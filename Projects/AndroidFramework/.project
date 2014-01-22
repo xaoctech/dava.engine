@@ -1047,6 +1047,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/FileSystem/KeyedUnarchiver.h</locationURI>
 		</link>
 		<link>
+			<name>Internal/FileSystem/LocalizationAndriod.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/FileSystem/LocalizationAndriod.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/FileSystem/LocalizationAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/FileSystem/LocalizationAndroid.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/FileSystem/LocalizationIPhone.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/FileSystem/LocalizationIPhone.h</locationURI>
@@ -1575,6 +1585,16 @@
 			<name>Internal/Platform/DeviceInfo.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/DeviceInfo.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/MovieViewControlStub.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/MovieViewControlStub.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/MovieViewControlStub.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/MovieViewControlStub.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/Mutex.cpp</name>
@@ -2487,6 +2507,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Sound/VolumeAnimatedObject.h</locationURI>
 		</link>
 		<link>
+			<name>Internal/UI/IMovieViewControl.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/IMovieViewControl.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/UI/IWebViewControl.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/IWebViewControl.h</locationURI>
@@ -2690,6 +2715,16 @@
 			<name>Internal/UI/UIMoveInTransition.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/UIMoveInTransition.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/UI/UIMovieView.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/UIMovieView.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/UI/UIMovieView.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/UI/UIMovieView.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/UI/UIPopup.cpp</name>
@@ -3065,6 +3100,16 @@
 			<name>Internal/Platform/TemplateAndroid/JniExtensions.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/JniExtensions.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/MovieViewControlAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/MovieViewControlAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/MovieViewControlAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/MovieViewControlAndroid.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/TemplateAndroid/WebViewControl.cpp</name>

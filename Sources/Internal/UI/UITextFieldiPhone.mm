@@ -23,6 +23,8 @@
 #include "UI/UITextFieldiPhone.h"
 #include "Core/Core.h"
 
+#import <HelperAppDelegate.h>
+
 float GetUITextViewSizeDivider()
 {
     float divider = 1.f;
@@ -44,6 +46,8 @@ float GetUITextViewSizeDivider()
 	UITextField * textField;
 	DAVA::UITextField * cppTextField;
 	BOOL textInputAllowed;
+    
+    CGRect lastKeyboardFrame;
 }
 - (id) init : (DAVA::UITextField  *) tf;
 - (void) dealloc;
@@ -71,9 +75,10 @@ float GetUITextViewSizeDivider()
 	if (self = [super init])
 	{
         float divider = GetUITextViewSizeDivider();
-		self.transform = CGAffineTransformMakeRotation(DAVA::DegToRad(-90.0f));
-		self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider);
-		self.center = CGPointMake(DAVA::Core::Instance()->GetPhysicalScreenWidth()/2/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/2/divider);	
+        
+        self.bounds = CGRectMake(0.0f, 0.0f, DAVA::Core::Instance()->GetPhysicalScreenWidth()/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/divider);
+        
+		self.center = CGPointMake(DAVA::Core::Instance()->GetPhysicalScreenWidth()/2/divider, DAVA::Core::Instance()->GetPhysicalScreenHeight()/2/divider);
 		self.userInteractionEnabled = TRUE;
 		textInputAllowed = YES;
 
@@ -92,6 +97,18 @@ float GetUITextViewSizeDivider()
 		textField.delegate = self;
 		
 		[self setupTraits];
+		
+		// Attach to "keyboard shown/keyboard hidden" notifications.
+		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+		[center addObserver:self selector:@selector(keyboardDidShow:)
+					   name:UIKeyboardDidShowNotification object:nil];
+		[center addObserver:self selector:@selector(keyboardWillHide:)
+					   name:UIKeyboardWillHideNotification object:nil];
+
+		[center addObserver:self selector:@selector(keyboardFrameDidChange:)
+					   name:UIKeyboardDidChangeFrameNotification object:nil];
+
+		// Done!
 		[self addSubview:textField];
 	}
 	return self;
@@ -119,6 +136,8 @@ float GetUITextViewSizeDivider()
 {
 	[textField release];
 	textField = 0;
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+
 	[super dealloc];
 }
 
@@ -402,6 +421,50 @@ float GetUITextViewSizeDivider()
 	}
 }
 
+- (void)keyboardFrameDidChange:(NSNotification *)notification
+{
+    NSDictionary* userInfo = notification.userInfo;
+
+    // Remember the last keyboard frame here, since it might be incorrect in keyboardDidShow.
+    lastKeyboardFrame = [[notification.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+	if (cppTextField && cppTextField->GetDelegate())
+	{
+		cppTextField->GetDelegate()->OnKeyboardHidden();
+	}
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+	if (!cppTextField || !cppTextField->GetDelegate())
+	{
+		return;
+	}
+
+	// convert own frame to window coordinates, frame is in superview's coordinates
+	CGRect ownFrame = [textField.window convertRect:self.frame fromView:textField.superview];
+
+	// calculate the area of own frame that is covered by keyboard
+	CGRect keyboardFrame = CGRectIntersection(ownFrame, lastKeyboardFrame);
+
+	// now this might be rotated, so convert it back
+	keyboardFrame = [textField.window convertRect:keyboardFrame toView:textField.superview];
+
+	// Recalculate to virtual coordinates.
+	DAVA::Vector2 keyboardOrigin(keyboardFrame.origin.x, keyboardFrame.origin.y);
+	keyboardOrigin *= DAVA::UIControlSystem::Instance()->GetScaleFactor();
+	keyboardOrigin += DAVA::UIControlSystem::Instance()->GetInputOffset();
+	
+	DAVA::Vector2 keyboardSize(keyboardFrame.size.width, keyboardFrame.size.height);
+	keyboardSize *= DAVA::UIControlSystem::Instance()->GetScaleFactor();
+	keyboardSize += DAVA::UIControlSystem::Instance()->GetInputOffset();
+
+	cppTextField->GetDelegate()->OnKeyboardShown(DAVA::Rect(keyboardOrigin, keyboardSize));
+}
+
 @end
 
 void CreateTextField(DAVA::UITextField  * tf)
@@ -458,11 +521,20 @@ namespace DAVA
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         if (align & ALIGN_LEFT)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentLeft;
+		}
         else if (align & ALIGN_HCENTER)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentCenter;
+		}
         else if (align & ALIGN_RIGHT)
+		{
             textFieldHolder->textField.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+			textFieldHolder->textField.textAlignment = NSTextAlignmentRight;
+		}
 
         if (align & ALIGN_TOP)
             textFieldHolder->textField.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
@@ -526,7 +598,9 @@ namespace DAVA
     void UITextFieldiPhone::ShowField()
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
-        [[[UIApplication sharedApplication] keyWindow] addSubview: textFieldHolder];
+        HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
+        [[appDelegate glController].backgroundView addSubview:textFieldHolder];
+        //[[[UIApplication sharedApplication] keyWindow] addSubview: textFieldHolder];
     }
     
     void UITextFieldiPhone::HideField()
@@ -629,6 +703,44 @@ namespace DAVA
 		UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
 		textFieldHolder->textField.enablesReturnKeyAutomatically = [textFieldHolder convertEnablesReturnKeyAutomatically:value];
 	}
+
+    uint32 UITextFieldiPhone::GetCursorPos()
+    {
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        if (!textFieldHolder)
+        {
+            return 0;
+        }
+
+        ::UITextField* textField = textFieldHolder->textField;
+        int pos = [textField offsetFromPosition: textField.beginningOfDocument
+                                     toPosition: textField.selectedTextRange.start];
+        return pos;
+    }
+
+    void UITextFieldiPhone::SetCursorPos(uint32 pos)
+    {
+        UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        if (!textFieldHolder)
+        {
+            return;
+        }
+
+        ::UITextField* textField = textFieldHolder->textField;
+        NSUInteger textLength = [textField.text length];
+        if (textLength == 0)
+        {
+            return;
+        }
+        if (pos > textLength)
+        {
+            pos = textLength - 1;
+        }
+
+        UITextPosition *start = [textField positionFromPosition:[textField beginningOfDocument] offset:pos];
+        UITextPosition *end = [textField positionFromPosition:start offset:0];
+        [textField setSelectedTextRange:[textField textRangeFromPosition:start toPosition:end]];
+    }
 }
 
 #endif

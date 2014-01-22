@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include <ft2build.h>
 #include <freetype/ftglyph.h>
 //#include "ftglyph.h"
@@ -35,12 +49,12 @@ FontManager::FontManager()
 	{
 		Logger::Error("FontManager FT_Init_FreeType failed");
 	}
-
-	trackedFontId = 0;
 }
 	
 FontManager::~FontManager()
 {
+	FTFont::ClearCache();
+
 	FT_Error error = FT_Done_FreeType(library);
 	if(error)
 	{
@@ -70,8 +84,10 @@ void FontManager::SetFontName(Font* font, const String& name)
 {
 	if (registeredFonts.find(font) == registeredFonts.end())
 		return;
-	
-	registeredFonts[font] = name;
+
+	// The names of all fonts should coincide with their hashed names (see DF-2316).
+	String fontHashName = GetFontHashName(font);
+	registeredFonts[font] = fontHashName;
 }
 	
 String FontManager::GetFontName(Font *font)
@@ -97,9 +113,11 @@ String FontManager::GetFontName(Font *font)
 		
 		String name = fontIter->second;
 		if (name.empty())
-			//generate name
-			name = Format("Font_%d", trackedFontId++);
-		
+		{
+			// YuriCoder, 2013/10/18. Font name HAVE TO BE unique, otherwise it might not be saved correctly.
+			name = GetFontHashName(font);
+		}
+
 		fontName->name = name;
 		return name;
 	}
@@ -111,8 +129,7 @@ void FontManager::PrepareToSaveFonts()
 	Clear();
 	fontsName.clear();
 	trackedFonts.clear();
-	trackedFontId = 0;
-	
+
 	for (REGISTERED_FONTS::iterator iter = registeredFonts.begin();
 		 iter != registeredFonts.end();
 		 ++iter)
@@ -127,7 +144,7 @@ void FontManager::PrepareToSaveFonts()
 			FONT_NAME* fontName = (*iter);
 			
 			Font* firstFont = (*fontName->fonts.begin());
-			if (firstFont->IsEqual(font))
+			if (firstFont && firstFont->IsEqual(font))
 			{
 				fontName->fonts.insert(font);
 				fontAdded = true;
@@ -160,6 +177,11 @@ const FontManager::TRACKED_FONTS& FontManager::GetTrackedFont() const
 {
 	return trackedFonts;
 }
-	
+
+String FontManager::GetFontHashName(Font* font)
+{
+	return Format("Font_%X", font->GetHashCode());
+}
+
 };
 

@@ -1,28 +1,41 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Particles/ParticlePropertyLine.h"
 
 
 namespace DAVA
 {
 
-RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFromYamlNode(YamlNode * parentNode, const String & propertyName, RefPtr<PropertyLine<float32> > defaultPropertyLine)
-{
-	YamlNode * node = parentNode->Get(propertyName);
-	if (!node)return defaultPropertyLine;
+template <> RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreatePropertyLineInternal<float32>(const YamlNode * node)
+{	
+	if (!node) return RefPtr<PropertyLine<float32> >();
 
 	if (node->GetType() == YamlNode::TYPE_STRING)
 	{
@@ -33,8 +46,8 @@ RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFr
 
 		for (int k = 0; k < node->GetCount() / 2; ++k)
 		{
-			YamlNode * time = node->Get(k * 2);
-			YamlNode * value = node->Get(k * 2 + 1);
+			const YamlNode * time = node->Get(k * 2);
+			const YamlNode * value = node->Get(k * 2 + 1);
 
 			if (time && value)
 			{
@@ -46,10 +59,9 @@ RefPtr<PropertyLine<float32> > PropertyLineYamlReader::CreateFloatPropertyLineFr
 	return RefPtr<PropertyLine<float32> >();
 }
 
-RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLineFromYamlNode( YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Vector2> > defaultPropertyLine /*= 0*/ )
-{
-	YamlNode * node = parentNode->Get(propertyName);
-	if (!node)return defaultPropertyLine;
+template <> RefPtr<PropertyLine<Vector2> > PropertyLineYamlReader::CreatePropertyLineInternal<Vector2>(const YamlNode * node)
+{	
+	if (!node) return RefPtr<PropertyLine<Vector2> >();
 
 	if (node->GetType() == YamlNode::TYPE_STRING)
 	{
@@ -68,8 +80,8 @@ RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLin
 
 		for (int k = 0; k < node->GetCount() / 2; ++k)
 		{
-			YamlNode * time = node->Get(k * 2);
-			YamlNode * value = node->Get(k * 2 + 1);
+			const YamlNode * time = node->Get(k * 2);
+			const YamlNode * value = node->Get(k * 2 + 1);
 
 			if (time && value)
 			{
@@ -89,75 +101,80 @@ RefPtr< PropertyLine<Vector2> > PropertyLineYamlReader::CreateVector2PropertyLin
 
 	return RefPtr< PropertyLine<Vector2> >();
 }
-    RefPtr< PropertyLine<Vector3> > PropertyLineYamlReader::CreateVector3PropertyLineFromYamlNode( YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Vector3> > defaultPropertyLine /*= 0*/ )
-    {
-        YamlNode * node = parentNode->Get(propertyName);
-        if (!node)return defaultPropertyLine;
+template <> RefPtr<PropertyLine<Vector3> > PropertyLineYamlReader::CreatePropertyLineInternal<Vector3>(const YamlNode * node)
+{	
+	if (!node) return RefPtr<PropertyLine<Vector3> >();
         
-        if (node->GetType() == YamlNode::TYPE_STRING)
+    if (node->GetType() == YamlNode::TYPE_STRING)
+    {                    
+        float32 v = node->AsFloat();
+        return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(v, v, v)));
+    }
+    else if (node->GetType() == YamlNode::TYPE_ARRAY)
+    {
+        if(node->GetCount() == 2) // for 2D forces compatibility
         {
-            if(propertyName == "emissionAngle") // for old emissionAngle compatibility
-            {
-                Vector3 res(0, 0, 0);
-                float32 angle = DegToRad(node->AsFloat());
-                res.x = cosf(angle);
-                res.y = sinf(angle);
-                return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(res));
-            }
-            
-            float32 v = node->AsFloat();
-            return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(Vector3(v, v, v)));
+            Vector3 res(node->AsVector2());
+            res.z = 0.0f;
+            return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(res));
         }
-        else if (node->GetType() == YamlNode::TYPE_ARRAY)
+        if (node->GetCount() == 3 || node->GetCount() == 2) 
         {
-            if(node->GetCount() == 2) // for 2D forces compatibility
-            {
-                Vector3 res(node->AsVector2());
-                res.z = 0.0f;
-                return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(res));
-            }
-            if (node->GetCount() == 3 || node->GetCount() == 2) 
-            {
-                Vector3 res(0.0f, 0.0f, 0.0f);
-                res = node->AsVector3();
-                return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(res));
-            }
+            Vector3 res(0.0f, 0.0f, 0.0f);
+            res = node->AsVector3();
+            return RefPtr< PropertyLine<Vector3> >(new PropertyLineValue<Vector3>(res));
+        }
             
-            RefPtr< PropertyLineKeyframes<Vector3> > keyframes (new PropertyLineKeyframes<Vector3>());
+        RefPtr< PropertyLineKeyframes<Vector3> > keyframes (new PropertyLineKeyframes<Vector3>());
             
-            for (int k = 0; k < node->GetCount() / 2; ++k)
-            {
-                YamlNode * time = node->Get(k * 2);
-                YamlNode * value = node->Get(k * 2 + 1);
+        for (int k = 0; k < node->GetCount() / 2; ++k)
+        {
+            const YamlNode * time = node->Get(k * 2);
+            const YamlNode * value = node->Get(k * 2 + 1);
                 
-                if (time && value)
+            if (time && value)
+            {
+                if (value->GetType() == YamlNode::TYPE_ARRAY)
                 {
-                    if (value->GetType() == YamlNode::TYPE_ARRAY)
-                    {
-                        keyframes->AddValue(time->AsFloat(), value->AsVector3());
-                    }
-                    else 
-                    {
-                        Vector3 v = value->AsVector3();
-                        if(propertyName == "emissionAngle") // for old emissionAngle compatibility
-                        {
-                            float32 angle = DegToRad(value->AsFloat());
-                            v.x = cosf(angle);
-                            v.y = sinf(angle);
-                            v.z = 0.0f;
-                        }
-                        keyframes->AddValue(time->AsFloat(), v);
-                    }
+                    keyframes->AddValue(time->AsFloat(), value->AsVector3());
+                }
+                else 
+                {
+                    Vector3 v = value->AsVector3();                    
+                    keyframes->AddValue(time->AsFloat(), v);
                 }
             }
-            return keyframes;
         }
-        
-        return RefPtr< PropertyLine<Vector3> >();
+        return keyframes;
     }
+        
+    return RefPtr< PropertyLine<Vector3> >();
+}
+
+template <> float32 PropertyValueHelper::MakeUnityValue<float32>()
+{
+	return 1.0f;
+}
+
+template <> Vector2 PropertyValueHelper::MakeUnityValue<Vector2>()
+{
+	return Vector2(1.0f, 1.0f);
+}
+
+template <> Vector3 PropertyValueHelper::MakeUnityValue<Vector3>()
+{
+	return Vector3(1.0f, 1.0f, 1.0f);
+}
+
+template <> Color PropertyValueHelper::MakeUnityValue<Color>()
+{
+	return Color();
+}
+
+
     
     
-Color ColorFromYamlNode(YamlNode * node)
+Color ColorFromYamlNode(const YamlNode * node)
 {
 	Color c;
 	c.r = node->Get(0)->AsFloat() / 255.0f;
@@ -167,10 +184,9 @@ Color ColorFromYamlNode(YamlNode * node)
 	return c;
 }
 
-RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFromYamlNode( YamlNode * parentNode, const String & propertyName, RefPtr< PropertyLine<Color> > defaultPropertyLine)
-{
-	YamlNode * node = parentNode->Get(propertyName);
-	if (!node)return defaultPropertyLine;
+template <> RefPtr<PropertyLine<Color> > PropertyLineYamlReader::CreatePropertyLineInternal<Color>(const YamlNode * node)
+{	
+	if (!node) return RefPtr<PropertyLine<Color> >();
 
 	if (node->GetType() == YamlNode::TYPE_ARRAY)
 	{
@@ -188,8 +204,8 @@ RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFro
 
 			for (int k = 0; k < node->GetCount() / 2; ++k)
 			{
-				YamlNode * time = node->Get(k * 2);
-				YamlNode * value = node->Get(k * 2 + 1);
+				const YamlNode * time = node->Get(k * 2);
+				const YamlNode * value = node->Get(k * 2 + 1);
 
 				if (time && value)
 				{
@@ -205,35 +221,6 @@ RefPtr< PropertyLine<Color> > PropertyLineYamlReader::CreateColorPropertyLineFro
 	return RefPtr< PropertyLine<Color> >();
 }
 
-YamlNode* PropertyLineYamlWriter::WriteColorPropertyLineToYamlNode(YamlNode* parentNode, const String& propertyName,
-                                                                   RefPtr<PropertyLine<Color> > propertyLine)
-{
-    // Write the property line.
-    Vector<PropValue<Color> > wrappedPropertyValues = PropLineWrapper<Color>(propertyLine).GetProps();
-    if (wrappedPropertyValues.empty())
-    {
-        return NULL;
-    }
-
-    if (wrappedPropertyValues.size() == 1)
-    {
-        // This has to be single string value. Write Colors as Vectors.
-        parentNode->Set(propertyName, ColorToVector(wrappedPropertyValues.at(0).v));
-        return NULL;
-    }
-
-    // Create the child array node.
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_ARRAY);
-    for (Vector<PropValue<Color> >::iterator iter = wrappedPropertyValues.begin();
-         iter != wrappedPropertyValues.end(); iter ++)
-    {        
-        childNode->AddValueToArray((*iter).t);
-        childNode->AddValueToArray(ColorToVector((*iter).v));
-    }
-
-    parentNode->AddNodeToMap(propertyName, childNode);
-    return childNode;
-}
 
 Vector4 PropertyLineYamlWriter::ColorToVector(const Color& color)
 {

@@ -1,18 +1,32 @@
-/*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+ /*==================================================================================
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UIButton.h"
 #include "Base/ObjectFactory.h"
@@ -25,7 +39,6 @@
 
 namespace DAVA 
 {
-	REGISTER_CLASS(UIButton);
 
     const int32 stateArray[] = {UIControl::STATE_NORMAL, UIControl::STATE_PRESSED_INSIDE, UIControl::STATE_PRESSED_OUTSIDE, UIControl::STATE_DISABLED, UIControl::STATE_SELECTED, UIControl::STATE_HOVER};
     const String statePostfix[] = {"Normal", "PressedInside", "PressedOutside", "Disabled", "Selected", "Hover"};
@@ -502,7 +515,13 @@ namespace DAVA
             BringChildBack(selectedText);
 		}
 	}
-	
+
+	void UIButton::Input(UIEvent *currentInput)
+	{
+		UIControl::Input(currentInput);
+		currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_SOFT); // Drag is not handled - see please DF-2508.
+	}
+
 	void UIButton::SetBackground(UIControlBackground *newBg)
 	{
 		DVASSERT(false);
@@ -730,7 +749,7 @@ namespace DAVA
 		return DRAW_STATE_UNPRESSED;
 	}
 	
-	void UIButton::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+	void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	{
 		UIControl::LoadFromYamlNode(node, loader);
 		
@@ -739,12 +758,12 @@ namespace DAVA
 	
 		for (int k = 0; k < STATE_COUNT; ++k)
 		{
-			YamlNode * stateSpriteNode = node->Get(Format("stateSprite%s", statePostfix[k].c_str()));
+			const YamlNode * stateSpriteNode = node->Get(Format("stateSprite%s", statePostfix[k].c_str()));
 			if (stateSpriteNode)
 			{
-				YamlNode * spriteNode = stateSpriteNode->Get(0);
-				YamlNode * frameNode = stateSpriteNode->Get(1);
-				YamlNode * backgroundModificationNode = NULL;
+				const YamlNode * spriteNode = stateSpriteNode->Get(0);
+				const YamlNode * frameNode = stateSpriteNode->Get(1);
+				const YamlNode * backgroundModificationNode = NULL;
 				if(stateSpriteNode->GetCount() > 2)
 				{
 					backgroundModificationNode = stateSpriteNode->Get(2);
@@ -762,14 +781,14 @@ namespace DAVA
 				}
 			}
             
-            YamlNode * stateDrawTypeNode = node->Get(Format("stateDrawType%s", statePostfix[k].c_str()));
+            const YamlNode * stateDrawTypeNode = node->Get(Format("stateDrawType%s", statePostfix[k].c_str()));
 			if (stateDrawTypeNode)
 			{
 				UIControlBackground::eDrawType type = (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(stateDrawTypeNode);
                 SetStateDrawType(stateArray[k],type);
                 
-                YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix[k].c_str()));
-                YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix[k].c_str()));
+                const YamlNode * leftRightStretchCapNode = node->Get(Format("leftRightStretchCap%s", statePostfix[k].c_str()));
+                const YamlNode * topBottomStretchCapNode = node->Get(Format("topBottomStretchCap%s", statePostfix[k].c_str()));
 
                 if(leftRightStretchCapNode)
                 {
@@ -788,54 +807,54 @@ namespace DAVA
                 SetStateDrawType(stateArray[k],UIControlBackground::DRAW_ALIGNED);
 			}
             
-            YamlNode * stateAlignNode = node->Get(Format("stateAlign%s", statePostfix[k].c_str()));
+            const YamlNode * stateAlignNode = node->Get(Format("stateAlign%s", statePostfix[k].c_str()));
 			if (stateAlignNode)
 			{
 				int32 align = loader->GetAlignFromYamlNode(stateAlignNode);
                 SetStateAlign(stateArray[k],align);
 			}
 
-			YamlNode * stateFontNode = node->Get(Format("stateFont%s", statePostfix[k].c_str()));
+			const YamlNode * stateFontNode = node->Get(Format("stateFont%s", statePostfix[k].c_str()));
 			if (stateFontNode)
 			{
 				Font * font = loader->GetFontByName(stateFontNode->AsString());
 				if (font)SetStateFont(stateArray[k], font);
 			}
 			
-			YamlNode * stateTextNode = node->Get(Format("stateText%s", statePostfix[k].c_str()));
+			const YamlNode * stateTextNode = node->Get(Format("stateText%s", statePostfix[k].c_str()));
 			if (stateTextNode)
 			{
 				SetStateText(stateArray[k], LocalizedString(stateTextNode->AsWString()));
 			}
 			
-			YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
+			const YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
 			if (stateTextColorNode)
 			{
 				Vector4 c = stateTextColorNode->AsVector4();
 				SetStateFontColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
 			}
 			
-			YamlNode * stateShadowColorNode = node->Get(Format("stateShadowcolor%s", statePostfix[k].c_str()));
+			const YamlNode * stateShadowColorNode = node->Get(Format("stateShadowcolor%s", statePostfix[k].c_str()));
 			if (stateShadowColorNode)
 			{
 				Vector4 c = stateShadowColorNode->AsVector4();
 				SetStateShadowColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
 			}			
 			
-			YamlNode * stateShadowOffsetNode = node->Get(Format("stateShadowoffset%s", statePostfix[k].c_str()));
+			const YamlNode * stateShadowOffsetNode = node->Get(Format("stateShadowoffset%s", statePostfix[k].c_str()));
 			if (stateShadowOffsetNode)
 			{
 				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
 			}
 			
-			YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
+			const YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
 			if(colorInheritNode)
 			{
 				UIControlBackground::eColorInheritType type = (UIControlBackground::eColorInheritType)loader->GetColorInheritTypeFromNode(colorInheritNode);
 				GetActualBackground(stateArray[k])->SetColorInheritType(type);
 			}
 			
-			YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
+			const YamlNode * colorNode = node->Get(Format("stateColor%s", statePostfix[k].c_str()));
 			if(colorNode)
 			{
 				Color color = loader->GetColorFromYamlNode(colorNode);
@@ -858,14 +877,14 @@ namespace DAVA
         
 		//Remove values of UIControl
 		//UIButton has state specific properties
-		YamlNode *colorNode = node->Get("color");
-		YamlNode *spriteNode = node->Get("sprite");
-		YamlNode *drawTypeNode = node->Get("drawType");
-		YamlNode *colorInheritNode = node->Get("colorInherit");
-		YamlNode *alignNode = node->Get("align");
-		YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
-		YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
-		YamlNode *spriteModificationNode = node->Get("spriteModification");
+		const YamlNode *colorNode = node->Get("color");
+		const YamlNode *spriteNode = node->Get("sprite");
+		const YamlNode *drawTypeNode = node->Get("drawType");
+		const YamlNode *colorInheritNode = node->Get("colorInherit");
+		const YamlNode *alignNode = node->Get("align");
+		const YamlNode *leftRightStretchCapNode = node->Get("leftRightStretchCap");
+		const YamlNode *topBottomStretchCapNode = node->Get("topBottomStretchCap");
+		const YamlNode *spriteModificationNode = node->Get("spriteModification");
         
 		if (colorNode)
 		{
@@ -910,14 +929,10 @@ namespace DAVA
 			{
 				//Create array yamlnode and add it to map
 				YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
-                
-                FilePath path(stateSprite->GetRelativePathname());
-                path.TruncateExtension();
 
-                String pathname = path.GetFrameworkPath();
-				spriteNode->AddValueToArray(pathname);
-                
+				spriteNode->AddValueToArray(GetSpriteFrameworkPath(stateSprite));
 				spriteNode->AddValueToArray(stateFrame);
+
 				int32 modification = stateBacks[BackgroundIndexForState((eButtonDrawState)i)]->GetModification();
 				spriteNode->AddValueToArray(modification);
 				node->AddNodeToMap(Format("stateSprite%s", statePostfix[i].c_str()), spriteNode);
@@ -1021,5 +1036,16 @@ namespace DAVA
 			}
 		}
 	}
-
+    
+    void UIButton::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
+	{
+        UIControl::SetVisibleForUIEditor(value, hierarchic);
+        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+            if (stateTexts[i])
+            {
+                stateTexts[i]->SetVisibleForUIEditor(value, hierarchic);
+            }
+		}
+    }
 };

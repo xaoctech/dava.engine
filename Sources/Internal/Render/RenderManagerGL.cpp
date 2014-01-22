@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/RenderBase.h"
 #include "Render/RenderManager.h"
 #include "Render/Texture.h"
@@ -60,6 +74,9 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 	SetPixelFormat( hDC, iFormat, &pfd );
 
 	hRC = wglCreateContext(hDC);
+
+	renderContextId = (uint64)hRC;
+	
 	Thread::secondaryContext = wglCreateContext(hDC);
 	Thread::currentDC = hDC;
 
@@ -108,7 +125,7 @@ bool IsGLExtensionSupported(const String &extension)
     if(String::npos != spacePosition || extension.empty())
     {
         /* Extension names should not have spaces. */
-        Logger::Info("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
+        Logger::FrameworkDebug("[IsGLExtensionSupported] extension %s isn't supported", extension.c_str());
         return false;
     }
     
@@ -213,12 +230,12 @@ void RenderManager::PrepareRealMatrix()
         
         glTranslate = glScale * glTranslate;
         SetMatrix(MATRIX_MODELVIEW, glTranslate);
-//        Logger::Info("2D matricies recalculated");
+//        Logger::FrameworkDebug("2D matricies recalculated");
 //        Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-//        Logger::Info("Model matrix");
+//        Logger::FrameworkDebug("Model matrix");
 //        modelViewSave.Dump();
 //        Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-//        Logger::Info("Proj matrix");
+//        Logger::FrameworkDebug("Proj matrix");
 //        projectionSave.Dump();
     }
 }
@@ -243,7 +260,7 @@ void RenderManager::EndFrame()
     
 void RenderManager::MakeGLScreenShot()
 {
-    Logger::Debug("RenderManager::MakeGLScreenShot");
+    Logger::FrameworkDebug("RenderManager::MakeGLScreenShot");
 #if defined(__DAVAENGINE_OPENGL__)
     
 
@@ -252,15 +269,11 @@ void RenderManager::MakeGLScreenShot()
     
     PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     
-    Logger::Debug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
+    Logger::FrameworkDebug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
     
     // picture is rotated (framebuffer coordinates start from bottom left)
     Image *image = NULL;
-#if defined(__DAVAENGINE_IPHONE__)    
-    image = Image::Create(height, width, formatDescriptor.formatID);
-#else
     image = Image::Create(width, height, formatDescriptor.formatID);
-#endif
     uint8 *imageData = image->GetData();
     
     int32 formatSize = Texture::GetPixelFormatSizeInBytes(formatDescriptor.formatID);
@@ -269,8 +282,7 @@ void RenderManager::MakeGLScreenShot()
     uint32 imageDataSize = width * height * formatSize;
     tempData = new uint8[imageDataSize];
 
-    LockNonMain();
-    glBindFramebuffer(GL_FRAMEBUFFER, fboViewRenderbuffer);
+    RENDER_VERIFY(glBindFramebuffer(GL_FRAMEBUFFER, fboViewRenderbuffer));
 //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 //    glBindFramebuffer(GL_FRAMEBUFFER_BINDING_OES, fboViewRenderbuffer);
 //#else
@@ -279,26 +291,13 @@ void RenderManager::MakeGLScreenShot()
     
     RENDER_VERIFY(glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ));
     RENDER_VERIFY(glReadPixels(0, 0, width, height, formatDescriptor.format, formatDescriptor.type, (GLvoid *)tempData));
-    UnlockNonMain();
     
     //TODO: optimize (ex. use pre-allocated buffer instead of dynamic allocation)
     
     // iOS frame buffer starts from bottom left corner, but we need from top left, so we rotate picture here
     uint32 newIndex = 0;
     uint32 oldIndex = 0;
-#if defined(__DAVAENGINE_IPHONE__)
-    for(int32 w = 0; w < width; ++w)
-    {
-        for(int32 h = 0; h < height; ++h)
-        {
-            for(int32 b = 0; b < formatSize; ++b)
-            {
-                oldIndex = formatSize*width*h + formatSize*w + b;
-                imageData[newIndex++] = tempData[oldIndex];
-            }
-        }
-    }
-#else
+
     //MacOS
     //TODO: test on Windows and android
 
@@ -314,7 +313,6 @@ void RenderManager::MakeGLScreenShot()
         }
     }
     
-#endif
     SafeDeleteArray(tempData);
     
     if(screenShotCallback)
@@ -350,37 +348,11 @@ void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates
     width = (int32)(rect.dx * currentDrawScale.x);
     height = (int32)(rect.dy * currentDrawScale.y);    
     
-    
-    switch(renderOrientation)
+    if (renderOrientation!=Core::SCREEN_ORIENTATION_TEXTURE)
     {
-        case Core::SCREEN_ORIENTATION_PORTRAIT:
-        { 
-            y = frameBufferHeight - y - height;
-        }
-        break;    
-        
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-		{
-			int32 tmpY = y;
-			y = x;
-			x = tmpY;
-			tmpY = height;
-			height = width;
-			width = tmpY;
-		}
-        break;
-        case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-		{
-			int32 tmpY = height;
-			height = width;
-			width = tmpY;
-			tmpY = y;
-			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - x - height;
-			x = frameBufferWidth/* * Core::GetVirtualToPhysicalFactor()*/ - tmpY - width;
-		}
-        break;
-            
-    }    
+        y = frameBufferHeight - y - height;
+    }
+    
     RENDER_VERIFY(glViewport(x, y, width, height));
     viewport.x = (float32)x;
     viewport.y = (float32)y;
@@ -409,39 +381,10 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
     orthoMatrix.glOrtho(0.0f, (float32)frameBufferWidth, (float32)frameBufferHeight, 0.0f, -1.0f, 1.0f);
 	
-    switch (orientation) 
-	{
-		case Core::SCREEN_ORIENTATION_PORTRAIT:
-		case Core::SCREEN_ORIENTATION_TEXTURE:
-			retScreenWidth = frameBufferWidth;
-			retScreenHeight = frameBufferHeight;
-			break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-            
-            //mark glTranslatef(0.0f, (float32)frameBufferHeight, 0.0f);
-			//mark glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-            
-            glTranslate.glTranslate(0.0f, (float32)frameBufferHeight, 0.0f);
-            glRotate.glRotate(-90.0f, 0.0f, 0.0f, 1.0f);
-            
-            orthoMatrix = glRotate * glTranslate * orthoMatrix;
-            
-			retScreenWidth = frameBufferHeight;
-			retScreenHeight = frameBufferWidth;
-            break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-			//mark glTranslatef((float32)frameBufferWidth, 0.0f, 0.0f);
-			//mark glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            
-            glTranslate.glTranslate((float32)frameBufferWidth, 0.0f, 0.0f);
-            glRotate.glRotate(90.0f, 0.0f, 0.0f, 1.0f);
-            
-            orthoMatrix = glRotate * glTranslate * orthoMatrix;
-
-			retScreenWidth = frameBufferHeight;
-			retScreenHeight = frameBufferWidth;
-			break;
-	}
+    
+    retScreenWidth = frameBufferWidth;
+    retScreenHeight = frameBufferHeight;
+	
     
     SetMatrix(MATRIX_PROJECTION, orthoMatrix);
 
@@ -653,7 +596,7 @@ void RenderManager::HWDrawArrays(ePrimitiveType type, int32 first, int32 count)
 
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
+		Logger::FrameworkDebug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 
     RENDER_VERIFY(glDrawArrays(mode, first, count));
@@ -697,7 +640,7 @@ void RenderManager::HWDrawElements(ePrimitiveType type, int32 count, eIndexForma
 	
 	if(debugEnabled)
 	{
-		Logger::Debug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
+		Logger::FrameworkDebug("Draw arrays texture: id %d", currentState.currentTexture[0]->id);
 	}
 #if defined(__DAVAENGINE_IPHONE__)
 #if not defined(GL_UNSIGNED_INT)
@@ -787,35 +730,12 @@ void RenderManager::SetHWClip(const Rect &rect)
 	int32 y2= (int32)ceilf((rect.dy + rect.y) * currentDrawScale.y + currentDrawOffset.y);
 	int32 width = x2 - x;
 	int32 height = y2 - y;
-	switch (renderOrientation) 
-	{
-	case Core::SCREEN_ORIENTATION_PORTRAIT:
-		{
-			//			x = frameBufferWidth - x;
-			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - y - height;
-		}
-		break;
-	case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-		{
-			int32 tmpY = y;
-			y = x;
-			x = tmpY;
-			tmpY = height;
-			height = width;
-			width = tmpY;
-		}
-		break;
-	case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-		{
-			int32 tmpY = height;
-			height = width;
-			width = tmpY;
-			tmpY = y;
-			y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - x - height;
-			x = frameBufferWidth/* * Core::GetVirtualToPhysicalFactor()*/ - tmpY - width;
-		}
-		break;
-	}
+    
+    if (renderOrientation!=Core::SCREEN_ORIENTATION_TEXTURE)
+    {
+        y = frameBufferHeight/* * Core::GetVirtualToPhysicalFactor()*/ - y - height;
+    }
+	
 	RENDER_VERIFY(glEnable(GL_SCISSOR_TEST));
 	RENDER_VERIFY(glScissor(x, y, width, height));
 }
@@ -876,7 +796,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 
 		viewMappingDrawScale.x = renderTarget->GetResourceToPhysicalFactor();
 		viewMappingDrawScale.y = renderTarget->GetResourceToPhysicalFactor();
-//		Logger::Info("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
+//		Logger::FrameworkDebug("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
 		RemoveClip();
 	}
 	
@@ -924,7 +844,6 @@ void RenderManager::AttachRenderData()
     const int DEBUG = 0;
 	Shader * shader = hardwareState.shader;
     
-    RenderManager::Instance()->LockNonMain();
     if (!shader)
     {
         // TODO: should be moved to RenderManagerGL
@@ -939,7 +858,7 @@ void RenderManager::AttachRenderData()
         {
             for (int32 p = 0; p < enabledAttribCount; ++p)
             {
-                if (DEBUG)Logger::Debug("!shader glDisableVertexAttribArray: %d", p);
+                if (DEBUG)Logger::FrameworkDebug("!shader glDisableVertexAttribArray: %d", p);
                 RENDER_VERIFY(glDisableVertexAttribArray(p));
             }
             enabledAttribCount = 0;
@@ -954,26 +873,26 @@ void RenderManager::AttachRenderData()
             switch(stream->formatMark)
             {
                 case EVF_VERTEX:
-                    if (DEBUG)Logger::Debug("!shader SetVertexPointer");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetVertexPointer");
 
                     SetVertexPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_VERTEX;
                     break;
                 case EVF_NORMAL:
-                    if (DEBUG)Logger::Debug("!shader SetNormalPointer");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetNormalPointer");
 
                     SetNormalPointer(stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_NORMAL;
                     break;
                 case EVF_TEXCOORD0:
-                    if (DEBUG)Logger::Debug("!shader SetTexCoordPointer 0");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetTexCoordPointer 0");
 
                     glClientActiveTexture(GL_TEXTURE0);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
                     pointerArraysCurrentState |= EVF_TEXCOORD0;
                     break;
                 case EVF_TEXCOORD1:
-                    if (DEBUG)Logger::Debug("!shader SetTexCoordPointer 1");
+                    if (DEBUG)Logger::FrameworkDebug("!shader SetTexCoordPointer 1");
 
                     glClientActiveTexture(GL_TEXTURE1);
                     SetTexCoordPointer(stream->size, stream->type, stream->stride, stream->pointer);
@@ -988,25 +907,25 @@ void RenderManager::AttachRenderData()
         
         if (difference & EVF_VERTEX)
         {
-            if (DEBUG)Logger::Debug("!shader EnableVertexArray: %d", (pointerArraysCurrentState & EVF_VERTEX) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableVertexArray: %d", (pointerArraysCurrentState & EVF_VERTEX) != 0);
 
             EnableVertexArray((pointerArraysCurrentState & EVF_VERTEX) != 0);
         }
         if (difference & EVF_NORMAL)
         {
-            if (DEBUG)Logger::Debug("!shader EnableNormalArray: %d", (pointerArraysCurrentState & EVF_NORMAL) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableNormalArray: %d", (pointerArraysCurrentState & EVF_NORMAL) != 0);
 
             EnableNormalArray((pointerArraysCurrentState & EVF_NORMAL) != 0);
         }
         if (difference & EVF_TEXCOORD0)
         {
-            if (DEBUG)Logger::Debug("!shader EnableTextureCoordArray-0: %d", (pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableTextureCoordArray-0: %d", (pointerArraysCurrentState & EVF_TEXCOORD0) != 0);
 
             EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD0) != 0, 0);
         }
         if (difference & EVF_TEXCOORD1)
         {
-            if (DEBUG)Logger::Debug("!shader EnableTextureCoordArray-1: %d", (pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
+            if (DEBUG)Logger::FrameworkDebug("!shader EnableTextureCoordArray-1: %d", (pointerArraysCurrentState & EVF_TEXCOORD1) != 0);
 
             EnableTextureCoordArray((pointerArraysCurrentState & EVF_TEXCOORD1) != 0, 1);
         }
@@ -1066,12 +985,12 @@ void RenderManager::AttachRenderData()
 					normalized = GL_TRUE;
 				}
                 RENDER_VERIFY(glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer));
-                if (DEBUG)Logger::Debug("shader glVertexAttribPointer: %d", attribIndex);
+                if (DEBUG)Logger::FrameworkDebug("shader glVertexAttribPointer: %d", attribIndex);
 
                 if (attribIndex >= enabledAttribCount)  // enable only if it was not enabled on previous step
                 {
                     RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
-                    if (DEBUG)Logger::Debug("shader glEnableVertexAttribArray: %d", attribIndex);
+                    if (DEBUG)Logger::FrameworkDebug("shader glEnableVertexAttribArray: %d", attribIndex);
                 }
                 if (attribIndex + 1 > currentEnabledAttribCount)
                     currentEnabledAttribCount = attribIndex + 1;    // count of enabled attributes
@@ -1082,14 +1001,13 @@ void RenderManager::AttachRenderData()
         
         for (int32 p = currentEnabledAttribCount; p < enabledAttribCount; ++p)
         {
-            if (DEBUG)Logger::Debug("shader glDisableVertexAttribArray: %d", p);
+            if (DEBUG)Logger::FrameworkDebug("shader glDisableVertexAttribArray: %d", p);
 
             RENDER_VERIFY(glDisableVertexAttribArray(p));
         }
         enabledAttribCount = currentEnabledAttribCount;
         //pointerArraysRendererState = pointerArraysCurrentState;
     }
-    RenderManager::Instance()->UnlockNonMain();
 }
 
 
@@ -1116,9 +1034,9 @@ void RenderManager::AttachRenderData()
 
     
     
-int32 RenderManager::HWglGetLastTextureID()
+int32 RenderManager::HWglGetLastTextureID(int textureType)
 {
-    return lastBindedTexture;
+    return lastBindedTexture[textureType];
 
     
 //#if defined(__DAVAENGINE_ANDROID__)
@@ -1128,23 +1046,36 @@ int32 RenderManager::HWglGetLastTextureID()
 //    glGetIntegerv(GL_TEXTURE_BINDING_2D, &saveId);
 //    //    GLenum err = glGetError();
 //    //    if (err != GL_NO_ERROR)
-//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
+//    //        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_TEXTURE_BINDING_2D, saveId)", __FILE__, __LINE__, err);
 //    return saveId;
 //#endif //#if defined(__DAVAENGINE_ANDROID__)
 }
-
-void RenderManager::HWglBindTexture(int32 tId)
+	
+void RenderManager::HWglBindTexture(int32 tId, uint32 textureType)
 {
     if(0 != tId)
     {
-        glBindTexture(GL_TEXTURE_2D, tId);
+        glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId);
         
-        //		GLenum err = glGetError();
-        //		if (err != GL_NO_ERROR)
-        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+        		//GLenum err = glGetError();
+        		//if (err != GL_NO_ERROR)
+        		//	Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
         
-        lastBindedTexture = tId;
+        lastBindedTexture[textureType] = tId;
+		lastBindedTextureType = textureType;
     }
+}
+	
+void RenderManager::HWglForceBindTexture(int32 tId, uint32 textureType)
+{
+	glBindTexture((Texture::TEXTURE_2D == textureType) ? GL_TEXTURE_2D : GL_TEXTURE_CUBE_MAP, tId);
+	
+	//GLenum err = glGetError();
+	//if (err != GL_NO_ERROR)
+	//	Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindTexture(GL_TEXTURE_2D, tId)", __FILE__, __LINE__, err);
+	
+	lastBindedTexture[textureType] = tId;
+	lastBindedTextureType = textureType;
 }
 
 int32 RenderManager::HWglGetLastFBO()
@@ -1160,7 +1091,7 @@ int32 RenderManager::HWglGetLastFBO()
 //    
 //    //    GLenum err = glGetError();
 //    //    if (err != GL_NO_ERROR)
-//    //        Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
+//    //        Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &saveFBO)", __FILE__, __LINE__, err);
 //    
 //#endif //PLATFORMS
 //    
@@ -1180,7 +1111,7 @@ void RenderManager::HWglBindFBO(const int32 fbo)
         
         //		GLenum err = glGetError();
         //		if (err != GL_NO_ERROR)
-        //			Logger::Debug("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
+        //			Logger::Error("%s file:%s line:%d gl failed with errorcode: 0x%08x", "glBindFramebuffer(GL_FRAMEBUFFER_, tId)", __FILE__, __LINE__, err);
         
         
         lastBindedFBO = fbo;
@@ -1190,8 +1121,16 @@ void RenderManager::HWglBindFBO(const int32 fbo)
 #if defined(__DAVAENGINE_ANDROID__)
 void RenderManager::Lost()
 {
+    bufferBindingId[0] = 0;
+    bufferBindingId[1] = 0;
+
 	enabledAttribCount = 0;
-	lastBindedTexture = 0;
+	for(int32 i = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
+	{
+		lastBindedTexture[i] = 0;
+	}
+    lastBindedTextureType = Texture::TEXTURE_2D;
+
 	lastBindedFBO = 0;
 }
 

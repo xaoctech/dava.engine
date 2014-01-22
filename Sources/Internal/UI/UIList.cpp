@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UIList.h"
 #include "Debug/DVAssert.h"
@@ -22,7 +36,6 @@
 
 namespace DAVA 
 {
-	REGISTER_CLASS(UIList);
 	
 int32 UIListDelegate::CellWidth(UIList* /*list*/, int32 /*index*/)
 {
@@ -48,6 +61,7 @@ UIList::UIList(const Rect &rect, eListOrientation requiredOrientation, bool rect
 	,	orientation(requiredOrientation)
 	,	scrollContainer(NULL)
 	,	scroll(NULL)
+	, 	aggregatorPath(FilePath())
 {
 		InitAfterYaml();
 }
@@ -482,6 +496,8 @@ void UIList::Input(UIEvent *currentInput)
 		}
 			break;
 	}
+
+	currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
 }
 
 bool UIList::SystemInput(UIEvent *currentInput)
@@ -573,6 +589,10 @@ void UIList::AddCellAtPos(UIListCell *cell, int32 pos, int32 size, int32 index)
 		r.y = (float32)pos;
 	}
 	cell->SetRect(r);
+    
+    // Full refresh removes the cells and adds them again, losing the IsVisibleForUIEditor flag
+    // (see please DF-2860). So need to recover it basing on what is set on parent's level.
+    cell->SetVisibleForUIEditor(GetVisibleForUIEditor());
 	scrollContainer->AddControl(cell);
 	
 }
@@ -639,11 +659,11 @@ void UIList::SystemWillAppear()
 	Refresh();
 }
 
-void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UIList::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 		
-	YamlNode * orientNode = node->Get("orientation");
+	const YamlNode * orientNode = node->Get("orientation");
 	if (orientNode)
 	{
 		if (orientNode->AsString() == "ORIENTATION_VERTICAL")
@@ -656,13 +676,13 @@ void UIList::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 	// Load aggregator path
-	YamlNode * aggregatorPathNode = node->Get("aggregatorPath");
+	const YamlNode * aggregatorPathNode = node->Get("aggregatorPath");
 	if (aggregatorPathNode)
 	{
 		aggregatorPath = aggregatorPathNode->AsString();
 	}
 		
-		// TODO
+	// TODO
 	InitAfterYaml();
 }
 
@@ -695,7 +715,7 @@ void UIList::SetAggregatorPath(const FilePath &aggregatorPath)
 YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 {
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
-	//Temp variable
+	//Temp variables
 	String stringValue;
     
 	//Control Type

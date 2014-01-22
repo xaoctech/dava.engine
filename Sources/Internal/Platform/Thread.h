@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_THREAD_H__
 #define __DAVAENGINE_THREAD_H__ 
 
@@ -25,11 +39,6 @@
 #else
 #include <pthread.h>
 #endif
-
-#if defined (__DAVAENGINE_ANDROID__)
-	#include <EGL/eglplatform.h>
-	#include <EGL/egl.h>
-#endif //#if defined (__DAVAENGINE_ANDROID__)
 
 namespace DAVA
 {
@@ -64,6 +73,46 @@ public:
 		STATE_RUNNING,
 		STATE_ENDED
 	};
+
+	class ThreadId
+	{
+#if defined (__DAVAENGINE_WIN32__)
+	public:
+		bool operator<(const ThreadId & otherThread) const 
+		{ 
+			return internalTid < otherThread.internalTid; 
+		}
+
+	private:
+		ThreadId(DWORD _internalTid = 0) 
+		{ 
+			internalTid = _internalTid; 
+		}
+		bool operator==(const ThreadId & otherThread) const
+		{ 
+			return internalTid == otherThread.internalTid; 
+		}
+		DWORD internalTid;
+#else
+    public:
+		bool operator<(const ThreadId & otherThread) const
+		{
+			return internalTid < otherThread.internalTid;
+		}
+        
+    private:
+        ThreadId(pthread_t _internalTid = 0)
+		{
+			internalTid = _internalTid;
+		}
+		bool operator==(const ThreadId & otherThread) const
+		{
+			return internalTid == otherThread.internalTid;
+		}
+		pthread_t internalTid;
+#endif
+		friend class Thread;
+	};
 	
 	/**
 		\brief static function to detect if current thread is main thread of application
@@ -91,13 +140,6 @@ public:
 	*/
 	eThreadState	GetState();
 
-	/**
-		\brief this function is needed to copy gl context from calling thread to this thread
-		If you call it before thread start it will copy OpenGL context to this thread
-		It will do the same thing with DirectX device, so main purpose of the function is to make GL / DX objects
-	*/
-	void			EnableCopyContext() { needCopyContext = true; }//setting current context in new thread
-
     /**
         Wrapp pthread wait, signal and broadcast
 	*/
@@ -117,18 +159,24 @@ public:
      */
     static void SleepThread(uint32 timeMS);
 
+	static ThreadId GetCurrentThreadId();
+
+	void SetThreadId(const ThreadId & threadId);
+	ThreadId GetThreadId();
+
 private:
+    ~Thread() {};
 	Thread() {};
 	Thread(const Thread& t);
 	Thread(const Message& msg);
 	
-	Message			msg;
-	eThreadState		state;
-	bool				needCopyContext;
+	Message	msg;
+	eThreadState state;
+
+	ThreadId threadId;
+	static ThreadId mainThreadId;
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	void		* glContext;
-
 	#if defined (__DAVAENGINE_NPAPI__)
 		CGLContextObj npAPIGLContext;
 	#endif // #if defined (__DAVAENGINE_NPAPI__)
@@ -137,44 +185,26 @@ private:
 	void		StartMacOS();
 	static void	InitMacOS();
 #elif defined (__DAVAENGINE_WIN32__)
-
-	static DWORD	mainThreadId;
-
 public:
 	static HDC		currentDC;
 	static HGLRC	secondaryContext;
 
 private:
 	void		StartWin32();
-	HANDLE		handle;
-	DWORD		tid;
 	friend DWORD WINAPI ThreadFunc(void* param);
 public:
-	/* 
-		Note: This function called from Core::Create. Core::Create must be always called from main thread.
-	*/
-	static void		InitMainThread();
-
+	static void	InitMainThread();
 
 #elif defined(__DAVAENGINE_ANDROID__)
 private:
+	static ThreadId glThreadId;
+private:
 	friend void	* PthreadMain(void * param);
-	void		StartAndroid();
-    
-    static pid_t mainThreadId;
-    
-	static EGLContext currentContext;
-	static EGLDisplay currentDisplay;
-	static EGLSurface currentDrawSurface;
-	static EGLSurface currentReadSurface;
-
-	EGLContext localContext;
-
+	void StartAndroid();
 public:
-
-	static void		InitMainThread();
-
-	#else //PLATFORMS
+	static void	InitMainThread();
+	static void	InitGLThread();
+#else //PLATFORMS
 	// other platforms
 #endif //PLATFORMS	
 };

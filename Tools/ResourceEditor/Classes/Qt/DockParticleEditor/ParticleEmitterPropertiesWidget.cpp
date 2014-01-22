@@ -1,22 +1,35 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+
+
 #include "ParticleEmitterPropertiesWidget.h"
-#include "Commands/ParticleEditorCommands.h"
-#include "Commands/CommandsManager.h"
+#include "Commands2/ParticleEditorCommands.h"
 #include "../Scene/SceneDataManager.h"
 
 #include <QLineEdit>
@@ -26,7 +39,8 @@
 #define EMISSION_RANGE_MAX_LIMIT_DEGREES 180.0f
 
 ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent) :
-	QWidget(parent)
+	QWidget(parent),
+	BaseParticleEditorContentWidget()
 {
 	mainLayout = new QVBoxLayout();
 	this->setLayout(mainLayout);
@@ -35,6 +49,10 @@ ParticleEmitterPropertiesWidget::ParticleEmitterPropertiesWidget(QWidget* parent
 	emitterYamlPath->setReadOnly(true);
 	mainLayout->addWidget(emitterYamlPath);
 	connect(emitterYamlPath, SIGNAL(textChanged(const QString&)), this, SLOT(OnEmitterYamlPathChanged(const QString&)));
+
+	shortEffectCheckBox = new QCheckBox("Short effect");
+	mainLayout->addWidget(shortEffectCheckBox);
+	connect(shortEffectCheckBox, SIGNAL(stateChanged(int)), this, SLOT(OnValueChanged()));
 
 	QHBoxLayout* emitterTypeHBox = new QHBoxLayout();
 	emitterTypeHBox->addWidget(new QLabel("type"));
@@ -141,6 +159,8 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 
 	float playbackSpeed = ConvertFromSliderValueToPlaybackSpeed(emitterPlaybackSpeed->value());
 
+	bool isShortEffect = shortEffectCheckBox->isChecked();
+
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
 	commandUpdateEmitter->Init(type,
 							   emissionRange.GetPropLine(),
@@ -149,20 +169,25 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 							   colorOverLife.GetPropLine(),
 							   size.GetPropLine(),
 							   life,
-							   playbackSpeed);
-	CommandsManager::Instance()->ExecuteAndRelease(commandUpdateEmitter,
-												   SceneDataManager::Instance()->SceneGetActive()->GetScene());
+							   playbackSpeed,
+							   isShortEffect);
 
-	Init(emitter, false, initEmittersByDef);
+	DVASSERT(activeScene != 0);
+	activeScene->Exec(commandUpdateEmitter);
+
+	Init(activeScene, emitter, false, initEmittersByDef);
 	emit ValueChanged();
 }
 
-void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool updateMinimize, bool needUpdateTimeLimits)
+void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEmitter *emitter, bool updateMinimize, bool needUpdateTimeLimits)
 {
 	DVASSERT(emitter != 0);
 	this->emitter = emitter;
+	SetActiveScene(scene);
 
 	blockSignals = true;
+
+	shortEffectCheckBox->setChecked(emitter->IsShortEffect());
 
 	float32 emitterLifeTime = emitter->GetLifeTime();
 
@@ -181,7 +206,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		maxTime = emitterEmissionRange->GetMaxBoundary();
 	}
 	emitterEmissionRange->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize);
-	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(emitter->emissionRange).GetProps(), Qt::blue, "emission range");
+	emitterEmissionRange->AddLine(0, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(emitter->emissionRange)).GetProps(), Qt::blue, "emission range");
 	emitterEmissionRange->SetMinLimits(EMISSION_RANGE_MIN_LIMIT_DEGREES);
 	emitterEmissionRange->SetMaxLimits(EMISSION_RANGE_MAX_LIMIT_DEGREES);
 	emitterEmissionRange->SetYLegendMark(DEGREE_MARK_CHARACTER);
@@ -196,7 +221,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	vectorColors.push_back(Qt::red); vectorColors.push_back(Qt::darkGreen); vectorColors.push_back(Qt::blue);
 	Vector<QString> vectorLegends;
 	vectorLegends.push_back("emission vector: x"); vectorLegends.push_back("emission vector: y"); vectorLegends.push_back("emission vector: z");
-	emitterEmissionVector->AddLines(PropLineWrapper<Vector3>(emitter->emissionVector).GetProps(), vectorColors, vectorLegends);
+	emitterEmissionVector->AddLines(PropLineWrapper<Vector3>(PropertyLineHelper::GetValueLine(emitter->emissionVector)).GetProps(), vectorColors, vectorLegends);
 
 	if(!needUpdateTimeLimits)
 	{
@@ -204,12 +229,12 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 		maxTime = emitterRadius->GetMaxBoundary();
 	}
 	emitterRadius->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize);
-	emitterRadius->AddLine(0, PropLineWrapper<float32>(emitter->radius).GetProps(), Qt::blue, "radius");
+	emitterRadius->AddLine(0, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(emitter->radius)).GetProps(), Qt::blue, "radius");
 	// Radius cannot be negative.
 	emitterRadius->SetMinLimits(0.0f);
 
 	emitterColorWidget->Init(0.f, emitterLifeTime, "color over life");
-	emitterColorWidget->SetValues(PropLineWrapper<Color>(emitter->colorOverLife).GetProps());
+	emitterColorWidget->SetValues(PropLineWrapper<Color>(PropertyLineHelper::GetValueLine(emitter->colorOverLife)).GetProps());
 
 	if(!needUpdateTimeLimits)
 	{
@@ -222,7 +247,7 @@ void ParticleEmitterPropertiesWidget::Init(DAVA::ParticleEmitter *emitter, bool 
 	sizeColors.push_back(Qt::red); sizeColors.push_back(Qt::darkGreen); sizeColors.push_back(Qt::blue);
 	Vector<QString> sizeLegends;
 	sizeLegends.push_back("size: x"); sizeLegends.push_back("size: y"); sizeLegends.push_back("size: z");
-	emitterSize->AddLines(PropLineWrapper<Vector3>(emitter->size).GetProps(), sizeColors, sizeLegends);
+	emitterSize->AddLines(PropLineWrapper<Vector3>(PropertyLineHelper::GetValueLine(emitter->size)).GetProps(), sizeColors, sizeLegends);
 	emitterSize->EnableLock(true);
 	
 	emitterLife->setValue(emitterLifeTime);
@@ -279,7 +304,7 @@ void ParticleEmitterPropertiesWidget::StoreVisualState(KeyedArchive* visualState
 
 void ParticleEmitterPropertiesWidget::Update()
 {
-	Init(emitter, false);
+	Init(activeScene, emitter, false);
 }
 
 bool ParticleEmitterPropertiesWidget::eventFilter(QObject * o, QEvent * e)

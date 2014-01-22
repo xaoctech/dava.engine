@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_SCENE_H__
 #define __DAVAENGINE_SCENE_H__
 
@@ -22,6 +36,7 @@
 #include "Scene3D/Entity.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Light.h"
+#include "Scene3D/SceneFileV2.h"
 
 namespace DAVA
 {
@@ -45,7 +60,6 @@ class QuadTree;
 class MeshInstanceNode;
 class ImposterManager;
 class ImposterNode;
-class EntityManager;
 class Component;
 class SceneSystem;
 class RenderSystem;
@@ -61,6 +75,7 @@ class LightUpdateSystem;
 class SwitchSystem;
 class SoundUpdateSystem;
 class ActionUpdateSystem;
+class SkyboxSystem;
     
 /**
     \ingroup scene3d
@@ -73,9 +88,10 @@ class ActionUpdateSystem;
  */
 class Scene : public Entity
 {
+protected:
+	virtual ~Scene();
 public:	
 	Scene();
-	virtual ~Scene();
 	
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
@@ -87,7 +103,7 @@ public:
     virtual void    RemoveComponent(Entity * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
-    virtual void    RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
 	virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
@@ -104,22 +120,12 @@ public:
 	RenderSystem * renderSystem;
 	SoundUpdateSystem * soundSystem;
 	ActionUpdateSystem* actionSystem;
+	SkyboxSystem* skyboxSystem;
+	
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
      */
     virtual Scene * GetScene();
-
-    
-//  DataNode * GetMaterials();
-//	Material * GetMaterial(int32 index);
-//	int32	GetMaterialCount();
-	
-//    DataNode * GetStaticMeshes();
-//	StaticMesh * GetStaticMesh(int32 index);
-//	int32	GetStaticMeshCount();
-    
-    
-//    DataNode * GetScenes();
     
 	void AddAnimatedMesh(AnimatedMesh * mesh);
 	void RemoveAnimatedMesh(AnimatedMesh * mesh);
@@ -185,38 +191,6 @@ public:
      */
     void SetClipCamera(Camera * clipCamera);
     Camera * GetClipCamera() const;
-    
-//    /**
-//        \brief Registers LOD layer into the scene.
-//        \param[in] nearDistance near view distance fro the layer
-//        \param[in] farDistance far view distance fro the layer
-//        \returns Serial number of the layer
-//	 */
-//    int32 RegisterLodLayer(float32 nearDistance, float32 farDistance);
-//    /**
-//        \brief Sets lod layer thet would be forcely used in the whole scene.
-//        \param[in] layer layer to set on the for the scene. Use -1 to disable forced lod layer.
-//	 */
-//    void SetForceLodLayer(int32 layer);
-//    int32 GetForceLodLayer();
-//
-//    /**
-//     \brief Registers LOD layer into the scene.
-//     \param[in] nearDistance near view distance fro the layer
-//     \param[in] farDistance far view distance fro the layer
-//     \returns Serial number of the layer
-//	 */
-//    void ReplaceLodLayer(int32 layerNum, float32 nearDistance, float32 farDistance);
-//
-//    
-//    inline int32 GetLodLayersCount();
-//    inline float32 GetLodLayerNear(int32 layerNum);
-//    inline float32 GetLodLayerFar(int32 layerNum);
-//    inline float32 GetLodLayerNearSquare(int32 layerNum);
-//    inline float32 GetLodLayerFarSquare(int32 layerNum);
-
-    //void Save(KeyedArchive * archive);
-    //void Load(KeyedArchive * archive);
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
@@ -229,37 +203,25 @@ public:
 	void CreateComponents();
 	void CreateSystems();
 
-	EntityManager * entityManager;
-
-	void SetReferenceNodeSuffix(const String & suffix);
-	const String & GetReferenceNodeSuffix();
-	bool IsReferenceNodeSuffixChanged();
-
 	EventSystem * GetEventSystem();
-	RenderSystem * GetRenderSystem();
+	RenderSystem * GetRenderSystem() const;
+    
+    virtual SceneFileV2::eError Save(const DAVA::FilePath & pathname, bool saveForGame = false);
+
     
 protected:	
     
     void UpdateLights();
     
-    
-    uint64 updateTime;
     uint64 drawTime;
     uint32 nodeCounter;
 
-	// Vector<Texture*> textures;
-	// Vector<StaticMesh*> staticMeshes;
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     
     Map<String, ProxyNode*> rootNodes;
-    
-//    // TODO: move to nodes
-//    Vector<LodLayer> lodLayers;
-//    int32 forceLodLayer;
 
-    
     Camera * currentCamera;
     Camera * clipCamera;
 
@@ -267,14 +229,10 @@ protected:
     Set<Light*> lights;
 
 	ImposterManager * imposterManager;
-
-	String referenceNodeSuffix;
-	bool referenceNodeSuffixChanged;
     
     friend class Entity;
 };
 
-// Inline implementation
 	
 int32 Scene::GetAnimationCount()
 {
@@ -289,34 +247,7 @@ int32 Scene::GetAnimatedMeshCount()
 int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
-}
-
-    
-//int32 Scene::GetLodLayersCount()
-//{
-//    return (int32)lodLayers.size();
-//}
-//
-//float32 Scene::GetLodLayerNear(int32 layerNum)
-//{
-//    return lodLayers[layerNum].nearDistance;
-//}
-//
-//float32 Scene::GetLodLayerFar(int32 layerNum)
-//{
-//    return lodLayers[layerNum].farDistance;
-//}
-//
-//float32 Scene::GetLodLayerNearSquare(int32 layerNum)
-//{
-//    return lodLayers[layerNum].nearDistanceSq;
-//}
-//
-//float32 Scene::GetLodLayerFarSquare(int32 layerNum)
-//{
-//    return lodLayers[layerNum].farDistanceSq;
-//}
-    
+}  
 
 };
 

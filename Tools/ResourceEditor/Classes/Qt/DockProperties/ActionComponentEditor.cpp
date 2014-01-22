@@ -1,3 +1,32 @@
+/*==================================================================================
+    Copyright (c) 2008, binaryzebra
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=====================================================================================*/
+
+
 #include "ActionComponentEditor.h"
 #include "ui_ActionComponentEditor.h"
 #include "../Qt/Main/QtUtils.h"
@@ -7,12 +36,13 @@
 #include <QSpinBox>
 #include <QCheckBox>
 
-const int COLUMN_ACTION_TYPE = 0;
-const int COLUMN_ENTITY_NAME = 1;
-const int COLUMN_DELAY = 2;
-const int COLUMN_SWITCH_INDEX = 3;
-const int COLUMN_STOPAFTERNREPEATS_INDEX = 4;
-const int COLUMN_STOPWHENEMPTY_INDEX = 5;
+const int COLUMN_EVENT_TYPE = 0;
+const int COLUMN_ACTION_TYPE = 1;
+const int COLUMN_ENTITY_NAME = 2;
+const int COLUMN_DELAY = 3;
+const int COLUMN_SWITCH_INDEX = 4;
+const int COLUMN_STOPAFTERNREPEATS_INDEX = 5;
+const int COLUMN_STOPWHENEMPTY_INDEX = 6;
 
 const int COMBO_YES_INDEX = 0;
 const int COMBO_NO_INDEX = 1;
@@ -23,6 +53,12 @@ static QString ACTION_TYPE_NAME[] =
 	"None",
 	"Particle",
 	"Sound"
+};
+const int EVENT_NAME_COUNT = 2;
+static QString EVENT_TYPE_NAME[] =
+{	
+	"Switch",
+	"Added"
 };
 
 ActionComponentEditor::ActionComponentEditor(QWidget *parent) :
@@ -71,6 +107,7 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 		{
 			DAVA::ActionComponent::Action& action = component->Get(i);
 			
+			QTableWidgetItem* eventTypeTableItem = new QTableWidgetItem(EVENT_TYPE_NAME[action.eventType]);
 			QTableWidgetItem* actionTypeTableItem = new QTableWidgetItem(ACTION_TYPE_NAME[action.type]);
 			QTableWidgetItem* entityNameTableItem = new QTableWidgetItem(action.entityName.c_str());
 			QTableWidgetItem* delayTableItem = new QTableWidgetItem(QString("%1").arg(action.delay, 16, 'f', 2));
@@ -78,6 +115,7 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 			QTableWidgetItem* stopAfterNRepeatsTableItem = new QTableWidgetItem(QString("%1").arg(action.stopAfterNRepeats));
 			QTableWidgetItem* stopWhenEmptyTableItem = new QTableWidgetItem((action.stopWhenEmpty) ? "Yes" : "No", Qt::EditRole);
 			
+			ui->tableActions->setItem(i, COLUMN_EVENT_TYPE, eventTypeTableItem);
 			ui->tableActions->setItem(i, COLUMN_ACTION_TYPE, actionTypeTableItem);
 			ui->tableActions->setItem(i, COLUMN_ENTITY_NAME, entityNameTableItem);
 			ui->tableActions->setItem(i, COLUMN_DELAY, delayTableItem);
@@ -114,7 +152,7 @@ void ActionComponentEditor::OnRemoveAction()
 {
 	int currentRow = ui->tableActions->currentRow();
 	if(currentRow >= 0 &&
-	   currentRow < targetComponent->GetCount())
+	   currentRow < (int)targetComponent->GetCount())
 	{
 		targetComponent->Remove(targetComponent->Get(currentRow));
 		UpdateTableFromComponent(targetComponent);
@@ -139,7 +177,8 @@ void ActionComponentEditor::OnSelectedItemChanged()
 DAVA::ActionComponent::Action ActionComponentEditor::GetDefaultAction()
 {
 	DAVA::ActionComponent::Action action;
-	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT;
+	action.eventType = DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED;
+	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT;	
 	action.entityName = targetComponent->GetEntity()->GetName();
 	action.delay = 0.0f;
 	action.switchIndex = -1;
@@ -150,12 +189,13 @@ DAVA::ActionComponent::Action ActionComponentEditor::GetDefaultAction()
 bool ActionComponentEditor::IsActionPresent(const DAVA::ActionComponent::Action action)
 {
 	bool actionPresent = false;
-	for(int i = 0; i < targetComponent->GetCount(); ++i)
+	for(DAVA::uint32 i = 0; i < targetComponent->GetCount(); ++i)
 	{
 		const DAVA::ActionComponent::Action& innerAction = targetComponent->Get(i);
-		if(innerAction.switchIndex == action.switchIndex &&
-		   innerAction.entityName == action.entityName &&
-		   innerAction.type == action.type)
+		if((innerAction.type == action.type) &&  //different type
+			(innerAction.eventType == action.eventType) && //different event
+			((action.eventType!=DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED) || (innerAction.switchIndex == action.switchIndex)) && //different switch for EVENT_SWITCH_CHNGED only
+			(innerAction.entityName == action.entityName)) //different entity
 		{
 			actionPresent = true;
 			break;
@@ -185,6 +225,19 @@ QWidget* ActionItemEditDelegate::createEditor(QWidget *parent, const QStyleOptio
 	QWidget* editor = NULL;
 	switch(index.column())
 	{
+		case COLUMN_EVENT_TYPE:
+		{
+			QComboBox* combo = new QComboBox(parent);
+			combo->setFrame(false);
+			for(int i = 0; i < EVENT_NAME_COUNT; ++i) //do not add sound aciton
+			{
+				combo->addItem(EVENT_TYPE_NAME[i]);
+			}
+
+			editor = combo;
+
+			break;
+		}
 		case COLUMN_ACTION_TYPE:
 		{
 			QComboBox* combo = new QComboBox(parent);
@@ -207,7 +260,7 @@ QWidget* ActionItemEditDelegate::createEditor(QWidget *parent, const QStyleOptio
 
 			DAVA::Vector<DAVA::String> childrenNames;
 			childrenNames.push_back(parentEntity->GetName());
-			for(int i = 0; i < allChildren.size(); ++i)
+			for(int i = 0; i < (int)allChildren.size(); ++i)
 			{
 				childrenNames.push_back(allChildren[i]->GetName());
 			}
@@ -217,7 +270,7 @@ QWidget* ActionItemEditDelegate::createEditor(QWidget *parent, const QStyleOptio
 			
 			QComboBox* combo = new QComboBox(parent);
 			combo->setFrame(false);
-			for(int i = 0; i < childrenNames.size(); ++i)
+			for(int i = 0; i < (int)childrenNames.size(); ++i)
 			{
 				combo->addItem(childrenNames[i].c_str());
 			}
@@ -285,6 +338,13 @@ void ActionItemEditDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 
 	switch(index.column())
 	{
+		case COLUMN_EVENT_TYPE:
+		{
+			QComboBox* combo = static_cast<QComboBox*>(editor);
+			combo->setCurrentIndex((int)currentAction.eventType);
+
+			break;
+		}
 		case COLUMN_ACTION_TYPE:
 		{
 			QComboBox* combo = static_cast<QComboBox*>(editor);
@@ -350,6 +410,14 @@ void ActionItemEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 	
 	switch(index.column())
 	{
+		case COLUMN_EVENT_TYPE:
+		{
+			QComboBox* combo = static_cast<QComboBox*>(editor);
+			currentAction.eventType = (DAVA::ActionComponent::Action::eEvent)(combo->currentIndex());
+			model->setData(index, combo->currentText(), Qt::EditRole);
+
+			break;
+		}
 		case COLUMN_ACTION_TYPE:
 		{
 			QComboBox* combo = static_cast<QComboBox*>(editor);

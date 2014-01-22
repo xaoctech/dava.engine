@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_LOGGER_H__
 #define __DAVAENGINE_LOGGER_H__
 
@@ -39,8 +53,11 @@ class Logger : public Singleton<Logger>
 public:
 	enum eLogLevel
 	{
-		//! Highest log level if it set all message printed out
-		LEVEL_DEBUG = 0,
+		//! Highest log level if it set all message printed out. Use it to separate framework logs from project logs
+		LEVEL_FRAMEWORK = 0,
+
+		//! Highest log level at project. If it set all message printed out. 
+		LEVEL_DEBUG,
 
 		//! Normal log level prints only message not related to debug
 		LEVEL_INFO,
@@ -62,6 +79,11 @@ public:
 	//! \param[in] filename: name of log file. Empty string disables logging to file, 
 	//! non-empty creates log file in working directory.
 	virtual void SetLogFilename(const String & filename);
+
+	//! Enables/disables logging to file. Disabled by default.
+	//! \param[in] filepath: path to log file. Empty string disables logging to file, 
+	//! non-empty creates log file described by filepath.
+	virtual void SetLogPathname(const FilePath & filepath);
 	
 	//! Returns the current set log level.
 	virtual eLogLevel GetLogLevel();
@@ -94,18 +116,21 @@ public:
 	//! independent on what level filter is set, use ELL_NONE.
 	virtual void Log(eLogLevel ll, const char16* text, ...);
 	virtual void Logv(eLogLevel ll, const char16* text, va_list li);
-	
+
+	static void FrameworkDebug(const char8 * text, ...);
 	static void Debug(const char8 * text, ...);
 	static void Warning(const char8 * text, ...);
 	static void Info(const char8 * text, ...);
 	static void Error(const char8 * text, ...);
 
+	static void FrameworkDebug(const char16 * text, ...);
 	static void Debug(const char16 * text, ...);
 	static void Warning(const char16 * text, ...);
 	static void Info(const char16 * text, ...);
 	static void Error(const char16 * text, ...);
 
 	static void AddCustomOutput(DAVA::LoggerOutput *lo);
+	static void RemoveCustomOutput(DAVA::LoggerOutput *lo);
 
 #if defined(__DAVAENGINE_ANDROID__)
     static void SetTag(const char8 *logTag);

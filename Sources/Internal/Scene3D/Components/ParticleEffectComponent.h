@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #ifndef __PARTICLE_EFFECT_COMPONENT_H__
 #define __PARTICLE_EFFECT_COMPONENT_H__
@@ -27,8 +41,11 @@ namespace DAVA
 {
 
 class ParticleEmitter;
+class ModifiablePropertyLineBase;
 class ParticleEffectComponent : public Component
 {
+protected:
+    ~ParticleEffectComponent(){};
 public:
 	IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
 
@@ -54,6 +71,12 @@ public:
 		\param[in] isPaused true if you want to pause the generation, false if you want to resume it
 	 */
 	void Pause(bool isPaused = true);
+
+
+	bool IsPaused();
+
+
+	void Step(float32 delta);
 
     /**
      \brief Function marks that all the emitters must be stopped after N repeats of emitter animation.
@@ -84,18 +107,21 @@ public:
 	float32 GetPlaybackSpeed();
 	void SetPlaybackSpeed(float32 value);
 
+
+	void SetExtertnalValue(const String& name, float32 value);
+	float32 GetExternalValue(const String& name);
+	
+	Set<String> EnumerateVariables();
+
+	void RebuildEffectModifiables();
+	void RegisterModifiable(ModifiablePropertyLineBase *propertyLine);
+	void UnRegisterModifiable(ModifiablePropertyLineBase *propertyLine);
+
 	/**
      \brief Returns the total active particles count for the whole effect.
      */
 	int32 GetActiveParticlesCount();
-
-	/**
-     \brief Set/reset the "stop Particle Effect on load" flag.
-	 // TODO: Yuri Coder, 2013/06/05 - this logic is temporary, since all the effects
-	 // should be loaded in "stopped" state.
-     */
-	DAVA_DEPRECATED(void SetStopOnLoad(bool value));
-	DAVA_DEPRECATED(bool IsStopOnLoad() const);
+	
 
 protected:
 	// Update the duration for all the child nodes.
@@ -105,7 +131,7 @@ protected:
 	bool IsStopEmitter(ParticleEmitter * emitter) const;
 
 	// Check the "Playback Complete", emit a message, if needed.
-	void CheckPlaybackComplete();
+	void CheckPlaybackComplete();	
 
 private:
 	// "Stop after N repeats" value.
@@ -120,24 +146,25 @@ private:
 	// Playback complete message.
 	Message playbackComplete;
 
+    // Playback complete message.
+    bool isStopped;
+
 	// Effect duration - common for all emitters.
 	float32 effectDuration;
 
 	// Count of emitters currently stopped.
-	int32 emittersCurrentlyStopped;
+	int32 emittersCurrentlyStopped;		
 
-	// Whether the effect should be stopped immediately after load.
-	// TODO: Yuri Coder, 2013/06/05 - this logic is temporary, since all the effects
-	// should be loaded in "stopped" state.
-	bool stopOnLoad;
+	 bool requireRebuildEffectModifiables;
+	MultiMap<String, ModifiablePropertyLineBase *> externalModifiables;	
+	Map<String, float32> externalValues;
 
 public:
 	INTROSPECTION_EXTEND(ParticleEffectComponent, Component,
-		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", I_SAVE)
-        MEMBER(stopWhenEmpty, "stopWhenEmpty", I_SAVE)
+		MEMBER(stopAfterNRepeats, "stopAfterNRepeats", I_VIEW | I_EDIT | I_SAVE)
+        MEMBER(stopWhenEmpty, "stopWhenEmpty",  I_VIEW | I_EDIT | I_SAVE)
 //        MEMBER(needEmitPlaybackComplete, "needEmitPlaybackComplete", INTROSPECTION_SERIALIZABLE)
-        MEMBER(effectDuration, "effectDuration", I_SAVE)
-		MEMBER(stopOnLoad, "stopOnLoad", I_SAVE)
+        MEMBER(effectDuration, "effectDuration",  I_VIEW | I_SAVE)		
 
     );
 };

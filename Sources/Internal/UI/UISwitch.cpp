@@ -1,26 +1,38 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UISwitch.h"
 #include "Animation/LinearAnimation.h"
 
 namespace DAVA 
 {
-
-REGISTER_CLASS(UISwitch);
 
 //use these names for children controls to define UISwitch in .yaml
 static const String UISWITCH_BUTTON_LEFT_NAME = "buttonLeft";
@@ -30,6 +42,11 @@ static const float32 SWITCH_ANIMATION_TIME = 0.1f;
 
 class TogglePositionAnimation : public LinearAnimation<float32>
 {
+protected:
+    virtual ~TogglePositionAnimation()
+    {
+        SafeRelease(uiSwitch);
+    }
 public:
     TogglePositionAnimation(bool _isCausedByTap, UISwitch * _uiSwitch, float32 * _var, float32 _endValue, float32 _animationTimeLength, Interpolation::FuncType _iType)
         : LinearAnimation(_uiSwitch->GetToggle(), _var, _endValue, _animationTimeLength, _iType)
@@ -45,11 +62,6 @@ public:
         }
     }
     
-    virtual ~TogglePositionAnimation()
-    {
-        SafeRelease(uiSwitch);
-    }
-
     virtual void Update(float32 timeElapsed)
     {
         LinearAnimation::Update(timeElapsed);
@@ -116,7 +128,7 @@ void UISwitch::ReleaseControls()
     SafeRelease(toggle);
 }
 
-void UISwitch::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UISwitch::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
     //release default buttons - they have to be loaded from yaml
     RemoveControl(buttonLeft);
@@ -128,19 +140,12 @@ void UISwitch::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 
 YamlNode * UISwitch::SaveToYamlNode(UIYamlLoader * loader)
 {
+    buttonLeft->SetName(UISWITCH_BUTTON_LEFT_NAME);
+	toggle->SetName(UISWITCH_BUTTON_TOGGLE_NAME);
+	buttonRight->SetName(UISWITCH_BUTTON_RIGHT_NAME);
+
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
-
-	//Control Type
 	SetPreferredNodeType(node, "UISwitch");
-		
-	// All the buttons have to be saved too.
-	YamlNode* leftButtonNode = SaveToYamlNodeRecursive(loader, buttonLeft);
-	YamlNode* toggleButtonNode = SaveToYamlNodeRecursive(loader, toggle);
-	YamlNode* rightButtonNode = SaveToYamlNodeRecursive(loader, buttonRight);
-
-	node->AddNodeToMap(UISWITCH_BUTTON_LEFT_NAME, leftButtonNode);
-	node->AddNodeToMap(UISWITCH_BUTTON_TOGGLE_NAME, toggleButtonNode);
-	node->AddNodeToMap(UISWITCH_BUTTON_RIGHT_NAME, rightButtonNode);
 
 	return node;
 }
@@ -186,17 +191,6 @@ void UISwitch::CopyDataFrom(UIControl *srcControl)
 	AddControl(toggle);
 
     InitControls();
-}
-
-List<UIControl* >& UISwitch::GetRealChildren()
-{
-	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	
-	realChildren.remove(FindByName(UISWITCH_BUTTON_LEFT_NAME));
-	realChildren.remove(FindByName(UISWITCH_BUTTON_TOGGLE_NAME));
-	realChildren.remove(FindByName(UISWITCH_BUTTON_RIGHT_NAME));
-
-	return realChildren;
 }
 
 List<UIControl* > UISwitch::GetSubcontrols()
@@ -302,6 +296,8 @@ void UISwitch::Input(UIEvent *currentInput)
         Animation * animation = new TogglePositionAnimation(causedByTap, this, &(toggle->relativePosition.x), toggleX, SWITCH_ANIMATION_TIME, Interpolation::EASY_IN);
         animation->Start(MOVE_ANIMATION_TRACK);
     }
+
+    currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
 }
 
 void UISwitch::SetIsLeftSelected(bool aIsLeftSelected)

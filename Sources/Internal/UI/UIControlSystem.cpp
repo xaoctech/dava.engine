@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UIControlSystem.h"
 #include "UI/UIScreen.h"
@@ -331,8 +345,8 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 		}
 
 		//check all touches for active state
-//		Logger::Debug("IN   Active touches %d", activeInputs.size());
-//		Logger::Debug("IN   Total touches %d", allInputs.size());
+//		Logger::FrameworkDebug("IN   Active touches %d", activeInputs.size());
+//		Logger::FrameworkDebug("IN   Total touches %d", allInputs.size());
 		for (Vector<UIEvent>::iterator it = totalInputs.begin(); it != totalInputs.end(); it++) 
 		{
 			(*it).activeState = UIEvent::ACTIVITY_STATE_INACTIVE;
@@ -355,6 +369,7 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 					(*it).physPoint = (*wit).physPoint;
 					RecalculatePointToVirtual((*it).physPoint, (*it).point);
 					(*it).tapCount = (*wit).tapCount;
+					(*it).inputHandledType = (*wit).inputHandledType;
 					break;
 				}
 			}
@@ -379,6 +394,7 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
 						(*it).point = (*wit).point;
 						RecalculatePointToVirtual((*it).physPoint, (*it).point);
 						(*it).tapCount = (*wit).tapCount;
+						(*it).inputHandledType = (*wit).inputHandledType;
 						break;
 					}
 				}
@@ -445,11 +461,11 @@ void UIControlSystem::OnInput(int32 touchType, const Vector<UIEvent> &activeInpu
             it++;
 		}
 		
-//		Logger::Debug("Total touches %d", totalInputs.size());
+//		Logger::FrameworkDebug("Total touches %d", totalInputs.size());
 //		for (Vector<UIEvent>::iterator it = totalInputs.begin(); it != totalInputs.end(); it++)
 //		{
-//			Logger::Debug("		ID %d", (*it).tid);
-//			Logger::Debug("		phase %d", (*it).phase);
+//			Logger::FrameworkDebug("		ID %d", (*it).tid);
+//			Logger::FrameworkDebug("		phase %d", (*it).phase);
 //		}
 
 
@@ -634,16 +650,8 @@ const UIGeometricData &UIControlSystem::GetBaseGeometricData()
 	
 void UIControlSystem::SetInputScreenAreaSize(int32 width, int32 height)
 {
-	if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT || Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN)
-	{
-		inputWidth = width;
-		inputHeight = height;
-	}
-	else
-	{
-		inputWidth = height;
-		inputHeight = width;
-	}
+    inputWidth = width;
+    inputHeight = height;
 }
 
 void UIControlSystem::CalculateScaleMultipliers()
@@ -672,24 +680,7 @@ void UIControlSystem::RecalculatePointToPhysical(const Vector2 &virtualPoint, Ve
     calcPoint -= inputOffset;
     calcPoint /= scaleFactor;
     
-    if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-        calcPoint.x = inputWidth - calcPoint.x;
-        
-        physicalPoint.x = calcPoint.y;
-        physicalPoint.y = calcPoint.x;
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-        calcPoint.y = inputHeight - calcPoint.y;
-        
-        physicalPoint.x = calcPoint.y;
-        physicalPoint.y = calcPoint.x;
-	}
-	else
-	{
-        physicalPoint = calcPoint;
-	}
+    physicalPoint = calcPoint;
 }
 
 void UIControlSystem::RecalculatePointToVirtual(const Vector2 &physicalPoint, Vector2 &virtualPoint)
@@ -699,20 +690,8 @@ void UIControlSystem::RecalculatePointToVirtual(const Vector2 &physicalPoint, Ve
 		return;
 	}
 
-	if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT)
-	{
-		virtualPoint.x = (inputWidth - physicalPoint.y);
-		virtualPoint.y = (physicalPoint.x);
-	}
-	else if(Core::Instance()->GetScreenOrientation() == Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT)
-	{
-		virtualPoint.x = (physicalPoint.y);
-		virtualPoint.y = (inputHeight - physicalPoint.x);
-	}
-	else
-	{
-		virtualPoint = physicalPoint;
-	}
+	
+    virtualPoint = physicalPoint;
 	
 	virtualPoint *= scaleFactor;
 	virtualPoint += inputOffset;

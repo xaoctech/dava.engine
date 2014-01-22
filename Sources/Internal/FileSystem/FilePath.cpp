@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "FileSystem/FilePath.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/Utils.h"
@@ -69,6 +83,23 @@ void FilePath::AddResourcesFolder(const FilePath & folder)
     FilePath resPath = folder;
     resPath.pathType = PATH_IN_RESOURCES;
     resourceFolders.push_back(resPath);
+}
+
+void FilePath::AddTopResourcesFolder(const FilePath & folder)
+{
+	DVASSERT(!folder.IsEmpty());
+
+	for(List<FilePath>::iterator it = resourceFolders.begin(); it != resourceFolders.end(); ++it)
+	{
+		if(folder == *it)
+		{
+			DVASSERT(false);
+		}
+	}
+
+	FilePath resPath = folder;
+	resPath.pathType = PATH_IN_RESOURCES;
+	resourceFolders.push_front(resPath);
 }
     
 void FilePath::RemoveResourcesFolder(const FilePath & folder)
@@ -129,6 +160,10 @@ FilePath FilePath::FilepathInDocuments(const String & relativePathname)
     return FilepathInDocuments(relativePathname.c_str());
 }
 
+bool FilePath::ContainPath(const FilePath& basePath, const FilePath& partPath)
+{
+	return basePath.GetAbsolutePathname().find(partPath.GetAbsolutePathname()) != std::string::npos;
+}
 
 FilePath::FilePath()
 {
@@ -206,8 +241,7 @@ void FilePath::Initialize(const String &_pathname)
     }
     else
     {
-        Logger::Warning("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
-        
+        Logger::FrameworkDebug("[FilePath::Initialize] FilePath was initialized from relative path name (%s)", _pathname.c_str());
         
 #if defined(__DAVAENGINE_ANDROID__)
         absolutePathname = pathname;
@@ -245,7 +279,6 @@ String FilePath::ResolveResourcesPath() const
         String relativePathname = "Data" + absolutePathname.substr(5);
         FilePath path;
         
-		bool isResolved = false;
         List<FilePath>::reverse_iterator endIt = resourceFolders.rend();
         for(List<FilePath>::reverse_iterator it = resourceFolders.rbegin(); it != endIt; ++it)
         {
@@ -256,7 +289,6 @@ String FilePath::ResolveResourcesPath() const
             {
                 if(FileSystem::Instance()->IsDirectory(path))
                 {
-					isResolved = true;
                     break;
                 }
             }
@@ -264,18 +296,9 @@ String FilePath::ResolveResourcesPath() const
             {
                 if(FileSystem::Instance()->IsFile(path))
                 {
-					isResolved = true;
                     break;
                 }
             }
-        }
-		
-		if (!isResolved)
-		{
-			String warningMsg = "Unable to resolve relative path " + absolutePathname + "\n";
-			warningMsg += "Returning default absolute path found ";
-			warningMsg += path.absolutePathname;
-			Logger::Warning(warningMsg.c_str());
         }
         
         return path.absolutePathname;
@@ -485,11 +508,13 @@ void FilePath::ReplaceDirectory(const FilePath &directory)
     pathType = directory.pathType;
 }
     
-void FilePath::MakeDirectoryPathname()
+FilePath & FilePath::MakeDirectoryPathname()
 {
     DVASSERT(!IsEmpty());
     
     absolutePathname = MakeDirectory(absolutePathname);
+    
+    return *this;
 }
     
 void FilePath::TruncateExtension()
@@ -664,7 +689,6 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     if(absolutePathname.IsEmpty())
         return String();
 
-    DVASSERT(absolutePathname.IsAbsolutePathname());
     DVASSERT(directoryPathname.IsDirectoryPathname());
 
     Vector<String> folders;
@@ -702,11 +726,6 @@ String FilePath::AbsoluteToRelative(const FilePath &directoryPathname, const Fil
     }
     
     return (retPath + absolutePathname.GetFilename());
-}
-    
-bool FilePath::IsAbsolutePathname() const
-{
-    return IsAbsolutePathname(absolutePathname);
 }
     
     

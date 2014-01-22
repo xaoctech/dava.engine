@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/Highlevel/Camera.h"
 #include "Render/RenderBase.h"
 #include "Core/Core.h"
@@ -23,8 +37,6 @@
 namespace DAVA 
 {
     
-REGISTER_CLASS(Camera);
-
 
 Camera::Camera()
 :	orthoWidth(35.f)
@@ -185,27 +197,22 @@ void Camera::Recalc()
 {
 	flags |= REQUIRE_REBUILD_PROJECTION;
 
-	float32 realAspect = aspect;
-	if ((RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT) || (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN) || (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_TEXTURE))
-	{
-		realAspect = 1.0f / realAspect;
-	}
 
 	if(ortho)
 	{
 		xmax = orthoWidth/2.f;
 		xmin = -xmax;
 
-		ymax = xmax * realAspect;
-		ymin = xmin * realAspect;
+		ymax = xmax * aspect;
+		ymin = xmin * aspect;
 	}
 	else
 	{
 		xmax = znear * tanf(fovX * PI / 360.0f);
 		xmin = -xmax;
 
-		ymax = xmax * realAspect;
-		ymin = xmin * realAspect;
+		ymax = xmax * aspect;
+		ymin = xmin * aspect;
 	}
 
     CalculateZoomFactor();
@@ -213,33 +220,20 @@ void Camera::Recalc()
 
 Vector2 Camera::GetOnScreenPosition(const Vector3 &forPoint, const Rect & viewport)
 {
-    Vector4 pv(forPoint);
-    pv = pv * GetUniformProjModelMatrix();
-//    return Vector2((viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x
-//                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
+	Vector3 v = GetOnScreenPositionAndDepth(forPoint, viewport);
+	return Vector2(v.x, v.y);
+}
 
+Vector3 Camera::GetOnScreenPositionAndDepth(const Vector3 & forPoint, const Rect & viewport)
+{
+	Vector4 pv(forPoint);
+	pv = pv * GetUniformProjModelMatrix();
+	//    return Vector2((viewport.dx * 0.5f) * (1.f + pv.x/pv.w) + viewport.x
+	//                   , (viewport.dy * 0.5f) * (1.f + pv.y/pv.w) + viewport.y);
 
-	switch(RenderManager::Instance()->GetRenderOrientation())
-	{
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-        {
-            return Vector2((viewport.dx * 0.5f) * (1.f + pv.y/pv.w) + viewport.x
-                            , (viewport.dy * 0.5f) * (1.f + pv.x/pv.w) + viewport.y);
-        }
-            break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-        {
-            DVASSERT(false);
-        }
-                //add code here
-			break;
-        default:
-            return Vector2(((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
-                       (1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y);
-            break;
-	}
-    DVASSERT(false);
-	return Vector2();
+    return Vector3(((pv.x/pv.w)*0.5f+0.5f)*viewport.dx+viewport.x,
+			(1.0f - ((pv.y/pv.w)*0.5f+0.5f))*viewport.dy+viewport.y, pv.w + pv.z);
+
 }
 
 const Matrix4 &Camera::GetUniformProjModelMatrix()
@@ -283,29 +277,18 @@ void Camera::RecalcTransform()
 {
     flags &= ~REQUIRE_REBUILD_MODEL;
     flags |= REQUIRE_REBUILD_UNIFORM_PROJ_MODEL;
-
-//	Core::eScreenOrientation orientation = Core::Instance()->GetScreenOrientation();
-	modelMatrix = Matrix4::IDENTITY;
     
-	switch(RenderManager::Instance()->GetRenderOrientation())
+	if (RenderManager::Instance()->GetRenderOrientation()==Core::SCREEN_ORIENTATION_TEXTURE)
 	{
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-                //glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-			modelMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(-90.0f));
-            break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-                //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-            modelMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(90.0f));
-			break;
-		case Core::SCREEN_ORIENTATION_PORTRAIT_UPSIDE_DOWN:
-		case Core::SCREEN_ORIENTATION_TEXTURE:
-                //glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-            modelMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(180.0f));
-			break;
-        default:
-            break;
-	}
-    modelMatrix = cameraTransform * modelMatrix;
+        modelMatrix = Matrix4::IDENTITY;
+        modelMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(180.0f));
+        modelMatrix = cameraTransform * modelMatrix;
+        
+    }
+    else
+    {
+        modelMatrix = cameraTransform;   
+    }
 }
 
     
@@ -444,7 +427,7 @@ const Matrix4 & Camera::GetMatrix() const
 
 void Camera::RebuildCameraFromValues()
 {
-//    Logger::Debug("camera rebuild: pos(%0.2f %0.2f %0.2f) target(%0.2f %0.2f %0.2f) up(%0.2f %0.2f %0.2f)",
+//    Logger::FrameworkDebug("camera rebuild: pos(%0.2f %0.2f %0.2f) target(%0.2f %0.2f %0.2f) up(%0.2f %0.2f %0.2f)",
 //                  position.x, position.y, position.z, target.x, target.y, target.z, up.x, up.y, up.z);
     
     flags &= ~REQUIRE_REBUILD; 
@@ -562,28 +545,9 @@ Vector3 Camera::UnProject(float32 winx, float32 winy, float32 winz, const Rect &
 
 	/* Map x and y from window coordinates */
 
-	
-	switch(RenderManager::Instance()->GetRenderOrientation())
-	{
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_LEFT:
-        {
-			float32 xx = (in.y - viewport.y) / viewport.dy;
-			float32 yy = (in.x - viewport.x) / viewport.dx;
-			
-			in.x = xx;
-			in.y = yy;
-        }
-            break;
-		case Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT:
-        {
-            DVASSERT(false);
-        }
-			break;
-        default:
-			in.x = (in.x - viewport.x) / viewport.dx;
-			in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
-            break;
-	}
+    in.x = (in.x - viewport.x) / viewport.dx;
+    in.y = 1.0f - (in.y - viewport.y) / viewport.dy;
+    
 
 	/* Map to range -1 to 1 */
 	in.x = in.x * 2 - 1;

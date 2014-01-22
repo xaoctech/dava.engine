@@ -1,20 +1,33 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Platform/TemplateAndroid/CorePlatformAndroid.h"
-#include "Platform/TemplateAndroid/AndroidSpecifics.h"
 
 //#include "Core/Core.h"
 
@@ -25,6 +38,7 @@ extern void FrameworkWillTerminate();
 
 #include "Platform/Thread.h"
 #include "Input/InputSystem.h"
+#include "FileSystem/FileSystem.h"
 
 namespace DAVA
 {
@@ -160,7 +174,7 @@ namespace DAVA
 
 		renderIsActive = true;
 
-		Thread::InitMainThread();
+		Thread::InitGLThread();
 
 		if(wasCreated)
 		{
@@ -179,6 +193,7 @@ namespace DAVA
 
 			Logger::Debug("[CorePlatformAndroid::] before create renderer");
 			RenderManager::Create(Core::RENDERER_OPENGL_ES_2_0);
+			FileSystem::Init();
 
 			RenderManager::Instance()->InitFBO(androidDelegate->RenderBuffer(), androidDelegate->FrameBuffer());
 			Logger::Debug("[CorePlatformAndroid::] after create renderer");
@@ -263,8 +278,6 @@ namespace DAVA
 		height = 0;
 	}
 
-	static Vector<DAVA::UIEvent> activeTouches;
-
 	void CorePlatformAndroid::KeyUp(int32 keyCode)
 	{
 		InputSystem::Instance()->GetKeyboard()->OnSystemKeyUnpressed(keyCode);
@@ -285,7 +298,7 @@ namespace DAVA
 		SafeDelete(keyEvent);
 	}
 
-	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
+	UIEvent CorePlatformAndroid::CreateInputEvent(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source, int32 tapCount)
 	{
 		int32 phase = DAVA::UIEvent::PHASE_DRAG;
 		switch(action)
@@ -326,7 +339,7 @@ namespace DAVA
 		newEvent.point.x = x;
 		newEvent.point.y = y;
 		newEvent.phase = phase;
-		newEvent.tapCount = 1;
+		newEvent.tapCount = tapCount;
 		newEvent.timestamp = time;
 
 		return newEvent;
@@ -342,15 +355,16 @@ namespace DAVA
 		assetMngr = mngr;
 	}
 
-	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source)
+	void CorePlatformAndroid::OnInput(int32 action, int32 id, float32 x, float32 y, float64 time, int32 source, int32 tapCount)
 	{
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] IN totalTouches.size = %d", totalTouches.size());
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] action is %d, id is %d, x is %f, y is %f, time is %lf", action, id, x, y, time);
+		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source, tapCount);
 
-		UIEvent touchEvent = CreateInputEvent(action, id, x, y, time, source);
-		Vector<DAVA::UIEvent> activeTouches;
-		activeTouches.push_back(touchEvent);
-
+		if(touchEvent.phase == DAVA::UIEvent::PHASE_JOYSTICK)
+		{
+			InputSystem::Instance()->ProcessInputEvent(&touchEvent);
+			return;
+		}
+		
 		bool isFound = false;
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); ++it)
 		{
@@ -362,6 +376,7 @@ namespace DAVA
 				(*it).tapCount = touchEvent.tapCount;
 
 				isFound = true;
+				break;
 			}
 		}
 		if(!isFound)
@@ -369,7 +384,7 @@ namespace DAVA
 			totalTouches.push_back(touchEvent);
 		}
 
-		UIControlSystem::Instance()->OnInput(touchEvent.phase, activeTouches, totalTouches);
+		UIControlSystem::Instance()->OnInput(touchEvent.phase, totalTouches, totalTouches);
 
 		for(Vector<DAVA::UIEvent>::iterator it = totalTouches.begin(); it != totalTouches.end(); )
 		{
@@ -382,7 +397,6 @@ namespace DAVA
 				++it;
 			}
 		}
-//		Logger::Debug("[CorePlatformAndroid::OnTouch] OUT totalTouches.size = %d", totalTouches.size());
 	}
 
 	bool CorePlatformAndroid::DownloadHttpFile(const String & url, const String & documentsPathname)
