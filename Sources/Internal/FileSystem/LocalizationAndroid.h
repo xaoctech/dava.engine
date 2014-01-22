@@ -27,44 +27,39 @@
 =====================================================================================*/
 
 
-#include "RecentFilesManager.h"
-#include "Qt/Settings/SettingsManager.h"
+#ifndef __DAVAENGINE_LOCALIZATION_ANDROID_H__
+#define __DAVAENGINE_LOCALIZATION_ANDROID_H__
 
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-DAVA::Vector<String> RecentFilesManager::GetRecentFiles()
+#include "Platform/TemplateAndroid/JniExtensions.h"
+
+namespace DAVA 
 {
-	DAVA::Vector<String> retVector;
-	VariantType recentFilesVariant = SettingsManager::Instance()->GetValue("recentFiles", SettingsManager::INTERNAL);
-	if(recentFilesVariant.GetType() == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
-	{
-		KeyedArchive* archiveRecentFiles = recentFilesVariant.AsKeyedArchive();
-		DAVA::uint32 size = archiveRecentFiles->Count();
-		retVector.resize(size);
-		for (DAVA::uint32 i = 0; i < size; ++i)
-		{
-			retVector[i] = archiveRecentFiles->GetString(Format("%d", i));
-		}
-		
-	}
-	return retVector;
-}
 
-void RecentFilesManager::SetFileToRecent(const DAVA::String& file)
+class JniLocalization: public JniExtension
 {
-    DAVA::Vector<String> vectorToSave = GetRecentFiles();
-    DAVA::FilePath filePath(file);
-    DAVA::String stringToInsert = filePath.GetAbsolutePathname();
-    //check present set to avoid duplicates
-    vectorToSave.erase(std::remove(vectorToSave.begin(), vectorToSave.end(), stringToInsert), vectorToSave.end());
-    
-    vectorToSave.insert(vectorToSave.begin(), stringToInsert);
-    int32 recentFilesMaxCount = SettingsManager::Instance()->GetValue("recentFilesListCount",SettingsManager::INTERNAL).AsInt32();
-    DAVA::uint32 size = vectorToSave.size() > recentFilesMaxCount ? recentFilesMaxCount : vectorToSave.size();
-    KeyedArchive* archive = new KeyedArchive();
-    for (DAVA::uint32 i = 0; i < size; ++i)
-    {
-        archive->SetString(Format("%d",i), vectorToSave[i]);
-    }
-    SettingsManager::Instance()->SetValue("recentFiles", DAVA::VariantType(archive), SettingsManager::INTERNAL);
-    SafeRelease( archive);
-}
+public:
+	String GetLocale();
+
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
+
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+};
+
+class LocalizationAndroid
+{
+public:
+	static void SelecePreferedLocalization();
+};
+	
+};
+
+#endif //__DAVAENGINE_ANDROID__
+
+#endif //__DAVAENGINE_LOCALIZATION_ANDROID_H__

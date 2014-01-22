@@ -566,11 +566,7 @@ namespace DAVA
 		
 		if(illuminationParams)
 		{
-			clonedMaterial->illuminationParams = new IlluminationParams();
-			clonedMaterial->illuminationParams->castShadow = illuminationParams->castShadow;
-			clonedMaterial->illuminationParams->isUsed = illuminationParams->isUsed;
-			clonedMaterial->illuminationParams->lightmapSize = illuminationParams->lightmapSize;
-			clonedMaterial->illuminationParams->receiveShadow = illuminationParams->receiveShadow;
+			clonedMaterial->illuminationParams = new IlluminationParams(*illuminationParams);
 		}
 				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)

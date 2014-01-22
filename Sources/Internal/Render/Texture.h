@@ -314,7 +314,7 @@ protected:
 	void HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, void *callerData);
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
-    bool IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor) const;
+    bool IsLoadAvailable(const eGPUFamily gpuFamily) const;
     
 	static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
     
