@@ -532,7 +532,7 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 
 bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 {
-	if(!IsLoadAvailable(gpu, texDescriptor))
+	if(!IsLoadAvailable(gpu))
 		return false;
 	
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
@@ -775,16 +775,16 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 }
 
     
-bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor) const
+bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily) const
 {
-    if(descriptor->IsCompressedFile())
+    if(texDescriptor->IsCompressedFile())
     {
         return true;
     }
     
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
     
-    if(gpuFamily != GPU_UNKNOWN && descriptor->compression[gpuFamily].format == FORMAT_INVALID)
+    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily].format == FORMAT_INVALID)
     {
         return false;
     }

@@ -26,45 +26,45 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "FileSystem/LocalizationAndroid.h"
+#include "FileSystem/LocalizationSystem.h"
+#include "ExternC/AndroidLayer.h"
 
-#include "RecentFilesManager.h"
-#include "Qt/Settings/SettingsManager.h"
-
-
-DAVA::Vector<String> RecentFilesManager::GetRecentFiles()
+namespace DAVA
 {
-	DAVA::Vector<String> retVector;
-	VariantType recentFilesVariant = SettingsManager::Instance()->GetValue("recentFiles", SettingsManager::INTERNAL);
-	if(recentFilesVariant.GetType() == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
+
+jclass JniLocalization::gJavaClass = NULL;
+const char* JniLocalization::gJavaClassName = NULL;
+
+jclass JniLocalization::GetJavaClass() const
+{
+	return gJavaClass;
+}
+
+const char* JniLocalization::GetJavaClassName() const
+{
+	return gJavaClassName;
+}
+
+String JniLocalization::GetLocale()
+{
+	jmethodID mid = GetMethodID("GetLocale", "()Ljava/lang/String;");
+	if (mid)
 	{
-		KeyedArchive* archiveRecentFiles = recentFilesVariant.AsKeyedArchive();
-		DAVA::uint32 size = archiveRecentFiles->Count();
-		retVector.resize(size);
-		for (DAVA::uint32 i = 0; i < size; ++i)
-		{
-			retVector[i] = archiveRecentFiles->GetString(Format("%d", i));
-		}
-		
+		jobject obj = GetEnvironment()->CallStaticObjectMethod(GetJavaClass(), mid);
+		char str[256] = {0};
+		CreateStringFromJni(env, jstring(obj), str);
+		String locale = str;
+		return locale;
 	}
-	return retVector;
+
+	return "en";
 }
 
-void RecentFilesManager::SetFileToRecent(const DAVA::String& file)
+void LocalizationAndroid::SelecePreferedLocalization()
 {
-    DAVA::Vector<String> vectorToSave = GetRecentFiles();
-    DAVA::FilePath filePath(file);
-    DAVA::String stringToInsert = filePath.GetAbsolutePathname();
-    //check present set to avoid duplicates
-    vectorToSave.erase(std::remove(vectorToSave.begin(), vectorToSave.end(), stringToInsert), vectorToSave.end());
-    
-    vectorToSave.insert(vectorToSave.begin(), stringToInsert);
-    int32 recentFilesMaxCount = SettingsManager::Instance()->GetValue("recentFilesListCount",SettingsManager::INTERNAL).AsInt32();
-    DAVA::uint32 size = vectorToSave.size() > recentFilesMaxCount ? recentFilesMaxCount : vectorToSave.size();
-    KeyedArchive* archive = new KeyedArchive();
-    for (DAVA::uint32 i = 0; i < size; ++i)
-    {
-        archive->SetString(Format("%d",i), vectorToSave[i]);
-    }
-    SettingsManager::Instance()->SetValue("recentFiles", DAVA::VariantType(archive), SettingsManager::INTERNAL);
-    SafeRelease( archive);
+	JniLocalization jniLocalization;
+	LocalizationSystem::Instance()->SetCurrentLocale(jniLocalization.GetLocale());
 }
+
+};

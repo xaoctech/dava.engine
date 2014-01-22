@@ -560,7 +560,7 @@ void UIControlMetadata::SetSprite(const QString& value)
         if (sprite)
         {
             GetActiveUIControl()->GetBackground()->SetSprite(sprite, 0);
-            ApplyPixelization(sprite);
+            SpritesHelper::SetPixelization(sprite, EditorSettings::Instance()->IsPixelized());
             SafeRelease(sprite);
 
             // Specific case if the sprite is set to UISlider thumbSprite (see please DF-2834).
@@ -995,19 +995,6 @@ void UIControlMetadata::ResizeScrollViewContent(UIControl * control)
 	{
 		ResizeScrollViewContent(parentControl);
 	}
-}
-
-void UIControlMetadata::ApplyPixelization(Sprite* sprite)
-{
-    if (!sprite)
-    {
-        return;
-    }
-    
-    if (pixelizationNeeded)
-    {
-        SpritesHelper::ApplyPixelization(sprite);
-    }
 }
 
 void UIControlMetadata::SetUIControlVisible(const bool value, bool hierarchic)
