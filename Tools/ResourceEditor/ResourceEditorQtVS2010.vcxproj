@@ -538,6 +538,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\RunGuard\RunGuard.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp" />
@@ -1156,6 +1157,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.h" />
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\RunGuard\RunGuard.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.h" />

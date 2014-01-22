@@ -63,7 +63,9 @@ public:
 	
 	void SystemDraw(const UIGeometricData &/*geometricData*/)
 	{
+        RenderManager::Instance()->SetDefault2DNoTextureState();
 		RenderHelper::Instance()->DrawRect(GetRect());
+        RenderManager::Instance()->SetDefault2DState();
 	}
 };
 
