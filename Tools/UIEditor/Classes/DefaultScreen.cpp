@@ -106,9 +106,12 @@ void DefaultScreen::Draw(const UIGeometricData &geometricData)
 void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
 {
     Color oldColor = RenderManager::Instance()->GetColor();
+
+    RenderManager::Instance()->SetDefault2DNoTextureState();
     RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
     RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
     RenderManager::Instance()->SetColor(oldColor);
+    RenderManager::Instance()->SetDefault2DState();
 
 	UIScreen::SystemDraw(geometricData);
 	
