@@ -1963,14 +1963,17 @@ void QtMainWindow::OnCustomColorsEditor()
 		}
 		return;
 	}
+
+    if (sceneEditor->customColorsSystem->ChangesPresent())
+    {
+        FilePath currentTexturePath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
 	
-	FilePath currentTexturePath = sceneEditor->customColorsSystem->GetCurrentSaveFileName();
-	
-	if ((currentTexturePath.IsEmpty() || !currentTexturePath.Exists()) &&
-        !SelectCustomColorsTexturePath())
-	{
-        ui->actionCustomColorsEditor->setChecked(true);
-		return;
+        if ((currentTexturePath.IsEmpty() || !currentTexturePath.Exists()) &&
+            !SelectCustomColorsTexturePath())
+        {
+            ui->actionCustomColorsEditor->setChecked(true);
+            return;
+        }
 	}
 	
 	sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR, true);

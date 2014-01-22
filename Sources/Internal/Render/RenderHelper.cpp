@@ -1091,7 +1091,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		drawMatrix.SetTranslationVector(center);
 
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
-		RenderManager::Instance()->SetShader(0);
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
 		RenderManager::Instance()->FlushState();
@@ -1117,7 +1117,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		drawMatrix.SetTranslationVector(center);
 
 		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
-		RenderManager::Instance()->SetShader(0);
+		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
 		RenderManager::Instance()->FlushState();

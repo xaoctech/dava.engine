@@ -906,6 +906,9 @@ void MainWindow::OnImportPlatform()
 		return;
 	}
 
+	// Convert directory path into Unix-style path
+	selectedDir = ResourcesManageHelper::ConvertPathToUnixStyle(selectedDir);
+
 	if (!selectedDir.startsWith(platformsPath))
 	{
 		QMessageBox::critical(this, tr("Import error"),
