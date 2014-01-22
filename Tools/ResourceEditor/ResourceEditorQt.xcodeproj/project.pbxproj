@@ -196,7 +196,6 @@
 		E8BAD7441859F50300C98C8D /* TileTexturePreviewWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD69C1859F50300C98C8D /* TileTexturePreviewWidget_moc.cpp */; };
 		E8BAD7451859F50300C98C8D /* TileTexturePreviewWidgetItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD69D1859F50300C98C8D /* TileTexturePreviewWidgetItemDelegate_moc.cpp */; };
 		E8BAD7461859F50300C98C8D /* ToolButtonWithWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD69F1859F50300C98C8D /* ToolButtonWithWidget_moc.cpp */; };
-		E8BAD7491859F5F900C98C8D /* QtPropertyDataProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD7471859F5F900C98C8D /* QtPropertyDataProxy.cpp */; };
 		E8BAD750185A46BC00C98C8D /* LibraryFileSystemModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD74A185A46BC00C98C8D /* LibraryFileSystemModel.cpp */; };
 		E8BAD751185A46BC00C98C8D /* LibraryFilteringModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD74C185A46BC00C98C8D /* LibraryFilteringModel.cpp */; };
 		E8BAD752185A46BC00C98C8D /* LibraryWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD74E185A46BC00C98C8D /* LibraryWidget.cpp */; };
@@ -851,8 +850,6 @@
 		E8BAD6A91859F50300C98C8D /* ui_texturebrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_texturebrowser.h; path = _GeneratedQt/ui_texturebrowser.h; sourceTree = "<group>"; };
 		E8BAD6AA1859F50300C98C8D /* ui_treeimportdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_treeimportdialog.h; path = _GeneratedQt/ui_treeimportdialog.h; sourceTree = "<group>"; };
 		E8BAD6AB1859F50300C98C8D /* ui_waitdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_waitdialog.h; path = _GeneratedQt/ui_waitdialog.h; sourceTree = "<group>"; };
-		E8BAD7471859F5F900C98C8D /* QtPropertyDataProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataProxy.cpp; sourceTree = "<group>"; };
-		E8BAD7481859F5F900C98C8D /* QtPropertyDataProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataProxy.h; sourceTree = "<group>"; };
 		E8BAD74A185A46BC00C98C8D /* LibraryFileSystemModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryFileSystemModel.cpp; path = Classes/Qt/DockLibrary/LibraryFileSystemModel.cpp; sourceTree = SOURCE_ROOT; };
 		E8BAD74B185A46BC00C98C8D /* LibraryFileSystemModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryFileSystemModel.h; path = Classes/Qt/DockLibrary/LibraryFileSystemModel.h; sourceTree = SOURCE_ROOT; };
 		E8BAD74C185A46BC00C98C8D /* LibraryFilteringModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryFilteringModel.cpp; path = Classes/Qt/DockLibrary/LibraryFilteringModel.cpp; sourceTree = SOURCE_ROOT; };
@@ -3666,8 +3663,6 @@
 		E8C991AB184CD0EB00AFBF3F /* QtPropertyEditor */ = {
 			isa = PBXGroup;
 			children = (
-				E8BAD7471859F5F900C98C8D /* QtPropertyDataProxy.cpp */,
-				E8BAD7481859F5F900C98C8D /* QtPropertyDataProxy.h */,
 				E8C991AC184CD0EB00AFBF3F /* QtPropertyData */,
 				E8C991BD184CD0EB00AFBF3F /* QtPropertyData.cpp */,
 				E8C991BE184CD0EB00AFBF3F /* QtPropertyData.h */,
@@ -4128,7 +4123,6 @@
 				E8C9933B184CD0EC00AFBF3F /* QtPropertyDataMetaObject.cpp in Build Sources */,
 				E8BAD75F185A480100C98C8D /* SimpleMaterialModel.cpp in Build Sources */,
 				49DB9A52187D6C4E00D6E87A /* FogSettingsChangedReceiver_moc.cpp in Build Sources */,
-				E8BAD7491859F5F900C98C8D /* QtPropertyDataProxy.cpp in Build Sources */,
 				E8C9924E184CD0EC00AFBF3F /* btHingeConstraint.cpp in Build Sources */,
 				E8C9920A184CD0EC00AFBF3F /* btSphereTriangleCollisionAlgorithm.cpp in Build Sources */,
 				E8C9926F184CD0EC00AFBF3F /* ColladaSceneNodeAnimation.cpp in Build Sources */,
