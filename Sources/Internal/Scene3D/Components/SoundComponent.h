@@ -34,6 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
@@ -45,14 +46,15 @@ public:
     SoundComponent();
     virtual ~SoundComponent();
 
-	virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
-	virtual void Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile);
+    virtual Component * Clone(Entity * toEntity);
+
+    virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+    virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
     
     SoundEvent * GetSoundEvent();
     void SetSoundEvent(SoundEvent * event);
     
-	IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
+    IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
     
 protected:
     SoundEvent * event;

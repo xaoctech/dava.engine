@@ -33,6 +33,7 @@
 
 namespace DAVA
 {
+
 FilePath SoundSystem::soundsDir(DEFAULT_SOUNDS_DIRECTORY);
 SoundSystem::SoundSystemType SoundSystem::type = (SoundSystemType)0;
 SoundSystemInstance * SoundSystem::instance = 0;

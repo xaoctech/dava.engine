@@ -121,8 +121,8 @@ FMODSound * FMODSound::CreateWithFlags(const FilePath & fileName, uint32 flags, 
     
 FMODSound::FMODSound(const FilePath & _fileName, int32 _priority) :
     fileName(_fileName),
-	priority(_priority),
-	is3D(false),
+    priority(_priority),
+    is3D(false),
     soundData(0),
     fmodSound(0),
     fmodInstanceGroup(0)

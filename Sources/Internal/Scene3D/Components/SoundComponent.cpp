@@ -32,6 +32,7 @@
 #include "Base/FastName.h"
 
 using namespace DAVA;
+	REGISTER_CLASS(SoundComponent)
 
 SoundComponent::SoundComponent() : event(0) {}
 
@@ -62,19 +63,18 @@ Component * SoundComponent::Clone(Entity * toEntity)
     return soundComponent;
 }
 
-void SoundComponent::Serialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void SoundComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    //TODO
-    Component::Serialize(archive, sceneFile);
+    Component::Serialize(archive, serializationContext);
     
     event->Serialize(archive);
 }
 
-void SoundComponent::Deserialize(KeyedArchive *archive, SceneFileV2 *sceneFile)
+void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    //TODO
-    Component::Deserialize(archive, sceneFile);
-    
     event = SoundSystem::Instance()->CreateSoundEventByID("", FastName("FX"));
     event->Deserialize(archive);
+
+    //TODO
+    Component::Deserialize(archive, serializationContext);
 }

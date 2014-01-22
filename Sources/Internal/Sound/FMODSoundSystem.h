@@ -112,7 +112,7 @@ protected:
 
 friend class FMODSound;
 friend class FMODSoundEvent;
-friend class FMODSoundComponent;
+friend class SoundComponent;
 };
 
 };

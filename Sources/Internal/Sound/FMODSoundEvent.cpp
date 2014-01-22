@@ -184,11 +184,7 @@ void FMODSoundEvent::Deserialize(KeyedArchive *archive)
     
 void FMODSoundEvent::SetParameterValue(const FastName & paramName, float32 value)
 {
-    //TODO HashMap oprator[]
-    FastName fastParamName(paramName.c_str());
-    if(paramsValues.IsKey(fastParamName))
-        paramsValues.Remove(fastParamName);
-    paramsValues.Insert(fastParamName, value);
+    paramsValues[paramName] = value;
     
     List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
@@ -202,14 +198,14 @@ float32 FMODSoundEvent::GetParameterValue(const FastName & paramName)
     
 void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
 {
-    FastNameMap<float32>::Iterator it = paramsValues.Begin();
-    FastNameMap<float32>::Iterator itEnd = paramsValues.End();
+    FastNameMap<float32>::iterator it = paramsValues.begin();
+    FastNameMap<float32>::iterator itEnd = paramsValues.end();
     while(it != itEnd)
     {
         FMOD::EventParameter * param = 0;
-        FMOD_VERIFY(event->getParameter(it.GetKey().c_str(), &param));
+        FMOD_VERIFY(event->getParameter(it->first.c_str(), &param));
         if(param)
-            FMOD_VERIFY(param->setValue(it.GetValue()));
+            FMOD_VERIFY(param->setValue(it->second));
         ++it;
     }
 }
