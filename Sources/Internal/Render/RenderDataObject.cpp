@@ -1,21 +1,37 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Render/RenderBase.h"
 #include "Render/RenderDataObject.h"
 #include "Render/RenderManager.h"
+#include "Job/JobManager.h"
+#include "Job/JobWaiter.h"
 
 namespace DAVA 
 {
@@ -79,29 +95,30 @@ RenderDataObject::~RenderDataObject()
     //streamArray.clear();
     //streamMap.clear();
     
+	DestructorContainer * container = new DestructorContainer();
+	container->vboBuffer = vboBuffer;
+	container->indexBuffer = indexBuffer;
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::DeleteBuffersInternal, container));
+}
+
+void RenderDataObject::DeleteBuffersInternal(BaseObject * caller, void * param, void *callerData)
+{
+	DestructorContainer * container = (DestructorContainer*)param;
+	DVASSERT(container);
 #if defined(__DAVAENGINE_OPENGL__)
-
-    //TODO: ios build has assert without LockNonMain()
-	RenderManager::Instance()->LockNonMain();
-
-
-    #if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-        if (vboBuffer)
-            RENDER_VERIFY(glDeleteBuffersARB(1, &vboBuffer));
-        if (indexBuffer)
-            RENDER_VERIFY(glDeleteBuffersARB(1, &indexBuffer));
-    #else 
-        if (vboBuffer)
-            RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
-        if (indexBuffer)
-            RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
-    #endif
-    
-    RenderManager::Instance()->UnlockNonMain();
-    //ENDOF TODO
-
+#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
+	if (container->vboBuffer)
+		RENDER_VERIFY(glDeleteBuffersARB(1, &container->vboBuffer));
+	if (container->indexBuffer)
+		RENDER_VERIFY(glDeleteBuffersARB(1, &container->indexBuffer));
+#else 
+	if (container->vboBuffer)
+		RENDER_VERIFY(glDeleteBuffers(1, &container->vboBuffer));
+	if (container->indexBuffer)
+		RENDER_VERIFY(glDeleteBuffers(1, &container->indexBuffer));
 #endif
-    
+#endif
+	SafeDelete(container);
 }
 
 RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertexDataType vertexType, int32 size, int32 stride, const void * pointer)
@@ -127,6 +144,29 @@ RenderDataStream * RenderDataObject::SetStream(eVertexFormat formatMark, eVertex
     return stream;
 }
 
+void RenderDataObject::RemoveStream(eVertexFormat formatMark)
+{
+	Map<eVertexFormat, RenderDataStream*>::iterator it = streamMap.find(formatMark);
+	if (it!=streamMap.end())
+	{
+		RenderDataStream *stream = (*it).second;
+		streamMap.erase(it);
+		resultVertexFormat &= ~formatMark;	
+		/*remove from array*/
+		for (Vector<RenderDataStream *>::iterator vec_it = streamArray.begin(), e = streamArray.end(); vec_it!=e; ++vec_it)
+		{
+			if ((*vec_it) == stream)
+			{
+				streamArray.erase(vec_it);
+				break;
+			}
+		}
+		SafeRelease(stream);
+	}
+	
+	
+}
+
 uint32 RenderDataObject::GetResultFormat() const
 {
     return resultVertexFormat;
@@ -134,24 +174,20 @@ uint32 RenderDataObject::GetResultFormat() const
     
 void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
 {
-    RenderManager::Instance()->LockNonMain();
-//#if !defined(__DAVAENGINE_MACOS__)
-    
-//    Logger::Debug("[RenderDataObject::BuildVertexBuffer] vbo = %d", vboBuffer);
-    
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildVertexBufferInternal, (void*)vertexCount));
+}
+
+void RenderDataObject::BuildVertexBufferInternal(BaseObject * caller, void * param, void *callerData)
+{
+	DVASSERT(Thread::IsMainThread());
 #if defined (__DAVAENGINE_OPENGL__)
     
     uint32 size = streamArray.size();
     if (size == 0)return;
 
-//#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-//    savedVertexCount = vertexCount;
-//#endif//#if defined(__DAVAENGINE_ANDROID__)
-
     for (uint32 k = 1; k < size; ++k)
     {
         DVASSERT(streamArray[k]->stride == streamArray[k - 1]->stride);
-        //DVASSERT((uint8*)streamArray[k]->pointer == (uint8*)streamArray[k - 1]->pointer + GetVertexSize(streamArray[k - 1]->formatMark));
     }
     
     uint32 format = 0;
@@ -169,23 +205,20 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
     }
     
     RENDER_VERIFY(glGenBuffers(1, &vboBuffer));
-//    Logger::Debug("glGenBuffers: %d", vboBuffer);
     RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, vboBuffer));
+
+	int32 vertexCount = (int32)((int64)param);
     RENDER_VERIFY(glBufferData(GL_ARRAY_BUFFER, vertexCount * stride, streamArray[0]->pointer, GL_STATIC_DRAW));
 
     streamArray[0]->pointer = 0;
     for (uint32 k = 1; k < size; ++k)
     {
         streamArray[k]->pointer = (uint8*)streamArray[k - 1]->pointer + GetVertexSize(streamArray[k - 1]->formatMark);
-        //Logger::Debug("vbo offset: %d", (uint32)streamArray[k]->pointer);
     }
     
     RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, 0));
 
 #endif // #if defined (__DAVAENGINE_OPENGL__)
-    
-//#endif // #if !defined(__DAVAENGINE_MACOS__)
-    RenderManager::Instance()->UnlockNonMain();
 } 
     
 void RenderDataObject::SetIndices(eIndexFormat _format, uint8 * _indices, int32 _count)
@@ -201,8 +234,12 @@ void RenderDataObject::SetIndices(eIndexFormat _format, uint8 * _indices, int32 
 
 void RenderDataObject::BuildIndexBuffer()
 {
-    RenderManager::Instance()->LockNonMain();
-    
+	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildIndexBufferInternal));
+}
+
+void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * param, void *callerData)
+{
+	DVASSERT(Thread::IsMainThread());
 #if defined (__DAVAENGINE_OPENGL__)
     
     
@@ -224,7 +261,7 @@ void RenderDataObject::BuildIndexBuffer()
         indexBuffer = 0;
     }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
-//    Logger::Debug("glGenBuffers index: %d", indexBuffer);
+//    Logger::FrameworkDebug("glGenBuffers index: %d", indexBuffer);
     RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer));
     RENDER_VERIFY(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * INDEX_FORMAT_SIZE[indexFormat], indices, GL_STATIC_DRAW));
 #endif
@@ -236,8 +273,6 @@ void RenderDataObject::BuildIndexBuffer()
 #endif
     
 #endif // #if defined (__DAVAENGINE_OPENGL__)
-  
-    RenderManager::Instance()->UnlockNonMain();
 }
 
 //#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
@@ -247,7 +282,7 @@ void RenderDataObject::BuildIndexBuffer()
 //
 //void RenderDataObject::Lost()
 //{
-////    Logger::Debug("[RenderDataObject::Lost]");
+////    Logger::FrameworkDebug("[RenderDataObject::Lost]");
 //    //    vboBuffer = 0;
 //#if defined(__DAVAENGINE_OPENGL__)
 //#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
@@ -272,7 +307,7 @@ void RenderDataObject::BuildIndexBuffer()
 //
 //void RenderDataObject::Invalidate()
 //{
-////    Logger::Debug("[RenderDataObject::Invalidate]");
+////    Logger::FrameworkDebug("[RenderDataObject::Invalidate]");
 //
 //    if(isLost)
 //    {

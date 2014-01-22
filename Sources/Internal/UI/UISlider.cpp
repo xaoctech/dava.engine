@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "UI/UISlider.h"
 #include "UI/UIButton.h"
@@ -27,8 +41,6 @@ namespace DAVA
 {
 	
 	
-REGISTER_CLASS(UISlider);
-
 // Use these names for children buttons to define UISlider in .yaml
 static const String UISLIDER_THUMB_SPRITE_CONTROL_NAME = "thumbSpriteControl";
 static const String UISLIDER_MIN_SPRITE_CONTROL_NAME = "minSpriteControl";
@@ -41,6 +53,8 @@ UISlider::UISlider(const Rect & rect)
 ,	thumbButton(0)
 ,	minDrawType(UIControlBackground::DRAW_ALIGNED)
 ,	maxDrawType(UIControlBackground::DRAW_ALIGNED)
+,   needSetMinDrawType(false)
+,   needSetMaxDrawType(false)
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
@@ -60,7 +74,9 @@ UISlider::UISlider() :
 	bgMax(0),
 	thumbButton(0),
 	minDrawType(UIControlBackground::DRAW_ALIGNED),
-	maxDrawType(UIControlBackground::DRAW_ALIGNED)
+	maxDrawType(UIControlBackground::DRAW_ALIGNED),
+    needSetMinDrawType(false),
+    needSetMaxDrawType(false)
 {
 	inputEnabled = true;
 	isEventsContinuos = true;
@@ -95,18 +111,21 @@ void UISlider::AddControl(DAVA::UIControl *control)
 	// Synchronize the pointers to the buttons each time new control is added.
 	UIControl::AddControl(control);
 
-	if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME)
+	if (control->GetName() == UISLIDER_THUMB_SPRITE_CONTROL_NAME && control != thumbButton)
 	{
-		thumbButton = control;
+        RemoveAndReleaseControl(thumbButton);
+		thumbButton = SafeRetain(control);
 	}
-	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME)
+	else if (control->GetName() == UISLIDER_MIN_SPRITE_CONTROL_NAME && control != bgMin)
 	{
-		bgMin = control;
+        RemoveAndReleaseControl(bgMin);
+		bgMin = SafeRetain(control);
 		PostInitBackground(bgMin);
 	}
-	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME)
+	else if (control->GetName() == UISLIDER_MAX_SPRITE_CONTROL_NAME && control != bgMax)
 	{
-		bgMax = control;
+        RemoveAndReleaseControl(bgMax);
+		bgMax = SafeRetain(control);
 		PostInitBackground(bgMax);
 	}
 }
@@ -131,29 +150,15 @@ void UISlider::InitMaxBackground()
 		bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		UIControl::AddControl(bgMax);
 		
-		PostInitBackground(bgMin);
+		PostInitBackground(bgMax);
 	}
 }
 
 void UISlider::ReleaseAllSubcontrols()
 {
-	if (thumbButton)
-	{
-		RemoveControl(thumbButton);
-		SafeRelease(thumbButton);
-	}
-	
-	if (bgMin)
-	{
-		RemoveControl(bgMin);
-		SafeRelease(bgMin);
-	}
-	
-	if (bgMax)
-	{
-		RemoveControl(bgMax);
-		SafeRelease(bgMax);
-	}
+    RemoveAndReleaseControl(thumbButton);
+    RemoveAndReleaseControl(bgMin);
+    RemoveAndReleaseControl(bgMax);
 }
 
 void UISlider::InitInactiveParts(Sprite* spr)
@@ -163,14 +168,13 @@ void UISlider::InitInactiveParts(Sprite* spr)
 		return;
 	}
 
-	leftInactivePart = rightInactivePart = (int32)((spr->GetWidth() / 2.0f) + 1.0f); /* 1 px added to align it and make touches easier, with default setup */
+	leftInactivePart = rightInactivePart = (int32)((spr->GetWidth() / 2.0f));
 }
 
 void UISlider::SetThumb(UIControl *newThumb)
 {
-    RemoveControl(thumbButton);
-    SafeRelease(thumbButton);
-    
+    RemoveAndReleaseControl(thumbButton);
+
     thumbButton = SafeRetain(newThumb);
 	thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 	thumbButton->SetInputEnabled(false);
@@ -178,7 +182,7 @@ void UISlider::SetThumb(UIControl *newThumb)
 	thumbButton->relativePosition.y = size.y * 0.5f;
     thumbButton->pivotPoint = thumbButton->size*0.5f;
 	
-	AddControl(thumbButton);
+	UIControl::AddControl(thumbButton);
 	
 	SetValue(currentValue);
 }
@@ -256,7 +260,24 @@ void UISlider::RecalcButtonPos()
 	{
 		thumbButton->relativePosition.x = Interpolation::Linear((float32)leftInactivePart, size.x - rightInactivePart, minValue, currentValue, maxValue);
 		clipPointRelative = thumbButton->relativePosition.x;
+        thumbButton->relativePosition.y = GetSize().y / 2; // thumb button pivot point is on center.
 	}
+}
+
+void UISlider::SyncThumbWithSprite()
+{
+    // Get the thumb sprite size and update the sprite size/pos according to it.
+    if (thumbButton && thumbButton->GetSprite())
+    {
+        const Vector2 spriteSize = thumbButton->GetSprite()->GetSize();
+        thumbButton->SetSize(spriteSize);
+        
+        Vector2 spriteCenter = Vector2(spriteSize.x / 2.0f, spriteSize.y / 2.0f);
+        thumbButton->SetPosition(spriteCenter);
+        thumbButton->pivotPoint = spriteCenter;
+    }
+    
+   	RecalcButtonPos();
 }
 
 void UISlider::SetValue(float32 value)
@@ -321,16 +342,16 @@ void UISlider::Input(UIEvent *currentInput)
 		/* if not continuos always perform event because last move position almost always the same as end pos */
 		PerformEvent(EVENT_VALUE_CHANGED);
 	}
-			  
-			  
+
 	RecalcButtonPos();
+	currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
 }
 
 void UISlider::Draw(const UIGeometricData &geometricData)
 {
 	const Rect & aRect =  thumbButton->GetGeometricData().GetUnrotatedRect();
 	float32 clipPointAbsolute = aRect.x + aRect.dx * 0.5f;
-	if (bgMin && bgMin->GetVisible())
+	if (bgMin && bgMin->GetVisible() && bgMin->GetVisibleForUIEditor())
 	{
 		bgMin->GetBackground()->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
@@ -338,7 +359,7 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 		bgMin->Draw(geometricData);
 		RenderManager::Instance()->ClipPop();
 	}
-	if (bgMax && bgMax->GetVisible())
+	if (bgMax && bgMax->GetVisible() && bgMax->GetVisibleForUIEditor())
 	{
 		bgMax->GetBackground()->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
@@ -415,30 +436,20 @@ void UISlider::SystemDraw(const UIGeometricData &geometricData)
 	}
 }
 
-List<UIControl* >& UISlider::GetRealChildren()
-{
-	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME));
-	realChildren.remove(FindByName(UISLIDER_MIN_SPRITE_CONTROL_NAME));
-	realChildren.remove(FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME));
-
-	return realChildren;
-}
-	
-void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
+void UISlider::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 {
 	UIControl::LoadFromYamlNode(node, loader);
 	
 	ReleaseAllSubcontrols();
-	YamlNode * thumbSpriteNode = node->Get("thumbSprite");
+	const YamlNode * thumbSpriteNode = node->Get("thumbSprite");
 
 	if (thumbSpriteNode)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create sprite subcontrol.
 		InitThumb();
-		YamlNode * spriteNode = thumbSpriteNode->Get(0);
-		YamlNode * frameNode = thumbSpriteNode->Get(1);
+		const YamlNode * spriteNode = thumbSpriteNode->Get(0);
+		const YamlNode * frameNode = thumbSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
@@ -446,15 +457,15 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 	
-	YamlNode * minSpriteNode = node->Get("minSprite");
+	const YamlNode * minSpriteNode = node->Get("minSprite");
 	
 	if (minSpriteNode)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create min background subcontrol.
 		InitMinBackground();
-		YamlNode * spriteNode = minSpriteNode->Get(0);
-		YamlNode * frameNode = minSpriteNode->Get(1);
+		const YamlNode * spriteNode = minSpriteNode->Get(0);
+		const YamlNode * frameNode = minSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
@@ -462,15 +473,15 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 		}
 	}
 	
-	YamlNode * maxSpriteNode = node->Get("maxSprite");
+	const YamlNode * maxSpriteNode = node->Get("maxSprite");
 	
 	if (maxSpriteNode)
 	{
 		// Yuri Coder, 2012/04/24. This is old configuration version without the subcontrols.
 		// Need to create max background subcontrol.
 		InitMaxBackground();
-		YamlNode * spriteNode = maxSpriteNode->Get(0);
-		YamlNode * frameNode = maxSpriteNode->Get(1);
+		const YamlNode * spriteNode = maxSpriteNode->Get(0);
+		const YamlNode * frameNode = maxSpriteNode->Get(1);
 		
 		if (spriteNode)
 		{
@@ -479,49 +490,68 @@ void UISlider::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
 	}
 	
 	// Values
-	YamlNode * valueNode = node->Get("value");
+	const YamlNode * valueNode = node->Get("value");
 	
 	if (valueNode)
 		SetValue(valueNode->AsFloat());
 		
-	YamlNode * minValueNode= node->Get("minValue");
+	const YamlNode * minValueNode= node->Get("minValue");
 	
 	if (minValueNode)
 		SetMinValue(minValueNode->AsFloat());
 		
-	YamlNode * maxValueNode= node->Get("maxValue");
+	const YamlNode * maxValueNode= node->Get("maxValue");
 	
 	if (maxValueNode)
 		SetMaxValue(maxValueNode->AsFloat());
 	
 	
 	// Load the Min/Max draw types to apply them when the loading will be completed.
-	YamlNode * minDrawTypeNode = node->Get("minDrawType");
+	const YamlNode * minDrawTypeNode = node->Get("minDrawType");
 
 	if(minDrawTypeNode)
 	{
 		this->minDrawType =(UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(minDrawTypeNode);
+        this->needSetMinDrawType = true;
 	}
 	
-	YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
+	const YamlNode * maxDrawTypeNode = node->Get("maxDrawType");
 	if(maxDrawTypeNode)
 	{
 		this->maxDrawType= (UIControlBackground::eDrawType)loader->GetDrawTypeFromNode(maxDrawTypeNode);
+        this->needSetMaxDrawType = true;
 	}
 }
 
+void UISlider::SetSize(const DAVA::Vector2 &newSize)
+{
+    UIControl::SetSize(newSize);
+    RecalcButtonPos();
+}
+    
 void UISlider::LoadFromYamlNodeCompleted()
 {
 	// All the UIControls should exist at this moment - just attach to them.
 	AttachToSubcontrols();
-	bgMin->GetBackground()->SetDrawType(minDrawType);
-	bgMax->GetBackground()->SetDrawType(maxDrawType);
+    if (this->needSetMinDrawType)
+    {
+        bgMin->GetBackground()->SetDrawType(minDrawType);
+    }
 
-	RecalcButtonPos();
+    if (needSetMaxDrawType)
+    {
+        bgMax->GetBackground()->SetDrawType(maxDrawType);
+    }
+
+    SyncThumbWithSprite();
 }
 	
 YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 {
+    thumbButton->SetName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
+    bgMin->SetName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
+    bgMax->SetName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
+
     YamlNode *node = UIControl::SaveToYamlNode(loader);
     
     // Control Type
@@ -538,17 +568,6 @@ YamlNode * UISlider::SaveToYamlNode(UIYamlLoader * loader)
 	// Sprite max value
 	value = this->GetMaxValue();
 	node->Set("maxValue", value);
-
-	// Yuri Coder, 2013/04/24. Thumb Button and all the backgrounds are child controls now
-	// so save them under appropriate names.
-	YamlNode* thumbButtonNode = SaveToYamlNodeRecursive(loader, this->thumbButton);
-	node->AddNodeToMap(UISLIDER_THUMB_SPRITE_CONTROL_NAME, thumbButtonNode);
-
-	YamlNode* minBackgroundNode = SaveToYamlNodeRecursive(loader, this->bgMin);
-	node->AddNodeToMap(UISLIDER_MIN_SPRITE_CONTROL_NAME, minBackgroundNode);
-
-	YamlNode* maxBackgroundNode = SaveToYamlNodeRecursive(loader, this->bgMax);
-	node->AddNodeToMap(UISLIDER_MAX_SPRITE_CONTROL_NAME, maxBackgroundNode);
 
     return node;
 }
@@ -574,22 +593,28 @@ void UISlider::CopyDataFrom(UIControl *srcControl)
 	maxValue = t->maxValue;
 	
 	currentValue = t->currentValue;
-	
+
+    ReleaseAllSubcontrols();
 	if (t->thumbButton)
 	{
-		thumbButton = t->thumbButton->Clone();
-		AddControl(thumbButton);
+		UIControl *c = t->thumbButton->Clone();
+		AddControl(c);
+		c->Release();
 	}
 	if (t->bgMin)
 	{
-		bgMin = t->bgMin->Clone();
-		AddControl(bgMin);
+		UIControl *c = t->bgMin->Clone();
+		AddControl(c);
+		c->Release();
+
 		PostInitBackground(bgMin);
 	}
 	if (t->bgMax)
 	{
-		bgMax = t->bgMax->Clone();
-		AddControl(bgMax);
+		UIControl *c = t->bgMax->Clone();
+		AddControl(c);
+		c->Release();
+
 		PostInitBackground(bgMax);
 	}
 	
@@ -610,6 +635,8 @@ void UISlider::AttachToSubcontrols()
 	{
 		thumbButton = FindByName(UISLIDER_THUMB_SPRITE_CONTROL_NAME);
 		DVASSERT(thumbButton);
+        thumbButton->Retain();
+        
 		InitInactiveParts(thumbButton->GetBackground()->GetSprite());
 	}
 	
@@ -617,21 +644,20 @@ void UISlider::AttachToSubcontrols()
 	{
 		bgMin = FindByName(UISLIDER_MIN_SPRITE_CONTROL_NAME);
 		DVASSERT(bgMin);
+        
+        bgMin->Retain();
 	}
 	
 	if (!bgMax)
 	{
 		bgMax = FindByName(UISLIDER_MAX_SPRITE_CONTROL_NAME);
 		DVASSERT(bgMax);
+        
+        bgMax->Retain();
 	}
 
 	PostInitBackground(bgMin);
 	PostInitBackground(bgMax);
-
-	// All the controls will be released in the destructor, so need to addref.
-	SafeRetain(thumbButton);
-	SafeRetain(bgMin);
-	SafeRetain(bgMax);
 }
 
 List<UIControl*> UISlider::GetSubcontrols()
@@ -657,5 +683,36 @@ void UISlider::PostInitBackground(UIControl* backgroundControl)
 	backgroundControl->SetInputEnabled(false);
 	backgroundControl->SetPosition(Vector2(0.0f, 0.0f));
 }
+    
+void UISlider::RemoveAndReleaseControl(UIControl* &control)
+{
+    if (!control)
+    {
+        return;
+    }
+    
+    RemoveControl(control);
+    SafeRelease(control);
+}
+    
+void UISlider::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
+{
+    UIControl::SetVisibleForUIEditor(value, hierarchic);
+    if (bgMin)
+    {
+        bgMin->SetVisibleForUIEditor(value, hierarchic);
+    }
+
+    if (bgMax)
+    {
+        bgMax->SetVisibleForUIEditor(value, hierarchic);
+    }
+
+    if (thumbButton)
+    {
+        thumbButton->SetVisibleForUIEditor(value, hierarchic);
+    }
+}
+
 	
 } // ns

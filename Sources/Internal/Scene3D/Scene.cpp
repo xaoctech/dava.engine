@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #include "Scene3D/Scene.h"
 
 #include "Render/Texture.h"
@@ -53,6 +67,7 @@
 #include "Scene3D/Systems/SwitchSystem.h"
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
+#include "Scene3D/Systems/SkyboxSystem.h"
 
 //#include "Entity/Entity.h"
 //#include "Entity/EntityManager.h"
@@ -65,7 +80,6 @@
 namespace DAVA 
 {
     
-REGISTER_CLASS(Scene);
     
 Scene::Scene()
 	:   Entity()
@@ -73,8 +87,6 @@ Scene::Scene()
     ,   clipCamera(0)
 //    ,   forceLodLayer(-1)
 	,	imposterManager(0)
-	,	entityManager(0)
-	,	referenceNodeSuffixChanged(false)
 {   
 
 //	entityManager = new EntityManager();
@@ -122,6 +134,9 @@ void Scene::CreateSystems()
 	
 	actionSystem = new ActionUpdateSystem(this);
 	AddSystem(actionSystem, (1 << Component::ACTION_COMPONENT));
+	
+	skyboxSystem = new SkyboxSystem(this);
+	AddSystem(skyboxSystem, (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()
@@ -269,9 +284,19 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags)
     systems.push_back(sceneSystem);
 }
     
-void Scene::RemoveSystem(SceneSystem * sceneSystem, uint32 componentFlags)
+void Scene::RemoveSystem(SceneSystem * sceneSystem)
 {
-    DVASSERT(0 && "Need to write remove system function");
+    Vector<SceneSystem*>::const_iterator endIt = systems.end();
+    for(Vector<SceneSystem*>::iterator it = systems.begin(); it != endIt; ++it)
+    {
+        if(*it == sceneSystem)
+        {
+            systems.erase(it);
+            return;
+        }
+    }
+
+    DVASSERT_MSG(false, "System must be at systems array");
 }
 
 Scene * Scene::GetScene()
@@ -355,35 +380,6 @@ void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
 
 Entity *Scene::GetRootNode(const FilePath &rootNodePath)
 {
-//    ProxyNode * proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
-//    if (proxyNode)
-//    {
-//        return proxyNode->GetNode();
-//    }
-//    
-//    String ext = FileSystem::Instance()->GetExtension(rootNodePath);
-//    if(ext == ".sce")
-//    {
-//        SceneFile *file = new SceneFile();
-//        file->SetDebugLog(true);
-//        file->LoadScene(rootNodePath, this);
-//        SafeRelease(file);
-//    }
-//    else if(ext == ".sc2")
-//    {
-//        SceneFileV2 *file = new SceneFileV2();
-//        file->EnableDebugLog(true);
-//        file->LoadScene(rootNodePath.c_str(), this);
-//        SafeRelease(file);
-//    }
-//
-//    proxyNode = dynamic_cast<ProxyNode*>(scenes->FindByName(rootNodePath));
-//    if (proxyNode)
-//    {
-//        return proxyNode->GetNode();
-//    }
-//    return 0;
-    
 	Map<String, ProxyNode*>::const_iterator it;
 	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
 	if (it != rootNodes.end())
@@ -406,8 +402,9 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         file->EnableDebugLog(false);
         file->LoadScene(rootNodePath, this);
         SafeRelease(file);
+				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
-        Logger::Info("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
+        Logger::FrameworkDebug("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
     }
     
 	it = rootNodes.find(rootNodePath.GetAbsolutePathname());
@@ -499,84 +496,61 @@ void Scene::SetupTestLighting()
 void Scene::Update(float timeElapsed)
 {
     TIME_PROFILE("Scene::Update");
-    
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
-    
-    
-	updatableSystem->UpdatePreTransform();
 
-    transformSystem->Process();
-
-	updatableSystem->UpdatePostTransform();
+	updatableSystem->UpdatePreTransform(timeElapsed);
+    transformSystem->Process(timeElapsed);
+	updatableSystem->UpdatePostTransform(timeElapsed);
 
 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
 	{
 		lodSystem->SetCamera(currentCamera);
-		lodSystem->Process();
+		lodSystem->Process(timeElapsed);
 	}
 	
-
-	switchSystem->Process();
+	switchSystem->Process(timeElapsed);
     
-//	entityManager->Flush();
-	int32 size;
-	
-	size = (int32)animations.size();
-	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
-	{
-		SceneNodeAnimationList * anim = animations[animationIndex];
-		anim->Update(timeElapsed);
-	}
-	
-
-	referenceNodeSuffixChanged = false;
-
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
-	{
-		size = (int32)animatedMeshes.size();
-		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
-		{
-			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
-			mesh->Update(timeElapsed);
-		}
-	}
+// 	int32 size;
+// 	
+// 	size = (int32)animations.size();
+// 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
+// 	{
+// 		SceneNodeAnimationList * anim = animations[animationIndex];
+// 		anim->Update(timeElapsed);
+// 	}
+// 
+// 	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_ANIMATED_MESHES))
+// 	{
+// 		size = (int32)animatedMeshes.size();
+// 		for (int32 animatedMeshIndex = 0; animatedMeshIndex < size; ++animatedMeshIndex)
+// 		{
+// 			AnimatedMesh * mesh = animatedMeshes[animatedMeshIndex];
+// 			mesh->Update(timeElapsed);
+// 		}
+// 	}
 
 	//if(imposterManager)
 	//{
 	//	imposterManager->Update(timeElapsed);
 	//}
-    
-    updateTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
 
 void Scene::Draw()
 {
     TIME_PROFILE("Scene::Draw");
 
-    //Sprite * fboSprite = Sprite::CreateAsRenderTarget(512, 512, FORMAT_RGBA8888);
-	//RenderManager::Instance()->SetRenderTarget(fboSprite);
-	//RenderManager::Instance()->SetViewport(Rect(0, 0, 512, 512), false);
-    nodeCounter = 0;
-    uint64 time = SystemTimer::Instance()->AbsoluteMS();
+	float timeElapsed = SystemTimer::Instance()->FrameDelta();
 
 	shadowVolumes.clear();
     
-    //const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
-    //RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
-    //glDepthMask(GL_TRUE);
-    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
-    
-    if(imposterManager)
-	{
-		//imposterManager->ProcessQueue();
-	}
+//     if(imposterManager)
+// 	{
+// 		imposterManager->ProcessQueue();
+// 	}
     
     RenderManager::Instance()->SetCullMode(FACE_BACK);
     RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->ClearDepthBuffer();
-    //glDepthMask(GL_TRUE);
-    //RENDER_VERIFY(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT));
     
 	
     if (currentCamera)
@@ -586,29 +560,23 @@ void Scene::Draw()
     
     Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     renderSystem->SetCamera(currentCamera);
-    renderUpdateSystem->Process();
-	actionSystem->Process(); //update action system before particles and render
-	particleEffectSystem->Process();
+    renderUpdateSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render
+	particleEffectSystem->Process(timeElapsed);
+	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
     debugRenderSystem->SetCamera(currentCamera);
-    debugRenderSystem->Process();
+    debugRenderSystem->Process(timeElapsed);
+	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
 
     RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
     
-    if(imposterManager)
-	{
-		imposterManager->Draw();
-	}
-    
-
+//     if(imposterManager)
+// 	{
+// 		imposterManager->Draw();
+// 	}
 
 	RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
-	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
-
-	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
-	//RENDER_VERIFY(glReadPixels(0, 0, 512, 512, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *)image->data));
-	//image->Save("img.png");
-	//RenderManager::Instance()->RestoreRenderTarget();
 }
 
 	
@@ -788,28 +756,12 @@ void Scene::UnregisterImposter(ImposterNode * imposter)
 	}
 }
 
-void Scene::SetReferenceNodeSuffix(const String & suffix)
-{
-	referenceNodeSuffix = suffix;
-	referenceNodeSuffixChanged = true;
-}
-
-const String & Scene::GetReferenceNodeSuffix()
-{
-	return referenceNodeSuffix;
-}
-
-bool Scene::IsReferenceNodeSuffixChanged()
-{
-	return referenceNodeSuffixChanged;
-}
-
 EventSystem * Scene::GetEventSystem()
 {
 	return eventSystem;
 }
 
-RenderSystem * Scene::GetRenderSystem()
+RenderSystem * Scene::GetRenderSystem() const
 {
 	return renderSystem;
 }
@@ -830,6 +782,16 @@ void Scene::Load(KeyedArchive * archive)
     Entity::Load(archive);
 }*/
     
+    
+    
+SceneFileV2::eError Scene::Save(const DAVA::FilePath & pathname, bool saveForGame /*= false*/)
+{
+    ScopedPtr<SceneFileV2> file( new SceneFileV2() );
+	file->EnableDebugLog(false);
+	file->EnableSaveForGame(saveForGame);
+	return file->SaveScene(pathname, this);
+}
+
 
 
 

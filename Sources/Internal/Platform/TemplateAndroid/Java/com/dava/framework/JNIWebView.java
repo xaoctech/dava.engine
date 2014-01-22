@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -76,10 +77,8 @@ public class JNIWebView {
 				return false;
 			}
 			else if (res == 1) {
-
-				final JNIActivity activity = JNIActivity.GetActivity();
-				WebView webView = new WebView(activity);
-				webView.loadUrl(url);
+				Intent exWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				JNIActivity.GetActivity().startActivity(exWeb);
 				return true;
 			}
 			return true;
@@ -106,6 +105,9 @@ public class JNIWebView {
 				params.height = (int)(dy + 0.5f);
 				webView.setWebViewClient(new InternalViewClient(id));
 				webView.getSettings().setJavaScriptEnabled(true);
+				webView.getSettings().setLoadWithOverviewMode(true);
+				webView.getSettings().setUseWideViewPort(true);
+				webView.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
 				
 				activity.addContentView(webView, params);
 				views.put(id, webView);
@@ -206,6 +208,14 @@ public class JNIWebView {
 				view.setBackgroundColor((enabled ? Color.TRANSPARENT : Color.WHITE));
 			}
 		});
+	}
+	
+	static protected void RelinkNativeControls() {
+		for (WebView view: views.values()) {
+			ViewGroup viewGroup = (ViewGroup) view.getParent();
+			viewGroup.removeView(view);
+			JNIActivity.GetActivity().addContentView(view, view.getLayoutParams());
+		}
 	}
 	
 	private static native int OnUrlChange(int id, String url);

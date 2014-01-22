@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 #ifndef __DAVAENGINE_RENDER_BASE_H__
 #define __DAVAENGINE_RENDER_BASE_H__
 
@@ -100,23 +114,13 @@ enum eBlendMode
 	BLEND_DST_ALPHA,
 	BLEND_ONE_MINUS_DST_ALPHA,
 	BLEND_SRC_ALPHA_SATURATE,
+	BLEND_SRC_COLOR,
+	BLEND_ONE_MINUS_SRC_COLOR,
 
 	BLEND_MODE_COUNT,
 };
 
-static const String BLEND_MODE_NAMES[] = 
-{
-	"BLEND_NONE",
-	"BLEND_ZERO",
-	"BLEND_ONE",
-	"BLEND_DST_COLOR",
-	"BLEND_ONE_MINUS_DST_COLOR",
-	"BLEND_SRC_ALPHA",
-	"BLEND_ONE_MINUS_SRC_ALPHA",
-	"BLEND_DST_ALPHA",
-	"BLEND_ONE_MINUS_DST_ALPHA",
-	"BLEND_SRC_ALPHA_SATURATE"
-};
+extern const String BLEND_MODE_NAMES[BLEND_MODE_COUNT];
 
 enum PixelFormat
 {
@@ -183,33 +187,9 @@ enum eGPUFamily
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
-{
-    0,	// not a valid blend mode
-    GL_ZERO,
-    GL_ONE,
-    GL_DST_COLOR,
-    GL_ONE_MINUS_DST_COLOR,
-    GL_SRC_ALPHA,
-    GL_ONE_MINUS_SRC_ALPHA,
-    GL_DST_ALPHA,
-    GL_ONE_MINUS_DST_ALPHA,
-    GL_SRC_ALPHA_SATURATE,
-};
+extern const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT];
 #elif defined(__DAVAENGINE_DIRECTX9__)
-static const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT] = 
-{
-    0,	// not a valid blend mode
-    D3DBLEND_ZERO,
-    D3DBLEND_ONE,
-    D3DBLEND_DESTCOLOR,
-    D3DBLEND_INVDESTCOLOR,
-    D3DBLEND_SRCALPHA,
-    D3DBLEND_INVSRCALPHA,
-    D3DBLEND_DESTALPHA,
-    D3DBLEND_INVDESTALPHA,
-    D3DBLEND_SRCALPHASAT,
-};
+extern const GLint BLEND_MODE_MAP[BLEND_MODE_COUNT];
 #endif
   
 enum eCmpFunc
@@ -225,42 +205,12 @@ enum eCmpFunc
     CMP_TEST_MODE_COUNT, 
 };
 
-static const String CMP_FUNC_NAMES[] = 
-{
-	"CMP_NEVER",
-	"CMP_LESS",
-	"CMP_EQUAL",
-	"CMP_LEQUAL",
-	"CMP_GREATER",
-	"CMP_NOTEQUAL",
-	"CMP_GEQUAL",
-	"CMP_ALWAYS"
-};
+extern const String CMP_FUNC_NAMES[CMP_TEST_MODE_COUNT];
 
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] = 
-{
-    GL_NEVER,
-    GL_LESS,
-    GL_EQUAL,
-    GL_LEQUAL,
-    GL_GREATER,
-    GL_NOTEQUAL,
-    GL_GEQUAL,
-    GL_ALWAYS,
-};
+extern const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT];
 #elif defined(__DAVAENGINE_DIRECTX9__)  
-static const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT] = 
-{
-    D3DCMP_NEVER,
-    D3DCMP_LESS,
-    D3DCMP_EQUAL,
-    D3DCMP_LESSEQUAL,
-    D3DCMP_GREATER,
-    D3DCMP_NOTEQUAL,
-    D3DCMP_GREATEREQUAL,
-    D3DCMP_ALWAYS,
-};  
+extern const GLint COMPARE_FUNCTION_MAP[CMP_TEST_MODE_COUNT];
 #endif
     
 enum eVertexDataType
@@ -301,27 +251,12 @@ enum eFace
     FACE_COUNT,
 };
 
-static const String FACE_NAMES[] = 
-{
-	"FACE_FRONT",
-	"FACE_BACK",
-	"FACE_FRONT_AND_BACK"
-};
+extern const String FACE_NAMES[FACE_COUNT];
 
 #if defined(__DAVAENGINE_OPENGL__)
-    static const GLint CULL_FACE_MAP[FACE_COUNT] = 
-    {
-        GL_FRONT,
-        GL_BACK,
-        GL_FRONT_AND_BACK,
-    };
+extern const GLint CULL_FACE_MAP[FACE_COUNT];
 #elif defined(__DAVAENGINE_DIRECTX9__) 
-   static const int32 CULL_FACE_MAP[FACE_COUNT] = 
-   {
-       D3DCULL_CCW,
-	   D3DCULL_CW,
-	   D3DCULL_NONE,
-   };
+extern const int32 CULL_FACE_MAP[FACE_COUNT];
 #endif
 
 
@@ -339,42 +274,12 @@ enum eStencilOp
 	STENCILOP_COUNT
 };
 
-static const String STENCIL_OP_NAMES[] = 
-{
-	"STENCILOP_KEEP",
-	"STENCILOP_ZERO",
-	"STENCILOP_REPLACE",
-	"STENCILOP_INCR",
-	"STENCILOP_INCR_WRAP",
-	"STENCILOP_DECR",
-	"STENCILOP_DECR_WRAP",
-	"STENCILOP_INVERT"
-};
+extern const String STENCIL_OP_NAMES[STENCILOP_COUNT];
 
 #if defined(__DAVAENGINE_OPENGL__)
-static const GLint STENCIL_OP_MAP[STENCILOP_COUNT] = 
-{
-	GL_KEEP,
-	GL_ZERO,
-	GL_REPLACE,
-	GL_INCR,
-	GL_INCR_WRAP,
-	GL_DECR,
-	GL_DECR_WRAP,
-	GL_INVERT
-};
+extern const GLint STENCIL_OP_MAP[STENCILOP_COUNT];
 #elif defined(__DAVAENGINE_DIRECTX9__) 
-static const int32 STENCIL_OP_MAP[STENCILOP_COUNT] = 
-{
-	D3DSTENCILOP_KEEP,
-	D3DSTENCILOP_ZERO,
-	D3DSTENCILOP_REPLACE,
-	D3DSTENCILOP_INCRSAT,
-	D3DSTENCILOP_INCR,
-	D3DSTENCILOP_DECRSAT,
-	D3DSTENCILOP_DECR,
-	D3DSTENCILOP_INVERT
-};
+extern const int32 STENCIL_OP_MAP[STENCILOP_COUNT];
 #endif
 
 enum eFillMode
@@ -386,27 +291,12 @@ enum eFillMode
 	FILLMODE_COUNT
 };
 
-static const String FILL_MODE_NAMES[] = 
-{
-	"FILLMODE_POINT",
-	"FILLMODE_WIREFRAME",
-	"FILLMODE_SOLID"
-};
+extern const String FILL_MODE_NAMES[FILLMODE_COUNT];
 
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__))
-static const GLint FILLMODE_MAP[FILLMODE_COUNT] = 
-{
-	GL_POINT,
-	GL_LINE,
-	GL_FILL
-};
+extern const GLint FILLMODE_MAP[FILLMODE_COUNT];
 #elif defined(__DAVAENGINE_DIRECTX9__) 
-static const int32 FILLMODE_MAP[FILLMODE_COUNT] = 
-{
-	D3DFILL_POINT,
-	D3DFILL_WIREFRAME,
-	D3DFILL_SOLID
-};
+extern const int32 FILLMODE_MAP[FILLMODE_COUNT];
 #endif
     
 enum ePrimitiveType
@@ -435,15 +325,20 @@ enum eVertexFormat
     EVF_TANGENT			= 128,
     EVF_BINORMAL		= 256,
     EVF_JOINTWEIGHT		= 512,
+	EVF_TIME			= 1024,
+	EVF_CUBETEXCOORD0	= 2048,
+    EVF_CUBETEXCOORD1	= 4096,
+    EVF_CUBETEXCOORD2	= 8192,
+    EVF_CUBETEXCOORD3	= 16384,	
     EVF_LOWER_BIT		= EVF_VERTEX,
-    EVF_HIGHER_BIT		= EVF_JOINTWEIGHT, 
+    EVF_HIGHER_BIT		= EVF_TIME, 
     EVF_NEXT_AFTER_HIGHER_BIT
     = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD     = 0x7fffffff,
 };
 enum
 {
-    VERTEX_FORMAT_STREAM_MAX_COUNT = 10
+    VERTEX_FORMAT_STREAM_MAX_COUNT = 11
 };
 
 inline int32 GetTexCoordCount(int32 vertexFormat)
@@ -459,6 +354,21 @@ inline int32 GetTexCoordCount(int32 vertexFormat)
 
 	return ret;
 }
+	
+inline int32 GetCubeTexCoordCount(int32 vertexFormat)
+{
+	int32 ret = 0;
+	for(int32 i = EVF_CUBETEXCOORD0; i < EVF_CUBETEXCOORD3+1; i = (i << 1))
+	{
+		if(vertexFormat & i)
+		{
+			ret++;
+		}
+	}
+		
+	return ret;
+}
+
     
     
 inline int32 GetVertexSize(int32 flags)
@@ -474,7 +384,15 @@ inline int32 GetVertexSize(int32 flags)
     if (flags & EVF_TANGENT) size += 3 * sizeof(float32);
     if (flags & EVF_BINORMAL) size += 3 * sizeof(float32);
     
-    if (flags & EVF_JOINTWEIGHT) size += 2 * sizeof(float32); // 4 * 3 + 4 * 3= 12 + 12 
+    if (flags & EVF_JOINTWEIGHT) size += 2 * sizeof(float32); // 4 * 3 + 4 * 3= 12 + 12
+	
+	if (flags & EVF_CUBETEXCOORD0) size += 3 * sizeof(float32);
+    if (flags & EVF_CUBETEXCOORD1) size += 3 * sizeof(float32);
+    if (flags & EVF_CUBETEXCOORD2) size += 3 * sizeof(float32);
+    if (flags & EVF_CUBETEXCOORD3) size += 3 * sizeof(float32);
+
+	if (flags & EVF_TIME) size+=sizeof(float32);
+	
     return size;
 }
 

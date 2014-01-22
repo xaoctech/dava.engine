@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #include "AlignTest.h"
 #include "TextureUtils.h"
@@ -47,7 +61,7 @@ const int AlignTest::alignTypesData[] =
 };
 
 AlignTest::AlignTest():
-TestTemplate<AlignTest>("SplitTest"),
+TestTemplate<AlignTest>("AlignTest"),
 	currentAlignIndex(0),
 	currenTestIndex(0),
 	data(NULL)
@@ -65,8 +79,15 @@ TestTemplate<AlignTest>("SplitTest"),
 
 void AlignTest::LoadResources()
 {
-    font = FTFont::Create("~res:/Fonts/korinna.ttf");		
-  
+	// DF-1627 - Always set black background for this test for Windows - all screenshots should be the same
+#ifdef __DAVAENGINE_WIN32__
+	GetBackground()->SetColor(Color::Black());
+	GetBackground()->SetDrawType(UIControlBackground::DRAW_FILL);
+#endif
+
+    Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");		
+    DVASSERT(font);
+
     staticText = new UIStaticText();
     staticText->SetRect(Rect(10.f, 10.f, 400.f, 200.f));
 	staticText->SetTextColor(Color::White());
@@ -82,6 +103,8 @@ void AlignTest::LoadResources()
     staticText2->SetFont(font);
 	staticText2->SetText(controlText);
 	AddControl(staticText2);
+
+	SafeRelease(font);
 }
 
 void AlignTest::UnloadResources()
@@ -89,7 +112,6 @@ void AlignTest::UnloadResources()
 	RemoveAllControls();
     SafeRelease(staticText);
     SafeRelease(staticText2);
-    SafeRelease(font);
 }
 
 void AlignTest::MultilineEnable(PerfFuncData * testData)
@@ -160,7 +182,7 @@ void AlignTest::OnScreenShot(Image *testImage)
 {
 	//Use this code to generate new reference screenshots
 //	FilePath workingPath = FileSystem::Instance()->GetCurrentWorkingDirectory();
-//	ImageLoader::Save(testImage,workingPath + Format("Data/TestData/AlignTest/Win32/test%d.png", currenTestIndex));
+//	ImageLoader::Save(testImage, workingPath + Format("Data/test%d.png", currenTestIndex));
 	VerifyTestImage(testImage);
 }
 
@@ -183,7 +205,6 @@ void AlignTest::VerifyTestImage(Image *testImage)
 				
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
-
 	// Verify compare results
 	if (data)
 	{

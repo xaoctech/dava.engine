@@ -1,18 +1,32 @@
 /*==================================================================================
-    Copyright (c) 2008, DAVA, INC
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    * Neither the name of the DAVA, INC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-    THIS SOFTWARE IS PROVIDED BY THE DAVA, INC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DAVA, INC BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    * Neither the name of the binaryzebra nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+
+
 
 #ifndef __DAVAENGINE_UI_CONTROL_H__
 #define __DAVAENGINE_UI_CONTROL_H__
@@ -94,6 +108,37 @@ public:
 		unrotatedRect.y = position.y - pivotPoint.y * scale.y;
 		unrotatedRect.dx = size.x * scale.x;
 		unrotatedRect.dy = size.y * scale.y;
+	}
+
+	void BuildTransformMatrix( Matrix3 &transformMatr ) const
+	{
+		Matrix3 pivotMatr;
+		pivotMatr.BuildTranslation( -pivotPoint );
+
+		Matrix3 translateMatr;
+		translateMatr.BuildTranslation( position );
+
+		Matrix3 rotateMatr;
+		rotateMatr.BuildRotation( cosA, sinA );
+
+		Matrix3 scaleMatr;
+		scaleMatr.BuildScale( scale );
+
+		transformMatr = pivotMatr * scaleMatr * rotateMatr * translateMatr;
+	}
+
+	void GetPolygon( Polygon2 &polygon ) const
+	{
+		polygon.Clear();
+		polygon.points.reserve( 4 );
+		polygon.AddPoint( Vector2() );
+		polygon.AddPoint( Vector2( size.x, 0 ) );
+		polygon.AddPoint( size );
+		polygon.AddPoint( Vector2( 0, size.y ) );
+
+		Matrix3 transformMtx;
+		BuildTransformMatrix( transformMtx );
+		polygon.Transform( transformMtx );
 	}
 
 	const Rect &GetUnrotatedRect() const
@@ -187,7 +232,14 @@ public:
 		EVENT_TOUCH_UP_OUTSIDE		= 8,//!<Trigger when mouse pressure or touch processed by the control is released outside of the control.
         EVENTS_COUNT
 	};	
-	
+
+	enum eDebugDrawPivotMode
+	{
+		DRAW_NEVER					= 1, //!<Never draw the Pivot Point.
+		DRAW_ONLY_IF_NONZERO,			 //!<Draw the Pivot Point only if it is defined (nonzero).
+		DRAW_ALWAYS						 //!<Always draw the Pivot Point mark.
+	};
+
 	friend class ControlSystem;
 
 	
@@ -625,7 +677,7 @@ public:
 	 \param[in] recursive use true if you want fro recursive search.
 	 \returns first control with given name.
 	 */
-	UIControl * FindByName(const String & name, bool recursive = true);
+	UIControl * FindByName(const String & name, bool recursive = true) const;
 	
 	/**
 	 \brief Returns control state bit mask.
@@ -686,6 +738,10 @@ public:
 	 \param[in] control control to remove.
 	 */
 	virtual void RemoveControl(UIControl *control);
+	/**
+	 \brief Remove this control from its parent, if any.
+	 */
+	virtual void RemoveFromParent();
 	/**
 	 \brief Removes all children from the control.
 	 */
@@ -907,8 +963,15 @@ public:
 	 */
 	void	SetDebugDraw(bool _debugDrawEnabled, bool hierarchic = false);
 	void	SetDebugDrawColor(const Color& color);
-	Color	GetDebugDrawColor() const;
-	
+	const Color	&GetDebugDrawColor() const;
+
+	/**
+	 \brief Set the draw pivot point mode for the control.
+	 \param[in] mode draw pivot point mode
+	 \param[in] hierarchic Is value need to be changed in all coltrol children.
+	 */
+	void SetDrawPivotPointMode(eDebugDrawPivotMode mode, bool hierarchic = false);
+
 public:
 	
 	/**
@@ -1070,7 +1133,7 @@ public:
 	virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 	
 		//TODO: Борода напиши дескрипшн.
-	virtual void LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader);
+	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
 	/**
 	 \brief Save the control to YAML node and return it.
 	 */
@@ -1118,6 +1181,18 @@ public:
 
 	// Find the control by name and add it to the list, if found.
 	bool AddControlToList(List<UIControl*>& controlsList, const String& controlName, bool isRecursive = false);
+
+	// Get the framework path for sprite, don't process it if it is empty.
+	static String GetSpriteFrameworkPath( const Sprite* sprite);
+
+	// Get/set the Initial State.
+	int32 GetInitialState() const;
+	void SetInitialState(int32 newState);
+
+	// Get/set visible flag for UI editor. Should not be serialized.
+	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
+	virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1128,8 +1203,6 @@ public:
 	float32	angle;//!<control rotation angle. Rotation around pivot point.
 	
 protected:
-	// Save the control to YAML including all the child controls and return it.
-	virtual YamlNode* SaveToYamlNodeRecursive(UIYamlLoader* loader, UIControl* control,  YamlNode* rootNode = NULL);
 
 //	void SystemClearHoverState();//<! Internal method used by ControlSystem
 
@@ -1142,32 +1215,41 @@ protected:
 	UIControlBackground *background;
 //	Rect absoluteRect;
 	int32 controlState;
-	bool visible;
-	bool inputEnabled;
-	bool clipContents;
 
-	bool multiInput;
-	bool exclusiveInput;
+	// boolean flags are grouped here to pack them together (see please DF-2149).
+	bool inputEnabled : 1;
+	bool exclusiveInput : 1;
+	bool visible : 1;
+	bool clipContents : 1;
+	bool debugDrawEnabled : 1;
+	bool multiInput : 1;
+
+	bool visibleForUIEditor : 1;
+
+	// Enable align options
+	bool leftAlignEnabled : 1;
+	bool hcenterAlignEnabled : 1;
+	bool rightAlignEnabled : 1;
+	bool topAlignEnabled : 1;
+	bool vcenterAlignEnabled : 1;
+	bool bottomAlignEnabled : 1;
+	
+	bool isUpdated : 1;
+	bool isIteratorCorrupted : 1;
+
+
 	int32 currentInputID;
 	int32 touchesInside;
 	int32 totalTouches;
 	
 	// Align options
-	int32 _leftAlign;
-	int32 _hcenterAlign;
-	int32 _rightAlign;
-	int32 _topAlign;
-	int32 _vcenterAlign;
-	int32 _bottomAlign;
+	int32 leftAlign;
+	int32 hcenterAlign;
+	int32 rightAlign;
+	int32 topAlign;
+	int32 vcenterAlign;
+	int32 bottomAlign;
 
-	// Enable align options
-	bool _leftAlignEnabled;
-	bool _hcenterAlignEnabled;
-	bool _rightAlignEnabled;
-	bool _topAlignEnabled;
-	bool _vcenterAlignEnabled;
-	bool _bottomAlignEnabled;
-	
 	Rect returnedRect;
 	UIGeometricData tempGeometricData;
 
@@ -1175,11 +1257,15 @@ protected:
 	
 	bool needToRecalcFromAbsoluteCoordinates;
 	
-	bool debugDrawEnabled;
 	Color debugDrawColor;
+
+	eDebugDrawPivotMode drawPivotPointMode;
 
 	// If this UI control represents Custom Control - its type is stored here.
 	String customControlType;
+
+	// Initial control's state which is stored on Yaml.
+	int32 initialState;
 
 	void SetParent(UIControl *newParent);
 
@@ -1194,15 +1280,15 @@ protected:
 #endif
 	
 private:
-	bool isUpdated;
-	bool isIteratorCorrupted;
 	String	name;
 	int32	tag;
 
-	
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
-	void DrawDebugRect(const Rect &drawRect, bool useAlpha = false);
+	void RecalculatePivotPoint(const Rect &newRect);
+
+	void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
+	void DrawPivotPoint(const Rect &drawRect);
 	
 	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
 	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
