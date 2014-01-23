@@ -211,6 +211,7 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 		for(int i = 0; i < parent->ChildCount(); ++i)
 		{
 			bool toBeRemove = false;
+			bool scanChilds = true;
 			QtPropertyData *data = parent->ChildGet(i);
 
 			// show only editable items and favorites
@@ -240,6 +241,7 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 				else if(userData->type == PropEditorUserData::COPY)
 				{
 					favorite = data;
+					scanChilds = false;
 				}
 
 				if(NULL != favorite)
@@ -255,7 +257,7 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 				parent->ChildRemove(data);
 				i--;
 			}
-			else
+			else if(scanChilds)
 			{
 				// apply mode to data childs
 				ApplyModeFilter(data);
@@ -732,21 +734,38 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 					{
 						DVASSERT(NULL == userData->associatedData);
 
-						QtPropertyData *favorite = CreateClone(data);
-						ApplyCustomButtons(favorite);
+						// check if it hasn't parent, that is already favorite
+						bool canBeAdded = true;
+						QtPropertyData *parent = data;
+						while(NULL != parent)
+						{
+							if(GetUserData(parent)->isFavorite)
+							{
+								canBeAdded = false;
+								break;
+							}
 
-						favoriteGroup->ChildAdd(data->GetName(), favorite);
-						userData->associatedData = favorite;
-						userData->isFavorite = true;
+							parent = parent->Parent();
+						}
 
-						// create user data for added favorite, that will have COPY type,
-						// and associatedData will point to the original property
-						PropEditorUserData *favUserData = new PropEditorUserData(PropEditorUserData::COPY, data, true);
-						favorite->SetUserData(favUserData);
+						if(canBeAdded)
+						{
+							QtPropertyData *favorite = CreateClone(data);
+							ApplyCustomButtons(favorite);
 
-						favUserData->realPath = data->GetPath();
-						scheme.insert(data->GetPath());
-						RemFavoriteChilds(data);
+							favoriteGroup->ChildAdd(data->GetName(), favorite);
+							userData->associatedData = favorite;
+							userData->isFavorite = true;
+
+							// create user data for added favorite, that will have COPY type,
+							// and associatedData will point to the original property
+							PropEditorUserData *favUserData = new PropEditorUserData(PropEditorUserData::COPY, data, true);
+							favorite->SetUserData(favUserData);
+
+							favUserData->realPath = data->GetPath();
+							scheme.insert(data->GetPath());
+							RemFavoriteChilds(data);
+						}
 					}
 
 					data->EmitDataChanged(QtPropertyData::VALUE_SET);
