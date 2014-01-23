@@ -27,6 +27,7 @@
 =====================================================================================*/
 
 #include "QtPropertyData.h"
+#include "QtPropertyDataValidator/QtPropertyDataValidator.h"
 
 QtPropertyData::QtPropertyData()
 	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
@@ -35,6 +36,7 @@ QtPropertyData::QtPropertyData()
 	, model(NULL)
 	, userData(NULL)
 	, optionalButtonsViewport(NULL)
+    , validator(NULL)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
@@ -45,6 +47,7 @@ QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
 	, model(NULL)
 	, userData(NULL)
 	, optionalButtonsViewport(NULL)
+    , validator(NULL)
 { }
 
 QtPropertyData::~QtPropertyData()
@@ -68,6 +71,8 @@ QtPropertyData::~QtPropertyData()
 	{
 		delete userData;
 	}
+    
+    DAVA::SafeDelete(validator);
 }
 
 QVariant QtPropertyData::data(int role) const
@@ -150,7 +155,22 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	QVariant oldValue = curValue;
 
 	// set value
-	SetValueInternal(value);
+    if(reason == VALUE_EDITED && NULL != validator)
+    {
+        if(validator->Validate(value))
+        {
+            SetValueInternal(value);
+        }
+        else
+        {
+            validator->Notify(value);
+            return;
+        }        
+    }
+    else
+    {
+        SetValueInternal(value);
+    }
 
 	// and get what was really set
 	// it can't differ from input "value"
@@ -382,6 +402,12 @@ void QtPropertyData::SetModel(QtPropertyModel *_model)
 			child->SetModel(model);
 		}
 	}
+}
+
+void QtPropertyData::SetValidator(QtPropertyDataValidator* value)
+{
+    DAVA::SafeDelete(validator);
+    validator = value;
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) const
