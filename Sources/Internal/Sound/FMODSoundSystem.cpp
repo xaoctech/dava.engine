@@ -63,7 +63,7 @@ SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, con
     SoundEvent * event = new FMODSoundEvent(eventName);
     AddSoundEventToGroup(groupName, event);
 
-    Logger::Debug("[FMODSoundSystem::CreateSoundEventByID] %x %s", event, eventName.c_str());
+    //Logger::Debug("[FMODSoundSystem::CreateSoundEventByID] %x %s", event, eventName.c_str());
     
     return event;
 }
@@ -380,20 +380,20 @@ void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
 {
-    Logger::Debug("[FMODSoundSystem::PerformCallbackOnUpdate] %x", event);
+    //Logger::Debug("[FMODSoundSystem::PerformCallbackOnUpdate] %x", event);
     callbackOnUpdate.insert(std::pair<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>(event, type));
 }
 
 void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
 {
-    Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x", event);
+    //Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x", event);
     if(callbackOnUpdate.size())
     {
         MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator it = callbackOnUpdate.find(event);
         if(it != callbackOnUpdate.end())
         {
             callbackOnUpdate.erase(it);
-            Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x Canceled", event);
+            //Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x Canceled", event);
         }
     }
 }

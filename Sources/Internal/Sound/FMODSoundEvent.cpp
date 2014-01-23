@@ -114,6 +114,8 @@ bool FMODSoundEvent::Trigger()
         ApplyParamsToEvent(fmodEvent);
         fmodEventInstances.push_back(fmodEvent);
         
+        //Logger::Debug("[FMODSoundEvent::Trigger()] %x", this);
+
         FMOD_VERIFY(fmodEvent->setVolume(volume));
         FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
         FMOD_VERIFY(fmodEvent->start());
@@ -227,7 +229,8 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback
 {
     FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
     fmodSoundSystem->ReleaseOnUpdate(this);
-    fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
+    //fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
+    PerformEvent(callbackType);
     
     //FMOD_VERIFY(fmodEvent->setCallback(0, 0));
     
