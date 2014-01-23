@@ -182,7 +182,6 @@
 		E8BAD7331859F50300C98C8D /* QtPropertyDataKeyedArchiveMember_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6851859F50300C98C8D /* QtPropertyDataKeyedArchiveMember_moc.cpp */; };
 		E8BAD7341859F50300C98C8D /* QtPropertyDataMetaObject_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6861859F50300C98C8D /* QtPropertyDataMetaObject_moc.cpp */; };
 		E8BAD7351859F50300C98C8D /* QtPropertyData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6871859F50300C98C8D /* QtPropertyData_moc.cpp */; };
-		E8BAD7361859F50300C98C8D /* QtPropertyDataProxy_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6881859F50300C98C8D /* QtPropertyDataProxy_moc.cpp */; };
 		E8BAD7371859F50300C98C8D /* QtPropertyEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6891859F50300C98C8D /* QtPropertyEditor_moc.cpp */; };
 		E8BAD7381859F50300C98C8D /* QtPropertyItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD68A1859F50300C98C8D /* QtPropertyItem_moc.cpp */; };
 		E8BAD7391859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD68B1859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp */; };
@@ -816,7 +815,6 @@
 		E8BAD6851859F50300C98C8D /* QtPropertyDataKeyedArchiveMember_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataKeyedArchiveMember_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6861859F50300C98C8D /* QtPropertyDataMetaObject_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataMetaObject_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6871859F50300C98C8D /* QtPropertyData_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyData_moc.cpp; sourceTree = "<group>"; };
-		E8BAD6881859F50300C98C8D /* QtPropertyDataProxy_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataProxy_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6891859F50300C98C8D /* QtPropertyEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyEditor_moc.cpp; sourceTree = "<group>"; };
 		E8BAD68A1859F50300C98C8D /* QtPropertyItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyItem_moc.cpp; sourceTree = "<group>"; };
 		E8BAD68B1859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyItemDelegate_moc.cpp; sourceTree = "<group>"; };
@@ -2234,7 +2232,6 @@
 			children = (
 				E8BAD67E1859F50300C98C8D /* QtPropertyData */,
 				E8BAD6871859F50300C98C8D /* QtPropertyData_moc.cpp */,
-				E8BAD6881859F50300C98C8D /* QtPropertyDataProxy_moc.cpp */,
 				E8BAD6891859F50300C98C8D /* QtPropertyEditor_moc.cpp */,
 				E8BAD68A1859F50300C98C8D /* QtPropertyItem_moc.cpp */,
 				E8BAD68B1859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp */,
@@ -4251,7 +4248,6 @@
 				E8C9930E184CD0EC00AFBF3F /* NotPassableTerrainProxy.cpp in Build Sources */,
 				E8C99263184CD0EC00AFBF3F /* ColladaCamera.cpp in Build Sources */,
 				E8C9931F184CD0EC00AFBF3F /* TextureCache.cpp in Build Sources */,
-				E8BAD7361859F50300C98C8D /* QtPropertyDataProxy_moc.cpp in Build Sources */,
 				E8C9923F184CD0EC00AFBF3F /* btGjkEpa2.cpp in Build Sources */,
 				E8C9930F184CD0EC00AFBF3F /* RulerToolProxy.cpp in Build Sources */,
 				E8C99219184CD0EC00AFBF3F /* btConvexPolyhedron.cpp in Build Sources */,
