@@ -243,14 +243,15 @@ protected:
 
 	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign);
 
+    // Override this method to update the pixelization settings for controls which content
+    // is created dynamically (i.e. static texts).
+    virtual void UpdatePixelization() {};
+
 	// Refresh the align params.
 	void RefreshAlign();
 
     // Refresh the thumb size for UISlider.
     void UpdateThumbSizeForUIControlThumb();
-
-    // Apply the pixelization settings.
-    void ApplyPixelization(Sprite* sprite);
 
     // Verify whether UIControl exists and set its visible flag.
     void SetUIControlVisible(const bool isVisible, bool hierarchic);
