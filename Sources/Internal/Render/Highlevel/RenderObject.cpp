@@ -72,12 +72,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 		renderSystem->AddRenderBatch(batch);
     }
     
-    const AABBox3 & boundingBox = batch->GetBoundingBox();
-//    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
-//             boundingBox.min.y != AABBOX_INFINITY &&
-//             boundingBox.min.z != AABBOX_INFINITY);
-    
-    bbox.AddAABBox(boundingBox);
+    RecalcBoundingBox();
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
