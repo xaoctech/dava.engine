@@ -56,6 +56,10 @@ FMODSoundEvent::FMODSoundEvent(const String & _eventName)
             fmodEventInfo->getPropertyByIndex(FMOD_EVENTPROPERTY_MODE, &mode);
             is3D = (mode == FMOD_3D);
         }
+        else
+        {
+            Logger::Debug(eventName.c_str());
+        }
     }
 }
 
@@ -68,8 +72,10 @@ FMODSoundEvent::~FMODSoundEvent()
         
         FMOD_VERIFY(fmodEvent->setCallback(0, 0));
         FMOD_VERIFY(fmodEvent->stop());
+
+        FMODSoundSystem::GetFMODSoundSystem()->CancelCallbackOnUpdate(this, SoundEvent::EVENT_END);
     }
-    
+
     fmodEventInstances.clear();
 
     FMODSoundSystem::GetFMODSoundSystem()->RemoveSoundEventFromGroups(this);
@@ -188,7 +194,14 @@ void FMODSoundEvent::SetParameterValue(const FastName & paramName, float32 value
     
     List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
-        ApplyParamsToEvent((*it));
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY((*it)->getParameter(paramName.c_str(), &param));
+        if(param)
+        {
+            FMOD_VERIFY(param->setValue(value));
+        }
+    }
 }
 
 float32 FMODSoundEvent::GetParameterValue(const FastName & paramName)
@@ -214,9 +227,9 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback
 {
     FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
     fmodSoundSystem->ReleaseOnUpdate(this);
-    PerformEvent(callbackType);
+    fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
     
-    FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+    //FMOD_VERIFY(fmodEvent->setCallback(0, 0));
     
     List<FMOD::Event *>::iterator it = std::find(fmodEventInstances.begin(), fmodEventInstances.end(), fmodEvent);
     if(it != fmodEventInstances.end())
@@ -225,7 +238,7 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback
 
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
-    if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN || type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
+    if(/*type == FMOD_EVENT_CALLBACKTYPE_STOLEN || */type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
     {
         FMOD::Event * fEvent = (FMOD::Event *)event;
         FMODSoundEvent * sEvent = (FMODSoundEvent *)userdata;

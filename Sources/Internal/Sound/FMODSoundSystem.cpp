@@ -62,6 +62,8 @@ SoundEvent * FMODSoundSystem::CreateSoundEventByID(const String & eventName, con
 {
     SoundEvent * event = new FMODSoundEvent(eventName);
     AddSoundEventToGroup(groupName, event);
+
+    Logger::Debug("[FMODSoundSystem::CreateSoundEventByID] %x %s", event, eventName.c_str());
     
     return event;
 }
@@ -135,13 +137,22 @@ FMODSoundSystem * FMODSoundSystem::GetFMODSoundSystem()
 void FMODSoundSystem::Update(float32 timeElapsed)
 {
     SoundSystemInstance::Update(timeElapsed);
-
-	fmodEventSystem->update();
     
     int32 size = soundsToReleaseOnUpdate.size();
     for(int32 i = 0; i < size; i++)
         soundsToReleaseOnUpdate[i]->Release();
     soundsToReleaseOnUpdate.clear();
+
+    if(callbackOnUpdate.size())
+    {
+        MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator mapIt = callbackOnUpdate.begin();
+        MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator endIt = callbackOnUpdate.end();
+        for(; mapIt != endIt; ++mapIt)
+            mapIt->first->PerformEvent(mapIt->second);
+        callbackOnUpdate.clear();
+    }
+
+    fmodEventSystem->update();
 }
 
 void FMODSoundSystem::Suspend()
@@ -364,6 +375,26 @@ void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
             it = soundGroups.erase(it);
         else
             ++it;
+    }
+}
+
+void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
+{
+    Logger::Debug("[FMODSoundSystem::PerformCallbackOnUpdate] %x", event);
+    callbackOnUpdate.insert(std::pair<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>(event, type));
+}
+
+void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
+{
+    Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x", event);
+    if(callbackOnUpdate.size())
+    {
+        MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator it = callbackOnUpdate.find(event);
+        if(it != callbackOnUpdate.end())
+        {
+            callbackOnUpdate.erase(it);
+            Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x Canceled", event);
+        }
     }
 }
 

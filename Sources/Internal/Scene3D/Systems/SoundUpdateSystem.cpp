@@ -57,8 +57,11 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
         SoundEvent * sound = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
-		sound->SetPosition(translation);
-        sound->UpdateInstancesPosition();
+        if(sound)
+        {
+            sound->SetPosition(translation);
+            sound->UpdateInstancesPosition();
+        }
 	}
 }
     
