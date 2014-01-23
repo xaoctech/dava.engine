@@ -75,9 +75,6 @@ public:
     static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData, bool checkVisibility);
     static DAVA::uint32 GetTrianglesForEntity(DAVA::Entity *entity, bool checkVisibility);
 
-    //TODO: remove after lod editing implementation
-    DAVA_DEPRECATED(void CopyLastLodToLod0());
-
     bool CanDeleteLod();
 
 signals:

@@ -123,11 +123,6 @@ void LODEditor::SetupInternalUI()
     connect(ui->forceLayer, SIGNAL(activated(int)), SLOT(ForceLayerActivated(int)));
 
     connect(ui->createPlaneLodButton, SIGNAL(clicked()), this, SLOT(CreatePlaneLODClicked()));
-
-    //TODO: remove after lod editing implementation
-    connect(ui->lastLodToFrontButton, SIGNAL(clicked()), this, SLOT(CopyLODToLod0Clicked()));
-
-
     connect(ui->buttonDeleteFirstLOD, SIGNAL(clicked()), editedLODData, SLOT(DeleteFirstLOD()));
     connect(ui->buttonDeleteLastLOD, SIGNAL(clicked()), editedLODData, SLOT(DeleteLastLOD()));
 }
@@ -249,7 +244,6 @@ void LODEditor::LODDataChanged()
     UpdateWidgetVisibility();
 
     ui->createPlaneLodButton->setEnabled(editedLODData->CanCreatePlaneLOD());
-    ui->lastLodToFrontButton->setEnabled(editedLODData->CanCreatePlaneLOD());
     ui->buttonDeleteFirstLOD->setEnabled(editedLODData->CanDeleteLod());
     ui->buttonDeleteLastLOD->setEnabled(editedLODData->CanDeleteLod());
 }
@@ -389,11 +383,5 @@ void LODEditor::CreatePlaneLODClicked()
             QtMainWindow::Instance()->WaitStop();
         }
     }
-}
-
-void LODEditor::CopyLODToLod0Clicked()
-{
-    if(editedLODData->CanCreatePlaneLOD())
-        editedLODData->CopyLastLodToLod0();
 }
 

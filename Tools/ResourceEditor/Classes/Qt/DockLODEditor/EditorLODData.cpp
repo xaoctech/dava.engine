@@ -425,7 +425,6 @@ void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command
 		CommandBatch *batch = (CommandBatch *)command;
 		Command2 *firstCommand = batch->GetCommand(0);
 		if(firstCommand && (firstCommand->GetId() == CMDID_LOD_DISTANCE_CHANGE || 
-                            firstCommand->GetId() == CMDID_LOD_COPY_LAST_LOD || 
                             firstCommand->GetId() == CMDID_LOD_DELETE ||
                             firstCommand->GetId() == CMDID_LOD_CREATE_PLANE))
 		{
@@ -484,21 +483,6 @@ FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
 
     return texturePath;
 }
-
-void EditorLODData::CopyLastLodToLod0()
-{
-    DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
-    if(componentsCount && activeScene)
-    {
-        activeScene->BeginBatch("LOD Added");
-
-        for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new CopyLastLODToLod0Command(lodData[i]));
-
-        activeScene->EndBatch();
-    }
-}
-
 
 bool EditorLODData::CanDeleteLod()
 {
