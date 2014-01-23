@@ -303,6 +303,8 @@ void LandscapeDialog::OnItemEdited(const QModelIndex &index)
 	
 	if(isMultiple)
 	{
+        float val = Max(0.f, data->GetValue().toFloat());
+        data->SetValue(QVariant(val));
 		curScene->BeginBatch("Landscape resizing");
 	}
 	
