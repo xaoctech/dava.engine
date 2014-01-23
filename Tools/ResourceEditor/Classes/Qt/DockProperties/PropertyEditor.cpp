@@ -173,6 +173,7 @@ void PropertyEditor::ResetProperties()
 
 		ApplyFavorite(root);
 		ApplyModeFilter(root);
+		ApplyModeFilter(favoriteGroup);
 		ApplyCustomButtons(root);
 
 		// add not empty rows from root
@@ -210,6 +211,7 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 		for(int i = 0; i < parent->ChildCount(); ++i)
 		{
 			bool toBeRemove = false;
+			bool scanChilds = true;
 			QtPropertyData *data = parent->ChildGet(i);
 
 			// show only editable items and favorites
@@ -228,18 +230,25 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 			// show only favorite items
 			else if(viewMode == VIEW_FAVORITES_ONLY)
 			{
+				QtPropertyData *favorite = NULL;
 				PropEditorUserData *userData = GetUserData(data);
+
 				if(userData->type == PropEditorUserData::ORIGINAL)
 				{
 					toBeRemove = true;
+					favorite = userData->associatedData;
+				}
+				else if(userData->type == PropEditorUserData::COPY)
+				{
+					favorite = data;
+					scanChilds = false;
+				}
 
+				if(NULL != favorite)
+				{
 					// remove from favorite data back link to the original data
 					// because original data will be removed from properties
-					QtPropertyData *favorite = userData->associatedData;
-					if(NULL != favorite)
-					{
-						GetUserData(favorite)->associatedData = NULL;
-					}
+					GetUserData(favorite)->associatedData = NULL;
 				}
 			}
 
@@ -248,7 +257,7 @@ void PropertyEditor::ApplyModeFilter(QtPropertyData *parent)
 				parent->ChildRemove(data);
 				i--;
 			}
-			else
+			else if(scanChilds)
 			{
 				// apply mode to data childs
 				ApplyModeFilter(data);
@@ -555,22 +564,6 @@ void PropertyEditor::OnItemEdited(const QModelIndex &index)
 				curScene->Exec(command);
 			}
 		}
-
-		// go top, unit we find property item, that has other associated
-		// and we should update it to ensure that 
-		// new/old items was also added/removed for that associated data
-		QtPropertyData *parent = propData;
-		while(NULL != parent)
-		{
-			PropEditorUserData *userData = GetUserData(parent);
-			if(NULL != userData->associatedData)
-			{
-				userData->associatedData->UpdateValue(true);
-				break;
-			}
-
-			parent = parent->Parent();
-		}
 	}
 }
 
@@ -723,8 +716,8 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 			case PropEditorUserData::ORIGINAL:
 				if(userData->isFavorite != favorite)
 				{
-					// it is in favorite no, so we are going to remove it from favorites
-					if(userData->isFavorite)
+					// it is in favorite now, so we are going to remove it from favorites
+					if(!favorite)
 					{
 						DVASSERT(NULL != userData->associatedData);
 
@@ -734,24 +727,45 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 						userData->isFavorite = false;
 
 						scheme.remove(data->GetPath());
+						AddFavoriteChilds(data);
 					}
 					// new item should be added to favorites list
 					else
 					{
 						DVASSERT(NULL == userData->associatedData);
 
-						QtPropertyData *favorite = CreateClone(data);
-						ApplyCustomButtons(favorite);
+						// check if it hasn't parent, that is already favorite
+						bool canBeAdded = true;
+						QtPropertyData *parent = data;
+						while(NULL != parent)
+						{
+							if(GetUserData(parent)->isFavorite)
+							{
+								canBeAdded = false;
+								break;
+							}
 
-						favoriteGroup->ChildAdd(data->GetName(), favorite);
-						userData->associatedData = favorite;
-						userData->isFavorite = true;
+							parent = parent->Parent();
+						}
 
-						// create user data for added favorite, that will have COPY type,
-						// and associatedData will point to the original property
-						favorite->SetUserData(new PropEditorUserData(PropEditorUserData::COPY, data, true));
+						if(canBeAdded)
+						{
+							QtPropertyData *favorite = CreateClone(data);
+							ApplyCustomButtons(favorite);
 
-						scheme.insert(data->GetPath());
+							favoriteGroup->ChildAdd(data->GetName(), favorite);
+							userData->associatedData = favorite;
+							userData->isFavorite = true;
+
+							// create user data for added favorite, that will have COPY type,
+							// and associatedData will point to the original property
+							PropEditorUserData *favUserData = new PropEditorUserData(PropEditorUserData::COPY, data, true);
+							favorite->SetUserData(favUserData);
+
+							favUserData->realPath = data->GetPath();
+							scheme.insert(data->GetPath());
+							RemFavoriteChilds(data);
+						}
 					}
 
 					data->EmitDataChanged(QtPropertyData::VALUE_SET);
@@ -764,17 +778,18 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 					// copy of the original data can only be removed
 					DVASSERT(!favorite);
 					
-					QtPropertyData *original = userData->associatedData;
-
 					// copy of the original data should always have a pointer to the original property data
+					QtPropertyData *original = userData->associatedData;
 					if(NULL != original)
 					{
 						PropEditorUserData *originalUserData = GetUserData(original);
 						originalUserData->associatedData = NULL;
 						originalUserData->isFavorite = false;
+
+						AddFavoriteChilds(original);
 					}
 
-					scheme.remove(data->GetPath());
+					scheme.remove(userData->realPath);
 					favoriteGroup->ChildRemove(data);
 				}
 				break;
@@ -790,6 +805,53 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 	{
 		RemoveProperty(favoriteGroup);
 		favoriteGroup = NULL;
+	}
+}
+
+void PropertyEditor::AddFavoriteChilds(QtPropertyData *data)
+{
+	if(NULL != data)
+	{
+		// go through childs
+		for(int i = 0; i < data->ChildCount(); ++i)
+		{
+			QtPropertyData *child = data->ChildGet(i);
+			if(scheme.contains(child->GetPath()))
+			{
+				SetFavorite(child, true);
+			}
+			else
+			{
+				AddFavoriteChilds(child);
+			}
+		}
+	}
+}
+
+void PropertyEditor::RemFavoriteChilds(QtPropertyData *data)
+{
+	if(NULL != data)
+	{
+		if(GetUserData(data)->type == PropEditorUserData::ORIGINAL)
+		{
+			// go through childs
+			for(int i = 0; i < data->ChildCount(); ++i)
+			{
+				QtPropertyData *child = data->ChildGet(i);
+				PropEditorUserData *userData = GetUserData(child);
+				if(NULL != userData->associatedData)
+				{
+					favoriteGroup->ChildRemove(userData->associatedData);
+
+					userData->associatedData = NULL;
+					userData->isFavorite = false;
+				}
+				else
+				{
+					RemFavoriteChilds(child);
+				}
+			}
+		}
 	}
 }
 

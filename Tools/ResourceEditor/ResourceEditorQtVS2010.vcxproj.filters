@@ -1845,6 +1845,12 @@
     <ClCompile Include="Classes\Qt\Tools\RunGuard\RunGuard.cpp">
       <Filter>Classes\Qt\Tools\RunGuard</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModelFiltering_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3259,6 +3265,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\RunGuard\RunGuard.h">
       <Filter>Classes\Qt\Tools\RunGuard</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

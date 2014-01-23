@@ -169,9 +169,20 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 			if(value->type == presetValueType)
 			{
 				const DAVA::Vector<DAVA::String>& allowedValues = EditorConfig::Instance()->GetComboPropertyValues(key.toStdString());
-				for(size_t i = 0; i < allowedValues.size(); ++i)
+				if(allowedValues.size() > 0)
 				{
-					((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), allowedValues[i].c_str());
+					for(size_t i = 0; i < allowedValues.size(); ++i)
+					{
+						((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), allowedValues[i].c_str());
+					}
+				}
+				else
+				{
+					const DAVA::Vector<Color> & allowedColors = EditorConfig::Instance()->GetColorPropertyValues(key.toStdString());
+					for(size_t i = 0; i < allowedColors.size(); ++i)
+					{
+						((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), ColorToQColor(allowedColors[i]));
+					}
 				}
 			}
 		}

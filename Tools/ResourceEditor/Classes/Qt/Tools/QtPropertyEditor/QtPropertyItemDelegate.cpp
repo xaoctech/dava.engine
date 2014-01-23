@@ -38,6 +38,7 @@
 QtPropertyItemDelegate::QtPropertyItemDelegate(QtPropertyModel *_model, QWidget *parent /* = 0 */)
 	: QStyledItemDelegate(parent)
 	, model(_model)
+	, lastHoverData(NULL)
 { }
 
 QtPropertyItemDelegate::~QtPropertyItemDelegate()
@@ -112,9 +113,13 @@ void QtPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 
 bool QtPropertyItemDelegate::editorEvent(QEvent * event, QAbstractItemModel * _model, const QStyleOptionViewItem & option, const QModelIndex & index)
 {
-	if(event->type() == QEvent::MouseMove && index != lastHoverIndex)
+	if(event->type() == QEvent::MouseMove)
 	{
-		showButtons(index);
+		QtPropertyData* data = model->itemFromIndex(index);
+		if(data != lastHoverData)
+		{
+			showButtons(data);
+		}
 	}
 
 	return QStyledItemDelegate::editorEvent(event, model, option, index);
@@ -232,31 +237,27 @@ void QtPropertyItemDelegate::drawOptionalButtons(QPainter *painter, QStyleOption
 	}
 }
 
-void QtPropertyItemDelegate::showButtons(const QModelIndex &index)
+void QtPropertyItemDelegate::showButtons(QtPropertyData *data)
 {
-	showOptionalButtons(lastHoverIndex, false);
-	showOptionalButtons(index, true);
+	showOptionalButtons(lastHoverData, false);
+	showOptionalButtons(data, true);
 
-	lastHoverIndex = index;
+	lastHoverData = data;
 }
 
-void QtPropertyItemDelegate::showOptionalButtons(const QModelIndex &index, bool show)
+void QtPropertyItemDelegate::showOptionalButtons(QtPropertyData *data, bool show)
 {
-	if(index.isValid())
+	if(NULL != data)
 	{
-		QtPropertyData* data = model->itemFromIndex(index);
-		if(NULL != data)
+		for(int i = 0; i < data->GetButtonsCount(); ++i)
 		{
-			for(int i = 0; i < data->GetButtonsCount(); ++i)
+			if(show)
 			{
-				if(show)
-				{
-					data->GetButton(i)->show();
-				}
-				else
-				{
-					data->GetButton(i)->hide();
-				}
+				data->GetButton(i)->show();
+			}
+			else
+			{
+				data->GetButton(i)->hide();
 			}
 		}
 	}
@@ -264,9 +265,9 @@ void QtPropertyItemDelegate::showOptionalButtons(const QModelIndex &index, bool 
 
 void QtPropertyItemDelegate::invalidateButtons()
 {
-	if(lastHoverIndex.isValid())
+	if(NULL != lastHoverData)
 	{
-		showOptionalButtons(lastHoverIndex, false);
-		lastHoverIndex = QModelIndex();
+		showOptionalButtons(lastHoverData, false);
+		lastHoverData = NULL;
 	}
 }
