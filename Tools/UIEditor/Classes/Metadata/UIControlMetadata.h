@@ -243,10 +243,6 @@ protected:
 
 	virtual void SetActiveControlRect(const Rect& rect, bool restoreAlign);
 
-    // Override this method to update the pixelization settings for controls which content
-    // is created dynamically (i.e. static texts).
-    virtual void UpdatePixelization() {};
-
 	// Refresh the align params.
 	void RefreshAlign();
 

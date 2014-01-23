@@ -31,8 +31,7 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "ResourcesManageHelper.h"
 #include "UIControlStateHelper.h"
-
-#include "Helpers/SpritesHelper.h"
+#include "SpritesHelper.h"
 
 ReloadSpritesCommand::ReloadSpritesCommand(const HierarchyTreeNode* node) :
     rootNode(node)
