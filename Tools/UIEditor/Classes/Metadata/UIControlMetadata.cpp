@@ -420,6 +420,7 @@ void UIControlMetadata::ApplyResize(const Rect& /*originalRect*/, const Rect& ne
     }
     
 	SetActiveControlRect(newRect, false);
+    UpdatePixelization();
 }
                  
 QColor UIControlMetadata::GetColor()
@@ -685,6 +686,7 @@ void UIControlMetadata::SetLeftAlign(int value)
     }
 	
 	GetActiveUIControl()->SetLeftAlign(value);
+    UpdatePixelization();
 }
 	
 int UIControlMetadata::GetHCenterAlign()
@@ -705,6 +707,7 @@ void UIControlMetadata::SetHCenterAlign(int value)
     }
 
 	GetActiveUIControl()->SetHCenterAlign(value);
+    UpdatePixelization();
 }
 
 int UIControlMetadata::GetRightAlign()
@@ -725,6 +728,7 @@ void UIControlMetadata::SetRightAlign(int value)
     }
 	
 	GetActiveUIControl()->SetRightAlign(value);
+    UpdatePixelization();
 }
 
 int UIControlMetadata::GetTopAlign()
@@ -745,6 +749,7 @@ void UIControlMetadata::SetTopAlign(int value)
     }
 	
 	GetActiveUIControl()->SetTopAlign(value);
+    UpdatePixelization();
 }
 
 int UIControlMetadata::GetVCenterAlign()
@@ -765,6 +770,7 @@ void UIControlMetadata::SetVCenterAlign(int value)
     }
 	
 	GetActiveUIControl()->SetVCenterAlign(value);
+    UpdatePixelization();
 }
 
 int UIControlMetadata::GetBottomAlign()
@@ -785,6 +791,7 @@ void UIControlMetadata::SetBottomAlign(int value)
     }
 	
 	GetActiveUIControl()->SetBottomAlign(value);
+    UpdatePixelization();
 }
 
 bool UIControlMetadata::GetLeftAlignEnabled() const
@@ -805,6 +812,7 @@ void UIControlMetadata::SetLeftAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetLeftAlignEnabled(value);
+    UpdatePixelization();
 }
 	
 bool UIControlMetadata::GetHCenterAlignEnabled() const
@@ -825,6 +833,7 @@ void UIControlMetadata::SetHCenterAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetHCenterAlignEnabled(value);
+    UpdatePixelization();
 }
 	
 bool UIControlMetadata::GetRightAlignEnabled() const
@@ -844,7 +853,8 @@ void UIControlMetadata::SetRightAlignEnabled(const bool value)
         return;
     }
 	
-	GetActiveUIControl()->SetRightAlignEnabled(value);	
+	GetActiveUIControl()->SetRightAlignEnabled(value);
+    UpdatePixelization();
 }
 	
 bool UIControlMetadata::GetTopAlignEnabled() const
@@ -865,6 +875,7 @@ void UIControlMetadata::SetTopAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetTopAlignEnabled(value);
+    UpdatePixelization();
 }
 	
 bool UIControlMetadata::GetVCenterAlignEnabled() const
@@ -885,6 +896,7 @@ void UIControlMetadata::SetVCenterAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetVCenterAlignEnabled(value);
+    UpdatePixelization();
 }
 	
 bool UIControlMetadata::GetBottomAlignEnabled() const
@@ -905,6 +917,7 @@ void UIControlMetadata::SetBottomAlignEnabled(const bool value)
     }
 	
 	GetActiveUIControl()->SetBottomAlignEnabled(value);
+    UpdatePixelization();
 }
 
 void UIControlMetadata::SetActiveControlRect(const Rect& rect, bool restoreAlign)
@@ -926,6 +939,7 @@ void UIControlMetadata::SetActiveControlRect(const Rect& rect, bool restoreAlign
 	}
 
 	ResizeScrollViewContent(GetActiveUIControl());
+    UpdatePixelization();
 }
 
 QString UIControlMetadata::GetCustomControlName() const
