@@ -161,7 +161,7 @@ protected:
     void RecoverPropertyDirtyFlags();
     
     // Update the pixelization after changing values which might affect textures.
-    void UpdatePixelization();
+    virtual void UpdatePixelization();
 };
 
 };

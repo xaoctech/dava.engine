@@ -395,7 +395,6 @@ void QtMainWindow::SetupMainMenu()
 {
 	ui->menuView->addAction(ui->dockSceneInfo->toggleViewAction());
 	ui->menuView->addAction(ui->dockLibrary->toggleViewAction());
-	ui->menuView->addAction(ui->dockMaterials->toggleViewAction());
 	ui->menuView->addAction(ui->dockProperties->toggleViewAction());
 	ui->menuView->addAction(ui->dockParticleEditor->toggleViewAction());
 	ui->menuView->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
@@ -519,7 +518,6 @@ void QtMainWindow::SetupDocks()
     
 
     ui->libraryWidget->SetupSignals();
-    ui->materialsWidget->SetupSignals();
     
 	ui->dockProperties->Init();
 }
@@ -799,7 +797,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->dockProperties->setEnabled(enable);
 	ui->dockSceneTree->setEnabled(enable);
 	ui->dockSceneInfo->setEnabled(enable);
-    ui->dockMaterials->setEnabled(enable);
 
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveSceneAs->setEnabled(enable);

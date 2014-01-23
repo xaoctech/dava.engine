@@ -804,8 +804,8 @@ int32 Texture::Release()
 	
 Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
-	uint32 dx = ConvertToPower2FBOValue(w);
-	uint32 dy = ConvertToPower2FBOValue(h);
+	uint32 dx = ConvertToPower2Value(w, 8);
+	uint32 dy = ConvertToPower2Value(h, 8);
 
 #if defined(__DAVAENGINE_OPENGL__)
 
@@ -1313,23 +1313,6 @@ void Texture::GenerateCubeFaceNames(const FilePath & filePath, const Vector<Stri
 			
 		faceNames.push_back(faceFilePath);
 	}
-}
-
-uint32 Texture::ConvertToPower2FBOValue(uint32 value)
-{
-	if(value < 16)
-	{
-		return 16;
-	}
-
-	if(IsPowerOf2(value))
-		return value;
-
-	uint32 i = 16;
-	while(i < value)
-		i *= 2;
-
-	return i;
 }
 
 const FilePath & Texture::GetPathname() const

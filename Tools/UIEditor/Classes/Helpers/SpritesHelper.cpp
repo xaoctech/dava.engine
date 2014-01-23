@@ -111,6 +111,23 @@ void SpritesHelper::SetPixelization(Sprite* sprite, bool value)
 
 void SpritesHelper::SetPixelization(UIButton* button, bool value)
 {
+    if (!button)
+    {
+        return;
+    }
+
+    // Call to PreDraw() before updating pixelization settings is needed to regenerate
+    // textures of the appropriate static texts.
+    int32 statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    for (int32 i = 0; i < statesCount; i++)
+	{
+        UIStaticText* stateText = button->GetStateTextControl(i);
+        if (stateText && stateText->GetTextBlock())
+        {
+            stateText->PreDraw();
+        }
+	}
+
     Set<Sprite*> spritesList;
     BuildSpritesList(spritesList, button);
     SetPixelization(spritesList, value);
@@ -118,6 +135,18 @@ void SpritesHelper::SetPixelization(UIButton* button, bool value)
 
 void SpritesHelper::SetPixelization(UIStaticText* staticText, bool value)
 {
+    if (!staticText)
+    {
+        return;
+    }
+
+    // Call to PreDraw() before updating pixelization settings is needed to regenerate
+    // texture of the static text control.
+    if (staticText->GetTextBlock())
+    {
+        staticText->PreDraw();
+    }
+
     Set<Sprite*> spritesList;
     BuildSpritesList(spritesList, staticText);
     SetPixelization(spritesList, value);
