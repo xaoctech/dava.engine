@@ -848,9 +848,11 @@ void UIButtonMetadata::UpdatePixelization()
         // We are during initialization, so active index is not set yet. Take the first one.
         activeButton = dynamic_cast<UIButton*>(treeNodeParams[0].GetUIControl());
     }
-
-    if (activeButton)
+    
+    if (!activeButton)
     {
-        SpritesHelper::SetPixelization(activeButton, EditorSettings::Instance()->IsPixelized());
+        return;
     }
+
+    SpritesHelper::SetPixelization(activeButton, EditorSettings::Instance()->IsPixelized());
 }

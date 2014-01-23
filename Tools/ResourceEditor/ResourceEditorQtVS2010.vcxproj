@@ -413,10 +413,6 @@
     <ClCompile Include="Classes\Qt\DockLODEditor\DistanceSlider.cpp" />
     <ClCompile Include="Classes\Qt\DockLODEditor\EditorLODData.cpp" />
     <ClCompile Include="Classes\Qt\DockLODEditor\LODEditor.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\MaterialDelegate.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\MaterialsWidget.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\SimpleMaterialItem.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\SimpleMaterialModel.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.cpp" />
@@ -533,6 +529,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModel.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant.cpp" />
@@ -574,10 +571,6 @@
     <ClCompile Include="_GeneratedQt\DockLODEditor\DistanceSlider_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLODEditor\EditorLODData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLODEditor\LODEditor_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\MaterialDelegate_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\MaterialsWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\SimpleMaterialItem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\SimpleMaterialModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\BaseParticleEditorContentWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp" />
@@ -689,7 +682,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtFileDialog\QtFileDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtLabelWithActions\QtLabelWithActions_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPosSaver\QtPosSaver_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyDataProxy_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspColl_moc.cpp" />
@@ -702,6 +694,7 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModelFiltering_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
@@ -1030,10 +1023,6 @@
     <ClInclude Include="Classes\Qt\DockLODEditor\DistanceSlider.h" />
     <ClInclude Include="Classes\Qt\DockLODEditor\EditorLODData.h" />
     <ClInclude Include="Classes\Qt\DockLODEditor\LODEditor.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\MaterialDelegate.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\MaterialsWidget.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\SimpleMaterialItem.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\SimpleMaterialModel.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.h" />
@@ -1154,6 +1143,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModel.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant.h" />

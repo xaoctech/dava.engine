@@ -74,6 +74,8 @@ protected:
 	void FillMaterialTextures(DAVA::NMaterial *material);
 	void ScanTemplates();
 
+    QVariant CheckForTextureDescriptor(const QVariant& value);
+
 private:
     void initActions();
 
