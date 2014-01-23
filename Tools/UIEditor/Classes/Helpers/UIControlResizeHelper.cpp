@@ -9,9 +9,6 @@
 #include "UIControlResizeHelper.h"
 #include "Math/MathHelpers.h"
 
-#include "SpritesHelper.h"
-#include "EditorSettings.h"
-
 namespace DAVA {
 
 static const float32 MINIMUM_CONTROL_WIDTH = 8.0f;
@@ -96,21 +93,6 @@ void UIControlResizeHelper::ResizeControl(ResizeType unrotatedResizeType, UICont
 {
     Rect finalResizeRect = GetResizeRect(unrotatedResizeType, uiControl, resizeRect, delta);
     uiControl->SetRect(finalResizeRect);
-
-    // For some controls we have to update pixelization.
-    UIStaticText* staticText = dynamic_cast<UIStaticText*>(uiControl);
-    if (staticText)
-    {
-        SpritesHelper::SetPixelization(staticText, EditorSettings::Instance()->IsPixelized());
-    }
-    else
-    {
-        UIButton* uiButton = dynamic_cast<UIButton*>(uiControl);
-        if (uiButton)
-        {
-            SpritesHelper::SetPixelization(uiButton, EditorSettings::Instance()->IsPixelized());
-        }
-    }
 }
 
 Rect UIControlResizeHelper::GetResizeRect(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)

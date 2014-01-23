@@ -131,9 +131,6 @@ public:
     // Repack and reload sprites.
     void RepackAndReloadSprites();
 
-    // Set the pixelization value.
-    void SetPixelization(bool value);
-
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	String GetNewControlName(const String& baseName);

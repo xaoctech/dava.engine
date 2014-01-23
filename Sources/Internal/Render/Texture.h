@@ -272,6 +272,8 @@ public:
 
 	PixelFormat GetFormat() const;
 
+    static void SetPixelization(bool value);
+
 protected:
     
     void ReleaseTextureData();
@@ -358,6 +360,8 @@ public:							// properties for fast access
 
     static TexturesMap textureMap;
     static eGPUFamily defaultGPU;
+    
+    static bool pixelizationFlag;
 };
     
 // Implementation of inline functions
