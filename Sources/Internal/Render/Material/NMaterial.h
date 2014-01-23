@@ -169,10 +169,11 @@ public:
     static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_FLATCOLOR;
+    static const FastName FLAG_DISTANCEATTENUATION;
+    
 	static const FastName FLAG_LIGHTMAPONLY;
 	static const FastName FLAG_TEXTUREONLY; //VI: this flag is for backward compatibility with old materials. See FLAG_ALBEDOONLY
 	static const FastName FLAG_SETUPLIGHTMAP;
-    
     static const FastName FLAG_ALBEDOONLY;
     static const FastName FLAG_AMBIENTONLY;
     static const FastName FLAG_DIFFUSEONLY;
@@ -299,6 +300,8 @@ public:
 									 const FastName& defaultQuality);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+    
+    void SwitchTemplate(const FastName& templateName);
 
 protected:
 	
