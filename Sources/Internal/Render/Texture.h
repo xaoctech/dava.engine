@@ -297,8 +297,6 @@ protected:
     static bool CheckImageSize(const Vector<Image *> &imageSet);
     static bool IsCompressedFormat(PixelFormat format);
     
-	static uint32 ConvertToPower2FBOValue(uint32 value);
-    
 	void GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData);
     
 	Texture();

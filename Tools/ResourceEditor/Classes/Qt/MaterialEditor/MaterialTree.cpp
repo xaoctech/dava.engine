@@ -47,10 +47,6 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)), this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
-
-    expandMap[MaterialFilteringModel::SHOW_ALL] = false;
-    expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
-    expandMap[MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS] = true;
 }
 
 MaterialTree::~MaterialTree()
@@ -69,8 +65,6 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 	{
 		treeModel->SetSelection(NULL);
 	}
-
-    autoExpand();
 }
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
@@ -125,6 +119,16 @@ void MaterialTree::Update()
 	treeModel->Sync();
 }
 
+int MaterialTree::getFilterType() const
+{
+    return treeModel->getFilterType();
+}
+
+void MaterialTree::setFilterType(int filterType)
+{
+    treeModel->setFilterType( filterType );
+}
+
 void MaterialTree::ShowContextMenu(const QPoint &pos)
 { 
 	QMenu contextMenu(this);
@@ -177,6 +181,7 @@ void MaterialTree::dragTryAccepted(QDragMoveEvent *event)
 	{
 		event->setDropAction(Qt::MoveAction);
 		event->accept();
+        treeModel->invalidate();
 	}
 	else
 	{
@@ -193,6 +198,7 @@ void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row
 
 	switch(dropIndicatorPosition())
 	{
+	case QAbstractItemView::OnItem:
 	case QAbstractItemView::AboveItem:
 		row = index.row();
 		col = index.column();
@@ -203,8 +209,8 @@ void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row
 		col = index.column();
 		index = index.parent();
 		break;
-	case QAbstractItemView::OnItem:
 	case QAbstractItemView::OnViewport:
+        index = QModelIndex();
 		break;
 	}
 }
@@ -228,7 +234,6 @@ void MaterialTree::OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
 	{
 		treeModel->SetSelection(selected);
 		treeModel->invalidate();
-        autoExpand();
 	}
 }
 
@@ -236,27 +241,4 @@ void MaterialTree::OnSelectEntities()
 {
 	DAVA::NMaterial *currentMaterial = treeModel->GetMaterial(currentIndex());
 	SelectEntities(currentMaterial);
-}
-
-void MaterialTree::onCurrentExpandModeChange( bool setOn )
-{
-    const int filterType = treeModel->getFilterType();
-    expandMap[filterType] = setOn;
-    if ( setOn )
-        expandAll();
-    else
-        collapseAll();
-}
-
-void MaterialTree::autoExpand()
-{
-    const int filterType = treeModel->getFilterType();
-    if ( expandMap[filterType] )
-        expandAll();
-}
-
-bool MaterialTree::currentExpandMode() const
-{
-    const int filterType = treeModel->getFilterType();
-    return expandMap[filterType];
 }

@@ -93,8 +93,8 @@ protected:
 
 	virtual bool GetMultilineBySymbol() const;
 	virtual void SetMultilineBySymbol(const bool value);
-    
-    void UpdatePixelization();
+
+    virtual void UpdatePixelization();
 };
 
 };
