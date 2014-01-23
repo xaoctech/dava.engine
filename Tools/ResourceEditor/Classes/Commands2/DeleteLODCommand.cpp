@@ -97,13 +97,23 @@ void DeleteLODCommand::Redo()
     DAVA::Vector<DAVA::LodComponent::LodData>::iterator deleteIt = lodComponent->lodLayers.begin();
     std::advance(deleteIt, deletedLodIndex);
     lodComponent->lodLayers.erase(deleteIt);
-    
-    //update distances
+
+    //update layer indexes
     DAVA::int32 layersSize = lodComponent->GetLodLayersCount();
+    for(DAVA::int32 i = 0; i < layersSize; ++i)
+    {
+        if(lodComponent->lodLayers[i].layer >= deletedLodIndex)
+        {
+            --lodComponent->lodLayers[i].layer;
+        }
+    }
+
+    //update distances
     for(DAVA::int32 i = deletedLodIndex; i < DAVA::LodComponent::MAX_LOD_LAYERS-1; ++i)
     {
         lodComponent->lodLayersArray[i] = lodComponent->lodLayersArray[i+1];
     }
+    
 
     //last lod
     if(layersSize)
