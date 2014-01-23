@@ -35,6 +35,7 @@
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/LodComponent.h"
+#include "Render/Highlevel/RenderObject.h"
 
 
 namespace DAVA
@@ -96,6 +97,9 @@ private:
 	
 	static inline void ProcessEntity(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq, Camera* camera);
 	static inline void PorcessEntityRecursive(Entity * entity, float32 psLodOffsetSq, float32 psLodMultSq, Camera* camera);
+    
+    static void SetEntityLodRecursive(Entity * entity, int32 currentLod);
+    static void SetEntityLod(Entity * entity, int32 currentLod);
 
 	Camera * camera;
 };
@@ -120,6 +124,15 @@ void LodSystem::SetForceUpdateAll()
 Camera* LodSystem::GetCamera() const
 {
 	return camera;
+}
+    
+inline void LodSystem::SetEntityLod(Entity * entity, int32 currentLod)
+{
+    RenderObject * ro = GetRenderObject(entity);
+    if(ro)
+    {
+        ro->SetLodIndex(currentLod);
+    }
 }
 	
 }

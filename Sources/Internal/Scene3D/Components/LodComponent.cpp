@@ -233,19 +233,6 @@ float32 LodComponent::GetDefaultDistance(int32 layer)
 	return distance;
 }
 
-void LodComponent::SetCurrentLod(int32 newLod)
-{
-	if (newLod != currentLod) 
-	{
-		if (currentLod!=INVALID_LOD_LAYER) 
-		{
-			SetLayerVisibility(currentLod, false);
-		}
-		currentLod = newLod;		
-		SetLayerVisibility(currentLod, true);
-	}
-}
-
 void LodComponent::SetForceDistance(const float32 &newDistance)
 {
     forceDistance = newDistance;
@@ -321,28 +308,6 @@ int32 LodComponent::GetMaxLodLayer() const
 	}
 
 	return ret;
-}
-
-void LodComponent::SetLayerVisibility(int32 layerNum, bool visible)
-{
-	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
-
-
-//Dizz: this was old lod system
- 	if(visible && (int32)lodLayers.size() > layerNum)
- 	{
-        int32 lodINumber = lodLayers[layerNum].layer;
-        RenderObject * ro = GetRenderObject(entity);
-        if(ro)
-        {
-            ro->SetLodIndex(lodINumber);
-        }
-// 		int32 size = lodLayers[layerNum].nodes.size();
-// 		for (int32 i = 0; i < size; i++) 
-// 		{
-// 			lodLayers[layerNum].nodes[i]->SetLodVisible(visible);
-// 		}
- 	}
 }
 
 void LodComponent::CopyLODSettings(const LodComponent * fromLOD)
