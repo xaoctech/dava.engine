@@ -28,16 +28,12 @@
 
 #include "ProjectPathValidator.h"
 #include "Qt/Settings/SettingsManager.h"
+#include <QMessageBox>
 
-QtPropertyDataValidator::eValidationState ProjectPathValidator::Validate(const QVariant &value)
+QtPropertyDataValidator::eValidationState ProjectPathValidator::Validate(const QVariant &value) const
 {
     DAVA::String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
-    /*
-    if(checkForProjectPath && DAVA::String::npos == retString.find(projectPath))
-    {
-        QMessageBox::warning(NULL, "Wrong file selected", QString( Format("Path %s doesn't belong to project.", retString.c_str()).c_str() ), QMessageBox::Ok);
-        return;
-    }*/
+    
     DAVA::String pathStr = value.toString().toStdString();
     if(DAVA::String::npos == pathStr.find(projectPath))
     {
@@ -45,4 +41,9 @@ QtPropertyDataValidator::eValidationState ProjectPathValidator::Validate(const Q
     }
     
     return ProjectPathValidator::ACCEPTABLE;
+}
+
+void ProjectPathValidator::Notify(const QVariant &value) const
+{
+    QMessageBox::warning(NULL, "Wrong file selected", QString( Format("Path %s doesn't belong to project.", value.toString().toAscii().data()).c_str() ), QMessageBox::Ok);
 }

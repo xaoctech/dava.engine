@@ -45,6 +45,8 @@ public:
     };
 
     virtual eValidationState Validate(const QVariant &value) const = 0;
+    
+    virtual void Notify(const QVariant &value) const = 0;   
 };
 
 

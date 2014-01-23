@@ -35,7 +35,9 @@
 
 class ProjectPathValidator : public QtPropertyDataValidator
 {
-    virtual QtPropertyDataValidator::eValidationState Validate(const QVariant &value);
+    virtual QtPropertyDataValidator::eValidationState Validate(const QVariant &value) const;
+    
+    virtual void Notify(const QVariant &value) const;
 };
 
 
