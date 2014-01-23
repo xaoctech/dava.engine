@@ -85,6 +85,9 @@ public:
     inline uint32 GetSubdivisionsY();
     inline uint32 GetSubdivisionsZ();
     
+    
+    //Vector<Vector3> renderPositions;
+    
 private:
     AABBox3 boundingBox;
     uint32 xSubdivisions;

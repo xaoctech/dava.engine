@@ -637,7 +637,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 		//RENDER_VERIFY(glMatrixMode(GL_MODELVIEW));
 		//RENDER_VERIFY(glLoadIdentity());
         IdentityModelMatrix();
-		IdentityMappingMatrix();
+		IdentityMappingMatrix(); 
 
 		viewMappingDrawScale.x = renderTarget->GetResourceToPhysicalFactor();
 		viewMappingDrawScale.y = renderTarget->GetResourceToPhysicalFactor();

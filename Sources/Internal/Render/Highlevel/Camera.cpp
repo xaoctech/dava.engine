@@ -278,17 +278,16 @@ void Camera::RebuildViewMatrix()
     flags &= ~REQUIRE_REBUILD_MODEL;
     flags |= REQUIRE_REBUILD_UNIFORM_PROJ_MODEL;
     
-	if (RenderManager::Instance()->GetRenderOrientation()==Core::SCREEN_ORIENTATION_TEXTURE)
-	{
-        viewMatrix = Matrix4::IDENTITY;
-        viewMatrix.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(180.0f));
-        viewMatrix = cameraTransform * viewMatrix;
-        
-    }
-    else
-    {
-        viewMatrix = cameraTransform;
-    }
+//	if (RenderManager::Instance()->GetRenderOrientation()==Core::SCREEN_ORIENTATION_TEXTURE)
+//	{
+//        viewMatrix = Matrix4::IDENTITY;
+//        viewMatrix.CreateScale(Vector3(1.0f, -1.0f, 1.0f));
+//        viewMatrix = viewMatrix * cameraTransform;
+//    }
+//    else
+//    {
+    viewMatrix = cameraTransform;
+//    }
 }
 
 void Camera::SetPosition(const Vector3 & _position)
