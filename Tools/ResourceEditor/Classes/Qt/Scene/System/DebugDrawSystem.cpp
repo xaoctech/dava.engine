@@ -161,6 +161,13 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
 		//Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
 		//Matrix4 finalMatrix = entity->GetWorldTransform() * prevMatrix;
         
+		RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
+        
+//        for (uint32 k = 0; k < staticOcclusionComponent->renderPositions.size(); ++k)
+//        {
+//            DAVA::RenderHelper::Instance()->DrawPoint(staticOcclusionComponent->renderPositions[k]);
+//        }
+
 		RenderManager::SetDynamicParam(PARAM_WORLD, &entity->GetWorldTransform(), (pointer_size)&entity->GetWorldTransform());
         
 		AABBox3 localBox = staticOcclusionComponent->GetBoundingBox();
@@ -187,6 +194,8 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
                     DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.0f, 0.3f, 0.1f, 0.1f));
                     DAVA::RenderHelper::Instance()->DrawBox(box);
                 }
+        
+        
         const Vector3 & position = camera->GetPosition();
         
         AABBox3 worldBox;

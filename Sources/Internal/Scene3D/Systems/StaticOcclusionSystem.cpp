@@ -182,6 +182,9 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         //Logger::FrameworkDebug("end");
         if (result == 0)
         {
+            
+            //occlusionComponent->renderPositions = staticOcclusion->renderPositions;
+            
             // Remove old component
             entities[activeIndex]->RemoveComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT);
             // Add new component

@@ -1113,11 +1113,12 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 				}
                 case PARAM_WORLD_TRANSLATE:
                 {
-                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
+                    RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
                     if (_updateSemantic != currentUniform->updateSemantic)
                     {
                         RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
-                        Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD);
+                        Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
                         SetUniformValueByUniform(currentUniform, world->GetTranslationVector());
                         currentUniform->updateSemantic = _updateSemantic;
                     }
@@ -1194,22 +1195,11 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
                     break;
 				}
                 
-                case PARAM_INV_VIEW_PROJ:
-				{
-                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_VIEW_PROJ);
-                    if (_updateSemantic != currentUniform->updateSemantic)
-                    {
-                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
-                        
-                        Matrix4 * invViewMatrix = (Matrix4*)RenderManager::GetDynamicParam(PARAM_INV_VIEW_PROJ);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, invViewMatrix->data));
-                        currentUniform->updateSemantic = _updateSemantic;
-                    }
-                    break;
-				}
                 
                 case PARAM_WORLD:
                 case PARAM_VIEW:
+                case PARAM_INV_VIEW_PROJ:
+                case PARAM_VIEW_PROJ:
 				{
                     pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
                     if (_updateSemantic != currentUniform->updateSemantic)
