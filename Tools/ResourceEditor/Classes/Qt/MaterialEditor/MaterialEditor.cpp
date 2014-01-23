@@ -45,6 +45,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
 
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
@@ -548,6 +550,12 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 	{
 		QtPropertyData *propData = editor->GetProperty(index);
 
+        QVariant v = CheckForTextureDescriptor(propData->GetValue());
+        if (v.type() != QVariant::Invalid)
+        {
+            propData->SetValue(v);
+        }
+
 		if(NULL != propData)
 		{
 			Command2 *command = (Command2 *) propData->CreateLastCommand();
@@ -563,4 +571,23 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 	}
 
 	ui->materialTree->Update();
+}
+
+QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
+{
+    if (value.type() == QVariant::String)
+    {
+        String s = value.toString().toStdString();
+        FilePath fp = FilePath(s);
+        if (!fp.IsEmpty() && fp.Exists())
+        {
+            if (fp.GetExtension() == ".png")
+            {
+                TextureDescriptorUtils::CreateDescriptorIfNeed(fp);
+                FilePath texFile = TextureDescriptor::GetDescriptorPathname(fp);
+                return QVariant(QString::fromStdString(texFile.GetAbsolutePathname()));
+            }
+        }
+    }
+    return QVariant();
 }

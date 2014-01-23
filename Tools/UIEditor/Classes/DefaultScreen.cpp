@@ -106,9 +106,12 @@ void DefaultScreen::Draw(const UIGeometricData &geometricData)
 void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
 {
     Color oldColor = RenderManager::Instance()->GetColor();
+
+    RenderManager::Instance()->SetDefault2DNoTextureState();
     RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
     RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
     RenderManager::Instance()->SetColor(oldColor);
+    RenderManager::Instance()->SetDefault2DState();
 
 	UIScreen::SystemDraw(geometricData);
 	
@@ -706,9 +709,7 @@ void DefaultScreen::ApplySizeDelta(const Vector2& delta)
 	}
 
 	// The helper will calculate both resize (taking rotation into account) and clamp.
-    Rect rect = UIControlResizeHelper::ResizeControl(resizeType, lastSelectedControl->GetUIObject(), resizeRect,  delta);
-	
-	lastSelectedControl->GetUIObject()->SetRect(rect);
+    UIControlResizeHelper::ResizeControl(resizeType, lastSelectedControl->GetUIObject(), resizeRect,  delta);
 }
 
 void DefaultScreen::ResetSizeDelta()

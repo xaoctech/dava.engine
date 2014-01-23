@@ -54,6 +54,7 @@ struct PropEditorUserData : public QtPropertyData::UserData
 
 	PropertyType type;
 	QtPropertyData *associatedData;
+	QString realPath;
 	bool isFavorite;
 };
 
@@ -118,6 +119,9 @@ protected:
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
 	void ApplyCustomButtons(QtPropertyData *data);
+
+	void AddFavoriteChilds(QtPropertyData *parent);
+	void RemFavoriteChilds(QtPropertyData *parent);
 
 	bool ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspMember *member);
 

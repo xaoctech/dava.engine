@@ -34,6 +34,7 @@
 #include <QCoreApplication>
 
 #include "QtPropertyEditor.h"
+#include "QtPropertyModel.h"
 #include "QtPropertyItemDelegate.h"
 
 QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
@@ -288,5 +289,5 @@ void QtPropertyEditor::rowsOp(const QModelIndex & parent, int start, int end)
 void QtPropertyEditor::ShowButtonsUnderCursor()
 {
 	QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
-	curItemDelegate->showButtons(indexAt(pos));
+	curItemDelegate->showButtons(GetProperty(indexAt(pos)));
 }
