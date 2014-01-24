@@ -91,10 +91,13 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         }
         
         //FilePath pathToAutotesting = "~res:/Autotesting/";
-        String loadModulesScript = Format("LoadModules()");
+		FilePath pathToAutotesting = "~res:/Autotesting/";
+		String setPackagePathScript = Format("SetPackagePath(\"%s\")", pathToAutotesting.GetAbsolutePathname().c_str());
+
+        //String setPackagePathScript = Format("LoadModules()");
         if(isOk)
         {
-            isOk = RunScript(loadModulesScript);
+            isOk = RunScript(setPackagePathScript);
         }
         else
         {
@@ -103,12 +106,12 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         
         if(isOk)
         {
-            //isOk = LoadScriptFromFile(luaFilePath);
-			isOk = RunScriptFromFile(luaFilePath);
+            isOk = RunScriptFromFile(luaFilePath);
+			//isOk = RunScriptFromFile(setPackagePathScript);
         }
         else
         {
-            errors += ", " + loadModulesScript + " failed";
+            errors += ", " + setPackagePathScript + " failed";
         }
         
         if(isOk)
@@ -147,11 +150,45 @@ int AutotestingSystemLua::Print(lua_State* L)
 	return 0;
 }
 
+const char *AutotestingSystemLua::pushnexttemplate (lua_State *L, const char *path) 
+{
+	const char *l;
+	while (*path == *LUA_PATHSEP) path++;  /* skip separators */
+	if (*path == '\0') return NULL;  /* no more templates */
+	l = strchr(path, *LUA_PATHSEP);  /* find next separator */
+	if (l == NULL) l = path + strlen(path);
+	lua_pushlstring(L, path, l - path);  /* template */
+	return l;
+}
+
+const char *AutotestingSystemLua::findfile (lua_State *L, const char *name, const char *pname) 
+{
+		const char *path;
+		name = luaL_gsub(L, name, ".", LUA_DIRSEP);
+		lua_getglobal(L, "package");
+		lua_getfield(L, -1, pname);
+		path = lua_tostring(L, -1);
+		if (path == NULL)
+			luaL_error(L, LUA_QL("package.%s") " must be a string", pname);
+		lua_pushliteral(L, "");  /* error accumulator */
+		while ((path = pushnexttemplate(L, path)) != NULL) {
+			const char *filename;
+			filename = luaL_gsub(L, lua_tostring(L, -1), LUA_PATH_MARK, name);
+			lua_remove(L, -2);  /* remove path template */
+			if (FileSystem::Instance()->IsFile(filename))  /* does file exist and is readable? */
+				return filename;  /* return that file name */
+			lua_pushfstring(L, "\n\tno file " LUA_QS, filename);
+			lua_remove(L, -2);  /* remove file name */
+			lua_concat(L, 2);  /* add entry to possible error message */
+		}
+		return NULL;  /* not found */
+}
+
 int AutotestingSystemLua::ReqModule(lua_State* L)
 {
-	
-	FilePath path = lua_tostring(L, 1);
+	String module = lua_tostring(L, 1);
 	lua_pop(L, 1);
+	FilePath path = AutotestingSystemLua::Instance()->findfile(L, module.c_str(), "path");
 
 	if (!AutotestingSystemLua::Instance()->LoadScriptFromFile(path)) AutotestingSystem::Instance()->ForceQuit("AutotestingSystemLua::ReqModule: couldn't load module " + path.GetAbsolutePathname());
 
