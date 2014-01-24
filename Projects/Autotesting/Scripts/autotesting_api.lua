@@ -7,20 +7,9 @@ MULTIPLAYER_TIMEOUT = 300 -- Multiplayer timeout
 
 
 -- API setup
-function LoadModules()
-	--package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
-	require "~res:/Autotesting/Scripts/coxpcall.lua"
-	require "~res:/Autotesting/Actions/battleControlScreen.lua"
-	require "~res:/Autotesting/Actions/battleScreen.lua"
-	require "~res:/Autotesting/Actions/garageScreen.lua"
-	require "~res:/Autotesting/Actions/loginScreen.lua"
-	require "~res:/Autotesting/Actions/playerOptionsScreen.lua"
-	require "~res:/Autotesting/Actions/statisticScreen.lua"
-	require "~res:/Autotesting/Actions/stringGen.lua"
-	require "~res:/Autotesting/Actions/testData.lua"
-	require "~res:/Autotesting/Actions/utils.lua"
-	--require "logger"
-	--require "coxpcall"
+function SetPackagePath(path)
+	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
+	require "coxpcall"
 end
 
 function assert(isTrue, errorMsg)
