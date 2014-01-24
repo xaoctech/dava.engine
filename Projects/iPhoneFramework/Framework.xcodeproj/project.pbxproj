@@ -753,6 +753,8 @@
 		EA7DEDDA144854E900D9E652 /* libfreetype_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA7DEDD9144854E900D9E652 /* libfreetype_ios.a */; };
 		EA84E17517FAC20100304C3C /* SpatialTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA84E17317FAC20100304C3C /* SpatialTree.cpp */; };
 		EA84E17617FAC20100304C3C /* SpatialTree.h in Headers */ = {isa = PBXBuildFile; fileRef = EA84E17417FAC20100304C3C /* SpatialTree.h */; };
+		EAADA0051892A48E001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAADA0031892A48E001E1AA2 /* UIParticles.cpp */; };
+		EAADA0061892A48E001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAADA0041892A48E001E1AA2 /* UIParticles.h */; };
 		FEF4D44812C92F57004B850E /* libBox2D_iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FEF4D38612C91A3A004B850E /* libBox2D_iPhone.a */; };
 /* End PBXBuildFile section */
 
@@ -1523,6 +1525,8 @@
 		EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype_ios.a; path = ../../Libs/freetype/lib/libfreetype_ios.a; sourceTree = "<group>"; };
 		EA84E17317FAC20100304C3C /* SpatialTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpatialTree.cpp; sourceTree = "<group>"; };
 		EA84E17417FAC20100304C3C /* SpatialTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpatialTree.h; sourceTree = "<group>"; };
+		EAADA0031892A48E001E1AA2 /* UIParticles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIParticles.cpp; sourceTree = "<group>"; };
+		EAADA0041892A48E001E1AA2 /* UIParticles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIParticles.h; sourceTree = "<group>"; };
 		FEF4D38112C91A3A004B850E /* Box2D_iPhone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Box2D_iPhone.xcodeproj; path = ../../Libs/Box2D/Projects/Box2D_iPhone/Box2D_iPhone.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -2470,6 +2474,8 @@
 		E8B3CA2E16B9326E002BD35F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				EAADA0031892A48E001E1AA2 /* UIParticles.cpp */,
+				EAADA0041892A48E001E1AA2 /* UIParticles.h */,
 				17DC600717DE16D40075813E /* IMovieViewControl.h */,
 				17DC600817DE16D40075813E /* UIMovieView.cpp */,
 				17DC600917DE16D40075813E /* UIMovieView.h */,
@@ -3016,6 +3022,7 @@
 				A695E52E18113315008A0F20 /* RenderHierarchy.h in Headers */,
 				A695E53318113327008A0F20 /* SerializationContext.h in Headers */,
 				A6919536183A6E9B00D598AE /* RenderStateData.h in Headers */,
+				EAADA0061892A48E001E1AA2 /* UIParticles.h in Headers */,
 				A6919537183A6E9B00D598AE /* RenderStateDataUniqueHandler.h in Headers */,
 				A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */,
 				A670F2E818479DD20030E075 /* TextureStateData.h in Headers */,
@@ -3124,6 +3131,7 @@
 				E8B3CACB16B9326E002BD35F /* Core.cpp in Sources */,
 				E8B3CAD316B9326E002BD35F /* MongodbClient.cpp in Sources */,
 				E8B3CAD516B9326E002BD35F /* MongodbObject.cpp in Sources */,
+				EAADA0051892A48E001E1AA2 /* UIParticles.cpp in Sources */,
 				E8B3CAD816B9326E002BD35F /* DAVAEngine.cpp in Sources */,
 				E8B3CADA16B9326E002BD35F /* Backtrace.cpp in Sources */,
 				E8B3CADF16B9326E002BD35F /* MemoryManager.cpp in Sources */,
