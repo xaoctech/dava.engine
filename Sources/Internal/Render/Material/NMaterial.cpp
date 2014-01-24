@@ -1525,6 +1525,7 @@ namespace DAVA
 		}
 		
 		float32 intensity = (light) ? light->GetIntensity() : 0;
+        intensity = 2.0f;
 		SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
 	}
 	
