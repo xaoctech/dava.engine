@@ -80,7 +80,8 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
 {	
-	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
+    if (scene) //for 2d particles there would be no scene
+	    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
 	particleRegularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"),  NMaterialName::PARTICLES, NMaterial::DEFAULT_QUALITY_NAME);		
 	particleFrameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"),  NMaterialName::PARTICLES_FRAMEBLEND, NMaterial::DEFAULT_QUALITY_NAME);	
 }
@@ -123,7 +124,9 @@ void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleE
 
 void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 {	
-    effect->GetEntity()->GetScene()->lodSystem->ForceUpdate(effect->GetEntity(), effect->GetEntity()->GetScene()->GetClipCamera(), 1.0f/60.0f);
+    Scene *scene = GetScene();
+    if (scene)
+        scene->lodSystem->ForceUpdate(effect->GetEntity(), scene->GetClipCamera(), 1.0f/60.0f);
 
 	if (effect->effectData.groups.empty()) //clean position sources
 		effect->effectData.infoSources.resize(1);
@@ -137,15 +140,18 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 	{
 		//add to active effects and to render
 		activeComponents.push_back(effect);        
-
         for (Map<String, float32>::iterator it = globalExternalValues.begin(), e = globalExternalValues.end(); it!=e; ++it)
             effect->SetExtertnalValue((*it).first, (*it).second);
-		Matrix4 * worldTransformPointer = ((TransformComponent*)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
-		effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);
+
+        if (scene)
+        {
+            Matrix4 * worldTransformPointer = ((TransformComponent*)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+            effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);		
+            Vector3 pos = worldTransformPointer->GetTranslationVector();
+            effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
+            scene->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
+        }
 		
-		Vector3 pos = worldTransformPointer->GetTranslationVector();
-		effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
-		effect->GetEntity()->GetScene()->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
 	}
 	effect->state = ParticleEffectComponent::STATE_PLAYING;
 	effect->time = 0;
@@ -155,9 +161,11 @@ void ParticleEffectSystem::RemoveFromActive(ParticleEffectComponent *effect)
 {
 	Vector<ParticleEffectComponent*>::iterator it = std::find(activeComponents.begin(), activeComponents.end(), effect);
 	DVASSERT(it!=activeComponents.end());
-	activeComponents.erase(it);
-	effect->GetEntity()->GetScene()->GetRenderSystem()->RemoveFromRender(effect->effectRenderObject);
+	activeComponents.erase(it);	
 	effect->state = ParticleEffectComponent::STATE_STOPPED;	
+    Scene *scene = GetScene();
+    if (scene)
+        scene->GetRenderSystem()->RemoveFromRender(effect->effectRenderObject);
 }
 
 void ParticleEffectSystem::RemoveEntity(Entity * entity)
@@ -232,7 +240,9 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 		}
 		else
 		{
-			component->GetEntity()->GetScene()->GetRenderSystem()->MarkForUpdate(component->effectRenderObject);
+            Scene *scene = GetScene();
+            if (scene)
+			    scene->GetRenderSystem()->MarkForUpdate(component->effectRenderObject);
 		}
 		
 		
@@ -242,8 +252,14 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime)
 {
 	effect->time+=time;
-	effect->effectData.infoSources[0].position = ((TransformComponent *)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransform().GetTranslationVector();
-	const Matrix4 &worldTransform = effect->GetEntity()->GetWorldTransform();	
+    const Matrix4 *worldTransformPtr;
+    if (GetScene())
+        worldTransformPtr = &effect->GetEntity()->GetWorldTransform();
+    else
+        worldTransformPtr = effect->effectRenderObject->GetWorldTransformPtr();
+
+	effect->effectData.infoSources[0].position = worldTransformPtr->GetTranslationVector();
+	
 	AABBox3 bbox;
 	for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;)
 	{
@@ -367,7 +383,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 			{
 				if (!group.head)
 				{
-					current = GenerateNewParticle(effect, group, currLoopTime, worldTransform);
+					current = GenerateNewParticle(effect, group, currLoopTime, *worldTransformPtr);
 					if (group.layer->inheritPosition)
 						AddParticleToBBox(current->position+effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
 					else
@@ -387,7 +403,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 				while(group.particlesToGenerate >= 1.0f)
 				{
 					group.particlesToGenerate -= 1.0f;					
-					current = GenerateNewParticle(effect, group, currLoopTime, worldTransform);
+					current = GenerateNewParticle(effect, group, currLoopTime, *worldTransformPtr);
 					if (group.layer->inheritPosition)
 						AddParticleToBBox(current->position+effect->effectData.infoSources[group.positionSource].position, current->currRadius, bbox);
 					else
@@ -409,7 +425,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
 	}
 	if (bbox.IsEmpty())
 	{
-		Vector3 pos = worldTransform.GetTranslationVector();
+		Vector3 pos = worldTransformPtr->GetTranslationVector();
 		bbox = AABBox3(pos, pos);
 	}
 	effect->effectRenderObject->SetAABBox(bbox);

@@ -337,6 +337,62 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     return GetError();
 }
 
+SceneArchive *SceneFileV2::LoadSceneArchive(const FilePath & filename)
+{
+    SceneArchive *res = NULL;
+    File * file = File::Create(filename, File::OPEN | File::READ);
+    if (!file)
+    {
+        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.GetAbsolutePathname().c_str());        
+        return res;
+    }   
+        
+
+    file->Read(&header, sizeof(Header));
+    int requiredVersion = 3;
+    if (    (header.signature[0] != 'S') 
+        ||  (header.signature[1] != 'F') 
+        ||  (header.signature[2] != 'V') 
+        ||  (header.signature[3] != '2'))
+    {
+        Logger::Error("SceneFileV2::LoadScene header version is wrong: %d, required: %d", header.version, requiredVersion);
+        SafeRelease(file);        
+        return res;
+    }
+
+    if(header.version >= 10)
+    {
+        ReadDescriptor(file, descriptor);
+    }
+
+   res = new SceneArchive();
+
+    if (GetVersion() >= 2)
+    {
+        int32 dataNodeCount = 0;
+        file->Read(&dataNodeCount, sizeof(int32));
+        for (int k = 0; k < dataNodeCount; ++k)
+        {
+            KeyedArchive * archive = new KeyedArchive();
+            archive->Load(file);
+            res->dataNodes.push_back(archive);
+        }
+    }
+
+    
+
+    res->children.reserve(header.nodeCount);
+    for (int ci = 0; ci < header.nodeCount; ++ci)
+    {                
+        SceneArchive::SceneArchiveHierarchyNode * child = new SceneArchive::SceneArchiveHierarchyNode();
+        child->LoadHierarchy(file);
+        res->children.push_back(child);
+        
+    }    
+    SafeRelease(file);
+    return res;
+}
+
 void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
 {
 	file->Write(&descriptor.size, sizeof(descriptor.size));
@@ -1086,4 +1142,46 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
+
+
+
+SceneArchive::~SceneArchive()
+{    
+    for (int32 i=0, sz = dataNodes.size(); i<sz; ++i)
+    {
+        SafeRelease(dataNodes[i]);
+    }
+    for (int32 i=0, sz = children.size(); i<sz; ++i)
+    {
+        SafeRelease(children[i]);
+    }
+}
+
+SceneArchive::SceneArchiveHierarchyNode::SceneArchiveHierarchyNode():archive(NULL)
+{
+}
+
+void SceneArchive::SceneArchiveHierarchyNode::LoadHierarchy(File *file)
+{
+    archive = new KeyedArchive();
+    archive->Load(file);
+    int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+    children.reserve(childrenCount);
+    for (int ci = 0; ci < childrenCount; ++ci)
+    {
+        SceneArchiveHierarchyNode * child = new SceneArchiveHierarchyNode();
+        child->LoadHierarchy(file);
+        children.push_back(child);
+    }
+}
+
+SceneArchive::SceneArchiveHierarchyNode::~SceneArchiveHierarchyNode()
+{
+    SafeRelease(archive);
+    for (int32 i=0, sz = children.size(); i<sz; ++i)
+    {
+        SafeRelease(children[i]);
+    }
+}
+
 };
