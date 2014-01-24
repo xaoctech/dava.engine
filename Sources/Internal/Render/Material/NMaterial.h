@@ -297,6 +297,8 @@ public:
 									 const FastName& defaultQuality);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+    void SetMaterialTemplate(const FastName& templateName);
+    FastName GetMaterialTemplateName() const;
 
 protected:
 	
