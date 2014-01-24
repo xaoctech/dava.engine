@@ -76,7 +76,7 @@ protected:
 	void SetCurMaterial(DAVA::NMaterial *material);
 	void FillMaterialProperties(DAVA::NMaterial *material);
 	void FillMaterialTextures(DAVA::NMaterial *material);
-	void ScanTemplates();
+    void FillMaterialTemplates(DAVA::NMaterial *material);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
 
@@ -88,9 +88,6 @@ private:
 	QtPosSaver posSaver;
 
 	DAVA::NMaterial *curMaterial;
-
-	bool templatesScaned;
-	QVector<DAVA::FilePath> templates;
 
 	PropertyEditorStateHelper *treeStateHelper;
     ExpandMap expandMap;
