@@ -1117,7 +1117,7 @@ void MainWindow::UpdateProjectSettings(const QString& projectPath)
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle(projectPath));
     
     // Apply the pixelization value.
-    HierarchyTreeController::Instance()->SetPixelization(EditorSettings::Instance()->IsPixelized());
+    Texture::SetPixelization(EditorSettings::Instance()->IsPixelized());
 }
 
 void MainWindow::OnUndoRequested()
@@ -1310,7 +1310,7 @@ void MainWindow::OnPixelizationStateChanged()
     EditorSettings::Instance()->SetPixelized(isPixelized);
 
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
-    HierarchyTreeController::Instance()->SetPixelization(isPixelized);
+    Texture::SetPixelization(isPixelized);
     ScreenWrapper::Instance()->RestoreApplicationCursor();
 }
 
