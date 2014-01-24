@@ -211,7 +211,7 @@ QImage MaterialModel::GetPreview( const DAVA::NMaterial * material ) const
         else
             TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
     }
-    else if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
+    else if(material->IsFlagEffective(DAVA::NMaterial::FLAG_FLATCOLOR))
     {
         const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
         if(prop)

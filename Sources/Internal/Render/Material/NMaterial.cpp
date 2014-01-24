@@ -1644,6 +1644,20 @@ namespace DAVA
 		
 		return result;
 	}
+    
+    void NMaterial::SetMaterialTemplate(const FastName& templateName)
+    {
+        const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		
+		SetMaterialTemplate(matTemplate, currentQuality);
+    }
+    
+    FastName NMaterial::GetMaterialTemplateName() const
+    {
+        return (materialTemplate) ? materialTemplate->name : FastName();
+    }
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
