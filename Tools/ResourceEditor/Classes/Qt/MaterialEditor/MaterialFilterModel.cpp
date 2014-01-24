@@ -50,6 +50,11 @@ MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QO
 	setSourceModel(materialModel);
 }
 
+void MaterialFilteringModel::AssignMaterialToSelection( DAVA::NMaterial *material )
+{
+    materialModel->AssignMaterialToSelection( material );
+}
+
 void MaterialFilteringModel::Sync()
 {
 	materialModel->Sync();

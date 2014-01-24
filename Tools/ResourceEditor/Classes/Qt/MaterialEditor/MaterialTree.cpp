@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <QDragMoveEvent>
 #include <QDragEnterEvent>
+#include <QHeaderView>
 
 
 MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
@@ -47,6 +48,8 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2*, const Command2*, bool)), this, SLOT(OnCommandExecuted(SceneEditor2*, const Command2*, bool)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+
+    header()->setSortIndicator( 0, Qt::AscendingOrder );
 }
 
 MaterialTree::~MaterialTree()
@@ -65,6 +68,7 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 	{
 		treeModel->SetSelection(NULL);
 	}
+    sortByColumn( 0 );
 }
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
@@ -148,7 +152,27 @@ void MaterialTree::ShowContextMenu(const QPoint &pos)
 	contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 */
 
+    const QModelIndex proxyIndex = indexAt( pos );
+    DAVA::NMaterial *material = treeModel->GetMaterial(proxyIndex);
+    QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
+    QAction * actionAssign = contextMenu.addAction("Assign to Selection", this, SLOT(OnAssignToSelection()));
+    actionAssign->setData(materialAsVariant);
+
 	contextMenu.exec(mapToGlobal(pos));
+}
+
+void MaterialTree::OnAssignToSelection()
+{
+    QAction *act = qobject_cast<QAction *>( sender() );
+    if ( !act )
+        return ;
+    QVariant indexAsVariant = act->data();
+    if ( !indexAsVariant.isValid() )
+        return ;
+    DAVA::NMaterial *material = indexAsVariant.value<DAVA::NMaterial *>();
+    if ( !material )
+        return ;
+    treeModel->AssignMaterialToSelection( material );
 }
 
 void MaterialTree::dragEnterEvent(QDragEnterEvent * event)
