@@ -50,6 +50,7 @@ class ModifiablePropertyLineBase;
 class ParticleEffectComponent : public Component
 {
 	friend class ParticleEffectSystem;
+    friend class UIParticles;
 protected:
     ~ParticleEffectComponent();
 public:
@@ -71,7 +72,7 @@ public:
 
 	void Start();
 	void Stop(bool isDeleteAllParticles = true);
-	void Restart(bool isDeleteAllParticles = true); //restart always delete all particles
+	void Restart(bool isDeleteAllParticles = true);
 	bool IsStopped();	
 	void Pause(bool isPaused = true);
 	bool IsPaused();

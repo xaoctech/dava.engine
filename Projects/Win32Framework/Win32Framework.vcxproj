@@ -578,6 +578,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UILoadingTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIMoveInTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIMovieView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIParticles.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIPopup.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreen.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManager.h" />
@@ -964,6 +965,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UILoadingTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIMoveInTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIMovieView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIParticles.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIPopup.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreen.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp" />

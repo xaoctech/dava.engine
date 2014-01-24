@@ -1407,6 +1407,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialNames.h">
       <Filter>Internal\Render\Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIParticles.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2512,6 +2515,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialNames.cpp">
       <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIParticles.cpp">
+      <Filter>Internal\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

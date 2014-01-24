@@ -42,14 +42,14 @@ class Component;
 class ParticleEffectSystem : public SceneSystem
 {
 	friend class ParticleEffectComponent;
+    friend class UIParticles;    
 public:
 	ParticleEffectSystem(Scene * scene);
 
 	~ParticleEffectSystem();
 	virtual void Process(float32 timeElapsed);		
 	virtual void ImmediateEvent(Entity * entity, uint32 event);
-
-
+    
 	virtual void RemoveEntity(Entity * entity);	
 	virtual void RemoveComponent(Entity * entity, Component * component);
 
