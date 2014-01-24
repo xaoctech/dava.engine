@@ -84,6 +84,10 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	if(v1.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(0, v1.AsInt32());
 	if(v2.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(1, v2.AsInt32());
 
+    expandMap[MaterialFilteringModel::SHOW_ALL] = false;
+    expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
+    expandMap[MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS] = true;
+
     initActions();
 }
 
@@ -101,16 +105,11 @@ MaterialEditor::~MaterialEditor()
 
 void MaterialEditor::initActions()
 {
-    MaterialFilteringModel *model = qobject_cast< MaterialFilteringModel * >( ui->materialTree->model() );
-    Q_ASSERT( model );
-    if ( !model )
-        return ;
-
     ui->actionShowAll->setData( MaterialFilteringModel::SHOW_ALL );
     ui->actionInstances->setData( MaterialFilteringModel::SHOW_ONLY_INSTANCES );
     ui->actionMaterialsInstances->setData( MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS );
 
-    const int filterType =  model->getFilterType();
+    const int filterType =  MaterialFilteringModel::SHOW_ALL;
     foreach( QAction *action, ui->filterType->actions() )
     {
         connect( action, SIGNAL( triggered() ), SLOT( onFilterChanged() ) );
@@ -118,23 +117,30 @@ void MaterialEditor::initActions()
             action->activate( QAction::Trigger );
     }
 
-    connect( ui->actionAutoExpand, SIGNAL( triggered( bool ) ), ui->materialTree, SLOT( onCurrentExpandModeChange( bool ) ) );
+    connect( ui->actionAutoExpand, SIGNAL( triggered( bool ) ), SLOT( onCurrentExpandModeChange( bool ) ) );
 }
 
-void MaterialEditor::onFilterChanged()
+void MaterialEditor::autoExpand()
 {
-    MaterialFilteringModel *model = qobject_cast< MaterialFilteringModel * >( ui->materialTree->model() );
-    Q_ASSERT( model );
-    if ( !model )
-        return ;
-
     QAction *action = ui->filterType->checkedAction();
     if ( action == NULL )
         return ;
     const int filterType = action->data().toInt();
-    model->setFilterType( filterType );
+    
+    if ( expandMap[filterType] )
+        ui->materialTree->expandAll();
+}
 
-    ui->actionAutoExpand->setChecked( ui->materialTree->currentExpandMode() );
+void MaterialEditor::onFilterChanged()
+{
+    QAction *action = ui->filterType->checkedAction();
+    if ( action == NULL )
+        return ;
+    const int filterType = action->data().toInt();
+    ui->materialTree->setFilterType( filterType );
+
+    ui->actionAutoExpand->setChecked( expandMap[filterType] );
+    onCurrentExpandModeChange( expandMap[filterType] );
 }
 
 void MaterialEditor::SelectMaterial(DAVA::NMaterial *material)
@@ -235,6 +241,24 @@ void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *comman
 	{
 		SetCurMaterial(curMaterial);
 	}
+}
+
+void MaterialEditor::onCurrentExpandModeChange( bool mode )
+{
+    QAction *action = ui->filterType->checkedAction();
+    if ( action == NULL )
+        return ;
+    const int filterType = action->data().toInt();
+    expandMap[filterType] = mode;
+
+    if ( mode )
+    {
+        ui->materialTree->expandAll();
+    }
+    else
+    {
+        ui->materialTree->collapseAll();
+    }
 }
 
 void MaterialEditor::showEvent(QShowEvent * event)

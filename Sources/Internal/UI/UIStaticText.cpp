@@ -189,16 +189,12 @@ const Vector2 &UIStaticText::GetShadowOffset() const
 	return shadowOffset;
 }
 
-void UIStaticText::PreDraw()
+void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
     textBlock->SetRectSize(size);
 	PrepareSprite();
 	textBlock->PreDraw();
-}
 
-void UIStaticText::Draw(const UIGeometricData &geometricData)
-{
-    PreDraw();
 	UIControl::Draw(geometricData);
 
 	if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
