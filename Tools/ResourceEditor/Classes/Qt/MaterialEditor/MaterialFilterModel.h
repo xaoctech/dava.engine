@@ -71,6 +71,7 @@ public:
 	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
     void setFilterType( int type );
     int getFilterType() const;
+    void AssignMaterialToSelection( DAVA::NMaterial *material );
 	
     // QSortFilterProxyModel
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
