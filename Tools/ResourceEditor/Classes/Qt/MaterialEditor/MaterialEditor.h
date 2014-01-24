@@ -67,8 +67,6 @@ protected slots:
 	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
-    void onFilterChanged();
-    void onCurrentExpandModeChange( bool mode );
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -80,9 +78,14 @@ protected:
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
 
+private slots:
+    void onFilterChanged();
+    void onCurrentExpandModeChange( bool mode );
+    void autoExpand();
+
 private:
     void initActions();
-    void autoExpand();
+    //void autoExpand();
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
