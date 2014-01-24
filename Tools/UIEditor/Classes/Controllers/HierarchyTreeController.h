@@ -114,6 +114,9 @@ public:
 
     const SELECTEDCONTROLNODES& GetActiveControlNodes() const;
 
+	// Loock through all controls and update their values
+	void UpdateControlsData();
+
     // Look through all controls and update their localized texts.
     void UpdateLocalization(bool takePathFromLocalizationSystem);
 
