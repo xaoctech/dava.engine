@@ -35,19 +35,14 @@
 #include "Render/Shader.h"
 #include "Render/RenderDataObject.h"
 #include "Render/ShaderCache.h"
-
-#include "Render/Effects/ColorOnlyEffect.h"
-#include "Render/Effects/TextureMulColorEffect.h"
-#include "Render/Effects/TextureMulColorAlphaTestEffect.h"
-
 #include "Render/GPUFamilyDescriptor.h"
 
 namespace DAVA
 {
     
-RenderEffect * RenderManager::FLAT_COLOR = 0;
-RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR = 0;
-RenderEffect * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
+Shader * RenderManager::FLAT_COLOR = 0;
+Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR = 0;
+Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
 
 AutobindVariableData RenderManager::dynamicParameters[DYNAMIC_PARAMETERS_COUNT];
 uint32  RenderManager::dynamicParamersRequireUpdate;
@@ -158,7 +153,6 @@ RenderManager::~RenderManager()
     ShaderCache::Instance()->Release();
     
     currentRenderData = 0;
-	SafeRelease(currentRenderEffect);
     SafeRelease(FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR);
     SafeRelease(TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST);
@@ -260,17 +254,30 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
 }
 #endif //    #ifdef __DAVAENGINE_ANDROID__    
 
+FastName RenderManager::FLAT_COLOR_SHADER("~res:/Shaders/renderer2dColor");
+FastName RenderManager::TEXTURE_MUL_FLAT_COLOR_SHADER("~res:/Shaders/renderer2dTexture");
 
 void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 {
     DetectRenderingCapabilities();
-
+    
+    
     if (!FLAT_COLOR)
-        FLAT_COLOR = ColorOnlyEffect::Create(renderer);
-    if (!TEXTURE_MUL_FLAT_COLOR) 
-        TEXTURE_MUL_FLAT_COLOR= TextureMulColorEffect::Create(renderer);
+    {
+        FLAT_COLOR = SafeRetain(ShaderCache::Instance()->Get(FLAT_COLOR_SHADER, FastNameSet()));
+    }
+    
+    if (!TEXTURE_MUL_FLAT_COLOR)
+    {
+        TEXTURE_MUL_FLAT_COLOR = SafeRetain(ShaderCache::Instance()->Get(TEXTURE_MUL_FLAT_COLOR_SHADER, FastNameSet()));
+
+    }
     if (!TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST)
-        TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = TextureMulColorAlphaTestEffect::Create(renderer);
+    {
+        FastNameSet set;
+        set.Insert(FastName("ALPHA_TEST_ENABLED"));
+        TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = SafeRetain(ShaderCache::Instance()->Get(TEXTURE_MUL_FLAT_COLOR_SHADER, set));
+    }
 
 #if defined(__DAVAENGINE_DIRECTX9__)
 	currentState.direct3DDevice = GetD3DDevice();
@@ -307,7 +314,7 @@ void RenderManager::Reset()
 	ResetColor();
 
 	currentRenderTarget = NULL;
-	SafeRelease(currentRenderEffect);
+
 	currentClip.x = 0;
 	currentClip.y = 0;
 	currentClip.dx = -1;
@@ -510,28 +517,25 @@ bool RenderManager::IsDepthWriteEnabled()
 }
 */
 
-void RenderManager::SetNewRenderEffect(RenderEffect *renderEffect)
+void RenderManager::SetRenderEffect(Shader * renderEffect)
 {
-	SafeRelease(currentRenderEffect);
-	currentRenderEffect = SafeRetain(renderEffect);
-}
-
-void RenderManager::SetRenderEffect(RenderEffect *renderEffect)
-{
-	//renderEffectStack.push(SafeRetain(currentRenderEffect));
-	SetNewRenderEffect(renderEffect);
+    currentRenderEffect = renderEffect;
 }
 
 void RenderManager::DrawElements(ePrimitiveType type, int32 count, eIndexFormat indexFormat, void * indices)
 {
-	if (currentRenderEffect)
-		currentRenderEffect->DrawElements(type, count, indexFormat, indices);
+    RenderManager::Instance()->SetShader(currentRenderEffect);
+    RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
+    RenderManager::Instance()->HWDrawElements(type, count, indexFormat, indices);
 }
 
 void RenderManager::DrawArrays(ePrimitiveType type, int32 first, int32 count)
 {
-	if (currentRenderEffect)
-		currentRenderEffect->DrawArrays(type, first, count);
+    RenderManager::Instance()->SetShader(currentRenderEffect);
+    RenderManager::Instance()->FlushState();
+	RenderManager::Instance()->AttachRenderData();
+    RenderManager::Instance()->HWDrawArrays(type, first, count);
 }
 
 void RenderManager::Lock()
@@ -753,6 +757,7 @@ void RenderManager::Stats::Clear()
         primitiveCount[k] = 0;
     dynamicParamUniformBindCount = 0;
     materialParamUniformBindCount = 0;
+    spriteDrawCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)

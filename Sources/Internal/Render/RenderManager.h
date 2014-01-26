@@ -81,9 +81,12 @@ protected:
 class RenderManager : public Singleton<RenderManager>
 {
 public:
-    static RenderEffect * FLAT_COLOR;
-    static RenderEffect * TEXTURE_MUL_FLAT_COLOR;
-    static RenderEffect * TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST;
+    static FastName FLAT_COLOR_SHADER;
+    static FastName TEXTURE_MUL_FLAT_COLOR_SHADER;
+    
+    static Shader * FLAT_COLOR;
+    static Shader * TEXTURE_MUL_FLAT_COLOR;
+    static Shader * TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST;
     
     
     struct Caps
@@ -123,6 +126,7 @@ public:
 		uint32 attachRenderDataCount;
         uint32 dynamicParamUniformBindCount;
         uint32 materialParamUniformBindCount;
+        uint32 spriteDrawCount;
     };
     
     static void Create(Core::eRenderer renderer);
@@ -399,7 +403,7 @@ public:
         \brief Sets the effect for the rendering. 
         \param[in] renderEffect - if 0, sets the effect to none
 	 */
-	void SetRenderEffect(RenderEffect *renderEffect);
+	void SetRenderEffect(Shader * shader);
 
 	/** 
 	 \brief Sets the requested framerate. For iPhone can be set to 60, 30, 20, 15
@@ -493,7 +497,7 @@ public:
     static inline void ComputeViewProjMatrixIfRequired();
     static inline void ComputeWorldViewProjMatrixIfRequired();
     static inline void ComputeInvWorldViewMatrixIfRequired();
-    static inline void ComputeNormalMatrixIfRequired();
+    static inline void ComputeWorldViewInvTransposeMatrixIfRequired();
     
     static inline void ComputeInvWorldMatrixIfRequired();
     static inline void ComputeWorldInvTransposeMatrixIfRequired();
@@ -780,8 +784,7 @@ public:
 	std::stack<DrawMatrix> matrixStack;
 	std::stack<DrawMatrix> mappingMatrixStack;
 
-	std::stack<RenderEffect*> renderEffectStack;
-	RenderEffect *currentRenderEffect;
+	Shader * currentRenderEffect;
 	
     RenderDataObject * currentRenderData;
 
@@ -807,7 +810,6 @@ public:
 	void SetHWClip(const Rect &rect);
 	void SetHWRenderTargetSprite(Sprite *renderTarget);
 	void SetHWRenderTargetTexture(Texture * renderTarget);
-	void SetNewRenderEffect(RenderEffect *renderEffect);
 	
 	bool debugEnabled;
 
@@ -893,7 +895,7 @@ inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const
         {
             case PARAM_WORLD:
                 dynamicParamersRequireUpdate |= ((1 << PARAM_INV_WORLD) | ( 1 << PARAM_WORLD_VIEW) | (1 << PARAM_INV_WORLD_VIEW)
-                                                 | ( 1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ) | (1 << PARAM_NORMAL) | (1 << PARAM_WORLD_INV_TRANSPOSE));
+                                                 | ( 1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ) | (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) | (1 << PARAM_WORLD_INV_TRANSPOSE));
             break;
             case PARAM_VIEW:
                 dynamicParamersRequireUpdate |= (   (1 << PARAM_INV_VIEW)
@@ -903,7 +905,7 @@ inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const
                                                  |  (1 << PARAM_INV_WORLD_VIEW_PROJ)
                                                  |  (1 << PARAM_VIEW_PROJ)
                                                  |  (1 << PARAM_INV_VIEW_PROJ)
-                                                 |  (1 << PARAM_NORMAL) );
+                                                 |  (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) );
             break;
             case PARAM_PROJ:
                 dynamicParamersRequireUpdate |= ((1 << PARAM_INV_PROJ) | (1 << PARAM_VIEW_PROJ) | (1 << PARAM_INV_VIEW_PROJ) |
@@ -959,14 +961,14 @@ inline void RenderManager::ComputeInvWorldViewMatrixIfRequired()
     }
 }
     
-inline void RenderManager::ComputeNormalMatrixIfRequired()
+inline void RenderManager::ComputeWorldViewInvTransposeMatrixIfRequired()
 {
-    if (dynamicParamersRequireUpdate & (1 << PARAM_NORMAL))
+    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE))
     {
         ComputeInvWorldViewMatrixIfRequired();
         normalMatrix = invWorldViewMatrix;
         normalMatrix.Transpose();
-        SetDynamicParam(PARAM_NORMAL, &normalMatrix, UPDATE_SEMANTIC_ALWAYS);
+        SetDynamicParam(PARAM_WORLD_VIEW_INV_TRANSPOSE, &normalMatrix, UPDATE_SEMANTIC_ALWAYS);
     }
 }
     
@@ -1002,7 +1004,13 @@ const void * RenderManager::GetDynamicParam(eShaderSemantic shaderSemantic)
 #define GET_DYNAMIC_PARAM(x) RenderManager::dynamicParameters[x]
 #define GET_DYNAMIC_PARAM_VALUE(x) RenderManager::dynamicParameters[x].value
 #define GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(x) RenderManager::dynamicParameters[x].updateSemantic
+    
+// Update debug stats only in debug.
+#if defined(__DAVAENGINE_DEBUG__)
 #define RENDERER_UPDATE_STATS(param) RenderManager::Instance()->GetStats().param
+#else
+#define RENDERER_UPDATE_STATS(param)
+#endif
     
 };
 #endif

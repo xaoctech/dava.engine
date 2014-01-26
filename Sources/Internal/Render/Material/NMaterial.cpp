@@ -79,6 +79,8 @@ namespace DAVA
     const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
+	const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
+	const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
     const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 	const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
@@ -2030,9 +2032,9 @@ namespace DAVA
 							!(shaderSemantic == PARAM_WORLD_VIEW_PROJ ||
 							shaderSemantic == PARAM_WORLD_VIEW ||
 							shaderSemantic == PARAM_PROJ ||
-							shaderSemantic == PARAM_NORMAL ||
+							shaderSemantic == PARAM_WORLD_VIEW_INV_TRANSPOSE ||
 							shaderSemantic == PARAM_GLOBAL_TIME ||
-							shaderSemantic == PARAM_WORLD_TRANSLATE ||
+							shaderSemantic == PARAM_WORLD_VIEW_TRANSLATE ||
 							shaderSemantic == PARAM_WORLD_SCALE)
 							// <--
 							&&

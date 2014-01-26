@@ -32,6 +32,7 @@
 #include "Base/Data.h"
 #include "Render/Shader.h"
 #include "Utils/Utils.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA
 {
@@ -425,6 +426,7 @@ Shader * ShaderCache::Get(const FastName & shaderName, const FastNameSet & defin
         asset = Load(shaderName);
     }
     Shader * shader = asset->Get(definesSet);
+    //Logger::FrameworkDebug(Format("shader: %s %d", shaderName.c_str(), shader->GetRetainCount()).c_str());
     return shader;
 }
 

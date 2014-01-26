@@ -290,6 +290,7 @@ namespace DAVA
 			if(oldMaterial->IsFogEnabled())
 			{
 				material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
+                material->SetFlag(NMaterial::FLAG_FOG_EXP, NMaterial::FlagOn);
 			}
 						
 			if(oldMaterial->IsTextureShiftEnabled())

@@ -1146,6 +1146,8 @@ void Sprite::Draw()
 	{
 		return;
 	}
+    
+    RENDERER_UPDATE_STATS(spriteDrawCount++);
 
     PrepareSpriteRenderData(0);
 
@@ -1195,6 +1197,8 @@ void Sprite::Draw(DrawState * state)
 	{
 		return;
 	}
+    
+    RENDERER_UPDATE_STATS(spriteDrawCount++);
 
 	if (state->usePerPixelAccuracy)
 		RenderManager::Instance()->PushMappingMatrix();
@@ -1282,6 +1286,8 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	{
 		return;
 	}
+    
+    RENDERER_UPDATE_STATS(spriteDrawCount++);
 
 	float32 x = drawCoord.x;
 	float32 y = drawCoord.y;

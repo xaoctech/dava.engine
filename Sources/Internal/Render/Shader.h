@@ -203,20 +203,8 @@ public:
     
     Shader * Clone();
     
-    // virtual void SetActiveShader(const String & string);
-    void SetDefines(const String & defines);
-    void SetVertexShaderDefines(const String & defines);
-    void SetFragmentShaderDefines(const String & defines);
-    
-    // comma ';' sepated define list
-    void SetDefineList(const String & enableDefinesList);
-    
-    bool LoadFromYaml(const FilePath & pathname);
-    bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
-    
-    // TODO: OLD FUNCTIONS: NEED TO REMOVE THEM 
-    Shader * RecompileNewInstance(const String & combination);
-    
+    void SetDefines(const String & _defines);
+
     static Shader * CompileShader(const FastName & assetName,
                                   Data * vertexShaderData,
                                   Data * fragmentShaderData,
@@ -314,6 +302,7 @@ private:
     
     
 #elif defined(__DAVAENGINE_OPENGL__)
+    String shaderDefines;
     GLuint vertexShader;
     GLuint fragmentShader;
     GLuint program;
@@ -352,10 +341,7 @@ private:
     eShaderSemantic GetShaderSemanticByName(const FastName &name);
     int32 GetAttributeIndexByName(const FastName &name);
     
-    static GLuint activeProgram;
-    String vertexShaderDefines;
-    String fragmentShaderDefines;
-    
+    static GLuint activeProgram;    
     Data * vertexShaderData;
     Data * fragmentShaderData;
     FilePath vertexShaderPath, fragmentShaderPath;

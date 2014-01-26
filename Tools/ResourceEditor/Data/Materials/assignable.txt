@@ -25,3 +25,5 @@ VertexLit.Alphatest.material
 VertexLit.Opaque.material
 VertexLit.Reflection.Opaque.material
 PixelLit.SpecularMap.Reflection.Opaque.material
+WaterPerVertexCubemap.material
+WaterPerPixelCubemap.materialWaterPerPixelRealReflections.material

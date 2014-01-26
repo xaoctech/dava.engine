@@ -265,22 +265,22 @@ const FastName DYNAMIC_PARAM_NAMES[] =
         
         FastName("viewMatrix"), //PARAM_VIEW,
         FastName("invViewMatrix"), //PARAM_INV_VIEW,
-        FastName("projectionMatrix"), //PARAM_PROJ,
+        FastName("projMatrix"), //PARAM_PROJ,
         FastName("invProjMatrix"), //PARAM_INV_PROJ,
         
-        FastName("modelViewMatrix"), //PARAM_WORLD_VIEW,
+        FastName("worldViewMatrix"), //PARAM_WORLD_VIEW,
         FastName("invWorldViewMatrix"), //PARAM_INV_WORLD_VIEW,
-        FastName("normalMatrix"), //PARAM_NORMAL, // NORMAL MATRIX
+        FastName("worldViewInvTransposeMatrix"), //PARAM_NORMAL, // NORMAL MATRIX
         
         FastName("viewProjMatrix"), //PARAM_VIEW_PROJ,
         FastName("invViewProjMatrix"), //PARAM_INV_VIEW_PROJ,
         
-        FastName("modelViewProjectionMatrix"), //PARAM_WORLD_VIEW_PROJ,
+        FastName("worldViewProjMatrix"), //PARAM_WORLD_VIEW_PROJ,
         FastName("invWorldViewProjMatrix"), //PARAM_INV_WORLD_VIEW_PROJ,
         
         FastName("flatColor"),
         FastName("globalTime"),
-        FastName("worldTranslate"),
+        FastName("worldViewTranslate"),
         FastName("worldScale"),
 
         FastName("cameraPosition"), // PARAM_CAMERA_POS,

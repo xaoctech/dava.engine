@@ -42,14 +42,14 @@ attribute float inTime;
 #endif
 
 // UNIFORMS
-uniform mat4 modelViewProjectionMatrix;
+uniform mat4 worldViewProjMatrix;
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
-uniform mat4 modelViewMatrix;
+uniform mat4 worldViewMatrix;
 #endif
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
-uniform mat3 normalMatrix;
+uniform mat3 worldViewInvTransposeMatrix;
 uniform vec3 lightPosition0;
 uniform float lightIntensity0; 
 #endif
@@ -59,7 +59,12 @@ uniform float materialSpecularShininess;
 #endif
 
 #if defined(VERTEX_FOG)
-uniform float fogDensity;
+    #if !defined(FOG_LINEAR)
+    uniform float fogDensity;
+    #else
+    uniform float fogStart;
+    uniform float fogEnd;
+    #endif
 #endif
 
 #if defined(MATERIAL_LIGHTMAP)
@@ -68,9 +73,9 @@ uniform mediump vec2 uvScale;
 #endif
 
 #if defined(SPEED_TREE_LEAF)
-uniform vec3 worldTranslate;
+uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
-uniform mat4 projectionMatrix;
+uniform mat4 projMatrix;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -139,36 +144,36 @@ uniform vec2 tex0ShiftPerSecond;
 void main()
 {
 #if defined(MATERIAL_SKYBOX)
-	vec4 vecPos = (modelViewProjectionMatrix * inPosition);
+	vec4 vecPos = (worldViewProjMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
-    //mat4 mvp = worldMatrix * viewMatrix * projectionMatrix;
-    //mat4 mvp = projectionMatrix * modelViewMatrix;
+    //mat4 mvp = worldMatrix * viewMatrix * projMatrix;
+    //mat4 mvp = projMatrix * worldViewMatrix;
     //gl_Position = mvp * inPosition;
     
 //    vec3 position;
-//    vec3 tangentInCameraSpace = (worldScale * inTangent + worldTranslate);
+//    vec3 tangentInCameraSpace = (worldScale * inTangent + worldViewTranslate);
 //    float distance = length(tangentInCameraSpace);
 //    if (distance > 40.0)
 //    {
-//        position = worldScale * ((inPosition.xyz - inTangent) * (40.0 / distance)) + worldTranslate;
+//        position = worldScale * ((inPosition.xyz - inTangent) * (40.0 / distance)) + worldViewTranslate;
 //    }
 //    else
 //    {
-//        position = worldScale * (inPosition.xyz - inTangent) + worldTranslate;
+//        position = worldScale * (inPosition.xyz - inTangent) + worldViewTranslate;
 //    }
 //    
-//    //    vec4 position = vec4(worldScale * (inPosition.xyz - inTangent) + worldTranslate, inPosition.w);
-//    gl_Position = projectionMatrix * vec4(position, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
+//    //    vec4 position = vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w);
+//    gl_Position = projMatrix * vec4(position, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
     
-	gl_Position = projectionMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldTranslate, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
+	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 #else
-	gl_Position = modelViewProjectionMatrix * inPosition;
+	gl_Position = worldViewProjMatrix * inPosition;
 #endif
 
 #if defined(VERTEX_LIT)
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition); // view direction in view space
-    vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
+    vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition); // view direction in view space
+    vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal); // normal in eye coordinates
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     
 #if defined(DISTANCE_ATTENUATION)
@@ -203,11 +208,11 @@ void main()
 #endif
 
 #if defined(PIXEL_LIT)
-	vec3 n = normalize (normalMatrix * inNormal);
-	vec3 t = normalize (normalMatrix * inTangent);
+	vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
+	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
 	vec3 b = cross (n, t);
 
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix *  inPosition);
+    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
     
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
@@ -256,15 +261,19 @@ void main()
 #endif
 
 #if defined(VERTEX_FOG)
-    const float LOG2 = 1.442695;
     #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
         float fogFragCoord = length(eyeCoordsPosition);
     #else
-        vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
         float fogFragCoord = length(eyeCoordsPosition);
     #endif
-    varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
-    varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+    #if !defined(FOG_LINEAR)
+        const float LOG2 = 1.442695;
+        varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
+        varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+    #else
+        varFogFactor = clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
+    #endif
 	//varFogFactor = 1.0;
 #endif
 
