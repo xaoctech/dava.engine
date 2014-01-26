@@ -65,13 +65,8 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
 	
-    tileMaskEditorShader = new Shader();
-	tileMaskEditorShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor.shader");
-	tileMaskEditorShader->Recompile();
-
-	tileMaskCopyPasteShader = new Shader();
-	tileMaskCopyPasteShader->LoadFromYaml("~res:/Shaders/Landscape/tilemask-editor-copypaste.shader");
-	tileMaskCopyPasteShader->Recompile();
+    tileMaskEditorShader = SafeRetain(ShaderCache::Instance()->Get(FastName("~res:/Materials/Shaders/Landscape/tilemask-editor"), FastNameSet()));
+    tileMaskCopyPasteShader = SafeRetain(ShaderCache::Instance()->Get(FastName("~res:/Materials/Shaders/Landscape/tilemask-editor-copypaste"), FastNameSet()));
 
 	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;

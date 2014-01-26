@@ -167,6 +167,8 @@ public:
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
 	
 	static const FastName FLAG_VERTEXFOG;
+	static const FastName FLAG_FOG_EXP;
+	static const FastName FLAG_FOG_LINEAR;
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_FLATCOLOR;

@@ -10,21 +10,21 @@ precision highp float;
 attribute vec4 inPosition;
 attribute vec3 inNormal;
 
-uniform mat4 modelViewProjectionMatrix;
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat3 normalMatrix;
+uniform mat4 worldViewProjMatrix;
+uniform mat4 worldViewMatrix;
+uniform mat4 projMatrix;
+uniform mat3 worldViewInvTransposeMatrix;
 
 uniform mediump float silhouetteScale;
 uniform mediump float silhouetteExponent;
 
 void main()
 {
-	vec3 normal = normalize(normalMatrix * inNormal.xyz);
-	vec4 PosView = modelViewMatrix * inPosition;
+	vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal.xyz);
+	vec4 PosView = worldViewMatrix * inPosition;
 
 	mediump float distanceScale = length(PosView.xyz) / 100.0;
 
 	PosView.xyz += normal * pow(silhouetteScale * distanceScale, silhouetteExponent);
-	gl_Position = projectionMatrix * PosView;
+	gl_Position = projMatrix * PosView;
 }

@@ -203,7 +203,6 @@ void RenderManager::BeginFrame()
 	//DVASSERT(!currentRenderEffect);
 	DVASSERT(clipStack.empty());
 	DVASSERT(renderTargetStack.empty());
-	DVASSERT(renderEffectStack.empty());
 	Reset();
 	isInsideDraw = true;
     

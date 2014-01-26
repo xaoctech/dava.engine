@@ -263,16 +263,4 @@ void main()
 #if defined(VERTEX_FOG)
     gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
 #endif
-
-/*#if defined(LOD_LOW)
-        gl_FragColor.r += 0.5;
-#endif
-
-#if defined(LOD_NORMAL)
-        gl_FragColor.g += 0.5;
-#endif
-        
-#if defined(LOD_HIGH)
-        gl_FragColor.b += 0.5;
-#endif*/
 }

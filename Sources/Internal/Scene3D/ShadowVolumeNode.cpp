@@ -45,11 +45,8 @@ namespace DAVA
 ShadowVolumeNode::ShadowVolumeNode()
 : shadowPolygonGroup(0)
 {
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	shader->Recompile();
-
-    uniformLightPosition0 = shader->FindUniformIndexByName(FastName("lightPosition0"));
+	shader = 0; //ShaderCache::Instance->Get("~res:/Shaders/ShadowVolume/shadowvolume.shader");
+    uniformLightPosition0 = -1; //shader->FindUniformIndexByName(FastName("lightPosition0"));
 }
 
 DAVA::ShadowVolumeNode::~ShadowVolumeNode()
