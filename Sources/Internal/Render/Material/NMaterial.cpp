@@ -163,40 +163,7 @@ namespace DAVA
 		
 		SafeRelease(baseTechnique);
 	}
-			
-	/*void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
-	{
-		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
-		DVASSERT(NULL == parent);
-		DVASSERT(this != material);
-		
-		material->materialSortKey = (uint16)((pointer_size)this);
-		children.push_back(material);
-		
-		this->Retain();
-		
-		material->OnParentChanged(this, inheritTemplate);
-		
-		this->Release();
-	}
-	
-	void NMaterial::RemoveChild(NMaterial* material)
-	{
-		Vector<NMaterial*>::iterator child = std::find(children.begin(), children.end(), material);
-		if(children.end() != child)
-		{
-			this->Retain();
-			
-			children.erase(child);
-			material->OnParentChanged(NULL, true);
-			
-			//VI: TODO: review if this call is realy needed at this point
-			//CleanupUnusedTextures();
-		
-			this->Release();
-		}
-	}*/
-	
+				
 	void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
 	{
 		DVASSERT(this != newParent);
@@ -236,30 +203,44 @@ namespace DAVA
 	{
 		materialSetFlags.insert(flag, flagValue);
 
-		UpdateShaderWithFlags();
-		
-		this->Retain();
-		
-		size_t childrenCount = children.size();
-		for(size_t i = 0; i < childrenCount; ++i)
-		{
-			children[i]->OnParentFlagsChanged();
-		}
-				
-		this->Release();
+		UpdateShaderWithFlags(true);
 	}
+    
+    void NMaterial::ResetFlag(const FastName& flag)
+    {
+        if(materialSetFlags.count(flag) > 0)
+        {
+            materialSetFlags.erase(flag);
+            
+            UpdateShaderWithFlags(true);
+        }
+    }
 			
 	int32 NMaterial::GetFlagValue(const FastName& flag) const
 	{
-		int32 result = materialSetFlags.at(flag);
-		
-		if(NMaterial::FlagOff == result && parent)
-		{
-			result = parent->GetFlagValue(flag);
-		}
+		int32 flagValue = NMaterial::FlagOff;
+        
+        if(materialSetFlags.count(flag) > 0)
+        {
+            flagValue = materialSetFlags.at(flag);
+        }
+        else
+        {
+            if(parent)
+            {
+                flagValue = parent->GetFlagValue(flag) | NMaterial::FlagInherited;
+            }
+        }
 			
-		return result;
+		return flagValue;
 	}
+    
+    bool NMaterial::IsFlagEffective(const FastName& flag) const
+    {
+        int32 flagValue = GetFlagValue(flag);
+        
+        return ((flagValue & 1) == NMaterial::FlagOn);
+    }
 			
 	void NMaterial::Save(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
@@ -566,11 +547,7 @@ namespace DAVA
 		
 		if(illuminationParams)
 		{
-			clonedMaterial->illuminationParams = new IlluminationParams();
-			clonedMaterial->illuminationParams->castShadow = illuminationParams->castShadow;
-			clonedMaterial->illuminationParams->isUsed = illuminationParams->isUsed;
-			clonedMaterial->illuminationParams->lightmapSize = illuminationParams->lightmapSize;
-			clonedMaterial->illuminationParams->receiveShadow = illuminationParams->receiveShadow;
+			clonedMaterial->illuminationParams = new IlluminationParams(*illuminationParams);
 		}
 				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
@@ -917,43 +894,29 @@ namespace DAVA
 	{
 		effectiveFlagSet.clear();
 				
-		HashMap<FastName, int32> rawEffectiveFlags;
-		BuildEffectiveFlagSet(rawEffectiveFlags);
-		
-		for(HashMap<FastName, int32>::iterator it = rawEffectiveFlags.begin();
-			it != rawEffectiveFlags.end();
-			++it)
-		{
-			int32 currentFlagValue = it->second;
-			if(NMaterial::FlagOn == currentFlagValue ||
-			   NMaterial::FlagOnOverride == currentFlagValue)
-			{
-				effectiveFlagSet.Insert(it->first);
-			}
-		}
+		BuildEffectiveFlagSetInternal(effectiveFlagSet);
 	}
 					
-	void NMaterial::BuildEffectiveFlagSet(HashMap<FastName, int32>& effectiveFlagSet)
-	{
-		if(parent)
-		{
-			parent->BuildEffectiveFlagSet(effectiveFlagSet);
-		}
-
+	void NMaterial::BuildEffectiveFlagSetInternal(FastNameSet& effectiveFlagSet)
+    {
+        if(parent)
+        {
+            parent->BuildEffectiveFlagSetInternal(effectiveFlagSet);
+        }
+    
+        //VI: now when flags were set by parent let's set them from our collection or filter out overriden flags.
 		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
 			it != materialSetFlags.end();
 			++it)
 		{
-			int32 currentFlagValue = it->second;
-			int32 effectiveFlagValue = effectiveFlagSet.at(it->first);
-			
-			if(NMaterial::FlagOnOverride == currentFlagValue ||
-			   NMaterial::FlagOffOverride == currentFlagValue ||
-			   (NMaterial::FlagOn == currentFlagValue &&
-				NMaterial::FlagOffOverride != effectiveFlagValue))
+			if(NMaterial::FlagOn == it->second)
 			{
-				effectiveFlagSet.insert(it->first, currentFlagValue);
+				effectiveFlagSet.Insert(it->first);
 			}
+            else
+            {
+                effectiveFlagSet.erase(it->first);
+            }
 		}
 	}
 	
@@ -1581,7 +1544,7 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::UpdateShaderWithFlags()
+	void NMaterial::UpdateShaderWithFlags(bool updateChildren)
 	{
 		DVASSERT(baseTechnique);
 		
@@ -1600,6 +1563,19 @@ namespace DAVA
 				pass->renderState.shader = techniquePass->CompileShader(effectiveFlags);
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
+            
+            if(updateChildren)
+            {
+                this->Retain();
+                
+                size_t childrenCount = children.size();
+                for(size_t i = 0; i < childrenCount; ++i)
+                {
+                    children[i]->OnParentFlagsChanged();
+                }
+				
+                this->Release();
+            }
 		}
 	}
 	
@@ -1668,6 +1644,20 @@ namespace DAVA
 		
 		return result;
 	}
+    
+    void NMaterial::SetMaterialTemplateName(const FastName& templateName)
+    {
+        const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		
+		SetMaterialTemplate(matTemplate, currentQuality);
+    }
+    
+    FastName NMaterial::GetMaterialTemplateName() const
+    {
+        return (materialTemplate) ? materialTemplate->name : FastName();
+    }
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
@@ -2496,8 +2486,8 @@ namespace DAVA
 		VariantType ret;
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
-
-		ret.SetBool((state->GetFlagValue(member) != 0));
+ 
+		ret.SetBool(state->IsFlagEffective(member));
 
 		return ret;
 	}

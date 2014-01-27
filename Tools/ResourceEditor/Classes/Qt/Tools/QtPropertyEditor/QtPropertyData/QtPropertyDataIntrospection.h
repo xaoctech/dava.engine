@@ -48,9 +48,10 @@ public:
 	virtual const DAVA::MetaInfo * MetaInfo() const;
 	static QtPropertyData * CreateMemberData(void *_object, const DAVA::InspMember *member);
 
-protected:
 	void *object;
 	const DAVA::InspInfo *info;
+
+protected:
 	QMap<QtPropertyDataDavaVariant*, const DAVA::InspMember *> childVariantMembers;
 
 	void AddMember(const DAVA::InspMember *member);

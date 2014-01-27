@@ -531,6 +531,11 @@ void HierarchyTree::UpdateExtraDataRecursive(HierarchyTreeControlNode* node, Bas
     }
 }
 
+void HierarchyTree::UpdateControlsData()
+{
+	UpdateExtraData(BaseMetadata::UPDATE_EXTRADATA_FROM_CONTROL);
+}
+
 void HierarchyTree::UpdateLocalization()
 {
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
