@@ -102,11 +102,15 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
                 }
 
 				uint32 sourceSize = sourceRenderObject->GetRenderBatchCount();
-				for(uint32 j = 0; j < sourceSize; ++j)
+                while(sourceSize)
 				{
 					int32 lodIndex, switchIndex;
-					RenderBatch * sourceRenderBatch = sourceRenderObject->GetRenderBatch(j, lodIndex, switchIndex);
+					RenderBatch * sourceRenderBatch = sourceRenderObject->GetRenderBatch(0, lodIndex, switchIndex);
+                    sourceRenderBatch->Retain();
+                    sourceRenderObject->RemoveRenderBatch(sourceRenderBatch);
 					ro->AddRenderBatch(sourceRenderBatch, lodIndex, i);
+                    sourceRenderBatch->Release();
+                    sourceSize--;
 				}
 			}
 
