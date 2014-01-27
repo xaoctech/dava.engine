@@ -34,7 +34,6 @@
 #include "QtPropertyDataDavaVariant.h"
 #include "../QtPropertyWidgets/QtColorLineEdit.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
-#include "./../QtPropertyDataValidator/ProjectPathValidator.h"
 
 #include <QColorDialog>
 #include <QListWidget>
@@ -855,7 +854,6 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 void QtPropertyDataDavaVariant::FilePathOWPressed()
 {
 	QString path = QtFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
-    SetValidator(new ProjectPathValidator());
 	if(!path.isEmpty())
 	{
 		SetValue(path, QtPropertyData::VALUE_EDITED);

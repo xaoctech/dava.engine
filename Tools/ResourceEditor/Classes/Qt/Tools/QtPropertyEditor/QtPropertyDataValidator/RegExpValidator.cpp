@@ -26,10 +26,47 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "ProjectPathValidator.h"
+#include "RegExpValidator.h"
 #include "Qt/Settings/SettingsManager.h"
 #include <QMessageBox>
 
+RegExpValidator::RegExpValidator(const QString& value):
+    regExpressionValue(value)
+{
+    QString regX = "/Users/a_makovii/Documents/work/temp/wot.blitz/";
+    regExpressionValue = regX;
+    DAVA::String tmpS =value.toStdString();
+    innerValidator.setRegExp(QRegExp(regExpressionValue));
+}
+
+bool RegExpValidator::ValidateInternal(const QVariant &value) const
+{
+    QString validateValue = value.toString();
+    DAVA::String tmpS =validateValue.toStdString();
+    int pos = 0;
+    
+    
+
+
+    validateValue = "/Users/a_makovii/Documents/work/temp/wot.blitz/DataSource/3d/Maps/dike_village/dike_village/landscape/hm2.heightmap";
+    QValidator::State state = innerValidator.validate(validateValue, pos);
+    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+}
+
+QString RegExpValidator::GetRegularExpression()
+{
+    return regExpressionValue;
+}
+
+void RegExpValidator::SetRegularExpression(const QString& value)
+{
+    QString regX = "/Users/a_makovii/Documents/work/temp/wot.blitz/";
+    regExpressionValue = regX;
+    regExpressionValue = value;
+    innerValidator.setRegExp(QRegExp(regExpressionValue));
+}
+
+/*
 QtPropertyDataValidator::eValidationState ProjectPathValidator::Validate(const QVariant &value) const
 {
     DAVA::String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
@@ -46,4 +83,4 @@ QtPropertyDataValidator::eValidationState ProjectPathValidator::Validate(const Q
 void ProjectPathValidator::Notify(const QVariant &value) const
 {
     QMessageBox::warning(NULL, "Wrong file selected", QString( Format("Path %s doesn't belong to project.", value.toString().toAscii().data()).c_str() ), QMessageBox::Ok);
-}
+}*/

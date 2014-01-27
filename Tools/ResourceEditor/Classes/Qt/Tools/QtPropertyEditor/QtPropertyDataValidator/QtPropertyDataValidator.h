@@ -37,17 +37,23 @@
 class QtPropertyDataValidator
 {
 public:
-    
-    enum eValidationState
+    bool Validate(const QVariant &v) const
     {
-        INVALID,
-        ACCEPTABLE
-    };
-
-    virtual eValidationState Validate(const QVariant &value) const = 0;
+        bool ret = ValidateInternal(v);
+        if(!ret)
+        {
+            ErrorNotifyInternal();
+        }
+        return ret;
+    }
     
-    virtual void Notify(const QVariant &value) const = 0;   
+protected:
+    
+    virtual bool ValidateInternal(const QVariant &v) const = 0;
+    
+    virtual void ErrorNotifyInternal() const
+    {
+    }
 };
-
 
 #endif // __QT_PROPERTY_DATA_VALIDATOR_H__
