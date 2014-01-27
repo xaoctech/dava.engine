@@ -781,9 +781,8 @@ List<UIControl* >& UIList::GetRealChildren()
 
 List<UIControl* > UIList::GetRealChildrenAndSubcontrols()
 {
-	List<UIControl* >& realChildren = UIControl::GetRealChildren();
-	realChildren.remove(scrollContainer);
-	return realChildren;
+	// According to previous UIList logic - we should hide scrollContainer from user. 
+	return GetRealChildren();
 }
 
 
