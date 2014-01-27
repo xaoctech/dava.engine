@@ -129,7 +129,7 @@ void TimeMeasure::Dump(FunctionMeasure * function, uint32 level)
         }
     }else
     {
-        Logger::FrameworkDebug("%s %s %0.9llf seconds", GetIndentString('-', level + 1), function->name.c_str(), (double)function->timeSpent / 1e+9);
+        Logger::FrameworkDebug("%s %s %0.9llf seconds", GetIndentString('-', level + 1).c_str(), function->name.c_str(), (double)function->timeSpent / 1e+9);
         for (HashMap<FunctionMeasure *, FunctionMeasure *>::Iterator it = function->children.Begin();
              it != function->children.End(); ++it)
         {
