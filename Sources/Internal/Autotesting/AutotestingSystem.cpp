@@ -118,20 +118,6 @@ void AutotestingSystem::OnInit()
 
 String AutotestingSystem::GetDeviceName()
 { 
-	/*
-	if (AUTOTESTING_PLATFORM_NAME == "Windows")
-	{
-		return "pc";
-	}
-	else if (AUTOTESTING_PLATFORM_NAME == "MacOS")
-	{
-		return "macbook";
-	}
-	else
-	{
-		return Format("%s", DeviceInfo::GetName());
-	}
-	*/
 	if (AUTOTESTING_PLATFORM_NAME == "Android")
 	{
 		return DeviceInfo::GetModel();

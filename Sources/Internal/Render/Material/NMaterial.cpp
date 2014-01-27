@@ -45,6 +45,7 @@
 #include "Render/Material/NMaterialTemplate.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/TextureDescriptor.h"
+#include "Render/Highlevel/Landscape.h"
 
 namespace DAVA
 {
@@ -84,11 +85,18 @@ namespace DAVA
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
     const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 	const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
+    const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
+    
 	const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 	const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
 	const FastName NMaterial::FLAG_SETUPLIGHTMAP = FastName("SETUP_LIGHTMAP");
+    const FastName NMaterial::FLAG_ALBEDOONLY = FastName("VIEW_ALBEDO_ONLY");
+    const FastName NMaterial::FLAG_AMBIENTONLY = FastName("VIEW_AMBIENT_ONLY");
+    const FastName NMaterial::FLAG_DIFFUSEONLY = FastName("VIEW_DIFFUSE_ONLY");
+    const FastName NMaterial::FLAG_SPECULARONLY = FastName("VIEW_SPECULAR_ONLY");
 
-	static FastName TEXTURE_NAME_PROPS[] = {
+	static FastName TEXTURE_NAME_PROPS[] =
+    {
 		NMaterial::TEXTURE_ALBEDO,
 		NMaterial::TEXTURE_NORMAL,
 		NMaterial::TEXTURE_DETAIL,
@@ -100,7 +108,12 @@ namespace DAVA
 	{
 		NMaterial::FLAG_LIGHTMAPONLY,
 		NMaterial::FLAG_TEXTUREONLY,
-		NMaterial::FLAG_SETUPLIGHTMAP
+		NMaterial::FLAG_SETUPLIGHTMAP,
+        
+        NMaterial::FLAG_ALBEDOONLY,
+        NMaterial::FLAG_AMBIENTONLY,
+        NMaterial::FLAG_DIFFUSEONLY,
+        NMaterial::FLAG_SPECULARONLY
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -1648,6 +1661,20 @@ namespace DAVA
 		
 		return result;
 	}
+    
+    void NMaterial::SetMaterialTemplateName(const FastName& templateName)
+    {
+        const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		
+		SetMaterialTemplate(matTemplate, currentQuality);
+    }
+    
+    FastName NMaterial::GetMaterialTemplateName() const
+    {
+        return (materialTemplate) ? materialTemplate->name : FastName();
+    }
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
@@ -2303,8 +2330,11 @@ namespace DAVA
 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
 				propName == NMaterial::PARAM_FOG_COLOR ||
 				propName == NMaterial::PARAM_FLAT_COLOR ||
-                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL
-                );
+                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL ||
+                propName == Landscape::PARAM_TILE_COLOR0 ||
+                propName == Landscape::PARAM_TILE_COLOR1 ||
+                propName == Landscape::PARAM_TILE_COLOR2 ||
+                propName == Landscape::PARAM_TILE_COLOR3);
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const FastName &member, const VariantType &value)
