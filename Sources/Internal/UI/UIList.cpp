@@ -779,4 +779,12 @@ List<UIControl* >& UIList::GetRealChildren()
 	return realChildren;
 }
 
+List<UIControl* > UIList::GetRealChildrenAndSubcontrols()
+{
+	List<UIControl* >& realChildren = UIControl::GetRealChildren();
+	realChildren.remove(scrollContainer);
+	return realChildren;
+}
+
+
 };
