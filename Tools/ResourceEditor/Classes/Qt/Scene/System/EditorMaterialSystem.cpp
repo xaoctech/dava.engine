@@ -209,16 +209,16 @@ void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
     DAVA::NMaterial::eFlagValue flag;
 
     (curViewMode & MVM_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
-    material->SetFlag(DAVA::NMaterial::FLAG_ALBEDOONLY, flag);
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
 
     (curViewMode & MVM_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
-    material->SetFlag(DAVA::NMaterial::FLAG_DIFFUSEONLY, flag);
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
 
     (curViewMode & MVM_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
-    material->SetFlag(DAVA::NMaterial::FLAG_SPECULARONLY, flag);
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWSPECULAR, flag);
 
     (curViewMode & MVM_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
-    material->SetFlag(DAVA::NMaterial::FLAG_AMBIENTONLY, flag);
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWAMBIENT, flag);
 }
 
 void EditorMaterialSystem::Update(DAVA::float32 timeElapsed)
