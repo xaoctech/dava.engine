@@ -45,6 +45,7 @@
 #include "Render/Material/NMaterialTemplate.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/TextureDescriptor.h"
+#include "Render/Highlevel/Landscape.h"
 
 namespace DAVA
 {
@@ -2314,8 +2315,11 @@ namespace DAVA
 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
 				propName == NMaterial::PARAM_FOG_COLOR ||
 				propName == NMaterial::PARAM_FLAT_COLOR ||
-                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL
-                );
+                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL ||
+                propName == Landscape::PARAM_TILE_COLOR0 ||
+                propName == Landscape::PARAM_TILE_COLOR1 ||
+                propName == Landscape::PARAM_TILE_COLOR2 ||
+                propName == Landscape::PARAM_TILE_COLOR3);
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const FastName &member, const VariantType &value)
