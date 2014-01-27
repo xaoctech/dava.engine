@@ -607,7 +607,7 @@ bool SceneFile::ReadSceneNode(Entity * parentNode, int level)
             
             DVASSERT(materialIndex < (int)materials.size());
 
-			if (debugLogEnabled)Logger::FrameworkDebug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1), meshIndex, polyGroupIndex, materialIndex); 
+			if (debugLogEnabled)Logger::FrameworkDebug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1).c_str(), meshIndex, polyGroupIndex, materialIndex);
 		
 			if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH)
 			{
@@ -625,7 +625,7 @@ bool SceneFile::ReadSceneNode(Entity * parentNode, int level)
             parentNode->AddNode(node);
         }
 	}
-	if (debugLogEnabled)Logger::FrameworkDebug("%s node: %s typeId: %d childCount: %d type: %s\n", GetIndentString('-', level), name, def.nodeType, def.childCount, nodeType); 
+	if (debugLogEnabled)Logger::FrameworkDebug("%s node: %s typeId: %d childCount: %d type: %s\n", GetIndentString('-', level).c_str(), name, def.nodeType, def.childCount, nodeType); 
 	
     if (parentNode == scene) 
     {
