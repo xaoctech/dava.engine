@@ -143,6 +143,7 @@ void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializat
 		archive->SetUInt32("ro.debugflags", debugFlags);
 		archive->SetUInt32("ro.batchCount", GetRenderBatchCount());
         archive->SetUInt32("ro.sOclIndex", staticOcclusionIndex);
+        archive->SetUInt32("ro.flags", flags & RenderObject::VISIBLE);
 
 		KeyedArchive *batchesArch = new KeyedArchive();
 		for(uint32 i = 0; i < GetRenderBatchCount(); ++i)
@@ -173,6 +174,16 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 		type = archive->GetUInt32("ro.type", TYPE_RENDEROBJECT);
 		debugFlags = archive->GetUInt32("ro.debugflags", 0);
         staticOcclusionIndex = (uint16)archive->GetUInt32("ro.sOclIndex", INVALID_STATIC_OCCLUSION_INDEX);
+        
+        uint32 savedFlags = RenderObject::VISIBLE & archive->GetUInt32("ro.flags", RenderObject::VISIBLE);
+        if((savedFlags & RenderObject::VISIBLE) == 0)
+        {
+            flags = flags & ~RenderObject::VISIBLE;
+        }
+        else
+        {
+            flags = flags | RenderObject::VISIBLE;
+        }
 
 		uint32 roBatchCount = archive->GetUInt32("ro.batchCount");
         KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
