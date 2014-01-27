@@ -544,10 +544,13 @@ void MaterialEditor::OnTemplateChanged(int index)
         QString newTemplatePath = ui->templateBox->itemData(index).toString();
         if(!newTemplatePath.isEmpty())
         {
-            //curMaterial->GetTypeInfo()->Member("")
-            //QtMainWindow::Instance()->GetCurrentScene()->Exec();
+            const DAVA::InspMember *templateMember = curMaterial->GetTypeInfo()->Member("materialTemplate");
 
-            DAVA::NMaterialHelper::SwitchTemplate(curMaterial, DAVA::FastName(newTemplatePath.toStdString().c_str()));
+            if(NULL != templateMember)
+            {
+                QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, curMaterial, 
+                    DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
+            }
         }
 	}
 

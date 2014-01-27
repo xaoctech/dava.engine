@@ -73,3 +73,10 @@
 -
  name: "VertexLit Opaque"
  path: VertexLit.Opaque.material
+-
+ name: "Skybox"
+ path: Skybox.material
+-
+ name: "Landscape"
+ path: TileMask.material
+ 
