@@ -235,7 +235,7 @@ void TextureListModel::clear()
 
 	for(int i = 0; i < textureDescriptorsAll.size(); ++i)
 	{
-		DAVA::SafeRelease(textureDescriptorsAll[i]);
+		DAVA::SafeDelete(textureDescriptorsAll[i]);
 	}
 
 	textureDescriptorsAll.clear();

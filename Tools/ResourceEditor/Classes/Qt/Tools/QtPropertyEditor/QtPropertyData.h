@@ -55,7 +55,8 @@ public:
 	{
 		VALUE_SOURCE_CHANGED,
 		VALUE_SET,
-		VALUE_EDITED
+		VALUE_EDITED,
+		STATE_CHANGED,
 	};
 
 	struct UserData
@@ -75,7 +76,7 @@ public:
 
 	QVariant GetValue() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
-	bool UpdateValue();
+	bool UpdateValue(bool force = false);
 
 	QVariant GetAlias() const;
 
@@ -98,8 +99,6 @@ public:
 	virtual void SetUserData(UserData* userdata);
 
 	virtual const DAVA::MetaInfo* MetaInfo() const;
-
-	virtual QtPropertyData* GetProxyOriginal();
 
 	// reset background/foreground/font settings
 	void ResetStyle();
@@ -210,26 +209,8 @@ public:
 		return propertyData;
 	}
 
-	virtual bool event(QEvent * event)
-	{
-		if(eventsPassThrought)
-		{
-			int type = event->type();
+	virtual bool event(QEvent * event);
 
-			if( type != QEvent::Enter &&
-				type != QEvent::Leave &&
-				type != QEvent::MouseMove)
-			{
-				QToolButton::event(event);
-			}
-
-			return false;
-		}
-		
-		return QToolButton::event(event);
-	}
-
-	QModelIndex activeIndex;
 	bool eventsPassThrought;
 	bool overlayed;
 

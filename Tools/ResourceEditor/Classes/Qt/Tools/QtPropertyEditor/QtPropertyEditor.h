@@ -33,8 +33,8 @@
 
 #include <QTreeView>
 #include <QTimer>
-#include "QtPropertyModel.h"
 #include "QtPropertyData.h"
+#include "QtPropertyModel.h"
 
 class QtPropertyItemDelegate;
 
@@ -72,10 +72,14 @@ public:
 	void SetUpdateTimeout(int ms);
 	int GetUpdateTimeout();
 
+	virtual void ApplyStyle(QtPropertyData *data, int style);
+
 public slots:
 	void SetFilter(const QString &regex);
 	void Update();
-	void expand(const QModelIndex & index);
+
+	void OnExpanded(const QModelIndex & index);
+	void OnCollapsed(const QModelIndex & index);
 
 signals:
 	// void PropertyChanged(const QModelIndex &index); // SZ: not implemented because is never used. will be implemented on request
@@ -89,26 +93,21 @@ protected:
 	QTimer updateTimer;
 	bool doUpdateOnPaintEvent;
 
-	virtual void paintEvent(QPaintEvent * event);
-	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
-
-	virtual void mouseMoveEvent(QMouseEvent * event);
-	virtual void mousePressEvent(QMouseEvent * event);
-	virtual void mouseReleaseEvent(QMouseEvent * event);
 	virtual void leaveEvent(QEvent * event);
+	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	
-	virtual void ApplyStyle(QtPropertyData *data, int style);
-	virtual QToolButton* GetButton(QMouseEvent * event);
+	//virtual QtPropertyToolButton* GetButton(QMouseEvent * event);
 
 protected slots:
 	virtual void OnItemClicked(const QModelIndex &);
 	virtual void OnItemEdited(const QModelIndex &);
 	virtual void OnUpdateTimeout();
 
-private:
-	QtPropertyData *lastHoverData;
+	virtual void rowsAboutToBeOp(const QModelIndex & parent, int start, int end);
+	virtual void rowsOp(const QModelIndex & parent, int start, int end);
 
-	void OnHover(const QModelIndex &index);
+private:
+	void ShowButtonsUnderCursor();
 };
 
 #endif // __QT_PROPERTY_VIEW_H__

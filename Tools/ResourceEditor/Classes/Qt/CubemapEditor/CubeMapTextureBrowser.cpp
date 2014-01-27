@@ -127,6 +127,8 @@ void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
 					cubemapList.insert(cubemapList.begin(), itemInfo);
 				}
 			}
+
+			SafeDelete(texDesc);
 		}
 		
 		cubeListItemDelegate.UpdateCache(cubemapList);

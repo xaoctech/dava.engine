@@ -60,9 +60,9 @@ namespace DAVA
 	const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 	
 	const FastName NMaterial::PARAM_LIGHT_POSITION0("lightPosition0");
-	const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("prop_ambientColor");
-	const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("prop_diffuseColor");
-	const FastName NMaterial::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
+	const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("ambientColor");
+	const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("diffuseColor");
+	const FastName NMaterial::PARAM_PROP_SPECULAR_COLOR("specularColor");
 	const FastName NMaterial::PARAM_LIGHT_AMBIENT_COLOR("materialLightAmbientColor");
 	const FastName NMaterial::PARAM_LIGHT_DIFFUSE_COLOR("materialLightDiffuseColor");
 	const FastName NMaterial::PARAM_LIGHT_SPECULAR_COLOR("materialLightSpecularColor");
@@ -163,40 +163,7 @@ namespace DAVA
 		
 		SafeRelease(baseTechnique);
 	}
-			
-	/*void NMaterial::AddChild(NMaterial* material, bool inheritTemplate)
-	{
-		DVASSERT(std::find(children.begin(), children.end(), material) == children.end());
-		DVASSERT(NULL == parent);
-		DVASSERT(this != material);
-		
-		material->materialSortKey = (uint16)((pointer_size)this);
-		children.push_back(material);
-		
-		this->Retain();
-		
-		material->OnParentChanged(this, inheritTemplate);
-		
-		this->Release();
-	}
-	
-	void NMaterial::RemoveChild(NMaterial* material)
-	{
-		Vector<NMaterial*>::iterator child = std::find(children.begin(), children.end(), material);
-		if(children.end() != child)
-		{
-			this->Retain();
-			
-			children.erase(child);
-			material->OnParentChanged(NULL, true);
-			
-			//VI: TODO: review if this call is realy needed at this point
-			//CleanupUnusedTextures();
-		
-			this->Release();
-		}
-	}*/
-	
+				
 	void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
 	{
 		DVASSERT(this != newParent);
@@ -236,30 +203,44 @@ namespace DAVA
 	{
 		materialSetFlags.insert(flag, flagValue);
 
-		UpdateShaderWithFlags();
-		
-		this->Retain();
-		
-		size_t childrenCount = children.size();
-		for(size_t i = 0; i < childrenCount; ++i)
-		{
-			children[i]->OnParentFlagsChanged();
-		}
-				
-		this->Release();
+		UpdateShaderWithFlags(true);
 	}
+    
+    void NMaterial::ResetFlag(const FastName& flag)
+    {
+        if(materialSetFlags.count(flag) > 0)
+        {
+            materialSetFlags.erase(flag);
+            
+            UpdateShaderWithFlags(true);
+        }
+    }
 			
 	int32 NMaterial::GetFlagValue(const FastName& flag) const
 	{
-		int32 result = materialSetFlags.at(flag);
-		
-		if(NMaterial::FlagOff == result && parent)
-		{
-			result = parent->GetFlagValue(flag);
-		}
+		int32 flagValue = NMaterial::FlagOff;
+        
+        if(materialSetFlags.count(flag) > 0)
+        {
+            flagValue = materialSetFlags.at(flag);
+        }
+        else
+        {
+            if(parent)
+            {
+                flagValue = parent->GetFlagValue(flag) | NMaterial::FlagInherited;
+            }
+        }
 			
-		return result;
+		return flagValue;
 	}
+    
+    bool NMaterial::IsFlagEffective(const FastName& flag) const
+    {
+        int32 flagValue = GetFlagValue(flag);
+        
+        return ((flagValue & 1) == NMaterial::FlagOn);
+    }
 			
 	void NMaterial::Save(KeyedArchive * archive,
 						 SerializationContext* serializationContext)
@@ -566,11 +547,7 @@ namespace DAVA
 		
 		if(illuminationParams)
 		{
-			clonedMaterial->illuminationParams = new IlluminationParams();
-			clonedMaterial->illuminationParams->castShadow = illuminationParams->castShadow;
-			clonedMaterial->illuminationParams->isUsed = illuminationParams->isUsed;
-			clonedMaterial->illuminationParams->lightmapSize = illuminationParams->lightmapSize;
-			clonedMaterial->illuminationParams->receiveShadow = illuminationParams->receiveShadow;
+			clonedMaterial->illuminationParams = new IlluminationParams(*illuminationParams);
 		}
 				
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
@@ -917,43 +894,29 @@ namespace DAVA
 	{
 		effectiveFlagSet.clear();
 				
-		HashMap<FastName, int32> rawEffectiveFlags;
-		BuildEffectiveFlagSet(rawEffectiveFlags);
-		
-		for(HashMap<FastName, int32>::iterator it = rawEffectiveFlags.begin();
-			it != rawEffectiveFlags.end();
-			++it)
-		{
-			int32 currentFlagValue = it->second;
-			if(NMaterial::FlagOn == currentFlagValue ||
-			   NMaterial::FlagOnOverride == currentFlagValue)
-			{
-				effectiveFlagSet.Insert(it->first);
-			}
-		}
+		BuildEffectiveFlagSetInternal(effectiveFlagSet);
 	}
 					
-	void NMaterial::BuildEffectiveFlagSet(HashMap<FastName, int32>& effectiveFlagSet)
-	{
-		if(parent)
-		{
-			parent->BuildEffectiveFlagSet(effectiveFlagSet);
-		}
-
+	void NMaterial::BuildEffectiveFlagSetInternal(FastNameSet& effectiveFlagSet)
+    {
+        if(parent)
+        {
+            parent->BuildEffectiveFlagSetInternal(effectiveFlagSet);
+        }
+    
+        //VI: now when flags were set by parent let's set them from our collection or filter out overriden flags.
 		for(HashMap<FastName, int32>::iterator it = materialSetFlags.begin();
 			it != materialSetFlags.end();
 			++it)
 		{
-			int32 currentFlagValue = it->second;
-			int32 effectiveFlagValue = effectiveFlagSet.at(it->first);
-			
-			if(NMaterial::FlagOnOverride == currentFlagValue ||
-			   NMaterial::FlagOffOverride == currentFlagValue ||
-			   (NMaterial::FlagOn == currentFlagValue &&
-				NMaterial::FlagOffOverride != effectiveFlagValue))
+			if(NMaterial::FlagOn == it->second)
 			{
-				effectiveFlagSet.insert(it->first, currentFlagValue);
+				effectiveFlagSet.Insert(it->first);
 			}
+            else
+            {
+                effectiveFlagSet.erase(it->first);
+            }
 		}
 	}
 	
@@ -1459,33 +1422,33 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::SetLight(uint32 index, Light * light)
+	void NMaterial::SetLight(uint32 index, Light * light, bool forceUpdate)
 	{
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			if(parent)
 			{
-				parent->SetLight(index, light);
+				parent->SetLight(index, light, forceUpdate);
 			}
 			else
 			{
-				SetLightInternal(index, light);
+				SetLightInternal(index, light, forceUpdate);
 			}
 		}
 		else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
 		{
-			SetLightInternal(index, light);
+			SetLightInternal(index, light, forceUpdate);
 
 			for(size_t i = 0; i < children.size(); ++i)
 			{
-				children[i]->SetLightInternal(index, light);
+				children[i]->SetLightInternal(index, light, forceUpdate);
 			}
 		}
 	}
 	
-	void NMaterial::SetLightInternal(int index, Light* light)
+	void NMaterial::SetLightInternal(int index, Light* light, bool forceUpdate)
 	{
-		bool changed = (light != lights[index]);
+		bool changed = forceUpdate || (light != lights[index]);
 		lights[index] = light;
 		
 		if(changed && materialDynamicLit)
@@ -1581,7 +1544,7 @@ namespace DAVA
 		}
 	}
 	
-	void NMaterial::UpdateShaderWithFlags()
+	void NMaterial::UpdateShaderWithFlags(bool updateChildren)
 	{
 		DVASSERT(baseTechnique);
 		
@@ -1600,6 +1563,19 @@ namespace DAVA
 				pass->renderState.shader = techniquePass->CompileShader(effectiveFlags);
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
+            
+            if(updateChildren)
+            {
+                this->Retain();
+                
+                size_t childrenCount = children.size();
+                for(size_t i = 0; i < childrenCount; ++i)
+                {
+                    children[i]->OnParentFlagsChanged();
+                }
+				
+                this->Release();
+            }
 		}
 	}
 	
@@ -1628,7 +1604,7 @@ namespace DAVA
 		NMaterial* mat = new NMaterial();
 		mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
 		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
-		mat->SetMaterialName(FastName(materialName.c_str()));
+		mat->SetMaterialName(materialName);
 		mat->SetName(mat->GetMaterialName().c_str());
 		
 		const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
@@ -1668,6 +1644,20 @@ namespace DAVA
 		
 		return result;
 	}
+    
+    void NMaterial::SetMaterialTemplateName(const FastName& templateName)
+    {
+        const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
+		DVASSERT(matTemplate);
+		
+		SetMaterialTemplate(matTemplate, currentQuality);
+    }
+    
+    FastName NMaterial::GetMaterialTemplateName() const
+    {
+        return (materialTemplate) ? materialTemplate->name : FastName();
+    }
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	
@@ -1783,18 +1773,52 @@ namespace DAVA
         const RenderStateData* currentData = mat->GetRenderState(passName);
         return currentData->fillMode;
     }
-
+        
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
 
-	Vector<NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp> NMaterial::NMaterialStateDynamicTexturesInsp::textureDescrInspVector;
-	void NMaterial::NMaterialStateDynamicTexturesInsp::UpdateTextureDescrInspVector(NMaterial *state) const
+	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* NMaterial::NMaterialStateDynamicTexturesInsp::FindMaterialTextures(NMaterial *state) const
 	{
-		textureDescrInspVector.clear();
-		//collect for shader
+		static FastNameMap<PropData> staticData;
+
+		staticData.clear();
+
+		NMaterial *parent = state;
+		int source = PropData::SOURCE_SELF;
+
+		// properties chain data
+		while(NULL != parent)
+		{
+			HashMap<FastName, TextureBucket*>::iterator it = parent->textures.begin();
+			HashMap<FastName, TextureBucket*>::iterator end = parent->textures.end();
+
+			for(; it != end; ++it)
+			{
+				if(0 == staticData.count(it->first))
+				{
+					PropData data;
+					TextureBucket *bucket = it->second;
+
+					data.source |= source;
+					data.path = bucket->path;
+
+					staticData.Insert(it->first, data);
+				}
+			}
+
+			parent = parent->GetParent();
+			source = PropData::SOURCE_PARENT;
+		}
+
+
+		// shader data
+		source = PropData::SOURCE_SHADER;
 		if(state->instancePasses.size() > 0)
-		{			
-			for(HashMap<FastName, RenderPassInstance*>::iterator it = state->instancePasses.begin(), end = state->instancePasses.end(); it != end; ++it)
+		{
+			HashMap<FastName, RenderPassInstance*>::iterator it = state->instancePasses.begin();
+			HashMap<FastName, RenderPassInstance*>::iterator end = state->instancePasses.end();
+
+			for(; it != end; ++it)
 			{
 				Shader *shader = it->second->renderState.shader;
 				if(NULL != shader)
@@ -1803,111 +1827,150 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						if (uniform->type == Shader::UT_SAMPLER_2D || uniform->type == Shader::UT_SAMPLER_CUBE) // is texture							
-						{							
-							textureDescrInspVector.push_back(NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp());
-							textureDescrInspVector[textureDescrInspVector.size()-1].name = uniform->name;
+						Shader::eUniform uniformId = uniform->id;
+						if( uniform->type == Shader::UT_SAMPLER_2D ||
+							uniform->type == Shader::UT_SAMPLER_CUBE) // is texture
+						{
+							FastName propName = uniform->name;
+
+							if(!staticData.count(propName))
+							{
+								PropData data;
+
+								data.path = FilePath();
+								data.source |= source;
+
+								staticData.Insert(propName, data);
+							}
+							else
+							{
+								staticData[propName].source |= source;
+							}
 						}
 					}
 				}
 			}
 		}
-        NMaterial *currState = state;
-		while (NULL!=currState)
-		{
-			for (int32 i=0, sz = currState->GetTextureCount(); i<sz; ++i)
-			{
-				const FastName & name = currState->GetTextureName(i);
-                bool slotFound = false;
-				for (int32 slot=0, slotCount = textureDescrInspVector.size(); slot<slotCount; ++slot)
-				{                    
-					if (textureDescrInspVector[slot].name == name)
-					{
-                        if (currState==state)
-                            textureDescrInspVector[slot].flags+=I_EDIT;
-                        textureDescrInspVector[slot].flags+=I_SAVE;                        
-                        if (textureDescrInspVector[slot].empty)
-                        {
-                            textureDescrInspVector[slot].empty = false;
-                            textureDescrInspVector[slot].path = currState->GetTexturePath(i);
-                        }
-					}
-                    slotFound = true;
-                    break;
-				}
-                if (!slotFound)
-                {
-                    //new texture slot;
-                    textureDescrInspVector.push_back(NMaterial::NMaterialStateDynamicTexturesInsp::TextureDescrInsp());
-                    int32 slot = textureDescrInspVector.size()-1;
-                    textureDescrInspVector[slot].name = currState->GetTextureName(i);
-                    textureDescrInspVector[slot].path = currState->GetTexturePath(i);
-                    textureDescrInspVector[slot].empty = false;
-                    textureDescrInspVector[slot].flags = I_VIEW;
-                    if (currState==state)
-                        textureDescrInspVector[slot].flags+=I_EDIT;                    
-                }
-                
-			}
-            currState = currState->GetParent();
-		}
 
+		return &staticData;
 	}
-	
-	size_t NMaterial::NMaterialStateDynamicTexturesInsp::MembersCount(void *object) const
+
+	Vector<FastName> NMaterial::NMaterialStateDynamicTexturesInsp::MembersList(void *object) const
 	{
+		Vector<FastName> ret;
+
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
-		UpdateTextureDescrInspVector(state);
-		return textureDescrInspVector.size();
+
+		const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+
+		FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>::iterator it = textures->begin();
+		FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>::iterator end = textures->end();
+
+		ret.reserve(textures->size());
+		while(it != end)
+		{
+			ret.push_back(it->first);
+			++it;
+		}
+
+		return ret;
+	}
+
+	InspDesc NMaterial::NMaterialStateDynamicTexturesInsp::MemberDesc(void *object, const FastName &texture) const
+	{
+		return InspDesc(texture.c_str());
 	}
 	
-	InspDesc NMaterial::NMaterialStateDynamicTexturesInsp::MemberDesc(void *object, size_t index) const
+	VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberAliasGet(void *object, const FastName &texture) const
 	{
-		return InspDesc(MemberName(object, index));
-	}
-	
-	const char* NMaterial::NMaterialStateDynamicTexturesInsp::MemberName(void *object, size_t index) const
-	{
+		VariantType ret;
+
 		NMaterial *state = (NMaterial*) object;
-        UpdateTextureDescrInspVector(state);
-		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
-		
-		return textureDescrInspVector[index].name.c_str();
+		DVASSERT(state);
+
+		const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+		if(textures->count(texture))
+		{
+			ret.SetFilePath(textures->at(texture).path);
+		}
+
+		return ret;
 	}
-	
-	VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, size_t index) const
+
+	VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, const FastName &texture) const
+	{
+		VariantType ret;
+
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+		if(textures->count(texture))
+		{
+			if(textures->at(texture).source & PropData::SOURCE_SELF)
+			{
+				ret.SetFilePath(textures->at(texture).path);
+			}
+		}
+
+		return ret;
+	}
+
+	void NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, const FastName &texture, const VariantType &value)
 	{
 		VariantType ret;
 		NMaterial *state = (NMaterial*) object;
-        UpdateTextureDescrInspVector(state);
-        DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());				
-		ret.SetFilePath(textureDescrInspVector[index].path);
-		
-		return ret;
-	}
-	
-	void NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
-	{
-		NMaterial *state = (NMaterial*) object;
-        UpdateTextureDescrInspVector(state);
-        DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
-        if (value.type == VariantType::TYPE_NONE)
-            state->RemoveTexture(textureDescrInspVector[index].name);
-        else
-            state->SetTexture(textureDescrInspVector[index].name, value.AsFilePath());
-		
-	}
-	
-	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, size_t index) const
-	{
-		NMaterial *state = (NMaterial*) object;
-		UpdateTextureDescrInspVector(state);
-		DVASSERT(state && index >= 0 && index < textureDescrInspVector.size());
+		DVASSERT(state);
 
-		return textureDescrInspVector[index].flags;
+		const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+		if(textures->count(texture))
+		{
+			if(value.type == VariantType::TYPE_NONE)
+			{
+				if(state->textures.count(texture) > 0)
+				{
+					state->RemoveTexture(texture);
+				}
+			}
+			else
+			{
+				state->SetTexture(texture, value.AsFilePath());
+			}
+		}
 	}
 	
+	int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, const FastName &texture) const
+	{
+		int flags = 0;
+
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+		if(textures->count(texture))
+		{
+			const PropData &propData = textures->at(texture);
+
+			if(propData.source & PropData::SOURCE_SELF)
+			{
+				flags |= I_EDIT;
+			}
+
+			if(propData.source & PropData::SOURCE_PARENT)
+			{
+				flags |= I_VIEW;
+			}
+
+			if(propData.source & PropData::SOURCE_SHADER)
+			{
+				flags |= I_SAVE;
+			}
+		}
+
+		return flags;
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicPropertiesInsp implementation
 	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMaterial::NMaterialStateDynamicPropertiesInsp::FindMaterialProperties(NMaterial *state) const
@@ -2020,33 +2083,34 @@ namespace DAVA
 		return &staticData;
 	}
 	
-	size_t NMaterial::NMaterialStateDynamicPropertiesInsp::MembersCount(void *object) const
+	Vector<FastName> NMaterial::NMaterialStateDynamicPropertiesInsp::MembersList(void *object) const
 	{
+		Vector<FastName> ret;
+
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
 		
 		const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
 		
-		return members->size();
+		FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>::iterator it = members->begin();
+		FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>::iterator end = members->end();
+
+		ret.reserve(members->size());
+		while(it != end)
+		{
+			ret.push_back(it->first);
+			++it;
+		}
+
+		return ret;
 	}
 	
-	InspDesc NMaterial::NMaterialStateDynamicPropertiesInsp::MemberDesc(void *object, size_t index) const
+	InspDesc NMaterial::NMaterialStateDynamicPropertiesInsp::MemberDesc(void *object, const FastName &member) const
 	{
-		return InspDesc(MemberName(object, index));
+		return InspDesc(member.c_str());
 	}
 	
-	const char* NMaterial::NMaterialStateDynamicPropertiesInsp::MemberName(void *object, size_t index) const
-	{
-		NMaterial *state = (NMaterial*) object;
-		DVASSERT(state);
-		
-		const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
-		DVASSERT(index < members->size());
-		
-		return members->keyByIndex(index).c_str();
-	}
-	
-	int NMaterial::NMaterialStateDynamicPropertiesInsp::MemberFlags(void *object, size_t index) const
+	int NMaterial::NMaterialStateDynamicPropertiesInsp::MemberFlags(void *object, const FastName &member) const
 	{
 		int flags = 0;
 		
@@ -2054,30 +2118,47 @@ namespace DAVA
 		DVASSERT(state);
 		
 		const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
-		DVASSERT(index < members->size());
-		
-		const PropData &propData = members->valueByIndex(index);
-		const FastName &propName = members->keyByIndex(index);
-		
-		if(propData.source & PropData::SOURCE_SELF)
+		if(members->count(member))
 		{
-			flags |= I_EDIT;
-		}
-		
-		if(propData.source & PropData::SOURCE_PARENT)
-		{
-			flags |= I_VIEW;
-		}
-		
-		if(propData.source & PropData::SOURCE_SHADER)
-		{
-			flags |= I_SAVE;
+			const PropData &propData = members->at(member);
+
+			if(propData.source & PropData::SOURCE_SELF)
+			{
+				flags |= I_EDIT;
+			}
+
+			if(propData.source & PropData::SOURCE_PARENT)
+			{
+				flags |= I_VIEW;
+			}
+
+			if(propData.source & PropData::SOURCE_SHADER)
+			{
+				flags |= I_SAVE;
+			}
 		}
 		
 		return flags;
 	}
 	
-	VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void *object, size_t index) const
+	VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberAliasGet(void *object, const FastName &member) const
+	{
+		VariantType ret;
+
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
+		const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
+		if(members->count(member))
+		{
+			const PropData &prop = members->at(member);
+			ret = getVariant(member, prop);
+		}
+
+		return ret;
+	}
+
+	VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void *object, const FastName &member) const
 	{
 		VariantType ret;
 		
@@ -2085,11 +2166,22 @@ namespace DAVA
 		DVASSERT(state);
 		
 		const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
-		DVASSERT(index < members->size());
+		if(members->count(member))
+		{
+			const PropData &prop = members->at(member);
+			if(prop.source & PropData::SOURCE_SELF)
+			{
+				ret = getVariant(member, prop);
+			}
+		}
 		
-		FastName propName = members->keyByIndex(index);
-		PropData prop = members->valueByIndex(index);
-		
+		return ret;
+	}
+
+	VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::getVariant(const FastName &propName, const PropData &prop) const
+	{
+		VariantType ret;
+
 		// self or parent property
 		if(NULL != prop.data)
 		{
@@ -2098,11 +2190,11 @@ namespace DAVA
 				case Shader::UT_FLOAT:
 					ret.SetFloat(*(float32*) prop.data);
 					break;
-					
+
 				case Shader::UT_FLOAT_VEC2:
 					ret.SetVector2(*(Vector2*) prop.data);
 					break;
-					
+
 				case Shader::UT_FLOAT_VEC3:
 					if(isColor(propName))
 					{
@@ -2114,7 +2206,7 @@ namespace DAVA
 						ret.SetVector3(*(Vector3*) prop.data);
 					}
 					break;
-					
+
 				case Shader::UT_FLOAT_VEC4:
 					if(isColor(propName))
 					{
@@ -2126,54 +2218,54 @@ namespace DAVA
 						ret.SetVector4(*(Vector4*) prop.data);
 					}
 					break;
-					
+
 				case Shader::UT_INT:
 					ret.SetInt32(*(int32*) prop.data);
 					break;
-					
+
 				case Shader::UT_INT_VEC2:
 				case Shader::UT_INT_VEC3:
 				case Shader::UT_INT_VEC4:
 					DVASSERT(false);
 					//TODO: add a way to set int[]
 					break;
-					
+
 				case Shader::UT_BOOL:
 					ret.SetBool((*(int32*) prop.data) != 0);
 					break;
-					
+
 				case Shader::UT_BOOL_VEC2:
 				case Shader::UT_BOOL_VEC3:
 				case Shader::UT_BOOL_VEC4:
 					DVASSERT(false);
 					//TODO: add a way to set bool[]
 					break;
-					
+
 				case Shader::UT_FLOAT_MAT2:
 					ret.SetMatrix2(*(Matrix2*) prop.data);
 					break;
-					
+
 				case Shader::UT_FLOAT_MAT3:
 					ret.SetMatrix3(*(Matrix3*) prop.data);
 					break;
-					
+
 				case Shader::UT_FLOAT_MAT4:
 					ret.SetMatrix4(*(Matrix4*) prop.data);
 					break;
-					
+
 				case Shader::UT_SAMPLER_2D:
 					ret.SetInt32(*(int32*) prop.data);
 					break;
-					
+
 				case Shader::UT_SAMPLER_CUBE:
 					ret.SetInt32(*(int32*) prop.data);
 					break;
-					
+
 				default:
 					DVASSERT(false);
 					break;
 			}
-			
+
 		}
 		// shader property that is not set in self or parent properties
 		else
@@ -2211,7 +2303,7 @@ namespace DAVA
 					break;
 			}
 		}
-		
+
 		return ret;
 	}
 
@@ -2226,212 +2318,195 @@ namespace DAVA
                 );
 	}
 	
-	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
+	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const FastName &member, const VariantType &value)
 	{
-		NMaterial* state = (NMaterial*) object;
-		DVASSERT(index >= 0 && index < MembersCount(object));
-		
+		NMaterial *state = (NMaterial*) object;
+		DVASSERT(state);
+
 		const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
-		DVASSERT(index < members->size());
-		
-		FastName propName = members->keyByIndex(index);
-		PropData prop = members->valueByIndex(index);
-		int propSize = prop.size;
-		Shader::eUniformType propType = prop.type;
-		
-		if(value.GetType() == VariantType::TYPE_NONE)
+		if(members->count(member))
 		{
-			// empty variant value should remove this property
-			state->RemoveMaterialProperty(propName);
-		}
-		else
-		{
-			switch(prop.type)
+			PropData prop = members->at(member);
+			int propSize = prop.size;
+			Shader::eUniformType propType = prop.type;
+		
+			if(value.GetType() == VariantType::TYPE_NONE)
 			{
-				case Shader::UT_FLOAT:
+				// empty variant value should remove this property
+				state->RemoveMaterialProperty(member);
+			}
+			else
+			{
+				switch(prop.type)
 				{
-					float32 val = value.AsFloat();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_FLOAT_VEC2:
-				{
-					const Vector2& val = value.AsVector2();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_FLOAT_VEC3:
-				{
-					Vector3 val;
-				
-					if(isColor(propName))
+					case Shader::UT_FLOAT:
 					{
-						Color c = value.AsColor();
-						val = Vector3(c.r, c.g, c.b);
+						float32 val = value.AsFloat();
+						state->SetPropertyValue(member, propType, propSize, &val);
 					}
-					else
+						break;
+				
+					case Shader::UT_FLOAT_VEC2:
 					{
-						val = value.AsVector3();
+						const Vector2& val = value.AsVector2();
+						state->SetPropertyValue(member, propType, propSize, &val);
 					}
+						break;
 				
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_FLOAT_VEC4:
-				{
-					Vector4 val;
-				
-					if(isColor(propName))
+					case Shader::UT_FLOAT_VEC3:
 					{
-						Color c = value.AsColor();
-						val = Vector4(c.r, c.g, c.b, c.a);
+						Vector3 val;
+				
+						if(isColor(member))
+						{
+							Color c = value.AsColor();
+							val = Vector3(c.r, c.g, c.b);
+						}
+						else
+						{
+							val = value.AsVector3();
+						}
+				
+						state->SetPropertyValue(member, propType, propSize, &val);
 					}
-					else
+						break;
+				
+					case Shader::UT_FLOAT_VEC4:
 					{
-						val = value.AsVector4();
+						Vector4 val;
+				
+						if(isColor(member))
+						{
+							Color c = value.AsColor();
+							val = Vector4(c.r, c.g, c.b, c.a);
+						}
+						else
+						{
+							val = value.AsVector4();
+						}
+				
+						state->SetPropertyValue(member, propType, propSize, &val);
 					}
+						break;
 				
-					state->SetPropertyValue(propName, propType, propSize, &val);
+					case Shader::UT_INT:
+					{
+						int32 val = value.AsInt32();
+						state->SetPropertyValue(member, propType, propSize, &val);
+					}
+						break;
+				
+					case Shader::UT_INT_VEC2:
+					case Shader::UT_INT_VEC3:
+					case Shader::UT_INT_VEC4:
+					{
+						DVASSERT(false);
+						//TODO: add a way to set int[]
+					}
+						break;
+				
+					case Shader::UT_BOOL:
+					{
+						bool val = value.AsBool();
+						state->SetPropertyValue(member, propType, propSize, &val);
+					}
+						break;
+				
+					case Shader::UT_BOOL_VEC2:
+					case Shader::UT_BOOL_VEC3:
+					case Shader::UT_BOOL_VEC4:
+					{
+						DVASSERT(false);
+						//TODO: add a way to set bool[]
+					}
+						break;
+				
+					case Shader::UT_FLOAT_MAT2:
+					{
+						const Matrix2& val = value.AsMatrix2();
+						state->SetPropertyValue(member, propType, propSize, &val);
+					}
+						break;
+				
+					case Shader::UT_FLOAT_MAT3:
+					{
+						const Matrix3& val = value.AsMatrix3();
+						state->SetPropertyValue(member, propType, propSize, &val);
+					}
+						break;
+				
+					case Shader::UT_FLOAT_MAT4:
+					{
+						const Matrix3& val = value.AsMatrix3();
+						state->SetPropertyValue(member, propType, propSize, &val);
+					}
+						break;
+				
+					case Shader::UT_SAMPLER_2D:
+						//VI: samplers are set by config materials
+						break;
+				
+					case Shader::UT_SAMPLER_CUBE:
+						//VI: samplers are set by config materials
+						break;
+				
+					default:
+						DVASSERT(false);
+						break;
 				}
-					break;
-				
-				case Shader::UT_INT:
-				{
-					int32 val = value.AsInt32();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_INT_VEC2:
-				case Shader::UT_INT_VEC3:
-				case Shader::UT_INT_VEC4:
-				{
-					DVASSERT(false);
-					//TODO: add a way to set int[]
-				}
-					break;
-				
-				case Shader::UT_BOOL:
-				{
-					bool val = value.AsBool();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_BOOL_VEC2:
-				case Shader::UT_BOOL_VEC3:
-				case Shader::UT_BOOL_VEC4:
-				{
-					DVASSERT(false);
-					//TODO: add a way to set bool[]
-				}
-					break;
-				
-				case Shader::UT_FLOAT_MAT2:
-				{
-					const Matrix2& val = value.AsMatrix2();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_FLOAT_MAT3:
-				{
-					const Matrix3& val = value.AsMatrix3();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_FLOAT_MAT4:
-				{
-					const Matrix3& val = value.AsMatrix3();
-					state->SetPropertyValue(propName, propType, propSize, &val);
-				}
-					break;
-				
-				case Shader::UT_SAMPLER_2D:
-					//VI: samplers are set by config materials
-					break;
-				
-				case Shader::UT_SAMPLER_CUBE:
-					//VI: samplers are set by config materials
-					break;
-				
-				default:
-					DVASSERT(false);
-					break;
 			}
 		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 	///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
-	FastName NMaterial::NMaterialStateDynamicFlagsInsp::GetName(size_t index) const
-	{
-		FastName ret;
 
-		switch(index)
-		{
-			case 0: ret = FLAG_VERTEXFOG; break;
-			case 2: ret = FLAG_FLATCOLOR; break;
-			case 1: ret = FLAG_TEXTURESHIFT; break;
-			default: break;
-		}
+	Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *object) const
+	{
+		static Vector<FastName> ret;
+
+ 		if(0 == ret.size())
+ 		{
+			ret.reserve(3);
+ 			ret.push_back(FLAG_VERTEXFOG);
+ 			ret.push_back(FLAG_FLATCOLOR);
+ 			ret.push_back(FLAG_TEXTURESHIFT);
+ 		}
 
 		return ret;
 	}
 
-	size_t NMaterial::NMaterialStateDynamicFlagsInsp::MembersCount(void *object) const
+	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, const FastName &member) const
 	{
-		return 3;
+		return InspDesc(member.c_str());
 	}
 
-	InspDesc NMaterial::NMaterialStateDynamicFlagsInsp::MemberDesc(void *object, size_t index) const
-	{
-		return InspDesc(MemberName(object, index));
-	}
-
-	const char* NMaterial::NMaterialStateDynamicFlagsInsp::MemberName(void *object, size_t index) const
-	{
-		return GetName(index).c_str();
-	}
-
-	VariantType NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueGet(void *object, size_t index) const
+	VariantType NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueGet(void *object, const FastName &member) const
 	{
 		VariantType ret;
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
-
-		FastName name = GetName(index);
-		if(name.IsValid())
-		{
-			ret.SetBool((bool) state->GetFlagValue(name));
-		}
+ 
+		ret.SetBool(state->IsFlagEffective(member));
 
 		return ret;
 	}
 
-	void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, size_t index, const VariantType &value)
+	void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, const FastName &member, const VariantType &value)
 	{
 		NMaterial *state = (NMaterial*) object;
 		DVASSERT(state);
 
-		FastName name = GetName(index);
-		if(name.IsValid())
+		NMaterial::eFlagValue newValue = NMaterial::FlagOff;
+		if(value.AsBool())
 		{
-			NMaterial::eFlagValue flag = NMaterial::FlagOff;
-			if(value.AsBool())
-			{
-				flag = NMaterial::FlagOn;
-			}
-
-			state->SetFlag(name, flag);
+			newValue = NMaterial::FlagOn;
 		}
+
+		state->SetFlag(member, newValue);
 	}
 
-	int NMaterial::NMaterialStateDynamicFlagsInsp::MemberFlags(void *object, size_t index) const
+	int NMaterial::NMaterialStateDynamicFlagsInsp::MemberFlags(void *object, const FastName &member) const
 	{
 		return I_VIEW | I_EDIT;
 	}

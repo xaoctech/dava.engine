@@ -356,6 +356,7 @@
     <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\HeightmapEditorCommands2.cpp" />
+    <ClCompile Include="Classes\Commands2\InspDynamicModifyCommand.cpp" />
     <ClCompile Include="Classes\Commands2\InspMemebrModifyCommand.cpp" />
     <ClCompile Include="Classes\Commands2\KeyedArchiveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\LandscapeEditorDrawSystemActions.cpp" />
@@ -412,10 +413,6 @@
     <ClCompile Include="Classes\Qt\DockLODEditor\DistanceSlider.cpp" />
     <ClCompile Include="Classes\Qt\DockLODEditor\EditorLODData.cpp" />
     <ClCompile Include="Classes\Qt\DockLODEditor\LODEditor.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\MaterialDelegate.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\MaterialsWidget.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\SimpleMaterialItem.cpp" />
-    <ClCompile Include="Classes\Qt\DockMaterials\SimpleMaterialModel.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.cpp" />
     <ClCompile Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.cpp" />
@@ -446,6 +443,7 @@
     <ClCompile Include="Classes\Qt\Main\StatusBar.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialEditor.cpp" />
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialFilterModel.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialItem.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialModel.cpp" />
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialTree.cpp" />
@@ -523,13 +521,13 @@
     <ClCompile Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModel.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant.cpp" />
@@ -537,6 +535,7 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\RunGuard\RunGuard.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp" />
@@ -570,10 +569,6 @@
     <ClCompile Include="_GeneratedQt\DockLODEditor\DistanceSlider_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLODEditor\EditorLODData_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockLODEditor\LODEditor_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\MaterialDelegate_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\MaterialsWidget_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\SimpleMaterialItem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\DockMaterials\SimpleMaterialModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\BaseParticleEditorContentWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\EmitterLayerWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockParticleEditor\GradientPickerWidget_moc.cpp" />
@@ -606,6 +601,7 @@
     <ClCompile Include="_GeneratedQt\Main\StatusBar_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialAssignSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialEditor_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialFilterModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialTree_moc.cpp" />
@@ -684,7 +680,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtFileDialog\QtFileDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtLabelWithActions\QtLabelWithActions_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPosSaver\QtPosSaver_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyDataProxy_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspColl_moc.cpp" />
@@ -697,6 +692,7 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyItemDelegate_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyItem_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModelFiltering_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
@@ -966,6 +962,7 @@
     <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\HeightmapEditorCommands2.h" />
+    <ClInclude Include="Classes\Commands2\InspDynamicModifyCommand.h" />
     <ClInclude Include="Classes\Commands2\InspMemberModifyCommand.h" />
     <ClInclude Include="Classes\Commands2\KeyedArchiveCommand.h" />
     <ClInclude Include="Classes\Commands2\LandscapeEditorDrawSystemActions.h" />
@@ -1024,10 +1021,6 @@
     <ClInclude Include="Classes\Qt\DockLODEditor\DistanceSlider.h" />
     <ClInclude Include="Classes\Qt\DockLODEditor\EditorLODData.h" />
     <ClInclude Include="Classes\Qt\DockLODEditor\LODEditor.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\MaterialDelegate.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\MaterialsWidget.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\SimpleMaterialItem.h" />
-    <ClInclude Include="Classes\Qt\DockMaterials\SimpleMaterialModel.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\BaseParticleEditorContentWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\EmitterLayerWidget.h" />
     <ClInclude Include="Classes\Qt\DockParticleEditor\GradientPickerWidget.h" />
@@ -1057,6 +1050,7 @@
     <ClInclude Include="Classes\Qt\Main\StatusBar.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialAssignSystem.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialEditor.h" />
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialFilterModel.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialItem.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialModel.h" />
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialTree.h" />
@@ -1115,6 +1109,7 @@
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertor.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertorWork.h" />
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureInfo.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureList.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListDelegate.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureListModel.h" />
@@ -1138,13 +1133,13 @@
     <ClInclude Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataProxy.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyEditor.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModel.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant.h" />
@@ -1152,6 +1147,7 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataIntrospection.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.h" />
     <ClInclude Include="Classes\Qt\Tools\QtWaitDialog\QtWaitDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\RunGuard\RunGuard.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h" />
     <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.h" />

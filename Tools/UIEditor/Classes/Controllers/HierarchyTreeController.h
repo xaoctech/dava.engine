@@ -114,6 +114,9 @@ public:
 
     const SELECTEDCONTROLNODES& GetActiveControlNodes() const;
 
+	// Loock through all controls and update their values
+	void UpdateControlsData();
+
     // Look through all controls and update their localized texts.
     void UpdateLocalization(bool takePathFromLocalizationSystem);
 
@@ -129,10 +132,7 @@ public:
 	void AdjustSelectedControlsSize();
 
     // Repack and reload sprites.
-    void RepackAndReloadSprites(bool needRepack, bool pixelized);
-
-    // Apply the pixelization.
-    void ApplyPixelizationForAllSprites();
+    void RepackAndReloadSprites();
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);

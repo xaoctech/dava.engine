@@ -161,6 +161,8 @@ TexturesMap Texture::textureMap;
 
 static int32 textureFboCounter = 0;
 
+bool Texture::pixelizationFlag = false;
+
 // Main constructors
 Texture * Texture::Get(const FilePath & pathName)
 {
@@ -194,7 +196,7 @@ Texture::Texture()
 ,	textureType(Texture::TEXTURE_2D)
 ,	isPink(false)
 ,	state(STATE_INVALID)
-,	texDescriptor(NULL)
+,	invalidater(NULL)
 {
 #ifdef __DAVAENGINE_DIRECTX9__
 	saveTexture = 0;
@@ -208,13 +210,13 @@ Texture::Texture()
 	rboID = -1;
 #endif
 
-	invalidater = NULL;
+	texDescriptor = new TextureDescriptor();
 }
 
 Texture::~Texture()
 {
     ReleaseTextureData();
-	SafeRelease(texDescriptor);
+	SafeDelete(texDescriptor);
 }
     
 void Texture::ReleaseTextureData()
@@ -382,7 +384,7 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	if(!image) return NULL;
 
 	Texture * texture = new Texture();
-	texture->texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, generateMipMaps);
+	texture->texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, generateMipMaps);
     
     Vector<Image *> *images = new Vector<Image *>();
     images->push_back(image);
@@ -511,7 +513,7 @@ void Texture::GeneratePixelesationInternal(BaseObject * caller, void * param, vo
 Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu)
 {
 	Texture * texture = new Texture();
-	texture->texDescriptor = SafeRetain(descriptor);
+	texture->texDescriptor->Initialize(descriptor);
 
     Vector<Image *> * images = new Vector<Image *> ();
 	bool loaded = texture->LoadImages(gpu, images);
@@ -532,7 +534,7 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 
 bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 {
-	if(!IsLoadAvailable(gpu, texDescriptor))
+	if(!IsLoadAvailable(gpu))
 		return false;
 	
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
@@ -627,7 +629,6 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
     Vector<Image *> * images = static_cast< Vector<Image *> * >(param);
     
 	DVASSERT(images->size() != 0);
-	DVASSERT(texDescriptor);
 	DVASSERT(Thread::IsMainThread());
 
 #if defined(__DAVAENGINE_OPENGL__)
@@ -651,8 +652,16 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeS]));
 	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeT]));
 
-    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.minFilter]));
-    RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.magFilter]));
+    if (pixelizationFlag)
+    {
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[FILTER_NEAREST]));
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[FILTER_NEAREST]));
+    }
+    else
+    {
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.minFilter]));
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.magFilter]));
+    }
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
 #elif defined(__DAVAENGINE_DIRECTX9__)
@@ -732,7 +741,7 @@ Texture * Texture::PureCreate(const FilePath & pathName)
 		AddToMap(texture);
 	}
 
-	descriptor->Release();
+	delete descriptor;
 	return texture;
 }
     
@@ -750,8 +759,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 
     if(savedPath.Exists())
     {
-        texDescriptor->Release();
-        texDescriptor = TextureDescriptor::CreateFromFile(savedPath);
+        texDescriptor->Initialize(savedPath);
     }
     
 	DVASSERT(NULL != texDescriptor);
@@ -777,16 +785,16 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 }
 
     
-bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily, const TextureDescriptor *descriptor)
+bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily) const
 {
-    if(descriptor->IsCompressedFile())
+    if(texDescriptor->IsCompressedFile())
     {
         return true;
     }
     
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
     
-    if(gpuFamily != GPU_UNKNOWN && descriptor->compression[gpuFamily].format == FORMAT_INVALID)
+    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily].format == FORMAT_INVALID)
     {
         return false;
     }
@@ -806,8 +814,8 @@ int32 Texture::Release()
 	
 Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
-	uint32 dx = ConvertToPower2FBOValue(w);
-	uint32 dy = ConvertToPower2FBOValue(h);
+	uint32 dx = ConvertToPower2Value(w, 8);
+	uint32 dy = ConvertToPower2Value(h, 8);
 
 #if defined(__DAVAENGINE_OPENGL__)
 
@@ -1074,12 +1082,11 @@ Texture * Texture::CreatePink(TextureType requestedType)
 void Texture::MakePink(TextureType requestedType)
 {
 	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
-	SafeRelease(texDescriptor);
 
     Vector<Image *> *images = new Vector<Image *> ();
 	if(Texture::TEXTURE_CUBE == requestedType)
 	{
-		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_REPEAT, true);
+		texDescriptor->Initialize(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
             Image *img = Image::CreatePinkPlaceholder();
@@ -1093,7 +1100,7 @@ void Texture::MakePink(TextureType requestedType)
 	}
 	else
 	{
-		texDescriptor = TextureDescriptor::CreateDescriptor(WRAP_CLAMP_TO_EDGE, false);
+		texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
 		images->push_back(Image::CreatePinkPlaceholder());
 	}
 
@@ -1318,23 +1325,6 @@ void Texture::GenerateCubeFaceNames(const FilePath & filePath, const Vector<Stri
 	}
 }
 
-uint32 Texture::ConvertToPower2FBOValue(uint32 value)
-{
-	if(value < 16)
-	{
-		return 16;
-	}
-
-	if(IsPowerOf2(value))
-		return value;
-
-	uint32 i = 16;
-	while(i < value)
-		i *= 2;
-
-	return i;
-}
-
 const FilePath & Texture::GetPathname() const
 {
     return texDescriptor->pathname;
@@ -1345,5 +1335,23 @@ PixelFormat Texture::GetFormat() const
 	return texDescriptor->format;
 }
 
+void Texture::SetPixelization(bool value)
+{
+    if (value == pixelizationFlag)
+    {
+        return;
+    }
+
+    pixelizationFlag = value;
+    const TexturesMap& texturesMap = GetTextureMap();
+
+    for (Map<FilePath, Texture *>::const_iterator iter = texturesMap.begin(); iter != texturesMap.end(); iter ++)
+    {
+        Texture* texture = iter->second;
+        TextureFilter minFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.minFilter;
+        TextureFilter magFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.magFilter;
+        texture->SetMinMagFilter(minFilter, magFilter);
+    }
+}
 
 };

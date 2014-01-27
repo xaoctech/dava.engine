@@ -18,38 +18,47 @@
 #define __QT_PROPERTY_DATA_INSP_DYNAMIC_H__
 
 #include "Base/Introspection.h"
+#include "Base/FastName.h"
+
 #include "../QtPropertyData.h"
 #include "QtPropertyDataDavaVariant.h"
-//#include "Commands2/InspMemberModifyCommand.h"
+#include "Commands2/InspDynamicModifyCommand.h"
 
 class QtPropertyDataInspDynamic : public QtPropertyDataDavaVariant
 {
 public:
-	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, int _index);
+	QtPropertyDataInspDynamic(void *_object, DAVA::InspInfoDynamic *_dynamicInfo, DAVA::FastName name);
 	virtual ~QtPropertyDataInspDynamic();
 
 	int InspFlags() const;
 
 	virtual const DAVA::MetaInfo * MetaInfo() const;
-	// virtual void* CreateLastCommand() const;
+	virtual void* CreateLastCommand() const;
 
 	DAVA::InspInfoDynamic* GetDynamicInfo() const 
-	{ return dynamicInfo; }
+	{ 
+		return dynamicInfo; 
+	}
 
-	int GetIndex() const 
-	{ return index; }
-	
-	void* GetObject() const 
-	{ return object; }
+	DAVA::VariantType GetVariant() const
+	{
+		return dynamicInfo->MemberValueGet(object, name);
+	}
 
-protected:
-	int index;
-	int inspFlags;
+	DAVA::VariantType GetAliasVariant() const
+	{ 
+		return dynamicInfo->MemberAliasGet(object, name); 
+	}
+
 	void *object;
+	DAVA::FastName name;
 	DAVA::InspInfoDynamic *dynamicInfo;
 
-	// InspDynamicModifyCommand* lastCommand;
+protected:
+	int inspFlags;
+	InspDynamicModifyCommand* lastCommand;
 
+	virtual QVariant GetValueAlias() const;
 	virtual void SetValueInternal(const QVariant &value);
 	virtual bool UpdateValueInternal();
 	virtual bool EditorDoneInternal(QWidget *editor);

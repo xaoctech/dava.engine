@@ -1094,6 +1094,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
+		RenderManager::Instance()->FlushState();
 
 		if(gDodecObject->GetIndexBufferID() != 0)
 		{
@@ -1119,6 +1120,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
+		RenderManager::Instance()->FlushState();
 
 		if(gDodecObject->GetIndexBufferID() != 0)
 		{

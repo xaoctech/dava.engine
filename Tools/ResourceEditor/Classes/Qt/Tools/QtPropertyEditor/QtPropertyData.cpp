@@ -175,7 +175,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	}
 }
 
-bool QtPropertyData::UpdateValue()
+bool QtPropertyData::UpdateValue(bool force)
 {
 	bool ret = false;
 
@@ -183,7 +183,7 @@ bool QtPropertyData::UpdateValue()
 	{
 		updatingValue = true;
 
-		if(UpdateValueInternal())
+		if(UpdateValueInternal() || force)
 		{
 			curValue = GetValueInternal();
 			EmitDataChanged(VALUE_SOURCE_CHANGED);
@@ -361,11 +361,6 @@ QtPropertyData::UserData* QtPropertyData::GetUserData() const
 const DAVA::MetaInfo* QtPropertyData::MetaInfo() const
 {
 	return NULL;
-}
-
-QtPropertyData* QtPropertyData::GetProxyOriginal()
-{
-	return this;
 }
 
 bool QtPropertyData::IsEnabled() const
@@ -724,4 +719,29 @@ bool QtPropertyData::SetEditorDataInternal(QWidget *editor)
 {
 	// should be re-implemented by sub-class
 	return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// QtPropertyToolButton
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool QtPropertyToolButton::event(QEvent * event)
+{
+	int type = event->type();
+
+	if(eventsPassThrought)
+	{
+		if(type != QEvent::Enter &&
+			type != QEvent::Leave &&
+			type != QEvent::MouseMove)
+		{
+			QToolButton::event(event);
+		}
+
+		return false;
+	}
+
+	return QToolButton::event(event);
 }

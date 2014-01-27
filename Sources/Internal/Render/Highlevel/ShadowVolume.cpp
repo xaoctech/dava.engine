@@ -37,6 +37,8 @@
 #include "FileSystem/FilePath.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 
+#include "Render/Material/NMaterialNames.h"
+
 namespace DAVA
 {
 
@@ -48,8 +50,8 @@ ShadowVolume::ShadowVolume()
 		
 	//VI: create single instance of parent shadow volume material
 	static NMaterial* parentShadowVolume = NMaterial::CreateMaterial(MATERIAL_NAME,
-															  FastName("~res:/Materials/Legacy/ShadowVolume.material"),
-															  NMaterial::DEFAULT_QUALITY_NAME);
+                                                                     NMaterialName::SHADOW_VOLUME,
+															         NMaterial::DEFAULT_QUALITY_NAME);
 	parentShadowVolume->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	
 	NMaterial* shadowMat = NMaterial::CreateMaterialInstance();

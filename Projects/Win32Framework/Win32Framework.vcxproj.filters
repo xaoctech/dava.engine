@@ -990,9 +990,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h">
       <Filter>Internal\Render\Material</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ShaderUniformArray.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Entity\Component.h">
       <Filter>Internal\Entity</Filter>
     </ClInclude>
@@ -1415,6 +1412,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VisibilityArray.h">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialNames.h">
+      <Filter>Internal\Render\Material</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.h">
       <Filter>Internal\Scene3D\Converters</Filter>
@@ -2536,6 +2536,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
       <Filter>Internal\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialNames.cpp">
+      <Filter>Internal\Render\Material</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.cpp">
       <Filter>Internal\Scene3D\Converters</Filter>

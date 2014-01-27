@@ -44,15 +44,14 @@ TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 
 TextureProperties::~TextureProperties()
 {
-	Save();
+	curTextureDescriptor = NULL;
 }
 
 void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor)
 {
-	Save();
-	DAVA::SafeRelease(curTextureDescriptor);
+//	DAVA::SafeRelease(curTextureDescriptor);
 
-	curTextureDescriptor = DAVA::SafeRetain(descriptor);
+	curTextureDescriptor = descriptor;
 	origImageSize = QSize(0, 0);
 
 	if(NULL != curTextureDescriptor)
@@ -60,7 +59,7 @@ void TextureProperties::setTextureDescriptor(DAVA::TextureDescriptor *descriptor
 		// enable this widget
 		setEnabled(true);
 
-		// reset mimmap sizes
+		// reset mipmap sizes
 		// we don't know avaliable mipmap sizes for newly set texture until setOriginalSize() method will be called by user
 		MipMapSizesReset();
 
@@ -88,7 +87,7 @@ void TextureProperties::setOriginalImageSize(const QSize &size)
 {
 	origImageSize = size;
 
-	// Init mimmap sizes based on original image size
+	// Init mipmap sizes based on original image size
 	MipMapSizesInit(size.width(), size.height());
 }
 
@@ -338,6 +337,7 @@ void TextureProperties::OnItemEdited(const QModelIndex &index)
 			emit PropertyChanged(PROP_SIZE);
 		}
 	}
+    Save();
 }
 
 void TextureProperties::LoadCurSizeToProp()

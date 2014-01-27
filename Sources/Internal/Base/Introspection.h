@@ -42,6 +42,7 @@
 #include "Base/IntrospectionDynamic.h"
 #include "Base/BaseTypes.h"
 
+
 namespace DAVA
 {
 	// Класс интроспекции. 
@@ -225,12 +226,12 @@ namespace DAVA
 		InspInfoDynamic() : memberDynamic(NULL) {};
 		virtual ~InspInfoDynamic() {};
 
-		virtual size_t MembersCount(void *object) const = 0;
-		virtual InspDesc MemberDesc(void *object, size_t index) const = 0;
-		virtual const char* MemberName(void *object, size_t index) const = 0;
-		virtual int MemberFlags(void *object, size_t index) const = 0;
-		virtual VariantType MemberValueGet(void *object, size_t index) const = 0;
-		virtual void MemberValueSet(void *object, size_t index, const VariantType &value) = 0;
+		virtual Vector<FastName> MembersList(void *object) const = 0;
+		virtual InspDesc MemberDesc(void *object, const FastName &member) const = 0;
+		virtual int MemberFlags(void *object, const FastName &member) const = 0;
+		virtual VariantType MemberAliasGet(void *object, const FastName &member) const { return VariantType(); };
+		virtual VariantType MemberValueGet(void *object, const FastName &member) const = 0;
+		virtual void MemberValueSet(void *object, const FastName &member, const VariantType &value) = 0;
 
 		const InspMemberDynamic* GetMember() const { return memberDynamic; };
 

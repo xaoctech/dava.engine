@@ -32,9 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QDialog>
 #include "DAVAEngine.h"
 
-#include "MaterialModel.h"
 #include "Scene/SceneSignals.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
+#include "DockProperties/PropertyEditorStateHelper.h"
 
 namespace Ui {
 	class MaterialEditor;
@@ -43,6 +43,9 @@ namespace Ui {
 class MaterialEditor : public QDialog, public DAVA::Singleton<MaterialEditor>
 {
 	Q_OBJECT
+
+private:
+    typedef QMap< int, bool > ExpandMap;
 
 public:
 	MaterialEditor(QWidget *parent = 0);
@@ -54,7 +57,8 @@ public:
 public slots:
 	void sceneActivated(SceneEditor2 *scene);
 	void sceneDeactivated(SceneEditor2 *scene);
-	void materialSelected(const QModelIndex & current, const QModelIndex & previous);
+	void commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo);
+	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:
 	void OnAddProperty();
@@ -70,16 +74,26 @@ protected:
 	void SetCurMaterial(DAVA::NMaterial *material);
 	void FillMaterialProperties(DAVA::NMaterial *material);
 	void FillMaterialTextures(DAVA::NMaterial *material);
-	void ScanTemplates();
+    void FillMaterialTemplates(DAVA::NMaterial *material);
+
+    QVariant CheckForTextureDescriptor(const QVariant& value);
+
+private slots:
+    void onFilterChanged();
+    void onCurrentExpandModeChange( bool mode );
+    void autoExpand();
 
 private:
+    void initActions();
+    //void autoExpand();
+
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 
 	DAVA::NMaterial *curMaterial;
 
-	bool templatesScaned;
-	QVector<DAVA::FilePath> templates;
+	PropertyEditorStateHelper *treeStateHelper;
+    ExpandMap expandMap;
 };
 
 #endif

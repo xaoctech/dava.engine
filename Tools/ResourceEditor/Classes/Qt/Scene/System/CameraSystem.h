@@ -99,6 +99,9 @@ protected:
 	void MoveAnimate(DAVA::float32 timeElapsed);
 	DAVA::Entity* GetEntityFromCamera(DAVA::Camera *camera) const;
 
+    bool IsCameraMovementKeyPressed();
+    bool IsModifiersPressed();
+
 protected:
 	DAVA::Rect viewportRect;
 	bool debugCamerasCreated;
@@ -124,7 +127,7 @@ protected:
 	DAVA::uint32				activeSpeedArrayIndex;
 	DAVA::Vector<DAVA::float32>	cameraSpeedArray;
     
-    
+    bool cameraShouldIgnoreKeyboard;
 };
 
 #endif

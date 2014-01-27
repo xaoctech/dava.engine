@@ -55,7 +55,7 @@ TextureListDelegate::TextureListDelegate(QObject *parent /* = 0 */)
 	, nameFontMetrics(nameFont)
 	, drawRule(DRAW_PREVIEW_BIG)
 {
-	QObject::connect(TextureCache::Instance(), SIGNAL(ThumbnailLoaded(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)), this, SLOT(textureReadyThumbnail(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)));
+	QObject::connect(TextureCache::Instance(), SIGNAL(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)), this, SLOT(textureReadyThumbnail(const DAVA::TextureDescriptor *, const TextureInfo &)));
 };
 
 void TextureListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -88,14 +88,14 @@ QSize TextureListDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 	}
 }
 
-void TextureListDelegate::textureReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images)
+void TextureListDelegate::textureReadyThumbnail(const DAVA::TextureDescriptor *descriptor, const TextureInfo & images)
 {
 	if(NULL != descriptor)
 	{
-		if(descriptorIndexes.contains(descriptor))
+		if(descriptorIndexes.contains(descriptor->pathname))
 		{
-			QModelIndex index = descriptorIndexes[descriptor];
-			descriptorIndexes.remove(descriptor);
+			QModelIndex index = descriptorIndexes[descriptor->pathname];
+			descriptorIndexes.remove(descriptor->pathname);
             
 			// this will force item with given index to redraw
 			emit sizeHintChanged(index);
@@ -125,7 +125,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		if(NULL != curTexture)
 		{
 			textureDimension = QSize(curTexture->width, curTexture->height);
-            textureDataSize = QString::fromStdString(SizeInBytesToString(TextureCache::Instance()->getOriginalSize(curTextureDescriptor)));
+            textureDataSize = QString::fromStdString(SizeInBytesToString(TextureCache::Instance()->getThumbnailSize(curTextureDescriptor)));
 		}
 
 		painter->save();
@@ -156,7 +156,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 			// there is no image for this texture in cache
 			// so load it async
             TextureConvertor::Instance()->GetThumbnail(curTextureDescriptor);
-			descriptorIndexes.insert(curTextureDescriptor, index);
+			descriptorIndexes.insert(curTextureDescriptor->pathname, index);
 		}
 
 		// draw formats info
