@@ -123,10 +123,14 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
                     }
 
                     uint32 sourceRenderBatchCount = sourceRenderObject->GetRenderBatchCount();
-                    for(uint32 k = 0; k < sourceRenderBatchCount; ++k)
+                    while(sourceRenderBatchCount)
                     {
-                        RenderBatch * sourceRenderBatch = sourceRenderObject->GetRenderBatch(k);
+                        RenderBatch * sourceRenderBatch = sourceRenderObject->GetRenderBatch(0);
+                        sourceRenderBatch->Retain();
+                        sourceRenderObject->RemoveRenderBatch(sourceRenderBatch);
                         ro->AddRenderBatch(sourceRenderBatch, data->layer, -1);
+                        sourceRenderBatch->Release();
+                        sourceRenderBatchCount--;
                     }
                     sourceRenderObject->Release();
                 }

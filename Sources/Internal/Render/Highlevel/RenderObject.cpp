@@ -72,6 +72,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _switchIndex)
 {
 	batch->Retain();
+    DVASSERT((batch->GetRenderObject() == 0) || (batch->GetRenderObject() == this));
 	batch->SetRenderObject(this);
 	
 	IndexedRenderBatch ind;
@@ -112,7 +113,8 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 		{
 			renderBatchArray[k] = renderBatchArray[size - 1];
 			renderBatchArray.pop_back();
-			break;
+            k--;
+            size--;
 		}
 	}
 
