@@ -205,17 +205,9 @@ QStringList ResourcesManageHelper::GetFontsList()
     // Get absoulute path
     QString fontsPath = QString::fromStdString(FilePath(FONTS_RES_PATH).GetAbsolutePathname());
     QDir dir(fontsPath);
-    // Get the list of files in fonts directory
-    filesNamesList = dir.entryList(FONTS_EXTENSIONS_FILTER, QDir::Files);	
+    // Get the list of files in fonts directory - both true type fonts and graphics fonts
+    filesNamesList = dir.entryList(FONTS_EXTENSIONS_FILTER, QDir::Files);
 	fontsPath.clear();
-	
-	// Get graphics fonts
-	fontsPath = QString::fromStdString(FilePath(GRAPHICS_FONTS_RES_PATH).GetAbsolutePathname());
-	// If we can't open graphics font directory - do nothing
-	if (dir.cd(fontsPath))
-	{
-		filesNamesList.append(dir.entryList(FONTS_EXTENSIONS_FILTER, QDir::Files));
-    }
     return filesNamesList;
 }
 
