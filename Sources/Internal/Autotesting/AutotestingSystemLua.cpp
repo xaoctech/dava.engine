@@ -682,9 +682,12 @@ bool AutotestingSystemLua::LoadScriptFromFile(const FilePath &luaFilePath)
 	{
 		char *data = new char[file->GetSize()];
 		file->Read(data, file->GetSize());
-		bool result = luaL_loadbuffer(luaState, data, file->GetSize(), luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK;
+		uint32 fileSize = file->GetSize();
 		file->Release();
-		delete data;
+		file = NULL;
+
+		bool result = luaL_loadbuffer(luaState, data, fileSize, luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK;
+		delete [] data;
 		if (result)
 		{
 			return true;
