@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Main/mainwindow.h"
 #include "Main/QtUtils.h"
+#include "Project/ProjectManager.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
@@ -51,7 +52,6 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
 , curMaterial(NULL)
-, templatesScaned(false)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -66,6 +66,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Deactivated(SceneEditor2 *)), this, SLOT(sceneDeactivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT( autoExpand() ));
 	
 	// material tree
 	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
@@ -170,28 +171,13 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 
 			child->deleteLater();
 		}
-		}
+	}
 
 	if(NULL != material)
 	{
 		FillMaterialProperties(material);
 		FillMaterialTextures(material);
-
-		// set current template
-		DAVA::FilePath curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
-		int curIndex = templates.indexOf(curMaterialTemplate);
-
-		if(-1 != curIndex)
-		{
-			ui->templateBox->setCurrentIndex(curIndex);
-		}
-		else
-		{
-			ui->templateBox->setCurrentIndex(0);
-		}
-
-		// enable template selection only for real materials, not instances
-		ui->templateBox->setEnabled(DAVA::NMaterial::MATERIALTYPE_MATERIAL == material->GetMaterialType());
+        FillMaterialTemplates(material);
 	}
 
 	// Restore back the tree view state from the shared storage.
@@ -263,12 +249,8 @@ void MaterialEditor::onCurrentExpandModeChange( bool mode )
 
 void MaterialEditor::showEvent(QShowEvent * event)
 {
+    FillMaterialTemplates(NULL);
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
-
-	if(!templatesScaned)
-	{
-		ScanTemplates();
-	}
 }
 
 void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
@@ -444,44 +426,43 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 	}
 }
 
-void MaterialEditor::ScanTemplates()
+void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
 {
-	int i = 0;
-	QtWaitDialog waitDlg;
-	waitDlg.Show("Scanning material templates", "", true, false);
+    if(0 == ui->templateBox->count())
+    {
+        ui->templateBox->addItem("Unknown", QString());
 
-	templates.clear();
-	ui->templateBox->clear();
+        const QVector<ProjectManager::AvailableMaterialTemplate> *templates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
+        for(int i = 0; i < templates->size(); ++i)
+        {
+            ui->templateBox->addItem(templates->at(i).name, templates->at(i).path);
+        }
+    }
 
-	// add unknown template
-	templates.append("");
-	ui->templateBox->addItem("Unknown", i++);
+    if(NULL != material)
+    {
+        int indexToSet = 0;
+        QString curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
 
-	DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/assignable.txt");
-	if(materialsListPath.Exists())
-	{
-		QString materialsListDir = materialsListPath.GetDirectory().GetAbsolutePathname().c_str();
+        for(int i = 0; i < ui->templateBox->count(); ++i)
+        {
+            if(curMaterialTemplate == ui->templateBox->itemData(i).toString())
+            {
+                indexToSet = i;
+                break;
+            }
+        }
 
-		// scan for known templates
-		QFile materialsListFile(materialsListPath.GetAbsolutePathname().c_str());
-		if(materialsListFile.open(QIODevice::ReadOnly))
-		{
-			QTextStream in(&materialsListFile);
-			while(!in.atEnd())
-			{
-				QFileInfo materialPath(materialsListDir + in.readLine());
-				if(materialPath.exists())
-				{
-					templates.append(DAVA::FilePath(materialPath.absoluteFilePath().toAscii().data()).GetFrameworkPath());
-					ui->templateBox->addItem(materialPath.completeBaseName(), i++);
-				}
-			}
-			materialsListFile.close();
-		}
-	}
+        ui->templateBox->setCurrentIndex(indexToSet);
 
-	waitDlg.Reset();
-	templatesScaned = true;
+        // enable template selection only for real materials, not instances
+        ui->templateBox->setEnabled(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL);
+    }
+    else
+    {
+        ui->templateBox->setCurrentIndex(0);
+        ui->templateBox->setEnabled(false);
+    }
 }
 
 void MaterialEditor::OnAddProperty()
@@ -558,10 +539,19 @@ void MaterialEditor::OnRemTexture()
 
 void MaterialEditor::OnTemplateChanged(int index)
 {
-	if(NULL != curMaterial && index > 0 && index < templates.size())
+	if(NULL != curMaterial && index > 0)
 	{
-		DAVA::FilePath newTemplateName = templates[index];
-		DAVA::NMaterialHelper::SwitchTemplate(curMaterial, DAVA::FastName(newTemplateName.GetFrameworkPath().c_str()));
+        QString newTemplatePath = ui->templateBox->itemData(index).toString();
+        if(!newTemplatePath.isEmpty())
+        {
+            const DAVA::InspMember *templateMember = curMaterial->GetTypeInfo()->Member("materialTemplate");
+
+            if(NULL != templateMember)
+            {
+                QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, curMaterial, 
+                    DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
+            }
+        }
 	}
 
 	SetCurMaterial(curMaterial);

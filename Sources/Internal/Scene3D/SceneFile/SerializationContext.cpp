@@ -297,7 +297,8 @@ namespace DAVA
 				material->SetFlag(NMaterial::FLAG_TEXTURESHIFT, NMaterial::FlagOn);
 			}
 			
-			if(oldMaterial->IsFlatColorEnabled())
+			if(oldMaterial->IsFlatColorEnabled() &&
+               Material::MATERIAL_SKYBOX != oldMaterial->type)
 			{
 				material->SetFlag(NMaterial::FLAG_FLATCOLOR, NMaterial::FlagOn);
 			}
@@ -358,17 +359,6 @@ namespace DAVA
 				}
 			}
 			
-			if(Material::MATERIAL_SKYBOX == oldMaterial->type)
-			{
-				Texture* tex = PrepareTexture(Texture::TEXTURE_CUBE, oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE));
-				material->SetTexture(NMaterial::TEXTURE_CUBEMAP, tex);
-				
-				if(tex->isPink)
-				{
-					SafeRelease(tex);
-				}
-			}
-			
 			if(Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE == oldMaterial->type ||
 			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR == oldMaterial->type ||
 			   Material::MATERIAL_PIXEL_LIT_NORMAL_DIFFUSE_SPECULAR_MAP == oldMaterial->type)
@@ -381,8 +371,20 @@ namespace DAVA
 					SafeRelease(tex);
 				}
 			}
+            
+            if(Material::MATERIAL_SKYBOX == oldMaterial->type)
+            {
+                Texture* tex = PrepareTexture(Texture::TEXTURE_CUBE, oldMaterial->GetTexture(Material::TEXTURE_DIFFUSE));
+                material->SetTexture(NMaterial::TEXTURE_CUBEMAP, tex);
+                
+                if(tex->isPink)
+                {
+                    SafeRelease(tex);
+                }
+            }
 
-			if(oldMaterial->IsFlatColorEnabled())
+			if(oldMaterial->IsFlatColorEnabled() &&
+               Material::MATERIAL_SKYBOX != oldMaterial->type)
 			{
 				material->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &oldMaterialState->GetFlatColor());
 			}

@@ -67,6 +67,14 @@ void UIWebView::OpenURL(const String& urlToOpen)
 	this->webViewControl->OpenURL(urlToOpen);
 }
 
+void UIWebView::SetParent(UIControl* control)
+{
+    UIControl::SetParent(control);
+
+    // NULL as parent means we are removed from the hierarchy - hide us in this case.
+    webViewControl->SetVisible(control != NULL, false);
+}
+
 void UIWebView::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)
 {
 	UIControl::SetPosition(position, positionInAbsoluteCoordinates);
