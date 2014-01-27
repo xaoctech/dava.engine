@@ -83,6 +83,8 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         
         if(isOk)
         {
+			FilePath api = "~res:/Autotesting/Scripts/autotesting_api.lua";
+			FileSystem::Instance()->IsFile(api);
             isOk = RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
         }
         else
@@ -186,7 +188,7 @@ const char *AutotestingSystemLua::findfile (lua_State *L, const char *name, cons
 
 int AutotestingSystemLua::ReqModule(lua_State* L)
 {
-	String module = lua_tostring(L, 1);
+	String module = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	FilePath path = AutotestingSystemLua::Instance()->findfile(L, module.c_str(), "path");
 
