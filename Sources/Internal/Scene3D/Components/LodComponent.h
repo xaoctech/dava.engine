@@ -188,7 +188,7 @@ void LodComponent::EnableRecursiveUpdate()
 
 bool LodComponent::IsRecursiveUpdate()
 {
-    return flags & RECURSIVE_UPDATE;
+    return (flags & RECURSIVE_UPDATE) != 0;
 }
     
 };
