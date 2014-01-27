@@ -564,6 +564,11 @@ void HierarchyTreeController::SynchronizeSelection(const QList<HierarchyTreeCont
     }
 }
 
+void HierarchyTreeController::UpdateControlsData()
+{
+	 hierarchyTree.UpdateControlsData();
+}
+
 void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
 {
     // Update the Active Platform.
