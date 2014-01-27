@@ -86,8 +86,8 @@ TextureBrowser::TextureBrowser(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
 	// convertor signals
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const DAVA::Vector<QImage>&)));
-	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const DAVA::Vector<QImage>&)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const DAVA::Vector<QImage>&)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyOriginal(const DAVA::TextureDescriptor *, const TextureInfo &)), this, SLOT(textureReadyOriginal(const DAVA::TextureDescriptor *, const TextureInfo &)));
+	QObject::connect(TextureConvertor::Instance(), SIGNAL(ReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const TextureInfo &)), this, SLOT(textureReadyConverted(const DAVA::TextureDescriptor *, const DAVA::eGPUFamily, const TextureInfo &)));
 
 	setupStatusBar();
 	setupTexturesList();
@@ -188,12 +188,13 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 
 		// load original image
 		// check if image is in cache
-		DAVA::Vector<QImage> images = TextureCache::Instance()->getOriginal(curDescriptor);
-		if(images.size() > 0 &&
-		   !images[0].isNull())
+		TextureInfo info;
+		info.images = TextureCache::Instance()->getOriginal(curDescriptor);
+		if(info.images.size() > 0 &&
+		   !info.images[0].isNull())
 		{
 			// image is in cache, so set it immediately (by calling image-ready slot)
-			textureReadyOriginal(curDescriptor, images);
+			textureReadyOriginal(curDescriptor, info);
 		}
 		else
 		{
@@ -603,7 +604,8 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
 		if(DAVA::GPU_UNKNOWN == gpu || gpu == curEditorImageGPUForTextures)
 		{
-			texture->ReloadAs(gpu);
+			descriptor->Save(); //TODO: it's kostil for broken logic. We need to remove this code during refactoring of texture browser
+			texture->ReloadAs(curEditorImageGPUForTextures);
 		}
 	}
 }
@@ -697,7 +699,7 @@ void TextureBrowser::texturePropertyChanged(int type)
 	updatePropertiesWarning();
 }
 
-void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const DAVA::Vector<QImage>& images)
+void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descriptor, const TextureInfo & images)
 {
 	if(NULL != descriptor)
 	{
@@ -705,31 +707,31 @@ void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descrip
 		{
 			if(descriptor->IsCubeMap())
 			{
-				ui->textureAreaOriginal->setImage(images, descriptor->faceDescription);
+				ui->textureAreaOriginal->setImage(images.images, descriptor->faceDescription);
 			}
 			else
 			{
-				ui->textureAreaOriginal->setImage(images[0]);
+				ui->textureAreaOriginal->setImage(images.images[0]);
 			}
 			ui->textureAreaOriginal->setEnabled(true);
 			ui->textureAreaOriginal->waitbarShow(false);
 
 			// set info about original image size info texture properties
-			ui->textureProperties->setOriginalImageSize(images[0].size());
+			ui->textureProperties->setOriginalImageSize(images.images[0].size());
 
 			// set info about loaded image
-			updateInfoOriginal(images);
+			updateInfoOriginal(images.images);
 		}
 	}
 }
 
-void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const DAVA::Vector<QImage>& images)
+void TextureBrowser::textureReadyConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const TextureInfo & images)
 {
 	if(NULL != descriptor)
 	{
 		if(curDescriptor == descriptor && curTextureView == gpu)
 		{
-			updateConvertedImageAndInfo(images, *curDescriptor);
+			updateConvertedImageAndInfo(images.images, *curDescriptor);
 		}
 
 		DAVA::Texture *texture = textureListModel->getTexture(descriptor);

@@ -47,6 +47,8 @@
 #include "Render/Material/NMaterial.h"
 #include "Scene3D/Systems/MaterialSystem.h"
 
+#include "Render/Material/NMaterialNames.h"
+
 namespace DAVA
 {
 
@@ -148,8 +150,8 @@ Landscape::Landscape()
     fogColor = Color::White;
 	
 	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
-																FastName("~res:/Materials/Legacy/TileMask.material"),
-																NMaterial::DEFAULT_QUALITY_NAME);
+                                                            NMaterialName::TILE_MASK,
+                                                            NMaterial::DEFAULT_QUALITY_NAME);
 
 	
 	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();

@@ -196,6 +196,13 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(texturePathname);
 	
 	TextureDescriptor* desc = TextureDescriptor::CreateFromFile(descriptorPathname);
+	if(!desc)
+	{
+		//errorLog.insert(Format("Can't open file %s", descriptorPathname.GetAbsolutePathname().c_str()));
+        Logger::Error("Can't open file %s", descriptorPathname.GetAbsolutePathname().c_str());
+		return;
+	}
+
 	if(desc->IsCubeMap())
 	{
 		sceneUtils.AddFile(descriptorPathname);
@@ -217,7 +224,7 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
 		sceneUtils.AddFile(pngPathname);
 	}
 	
-	SafeRelease(desc);
+	delete desc;
 }
 
 void SceneSaver::CopyReferencedObject( Entity *node)

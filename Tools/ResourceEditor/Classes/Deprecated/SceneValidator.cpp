@@ -45,6 +45,8 @@
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
+#include "Render/Material/NMaterialNames.h"
+
 SceneValidator::SceneValidator()
 {
     pathForChecking = String("");
@@ -195,14 +197,13 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
     
     bool isSpeedTree = false;
 
-	FastName speedTreeTemplateName("~res:/Materials/Legacy/SpeedTreeLeaf.material");
     uint32 count = ro->GetRenderBatchCount();
     for(uint32 b = 0; b < count; ++b)
     {
         RenderBatch *renderBatch = ro->GetRenderBatch(b);
         ValidateRenderBatch(ownerNode, renderBatch, errorsLog);
 
-        isSpeedTree |= (renderBatch->GetMaterial() && renderBatch->GetMaterial()->GetMaterialTemplate()->name == speedTreeTemplateName);
+        isSpeedTree |= (renderBatch->GetMaterial() && renderBatch->GetMaterial()->GetMaterialTemplate()->name == NMaterialName::SPEEDTREE_LEAF);
     }
     
     if(isSpeedTree && !IsPointerToExactClass<SpeedTreeObject>(ro))
@@ -726,7 +727,7 @@ bool SceneValidator::IsTextureChanged(const FilePath &texturePathname, eGPUFamil
     if(descriptor)
     {
         isChanged = IsTextureChanged(descriptor, forGPU);
-        SafeRelease(descriptor);
+		delete descriptor;
     }
 
     return isChanged;

@@ -33,6 +33,7 @@
 #include "EditorFontManager.h"
 
 #include "StringUtils.h"
+#include "ColorHelper.h"
 
 using namespace DAVA;
 
@@ -150,7 +151,7 @@ QColor UIStaticTextMetadata::GetFontColor() const
         return QColor();
     }
 
-	return DAVAColorToQTColor(GetActiveStaticText()->GetTextColor());
+	return ColorHelper::DAVAColorToQTColor(GetActiveStaticText()->GetTextColor());
 }
 
 void UIStaticTextMetadata::SetFontColor(const QColor& value)
@@ -160,7 +161,7 @@ void UIStaticTextMetadata::SetFontColor(const QColor& value)
         return;
     }
 
-	GetActiveStaticText()->SetTextColor(QTColorToDAVAColor(value));
+	GetActiveStaticText()->SetTextColor(ColorHelper::QTColorToDAVAColor(value));
 }
 
 float UIStaticTextMetadata::GetShadowOffsetX() const
@@ -210,7 +211,7 @@ QColor UIStaticTextMetadata::GetShadowColor() const
     	return QColor();
     }
 	
-	return DAVAColorToQTColor(GetActiveStaticText()->GetShadowColor());
+	return ColorHelper::DAVAColorToQTColor(GetActiveStaticText()->GetShadowColor());
 }
 
 void UIStaticTextMetadata::SetShadowColor(const QColor& value)
@@ -220,7 +221,7 @@ void UIStaticTextMetadata::SetShadowColor(const QColor& value)
         return;
     }
 	
-	GetActiveStaticText()->SetShadowColor(QTColorToDAVAColor(value));
+	GetActiveStaticText()->SetShadowColor(ColorHelper::QTColorToDAVAColor(value));
 }
 
 int UIStaticTextMetadata::GetAlign()

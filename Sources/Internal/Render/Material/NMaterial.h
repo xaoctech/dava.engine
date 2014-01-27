@@ -186,8 +186,8 @@ public:
 	{
 		FlagOff = 0,
 		FlagOn = 1,
-		FlagOffOverride = 2,
-		FlagOnOverride = 3
+		
+        FlagInherited = 2 //VI: this bit is set for flags inherited from the parent
 	};
 	
 public:
@@ -213,7 +213,7 @@ public:
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
     uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light);
+    void SetLight(uint32 index, Light * light, bool forceUpdate);
     Light * GetLight(uint32 index) { return lights[index]; };
 	inline bool IsDynamicLit() {return materialDynamicLit;}
 	//}END TODO
@@ -222,7 +222,11 @@ public:
 	void Draw(RenderDataObject* renderData, uint16* indices = NULL, uint16 indexCount = 0);
 	
 	void SetFlag(const FastName& flag, eFlagValue flagValue);
+    void ResetFlag(const FastName& flag);
+    //VI: this method returns current flag value witb bit "FlagInherited" set to 1 if flag value were take from the parent
 	int32 GetFlagValue(const FastName& flag) const;
+    //VI: this mtehod is for testing in overall if the given flag is effective for this material object
+    bool IsFlagEffective(const FastName& flag) const;
     
 	void BindMaterialTechnique(const FastName & passName, Camera* camera);
 	inline uint32 GetRequiredVertexFormat() {return requiredVertexFormat;}
@@ -293,6 +297,8 @@ public:
 									 const FastName& defaultQuality);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
+    void SetMaterialTemplateName(const FastName& templateName);
+    FastName GetMaterialTemplateName() const;
 
 protected:
 	
@@ -398,7 +404,7 @@ protected:
 	void SetMaterialTemplate(const NMaterialTemplate* matTemplate, const FastName& defaultQuality);
 	
 	void BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet);
-	void BuildEffectiveFlagSet(HashMap<FastName, int32>& effectiveFlagSet);
+	void BuildEffectiveFlagSetInternal(FastNameSet& effectiveFlagSet);
 		
 	void ReleaseInstancePasses();
 	
@@ -416,7 +422,7 @@ protected:
 	bool IsTextureActive(const FastName& textureName) const;
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
-	void UpdateShaderWithFlags();
+	void UpdateShaderWithFlags(bool updateChildren = false);
 	static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
@@ -426,7 +432,7 @@ protected:
 	//VI: this method is for updating light. It's temporary solution hopefully
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
-	void SetLightInternal(int index, Light* light);
+	void SetLightInternal(int index, Light* light, bool forceUpdate);
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
 		
@@ -445,47 +451,53 @@ public:
 	class NMaterialStateDynamicTexturesInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberAliasGet(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
+
 	protected:
-		struct TextureDescrInsp
-		{			
-			int flags;
+		struct PropData
+		{
+			enum PropSource
+			{
+				SOURCE_UNKNOWN = 0x0,
+				SOURCE_SELF = 0x1,
+				SOURCE_PARENT = 0x2,
+				SOURCE_SHADER = 0x4
+			};
+
+			PropData() : source(SOURCE_UNKNOWN)
+			{ }
+
+			int source;
 			FilePath path;
-			FastName name;
-			bool empty;
-			TextureDescrInsp():flags(I_VIEW), empty(true){}
 		};
-		static Vector<TextureDescrInsp> textureDescrInspVector;
-		void UpdateTextureDescrInspVector(NMaterial *state) const;
+
+		const FastNameMap<PropData>* FindMaterialTextures(NMaterial *state) const;
 	};
 
 	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
-	protected:
-		FastName GetName(size_t index) const;
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 	};
 
 	class NMaterialStateDynamicPropertiesInsp : public InspInfoDynamic
 	{
 	public:
-		size_t MembersCount(void *object) const;
-		InspDesc MemberDesc(void *object, size_t index) const;
-		const char* MemberName(void *object, size_t index) const;
-		int MemberFlags(void *object, size_t index) const;
-		VariantType MemberValueGet(void *object, size_t index) const;
-		void MemberValueSet(void *object, size_t index, const VariantType &value);
+		Vector<FastName> MembersList(void *object) const;
+		InspDesc MemberDesc(void *object, const FastName &member) const;
+		int MemberFlags(void *object, const FastName &member) const;
+		VariantType MemberAliasGet(void *object, const FastName &member) const;
+		VariantType MemberValueGet(void *object, const FastName &member) const;
+		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 		
 	protected:
 		struct PropData
@@ -508,6 +520,7 @@ public:
 		};
 		
 		bool isColor(const FastName &propName) const;
+		VariantType getVariant(const FastName &propName, const PropData &propData) const;
 		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
 	};
 	
@@ -516,6 +529,7 @@ public:
 	INTROSPECTION_EXTEND(NMaterial, DataNode,
 				  //(DAVA::CreateIspProp("materialName", "Material name", &NMaterial::GetMaterialName, &NMaterial::SetMaterialName, I_SAVE | I_EDIT | I_VIEW),
 				  MEMBER(materialName, "Material name", I_SAVE | I_EDIT | I_VIEW)
+                  PROPERTY("materialTemplate", "Material template", GetMaterialTemplateName, SetMaterialTemplateName, I_SAVE)
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)

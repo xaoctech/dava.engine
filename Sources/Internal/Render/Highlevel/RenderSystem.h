@@ -130,6 +130,7 @@ public:
     void AddLight(Light * light);
     void RemoveLight(Light * light);
     Vector<Light*> & GetLights();
+    void SetForceUpdateLights();
 
 	//RenderLayer * AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer);
 	//RenderPass * GetRenderPass(const FastName & passName);
@@ -162,6 +163,7 @@ private:
     Vector<RenderObject*> renderObjectArray;
 	Vector<RenderObject*> particleEmitterArray;
     Vector<Light*> lights;
+    bool forceUpdateLights;
     
     RenderHierarchy * renderHierarchy;
 	bool hierarchyInitialized;

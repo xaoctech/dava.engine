@@ -62,6 +62,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 	, animateToNewPosTime(0)
 	, debugCamerasCreated(false)
     , distanceToCamera(0.f)
+    , cameraShouldIgnoreKeyboard(false)
 {
 	renderState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_WRITE);
 	
@@ -364,13 +365,37 @@ void SceneCameraSystem::RemoveEntity(DAVA::Entity * entity)
 	}
 }
 
+bool SceneCameraSystem::IsCameraMovementKeyPressed()
+{
+    DAVA::KeyboardDevice *kd = DAVA::InputSystem::Instance()->GetKeyboard();
+    bool movingKeyPressed = kd->IsKeyPressed(DAVA::DVKEY_UP) | kd->IsKeyPressed(DAVA::DVKEY_W) |
+                            kd->IsKeyPressed(DAVA::DVKEY_LEFT) | kd->IsKeyPressed(DAVA::DVKEY_A) |
+                            kd->IsKeyPressed(DAVA::DVKEY_DOWN) | kd->IsKeyPressed(DAVA::DVKEY_S) |
+                            kd->IsKeyPressed(DAVA::DVKEY_RIGHT) | kd->IsKeyPressed(DAVA::DVKEY_D);
+
+    return movingKeyPressed;
+}
+
+bool SceneCameraSystem::IsModifiersPressed()
+{
+    return (QApplication::queryKeyboardModifiers() != Qt::NoModifier);
+}
+
 void SceneCameraSystem::ProcessKeyboardMove(DAVA::float32 timeElapsed)
 {
 	if(NULL != curSceneCamera)
 	{
 		DAVA::float32 moveSpeed = cameraSpeedArray[activeSpeedArrayIndex] * timeElapsed;        
 
-		if(Qt::NoModifier == QApplication::keyboardModifiers())
+        // since pressing shortcuts with camera movement keys could produce camera flickering,
+        // camera should ignore movement till both - modifier keys and movement keys - are released
+        if (!IsCameraMovementKeyPressed())
+        {
+            cameraShouldIgnoreKeyboard = false;
+        }
+        cameraShouldIgnoreKeyboard |= IsModifiersPressed();
+
+		if(!cameraShouldIgnoreKeyboard)
 		{
 			DAVA::KeyboardDevice *kd = DAVA::InputSystem::Instance()->GetKeyboard();
 
