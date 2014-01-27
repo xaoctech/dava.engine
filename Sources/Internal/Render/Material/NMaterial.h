@@ -176,10 +176,10 @@ public:
 	static const FastName FLAG_LIGHTMAPONLY;
 	static const FastName FLAG_TEXTUREONLY; //VI: this flag is for backward compatibility with old materials. See FLAG_ALBEDOONLY
 	static const FastName FLAG_SETUPLIGHTMAP;
-    static const FastName FLAG_ALBEDOONLY;
-    static const FastName FLAG_AMBIENTONLY;
-    static const FastName FLAG_DIFFUSEONLY;
-    static const FastName FLAG_SPECULARONLY;
+    static const FastName FLAG_VIEWALBEDO;
+    static const FastName FLAG_VIEWAMBIENT;
+    static const FastName FLAG_VIEWDIFFUSE;
+    static const FastName FLAG_VIEWSPECULAR;
 
 	
 	static const FastName DEFAULT_QUALITY_NAME;

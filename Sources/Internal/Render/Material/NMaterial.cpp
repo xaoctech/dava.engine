@@ -90,10 +90,10 @@ namespace DAVA
 	const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 	const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
 	const FastName NMaterial::FLAG_SETUPLIGHTMAP = FastName("SETUP_LIGHTMAP");
-    const FastName NMaterial::FLAG_ALBEDOONLY = FastName("VIEW_ALBEDO_ONLY");
-    const FastName NMaterial::FLAG_AMBIENTONLY = FastName("VIEW_AMBIENT_ONLY");
-    const FastName NMaterial::FLAG_DIFFUSEONLY = FastName("VIEW_DIFFUSE_ONLY");
-    const FastName NMaterial::FLAG_SPECULARONLY = FastName("VIEW_SPECULAR_ONLY");
+    const FastName NMaterial::FLAG_VIEWALBEDO = FastName("VIEW_ALBEDO");
+    const FastName NMaterial::FLAG_VIEWAMBIENT = FastName("VIEW_AMBIENT");
+    const FastName NMaterial::FLAG_VIEWDIFFUSE = FastName("VIEW_DIFFUSE");
+    const FastName NMaterial::FLAG_VIEWSPECULAR = FastName("VIEW_SPECULAR");
 
 	static FastName TEXTURE_NAME_PROPS[] =
     {
@@ -110,10 +110,10 @@ namespace DAVA
 		NMaterial::FLAG_TEXTUREONLY,
 		NMaterial::FLAG_SETUPLIGHTMAP,
         
-        NMaterial::FLAG_ALBEDOONLY,
-        NMaterial::FLAG_AMBIENTONLY,
-        NMaterial::FLAG_DIFFUSEONLY,
-        NMaterial::FLAG_SPECULARONLY
+        NMaterial::FLAG_VIEWALBEDO,
+        NMaterial::FLAG_VIEWAMBIENT,
+        NMaterial::FLAG_VIEWDIFFUSE,
+        NMaterial::FLAG_VIEWSPECULAR
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
