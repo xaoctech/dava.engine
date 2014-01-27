@@ -28,17 +28,36 @@
 
 
 
-#ifndef __QT_PROJECT_PATH_VALIDATOR_H__
-#define __QT_PROJECT_PATH_VALIDATOR_H__
+#ifndef __QT_REG_EXP_VALIDATOR_H__
+#define __QT_REG_EXP_VALIDATOR_H__
 
 #include "QtPropertyDataValidator.h"
+#include <QRegExpValidator>
 
-class ProjectPathValidator : public QtPropertyDataValidator
+class RegExpValidator : public QtPropertyDataValidator
 {
-    virtual QtPropertyDataValidator::eValidationState Validate(const QVariant &value) const;
+public:
     
-    virtual void Notify(const QVariant &value) const;
+    RegExpValidator(const QString& value);
+    
+    QString GetRegularExpression();
+    
+    void SetRegularExpression(const QString& value);
+
+    
+protected:
+
+    virtual bool ValidateInternal(const QVariant &v) const;
+    
+    virtual void ErrorNotifyInternal() const
+    {
+    }
+
+private:
+    
+    QString regExpressionValue;
+    
+    QRegExpValidator innerValidator;
 };
 
-
-#endif // __QT_PROJECT_PATH_VALIDATOR_H__
+#endif // __QT_REG_EXP_VALIDATOR_H__

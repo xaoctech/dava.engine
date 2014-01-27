@@ -163,9 +163,8 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
         }
         else
         {
-            validator->Notify(value);
             return;
-        }        
+        }
     }
     else
     {
@@ -408,6 +407,11 @@ void QtPropertyData::SetValidator(QtPropertyDataValidator* value)
 {
     DAVA::SafeDelete(validator);
     validator = value;
+}
+
+QtPropertyDataValidator* QtPropertyData::GetValidator() const
+{
+    return validator;
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) const

@@ -32,6 +32,8 @@
 #include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Qt/Tools/QtPropertyEditor/QtPropertyData.h"
+#include "Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/RegExpValidator.h"
 
 #include <QFileInfo>
 #include <QKeyEvent>
@@ -125,8 +127,34 @@ void SelectPathWidgetBase::OpenClicked()
 	this->blockSignals(true);
 	DAVA::String retString = QtFileDialog::getOpenFileName(this, openFileDialogTitle.c_str(), QString(dialogString.GetAbsolutePathname().c_str()), fileFormatFilter.c_str()).toStdString();
 	this->blockSignals(false);
-	
+
+    if(retString.empty())
+    {
+        return;
+    }
+    
     DAVA::String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+    
+    DAVA::String regx = projectPath;
+    DAVA::String test = retString;
+    
+    
+    QString regxQ(regx.c_str());
+    QString testQ(test.c_str());
+    
+    // регулярное выражение: необязательный '-' с последующими цифрами в количестве от 1 до 3
+    QRegExp rx(regxQ);
+    
+    QRegExpValidator v(rx, 0);
+    int pos = 0;
+    
+    QValidator::State st = v.validate(testQ, pos);    // возвращает Invalid
+    
+    
+    QtPropertyData data;
+    data.SetValidator(new RegExpValidator(regx.c_str()));
+    bool res = data.GetValidator()->Validate(QVariant(test.c_str()));
+    
     
     if(checkForProjectPath && DAVA::String::npos == retString.find(projectPath))
     {
@@ -134,10 +162,7 @@ void SelectPathWidgetBase::OpenClicked()
         return;
     }
     
-	if(!retString.empty())
-	{
-		HandlePathSelected(retString);
-	}
+	HandlePathSelected(retString);
 }
 
 void SelectPathWidgetBase::HandlePathSelected(DAVA::String name)

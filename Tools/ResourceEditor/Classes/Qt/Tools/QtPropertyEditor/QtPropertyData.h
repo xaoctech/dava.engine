@@ -117,6 +117,7 @@ public:
 
 	QtPropertyModel* GetModel() const;
     
+    QtPropertyDataValidator* GetValidator() const;
     void SetValidator(QtPropertyDataValidator*);
 
 	// editor
