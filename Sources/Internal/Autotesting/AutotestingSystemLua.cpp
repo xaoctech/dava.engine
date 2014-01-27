@@ -84,7 +84,12 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         if(isOk)
         {
 			FilePath api = "~res:/Autotesting/Scripts/autotesting_api.lua";
-			FileSystem::Instance()->IsFile(api);
+			
+			if (FileSystem::Instance()->IsFile(api))
+				Logger::Debug("AutotestingSystemLua::InitFromFile file exists");
+			else
+				Logger::Debug("AutotestingSystemLua::InitFromFile file doesn't exists");
+
             isOk = RunScriptFromFile("~res:/Autotesting/Scripts/autotesting_api.lua");
         }
         else
