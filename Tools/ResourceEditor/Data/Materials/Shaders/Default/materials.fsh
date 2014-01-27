@@ -187,9 +187,42 @@ void main()
 
     // DRAW PHASE
 #if defined(VERTEX_LIT)
-    vec3 color = materialLightAmbientColor + varDiffuseColor * materialLightDiffuseColor
-                                           + (varSpecularColor * textureColor0.a) * materialLightSpecularColor;
-    color *= textureColor0.rgb;
+    
+    //ATTENTION:
+    //BE CAREFUL TO MODIFY BOTH PARTS OF THIS CONDITION
+    //THEY SHOULD BE IDENTICAL IN MATH!
+#if defined(VIEW_AMBIENT) || defined(VIEW_DIFFUSE) || defined(VIEW_SPECULAR) || defined(VIEW_ALBEDO)
+
+    //THIS PART IS USED BY RES EDITOR
+    
+    vec3 color = vec3(0.0);
+    #if defined(VIEW_AMBIENT)
+        color += materialLightAmbientColor;
+    #endif
+
+    #if defined(VIEW_DIFFUSE)
+        color += varDiffuseColor * materialLightDiffuseColor;
+    #endif
+
+    #if defined(VIEW_SPECULAR)
+        color += (varSpecularColor * textureColor0.a) * materialLightSpecularColor;
+    #endif
+
+    #if defined(VIEW_ALBEDO)
+        color *= textureColor0.rgb;
+    #endif
+    
+#else
+
+    //THIS PART IS USED BY GAME CODE
+    
+    vec3 color = (materialLightAmbientColor + //VIEW_AMBIENT
+                 varDiffuseColor * materialLightDiffuseColor + //VIEW_DIFFUSE
+                 (varSpecularColor * textureColor0.a) * materialLightSpecularColor) * //VIEW_SPECULAR
+                 textureColor0.rgb; //VIEW_ALBEDO
+    
+#endif
+    
 #elif defined(PIXEL_LIT)
         // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
@@ -211,8 +244,9 @@ void main()
         float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
         color += materialLightSpecularColor * (shininess * textureColor0.a * attenuation);
     }
-    color *= textureColor0.rgb;
 #endif
+
+    color *= textureColor0.rgb;
 
 #elif defined(MATERIAL_VIEW_LIGHTMAP_ONLY)        
     vec3 color = textureColor1.rgb;
