@@ -690,6 +690,9 @@
     <ClCompile Include="GeneratedFiles\UI\QtColorLineEdit_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Helpers\ColorHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1102,6 +1105,9 @@
     </ClInclude>
     <ClInclude Include="Classes\UI\QtColorLineEdit.h">
       <Filter>Sources\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Helpers\ColorHelper.h">
+      <Filter>Sources\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
