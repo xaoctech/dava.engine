@@ -124,8 +124,15 @@ public:
     
     static PixelFormat GetPixelFormat(const FilePath &filePathname);
     static uint32 GetDataSize(const FilePath &filePathname);
+	
+	static bool AddCRCIntoMetaData(const FilePath &filePathname);
+	static uint32 GetCRCFromFile(const FilePath &filePathname);
     
 protected:
+		
+	static uint32 ReadNextMetadata(DAVA::File* file, uint32* crc);
+	
+	static bool GetCRCFromMetaData(const FilePath &filePathname, uint32* outputCRC);
 
     static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
 
