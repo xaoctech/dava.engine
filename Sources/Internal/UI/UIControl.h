@@ -1267,7 +1267,7 @@ protected:
 	// Initial control's state which is stored on Yaml.
 	int32 initialState;
 
-	void SetParent(UIControl *newParent);
+	virtual void SetParent(UIControl *newParent);
 
 	virtual ~UIControl();
 	

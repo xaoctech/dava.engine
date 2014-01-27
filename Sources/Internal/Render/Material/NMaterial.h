@@ -297,7 +297,7 @@ public:
 									 const FastName& defaultQuality);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
-    void SetMaterialTemplate(const FastName& templateName);
+    void SetMaterialTemplateName(const FastName& templateName);
     FastName GetMaterialTemplateName() const;
 
 protected:
@@ -529,6 +529,7 @@ public:
 	INTROSPECTION_EXTEND(NMaterial, DataNode,
 				  //(DAVA::CreateIspProp("materialName", "Material name", &NMaterial::GetMaterialName, &NMaterial::SetMaterialName, I_SAVE | I_EDIT | I_VIEW),
 				  MEMBER(materialName, "Material name", I_SAVE | I_EDIT | I_VIEW)
+                  PROPERTY("materialTemplate", "Material template", GetMaterialTemplateName, SetMaterialTemplateName, I_SAVE)
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(materialProperties, "Material properties", new NMaterialStateDynamicPropertiesInsp(), I_SAVE | I_EDIT | I_VIEW)
