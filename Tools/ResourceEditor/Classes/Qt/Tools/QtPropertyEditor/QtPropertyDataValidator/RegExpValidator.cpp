@@ -41,13 +41,12 @@ bool RegExpValidator::ValidateInternal(const QVariant &value) const
     return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
 }
 
-QString RegExpValidator::GetRegularExpression()
+QString RegExpValidator::GetRegularExpression() const
 {
-    return regExpressionValue;
+    return innerValidator.regExp().pattern();
 }
 
 void RegExpValidator::SetRegularExpression(const QString& value)
 {
-    regExpressionValue = value;
-    innerValidator.setRegExp(QRegExp(regExpressionValue));
+    innerValidator.setRegExp(QRegExp(value));
 }

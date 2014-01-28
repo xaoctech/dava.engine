@@ -40,7 +40,7 @@ public:
     
     RegExpValidator(const QString& value);
     
-    QString GetRegularExpression();
+    QString GetRegularExpression() const;
     
     void SetRegularExpression(const QString& value);
 
@@ -54,8 +54,6 @@ protected:
     }
 
 private:
-    
-    QString regExpressionValue;
     
     QRegExpValidator innerValidator;
 };
