@@ -779,11 +779,4 @@ List<UIControl* >& UIList::GetRealChildren()
 	return realChildren;
 }
 
-List<UIControl* > UIList::GetRealChildrenAndSubcontrols()
-{
-	// According to previous UIList logic - we should hide scrollContainer from user. 
-	return GetRealChildren();
-}
-
-
 };
