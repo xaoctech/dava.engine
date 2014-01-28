@@ -27,3 +27,39 @@
 =====================================================================================*/
 
 
+
+#ifndef __FLOAT_RANGE_VALIDATOR_H__
+#define __FLOAT_RANGE_VALIDATOR_H__
+
+#include "QtPropertyDataValidator.h"
+#include <QRegExpValidator>
+
+class FloatRangeValidator : public QtPropertyDataValidator
+{
+public:
+    
+    FloatRangeValidator(float minValue, float maxValue);
+	
+	void SetRange(float minValue, float maxValue);
+	
+	float GetMaximum();
+	void SetMaximum(float maxValue);
+	
+	float GetMinimum();
+	void SetMinimum(float minValue);
+   
+protected:
+
+    virtual bool ValidateInternal(const QVariant &v) const;
+    
+    virtual void ErrorNotifyInternal() const
+    {
+    }
+
+private:
+    
+	float	minValue;
+	float	maxValue;
+};
+
+#endif // __FLOAT_RANGE_VALIDATOR_H__

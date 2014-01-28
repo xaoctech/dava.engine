@@ -26,28 +26,40 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "RegExpValidator.h"
-#include "Qt/Settings/SettingsManager.h"
 
-RegExpValidator::RegExpValidator(const QString& value)
-{
-    SetRegularExpression(value);
-}
 
-bool RegExpValidator::ValidateInternal(const QVariant &value) const
-{
-    QString validateValue = value.toString();
-    int pos = 0;
-    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
-}
+#ifndef __INT_RANGE_VALIDATOR_H__
+#define __INT_RANGE_VALIDATOR_H__
 
-QString RegExpValidator::GetRegularExpression()
-{
-    return regExpressionValue;
-}
+#include "QtPropertyDataValidator.h"
+#include <QRegExpValidator>
 
-void RegExpValidator::SetRegularExpression(const QString& value)
+class IntRangeValidator : public QtPropertyDataValidator
 {
-    regExpressionValue = value;
-    innerValidator.setRegExp(QRegExp(regExpressionValue));
-}
+public:
+    
+    IntRangeValidator(int minValue, int maxValue);
+	
+	void SetRange(int minValue, int maxValue);
+	
+	int GetMaximum();
+	void SetMaximum(int maxValue);
+	
+	int GetMinimum();
+	void SetMinimum(int minValue);
+   
+protected:
+
+    virtual bool ValidateInternal(const QVariant &v) const;
+    
+    virtual void ErrorNotifyInternal() const
+    {
+    }
+
+private:
+    
+	int	minValue;
+	int	maxValue;
+};
+
+#endif // __INT_RANGE_VALIDATOR_H__
