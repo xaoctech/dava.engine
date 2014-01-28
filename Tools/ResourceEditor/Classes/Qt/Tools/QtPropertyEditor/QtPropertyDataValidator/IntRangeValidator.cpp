@@ -26,28 +26,50 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "RegExpValidator.h"
+#include "IntRangeValidator.h"
 #include "Qt/Settings/SettingsManager.h"
 
-RegExpValidator::RegExpValidator(const QString& value)
+IntRangeValidator::IntRangeValidator(int _minValue, int _maxValue):
+	minValue(_minValue),
+	maxValue(_maxValue)
+{}
+
+bool IntRangeValidator::ValidateInternal(const QVariant &value) const
 {
-    SetRegularExpression(value);
+	bool isInt = false;
+	int valueToCheck = value.toInt(&isInt);
+	DVASSERT(isInt);
+	if(!isInt)
+	{
+		return false;
+	}
+	return minValue <= valueToCheck && valueToCheck <= maxValue;
 }
 
-bool RegExpValidator::ValidateInternal(const QVariant &value) const
+void IntRangeValidator::SetRange(int _minValue, int _maxValue)
 {
-    QString validateValue = value.toString();
-    int pos = 0;
-    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+	minValue = _minValue;
+	maxValue = _maxValue;
 }
 
-QString RegExpValidator::GetRegularExpression()
+int IntRangeValidator::GetMaximum()
 {
-    return regExpressionValue;
+	return maxValue;
 }
 
-void RegExpValidator::SetRegularExpression(const QString& value)
+void IntRangeValidator::SetMaximum(int _maxValue)
 {
-    regExpressionValue = value;
-    innerValidator.setRegExp(QRegExp(regExpressionValue));
+	maxValue = _maxValue;
 }
+
+int IntRangeValidator::GetMinimum()
+{
+	return minValue;
+}
+
+void IntRangeValidator::SetMinimum(int _minValue)
+{
+	minValue = _minValue;
+}
+
+

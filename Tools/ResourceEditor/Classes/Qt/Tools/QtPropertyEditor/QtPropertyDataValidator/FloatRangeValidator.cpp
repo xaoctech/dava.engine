@@ -26,28 +26,54 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "RegExpValidator.h"
+#include "FloatRangeValidator.h"
 #include "Qt/Settings/SettingsManager.h"
 
-RegExpValidator::RegExpValidator(const QString& value)
+FloatRangeValidator::FloatRangeValidator(float _minValue, float _maxValue):
+	minValue(_minValue),
+	maxValue(_maxValue)
+{}
+
+bool FloatRangeValidator::ValidateInternal(const QVariant &value) const
 {
-    SetRegularExpression(value);
+	bool isFloat = false;
+	float valueToCheck = value.toFloat(&isFloat);
+	DVASSERT(isFloat);
+	if (!isFloat)
+	{
+		return false;
+	}
+	if (FLOAT_EQUAL(valueToCheck, minValue) || FLOAT_EQUAL(valueToCheck, maxValue))
+	{
+		return true;
+	}
+	return minValue < valueToCheck && valueToCheck < maxValue;
 }
 
-bool RegExpValidator::ValidateInternal(const QVariant &value) const
+void FloatRangeValidator::SetRange(float _minValue, float _maxValue)
 {
-    QString validateValue = value.toString();
-    int pos = 0;
-    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+	minValue = _minValue;
+	maxValue = _maxValue;
 }
 
-QString RegExpValidator::GetRegularExpression()
+float FloatRangeValidator::GetMaximum()
 {
-    return regExpressionValue;
+	return maxValue;
 }
 
-void RegExpValidator::SetRegularExpression(const QString& value)
+void FloatRangeValidator::SetMaximum(float _maxValue)
 {
-    regExpressionValue = value;
-    innerValidator.setRegExp(QRegExp(regExpressionValue));
+	maxValue = _maxValue;
 }
+
+float FloatRangeValidator::GetMinimum()
+{
+	return minValue;
+}
+
+void FloatRangeValidator::SetMinimum(float _minValue)
+{
+	minValue = _minValue;
+}
+
+

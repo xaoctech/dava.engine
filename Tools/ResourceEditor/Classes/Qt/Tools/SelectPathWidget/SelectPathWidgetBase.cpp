@@ -134,28 +134,7 @@ void SelectPathWidgetBase::OpenClicked()
     }
     
     DAVA::String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
-    
-    DAVA::String regx = projectPath;
-    DAVA::String test = retString;
-    
-    
-    QString regxQ(regx.c_str());
-    QString testQ(test.c_str());
-    
-    // регулярное выражение: необязательный '-' с последующими цифрами в количестве от 1 до 3
-    QRegExp rx(regxQ);
-    
-    QRegExpValidator v(rx, 0);
-    int pos = 0;
-    
-    QValidator::State st = v.validate(testQ, pos);    // возвращает Invalid
-    
-    
-    QtPropertyData data;
-    data.SetValidator(new RegExpValidator(regx.c_str()));
-    bool res = data.GetValidator()->Validate(QVariant(test.c_str()));
-    
-    
+
     if(checkForProjectPath && DAVA::String::npos == retString.find(projectPath))
     {
         QMessageBox::warning(NULL, "Wrong file selected", QString( Format("Path %s doesn't belong to project.", retString.c_str()).c_str() ), QMessageBox::Ok);
