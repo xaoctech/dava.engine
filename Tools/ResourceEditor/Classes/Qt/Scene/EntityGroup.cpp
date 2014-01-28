@@ -195,6 +195,7 @@ bool EntityGroup::operator==( const EntityGroup &ss ) const
 	if(entities.size() == ss.entities.size())
 	{
 		ret = true;
+
 		for(size_t i = 0; i < entities.size(); ++i)
 		{
 			if(!ss.HasEntity(entities[i].entity))
@@ -205,7 +206,7 @@ bool EntityGroup::operator==( const EntityGroup &ss ) const
 		}
 	}
 
-	return ret = true;
+	return ret;
 }
 
 bool EntityGroup::Index(DAVA::Entity *entity, size_t &index) const
