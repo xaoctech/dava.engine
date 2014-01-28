@@ -715,12 +715,6 @@ public:
 	virtual List<UIControl* > GetSubcontrols();
 
 	/**
-	 \brief Returns list of control children including internal controls,
-	 \which are editable and belongs to the same control.
-	 */
-	virtual List<UIControl* > GetRealChildrenAndSubcontrols();
-
-	/**
 	 \brief Returns whether this control is subcontrol of its parent.
 	 */
 	virtual bool IsSubcontrol();
@@ -1267,7 +1261,7 @@ protected:
 	// Initial control's state which is stored on Yaml.
 	int32 initialState;
 
-	void SetParent(UIControl *newParent);
+	virtual void SetParent(UIControl *newParent);
 
 	virtual ~UIControl();
 	

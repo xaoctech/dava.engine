@@ -45,7 +45,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "TextureBrowser/TextureInfo.h"
 
-#include <QDebug>
+#include <QPainter>
 
 
 namespace
@@ -79,6 +79,11 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 	}
 }
 
+SceneEditor2* MaterialModel::GetScene()
+{
+    return curScene;
+}
+
 void MaterialModel::SetSelection(const EntityGroup *group)
 {
 	QStandardItem *root = invisibleRootItem();
@@ -86,24 +91,33 @@ void MaterialModel::SetSelection(const EntityGroup *group)
 	{
 		MaterialItem *topItem = (MaterialItem *) root->child(i);
 
+        bool hasSelectedItems = false;
 		for(int j = 0; j < topItem->rowCount(); ++j)
 		{
 			MaterialItem *childItem = (MaterialItem *) topItem->child(j);
-
-			if(NULL != group)
-			{
-				DAVA::NMaterial *material = childItem->GetMaterial();
-				DAVA::Entity *entity = curScene->materialSystem->GetEntity(material);
-
-				entity = curScene->selectionSystem->GetSelectableEntity(entity);
-				childItem->SetFlag(MaterialItem::IS_PART_OF_SELECTION, group->HasEntity(entity));
-			}
-			else
-			{
-				childItem->SetFlag(MaterialItem::IS_PART_OF_SELECTION, false);
-			}
+            if ( SetItemSelection( childItem, group ) )
+                hasSelectedItems = true;
 		}
+        topItem->SetFlag( MaterialItem::IS_PART_OF_SELECTION, hasSelectedItems );
 	}
+}
+
+bool MaterialModel::SetItemSelection( MaterialItem *item, const EntityGroup *group )
+{
+    if ( group == NULL )
+    {
+        item->SetFlag( MaterialItem::IS_PART_OF_SELECTION, false );
+        return false;
+    }
+
+	DAVA::NMaterial *material = item->GetMaterial();
+	DAVA::Entity *entity = curScene->materialSystem->GetEntity(material);
+
+	entity = curScene->selectionSystem->GetSelectableEntity(entity);
+    const bool select = group->HasEntity(entity);
+	item->SetFlag( MaterialItem::IS_PART_OF_SELECTION, select );
+    
+    return select;
 }
 
 void MaterialModel::Sync()
@@ -211,7 +225,7 @@ QImage MaterialModel::GetPreview( const DAVA::NMaterial * material ) const
         else
             TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
     }
-    else if(material->GetFlagValue(DAVA::NMaterial::FLAG_FLATCOLOR) == DAVA::NMaterial::FlagOn)
+    else if(material->IsFlagEffective(DAVA::NMaterial::FLAG_FLATCOLOR))
     {
         const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
         if(prop)
@@ -234,7 +248,14 @@ void MaterialModel::setPreview( QStandardItem *item, const DAVA::NMaterial * mat
 
     const QImage& preview = GetPreview( material );
     if ( !preview.isNull() )
-        item->setData( preview.scaled( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::KeepAspectRatio, Qt::SmoothTransformation ), Qt::DecorationRole );
+    {
+        QImage scaled = preview.scaled( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+        QPainter p( &scaled );
+        QRect rc( 0, 0, scaled.width() - 1, scaled.height() - 1 );
+        p.setPen( QColor( 0, 0, 0, 0x30 ) );
+        p.drawRect( rc );
+        item->setData( scaled, Qt::DecorationRole );
+    }
 }
 
 void MaterialModel::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image)
@@ -337,10 +358,7 @@ QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
         foreach(QModelIndex index, indexes)
         {
             DAVA::NMaterial *material = GetMaterial(index);
-            if ( material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL )
-            {
-                data.push_back(material);
-            }
+            data.push_back(material);
         }
         
         return MimeDataHelper2<DAVA::NMaterial>::EncodeMimeData(data);

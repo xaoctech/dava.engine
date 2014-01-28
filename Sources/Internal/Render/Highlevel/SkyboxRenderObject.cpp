@@ -78,7 +78,6 @@ namespace DAVA
 		
 		CreateRenderData();
 		BuildSkybox();
-		UpdateMaterial();
 	}
 	
 	void SkyboxRenderObject::CreateRenderData()
@@ -181,23 +180,7 @@ namespace DAVA
 		renderBatchArray[0]->SetPolygonGroup(polygonGroup);
 		SafeRelease(polygonGroup);
 	}
-	
-	void SkyboxRenderObject::UpdateMaterial()
-	{
-		if(renderBatchArray.size() > 0)
-		{
-			NMaterial* skyboxMaterial = renderBatchArray[0]->GetMaterial();
-			
-			//since the renderBatchArray is entirely controlled by SkyboxRenderObject
-			//we can safely assume that objects in render batch array are properly initialized
-			//and have material in place (no need to check for NULL)
-			
-            DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texturePath, Texture::TEXTURE_CUBE);
-			skyboxMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, tx);
-			SafeRelease(tx);
-		}
-	}
-	
+		
 	void SkyboxRenderObject::RenderUpdate(Camera *camera, float32 timeElapsed)
 	{
 		Vector3 camPos = camera->GetPosition();
@@ -231,7 +214,6 @@ namespace DAVA
 		skyboxRenderObject->ownerDebugInfo = ownerDebugInfo;
 		
 		skyboxRenderObject->bbox = bbox;
-		skyboxRenderObject->texturePath = texturePath;
 		skyboxRenderObject->offsetZ = offsetZ;
 		skyboxRenderObject->rotationZ = rotationZ;
 		skyboxRenderObject->nonClippingDistance = nonClippingDistance;
@@ -246,7 +228,6 @@ namespace DAVA
 		}
 		
 		skyboxRenderObject->BuildSkybox();
-		skyboxRenderObject->UpdateMaterial();
 		
 		return newObject;
 	}
@@ -257,7 +238,6 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			archive->SetString("skbxro.texture", texturePath.GetRelativePathname(serializationContext->GetScenePath()));
 			archive->SetFloat("skbxro.verticalOffset", offsetZ);
 			archive->SetFloat("skbxro.rotation", rotationZ);
 			archive->SetFloat("skbxro.noclipdist", nonClippingDistance);
@@ -270,7 +250,6 @@ namespace DAVA
 		
 		if(archive != NULL)
 		{
-			texturePath = serializationContext->GetScenePath() + archive->GetString("skbxro.texture");
 			offsetZ = archive->GetFloat("skbxro.verticalOffset");
 			rotationZ = archive->GetFloat("skbxro.rotation");
 			nonClippingDistance = archive->GetFloat("skbxro.noclipdist");
@@ -281,13 +260,67 @@ namespace DAVA
 
 	void SkyboxRenderObject::SetTexture(const FilePath& texPath)
 	{
-		texturePath = texPath;
-		UpdateMaterial();
+        DVASSERT(renderBatchArray.size() > 0);
+        
+        NMaterial* skyboxMaterial = renderBatchArray[0]->GetMaterial();
+        
+        //since the renderBatchArray is entirely controlled by SkyboxRenderObject
+        //we can safely assume that objects in render batch array are properly initialized
+        //and have material in place (no need to check for NULL)
+        
+        NMaterial* topParent = NULL;
+        bool textureSet = false;
+        while(skyboxMaterial)
+        {
+            Texture* tx = skyboxMaterial->GetTexture(NMaterial::TEXTURE_CUBEMAP);
+            if(NULL != tx)
+            {
+                DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texPath, Texture::TEXTURE_CUBE);
+                skyboxMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, tx);
+                SafeRelease(tx);
+                
+                textureSet = true;
+                
+                break;
+            }
+            
+            if(NULL == skyboxMaterial->GetParent())
+            {
+                topParent = skyboxMaterial;
+            }
+            
+            skyboxMaterial = skyboxMaterial->GetParent();
+        }
+        
+        if(!textureSet)
+        {
+            DAVA::Texture* tx = DAVA::Texture::CreateFromFile(texPath, Texture::TEXTURE_CUBE);
+            topParent->SetTexture(NMaterial::TEXTURE_CUBEMAP, tx);
+            SafeRelease(tx);
+        }
 	}
 	
 	FilePath SkyboxRenderObject::GetTexture()
 	{
-		return texturePath;
+        DVASSERT(renderBatchArray.size() > 0);
+        
+        FilePath path;
+        
+        NMaterial* skyboxMaterial = renderBatchArray[0]->GetMaterial();
+        
+        while(skyboxMaterial)
+        {
+            Texture* tx = skyboxMaterial->GetTexture(NMaterial::TEXTURE_CUBEMAP);
+            if(NULL != tx)
+            {
+                path = skyboxMaterial->GetTexturePath(NMaterial::TEXTURE_CUBEMAP);
+                break;
+            }
+            
+            skyboxMaterial = skyboxMaterial->GetParent();
+        }
+        
+        return path;
 	}
 	
 	void SkyboxRenderObject::SetOffsetZ(const float32& offset)
