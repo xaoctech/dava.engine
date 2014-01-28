@@ -42,7 +42,7 @@ public:
         bool ret = ValidateInternal(v);
         if(!ret)
         {
-            ErrorNotifyInternal();
+            ErrorNotifyInternal(v);
         }
         return ret;
     }
@@ -51,7 +51,7 @@ protected:
     
     virtual bool ValidateInternal(const QVariant &v) const = 0;
     
-    virtual void ErrorNotifyInternal() const
+    virtual void ErrorNotifyInternal(const QVariant &v) const
     {
     }
 };
