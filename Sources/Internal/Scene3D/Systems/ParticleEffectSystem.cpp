@@ -225,6 +225,7 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 			else
 			{
 				component->state = ParticleEffectComponent::STATE_STOPPING;
+                component->SetGroupsFinishing();
 			}
 		}
 		/*finish restart criteria*/		
