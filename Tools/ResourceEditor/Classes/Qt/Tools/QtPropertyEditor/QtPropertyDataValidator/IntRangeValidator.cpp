@@ -58,7 +58,7 @@ void IntRangeValidator::SetMaximum(int maxValue)
 
 int IntRangeValidator::GetMinimum() const
 {
-	innerValidator.bottom();
+	return innerValidator.bottom();
 }
 
 void IntRangeValidator::SetMinimum(int minValue)

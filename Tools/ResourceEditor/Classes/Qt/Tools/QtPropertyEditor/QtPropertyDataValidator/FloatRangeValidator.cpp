@@ -58,7 +58,7 @@ void FloatRangeValidator::SetMaximum(float maxValue)
 
 int FloatRangeValidator::GetMinimum() const
 {
-	innerValidator.bottom();
+	return innerValidator.bottom();
 }
 
 void FloatRangeValidator::SetMinimum(float minValue)
