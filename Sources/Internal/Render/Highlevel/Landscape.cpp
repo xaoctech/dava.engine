@@ -119,7 +119,7 @@ Landscape::Landscape()
 	  //currentMaterial(NULL)
 {
 	drawIndices = 0;
-    textureNames.resize(TEXTURE_COUNT);
+    //textureNames.resize(TEXTURE_COUNT);
     
     type = TYPE_LANDSCAPE;
     
@@ -660,7 +660,7 @@ Color Landscape::GetTileColor(eTextureLevel level)
     
 void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
 {
-	textureNames[level] = String("");
+	//textureNames[level] = String("");
 
 	if((TILED_MODE_TILEMASK == tiledShaderMode || TILED_MODE_TILE_DETAIL_MASK == tiledShaderMode) && TEXTURE_TILE_FULL == level)
 		return;
@@ -669,6 +669,7 @@ void Landscape::SetTexture(eTextureLevel level, const FilePath & textureName)
        TILEMASK_TEXTURE_PROPS_NAMES[level] != INVALID_PROPERTY_NAME)
 	{
 		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], textureName);
+        //textureNames[level] = textureName;
 	}
 }
     
@@ -690,16 +691,8 @@ Texture * Landscape::CreateTexture(eTextureLevel level, const FilePath & texture
 
 void Landscape::SetTexture(eTextureLevel level, Texture *texture)
 {
- 	textureNames[level] = String("");
+ 	//textureNames[level] = String("");
 
-    if(texture)
-    {
-        if(!texture->isRenderTarget)
-        {
-            textureNames[level] = texture->GetPathname();
-        }
-    }
-	
 	if(TILEMASK_TEXTURE_PROPS_NAMES[level] != INVALID_PROPERTY_NAME)
 	{
 		tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], texture);
@@ -709,7 +702,7 @@ void Landscape::SetTexture(eTextureLevel level, Texture *texture)
     
 Texture * Landscape::GetTexture(eTextureLevel level)
 {
-	return tileMaskMaterial->GetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level]);
+	return tileMaskMaterial->GetEffectiveTexture(TILEMASK_TEXTURE_PROPS_NAMES[level]);
 }
     
 void Landscape::FlushQueue()
@@ -1423,10 +1416,11 @@ void Landscape::Save(KeyedArchive * archive, SerializationContext * serializatio
     {
         if(TEXTURE_DETAIL == k) continue;
 
-        String relPath  = textureNames[k].GetRelativePathname(serializationContext->GetScenePath());
         
-        if(serializationContext->IsDebugLogEnabled())
-            Logger::FrameworkDebug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
+        String relPath  = tileMaskMaterial->GetEffectiveTexturePath(TILEMASK_TEXTURE_PROPS_NAMES[k]).GetRelativePathname(serializationContext->GetScenePath());
+        
+        //if(serializationContext->IsDebugLogEnabled())
+        //   Logger::FrameworkDebug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
         
         archive->SetString(Format("tex_%d", k), relPath);
         Vector2 tilingValue = GetTextureTiling((eTextureLevel)k);
@@ -1539,13 +1533,13 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
-    return textureNames[level];
+    return tileMaskMaterial->GetEffectiveTexturePath(TILEMASK_TEXTURE_PROPS_NAMES[level]);
 }
     
 void Landscape::SetTextureName(eTextureLevel level, const FilePath &newTextureName)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
-    textureNames[level] = newTextureName;
+    tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], newTextureName);
 }
 
 
@@ -1872,7 +1866,7 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
     {
-        newLandscape->textureNames[k] = textureNames[k];
+        //newLandscape->textureNames[k] = textureNames[k];
 		
         newLandscape->SetTexture((eTextureLevel)k, GetTexture((eTextureLevel)k));
         
