@@ -351,6 +351,7 @@
     <ClCompile Include="Classes\Commands2\CreatePlaneLODCommand.cpp" />
     <ClCompile Include="Classes\Commands2\CustomColorsCommands2.cpp" />
     <ClCompile Include="Classes\Commands2\DAEConvertAction.cpp" />
+    <ClCompile Include="Classes\Commands2\DeleteLODCommand.cpp" />
     <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp" />
     <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp" />
@@ -957,6 +958,7 @@
     <ClInclude Include="Classes\Commands2\CreatePlaneLODCommand.h" />
     <ClInclude Include="Classes\Commands2\CustomColorsCommands2.h" />
     <ClInclude Include="Classes\Commands2\DAEConvertAction.h" />
+    <ClInclude Include="Classes\Commands2\DeleteLODCommand.h" />
     <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h" />
     <ClInclude Include="Classes\Commands2\EntityAddCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h" />
