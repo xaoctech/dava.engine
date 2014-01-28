@@ -1103,7 +1103,8 @@ namespace DAVA
 	{
 		TextureBucket* bucket = NULL;
 		const NMaterial* currentMaterial = this;
-		while(currentMaterial)
+		while(currentMaterial &&
+              NULL == bucket)
 		{
 			bucket = currentMaterial->textures.at(textureFastName);
 			
