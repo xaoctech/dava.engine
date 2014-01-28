@@ -78,6 +78,9 @@ public:
 
 	// Returns the list of screens currently unsaved. Might be empty.
 	List<HierarchyTreeScreenNode*> GetUnsavedScreens();
+	
+	// Update properties for all controls
+	void UpdateControlsData();
 
     // Update the localization for all controls.
     void UpdateLocalization();
