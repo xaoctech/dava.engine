@@ -604,6 +604,7 @@ DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		modifPosWithLocedAxis.z = newPos3d.z;
 		modifPosWithLocedAxis.y = newPos3d.y;
 		break;
+    default: break;
 	}
 
 	moveOffset = modifPosWithLocedAxis - modifStartPos3d;
