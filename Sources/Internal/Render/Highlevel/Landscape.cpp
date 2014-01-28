@@ -702,7 +702,7 @@ void Landscape::SetTexture(eTextureLevel level, Texture *texture)
     
 Texture * Landscape::GetTexture(eTextureLevel level)
 {
-	return tileMaskMaterial->GetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level]);
+	return tileMaskMaterial->GetEffectiveTexture(TILEMASK_TEXTURE_PROPS_NAMES[level]);
 }
     
 void Landscape::FlushQueue()
