@@ -261,8 +261,13 @@ public:
     void RemoveTexture(const FastName& textureFastName);
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
 	void SetTexture(const FastName& textureFastName, Texture* texture);
+    
     Texture * GetTexture(const FastName& textureFastName) const;
 	const FilePath& GetTexturePath(const FastName& textureFastName) const;
+    
+    Texture * GetEffectiveTexture(const FastName& textureFastName) const;
+	const FilePath& GetEffectiveTexturePath(const FastName& textureFastName) const;
+    
     Texture * GetTexture(uint32 index) const;
 	const FilePath& GetTexturePath(uint32 index) const;
 	const FastName& GetTextureName(uint32 index) const;

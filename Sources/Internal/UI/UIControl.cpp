@@ -267,13 +267,6 @@ namespace DAVA
 		return false;
 	}
 
-	List<UIControl* > UIControl::GetRealChildrenAndSubcontrols()
-	{
-        // Yuri Coder, 2013/12/16. Return all children, keep their order (see please DF-2817). In case
-        // some specific hanldling is needed for some control, reimplement this function on its level.
-        return this->childs;
-	}
-
 	String UIControl::GetSpriteFrameworkPath( const Sprite* sprite)
 	{
 		if (!sprite)

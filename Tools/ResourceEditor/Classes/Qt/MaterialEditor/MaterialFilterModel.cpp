@@ -50,11 +50,6 @@ MaterialFilteringModel::MaterialFilteringModel(MaterialModel *_materialModel, QO
 	setSourceModel(materialModel);
 }
 
-void MaterialFilteringModel::AssignMaterialToSelection( DAVA::NMaterial *material )
-{
-    materialModel->AssignMaterialToSelection( material );
-}
-
 void MaterialFilteringModel::Sync()
 {
 	materialModel->Sync();
@@ -63,6 +58,11 @@ void MaterialFilteringModel::Sync()
 void MaterialFilteringModel::SetScene(SceneEditor2 * scene)
 {
 	materialModel->SetScene(scene);
+}
+
+SceneEditor2* MaterialFilteringModel::GetScene()
+{
+    return materialModel->GetScene();
 }
 
 void MaterialFilteringModel::SetSelection(const EntityGroup *group)
@@ -151,7 +151,7 @@ bool MaterialFilteringModel::dropMimeData(QMimeData const* data, Qt::DropAction 
 {
     const bool ret = QSortFilterProxyModel::dropMimeData( data, action, row, column, parent );
     if ( ret )
-        QTimer::singleShot( 0, this, SLOT( invalidate() ) );
+        invalidate();
 
     return ret;
 }
