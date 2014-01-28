@@ -69,12 +69,7 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
     if (renderSystem)
         renderSystem->RegisterBatch(batch);
     
-    const AABBox3 & boundingBox = batch->GetBoundingBox();
-//    DVASSERT(boundingBox.min.x != AABBOX_INFINITY &&
-//             boundingBox.min.y != AABBOX_INFINITY &&
-//             boundingBox.min.z != AABBOX_INFINITY);
-    
-    bbox.AddAABBox(boundingBox);
+    RecalcBoundingBox();
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
@@ -139,10 +134,12 @@ void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializat
 	if(NULL != archive)
 	{
 		archive->SetUInt32("ro.type", type);
-		//archive->SetUInt32("ro.flags", flags);
 		archive->SetUInt32("ro.debugflags", debugFlags);
 		archive->SetUInt32("ro.batchCount", GetRenderBatchCount());
         archive->SetUInt32("ro.sOclIndex", staticOcclusionIndex);
+        
+        //VI: save only VISIBLE flag for now. May be extended in the future
+        archive->SetUInt32("ro.flags", flags & RenderObject::VISIBLE);
 
 		KeyedArchive *batchesArch = new KeyedArchive();
 		for(uint32 i = 0; i < GetRenderBatchCount(); ++i)
@@ -173,6 +170,17 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 		type = archive->GetUInt32("ro.type", TYPE_RENDEROBJECT);
 		debugFlags = archive->GetUInt32("ro.debugflags", 0);
         staticOcclusionIndex = (uint16)archive->GetUInt32("ro.sOclIndex", INVALID_STATIC_OCCLUSION_INDEX);
+        
+        //VI: load only VISIBLE flag for now. May be extended in the future.
+        uint32 savedFlags = RenderObject::VISIBLE & archive->GetUInt32("ro.flags", RenderObject::VISIBLE);
+        if((savedFlags & RenderObject::VISIBLE) == 0)
+        {
+            flags = flags & ~RenderObject::VISIBLE;
+        }
+        else
+        {
+            flags = flags | RenderObject::VISIBLE;
+        }
 
 		uint32 roBatchCount = archive->GetUInt32("ro.batchCount");
         KeyedArchive *batchesArch = archive->GetArchive("ro.batches");

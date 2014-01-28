@@ -139,6 +139,11 @@ public:
         
         TILED_MODE_COUNT
     };
+    
+    const static FastName PARAM_TILE_COLOR0;
+	const static FastName PARAM_TILE_COLOR1;
+	const static FastName PARAM_TILE_COLOR2;
+	const static FastName PARAM_TILE_COLOR3;
 
     
     /**
@@ -248,10 +253,10 @@ public:
         \brief Get tiling for specified texture level.
         \returns Tiling for specified texture level.
      */
-    const Vector2 & GetTextureTiling(eTextureLevel level); 
+    Vector2 GetTextureTiling(eTextureLevel level); 
 
     void SetTileColor(eTextureLevel level, const Color & color);
-    const Color & GetTileColor(eTextureLevel level);
+    Color GetTileColor(eTextureLevel level);
 
     /**
         \brief Overloaded draw function to draw landscape
@@ -299,7 +304,7 @@ public:
     void SetFogDensity(float32 _fogDensity);
     float32 GetFogDensity() const;
     void SetFogColor(const Color & _fogColor);
-    const Color & GetFogColor() const;
+    Color GetFogColor() const;
 
     LandscapeCursor *GetCursor();
     
@@ -316,10 +321,6 @@ protected:
 	const static FastName PARAM_TEXTURE1_TILING;
 	const static FastName PARAM_TEXTURE2_TILING;
 	const static FastName PARAM_TEXTURE3_TILING;
-	const static FastName PARAM_TILE_COLOR0;
-	const static FastName PARAM_TILE_COLOR1;
-	const static FastName PARAM_TILE_COLOR2;
-	const static FastName PARAM_TILE_COLOR3;
 	const static FastName PARAM_PROP_SPECULAR_COLOR;
 	const static FastName PARAM_SPECULAR_SHININESS;
 	const static FastName TEXTURE_SPECULAR_MAP;
@@ -384,8 +385,8 @@ protected:
     Vector<RenderDataObject *> landscapeRDOArray;
     
     uint16 * indices;
-    Texture * textures[TEXTURE_COUNT];
-    Vector<FilePath> textureNames;
+    //Texture * textures[TEXTURE_COUNT];
+    //Vector<FilePath> textureNames;
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //
@@ -402,8 +403,8 @@ protected:
     
     ePrimitiveType primitypeType;
     
-    Vector2 textureTiling[TEXTURE_COUNT];
-    Color tileColor[TEXTURE_COUNT];
+    //Vector2 textureTiling[TEXTURE_COUNT];
+    //Color tileColor[TEXTURE_COUNT];
     
 	LandscapeCursor * cursor;
         
@@ -433,10 +434,9 @@ protected:
     int32 nearLodIndex;
     int32 farLodIndex;
     
-    
     bool    isFogEnabled;
-    float32 fogDensity;
-    Color   fogColor;
+    //float32 fogDensity;
+    //Color   fogColor;
     
 	NMaterial* tileMaskMaterial;
 	//NMaterial* fullTiledMaterial;
@@ -472,8 +472,8 @@ public:
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
+        //MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
+        //MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
 		
 		);
 

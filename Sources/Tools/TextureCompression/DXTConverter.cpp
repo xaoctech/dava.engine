@@ -62,6 +62,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
                                       (descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
         {
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
+			LibDxtHelper::AddCRCIntoMetaData(outputName);
             return outputName;
         }
     }
@@ -127,6 +128,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
         {
 			SafeDeleteArray(faceData);
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
+            LibDxtHelper::AddCRCIntoMetaData(outputName);
             return outputName;
         }
 		

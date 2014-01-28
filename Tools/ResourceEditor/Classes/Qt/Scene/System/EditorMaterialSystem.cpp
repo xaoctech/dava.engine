@@ -32,9 +32,8 @@
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
-{
-
-}
+, curViewMode(MVM_ALL)
+{ }
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
@@ -82,7 +81,7 @@ void EditorMaterialSystem::BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::
 	// init set with already owned materials
 	DAVA::Set<DAVA::NMaterial *> materials = ownedParents;
 
-	GetScene()->GetMaterialSystem()->BuildMaterialList(GetScene(), materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
+	//GetScene()->GetMaterialSystem()->BuildMaterialList(GetScene(), materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
 
 	DAVA::Set<DAVA::NMaterial *>::const_iterator i = materials.begin();
 	DAVA::Set<DAVA::NMaterial *>::const_iterator end = materials.end();
@@ -112,6 +111,48 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 	}
 }
 
+int EditorMaterialSystem::GetViewMode() const
+{
+    return curViewMode;
+}
+
+bool EditorMaterialSystem::GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const
+{
+    return (bool) (curViewMode & viewMode);
+}
+
+void EditorMaterialSystem::SetViewMode(int fullViewMode)
+{
+    if(curViewMode != fullViewMode)
+    {
+        curViewMode = fullViewMode;
+
+        DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
+        DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
+
+        for(; i != end; ++i)
+        {
+            ApplyViewMode(*i);
+        }
+    }
+}
+
+void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set)
+{
+    int newMode = curViewMode;
+
+    if(set)
+    {
+        newMode |= viewMode;
+    }
+    else
+    {
+        newMode &= ~viewMode;
+    }
+
+    SetViewMode(newMode);
+}
+
 void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
 {
 	DAVA::RenderObject *ro = GetRenderObject(entity);
@@ -135,8 +176,13 @@ void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
 				DAVA::NMaterial *parent = material->GetParent();
 				if(NULL != parent && 0 == ownedParents.count(parent))
 				{
-					ownedParents.insert(parent);
-					parent->Retain();
+                    if(!(parent->GetNodeGlags() & DAVA::DataNode::NodeRuntimeFlag))
+                    {
+                        ownedParents.insert(parent);
+                        parent->Retain();
+
+                        ApplyViewMode(parent);
+                    }
 				}
 			}
 		}
@@ -159,6 +205,23 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 			}
 		}
 	}
+}
+
+void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
+{
+    DAVA::NMaterial::eFlagValue flag;
+
+    (curViewMode & MVM_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
+
+    (curViewMode & MVM_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
+
+    (curViewMode & MVM_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWSPECULAR, flag);
+
+    (curViewMode & MVM_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    material->SetFlag(DAVA::NMaterial::FLAG_VIEWAMBIENT, flag);
 }
 
 void EditorMaterialSystem::Update(DAVA::float32 timeElapsed)
