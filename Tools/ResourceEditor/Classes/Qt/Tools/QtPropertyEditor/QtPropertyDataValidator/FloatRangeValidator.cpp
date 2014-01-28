@@ -29,51 +29,41 @@
 #include "FloatRangeValidator.h"
 #include "Qt/Settings/SettingsManager.h"
 
-FloatRangeValidator::FloatRangeValidator(float _minValue, float _maxValue):
-	minValue(_minValue),
-	maxValue(_maxValue)
-{}
+FloatRangeValidator::FloatRangeValidator(float minValue, float maxValue)
+{
+    innerValidator.setRange(minValue, maxValue);
+}
 
 bool FloatRangeValidator::ValidateInternal(const QVariant &value) const
 {
-	bool isFloat = false;
-	float valueToCheck = value.toFloat(&isFloat);
-	DVASSERT(isFloat);
-	if (!isFloat)
-	{
-		return false;
-	}
-	if (FLOAT_EQUAL(valueToCheck, minValue) || FLOAT_EQUAL(valueToCheck, maxValue))
-	{
-		return true;
-	}
-	return minValue < valueToCheck && valueToCheck < maxValue;
+    QString validateValue = value.toString();
+    int pos = 0;
+    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
 }
 
-void FloatRangeValidator::SetRange(float _minValue, float _maxValue)
+void FloatRangeValidator::SetRange(float minValue, float maxValue)
 {
-	minValue = _minValue;
-	maxValue = _maxValue;
+	innerValidator.setRange(minValue, maxValue);
 }
 
-float FloatRangeValidator::GetMaximum()
+int FloatRangeValidator::GetMaximum() const
 {
-	return maxValue;
+	return innerValidator.top();
 }
 
-void FloatRangeValidator::SetMaximum(float _maxValue)
+void FloatRangeValidator::SetMaximum(float maxValue)
 {
-	maxValue = _maxValue;
+	innerValidator.setTop(maxValue);
 }
 
-float FloatRangeValidator::GetMinimum()
+int FloatRangeValidator::GetMinimum() const
 {
-	return minValue;
+	innerValidator.bottom();
 }
 
-void FloatRangeValidator::SetMinimum(float _minValue)
+void FloatRangeValidator::SetMinimum(float minValue)
 {
-	minValue = _minValue;
+    innerValidator.setBottom(minValue);
 }
 
 

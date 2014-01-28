@@ -32,7 +32,7 @@
 #define __INT_RANGE_VALIDATOR_H__
 
 #include "QtPropertyDataValidator.h"
-#include <QRegExpValidator>
+#include <QIntValidator>
 
 class IntRangeValidator : public QtPropertyDataValidator
 {
@@ -42,10 +42,10 @@ public:
 	
 	void SetRange(int minValue, int maxValue);
 	
-	int GetMaximum();
+	int GetMaximum() const;
 	void SetMaximum(int maxValue);
 	
-	int GetMinimum();
+	int GetMinimum() const;
 	void SetMinimum(int minValue);
    
 protected:
@@ -58,8 +58,7 @@ protected:
 
 private:
     
-	int	minValue;
-	int	maxValue;
+    QIntValidator  innerValidator;
 };
 
 #endif // __INT_RANGE_VALIDATOR_H__

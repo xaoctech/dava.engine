@@ -29,47 +29,41 @@
 #include "IntRangeValidator.h"
 #include "Qt/Settings/SettingsManager.h"
 
-IntRangeValidator::IntRangeValidator(int _minValue, int _maxValue):
-	minValue(_minValue),
-	maxValue(_maxValue)
-{}
+IntRangeValidator::IntRangeValidator(int minValue, int maxValue)
+{
+    innerValidator.setRange(minValue, maxValue);
+}
 
 bool IntRangeValidator::ValidateInternal(const QVariant &value) const
 {
-	bool isInt = false;
-	int valueToCheck = value.toInt(&isInt);
-	DVASSERT(isInt);
-	if(!isInt)
-	{
-		return false;
-	}
-	return minValue <= valueToCheck && valueToCheck <= maxValue;
+    QString validateValue = value.toString();
+    int pos = 0;
+    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
 }
 
-void IntRangeValidator::SetRange(int _minValue, int _maxValue)
+void IntRangeValidator::SetRange(int minValue, int maxValue)
 {
-	minValue = _minValue;
-	maxValue = _maxValue;
+	innerValidator.setRange(minValue, maxValue);
 }
 
-int IntRangeValidator::GetMaximum()
+int IntRangeValidator::GetMaximum() const
 {
-	return maxValue;
+	return innerValidator.top();
 }
 
-void IntRangeValidator::SetMaximum(int _maxValue)
+void IntRangeValidator::SetMaximum(int maxValue)
 {
-	maxValue = _maxValue;
+	innerValidator.setTop(maxValue);
 }
 
-int IntRangeValidator::GetMinimum()
+int IntRangeValidator::GetMinimum() const
 {
-	return minValue;
+	innerValidator.bottom();
 }
 
-void IntRangeValidator::SetMinimum(int _minValue)
+void IntRangeValidator::SetMinimum(int minValue)
 {
-	minValue = _minValue;
+    innerValidator.setBottom(minValue);
 }
 
 

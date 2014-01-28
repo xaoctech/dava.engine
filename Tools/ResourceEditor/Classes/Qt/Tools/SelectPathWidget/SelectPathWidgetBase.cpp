@@ -32,8 +32,6 @@
 #include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Qt/Settings/SettingsManager.h"
-#include "Qt/Tools/QtPropertyEditor/QtPropertyData.h"
-#include "Qt/Tools/QtPropertyEditor/QtPropertyDataValidator/RegExpValidator.h"
 
 #include <QFileInfo>
 #include <QKeyEvent>
