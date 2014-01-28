@@ -58,6 +58,13 @@ CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
 	faceChanged = false;
 	
 	ConnectSignals();
+    
+    ui->labelPX->SetVisualRotation(90);
+    ui->labelNX->SetVisualRotation(90);
+    ui->labelPY->SetVisualRotation(90);
+    ui->labelNY->SetVisualRotation(90);
+    ui->labelPZ->SetVisualRotation(90);
+    ui->labelNZ->SetVisualRotation(90);
 
 	setMouseTracking(true);
 }
