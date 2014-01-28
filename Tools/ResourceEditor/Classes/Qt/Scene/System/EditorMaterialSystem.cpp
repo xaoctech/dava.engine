@@ -81,7 +81,7 @@ void EditorMaterialSystem::BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::
 	// init set with already owned materials
 	DAVA::Set<DAVA::NMaterial *> materials = ownedParents;
 
-	GetScene()->GetMaterialSystem()->BuildMaterialList(GetScene(), materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
+	//GetScene()->GetMaterialSystem()->BuildMaterialList(GetScene(), materials, DAVA::NMaterial::MATERIALTYPE_MATERIAL, false);
 
 	DAVA::Set<DAVA::NMaterial *>::const_iterator i = materials.begin();
 	DAVA::Set<DAVA::NMaterial *>::const_iterator end = materials.end();
@@ -176,10 +176,13 @@ void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
 				DAVA::NMaterial *parent = material->GetParent();
 				if(NULL != parent && 0 == ownedParents.count(parent))
 				{
-					ownedParents.insert(parent);
-					parent->Retain();
+                    if(!(parent->GetNodeGlags() & DAVA::DataNode::NodeRuntimeFlag))
+                    {
+                        ownedParents.insert(parent);
+                        parent->Retain();
 
-                    ApplyViewMode(parent);
+                        ApplyViewMode(parent);
+                    }
 				}
 			}
 		}
