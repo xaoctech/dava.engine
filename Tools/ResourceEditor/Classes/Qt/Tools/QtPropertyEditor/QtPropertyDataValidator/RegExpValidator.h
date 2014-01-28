@@ -49,7 +49,7 @@ protected:
 
     virtual bool ValidateInternal(const QVariant &v) const;
     
-    virtual void ErrorNotifyInternal() const
+    virtual void ErrorNotifyInternal(const QVariant &v) const
     {
     }
 
