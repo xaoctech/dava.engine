@@ -141,7 +141,7 @@ void LODEditor::LODCorrectionChanged(double value)
     if(spinBox)
     {
         //TODO set new value to scene
-        int lodLevel = spinBox->property("tag").toInt();
+//        int lodLevel = spinBox->property("tag").toInt();
         
         UpdateSpinboxColor(spinBox);
     }

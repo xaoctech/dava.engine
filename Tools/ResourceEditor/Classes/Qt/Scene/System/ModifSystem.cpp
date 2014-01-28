@@ -762,7 +762,6 @@ void EntityModificationSystem::CloneEnd()
 	if(modifEntities.size() > 0 && clonedEntities.size() == modifEntities.size())
 	{
 		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
-		StructureSystem *structureSystem = sceneEditor->structureSystem;
 		SceneSelectionSystem *selectionSystem = sceneEditor->selectionSystem;
 
 		selectionSystem->Clear();
