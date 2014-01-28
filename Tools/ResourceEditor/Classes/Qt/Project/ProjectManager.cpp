@@ -35,8 +35,10 @@
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/EditorConfig.h"
 
-#include "Classes/CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-#include "Classes/Qt/SpritesPacker/SpritePackerHelper.h"
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+#include "SpritesPacker/SpritePackerHelper.h"
+
+#include "FileSystem/YamlParser.h"
 
 ProjectManager::ProjectManager()
 	: curProjectPath("")
@@ -63,6 +65,16 @@ QString ProjectManager::CurProjectPath()
 QString ProjectManager::CurProjectDataSourcePath()
 {
 	return curProjectPathDataSource;
+}
+
+const QVector<ProjectManager::AvailableMaterialTemplate>* ProjectManager::GetAvailableMaterialTemplates() const
+{
+    return &templates;
+}
+
+const QVector<ProjectManager::AvailableMaterialQuality>* ProjectManager::GetAvailableMaterialQualities() const
+{
+    return &qualities;
 }
 
 QString ProjectManager::ProjectOpenDialog()
@@ -97,6 +109,7 @@ void ProjectManager::ProjectOpen(const QString &path)
             SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
             LoadProjectSettings();
+            LoadMaterialsSettings();
             
             emit ProjectOpened(curProjectPath);
             
@@ -134,4 +147,92 @@ void ProjectManager::LoadProjectSettings()
 	DAVA::FilePath prjPath = DAVA::FilePath(curProjectPath.toStdString());
 	prjPath.MakeDirectoryPathname();
 	EditorConfig::Instance()->ParseConfig(prjPath + "EditorConfig.yaml");
+}
+
+void ProjectManager::LoadMaterialsSettings()
+{
+    templates.clear();
+    qualities.clear();
+
+    // parse available material templates
+    DAVA::FilePath materialsListPath = DAVA::FilePath("~res:/Materials/assignable.yaml");
+    if(materialsListPath.Exists())
+    {
+        DAVA::YamlParser *parser = DAVA::YamlParser::Create(materialsListPath);
+        DAVA::YamlNode *rootNode = parser->GetRootNode();
+
+        if(NULL != rootNode)
+        {
+            DAVA::FilePath materialsListDir = materialsListPath.GetDirectory();
+
+            for(int i = 0; i < rootNode->GetCount(); ++i)
+            {
+                const DAVA::YamlNode *templateNode = rootNode->Get(i);
+                if(NULL != templateNode)
+                {
+                    const DAVA::YamlNode *name = templateNode->Get("name");
+                    const DAVA::YamlNode *path = templateNode->Get("path");
+
+                    if(NULL != name && NULL != path &&
+                        name->GetType() == DAVA::YamlNode::TYPE_STRING &&
+                        path->GetType() == DAVA::YamlNode::TYPE_STRING)
+                    {
+                        DAVA::FilePath templatePath = DAVA::FilePath(materialsListDir, path->AsString());
+                        if(templatePath.Exists())
+                        {
+                            AvailableMaterialTemplate amt;
+                            amt.name = name->AsString().c_str();
+                            amt.path = templatePath.GetFrameworkPath().c_str();
+
+                            templates.append(amt);
+                        }
+                    }
+                }
+            }
+        }
+
+        parser->Release();
+    }
+
+    // parse available material qualities
+    DAVA::FilePath qualitiesListPath = DAVA::FilePath("~res:/Materials/quality.yaml");
+    if(qualitiesListPath.Exists())
+    {
+        DAVA::YamlParser *parser = DAVA::YamlParser::Create(qualitiesListPath);
+        DAVA::YamlNode *rootNode = parser->GetRootNode();
+
+        if(NULL != rootNode)
+        {
+            for(int i = 0; i < rootNode->GetCount(); ++i)
+            {
+                const DAVA::YamlNode *qualityNode = rootNode->Get(i);
+                if(NULL != qualityNode)
+                {
+                    const DAVA::YamlNode *name = qualityNode->Get("name");
+                    const DAVA::YamlNode *values = qualityNode->Get("values");
+
+                    if(NULL != name && NULL != values &&
+                        name->GetType() == DAVA::YamlNode::TYPE_STRING &&
+                        values->GetType() == DAVA::YamlNode::TYPE_ARRAY)
+                    {
+                        AvailableMaterialQuality amq;
+                        amq.name = name->AsString().c_str();
+
+                        const DAVA::Vector<DAVA::YamlNode *> &v = values->AsVector();
+                        for(size_t j = 0; j < v.size(); ++j)
+                        {
+                            if(v[j]->GetType() == DAVA::YamlNode::TYPE_STRING)
+                            {
+                                amq.values.append(v[j]->AsString().c_str());
+                            }
+                        }
+
+                        qualities.append(amq);
+                    }
+                }
+            }
+        }
+
+        parser->Release();
+    }
 }
