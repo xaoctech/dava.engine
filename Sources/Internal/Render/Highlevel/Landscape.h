@@ -386,7 +386,7 @@ protected:
     
     uint16 * indices;
     //Texture * textures[TEXTURE_COUNT];
-    Vector<FilePath> textureNames;
+    //Vector<FilePath> textureNames;
     
     int32 lodLevelsCount;
     float32 lodDistance[8]; //

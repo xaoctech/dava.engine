@@ -704,7 +704,20 @@ namespace DAVA
 		TextureBucket* bucket = textures.at(textureFastName);
 		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
 	}
-	
+    
+    Texture * NMaterial::GetEffectiveTexture(const FastName& textureFastName) const
+    {
+        TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
+		return (NULL == bucket) ? NULL : bucket->texture;
+    }
+    
+	const FilePath& NMaterial::GetEffectiveTexturePath(const FastName& textureFastName) const
+    {
+        static FilePath invalidEmptyPath;
+		TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
+		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
+    }
+
     Texture * NMaterial::GetTexture(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < textures.size());

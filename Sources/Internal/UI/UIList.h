@@ -212,7 +212,6 @@ public:
 	const List<UIControl*> &GetVisibleCells();
 
 	virtual List<UIControl* >& GetRealChildren();
-	virtual List<UIControl* > GetRealChildrenAndSubcontrols();
 
 	UIListCell* GetReusableCell(const String &cellIdentifier);//returns cell from the cells cache, if returns 0 you need to create the new one
 	
