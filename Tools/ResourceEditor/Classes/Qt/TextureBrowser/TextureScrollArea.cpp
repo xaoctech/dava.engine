@@ -130,7 +130,6 @@ void TextureScrollArea::setImage(const QImage &image)
 	cubeDrawPixmap = QPixmap(1, 1);
 	
 	currentTextureImage = image;
-	QImage::Format imgFormat = image.format();
 
 	//applyCurrentImageToScenePixmap();
 	applyTextureImageToScenePixmap();

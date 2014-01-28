@@ -819,7 +819,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             if (oldMeshInstanceNode->GetLightmapCount() > 0)
             {
                 RenderBatch * batch = mesh->GetRenderBatch(k);
-                NMaterial * material = batch->GetMaterial();
                 //MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
 
                 //tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
