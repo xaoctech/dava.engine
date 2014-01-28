@@ -90,11 +90,11 @@ bool RenderManager::Create(HINSTANCE _hInstance, HWND _hWnd)
 
 void RenderManager::Release()
 {
+	Singleton<RenderManager>::Release();
+
 	wglMakeCurrent(0, 0);
 	wglDeleteContext(hRC);
 	ReleaseDC(hWnd, hDC);	
-	
-	Singleton<RenderManager>::Release();
 }
 
 bool RenderManager::ChangeDisplayMode(DisplayMode mode, bool isFullscreen)
