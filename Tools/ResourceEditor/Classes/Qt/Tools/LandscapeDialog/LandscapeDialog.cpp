@@ -247,12 +247,12 @@ void LandscapeDialog::ActionButtonClicked()
         entityToProcess->SetLocked(true);
 		Landscape* newLandscape = new Landscape();
 		
-		for(uint32 i = Landscape::TEXTURE_COLOR; i < Landscape::TEXTURE_COUNT; ++i)
-		{
-			Texture* pinkTexture = Texture::CreatePink();
-			newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
-			SafeRelease(pinkTexture);
-		}
+		//for(uint32 i = Landscape::TEXTURE_COLOR; i < Landscape::TEXTURE_COUNT; ++i)
+		//{
+		//	Texture* pinkTexture = Texture::CreatePink();
+		//	newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
+		//	SafeRelease(pinkTexture);
+		//}
 		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
 		entityToProcess->AddComponent(component);
