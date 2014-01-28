@@ -45,8 +45,6 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "TextureBrowser/TextureInfo.h"
 
-#include "MaterialEditor/MaterialAssignSystem.h"
-
 #include <QPainter>
 
 
@@ -70,12 +68,6 @@ MaterialModel::MaterialModel(QObject * parent)
 MaterialModel::~MaterialModel()
 { }
 
-void MaterialModel::AssignMaterialToSelection( DAVA::NMaterial *material )
-{
-    EntityGroup selection = curScene->selectionSystem->GetSelection();
-    MaterialAssignSystem::AssignMaterialToGroup(curScene, &selection, material);
-}
-
 void MaterialModel::SetScene(SceneEditor2 *scene)
 {
 	removeRows(0, rowCount());
@@ -85,6 +77,11 @@ void MaterialModel::SetScene(SceneEditor2 *scene)
 	{
 		Sync();
 	}
+}
+
+SceneEditor2* MaterialModel::GetScene()
+{
+    return curScene;
 }
 
 void MaterialModel::SetSelection(const EntityGroup *group)
