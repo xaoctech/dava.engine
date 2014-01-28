@@ -104,16 +104,11 @@ void MaterialItem::SetFlag(MaterialFlag flag, bool set)
 				break;
 
 			case IS_PART_OF_SELECTION:
-				if(set)
-				{
+                {
 					QFont curFont = font();
-					curFont.setBold(true);
+					curFont.setBold(set);
 					setFont(curFont); 
-				}
-				else
-				{
-					setFont(QFont());
-				}
+                }
 				break;
 
 			default:
