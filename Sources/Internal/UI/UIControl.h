@@ -715,12 +715,6 @@ public:
 	virtual List<UIControl* > GetSubcontrols();
 
 	/**
-	 \brief Returns list of control children including internal controls,
-	 \which are editable and belongs to the same control.
-	 */
-	virtual List<UIControl* > GetRealChildrenAndSubcontrols();
-
-	/**
 	 \brief Returns whether this control is subcontrol of its parent.
 	 */
 	virtual bool IsSubcontrol();

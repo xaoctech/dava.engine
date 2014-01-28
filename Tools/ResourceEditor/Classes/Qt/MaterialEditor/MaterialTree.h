@@ -56,6 +56,7 @@ public:
 
     int getFilterType() const;
     void setFilterType( int filterType );
+    void AssignMaterialToSelection( DAVA::NMaterial *material );
 
 signals:
 
