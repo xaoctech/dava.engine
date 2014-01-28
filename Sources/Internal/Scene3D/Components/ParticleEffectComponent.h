@@ -99,8 +99,11 @@ public:
 	
 	int32 GetActiveParticlesCount();
 
+    void SetRenderObjectVisible(bool visible);
+
 private:
 	void ClearCurrentGroups();
+    void SetGroupsFinishing();
 	
 	/*effect playback setup       i bit changed logic*/	
 	bool stopWhenEmpty;			  //if true effect is considered finished when no particles left, otherwise effect is considered finished if time>effectDuration

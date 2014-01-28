@@ -105,6 +105,7 @@ void ParticleEffectComponent::Stop(bool isDeleteAllParticles)
 	else
 	{
 		state = STATE_STOPPING;
+        SetGroupsFinishing();
 	}
 }
 
@@ -162,6 +163,23 @@ void ParticleEffectComponent::ClearCurrentGroups()
 		it->emitter->Release();		
 	}
 	effectData.groups.clear();
+}
+
+void ParticleEffectComponent::SetRenderObjectVisible(bool visible)
+{
+    if (visible) 
+        effectRenderObject->AddFlag(RenderObject::VISIBLE);
+    else
+        effectRenderObject->RemoveFlag(RenderObject::VISIBLE);
+
+}
+
+void ParticleEffectComponent::SetGroupsFinishing()
+{
+    for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
+    {
+        (*it).finishingGroup = true;
+    }
 }
 
 void ParticleEffectComponent::SetPlaybackCompleteMessage(const Message & msg)
