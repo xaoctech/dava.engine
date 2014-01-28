@@ -1873,8 +1873,8 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
 				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
 			
 				//Get the face offset. Varies per MIP level.
-				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
+//				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
+//				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
 				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
 				//{
 				PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
