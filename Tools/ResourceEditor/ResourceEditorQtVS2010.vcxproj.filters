@@ -1848,17 +1848,20 @@
     <ClCompile Include="Classes\Qt\Tools\RunGuard\RunGuard.cpp">
       <Filter>Classes\Qt\Tools\RunGuard</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\ProjectPathValidator.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModelFiltering_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3275,14 +3278,20 @@
     <ClInclude Include="Classes\Qt\Tools\RunGuard\RunGuard.h">
       <Filter>Classes\Qt\Tools\RunGuard</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\ProjectPathValidator.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
