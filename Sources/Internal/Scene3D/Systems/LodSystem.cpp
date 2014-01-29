@@ -246,19 +246,16 @@ void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 p
 			return;
 		}
         
-        int32 layerNum = lodComponent->lodLayers[lodComponent->currentLod].layer;
+        int32 layerNum = lodComponent->currentLod;
         DVASSERT(0 <= layerNum && layerNum < LodComponent::MAX_LOD_LAYERS);
         
-        if((int32)lodComponent->lodLayers.size() > layerNum)
+        if(lodComponent->IsRecursiveUpdate())
         {
-            if(lodComponent->IsRecursiveUpdate())
-            {
-                SetEntityLodRecursive(entity, layerNum);
-            }
-            else
-            {
-                SetEntityLod(entity, layerNum);
-            }
+            SetEntityLodRecursive(entity, layerNum);
+        }
+        else
+        {
+            SetEntityLod(entity, layerNum);
         }
 	}
 }
@@ -285,26 +282,16 @@ bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
-		if (usePsSettings)
-			lodComponent->currentLod = lodComponent->forceLodLayer;
-		else if(lodComponent->lodLayers.size())
-		{
-			lodComponent->currentLod = Min((int32)lodComponent->lodLayers.size() - 1, lodComponent->forceLodLayer);
-		}
-		else
-		{
-			lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
-		}
+		lodComponent->currentLod = lodComponent->forceLodLayer;
 		return true;
 	}
 
-	int32 layersCount = lodComponent->GetLodLayersCount();	
+	int32 layersCount = LodComponent::MAX_LOD_LAYERS;
 	float32 dst = CalculateDistanceToCamera(entity, lodComponent, camera);
 
 	
 	if (usePsSettings)
 	{
-		layersCount = LodComponent::MAX_LOD_LAYERS;
 		if (dst>lodComponent->GetLodLayerFarSquare(0)) //preserv lod 0 from degrade
 			dst = dst*psLodMultSq+psLodOffsetSq;
 	}

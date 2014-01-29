@@ -174,7 +174,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 10;
+    header.version = 11;
     header.nodeCount = _scene->GetChildrenCount();
 	
 	descriptor.size = sizeof(descriptor.fileType); // + sizeof(descriptor.additionalField1) + sizeof(descriptor.additionalField1) +....
@@ -1072,10 +1072,13 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 
-	LodToLod2Converter lodConverter;
-	lodConverter.ConvertLodToV2(rootNode);
-	SwitchToRenerObjectConverter switchConverter;
-	switchConverter.ConsumeSwitchedRenderObjects(rootNode);
+    if(GetVersion() < 11)
+    {
+	    LodToLod2Converter lodConverter;
+	    lodConverter.ConvertLodToV2(rootNode);
+	    SwitchToRenerObjectConverter switchConverter;
+	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
+    }
 	
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     

@@ -414,7 +414,10 @@ DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
         return DAVA::LodComponent::MAX_LOD_LAYERS;
     }
 
-    return lod->GetLodLayersCount();
+    Entity * en = lod->GetEntity();
+    RenderObject * ro = GetRenderObject(en);
+    DVASSERT(ro);
+    return ro->GetMaxLodIndex()+1;
 }
 
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
