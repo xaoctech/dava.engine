@@ -101,7 +101,9 @@ private slots:
 	void OnChangePropertySucceeded();
 
 	void OnUnsavedChangesNumberChanged();
-	
+
+    void OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &);
+
 	// Adjust size
 	void OnAdjustSize();
 	
@@ -168,6 +170,10 @@ private:
 
     // Repack and reload sprites.
     void RepackAndReloadSprites();
+
+    // Control Align/Distribute actions.
+    void SetAlignEnabled(bool value);
+    void SetDistributeEnabled(bool value);
 
 private:
     Ui::MainWindow *ui;

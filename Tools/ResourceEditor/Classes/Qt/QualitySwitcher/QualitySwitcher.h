@@ -26,29 +26,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __QUALITY_SWITCHER_H__
+#define __QUALITY_SWITCHER_H__
 
+#include <QDialog>
 
-#ifndef __CHANGE_LOD_DISTANCE_COMMAND_H__
-#define __CHANGE_LOD_DISTANCE_COMMAND_H__
-
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
-
-class ChangeLODDistanceCommand: public Command2
+class QualitySwitcher : public QDialog
 {
-public:
-	ChangeLODDistanceCommand(DAVA::LodComponent *lod, DAVA::int32 lodLayer, DAVA::float32 distance);
+    Q_OBJECT
 
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
+public:
+    static void Show();
 
 protected:
+    QualitySwitcher(QWidget *parent = NULL);
+    ~QualitySwitcher();
 
-	DAVA::LodComponent *lodComponent;
-	DAVA::int32 layer;
-	DAVA::float32 newDistance;
-	DAVA::float32 oldDistance;
+    QPushButton *defBtn;
 };
 
-#endif // __CHANGE_LOD_DISTANCE_COMMAND_H__
+#endif // __QUALITY_SWITCHER_H__

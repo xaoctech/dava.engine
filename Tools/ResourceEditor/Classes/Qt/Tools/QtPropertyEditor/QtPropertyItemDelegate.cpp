@@ -83,7 +83,9 @@ QWidget* QtPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptio
 			editWidget = data->CreateEditor(parent, option);
 		}
 
-		if(NULL == editWidget)
+        // if widget wasn't created and it isn't checkable
+        // let base class create editor
+		if(NULL == editWidget && !data->IsCheckable())
 		{
 			editWidget = QStyledItemDelegate::createEditor(parent, option, index);
 		}

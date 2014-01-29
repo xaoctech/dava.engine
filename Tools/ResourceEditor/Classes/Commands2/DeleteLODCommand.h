@@ -28,27 +28,36 @@
 
 
 
-#ifndef __CHANGE_LOD_DISTANCE_COMMAND_H__
-#define __CHANGE_LOD_DISTANCE_COMMAND_H__
+#ifndef __DELETE_LOD_COMMAND_H__
+#define __DELETE_LOD_COMMAND_H__
 
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
+#include "Command2.h"
+#include "Scene3D/Components/LodComponent.h"
 
-class ChangeLODDistanceCommand: public Command2
+class EntityRemoveCommand;
+class DeleteLODCommand: public Command2
 {
 public:
-	ChangeLODDistanceCommand(DAVA::LodComponent *lod, DAVA::int32 lodLayer, DAVA::float32 distance);
+	DeleteLODCommand(DAVA::LodComponent *lod, DAVA::int32 lodIndex);
+    virtual ~DeleteLODCommand();
 
 	virtual void Undo();
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const;
 
 protected:
+    
+    DAVA::int32 CountOccurence(DAVA::Entity *entity) const;
 
 	DAVA::LodComponent *lodComponent;
-	DAVA::int32 layer;
-	DAVA::float32 newDistance;
-	DAVA::float32 oldDistance;
+    DAVA::int32 deletedLodIndex;
+    
+	DAVA::Vector<DAVA::LodComponent::LodData> lodLayers;
+	DAVA::Vector<DAVA::LodComponent::LodDistance> lodLayersArray;
+    
+    DAVA::Vector<DAVA::Entity *>nodes;
+    DAVA::Vector<EntityRemoveCommand *> commands;
 };
 
-#endif // __CHANGE_LOD_DISTANCE_COMMAND_H__
+
+#endif // __DELETE_LOD_COMMAND_H__
