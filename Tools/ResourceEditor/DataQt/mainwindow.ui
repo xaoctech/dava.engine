@@ -36,16 +36,7 @@
     <property name="spacing">
      <number>3</number>
     </property>
-    <property name="leftMargin">
-     <number>1</number>
-    </property>
-    <property name="topMargin">
-     <number>1</number>
-    </property>
-    <property name="rightMargin">
-     <number>1</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>1</number>
     </property>
     <item>
@@ -78,16 +69,7 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -115,16 +97,7 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -163,16 +136,7 @@
         <property name="spacing">
          <number>1</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -288,6 +252,9 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="separator"/>
+     <addaction name="actionEditor_2D_Camera"/>
+     <addaction name="actionEditor_Sprite"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -530,16 +497,7 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -585,16 +543,7 @@
      <property name="spacing">
       <number>2</number>
      </property>
-     <property name="leftMargin">
-      <number>1</number>
-     </property>
-     <property name="topMargin">
-      <number>1</number>
-     </property>
-     <property name="rightMargin">
-      <number>1</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>1</number>
      </property>
      <item>
@@ -626,16 +575,7 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -1716,6 +1656,24 @@
    </property>
    <property name="text">
     <string>Current scene settings...</string>
+   </property>
+  </action>
+  <action name="actionEditor_Sprite">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/map.png</normaloff>:/QtIcons/map.png</iconset>
+   </property>
+   <property name="text">
+    <string>Editor Sprite</string>
+   </property>
+  </action>
+  <action name="actionEditor_2D_Camera">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Editor 2D Camera</string>
    </property>
   </action>
  </widget>

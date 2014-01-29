@@ -133,6 +133,8 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
+    void OnEditor2DCameraDialog();
+    void OnEditorSpriteDialog();
 	void OnAddEntityFromSceneTree();
 
 	void OnSetSkyboxNode();
