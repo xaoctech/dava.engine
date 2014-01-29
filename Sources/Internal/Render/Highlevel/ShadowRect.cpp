@@ -35,12 +35,13 @@
 #include "Render/RenderManager.h"
 #include "Scene3D/Scene.h"
 #include "FileSystem/FilePath.h"
+#include "Render/ShaderCache.h"
 
 namespace DAVA
 {
 	
 	ShadowRect * ShadowRect::instance = 0;
-	
+	FastName ShadowRect::SHADOW_RECT_SHADER("~res:/Materials/Shaders/ShadowVolume/shadowrect");
 	
 	ShadowRect * ShadowRect::Create()
 	{
@@ -74,9 +75,7 @@ namespace DAVA
 		
 		shadowColor = Color(0, 0, 0, 0.5f);
 		
-		shader = new Shader();
-		shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
-		shader->Recompile();
+		shader = SafeRetain(ShaderCache::Instance()->Get(SHADOW_RECT_SHADER, FastNameSet()));
 		
 		uniformShadowColor = shader->FindUniformIndexByName(FastName("shadowColor"));
 		DVASSERT(uniformShadowColor != -1);

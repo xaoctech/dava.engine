@@ -209,6 +209,7 @@ void ProjectManager::LoadMaterialsSettings()
                 if(NULL != qualityNode)
                 {
                     const DAVA::YamlNode *name = qualityNode->Get("name");
+                    const DAVA::YamlNode *prefix = qualityNode->Get("prefix");
                     const DAVA::YamlNode *values = qualityNode->Get("values");
 
                     if(NULL != name && NULL != values &&
@@ -217,6 +218,11 @@ void ProjectManager::LoadMaterialsSettings()
                     {
                         AvailableMaterialQuality amq;
                         amq.name = name->AsString().c_str();
+
+                        if(NULL != prefix && prefix->GetType() == DAVA::YamlNode::TYPE_STRING)
+                        {
+                            amq.prefix = prefix->AsString().c_str();
+                        }
 
                         const DAVA::Vector<DAVA::YamlNode *> &v = values->AsVector();
                         for(size_t j = 0; j < v.size(); ++j)

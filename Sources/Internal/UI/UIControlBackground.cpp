@@ -538,7 +538,6 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
     float32 textureHeight = (float32)texture->GetHeight();
 	
 	int32 vertInTriCount = 18;
-	int32 vertCount = 16;
 
 	switch (type) 
 	{
@@ -591,7 +590,6 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 		case DRAW_STRETCH_BOTH:
 		{
             vertInTriCount = 18 * 3;
-            vertCount = 32;
 
             vertices[0] = vertices[8]  = vertices[16] = vertices[24] = x;
             vertices[2] = vertices[10] = vertices[18] = vertices[26] = x + realLeftStretchCap;
@@ -682,7 +680,6 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd)
 	Vector2 stretchCap( Min( size.x, spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH) ),
 						Min( size.y, spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT) ) );
 
-	Texture *texture = spr->GetTexture(frame);
 	UniqueHandle textureHandle = spr->GetTextureHandle(frame);
 
 	stretchCap.x = Min( stretchCap.x * 0.5f, leftStretchCap );

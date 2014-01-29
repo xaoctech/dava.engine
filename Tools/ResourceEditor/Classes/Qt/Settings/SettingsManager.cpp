@@ -62,7 +62,7 @@ const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
 	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::String(""))),
 	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
-	SettingRow("recentFiles", DAVA::VariantType()),
+	SettingRow("recentFiles", DAVA::VariantType((KeyedArchive *)NULL)),
     SettingRow("recentFilesListCount", DAVA::VariantType(5)),
 };
 
@@ -103,6 +103,7 @@ void SettingsManager::Load()
 	KeyedArchive* loadedArchive = new KeyedArchive();
 	if(!loadedArchive->Load(CONFIG_FILE))
 	{
+        loadedArchive->Release();
 		return;
 	}
 	bool isSettingsFileVersionActual = loadedArchive->IsKeyExists(SETTINGS_VERSION_KEY);

@@ -192,7 +192,6 @@
    <addaction name="separator"/>
    <addaction name="actionMaterialEditor"/>
    <addaction name="actionTextureConverter"/>
-   <addaction name="separator"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -278,7 +277,7 @@
     </property>
     <widget class="QMenu" name="menuTexturesForGPU">
      <property name="title">
-      <string>Textures for GPU</string>
+      <string>GPU</string>
      </property>
      <addaction name="actionReloadPoverVRIOS"/>
      <addaction name="actionReloadPoverVRAndroid"/>
@@ -293,7 +292,18 @@
       <string>Toolbars</string>
      </property>
     </widget>
+    <widget class="QMenu" name="menuTextures">
+     <property name="title">
+      <string>Textures</string>
+     </property>
+     <addaction name="actionAlbedo"/>
+     <addaction name="actionAmbient"/>
+     <addaction name="actionDiffuse"/>
+     <addaction name="actionSpecular"/>
+    </widget>
     <addaction name="menuTexturesForGPU"/>
+    <addaction name="menuTextures"/>
+    <addaction name="actionQuality"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -1656,6 +1666,55 @@
    </property>
    <property name="text">
     <string>Current scene settings...</string>
+   </property>
+  </action>
+  <action name="actionAlbedo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Albedo</string>
+   </property>
+  </action>
+  <action name="actionAmbient">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ambient</string>
+   </property>
+  </action>
+  <action name="actionDiffuse">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Diffuse</string>
+   </property>
+  </action>
+  <action name="actionSpecular">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Specular</string>
+   </property>
+  </action>
+  <action name="actionQuality">
+   <property name="text">
+    <string>Quality...</string>
    </property>
   </action>
   <action name="actionEditor_Sprite">

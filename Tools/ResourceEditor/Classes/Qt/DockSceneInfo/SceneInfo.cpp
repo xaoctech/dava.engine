@@ -141,6 +141,11 @@ void SceneInfo::Initialize3DDrawSection()
     AddChild("TriangleList", header);
     AddChild("TriangleStrip", header);
     AddChild("TriangleFan", header);
+
+    QtPropertyData* header2 = CreateInfoHeader("Bind Info");
+    AddChild("Dynamic Param Bind Count", header2);
+    AddChild("Material Param Bind Count", header2);
+    
 }
 
 void SceneInfo::Refresh3DDrawInfo()
@@ -159,6 +164,12 @@ void SceneInfo::Refresh3DDrawInfo()
     SetChild("TriangleList", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLELIST], header);
     SetChild("TriangleStrip", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLESTRIP], header);
     SetChild("TriangleFan", renderStats.primitiveCount[PRIMITIVETYPE_TRIANGLEFAN], header);
+    
+    QtPropertyData* header2 = GetInfoHeader("Bind Info");
+
+    SetChild("Dynamic Param Bind Count", renderStats.dynamicParamUniformBindCount, header2);
+    SetChild("Material Param Bind Count", renderStats.materialParamUniformBindCount, header2);
+
 }
 
 

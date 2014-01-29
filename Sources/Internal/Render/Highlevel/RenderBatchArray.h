@@ -44,9 +44,10 @@ class RenderLayerBatchArray;
 class RenderPassBatchArray
 {
 public:
-    RenderPassBatchArray(RenderSystem * renderSystem);
+    RenderPassBatchArray(RenderSystem * rs);
     ~RenderPassBatchArray();
     
+    void InitPassLayers(RenderPass * pass);
     void Clear();
 
     void PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera);
@@ -89,6 +90,9 @@ public:
 
 	void SetVisible(bool visible);
 	bool GetVisible();
+    
+    inline void SetFlags(uint32 flags);
+    
 private:
     Vector<RenderBatch*> renderBatchArray;
     uint32 flags;
@@ -110,6 +114,10 @@ public:
 		renderBatchArray.push_back(batch);
 	}
 
+    inline void RenderLayerBatchArray::SetFlags(uint32 _flags)
+    {
+        flags = _flags;
+    }
 
     
 } // ns

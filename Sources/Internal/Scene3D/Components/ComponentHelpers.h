@@ -47,10 +47,13 @@ class LodComponent;
 class SkyboxRenderObject;
 class SwitchComponent;
 class QualitySettingsComponent;
+class RenderComponent;
+class TransformComponent;
 
 
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
-
+TransformComponent * GetTransformComponent(Entity * fromEntity);
+RenderComponent * GetRenderComponent(const Entity *fromEntity);
 RenderObject * GetRenderObject(const Entity * fromEntity);
 SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
 

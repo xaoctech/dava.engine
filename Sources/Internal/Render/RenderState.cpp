@@ -172,11 +172,11 @@ bool RenderState::IsEqual(RenderState * anotherState)
 
 void RenderState::Flush(RenderState * hardwareState) const
 {
-	RenderManager::Instance()->GetStats().renderStateSwitches++;
+	RENDERER_UPDATE_STATS(renderStateSwitches++);
 	
 	if(hardwareState->stateHandle != stateHandle)
 	{
-		RenderManager::Instance()->GetStats().renderStateFullSwitches++;
+		RENDERER_UPDATE_STATS(renderStateFullSwitches++);
 		
 		const RenderStateData* currentData = RenderManager::Instance()->GetRenderStateData(stateHandle);
 		const RenderStateData* hardwareData = RenderManager::Instance()->GetRenderStateData(hardwareState->stateHandle);
@@ -311,7 +311,7 @@ void RenderState::Flush(RenderState * hardwareState) const
 			
 			hardwareState->textureState = textureState;
 			
-			RenderManager::Instance()->GetStats().textureStateFullSwitches++;
+			RENDERER_UPDATE_STATS(textureStateFullSwitches++);
 		}
     
 	
@@ -917,15 +917,15 @@ void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 			stateData.fillMode = newFillMode;
 		}
 
-		const YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
-		const YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
-		if(alphaFuncNode && alphaFuncCmpValueNode)
-		{
-			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
-			float32 newCmpValue = alphaFuncCmpValueNode->AsFloat();
-		
-			//DO NOTHING FOR NOW
-		}
+//		const YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
+//		const YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
+//		if(alphaFuncNode && alphaFuncCmpValueNode)
+//		{
+//			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
+//			float32 newCmpValue = alphaFuncCmpValueNode->AsFloat();
+//		
+//			//DO NOTHING FOR NOW
+//		}
 
 		const YamlNode * stencilNode = renderStateNode->Get("stencil");
 		if(stencilNode)

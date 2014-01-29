@@ -31,6 +31,7 @@
 #include "Debug/Stats.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderLayerManager.h"
+#include "Render/Highlevel/RenderPass.h"
 
 namespace DAVA
 {
@@ -42,6 +43,27 @@ RenderPassBatchArray::RenderPassBatchArray(RenderSystem * rs)
     {
         RenderLayerBatchArray* batchArray = new RenderLayerBatchArray( manager->GetRenderLayer(id)->GetFlags() );
         layerBatchArrays[id] = batchArray;
+    }
+}
+    
+void RenderPassBatchArray::InitPassLayers(RenderPass * renderPass)
+{
+    // const RenderLayerManager * manager = RenderLayerManager::Instance();
+    for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
+    {
+        RenderLayer * layer = 0;
+        for (uint32 k = 0; k < renderPass->GetRenderLayerCount(); ++k)
+        {
+            if (renderPass->GetRenderLayer(k)->GetRenderLayerID() == id)
+            {
+                layer = renderPass->GetRenderLayer(k);
+                break;
+            }
+        }
+        if (layer)
+        {
+            layerBatchArrays[id]->SetFlags(layer->GetFlags());
+        }
     }
 }
     
@@ -71,10 +93,10 @@ void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityAr
 		renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         
-        uint32 batchCount = renderObject->GetRenderBatchCount();
+        uint32 batchCount = renderObject->GetActiveRenderBatchCount();
 		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 		{
-			RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+			RenderBatch * batch = renderObject->GetActiveRenderBatch(batchIndex);
             //batch->SetCameraWorldTransformPtr(&cameraWorldMatrices[ro]);
 
 			NMaterial * material = batch->GetMaterial();

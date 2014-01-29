@@ -210,6 +210,7 @@ void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Co
 
     vertexStream->Set(TYPE_FLOAT, 2, 0, gridVertices.data());
 
+    RenderManager::Instance()->SetDefault2DNoTextureState();
     Color oldColor = RenderManager::Instance()->GetColor();
     RenderManager::Instance()->SetColor(color);
     
@@ -218,6 +219,7 @@ void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Co
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINELIST, 0, curVertexIndex / 2);
     
     RenderManager::Instance()->SetColor(oldColor);
+    RenderManager::Instance()->SetDefault2DState();
 }
 
 void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
@@ -1084,17 +1086,21 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 
 	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
 	{
-		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+        if (gDodecObject->GetIndexBufferID() != 0)
+        {
+            gDodecObject->BuildVertexBuffer(sizeof(gDodecVertexes) / sizeof(gDodecVertexes[0]));
+            gDodecObject->BuildIndexBuffer();
+        }
+        
 		Matrix4 drawMatrix;
-
 		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
 		drawMatrix.SetTranslationVector(center);
 
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
+		RenderManager::Instance()->SetDynamicParam(PARAM_WORLD, &drawMatrix, UPDATE_SEMANTIC_ALWAYS);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
-		RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->FlushState();
 
 		if(gDodecObject->GetIndexBufferID() != 0)
 		{
@@ -1104,24 +1110,26 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		{
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, gDodecIndexes);
 		}
-
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 
 	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
 	{
-		Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-		Matrix4 drawMatrix;
+        if (gDodecObject->GetIndexBufferID() != 0)
+        {
+            gDodecObject->BuildVertexBuffer(sizeof(gDodecVertexes) / sizeof(gDodecVertexes[0]));
+            gDodecObject->BuildIndexBuffer();
+        }
 
+		Matrix4 drawMatrix;
 		drawMatrix.CreateScale(DAVA::Vector3(radius, radius, radius));
 		drawMatrix.SetTranslationVector(center);
 
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, drawMatrix * prevMatrix);
+		RenderManager::Instance()->SetDynamicParam(PARAM_WORLD, &drawMatrix, UPDATE_SEMANTIC_ALWAYS);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
-		RenderManager::Instance()->FlushState();
-
+        RenderManager::Instance()->FlushState();
+        
 		if(gDodecObject->GetIndexBufferID() != 0)
 		{
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, 0);
@@ -1130,8 +1138,6 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		{
 			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, sizeof(gDodecIndexes) / sizeof(gDodecIndexes[0]), EIF_16, gDodecIndexes);
 		}
-
-		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
 	}
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)

@@ -462,13 +462,11 @@ void StructureSystem::ProcessCommand(const Command2 *command, bool redo)
 
 void StructureSystem::AddEntity(DAVA::Entity * entity)
 {
-	DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
 	EmitChanged();
 }
 
 void StructureSystem::RemoveEntity(DAVA::Entity * entity)
 {
-	DAVA::Entity *parent = (NULL != entity) ? entity->GetParent() : NULL;
 	EmitChanged();
 }
 

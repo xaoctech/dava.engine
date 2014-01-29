@@ -130,7 +130,6 @@ void TextureScrollArea::setImage(const QImage &image)
 	cubeDrawPixmap = QPixmap(1, 1);
 	
 	currentTextureImage = image;
-	QImage::Format imgFormat = image.format();
 
 	//applyCurrentImageToScenePixmap();
 	applyTextureImageToScenePixmap();
@@ -483,7 +482,7 @@ void TextureScrollArea::applyCurrentCompositeImagesToScenePixmap()
 	p.drawRect(0, 0, cubeDrawPixmap.width(), cubeDrawPixmap.height());
 
 	QMatrix rotation;
-	rotation.rotate(-90);
+	//rotation.rotate(-90);
 	int currentIndex = 0;
 	for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
 	{

@@ -137,7 +137,7 @@ void ImposterManager::ProcessQueue()
 #if defined(__DAVAENGINE_OPENGL__)
 		RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
 #endif //#if defined(__DAVAENGINE_OPENGL__)
-		camera->Set();
+		camera->SetupDynamicParameters();
 	}
 }
 

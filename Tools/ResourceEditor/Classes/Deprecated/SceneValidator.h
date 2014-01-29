@@ -128,9 +128,7 @@ public:
 protected:
 
     void ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog);
-    void ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog);
     void ValidateParticleEffectComponent(Entity *ownerNode, Set<String> &errorsLog);
-
     void ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
 
     

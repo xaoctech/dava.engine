@@ -40,6 +40,10 @@
 namespace DAVA
 {
     
+static const uint32 RENDER_TARGET_WIDTH = 1024;
+static const uint32 RENDER_TARGET_HEIGHT = 512;
+    
+    
 StaticOcclusion::StaticOcclusion()
     : manager(5000)
 {
@@ -64,13 +68,29 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
 {
     staticOcclusionRenderPass = new StaticOcclusionRenderPass(renderSystem, PASS_FORWARD, this, RENDER_PASS_FORWARD_ID);
     
-//  staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//  staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, this), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_OPAQUE,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_OPAQUE_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_AFTER_OPAQUE_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_ALPHA_TEST_LAYER_ID), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_TRANSLUCENT_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_AFTER_TRANSLUCENT_ID), LAST_LAYER);
 
     renderPassBatchArray = new RenderPassBatchArray(renderSystem);
+    renderPassBatchArray->InitPassLayers(staticOcclusionRenderPass);
     
     
     currentData = _currentData;
@@ -88,14 +108,14 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
     for (uint32 k = 0; k < 6; ++k)
     {
         cameras[k] = new Camera();
-        cameras[k]->SetupPerspective(120.0f, 1.0, 1.0f, 2500.0f);
+        cameras[k]->SetupPerspective(95.0f, (float32)RENDER_TARGET_WIDTH / (float32)RENDER_TARGET_HEIGHT, 1.0f, 2500.0f);
     }
     
     
     if (!renderTargetTexture)
-        renderTargetTexture = Texture::CreateFBO(1024, 512, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
+        renderTargetTexture = Texture::CreateFBO(RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
     if (!renderTargetSprite)
-        renderTargetSprite = Sprite::CreateFromTexture(renderTargetTexture, 0, 0, 1024, 512);
+        renderTargetSprite = Sprite::CreateFromTexture(renderTargetTexture, 0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT);
     
     for (uint32 k = 0; k < renderObjects.size(); ++k)
         renderObjects[k]->SetStaticOcclusionIndex((uint16)k);
@@ -171,6 +191,7 @@ uint32 StaticOcclusion::RenderFrame()
     Vector3 stepSize = cellBox.GetSize();
     stepSize /= stepCount;
     
+    
     Vector3 directions[6] =
     {
         Vector3(1.0f, 0.0f, 0.0f),  // x
@@ -187,6 +208,15 @@ uint32 StaticOcclusion::RenderFrame()
     uint32 blockIndex = currentFrameZ * (currentData->sizeX * currentData->sizeY)
                         + currentFrameY * (currentData->sizeX) + currentFrameX;
 
+    //renderPositions.clear();
+    
+    uint32 effectiveSides[4][3]=
+    {
+        {0, 1, 3},
+        {1, 0, 2},
+        {2, 1, 3},
+        {3, 0, 2},
+    };
     
     for (uint32 side = 0; side < 4; ++side)
     {
@@ -219,90 +249,66 @@ uint32 StaticOcclusion::RenderFrame()
         //Vector3 crossProduct = CrossProduct(camera->GetDirection(), )
 
         
-        
-        for (uint32 stepX = 0; stepX < stepCount; ++stepX)
-            for (uint32 stepY = 0; stepY < stepCount; ++stepY)
-            {
-                Vector3 renderPosition = startPosition + directionX * stepX * stepSize + directionY * stepY * stepSize;
-                camera->SetPosition(renderPosition);
-                camera->SetDirection(directions[side]);
-                camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
-                camera->SetLeft(Vector3(1.0f, 0.0f, 1.0f));
-                camera->Set();
-                // Do Render
-                
-                RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
-                RenderManager::Instance()->SetViewport(Rect(0, 0, 1024, 512), false);
-                //RenderManager::Instance()->ClearDepthBuffer();
-                //RenderManager::Instance()->ClearStencilBuffer(0);
-                
-//                RenderManager::Instance()->SetDefault2DState();
-//                
-//                glColorMask(true, true, true, true);
-//
-//                RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 0.5f);
-//                RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, 256.0f, 256.0f));
-//
-//                RenderManager::Instance()->SetColor(0.0f, 0.0f, 1.0f, 1.0f);
-//                RenderHelper::Instance()->FillRect(Rect(0.0f, 256.0f, 256.0f, 256.0f));
-//
-//                RenderManager::Instance()->SetColor(1.0f, 1.0f, 0.0f, 1.0f);
-//                RenderHelper::Instance()->FillRect(Rect(128.0f, 0.0f, 256.0f, 256.0f));
-
-                //glColorMaterial(0, 0);
-                
-//                renderPassBatchArray->Clear();
-//                renderHierarchy->Clip(camera, renderPassBatchArray);
-//                staticOcclusionRenderPass->Draw(camera, renderPassBatchArray);
-                
-                
-                RenderManager::Instance()->SetDefault3DState();
-                RenderManager::Instance()->FlushState();
-                RenderManager::Instance()->Clear(Color(0.5f, 0.5f, 0.5f, 1.0f), 1.0f, 0);
-
-                //RenderManager::Instance()->ClearDepthBuffer();
-                
-                camera->Set();
-                
-                recordedBatches.clear();
-                
-                visibilityArray.Clear();
-                renderHierarchy->Clip(camera, &visibilityArray);
-
-                renderPassBatchArray->Clear();
-                renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera);
-                
-                staticOcclusionRenderPass->Draw(camera, renderPassBatchArray);
-                
-                size_t size = recordedBatches.size();
-                for (size_t k = 0; k < size; ++k)
+        // Render 360 from each point
+        for (uint32 realSide = 0; realSide < 3; ++realSide)
+            for (uint32 stepX = 0; stepX <= stepCount; ++stepX)
+                for (uint32 stepY = 0; stepY <= stepCount; ++stepY)
                 {
-                    std::pair<RenderBatch*, OcclusionQueryManagerHandle> & batchInfo = recordedBatches[k];
-                    OcclusionQuery & query = manager.Get(batchInfo.second);
-                    while (!query.IsResultAvailable())
+                    Vector3 renderPosition = startPosition + directionX * stepX * stepSize + directionY * stepY * stepSize;
+                    
+                    //renderPositions.push_back(renderPosition);
+                    camera->SetPosition(renderPosition);
+                    camera->SetDirection(directions[effectiveSides[side][realSide]]);
+                    camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
+                    camera->SetLeft(Vector3(1.0f, 0.0f, 1.0f));
+                    camera->SetupDynamicParameters();
+                    // Do Render
+                    
+                    RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
+                    RenderManager::Instance()->SetViewport(Rect(0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT), false);
+                    
+                    RenderManager::Instance()->SetDefault3DState();
+                    RenderManager::Instance()->FlushState();
+                    RenderManager::Instance()->Clear(Color(0.5f, 0.5f, 0.5f, 1.0f), 1.0f, 0);
+                    
+                    camera->SetupDynamicParameters();
+                    
+                    recordedBatches.clear();
+                    
+                    visibilityArray.Clear();
+                    renderHierarchy->Clip(camera, &visibilityArray);
+
+                    renderPassBatchArray->Clear();
+                    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray);
+                    
+                    staticOcclusionRenderPass->Draw(camera, renderPassBatchArray);
+                    
+                    size_t size = recordedBatches.size();
+                    for (size_t k = 0; k < size; ++k)
                     {
+                        std::pair<RenderBatch*, OcclusionQueryManagerHandle> & batchInfo = recordedBatches[k];
+                        OcclusionQuery & query = manager.Get(batchInfo.second);
+                        while (!query.IsResultAvailable())
+                        {
+                        }
+                        uint32 result;
+                        query.GetQuery(&result);
+                        if (result != 0)
+                        {
+                            frameGlobalVisibleInfo.insert(batchInfo.first->GetRenderObject());
+                        }
+                        manager.ReleaseQueryObject(batchInfo.second);
                     }
-                    uint32 result;
-                    query.GetQuery(&result);
-                    if (result != 0)
+
+                    RenderManager::Instance()->RestoreRenderTarget();
+                    
+                    if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
                     {
-                        frameGlobalVisibleInfo.insert(batchInfo.first->GetRenderObject());
+                        Image * image = renderTargetTexture->CreateImageFromMemory();
+                        ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
+                        SafeRelease(image);
                     }
-                    manager.ReleaseQueryObject(batchInfo.second);
                 }
-                //recordedBatches.clear();
-
-                RenderManager::Instance()->RestoreRenderTarget();
-                
-
-                //renderTargetTexture->
-//                if ((stepX == 0) && (stepY == 0))
-//                {
-//                    Image * image = renderTargetTexture->CreateImageFromMemory();
-//                    ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
-//                    SafeRelease(image);
-//                }
-            }
         
     }
     
