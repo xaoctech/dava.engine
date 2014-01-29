@@ -70,6 +70,9 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
 		lua_pushcfunction(luaState, &AutotestingSystemLua::ReqModule);
 		lua_setglobal(luaState, "require");
 
+		lua_pushcfunction(luaState, &AutotestingSystemLua::ReqModule2);
+		lua_setglobal(luaState, "my_require");
+
         String errors;
         
         if(isOk)
@@ -196,6 +199,27 @@ int AutotestingSystemLua::ReqModule(lua_State* L)
 	String module = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	FilePath path = AutotestingSystemLua::Instance()->findfile(L, module.c_str(), "path");
+
+	if (!AutotestingSystemLua::Instance()->LoadScriptFromFile(path)) AutotestingSystem::Instance()->ForceQuit("AutotestingSystemLua::ReqModule: couldn't load module " + path.GetAbsolutePathname());
+
+	lua_pushstring(AutotestingSystemLua::Instance()->luaState, path.GetBasename().c_str());
+	if (!AutotestingSystemLua::Instance()->RunScript()) AutotestingSystem::Instance()->ForceQuit("AutotestingSystemLua::ReqModule: couldn't run module " + path.GetBasename());
+
+	lua_pushcfunction(L, lua_tocfunction(AutotestingSystemLua::Instance()->luaState, -1));
+	lua_pushstring(L, path.GetBasename().c_str());
+	return 2;
+}
+
+int AutotestingSystemLua::ReqModule2(lua_State* L)
+{
+	String module = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	FilePath path = module;
+	
+	if (FileSystem::Instance()->IsFile(path.GetAbsolutePathname()))
+		Logger::Debug("AutotestingSystemLua::ReqModule2 file exist: %s", path.GetAbsolutePathname().c_str());
+	else
+		Logger::Debug("AutotestingSystemLua::ReqModule2 not found: %s", path.GetAbsolutePathname().c_str());
 
 	if (!AutotestingSystemLua::Instance()->LoadScriptFromFile(path)) AutotestingSystem::Instance()->ForceQuit("AutotestingSystemLua::ReqModule: couldn't load module " + path.GetAbsolutePathname());
 
