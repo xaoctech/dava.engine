@@ -135,14 +135,20 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 	{
 		RunEmitter(effect, effect->emitters[emitterId]);		
 	}
-	
-	if (effect->state==ParticleEffectComponent::STATE_STOPPED)
-	{
-		//add to active effects and to render
-		activeComponents.push_back(effect);        
+		
+	effect->state = ParticleEffectComponent::STATE_PLAYING;
+	effect->time = 0;
+}
+
+void ParticleEffectSystem::AddToActive(ParticleEffectComponent *effect)
+{
+    if (effect->state==ParticleEffectComponent::STATE_STOPPED)
+    {
+        //add to active effects and to render
+        activeComponents.push_back(effect);        
         for (Map<String, float32>::iterator it = globalExternalValues.begin(), e = globalExternalValues.end(); it!=e; ++it)
             effect->SetExtertnalValue((*it).first, (*it).second);
-
+        Scene *scene = GetScene();
         if (scene)
         {
             Matrix4 * worldTransformPointer = ((TransformComponent*)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
@@ -151,10 +157,8 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
             effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
             scene->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);
         }
-		
-	}
-	effect->state = ParticleEffectComponent::STATE_PLAYING;
-	effect->time = 0;
+
+    }
 }
 
 void ParticleEffectSystem::RemoveFromActive(ParticleEffectComponent *effect)
@@ -187,7 +191,11 @@ void ParticleEffectSystem::ImmediateEvent(Entity * entity, uint32 event)
 	ParticleEffectComponent *effect = GetEffectComponent(entity);
 	if (!effect) return;
 	if (event == EventSystem::START_PARTICLE_EFFECT)
-		RunEffect(effect);
+    {
+		if (effect->state == ParticleEffectComponent::STATE_STOPPED)
+            AddToActive(effect);            
+        effect->state = ParticleEffectComponent::STATE_STARTING;                    
+    }
 	else if (event = EventSystem::STOP_PARTICLE_EFFECT)
 		RemoveFromActive(effect);
 
@@ -207,43 +215,46 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 	int componentsCount = activeComponents.size();
 	for(int i=0; i<componentsCount; i++) 
 	{
-		ParticleEffectComponent * component = activeComponents[i];
-		if (component->isPaused) 
+		ParticleEffectComponent * effect = activeComponents[i];
+        if (effect->state == ParticleEffectComponent::STATE_STARTING)        
+            RunEffect(effect);
+        
+		if (effect->isPaused) 
 			continue;
-		UpdateEffect(component, timeElapsed*component->playbackSpeed, shortEffectTime*component->playbackSpeed);	
+		UpdateEffect(effect, timeElapsed*effect->playbackSpeed, shortEffectTime*effect->playbackSpeed);	
 
-		bool effectEnded = component->stopWhenEmpty?component->effectData.groups.empty():(component->time>component->effectDuration);
+		bool effectEnded = effect->stopWhenEmpty?effect->effectData.groups.empty():(effect->time>effect->effectDuration);
 		if (effectEnded)
 		{
-			component->currRepeatsCont++;
-			if ((component->repeatsCount==0)||(component->currRepeatsCont<component->repeatsCount)) //0 means infinite repeats
+			effect->currRepeatsCont++;
+			if ((effect->repeatsCount==0)||(effect->currRepeatsCont<effect->repeatsCount)) //0 means infinite repeats
 			{
-				if (component->clearOnRestart)
-					component->ClearCurrentGroups();
-				RunEffect(component);
+				if (effect->clearOnRestart)
+					effect->ClearCurrentGroups();
+				RunEffect(effect);
 			}
 			else
 			{
-				component->state = ParticleEffectComponent::STATE_STOPPING;
-                component->SetGroupsFinishing();
+				effect->state = ParticleEffectComponent::STATE_STOPPING;
+                effect->SetGroupsFinishing();
 			}
 		}
 		/*finish restart criteria*/		
-		if ((component->state == ParticleEffectComponent::STATE_STOPPING)&&component->effectData.groups.empty())
+		if ((effect->state == ParticleEffectComponent::STATE_STOPPING)&&effect->effectData.groups.empty())
 		{
-			component->effectData.infoSources.resize(1);
-			RemoveFromActive(component);
+			effect->effectData.infoSources.resize(1);
+			RemoveFromActive(effect);
 			componentsCount--;
 			i--;
-			component->state = ParticleEffectComponent::STATE_STOPPED;
-			if (!component->playbackComplete.IsEmpty())
-				component->playbackComplete(component->GetEntity(), 0);
+			effect->state = ParticleEffectComponent::STATE_STOPPED;
+			if (!effect->playbackComplete.IsEmpty())
+				effect->playbackComplete(effect->GetEntity(), 0);
 		}
 		else
 		{
             Scene *scene = GetScene();
             if (scene)
-			    scene->GetRenderSystem()->MarkForUpdate(component->effectRenderObject);
+			    scene->GetRenderSystem()->MarkForUpdate(effect->effectRenderObject);
 		}
 		
 		

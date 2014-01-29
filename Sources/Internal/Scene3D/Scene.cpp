@@ -553,6 +553,7 @@ void Scene::Update(float timeElapsed)
 	}
 	
 	switchSystem->Process(timeElapsed);
+    particleEffectSystem->Process(timeElapsed);
     
 // 	int32 size;
 // 	
@@ -617,8 +618,7 @@ void Scene::Draw()
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
-	actionSystem->Process(timeElapsed); //update action system before particles and render
-	particleEffectSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render	
 	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
