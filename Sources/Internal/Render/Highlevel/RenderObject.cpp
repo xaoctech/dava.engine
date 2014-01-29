@@ -281,7 +281,7 @@ void RenderObject::UpdateActiveRenderBatches()
 	for(uint32 i = 0; i < size; ++i)
 	{
 		IndexedRenderBatch & irb = renderBatchArray[i];
-		if(irb.lodIndex == lodIndex && irb.switchIndex == switchIndex)
+		if((irb.lodIndex == lodIndex || -1 == irb.lodIndex) && (irb.switchIndex == switchIndex || -1 == irb.switchIndex))
 		{
 			activeRenderBatchArray.push_back(irb.renderBatch);
 		}
