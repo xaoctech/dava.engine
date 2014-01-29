@@ -412,7 +412,7 @@ void TextureBrowser::setupStatusBar()
 	statusBar->layout()->setMargin(0);
 	statusBar->layout()->setSpacing(1);
 	statusBar->layout()->setContentsMargins(0, 0, 0, 0);
-	statusBar->setMaximumHeight(16);
+	statusBar->setMaximumHeight(20);
 
 	ui->mainLayout->addWidget(statusBar);
 
