@@ -551,7 +551,7 @@ void MainWindow::OnSelectedScreenChanged()
 	}
 	
 	screenChangeUpdate = false;
-	
+	UpdateMenu();
 	UpdateScreenPosition();
 }
 
@@ -782,10 +782,10 @@ void MainWindow::UpdateMenu()
 	ui->actionClose_project->setEnabled(projectCreated);
 	ui->menuProject->setEnabled(projectCreated);
 	ui->actionNew_platform->setEnabled(projectCreated);
-
+	ui->actionImport_Platform->setEnabled(projectCreated);
+	
 	ui->actionNew_screen->setEnabled(projectNotEmpty);
 	ui->actionNew_aggregator->setEnabled(projectNotEmpty);
-	ui->actionImport_Platform->setEnabled(projectNotEmpty);
 
     ui->actionAlign_Left->setEnabled(projectNotEmpty);
 	ui->actionAlign_Horz_Center->setEnabled(projectNotEmpty);
@@ -931,6 +931,7 @@ void MainWindow::OnImportPlatform()
 															   size, files);
 		CommandsController::Instance()->ExecuteCommand(cmd);
 		SafeRelease(cmd);
+		UpdateMenu();
 	}
 }
 
