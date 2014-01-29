@@ -69,6 +69,7 @@ void SceneGridSystem::Draw()
 	//DAVA::uint32 oldState = rm->GetState();
 	
 	//rm->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
+    rm->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
 	rm->SetRenderState(renderState);
 	rm->FlushState();
 	

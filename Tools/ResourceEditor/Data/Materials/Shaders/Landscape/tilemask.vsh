@@ -9,7 +9,7 @@ precision highp float;
 attribute vec4 inPosition;
 attribute vec2 inTexCoord0;
 
-uniform mat4 modelViewProjectionMatrix;
+uniform mat4 worldViewProjMatrix;
 uniform mediump vec2 texture0Tiling;
 #ifndef DETAILMASK
 uniform mediump vec2 texture1Tiling;
@@ -27,7 +27,7 @@ varying mediump vec2 varTexCoord3;
 #endif
 
 #if defined(VERTEX_FOG) || defined(SPECULAR_LAND)
-uniform mat4 modelViewMatrix;
+uniform mat4 worldViewMatrix;
 #endif
 
 #if defined(VERTEX_FOG)
@@ -55,7 +55,7 @@ varying float varSpecularColor;
 
 void main()
 {
-	gl_Position = modelViewProjectionMatrix * inPosition;
+	gl_Position = worldViewProjMatrix * inPosition;
 
 	varTexCoordOrig = inTexCoord0;
 
@@ -67,7 +67,7 @@ void main()
 #endif
 	
 #if defined(SPECULAR_LAND) || defined(VERTEX_FOG)
-	vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+	vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
 #endif
 	
 #if defined(SPECULAR_LAND)

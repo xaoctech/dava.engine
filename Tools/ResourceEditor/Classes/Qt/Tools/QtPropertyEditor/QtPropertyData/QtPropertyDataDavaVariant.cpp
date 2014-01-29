@@ -72,7 +72,6 @@ void QtPropertyDataDavaVariant::InitFlags()
 	{
 	case DAVA::VariantType::TYPE_BOOLEAN:
 		SetCheckable(true);
-		SetEditable(false);
 		break;
 	case DAVA::VariantType::TYPE_KEYED_ARCHIVE:
 	case DAVA::VariantType::TYPE_BYTE_ARRAY:

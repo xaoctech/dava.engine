@@ -35,6 +35,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/Utils.h"
+#include "FileSystem/Logger.h"
 #include "Utils/StringFormat.h"
 #include "Math/Math2D.h"
 #ifdef USE_CRC_COMPARE
@@ -72,13 +73,6 @@ namespace DAVA
 		vertexShaderData = 0;
 		fragmentShaderData = 0;
         
-        lastProjectionMatrixCache = 0;
-        lastModelViewMatrixCache = 0;
-        lastMVPMatrixModelViewCache = 0;
-        lastMVPMatrixProjectionCache = 0;
-        lastModelViewTranslateCache = 0;
-        lastModelScaleCache = 0;
-		
 		//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 		//    relativeFileName = "";
 		//#endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -125,11 +119,11 @@ namespace DAVA
 		FastName("inTime")
     };
     
-	Shader::eUniform Shader::GetUniformByName(const FastName & name)
+	eShaderSemantic Shader::GetShaderSemanticByName(const FastName & name)
 	{
-		for (int32 k = 0; k < UNIFORM_COUNT; ++k)
-			if (name == uniformStrings[k])return (Shader::eUniform)k;
-		return Shader::UNIFORM_NONE;
+		for (int32 k = 0; k < DYNAMIC_PARAMETERS_COUNT; ++k)
+			if (name == DYNAMIC_PARAM_NAMES[k])return (eShaderSemantic)k;
+		return UNKNOWN_SEMANTIC;
 	};
     
 	int32 Shader::GetUniformTypeSize(eUniformType type)
@@ -241,12 +235,11 @@ namespace DAVA
 
     void Shader::ClearLastBindedCaches()
     {
-        lastProjectionMatrixCache = 0;
-        lastModelViewMatrixCache = 0;
-        lastMVPMatrixModelViewCache = 0;
-        lastMVPMatrixProjectionCache = 0;
-        lastModelViewTranslateCache = 0;
-        lastModelScaleCache = 0;
+        for (uint32 k = 0; k < autobindUniformCount; ++k)
+        {
+            Uniform * currentUniform = autobindUniforms[k];
+            currentUniform->updateSemantic = 0;
+        }
     }
 
 	int32 Shader::FindUniformIndexByName(const FastName & name)
@@ -271,111 +264,9 @@ namespace DAVA
     
 	void Shader::SetDefines(const String & _defines)
 	{
-		vertexShaderDefines = fragmentShaderDefines = _defines;
+		shaderDefines = _defines;
 	}
-	
-	void Shader::SetVertexShaderDefines(const String & _defines)
-	{
-		vertexShaderDefines = _defines;
-	}
-    
-	void Shader::SetFragmentShaderDefines(const String & _defines)
-	{
-		fragmentShaderDefines = _defines;
-	}
-    
-	void Shader::SetDefineList(const String & enableDefinesList)
-	{
-		Vector<String> defineNameList;
-		String result;
-		Split(enableDefinesList, ";", defineNameList, true);
-		size_t size = defineNameList.size();
-		for (size_t i = 0; i < size; ++i)
-		{
-			result += Format("#define %s\n", defineNameList[i].c_str());
-		}
-		SetDefines(result);
-	}
-    
-	bool Shader::LoadFromYaml(const FilePath & pathname)
-	{
-		//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-		//    relativeFileName = pathname;
-		//#endif //#if defined(__DAVAENGINE_ANDROID__)
-		
-		uint64 shaderLoadTime = SystemTimer::Instance()->AbsoluteMS();
-		
-		YamlParser * parser = YamlParser::Create(pathname);
-		if (!parser)
-			return false;
-		
-		YamlNode * rootNode = parser->GetRootNode();
-		if (!rootNode)
-		{
-			SafeRelease(parser);
-			return false;
-		}
-		
-		const YamlNode * vertexShaderNode = rootNode->Get("vertexShader");
-		if (!vertexShaderNode)
-		{
-			SafeRelease(parser);
-			return false;
-		}
-		
-		const YamlNode * glslVertexNode = vertexShaderNode->Get("glsl");
-		if (!glslVertexNode)
-		{
-			SafeRelease(parser);
-			return false;
-		}
-		
-		const YamlNode * fragmentShaderNode = rootNode->Get("fragmentShader");
-		if (!fragmentShaderNode)
-		{
-			SafeRelease(parser);
-			return false;
-		}
-		
-		const YamlNode * glslFragmentNode = fragmentShaderNode->Get("glsl");
-		if (!glslFragmentNode)
-		{
-			SafeRelease(parser);
-			return false;
-		}
-		
-		FilePath pathOnly(pathname.GetDirectory());
-		vertexShaderPath = pathOnly + glslVertexNode->AsString();
-		fragmentShaderPath = pathOnly + glslFragmentNode->AsString();
-		SafeRelease(parser);
-		
-		Load(vertexShaderPath, fragmentShaderPath);
-		
-		shaderLoadTime = SystemTimer::Instance()->AbsoluteMS() - shaderLoadTime;
-		
-//    Logger::Debug("shader loaded:%s load-time: %lld ms", pathname.c_str(), shaderLoadTime);
-		return true;
-	}
-    
-	bool Shader::Load(const FilePath & _vertexShaderPath, const FilePath & _fragmentShaderPath)
-	{
-		vertexShaderPath = _vertexShaderPath;
-		fragmentShaderPath = _fragmentShaderPath;
-		uint32 vertexShaderSize = 0, fragmentShaderSize = 0;
-        
-		uint8 * vertexShaderBytes = FileSystem::Instance()->ReadFileContents(vertexShaderPath, vertexShaderSize);
-		vertexShaderData = new Data(vertexShaderBytes, vertexShaderSize);
-		vertexShaderDataStart = vertexShaderBytes;
-        vertexShaderDataSize = vertexShaderSize;
-        
-		uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
-		fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
-        fragmentShaderDataStart = fragmentShaderBytes;
-        fragmentShaderDataSize = fragmentShaderSize;
-        
-		return true;
-	}
-    
+	   
 	Shader::~Shader()
 	{
 		SafeDeleteArray(attributeNames);
@@ -410,15 +301,15 @@ namespace DAVA
 			DVASSERT((vertexShader == 0) && (fragmentShader == 0) && (program == 0));
 		}
 		
-		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderDataSize, (GLchar*)vertexShaderDataStart, vertexShaderDefines))
+		if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderDataSize, (GLchar*)vertexShaderDataStart, shaderDefines))
 		{
-			Logger::Error("Failed to compile vertex shader: %s", vertexShaderPath.GetAbsolutePathname().c_str());
+			Logger::Error("Failed to compile vertex shader: %s", assetName.c_str());
 			return;
 		}
 		
-		if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderDataSize, (GLchar*)fragmentShaderDataStart, fragmentShaderDefines))
+		if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderDataSize, (GLchar*)fragmentShaderDataStart, shaderDefines))
 		{
-			Logger::Error("Failed to compile fragment shader: %s", fragmentShaderPath.GetAbsolutePathname().c_str());
+			Logger::Error("Failed to compile fragment shader: %s", assetName.c_str());
 			return ;
 		}
 		
@@ -481,10 +372,10 @@ namespace DAVA
 			new (&uniformStruct->name) FastName(); //VI: FastName is not a POD so a constructor should be called
 			
 			FastName attrName(attributeName);
-			eUniform uniform = GetUniformByName(attrName);
+			eShaderSemantic shaderSemantic = GetShaderSemanticByName(attrName);
 			uniformStruct->name = attrName;
 			uniformStruct->location = glGetUniformLocation(program, uniformStruct->name.c_str());
-			uniformStruct->id = uniform;
+			uniformStruct->shaderSemantic = shaderSemantic;
 			uniformStruct->type = (eUniformType)type;
 			uniformStruct->size = size;
 
@@ -500,8 +391,9 @@ namespace DAVA
             uniformStruct->matrixCRC = vmovq_n_u32(0);
 #endif
 			
-			if(IsAutobindUniform(uniform))
+			if(IsAutobindUniform(shaderSemantic))
 			{
+                Logger::Debug(Format("%s %d", attrName.c_str(), shaderSemantic).c_str());
 				autobindUniformCount++;
 			}
 			
@@ -637,7 +529,7 @@ namespace DAVA
 			for (int32 k = 0; k < activeUniforms; ++k)
 			{
 				Uniform* currentUniform = GET_UNIFORM(k);
-				if(IsAutobindUniform(currentUniform->id))
+				if(IsAutobindUniform(currentUniform->shaderSemantic))
 				{
 					autobindUniforms[autobindUniformIndex] = currentUniform;
 					autobindUniformIndex++;
@@ -1068,24 +960,16 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		}
 	}
 
-	bool Shader::IsAutobindUniform(Shader::eUniform uniformId)
+	bool Shader::IsAutobindUniform(eShaderSemantic semantic)
 	{
-		return (uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
-		uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
-		uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
-		uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
-		uniformId == Shader::UNIFORM_COLOR ||
-		uniformId == Shader::UNIFORM_GLOBAL_TIME ||
-        uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
-        uniformId == Shader::UNIFORM_MODEL_SCALE
-        );
+		return ((semantic > AUTOBIND_UNIFORMS_START) && (semantic < AUTOBIND_UNIFORMS_END));
 	}
     
 	void Shader::Bind()
 	{
 		if (activeProgram != program)
 		{
-            RenderManager::Instance()->GetStats().shaderBindCount++;
+            RENDERER_UPDATE_STATS(shaderBindCount++);
 			RENDER_VERIFY(glUseProgram(program));
 			activeProgram = program;
 		}
@@ -1097,88 +981,193 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		{
 			Uniform* currentUniform = autobindUniforms[k];
 			
-			switch (currentUniform->id)
+			switch (currentUniform->shaderSemantic)
 			{
-				case UNIFORM_MODEL_VIEW_PROJECTION_MATRIX:
+				case PARAM_WORLD_VIEW_PROJ:
 				{
-                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0   ||
-                        lastMVPMatrixModelViewCache != modelViewMatrixCache    ||
-                        lastMVPMatrixProjectionCache != projectionMatrixCache)
+                    RenderManager::ComputeWorldViewProjMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW_PROJ);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelViewProj = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelViewProj.data));
-                        lastMVPMatrixModelViewCache = modelViewMatrixCache;
-                        lastMVPMatrixProjectionCache = projectionMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        Matrix4 * worldViewProj = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW_PROJ);
+                        SetUniformValueByUniform(currentUniform, *worldViewProj);
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+
+//                    Matrix4 * worldViewProj = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW_PROJ);
+//                    Matrix4 * world = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD);
+//                    Matrix4 * view = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_VIEW);
+//                    Matrix4 * proj = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_PROJ);
+//                    Matrix4 cWorldViewProj = (*world) * ((*view) * (*proj));
+//                    DVASSERT(*worldViewProj == cWorldViewProj);
+					break;
+				}
+				case PARAM_WORLD_VIEW:
+				{
+                    RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        Matrix4 * worldView = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
+                        SetUniformValueByUniform(currentUniform, *worldView);
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
 					break;
 				}
-				case UNIFORM_MODEL_VIEW_MATRIX:
-				{
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0   ||
-                        lastModelViewMatrixCache != modelViewMatrixCache)
-                    {
-                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, modelView.data));
-                        lastModelViewMatrixCache = modelViewMatrixCache;
-                    }
-					break;
-				}
-                case UNIFORM_MODEL_VIEW_TRANSLATE:
+                case PARAM_WORLD_VIEW_TRANSLATE:
                 {
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0 || lastModelViewTranslateCache != modelViewMatrixCache)
+                    RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-                        SetUniformValueByUniform(currentUniform, modelView.GetTranslationVector());
-                        lastModelViewTranslateCache = modelViewMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
+                        SetUniformValueByUniform(currentUniform, world->GetTranslationVector());
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
                     break;
                 }
-                case UNIFORM_MODEL_SCALE:
+                case PARAM_WORLD_SCALE:
                 {
-                    uint32 modelViewMatrixCache = RenderManager::Instance()->GetModelViewMatrixCache();
-                    if (modelViewMatrixCache == 0 || lastModelScaleCache != modelViewMatrixCache)
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+
+                        Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD);
                         //TODO: GetScaleVector() is slow
-                        SetUniformValueByUniform(currentUniform, modelView.GetScaleVector());
-                        lastModelScaleCache = modelViewMatrixCache;
+                        SetUniformValueByUniform(currentUniform, world->GetScaleVector());
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
                     break;
                 }
-				case UNIFORM_PROJECTION_MATRIX:
+				case PARAM_PROJ:
 				{
-                    uint32 projectionMatrixCache = RenderManager::Instance()->GetProjectionMatrixCache();
-                    if (lastProjectionMatrixCache != projectionMatrixCache)
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_PROJ);
+                    if (_updateSemantic != currentUniform->updateSemantic)
                     {
-                        const Matrix4 & proj = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
-                        RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, proj.data));
-                        lastProjectionMatrixCache = projectionMatrixCache;
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        Matrix4 * proj = (Matrix4*)RenderManager::GetDynamicParam(PARAM_PROJ);
+                        SetUniformValueByUniform(currentUniform, *proj);
+                        currentUniform->updateSemantic = _updateSemantic;
                     }
 					break;
 				}
-				case UNIFORM_NORMAL_MATRIX:
+				case PARAM_WORLD_VIEW_INV_TRANSPOSE:
 				{
-					const Matrix3 & normalMatrix = RenderManager::Instance()->GetNormalMatrix();
-					SetUniformValueByUniform(currentUniform, normalMatrix);
-					break;
+                    RenderManager::Instance()->ComputeWorldViewInvTransposeMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW_INV_TRANSPOSE);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+
+                        Matrix3 * normalMatrix = (Matrix3*)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW_INV_TRANSPOSE);
+//                        Matrix3 matrixInside;
+//                        glGetUniformfv(program, currentUniform->location, (GLfloat*)&matrixInside);
+//                        
+//                        if (matrixInside == *normalMatrix)
+//                        {
+//                            int32 k = 0;
+//                        }
+//                        
+                        SetUniformValueByUniform(currentUniform, *normalMatrix);
+                        //RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, (GLfloat*)normalMatrix));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
 				}
-				case UNIFORM_COLOR:
+                
+                case PARAM_WORLD_INV_TRANSPOSE:
+				{
+                    RenderManager::Instance()->ComputeWorldInvTransposeMatrixIfRequired();
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_INV_TRANSPOSE);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Matrix3 * worldInvTranspose = (Matrix3*)RenderManager::GetDynamicParam(PARAM_WORLD_INV_TRANSPOSE);
+                        SetUniformValueByUniform(currentUniform, *worldInvTranspose);
+                        //RENDER_VERIFY(glUniformMatrix3fv(currentUniform->location, 1, GL_FALSE, matrix));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
+                case PARAM_INV_VIEW:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_VIEW);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Matrix4 * invViewMatrix = (Matrix4*)RenderManager::GetDynamicParam(PARAM_INV_VIEW);
+                        SetUniformValueByUniform(currentUniform, *invViewMatrix);
+                        //RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, invViewMatrix->data));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
+                
+                case PARAM_WORLD:
+                case PARAM_VIEW:
+                case PARAM_INV_VIEW_PROJ:
+                case PARAM_VIEW_PROJ:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        Matrix4 * matrix = (Matrix4 *)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+//                        if (currentUniform->shaderSemantic == PARAM_WORLD)
+//                        {
+//                            for (uint32 k = 0; k < 4; ++k)
+//                                Logger::Debug(Format("%f %f %f %f", worldMatrix[k * 4 + 0], worldMatrix[k * 4 + 1], worldMatrix[k * 4 + 2], worldMatrix[k * 4 + 3]).c_str());
+//                            Logger::Debug("");
+//                        }
+                        SetUniformValueByUniform(currentUniform, *matrix);
+                        //RENDER_VERIFY(glUniformMatrix4fv(currentUniform->location, 1, GL_FALSE, worldMatrix));
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+                
+                case PARAM_CAMERA_POS:
+                case PARAM_CAMERA_DIR:
+                case PARAM_CAMERA_UP:
+				{
+                    pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                    if (_updateSemantic != currentUniform->updateSemantic)
+                    {
+                        RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                        
+                        Vector3 * camParam = (Vector3*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                        //RENDER_VERIFY(glUniform3fv(currentUniform->location, 1, (float*)camParam));
+                        SetUniformValueByUniform(currentUniform, *camParam);
+
+                        currentUniform->updateSemantic = _updateSemantic;
+                    }
+                    break;
+				}
+
+				case PARAM_COLOR:
 				{
 					const Color & c = RenderManager::Instance()->GetColor();
 					SetUniformColor4ByUniform(currentUniform, c);
 					break;
 				}
-				case UNIFORM_GLOBAL_TIME:
+				case PARAM_GLOBAL_TIME:
 				{
-					float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
-					SetUniformValueByUniform(currentUniform, globalTime);
+                    if (currentUniform->updateSemantic != Core::Instance()->GetGlobalFrameIndex())
+                    {
+                        float32 globalTime = SystemTimer::Instance()->GetGlobalTime();
+                        SetUniformValueByUniform(currentUniform, globalTime);
+                        currentUniform->updateSemantic = Core::Instance()->GetGlobalFrameIndex();
+                    }
 				};
 				default:
-					
 					break;
 			}
 		}
@@ -1207,7 +1196,7 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 			//        uniformLocations[k] = glGetUniformLocation(program, uniformNames[k].c_str());
 			//        uniformIDs[k] = uniform;
 			//        uniformTypes[k] = (eUniformType)type;
-			eUniform uniform = GetUniformByName(currentUniform->name);
+			eShaderSemantic uniform = GetShaderSemanticByName(currentUniform->name);
 			Logger::FrameworkDebug("uniform: %s(%d) type: %s", currentUniform->name.c_str(), uniform, VertexTypeStringFromEnum(currentUniform->type).c_str());
 		}
 	}
@@ -1243,27 +1232,6 @@ void Shader::DeleteShadersInternal(BaseObject * caller, void * param, void *call
 		return shader;
 	}
     
-    
-Shader * Shader::RecompileNewInstance(const String & combination)
-{
-    Shader * shader = new Shader();
-	shader->vertexShaderData = SafeRetain(vertexShaderData);
-	shader->fragmentShaderData = SafeRetain(fragmentShaderData);
-	shader->vertexShaderDataStart = vertexShaderDataStart;
-	shader->vertexShaderDataSize = vertexShaderDataSize;
-	shader->fragmentShaderDataStart = fragmentShaderDataStart;
-	shader->fragmentShaderDataSize = fragmentShaderDataSize;
-    shader->SetDefineList(combination);
-    
-	//TODO: return "invalid shader" on error;
-	shader->Recompile();
-	/*if (!shader->Recompile())
-    {
-        SafeRelease(shader);
-        return 0;
-    }*/
-    return shader;
-}
 
 #if defined(__DAVAENGINE_ANDROID__)
 	void Shader::Lost()

@@ -63,9 +63,7 @@ void ParticleLayerBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	if (!GetVisible() || particleLayer->GetDisabled())
 		return;
 
-	Matrix4 worldMatrix = Matrix4::IDENTITY;
-	Matrix4 finalMatrix = worldMatrix * camera->GetMatrix();
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)&worldMatrix);
+	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 
     particleLayer->Draw(camera); //note - it is mostly deprecated and is here for compatibility with old not-3d particles
     
