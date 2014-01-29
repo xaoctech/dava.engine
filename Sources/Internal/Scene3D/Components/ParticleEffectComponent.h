@@ -58,7 +58,8 @@ public:
 
 	enum eState
 	{
-		STATE_PLAYING,    
+		STATE_PLAYING,  //effect is playing
+        STATE_STARTING, //effect is starting - on next system update it would be moved to playing state (RunEffect called)
 		STATE_STOPPING, //effect is stopping - no new particle generation, still need to update and recalculate
 		STATE_STOPPED   //effect is completely stopped and removed from active lists
 	};
