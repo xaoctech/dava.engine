@@ -226,7 +226,7 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 					if(NULL != batch)
 					{
 						batch->Load(batchArch, serializationContext);
-						AddRenderBatch(batch, batchLodIndex, switchIndex);
+						AddRenderBatch(batch, batchLodIndex, batchSwitchIndex);
 						batch->Release();
 					}
 				}
@@ -286,6 +286,19 @@ void RenderObject::UpdateActiveRenderBatches()
 			activeRenderBatchArray.push_back(irb.renderBatch);
 		}
 	}
+}
+
+int32 RenderObject::GetMaxLodIndex() const
+{
+    int32 ret = -1;
+    uint32 size = renderBatchArray.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
+        const IndexedRenderBatch & irb = renderBatchArray[i];
+        ret = Max(ret, irb.lodIndex);
+    }
+
+    return ret;
 }
 
 };

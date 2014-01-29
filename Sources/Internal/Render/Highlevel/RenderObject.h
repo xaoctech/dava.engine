@@ -158,6 +158,7 @@ public:
 
 	void SetLodIndex(int32 lodIndex);
 	void SetSwitchIndex(int32 switchIndex);
+    int32 GetMaxLodIndex() const;
 
 	uint8 startClippingPlane;
     
@@ -192,9 +193,9 @@ protected:
 		int32 switchIndex;
 
 		INTROSPECTION(IndexedRenderBatch, 
-			MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW | I_EDIT)
-			MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW | I_EDIT)
-			MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW | I_EDIT)
+			MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW)
+			MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW)
+			MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW)
 			);
 	};
     

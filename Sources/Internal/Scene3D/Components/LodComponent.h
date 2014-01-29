@@ -110,7 +110,7 @@ public:
 	inline float32 GetLodLayerNearSquare(int32 layerNum) const;
 	inline float32 GetLodLayerFarSquare(int32 layerNum) const;
 
-	void GetLodData(Vector<LodData*> &retLodLayers);
+	DAVA_DEPRECATED(void GetLodData(Vector<LodData*> &retLodLayers));
 
 	int32 currentLod;
 	Vector<LodData> lodLayers;

@@ -116,34 +116,6 @@ void LodComponent::Serialize(KeyedArchive *archive, SerializationContext *serial
 		}
 		archive->SetArchive("lc.loddist", lodDistArch);
 		lodDistArch->Release();
-
-		i = 0;
-		KeyedArchive *lodDataArch = new KeyedArchive();
-		Vector<LodData>::iterator it = lodLayers.begin();
-		for(; it != lodLayers.end(); ++it)
-		{
-			KeyedArchive *lodDataValuesArch = new KeyedArchive();
-			KeyedArchive *lodDataIndexesArch = new KeyedArchive();
-
-			for(uint32 j = 0; j < it->indexes.size(); ++j)
-			{
-				lodDataIndexesArch->SetInt32(KeyedArchive::GenKeyFromIndex(j), it->indexes[j]);
-			}
-
-			lodDataValuesArch->SetArchive("indexes", lodDataIndexesArch);
-			lodDataValuesArch->SetInt32("layer", it->layer);
-			lodDataValuesArch->SetBool("isdummy", it->isDummy);
-			lodDataValuesArch->SetUInt32("indexescount", it->indexes.size());
-
-			lodDataArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), lodDataValuesArch);
-
-			lodDataIndexesArch->Release();
-			lodDataValuesArch->Release();
-			++i;
-		}
-		archive->SetUInt32("lc.loddatacount", lodLayers.size());
-		archive->SetArchive("lc.loddata", lodDataArch);
-		lodDataArch->Release();
 	}
 }
 
@@ -172,36 +144,39 @@ void LodComponent::Deserialize(KeyedArchive *archive, SerializationContext *seri
 			}
 		}
 
-		KeyedArchive *lodDataArch = archive->GetArchive("lc.loddata");
-		if(NULL != lodDataArch)
-		{
-            uint32 lodDataCount = archive->GetUInt32("lc.loddatacount");
-            lodLayers.reserve(lodDataCount);
-			for(uint32 i = 0; i < lodDataCount; ++i)
-			{
-				KeyedArchive *lodDataValuesArch = lodDataArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
-				if(NULL != lodDataValuesArch)
-				{
-					LodData data;
+        if(serializationContext->GetVersion() < 11)
+        {
+            KeyedArchive *lodDataArch = archive->GetArchive("lc.loddata");
+            if(NULL != lodDataArch)
+            {
+                uint32 lodDataCount = archive->GetUInt32("lc.loddatacount");
+                lodLayers.reserve(lodDataCount);
+                for(uint32 i = 0; i < lodDataCount; ++i)
+                {
+                    KeyedArchive *lodDataValuesArch = lodDataArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+                    if(NULL != lodDataValuesArch)
+                    {
+                        LodData data;
 
-					if(lodDataValuesArch->IsKeyExists("layer")) data.layer = lodDataValuesArch->GetInt32("layer");
-					if(lodDataValuesArch->IsKeyExists("isdummy")) data.isDummy = lodDataValuesArch->GetBool("isdummy");
+                        if(lodDataValuesArch->IsKeyExists("layer")) data.layer = lodDataValuesArch->GetInt32("layer");
+                        if(lodDataValuesArch->IsKeyExists("isdummy")) data.isDummy = lodDataValuesArch->GetBool("isdummy");
 
-					KeyedArchive *lodDataIndexesArch = lodDataValuesArch->GetArchive("indexes");
-					if(NULL != lodDataIndexesArch)
-					{
-                        uint32 indexesCount = lodDataValuesArch->GetUInt32("indexescount");
-                        data.indexes.reserve(indexesCount);
-						for(uint32 j = 0; j < indexesCount; ++j)
-						{
-							data.indexes.push_back(lodDataIndexesArch->GetInt32(KeyedArchive::GenKeyFromIndex(j)));
-						}
-					}
+                        KeyedArchive *lodDataIndexesArch = lodDataValuesArch->GetArchive("indexes");
+                        if(NULL != lodDataIndexesArch)
+                        {
+                            uint32 indexesCount = lodDataValuesArch->GetUInt32("indexescount");
+                            data.indexes.reserve(indexesCount);
+                            for(uint32 j = 0; j < indexesCount; ++j)
+                            {
+                                data.indexes.push_back(lodDataIndexesArch->GetInt32(KeyedArchive::GenKeyFromIndex(j)));
+                            }
+                        }
 
-					lodLayers.push_back(data);
-				}
-			}
-		}
+                        lodLayers.push_back(data);
+                    }
+                }
+            }
+        }
 	}
 
 	flags |= NEED_UPDATE_AFTER_LOAD;
