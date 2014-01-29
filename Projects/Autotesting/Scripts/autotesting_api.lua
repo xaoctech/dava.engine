@@ -9,7 +9,7 @@ MULTIPLAYER_TIMEOUT = 300 -- Multiplayer timeout
 -- API setup
 function SetPackagePath(path)
 	package.path = package.path .. ";" .. path .. "Actions/?.lua;" .. path .. "Scripts/?.lua;"
-	require "coxpcall"
+	my_require "~res:/Autotesting/Scripts/coxpcall.lua"
 end
 
 function assert(isTrue, errorMsg)

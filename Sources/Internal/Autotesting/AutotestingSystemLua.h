@@ -74,6 +74,7 @@ public:
 
 	static int Print(lua_State* L);
 	int static ReqModule(lua_State* L);
+	int static ReqModule2(lua_State* L);
 	void static stackDump (lua_State *L);
 	const char *pushnexttemplate (lua_State *L, const char *path);
 	const char *findfile (lua_State *L, const char *name, const char *pname);
