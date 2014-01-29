@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 #include "QualitySwitcher.h"
-#include "Project\ProjectManager.h"
+#include "Project/ProjectManager.h"
 
 #include <QComboBox>
 #include <QPushButton>
