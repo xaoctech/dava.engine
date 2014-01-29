@@ -120,7 +120,8 @@ void UIStaticTextMetadata::InitializeControl(const String& controlName, const Ve
 
         staticText->SetFont(EditorFontManager::Instance()->GetDefaultFont());
         staticText->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-    
+        staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
+
         // Initialize both control text and localization key.
         WideString controlText = StringToWString(staticText->GetName());
 

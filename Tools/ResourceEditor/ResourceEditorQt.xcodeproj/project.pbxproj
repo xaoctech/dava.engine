@@ -34,12 +34,15 @@
 		A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6796CD81885702800EB254C /* DDSExtractorTool.cpp */; };
 		A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A69D4042188940CF0093F7AA /* WebKit.framework */; };
 		A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A6A617DA17CF4CD500375E11 /* libFrameworkToolsQt.a */; };
+		A6CCB64A18990C3000F5DA38 /* QualitySwitcher.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6CCB64818990C3000F5DA38 /* QualitySwitcher.cpp */; };
+		A6CCB65418990C5500F5DA38 /* QualitySwitcher_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6CCB65318990C5500F5DA38 /* QualitySwitcher_moc.cpp */; };
 		A6D8279E1877175E0006A5DD /* PlaneLODDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */; };
 		A6D827A8187717A60006A5DD /* PlaneLODDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */; };
 		A6D827AB187717EA0006A5DD /* CreatePlaneLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */; };
 		A93E34BD17283146D6E95207 /* QtCore.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 419FFB6CDDEB353FF0A4F469 /* QtCore.framework */; };
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
+		E879F45D189802680008E0B1 /* DeleteLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */; };
 		E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
 		E8BAD5AB185213A600C98C8D /* QtPropertyDataInspDynamic.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */; };
@@ -659,6 +662,9 @@
 		A6796CD91885702800EB254C /* DDSExtractorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDSExtractorTool.h; sourceTree = "<group>"; };
 		A69D4042188940CF0093F7AA /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrameworkTools.xcodeproj; path = ../../Projects/MacOSFramework/FrameworkTools.xcodeproj; sourceTree = "<group>"; };
+		A6CCB64818990C3000F5DA38 /* QualitySwitcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySwitcher.cpp; sourceTree = "<group>"; };
+		A6CCB64918990C3000F5DA38 /* QualitySwitcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QualitySwitcher.h; sourceTree = "<group>"; };
+		A6CCB65318990C5500F5DA38 /* QualitySwitcher_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QualitySwitcher_moc.cpp; sourceTree = "<group>"; };
 		A6D8279C1877175E0006A5DD /* PlaneLODDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog.cpp; sourceTree = "<group>"; };
 		A6D8279D1877175E0006A5DD /* PlaneLODDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaneLODDialog.h; sourceTree = "<group>"; };
 		A6D827A7187717A60006A5DD /* PlaneLODDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlaneLODDialog_moc.cpp; sourceTree = "<group>"; };
@@ -667,6 +673,8 @@
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteLODCommand.cpp; sourceTree = "<group>"; };
+		E879F45C189802680008E0B1 /* DeleteLODCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteLODCommand.h; sourceTree = "<group>"; };
 		E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspDynamicModifyCommand.cpp; sourceTree = "<group>"; };
 		E881535018883A630028AFD3 /* InspDynamicModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspDynamicModifyCommand.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
@@ -1715,6 +1723,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A6CCB64718990C3000F5DA38 /* QualitySwitcher */ = {
+			isa = PBXGroup;
+			children = (
+				A6CCB64818990C3000F5DA38 /* QualitySwitcher.cpp */,
+				A6CCB64918990C3000F5DA38 /* QualitySwitcher.h */,
+			);
+			path = QualitySwitcher;
+			sourceTree = "<group>";
+		};
+		A6CCB65218990C5500F5DA38 /* QualitySwitcher */ = {
+			isa = PBXGroup;
+			children = (
+				A6CCB65318990C5500F5DA38 /* QualitySwitcher_moc.cpp */,
+			);
+			name = QualitySwitcher;
+			path = _GeneratedQt/QualitySwitcher;
+			sourceTree = "<group>";
+		};
 		A6D8279B1877175E0006A5DD /* PlaneLODDialog */ = {
 			isa = PBXGroup;
 			children = (
@@ -1736,6 +1762,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				A6CCB65218990C5500F5DA38 /* QualitySwitcher */,
 				A6D827A6187717A60006A5DD /* PlaneLODDialog */,
 				E8BAD5D71859F50200C98C8D /* CubemapEditor */,
 				E8BAD5DE1859F50200C98C8D /* DockConsole */,
@@ -2905,6 +2932,8 @@
 			children = (
 				E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */,
 				E881535018883A630028AFD3 /* InspDynamicModifyCommand.h */,
+				E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */,
+				E879F45C189802680008E0B1 /* DeleteLODCommand.h */,
 				A6D827A9187717EA0006A5DD /* CreatePlaneLODCommand.cpp */,
 				A6D827AA187717EA0006A5DD /* CreatePlaneLODCommand.h */,
 				E8C99009184CD0EB00AFBF3F /* AddComponentCommand.cpp */,
@@ -3026,6 +3055,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				A6CCB64718990C3000F5DA38 /* QualitySwitcher */,
 				A6D8279B1877175E0006A5DD /* PlaneLODDialog */,
 				E8BAD5CA1859F48600C98C8D /* MaterialEditor */,
 				E8C99075184CD0EB00AFBF3F /* CubemapEditor */,
@@ -4103,6 +4133,7 @@
 				E8C9922D184CD0EC00AFBF3F /* btTriangleIndexVertexMaterialArray.cpp in Build Sources */,
 				E8C992A5184CD0EC00AFBF3F /* EditorHeightmap.cpp in Build Sources */,
 				E8C992F1184CD0EC00AFBF3F /* EntityGroup.cpp in Build Sources */,
+				A6CCB65418990C5500F5DA38 /* QualitySwitcher_moc.cpp in Build Sources */,
 				E8BAD70D1859F50300C98C8D /* StructureSystem_moc.cpp in Build Sources */,
 				E8C9922F184CD0EC00AFBF3F /* btTriangleMeshShape.cpp in Build Sources */,
 				E8C99280184CD0EC00AFBF3F /* BeastAction.cpp in Build Sources */,
@@ -4206,6 +4237,7 @@
 				E8C992E0184CD0EC00AFBF3F /* SceneInfo.cpp in Build Sources */,
 				E8C9929F184CD0EC00AFBF3F /* TransformCommand.cpp in Build Sources */,
 				E8BAD7221859F50300C98C8D /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */,
+				A6CCB64A18990C3000F5DA38 /* QualitySwitcher.cpp in Build Sources */,
 				E8C992A8184CD0EC00AFBF3F /* LandscapeRenderer.cpp in Build Sources */,
 				E8BAD7131859F50300C98C8D /* SpeedTreeImportDialog_moc.cpp in Build Sources */,
 				E8C99240184CD0EC00AFBF3F /* btGjkEpaPenetrationDepthSolver.cpp in Build Sources */,
@@ -4413,6 +4445,7 @@
 				E8C991EA184CD0EC00AFBF3F /* BeastProxy.cpp in Build Sources */,
 				E8C992A4184CD0EC00AFBF3F /* EditorConfig.cpp in Build Sources */,
 				E8C992FC184CD0EC00AFBF3F /* CollisionSystem.cpp in Build Sources */,
+				E879F45D189802680008E0B1 /* DeleteLODCommand.cpp in Build Sources */,
 				E8C991FF184CD0EC00AFBF3F /* btConvexConcaveCollisionAlgorithm.cpp in Build Sources */,
 				E8C99321184CD0EC00AFBF3F /* TextureConvertorWork.cpp in Build Sources */,
 				E8C99246184CD0EC00AFBF3F /* btSubSimplexConvexCast.cpp in Build Sources */,
