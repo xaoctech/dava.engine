@@ -43,7 +43,6 @@
 #include <QToolBar>
 #include <QLineEdit>
 #include <QComboBox>
-#include <QTreeView>
 #include <QHeaderView>
 #include <QProgressBar>
 #include <QLabel>
@@ -55,8 +54,6 @@
 #include <QStringList>
 
 Q_DECLARE_METATYPE( QFileInfo )
-
-
 
 struct FileType
 {
@@ -186,13 +183,16 @@ void LibraryWidget::SetupView()
     filesModel = new LibraryFileSystemModel(this);
 //    proxyModel = new LibraryFilteringModel(this);
 
-    filesView = new QTreeView(this);
+    filesView = new LibraryTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
     filesView->setDragDropMode(QAbstractItemView::DragOnly);
 	filesView->setDragEnabled(true);
     filesView->setUniformRowHeights(true);
     
     filesView->setModel(filesModel);
+    
+    QObject::connect(filesView, SIGNAL(DragStarted()), this, SLOT(OnTreeDragStarted()));
+    
 //    QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
     
 // 	notFoundMessage = new QLabel("Nothing found", this);
@@ -620,4 +620,9 @@ void LibraryWidget::ShowPreview(const QString & pathname) const
 //     
 //     return wasExpanded;
 // }
+
+void LibraryWidget::OnTreeDragStarted()
+{
+    HidePreview();
+}
 
