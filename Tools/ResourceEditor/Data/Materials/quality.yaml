@@ -1,14 +1,18 @@
 -
  name: "Water Quality"
- values: ["WATER_LOW", "WATER_HIGH"]
+ prefix: "WATER_"
+ values: ["LOW", "HIGH"]
 -
  name: "Objects Quality"
- values: ["OBJECTS_LOW", "OBJECTS_HIGH"]
+ prefix: "OBJECTS_"
+ values: ["LOW", "HIGH"]
 
 -
  name: "Landscape Quality"
- values: ["LANDSCAPE_LOW", "LANDSCAPE_HIGH"]
+ prefix: "LANDSCAPE_"
+ values: ["LOW", "HIGH"]
 
 -
- name: "ParticlesQuality"
- values: ["PARTICLES_LOW", "PARTICLES_HIGH"]
+ name: "Particles Quality"
+ prefix: "PARTICLES_"
+ values: ["LOW", "HIGH"]
