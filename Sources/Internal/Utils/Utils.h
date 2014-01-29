@@ -152,9 +152,6 @@ uint64 EglGetCurrentContext();
 
 // Open the URL in external browser.
 void OpenURL(const String& url);
-  
-uint32 ConvertToPower2Value(uint32 value, uint32 initialValaue = 2);
-
 
 };
 

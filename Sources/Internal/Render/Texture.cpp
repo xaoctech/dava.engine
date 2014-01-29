@@ -58,6 +58,7 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "Job/JobManager.h"
 #include "Job/JobWaiter.h"
+#include "Math/MathHelpers.h"
 
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -814,8 +815,12 @@ int32 Texture::Release()
 	
 Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
-	uint32 dx = ConvertToPower2Value(w, 8);
-	uint32 dy = ConvertToPower2Value(h, 8);
+	int32 dx = Max((int32)w, 8);
+    EnsurePowerOf2(dx);
+    
+	int32 dy = Max((int32)h, 8);
+    EnsurePowerOf2(dy);
+    
 
 #if defined(__DAVAENGINE_OPENGL__)
 
