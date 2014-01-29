@@ -21,16 +21,7 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>3</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>3</number>
    </property>
    <item>
@@ -49,6 +40,7 @@
      <addaction name="actionInstances"/>
      <addaction name="separator"/>
      <addaction name="actionAutoExpand"/>
+     <addaction name="actionSwitchQuality"/>
     </widget>
    </item>
    <item>
@@ -67,16 +59,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -114,16 +97,7 @@
        <property name="spacing">
         <number>3</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -215,6 +189,11 @@
    </property>
    <property name="toolTip">
     <string>Turn on/off automatin node expanding</string>
+   </property>
+  </action>
+  <action name="actionSwitchQuality">
+   <property name="text">
+    <string>switchQuality</string>
    </property>
   </action>
   <actiongroup name="filterType">

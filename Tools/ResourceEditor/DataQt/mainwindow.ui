@@ -300,6 +300,7 @@
     </widget>
     <addaction name="menuTexturesForGPU"/>
     <addaction name="menuTextures"/>
+    <addaction name="actionQuality"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -1706,6 +1707,11 @@
    </property>
    <property name="text">
     <string>Specular</string>
+   </property>
+  </action>
+  <action name="actionQuality">
+   <property name="text">
+    <string>Quality...</string>
    </property>
   </action>
  </widget>
