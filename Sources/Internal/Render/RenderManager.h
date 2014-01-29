@@ -42,13 +42,15 @@
 #include "Render/Cursor.h"
 #include "Render/RenderState.h"
 #include "Render/RenderOptions.h"
-#include <stack>
-
+#include "Render/Shader.h"
 #include "Render/UniqueStateSet.h"
 #include "Render/RenderStateData.h"
 #include "Render/RenderStateDataUniqueHandler.h"
 #include "Render/TextureStateData.h"
 #include "Render/TextureStateDataUniqueHandler.h"
+
+#include <stack>
+
 
 namespace DAVA
 {
@@ -79,9 +81,13 @@ protected:
 class RenderManager : public Singleton<RenderManager>
 {
 public:
-    static RenderEffect * FLAT_COLOR;
-    static RenderEffect * TEXTURE_MUL_FLAT_COLOR;
-    static RenderEffect * TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST;
+    static FastName FLAT_COLOR_SHADER;
+    static FastName TEXTURE_MUL_FLAT_COLOR_SHADER;
+    
+    static Shader * FLAT_COLOR;
+    static Shader * TEXTURE_MUL_FLAT_COLOR;
+    static Shader * TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST;
+    static Shader * TEXTURE_MUL_FLAT_COLOR_IMAGE_A8;
     
     
     struct Caps
@@ -119,6 +125,9 @@ public:
 		uint32 textureStateFullSwitches;
 		
 		uint32 attachRenderDataCount;
+        uint32 dynamicParamUniformBindCount;
+        uint32 materialParamUniformBindCount;
+        uint32 spriteDrawCount;
     };
     
     static void Create(Core::eRenderer renderer);
@@ -309,15 +318,6 @@ public:
     
     void SetRenderData(RenderDataObject * object);
 	void AttachRenderData();
-	
-	/** 
-	 \brief 
-	 */
-	void SetTexCoordPointer(int32 size, eVertexDataType type, int stride, const void *pointer);
-    void SetVertexPointer(int32 size, eVertexDataType type, int stride, const void *pointer);
-	void SetColorPointer(int32 size, eVertexDataType type, int stride, const void *pointer);
-	void SetNormalPointer(eVertexDataType type, int stride, const void *pointer);
-
     
 	/** 
         \brief 
@@ -404,7 +404,7 @@ public:
         \brief Sets the effect for the rendering. 
         \param[in] renderEffect - if 0, sets the effect to none
 	 */
-	void SetRenderEffect(RenderEffect *renderEffect);
+	void SetRenderEffect(Shader * shader);
 
 	/** 
 	 \brief Sets the requested framerate. For iPhone can be set to 60, 30, 20, 15
@@ -459,7 +459,7 @@ public:
     void SetRenderContextId(uint64 contextId);
 	uint64 GetRenderContextId();
 	void VerifyRenderContext();
-    
+        
     /*  
         Matrix support
      */
@@ -477,19 +477,41 @@ public:
         UNIFORM_MATRIX_COUNT,
     };
     
-    void SetMatrix(eMatrixType type, const Matrix4 & matrix);
-    void SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue);
-    const Matrix4 & GetMatrix(eMatrixType type);
-    const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
-    const Matrix3 & GetNormalMatrix();
-    void  ClearUniformMatrices();
-    uint32 GetProjectionMatrixCache() const {return projectionMatrixCache;};
-    uint32 GetModelViewMatrixCache() const {return modelViewMatrixCache;};
+    static AutobindVariableData dynamicParameters[DYNAMIC_PARAMETERS_COUNT];
+    static uint32  dynamicParamersRequireUpdate;
+    static Matrix4 worldViewMatrix;
+    static Matrix4 viewProjMatrix;
+    static Matrix4 worldViewProjMatrix;
+    static Matrix4 invWorldViewMatrix;
+    static Matrix3 normalMatrix;
+    static Matrix4 invWorldMatrix;
+    static Matrix3 worldInvTransposeMatrix;
+
+    static inline void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 updateSemantic);
+    
+    //void SetMatrix(eShaderSemantic type, void * value, uint32 updateSemantic);
+    //void SetMatrix(eShaderSemantic type, const Matrix4 & matrix, uint32 cacheValue);
+
+    static inline const void * GetDynamicParam(eShaderSemantic shaderSemantic);
+    static inline const Matrix4 & GetDynamicParamMatrix(eShaderSemantic shaderSemantic);
+    static inline void ComputeWorldViewMatrixIfRequired();
+    static inline void ComputeViewProjMatrixIfRequired();
+    static inline void ComputeWorldViewProjMatrixIfRequired();
+    static inline void ComputeInvWorldViewMatrixIfRequired();
+    static inline void ComputeWorldViewInvTransposeMatrixIfRequired();
+    
+    static inline void ComputeInvWorldMatrixIfRequired();
+    static inline void ComputeWorldInvTransposeMatrixIfRequired();
+
+    
+    //const Matrix4 & GetUniformMatrix(eUniformMatrixType type);
+    //const Matrix3 & GetNormalMatrix();
+    //void  ClearUniformMatrices();
 
 
 	/**
 		\brief This function sets hardware cursor to render manager
-		It acts differently in different operation systems but idea is common. 
+		It acts differently in different operation systems but idea is common.
 		When you call this function on next refresh cursor will be changed to the new one.
 	*/
 	void SetCursor(Cursor * cursor);
@@ -654,13 +676,13 @@ protected:
     // general matrices for rendermanager 
     // 
     
-    Matrix4 matrices[MATRIX_COUNT];
-    uint32 projectionMatrixCache;
-    uint32 modelViewMatrixCache;
-    int32   uniformMatrixFlags[UNIFORM_MATRIX_COUNT];
-    Matrix4 uniformMatrices[UNIFORM_MATRIX_COUNT];
-    Matrix3 uniformMatrixNormal;
-    
+//    Matrix4 matrices[MATRIX_COUNT];
+//    uint32 projectionMatrixCache;
+//    uint32 modelViewMatrixCache;
+//    int32   uniformMatrixFlags[UNIFORM_MATRIX_COUNT];
+//    Matrix4 uniformMatrices[UNIFORM_MATRIX_COUNT];
+//    Matrix3 uniformMatrixNormal;
+//    
 
     //do nothing right now
     DAVA_DEPRECATED(void RectFromRenderOrientationToViewport(Rect & rect));
@@ -679,9 +701,22 @@ protected:
     bool mappingMatrixChanged;
 	
 	void PrepareRealMatrix();
+    
+    struct Renderer2D
+    {
+        
+        Matrix4 viewMatrix;
+        Matrix4 projMatrix;
+        Matrix4 viewProjMatrix;
+        
+        void Setup2DMatrices();
+	};
+    Renderer2D renderer2d;
+public:
+    Renderer2D * GetRenderer2D() { return &renderer2d; };
 
-	
-	
+    
+    
 	/** 
 	 \brief 
 	 \returns 
@@ -739,29 +774,6 @@ protected:
     RenderState currentState;
     RenderState hardwareState;
 
-    int oldVertexArrayEnabled;                      // state
-    int oldNormalArrayEnabled;                      // state
-	int oldTextureCoordArrayEnabled[RenderState::MAX_TEXTURE_LEVELS];                // state
-	int oldColorArrayEnabled;                       // state
-//	int oldBlendingEnabled;                         // state
-
-    
-    /*int newTextureEnabled, oldTextureEnabled;       // Enable or disable texturing
-    int depthWriteEnabled;                          // state
-    int depthTestEnabled;                           // state
-    
-    bool oldAlphaTestEnabled;                       // default value: false
-    bool alphaTestEnabled;                          // default value: false
-    eCmpFunc alphaFunc;                           // 
-    eCmpFunc oldAlphaFunc;
-    float32 oldAlphaTestCmpValue;                   // old alpha test cmp value
-    float32 alphaTestCmpValue;                      // default value: 0.0f
-    bool cullingEnabled, oldCullingEnabled;
-    eCull cullFace, oldCullFace;*/
-    
-    uint32 pointerArraysCurrentState;
-    uint32 pointerArraysRendererState;
-    uint32 gl20RendererState;
     int32 enabledAttribCount;
 
     
@@ -773,8 +785,7 @@ protected:
 	std::stack<DrawMatrix> matrixStack;
 	std::stack<DrawMatrix> mappingMatrixStack;
 
-	std::stack<RenderEffect*> renderEffectStack;
-	RenderEffect *currentRenderEffect;
+	Shader * currentRenderEffect;
 	
     RenderDataObject * currentRenderData;
 
@@ -800,7 +811,6 @@ protected:
 	void SetHWClip(const Rect &rect);
 	void SetHWRenderTargetSprite(Sprite *renderTarget);
 	void SetHWRenderTargetTexture(Texture * renderTarget);
-	void SetNewRenderEffect(RenderEffect *renderEffect);
 	
 	bool debugEnabled;
 
@@ -850,7 +860,158 @@ protected:
     ScreenShotCallbackDelegate *screenShotCallback;
     void MakeGLScreenShot();
 };
+    
+inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 _updateSemantic)
+{
+    //AutobindVariableData * var = &dynamicParameters[shaderSemantic];
+    //if (var->updateSemantic
+    if (_updateSemantic == UPDATE_SEMANTIC_ALWAYS || dynamicParameters[shaderSemantic].updateSemantic != _updateSemantic)
+    {
+        
+        if (_updateSemantic == UPDATE_SEMANTIC_ALWAYS)
+            dynamicParameters[shaderSemantic].updateSemantic++;
+        else
+            dynamicParameters[shaderSemantic].updateSemantic = _updateSemantic;
+        
+        dynamicParameters[shaderSemantic].value = value;
+        dynamicParamersRequireUpdate &= ~(1 << shaderSemantic);
+        
+//        PARAM_WORLD,
+//        PARAM_INV_WORLD,
+//        PARAM_VIEW,
+//        PARAM_INV_VIEW,
+//        PARAM_PROJ,
+//        PARAM_INV_PROJ,
+//        
+//        PARAM_WORLD_VIEW,
+//        PARAM_INV_WORLD_VIEW,
+//        PARAM_NORMAL, // NORMAL MATRIX
+//        
+//        PARAM_VIEW_PROJ,
+//        PARAM_INV_VIEW_PROJ,
+//        
+//        PARAM_WORLD_VIEW_PROJ,
+//        PARAM_INV_WORLD_VIEW_PROJ,
+        switch(shaderSemantic)
+        {
+            case PARAM_WORLD:
+                dynamicParamersRequireUpdate |= ((1 << PARAM_INV_WORLD) | ( 1 << PARAM_WORLD_VIEW) | (1 << PARAM_INV_WORLD_VIEW)
+                                                 | ( 1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ) | (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) | (1 << PARAM_WORLD_INV_TRANSPOSE));
+            break;
+            case PARAM_VIEW:
+                dynamicParamersRequireUpdate |= (   (1 << PARAM_INV_VIEW)
+                                                 |  (1 << PARAM_WORLD_VIEW)
+                                                 |  (1 << PARAM_INV_WORLD_VIEW)
+                                                 |  (1 << PARAM_WORLD_VIEW_PROJ)
+                                                 |  (1 << PARAM_INV_WORLD_VIEW_PROJ)
+                                                 |  (1 << PARAM_VIEW_PROJ)
+                                                 |  (1 << PARAM_INV_VIEW_PROJ)
+                                                 |  (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) );
+            break;
+            case PARAM_PROJ:
+                dynamicParamersRequireUpdate |= ((1 << PARAM_INV_PROJ) | (1 << PARAM_VIEW_PROJ) | (1 << PARAM_INV_VIEW_PROJ) |
+                                                 (1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ));
+            break;
+            default:
+            break;
+        }
+        
+    }
+}
 
+inline const Matrix4 & RenderManager::GetDynamicParamMatrix(eShaderSemantic shaderSemantic)
+{
+    return *(Matrix4*)dynamicParameters[shaderSemantic].value;
+}
+    
+inline void RenderManager::ComputeWorldViewMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_VIEW))
+    {
+        worldViewMatrix = GetDynamicParamMatrix(PARAM_WORLD) * GetDynamicParamMatrix(PARAM_VIEW);
+        SetDynamicParam(PARAM_WORLD_VIEW, &worldViewMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+inline void RenderManager::ComputeViewProjMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_VIEW_PROJ))
+    {
+        viewProjMatrix = GetDynamicParamMatrix(PARAM_VIEW) * GetDynamicParamMatrix(PARAM_PROJ);
+        SetDynamicParam(PARAM_VIEW_PROJ, &viewProjMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
 
+inline void RenderManager::ComputeWorldViewProjMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_VIEW_PROJ))
+    {
+        ComputeViewProjMatrixIfRequired();
+        worldViewProjMatrix = GetDynamicParamMatrix(PARAM_WORLD) * GetDynamicParamMatrix(PARAM_VIEW_PROJ);
+        SetDynamicParam(PARAM_WORLD_VIEW_PROJ, &worldViewProjMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+inline void RenderManager::ComputeInvWorldViewMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_INV_WORLD_VIEW))
+    {
+        ComputeWorldViewMatrixIfRequired();
+        worldViewMatrix.GetInverse(invWorldViewMatrix);
+        SetDynamicParam(PARAM_INV_WORLD_VIEW, &invWorldViewMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+inline void RenderManager::ComputeWorldViewInvTransposeMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE))
+    {
+        ComputeInvWorldViewMatrixIfRequired();
+        normalMatrix = invWorldViewMatrix;
+        normalMatrix.Transpose();
+        SetDynamicParam(PARAM_WORLD_VIEW_INV_TRANSPOSE, &normalMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+    
+inline void RenderManager::ComputeInvWorldMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_INV_WORLD))
+    {
+        const Matrix4 & worldMatrix = GetDynamicParamMatrix(PARAM_WORLD);
+        worldMatrix.GetInverse(invWorldMatrix);
+        SetDynamicParam(PARAM_INV_WORLD, &invWorldMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+    
+inline void RenderManager::ComputeWorldInvTransposeMatrixIfRequired()
+{
+    if (dynamicParamersRequireUpdate & (1 << PARAM_WORLD_INV_TRANSPOSE))
+    {
+        ComputeInvWorldMatrixIfRequired();
+        worldInvTransposeMatrix = invWorldMatrix;
+        worldInvTransposeMatrix.Transpose();
+        SetDynamicParam(PARAM_WORLD_INV_TRANSPOSE, &worldInvTransposeMatrix, UPDATE_SEMANTIC_ALWAYS);
+    }
+}
+ 
+const void * RenderManager::GetDynamicParam(eShaderSemantic shaderSemantic)
+{
+    DVASSERT(dynamicParameters[shaderSemantic].value != 0);
+    return dynamicParameters[shaderSemantic].value;
+}
+
+#define SET_DYNAMIC_PARAM(x, y, z) RenderManager::SetDynamicParam(x, y, z)
+#define GET_DYNAMIC_PARAM(x) RenderManager::dynamicParameters[x]
+#define GET_DYNAMIC_PARAM_VALUE(x) RenderManager::dynamicParameters[x].value
+#define GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(x) RenderManager::dynamicParameters[x].updateSemantic
+    
+// Update debug stats only in debug.
+#if defined(__DAVAENGINE_DEBUG__)
+#define RENDERER_UPDATE_STATS(param) RenderManager::Instance()->GetStats().param
+#else
+#define RENDERER_UPDATE_STATS(param)
+#endif
+    
 };
 #endif

@@ -297,24 +297,7 @@ Material::Material()
 //        materialsNode->AddNode(this);
 //    }
     
-    if (!uberShader)
-    {
-        uberShader = new UberShader();
-        uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
-        
-        
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
-        //uberShader->CompileShaderCombination("MATERIAL_DECAL");
-        //uberShader->CompileShaderCombination("MATERIAL_DETAIL");
-        //
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
-        //uberShader->CompileShaderCombination("MATERIAL_DECAL;VERTEX_LIT");
-        //uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
-        //
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;");
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;");
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS;");
-    }
+
     
 //    type = MATERIAL_UNLIT_TEXTURE;
 //    shader = uberShader->GetShader("MATERIAL_TEXTURE");

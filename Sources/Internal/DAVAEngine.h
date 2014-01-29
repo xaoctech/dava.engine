@@ -122,12 +122,10 @@
 #include "Render/Image.h"
 #include "Render/ImageLoader.h"
 #include "Render/Shader.h"
+#include "Render/ShaderCache.h"
 
 #include "Core/DisplayMode.h"
 #include "Render/RenderManager.h"
-
-#include "Render/RenderEffect.h"
-#include "Render/RenderGrayscaleEffect.h"
 
 #include "Render/RenderHelper.h"
 

@@ -1,7 +1,7 @@
 attribute vec4 inPosition;
 attribute vec2 inTexCoord0;
 
-uniform mat4 modelViewProjectionMatrix;
+uniform mat4 worldViewProjMatrix;
 uniform vec3 cameraPosition;
 uniform vec2 texture0Tiling;
 uniform vec2 texture1Tiling;
@@ -13,7 +13,7 @@ varying vec2 varTexCoord1;
 
 void main()
 {
-	gl_Position = modelViewProjectionMatrix * inPosition;
+	gl_Position = worldViewProjMatrix * inPosition;
 	varTexCoordOrig = inTexCoord0;
 	varTexCoord0 = inTexCoord0 * texture0Tiling;
 	varTexCoord1 = inTexCoord0 * texture1Tiling;

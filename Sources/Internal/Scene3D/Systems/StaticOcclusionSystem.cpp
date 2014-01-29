@@ -138,7 +138,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
             Vector<RenderObject*> others;
             for (uint32 lodLayer = 0; lodLayer < (uint32)retLodLayers.size(); ++lodLayer)
             {
-                if (lodLayer == 0)
+                if (retLodLayers[lodLayer]->layer == 0)
                 {
                     DVASSERT(retLodLayers[lodLayer]->nodes.size() == 1);
                     lod0Object = GetRenderObject(retLodLayers[lodLayer]->nodes[0]);
@@ -148,11 +148,13 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
                     for (uint32 p = 0; p < retLodLayers[lodLayer]->nodes.size(); ++p)
                     {
                         RenderObject * ro = GetRenderObject(retLodLayers[lodLayer]->nodes[p]);
+                        DVASSERT(ro != 0);
                         others.push_back(ro);
                     }
                 }
             }
-            equalRenderObjects[lod0Object] = others;
+            if (lod0Object)
+                equalRenderObjects[lod0Object] = others;
         }
         // VB: This code will require changes )))
         size = (uint32)lodEntities.size();
@@ -161,6 +163,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
             LodComponent * lodComponent = (LodComponent*)lodEntities[k]->GetComponent(Component::LOD_COMPONENT);
             lodComponent->SetForceLodLayer(0);
         }
+        GetScene()->lodSystem->SetForceUpdateAll();
         GetScene()->lodSystem->Process(timeElapsed);
 
         
@@ -179,6 +182,9 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         //Logger::FrameworkDebug("end");
         if (result == 0)
         {
+            
+            //occlusionComponent->renderPositions = staticOcclusion->renderPositions;
+            
             // Remove old component
             entities[activeIndex]->RemoveComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT);
             // Add new component

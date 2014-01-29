@@ -93,8 +93,7 @@ void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
 		return;
 	}
 	
-	Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)worldTransformPtr);
+    RenderManager::SetDynamicParam(PARAM_WORLD, worldTransformPtr, (pointer_size)worldTransformPtr);
 	
     material->BindMaterialTechnique(ownerRenderPass, camera);
     material->Draw(dataSource);

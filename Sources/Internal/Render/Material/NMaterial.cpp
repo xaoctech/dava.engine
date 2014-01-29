@@ -45,6 +45,7 @@
 #include "Render/Material/NMaterialTemplate.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/TextureDescriptor.h"
+#include "Render/Highlevel/Landscape.h"
 
 namespace DAVA
 {
@@ -53,7 +54,7 @@ namespace DAVA
 	static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
 	
 	const FastName NMaterial::TEXTURE_ALBEDO("albedo");
-	const FastName NMaterial::TEXTURE_NORMAL("normal");
+	const FastName NMaterial::TEXTURE_NORMAL("normalmap");
 	const FastName NMaterial::TEXTURE_DETAIL("detail");
 	const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 	const FastName NMaterial::TEXTURE_DECAL("decal");
@@ -79,13 +80,23 @@ namespace DAVA
     const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 	
 	const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
+	const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
+	const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
 	const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
+    const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 	const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
+    const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
+    
 	const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 	const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
 	const FastName NMaterial::FLAG_SETUPLIGHTMAP = FastName("SETUP_LIGHTMAP");
+    const FastName NMaterial::FLAG_VIEWALBEDO = FastName("VIEW_ALBEDO");
+    const FastName NMaterial::FLAG_VIEWAMBIENT = FastName("VIEW_AMBIENT");
+    const FastName NMaterial::FLAG_VIEWDIFFUSE = FastName("VIEW_DIFFUSE");
+    const FastName NMaterial::FLAG_VIEWSPECULAR = FastName("VIEW_SPECULAR");
 
-	static FastName TEXTURE_NAME_PROPS[] = {
+	static FastName TEXTURE_NAME_PROPS[] =
+    {
 		NMaterial::TEXTURE_ALBEDO,
 		NMaterial::TEXTURE_NORMAL,
 		NMaterial::TEXTURE_DETAIL,
@@ -97,7 +108,12 @@ namespace DAVA
 	{
 		NMaterial::FLAG_LIGHTMAPONLY,
 		NMaterial::FLAG_TEXTUREONLY,
-		NMaterial::FLAG_SETUPLIGHTMAP
+		NMaterial::FLAG_SETUPLIGHTMAP,
+        
+        NMaterial::FLAG_VIEWALBEDO,
+        NMaterial::FLAG_VIEWAMBIENT,
+        NMaterial::FLAG_VIEWDIFFUSE,
+        NMaterial::FLAG_VIEWSPECULAR
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -691,7 +707,20 @@ namespace DAVA
 		TextureBucket* bucket = textures.at(textureFastName);
 		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
 	}
-	
+    
+    Texture * NMaterial::GetEffectiveTexture(const FastName& textureFastName) const
+    {
+        TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
+		return (NULL == bucket) ? NULL : bucket->texture;
+    }
+    
+	const FilePath& NMaterial::GetEffectiveTexturePath(const FastName& textureFastName) const
+    {
+        static FilePath invalidEmptyPath;
+		TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
+		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
+    }
+
     Texture * NMaterial::GetTexture(uint32 index) const
 	{
 		DVASSERT(index >= 0 && index < textures.size());
@@ -1024,7 +1053,7 @@ namespace DAVA
 		for(uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
-			if(uniform->id == Shader::UNIFORM_NONE)
+			if(uniform->shaderSemantic == UNKNOWN_SEMANTIC)
 			{
 				if(uniform->type == Shader::UT_SAMPLER_2D ||
 				   uniform->type == Shader::UT_SAMPLER_CUBE)
@@ -1048,8 +1077,8 @@ namespace DAVA
 		{
 			Shader::Uniform * uniform = shader->GetUniform(uniformIndex);
 			
-			if((Shader::UNIFORM_NONE == uniform->id ||
-			   Shader::UNIFORM_COLOR == uniform->id) &&
+			if((UNKNOWN_SEMANTIC == uniform->shaderSemantic ||
+			    PARAM_COLOR == uniform->shaderSemantic) &&
 			   (Shader::UT_SAMPLER_2D != uniform->type &&
 				Shader::UT_SAMPLER_CUBE != uniform->type)) //TODO: do something with conditional binding
 			{
@@ -1077,7 +1106,8 @@ namespace DAVA
 	{
 		TextureBucket* bucket = NULL;
 		const NMaterial* currentMaterial = this;
-		while(currentMaterial)
+		while(currentMaterial &&
+              NULL == bucket)
 		{
 			bucket = currentMaterial->textures.at(textureFastName);
 			
@@ -1303,6 +1333,7 @@ namespace DAVA
 			
 			if(uniformEntry.prop)
 			{
+                RENDERER_UPDATE_STATS(materialParamUniformBindCount++);
 				shader->SetUniformValueByUniform(uniform,
 												 uniform->type,
 												 uniform->size,
@@ -1398,7 +1429,6 @@ namespace DAVA
 	{
 		DVASSERT(renderData);
 		
-		// TODO: Remove support of OpenGL ES 1.0 from attach render data
 		RenderManager::Instance()->SetRenderData(renderData);
 		RenderManager::Instance()->AttachRenderData();
 		
@@ -1487,6 +1517,7 @@ namespace DAVA
 		}
 		
 		float32 intensity = (light) ? light->GetIntensity() : 0;
+        intensity = 2.0f;
 		SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
 	}
 	
@@ -1827,7 +1858,6 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						Shader::eUniform uniformId = uniform->id;
 						if( uniform->type == Shader::UT_SAMPLER_2D ||
 							uniform->type == Shader::UT_SAMPLER_CUBE) // is texture
 						{
@@ -2036,17 +2066,17 @@ namespace DAVA
 					for(int32 i = 0; i < uniformCount; ++i)
 					{
 						Shader::Uniform *uniform = shader->GetUniform(i);
-						Shader::eUniform uniformId = uniform->id;
+						eShaderSemantic shaderSemantic = uniform->shaderSemantic;
 						if( //!Shader::IsAutobindUniform(uniform->id) && // isn't auto-bind
 							// we can't use IsAutobindUniform, because we need color to change
 							// so this is copy from IsAutobindUniform with color excluded -->
-							!(uniformId == Shader::UNIFORM_MODEL_VIEW_PROJECTION_MATRIX ||
-							uniformId == Shader::UNIFORM_MODEL_VIEW_MATRIX ||
-							uniformId == Shader::UNIFORM_PROJECTION_MATRIX ||
-							uniformId == Shader::UNIFORM_NORMAL_MATRIX ||
-							uniformId == Shader::UNIFORM_GLOBAL_TIME ||
-							uniformId == Shader::UNIFORM_MODEL_VIEW_TRANSLATE ||
-							uniformId == Shader::UNIFORM_MODEL_SCALE)
+							!(shaderSemantic == PARAM_WORLD_VIEW_PROJ ||
+							shaderSemantic == PARAM_WORLD_VIEW ||
+							shaderSemantic == PARAM_PROJ ||
+							shaderSemantic == PARAM_WORLD_VIEW_INV_TRANSPOSE ||
+							shaderSemantic == PARAM_GLOBAL_TIME ||
+							shaderSemantic == PARAM_WORLD_VIEW_TRANSLATE ||
+							shaderSemantic == PARAM_WORLD_SCALE)
 							// <--
 							&&
 							uniform->type != Shader::UT_SAMPLER_2D && uniform->type != Shader::UT_SAMPLER_CUBE) // isn't texture
@@ -2309,13 +2339,18 @@ namespace DAVA
 
 	bool NMaterial::NMaterialStateDynamicPropertiesInsp::isColor(const FastName &propName) const
 	{
-		return (propName == NMaterial::PARAM_PROP_AMBIENT_COLOR ||
-				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
-				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
-				propName == NMaterial::PARAM_FOG_COLOR ||
-				propName == NMaterial::PARAM_FLAT_COLOR ||
-                propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL
-                );
+        return (NULL != strstr(propName.c_str(), "Color"));
+
+// 		return (propName == NMaterial::PARAM_PROP_AMBIENT_COLOR ||
+// 				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
+// 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
+// 				propName == NMaterial::PARAM_FOG_COLOR ||
+// 				propName == NMaterial::PARAM_FLAT_COLOR ||
+//                 propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL ||
+//                 propName == Landscape::PARAM_TILE_COLOR0 ||
+//                 propName == Landscape::PARAM_TILE_COLOR1 ||
+//                 propName == Landscape::PARAM_TILE_COLOR2 ||
+//                 propName == Landscape::PARAM_TILE_COLOR3);
 	}
 	
 	void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const FastName &member, const VariantType &value)
@@ -2471,8 +2506,8 @@ namespace DAVA
  			ret.push_back(FLAG_VERTEXFOG);
  			ret.push_back(FLAG_FLATCOLOR);
  			ret.push_back(FLAG_TEXTURESHIFT);
+            ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
  		}
-
 		return ret;
 	}
 

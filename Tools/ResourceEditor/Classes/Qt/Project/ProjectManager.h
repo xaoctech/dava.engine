@@ -49,6 +49,7 @@ public:
     struct AvailableMaterialQuality
     {
         QString name;
+        QString prefix;
         QVector<QString> values;
     };
 

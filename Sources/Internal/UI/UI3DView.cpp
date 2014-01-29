@@ -95,10 +95,10 @@ void UI3DView::Draw(const UIGeometricData & geometricData)
         //glViewport(viewportRect.x, viewportRect.y, viewportRect.dx, viewportRect.dy);
     RenderManager::Instance()->PushDrawMatrix();
 	RenderManager::Instance()->PushMappingMatrix();
-    Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    //Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
         //    Logger::Info("Model matrix");
         //    modelViewSave.Dump();
-    Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
+    //Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);
         //    Logger::Info("Proj matrix");
         //    projectionSave.Dump();
     int32 renderOrientation = RenderManager::Instance()->GetRenderOrientation();
@@ -136,9 +136,10 @@ void UI3DView::Draw(const UIGeometricData & geometricData)
     RenderManager::Instance()->SetRenderOrientation(renderOrientation);
     
         //RenderManager::Instance()->SetState(RenderStateBlock::DEFAULT_2D_STATE_BLEND);
-    
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewSave);
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projectionSave);
+
+    RenderManager::Instance()->GetRenderer2D()->Setup2DMatrices();
+//    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewSave);
+//    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projectionSave);
 	RenderManager::Instance()->PopDrawMatrix();
 	RenderManager::Instance()->PopMappingMatrix();
 	

@@ -38,7 +38,8 @@ namespace DAVA
 {
 
 	//do not create lower cube face
-	const int SKYBOX_VERTEX_COUNT = (5 * 6);
+	const int32 SKYBOX_VERTEX_COUNT = (8);
+    const int32 SKYBOX_INDEX_COUNT = (6 * 2 * 3);
 
 	SkyboxRenderObject::SkyboxRenderObject()
 	:
@@ -111,68 +112,46 @@ namespace DAVA
 			return;
 		}
 		
-		Vector3 cubeTexCoords[SKYBOX_VERTEX_COUNT] = {
-			Vector3(1, 1, -1), Vector3(-1, 1, -1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(-1, 1, -1), Vector3(-1, 1, 1),
-			Vector3(1, -1, -1), Vector3(1, 1, -1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, -1), Vector3(1, 1, 1),
-			Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(-1, -1, 1), Vector3(-1, -1, 1), Vector3(1, -1, -1), Vector3(1, -1, 1),
-			Vector3(-1, 1, -1), Vector3(-1, -1, -1), Vector3(-1, 1, 1), Vector3(-1, 1, 1), Vector3(-1, -1, -1), Vector3(-1, -1, 1),
-			Vector3(1, 1, 1), Vector3(-1, 1, 1), Vector3(1, -1, 1), Vector3(1, -1, 1), Vector3(-1, 1, 1), Vector3(-1, -1, 1)
+		Vector3 cubeCoords[SKYBOX_VERTEX_COUNT] = {
+			Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(1, 1, -1), Vector3(-1, 1, -1), // 0, 1, 2, 3
+			Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1), Vector3(-1, 1, 1),     // 4, 5, 6, 7
 		};
+        
+        uint32 cubeIndices[SKYBOX_INDEX_COUNT] =
+        {
+            //0, 1, 2,
+            //0, 2, 3,
+            0, 1, 5,
+            0, 5, 4,
+            0, 4, 7,
+            0, 7, 3,
+            2, 6, 7,
+            2, 7, 3,
+            1, 5, 6,
+            1, 6, 2,
+            4, 5, 6,
+            4, 6, 7,
+        };
 		
 		PolygonGroup* polygonGroup = new PolygonGroup();
-		polygonGroup->AllocateData(EVF_VERTEX | EVF_CUBETEXCOORD0, SKYBOX_VERTEX_COUNT, SKYBOX_VERTEX_COUNT);
-		
-		//face 0 (right)+
-		polygonGroup->SetCoord(0, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
-		polygonGroup->SetCoord(1, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(2, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
-		polygonGroup->SetCoord(3, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
-		polygonGroup->SetCoord(4, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(5, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
-		
-		//face 1 (front)+
-		polygonGroup->SetCoord(6, Vector3(bbox.max.x, bbox.min.y, bbox.min.z));
-		polygonGroup->SetCoord(7, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(8, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
-		polygonGroup->SetCoord(9, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
-		polygonGroup->SetCoord(10, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(11, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
-
-		//face 2 (left)
-		polygonGroup->SetCoord(12, Vector3(bbox.max.x, bbox.max.y, bbox.min.z));
-		polygonGroup->SetCoord(13, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
-		polygonGroup->SetCoord(14, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
-		polygonGroup->SetCoord(15, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
-		polygonGroup->SetCoord(16, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
-		polygonGroup->SetCoord(17, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
-				
-		//face 3 (back)
-		polygonGroup->SetCoord(18, Vector3(bbox.min.x, bbox.max.y, bbox.min.z));
-		polygonGroup->SetCoord(19, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
-		polygonGroup->SetCoord(20, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
-		polygonGroup->SetCoord(21, Vector3(bbox.min.x, bbox.min.y, bbox.min.z));
-		polygonGroup->SetCoord(22, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
-		polygonGroup->SetCoord(23, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
-		
-		//face 4 (top)
-		polygonGroup->SetCoord(24, Vector3(bbox.min.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(25, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
-		polygonGroup->SetCoord(26, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(27, Vector3(bbox.max.x, bbox.min.y, bbox.max.z));
-		polygonGroup->SetCoord(28, Vector3(bbox.min.x, bbox.max.y, bbox.max.z));
-		polygonGroup->SetCoord(29, Vector3(bbox.max.x, bbox.max.y, bbox.max.z));
-		
-		for(int i = 0; i < SKYBOX_VERTEX_COUNT; ++i)
+		polygonGroup->AllocateData(EVF_VERTEX | EVF_CUBETEXCOORD0, SKYBOX_VERTEX_COUNT, SKYBOX_INDEX_COUNT);
+    
+        for (int32 i = 0; i < SKYBOX_VERTEX_COUNT; ++i)
+        {
+            polygonGroup->SetCoord(i, cubeCoords[i]);
+            polygonGroup->SetCubeTexcoord(0, i, cubeCoords[i]);
+        }
+        
+		for(int32 i = 0; i < SKYBOX_INDEX_COUNT; ++i)
 		{
-			polygonGroup->SetIndex(i, i);
-			polygonGroup->SetCubeTexcoord(0, i, cubeTexCoords[i]);
+			polygonGroup->SetIndex(i, cubeIndices[i]);
 		}
 				
 		//could be any pair of opposite diagonal vertices
 		Vector3 coord0;
 		Vector3 coord1;
-		polygonGroup->GetCoord(24, coord0);
-		polygonGroup->GetCoord(29, coord1);
+		polygonGroup->GetCoord(0, coord0);
+		polygonGroup->GetCoord(6, coord1);
 		Vector3 maxDistanceBetweenVertices = coord1 - coord0;
 		nonClippingDistance = 0.5f * maxDistanceBetweenVertices.Length();
 		
@@ -192,7 +171,7 @@ namespace DAVA
 		camPos.z += offsetZ;
 		
 		Matrix4& finalMatrix = *worldTransform;
-		finalMatrix = Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotationZ) *
+		finalMatrix = /*Matrix4::MakeRotation(Vector3(0.0f, 0.0f, 1.0f), rotationZ) * */
 			Matrix4::MakeScale(Vector3(scale, scale, scale)) *
 			Matrix4::MakeTranslation(camPos);
 	}

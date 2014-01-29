@@ -171,9 +171,9 @@ MaterialCompiler::eCompileError MaterialCompiler::GenerateCodeForNode(MaterialGr
     if (type == MaterialGraphNode::TYPE_SHIFTER)
     {
         MaterialGraphNodeConnector * connectorTexCoord = node->GetInputConnector("texCoord");
-        int32 texCoordIndex = 0;
-        if (connectorTexCoord)
-            texCoordIndex = connectorTexCoord->GetNode()->textureInputIndex;
+//        int32 texCoordIndex = 0;
+//        if (connectorTexCoord)
+//            texCoordIndex = connectorTexCoord->GetNode()->textureInputIndex;
         
         // Add uniform
         vertexShaderAdditionaUniforms[NMaterialConsts::UNIFORM_GLOBAL_TIME] = Shader::UT_FLOAT;

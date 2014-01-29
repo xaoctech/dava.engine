@@ -59,15 +59,40 @@ typedef char             GLchar;
 namespace DAVA
 {
 
+    
+struct AutobindVariableData
+{
+    pointer_size updateSemantic;    // Use lower 1 bit, for indication of update
+    const void * value;
+    
+    inline void SetUpdateSemantic(pointer_size _updateSemantic)
+    {
+        //updateSemantic = 1 | (_updateSemantic & 0xFFFFFFFE);
+        updateSemantic = _updateSemantic;
+    };
+    
+    inline void ResetRequireUpdate(pointer_size flag)
+    {
+        updateSemantic &= 0xFFFFFFFE;
+        updateSemantic |= flag & 1;
+    }
+    inline pointer_size IsRequireUpdate()
+    {
+        return updateSemantic & 1;
+    }
+};
+    
+
 template<class AutobindType>
 class AutobindVariable
 {
 public:
-    inline void SetValue(uint32 _semantic, const AutobindType & _value){ if (semantic != _semantic)value = _value; }
+    inline void SetValue(uint32 _semantic, const AutobindType * _value){ if (semantic != _semantic){ semantic = _semantic; value = _value;} }
     inline void ClearSemantic() { semantic = 0; }
+    inline AutobindType * GetValue() {return  value; }
     
     uint32 semantic;
-    AutobindType value;
+    AutobindType *value;
 };
 
 class AutobindManager
@@ -138,12 +163,13 @@ public:
 #endif
     struct Uniform
     {
-        eUniform        id;
+        eShaderSemantic shaderSemantic;
         //eUpdateFreq     updateFreq;
         FastName        name;
         GLint           location;
         GLint           size;
         eUniformType    type;
+        pointer_size    updateSemantic;
 #ifdef USE_CRC_COMPARE
         uint32          crc;
 #else
@@ -177,20 +203,8 @@ public:
     
     Shader * Clone();
     
-    // virtual void SetActiveShader(const String & string);
-    void SetDefines(const String & defines);
-    void SetVertexShaderDefines(const String & defines);
-    void SetFragmentShaderDefines(const String & defines);
-    
-    // comma ';' sepated define list
-    void SetDefineList(const String & enableDefinesList);
-    
-    bool LoadFromYaml(const FilePath & pathname);
-    bool Load(const FilePath & vertexShaderPath, const FilePath & fragmentShaderPath);
-    
-    // TODO: OLD FUNCTIONS: NEED TO REMOVE THEM 
-    Shader * RecompileNewInstance(const String & combination);
-    
+    void SetDefines(const String & _defines);
+
     static Shader * CompileShader(const FastName & assetName,
                                   Data * vertexShaderData,
                                   Data * fragmentShaderData,
@@ -209,7 +223,7 @@ public:
 
     void Bind();
     static void Unbind();
-	static bool IsAutobindUniform(Shader::eUniform uniformId);
+	static bool IsAutobindUniform(eShaderSemantic uniformId);
 
     inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
     inline int32 GetAttributeCount();
@@ -288,6 +302,7 @@ private:
     
     
 #elif defined(__DAVAENGINE_OPENGL__)
+    String shaderDefines;
     GLuint vertexShader;
     GLuint fragmentShader;
     GLuint program;
@@ -323,13 +338,10 @@ private:
 	};
 	void DeleteShadersInternal(BaseObject * caller, void * param, void *callerData);
 
-    eUniform GetUniformByName(const FastName &name);
+    eShaderSemantic GetShaderSemanticByName(const FastName &name);
     int32 GetAttributeIndexByName(const FastName &name);
     
-    static GLuint activeProgram;
-    String vertexShaderDefines;
-    String fragmentShaderDefines;
-    
+    static GLuint activeProgram;    
     Data * vertexShaderData;
     Data * fragmentShaderData;
     FilePath vertexShaderPath, fragmentShaderPath;
@@ -340,13 +352,6 @@ private:
     uint8 * fragmentShaderDataStart;
     uint32 vertexShaderDataSize;
     uint32 fragmentShaderDataSize;
-    
-    uint32 lastProjectionMatrixCache;
-    uint32 lastModelViewMatrixCache;
-    uint32 lastMVPMatrixModelViewCache;
-    uint32 lastMVPMatrixProjectionCache;
-    uint32 lastModelViewTranslateCache;
-    uint32 lastModelScaleCache;
 };
 
 //

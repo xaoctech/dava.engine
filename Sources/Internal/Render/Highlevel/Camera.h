@@ -129,7 +129,7 @@ public:
         \brief Function applies camera transformations (projection, model-view matrices) to RenderManager
         This function normally is called internally from Scene class. In most cases you'll not need it. 
      */
-	void Set();
+	void SetupDynamicParameters();
 	
 	/**     
         \brief Restore camera transform to original camera transform that was set using 
@@ -297,7 +297,7 @@ public:
         \brief Get project * camera matrix
         \returns matrix 
      */
-    const Matrix4 &GetUniformProjModelMatrix();
+    const Matrix4 &GetViewProjMatrix();
     
     /**
         \brief Function to return 2D position of 3D point that is transformed to screen. 
@@ -371,9 +371,11 @@ public:
 	//Quaternion rotation;	// 
 	Matrix4 cameraTransform;
 
-    Matrix4 modelMatrix;
+    Matrix4 viewMatrix;
 	Matrix4 projMatrix;
-    Matrix4 uniformProjModelMatrix;
+    Matrix4 viewProjMatrix;
+    Matrix4 invViewMatrix;
+    Matrix4 invViewProjMatrix;
 
     uint32 flags;
 
@@ -384,8 +386,8 @@ public:
 	void ConstructMatrixFromValues();
 	void Recalc();
 
-	void RecalcFrustum();
-	void RecalcTransform();
+	void RebuildProjectionMatrix();
+	void RebuildViewMatrix();
     
 	
 	/** calls glFrustum for projection matrix */
@@ -420,7 +422,7 @@ public:
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
                          
         MEMBER(cameraTransform, "Camera Transform", I_SAVE | I_VIEW)
-        MEMBER(modelMatrix, "Model Matrix", I_SAVE | I_VIEW)
+        MEMBER(viewMatrix, "View Matrix", I_SAVE | I_VIEW)
         MEMBER(projMatrix, "Proj Matrix", I_SAVE | I_VIEW)
     );
 };

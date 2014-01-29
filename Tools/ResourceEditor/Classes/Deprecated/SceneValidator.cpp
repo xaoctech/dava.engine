@@ -416,8 +416,6 @@ void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::e
 
 void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NMaterial *material)
 {
-	KeyedArchive * props = ownerNode->GetCustomProperties();
-
     IlluminationParams * params = material->GetIlluminationParams();
 
     VariantType * variant = 0;

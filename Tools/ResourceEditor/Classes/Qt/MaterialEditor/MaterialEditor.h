@@ -67,6 +67,7 @@ protected slots:
 	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
+    void OnSwitchQuality(bool checked);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
