@@ -1177,10 +1177,10 @@ void Sprite::Draw()
         RenderManager::Instance()->ClipRect( clipRect );
     }
 
-    //RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+    PixelFormat format = (textures[frameTextureIndex[frame]]) ? textures[frameTextureIndex[frame]]->GetFormat() : FORMAT_RGBA8888;
 	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
     RenderManager::Instance()->SetRenderData(spriteRenderObject);
-    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+    RenderManager::Instance()->SetRenderEffect((DAVA::FORMAT_A8 == format || DAVA::FORMAT_A16 == format) ? RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 : RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 
     if( clipPolygon )
@@ -1231,10 +1231,10 @@ void Sprite::Draw(DrawState * state)
 		RenderManager::Instance()->ClipRect( clipRect );
 	}
 
-	//RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+	PixelFormat format = (textures[frameTextureIndex[frame]]) ? textures[frameTextureIndex[frame]]->GetFormat() : FORMAT_RGBA8888;
 	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
-	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+	RenderManager::Instance()->SetRenderEffect((DAVA::FORMAT_A8 == format || DAVA::FORMAT_A16 == format) ? RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 : RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 
 	if( clipPolygon )
