@@ -153,8 +153,7 @@ struct Matrix4
 	inline bool operator != (const Matrix4 & _m) const;	
     
     
-    static const Matrix4 IDENTITY;
-	
+    static Matrix4 IDENTITY;
 	//static uint32 matrixMultiplicationCounter;
 };
 
@@ -663,9 +662,36 @@ inline Matrix4 Matrix4::MakeScale(const Vector3 & scaleVector)
 //! Comparison operators
 inline bool Matrix4::operator == (const Matrix4 & _m) const
 {
-	for (int k = 0; k < 16; ++k)
-		if (!FLOAT_EQUAL(data[k], _m.data[k]))return false;
-	return true;
+    // Check translation first
+    if (!FLOAT_EQUAL(_30, _m._30))return false;
+    if (!FLOAT_EQUAL(_31, _m._31))return false;
+    if (!FLOAT_EQUAL(_32, _m._32))return false;
+    
+    if (!FLOAT_EQUAL(_00, _m._00))return false;
+    if (!FLOAT_EQUAL(_11, _m._11))return false;
+    if (!FLOAT_EQUAL(_22, _m._22))return false;
+    
+//    if (!FLOAT_EQUAL(_00, _m._00))return false;
+    if (!FLOAT_EQUAL(_01, _m._01))return false;
+    if (!FLOAT_EQUAL(_02, _m._02))return false;
+    if (!FLOAT_EQUAL(_03, _m._03))return false;
+    
+    if (!FLOAT_EQUAL(_10, _m._10))return false;
+//    if (!FLOAT_EQUAL(_11, _m._11))return false;
+    if (!FLOAT_EQUAL(_12, _m._12))return false;
+    if (!FLOAT_EQUAL(_13, _m._13))return false;
+
+    if (!FLOAT_EQUAL(_20, _m._20))return false;
+    if (!FLOAT_EQUAL(_21, _m._21))return false;
+//    if (!FLOAT_EQUAL(_22, _m._22))return false;
+    if (!FLOAT_EQUAL(_23, _m._23))return false;
+    
+//    if (!FLOAT_EQUAL(_30, _m._30))return false;
+//    if (!FLOAT_EQUAL(_31, _m._31))return false;
+//    if (!FLOAT_EQUAL(_32, _m._32))return false;
+    if (!FLOAT_EQUAL(_33, _m._33))return false;
+
+    return true;
 }
 
 inline bool Matrix4::operator != (const Matrix4 & _m) const

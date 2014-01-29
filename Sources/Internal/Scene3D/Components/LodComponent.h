@@ -54,6 +54,7 @@ public:
 	enum eFlags
 	{
 		NEED_UPDATE_AFTER_LOAD = 1 << 0,
+        RECURSIVE_UPDATE = 1 << 1
 	};
 
 	struct LodDistance
@@ -101,7 +102,6 @@ public:
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
 	static float32 GetDefaultDistance(int32 layer);
-	void SetCurrentLod(int32 newLod);
 
 	inline int32 GetLodLayersCount() const;
 	inline float32 GetLodLayerDistance(int32 layerNum) const;
@@ -110,7 +110,7 @@ public:
 	inline float32 GetLodLayerNearSquare(int32 layerNum) const;
 	inline float32 GetLodLayerFarSquare(int32 layerNum) const;
 
-	void GetLodData(Vector<LodData*> &retLodLayers);
+	DAVA_DEPRECATED(void GetLodData(Vector<LodData*> &retLodLayers));
 
 	int32 currentLod;
 	Vector<LodData> lodLayers;
@@ -141,10 +141,13 @@ public:
 
 	int32 GetMaxLodLayer() const;
 
-	void SetLayerVisibility(int32 layerNum, bool visible);
+	
 
     void CopyLODSettings(const LodComponent * fromLOD);	
 
+    inline void EnableRecursiveUpdate();
+    inline bool IsRecursiveUpdate();
+    
 public:
     
     INTROSPECTION_EXTEND(LodComponent, Component,
@@ -177,7 +180,17 @@ float32 LodComponent::GetLodLayerFarSquare(int32 layerNum) const
 	DVASSERT(0 <= layerNum && layerNum < MAX_LOD_LAYERS);
 	return lodLayersArray[layerNum].farDistanceSq;
 }
+    
+void LodComponent::EnableRecursiveUpdate()
+{
+    flags |= RECURSIVE_UPDATE;
+}
 
+bool LodComponent::IsRecursiveUpdate()
+{
+    return (flags & RECURSIVE_UPDATE) != 0;
+}
+    
 };
 
 #endif //__DAVAENGINE_LOD_COMPONENT_H__

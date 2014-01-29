@@ -53,8 +53,9 @@ bool QuadTree::CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& node
 	case QuadTreeNode::NODE_LT:
 		return (0.5f*(nodeBox.min.x+nodeBox.max.x)>=objBox.min.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);		
 	case QuadTreeNode::NODE_RT:
-		return (0.5f*(nodeBox.min.x+nodeBox.max.x)<=objBox.max.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);		
-	}			
+		return (0.5f*(nodeBox.min.x+nodeBox.max.x)<=objBox.max.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);
+    default: break;
+	}
 	return false;
 }
 
@@ -78,6 +79,7 @@ void QuadTree::UpdateChildBox(AABBox3 &parentBox, QuadTreeNode::eNodeType childT
 		parentBox.min.x = (parentBox.max.x+parentBox.min.x)*0.5f;
 		parentBox.min.y = (parentBox.max.y+parentBox.min.y)*0.5f;
 		break;
+    default: break;
 	}
 }
 
@@ -101,6 +103,7 @@ void QuadTree::UpdateParentBox(AABBox3 &childtBox, QuadTreeNode::eNodeType child
 		childtBox.min.x -= (childtBox.max.x-childtBox.min.x);
 		childtBox.min.y -= (childtBox.max.y-childtBox.min.y);
 		break;
+    default: break;
 	}
 }
 
@@ -587,7 +590,8 @@ void QuadTree::DebugDraw(const Matrix4& cameraMatrix)
 		debugStateData.fillMode = FILLMODE_SOLID;		
 		debugDrawStateHandle = RenderManager::Instance()->AddRenderStateData(&debugStateData);
 	}
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, cameraMatrix);
+    
+	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 	RenderManager::Instance()->SetRenderState(debugDrawStateHandle);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);	
 	RenderManager::Instance()->FlushState();

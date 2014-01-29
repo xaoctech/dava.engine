@@ -186,6 +186,11 @@ public slots:
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
 
+    void OnMaterialAlbedo(bool state);
+    void OnMaterialAmbient(bool state);
+    void OnMaterialDiffuse(bool state);
+    void OnMaterialSpecular(bool state);
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);
@@ -259,6 +264,7 @@ private:
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
+    void LoadMaterialViewMode(SceneEditor2 *scene);
 
 	bool SaveTilemask(bool forAllTabs = true);
 

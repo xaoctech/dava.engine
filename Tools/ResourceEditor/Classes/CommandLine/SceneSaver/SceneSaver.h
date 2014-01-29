@@ -49,6 +49,8 @@ public:
 	void ResaveFile(const String &fileName, Set<String> &errorLog);
     void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
     
+    void EnableCopyConverted(bool enabled);
+    
 protected:
     
     void ReleaseTextures();
@@ -69,6 +71,7 @@ protected:
     SceneUtils sceneUtils;
     
     TexturesMap texturesForSave;
+    bool copyConverted;
 };
 
 

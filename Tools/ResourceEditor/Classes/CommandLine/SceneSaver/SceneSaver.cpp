@@ -41,6 +41,7 @@
 using namespace DAVA;
 
 SceneSaver::SceneSaver()
+    : copyConverted(false)
 {
 }
 
@@ -60,6 +61,10 @@ void SceneSaver::SetOutFolder(const FilePath &folderPathname)
     sceneUtils.SetOutFolder(folderPathname);
 }
 
+void SceneSaver::EnableCopyConverted(bool enabled)
+{
+    copyConverted = enabled;
+}
 
 void SceneSaver::SaveFile(const String &fileName, Set<String> &errorLog)
 {
@@ -203,11 +208,14 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
 		return;
 	}
 
+    //copy descriptor
+    sceneUtils.AddFile(descriptorPathname);
+
+    //copy source textures
 	if(desc->IsCubeMap())
 	{
-		sceneUtils.AddFile(descriptorPathname);
-		
 		Vector<FilePath> faceNames;
+
 		Texture::GenerateCubeFaceNames(descriptorPathname.GetAbsolutePathname().c_str(), faceNames);
 		for(Vector<FilePath>::iterator it = faceNames.begin();
 			it != faceNames.end();
@@ -219,11 +227,28 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
 	else
 	{
 		FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_UNKNOWN, FORMAT_RGBA8888);
-
-		sceneUtils.AddFile(descriptorPathname);
 		sceneUtils.AddFile(pngPathname);
 	}
 	
+
+	//copy converted textures (*.pvr and *.dds)
+    if(copyConverted)
+    {
+        for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+        {
+            eGPUFamily gpu = (eGPUFamily)i;
+            
+            PixelFormat format = desc->GetPixelFormatForCompression(gpu);
+            if(format == FORMAT_INVALID)
+            {
+                continue;
+            }
+            
+            FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(desc, gpu);
+            sceneUtils.AddFile(imagePathname);
+        }
+    }
+    
 	delete desc;
 }
 

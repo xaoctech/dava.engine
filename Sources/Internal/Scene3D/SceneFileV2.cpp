@@ -75,6 +75,9 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
+#include "Scene3D/Converters/LodToLod2Converter.h"
+#include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
+
 namespace DAVA
 {
     
@@ -171,7 +174,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 10;
+    header.version = 11;
     header.nodeCount = _scene->GetChildrenCount();
 	
 	descriptor.size = sizeof(descriptor.fileType); // + sizeof(descriptor.additionalField1) + sizeof(descriptor.additionalField1) +....
@@ -880,7 +883,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             if (oldMeshInstanceNode->GetLightmapCount() > 0)
             {
                 RenderBatch * batch = mesh->GetRenderBatch(k);
-                NMaterial * material = batch->GetMaterial();
                 //MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
 
                 //tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
@@ -1130,6 +1132,14 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     //RemoveEmptySceneNodes(rootNode);
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
+
+    if(GetVersion() < 11)
+    {
+	    LodToLod2Converter lodConverter;
+	    lodConverter.ConvertLodToV2(rootNode);
+	    SwitchToRenerObjectConverter switchConverter;
+	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
+    }
 	
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     

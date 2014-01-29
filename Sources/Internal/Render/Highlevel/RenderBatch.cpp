@@ -143,10 +143,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //    if(!GetVisible())
 //        return;
 	
-    //Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-	const Matrix4 *finalMatrixPtr = renderObject->GetFinalMatrix();
-	DVASSERT(finalMatrixPtr != 0);
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, *finalMatrixPtr, (pointer_size)finalMatrixPtr);
+    RenderManager::SetDynamicParam(PARAM_WORLD, worldTransformPtr, (pointer_size)worldTransformPtr);
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 

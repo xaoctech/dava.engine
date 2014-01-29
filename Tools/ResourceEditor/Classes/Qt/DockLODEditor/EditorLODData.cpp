@@ -30,9 +30,11 @@
 
 #include "EditorLODData.h"
 
-#include "Classes/Qt/Scene/SceneSignals.h"
-#include "Classes/Commands2/ChangeLODDistanceCommand.h"
-#include "Classes/Commands2/CreatePlaneLODCommand.h"
+#include "Scene/SceneSignals.h"
+#include "Commands2/ChangeLODDistanceCommand.h"
+#include "Commands2/CreatePlaneLODCommand.h"
+#include "Commands2/DeleteLODCommand.h"
+
 
 EditorLODData::EditorLODData()
     :   lodLayersCount(0)
@@ -414,7 +416,10 @@ DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
         return DAVA::LodComponent::MAX_LOD_LAYERS;
     }
 
-    return lod->GetLodLayersCount();
+    Entity * en = lod->GetEntity();
+    RenderObject * ro = GetRenderObject(en);
+    DVASSERT(ro);
+    return ro->GetMaxLodIndex()+1;
 }
 
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
@@ -424,7 +429,7 @@ void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command
 		CommandBatch *batch = (CommandBatch *)command;
 		Command2 *firstCommand = batch->GetCommand(0);
 		if(firstCommand && (firstCommand->GetId() == CMDID_LOD_DISTANCE_CHANGE || 
-                            firstCommand->GetId() == CMDID_LOD_COPY_LAST_LOD || 
+                            firstCommand->GetId() == CMDID_LOD_DELETE ||
                             firstCommand->GetId() == CMDID_LOD_CREATE_PLANE))
 		{
 			GetDataFromSelection();
@@ -483,16 +488,47 @@ FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
     return texturePath;
 }
 
-void EditorLODData::CopyLastLodToLod0()
+bool EditorLODData::CanDeleteLod()
 {
+    if(lodData.size() == 0)
+        return false;
+    
+    Entity * componentOwner = lodData[0]->GetEntity();
+    if(componentOwner->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || componentOwner->GetParent()->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
+        return false;
+    
+    return true;
+}
+
+void EditorLODData::DeleteFirstLOD()
+{
+    if(CanDeleteLod() == false) return;
+    
     DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
     if(componentsCount && activeScene)
     {
-        activeScene->BeginBatch("LOD Added");
-
+        activeScene->BeginBatch("Delete First LOD");
+        
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new CopyLastLODToLod0Command(lodData[i]));
-
+            activeScene->Exec(new DeleteLODCommand(lodData[i], 0));
+        
         activeScene->EndBatch();
     }
 }
+
+void EditorLODData::DeleteLastLOD()
+{
+    if(CanDeleteLod() == false) return;
+
+    DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
+    if(componentsCount && activeScene)
+    {
+        activeScene->BeginBatch("Delete Last LOD");
+        
+        for(DAVA::uint32 i = 0; i < componentsCount; ++i)
+            activeScene->Exec(new DeleteLODCommand(lodData[i], lodData[i]->GetLodLayersCount() - 1));
+        
+        activeScene->EndBatch();
+    }
+}
+

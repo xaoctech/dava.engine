@@ -38,26 +38,22 @@ OcclusionQuery::OcclusionQuery()
     
 void OcclusionQuery::Init()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
         RENDER_VERIFY(glGenQueries(1, &id));
 #else
         RENDER_VERIFY(glGenQueriesEXT(1, &id));
 #endif
         //Logger::Debug("Init query: %d", id);
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 void OcclusionQuery::Release()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
         RENDER_VERIFY(glDeleteQueries(1, &id));
 #else
         RENDER_VERIFY(glDeleteQueriesEXT(1, &id));
 #endif
         //Logger::Debug("Release query: %d", id);
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
 
 OcclusionQuery::~OcclusionQuery()
@@ -67,31 +63,26 @@ OcclusionQuery::~OcclusionQuery()
 
 void OcclusionQuery::BeginQuery()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 // Temporarly written, should be refactored and moved to RenderBase.h defines
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glBeginQuery(GL_SAMPLES_PASSED, id));
 #else
     RENDER_VERIFY(glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, id));
 #endif
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 void OcclusionQuery::EndQuery()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 // Temporarly written, should be refactored and moved to RenderBase.h defines
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glEndQuery(GL_SAMPLES_PASSED));
 #else
     RENDER_VERIFY(glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT));
 #endif
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 bool OcclusionQuery::IsResultAvailable()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     GLint available;
     RENDER_VERIFY(glGetQueryObjectiv(id,
@@ -105,20 +96,16 @@ bool OcclusionQuery::IsResultAvailable()
                                      &available));
     return (available != 0);
 #endif
-#else
 	return false;
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 void OcclusionQuery::GetQuery(uint32 * resultValue)
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     RENDER_VERIFY(glGetQueryObjectuiv(id, GL_QUERY_RESULT_ARB, resultValue));
 #else
     RENDER_VERIFY(glGetQueryObjectuivEXT(id, GL_QUERY_RESULT_EXT, resultValue));
 #endif
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
     
