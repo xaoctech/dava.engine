@@ -70,10 +70,11 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 }
   
 void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _switchIndex)
-{
+{    
 	batch->Retain();
     DVASSERT((batch->GetRenderObject() == 0) || (batch->GetRenderObject() == this));
 	batch->SetRenderObject(this);
+    batch->SetSortingTransformPtr(worldTransform);
 	
 	IndexedRenderBatch ind;
 	ind.lodIndex = _lodIndex;
@@ -90,6 +91,12 @@ void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _s
         renderSystem->RegisterBatch(batch);
             
     RecalcBoundingBox();
+}
+
+void RenderObject::UpdateBatchesSortingTransforms()
+{
+    for (int32 i=0, batchCount = renderBatchArray.size(); i<batchCount; ++i)
+        renderBatchArray[i].renderBatch->SetSortingTransformPtr(worldTransform); 
 }
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)

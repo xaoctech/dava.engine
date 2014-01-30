@@ -56,6 +56,7 @@ RenderBatch::RenderBatch()
     ,   renderObject(0)
     ,	visiblityCriteria(RenderObject::VISIBILITY_CRITERIA)
     ,   aabbox(Vector3(), Vector3())
+    ,   sortingTransformPtr(NULL)
 {
 	
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
@@ -181,6 +182,11 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 {
 	renderObject = _renderObject;
+}
+
+void RenderBatch::SetSortingTransformPtr(Matrix4 * _worldTransformPtr)
+{
+    sortingTransformPtr = _worldTransformPtr;
 }
 
 const AABBox3 & RenderBatch::GetBoundingBox() const

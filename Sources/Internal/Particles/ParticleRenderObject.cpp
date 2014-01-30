@@ -194,6 +194,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			renderGroupCache[i]->UpdateRenderBatch();
 			renderGroupCache[i]->renderBatch->SetIndexCount(renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);		
 			renderGroupCache[i]->renderBatch->GetRenderDataObject()->SetIndices(EIF_16, (uint8*)(&indices.front()), renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);
+            renderGroupCache[i]->renderBatch->SetSortingTransformPtr(effectMatrix);
 			activeRenderBatchArray.push_back(renderGroupCache[i]->renderBatch);
 		}
 		
