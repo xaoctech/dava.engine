@@ -263,13 +263,36 @@ void Camera::RebuildProjectionMatrix()
 {
     flags &= ~REQUIRE_REBUILD_PROJECTION;
     flags |= REQUIRE_REBUILD_UNIFORM_PROJ_MODEL;
+    
+    float32 xMinOrientation = xmin;
+    float32 xMaxOrientation = xmax;
+    float32 yMinOrientation = ymin;
+    float32 yMaxOrientation = ymax;
+    
+    uint32 cullInvert = 0;
+    
+    if (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_TEXTURE)
+    {
+        yMinOrientation = ymax;
+        yMaxOrientation = ymin;
+        cullInvert = 1 - cullInvert; // Invert once if we render to FBO
+    }
+    if (flags & INVERT_CULL)
+        cullInvert = 1 - cullInvert;    // Invert twice if we want to invert the faces for rendering purpose (for example shadow maps, or water reflection)
+    
+    // Set correct drawing order according to FBO config + camera requirements
+    if (cullInvert == 0)
+        RenderManager::Instance()->SetCullOrder(ORDER_CCW);
+    else
+        RenderManager::Instance()->SetCullOrder(ORDER_CW);
+    
     if (!ortho) 
     {
-        projMatrix.glFrustum(xmin, xmax, ymin, ymax, znear, zfar);
+        projMatrix.glFrustum(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar);
     }
     else
     {
-        projMatrix.glOrtho(xmin, xmax, ymin, ymax, znear, zfar);
+        projMatrix.glOrtho(xMinOrientation, xMaxOrientation, yMinOrientation, yMaxOrientation, znear, zfar);
     }
 }
 
@@ -479,6 +502,13 @@ float32 Camera::GetZoomFactor() const
     return zoomFactor;
 }
 
+void Camera::SetCullInvert(bool enabled)
+{
+    if (enabled)
+        flags |= INVERT_CULL;
+    else
+        flags &= ~INVERT_CULL;
+}
 
     
 void Camera::Draw()

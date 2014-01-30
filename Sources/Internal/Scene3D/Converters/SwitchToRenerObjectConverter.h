@@ -26,34 +26,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_SWITCHTORENDEROBJECTCONVERTER_H__
+#define __DAVAENGINE_SWITCHTORENDEROBJECTCONVERTER_H__
+
+#include "DAVAEngine.h"
+using namespace DAVA;
 
 
-#ifndef __DAVAENGINE_SCENE3D_GLOBALEVENTSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_GLOBALEVENTSYSTEM_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
-#include "Base/StaticSingleton.h"
-
-namespace DAVA
-{
-class Component;
-class Entity;
-class Scene;
-    
-class GlobalEventSystem : public StaticSingleton<GlobalEventSystem>
+class SwitchToRenerObjectConverter
 {
 public:
-    void Event(Entity * entity, uint32 event);
-    void GroupEvent(Scene * scene, Vector<Entity *> & entities, uint32 event);
-    void PerformAllEventsFromCache(Entity * entity);
-    void RemoveAllEvents(Entity * entity);
-    
-private:
-    Map<Entity*, List<uint32> > eventsCache;
+	void ConsumeSwitchedRenderObjects(Entity * scene);
+	void SerachForSwitch(Entity * currentNode);
+	bool MergeSwitch(Entity * entity);
 
+private:
+    void FindRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects);
+    Set<PolygonGroup*> bakedPolygonGroups;
 };
 
-}
-
-#endif //__DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
+#endif //__DAVAENGINE_SWITCHTORENDEROBJECTCONVERTER_H__

@@ -72,8 +72,7 @@ public:
     DAVA::FilePath GetDefaultTexturePathForPlaneEntity();
 
     static void EnumerateLODsRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::LodComponent *> & lods);
-    static DAVA::uint32 GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData, bool checkVisibility);
-    static DAVA::uint32 GetTrianglesForEntity(DAVA::Entity *entity, bool checkVisibility);
+    static void AddTrianglesInfo(DAVA::uint32 triangles[], DAVA::LodComponent *lod, bool onlyVisibleBatches);
 
     bool CanDeleteLod();
 
@@ -104,6 +103,7 @@ protected:
     void EnumerateSelectionLODs(SceneEditor2 * scene);
 
     void ResetForceState(DAVA::Entity *entity);
+    
     
     DAVA::int32 GetLayersCount(DAVA::LodComponent *lod) const;
     

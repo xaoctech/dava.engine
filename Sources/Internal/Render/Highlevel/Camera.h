@@ -329,6 +329,11 @@ public:
         \returns tanf(fov / 2). 
      */
     float32 GetZoomFactor() const;
+    
+    /**
+        \brief Request camera to invert cull order direction.
+     */
+    void SetCullInvert(bool enabled);
 
     
     /**
@@ -348,9 +353,10 @@ public:
     enum
     {
         REQUIRE_REBUILD = 1,
-        REQUIRE_REBUILD_MODEL = 1<<1,
-        REQUIRE_REBUILD_PROJECTION = 1<<2,
-        REQUIRE_REBUILD_UNIFORM_PROJ_MODEL = 1<<3
+        REQUIRE_REBUILD_MODEL = 1 << 1,
+        REQUIRE_REBUILD_PROJECTION = 1 << 2,
+        REQUIRE_REBUILD_UNIFORM_PROJ_MODEL = 1 << 3,
+        INVERT_CULL = 1 << 4,
     };
     
     
