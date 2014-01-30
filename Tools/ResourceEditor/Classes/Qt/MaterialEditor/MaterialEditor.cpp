@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Main/mainwindow.h"
 #include "Main/QtUtils.h"
+#include "QualitySwitcher/QualitySwitcher.h"
 #include "Project/ProjectManager.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
@@ -74,6 +75,8 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
+
+    QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
@@ -585,6 +588,11 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 	}
 
 	ui->materialTree->Update();
+}
+
+void MaterialEditor::OnSwitchQuality(bool checked)
+{
+    QualitySwitcher::Show();
 }
 
 QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)

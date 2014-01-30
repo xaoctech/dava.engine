@@ -119,8 +119,8 @@ namespace DAVA
         
         uint32 cubeIndices[SKYBOX_INDEX_COUNT] =
         {
-            0, 1, 2,
-            0, 2, 3,
+            //0, 1, 2,
+            //0, 2, 3,
             0, 1, 5,
             0, 5, 4,
             0, 4, 7,
@@ -156,7 +156,7 @@ namespace DAVA
 		nonClippingDistance = 0.5f * maxDistanceBetweenVertices.Length();
 		
 		polygonGroup->BuildBuffers();
-		renderBatchArray[0]->SetPolygonGroup(polygonGroup);
+		renderBatchArray[0].renderBatch->SetPolygonGroup(polygonGroup);
 		SafeRelease(polygonGroup);
 	}
 		
@@ -234,14 +234,14 @@ namespace DAVA
 			nonClippingDistance = archive->GetFloat("skbxro.noclipdist");
 		}
 				
-		bbox = renderBatchArray[0]->GetBoundingBox();
+		bbox = renderBatchArray[0].renderBatch->GetBoundingBox();
 	}
 
 	void SkyboxRenderObject::SetTexture(const FilePath& texPath)
 	{
         DVASSERT(renderBatchArray.size() > 0);
         
-        NMaterial* skyboxMaterial = renderBatchArray[0]->GetMaterial();
+        NMaterial* skyboxMaterial = renderBatchArray[0].renderBatch->GetMaterial();
         
         //since the renderBatchArray is entirely controlled by SkyboxRenderObject
         //we can safely assume that objects in render batch array are properly initialized
@@ -285,7 +285,7 @@ namespace DAVA
         
         FilePath path;
         
-        NMaterial* skyboxMaterial = renderBatchArray[0]->GetMaterial();
+        NMaterial* skyboxMaterial = renderBatchArray[0].renderBatch->GetMaterial();
         
         while(skyboxMaterial)
         {

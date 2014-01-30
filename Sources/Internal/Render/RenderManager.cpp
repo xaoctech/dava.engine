@@ -43,6 +43,7 @@ namespace DAVA
 Shader * RenderManager::FLAT_COLOR = 0;
 Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR = 0;
 Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
+Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = NULL;
 
 AutobindVariableData RenderManager::dynamicParameters[DYNAMIC_PARAMETERS_COUNT];
 uint32  RenderManager::dynamicParamersRequireUpdate;
@@ -129,6 +130,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR = 0;
     TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
+    TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = 0;
 	
 	renderContextId = 0;
     
@@ -257,6 +259,7 @@ void RenderManager::InitFBSize(int32 _frameBufferWidth, int32 _frameBufferHeight
 FastName RenderManager::FLAT_COLOR_SHADER("~res:/Shaders/renderer2dColor");
 FastName RenderManager::TEXTURE_MUL_FLAT_COLOR_SHADER("~res:/Shaders/renderer2dTexture");
 
+
 void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
 {
     DetectRenderingCapabilities();
@@ -277,6 +280,13 @@ void RenderManager::Init(int32 _frameBufferWidth, int32 _frameBufferHeight)
         FastNameSet set;
         set.Insert(FastName("ALPHA_TEST_ENABLED"));
         TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = SafeRetain(ShaderCache::Instance()->Get(TEXTURE_MUL_FLAT_COLOR_SHADER, set));
+    }
+    
+    if(!TEXTURE_MUL_FLAT_COLOR_IMAGE_A8)
+    {
+        FastNameSet set;
+        set.Insert(FastName("IMAGE_A8"));
+        TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = SafeRetain(ShaderCache::Instance()->Get(TEXTURE_MUL_FLAT_COLOR_SHADER, set));
     }
 
 #if defined(__DAVAENGINE_DIRECTX9__)

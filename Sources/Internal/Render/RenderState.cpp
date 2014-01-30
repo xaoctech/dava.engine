@@ -917,15 +917,15 @@ void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 			stateData.fillMode = newFillMode;
 		}
 
-		const YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
-		const YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
-		if(alphaFuncNode && alphaFuncCmpValueNode)
-		{
-			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
-			float32 newCmpValue = alphaFuncCmpValueNode->AsFloat();
-		
-			//DO NOTHING FOR NOW
-		}
+//		const YamlNode * alphaFuncNode = renderStateNode->Get("alphaFunc");
+//		const YamlNode * alphaFuncCmpValueNode = renderStateNode->Get("alphaFuncCmpValue");
+//		if(alphaFuncNode && alphaFuncCmpValueNode)
+//		{
+//			eCmpFunc newAlphaFunc = GetCmpFuncByName(alphaFuncNode->AsString());
+//			float32 newCmpValue = alphaFuncCmpValueNode->AsFloat();
+//		
+//			//DO NOTHING FOR NOW
+//		}
 
 		const YamlNode * stencilNode = renderStateNode->Get("stencil");
 		if(stencilNode)

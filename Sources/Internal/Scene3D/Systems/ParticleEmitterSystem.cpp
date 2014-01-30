@@ -77,7 +77,6 @@ void ParticleEmitterSystem::Update(float32 timeElapsed, Camera * camera)
 	
 	float32 currPSValue = (currFps - PerformanceSettings::Instance()->GetPsPerformanceMinFPS())/(PerformanceSettings::Instance()->GetPsPerformanceMaxFPS()-PerformanceSettings::Instance()->GetPsPerformanceMinFPS());
 	currPSValue = Clamp(currPSValue, 0.0f, 1.0f);
-	float32 speedMult = 1.0f+(PerformanceSettings::Instance()->GetPsPerformanceSpeedMult()-1.0f)*(1-currPSValue);
 
 	for(uint32 i = 0; i < size; ++i)
 	{
