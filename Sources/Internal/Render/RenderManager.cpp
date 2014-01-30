@@ -598,9 +598,10 @@ void RenderManager::IdentityMappingMatrix()
 void RenderManager::IdentityModelMatrix()
 {
     mappingMatrixChanged = true;
-    SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
-	currentDrawOffset = Vector2(0.0f, 0.0f);
+    currentDrawOffset = Vector2(0.0f, 0.0f);
     currentDrawScale = Vector2(1.0f, 1.0f);
+
+    renderer2d.viewMatrix = Matrix4::IDENTITY;
 }
     
 	
@@ -665,6 +666,7 @@ void RenderManager::PopMappingMatrix()
 	mappingMatrixStack.pop();
 	viewMappingDrawOffset = dm.userDrawOffset;
 	viewMappingDrawScale = dm.userDrawScale;
+    DVASSERT(mappingMatrixChanged == true);
 	PrepareRealMatrix();
 }
 
@@ -860,11 +862,16 @@ void RenderManager::VerifyRenderContext()
 }
     
     
-void RenderManager::Renderer2D::Setup2DMatrices()
+void RenderManager::Setup2DMatrices()
 {
+    Matrix4 glTranslate, glScale;
+    glTranslate.glTranslate(currentDrawOffset.x, currentDrawOffset.y, 0.0f);
+    glScale.glScale(currentDrawScale.x, currentDrawScale.y, 1.0f);
+    renderer2d.viewMatrix = glScale * glTranslate;
+    
     RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, UPDATE_SEMANTIC_ALWAYS);
-    RenderManager::SetDynamicParam(PARAM_VIEW, &viewMatrix, UPDATE_SEMANTIC_ALWAYS);
-    RenderManager::SetDynamicParam(PARAM_PROJ, &projMatrix, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_VIEW, &renderer2d.viewMatrix, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_PROJ, &renderer2d.projMatrix, UPDATE_SEMANTIC_ALWAYS);
 }
     
 
