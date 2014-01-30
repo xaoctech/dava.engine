@@ -497,6 +497,19 @@ enum
 };
     
     
+enum eCullOrder
+{
+#if defined(__DAVAENGINE_OPENGL__)
+    ORDER_CCW = GL_CCW,
+    ORDER_CW = GL_CW,
+#elif defined(__DAVAENGINE_DIRECTX__)
+    ORDER_CCW = 0,
+    ORDER_CW = 0,
+#error "Need to define this"
+#endif
+};
+    
+    
 
 class RenderGuard
 {
