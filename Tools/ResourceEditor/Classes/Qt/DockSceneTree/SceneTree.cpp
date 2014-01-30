@@ -401,7 +401,11 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 
 			// add/remove
 			contextMenu.addSeparator();
-			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+
+            if(entity->GetLocked() == false)
+            {
+                contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+            }
 
 			// lock/unlock
 			contextMenu.addSeparator();
@@ -432,14 +436,14 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 					{
 						if(selectionSize == 1)
 						{
-							QAction *editModelAction = contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+                            contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
 						}
 
-						QAction *reloadModelAction = contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
+                        contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
 					}
 				}
 				//DF-2004: Reload for every entity at scene
-				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
+                contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
 			}
 			// but particle emitter has it own menu actions
 			else
@@ -559,7 +563,18 @@ void SceneTree::RemoveSelection()
 	if(NULL != sceneEditor)
 	{
 		EntityGroup selection = sceneEditor->selectionSystem->GetSelection();
-		sceneEditor->structureSystem->Remove(selection);
+        for(size_t i = 0; i < selection.Size(); ++i)
+        {
+            DAVA::Entity *entity = selection.GetEntity(i);
+            if(entity->GetLocked())
+            {
+                selection.Rem(entity);
+                --i;
+            }
+        }
+        
+        if(selection.Size())
+            sceneEditor->structureSystem->Remove(selection);
 	}
 }
 

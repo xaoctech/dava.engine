@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MaterialFilterModel.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneSignals.h"
+#include "MaterialEditor/MaterialAssignSystem.h"
 
 #include <QDragMoveEvent>
 #include <QDragEnterEvent>
@@ -69,6 +70,16 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 		treeModel->SetSelection(NULL);
 	}
     sortByColumn( 0 );
+}
+
+void MaterialTree::AssignMaterialToSelection( DAVA::NMaterial *material )
+{
+    SceneEditor2 *curScene = treeModel->GetScene();
+    Q_ASSERT( curScene );
+    if ( !curScene )
+        return ;
+    EntityGroup selection = curScene->selectionSystem->GetSelection();
+    MaterialAssignSystem::AssignMaterialToGroup(curScene, &selection, material);
 }
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
@@ -172,7 +183,7 @@ void MaterialTree::OnAssignToSelection()
     DAVA::NMaterial *material = indexAsVariant.value<DAVA::NMaterial *>();
     if ( !material )
         return ;
-    treeModel->AssignMaterialToSelection( material );
+    AssignMaterialToSelection( material );
 }
 
 void MaterialTree::dragEnterEvent(QDragEnterEvent * event)

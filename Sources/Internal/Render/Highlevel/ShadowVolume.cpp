@@ -42,13 +42,9 @@
 namespace DAVA
 {
 
-//Shader * ShadowVolume::shader = 0;
-//int32 ShadowVolume::uniformLightPosition0 = 0;
-
 const FastName ShadowVolume::MATERIAL_NAME = FastName("Shadow_Volume_Material");
 
 ShadowVolume::ShadowVolume()
-:   shadowPolygonGroup(0)
 {
     aabbox = AABBox3(Vector3(), Vector3());
 		
@@ -69,8 +65,6 @@ ShadowVolume::ShadowVolume()
 
 ShadowVolume::~ShadowVolume()
 {
-	//SafeRelease(shader);
-	SafeRelease(shadowPolygonGroup);
 }
 
 //void ShadowVolume::Draw()
@@ -102,7 +96,7 @@ void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
     RenderManager::SetDynamicParam(PARAM_WORLD, worldTransformPtr, (pointer_size)worldTransformPtr);
 	
     material->BindMaterialTechnique(ownerRenderPass, camera);
-    material->Draw(shadowPolygonGroup);
+    material->Draw(dataSource);
 
     /*Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix);
@@ -479,11 +473,11 @@ void ShadowVolume::MakeShadowVolumeFromPolygonGroup(PolygonGroup * oldPolygonGro
 		}
 	}
 
-	SafeRelease(shadowPolygonGroup);
-	shadowPolygonGroup = new PolygonGroup();
-	shadowPolygonGroup->AllocateData(EVF_VERTEX | EVF_NORMAL, nextVertex, nextIndex);
-	Memcpy(shadowPolygonGroup->meshData, newPolygonGroup->meshData, nextVertex*newPolygonGroup->vertexStride);
-	Memcpy(shadowPolygonGroup->indexArray, newPolygonGroup->indexArray, nextIndex*sizeof(int16));
+	SafeRelease(dataSource);
+	dataSource = new PolygonGroup();
+	dataSource->AllocateData(EVF_VERTEX | EVF_NORMAL, nextVertex, nextIndex);
+	Memcpy(dataSource->meshData, newPolygonGroup->meshData, nextVertex*newPolygonGroup->vertexStride);
+	Memcpy(dataSource->indexArray, newPolygonGroup->indexArray, nextIndex*sizeof(int16));
 
 	SafeRelease(newPolygonGroup);
 
@@ -495,9 +489,9 @@ void ShadowVolume::GetDataNodes(Set<DataNode*> & dataNodes)
 {
 	RenderBatch::GetDataNodes(dataNodes);
 
-	if(shadowPolygonGroup)
+	if(dataSource)
 	{
-		InsertDataNode(shadowPolygonGroup, dataNodes);
+		InsertDataNode(dataSource, dataNodes);
 	}
 }
 
@@ -512,8 +506,8 @@ RenderBatch * ShadowVolume::Clone(RenderBatch * dstNode /*= NULL*/)
 	RenderBatch::Clone(dstNode);
 	ShadowVolume *nd = (ShadowVolume *)dstNode;
 
-    SafeRelease(nd->shadowPolygonGroup);
-	nd->shadowPolygonGroup = SafeRetain(shadowPolygonGroup);
+    SafeRelease(nd->dataSource);
+	nd->dataSource = SafeRetain(dataSource);
 
 	return nd;
 }
@@ -524,7 +518,7 @@ void ShadowVolume::Save(KeyedArchive *archive, SerializationContext *serializati
 
 	if(NULL != archive)
 	{
-		archive->SetVariant("sv.spg", VariantType((uint64)shadowPolygonGroup));
+		archive->SetVariant("sv.spg", VariantType((uint64)dataSource));
 	}
 }
 
@@ -547,22 +541,22 @@ void ShadowVolume::Load(KeyedArchive *archive, SerializationContext *serializati
     
 void ShadowVolume::SetPolygonGroup(PolygonGroup * _polygonGroup)
 {
-	SafeRelease(shadowPolygonGroup);
-    shadowPolygonGroup = SafeRetain(_polygonGroup);
+	SafeRelease(dataSource);
+    dataSource = SafeRetain(_polygonGroup);
 
 	UpdateAABBoxFromSource();
 }
 
 PolygonGroup * ShadowVolume::GetPolygonGroup()
 {
-    return shadowPolygonGroup;
+    return dataSource;
 }
 
 void ShadowVolume::UpdateAABBoxFromSource()
 {
-	if(NULL != shadowPolygonGroup)
+	if(NULL != dataSource)
 	{
-		aabbox = shadowPolygonGroup->GetBoundingBox();
+        aabbox = dataSource->GetBoundingBox();
 		DVASSERT(aabbox.min.x != AABBOX_INFINITY &&
 			aabbox.min.y != AABBOX_INFINITY &&
 			aabbox.min.z != AABBOX_INFINITY);

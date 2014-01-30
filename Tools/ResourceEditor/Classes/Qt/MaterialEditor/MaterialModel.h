@@ -54,8 +54,8 @@ public:
     virtual ~MaterialModel();
     
     void SetScene(SceneEditor2 * scene);
+    SceneEditor2 *GetScene();
 	void SetSelection(const EntityGroup *group);
-    void AssignMaterialToSelection( DAVA::NMaterial *material );
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
 

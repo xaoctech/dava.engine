@@ -165,7 +165,6 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         Entity *node = sceneNode->GetChild(i);
         
         ValidateRenderComponent(node, errorsLog);
-        ValidateLodComponent(node, errorsLog);
         ValidateParticleEmitterComponent(node, errorsLog);
         ValidateSceneNode(node, errorsLog);
         ValidateNodeCustomProperties(node);
@@ -247,49 +246,6 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
         ValidateLandscape(landscape, errorsLog);
 
 		ValidateCustomColorsTexture(ownerNode, errorsLog);
-    }
-}
-
-
-void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog)
-{
-    LodComponent *lodComponent = GetLodComponent(ownerNode);
-    if(!lodComponent) return;
-
-    int32 layersCount = lodComponent->GetLodLayersCount();
-	if (GetEmitter(ownerNode))
-		layersCount = LodComponent::MAX_LOD_LAYERS;
-    
-    if(layersCount == 0)
-    {
-        errorsLog.insert(Format("Node %s: Count of layers is 0", ownerNode->GetName().c_str()));
-    }
-    
-    for(int32 layer = 0; layer < layersCount; ++layer)
-    {
-        float32 distance = lodComponent->GetLodLayerDistance(layer);
-        if(LodComponent::INVALID_DISTANCE == distance)
-        {
-            //TODO: why this function isn't realized for lodcomponent?
-            lodComponent->SetLodLayerDistance(layer, LodComponent::GetDefaultDistance(layer));
-            errorsLog.insert(Format("Node %s: lod distances weren't correct. Re-save.", ownerNode->GetName().c_str()));
-        }
-    }
-    
-    Vector<LodComponent::LodData *>lodLayers;
-    lodComponent->GetLodData(lodLayers);
-    
-    Vector<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
-    int32 layer = 0;
-    for(Vector<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
-    {
-        LodComponent::LodData * ld = *it;
-        
-        if(ld->layer != layer)
-        {
-            ld->layer = layer;
-            errorsLog.insert(Format("Node %s: lod layers weren't correct. Rename childs. Re-save.", ownerNode->GetName().c_str()));
-        }
     }
 }
 
@@ -460,8 +416,6 @@ void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::e
 
 void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NMaterial *material)
 {
-	KeyedArchive * props = ownerNode->GetCustomProperties();
-
     IlluminationParams * params = material->GetIlluminationParams();
 
     VariantType * variant = 0;
