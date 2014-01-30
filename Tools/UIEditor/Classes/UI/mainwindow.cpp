@@ -120,10 +120,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMoved()));
 	connect(ui->horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMoved()));
 
-	ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
-	ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
-	ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
-
     // Setup rulers.
     ui->horizontalRuler->SetOrientation(RulerWidget::Horizontal);
     ui->verticalRuler->SetOrientation(RulerWidget::Vertical);
@@ -263,6 +259,8 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
 {
 	QMainWindow *window = new QMainWindow(0);
  	QToolBar *toolBar = new QToolBar(window);
+    toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    
 	// Change size of icons to 16x16 (default is 32x32)
 	toolBar->setIconSize(QSize(16, 16));
 	// Set actions for toolbar
@@ -728,7 +726,10 @@ void MainWindow::SetupViewMenu()
     ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
-    
+
+    ui->menuView->addSeparator();
+    ui->menuView->addAction(ui->mainToolbar->toggleViewAction());
+
     // Setup the Background Color menu.
     QMenu* setBackgroundColorMenu = new QMenu("Background Color");
     ui->menuView->addSeparator();

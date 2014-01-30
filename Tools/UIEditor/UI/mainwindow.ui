@@ -416,9 +416,9 @@
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="mainToolbar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>UIEditor Toolbar</string>
    </property>
    <property name="movable">
     <bool>false</bool>
