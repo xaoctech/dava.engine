@@ -31,7 +31,7 @@
 #ifndef __FLOAT_RANGE_VALIDATOR_H__
 #define __FLOAT_RANGE_VALIDATOR_H__
 
-#include "QtPropertyDataValidator.h"
+#include "../QtPropertyDataValidator.h"
 #include <QDoubleValidator>
 
 class FloatRangeValidator : public QtPropertyDataValidator

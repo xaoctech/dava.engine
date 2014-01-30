@@ -31,7 +31,7 @@
 #ifndef __QT_REG_EXP_VALIDATOR_H__
 #define __QT_REG_EXP_VALIDATOR_H__
 
-#include "QtPropertyDataValidator.h"
+#include "../QtPropertyDataValidator.h"
 #include <QRegExpValidator>
 
 class RegExpValidator : public QtPropertyDataValidator

@@ -31,7 +31,7 @@
 #ifndef __INT_RANGE_VALIDATOR_H__
 #define __INT_RANGE_VALIDATOR_H__
 
-#include "QtPropertyDataValidator.h"
+#include "../QtPropertyDataValidator.h"
 #include <QIntValidator>
 
 class IntRangeValidator : public QtPropertyDataValidator
