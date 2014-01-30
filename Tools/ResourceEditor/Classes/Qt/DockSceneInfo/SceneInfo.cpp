@@ -404,14 +404,7 @@ void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
     
     if(lod)
     {
-        Vector<LodComponent::LodData*> lodLayers;
-        lod->GetLodData(lodLayers);
-        Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
-        DAVA::uint32 layersCount = lod->GetForceLodLayer();
-        for(DAVA::uint32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
-        {
-            lodInfoInFrame.trianglesOnLod[layer] += EditorLODData::GetTrianglesForLodLayer(*lodLayerIt, true);
-        }
+        EditorLODData::AddTrianglesInfo(lodInfoInFrame.trianglesOnLod, lod, true);
     }
     
     DAVA::int32 count = entity->GetChildrenCount();
@@ -428,29 +421,36 @@ void SceneInfo::CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lo
     uint32 count = (uint32)lods.size();
     for(uint32 i = 0; i < count; ++i)
     {
-        Vector<LodComponent::LodData*> lodLayers;
-        lods[i]->GetLodData(lodLayers);
-
-        int32 layersCount = lods[i]->GetLodLayersCount();
-        Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
-        for(int32 layer = 0; layer < layersCount; ++layer, ++lodLayerIt)
-        {
-            info.trianglesOnLod[layer] += EditorLODData::GetTrianglesForLodLayer(*lodLayerIt, false);
-        }
+        EditorLODData::AddTrianglesInfo(info.trianglesOnLod, lods[i], false);
     }
 }
 
-DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility)
+DAVA::uint32 SceneInfo::GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool onlyVisibleBatches)
 {
     if(GetLodComponent(entity))
         return 0;
     
-    DAVA::uint32 triangles = EditorLODData::GetTrianglesForEntity(entity, checkVisibility);
+    DAVA::uint32 triangles = 0;
     
+    RenderObject * ro = GetRenderObject(entity);
+    if(ro && ro->GetType() != RenderObject::TYPE_PARTICLE_EMTITTER)
+    {
+        uint32 batchCount = (onlyVisibleBatches) ? ro->GetActiveRenderBatchCount() : ro->GetRenderBatchCount();
+        for(uint32 i = 0; i < batchCount; ++i)
+        {
+            RenderBatch *rb = (onlyVisibleBatches) ? ro->GetActiveRenderBatch(i) : ro->GetRenderBatch(i);
+            PolygonGroup *pg = rb->GetPolygonGroup();
+            if(pg)
+            {
+                triangles += (pg->GetIndexCount() / 3);
+            }
+        }
+    }
+
     DAVA::uint32 count = entity->GetChildrenCount();
     for(DAVA::uint32 i = 0; i < count; ++i)
     {
-        triangles += GetTrianglesForNotLODEntityRecursive(entity->GetChild(i), checkVisibility);
+        triangles += GetTrianglesForNotLODEntityRecursive(entity->GetChild(i), onlyVisibleBatches);
     }
     
     return triangles;
