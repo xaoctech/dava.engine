@@ -152,7 +152,7 @@ void ParticleEffectSystem::AddToActive(ParticleEffectComponent *effect)
         if (scene)
         {
             Matrix4 * worldTransformPointer = ((TransformComponent*)effect->GetEntity()->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
-            effect->effectRenderObject->SetWorldTransformPtr(worldTransformPointer);		
+            effect->effectRenderObject->SetEffectMatrix(worldTransformPointer);
             Vector3 pos = worldTransformPointer->GetTranslationVector();
             effect->effectRenderObject->SetAABBox(AABBox3(pos, pos));
             scene->GetRenderSystem()->RenderPermanent(effect->effectRenderObject);

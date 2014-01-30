@@ -427,38 +427,25 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 			
 			// show save as/reload/edit for regular entity
 				// save model as
-				contextMenu.addSeparator();
-				contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
+			contextMenu.addSeparator();
+			contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 
-				DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
-				if(NULL != customProp)
-				{
-					DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
-					if(!ownerRef.IsEmpty())
-					{
-						if(selectionSize == 1)
-						{
-                            contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
-						}
-
-                        contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
-					}
-				}
-				//DF-2004: Reload for every entity at scene
-				QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));
-			}
-			// but particle emitter has it own menu actions
-			else
+			DAVA::KeyedArchive *customProp = entity->GetCustomProperties();
+			if(NULL != customProp)
 			{
-				contextMenu.addSeparator();
-				QMenu *particleEffectMenu = contextMenu.addMenu("Particle Emitter");
+				DAVA::FilePath ownerRef = customProp->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER);
+				if(!ownerRef.IsEmpty())
+				{
+					if(selectionSize == 1)
+					{
+                        contextMenu.addAction("Edit Model", this, SLOT(EditModel()));
+					}
 
-				particleEffectMenu->addAction(QIcon(":/QtIcons/layer_particle.png"), "Add Layer", this, SLOT(AddLayer()));
-				particleEffectMenu->addSeparator();
-				particleEffectMenu->addAction(QIcon(":/QtIcons/openscene.png"), "Load Emitter from Yaml", this, SLOT(LoadEmitterFromYaml()));
-				particleEffectMenu->addAction(QIcon(":/QtIcons/savescene.png"), "Save Emitter to Yaml", this, SLOT(SaveEmitterToYaml()));
-				particleEffectMenu->addAction(QIcon(":/QtIcons/save_as.png"), "Save Emitter to Yaml As...", this, SLOT(SaveEmitterToYamlAs()));
+                    contextMenu.addAction("Reload Model...", this, SLOT(ReloadModel()));
+				}
 			}
+			//DF-2004: Reload for every entity at scene
+			QAction *reloadModelAsAction = contextMenu.addAction("Reload Model As...", this, SLOT(ReloadModelAs()));			
 
 			// particle effect
 			DAVA::ParticleEffectComponent* effect = DAVA::GetEffectComponent(entity);

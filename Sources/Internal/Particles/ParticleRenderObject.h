@@ -60,7 +60,7 @@ class ParticleRenderObject : public RenderObject
 
 	void AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection);	
 	void PrepareRenderData(Camera * camera);
-
+    Matrix4* effectMatrix;
 	Vector<uint16> indices;
 public:
 	ParticleRenderObject(ParticleEffectData *effect);
@@ -69,6 +69,7 @@ public:
 
 	virtual void PrepareToRender(Camera *camera);
 	
+    void SetEffectMatrix(Matrix4 *matrix);
 
 	virtual void RecalcBoundingBox(){}
 	virtual void RecalculateWorldBoundingBox(){

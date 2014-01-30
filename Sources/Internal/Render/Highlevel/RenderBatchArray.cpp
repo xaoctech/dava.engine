@@ -90,7 +90,8 @@ void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityAr
     for (uint32 ro = 0; ro < size; ++ro)
     {
         RenderObject * renderObject = visibilityArray->visibilityArray[ro];
-		renderObject->PrepareToRender(camera);
+        if (renderObject->GetFlags()&RenderObject::CUSTOM_PREPARE_TO_RENDER)
+		    renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         
         uint32 batchCount = renderObject->GetActiveRenderBatchCount();
