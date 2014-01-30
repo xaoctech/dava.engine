@@ -33,6 +33,8 @@
 #include "Render/RenderHelper.h"
 #include "Platform/SystemTimer.h"
 #include "UI/UIControlSystem.h"
+#include "Render/ImageLoader.h"
+#include "Render/Image.h"
 
 namespace DAVA 
 {
@@ -59,16 +61,20 @@ void UIScreenTransition::CreateRenderTargets()
 		Logger::FrameworkDebug("Render targets already created");
 		return;
 	}
+    uint32 width = Core::Instance()->GetPhysicalScreenWidth();//(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin());
+    uint32 height = Core::Instance()->GetPhysicalScreenHeight();//(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin());
+    
+    Texture * tex1 = Texture::CreateFBO(width, height, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
+    Texture * tex2 = Texture::CreateFBO(width, height, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
 	
-	renderTargetPrevScreen = Sprite::CreateAsRenderTarget(
-		(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 
-		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), FORMAT_RGB565);
+	renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, width, height);
 	renderTargetPrevScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 	
-	renderTargetNextScreen = Sprite::CreateAsRenderTarget(
-		(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 
-		(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin()), FORMAT_RGB565);
+	renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, width, height);
 	renderTargetNextScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
+
+    SafeRelease(tex1);
+    SafeRelease(tex2);
 }
 
 void UIScreenTransition::ReleaseRenderTargets()
@@ -83,18 +89,17 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 	nextScreen = _nextScreen;
 	prevScreen = _prevScreen;
 	
-	Rect screenRect = Rect(Core::Instance()->GetVirtualScreenXMin()
-						   , Core::Instance()->GetVirtualScreenYMin()
+	Rect screenRect = Rect(Core::Instance()->GetVirtualScreenXMin() , Core::Instance()->GetVirtualScreenYMin()
 						   , Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()
 						   , Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin());
 	
 	RenderManager::Instance()->SetRenderTarget(renderTargetPrevScreen);
 	RenderManager::Instance()->SetVirtualViewOffset();
-	RenderManager::Instance()->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-	RenderHelper::Instance()->FillRect(screenRect);
 	RenderManager::Instance()->ResetColor(); //SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-//	int32 prevScreenGroupId = 0;
+    RenderManager::Instance()->Clear(Color(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
+    
+    
+	int32 prevScreenGroupId = 0;
 	if (prevScreen)
 	{
 		prevScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
@@ -107,6 +112,10 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 		
 		SafeRelease(prevScreen);
 	}
+    
+//    RenderManager::Instance()->SetColor(1.0, 0.0, 0.0, 1.0);
+//    RenderHelper::Instance()->FillRect(Rect(screenRect.x, screenRect.y, screenRect.dx / 2, screenRect.dy));
+//    
 	RenderManager::Instance()->RestoreRenderTarget();
 
 	nextScreen->LoadGroup();
@@ -117,15 +126,27 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 	
 	RenderManager::Instance()->SetRenderTarget(renderTargetNextScreen);
 	RenderManager::Instance()->SetVirtualViewOffset();
-	
-	RenderManager::Instance()->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-	RenderHelper::Instance()->FillRect(screenRect);
-	RenderManager::Instance()->ResetColor();//SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    RenderManager::Instance()->ResetColor(); //SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+    RenderManager::Instance()->Clear(Color(0.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
+
 	float32 timeElapsed = SystemTimer::FrameDelta();
 	nextScreen->SystemUpdate(timeElapsed);
 	nextScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
-	
+
+//    RenderManager::Instance()->SetColor(0.0, 1.0, 0.0, 1.0);
+//    RenderHelper::Instance()->FillRect(Rect(screenRect.x, screenRect.y, screenRect.dx / 2, screenRect.dy));
+
 	RenderManager::Instance()->RestoreRenderTarget();
+    
+//  Debug images. Left here for future bugs :)
+//    Image * image = renderTargetPrevScreen->GetTexture()->CreateImageFromMemory();
+//    ImageLoader::Save(image, "~doc:/render_target_prev.png");
+//    SafeRelease(image);
+//
+//    Image * image2 = renderTargetNextScreen->GetTexture()->CreateImageFromMemory();
+//    ImageLoader::Save(image2, "~doc:/render_target_next.png");
+//    SafeRelease(image2);
+
 	currentTime = 0;
 }
 	
@@ -157,8 +178,9 @@ void UIScreenTransition::Draw(const UIGeometricData &geometricData)
 	renderTargetPrevScreen->SetPosition(0, 0);
 	renderTargetPrevScreen->Draw();
 
+    
 	renderTargetNextScreen->SetScale(0.5f, 1.0f);
-	renderTargetNextScreen->SetPosition(240, 0);
+	renderTargetNextScreen->SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
 	renderTargetNextScreen->Draw();
 }
 	

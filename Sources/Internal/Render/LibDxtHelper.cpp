@@ -538,9 +538,7 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 				break;
 			}
 			
-			Image* innerImage = Image::Create(faceWidth, faceHeight, FORMAT_RGBA8888);
-			innerImage->data = dstImg.pData;
-			innerImage->dataSize = dstImg.nDataSize;
+			Image* innerImage = Image::CreateFromData(faceWidth, faceHeight, FORMAT_RGBA8888, dstImg.pData);
 			innerImage->mipmapLevel = i;
 			
 			if(info.faceCount > 1)
@@ -548,13 +546,13 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 				innerImage->cubeFaceID = NvttHelper::GetCubeFaceId(info.faceFlags, faceIndex);
 			}
 
-			//SafeDeleteArray(dstImg.pData);
-			
 			//SwapBRChannels(innerImage->data, innerImage->dataSize);
 			imageSet.push_back(innerImage);
 			
 			faceWidth = Max((uint32)1, faceWidth / 2);
 			faceHeight = Max((uint32)1, faceHeight / 2);
+
+			SafeDeleteArray(dstImg.pData);
 		}
 	}
 	
