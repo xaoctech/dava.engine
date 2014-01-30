@@ -146,22 +146,22 @@ void UIParticles::Draw(const UIGeometricData & geometricData)
     system->Process(updateTime);
     updateTime = 0;
     		
-    Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);    
-    Matrix4 projectionSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_PROJECTION);                   
+    RenderManager::Instance()->PushDrawMatrix();
+    RenderManager::Instance()->PushMappingMatrix();
     
     /*draw particles here*/
     RenderManager::Instance()->SetDefault3DState();    
-    RenderManager::Instance()->FlushState();
-    RenderManager::Instance()->ClearDepthBuffer();
-    camera->Set();
+    RenderManager::Instance()->FlushState();    
+    camera->SetupDynamicParameters();
 
     
     effect->effectRenderObject->PrepareToRender(camera);
     for (int32 i=0, sz = effect->effectRenderObject->GetRenderBatchCount(); i<sz; ++i)
         effect->effectRenderObject->GetRenderBatch(i)->Draw(PASS_FORWARD, camera);
                        
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewSave);
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_PROJECTION, projectionSave);	
+    RenderManager::Instance()->GetRenderer2D()->Setup2DMatrices();    
+    RenderManager::Instance()->PopDrawMatrix();
+    RenderManager::Instance()->PopMappingMatrix();
 	RenderManager::Instance()->SetDefault2DState();
 	        
 }
@@ -193,7 +193,7 @@ void UIParticles::Load(const FilePath& path)
     SafeRelease(archive);
 
     if (effect)
-        effect->effectRenderObject->SetWorldTransformPtr(&matrix);
+        effect->effectRenderObject->SetEffectMatrix(&matrix);
     
 }
 

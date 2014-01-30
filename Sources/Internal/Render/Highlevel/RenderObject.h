@@ -93,6 +93,8 @@ public:
 		NEED_UPDATE = 1 << 7,
 		MARKED_FOR_UPDATE = 1 << 8,
 
+        CUSTOM_PREPARE_TO_RENDER = 1<<9, //if set, PrepareToRender would be called
+
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
@@ -136,7 +138,6 @@ public:
     
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
-	inline const Matrix4 * GetFinalMatrix() const;
     
     inline eType GetType() { return (eType)type; }
 
@@ -176,8 +177,7 @@ protected:
     uint16 staticOcclusionIndex;    
     AABBox3 bbox;
     AABBox3 worldBBox;
-    Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
-	Matrix4 finalMatrix;
+    Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms	
     String ownerDebugInfo;
 	int32 lodIndex;
 	int32 switchIndex;
@@ -272,11 +272,6 @@ inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const
 {
     return worldTransform;
-}
-
-inline const Matrix4 * RenderObject::GetFinalMatrix() const
-{
-	return &finalMatrix;
 }
 
 inline uint32 RenderObject::GetRenderBatchCount()

@@ -85,7 +85,7 @@ void ParticleRenderGroup::ClearArrays()
 
 ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect)
 {
-	
+	AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
 
 ParticleRenderObject::~ParticleRenderObject()
@@ -96,20 +96,22 @@ ParticleRenderObject::~ParticleRenderObject()
 
 void ParticleRenderObject::PrepareToRender(Camera *camera)
 {
-	finalMatrix = camera->GetMatrix();
 	PrepareRenderData(camera);
 }
 
+void ParticleRenderObject::SetEffectMatrix(Matrix4 *matrix)
+{
+    effectMatrix = matrix;
+}
 
 void ParticleRenderObject::PrepareRenderData(Camera * camera)
 {
 	for (int32 i=0, sz = renderGroupCache.size(); i<sz; ++i)
 		renderGroupCache[i]->ClearArrays();
-	renderBatchArray.clear();
+	activeRenderBatchArray.clear();
 	
-	Matrix4 * transformPtr = GetWorldTransformPtr();	
-	if (!transformPtr)
-		return;
+	if (!effectMatrix)
+        return;
 
 	Vector3 currCamDirection = camera->GetDirection();
 
@@ -119,9 +121,9 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	basisVectors[1] = Vector3(mv._01, mv._11, mv._21);
 	basisVectors[0].Normalize();
 	basisVectors[1].Normalize();	
-	Vector3 ex(transformPtr->_00, transformPtr->_01, transformPtr->_02);
-	Vector3 ey(transformPtr->_10, transformPtr->_11, transformPtr->_12);
-	Vector3 ez(transformPtr->_20, transformPtr->_21, transformPtr->_22);
+	Vector3 ex(effectMatrix->_00, effectMatrix->_01, effectMatrix->_02);
+	Vector3 ey(effectMatrix->_10, effectMatrix->_11, effectMatrix->_12);
+	Vector3 ez(effectMatrix->_20, effectMatrix->_21, effectMatrix->_22);
 	ex.Normalize();
 	ey.Normalize();
 	ez.Normalize();
@@ -192,7 +194,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			renderGroupCache[i]->UpdateRenderBatch();
 			renderGroupCache[i]->renderBatch->SetIndexCount(renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);		
 			renderGroupCache[i]->renderBatch->GetRenderDataObject()->SetIndices(EIF_16, (uint8*)(&indices.front()), renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);
-			renderBatchArray.push_back(renderGroupCache[i]->renderBatch);
+			activeRenderBatchArray.push_back(renderGroupCache[i]->renderBatch);
 		}
 		
 	}
