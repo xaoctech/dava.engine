@@ -105,8 +105,11 @@ void HierarchyTreeWidget::OnTreeUpdated(bool needRestoreSelection)
 			QVariant data = item->data(ITEM_ID);
 			selectedItems.insert(data.toInt());
 			HierarchyTreeNode* baseNode = HierarchyTreeController::Instance()->GetTree().GetNode(data.toInt());
+			HierarchyTreeScreenNode* selectedScreen =  dynamic_cast<HierarchyTreeScreenNode* >(baseNode);
+			HierarchyTreePlatformNode* selectedPlatform = dynamic_cast<HierarchyTreePlatformNode* >(baseNode);
 			HierarchyTreeControlNode* selectedControl = dynamic_cast<HierarchyTreeControlNode* >(baseNode);
-			if(NULL != selectedControl)
+
+			if(selectedPlatform || selectedScreen || selectedControl)
 			{
 				internalSelectionChanged = true;
 			}
