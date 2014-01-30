@@ -120,10 +120,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMoved()));
 	connect(ui->horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(OnSliderMoved()));
 
-	ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
-	ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
-	ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
-
     // Setup rulers.
     ui->horizontalRuler->SetOrientation(RulerWidget::Horizontal);
     ui->verticalRuler->SetOrientation(RulerWidget::Vertical);
@@ -171,6 +167,11 @@ MainWindow::MainWindow(QWidget *parent) :
 			this,
 			SLOT(OnSelectedScreenChanged()));
 	
+    connect(HierarchyTreeController::Instance(),
+			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)),
+			this,
+			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)));
+
 	connect(ui->hierarchyDockWidget->widget(),
 			SIGNAL(CreateNewScreen()),
 			this,
@@ -216,6 +217,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	InitMenu();
 	RestoreMainWindowState();
 	CreateHierarchyDockWidgetToolbar();
+
+    SetAlignEnabled(false);
+    SetDistributeEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -255,6 +259,8 @@ void MainWindow::CreateHierarchyDockWidgetToolbar()
 {
 	QMainWindow *window = new QMainWindow(0);
  	QToolBar *toolBar = new QToolBar(window);
+    toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+    
 	// Change size of icons to 16x16 (default is 32x32)
 	toolBar->setIconSize(QSize(16, 16));
 	// Set actions for toolbar
@@ -555,6 +561,14 @@ void MainWindow::OnSelectedScreenChanged()
 	UpdateScreenPosition();
 }
 
+void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
+{
+    int nodesCount = selectedNodes.size();
+
+    SetAlignEnabled(nodesCount >= 2);
+    SetDistributeEnabled(nodesCount >= 3);
+}
+
 void MainWindow::UpdateSliders()
 {
 	QRect widgetRect = ui->davaGlWidget->rect();
@@ -712,7 +726,10 @@ void MainWindow::SetupViewMenu()
     ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
-    
+
+    ui->menuView->addSeparator();
+    ui->menuView->addAction(ui->mainToolbar->toggleViewAction());
+
     // Setup the Background Color menu.
     QMenu* setBackgroundColorMenu = new QMenu("Background Color");
     ui->menuView->addSeparator();
@@ -787,26 +804,7 @@ void MainWindow::UpdateMenu()
 	ui->actionNew_screen->setEnabled(projectNotEmpty);
 	ui->actionNew_aggregator->setEnabled(projectNotEmpty);
 
-    ui->actionAlign_Left->setEnabled(projectNotEmpty);
-	ui->actionAlign_Horz_Center->setEnabled(projectNotEmpty);
-	ui->actionAlign_Right->setEnabled(projectNotEmpty);
-
-	ui->actionAlign_Top->setEnabled(projectNotEmpty);
-    ui->actionAlign_Vert_Center->setEnabled(projectNotEmpty);
-	ui->actionAlign_Bottom->setEnabled(projectNotEmpty);
-	
 	ui->actionAdjustControlSize->setEnabled(projectNotEmpty);
-
-	// Distribute.
-	ui->actionEqualBetweenLeftEdges->setEnabled(projectNotEmpty);
-	ui->actionEqualBetweenXCenters->setEnabled(projectNotEmpty);
-	ui->actionEqualBetweenRightEdges->setEnabled(projectNotEmpty);
-	ui->actionEqualBetweenXObjects->setEnabled(projectNotEmpty);
-
-	ui->actionEqualBetweenTopEdges->setEnabled(projectNotEmpty);
-	ui->actionEqualBetweenYCenters->setEnabled(projectNotEmpty);
-	ui->actionEqualBetweenBottomEdges->setEnabled(projectNotEmpty);
-	ui->actionEqualBetweenYObjects->setEnabled(projectNotEmpty);
 
     // Reload.
     ui->actionRepack_And_Reload->setEnabled(projectNotEmpty);
@@ -839,6 +837,9 @@ void MainWindow::OnProjectCreated()
 	UpdateMenu();
 	UpdateScaleSlider(SCALE_PERCENTAGES[DEFAULT_SCALE_PERCENTAGE_INDEX]);
 	UpdateScaleComboIndex(DEFAULT_SCALE_PERCENTAGE_INDEX);
+
+    SetAlignEnabled(false);
+    SetDistributeEnabled(false);
 
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
@@ -1371,4 +1372,28 @@ void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)
 
     // In case we don't found current color in predefined ones - select "Custom" menu item.
     backgroundFrameUseCustomColorAction->setChecked(!colorFound);
+}
+
+void MainWindow::SetAlignEnabled(bool value)
+{
+	ui->actionAlign_Left->setEnabled(value);
+	ui->actionAlign_Horz_Center->setEnabled(value);
+	ui->actionAlign_Right->setEnabled(value);
+
+	ui->actionAlign_Top->setEnabled(value);
+    ui->actionAlign_Vert_Center->setEnabled(value);
+	ui->actionAlign_Bottom->setEnabled(value);
+}
+
+void MainWindow::SetDistributeEnabled(bool value)
+{
+	ui->actionEqualBetweenLeftEdges->setEnabled(value);
+	ui->actionEqualBetweenXCenters->setEnabled(value);
+    ui->actionEqualBetweenRightEdges->setEnabled(value);
+    ui->actionEqualBetweenXObjects->setEnabled(value);
+
+	ui->actionEqualBetweenTopEdges->setEnabled(value);
+    ui->actionEqualBetweenYCenters->setEnabled(value);
+    ui->actionEqualBetweenBottomEdges->setEnabled(value);
+    ui->actionEqualBetweenYObjects->setEnabled(value);
 }

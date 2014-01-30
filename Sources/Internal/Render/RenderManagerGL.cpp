@@ -218,14 +218,17 @@ void RenderManager::BeginFrame()
 
 void RenderManager::PrepareRealMatrix()
 {
+    bool isMappingMatrixChanged = mappingMatrixChanged;
     if (mappingMatrixChanged)
     {
         mappingMatrixChanged = false;
         Vector2 realDrawScale(viewMappingDrawScale.x * userDrawScale.x, viewMappingDrawScale.y * userDrawScale.y);
         Vector2 realDrawOffset(viewMappingDrawOffset.x + userDrawOffset.x * viewMappingDrawScale.x, viewMappingDrawOffset.y + userDrawOffset.y * viewMappingDrawScale.y);
 	
-        if (realDrawScale != currentDrawScale || realDrawOffset != currentDrawOffset) 
+        if (realDrawScale != currentDrawScale || realDrawOffset != currentDrawOffset)
         {
+            Vector2 oldCurrentDrawScale = currentDrawScale;
+            Vector2 oldCurrentDrawOffset = currentDrawOffset;
 
             currentDrawScale = realDrawScale;
             currentDrawOffset = realDrawOffset;
@@ -235,8 +238,13 @@ void RenderManager::PrepareRealMatrix()
             glTranslate.glTranslate(currentDrawOffset.x, currentDrawOffset.y, 0.0f);
             glScale.glScale(currentDrawScale.x, currentDrawScale.y, 1.0f);
             
+            
+            //Matrix4 oldMatrix = renderer2d.viewMatrix;
+            
             renderer2d.viewMatrix = glScale * glTranslate;
             SetDynamicParam(PARAM_VIEW, &renderer2d.viewMatrix, UPDATE_SEMANTIC_ALWAYS);
+            
+            //DVASSERT(oldMatrix != renderer2d.viewMatrix);
     //        Logger::FrameworkDebug("2D matricies recalculated");
     //        Matrix4 modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     //        Logger::FrameworkDebug("Model matrix");
@@ -246,6 +254,13 @@ void RenderManager::PrepareRealMatrix()
     //        projectionSave.Dump();
         }
     }
+    
+    Matrix4 glTranslate, glScale;
+    glTranslate.glTranslate(currentDrawOffset.x, currentDrawOffset.y, 0.0f);
+    glScale.glScale(currentDrawScale.x, currentDrawScale.y, 1.0f);
+    
+    Matrix4 check = glScale * glTranslate;
+    DVASSERT(check == renderer2d.viewMatrix);
 }
 	
 
@@ -336,7 +351,14 @@ void RenderManager::SetViewport(const Rect & rect, bool precaleulatedCoordinates
     if ((rect.dx < 0.0f) && (rect.dy < 0.0f))
     {
         viewport = rect;
-        RENDER_VERIFY(glViewport(0, 0, frameBufferWidth, frameBufferHeight));
+        if (currentRenderTarget)
+        {
+            RENDER_VERIFY(glViewport(0, 0, currentRenderTarget->GetTexture()->GetWidth(), currentRenderTarget->GetTexture()->GetHeight()));
+        }
+        else
+        {
+            RENDER_VERIFY(glViewport(0, 0, frameBufferWidth, frameBufferHeight));
+        }
         return;
     }
     if (precaleulatedCoordinates) 
@@ -374,30 +396,18 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 {
 	renderOrientation = orientation;
 	
-//	glMatrixMode(GL_PROJECTION);
-//	glLoadIdentity();
-//#if defined(__DAVAENGINE_IPHONE__)
-//	RENDER_VERIFY(glOrthof(0.0f, frameBufferWidth, frameBufferHeight, 0.0f, -1.0f, 1.0f));
-//#else // for NON ES platforms
-//	RENDER_VERIFY(glOrtho(0.0f, frameBufferWidth, frameBufferHeight, 0.0f, -1.0f, 1.0f));
-//#endif
-    
-    renderer2d.projMatrix.glOrtho(0.0f, (float32)frameBufferWidth, (float32)frameBufferHeight, 0.0f, -1.0f, 1.0f);
-    
+    if (orientation != Core::SCREEN_ORIENTATION_TEXTURE)
+    {
+        renderer2d.projMatrix.glOrtho(0.0f, (float32)frameBufferWidth, (float32)frameBufferHeight, 0.0f, -1.0f, 1.0f);
+    }else{
+        renderer2d.projMatrix.glOrtho(0.0f, (float32)currentRenderTarget->GetTexture()->GetWidth(),
+                                      0.0f, (float32)currentRenderTarget->GetTexture()->GetHeight(), -1.0f, 1.0f);
+    }
     retScreenWidth = frameBufferWidth;
     retScreenHeight = frameBufferHeight;
 	
     
     SetDynamicParam(PARAM_PROJ, &renderer2d.projMatrix, UPDATE_SEMANTIC_ALWAYS);
-
-//	if (orientation != Core::SCREEN_ORIENTATION_TEXTURE) 
-//	{
-//		glTranslatef(Core::Instance()->GetPhysicalDrawOffset().x, Core::Instance()->GetPhysicalDrawOffset().y, 0.0f);
-//	}
-	
-    //glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
-	
 
     IdentityModelMatrix();
     
@@ -409,7 +419,10 @@ void RenderManager::SetRenderOrientation(int32 orientation)
 
 }
 
-
+void RenderManager::SetCullOrder(eCullOrder cullOrder)
+{
+    glFrontFace(cullOrder);
+}
     
 void RenderManager::FlushState()
 {
@@ -640,6 +653,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 
 		viewMappingDrawScale.x = renderTarget->GetResourceToPhysicalFactor();
 		viewMappingDrawScale.y = renderTarget->GetResourceToPhysicalFactor();
+        mappingMatrixChanged = true;
 //		Logger::FrameworkDebug("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
 		RemoveClip();
 	}

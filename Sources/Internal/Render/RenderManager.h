@@ -251,7 +251,10 @@ public:
         \brief 
         
      */
-    void SetViewport(const Rect & rect, bool precaleulatedCoordinates);     
+    void SetViewport(const Rect & rect, bool precaleulatedCoordinates);
+    
+    
+    void SetCullOrder(eCullOrder cullOrder);
 
     const Rect & GetViewport()
     {
@@ -709,10 +712,10 @@ protected:
         Matrix4 projMatrix;
         Matrix4 viewProjMatrix;
         
-        void Setup2DMatrices();
 	};
     Renderer2D renderer2d;
 public:
+    void Setup2DMatrices();
     Renderer2D * GetRenderer2D() { return &renderer2d; };
 
     

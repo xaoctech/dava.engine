@@ -111,11 +111,16 @@ public:
 	inline uint16 GetTreeNodeIndex();
     
     void AddRenderBatch(RenderBatch * batch);
+    void AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex);
     void RemoveRenderBatch(RenderBatch * batch);
     virtual void RecalcBoundingBox();
     
 	inline uint32 GetRenderBatchCount();
     inline RenderBatch * GetRenderBatch(uint32 batchIndex);
+	inline RenderBatch * GetRenderBatch(uint32 batchIndex, int32 & lodIndex, int32 & switchIndex);
+
+	inline uint32 GetActiveRenderBatchCount();
+	inline RenderBatch * GetActiveRenderBatch(uint32 batchIndex);
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
     inline uint32 GetFlags() { return flags; }
@@ -151,6 +156,10 @@ public:
     inline uint16 GetStaticOcclusionIndex() const;
     inline void SetStaticOcclusionIndex(uint16 index);
 
+	void SetLodIndex(int32 lodIndex);
+	void SetSwitchIndex(int32 switchIndex);
+    int32 GetMaxLodIndex() const;
+
 	uint8 startClippingPlane;
     
 protected:
@@ -167,9 +176,32 @@ protected:
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
     String ownerDebugInfo;
+	int32 lodIndex;
+	int32 switchIndex;
 //    Sphere bsphere;
     
-    Vector<RenderBatch*> renderBatchArray;
+	struct IndexedRenderBatch
+	{
+		IndexedRenderBatch()
+		:	renderBatch(0),
+			lodIndex(-2),
+			switchIndex(-1)
+		{}
+
+		RenderBatch * renderBatch;
+		int32 lodIndex;
+		int32 switchIndex;
+
+		INTROSPECTION(IndexedRenderBatch, 
+			MEMBER(renderBatch, "Render Batch", I_SAVE | I_VIEW)
+			MEMBER(lodIndex, "Lod Index", I_SAVE | I_VIEW)
+			MEMBER(switchIndex, "Switch Index", I_SAVE | I_VIEW)
+			);
+	};
+    
+	void UpdateActiveRenderBatches();
+    Vector<IndexedRenderBatch> renderBatchArray;
+	Vector<RenderBatch*> activeRenderBatchArray;
 
 public:
 	INTROSPECTION_EXTEND(RenderObject, AnimatedObject,
@@ -180,10 +212,12 @@ public:
         MEMBER(removeIndex, "Remove index", I_SAVE)
         MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
-
         MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
+		MEMBER(lodIndex, "Lod Index", I_VIEW | I_EDIT)
+		MEMBER(switchIndex, "Switch Index", I_VIEW | I_EDIT)
                  
         COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
+        COLLECTION(activeRenderBatchArray, "Render Batch Array", I_VIEW)
     );
 };
 
@@ -244,7 +278,26 @@ inline uint32 RenderObject::GetRenderBatchCount()
 
 inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
 {
-    return renderBatchArray[batchIndex];
+    return renderBatchArray[batchIndex].renderBatch;
+}
+
+inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex, int32 & _lodIndex, int32 & _switchIndex)
+{
+	IndexedRenderBatch & irb = renderBatchArray[batchIndex];
+	_lodIndex = irb.lodIndex;
+	_switchIndex = irb.switchIndex;
+
+	return renderBatchArray[batchIndex].renderBatch;
+}
+
+inline uint32 RenderObject::GetActiveRenderBatchCount()
+{
+	return (uint32)activeRenderBatchArray.size();
+}
+
+inline RenderBatch * RenderObject::GetActiveRenderBatch(uint32 batchIndex)
+{
+	return activeRenderBatchArray[batchIndex];
 }
     
 inline uint16 RenderObject::GetStaticOcclusionIndex() const
