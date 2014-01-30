@@ -115,6 +115,7 @@ public:
     void AddRenderBatch(RenderBatch * batch);
     void AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex);
     void RemoveRenderBatch(RenderBatch * batch);
+    void UpdateBatchesSortingTransforms();
     virtual void RecalcBoundingBox();
     
 	inline uint32 GetRenderBatchCount();
@@ -265,8 +266,11 @@ inline AABBox3 & RenderObject::GetWorldBoundingBox()
     
 inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 {
+    if (worldTransform == _worldTransform)
+        return;
     worldTransform = _worldTransform;
     flags |= TRANSFORM_UPDATED;
+    UpdateBatchesSortingTransforms();
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const
