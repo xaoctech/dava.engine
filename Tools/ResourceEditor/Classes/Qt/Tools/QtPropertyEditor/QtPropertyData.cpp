@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 #include "QtPropertyData.h"
-#include "QtPropertyDataValidator/QtPropertyDataValidator.h"
+#include "QtPropertyDataValidator.h"
 
 QtPropertyData::QtPropertyData()
 	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
@@ -58,7 +58,6 @@ QtPropertyData::~QtPropertyData()
 	{
 		delete childrenData.at(i);
 	}
-
 	childrenData.clear();
 
 	for (int i = 0; i < optionalButtons.size(); i++)

@@ -28,6 +28,7 @@
 		62B36CD61876B72100F7F030 /* RecentFilesManager.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62B36CD41876B72100F7F030 /* RecentFilesManager.cpp */; };
 		62C1B999188E913300CD3005 /* MaterialFilterModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C1B997188E913300CD3005 /* MaterialFilterModel.cpp */; };
 		62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C1B9A1188E947200CD3005 /* MaterialFilterModel_moc.cpp */; };
+		62C47F75189A9CBC008996F1 /* QtPropertyDataValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C47F73189A9CBB008996F1 /* QtPropertyDataValidator.cpp */; };
 		62C8751B189698E5000E398E /* RegExpValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C87519189698E5000E398E /* RegExpValidator.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
@@ -641,7 +642,6 @@
 		5C7F49F815B44F6D0038AF3A /* FCollada.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FCollada.xcodeproj; path = ../ColladaConverter/Collada15/FCollada/FCollada.xcodeproj; sourceTree = "<group>"; };
 		5CCC10B115B45FBB00DA83EB /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5CCC10B315B45FC200DA83EB /* libbz2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
-		626D3C7E18900B3300E2B744 /* QtPropertyDataValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QtPropertyDataValidator.h; path = QtPropertyDataValidator/QtPropertyDataValidator.h; sourceTree = "<group>"; };
 		62B0D98018682C3E00A60F7E /* GeneralSettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeneralSettingsDialog.cpp; sourceTree = "<group>"; };
 		62B0D98118682C3E00A60F7E /* GeneralSettingsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneralSettingsDialog.h; sourceTree = "<group>"; };
 		62B0D98218682C3E00A60F7E /* SceneSettingsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneSettingsDialog.cpp; sourceTree = "<group>"; };
@@ -653,6 +653,8 @@
 		62C1B997188E913300CD3005 /* MaterialFilterModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialFilterModel.cpp; sourceTree = "<group>"; };
 		62C1B998188E913300CD3005 /* MaterialFilterModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialFilterModel.h; sourceTree = "<group>"; };
 		62C1B9A1188E947200CD3005 /* MaterialFilterModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialFilterModel_moc.cpp; sourceTree = "<group>"; };
+		62C47F73189A9CBB008996F1 /* QtPropertyDataValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataValidator.cpp; sourceTree = "<group>"; };
+		62C47F74189A9CBB008996F1 /* QtPropertyDataValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataValidator.h; sourceTree = "<group>"; };
 		62C87519189698E5000E398E /* RegExpValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegExpValidator.cpp; path = QtPropertyDataValidator/RegExpValidator.cpp; sourceTree = "<group>"; };
 		62C8751A189698E5000E398E /* RegExpValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegExpValidator.h; path = QtPropertyDataValidator/RegExpValidator.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
@@ -1718,7 +1720,6 @@
 				84A6B1FA18972F64002FD263 /* FloatRangeValidator.h */,
 				62C87519189698E5000E398E /* RegExpValidator.cpp */,
 				62C8751A189698E5000E398E /* RegExpValidator.h */,
-				626D3C7E18900B3300E2B744 /* QtPropertyDataValidator.h */,
 			);
 			name = QtPropertyDataValidator;
 			sourceTree = "<group>";
@@ -3640,6 +3641,8 @@
 		E8C991AB184CD0EB00AFBF3F /* QtPropertyEditor */ = {
 			isa = PBXGroup;
 			children = (
+				62C47F73189A9CBB008996F1 /* QtPropertyDataValidator.cpp */,
+				62C47F74189A9CBB008996F1 /* QtPropertyDataValidator.h */,
 				626D3C7318900B2200E2B744 /* QtPropertyDataValidator */,
 				E8C991AC184CD0EB00AFBF3F /* QtPropertyData */,
 				E8C991BD184CD0EB00AFBF3F /* QtPropertyData.cpp */,
@@ -4122,6 +4125,7 @@
 				E8C9925D184CD0EC00AFBF3F /* btConvexHullComputer.cpp in Build Sources */,
 				E8BAD6D51859F50300C98C8D /* SceneTreeItemEntity_moc.cpp in Build Sources */,
 				4FA419631886E3D400395C70 /* TextureInfo_moc.cpp in Build Sources */,
+				62C47F75189A9CBC008996F1 /* QtPropertyDataValidator.cpp in Build Sources */,
 				E8C99336184CD0EC00AFBF3F /* QtPropertyDataDavaVariant.cpp in Build Sources */,
 				E8BAD6C91859F50300C98C8D /* ParticleTimeLineColumns_moc.cpp in Build Sources */,
 				E8C9920D184CD0EC00AFBF3F /* btBox2dShape.cpp in Build Sources */,

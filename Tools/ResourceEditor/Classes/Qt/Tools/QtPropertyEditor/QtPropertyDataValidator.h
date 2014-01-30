@@ -31,29 +31,19 @@
 #ifndef __QT_PROPERTY_DATA_VALIDATOR_H__
 #define __QT_PROPERTY_DATA_VALIDATOR_H__
 
-//#include "../QtPropertyData.h"
 #include <QVariant>
 
 class QtPropertyDataValidator
 {
 public:
-    bool Validate(const QVariant &v) const
-    {
-        bool ret = ValidateInternal(v);
-        if(!ret)
-        {
-            ErrorNotifyInternal(v);
-        }
-        return ret;
-    }
-    
+
+    bool Validate(const QVariant &v) const;
+
 protected:
     
     virtual bool ValidateInternal(const QVariant &v) const = 0;
     
-    virtual void ErrorNotifyInternal(const QVariant &v) const
-    {
-    }
+    virtual void ErrorNotifyInternal(const QVariant &v) const {}
 };
 
 #endif // __QT_PROPERTY_DATA_VALIDATOR_H__
