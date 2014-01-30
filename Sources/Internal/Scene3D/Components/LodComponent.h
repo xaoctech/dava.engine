@@ -103,7 +103,7 @@ public:
 
 	static float32 GetDefaultDistance(int32 layer);
 
-	inline int32 GetLodLayersCount() const;
+	DAVA_DEPRECATED(inline int32 GetLodLayersCount() const);
 	inline float32 GetLodLayerDistance(int32 layerNum) const;
 	inline float32 GetLodLayerNear(int32 layerNum) const;
 	inline float32 GetLodLayerFar(int32 layerNum) const;

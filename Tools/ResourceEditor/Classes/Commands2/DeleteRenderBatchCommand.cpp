@@ -28,35 +28,46 @@
 
 
 
-#ifndef __DELETE_LOD_COMMAND_H__
-#define __DELETE_LOD_COMMAND_H__
+#include "DeleteRenderBatchCommand.h"
 
-#include "Command2.h"
-#include "Render/Highlevel/RenderBatch.h"
-#include "Scene3D/Components/LodComponent.h"
-
-class DeleteRenderBatchCommand;
-class DeleteLODCommand: public Command2
+DeleteRenderBatchCommand::DeleteRenderBatchCommand(DAVA::Entity *en, DAVA::RenderObject *ro, DAVA::uint32 batchIndex)
+	: Command2(CMDID_DELETE_RENDER_BATCH, "Delete Render Batch")
+    , entity(en)
+    , renderObject(ro)
+    , renderBatchIndex(batchIndex)
 {
-public:
-	DeleteLODCommand(DAVA::LodComponent *lod, DAVA::int32 lodIndex, DAVA::int32 switchIndex);
-    virtual ~DeleteLODCommand();
-
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
-
-    const DAVA::Vector<DeleteRenderBatchCommand *> GetRenderBatchCommands() const;
+    DVASSERT(entity);
+    DVASSERT(renderObject);
+    DVASSERT(renderBatchIndex < renderObject->GetRenderBatchCount());
     
-protected:
+    renderBatch = renderObject->GetRenderBatch(renderBatchIndex, lodIndex, switchIndex);
+    renderBatch->Retain();
+}
 
-	DAVA::LodComponent *lodComponent;
-    DAVA::int32 deletedLodIndex;
-    DAVA::int32 requestedSwitchIndex;
-    
-	DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
-    DAVA::Vector<DeleteRenderBatchCommand *> deletedBatches;
-};
+DeleteRenderBatchCommand::~DeleteRenderBatchCommand()
+{
+    SafeRelease(renderBatch);
+}
+
+void DeleteRenderBatchCommand::Redo()
+{
+    renderObject->RemoveRenderBatch(renderBatchIndex);
+}
+
+void DeleteRenderBatchCommand::Undo()
+{
+    renderBatchIndex = renderObject->GetRenderBatchCount();
+    renderObject->AddRenderBatch(renderBatch, lodIndex, switchIndex);
+}
 
 
-#endif // __DELETE_LOD_COMMAND_H__
+DAVA::Entity * DeleteRenderBatchCommand::GetEntity() const
+{
+    return entity;
+}
+
+DAVA::RenderBatch * DeleteRenderBatchCommand::GetRenderBatch() const
+{
+    return renderBatch;
+}
+

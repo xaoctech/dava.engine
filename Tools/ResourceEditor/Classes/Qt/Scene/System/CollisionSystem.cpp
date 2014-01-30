@@ -429,6 +429,11 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		case CMDID_HEIGHTMAP_MODIFY:
 			UpdateCollisionObject(curLandscapeEntity);
 			break;
+        case CMDID_LOD_DELETE:
+            {
+                UpdateCollisionObject(command->GetEntity());
+                break;
+            }
 		default:
 			break;
 		}
