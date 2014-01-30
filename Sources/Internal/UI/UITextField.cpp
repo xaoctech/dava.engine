@@ -568,7 +568,11 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
     {
         Font * font = loader->GetFontByName(fontNode->AsString());
         if (font)
+        {
             SetFont(font);
+            int32 fontSize = font->GetFontHeight();
+            SetFontSize(fontSize);
+        }
     }
     
     const YamlNode * passwordNode = node->Get("isPassword");
