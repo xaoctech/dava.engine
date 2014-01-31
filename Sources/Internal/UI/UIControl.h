@@ -715,12 +715,6 @@ public:
 	virtual List<UIControl* > GetSubcontrols();
 
 	/**
-	 \brief Returns list of control children including internal controls,
-	 \which are editable and belongs to the same control.
-	 */
-	virtual List<UIControl* > GetRealChildrenAndSubcontrols();
-
-	/**
 	 \brief Returns whether this control is subcontrol of its parent.
 	 */
 	virtual bool IsSubcontrol();
@@ -1278,7 +1272,10 @@ protected:
 	Vector2	__touchStart;
 	Vector2		__oldPosition;
 #endif
-	
+
+    void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
+	void DrawPivotPoint(const Rect &drawRect);
+
 private:
 	String	name;
 	int32	tag;
@@ -1287,9 +1284,6 @@ private:
 	void RecalculateChildsSize();
 	void RecalculatePivotPoint(const Rect &newRect);
 
-	void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
-	void DrawPivotPoint(const Rect &drawRect);
-	
 	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
 	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
 	

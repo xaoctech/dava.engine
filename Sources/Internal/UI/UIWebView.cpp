@@ -44,22 +44,18 @@
 
 using namespace DAVA;
 
-UIWebView::UIWebView()
+UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
+    webViewControl(new WebViewControl()),
+    UIControl(rect, rectInAbsoluteCoordinates)
 {
-	webViewControl = new WebViewControl();
+    Rect newRect = GetRect(true);
+    this->webViewControl->Initialize(newRect);
 }
 
 UIWebView::~UIWebView()
 {
 	SafeDelete(webViewControl);
 };
-
-UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
-	webViewControl(new WebViewControl()),
-	UIControl(rect, rectInAbsoluteCoordinates)
-{
-	this->webViewControl->Initialize(rect);
-}
 
 void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
 {
@@ -71,12 +67,24 @@ void UIWebView::OpenURL(const String& urlToOpen)
 	this->webViewControl->OpenURL(urlToOpen);
 }
 
+void UIWebView::WillAppear()
+{
+    UIControl::WillAppear();
+    webViewControl->SetVisible(GetVisible(), true);
+}
+
+void UIWebView::WillDisappear()
+{
+    UIControl::WillDisappear();
+    webViewControl->SetVisible(false, true);
+}
+
 void UIWebView::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)
 {
 	UIControl::SetPosition(position, positionInAbsoluteCoordinates);
 
 	// Update the inner control.
-	Rect newRect = GetRect();
+	Rect newRect = GetRect(true);
 	this->webViewControl->SetRect(newRect);
 }
 
@@ -85,7 +93,7 @@ void UIWebView::SetSize(const Vector2 &newSize)
 	UIControl::SetSize(newSize);
 
 	// Update the inner control.
-	Rect newRect = GetRect();
+	Rect newRect = GetRect(true);
 	this->webViewControl->SetRect(newRect);
 }
 

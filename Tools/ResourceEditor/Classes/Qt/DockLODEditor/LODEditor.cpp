@@ -34,7 +34,7 @@
 #include "EditorLODData.h"
 #include "DistanceSlider.h"
 
-#include "Classes/Qt/Main/QtMainWindowHandler.h"
+#include "Scene/SceneSignals.h"
 #include "Classes/Qt/Scene/SceneSignals.h"
 #include "Classes/Qt/PlaneLODDialog/PlaneLODDialog.h"
 #include "Classes/Qt/Main/mainwindow.h"
@@ -123,9 +123,8 @@ void LODEditor::SetupInternalUI()
     connect(ui->forceLayer, SIGNAL(activated(int)), SLOT(ForceLayerActivated(int)));
 
     connect(ui->createPlaneLodButton, SIGNAL(clicked()), this, SLOT(CreatePlaneLODClicked()));
-
-    //TODO: remove after lod editing implementation
-    connect(ui->lastLodToFrontButton, SIGNAL(clicked()), this, SLOT(CopyLODToLod0Clicked()));
+    connect(ui->buttonDeleteFirstLOD, SIGNAL(clicked()), editedLODData, SLOT(DeleteFirstLOD()));
+    connect(ui->buttonDeleteLastLOD, SIGNAL(clicked()), editedLODData, SLOT(DeleteLastLOD()));
 }
 
 void LODEditor::SetupSceneSignals()
@@ -235,7 +234,7 @@ void LODEditor::LODDataChanged()
         SetSpinboxValue(distanceWidgets[i].distance, distance);
         ui->distanceSlider->SetDistance(i, distance);
         
-        distanceWidgets[i].name->setText(Format("%d. (%d):", i, editedLODData->GetLayerTriangles(i)));
+        distanceWidgets[i].name->setText(Format("%d. (%d):", i, editedLODData->GetLayerTriangles(i)).c_str());
     }
     for (DAVA::int32 i = lodLayersCount; i < DAVA::LodComponent::MAX_LOD_LAYERS; ++i)
     {
@@ -245,7 +244,8 @@ void LODEditor::LODDataChanged()
     UpdateWidgetVisibility();
 
     ui->createPlaneLodButton->setEnabled(editedLODData->CanCreatePlaneLOD());
-    ui->lastLodToFrontButton->setEnabled(editedLODData->CanCreatePlaneLOD());
+    ui->buttonDeleteFirstLOD->setEnabled(editedLODData->CanDeleteLod());
+    ui->buttonDeleteLastLOD->setEnabled(editedLODData->CanDeleteLod());
 }
 
 void LODEditor::LODDistanceChangedBySlider(const QVector<int> &changedLayers, bool continuous)
@@ -307,7 +307,7 @@ void LODEditor::SetForceLayerValues(int layersCount)
     ui->forceLayer->addItem("Auto", QVariant(DAVA::LodComponent::INVALID_LOD_LAYER));
     for(DAVA::int32 i = 0; i < layersCount; ++i)
     {
-        ui->forceLayer->addItem(Format("%d", i), QVariant(i));
+        ui->forceLayer->addItem(Format("%d", i).c_str(), QVariant(i));
     }
     
     int requestedIndex = editedLODData->GetForceLayer() + 1;
@@ -385,8 +385,3 @@ void LODEditor::CreatePlaneLODClicked()
     }
 }
 
-void LODEditor::CopyLODToLod0Clicked()
-{
-    if(editedLODData->CanCreatePlaneLOD())
-        editedLODData->CopyLastLodToLod0();
-}

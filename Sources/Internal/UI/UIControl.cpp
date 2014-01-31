@@ -267,13 +267,6 @@ namespace DAVA
 		return false;
 	}
 
-	List<UIControl* > UIControl::GetRealChildrenAndSubcontrols()
-	{
-        // Yuri Coder, 2013/12/16. Return all children, keep their order (see please DF-2817). In case
-        // some specific hanldling is needed for some control, reimplement this function on its level.
-        return this->childs;
-	}
-
 	String UIControl::GetSpriteFrameworkPath( const Sprite* sprite)
 	{
 		if (!sprite)
@@ -1609,6 +1602,7 @@ namespace DAVA
 	
 	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)
 	{
+        RenderManager::Instance()->SetDefault2DNoTextureState();
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 
@@ -1637,6 +1631,7 @@ namespace DAVA
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
+        RenderManager::Instance()->SetDefault2DState();
 	}
 
 	void UIControl::DrawPivotPoint(const Rect &drawRect)
@@ -1654,6 +1649,7 @@ namespace DAVA
 		static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
 		static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
+        RenderManager::Instance()->SetDefault2DNoTextureState();
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
@@ -1676,6 +1672,7 @@ namespace DAVA
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
+        RenderManager::Instance()->SetDefault2DState();
 	}
 	
 	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
