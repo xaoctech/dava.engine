@@ -441,7 +441,7 @@ bool EditorLODData::CanCreatePlaneLOD()
     if(componentOwner->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || componentOwner->GetParent()->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
         return false;
 
-    return (lodData[0]->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
+    return (GetLayersCount(lodData[0]) < LodComponent::MAX_LOD_LAYERS);
 }
 
 FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
@@ -491,7 +491,7 @@ void EditorLODData::DeleteFirstLOD()
         activeScene->BeginBatch("Delete First LOD");
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new DeleteLODCommand(lodData[i], 0));
+            activeScene->Exec(new DeleteLODCommand(lodData[i], 0, -1));
         
         activeScene->EndBatch();
     }
@@ -507,7 +507,7 @@ void EditorLODData::DeleteLastLOD()
         activeScene->BeginBatch("Delete Last LOD");
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new DeleteLODCommand(lodData[i], lodData[i]->GetLodLayersCount() - 1));
+            activeScene->Exec(new DeleteLODCommand(lodData[i], GetLayersCount(lodData[i]) - 1, -1));
         
         activeScene->EndBatch();
     }

@@ -117,6 +117,26 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
     RecalcBoundingBox();
 }
     
+void RenderObject::RemoveRenderBatch(uint32 batchIndex)
+{
+	uint32 size = (uint32)renderBatchArray.size();
+    DVASSERT(batchIndex < size);
+
+    RenderBatch *batch = renderBatchArray[batchIndex].renderBatch;
+    if (renderSystem)
+        renderSystem->UnregisterBatch(batch);
+
+    batch->SetRenderObject(0);
+	batch->Release();
+
+    renderBatchArray[batchIndex] = renderBatchArray[size - 1];
+    renderBatchArray.pop_back();
+	FindAndRemoveExchangingWithLast(activeRenderBatchArray, batch);
+
+    RecalcBoundingBox();
+}
+
+    
 void RenderObject::RecalcBoundingBox()
 {
     bbox = AABBox3();

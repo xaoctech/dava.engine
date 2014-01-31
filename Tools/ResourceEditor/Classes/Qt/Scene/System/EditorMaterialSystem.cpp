@@ -30,6 +30,10 @@
 #include "Project/ProjectManager.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/MaterialSystem.h"
+#include "Commands2/Command2.h"
+#include "Commands2/CommandBatch.h"
+#include "Commands2/DeleteRenderBatchCommand.h"
+#include "Commands2/DeleteLODCommand.h"
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
@@ -40,7 +44,8 @@ EditorMaterialSystem::~EditorMaterialSystem()
 {
 	while(materialFeedback.size() > 0)
 	{
-		RemMaterial(materialFeedback.begin()->first);
+        DVASSERT(false);
+		RemoveMaterial(materialFeedback.begin()->first);
 	}
 
 	while(ownedParents.size() > 0)
@@ -157,41 +162,12 @@ void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
 	DAVA::RenderObject *ro = GetRenderObject(entity);
 	if(NULL != ro)
 	{
-        const QVector<ProjectManager::AvailableMaterialTemplate> *availableTemplates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
-
         for(DAVA::uint32 i = 0; i < ro->GetRenderBatchCount(); ++i)
 		{
 			DAVA::RenderBatch *rb  = ro->GetRenderBatch(i);
 			DAVA::NMaterial *material = rb->GetMaterial();
 
-			if(NULL != material)
-			{
-				MaterialFB fb;
-
-				fb.entity = entity;
-				fb.batch = rb;
-
-				materialFeedback[material] = fb;
-
-				// remember parent material, if still isn't
-				DAVA::NMaterial *parent = material->GetParent();
-				if(NULL != parent && 0 == ownedParents.count(parent))
-				{
-                    QString parentTemplate = parent->GetMaterialTemplateName().c_str();
-
-                    for(int j = 0; j < availableTemplates->size(); ++j)
-                    {
-                        if(parentTemplate == availableTemplates->at(j).path)
-                        {
-                            ownedParents.insert(parent);
-                            parent->Retain();
-
-                            ApplyViewMode(parent);
-                            break;
-                        }
-                    }
-				}
-			}
+            AddMaterial(material, entity, rb);
 		}
 	}
 }
@@ -206,10 +182,7 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 			DAVA::RenderBatch *rb = ro->GetRenderBatch(i);
 			DAVA::NMaterial *material = rb->GetMaterial();
 
-			if(NULL != material)
-			{
-				materialFeedback.erase(material);
-			}
+            RemoveMaterial(material);
 		}
 	}
 }
@@ -243,7 +216,27 @@ void EditorMaterialSystem::Draw()
 
 void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
 {
-
+    //TODO: VK: need to be redesigned after command notification will be changed
+    int commandID = command->GetId();
+    if(commandID == CMDID_LOD_DELETE)
+    {
+        DeleteLODCommand *lodCommand = (DeleteLODCommand *)command;
+        const DAVA::Vector<DeleteRenderBatchCommand *> batchCommands = lodCommand->GetRenderBatchCommands();
+        
+        const DAVA::uint32 count = (const DAVA::uint32)batchCommands.size();
+        for (DAVA::uint32 i = 0; i < count; ++i)
+        {
+            DAVA::RenderBatch *batch = batchCommands[i]->GetRenderBatch();
+            if(redo)
+            {
+                RemoveMaterial(batch->GetMaterial());
+            }
+            else
+            {
+                AddMaterial(batch->GetMaterial(), lodCommand->GetEntity(), batch);
+            }
+        }
+    }
 }
 
 void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -251,6 +244,41 @@ void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void EditorMaterialSystem::RemMaterial(DAVA::NMaterial *material)
+void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb)
 {
+    if(NULL != material)
+    {
+        MaterialFB fb;
+        
+        fb.entity = entity;
+        fb.batch = rb;
+        
+        materialFeedback[material] = fb;
+        
+        // remember parent material, if still isn't
+        DAVA::NMaterial *parent = material->GetParent();
+        if(NULL != parent && 0 == ownedParents.count(parent))
+        {
+            const QVector<ProjectManager::AvailableMaterialTemplate> *availableTemplates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
+
+            QString parentTemplate = parent->GetMaterialTemplateName().c_str();
+            for(int j = 0; j < availableTemplates->size(); ++j)
+            {
+                if(parentTemplate == availableTemplates->at(j).path)
+                {
+                    ownedParents.insert(parent);
+                    parent->Retain();
+                    
+                    ApplyViewMode(parent);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void EditorMaterialSystem::RemoveMaterial(DAVA::NMaterial *material)
+{
+    if(material)
+        materialFeedback.erase(material);
 }
