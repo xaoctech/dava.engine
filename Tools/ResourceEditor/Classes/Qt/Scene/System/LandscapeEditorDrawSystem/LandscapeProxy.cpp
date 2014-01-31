@@ -428,6 +428,7 @@ void LandscapeProxy::InitTilemaskImageCopy()
 	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
 	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+    RenderManager::Instance()->SetColor(Color::White);
 	RenderManager::Instance()->FlushState();
 	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);

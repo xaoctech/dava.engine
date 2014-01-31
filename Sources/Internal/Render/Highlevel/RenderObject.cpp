@@ -94,18 +94,17 @@ void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _s
 
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
-    if (renderSystem)
-        renderSystem->UnregisterBatch(batch);
-    
     batch->SetRenderObject(0);
-	batch->Release();
-
-
+	
 	uint32 size = (uint32)renderBatchArray.size();
 	for (uint32 k = 0; k < size; ++k)
 	{
 		if (renderBatchArray[k].renderBatch == batch)
 		{
+            if (renderSystem)
+                renderSystem->UnregisterBatch(batch);
+            batch->Release();
+
 			renderBatchArray[k] = renderBatchArray[size - 1];
 			renderBatchArray.pop_back();
             k--;
@@ -113,7 +112,7 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 		}
 	}
 
-	FindAndRemoveExchangingWithLast(activeRenderBatchArray, batch);
+	UpdateActiveRenderBatches();
 
     RecalcBoundingBox();
 }

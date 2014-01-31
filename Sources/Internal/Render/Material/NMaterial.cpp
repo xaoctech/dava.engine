@@ -694,6 +694,21 @@ namespace DAVA
 			SetTexturesDirty();
 		}
 	}
+    
+    void NMaterial::SetTexturePath(const FastName& textureFastName, const FilePath& texturePath)
+    {
+        TextureBucket* bucket = textures.at(textureFastName);
+		if(NULL == bucket)
+		{
+			bucket = new TextureBucket();
+			bucket->texture = NULL;
+			textures.insert(textureFastName, bucket);
+		}
+        else
+        {
+            bucket->path = texturePath;
+        }
+    }
 	
     Texture * NMaterial::GetTexture(const FastName& textureFastName) const
 	{
