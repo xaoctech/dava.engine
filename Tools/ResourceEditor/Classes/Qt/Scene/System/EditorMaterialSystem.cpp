@@ -34,6 +34,7 @@
 #include "Commands2/CommandBatch.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
 #include "Commands2/DeleteLODCommand.h"
+#include "Commands2/CreatePlaneLODCommand.h"
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
@@ -69,9 +70,9 @@ DAVA::Entity* EditorMaterialSystem::GetEntity(DAVA::NMaterial* material) const
 	return entity;
 }
 
-DAVA::RenderBatch* EditorMaterialSystem::GetRenderBatch(DAVA::NMaterial* material) const
+const DAVA::RenderBatch* EditorMaterialSystem::GetRenderBatch(DAVA::NMaterial* material) const
 {
-	DAVA::RenderBatch *batch = NULL;
+	const DAVA::RenderBatch *batch = NULL;
 
 	auto it = materialFeedback.find(material);
 	if(it != materialFeedback.end())
@@ -237,6 +238,19 @@ void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
             }
         }
     }
+    else if(commandID == CMDID_LOD_CREATE_PLANE)
+    {
+        CreatePlaneLODCommand *lodCommand = (CreatePlaneLODCommand *)command;
+        DAVA::RenderBatch *batch = lodCommand->GetRenderBatch();
+        if(redo)
+        {
+            AddMaterial(batch->GetMaterial(), lodCommand->GetEntity(), batch);
+        }
+        else
+        {
+            RemoveMaterial(batch->GetMaterial());
+        }
+    }
 }
 
 void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -244,7 +258,7 @@ void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb)
+void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, const DAVA::RenderBatch *rb)
 {
     if(NULL != material)
     {

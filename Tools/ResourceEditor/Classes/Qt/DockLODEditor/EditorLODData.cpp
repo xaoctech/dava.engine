@@ -105,7 +105,7 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
         {
-            if(layerNum >= GetLayersCount(lodData[i]))
+            if(layerNum >= GetLodLayersCount(lodData[i]))
                 continue;
            
 			activeScene->Exec(new ChangeLODDistanceCommand(lodData[i], layerNum, distance));
@@ -133,7 +133,7 @@ void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::int32, DAVA::float32>
 
 			for(DAVA::uint32 i = 0; i < componentsCount; ++i)
 			{
-				if(layerNum < GetLayersCount(lodData[i]))
+				if(layerNum < GetLodLayersCount(lodData[i]))
 				{
 					activeScene->Exec(new ChangeLODDistanceCommand(lodData[i], layerNum, distance));
 				}
@@ -233,7 +233,7 @@ void EditorLODData::GetDataFromSelection()
         for(DAVA::int32 i = 0; i < lodComponentsSize; ++i)
         {
             //distances
-            DAVA::int32 layersCount = GetLayersCount(lodData[i]);
+            DAVA::int32 layersCount = GetLodLayersCount(lodData[i]);
             for(DAVA::int32 layer = 0; layer < layersCount; ++layer)
             {
                 lodDistances[layer] += lodData[i]->GetLodLayerDistance(layer);
@@ -390,19 +390,6 @@ void EditorLODData::UpdateForceData()
 }
 
 
-DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
-{
-    if(GetEmitter(lod->GetEntity()))
-    {
-        return DAVA::LodComponent::MAX_LOD_LAYERS;
-    }
-
-    Entity * en = lod->GetEntity();
-    RenderObject * ro = GetRenderObject(en);
-    DVASSERT(ro);
-    return ro->GetMaxLodIndex()+1;
-}
-
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
     if(command->GetId() == CMDID_BATCH)
@@ -441,7 +428,7 @@ bool EditorLODData::CanCreatePlaneLOD()
     if(componentOwner->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || componentOwner->GetParent()->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
         return false;
 
-    return (GetLayersCount(lodData[0]) < LodComponent::MAX_LOD_LAYERS);
+    return (GetLodLayersCount(lodData[0]) < LodComponent::MAX_LOD_LAYERS);
 }
 
 FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
@@ -507,7 +494,7 @@ void EditorLODData::DeleteLastLOD()
         activeScene->BeginBatch("Delete Last LOD");
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new DeleteLODCommand(lodData[i], GetLayersCount(lodData[i]) - 1, -1));
+            activeScene->Exec(new DeleteLODCommand(lodData[i], GetLodLayersCount(lodData[i]) - 1, -1));
         
         activeScene->EndBatch();
     }

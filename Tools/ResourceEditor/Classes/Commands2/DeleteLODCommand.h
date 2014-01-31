@@ -46,7 +46,7 @@ public:
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const;
 
-    const DAVA::Vector<DeleteRenderBatchCommand *> GetRenderBatchCommands() const;
+    const DAVA::Vector<DeleteRenderBatchCommand *> & GetRenderBatchCommands() const;
     
 protected:
 

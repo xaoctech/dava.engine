@@ -44,13 +44,26 @@ public:
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const;
     
-    DAVA::Entity * CreatePlaneEntity(DAVA::Entity * fromEntity);
-
     static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
 
+    DAVA::RenderBatch * GetRenderBatch() const;
+    
 protected:
+
+    void CreatePlaneImage();
+    void CreatePlaneBatch();
+
+    void CreateTextureFiles();
+    void DeleteTextureFiles();
+    
     DAVA::LodComponent * lodComponent;
-    DAVA::LodComponent::LodData * lodData;
+    DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
+    
+    DAVA::RenderBatch * planeBatch;
+    DAVA::Image *planeImage;
+    
+    DAVA::int32 newLodIndex;
+    DAVA::int32 newSwitchIndex;
 
     DAVA::int32 fromLodLayer;
     DAVA::uint32 textureSize;
