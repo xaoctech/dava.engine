@@ -1539,7 +1539,7 @@ const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
 void Landscape::SetTextureName(eTextureLevel level, const FilePath &newTextureName)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
-    tileMaskMaterial->SetTexture(TILEMASK_TEXTURE_PROPS_NAMES[level], newTextureName);
+    tileMaskMaterial->SetTexturePath(TILEMASK_TEXTURE_PROPS_NAMES[level], newTextureName);
 }
 
 
@@ -1869,6 +1869,7 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
         //newLandscape->textureNames[k] = textureNames[k];
 		
         newLandscape->SetTexture((eTextureLevel)k, GetTexture((eTextureLevel)k));
+        newLandscape->SetTextureName((eTextureLevel)k, GetTextureName((eTextureLevel)k));
         
         Vector2 tilingValue = GetTextureTiling((eTextureLevel)k);
         newLandscape->SetTextureTiling((eTextureLevel)k, tilingValue);
