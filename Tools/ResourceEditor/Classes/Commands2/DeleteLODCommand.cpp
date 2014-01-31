@@ -160,7 +160,7 @@ DAVA::Entity * DeleteLODCommand::GetEntity() const
     return lodComponent->GetEntity();
 }
 
-const DAVA::Vector<DeleteRenderBatchCommand *> DeleteLODCommand::GetRenderBatchCommands() const
+const DAVA::Vector<DeleteRenderBatchCommand *> & DeleteLODCommand::GetRenderBatchCommands() const
 {
     return deletedBatches;
 }
