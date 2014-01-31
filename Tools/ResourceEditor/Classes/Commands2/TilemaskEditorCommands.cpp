@@ -104,6 +104,8 @@ void ActionDisableTilemaskEditor::Redo()
 ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, const Rect& updatedRect)
 :	Command2(CMDID_TILEMASK_MODIFY, "Tile Mask Modification")
 {
+    RenderManager::Instance()->SetColor(Color::White);
+    
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
 	
@@ -140,12 +142,18 @@ ModifyTilemaskCommand::~ModifyTilemaskCommand()
 
 void ModifyTilemaskCommand::Undo()
 {
-	ApplyImageToSprite(undoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
-
+    RenderManager::Instance()->Setup2DMatrices();
+    
+    RenderManager::Instance()->SetColor(Color::White);
+    
+    Sprite* srcSprite = landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE);
+	ApplyImageToSprite(undoImageMask, srcSprite);
+    
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 
 	Sprite* sprite;
 	sprite = ApplyImageToTexture(undoImageMask, maskTexture);
+    
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 
@@ -159,6 +167,8 @@ void ModifyTilemaskCommand::Undo()
 
 void ModifyTilemaskCommand::Redo()
 {
+    RenderManager::Instance()->Setup2DMatrices();
+    
 	ApplyImageToSprite(redoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
 
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
@@ -203,6 +213,8 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
     
     RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
+    RenderManager::Instance()->SetTextureState(RenderManager::Instance()->GetDefaultTextureState());
+    RenderManager::Instance()->FlushState();
 
 	Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 										 image->GetWidth(), image->GetHeight(), false);
@@ -222,7 +234,6 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 void ModifyTilemaskCommand::ApplyImageToSprite(Image* image, Sprite* dstSprite)
 {
 	RenderManager::Instance()->SetRenderTarget(dstSprite);
-    RenderManager::Instance()->Reset();
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
 
