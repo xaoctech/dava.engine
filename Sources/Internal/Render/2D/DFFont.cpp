@@ -75,7 +75,7 @@ namespace DAVA {
 	
 	uint32 DFFont::GetFontHeight() const
 	{
-		return (lineHeight - paddingTop - paddingBottom) * GetSizeScale();
+		return (lineHeight) * GetSizeScale();
 	}
 	
 	Font * DFFont::Clone() const
@@ -119,8 +119,7 @@ namespace DAVA {
 		float32 lastX = xOffset;
 		float32 lastY = 0;
 		float32 sizeScale = GetSizeScale();
-		lastX -= paddingLeft * sizeScale;
-		
+
 		uint32 strLength = str.length();
 		for (uint32 charPos = 0; charPos < strLength; ++charPos)
 		{
@@ -130,7 +129,7 @@ namespace DAVA {
 			{
 				int32 charSize = 0;
 				if (charId == L' ')
-					charSize = size / 2;
+					charSize = (size / 2) * sizeScale;
 				
 				if (charSizes)
 					charSizes->push_back(charSize);
@@ -162,25 +161,25 @@ namespace DAVA {
 			
 			if (vertexBuffer)
 			{
-				vertexBuffer[vertexAdded].position.x = lastX;
+				vertexBuffer[vertexAdded].position.x = lastX + charDescription.xOffset;
 				vertexBuffer[vertexAdded].position.y = startHeight;
 				vertexBuffer[vertexAdded].position.z = 0;
 				vertexBuffer[vertexAdded].texCoord.x = charDescription.u;
 				vertexBuffer[vertexAdded].texCoord.y = charDescription.v;
 				
-				vertexBuffer[vertexAdded + 1].position.x = lastX + width;
+				vertexBuffer[vertexAdded + 1].position.x = lastX + width  + charDescription.xOffset;
 				vertexBuffer[vertexAdded + 1].position.y = startHeight;
 				vertexBuffer[vertexAdded + 1].position.z = 0;
 				vertexBuffer[vertexAdded + 1].texCoord.x = charDescription.u2;
 				vertexBuffer[vertexAdded + 1].texCoord.y = charDescription.v;
 				
-				vertexBuffer[vertexAdded + 2].position.x = lastX + width;
+				vertexBuffer[vertexAdded + 2].position.x = lastX + width  + charDescription.xOffset;
 				vertexBuffer[vertexAdded + 2].position.y = fullHeight;
 				vertexBuffer[vertexAdded + 2].position.z = 0;
 				vertexBuffer[vertexAdded + 2].texCoord.x = charDescription.u2;
 				vertexBuffer[vertexAdded + 2].texCoord.y = charDescription.v2;
 				
-				vertexBuffer[vertexAdded + 3].position.x = lastX;
+				vertexBuffer[vertexAdded + 3].position.x = lastX  + charDescription.xOffset;
 				vertexBuffer[vertexAdded + 3].position.y = fullHeight;
 				vertexBuffer[vertexAdded + 3].position.z = 0;
 				vertexBuffer[vertexAdded + 3].texCoord.x = charDescription.u;
@@ -188,15 +187,13 @@ namespace DAVA {
 				vertexAdded += 4;
 			}
 				
-			int32 charWidth = (charDescription.width - paddingLeft - paddingRight + nextKerning) * sizeScale;
+            float32 charWidth = (charDescription.xAdvance + nextKerning) * sizeScale;
 			if (charSizes)
-				charSizes->push_back(charWidth);
-			if (charPos < strLength - 1)
-				lastX += charWidth;
+				charSizes->push_back(int32(charWidth));
+            lastX += charWidth;
 			
 			charDrawed++;
 		}
-		lastX += (paddingLeft + paddingRight) * sizeScale;
 		lastY += yOffset + GetFontHeight();
 
 		return Size2i(lastX, lastY);
