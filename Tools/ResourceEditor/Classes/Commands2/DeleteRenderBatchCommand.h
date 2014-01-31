@@ -28,50 +28,37 @@
 
 
 
-#include "DAVAEngine.h"
-#include "GameCore.h"
- 
-using namespace DAVA;
+#ifndef __DELETE_RENDER_BATCH_COMMAND_H__
+#define __DELETE_RENDER_BATCH_COMMAND_H__
 
+#include "Command2.h"
 
-void FrameworkDidLaunched()
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderObject.h"
+
+class DeleteRenderBatchCommand: public Command2
 {
-/*#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-	KeyedArchive * appOptions = new KeyedArchive();
-	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT);
-    appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
-	
-	DAVA::Core::Instance()->SetVirtualScreenSize(960, 480);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(960, 480, "Gfx");
+public:
+	DeleteRenderBatchCommand(DAVA::Entity *entity, DAVA::RenderObject *renderObject, DAVA::uint32 renderBatchIndex);
+    virtual ~DeleteRenderBatchCommand();
 
-#else*/
-	KeyedArchive * appOptions = new KeyedArchive();
-	
-	appOptions->SetInt32("width", 700);
-	appOptions->SetInt32("height", 500);
+	virtual void Undo();
+	virtual void Redo();
+    
+	virtual DAVA::Entity* GetEntity() const;
+    
+    DAVA::RenderBatch *GetRenderBatch() const;
 
-// 	appOptions->SetInt("fullscreen.width",	1280);
-// 	appOptions->SetInt("fullscreen.height", 800);
-	
-	appOptions->SetInt32("fullscreen", 0);
-	appOptions->SetInt32("bpp", 32);
-	appOptions->SetBool("trackFont", true);
+protected:
 
-//	DAVA::Core::Instance()->SetVirtualScreenSize(700, 500);
-//	DAVA::Core::Instance()->RegisterAvailableResourceSize(700, 500, "Gfx");
-	Core::Instance()->RegisterAvailableResourceSize(500, 700, "Gfx");
-//#endif
-
-	Core::Instance()->SetOptions(appOptions);
-    Core::Instance()->EnableReloadResourceOnResize(false);
-
-	GameCore * core = new GameCore();
-	Core::SetApplicationCore(core);
-}
+    DAVA::Entity *entity;
+    DAVA::RenderObject *renderObject;
+    DAVA::RenderBatch *renderBatch;
+    
+    DAVA::uint32 renderBatchIndex;
+    DAVA::int32 lodIndex;
+    DAVA::int32 switchIndex;
+};
 
 
-void FrameworkWillTerminate() 
-{
-    ApplicationCore* core = Core::GetApplicationCore();
-    SafeRelease(core);
-}
+#endif // __DELETE_RENDER_BATCH_COMMAND_H__

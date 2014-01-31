@@ -75,7 +75,7 @@ protected:
 	void ProcessCommand(const Command2 *command, bool redo);
 
 	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
-	void RemMaterial(DAVA::NMaterial *material);
+	void RemoveMaterial(DAVA::NMaterial *material);
 
     void ApplyViewMode(DAVA::NMaterial *material);
 

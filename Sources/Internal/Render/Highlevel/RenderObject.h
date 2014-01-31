@@ -113,6 +113,7 @@ public:
     void AddRenderBatch(RenderBatch * batch);
     void AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex);
     void RemoveRenderBatch(RenderBatch * batch);
+    void RemoveRenderBatch(uint32 batchIndex);
     virtual void RecalcBoundingBox();
     
 	inline uint32 GetRenderBatchCount();

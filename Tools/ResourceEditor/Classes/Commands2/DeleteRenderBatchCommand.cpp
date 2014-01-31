@@ -28,50 +28,46 @@
 
 
 
-#include "DAVAEngine.h"
-#include "GameCore.h"
- 
-using namespace DAVA;
+#include "DeleteRenderBatchCommand.h"
 
-
-void FrameworkDidLaunched()
+DeleteRenderBatchCommand::DeleteRenderBatchCommand(DAVA::Entity *en, DAVA::RenderObject *ro, DAVA::uint32 batchIndex)
+	: Command2(CMDID_DELETE_RENDER_BATCH, "Delete Render Batch")
+    , entity(en)
+    , renderObject(ro)
+    , renderBatchIndex(batchIndex)
 {
-/*#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-	KeyedArchive * appOptions = new KeyedArchive();
-	appOptions->SetInt32("orientation", Core::SCREEN_ORIENTATION_LANDSCAPE_RIGHT);
-    appOptions->SetInt32("renderer", Core::RENDERER_OPENGL_ES_2_0);
-	
-	DAVA::Core::Instance()->SetVirtualScreenSize(960, 480);
-	DAVA::Core::Instance()->RegisterAvailableResourceSize(960, 480, "Gfx");
+    DVASSERT(entity);
+    DVASSERT(renderObject);
+    DVASSERT(renderBatchIndex < renderObject->GetRenderBatchCount());
+    
+    renderBatch = renderObject->GetRenderBatch(renderBatchIndex, lodIndex, switchIndex);
+    renderBatch->Retain();
+}
 
-#else*/
-	KeyedArchive * appOptions = new KeyedArchive();
-	
-	appOptions->SetInt32("width", 700);
-	appOptions->SetInt32("height", 500);
+DeleteRenderBatchCommand::~DeleteRenderBatchCommand()
+{
+    SafeRelease(renderBatch);
+}
 
-// 	appOptions->SetInt("fullscreen.width",	1280);
-// 	appOptions->SetInt("fullscreen.height", 800);
-	
-	appOptions->SetInt32("fullscreen", 0);
-	appOptions->SetInt32("bpp", 32);
-	appOptions->SetBool("trackFont", true);
+void DeleteRenderBatchCommand::Redo()
+{
+    renderObject->RemoveRenderBatch(renderBatchIndex);
+}
 
-//	DAVA::Core::Instance()->SetVirtualScreenSize(700, 500);
-//	DAVA::Core::Instance()->RegisterAvailableResourceSize(700, 500, "Gfx");
-	Core::Instance()->RegisterAvailableResourceSize(500, 700, "Gfx");
-//#endif
-
-	Core::Instance()->SetOptions(appOptions);
-    Core::Instance()->EnableReloadResourceOnResize(false);
-
-	GameCore * core = new GameCore();
-	Core::SetApplicationCore(core);
+void DeleteRenderBatchCommand::Undo()
+{
+    renderBatchIndex = renderObject->GetRenderBatchCount();
+    renderObject->AddRenderBatch(renderBatch, lodIndex, switchIndex);
 }
 
 
-void FrameworkWillTerminate() 
+DAVA::Entity * DeleteRenderBatchCommand::GetEntity() const
 {
-    ApplicationCore* core = Core::GetApplicationCore();
-    SafeRelease(core);
+    return entity;
 }
+
+DAVA::RenderBatch * DeleteRenderBatchCommand::GetRenderBatch() const
+{
+    return renderBatch;
+}
+
