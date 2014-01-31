@@ -1185,7 +1185,6 @@ Vector2 MainWindow::CalculateScenePositionForPoint(const QRect& widgetRect, cons
 	Vector2 resultPosition;
 	resultPosition.x = (hOffset + point.x) / curScale;
 	resultPosition.y = (vOffset + point.y) / curScale;
-	Logger::Warning("Scene position under mouse: X:%f, Y:%f", resultPosition.x, resultPosition.y);
 	
 	return resultPosition;
 }

@@ -296,18 +296,34 @@ void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& 
 	Image* images[CHANNELS_COUNT];
 	for (int32 i = 0; i < CHANNELS_COUNT; ++i)
 	{
-		images[i] = Image::Create(width, height, FORMAT_A8);
+		images[i] = Image::Create(width, height, FORMAT_RGBA8888);
 	}
 
 	int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
 	for(int32 i = 0; i < size; ++i)
 	{
 		int32 offset = i * pixelSize;
-		images[0]->data[i] = image->data[offset];
-		images[1]->data[i] = image->data[offset + 1];
-		images[2]->data[i] = image->data[offset + 2];
-		images[3]->data[i] = image->data[offset + 3];
-	}
+        
+		images[0]->data[offset] = image->data[offset];
+		images[0]->data[offset + 1] = image->data[offset];
+		images[0]->data[offset + 2] = image->data[offset];
+		images[0]->data[offset + 3] = 255;
+        
+		images[1]->data[offset] = image->data[offset + 1];
+		images[1]->data[offset + 1] = image->data[offset + 1];
+		images[1]->data[offset + 2] = image->data[offset + 1];
+		images[1]->data[offset + 3] = 255;
+
+		images[2]->data[offset] = image->data[offset + 2];
+		images[2]->data[offset + 1] = image->data[offset + 2];
+		images[2]->data[offset + 2] = image->data[offset + 2];
+		images[2]->data[offset + 3] = 255;
+        
+		images[3]->data[offset] = image->data[offset + 3];
+		images[3]->data[offset + 1] = image->data[offset + 3];
+		images[3]->data[offset + 2] = image->data[offset + 3];
+		images[3]->data[offset + 3] = 255;
+    }
 
 	r = images[0];
 	g = images[1];

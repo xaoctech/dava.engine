@@ -1045,6 +1045,8 @@ Image * Texture::CreateImageFromMemory()
         Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
+        RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+
 		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
 
         drawTexture->SetPosition(0, 0);

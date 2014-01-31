@@ -260,6 +260,8 @@ public:
 	// Work with textures and properties
     void RemoveTexture(const FastName& textureFastName);
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
+    //VI: this method leaves texture intact. Allows to manipulate with FBO that has to be saved to some path
+    void SetTexturePath(const FastName& textureFastName, const FilePath& texturePath);
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     
     Texture * GetTexture(const FastName& textureFastName) const;
