@@ -36,55 +36,83 @@
 using namespace DAVA;
 
 CreatePlaneLODCommand::CreatePlaneLODCommand(DAVA::LodComponent * _lodComponent, int32 _fromLodLayer, uint32 _textureSize, const DAVA::FilePath & texturePath)
-    : Command2(CMDID_LOD_CREATE_PLANE, "Create Plane LOD"),
-    lodData(0),
-    fromLodLayer(_fromLodLayer),
-    textureSize(_textureSize),
-    lodComponent(_lodComponent),
-    textureSavePath(texturePath)
+    : Command2(CMDID_LOD_CREATE_PLANE, "Create Plane LOD")
+    , newSwitchIndex(-1)
+    , planeImage(NULL)
+    , planeBatch(NULL)
+    , fromLodLayer(_fromLodLayer)
+    , textureSize(_textureSize)
+    , lodComponent(_lodComponent)
+    , textureSavePath(texturePath)
 {
+    DVASSERT(GetRenderObject(GetEntity()));
+    
+    newLodIndex = GetLodLayersCount(lodComponent);
+    DVASSERT(newLodIndex > 0);
+    
     if(fromLodLayer == -1)
-        fromLodLayer = lodComponent->GetLodLayersCount() - 1;
+        fromLodLayer = newLodIndex - 1;
+    
+    CreatePlaneImage();
+    CreatePlaneBatch();
 }
 
 CreatePlaneLODCommand::~CreatePlaneLODCommand()
 {
-    SafeDelete(lodData);
+    SafeRelease(planeBatch);
+    SafeRelease(planeImage);
 }
 
 void CreatePlaneLODCommand::Redo()
 {
-    DVASSERT(lodComponent);
-    DVASSERT(lodComponent->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
-    DVASSERT(lodComponent->lodLayers[fromLodLayer].nodes.size() == 1);
+    CreateTextureFiles();
 
-    Entity * planeLodEntity = CreatePlaneEntity(lodComponent->lodLayers[fromLodLayer].nodes[0]);
-
-    lodData = new LodComponent::LodData();
-    lodData->layer = lodComponent->GetLodLayersCount();
-    lodData->nodes.push_back(planeLodEntity);
-    lodData->indexes.push_back(lodComponent->GetEntity()->GetChildrenCount());
-
-    planeLodEntity->SetLocked(true);
-
-    lodComponent->lodLayers.push_back((*lodData));
-    lodComponent->SetLodLayerDistance(lodData->layer, lodComponent->GetLodLayerDistance(lodData->layer-1) * 2);
-
-    lodComponent->GetEntity()->AddNode(planeLodEntity);
-    planeLodEntity->SetLodVisible(lodComponent->currentLod == lodData->layer);
-    planeLodEntity->Release();
+    Texture *t = planeBatch->GetMaterial()->GetTexture(NMaterial::TEXTURE_ALBEDO);
+    t->Reload();
+    
+    DAVA::Entity *entity = GetEntity();
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+    
+    ro->AddRenderBatch(planeBatch, newLodIndex, newSwitchIndex);
+    
+    lodComponent->SetLodLayerDistance(newLodIndex, lodComponent->GetLodLayerDistance(newLodIndex-1) * 2);
 }
 
 void CreatePlaneLODCommand::Undo()
 {
-    lodComponent->GetEntity()->RemoveNode(lodData->nodes[0]);
-    lodComponent->lodLayers.pop_back();
-    lodComponent->SetLodLayerDistance(lodData->layer, LodComponent::INVALID_DISTANCE);
-    
-    SafeDelete(lodData);
+    DAVA::Entity *entity = GetEntity();
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
 
-    FileSystem::Instance()->DeleteFile(textureSavePath);
-    FileSystem::Instance()->DeleteFile(FilePath::CreateWithNewExtension(textureSavePath, ".tex"));
+    //restore batches
+    DAVA::uint32 count = ro->GetRenderBatchCount();
+    for(DAVA::uint32 i = 0; i < count; ++i)
+    {
+        DAVA::int32 lodIndex = 0, switchIndex = 0;
+        DAVA::RenderBatch *batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+        if(lodIndex == newLodIndex)
+        {
+            ro->RemoveRenderBatch(i);
+            --i;
+            --count;
+        }
+    }
+
+    //restore distances
+    lodComponent->lodLayersArray = savedDistances;
+
+    //fix visibility settings
+    DAVA::int32 maxLodIndex = ro->GetMaxLodIndex();
+    if(lodComponent->forceLodLayer > maxLodIndex)
+    {
+        lodComponent->forceLodLayer = maxLodIndex;
+    }
+    
+    if(lodComponent->currentLod > maxLodIndex)
+    {
+        lodComponent->currentLod = maxLodIndex;
+    }
+
+    DeleteTextureFiles();
 }
 
 DAVA::Entity* CreatePlaneLODCommand::GetEntity() const
@@ -92,158 +120,6 @@ DAVA::Entity* CreatePlaneLODCommand::GetEntity() const
     return lodComponent->GetEntity();
 }
 
-DAVA::Entity * CreatePlaneLODCommand::CreatePlaneEntity(DAVA::Entity * fromEntity)
-{
-//////////Create and save texture
-    Texture * fboTexture = Texture::CreateFBO(textureSize, textureSize, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
-
-    AABBox3 bbox; Matrix4 wtMx;
-    fromEntity->GetWorldTransform().GetInverse(wtMx);
-    fromEntity->GetWTMaximumBoundingBoxSlow().GetTransformedBox(wtMx, bbox);
-
-    const Vector3 & min = bbox.min;
-    const Vector3 & max = bbox.max;
-
-    Camera * camera = new Camera();
-    camera->SetTarget(Vector3(0.f, 0.f, 0.f));
-    camera->SetUp(Vector3(0.f, 0.f, 1.f));
-    camera->SetIsOrtho(true);
-
-    float32 halfSizef = textureSize / 2.f;
-    
-    bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
-    
-    Rect firstSideViewport, secondSideViewport;
-    if(isMeshHorizontal) //bushes
-    {
-        firstSideViewport = Rect(0, 0, (float32)textureSize, halfSizef);
-        secondSideViewport = Rect(0, halfSizef, (float32)textureSize, halfSizef);
-    }
-    else //trees
-    {
-        firstSideViewport = Rect(0, 0, halfSizef, (float32)textureSize);
-        secondSideViewport = Rect(halfSizef, 0, halfSizef, (float32)textureSize);
-    }
-    
-    float32 depth = 0.f;
-    //draw 1st side
-    depth = max.y - min.y;
-    camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
-    camera->SetPosition(Vector3(0.f, min.y, 0.f));
-    DrawToTexture(fromEntity, camera, fboTexture, firstSideViewport, true);
-
-    //draw 2nd side
-    depth = max.x - min.x;
-    camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
-    camera->SetPosition(Vector3(max.x, 0.f, 0.f));
-    DrawToTexture(fromEntity, camera, fboTexture, secondSideViewport, false);
-
-    SafeRelease(camera);
-
-    Image * textureImage = fboTexture->CreateImageFromMemory();
-    ImageLoader::Save(textureImage, textureSavePath);
-    SafeRelease(fboTexture);
-    
-    TextureDescriptorUtils::CreateDescriptorIfNeed(textureSavePath);
-
-//////////Create entity from planes
-
-    Entity * planeEntity = new Entity();
-    planeEntity->SetName(lodComponent->GetEntity()->GetName() + Format("_lod%d", lodComponent->GetLodLayersCount()));
-
-    RenderObject * planeRO = new Mesh();
-    planeEntity->AddComponent(new RenderComponent(planeRO));
-
-    RenderBatch * rb = new RenderBatch();
-
-    int32 vxCount, indCount;
-    vxCount = 8;
-    indCount = 12;
-    PolygonGroup * planePG = new PolygonGroup();
-    planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
-    
-    //1st plane
-    planePG->SetCoord(0, Vector3(0.f, min.y, max.z));
-    planePG->SetCoord(1, Vector3(0.f, max.y, max.z));
-    planePG->SetCoord(2, Vector3(0.f, max.y, min.z));
-    planePG->SetCoord(3, Vector3(0.f, min.y, min.z));
-
-    planePG->SetIndex(0, 1);
-    planePG->SetIndex(1, 0);
-    planePG->SetIndex(2, 3);
-    planePG->SetIndex(3, 1);
-    planePG->SetIndex(4, 3);
-    planePG->SetIndex(5, 2);
-
-    //2nd plane
-    planePG->SetCoord(4, Vector3(min.x, 0.f, max.z));
-    planePG->SetCoord(5, Vector3(max.x, 0.f, max.z));
-    planePG->SetCoord(6, Vector3(max.x, 0.f, min.z));
-    planePG->SetCoord(7, Vector3(min.x, 0.f, min.z));
-
-    planePG->SetIndex(6,  5);
-    planePG->SetIndex(7,  4);
-    planePG->SetIndex(8,  7);
-    planePG->SetIndex(9,  5);
-    planePG->SetIndex(10, 7);
-    planePG->SetIndex(11, 6);
-
-    if(isMeshHorizontal)
-    {
-        //1st plane
-        planePG->SetTexcoord(0, 0, Vector2(.0f, .5f));
-        planePG->SetTexcoord(0, 1, Vector2(1.f, .5f));
-        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
-        planePG->SetTexcoord(0, 3, Vector2(.0f, 1.f));
-        
-        //2nd plane
-        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
-        planePG->SetTexcoord(0, 5, Vector2(1.f, 0.f));
-        planePG->SetTexcoord(0, 6, Vector2(1.f, .5f));
-        planePG->SetTexcoord(0, 7, Vector2(.0f, .5f));
-    }
-    else
-    {
-        //1st plane
-        planePG->SetTexcoord(0, 0, Vector2(.5f, 0.f));
-        planePG->SetTexcoord(0, 1, Vector2(1.f, 0.f));
-        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
-        planePG->SetTexcoord(0, 3, Vector2(.5f, 1.f));
-        
-        //2nd plane
-        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
-        planePG->SetTexcoord(0, 5, Vector2(.5f, 0.f));
-        planePG->SetTexcoord(0, 6, Vector2(.5f, 1.f));
-        planePG->SetTexcoord(0, 7, Vector2(.0f, 1.f));
-    }
-    
-    rb->SetPolygonGroup(planePG);
-    planeRO->AddRenderBatch(rb);
-
-    /*Material * material = new Material();
-    material->SetType(Material::MATERIAL_UNLIT_TEXTURE);
-    material->SetFog(true);
-    material->SetOpaque(true);
-    material->SetTwoSided(true);
-    material->SetName(Format("%s_planes", fromEntity->GetName().c_str()));
-    
-    material->SetTexture(Material::TEXTURE_DIFFUSE, textureSavePath);*/
-	
-	NMaterial* material = NMaterial::CreateMaterialInstance(FastName(Format("%s_planes", fromEntity->GetName().c_str())),
-															NMaterialName::TEXTURED_ALPHATEST,
-															NMaterial::DEFAULT_QUALITY_NAME);
-	material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
-	NMaterialHelper::DisableStateFlags(PASS_FORWARD, material, RenderStateData::STATE_CULL);
-	material->SetTexture(NMaterial::TEXTURE_ALBEDO, textureSavePath);
-	
-    rb->SetMaterial(material);
-
-    SafeRelease(rb);
-    SafeRelease(planePG);
-    SafeRelease(material);
-
-    return planeEntity;
-}
 
 void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camera * camera, DAVA::Texture * toTexture, const DAVA::Rect & viewport /* = DAVA::Rect(0, 0, -1, -1) */, bool clearTarget /* = true */)
 {
@@ -295,4 +171,172 @@ void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camer
     end = textures.end();
     for(; it != end; ++it)
         it->second->ReloadAs(currentGPU);
+}
+
+void CreatePlaneLODCommand::CreatePlaneImage()
+{
+    DVASSERT(planeImage == NULL);
+    
+    DAVA::Entity *fromEntity = GetEntity();
+    
+    AABBox3 bbox; Matrix4 wtMx;
+    fromEntity->GetWorldTransform().GetInverse(wtMx);
+    fromEntity->GetWTMaximumBoundingBoxSlow().GetTransformedBox(wtMx, bbox);
+    
+    const Vector3 & min = bbox.min;
+    const Vector3 & max = bbox.max;
+    bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
+    
+    Camera * camera = new Camera();
+    camera->SetTarget(Vector3(0.f, 0.f, 0.f));
+    camera->SetUp(Vector3(0.f, 0.f, 1.f));
+    camera->SetIsOrtho(true);
+    
+    float32 halfSizef = textureSize / 2.f;
+    
+    
+    Rect firstSideViewport, secondSideViewport;
+    if(isMeshHorizontal) //bushes
+    {
+        firstSideViewport = Rect(0, 0, (float32)textureSize, halfSizef);
+        secondSideViewport = Rect(0, halfSizef, (float32)textureSize, halfSizef);
+    }
+    else //trees
+    {
+        firstSideViewport = Rect(0, 0, halfSizef, (float32)textureSize);
+        secondSideViewport = Rect(halfSizef, 0, halfSizef, (float32)textureSize);
+    }
+    
+    Texture * fboTexture = Texture::CreateFBO(textureSize, textureSize, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
+
+    float32 depth = 0.f;
+    //draw 1st side
+    depth = max.y - min.y;
+    camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
+    camera->SetPosition(Vector3(0.f, min.y, 0.f));
+    DrawToTexture(fromEntity, camera, fboTexture, firstSideViewport, true);
+    
+    //draw 2nd side
+    depth = max.x - min.x;
+    camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
+    camera->SetPosition(Vector3(max.x, 0.f, 0.f));
+    DrawToTexture(fromEntity, camera, fboTexture, secondSideViewport, false);
+    
+    SafeRelease(camera);
+    
+    planeImage = fboTexture->CreateImageFromMemory();
+    SafeRelease(fboTexture);
+}
+
+void CreatePlaneLODCommand::CreatePlaneBatch()
+{
+    DVASSERT(planeBatch == NULL);
+    
+    DAVA::Entity *fromEntity = GetEntity();
+    
+    AABBox3 bbox; Matrix4 wtMx;
+    fromEntity->GetWorldTransform().GetInverse(wtMx);
+    fromEntity->GetWTMaximumBoundingBoxSlow().GetTransformedBox(wtMx, bbox);
+    
+    const Vector3 & min = bbox.min;
+    const Vector3 & max = bbox.max;
+    bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
+
+    int32 vxCount = 8, indCount = 12;
+
+    PolygonGroup * planePG = new PolygonGroup();
+    planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
+    
+    //1st plane
+    planePG->SetCoord(0, Vector3(0.f, min.y, max.z));
+    planePG->SetCoord(1, Vector3(0.f, max.y, max.z));
+    planePG->SetCoord(2, Vector3(0.f, max.y, min.z));
+    planePG->SetCoord(3, Vector3(0.f, min.y, min.z));
+    
+    planePG->SetIndex(0, 1);
+    planePG->SetIndex(1, 0);
+    planePG->SetIndex(2, 3);
+    planePG->SetIndex(3, 1);
+    planePG->SetIndex(4, 3);
+    planePG->SetIndex(5, 2);
+    
+    //2nd plane
+    planePG->SetCoord(4, Vector3(min.x, 0.f, max.z));
+    planePG->SetCoord(5, Vector3(max.x, 0.f, max.z));
+    planePG->SetCoord(6, Vector3(max.x, 0.f, min.z));
+    planePG->SetCoord(7, Vector3(min.x, 0.f, min.z));
+    
+    planePG->SetIndex(6,  5);
+    planePG->SetIndex(7,  4);
+    planePG->SetIndex(8,  7);
+    planePG->SetIndex(9,  5);
+    planePG->SetIndex(10, 7);
+    planePG->SetIndex(11, 6);
+    
+    if(isMeshHorizontal)
+    {
+        //1st plane
+        planePG->SetTexcoord(0, 0, Vector2(.0f, .5f));
+        planePG->SetTexcoord(0, 1, Vector2(1.f, .5f));
+        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
+        planePG->SetTexcoord(0, 3, Vector2(.0f, 1.f));
+        
+        //2nd plane
+        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
+        planePG->SetTexcoord(0, 5, Vector2(1.f, 0.f));
+        planePG->SetTexcoord(0, 6, Vector2(1.f, .5f));
+        planePG->SetTexcoord(0, 7, Vector2(.0f, .5f));
+    }
+    else
+    {
+        //1st plane
+        planePG->SetTexcoord(0, 0, Vector2(.5f, 0.f));
+        planePG->SetTexcoord(0, 1, Vector2(1.f, 0.f));
+        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
+        planePG->SetTexcoord(0, 3, Vector2(.5f, 1.f));
+        
+        //2nd plane
+        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
+        planePG->SetTexcoord(0, 5, Vector2(.5f, 0.f));
+        planePG->SetTexcoord(0, 6, Vector2(.5f, 1.f));
+        planePG->SetTexcoord(0, 7, Vector2(.0f, 1.f));
+    }
+    
+    planeBatch = new RenderBatch();
+    planeBatch->SetPolygonGroup(planePG);
+    SafeRelease(planePG);
+
+	NMaterial* material = NMaterial::CreateMaterialInstance(FastName(Format("%s_planes", fromEntity->GetName().c_str())),
+															NMaterialName::TEXTURED_ALPHATEST,
+															NMaterial::DEFAULT_QUALITY_NAME);
+	material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
+	NMaterialHelper::DisableStateFlags(PASS_FORWARD, material, RenderStateData::STATE_CULL);
+	material->SetTexture(NMaterial::TEXTURE_ALBEDO, TextureDescriptor::GetDescriptorPathname(textureSavePath));
+	
+    planeBatch->SetMaterial(material);
+    SafeRelease(material);
+}
+
+
+void CreatePlaneLODCommand::CreateTextureFiles()
+{
+    DVASSERT(planeImage);
+    
+    FilePath folder = textureSavePath.GetDirectory();
+    FileSystem::Instance()->CreateDirectory(folder, true);
+    
+    ImageLoader::Save(planeImage, textureSavePath);
+    TextureDescriptorUtils::CreateDescriptorIfNeed(textureSavePath);
+}
+
+void CreatePlaneLODCommand::DeleteTextureFiles()
+{
+    FileSystem::Instance()->DeleteFile(textureSavePath);
+    FileSystem::Instance()->DeleteFile(TextureDescriptor::GetDescriptorPathname(textureSavePath));
+}
+
+
+DAVA::RenderBatch * CreatePlaneLODCommand::GetRenderBatch() const
+{
+    return planeBatch;
 }

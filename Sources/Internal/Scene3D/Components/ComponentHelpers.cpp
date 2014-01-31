@@ -173,6 +173,32 @@ SwitchComponent * GetSwitchComponent(Entity *fromEntity)
 	return NULL;
 }
 
+uint32 GetLodLayersCount(Entity *fromEntity)
+{
+    if (!fromEntity) return 0;
+
+    RenderObject *object = GetRenderObject(fromEntity);
+    if(!object) return 0;
+    
+    if(object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+        return 0;
+    
+    return (object->GetMaxLodIndex() + 1);
+}
+    
+uint32 GetLodLayersCount(LodComponent *fromComponent)
+{
+    if(!fromComponent) return 0;
+
+    RenderObject *object = GetRenderObject(fromComponent->GetEntity());
+    if(!object) return 0;
+    
+    if(object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
+        return 0;
+    
+    return (object->GetMaxLodIndex() + 1);
+}
+
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *))
 {
 	RenderComponent * comp = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);
