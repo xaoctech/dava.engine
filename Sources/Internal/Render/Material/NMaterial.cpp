@@ -255,7 +255,7 @@ namespace DAVA
     {
         int32 flagValue = GetFlagValue(flag);
         
-        return ((flagValue & 1) == NMaterial::FlagOn);
+        return ((flagValue & NMaterial::FlagOn) == NMaterial::FlagOn);
     }
 			
 	void NMaterial::Save(KeyedArchive * archive,
@@ -698,16 +698,15 @@ namespace DAVA
     void NMaterial::SetTexturePath(const FastName& textureFastName, const FilePath& texturePath)
     {
         TextureBucket* bucket = textures.at(textureFastName);
+        
 		if(NULL == bucket)
 		{
 			bucket = new TextureBucket();
 			bucket->texture = NULL;
 			textures.insert(textureFastName, bucket);
 		}
-        else
-        {
-            bucket->path = texturePath;
-        }
+        
+        bucket->path = texturePath;
     }
 	
     Texture * NMaterial::GetTexture(const FastName& textureFastName) const
