@@ -89,6 +89,7 @@ namespace ResourceEditor
 	static const char* SETTINGS_SHOW_OUTPUT =			"ShowOutput";
 	static const char* SETTINGS_LEFT_PANEL_WIDTH =		"LeftPanelWidth";
 	static const char* SETTINGS_RIGHT_PANEL_WIDTH =		"RightPanelWidth";
+	static const char* SETTINGS_LOD_LAYER =				"LODLayer";
 	static const char* SETTINGS_LAST_OPENED_FILE =		"LastOpenedFile";
 	//static const char* SETTINGS_LAST_OPENED_FILES_COUNT = "LastOpenedFilesCount";
 	static const char* SETTINGS_DRAW_GRID =				"DrawGrid";
