@@ -63,6 +63,7 @@ void FrameworkDidLaunched()
 //#endif
 
 	Core::Instance()->SetOptions(appOptions);
+    Core::Instance()->EnableReloadResourceOnResize(false);
 
 	GameCore * core = new GameCore();
 	Core::SetApplicationCore(core);
