@@ -276,7 +276,16 @@ public:
         \returns pathname of heightmap
      */
     const FilePath & GetHeightmapPathname();
+	
+	void SetHeightmapPathname(const FilePath & newPath);
+	
+	float32 GetLandscapeSize();
+	
+	void SetLandscapeSize(float32 newSize);
 
+	float32 GetLandscapeHeight();
+	
+	void SetLandscapeHeight(float32 newHeight);
     
     void Save(KeyedArchive * archive, SerializationContext * serializationContext);
     void Load(KeyedArchive * archive, SerializationContext * serializationContext);
@@ -438,6 +447,9 @@ protected:
     //float32 fogDensity;
     //Color   fogColor;
     
+	float32 size;
+	float32 height;
+	
 	NMaterial* tileMaskMaterial;
 	//NMaterial* fullTiledMaterial;
 	//NMaterial* currentMaterial;
@@ -472,6 +484,9 @@ public:
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
+        PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
+        PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
         //MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         //MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
 		
