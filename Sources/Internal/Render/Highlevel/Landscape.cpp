@@ -1394,6 +1394,76 @@ const FilePath & Landscape::GetHeightmapPathname()
 {
     return heightmapPath;
 }
+	
+void Landscape::SetHeightmapPathname(const FilePath & newHeightMapPath)
+{
+	if(newHeightMapPath == heightmapPath)
+	{
+		return;
+	}
+	
+	if(newHeightMapPath.IsEqualToExtension(".png"))
+	{
+		Vector<Image *> imageVector = ImageLoader::CreateFromFileByExtension(newHeightMapPath);
+		DVASSERT(imageVector.size());
+		
+		PixelFormat format = imageVector[0]->GetPixelFormat();
+
+		for_each(imageVector.begin(), imageVector.end(), SafeRelease<Image>);
+		if( !(format == FORMAT_A8 ||format == FORMAT_A16))
+		{
+			Logger::Error("HeightMapt isn't applies: png file should be in format A8 or A16.");
+			return;
+		}
+	}
+	BuildLandscapeFromHeightmapImage(newHeightMapPath, bbox);
+}
+	
+float32 Landscape::GetLandscapeSize()
+{
+	return bbox.GetSize().x;
+}
+	
+void Landscape::SetLandscapeSize(float32 newSize)
+{
+	if(newSize < 0.0f)
+	{
+		return;
+	}
+	Vector3 newLandscapeSize(newSize, newSize, bbox.GetSize().z);
+	if(newLandscapeSize == bbox.GetSize())
+	{
+		return;
+	}
+	AABBox3 bboxForLandscape;
+	bboxForLandscape.AddPoint(Vector3(-newLandscapeSize.x/2.f, -newLandscapeSize.y/2.f, 0.f));
+	bboxForLandscape.AddPoint(Vector3(newLandscapeSize.x/2.f, newLandscapeSize.y/2.f, newLandscapeSize.z));
+	bbox = bboxForLandscape;
+    BuildLandscape();
+}
+	
+float32 Landscape::GetLandscapeHeight()
+{
+	return bbox.GetSize().z;
+}
+	
+void Landscape::SetLandscapeHeight(float32 newHeight)
+{
+	if(newHeight < 0.0f)
+	{
+		return;
+	}
+	Vector3 newLandscapeSize(bbox.GetSize().x, bbox.GetSize().y, newHeight);
+	if(newLandscapeSize == bbox.GetSize())
+	{
+		return;
+	}
+	AABBox3 bboxForLandscape;
+	bboxForLandscape.AddPoint(Vector3(-newLandscapeSize.x/2.f, -newLandscapeSize.y/2.f, 0.f));
+	bboxForLandscape.AddPoint(Vector3(newLandscapeSize.x/2.f, newLandscapeSize.y/2.f, newLandscapeSize.z));
+	bbox = bboxForLandscape;
+    BuildLandscape();
+}
     
 void Landscape::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
