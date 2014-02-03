@@ -253,7 +253,7 @@ namespace DAVA
     {
         int32 flagValue = GetFlagValue(flag);
         
-        return ((flagValue & 1) == NMaterial::FlagOn);
+        return ((flagValue & NMaterial::FlagOn) == NMaterial::FlagOn);
     }
 			
 	void NMaterial::Save(KeyedArchive * archive,

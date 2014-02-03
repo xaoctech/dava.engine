@@ -44,7 +44,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 modelViewProjectionMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
 uniform mat4 modelViewMatrix;
 #endif
 
@@ -71,6 +71,7 @@ uniform mediump vec2 uvScale;
 uniform vec3 worldTranslate;
 uniform vec3 worldScale;
 uniform mat4 projectionMatrix;
+uniform float cutDistance;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -124,7 +125,23 @@ void main()
 	vec4 vecPos = (modelViewProjectionMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
+
+#if defined (CUT_LEAF)
+    vec3 position;
+    vec4 tangentInCameraSpace = modelViewMatrix * vec4(inTangent, 1);
+    if (tangentInCameraSpace.z < -cutDistance)
+    {
+        position = /*worldScale * vec3(0,0,0) +*/ worldTranslate;
+    }
+    else
+    {
+        position = worldScale * (inPosition.xyz - inTangent) + worldTranslate;
+    }
+    gl_Position = projectionMatrix * vec4(position, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
+#else
 	gl_Position = projectionMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldTranslate, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
+#endif
+    
 #else
 	gl_Position = modelViewProjectionMatrix * inPosition;
 #endif

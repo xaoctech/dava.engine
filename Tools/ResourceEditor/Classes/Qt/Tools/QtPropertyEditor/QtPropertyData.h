@@ -41,6 +41,7 @@
 // model class
 class QtPropertyModel;
 class QtPropertyToolButton;
+class QtPropertyDataValidator;
 
 // PropertyData class
 class QtPropertyData : public QObject
@@ -115,6 +116,9 @@ public:
 	bool IsEnabled() const;
 
 	QtPropertyModel* GetModel() const;
+    
+    QtPropertyDataValidator* GetValidator() const;
+    void SetValidator(QtPropertyDataValidator*);
 
 	// editor
 	QWidget* CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) const;
@@ -167,6 +171,8 @@ protected:
 	
 	QWidget *optionalButtonsViewport;
 	QVector<QtPropertyToolButton*> optionalButtons;
+    
+    QtPropertyDataValidator* validator;
 
 	void SetModel(QtPropertyModel *model);
 
