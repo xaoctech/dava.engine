@@ -549,6 +549,7 @@
 		E8D417C5188160C800A76E21 /* EditorMaterialSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8D417C3188160C800A76E21 /* EditorMaterialSystem.cpp */; };
 		E8EA8DBF185C38040064906E /* MaterialTree.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DBD185C38040064906E /* MaterialTree.cpp */; };
 		E8EA8DC1185C38170064906E /* MaterialTree_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8EA8DC0185C38170064906E /* MaterialTree_moc.cpp */; };
+		EAADA00E189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = EAADA00C189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1629,6 +1630,8 @@
 		E8EA8DBD185C38040064906E /* MaterialTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree.cpp; sourceTree = "<group>"; };
 		E8EA8DBE185C38040064906E /* MaterialTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTree.h; sourceTree = "<group>"; };
 		E8EA8DC0185C38170064906E /* MaterialTree_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTree_moc.cpp; sourceTree = "<group>"; };
+		EAADA00C189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleEmitterMoveCommands.cpp; sourceTree = "<group>"; };
+		EAADA00D189FB59E001E1AA2 /* ParticleEmitterMoveCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleEmitterMoveCommands.h; sourceTree = "<group>"; };
 		F7C12D3D2FE75302773F34BB /* vorbisfile_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbisfile_macos; path = ../../Libs/oggvorbis/lib/libvorbisfile_macos.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2933,6 +2936,8 @@
 		E8C99008184CD0EB00AFBF3F /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				EAADA00C189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp */,
+				EAADA00D189FB59E001E1AA2 /* ParticleEmitterMoveCommands.h */,
 				E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */,
 				E8064AC2189A95FA00EE7164 /* DeleteRenderBatchCommand.h */,
 				E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */,
@@ -4409,6 +4414,7 @@
 				E8C992D8184CD0EC00AFBF3F /* ParticleTimeLineColumns.cpp in Build Sources */,
 				E8BAD7111859F50300C98C8D /* SettingsManager_moc.cpp in Build Sources */,
 				E8C99283184CD0EC00AFBF3F /* CommandAction.cpp in Build Sources */,
+				EAADA00E189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp in Build Sources */,
 				E8C99236184CD0EC00AFBF3F /* btGImpactShape.cpp in Build Sources */,
 				E8C992A2184CD0EC00AFBF3F /* ControlsFactory.cpp in Build Sources */,
 				E8C99338184CD0EC00AFBF3F /* QtPropertyDataInspMember.cpp in Build Sources */,
