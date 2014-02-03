@@ -47,6 +47,8 @@ CreatePlaneLODCommand::CreatePlaneLODCommand(DAVA::LodComponent * _lodComponent,
 {
     DVASSERT(GetRenderObject(GetEntity()));
     
+	savedDistances = lodComponent->lodLayersArray;
+
     newLodIndex = GetLodLayersCount(lodComponent);
     DVASSERT(newLodIndex > 0);
     
@@ -84,18 +86,7 @@ void CreatePlaneLODCommand::Undo()
     DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
 
     //restore batches
-    DAVA::uint32 count = ro->GetRenderBatchCount();
-    for(DAVA::uint32 i = 0; i < count; ++i)
-    {
-        DAVA::int32 lodIndex = 0, switchIndex = 0;
-        DAVA::RenderBatch *batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
-        if(lodIndex == newLodIndex)
-        {
-            ro->RemoveRenderBatch(i);
-            --i;
-            --count;
-        }
-    }
+	ro->RemoveRenderBatch(planeBatch);
 
     //restore distances
     lodComponent->lodLayersArray = savedDistances;
@@ -107,11 +98,7 @@ void CreatePlaneLODCommand::Undo()
         lodComponent->forceLodLayer = maxLodIndex;
     }
     
-    if(lodComponent->currentLod > maxLodIndex)
-    {
-        lodComponent->currentLod = maxLodIndex;
-    }
-
+	lodComponent->currentLod = DAVA::LodComponent::INVALID_LOD_LAYER;
     DeleteTextureFiles();
 }
 
