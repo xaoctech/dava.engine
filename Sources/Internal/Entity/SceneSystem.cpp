@@ -64,7 +64,7 @@ void SceneSystem::RemoveEntity(Entity * entity)
     
 }
     
-void SceneSystem::SetParent(DAVA::Entity *entity, DAVA::Entity *parent)
+void SceneSystem::SetParent(Entity *entity, Entity *parent)
 {
     
 }
