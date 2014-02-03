@@ -46,6 +46,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
+#include "Qt/Settings/SettingsManager.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/PathValidator.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -387,7 +389,12 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 			{
 				int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
-
+                
+                DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+                dynamicMember->SetDefaultOpenDialogPath(projPath.c_str());
+                dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
+				dynamicMember->SetValidator(new PathValidator(projPath.c_str()));
+                
 				// self property
 				if(memberFlags & DAVA::I_EDIT)
 				{
