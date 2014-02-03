@@ -2159,6 +2159,8 @@
 		EA84E17117FAC0B400304C3C /* SpatialTree.h in Headers */ = {isa = PBXBuildFile; fileRef = EA84E16B17FAC0B400304C3C /* SpatialTree.h */; };
 		EAADA0001892A458001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
 		EAADA0011892A458001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
+		EAADA01E189FCB09001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
+		EAADA01F189FCB30001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
 		FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
@@ -5561,6 +5563,7 @@
 				A650F4BA1864A10100D3278D /* NMaterialTemplate.cpp in Sources */,
 				176DEAC1174B5561007A983B /* RenderDataObject.cpp in Sources */,
 				176DEAC2174B5561007A983B /* RenderEffect.cpp in Sources */,
+				EAADA01F189FCB30001E1AA2 /* ParticleRenderObject.cpp in Sources */,
 				176DEAC3174B5561007A983B /* RenderGrayscaleEffect.cpp in Sources */,
 				176DEAC4174B5561007A983B /* RenderHelper.cpp in Sources */,
 				176DEAC5174B5561007A983B /* RenderManager.cpp in Sources */,
@@ -6296,6 +6299,7 @@
 				E898A26116BD265400732C04 /* MeshInstance.cpp in Sources */,
 				E898A26216BD265400732C04 /* MeshInstanceNode.cpp in Sources */,
 				E898A26316BD265400732C04 /* ParticleEffectNode.cpp in Sources */,
+				EAADA01E189FCB09001E1AA2 /* ParticleRenderObject.cpp in Sources */,
 				E898A26416BD265400732C04 /* ParticleEmitterNode.cpp in Sources */,
 				E898A26516BD265400732C04 /* PathManip.cpp in Sources */,
 				E898A26616BD265400732C04 /* PolygonGroupInstance.cpp in Sources */,
