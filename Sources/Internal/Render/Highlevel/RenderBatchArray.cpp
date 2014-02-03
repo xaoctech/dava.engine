@@ -83,13 +83,15 @@ void RenderPassBatchArray::Clear()
     }
 }
 
-void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray)
+void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera)
 {
     cameraWorldMatrices.clear();
     uint32 size = (uint32)visibilityArray->visibilityArray.size();
     for (uint32 ro = 0; ro < size; ++ro)
     {
         RenderObject * renderObject = visibilityArray->visibilityArray[ro];
+        if (renderObject->GetFlags()&RenderObject::CUSTOM_PREPARE_TO_RENDER)
+		    renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         
         uint32 batchCount = renderObject->GetActiveRenderBatchCount();
@@ -187,7 +189,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
             {
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
-                Vector3 position = renderObject->GetWorldTransformPtr()->GetTranslationVector();
+                Vector3 position = batch->GetSortingTransformPtr()->GetTranslationVector();
                 float32 distance = (position - cameraPosition).Length();
                 batch->layerSortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }

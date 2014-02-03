@@ -56,6 +56,8 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 {
 	bool res = false;
 
+    if (GetEffectComponent(entity))
+        return false;
 	Set<Entity*> entitiesToRemove;
 
 	LodComponent * lod = GetLodComponent(entity);

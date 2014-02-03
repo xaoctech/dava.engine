@@ -93,6 +93,28 @@ namespace DAVA
 
 class NMaterial;
 class Scene;
+
+class SceneArchive : public BaseObject
+{
+public:
+    struct SceneArchiveHierarchyNode : public BaseObject
+    {
+        KeyedArchive *archive;
+        Vector<SceneArchiveHierarchyNode *> children;
+        SceneArchiveHierarchyNode();
+        void LoadHierarchy(File *file);
+
+    protected:
+        ~SceneArchiveHierarchyNode();
+    };    
+
+    Vector<SceneArchiveHierarchyNode *> children;
+    Vector<KeyedArchive *> dataNodes;
+
+
+protected:
+    ~SceneArchive();
+};
     
 class SceneFileV2 : public BaseObject
 {
@@ -140,6 +162,8 @@ public:
     int32 removedNodeCount;
     	
 	Scene* GetScene() {return scene;}
+
+    SceneArchive *LoadSceneArchive(const FilePath & filename); //purely load data
 	
 private:
     void AddToNodeMap(DataNode * node);
