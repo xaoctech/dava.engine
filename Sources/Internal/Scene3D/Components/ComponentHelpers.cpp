@@ -82,23 +82,7 @@ SkyboxRenderObject * GetSkybox(const Entity * fromEntity)
     
     return NULL;
 }
-
-    
-ParticleEmitter * GetEmitter(Entity * fromEntity)
-{
-	ParticleEmitter * emitter = 0;
-
-	if(NULL != fromEntity)
-	{
-		RenderObject * object = GetRenderObject(fromEntity);
-		if(object && object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
-		{
-			emitter = static_cast<ParticleEmitter*>(object);
-		}
-	}
-
-	return emitter;
-}
+   
 
 ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 {

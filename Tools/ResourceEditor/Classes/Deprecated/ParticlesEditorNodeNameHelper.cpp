@@ -122,7 +122,7 @@ bool ParticlesEditorNodeNameHelper::IsLayerNameExist(const String &name, Particl
 	if (!emitter)
 		return false;	
 	
-	for (std::vector<ParticleLayer*>::const_iterator t = emitter->GetLayers().begin(); t != emitter->GetLayers().end(); ++t)
+	for (std::vector<ParticleLayer*>::const_iterator t = emitter->layers.begin(); t != emitter->layers.end(); ++t)
 	{
         ParticleLayer *layer = *t;
 		

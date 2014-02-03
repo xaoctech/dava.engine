@@ -99,6 +99,9 @@ public:
     
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
+
+    void SetSortingTransformPtr(Matrix4* worldTransformPtr);
+    inline Matrix4 * GetSortingTransformPtr() const;
     
     inline void SetStartIndex(uint32 _startIndex);
     inline void SetIndexCount(uint32 _indexCount);
@@ -130,6 +133,7 @@ protected:
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     NMaterial * material;                    // Should be replaced to NMaterial
 	RenderObject * renderObject;
+    Matrix4 *sortingTransformPtr;
     
     uint32 startIndex;
     uint32 indexCount;
@@ -186,6 +190,11 @@ inline NMaterial * RenderBatch::GetMaterial()
 inline RenderObject * RenderBatch::GetRenderObject()
 {
 	return renderObject;
+}
+
+inline Matrix4 * RenderBatch::GetSortingTransformPtr() const
+{
+    return sortingTransformPtr;
 }
 
 inline void RenderBatch::SetStartIndex(uint32 _startIndex)
