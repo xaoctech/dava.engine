@@ -102,11 +102,15 @@
 #include <QKeySequence>
 
 #include "Scene3D/Components/ActionComponent.h"
+#include "Scene3D/Systems/SkyboxSystem.h"
 
 #include "Classes/Constants.h"
 
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
+
+#define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
+#define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -626,6 +630,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
+    QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
+    QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowGeneralSettings()));
 	QObject::connect(ui->actionCurrentSceneSettings, SIGNAL(triggered()), this, SLOT(OnShowCurrentSceneSettings()));
@@ -1336,6 +1342,45 @@ void QtMainWindow::UnmodalDialogFinished(int)
 	{
 		landscapeDialog = NULL;
 	}
+}
+
+void QtMainWindow::OnAddLandscape()
+{
+    Entity* entityToProcess = new Entity();
+    entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
+    entityToProcess->SetLocked(true);
+    Landscape* newLandscape = new Landscape();
+    newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
+    RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
+    entityToProcess->AddComponent(component);
+    
+    AABBox3 bboxForLandscape;
+    bboxForLandscape.AddPoint(Vector3(-DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, -DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, 0.f));
+    bboxForLandscape.AddPoint(Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_HEIGHT));
+    newLandscape->BuildLandscapeFromHeightmapImage("", bboxForLandscape);
+
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        sceneEditor->Exec(new EntityAddCommand(entityToProcess, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(entityToProcess);
+    }
+    SafeRelease(entityToProcess);
+}
+
+void QtMainWindow::OnAddSkybox()
+{
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(!sceneEditor)
+    {
+        return;
+    }
+    Entity* skyboxEntity = sceneEditor->skyboxSystem->AddSkybox();
+    skyboxEntity->Retain();
+    
+    skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
+    sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
+    skyboxEntity->Release();
 }
 
 void QtMainWindow::OnLandscapeDialog()
