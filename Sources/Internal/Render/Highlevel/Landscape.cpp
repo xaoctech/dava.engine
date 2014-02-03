@@ -65,11 +65,7 @@ const FastName Landscape::PARAM_PROP_SPECULAR_COLOR("prop_specularColor");
 const FastName Landscape::PARAM_SPECULAR_SHININESS("materialSpecularShininess");
 const FastName Landscape::TEXTURE_SPECULAR_MAP("specularMap");
 const FastName Landscape::TECHNIQUE_TILEMASK_NAME("ForwardPass");
-	
-const int TEXTURE_NAME_COLOR = 0;
-const int TEXTURE_NAME_TILEMASK = 1;
-const int TEXTURE_NAME_TILE0 = 2;
-    
+	   
 const FastName INVALID_PROPERTY_NAME = FastName("");
 	
 static FastName TILEMASK_TEXTURE_PROPS_NAMES[] =
@@ -1427,10 +1423,7 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 {
 	RenderObject::Load(archive, serializationContext);
 	
-	//MaterialSystem* matSystem = serializationContext->GetScene()->renderSystem->GetMaterialSystem();
-	//SetRenderSystem(serializationContext->GetScene()->renderSystem);
-		
-	//fullTiledMaterial = matSystem->CreateChild(matSystem->GetMaterial("Global.Landscape.FullTiled"));
+    DVASSERT(serializationContext->GetVersion() >= 4);
 		
 #ifdef LANDSCAPE_SPECULAR_LIT
 		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
@@ -1450,9 +1443,6 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     fogDensityValue = archive->GetFloat("fogdencity", fogDensityValue);
     SetFogDensity(fogDensityValue);
 	
-	//isFogEnabled = !isFogEnabled;
-	//SetFog(!isFogEnabled);
-
 	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
     BuildLandscapeFromHeightmapImage(heightmapPath, boxDef);
         
@@ -1470,46 +1460,17 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 			if(!textureName.empty())
 			{
 				FilePath absPath = serializationContext->GetScenePath() + textureName;
-				if (serializationContext->GetVersion() >= 4)
-				{
-					SetTexture((eTextureLevel)k, absPath);
-				}
-				else
-				{
-					DVASSERT(0); //VK: need to check if we have old scenes
-
-					if ((k == 0) || (k == 1)) // if texture 0 or texture 1, move them to TILE0, TILE1
-						SetTexture((eTextureLevel)(k + 2), absPath);
-
-					if (k == 3)
-						SetTexture(TEXTURE_COLOR, absPath);
-				}
+                SetTexture((eTextureLevel)k, absPath);
 			}
 		}
 
-		//load tiles
-		if (serializationContext->GetVersion() >= 4)
-		{
-            Vector2 tilingValue;
-            tilingValue = archive->GetByteArrayAsType(Format("tiling_%d", k), tilingValue);
-            SetTextureTiling((eTextureLevel)k, tilingValue);
+        Vector2 tilingValue;
+        tilingValue = archive->GetByteArrayAsType(Format("tiling_%d", k), tilingValue);
+        SetTextureTiling((eTextureLevel)k, tilingValue);
             
-            Color colorValue;
-            colorValue = archive->GetByteArrayAsType(Format("tilecolor_%d", k), colorValue);
-            SetTileColor((eTextureLevel)k, colorValue);
-		}
-		else
-		{
-			DVASSERT(0); //VK: need to check if we have old scenes
-
-			if ((k == 0) || (k == 1))
-            {
-                Vector2 tilingValue;
-                tilingValue = archive->GetByteArrayAsType(Format("tiling_%d", k), tilingValue);
-				
-                SetTextureTiling((eTextureLevel)k, tilingValue);
-            }
-		}
+        Color colorValue;
+        colorValue = archive->GetByteArrayAsType(Format("tilecolor_%d", k), colorValue);
+        SetTileColor((eTextureLevel)k, colorValue);
     }
 	
 	SetupMaterialProperties();
