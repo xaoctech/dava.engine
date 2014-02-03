@@ -41,8 +41,6 @@
 
 #include "AlignDistribute/AlignDistributeManager.h"
 
-#include "Helpers/SpritesHelper.h"
-
 HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 	QObject(parent)
 {
@@ -566,6 +564,11 @@ void HierarchyTreeController::SynchronizeSelection(const QList<HierarchyTreeCont
     }
 }
 
+void HierarchyTreeController::UpdateControlsData()
+{
+	 hierarchyTree.UpdateControlsData();
+}
+
 void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSystem)
 {
     // Update the Active Platform.
@@ -719,9 +722,4 @@ void HierarchyTreeController::RepackAndReloadSprites()
     ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode());
     CommandsController::Instance()->ExecuteCommand(cmd);
     SafeRelease(cmd);
-}
-
-void HierarchyTreeController::SetPixelization(bool value)
-{
-    SpritesHelper::SetPixelization(hierarchyTree.GetRootNode(), value);
 }

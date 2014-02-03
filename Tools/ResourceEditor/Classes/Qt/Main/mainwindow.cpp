@@ -396,7 +396,6 @@ void QtMainWindow::SetupMainMenu()
 {
 	ui->menuView->addAction(ui->dockSceneInfo->toggleViewAction());
 	ui->menuView->addAction(ui->dockLibrary->toggleViewAction());
-	ui->menuView->addAction(ui->dockMaterials->toggleViewAction());
 	ui->menuView->addAction(ui->dockProperties->toggleViewAction());
 	ui->menuView->addAction(ui->dockParticleEditor->toggleViewAction());
 	ui->menuView->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
@@ -445,6 +444,20 @@ void QtMainWindow::SetupToolBars()
 		reloadTexturesBtn->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 		reloadTexturesBtn->setAutoRaise(false);
 	}
+
+    // adding menu for textures view mode
+    {
+        QToolButton *setTexturesMode = new QToolButton();
+        setTexturesMode->setMenu(ui->menuTextures);
+        setTexturesMode->setPopupMode(QToolButton::InstantPopup);
+        //reloadTexturesBtn->setDefaultAction(ui->actionReloadTextures);
+        //reloadTexturesBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+        //reloadTexturesBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+        //ui->mainToolBar->addSeparator();
+        ui->mainToolBar->addWidget(setTexturesMode);
+        setTexturesMode->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        setTexturesMode->setAutoRaise(false);
+    }
 
 	//hanging objects	
 	{
@@ -520,7 +533,6 @@ void QtMainWindow::SetupDocks()
     
 
     ui->libraryWidget->SetupSignals();
-    ui->materialsWidget->SetupSignals();
     
 	ui->dockProperties->Init();
 }
@@ -565,6 +577,10 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
 	QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
 
+    QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialAlbedo(bool)));
+    QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialAmbient(bool)));
+    QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialDiffuse(bool)));
+    QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialSpecular(bool)));
 	
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
 	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
@@ -766,6 +782,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadLandscapeEditorState(scene);
 	LoadObjectTypes(scene);
 	LoadHangingObjects(scene);
+    LoadMaterialViewMode(scene);
 
 	int32 tools = scene->GetEnabledTools();
 	SetLandscapeSettingsEnabled(tools == 0);
@@ -803,7 +820,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->dockProperties->setEnabled(enable);
 	ui->dockSceneTree->setEnabled(enable);
 	ui->dockSceneInfo->setEnabled(enable);
-    ui->dockMaterials->setEnabled(enable);
 
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveSceneAs->setEnabled(enable);
@@ -2402,6 +2418,59 @@ void QtMainWindow::LoadHangingObjects( SceneEditor2 * scene )
 void QtMainWindow::OnHangingObjectsHeight( double value)
 {
 	DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32) value;
+}
+
+void QtMainWindow::OnMaterialAlbedo(bool state)
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(NULL != scene)
+    {
+        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_ALBEDO, state);
+        LoadMaterialViewMode(scene);
+    }
+}
+
+void QtMainWindow::OnMaterialAmbient(bool state)
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(NULL != scene)
+    {
+        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_AMBIENT, state);
+        LoadMaterialViewMode(scene);
+    }
+}
+
+void QtMainWindow::OnMaterialDiffuse(bool state)
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(NULL != scene)
+    {
+        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_DIFFUSE, state);
+        LoadMaterialViewMode(scene);
+    }
+}
+
+void QtMainWindow::OnMaterialSpecular(bool state)
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(NULL != scene)
+    {
+        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_SPECULAR, state);
+        LoadMaterialViewMode(scene);
+    }
+}
+
+void QtMainWindow::LoadMaterialViewMode(SceneEditor2 *scene)
+{
+    if(NULL != scene)
+    {
+        int curViewMode = scene->materialSystem->GetViewMode();
+        
+        ui->actionAlbedo->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_ALBEDO));
+        ui->actionAmbient->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_AMBIENT));
+        ui->actionSpecular->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_SPECULAR));
+        ui->actionDiffuse->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_DIFFUSE));
+    }
 }
 
 void QtMainWindow::UpdateConflictingActionsState(bool enable)

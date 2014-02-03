@@ -1,10 +1,30 @@
-//
-//  SpritesHelper.cpp
-//  UIEditor
-//
-//  Created by Yuri Coder on 12/23/13.
-//
-//
+/*==================================================================================
+ Copyright (c) 2008, binaryzebra
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ 
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of the binaryzebra nor the
+ names of its contributors may be used to endorse or promote products
+ derived from this software without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE binaryzebra AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL binaryzebra BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ =====================================================================================*/
 
 #include "SpritesHelper.h"
 #include "UIControlStateHelper.h"
@@ -42,7 +62,7 @@ Set<Sprite*> SpritesHelper::EnumerateSprites(const HierarchyTreeNode* rootNode)
     return resultSprites;
 }
 
-void SpritesHelper::BuildSpritesListRecursive(const HierarchyTreeControlNode* controlNode, Set<Sprite*>& sprites)
+void SpritesHelper::BuildSpritesListRecursive(const HierarchyTreeControlNode* controlNode, Set<Sprite*>& spritesList)
 {
     if (!controlNode)
     {
@@ -50,18 +70,13 @@ void SpritesHelper::BuildSpritesListRecursive(const HierarchyTreeControlNode* co
     }
     
     UIButton* buttonControl = dynamic_cast<UIButton*>(controlNode->GetUIObject());
-    UIStaticText* staticTextControl = dynamic_cast<UIStaticText*>(controlNode->GetUIObject());
     if (buttonControl)
     {
-        BuildSpritesList(sprites, buttonControl);
-    }
-    else if (staticTextControl)
-    {
-        BuildSpritesList(sprites, staticTextControl);
+        BuildSpritesList(spritesList, buttonControl);
     }
     else if (controlNode->GetUIObject() && controlNode->GetUIObject()->GetSprite())
     {
-        sprites.insert(controlNode->GetUIObject()->GetSprite());
+        spritesList.insert(controlNode->GetUIObject()->GetSprite());
     }
 
     // Repeat for all children.
@@ -69,58 +84,8 @@ void SpritesHelper::BuildSpritesListRecursive(const HierarchyTreeControlNode* co
     for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = childNodes.begin(); iter != childNodes.end(); iter ++)
     {
         const HierarchyTreeControlNode* childNode = dynamic_cast<const HierarchyTreeControlNode*>(*iter);
-        BuildSpritesListRecursive(childNode, sprites);
+        BuildSpritesListRecursive(childNode, spritesList);
     }
-}
-
-void SpritesHelper::SetPixelization(const HierarchyTreeNode* rootNode, bool value)
-{
-    Set<Sprite*> sprites = EnumerateSprites(rootNode);
-    SetPixelization(sprites, value);
-}
-
-void SpritesHelper::SetPixelization(Set<Sprite*>& spritesList, bool value)
-{
-    for (Set<Sprite*>::iterator iter = spritesList.begin(); iter != spritesList.end(); iter ++)
-    {
-        SetPixelization(*iter, value);
-    }
-}
-
-void SpritesHelper::SetPixelization(Sprite* sprite, bool value)
-{
-    if (!sprite)
-    {
-        return;
-    }
-
-    int32 frameCount = sprite->GetFrameCount();
-    for (int32 i = 0; i < frameCount; i ++)
-    {
-        Texture* texture = sprite->GetTexture(i);
-        if (!texture || !texture->GetDescriptor())
-        {
-            continue;
-        }
-
-        Texture::TextureFilter minFilter = value ? Texture::FILTER_NEAREST : (Texture::TextureFilter)texture->GetDescriptor()->settings.minFilter;
-        Texture::TextureFilter magFilter = value ? Texture::FILTER_NEAREST : (Texture::TextureFilter)texture->GetDescriptor()->settings.magFilter;
-        texture->SetMinMagFilter(minFilter, magFilter);
-    }
-}
-
-void SpritesHelper::SetPixelization(UIButton* button, bool value)
-{
-    Set<Sprite*> spritesList;
-    BuildSpritesList(spritesList, button);
-    SetPixelization(spritesList, value);
-}
-
-void SpritesHelper::SetPixelization(UIStaticText* staticText, bool value)
-{
-    Set<Sprite*> spritesList;
-    BuildSpritesList(spritesList, staticText);
-    SetPixelization(spritesList, value);
 }
 
 void SpritesHelper::BuildSpritesList(Set<Sprite*>& spritesList, UIButton* button)
@@ -134,16 +99,5 @@ void SpritesHelper::BuildSpritesList(Set<Sprite*>& spritesList, UIButton* button
         {
             spritesList.insert(buttonSprite);
         }
-
-        UIStaticText* textControl = button->GetStateTextControl(i);
-        BuildSpritesList(spritesList, textControl);
-    }
-}
-
-void SpritesHelper::BuildSpritesList(Set<Sprite*>& spritesList, UIStaticText* staticText)
-{
-    if (staticText && staticText->GetTextBlock() && staticText->GetTextBlock()->IsSpriteReady())
-    {
-        spritesList.insert(staticText->GetTextBlock()->GetSprite());
     }
 }

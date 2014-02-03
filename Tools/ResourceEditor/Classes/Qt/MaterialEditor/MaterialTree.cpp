@@ -30,9 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MaterialFilterModel.h"
 #include "Main/mainwindow.h"
 #include "Scene/SceneSignals.h"
+#include "MaterialEditor/MaterialAssignSystem.h"
 
 #include <QDragMoveEvent>
 #include <QDragEnterEvent>
+#include <QHeaderView>
 
 
 MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
@@ -48,9 +50,7 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), this, SLOT(OnStructureChanged(SceneEditor2 *, DAVA::Entity *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
-    expandMap[MaterialFilteringModel::SHOW_ALL] = false;
-    expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
-    expandMap[MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS] = true;
+    header()->setSortIndicator( 0, Qt::AscendingOrder );
 }
 
 MaterialTree::~MaterialTree()
@@ -69,8 +69,17 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 	{
 		treeModel->SetSelection(NULL);
 	}
+    sortByColumn( 0 );
+}
 
-    autoExpand();
+void MaterialTree::AssignMaterialToSelection( DAVA::NMaterial *material )
+{
+    SceneEditor2 *curScene = treeModel->GetScene();
+    Q_ASSERT( curScene );
+    if ( !curScene )
+        return ;
+    EntityGroup selection = curScene->selectionSystem->GetSelection();
+    MaterialAssignSystem::AssignMaterialToGroup(curScene, &selection, material);
 }
 
 DAVA::NMaterial* MaterialTree::GetMaterial(const QModelIndex &index) const
@@ -125,6 +134,16 @@ void MaterialTree::Update()
 	treeModel->Sync();
 }
 
+int MaterialTree::getFilterType() const
+{
+    return treeModel->getFilterType();
+}
+
+void MaterialTree::setFilterType(int filterType)
+{
+    treeModel->setFilterType( filterType );
+}
+
 void MaterialTree::ShowContextMenu(const QPoint &pos)
 { 
 	QMenu contextMenu(this);
@@ -144,7 +163,27 @@ void MaterialTree::ShowContextMenu(const QPoint &pos)
 	contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 */
 
+    const QModelIndex proxyIndex = indexAt( pos );
+    DAVA::NMaterial *material = treeModel->GetMaterial(proxyIndex);
+    QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
+    QAction * actionAssign = contextMenu.addAction("Assign to Selection", this, SLOT(OnAssignToSelection()));
+    actionAssign->setData(materialAsVariant);
+
 	contextMenu.exec(mapToGlobal(pos));
+}
+
+void MaterialTree::OnAssignToSelection()
+{
+    QAction *act = qobject_cast<QAction *>( sender() );
+    if ( !act )
+        return ;
+    QVariant indexAsVariant = act->data();
+    if ( !indexAsVariant.isValid() )
+        return ;
+    DAVA::NMaterial *material = indexAsVariant.value<DAVA::NMaterial *>();
+    if ( !material )
+        return ;
+    AssignMaterialToSelection( material );
 }
 
 void MaterialTree::dragEnterEvent(QDragEnterEvent * event)
@@ -230,7 +269,6 @@ void MaterialTree::OnSelectionChanged(SceneEditor2 *scene, const EntityGroup *se
 	{
 		treeModel->SetSelection(selected);
 		treeModel->invalidate();
-        autoExpand();
 	}
 }
 
@@ -238,33 +276,4 @@ void MaterialTree::OnSelectEntities()
 {
 	DAVA::NMaterial *currentMaterial = treeModel->GetMaterial(currentIndex());
 	SelectEntities(currentMaterial);
-}
-
-void MaterialTree::onCurrentExpandModeChange( bool setOn )
-{
-    const int filterType = treeModel->getFilterType();
-    expandMap[filterType] = setOn;
-    if ( setOn )
-    {
-        expandAll();
-    }
-    else
-    {
-        collapseAll();
-    }
-}
-
-void MaterialTree::autoExpand()
-{
-    const int filterType = treeModel->getFilterType();
-    if ( expandMap[filterType] )
-    {
-        expandAll();
-    }
-}
-
-bool MaterialTree::currentExpandMode() const
-{
-    const int filterType = treeModel->getFilterType();
-    return expandMap[filterType];
 }

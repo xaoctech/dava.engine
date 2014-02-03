@@ -33,8 +33,8 @@
 
 #include <QTreeView>
 #include <QTimer>
-#include "QtPropertyModel.h"
 #include "QtPropertyData.h"
+#include "QtPropertyModel.h"
 
 class QtPropertyItemDelegate;
 

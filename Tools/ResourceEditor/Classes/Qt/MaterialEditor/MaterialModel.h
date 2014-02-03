@@ -54,6 +54,7 @@ public:
     virtual ~MaterialModel();
     
     void SetScene(SceneEditor2 * scene);
+    SceneEditor2 *GetScene();
 	void SetSelection(const EntityGroup *group);
     DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
@@ -66,8 +67,6 @@ public:
 	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
-    // 
-
 protected:
 	SceneEditor2 *curScene;
 
@@ -76,6 +75,7 @@ private:
     QImage GetPreview( const DAVA::NMaterial * material ) const;
     QModelIndex FindItemIndex(const DAVA::TextureDescriptor *descriptor) const;
     QModelIndex FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const;
+    bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
 
 private slots:
     void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);

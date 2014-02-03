@@ -272,6 +272,8 @@ public:
 
 	PixelFormat GetFormat() const;
 
+    static void SetPixelization(bool value);
+
 protected:
     
     void ReleaseTextureData();
@@ -296,8 +298,6 @@ protected:
     
     static bool CheckImageSize(const Vector<Image *> &imageSet);
     static bool IsCompressedFormat(PixelFormat format);
-    
-	static uint32 ConvertToPower2FBOValue(uint32 value);
     
 	void GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData);
     
@@ -360,6 +360,8 @@ public:							// properties for fast access
 
     static TexturesMap textureMap;
     static eGPUFamily defaultGPU;
+    
+    static bool pixelizationFlag;
 };
     
 // Implementation of inline functions

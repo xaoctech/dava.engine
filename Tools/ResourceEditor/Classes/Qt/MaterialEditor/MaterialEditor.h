@@ -44,6 +44,9 @@ class MaterialEditor : public QDialog, public DAVA::Singleton<MaterialEditor>
 {
 	Q_OBJECT
 
+private:
+    typedef QMap< int, bool > ExpandMap;
+
 public:
 	MaterialEditor(QWidget *parent = 0);
 	~MaterialEditor();
@@ -64,7 +67,7 @@ protected slots:
 	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
-    void onFilterChanged();
+    void OnSwitchQuality(bool checked);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -72,20 +75,26 @@ protected:
 	void SetCurMaterial(DAVA::NMaterial *material);
 	void FillMaterialProperties(DAVA::NMaterial *material);
 	void FillMaterialTextures(DAVA::NMaterial *material);
-	void ScanTemplates();
+    void FillMaterialTemplates(DAVA::NMaterial *material);
+
+    QVariant CheckForTextureDescriptor(const QVariant& value);
+
+private slots:
+    void onFilterChanged();
+    void onCurrentExpandModeChange( bool mode );
+    void autoExpand();
 
 private:
     void initActions();
+    //void autoExpand();
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 
 	DAVA::NMaterial *curMaterial;
 
-	bool templatesScaned;
-	QVector<DAVA::FilePath> templates;
-
 	PropertyEditorStateHelper *treeStateHelper;
+    ExpandMap expandMap;
 };
 
 #endif
