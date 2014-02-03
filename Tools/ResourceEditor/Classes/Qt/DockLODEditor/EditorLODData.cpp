@@ -273,26 +273,28 @@ void EditorLODData::AddTrianglesInfo(DAVA::uint32 triangles[], DAVA::LodComponen
         int32 switchIndex = 0;
         
         RenderBatch *rb = ro->GetRenderBatch(i, lodIndex, switchIndex);
-
-        if(onlyVisibleBatches)
-        { //check batch visibility
-            
-            bool batchIsVisible = false;
-            uint32 activeBatchCount = ro->GetActiveRenderBatchCount();
-            for(uint32 a = 0; a < activeBatchCount && !batchIsVisible; ++a)
-            {
-                RenderBatch *visibleBatch = ro->GetActiveRenderBatch(a);
-                batchIsVisible = (visibleBatch == rb);
+        if(IsPointerToExactClass<RenderBatch>(rb))
+        {
+            if(onlyVisibleBatches)
+            { //check batch visibility
+                
+                bool batchIsVisible = false;
+                uint32 activeBatchCount = ro->GetActiveRenderBatchCount();
+                for(uint32 a = 0; a < activeBatchCount && !batchIsVisible; ++a)
+                {
+                    RenderBatch *visibleBatch = ro->GetActiveRenderBatch(a);
+                    batchIsVisible = (visibleBatch == rb);
+                }
+                
+                if(batchIsVisible == false) // need to skip this render batch
+                    continue;
             }
             
-            if(batchIsVisible == false) // need to skip this render batch
-                continue;
-        }
-        
-        PolygonGroup *pg = rb->GetPolygonGroup();
-        if(pg)
-        {
-            triangles[lodIndex] += (pg->GetIndexCount() / 3);
+            PolygonGroup *pg = rb->GetPolygonGroup();
+            if(pg)
+            {
+                triangles[lodIndex] += (pg->GetIndexCount() / 3);
+            }
         }
     }
 }

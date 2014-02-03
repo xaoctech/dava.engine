@@ -369,7 +369,7 @@ namespace DAVA
 	{
 		uint32 count = 0;
 		for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
-			if (componentFlags >> k)
+			if ((componentFlags >> k) & 1)
 				count++;
 		
 #if defined(COMPONENT_STORAGE_STDMAP)
