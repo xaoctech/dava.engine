@@ -46,6 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -270,6 +271,23 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 		QtPropertyDataInspMember *name = new QtPropertyDataInspMember(material, nameMember);
 		ui->materialProperty->AppendProperty("Name", name);
 	}
+
+    // fill material group, only for material type
+    if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
+    {
+        const DAVA::InspMember *groupMember = info->Member("materialGroup");
+        if(NULL != groupMember)
+        {
+            QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
+            ui->materialProperty->AppendProperty("Group", group);
+
+            for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
+            {
+                DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
+                group->AddAllowedValue(DAVA::VariantType(groupName), groupName.c_str());
+            }
+        }
+    }
 
 	QtPropertyData *propertiesParent = new QtPropertyData();
 
