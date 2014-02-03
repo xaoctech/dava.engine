@@ -93,11 +93,14 @@ public:
 		NEED_UPDATE = 1 << 7,
 		MARKED_FOR_UPDATE = 1 << 8,
 
+        CUSTOM_PREPARE_TO_RENDER = 1<<9, //if set, PrepareToRender would be called
+
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
 	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD | VISIBLE_SWITCH | VISIBLE_STATIC_OCCLUSION;
 	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH | VISIBLE_STATIC_OCCLUSION;
+    static const uint32 SERIALIZATION_CRITERIA = VISIBLE;
 protected:
     virtual ~RenderObject();
 public:
@@ -113,6 +116,10 @@ public:
     void AddRenderBatch(RenderBatch * batch);
     void AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex);
     void RemoveRenderBatch(RenderBatch * batch);
+    void RemoveRenderBatch(uint32 batchIndex);
+
+    void UpdateBatchesSortingTransforms();
+
     virtual void RecalcBoundingBox();
     
 	inline uint32 GetRenderBatchCount();
@@ -155,6 +162,7 @@ public:
     
     inline uint16 GetStaticOcclusionIndex() const;
     inline void SetStaticOcclusionIndex(uint16 index);
+	virtual void PrepareToRender(Camera *camera); //objects passed all tests and is going to be rendered this frame - by default calculates final matrix	
 
 	void SetLodIndex(int32 lodIndex);
 	void SetSwitchIndex(int32 switchIndex);
@@ -174,7 +182,7 @@ protected:
     uint16 staticOcclusionIndex;    
     AABBox3 bbox;
     AABBox3 worldBBox;
-    Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
+    Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms	
     String ownerDebugInfo;
 	int32 lodIndex;
 	int32 switchIndex;
@@ -262,8 +270,11 @@ inline AABBox3 & RenderObject::GetWorldBoundingBox()
     
 inline void RenderObject::SetWorldTransformPtr(Matrix4 * _worldTransform)
 {
+    if (worldTransform == _worldTransform)
+        return;
     worldTransform = _worldTransform;
     flags |= TRANSFORM_UPDATED;
+    UpdateBatchesSortingTransforms();
 }
     
 inline Matrix4 * RenderObject::GetWorldTransformPtr() const
@@ -309,8 +320,7 @@ inline void RenderObject::SetStaticOcclusionIndex(uint16 _index)
     staticOcclusionIndex = _index;
 }
 
-    
-    
+
 } // ns
 
 #endif	/* __DAVAENGINE_SCENE3D_RENDEROBJECT_H__ */

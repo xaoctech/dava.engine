@@ -1839,6 +1839,9 @@
     <ClCompile Include="Classes\Commands2\InspDynamicModifyCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands2\ParticleEmitterMoveCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+	</ClCompile>
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialFilterModel.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
@@ -1861,6 +1864,9 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\DeleteLODCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\DeleteRenderBatchCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3263,6 +3269,9 @@
     <ClInclude Include="Classes\Qt\Scene\FogSettingsChangedReceiver.h">
       <Filter>Classes\Qt\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands2\ParticleEmitterMoveCommands.h">
+      <Filter>Classes\Commands2</Filter>
+	</ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
@@ -3285,6 +3294,9 @@
       <Filter>Classes\Qt\QualitySwitcher</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\DeleteLODCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\DeleteRenderBatchCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>

@@ -32,7 +32,7 @@
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/RenderComponent.h"
-#include "Particles/ParticleEmitter.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Platform/SystemTimer.h"
 #include "Core/PerformanceSettings.h"
@@ -188,11 +188,11 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
 	}
 
 	lod->currentLod = LodComponent::INVALID_LOD_LAYER;
-	ParticleEmitter * emmiter = GetEmitter(entity);
-	if (emmiter)
+	ParticleEffectComponent * effect = GetEffectComponent(entity);
+	if (effect)
 	{
 		lod->currentLod = LodComponent::MAX_LOD_LAYERS-1;
-		emmiter->SetDesiredLodLevel(lod->currentLod);
+		effect->SetDesiredLodLevel(lod->currentLod);
 	}
 	else if(lod->lodLayers.size() > 0)
 	{
@@ -239,10 +239,10 @@ void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 p
 
 	if (oldLod != lodComponent->currentLod) 
 	{
-		ParticleEmitter * emmiter = GetEmitter(entity);
-		if (emmiter)
-		{
-			emmiter->SetDesiredLodLevel(lodComponent->currentLod);
+		ParticleEffectComponent * effect = GetEffectComponent(entity);
+		if (effect)
+		{			
+			effect->SetDesiredLodLevel(lodComponent->currentLod);
 			return;
 		}
         
@@ -278,7 +278,8 @@ void LodSystem::SetEntityLodRecursive(Entity * entity, int32 currentLod)
 
 bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq, Camera* camera)
 {
-	bool usePsSettings = (GetEmitter(entity) != NULL);
+
+	bool usePsSettings = (GetEffectComponent(entity) != NULL);
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
@@ -411,8 +412,8 @@ void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector
 	if(fromEntity != toEntity)
 	{
 		LodComponent * lod = GetLodComponent(fromEntity);
-		ParticleEmitter *emitter = GetEmitter(fromEntity);
-		if(lod&&(!emitter)) //as emitters have separate LOD logic
+		ParticleEffectComponent *effect = GetEffectComponent(fromEntity);
+		if(lod&&(!effect)) //as emitters have separate LOD logic
 		{
 			if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 			{

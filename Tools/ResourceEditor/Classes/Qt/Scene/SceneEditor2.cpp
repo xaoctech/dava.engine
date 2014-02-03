@@ -441,8 +441,12 @@ void SceneEditor2::Draw()
 
 		materialSystem->Draw();
 	}
-
+ 
+    //VI: need to call Setup2DDrawing in order to draw 2d to render targets correctly
+    Setup2DDrawing();
 	tilemaskEditorSystem->Draw();
+    //VI: restore 3d camera state
+    Setup3DDrawing();
 
 	if(isHUDVisible)
 	{
@@ -735,4 +739,18 @@ void SceneEditor2::MarkAsChanged()
 		SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
 	}
 }
+
+void SceneEditor2::Setup2DDrawing()
+{
+    RenderManager::Instance()->Setup2DMatrices();
+}
+
+void SceneEditor2::Setup3DDrawing()
+{
+    if (currentCamera)
+    {
+        currentCamera->SetupDynamicParameters();
+    }
+}
+
 

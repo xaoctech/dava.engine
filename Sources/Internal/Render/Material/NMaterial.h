@@ -259,7 +259,13 @@ public:
 	
 	// Work with textures and properties
     void RemoveTexture(const FastName& textureFastName);
+    //When you set texture by path it will be loaded only after it became active in the current material quality.
+    //SetTexture("cubemap", "~res:/cubemap.pvr") will not result in GetTexture("cubemap") returning a valid texture object.
+    //A valid texture object will be returned only if there's actually uniform named "cubemap" in the material.
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
+    //VI: this method leaves texture intact. Allows to manipulate with FBO that has to be saved to some path
+    void SetTexturePath(const FastName& textureFastName, const FilePath& texturePath);
+    //This method doesn't check for uniform in the material and always uses texture provided.
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     
     Texture * GetTexture(const FastName& textureFastName) const;
@@ -316,11 +322,43 @@ public:
 
 protected:
 	
-	struct TextureBucket
+	class TextureBucket
 	{
+    public:
+    
 		TextureBucket() : texture(NULL)
 		{ }
+        
+        ~TextureBucket()
+        {
+            SafeRelease(texture);
+        }
+        
+        inline void SetTexture(Texture* tx)
+        {
+            if(tx != texture)
+            {
+                SafeRelease(texture);
+                texture = SafeRetain(tx);
+            }
+        }
+        
+        inline Texture* GetTexture() const
+        {
+            return texture;
+        }
+        
+        inline void SetPath(const FilePath& filePath)
+        {
+            path = filePath;
+        }
+        
+        inline const FilePath& GetPath() const
+        {
+            return path;
+        }
 
+    private:
 		Texture* texture; //VI: can be NULL
 		FilePath path;
 	};

@@ -50,7 +50,7 @@ class QualitySettingsComponent;
 class RenderComponent;
 class TransformComponent;
 
-ParticleEmitter * GetEmitter(Entity * fromEntity);
+
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 TransformComponent * GetTransformComponent(Entity * fromEntity);
 RenderComponent * GetRenderComponent(const Entity *fromEntity);
@@ -64,6 +64,11 @@ Camera * GetCamera(Entity * fromEntity);
 
 LodComponent * GetLodComponent(Entity *fromEntity);
 SwitchComponent* GetSwitchComponent(Entity *fromEntity);
+    
+uint32 GetLodLayersCount(Entity *fromEntity);
+uint32 GetLodLayersCount(LodComponent *fromComponent);
+    
+    
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
 void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
 

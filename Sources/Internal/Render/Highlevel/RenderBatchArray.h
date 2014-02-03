@@ -50,7 +50,7 @@ public:
     void InitPassLayers(RenderPass * pass);
     void Clear();
 
-    void PrepareVisibilityArray(VisibilityArray * visibilityArray);
+    void PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera);
     inline void AddRenderBatch(RenderLayerID id, RenderBatch * renderBatch);
     inline RenderLayerBatchArray * Get(RenderLayerID id) { return layerBatchArrays[id]; };
 

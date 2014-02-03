@@ -568,7 +568,11 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
     {
         Font * font = loader->GetFontByName(fontNode->AsString());
         if (font)
+        {
             SetFont(font);
+            int32 fontSize = font->GetFontHeight();
+            SetFontSize(fontSize);
+        }
     }
     
     const YamlNode * passwordNode = node->Get("isPassword");
@@ -581,43 +585,43 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 	const YamlNode* autoCapitalizationTypeNode = node->Get("autoCapitalizationType");
 	if (autoCapitalizationTypeNode)
 	{
-		autoCapitalizationType = (eAutoCapitalizationType)autoCapitalizationTypeNode->AsInt32();
+        SetAutoCapitalizationType((eAutoCapitalizationType)autoCapitalizationTypeNode->AsInt32());
 	}
 
 	const YamlNode* autoCorrectionTypeNode = node->Get("autoCorrectionType");
 	if (autoCorrectionTypeNode)
 	{
-		autoCorrectionType = (eAutoCorrectionType)autoCorrectionTypeNode->AsInt32();
+        SetAutoCorrectionType((eAutoCorrectionType)autoCorrectionTypeNode->AsInt32());
 	}
 
 	const YamlNode* spellCheckingTypeNode = node->Get("spellCheckingType");
 	if (spellCheckingTypeNode)
 	{
-		spellCheckingType = (eSpellCheckingType)spellCheckingTypeNode->AsInt32();
+        SetSpellCheckingType((eSpellCheckingType)spellCheckingTypeNode->AsInt32());
 	}
 
 	const YamlNode* keyboardAppearanceTypeNode = node->Get("keyboardAppearanceType");
 	if (keyboardAppearanceTypeNode)
 	{
-		keyboardAppearanceType = (eKeyboardAppearanceType)keyboardAppearanceTypeNode->AsInt32();
+        SetKeyboardAppearanceType((eKeyboardAppearanceType)keyboardAppearanceTypeNode->AsInt32());
 	}
 
 	const YamlNode* keyboardTypeNode = node->Get("keyboardType");
 	if (keyboardTypeNode)
 	{
-		keyboardType = (eKeyboardType)keyboardTypeNode->AsInt32();
+        SetKeyboardType((eKeyboardType)keyboardTypeNode->AsInt32());
 	}
 
 	const YamlNode* returnKeyTypeNode = node->Get("returnKeyType");
 	if (returnKeyTypeNode)
 	{
-		returnKeyType = (eReturnKeyType)returnKeyTypeNode->AsInt32();
+        SetReturnKeyType((eReturnKeyType)returnKeyTypeNode->AsInt32());
 	}
 
 	const YamlNode* enableReturnKeyAutomaticallyNode = node->Get("enableReturnKeyAutomatically");
 	if (enableReturnKeyAutomaticallyNode)
 	{
-		enableReturnKeyAutomatically = enableReturnKeyAutomaticallyNode->AsBool();
+        SetEnableReturnKeyAutomatically(enableReturnKeyAutomaticallyNode->AsBool());
 	}
 
 #if !defined (__DAVAENGINE_ANDROID__) && !defined (__DAVAENGINE_IPHONE__)

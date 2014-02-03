@@ -253,7 +253,6 @@ void LandscapeDialog::ActionButtonClicked()
 		//	newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
 		//	SafeRelease(pinkTexture);
 		//}
-		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
 		entityToProcess->AddComponent(component);
 

@@ -28,26 +28,67 @@
 
 
 
-#ifndef __PARTICLE_LAYER_REMOVE_COMMAND_H__
-#define __PARTICLE_LAYER_REMOVE_COMMAND_H__
+#include "Commands2/ParticleEmitterMoveCommands.h"
 
-#include "Commands2/Command2.h"
-#include "Particles/ParticleLayer.h"
-#include "Particles/ParticleEmitter.h"
-
-class ParticleLayerRemoveCommand : public Command2
+ParticleEmitterMoveCommand::ParticleEmitterMoveCommand(DAVA::ParticleEffectComponent *_oldEffect, DAVA::ParticleEmitter* _emitter, DAVA::ParticleEffectComponent *_newEffect, int _newIndex)
+	: Command2(CMDID_PARTICLE_EMITTER_MOVE, "Move particle emitter")
+	, emitter(_emitter)
+	, oldEffect(_oldEffect)
+	, oldIndex(-1)
+	, newEffect(_newEffect)
+	, newIndex(_newIndex)
 {
-public:
-	ParticleLayerRemoveCommand(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer* layer);
-	~ParticleLayerRemoveCommand();
+	SafeRetain(emitter);
+	if(NULL != emitter && NULL != oldEffect)
+	{
+		oldIndex = oldEffect->GetEmitterId(emitter);
+	}
+}
 
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const { return NULL; }
+ParticleEmitterMoveCommand::~ParticleEmitterMoveCommand()
+{
+	SafeRelease(emitter);
+}
 
-	DAVA::ParticleLayer* layer;
-	DAVA::ParticleLayer* before;
-	DAVA::ParticleEmitter* emitter;
-};
+void ParticleEmitterMoveCommand::Undo()
+{
+	if(NULL != emitter)
+	{
+		if(NULL != newEffect)
+		{
+			newEffect->RemoveEmitter(emitter);
+		}
 
-#endif // __PARTICLE_LAYER_REMOVE_COMMAND_H__
+		if(NULL != oldEffect)
+		{
+			if(-1 != oldIndex)
+			{
+				oldEffect->InsertEmitterAt(emitter, oldIndex);
+			}
+			else
+			{
+				oldEffect->AddEmitter(emitter);
+			}
+		}
+	}
+}
+
+void ParticleEmitterMoveCommand::Redo()
+{
+	if(NULL != emitter && NULL != newEffect)
+	{
+		if(NULL != oldEffect)
+		{
+			oldEffect->RemoveEmitter(emitter);
+		}
+
+		if(-1 != newIndex)
+		{
+			newEffect->InsertEmitterAt(emitter, newIndex);
+		}
+		else
+		{
+			newEffect->AddEmitter(emitter);
+		}
+	}
+}
