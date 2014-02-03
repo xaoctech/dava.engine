@@ -28,26 +28,26 @@
 
 
 
-#ifndef __PARTICLE_LAYER_REMOVE_COMMAND_H__
-#define __PARTICLE_LAYER_REMOVE_COMMAND_H__
+#ifndef __PARTICLE_EMITTER_MOVE_COMMANDS_H__
+#define __PARTICLE_EMITTER_MOVE_COMMANDS_H__
 
 #include "Commands2/Command2.h"
-#include "Particles/ParticleLayer.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Particles/ParticleEmitter.h"
 
-class ParticleLayerRemoveCommand : public Command2
+class ParticleEmitterMoveCommand : public Command2
 {
 public:
-	ParticleLayerRemoveCommand(DAVA::ParticleEmitter *emitter, DAVA::ParticleLayer* layer);
-	~ParticleLayerRemoveCommand();
+	ParticleEmitterMoveCommand(DAVA::ParticleEffectComponent *oldEffect, DAVA::ParticleEmitter* emitter, DAVA::ParticleEffectComponent *newEffect, int newIndex);
+	~ParticleEmitterMoveCommand();
 
 	virtual void Undo();
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const { return NULL; }
 
-	DAVA::ParticleLayer* layer;
-	DAVA::ParticleLayer* before;
 	DAVA::ParticleEmitter* emitter;
+	DAVA::ParticleEffectComponent* oldEffect, *newEffect;		
+	int oldIndex, newIndex;
 };
 
-#endif // __PARTICLE_LAYER_REMOVE_COMMAND_H__
+#endif

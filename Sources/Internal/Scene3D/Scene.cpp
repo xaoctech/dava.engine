@@ -60,7 +60,6 @@
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
@@ -554,6 +553,7 @@ void Scene::Update(float timeElapsed)
 	}
 	
 	switchSystem->Process(timeElapsed);
+    particleEffectSystem->Process(timeElapsed);
     
 // 	int32 size;
 // 	
@@ -619,8 +619,7 @@ void Scene::Draw()
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
-	actionSystem->Process(timeElapsed); //update action system before particles and render
-	particleEffectSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render	
 	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());

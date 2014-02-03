@@ -279,7 +279,7 @@ uint32 StaticOcclusion::RenderFrame()
                     renderHierarchy->Clip(camera, &visibilityArray);
 
                     renderPassBatchArray->Clear();
-                    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray);
+                    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera);
                     
                     staticOcclusionRenderPass->Draw(camera, renderPassBatchArray);
                     

@@ -50,7 +50,7 @@ class QualitySettingsComponent;
 class RenderComponent;
 class TransformComponent;
 
-ParticleEmitter * GetEmitter(Entity * fromEntity);
+
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 TransformComponent * GetTransformComponent(Entity * fromEntity);
 RenderComponent * GetRenderComponent(const Entity *fromEntity);

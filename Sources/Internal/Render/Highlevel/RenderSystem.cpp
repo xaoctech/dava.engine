@@ -45,7 +45,6 @@
 #include "Render/ShaderCache.h"
 
 // TODO: Move class to other place
-#include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Utils/Utils.h"
 #include "Debug/Stats.h"
@@ -59,11 +58,9 @@ RenderSystem::RenderSystem()
     ,   clipCamera(0)
     ,   forceUpdateLights(false)
 {
-
     renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_FORWARD));
     renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
 
-	particleEmitterSystem = new ParticleEmitterSystem();
     renderHierarchy = new QuadTree(10);
 	hierarchyInitialized = false;
     globalBatchArray = new RenderPassBatchArray(this);
@@ -76,8 +73,7 @@ RenderSystem::~RenderSystem()
     SafeRelease(clipCamera);
     
     SafeDelete(globalBatchArray);
-    SafeDelete(renderHierarchy);
-	SafeDelete(particleEmitterSystem);
+    SafeDelete(renderHierarchy);	
 }
     
 
@@ -111,6 +107,7 @@ void RenderSystem::RemoveFromRender(RenderObject * renderObject)
 //	}
 
 	FindAndRemoveExchangingWithLast(markedObjects, renderObject);
+	renderObject->RemoveFlag(RenderObject::MARKED_FOR_UPDATE);	
 
 	RenderObject * lastRenderObject = renderObjectArray[renderObjectArray.size() - 1];
     renderObjectArray[renderObject->GetRemoveIndex()] = lastRenderObject;
@@ -128,7 +125,6 @@ void RenderSystem::AddRenderObject(RenderObject * renderObject)
 	renderObject->RecalculateWorldBoundingBox();						
 	renderHierarchy->AddRenderObject(renderObject);
 
-	particleEmitterSystem->AddIfEmitter(renderObject);
 	renderObject->SetRenderSystem(this);
     
 	uint32 size = renderObject->GetRenderBatchCount();
@@ -137,6 +133,7 @@ void RenderSystem::AddRenderObject(RenderObject * renderObject)
         RenderBatch *batch = renderObject->GetRenderBatch(i);
         RegisterBatch(batch);
     }
+
 }
 
 void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
@@ -149,7 +146,6 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
     }
 
 	renderHierarchy->RemoveRenderObject(renderObject);
-    particleEmitterSystem->RemoveIfEmitter(renderObject);
 	renderObject->SetRenderSystem(0);	
 }
     
@@ -328,11 +324,7 @@ void RenderSystem::Update(float32 timeElapsed)
 	{
 		renderHierarchy->Initialize();
 		hierarchyInitialized = true;
-	}
-	if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_PARTICLE_EMMITERS))
-	{
-		particleEmitterSystem->Update(timeElapsed, clipCamera);
-	}
+	}		
 	
     int32 objectBoxesUpdated = 0;
     Vector<RenderObject*>::iterator end = markedObjects.end();
@@ -361,17 +353,17 @@ void RenderSystem::Update(float32 timeElapsed)
     }
     movedLights.clear();
     
-    visibilityArray.Clear();
-    renderHierarchy->Clip(clipCamera, &visibilityArray);
-
-    globalBatchArray->Clear();
-	globalBatchArray->PrepareVisibilityArray(&visibilityArray);
-    
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
         objectsForUpdate[i]->RenderUpdate(clipCamera, timeElapsed);
     }
+	
+    visibilityArray.Clear();
+    renderHierarchy->Clip(clipCamera, &visibilityArray);
+
+    globalBatchArray->Clear();
+	globalBatchArray->PrepareVisibilityArray(&visibilityArray, clipCamera); 
 
     ShaderCache::Instance()->ClearAllLastBindedCaches();
 }

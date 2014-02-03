@@ -28,31 +28,50 @@
 
 
 
-#ifndef __DAVAENGINE_SCENE3D_PARTICLEEMITTERSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_PARTICLEEMITTERSYSTEM_H__
+#ifndef __DAVAENGINE_UI_PARTICLES__
+#define __DAVAENGINE_UI_PARTICLES__
 
 #include "Base/BaseTypes.h"
+#include "UI/UIControl.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Systems/ParticleEffectSystem.h"
 
-namespace DAVA
+namespace DAVA 
 {
 
-class RenderObject;
-class ParticleEmitter;
-class Camera;
-
-class ParticleEmitterSystem
+class UIParticles : public UIControl 
 {
+protected:
+    virtual ~UIParticles();
 public:
-	void AddIfEmitter(RenderObject * maybeEmitter);
-	void RemoveIfEmitter(RenderObject * maybeEmitter);
-	/*camera is required for updating arrays*/
-	void Update(float32 timeElapsed, Camera * camera);
+	UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates = FALSE);        
+
+
+    /*methods analogical to once in ParticleEffectComponent*/
+    void Start();
+    void Stop(bool isDeleteAllParticles = true);
+    void Restart(bool isDeleteAllParticles = true); 
+    bool IsStopped();	
+    void Pause(bool isPaused = true);
+    bool IsPaused();
+
+    virtual void AddControl(UIControl *control);
+    virtual void Update(float32 timeElapsed);
+    virtual void Draw(const UIGeometricData &geometricData);
+
+    
+    void Load(const FilePath& path);
+    
+protected:    	
 
 private:
-	//TODO: use HashMap
-	Vector<ParticleEmitter*> emitters;
+    ParticleEffectComponent *effect;
+    ParticleEffectSystem *system;
+    Matrix4 matrix;
+    Camera *camera;
+    float32 updateTime;
+};
+	
 };
 
-}
-
-#endif //__DAVAENGINE_SCENE3D_PARTICLEEMITTERSYSTEM_H__
+#endif

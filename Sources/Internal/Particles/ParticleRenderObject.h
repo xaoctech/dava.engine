@@ -26,51 +26,57 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_PARTICLE_RENDER_OBJECT_H_
+#define __DAVAENGINE_PARTICLE_RENDER_OBJECT_H_
 
-
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_3D_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_3D_H__
-
-#include "Particles/ParticleEmitter.h"
-#include "Math/Matrix4.h"
+#include "ParticleGroup.h"
 
 namespace DAVA
 {
 
-class Camera;
-class ParticleEmitter3D : public ParticleEmitter
+struct ParticleRenderGroup
 {
-public:
-	ParticleEmitter3D();
-
-	virtual void AddLayer(ParticleLayer * layer);
-	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
-
-	virtual bool Is3DFlagCorrect();
-
-	void Draw(Camera * camera);
-	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
-
-	virtual RenderObject * Clone(RenderObject *newObject);
-
-	virtual void RecalcBoundingBox();
-
-protected:
-	// Virtual methods which are different for 2D and 3D emitters.
-	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
-	virtual void LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLiong);
+	RenderBatch *renderBatch;	
 	
-	// 3D-specific methods.
-	void CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition,
-											const Matrix3& rotationMatrix);
-	void PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
-										   int32 emitIndex, const Vector3& tempPosition,
-										   const Matrix3& rotationMatrix);
-	void PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
-										 int32 emitIndex, const Vector3& tempPosition,
-										 const Matrix3& rotationMatrix);
+	Vector<float> vertices;
+	Vector<float> texcoords;
+	Vector<uint32> colors;
+
+	Vector<float> texcoords2;
+	Vector<float> times;	
+
+	uint16 currParticlesCount;
+	bool enableFrameBlend;
+
+	void ClearArrays();
+	void ResizeArrays(uint32 particlesCount);
+	void UpdateRenderBatch();
 };
 
+class ParticleRenderObject : public RenderObject
+{
+	ParticleEffectData *effectData;
+	Vector<ParticleRenderGroup*> renderGroupCache;
+
+	void AppendParticleGroup(const ParticleGroup &group, ParticleRenderGroup *renderGroup, const Vector3& cameraDirection);	
+	void PrepareRenderData(Camera * camera);
+    Matrix4* effectMatrix;
+	Vector<uint16> indices;
+public:
+	ParticleRenderObject(ParticleEffectData *effect);
+	~ParticleRenderObject();
+	
+
+	virtual void PrepareToRender(Camera *camera);
+	
+    void SetEffectMatrix(Matrix4 *matrix);
+
+	virtual void RecalcBoundingBox(){}
+	virtual void RecalculateWorldBoundingBox(){
+		worldBBox = bbox;}
+	
 };
 
-#endif //__DAVAENGINE_PARTICLE_EMITTER_3D_H__
+}
+
+#endif

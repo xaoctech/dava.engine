@@ -348,27 +348,28 @@ void SceneInfo::CollectParticlesData()
     emittersCount = 0;
     for(uint32 n = 0; n < nodesAtScene.size(); ++n)
     {
-        ParticleEmitter *emitter = GetEmitter(nodesAtScene[n]);
-        if(!emitter) continue;
+        ParticleEffectComponent *effect = GetEffectComponent(nodesAtScene[n]);
+        if(!effect) continue;
         
-        ++emittersCount;
-        
-        Vector<ParticleLayer*> &layers = emitter->GetLayers();
-        
-        for(uint32 lay = 0; lay < layers.size(); ++lay)
-        {
-            Sprite *spr = layers[lay]->GetSprite();
-            if(spr)
-            {
-                sprites.insert(spr);
-                
-                for(int32 fr = 0; fr < spr->GetFrameCount(); ++fr)
-                {
-                    Texture *tex = spr->GetTexture(fr);
-                    CollectTexture(particleTextures, tex->GetPathname(), tex);
-                }
-            }
-        }
+		for (int32 i=0, sz=effect->GetEmittersCount(); i<sz; ++i)
+		{
+			++emittersCount;
+			Vector<ParticleLayer*> &layers = effect->GetEmitter(i)->layers;
+			for(uint32 lay = 0; lay < layers.size(); ++lay)
+			{
+				Sprite *spr = layers[lay]->sprite;
+				if(spr)
+				{
+					sprites.insert(spr);
+
+					for(int32 fr = 0; fr < spr->GetFrameCount(); ++fr)
+					{
+						Texture *tex = spr->GetTexture(fr);
+						CollectTexture(particleTextures, tex->GetPathname(), tex);
+					}
+				}
+			}
+		}
     }
     
     spritesCount = (uint32)sprites.size();
