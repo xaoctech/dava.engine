@@ -56,9 +56,9 @@ void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc 
 
 void ObjectFactory::RegisterObjectCreator(const String & name, CreateObjectFunc func, const std::type_info & info, uint32 size, const String & alias)
 {
-    creatorMap[name] = func;
+    creatorMap[alias] = func;
     nameMap[info.name()] = alias;
-    sizeMap[name] = size;
+    sizeMap[alias] = size;
 }
     
 void ObjectFactory::Dump()

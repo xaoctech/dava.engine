@@ -268,10 +268,11 @@ void SceneSaver::CopyReferencedObject( Entity *node)
 
 void SceneSaver::CopyEffects(Entity *node)
 {
-	ParticleEmitter *emitter = GetEmitter(node);
-	if(emitter)
+	ParticleEffectComponent *effect = GetEffectComponent(node);
+	if(effect)
 	{
-		CopyEmitter(emitter);
+		for (int32 i=0, sz=effect->GetEmittersCount(); i<sz; ++i)
+			CopyEmitter(effect->GetEmitter(i));
 	}
 
 	for (int i = 0; i < node->GetChildrenCount(); ++i)
@@ -282,20 +283,20 @@ void SceneSaver::CopyEffects(Entity *node)
 
 void SceneSaver::CopyEmitter( ParticleEmitter *emitter)
 {
-	sceneUtils.AddFile(emitter->GetConfigPath());
+	sceneUtils.AddFile(emitter->configPath);
 
-	const Vector<ParticleLayer*> &layers = emitter->GetLayers();
+	const Vector<ParticleLayer*> &layers = emitter->layers;
 
 	uint32 count = (uint32)layers.size();
 	for(uint32 i = 0; i < count; ++i)
 	{
 		if(layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
 		{
-			CopyEmitter(layers[i]->GetInnerEmitter());
+			CopyEmitter(layers[i]->innerEmitter);
 		}
 		else
 		{
-			Sprite *sprite = layers[i]->GetSprite();
+			Sprite *sprite = layers[i]->sprite;
 			if(!sprite) continue;
 
 			FilePath psdPath = ReplaceInString(sprite->GetRelativePathname().GetAbsolutePathname(), "/Data/", "/DataSource/");
@@ -349,4 +350,3 @@ FilePath SceneSaver::CreateProjectPathFromPath(const FilePath & pathname)
     
     return FilePath();
 }
-

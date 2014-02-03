@@ -36,6 +36,7 @@
 #include "Commands2/EntityParentChangeCommand.h"
 #include "Commands2/EntityAddCommand.h"
 #include "Commands2/EntityRemoveCommand.h"
+#include "Commands2/ParticleEmitterMoveCommands.h"
 #include "Commands2/ParticleLayerMoveCommand.h"
 #include "Commands2/ParticleLayerRemoveCommand.h"
 #include "Commands2/ParticleForceMoveCommand.h"
@@ -138,7 +139,31 @@ void StructureSystem::Remove(const EntityGroup &entityGroup)
 	}
 }
 
-void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore)
+void StructureSystem::MoveEmitter(const DAVA::Vector<DAVA::ParticleEmitter *> &emitters, const DAVA::Vector<DAVA::ParticleEffectComponent *>& oldEffects, DAVA::ParticleEffectComponent *newEffect, int dropAfter)
+{
+    SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
+    if(NULL != sceneEditor)
+    {
+        if(emitters.size() > 1)
+        {
+            sceneEditor->BeginBatch("Move particle emitter");
+        }
+
+        for(size_t i = 0; i < emitters.size(); ++i)
+        {		
+            sceneEditor->Exec(new ParticleEmitterMoveCommand(oldEffects[i], emitters[i], newEffect, dropAfter++));
+        }
+
+        if(emitters.size() > 1)
+        {
+            sceneEditor->EndBatch();
+        }
+
+        EmitChanged();
+    }
+}
+
+void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, const DAVA::Vector<DAVA::ParticleEmitter *>& oldEmitters, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor)
@@ -149,8 +174,8 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 		}
 
 		for(size_t i = 0; i < layers.size(); ++i)
-		{
-			sceneEditor->Exec(new ParticleLayerMoveCommand(layers[i], newEmitter, newBefore));
+		{		
+			sceneEditor->Exec(new ParticleLayerMoveCommand(oldEmitters[i], layers[i], newEmitter, newBefore));
 		}
 
 		if(layers.size() > 1)
@@ -163,7 +188,7 @@ void StructureSystem::MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layer
 }
 
 
-void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers)
+void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, const DAVA::Vector<DAVA::ParticleEmitter *>& oldEmitters)
 {
 	SceneEditor2* sceneEditor = (SceneEditor2*) GetScene();
 	if(NULL != sceneEditor)
@@ -175,7 +200,8 @@ void StructureSystem::RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &lay
 
 		for(size_t i = 0; i < layers.size(); ++i)
 		{
-			sceneEditor->Exec(new ParticleLayerRemoveCommand(layers[i]));
+			
+			sceneEditor->Exec(new ParticleLayerRemoveCommand(oldEmitters[i], layers[i]));
 		}
 
 		if(layers.size() > 1)
