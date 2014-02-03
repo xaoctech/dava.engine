@@ -26,45 +26,52 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_PARTICLE_GROUP_H_
+#define __DAVAENGINE_PARTICLE_GROUP_H_
 
-
-#ifndef __DAVAENGINE_PARTICLELAYER_BATCH_H__
-#define __DAVAENGINE_PARTICLELAYER_BATCH_H__
-
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "ParticleEmitter.h"
+#include "ParticleLayer.h"
+#include "Particle.h"
+#include "Render/Material/NMaterial.h"
 
 namespace DAVA
 {
 
-class ParticleLayer;
-class ParticleLayerBatch : public RenderBatch
+
+struct ParticleGroup
 {
-protected:
-	virtual ~ParticleLayerBatch();
-public:
-	ParticleLayerBatch();
+	ParticleEmitter *emitter;
+	ParticleLayer *layer;
+	NMaterial *material;
+	
+	Particle *head;
+	int32 activeParticleCount;
+	
+	bool finishingGroup;
 
-	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
-	void SetTotalCount(int32 totalCount);
-	void SetParticleLayer(ParticleLayer * particleLayer);
+	bool visibleLod;
 
-	virtual RenderBatch * Clone(RenderBatch * destination = 0);
+	float32 time;	
+	float32 loopStartTime, loopLyaerStartTime, loopDuration;
+	float32 particlesToGenerate;	
 
-	void SetLayerBoundingBox(const AABBox3 & bbox);
-	void SetIndices(Vector<uint16> *indices);
-protected:
-	int32 totalCount;
-	ParticleLayer * particleLayer;
-	Vector<uint16> *indices;
-    
-public:
-    INTROSPECTION_EXTEND(ParticleLayerBatch, RenderBatch,
-        MEMBER(totalCount, "Total Count", I_SAVE | I_VIEW)
-    );
+	int32 positionSource;
+
+  	ParticleGroup() : emitter(0), layer(0), material(0), head(0), activeParticleCount(0), finishingGroup(false), visibleLod(true), time(0), particlesToGenerate(0), positionSource(0){}
+};
+
+struct ParentInfo
+{
+	Vector3 position;
+	Vector2 size;
+};
+
+struct ParticleEffectData
+{
+	Vector<ParentInfo> infoSources;
+	List<ParticleGroup> groups;
 };
 
 }
 
-#endif //__DAVAENGINE_PARTICLELAYER_BATCH_H__
+#endif

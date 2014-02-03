@@ -261,13 +261,10 @@ void EditorLODData::GetDataFromSelection()
 void EditorLODData::AddTrianglesInfo(DAVA::uint32 triangles[], DAVA::LodComponent *lod, bool onlyVisibleBatches)
 {
     Entity * en = lod->GetEntity();
-    RenderObject * ro = GetRenderObject(en);
-    DVASSERT(ro);
-
-    if(ro->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
-    {
+    if (GetEffectComponent(en))
         return;
-    }
+    RenderObject * ro = GetRenderObject(en);
+    DVASSERT(ro);    
     
     uint32 batchCount = ro->GetRenderBatchCount();
     for(uint32 i = 0; i < batchCount; ++i)

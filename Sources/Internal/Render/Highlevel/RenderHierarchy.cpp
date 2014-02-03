@@ -34,6 +34,7 @@
 
 namespace DAVA
 {
+
 	void LinearRenderHierarchy::AddRenderObject(RenderObject * object)
 	{		
 		renderObjectArray.push_back(object);
