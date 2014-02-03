@@ -34,8 +34,6 @@
 #include "StringUtils.h"
 #include "StringConstants.h"
 
-#include "EditorSettings.h"
-#include "Helpers/SpritesHelper.h"
 #include "Helpers/ColorHelper.h"
 
 #include <QtGlobal>
@@ -560,7 +558,6 @@ void UIControlMetadata::SetSprite(const QString& value)
         if (sprite)
         {
             GetActiveUIControl()->GetBackground()->SetSprite(sprite, 0);
-            SpritesHelper::SetPixelization(sprite, EditorSettings::Instance()->IsPixelized());
             SafeRelease(sprite);
 
             // Specific case if the sprite is set to UISlider thumbSprite (see please DF-2834).
@@ -844,7 +841,7 @@ void UIControlMetadata::SetRightAlignEnabled(const bool value)
         return;
     }
 	
-	GetActiveUIControl()->SetRightAlignEnabled(value);	
+	GetActiveUIControl()->SetRightAlignEnabled(value);
 }
 	
 bool UIControlMetadata::GetTopAlignEnabled() const

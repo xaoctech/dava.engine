@@ -60,6 +60,11 @@ void MaterialFilteringModel::SetScene(SceneEditor2 * scene)
 	materialModel->SetScene(scene);
 }
 
+SceneEditor2* MaterialFilteringModel::GetScene()
+{
+    return materialModel->GetScene();
+}
+
 void MaterialFilteringModel::SetSelection(const EntityGroup *group)
 {
 	materialModel->SetSelection(group);
@@ -146,7 +151,7 @@ bool MaterialFilteringModel::dropMimeData(QMimeData const* data, Qt::DropAction 
 {
     const bool ret = QSortFilterProxyModel::dropMimeData( data, action, row, column, parent );
     if ( ret )
-        QTimer::singleShot( 0, this, SLOT( invalidate() ) );
+        invalidate();
 
     return ret;
 }

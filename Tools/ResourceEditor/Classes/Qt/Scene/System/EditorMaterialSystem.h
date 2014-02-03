@@ -37,6 +37,18 @@ class EditorMaterialSystem : public DAVA::SceneSystem
 	friend class SceneEditor2;
 
 public:
+    enum MaterialViewMode
+    {
+        MVM_NOTHING     = 0x0,
+
+        MVM_ALBEDO      = 0x1,
+        MVM_AMBIENT     = 0x2,
+        MVM_DIFFUSE     = 0x4,
+        MVM_SPECULAR    = 0x8,
+
+        MVM_ALL         = (MVM_ALBEDO | MVM_AMBIENT | MVM_DIFFUSE | MVM_SPECULAR)
+    };
+
 	EditorMaterialSystem(DAVA::Scene * scene);
 	virtual ~EditorMaterialSystem();
 
@@ -45,6 +57,12 @@ public:
 
 	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
 	DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
+
+    void SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set);
+    bool GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const;
+
+    void SetViewMode(int fullViewMode);
+    int GetViewMode() const;
 
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);
@@ -59,8 +77,12 @@ protected:
 	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
 	void RemMaterial(DAVA::NMaterial *material);
 
+    void ApplyViewMode(DAVA::NMaterial *material);
+
 private:
-	struct MaterialFB
+    int curViewMode;
+
+    struct MaterialFB
 	{
 		MaterialFB() : entity(NULL), batch(NULL) {}
 

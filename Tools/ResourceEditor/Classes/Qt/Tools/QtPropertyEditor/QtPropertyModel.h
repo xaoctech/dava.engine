@@ -26,8 +26,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __QT_PROPERTY_MODEL_H__
 #define __QT_PROPERTY_MODEL_H__
 
@@ -90,21 +88,6 @@ protected:
 	void DataRemoved();
 
 	void UpdateStructureInternal(const QModelIndex &index);
-};
-
-class QtPropertyFilteringModel : public QSortFilterProxyModel
-{
-public:
-	QtPropertyFilteringModel(QtPropertyModel *_propModel, QObject *parent = NULL);
-	virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-
-	QtPropertyData* itemFromIndex(const QModelIndex &index) const;
-
-protected:
-	QtPropertyModel *propModel;
-
-	bool selfAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
-	bool childrenAcceptRow(int sourceRow, const QModelIndex &sourceParent) const;
 };
 
 #endif // __QT_PROPERTY_MODEL_H__

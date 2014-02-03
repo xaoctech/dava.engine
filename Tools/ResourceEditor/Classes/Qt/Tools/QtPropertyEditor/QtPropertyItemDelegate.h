@@ -35,7 +35,6 @@
 
 class QtPropertyData;
 class QtPropertyModel;
-class QtPropertyFilteringModel;
 
 class QtPropertyItemDelegate : public QStyledItemDelegate
 {
@@ -55,12 +54,12 @@ public:
 
 public slots:
 	bool helpEvent(QHelpEvent * event, QAbstractItemView * view, const QStyleOptionViewItem & option, const QModelIndex & index);
-	void showButtons(const QModelIndex &index);
+	void showButtons(QtPropertyData *data);
 	void invalidateButtons();
 
 protected:
 	QtPropertyModel *model;
-	QModelIndex lastHoverIndex;
+	QtPropertyData *lastHoverData;
 
 	enum OptionalButtonsType
 	{
@@ -69,7 +68,7 @@ protected:
 	};
 
 	void drawOptionalButtons(QPainter *painter, QStyleOptionViewItem &option, const QModelIndex &index, OptionalButtonsType type) const;
-	void showOptionalButtons(const QModelIndex &index, bool show);
+	void showOptionalButtons(QtPropertyData *data, bool show);
 };
 
 #endif // __QT_PROPERY_ITEM_DELEGATE_H__
