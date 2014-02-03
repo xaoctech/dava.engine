@@ -486,12 +486,14 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		isLandscape = true;
 	}
 
-	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
+	
+	DAVA::ParticleEffectComponent* particleEffect = DAVA::GetEffectComponent(entity);
 	if( NULL == cObj &&
-		NULL != particleEmitter)
+		NULL != particleEffect)
 	{
-		cObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
+		cObj = new CollisionParticleEffect(entity, objectsCollWorld);
 	}
+
 
 	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
 	if( NULL == cObj &&

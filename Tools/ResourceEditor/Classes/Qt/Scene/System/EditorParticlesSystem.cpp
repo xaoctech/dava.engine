@@ -54,6 +54,15 @@ EditorParticlesSystem::EditorParticlesSystem(DAVA::Scene * scene)
 	renderState = rm->Derive3DRenderState(DAVA::RenderStateData::STATE_BLEND |
 										  DAVA::RenderStateData::STATE_COLORMASK_ALL |
 										  DAVA::RenderStateData::STATE_DEPTH_TEST);
+
+    selectedEffectEntity = NULL;
+    selectedEmitter = NULL;
+}
+
+void EditorParticlesSystem::SetEmitterSelected(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter)
+{
+    selectedEffectEntity = effectEntity;
+    selectedEmitter = emitter;
 }
 
 EditorParticlesSystem::~EditorParticlesSystem()
@@ -71,26 +80,25 @@ void EditorParticlesSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void EditorParticlesSystem::DrawDebugInfoForEmitter(DAVA::Entity* parentEntity)
+void EditorParticlesSystem::DrawDebugInfoForEffect(DAVA::Entity* effectEntity)
 {
 	SceneCollisionSystem *collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
 	
 	if (collisionSystem)
 	{		
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.9f, 0.9f, 0.35f));		
-		for(int i = 0; i < parentEntity->GetChildrenCount(); ++i)
+		
+		
+		if(NULL != effectEntity)
 		{
-			DAVA::Entity *entity = parentEntity->GetChild(i);
-			if(NULL != entity)
-			{
-				DAVA::AABBox3 wordBox;
-				DAVA::AABBox3 collBox = collisionSystem->GetBoundingBox(entity);
-				collBox.GetTransformedBox(entity->GetWorldTransform(), wordBox);	
-				// Get sphere radius (size) of debug effect
-				DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
-				DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius);
-			}
+			DAVA::AABBox3 wordBox;
+			DAVA::AABBox3 collBox = collisionSystem->GetBoundingBox(effectEntity);
+			collBox.GetTransformedBox(effectEntity->GetWorldTransform(), wordBox);	
+			// Get sphere radius (size) of debug effect
+			DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
+			DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius);
 		}
+		
 		DAVA::RenderManager::Instance()->ResetColor();
 	}
 }
@@ -110,57 +118,45 @@ void EditorParticlesSystem::Draw()
 	// Draw debug information for non-selected entities
 	for(size_t i = 0; i < entities.size(); ++i)
 	{				
-		DrawDebugInfoForEmitter(entities[i]);
+		DrawDebugInfoForEffect(entities[i]);
 	}
 	
 	// Draw debug information for selected entities
-	SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
-	if(selectionSystem != NULL)
-	{
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
-		
-		for (size_t i = 0; i < selectionSystem->GetSelectionCount(); i++)
-		{
-			DAVA::Entity *entity = selectionSystem->GetSelectionEntity(i);
+	if ((selectedEmitter!=NULL) && (selectedEffectEntity!=NULL))
+    {
 			
-			DAVA::ParticleEmitter *emitter = GetEmitter(entity);
-			// Draw additional effects according to emitter type
-			if (emitter)
+			
+		// Draw additional effects according to emitter type
+        DAVA::Matrix3 effectMatrix(selectedEffectEntity->GetWorldTransform());
+        DAVA::Vector3 center = selectedEmitter->position;
+        TransformPerserveLength(center, effectMatrix);
+        center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();		
+        
+        DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
+		DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.1f);					        
+		DrawVectorArrow(selectedEffectEntity, selectedEmitter, center);
+
+		switch (selectedEmitter->emitterType)
+		{
+		case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME:
+		case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
 			{
-				// Get center of entity object
-				DAVA::AABBox3 selectionBox = selectionSystem->GetSelectionAABox(i);
-				DAVA::Vector3 center = selectionBox.GetCenter();
-				// Always draw emission vector arrow for emitter
-				DrawVectorArrow(entity, emitter, center);
-
-				switch (emitter->emitterType)
-				{
-				case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_VOLUME:
-				case DAVA::ParticleEmitter::EMITTER_ONCIRCLE_EDGES:
-					{
-						DrawSizeCircle(entity, emitter, center);
-					}
-					break;
-				case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
-					{
-						DrawSizeCircleShockWave(emitter, center);
-					}
-					break;
-
-				case DAVA::ParticleEmitter::EMITTER_RECT:
-					{
-						DrawSizeBox(entity, emitter, center);
-					}
-					break;
-
-				case DAVA::ParticleEmitter::EMITTER_POINT:
-					{
-						DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.05f);
-					}
-					break;
-				}
+				DrawSizeCircle(selectedEffectEntity, selectedEmitter, center);
 			}
-		}
+			break;
+		case DAVA::ParticleEmitter::EMITTER_SHOCKWAVE:
+			{
+				DrawSizeCircleShockWave(selectedEffectEntity, selectedEmitter, center);
+			}
+			break;
+
+		case DAVA::ParticleEmitter::EMITTER_RECT:
+			{
+				DrawSizeBox(selectedEffectEntity, selectedEmitter, center);
+			}
+			break;			
+		}					
+		
 		DAVA::RenderManager::Instance()->ResetColor();
 	}
 	
@@ -168,44 +164,48 @@ void EditorParticlesSystem::Draw()
 	//DAVA::RenderManager::Instance()->SetState(oldState);
 }
 
-void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
-	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(emitter->GetTime()) : 0.0f;
+	//float32 time = emitter->GetTime();
+	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
+	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(time) : 0.0f;
 	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true);
 }
 
-void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	float32 emitterRadius = 0.0f;
-	DAVA::Vector3 emitterVector;
+	DAVA::Vector3 emitterVector;	
+	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 							
 	if (emitter->radius)
 	{
-		emitterRadius = emitter->radius->GetValue(emitter->GetTime());
+		emitterRadius = emitter->radius->GetValue(time);
 	}
 
 	if (emitter->emissionVector)
 	{
-		DAVA::Matrix4 wMat = entity->GetWorldTransform();
+		DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
 		wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
 
-		emitterVector = emitter->emissionVector->GetValue(emitter->GetTime());
+		emitterVector = emitter->emissionVector->GetValue(time);
 		emitterVector = emitterVector * wMat;
 	}
 							
 	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true);
 }
 
-void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	// Default value of emitter size
 	DAVA::Vector3 emitterSize;
 
 	DAVA::Vector3 p[8];
+	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 	
 	if (emitter->size)
 	{
-		emitterSize = emitter->size->GetValue(emitter->GetTime());
+		emitterSize = emitter->size->GetValue(time);
 	}
 	
 	float halfSizeX = emitterSize.x / 2;
@@ -223,7 +223,7 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *entity, DAVA::ParticleEmit
 	p[6] = DAVA::Vector3(center.x - halfSizeX, center.y - halfSizeY, center.z + halfSizeZ);
 	p[7] = DAVA::Vector3(center.x - halfSizeX, center.y - halfSizeY, center.z - halfSizeZ);
 
-	DAVA::Matrix4 wMat = entity->GetWorldTransform();
+	DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
 	wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
 
 	for(int i = 0; i < 8; ++i)
@@ -274,14 +274,15 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *entity, DAVA::ParticleEmit
 	RenderHelper::Instance()->FillPolygon(poly);
 }
 
-void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *entity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
+void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
 {
 	DAVA::Vector3 emitterVector(0.f, 0.f, 1.f);
 	DAVA::float32 arrowBaseSize = 5.0f;
 				
+	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 	if (emitter->emissionVector)
 	{
-		emitterVector = emitter->emissionVector->GetValue(emitter->GetTime());
+		emitterVector = emitter->emissionVector->GetValue(time);
 	}
 	
 	DAVA::float32 scale = 1.0f;
@@ -297,7 +298,7 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *entity, DAVA::Particle
 	DAVA::float32 arrowSize = scale;
 	emitterVector = (emitterVector * arrowBaseSize * scale) + center;
 	
-	DAVA::Matrix4 wMat = entity->GetWorldTransform();
+	DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
 	wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
 	emitterVector = emitterVector * wMat;
 
@@ -401,7 +402,7 @@ void EditorParticlesSystem::ProcessCommand(const Command2 *command, bool redo)
 		case CMDID_PARTICLE_EMITTER_LAYER_ADD:
 		{
 			const CommandAddParticleEmitterLayer* castedCmd = static_cast<const CommandAddParticleEmitterLayer*>(command);
-			SceneSignals::Instance()->EmitParticleLayerAdded(activeScene, castedCmd->GetCreatedLayer());
+			SceneSignals::Instance()->EmitParticleLayerAdded(activeScene, castedCmd->GetParentEmitter(), castedCmd->GetCreatedLayer());
 			break;
 		}
 // Return to this code when implementing Layer popup menus.

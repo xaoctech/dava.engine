@@ -625,6 +625,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
+    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(OnEditor2DCameraDialog()));
+    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(OnEditorSpriteDialog()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
@@ -1416,6 +1418,62 @@ void QtMainWindow::OnParticleEffectDialog()
 		sceneEditor->selectionSystem->SetSelection(sceneNode);
 	}
 	SafeRelease(sceneNode);
+}
+
+void QtMainWindow::OnEditor2DCameraDialog()
+{
+    Entity* sceneNode = new Entity();
+    Camera * camera = new Camera();
+    
+    float32 w = Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin();
+    float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
+    float32 aspect = w / h;
+    camera->SetupOrtho(w, aspect, 1, 1000);        
+    camera->SetPosition(Vector3(0,-500, 0));
+    camera->SetTarget(Vector3(0, 0, 0));  
+    camera->SetUp(Vector3(0, 0, 1));
+    camera->RebuildCameraFromValues();        
+
+    sceneNode->AddComponent(new CameraComponent(camera));
+    sceneNode->SetName(ResourceEditor::EDITOR_2D_CAMERA);
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(sceneNode);
+    }
+    SafeRelease(sceneNode);
+    SafeRelease(camera);
+}
+void QtMainWindow::OnEditorSpriteDialog()
+{
+    FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+    projectPath += "Data/Gfx/";
+
+    QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.txt)"));
+    if (filePath.isEmpty())
+        return;        
+    filePath.remove(filePath.size() - 4, 4);
+    Sprite* sprite = Sprite::Create(filePath.toStdString());
+    if (!sprite)
+        return;
+
+    Entity *sceneNode = new Entity();
+    sceneNode->SetName(ResourceEditor::EDITOR_SPRITE);
+    SpriteObject *spriteObject = new SpriteObject(sprite, 0, Vector2(1,1), Vector2(0.5f*sprite->GetWidth(), 0.5f*sprite->GetHeight()));
+    spriteObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
+    sceneNode->AddComponent(new RenderComponent(spriteObject));    
+    Matrix4 m = Matrix4(1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1);
+    sceneNode->SetLocalTransform(m);
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(sceneNode);
+    }
+    SafeRelease(sceneNode);
+    SafeRelease(spriteObject);
+    SafeRelease(sprite);
 }
 
 void QtMainWindow::OnAddEntityFromSceneTree()

@@ -47,6 +47,8 @@ CreatePlaneLODCommand::CreatePlaneLODCommand(DAVA::LodComponent * _lodComponent,
 {
     DVASSERT(GetRenderObject(GetEntity()));
     
+	savedDistances = lodComponent->lodLayersArray;
+
     newLodIndex = GetLodLayersCount(lodComponent);
     DVASSERT(newLodIndex > 0);
     
@@ -84,18 +86,7 @@ void CreatePlaneLODCommand::Undo()
     DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
 
     //restore batches
-    DAVA::uint32 count = ro->GetRenderBatchCount();
-    for(DAVA::uint32 i = 0; i < count; ++i)
-    {
-        DAVA::int32 lodIndex = 0, switchIndex = 0;
-        DAVA::RenderBatch *batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
-        if(lodIndex == newLodIndex)
-        {
-            ro->RemoveRenderBatch(i);
-            --i;
-            --count;
-        }
-    }
+	ro->RemoveRenderBatch(planeBatch);
 
     //restore distances
     lodComponent->lodLayersArray = savedDistances;
@@ -107,11 +98,7 @@ void CreatePlaneLODCommand::Undo()
         lodComponent->forceLodLayer = maxLodIndex;
     }
     
-    if(lodComponent->currentLod > maxLodIndex)
-    {
-        lodComponent->currentLod = maxLodIndex;
-    }
-
+	lodComponent->currentLod = DAVA::LodComponent::INVALID_LOD_LAYER;
     DeleteTextureFiles();
 }
 
@@ -121,7 +108,7 @@ DAVA::Entity* CreatePlaneLODCommand::GetEntity() const
 }
 
 
-void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camera * camera, DAVA::Texture * toTexture, const DAVA::Rect & viewport /* = DAVA::Rect(0, 0, -1, -1) */, bool clearTarget /* = true */)
+void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer, const DAVA::Rect & viewport /* = DAVA::Rect(0, 0, -1, -1) */, bool clearTarget /* = true */)
 {
     DAVA::TexturesMap textures;
     SceneHelper::EnumerateEntityTextures(fromEntity->GetScene(), fromEntity, textures);
@@ -141,21 +128,26 @@ void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camer
         newViewport.dy = (float32)toTexture->GetHeight();
 
     RenderManager::Instance()->SetRenderTarget(toTexture);
-    RenderManager::Instance()->SetViewport(newViewport, true);
+
+	RenderManager::Instance()->SetViewport(newViewport, true);
 
     if(clearTarget)
         RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 
     Scene * tempScene = new Scene();
     Entity * entity = fromEntity->Clone();
+	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
 
     tempScene->AddNode(entity);
     tempScene->AddCamera(camera);
     tempScene->SetCurrentCamera(camera);
 
-    entity->SetLodVisible(true);
-    entity->SetSwitchVisible(true);
-    entity->SetVisible(true);
+	camera->SetupDynamicParameters();
+
+	DAVA::LodComponent *lodComponent = GetLodComponent(entity);
+	lodComponent->SetForceLodLayer(fromLodLayer);
+	entity->SetVisible(true);
+	tempScene->Update(0.1f);
     tempScene->Draw();
 
     SafeRelease(entity);
@@ -185,13 +177,13 @@ void CreatePlaneLODCommand::CreatePlaneImage()
     
     const Vector3 & min = bbox.min;
     const Vector3 & max = bbox.max;
-    bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
+    bool isMeshHorizontal = ((max.x - min.x) / (max.z - min.z) > 1.f) || ((max.y - min.y) / (max.z - min.z) > 1.f);
     
     Camera * camera = new Camera();
-    camera->SetTarget(Vector3(0.f, 0.f, 0.f));
+    camera->SetTarget(Vector3(0, 0, 0));
     camera->SetUp(Vector3(0.f, 0.f, 1.f));
     camera->SetIsOrtho(true);
-    
+
     float32 halfSizef = textureSize / 2.f;
     
     
@@ -212,18 +204,18 @@ void CreatePlaneLODCommand::CreatePlaneImage()
     float32 depth = 0.f;
     //draw 1st side
     depth = max.y - min.y;
-    camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
+ 	camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
     camera->SetPosition(Vector3(0.f, min.y, 0.f));
-    DrawToTexture(fromEntity, camera, fboTexture, firstSideViewport, true);
+    DrawToTexture(fromEntity, camera, fboTexture, fromLodLayer, firstSideViewport, true);
     
     //draw 2nd side
     depth = max.x - min.x;
-    camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
+	camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
     camera->SetPosition(Vector3(max.x, 0.f, 0.f));
-    DrawToTexture(fromEntity, camera, fboTexture, secondSideViewport, false);
+    DrawToTexture(fromEntity, camera, fboTexture, fromLodLayer, secondSideViewport, false);
     
     SafeRelease(camera);
-    
+
     planeImage = fboTexture->CreateImageFromMemory();
     SafeRelease(fboTexture);
 }

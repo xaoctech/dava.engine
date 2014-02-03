@@ -165,7 +165,7 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         Entity *node = sceneNode->GetChild(i);
         
         ValidateRenderComponent(node, errorsLog);
-        ValidateParticleEmitterComponent(node, errorsLog);
+        ValidateParticleEffectComponent(node, errorsLog);
         ValidateSceneNode(node, errorsLog);
         ValidateNodeCustomProperties(node);
     }
@@ -249,60 +249,16 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
     }
 }
 
-void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
+
+
+void SceneValidator::ValidateParticleEffectComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
 {
-	ParticleEmitter * emitter = GetEmitter(ownerNode);
-    if(!emitter)
+	ParticleEffectComponent *effect = GetEffectComponent(ownerNode);
+    if(!effect)
 	{
 		return;
 	}
 
-	if (GetLodComponent(ownerNode) == NULL)
-	{
-		ownerNode->AddComponent(new LodComponent());
-	}
-
-	ValidateParticleEmitter(emitter, errorsLog);
-	
-}
-
-bool SceneValidator::ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog)
-{
-	if (!emitter)
-	{
-		return true;
-	}
-
-	//validate layers
-	bool validationResult = true;
-	for (int32 i = 0; i < (int32)emitter->GetLayers().size(); ++i)
-	{
-		if (emitter->GetLayers()[i]->IsFrameBlendEnabled()&&(emitter->GetLayers()[i]->GetSprite()->GetFrameCount()==1))
-		{
-			String validationMsg = emitter->GetConfigPath().GetAbsolutePathname().c_str();			
-			validationMsg += " - layer ";
-			validationMsg += emitter->GetLayers()[i]->layerName;
-			validationMsg += " have \"Enable frame blending\" checked while sprite have only 1 frame. Frame blending would just waste time";
-			errorsLog.insert(validationMsg);
-			validationResult = false;
-		}
-	}
-	
-	if (!emitter->Is3DFlagCorrect())
-	{
-		// Don't use Format() helper here - the string with path might be too long for Format().
-		String validationMsg = ("\"3d\" flag value is wrong for Particle Emitter Configuration file ");
-		validationMsg += emitter->GetConfigPath().GetAbsolutePathname().c_str();
-		validationMsg += ". Please verify whether you are using the correct configuration file.\n\"3d\" flag for this Particle Emitter will be reset to TRUE.";
-		errorsLog.insert(validationMsg);
-
-		// Yuri Coder, 2013/05/08. Since Particle Editor works with 3D Particles only - have to set this flag
-		// manually.
-		emitter->Set3D(true);
-		validationResult = false;
-	}
-			
-	return validationResult;
 }
 
 void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
@@ -713,7 +669,6 @@ bool SceneValidator::ValidateColor(Color& color)
 	}
 	return ok;
 }
-
 
 
 
