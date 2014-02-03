@@ -963,6 +963,9 @@
 		CC84B02B18211A9000934482 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B01518211A9000934482 /* JobWaiter.h */; };
 		CC84B02C18211A9000934482 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B01518211A9000934482 /* JobWaiter.h */; };
 		CC84B02D18211A9000934482 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B01518211A9000934482 /* JobWaiter.h */; };
+		CC92A8B3189FBE6900C5DFEF /* ParticleRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EA106061188921FC00CB99A3 /* ParticleRenderObject.h */; };
+		CC92A8B4189FBE6D00C5DFEF /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
+		CC92A8B5189FBE6F00C5DFEF /* ParticleGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = EA10605F188921FC00CB99A3 /* ParticleGroup.h */; };
 		CC931B22188EC95F000375F9 /* LodToLod2Converter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC931B1E188EC95F000375F9 /* LodToLod2Converter.cpp */; };
 		CC931B23188EC95F000375F9 /* LodToLod2Converter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC931B1E188EC95F000375F9 /* LodToLod2Converter.cpp */; };
 		CC931B24188EC95F000375F9 /* LodToLod2Converter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC931B1F188EC95F000375F9 /* LodToLod2Converter.h */; };
@@ -5029,6 +5032,7 @@
 				E898A09D16BD265400732C04 /* File.h in Headers */,
 				0214140B181984D600925E51 /* DAVAClassRegistrator.h in Headers */,
 				5013F6951859EB0400FB3C51 /* StaticOcclusionSystem.h in Headers */,
+				CC92A8B5189FBE6F00C5DFEF /* ParticleGroup.h in Headers */,
 				E898A09E16BD265400732C04 /* FileList.h in Headers */,
 				E898A09F16BD265400732C04 /* FilePath.h in Headers */,
 				CC84B02018211A9000934482 /* JobManager.h in Headers */,
@@ -5185,6 +5189,7 @@
 				E898A15216BD265400732C04 /* Scene.h in Headers */,
 				E898A15316BD265400732C04 /* SceneAnimationMixer.h in Headers */,
 				E898A15416BD265400732C04 /* SceneFile.h in Headers */,
+				CC92A8B3189FBE6900C5DFEF /* ParticleRenderObject.h in Headers */,
 				E898A15516BD265400732C04 /* SceneFileV2.h in Headers */,
 				E898A15616BD265400732C04 /* SceneManager.h in Headers */,
 				E898A15816BD265400732C04 /* SceneNodeAnimation.h in Headers */,
@@ -6296,6 +6301,7 @@
 				E898A26116BD265400732C04 /* MeshInstance.cpp in Sources */,
 				E898A26216BD265400732C04 /* MeshInstanceNode.cpp in Sources */,
 				E898A26316BD265400732C04 /* ParticleEffectNode.cpp in Sources */,
+				CC92A8B4189FBE6D00C5DFEF /* ParticleRenderObject.cpp in Sources */,
 				E898A26416BD265400732C04 /* ParticleEmitterNode.cpp in Sources */,
 				E898A26516BD265400732C04 /* PathManip.cpp in Sources */,
 				E898A26616BD265400732C04 /* PolygonGroupInstance.cpp in Sources */,
