@@ -357,40 +357,20 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     if(!landscape) return;
     
     
-	if(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
-	{
-		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
-		{
-			Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
-			if(texLevel == Landscape::TEXTURE_COLOR || texLevel == Landscape::TEXTURE_TILE_MASK || texLevel == Landscape::TEXTURE_TILE0)
-			{
-				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
-			}
-
-			Color color = landscape->GetTileColor(texLevel);
-			if (!ValidateColor(color))
-			{
-				landscape->SetTileColor(texLevel, color);
-			}
-		}
-	}
-	else
-	{
-		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
-		{
-			Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
-			if(		(Landscape::TEXTURE_DETAIL == texLevel)
-				||	(Landscape::TEXTURE_TILE_FULL == texLevel
-				&&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
-				|| landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
-			{
-				continue;
-			}
-
-			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
-		}
-	}
-    
+    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
+    {
+        Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
+        if(texLevel == Landscape::TEXTURE_COLOR || texLevel == Landscape::TEXTURE_TILE_MASK || texLevel == Landscape::TEXTURE_TILE0)
+        {
+            ValidateLandscapeTexture(landscape, texLevel, errorsLog);
+        }
+        
+        Color color = landscape->GetTileColor(texLevel);
+        if (!ValidateColor(color))
+        {
+            landscape->SetTileColor(texLevel, color);
+        }
+    }
 
 	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
