@@ -352,30 +352,15 @@ void TilemaskEditorPanel::UpdateTileTextures()
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
 	RenderManager::Instance()->FlushState();
 	
-	if (sceneEditor->landscapeEditorDrawSystem->GetLandscapeTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
-	{
-		Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory();
-
-		image->ResizeCanvas(iconSize.width(), iconSize.height());
-
-		SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
-		SafeRelease(image);
-
-		tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITH_COLORS);
-	}
-	else
-	{
-		for (int32 i = 0; i < count; ++i)
-		{
-			Texture* texture = sceneEditor->tilemaskEditorSystem->GetTileTexture(i);
-			images[i] = texture->CreateImageFromMemory();
-			images[i]->ResizeCanvas(iconSize.width(), iconSize.height());
-		}
-		tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITHOUT_COLORS);
-	}
-
-	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
-
+    Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory();
+    
+    image->ResizeCanvas(iconSize.width(), iconSize.height());
+    
+    SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
+    SafeRelease(image);
+    
+    tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITH_COLORS);
+    
 	for (int32 i = 0; i < count; ++i)
 	{
 		Color color = sceneEditor->tilemaskEditorSystem->GetTileColor(i);
