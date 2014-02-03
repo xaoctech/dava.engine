@@ -389,6 +389,8 @@ protected:
 	float32 GetSpecularShininess();
 	void SetSpecularMapPath(const FilePath& path);
 	FilePath GetSpecularMapPath();
+    
+    void SetLandscapeSize(const Vector3 & newSize);
 	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
@@ -446,9 +448,6 @@ protected:
     bool    isFogEnabled;
     //float32 fogDensity;
     //Color   fogColor;
-    
-	float32 size;
-	float32 height;
 	
 	NMaterial* tileMaskMaterial;
 	//NMaterial* fullTiledMaterial;

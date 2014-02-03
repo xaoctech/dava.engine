@@ -199,7 +199,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -251,6 +251,8 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="actionAddLandscape"/>
+     <addaction name="actionAddSkybox"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -1712,6 +1714,30 @@
   <action name="actionQuality">
    <property name="text">
     <string>Quality...</string>
+   </property>
+  </action>
+  <action name="actionAddLandscape">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Landscape</string>
+   </property>
+   <property name="toolTip">
+    <string>Add landscape</string>
+   </property>
+  </action>
+  <action name="actionAddSkybox">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
+   </property>
+   <property name="text">
+    <string>Skybox</string>
+   </property>
+   <property name="toolTip">
+    <string>Add skybox</string>
    </property>
   </action>
  </widget>

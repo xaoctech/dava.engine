@@ -124,7 +124,9 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
-		
+	
+	void OnAddLandscape();
+    void OnAddSkybox();
 	void OnLandscapeDialog();
 	void OnLightDialog();
 	void OnCameraDialog();
