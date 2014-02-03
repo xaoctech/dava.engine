@@ -40,6 +40,7 @@
 #include "TextureBrowser/TextureBrowser.h"
 #include "TextureBrowser/TextureCache.h"
 #include "MaterialEditor/MaterialEditor.h"
+#include "QualitySwitcher/QualitySwitcher.h"
 
 #include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
@@ -587,6 +588,9 @@ void QtMainWindow::SetupActions()
 	// scene undo/redo
 	QObject::connect(ui->actionUndo, SIGNAL(triggered()), this, SLOT(OnUndo()));
 	QObject::connect(ui->actionRedo, SIGNAL(triggered()), this, SLOT(OnRedo()));
+
+    // quality
+    QObject::connect(ui->actionCustomQuality, SIGNAL(triggered()), this, SLOT(OnCustomQuality()));
 
 	// scene modifications
 	QObject::connect(ui->actionModifySelect, SIGNAL(triggered()), this, SLOT(OnSelectMode()));
@@ -2312,13 +2316,14 @@ bool QtMainWindow::OpenScene( const QString & path )
 		}
 		else
 		{
+            int needCloseIndex = -1;
 			SceneEditor2 *scene = ui->sceneTabWidget->GetCurrentScene();
 			if(scene && (ui->sceneTabWidget->GetTabCount() == 1))
 			{
 				FilePath path = scene->GetScenePath();
 				if(path.GetFilename() == "newscene1.sc2" && !scene->CanUndo())
 				{
-					ui->sceneTabWidget->CloseTab(0);
+					needCloseIndex = 0;
 				}
 			}
 
@@ -2327,15 +2332,26 @@ bool QtMainWindow::OpenScene( const QString & path )
 			WaitStart("Opening scene...", scenePath.GetAbsolutePathname().c_str());
 
 			int index = ui->sceneTabWidget->OpenTab(scenePath);
-			if(index != -1)
+
+            WaitStop();
+
+            if(index != -1)
 			{
 				ui->sceneTabWidget->SetCurrentTab(index);
 				AddRecent(path);
 
+                // close empty default scene
+                if(-1 != needCloseIndex)
+                {
+                    ui->sceneTabWidget->CloseTab(needCloseIndex);
+                }
+
 				ret = true;
 			}
-
-			WaitStop();
+            else
+            {
+                QMessageBox::critical(this, "Open scene error.", "Unexpected opening error. See logs for more info.");
+            }
 		}
 	}
 
@@ -2455,6 +2471,11 @@ void QtMainWindow::OnMaterialSpecular(bool state)
         scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_SPECULAR, state);
         LoadMaterialViewMode(scene);
     }
+}
+
+void QtMainWindow::OnCustomQuality()
+{
+    QualitySwitcher::Show();
 }
 
 void QtMainWindow::LoadMaterialViewMode(SceneEditor2 *scene)

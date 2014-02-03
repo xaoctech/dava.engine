@@ -55,7 +55,7 @@
 DavaGLWidget::DavaGLWidget(QWidget *parent)
 	: QWidget(parent)
     , ui(new Ui::DavaGLWidget)
-	, maxFPS(60)
+	, maxFPS(30)
 	, fps(0)
 	, fpsCountTime(0)
 	, fpsCount(0)
