@@ -72,10 +72,7 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 	
 	layerNameLineEdit = new QLineEdit();
 	mainBox->addWidget(layerNameLineEdit);
-	connect(layerNameLineEdit,
-			SIGNAL(editingFinished()),
-			this,
-			SLOT(OnValueChanged()));
+	connect(layerNameLineEdit, SIGNAL(editingFinished()),this, SLOT(OnValueChanged()));
 
 	QVBoxLayout* lodsLayout = new QVBoxLayout();
 	QLabel *lodsLabel = new QLabel("Active in LODs", this);
@@ -184,24 +181,28 @@ EmitterLayerWidget::EmitterLayerWidget(QWidget *parent) :
 
 	pivotPointXSpinBoxLabel = new QLabel("X:", this);
 	pivotPointInnerLayout->addWidget(pivotPointXSpinBoxLabel);
-	pivotPointXSpinBox = new QSpinBox(this);
-	pivotPointXSpinBox->setMinimum(-9999);
-	pivotPointXSpinBox->setMaximum(9999);
+	pivotPointXSpinBox = new EventFilterDoubleSpinBox(this);
+	pivotPointXSpinBox->setMinimum(-99);
+	pivotPointXSpinBox->setMaximum(99);
+	pivotPointXSpinBox->setSingleStep(0.1);
+	pivotPointXSpinBox->setDecimals(3);
 	pivotPointInnerLayout->addWidget(pivotPointXSpinBox);
 
 	pivotPointYSpinBoxLabel = new QLabel("Y:", this);
 	pivotPointInnerLayout->addWidget(pivotPointYSpinBoxLabel);
-	pivotPointYSpinBox = new QSpinBox(this);
-	pivotPointYSpinBox->setMinimum(-9999);
-	pivotPointYSpinBox->setMaximum(9999);
+	pivotPointYSpinBox = new EventFilterDoubleSpinBox(this);
+	pivotPointYSpinBox->setMinimum(-99);
+	pivotPointYSpinBox->setMaximum(99);
+	pivotPointYSpinBox->setSingleStep(0.1);
+	pivotPointYSpinBox->setDecimals(3);
 	pivotPointInnerLayout->addWidget(pivotPointYSpinBox);
 	
 	pivotPointResetButton = new QPushButton("Reset", this);
 	pivotPointInnerLayout->addWidget(pivotPointResetButton);
 	connect(pivotPointResetButton, SIGNAL(clicked(bool)), this, SLOT(OnPivotPointReset()));
 
-	connect(pivotPointXSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
-	connect(pivotPointYSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnValueChanged()));
+	connect(pivotPointXSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
+	connect(pivotPointYSpinBox, SIGNAL(valueChanged(double)), this, SLOT(OnValueChanged()));
 
 	pivotPointLayout->addLayout(pivotPointInnerLayout);
 	mainBox->addLayout(pivotPointLayout);
@@ -509,11 +510,11 @@ EmitterLayerWidget::~EmitterLayerWidget()
 		this,
 		SLOT(OnValueChanged()));	
 	disconnect(pivotPointXSpinBox,
-			   SIGNAL(valueChanged(int)),
+			   SIGNAL(valueChanged(double)),
 			   this,
 			   SLOT(OnValueChanged()));
 	disconnect(pivotPointYSpinBox,
-			SIGNAL(valueChanged(int)),
+			SIGNAL(valueChanged(double)),
 			this,
 			SLOT(OnValueChanged()));
 	for (int32 i=0; i<LodComponent::MAX_LOD_LAYERS; ++i)
@@ -575,26 +576,26 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	this->layer = layer;
 	SetActiveScene(scene);
 	
-	float32 emitterLifeTime = emitter->GetLifeTime();
-	float32 lifeTime = Min(emitterLifeTime, layer->endTime);
+	
+	float32 lifeTime = layer->endTime;
 
 	layerNameLineEdit->setText(QString::fromStdString(layer->layerName));
 	layerTypeComboBox->setCurrentIndex(LayerTypeToIndex(layer->type));
 
-	enableCheckBox->setChecked(!layer->GetDisabled());	
-	inheritPostionCheckBox->setChecked(layer->GetInheritPosition());
+	enableCheckBox->setChecked(!layer->isDisabled);	
+	inheritPostionCheckBox->setChecked(layer->inheritPosition);
 	
-	isLongCheckBox->setChecked(layer->IsLong());
+	isLongCheckBox->setChecked(layer->isLong);
 	scaleVelocityBaseSpinBox->setValue((double)layer->scaleVelocityBase);
 	scaleVelocityFactorSpinBox->setValue((double)layer->scaleVelocityFactor);
 
-	bool scaleVelocityVisible = layer->IsLong();
+	bool scaleVelocityVisible = layer->isLong;
 	scaleVelocityBaseLabel->setVisible(scaleVelocityVisible);
 	scaleVelocityBaseSpinBox->setVisible(scaleVelocityVisible);
 	scaleVelocityFactorLabel->setVisible(scaleVelocityVisible);
 	scaleVelocityFactorSpinBox->setVisible(scaleVelocityVisible);
 
-	isLoopedCheckBox->setChecked(layer->GetLooped());
+	isLoopedCheckBox->setChecked(layer->isLooped);
 
 	for (int32 i = 0; i < LodComponent::MAX_LOD_LAYERS; ++i)
 	{
@@ -602,7 +603,7 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	}
 
 	//LAYER_SPRITE = 0,
-	sprite = layer->GetSprite();
+	sprite = layer->sprite;
 	Sprite* renderSprite = Sprite::CreateAsRenderTarget(SPRITE_SIZE, SPRITE_SIZE, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(renderSprite);
 	if (sprite)
@@ -633,8 +634,8 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	worldAlignCheckBox->setChecked(layer->particleOrientation&ParticleLayer::PARTICLE_ORIENTATION_WORLD_ALIGN);
 
 	//blend and fog
-	eBlendMode sFactor = layer->GetBlendSrcFactor();
-	eBlendMode dFactor = layer->GetBlendDstFactor();
+	eBlendMode sFactor = layer->srcBlendFactor;
+	eBlendMode dFactor = layer->dstBlendFactor;
 	//-1 as we don't have BLEND_NONE
 	srcFactorComboBox->setCurrentIndex(sFactor-1);
 	dstFactorComboBox->setCurrentIndex(dFactor-1);
@@ -647,9 +648,9 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	}
 	presetComboBox->setCurrentIndex(presetId);
 
-	fogCheckBox->setChecked(layer->IsFogEnabled());
+	fogCheckBox->setChecked(layer->enableFog);
 
-	frameBlendingCheckBox->setChecked(layer->IsFrameBlendEnabled());
+	frameBlendingCheckBox->setChecked(layer->enableFrameBlend);
 	
 
 	//LAYER_LIFE, LAYER_LIFE_VARIATION,
@@ -686,7 +687,7 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	sizeVariationTimeLine->EnableLock(true);
 
 	legends.clear();
-	legends.push_back("size overlife X"); legends.push_back("size overlife Y");
+	legends.push_back("size over life X"); legends.push_back("size over life Y");
 	sizeOverLifeTimeLine->Init(0, 1, updateMinimized, true);
 	sizeOverLifeTimeLine->SetMinLimits(0);
 	sizeOverLifeTimeLine->AddLines(PropLineWrapper<Vector2>(PropertyLineHelper::GetValueLine(layer->sizeOverLifeXY)).GetProps(), colors, legends);
@@ -748,37 +749,33 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	startTimeSpin->setValue(layer->startTime);
 	startTimeSpin->setMaximum(layer->endTime);
 	endTimeSpin->setMinimum(0);
-	endTimeSpin->setValue(layer->endTime);
-	endTimeSpin->setMaximum(emitter->GetLifeTime());
+	endTimeSpin->setValue(layer->endTime);	
 
 	// LAYER delta, deltaVariation, loopEnd and loopVariation
 	bool isLoopedChecked = isLoopedCheckBox->isChecked();	
 	deltaSpin->setMinimum(0);
-	deltaSpin->setValue(layer->GetDeltaTime());
+	deltaSpin->setValue(layer->deltaTime);
 	deltaSpin->setVisible(isLoopedChecked);
 	deltaSpinLabel->setVisible(isLoopedChecked);
 	
-	deltaVariationSpin->setMinimum(0);
-	deltaVariationSpin->setMaximum(emitter->GetLifeTime());
-	deltaVariationSpin->setValue(layer->GetDeltaVariation());
+	deltaVariationSpin->setMinimum(0);	
+	deltaVariationSpin->setValue(layer->deltaVariation);
 	deltaVariationSpin->setVisible(isLoopedChecked);
 	deltaVariationSpinLabel->setVisible(isLoopedChecked);
 
-	loopEndSpin->setMinimum(0);
-	loopEndSpin->setMaximum(emitter->GetLifeTime());
-	loopEndSpin->setValue(layer->GetLoopEndTime());
+	loopEndSpin->setMinimum(0);	
+	loopEndSpin->setValue(layer->loopEndTime);
 	loopEndSpin->setVisible(isLoopedChecked);
 	loopEndSpinLabel->setVisible(isLoopedChecked);
 	
-	loopVariationSpin->setMinimum(0);
-	loopVariationSpin->setMaximum(emitter->GetLifeTime());
-	loopVariationSpin->setValue(layer->GetLoopVariation());
+	loopVariationSpin->setMinimum(0);	
+	loopVariationSpin->setValue(layer->loopVariation);
 	loopVariationSpin->setVisible(isLoopedChecked);
 	loopVariationSpinLabel->setVisible(isLoopedChecked);
 
-	const Vector2& layerPivotPoint = layer->GetPivotPoint();
-	pivotPointXSpinBox->setValue((int)layerPivotPoint.x);
-	pivotPointYSpinBox->setValue((int)layerPivotPoint.y);
+	const Vector2& layerPivotPoint = layer->layerPivotPoint;
+	pivotPointXSpinBox->setValue((double)layerPivotPoint.x);
+	pivotPointYSpinBox->setValue((double)layerPivotPoint.y);
 
 	blockSignals = false;
 }
@@ -1188,9 +1185,9 @@ void EmitterLayerWidget::SetSuperemitterMode(bool isSuperemitter)
 	innerEmitterLabel->setVisible(isSuperemitter);
 	innerEmitterPathLabel->setVisible(isSuperemitter);
 	
-	if (isSuperemitter && this->layer->GetInnerEmitter())
+	if (isSuperemitter && this->layer->innerEmitter)
 	{
-		innerEmitterPathLabel->setText(QString::fromStdString(layer->GetInnerEmitter()->GetConfigPath().GetAbsolutePathname()));
+		innerEmitterPathLabel->setText(QString::fromStdString(layer->innerEmitter->configPath.GetAbsolutePathname()));
 	}
 }
 
@@ -1221,9 +1218,9 @@ void EmitterLayerWidget::OnLayerValueChanged()
 	}
 	
 	// NOTE: inverse logic here.
-	if (enableCheckBox->isChecked() == layer->GetDisabled())
+	if (enableCheckBox->isChecked() == layer->isDisabled)
 	{
-		enableCheckBox->setChecked(!layer->GetDisabled());
+		enableCheckBox->setChecked(!layer->isDisabled);
 	}
 	
 	blockSignals = false;

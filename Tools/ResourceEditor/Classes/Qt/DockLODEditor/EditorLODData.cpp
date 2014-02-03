@@ -105,7 +105,7 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
         {
-            if(layerNum >= GetLayersCount(lodData[i]))
+            if(layerNum >= GetLodLayersCount(lodData[i]))
                 continue;
            
 			activeScene->Exec(new ChangeLODDistanceCommand(lodData[i], layerNum, distance));
@@ -133,7 +133,7 @@ void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::int32, DAVA::float32>
 
 			for(DAVA::uint32 i = 0; i < componentsCount; ++i)
 			{
-				if(layerNum < GetLayersCount(lodData[i]))
+				if(layerNum < GetLodLayersCount(lodData[i]))
 				{
 					activeScene->Exec(new ChangeLODDistanceCommand(lodData[i], layerNum, distance));
 				}
@@ -230,12 +230,10 @@ void EditorLODData::GetDataFromSelection()
     if(lodComponentsSize)
     {
         DAVA::int32 lodComponentsCount[DAVA::LodComponent::MAX_LOD_LAYERS] = { 0 };
-        
-        
         for(DAVA::int32 i = 0; i < lodComponentsSize; ++i)
         {
             //distances
-            DAVA::int32 layersCount = GetLayersCount(lodData[i]);
+            DAVA::int32 layersCount = GetLodLayersCount(lodData[i]);
             for(DAVA::int32 layer = 0; layer < layersCount; ++layer)
             {
                 lodDistances[layer] += lodData[i]->GetLodLayerDistance(layer);
@@ -243,13 +241,7 @@ void EditorLODData::GetDataFromSelection()
             }
 
             //triangles
-            Vector<LodComponent::LodData*> lodLayers;
-            lodData[i]->GetLodData(lodLayers);
-            Vector<LodComponent::LodData*>::const_iterator lodLayerIt = lodLayers.begin();
-            for(DAVA::int32 layer = 0; layer < layersCount && lodLayerIt != lodLayers.end(); ++layer, ++lodLayerIt)
-            {
-                lodTriangles[layer] += GetTrianglesForLodLayer(*lodLayerIt, false);
-            }
+            AddTrianglesInfo(lodTriangles, lodData[i], false);
         }
         
 
@@ -266,59 +258,45 @@ void EditorLODData::GetDataFromSelection()
     }
 }
 
-DAVA::uint32 EditorLODData::GetTrianglesForLodLayer(DAVA::LodComponent::LodData *lodData, bool checkVisibility)
+void EditorLODData::AddTrianglesInfo(DAVA::uint32 triangles[], DAVA::LodComponent *lod, bool onlyVisibleBatches)
 {
-    Vector<Entity *> meshes;
-    meshes.reserve(lodData->nodes.size());
+    Entity * en = lod->GetEntity();
+    if (GetEffectComponent(en))
+        return;
+    RenderObject * ro = GetRenderObject(en);
+    DVASSERT(ro);    
     
-    for(int32 n = 0; n < (int32)lodData->nodes.size(); ++n)
+    uint32 batchCount = ro->GetRenderBatchCount();
+    for(uint32 i = 0; i < batchCount; ++i)
     {
-        meshes.push_back(lodData->nodes[n]);
+        int32 lodIndex = 0;
+        int32 switchIndex = 0;
         
-        lodData->nodes[n]->GetChildNodes(meshes);
-    }
-    
-    uint32 trianglesCount = 0;
-    uint32 meshesCount = (uint32)meshes.size();
-    for(uint32 m = 0; m < meshesCount; ++m)
-    {
-        if(checkVisibility)
-        {
-            RenderObject *ro = GetRenderObject(meshes[m]);
-            if(!ro || ((ro->GetFlags() & RenderObject::VISIBLE_LOD) != RenderObject::VISIBLE_LOD))
-            {
-                continue;
-            }
-        }
-        
-        trianglesCount += GetTrianglesForEntity(meshes[m], checkVisibility);
-    }
-    
-    return trianglesCount;
-}
+        RenderBatch *rb = ro->GetRenderBatch(i, lodIndex, switchIndex);
 
-DAVA::uint32 EditorLODData::GetTrianglesForEntity(DAVA::Entity *entity, bool checkVisibility)
-{
-    RenderObject *ro = GetRenderObject(entity);
-    if(!ro || ro->GetType() != RenderObject::TYPE_MESH) return 0;
-    
-    uint32 trianglesCount = 0;
-    uint32 count = ro->GetRenderBatchCount();
-    for(uint32 r = 0; r < count; ++r)
-    {
-        RenderBatch *rb = ro->GetRenderBatch(r);
-        if(checkVisibility && !rb->GetVisible())
-            continue;
+        if(onlyVisibleBatches)
+        { //check batch visibility
+            
+            bool batchIsVisible = false;
+            uint32 activeBatchCount = ro->GetActiveRenderBatchCount();
+            for(uint32 a = 0; a < activeBatchCount && !batchIsVisible; ++a)
+            {
+                RenderBatch *visibleBatch = ro->GetActiveRenderBatch(a);
+                batchIsVisible = (visibleBatch == rb);
+            }
+            
+            if(batchIsVisible == false) // need to skip this render batch
+                continue;
+        }
         
         PolygonGroup *pg = rb->GetPolygonGroup();
         if(pg)
         {
-            trianglesCount += pg->GetIndexCount() / 3;
+            triangles[lodIndex] += (pg->GetIndexCount() / 3);
         }
     }
-
-    return trianglesCount;
 }
+
 
 void EditorLODData::EnumerateSelectionLODs(SceneEditor2 * scene)
 {
@@ -409,19 +387,6 @@ void EditorLODData::UpdateForceData()
 }
 
 
-DAVA::int32 EditorLODData::GetLayersCount(DAVA::LodComponent *lod) const
-{
-    if(GetEmitter(lod->GetEntity()))
-    {
-        return DAVA::LodComponent::MAX_LOD_LAYERS;
-    }
-
-    Entity * en = lod->GetEntity();
-    RenderObject * ro = GetRenderObject(en);
-    DVASSERT(ro);
-    return ro->GetMaxLodIndex()+1;
-}
-
 void EditorLODData::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
     if(command->GetId() == CMDID_BATCH)
@@ -460,7 +425,7 @@ bool EditorLODData::CanCreatePlaneLOD()
     if(componentOwner->GetComponent(Component::PARTICLE_EFFECT_COMPONENT) || componentOwner->GetParent()->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))
         return false;
 
-    return (lodData[0]->GetLodLayersCount() < LodComponent::MAX_LOD_LAYERS);
+    return (GetLodLayersCount(lodData[0]) < LodComponent::MAX_LOD_LAYERS);
 }
 
 FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
@@ -510,7 +475,7 @@ void EditorLODData::DeleteFirstLOD()
         activeScene->BeginBatch("Delete First LOD");
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new DeleteLODCommand(lodData[i], 0));
+            activeScene->Exec(new DeleteLODCommand(lodData[i], 0, -1));
         
         activeScene->EndBatch();
     }
@@ -526,7 +491,7 @@ void EditorLODData::DeleteLastLOD()
         activeScene->BeginBatch("Delete Last LOD");
         
         for(DAVA::uint32 i = 0; i < componentsCount; ++i)
-            activeScene->Exec(new DeleteLODCommand(lodData[i], lodData[i]->GetLodLayersCount() - 1));
+            activeScene->Exec(new DeleteLODCommand(lodData[i], GetLodLayersCount(lodData[i]) - 1, -1));
         
         activeScene->EndBatch();
     }

@@ -54,6 +54,7 @@ public:
 
 		DropingEntity,
 		DropingLayer,
+        DropingEmitter,
 		DropingForce,
         DropingMaterial
 	};
@@ -72,6 +73,7 @@ public:
 	SceneEditor2* GetScene() const;
 
 	QModelIndex GetIndex(DAVA::Entity *entity) const;
+    QModelIndex GetIndex(DAVA::ParticleEmitter *emitter) const;
 	QModelIndex GetIndex(DAVA::ParticleLayer *layer) const;
 	QModelIndex GetIndex(DAVA::ParticleForce *force) const;
 
@@ -103,6 +105,7 @@ protected:
 	bool dropAccepted;
 
 	QMap<DAVA::Entity*, QModelIndex> indexesCacheEntities;
+    QMap<DAVA::ParticleEmitter*, QModelIndex> indexesCacheEmitters;
 	QMap<DAVA::ParticleLayer*, QModelIndex> indexesCacheLayers;
 	QMap<DAVA::ParticleForce*, QModelIndex> indexesCacheForces;
 

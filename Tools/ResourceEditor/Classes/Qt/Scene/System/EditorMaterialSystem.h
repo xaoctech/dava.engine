@@ -56,7 +56,7 @@ public:
 	void BuildInstancesList(DAVA::NMaterial* parentMaterial, DAVA::Set<DAVA::NMaterial *> &in) const;
 
 	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
-	DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
+	const DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
 
     void SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set);
     bool GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const;
@@ -74,8 +74,8 @@ protected:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void ProcessCommand(const Command2 *command, bool redo);
 
-	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
-	void RemMaterial(DAVA::NMaterial *material);
+	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, const DAVA::RenderBatch *rb);
+	void RemoveMaterial(DAVA::NMaterial *material);
 
     void ApplyViewMode(DAVA::NMaterial *material);
 
@@ -87,7 +87,7 @@ private:
 		MaterialFB() : entity(NULL), batch(NULL) {}
 
 		DAVA::Entity *entity;
-		DAVA::RenderBatch *batch;
+		const DAVA::RenderBatch *batch;
 	};
 
 	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;

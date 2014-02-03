@@ -96,6 +96,7 @@ bool MimeDataHelper2<T>::IsValid(const QMimeData * mimeData)
 
 template<> inline const QString MimeDataHelper2<DAVA::Entity>::GetMimeType()		{ return "application/dava.entity"; }
 template<> inline const QString MimeDataHelper2<DAVA::NMaterial>::GetMimeType()		{ return "application/dava.nmaterial"; }
+template<> inline const QString MimeDataHelper2<DAVA::ParticleEmitter>::GetMimeType()	{ return "application/dava.particleemitter"; }
 template<> inline const QString MimeDataHelper2<DAVA::ParticleLayer>::GetMimeType()	{ return "application/dava.particlelayer"; }
 template<> inline const QString MimeDataHelper2<DAVA::ParticleForce>::GetMimeType()	{ return "application/dava.particleforce"; }
 

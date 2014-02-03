@@ -28,43 +28,46 @@
 
 
 
-#ifndef __DAVAENGINE_PARTICLELAYER_BATCH_H__
-#define __DAVAENGINE_PARTICLELAYER_BATCH_H__
+#include "DeleteRenderBatchCommand.h"
 
-#include "Base/BaseObject.h"
-#include "Base/BaseTypes.h"
-#include "Render/Highlevel/RenderBatch.h"
-
-namespace DAVA
+DeleteRenderBatchCommand::DeleteRenderBatchCommand(DAVA::Entity *en, DAVA::RenderObject *ro, DAVA::uint32 batchIndex)
+	: Command2(CMDID_DELETE_RENDER_BATCH, "Delete Render Batch")
+    , entity(en)
+    , renderObject(ro)
+    , renderBatchIndex(batchIndex)
 {
-
-class ParticleLayer;
-class ParticleLayerBatch : public RenderBatch
-{
-protected:
-	virtual ~ParticleLayerBatch();
-public:
-	ParticleLayerBatch();
-
-	virtual void Draw(const FastName & ownerRenderPass, Camera * camera);
-	void SetTotalCount(int32 totalCount);
-	void SetParticleLayer(ParticleLayer * particleLayer);
-
-	virtual RenderBatch * Clone(RenderBatch * destination = 0);
-
-	void SetLayerBoundingBox(const AABBox3 & bbox);
-	void SetIndices(Vector<uint16> *indices);
-protected:
-	int32 totalCount;
-	ParticleLayer * particleLayer;
-	Vector<uint16> *indices;
+    DVASSERT(entity);
+    DVASSERT(renderObject);
+    DVASSERT(renderBatchIndex < renderObject->GetRenderBatchCount());
     
-public:
-    INTROSPECTION_EXTEND(ParticleLayerBatch, RenderBatch,
-        MEMBER(totalCount, "Total Count", I_SAVE | I_VIEW)
-    );
-};
-
+    renderBatch = renderObject->GetRenderBatch(renderBatchIndex, lodIndex, switchIndex);
+    renderBatch->Retain();
 }
 
-#endif //__DAVAENGINE_PARTICLELAYER_BATCH_H__
+DeleteRenderBatchCommand::~DeleteRenderBatchCommand()
+{
+    SafeRelease(renderBatch);
+}
+
+void DeleteRenderBatchCommand::Redo()
+{
+    renderObject->RemoveRenderBatch(renderBatchIndex);
+}
+
+void DeleteRenderBatchCommand::Undo()
+{
+    renderBatchIndex = renderObject->GetRenderBatchCount();
+    renderObject->AddRenderBatch(renderBatch, lodIndex, switchIndex);
+}
+
+
+DAVA::Entity * DeleteRenderBatchCommand::GetEntity() const
+{
+    return entity;
+}
+
+DAVA::RenderBatch * DeleteRenderBatchCommand::GetRenderBatch() const
+{
+    return renderBatch;
+}
+

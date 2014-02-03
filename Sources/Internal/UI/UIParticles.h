@@ -27,81 +27,51 @@
 =====================================================================================*/
 
 
-#include "Particles/ParticleEmitterObject.h"
-#include "Scene2D/GameObjectManager.h"
+
+#ifndef __DAVAENGINE_UI_PARTICLES__
+#define __DAVAENGINE_UI_PARTICLES__
+
+#include "Base/BaseTypes.h"
+#include "UI/UIControl.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Systems/ParticleEffectSystem.h"
 
 namespace DAVA 
 {
+
+class UIParticles : public UIControl 
+{
+protected:
+    virtual ~UIParticles();
+public:
+	UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates = FALSE);        
+
+
+    /*methods analogical to once in ParticleEffectComponent*/
+    void Start();
+    void Stop(bool isDeleteAllParticles = true);
+    void Restart(bool isDeleteAllParticles = true); 
+    bool IsStopped();	
+    void Pause(bool isPaused = true);
+    bool IsPaused();
+
+    virtual void AddControl(UIControl *control);
+    virtual void Update(float32 timeElapsed);
+    virtual void Draw(const UIGeometricData &geometricData);
+
+    
+    void Load(const FilePath& path);
+    
+protected:    	
+
+private:
+    ParticleEffectComponent *effect;
+    ParticleEffectSystem *system;
+    Matrix4 matrix;
+    Camera *camera;
+    float32 updateTime;
+};
 	
-ParticleEmitterObject::ParticleEmitterObject()
-	: emitter(0)
-	, removeAfterNRepeats(-1)
-	, isRemoveWhenEmpty(false)
-{
-}
+};
 
-ParticleEmitterObject::~ParticleEmitterObject()
-{
-	SafeRelease(emitter);
-}
-
-void ParticleEmitterObject::SetEmitter(ParticleEmitter * _emitter)
-{
-	SafeRelease(emitter);
-	emitter = SafeRetain(_emitter);
-}
-	
-void ParticleEmitterObject::LoadFromYaml(const FilePath & pathName, MaterialSystem* materialSystem)
-{
-	SafeRelease(emitter);
-	emitter = new ParticleEmitter();
-	emitter->LoadFromYaml(pathName);
-}
-
-void ParticleEmitterObject::RecalcHierarchy(const Sprite::DrawState & parentDrawState)
-{
-	GameObject::RecalcHierarchy(parentDrawState);
-	
-	emitter->SetPosition(globalDrawState.position);
-	emitter->SetAngle(globalDrawState.angle);
-}
-	
-void ParticleEmitterObject::RemoveAfterNRepeats(int32 numberOfRepeats)
-{
-	removeAfterNRepeats = numberOfRepeats;
-}
-
-void ParticleEmitterObject::RemoveWhenEmpty()
-{
-	isRemoveWhenEmpty = true;
-}
-
-ParticleEmitter * ParticleEmitterObject::GetEmitter()
-{
-	return emitter;
-}
-
-void ParticleEmitterObject::Update(float32 timeElapsed)
-{
-	emitter->Update(timeElapsed);
-	if (removeAfterNRepeats > 0)
-	{
-		if (emitter->GetRepeatCount() >= removeAfterNRepeats)
-		{
-			GetManager()->RemoveObject(this);
-		}	
-	}
-	if (isRemoveWhenEmpty)
-	{
-		if (emitter->GetParticleCount() == 0)
-			GetManager()->RemoveObject(this);
-	}
-}
-
-void ParticleEmitterObject::Draw()
-{
-	//if (!visible)return;
-	//emitter->Draw();
-}
-
-}
+#endif

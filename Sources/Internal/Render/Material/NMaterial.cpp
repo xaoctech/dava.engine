@@ -170,7 +170,6 @@ namespace DAVA
 			it != textures.end();
 			++it)
 		{
-			SafeRelease(it->second->texture);
 			SafeDelete(it->second);
 		}
 		textures.clear();
@@ -255,7 +254,7 @@ namespace DAVA
     {
         int32 flagValue = GetFlagValue(flag);
         
-        return ((flagValue & 1) == NMaterial::FlagOn);
+        return ((flagValue & NMaterial::FlagOn) == NMaterial::FlagOn);
     }
 			
 	void NMaterial::Save(KeyedArchive * archive,
@@ -306,9 +305,9 @@ namespace DAVA
 			it != textures.end();
 			++it)
 		{
-			if(it->second->texture)
+			if(it->second->GetTexture() != NULL)
 			{
-				String texturePath = it->second->path.GetRelativePathname(serializationContext->GetScenePath());
+				String texturePath = it->second->GetPath().GetRelativePathname(serializationContext->GetScenePath());
 				
 				if(texturePath.size() > 0)
 				{
@@ -558,7 +557,7 @@ namespace DAVA
 			it != textures.end();
 			++it)
 		{
-			clonedMaterial->SetTexture(it->first, it->second->path);
+			clonedMaterial->SetTexture(it->first, it->second->GetPath());
 		}
 		
 		if(illuminationParams)
@@ -642,7 +641,6 @@ namespace DAVA
         if(bucket)
         {
             textures.erase(textureFastName);
-            SafeRelease(bucket->texture);
             SafeDelete(bucket);
             
             SetTexturesDirty();
@@ -656,18 +654,19 @@ namespace DAVA
 		if(NULL == bucket)
 		{
 			bucket = new TextureBucket();
-			bucket->texture = NULL;
 			textures.insert(textureFastName, bucket);
 		}
 		
-		if(bucket->path != texturePath)
+		if(bucket->GetPath() != texturePath)
 		{
-			SafeRelease(bucket->texture);
-			bucket->path = texturePath;
+            bucket->SetTexture(NULL); //VI: texture WILL NOT BE RELOADED if it's not active in the current quality
+			bucket->SetPath(texturePath);
 			
 			if(IsTextureActive(textureFastName))
 			{
-				bucket->texture = Texture::CreateFromFile(texturePath);
+                Texture* tx = Texture::CreateFromFile(texturePath);
+				bucket->SetTexture(tx);
+                SafeRelease(tx);
 			}
 			
 			SetTexturesDirty();
@@ -684,41 +683,52 @@ namespace DAVA
 			textures.insert(textureFastName, bucket);
 		}
 
-		if(texture != bucket->texture)
+		if(texture != bucket->GetTexture())
 		{
-			SafeRelease(bucket->texture);
-			
-			bucket->texture = SafeRetain(texture);
-			bucket->path = (bucket->texture) ? bucket->texture->texDescriptor->pathname : FilePath();
+			bucket->SetTexture(texture);
+			bucket->SetPath((texture) ? texture->texDescriptor->pathname : FilePath());
 			
 			SetTexturesDirty();
 		}
 	}
+    
+    void NMaterial::SetTexturePath(const FastName& textureFastName, const FilePath& texturePath)
+    {
+        TextureBucket* bucket = textures.at(textureFastName);
+        
+		if(NULL == bucket)
+		{
+			bucket = new TextureBucket();
+			textures.insert(textureFastName, bucket);
+		}
+        
+        bucket->SetPath(texturePath);
+    }
 	
     Texture * NMaterial::GetTexture(const FastName& textureFastName) const
 	{
 		TextureBucket* bucket = textures.at(textureFastName);
-		return (NULL == bucket) ? NULL : bucket->texture;
+		return (NULL == bucket) ? NULL : bucket->GetTexture();
 	}
 	
 	const FilePath& NMaterial::GetTexturePath(const FastName& textureFastName) const
 	{
 		static FilePath invalidEmptyPath;
 		TextureBucket* bucket = textures.at(textureFastName);
-		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
+		return (NULL == bucket) ? invalidEmptyPath : bucket->GetPath();
 	}
     
     Texture * NMaterial::GetEffectiveTexture(const FastName& textureFastName) const
     {
         TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
-		return (NULL == bucket) ? NULL : bucket->texture;
+		return (NULL == bucket) ? NULL : bucket->GetTexture();
     }
     
 	const FilePath& NMaterial::GetEffectiveTexturePath(const FastName& textureFastName) const
     {
         static FilePath invalidEmptyPath;
 		TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
-		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
+		return (NULL == bucket) ? invalidEmptyPath : bucket->GetPath();
     }
 
     Texture * NMaterial::GetTexture(uint32 index) const
@@ -726,7 +736,7 @@ namespace DAVA
 		DVASSERT(index >= 0 && index < textures.size());
 		
 		TextureBucket* bucket = textures.valueByIndex(index);
-		return bucket->texture;
+		return bucket->GetTexture();
 	}
 	
 	const FilePath& NMaterial::GetTexturePath(uint32 index) const
@@ -734,7 +744,7 @@ namespace DAVA
 		DVASSERT(index >= 0 && index < textures.size());
 		
 		TextureBucket* bucket = textures.valueByIndex(index);
-		return bucket->path;
+		return bucket->GetPath();
 	}
 	
 	const FastName& NMaterial::GetTextureName(uint32 index) const
@@ -1142,7 +1152,7 @@ namespace DAVA
 		{
 			if(!IsTextureActive(it->first))
 			{
-				SafeRelease(it->second->texture);
+				it->second->SetTexture(NULL);
 			}
 		}
 		
@@ -1163,12 +1173,14 @@ namespace DAVA
 			
 			if(bucket)
 			{
-				if(NULL == bucket->texture)
+				if(NULL == bucket->GetTexture())
 				{
-					bucket->texture = Texture::CreateFromFile(bucket->path);
+                    Texture* tx = Texture::CreateFromFile(bucket->GetPath());
+					bucket->SetTexture(tx);
+                    SafeRelease(tx);
 				}
 				
-				tex = bucket->texture;
+				tex = bucket->GetTexture();
 				break;
 			}
 			
@@ -1753,7 +1765,7 @@ namespace DAVA
 		DVASSERT(mat);
 		
 		NMaterial::TextureBucket* bucket = mat->GetEffectiveTextureBucket(textureName);
-		return (bucket) ? bucket->texture : NULL;
+		return (bucket) ? bucket->GetTexture() : NULL;
 	}
 	
 	bool NMaterialHelper::IsAlphatest(const FastName& passName, NMaterial* mat)
@@ -1831,7 +1843,7 @@ namespace DAVA
 					TextureBucket *bucket = it->second;
 
 					data.source |= source;
-					data.path = bucket->path;
+					data.path = bucket->GetPath();
 
 					staticData.Insert(it->first, data);
 				}

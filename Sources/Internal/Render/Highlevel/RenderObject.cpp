@@ -70,10 +70,11 @@ void RenderObject::AddRenderBatch(RenderBatch * batch)
 }
   
 void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _switchIndex)
-{
+{    
 	batch->Retain();
     DVASSERT((batch->GetRenderObject() == 0) || (batch->GetRenderObject() == this));
 	batch->SetRenderObject(this);
+    batch->SetSortingTransformPtr(worldTransform);
 	
 	IndexedRenderBatch ind;
 	ind.lodIndex = _lodIndex;
@@ -92,20 +93,25 @@ void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _s
     RecalcBoundingBox();
 }
 
+void RenderObject::UpdateBatchesSortingTransforms()
+{
+    for (int32 i=0, batchCount = renderBatchArray.size(); i<batchCount; ++i)
+        renderBatchArray[i].renderBatch->SetSortingTransformPtr(worldTransform); 
+}
+
 void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 {
-    if (renderSystem)
-        renderSystem->UnregisterBatch(batch);
-    
     batch->SetRenderObject(0);
-	batch->Release();
-
-
+	
 	uint32 size = (uint32)renderBatchArray.size();
 	for (uint32 k = 0; k < size; ++k)
 	{
 		if (renderBatchArray[k].renderBatch == batch)
 		{
+            if (renderSystem)
+                renderSystem->UnregisterBatch(batch);
+            batch->Release();
+
 			renderBatchArray[k] = renderBatchArray[size - 1];
 			renderBatchArray.pop_back();
             k--;
@@ -113,10 +119,30 @@ void RenderObject::RemoveRenderBatch(RenderBatch * batch)
 		}
 	}
 
+	UpdateActiveRenderBatches();
+
+    RecalcBoundingBox();
+}
+    
+void RenderObject::RemoveRenderBatch(uint32 batchIndex)
+{
+	uint32 size = (uint32)renderBatchArray.size();
+    DVASSERT(batchIndex < size);
+
+    RenderBatch *batch = renderBatchArray[batchIndex].renderBatch;
+    if (renderSystem)
+        renderSystem->UnregisterBatch(batch);
+
+    batch->SetRenderObject(0);
+	batch->Release();
+
+    renderBatchArray[batchIndex] = renderBatchArray[size - 1];
+    renderBatchArray.pop_back();
 	FindAndRemoveExchangingWithLast(activeRenderBatchArray, batch);
 
     RecalcBoundingBox();
 }
+
     
 void RenderObject::RecalcBoundingBox()
 {
@@ -174,7 +200,7 @@ void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializat
         archive->SetUInt32("ro.sOclIndex", staticOcclusionIndex);
         
         //VI: save only VISIBLE flag for now. May be extended in the future
-        archive->SetUInt32("ro.flags", flags & RenderObject::VISIBLE);
+        archive->SetUInt32("ro.flags", flags & RenderObject::SERIALIZATION_CRITERIA);
 
 		KeyedArchive *batchesArch = new KeyedArchive();
 		for(uint32 i = 0; i < GetRenderBatchCount(); ++i)
@@ -209,16 +235,10 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
         staticOcclusionIndex = (uint16)archive->GetUInt32("ro.sOclIndex", INVALID_STATIC_OCCLUSION_INDEX);
         
         //VI: load only VISIBLE flag for now. May be extended in the future.
-        uint32 savedFlags = RenderObject::VISIBLE & archive->GetUInt32("ro.flags", RenderObject::VISIBLE);
-        if((savedFlags & RenderObject::VISIBLE) == 0)
-        {
-            flags = flags & ~RenderObject::VISIBLE;
-        }
-        else
-        {
-            flags = flags | RenderObject::VISIBLE;
-        }
-
+        uint32 savedFlags = RenderObject::SERIALIZATION_CRITERIA & archive->GetUInt32("ro.flags", RenderObject::SERIALIZATION_CRITERIA);
+        
+        flags = (savedFlags | (flags & ~RenderObject::SERIALIZATION_CRITERIA));
+        
 		uint32 roBatchCount = archive->GetUInt32("ro.batchCount");
         KeyedArchive *batchesArch = archive->GetArchive("ro.batches");
         for(uint32 i = 0; i < roBatchCount; ++i)
@@ -262,6 +282,11 @@ void RenderObject::RecalculateWorldBoundingBox()
 {
 	DVASSERT(!bbox.IsEmpty());
 	bbox.GetTransformedBox(*worldTransform, worldBBox);
+}
+
+
+void RenderObject::PrepareToRender(Camera *camera)
+{
 }
 
 void RenderObject::SetLodIndex(int32 _lodIndex)

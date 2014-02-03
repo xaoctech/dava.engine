@@ -104,6 +104,8 @@ void ActionDisableTilemaskEditor::Redo()
 ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, const Rect& updatedRect)
 :	Command2(CMDID_TILEMASK_MODIFY, "Tile Mask Modification")
 {
+    RenderManager::Instance()->SetColor(Color::White);
+    
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
 	
@@ -121,6 +123,7 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, con
 	undoImageMask = Image::CopyImageRegion(originalMask, updatedRect);
 
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+    RenderManager::Instance()->SetColor(Color::White);
 	RenderManager::Instance()->FlushState();
 	Image* currentImageMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 
@@ -139,13 +142,18 @@ ModifyTilemaskCommand::~ModifyTilemaskCommand()
 
 void ModifyTilemaskCommand::Undo()
 {
-	ApplyImageToSprite(undoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
-
+    RenderManager::Instance()->Setup2DMatrices();
+    
+    RenderManager::Instance()->SetColor(Color::White);
+    
+    Sprite* srcSprite = landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE);
+	ApplyImageToSprite(undoImageMask, srcSprite);
+    
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
 
 	Sprite* sprite;
 	sprite = ApplyImageToTexture(undoImageMask, maskTexture);
-//	sprite->GetTexture()->GenerateMipmaps();
+    
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 
@@ -159,13 +167,14 @@ void ModifyTilemaskCommand::Undo()
 
 void ModifyTilemaskCommand::Redo()
 {
+    RenderManager::Instance()->Setup2DMatrices();
+    
 	ApplyImageToSprite(redoImageMask, landscapeProxy->GetTilemaskSprite(LandscapeProxy::TILEMASK_SPRITE_SOURCE));
 
 	Texture* maskTexture = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK);
-
-	Sprite* sprite;
+    
+	Sprite* sprite = NULL;
 	sprite = ApplyImageToTexture(redoImageMask, maskTexture);
-//	sprite->GetTexture()->GenerateMipmaps();
 	landscapeProxy->SetTilemaskTexture(sprite->GetTexture());
 	SafeRelease(sprite);
 
@@ -186,27 +195,26 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 {
 	int32 width = texture->GetWidth();
 	int32 height = texture->GetHeight();
-
+    
 	Sprite* resSprite = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(resSprite);
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-
-	TextureStateData textureStateData;
-	textureStateData.textures[0] = texture;
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
-
+    
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
-	RenderManager::Instance()->SetTextureState(uniqueHandle);
-	RenderManager::Instance()->FlushState();
-	
+    RenderManager::Instance()->SetColor(Color::White);
+    
 	Sprite* s = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height);
 	s->SetPosition(0.f, 0.f);
 	s->Draw();
 	SafeRelease(s);
-
+    
+    RenderManager::Instance()->Reset();
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+    
+    RenderManager::Instance()->SetRenderState(noBlendDrawState);
+    RenderManager::Instance()->SetColor(Color::White);
+    RenderManager::Instance()->SetTextureState(RenderManager::Instance()->GetDefaultTextureState());
+    RenderManager::Instance()->FlushState();
 
 	Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 										 image->GetWidth(), image->GetHeight(), false);
@@ -215,13 +223,11 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 	s->Draw();
 	SafeRelease(s);
 	SafeRelease(t);
-
+    
 	RenderManager::Instance()->ClipPop();
-	RenderManager::Instance()->ResetColor();
-	RenderManager::Instance()->RestoreRenderTarget();
-
-	RenderManager::Instance()->ReleaseTextureStateData(uniqueHandle);
-
+	
+    RenderManager::Instance()->RestoreRenderTarget();
+    
 	return resSprite;
 }
 
@@ -232,6 +238,7 @@ void ModifyTilemaskCommand::ApplyImageToSprite(Image* image, Sprite* dstSprite)
 	RenderManager::Instance()->SetClip(updatedRect);
 
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+    RenderManager::Instance()->SetColor(Color::White);
 	RenderManager::Instance()->FlushState();
 	
 	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
@@ -239,11 +246,8 @@ void ModifyTilemaskCommand::ApplyImageToSprite(Image* image, Sprite* dstSprite)
 	Sprite* srcSprite = Sprite::CreateFromTexture(texture, 0, 0, image->GetWidth(), image->GetHeight());
 	
 	srcSprite->SetPosition(updatedRect.x, updatedRect.y);
-	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	srcSprite->Draw();
-
-//	dstSprite->GetTexture()->GenerateMipmaps();
-	
+    
 	RenderManager::Instance()->ClipPop();
 	RenderManager::Instance()->RestoreRenderTarget();
 	

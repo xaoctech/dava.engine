@@ -429,6 +429,13 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		case CMDID_HEIGHTMAP_MODIFY:
 			UpdateCollisionObject(curLandscapeEntity);
 			break;
+
+        case CMDID_LOD_CREATE_PLANE:
+        case CMDID_LOD_DELETE:
+            {
+                UpdateCollisionObject(command->GetEntity());
+                break;
+            }
 		default:
 			break;
 		}
@@ -479,12 +486,14 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		isLandscape = true;
 	}
 
-	DAVA::ParticleEmitter* particleEmitter = DAVA::GetEmitter(entity);
+	
+	DAVA::ParticleEffectComponent* particleEffect = DAVA::GetEffectComponent(entity);
 	if( NULL == cObj &&
-		NULL != particleEmitter)
+		NULL != particleEffect)
 	{
-		cObj = new CollisionParticleEmitter(entity, objectsCollWorld, particleEmitter);
+		cObj = new CollisionParticleEffect(entity, objectsCollWorld);
 	}
+
 
 	DAVA::RenderObject *renderObject = DAVA::GetRenderObject(entity);
 	if( NULL == cObj &&

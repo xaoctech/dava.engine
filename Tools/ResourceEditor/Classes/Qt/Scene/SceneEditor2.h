@@ -193,6 +193,9 @@ protected:
 	void RemoveSystems();
 
 	bool wasChanged; //deprecated
+    
+    void Setup2DDrawing();
+    void Setup3DDrawing();
 
 private:
 	friend struct EditorCommandNotify;

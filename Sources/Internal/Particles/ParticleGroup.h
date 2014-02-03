@@ -26,51 +26,52 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_PARTICLE_GROUP_H_
+#define __DAVAENGINE_PARTICLE_GROUP_H_
 
-
-#ifndef __DAVAENGINE_PARTICLE_EMITTER_3D_H__
-#define __DAVAENGINE_PARTICLE_EMITTER_3D_H__
-
-#include "Particles/ParticleEmitter.h"
-#include "Math/Matrix4.h"
+#include "ParticleEmitter.h"
+#include "ParticleLayer.h"
+#include "Particle.h"
+#include "Render/Material/NMaterial.h"
 
 namespace DAVA
 {
 
-class Camera;
-class ParticleEmitter3D : public ParticleEmitter
+
+struct ParticleGroup
 {
-public:
-	ParticleEmitter3D();
-
-	virtual void AddLayer(ParticleLayer * layer);
-	virtual void InsertLayer(ParticleLayer * layer, ParticleLayer * beforeLayer);
-
-	virtual bool Is3DFlagCorrect();
-
-	void Draw(Camera * camera);
-	virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
-
-	virtual RenderObject * Clone(RenderObject *newObject);
-
-	virtual void RecalcBoundingBox();
-
-protected:
-	// Virtual methods which are different for 2D and 3D emitters.
-	virtual void PrepareEmitterParameters(Particle * particle, float32 velocity, int32 emitIndex);
-	virtual void LoadParticleLayerFromYaml(const YamlNode* yamlNode, bool isLiong);
+	ParticleEmitter *emitter;
+	ParticleLayer *layer;
+	NMaterial *material;
 	
-	// 3D-specific methods.
-	void CalculateParticlePositionForCircle(Particle* particle, const Vector3& tempPosition,
-											const Matrix3& rotationMatrix);
-	void PrepareEmitterParametersShockwave(Particle * particle, float32 velocity,
-										   int32 emitIndex, const Vector3& tempPosition,
-										   const Matrix3& rotationMatrix);
-	void PrepareEmitterParametersGeneric(Particle * particle, float32 velocity,
-										 int32 emitIndex, const Vector3& tempPosition,
-										 const Matrix3& rotationMatrix);
+	Particle *head;
+	int32 activeParticleCount;
+	
+	bool finishingGroup;
+
+	bool visibleLod;
+
+	float32 time;	
+	float32 loopStartTime, loopLyaerStartTime, loopDuration;
+	float32 particlesToGenerate;	
+
+	int32 positionSource;
+
+  	ParticleGroup() : emitter(0), layer(0), material(0), head(0), activeParticleCount(0), finishingGroup(false), visibleLod(true), time(0), particlesToGenerate(0), positionSource(0){}
 };
 
+struct ParentInfo
+{
+	Vector3 position;
+	Vector2 size;
 };
 
-#endif //__DAVAENGINE_PARTICLE_EMITTER_3D_H__
+struct ParticleEffectData
+{
+	Vector<ParentInfo> infoSources;
+	List<ParticleGroup> groups;
+};
+
+}
+
+#endif
