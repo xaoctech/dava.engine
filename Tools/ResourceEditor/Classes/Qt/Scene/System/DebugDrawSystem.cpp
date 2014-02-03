@@ -32,6 +32,7 @@
 #include "Scene/SceneEditor2.h"
 #include "Scene/System/LandscapeEditorDrawSystem/LandscapeProxy.h"
 #include "Deprecated/EditorConfig.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 using namespace DAVA;
 
@@ -290,11 +291,15 @@ bool DebugDrawSystem::HangingObjectsModeEnabled() const
 void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
 {
 	if(!hangingObjectsModeEnabled)
+	{
+        return;
+    }
+    //skyBox should not be marked as hanging object
+	if (entity->GetParent() != GetScene() || NULL != GetSkybox(entity))
+    {
 		return;
-
-	if (entity->GetParent() != GetScene())
-		return;
-
+    }
+    
 	if(IsObjectHanging(entity))
 	{
 		DrawEntityBox(entity, Color(1.f, 0.f, 0.f, 1.f));
