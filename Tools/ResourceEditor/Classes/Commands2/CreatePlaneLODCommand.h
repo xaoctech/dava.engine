@@ -1,5 +1,6 @@
 /*==================================================================================
-    Copyright (c) 2008, binaryzebra
+
+Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -44,7 +45,7 @@ public:
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const;
     
-    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
+    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer = -1, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
 
     DAVA::RenderBatch * GetRenderBatch() const;
     
