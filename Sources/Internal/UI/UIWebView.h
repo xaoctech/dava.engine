@@ -48,7 +48,9 @@ public:
 	void OpenURL(const String& urlToOpen);
 
 	// Overloaded virtual methods.
-    virtual void SetParent(UIControl* control);
+	virtual void WillAppear();
+	virtual void WillDisappear();
+
 	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
 	virtual void SetSize(const Vector2 &newSize);
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
