@@ -26,31 +26,35 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
 
-#include <QDialog>
 
-class QualitySwitcher : public QDialog
+#ifndef __FLOAT_RANGE_VALIDATOR_H__
+#define __FLOAT_RANGE_VALIDATOR_H__
+
+#include "../QtPropertyDataValidator.h"
+#include <QDoubleValidator>
+
+class FloatRangeValidator : public QtPropertyDataValidator
 {
-    Q_OBJECT
-
 public:
-    static void Show();
-
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
-
-    QPushButton *defBtn;
     
-    bool applyTx;
-    bool applyMa;
+    FloatRangeValidator(float minValue, float maxValue);
+	
+	void SetRange(float minValue, float maxValue);
+	
+	int GetMaximum() const;
+	void SetMaximum(float maxValue);
+	
+	int GetMinimum() const;
+	void SetMinimum(float minValue);
+   
+protected:
 
-protected slots:
-    void OnOk();
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
+    virtual bool ValidateInternal(const QVariant &v) const;
+
+private:
+    
+	QDoubleValidator innerValidator;
 };
 
-#endif // __QUALITY_SWITCHER_H__
+#endif // __FLOAT_RANGE_VALIDATOR_H__

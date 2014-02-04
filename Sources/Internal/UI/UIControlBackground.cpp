@@ -464,7 +464,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 		case DRAW_FILL:
 		{
 		    RenderManager::Instance()->SetDefault2DNoTextureState();
-			RenderManager::Instance()->SetDefaultTextureState();
+			RenderManager::Instance()->SetEmptyTextureState();
 			DrawFilled( geometricData );
 		}	
 		break;

@@ -26,31 +26,20 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
+#include "PathValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-#include <QDialog>
-
-class QualitySwitcher : public QDialog
+PathValidator::PathValidator(const QString& value):
+	RegExpValidator(""),
+	referencePath(value)
 {
-    Q_OBJECT
+	DAVA::String regExpr = DAVA::Format(".*%s.*", referencePath.toStdString().c_str());
+	SetRegularExpression(regExpr.c_str());
+}
 
-public:
-    static void Show();
-
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
-
-    QPushButton *defBtn;
-    
-    bool applyTx;
-    bool applyMa;
-
-protected slots:
-    void OnOk();
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
-};
-
-#endif // __QUALITY_SWITCHER_H__
+void PathValidator::ErrorNotifyInternal(const QVariant &v) const
+{
+	QString message = v.toString() + " is wrong. It's allowed to select only from " + referencePath;
+	QMessageBox::warning(NULL, "Wrong file selected", message, QMessageBox::Ok);
+}

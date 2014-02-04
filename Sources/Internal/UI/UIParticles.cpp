@@ -51,7 +51,7 @@ UIParticles::UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates)
     float32 aspect = w / h;
     camera->SetupOrtho(w, aspect, 1, 1000);        
     camera->SetPosition(Vector3(w/2,-500, -h/2));
-    camera->SetTarget(Vector3(w/2, 0, -h/2));  
+    camera->SetTarget(Vector3(w/2, 0, -h/2));      
     camera->SetUp(Vector3(0, 0, 1));
     camera->RebuildCameraFromValues();        
 }
@@ -71,7 +71,10 @@ void UIParticles::Start()
     DVASSERT(effect);
     updateTime = 0;
     effect->isPaused = false;    
+    system->AddToActive(effect);
+    effect->effectRenderObject->SetEffectMatrix(&matrix);
     system->RunEffect(effect);
+    
     
 }
 
@@ -146,25 +149,30 @@ void UIParticles::Draw(const UIGeometricData & geometricData)
     system->Process(updateTime);
     updateTime = 0;
     		
-    RenderManager::Instance()->PushDrawMatrix();
-    RenderManager::Instance()->PushMappingMatrix();
+    /*RenderManager::Instance()->PushDrawMatrix();
+    RenderManager::Instance()->PushMappingMatrix();*/
     
     /*draw particles here*/
     RenderManager::Instance()->SetDefault3DState();    
-    RenderManager::Instance()->FlushState();    
     camera->SetupDynamicParameters();
+    RenderManager::Instance()->FlushState();    
+    RenderManager::Instance()->ClearDepthBuffer();
+    
 
     
     effect->effectRenderObject->PrepareToRender(camera);
-    for (int32 i=0, sz = effect->effectRenderObject->GetRenderBatchCount(); i<sz; ++i)
-        effect->effectRenderObject->GetRenderBatch(i)->Draw(PASS_FORWARD, camera);
+    for (int32 i=0, sz = effect->effectRenderObject->GetActiveRenderBatchCount(); i<sz; ++i)
+        effect->effectRenderObject->GetActiveRenderBatch(i)->Draw(PASS_FORWARD, camera);
                        
-    RenderManager::Instance()->PopDrawMatrix();
-    RenderManager::Instance()->PopMappingMatrix();
-	RenderManager::Instance()->SetDefault2DState();
+    /*RenderManager::Instance()->PopDrawMatrix();
+    RenderManager::Instance()->PopMappingMatrix();*/
+	RenderManager::Instance()->SetDefault2DState();                
+    RenderManager::Instance()->Setup2DMatrices();
 	        
 }
-    
+
+
+
 
 
 void UIParticles::Load(const FilePath& path)

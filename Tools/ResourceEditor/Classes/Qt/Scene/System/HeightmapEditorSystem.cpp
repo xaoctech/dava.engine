@@ -72,7 +72,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
+	noBlendDrawState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
