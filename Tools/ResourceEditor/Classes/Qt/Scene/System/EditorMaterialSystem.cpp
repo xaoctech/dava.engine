@@ -273,20 +273,22 @@ void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *
         DAVA::NMaterial *parent = material->GetParent();
         if(NULL != parent && 0 == ownedParents.count(parent))
         {
-            const QVector<ProjectManager::AvailableMaterialTemplate> *availableTemplates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
+            //const QVector<ProjectManager::AvailableMaterialTemplate> *availableTemplates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
 
-            QString parentTemplate = parent->GetMaterialTemplateName().c_str();
-            for(int j = 0; j < availableTemplates->size(); ++j)
-            {
-                if(parentTemplate == availableTemplates->at(j).path)
+            //QString parentTemplate = parent->GetMaterialTemplateName().c_str();
+            //for(int j = 0; j < availableTemplates->size(); ++j)
+            //{
+            //    if(parentTemplate == availableTemplates->at(j).path)
+
+                if(parent->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
                 {
                     ownedParents.insert(parent);
                     parent->Retain();
                     
                     ApplyViewMode(parent);
-                    break;
+                    //break;
                 }
-            }
+            //}
         }
     }
 }
