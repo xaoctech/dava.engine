@@ -54,10 +54,13 @@ void LodToLod2Converter::SearchForLod(Entity * currentNode)
 
 bool LodToLod2Converter::MergeLod(Entity * entity)
 {
+    if (GetEffectComponent(entity))
+    {
+        return false;
+    }
+    
 	bool res = false;
 
-    if (GetEffectComponent(entity))
-        return false;
 	Set<Entity*> entitiesToRemove;
 
 	LodComponent * lod = GetLodComponent(entity);
@@ -153,14 +156,6 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 
 		ro->RecalcBoundingBox();
 	}
-
-#pragma message("LodToLod2Converter::MergeLod removing VisualSceneNode")
-	if(entity->GetName() == "VisualSceneNode")
-	{
-		entitiesToRemove.insert(entity);
-		res = true;
-	}
-
 
 	Set<Entity*>::iterator itEnd = entitiesToRemove.end();
 	for(Set<Entity*>::iterator it = entitiesToRemove.begin(); it != itEnd; ++it)
