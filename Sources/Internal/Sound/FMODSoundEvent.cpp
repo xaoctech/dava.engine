@@ -113,8 +113,6 @@ bool FMODSoundEvent::Trigger()
     {
         ApplyParamsToEvent(fmodEvent);
         fmodEventInstances.push_back(fmodEvent);
-        
-        //Logger::Debug("[FMODSoundEvent::Trigger()] %x", this);
 
         FMOD_VERIFY(fmodEvent->setVolume(volume));
         FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
@@ -153,7 +151,7 @@ void FMODSoundEvent::UpdateInstancesPosition()
 {
     FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
     
-    if((fmodSoundSystem->listenerPosition - position).SquareLength() > fmodSoundSystem->maxDistanceSq)
+    if(fmodEventInstances.size() && (fmodSoundSystem->listenerPosition - position).SquareLength() > fmodSoundSystem->maxDistanceSq)
         Stop();
     
     FMOD_VECTOR pos = {position.x, position.y, position.z};
@@ -164,8 +162,18 @@ void FMODSoundEvent::UpdateInstancesPosition()
     
 void FMODSoundEvent::Stop()
 {
-    while(fmodEventInstances.size())
-        FMOD_VERIFY(fmodEventInstances.front()->stop());
+    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
+
+    List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
+    for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
+    {
+        FMOD::Event * fEvent = (*it);
+        FMOD_VERIFY(fEvent->setCallback(0, 0));
+        FMOD_VERIFY(fEvent->stop());
+        fmodSoundSystem->ReleaseOnUpdate(this);
+        PerformEvent(SoundEvent::EVENT_END);
+    }
+    fmodEventInstances.clear();
 }
 
 bool FMODSoundEvent::IsActive()
@@ -229,10 +237,7 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback
 {
     FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
     fmodSoundSystem->ReleaseOnUpdate(this);
-    //fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
-    PerformEvent(callbackType);
-    
-    //FMOD_VERIFY(fmodEvent->setCallback(0, 0));
+    fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
     
     List<FMOD::Event *>::iterator it = std::find(fmodEventInstances.begin(), fmodEventInstances.end(), fmodEvent);
     if(it != fmodEventInstances.end())

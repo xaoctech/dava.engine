@@ -137,11 +137,8 @@ FMODSoundSystem * FMODSoundSystem::GetFMODSoundSystem()
 void FMODSoundSystem::Update(float32 timeElapsed)
 {
     SoundSystemInstance::Update(timeElapsed);
-    
-    int32 size = soundsToReleaseOnUpdate.size();
-    for(int32 i = 0; i < size; i++)
-        soundsToReleaseOnUpdate[i]->Release();
-    soundsToReleaseOnUpdate.clear();
+
+    fmodEventSystem->update();
 
     if(callbackOnUpdate.size())
     {
@@ -152,7 +149,13 @@ void FMODSoundSystem::Update(float32 timeElapsed)
         callbackOnUpdate.clear();
     }
 
-    fmodEventSystem->update();
+    int32 size = soundsToReleaseOnUpdate.size();
+    if(size)
+    {
+        for(int32 i = 0; i < size; i++)
+            soundsToReleaseOnUpdate[i]->Release();
+        soundsToReleaseOnUpdate.clear();
+    }
 }
 
 void FMODSoundSystem::Suspend()
@@ -380,21 +383,16 @@ void FMODSoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 
 void FMODSoundSystem::PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
 {
-    //Logger::Debug("[FMODSoundSystem::PerformCallbackOnUpdate] %x", event);
     callbackOnUpdate.insert(std::pair<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>(event, type));
 }
 
 void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type)
 {
-    //Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x", event);
     if(callbackOnUpdate.size())
     {
         MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback>::iterator it = callbackOnUpdate.find(event);
         if(it != callbackOnUpdate.end())
-        {
             callbackOnUpdate.erase(it);
-            //Logger::Debug("[FMODSoundSystem::CancelCallbackOnUpdate] %x Canceled", event);
-        }
     }
 }
 
