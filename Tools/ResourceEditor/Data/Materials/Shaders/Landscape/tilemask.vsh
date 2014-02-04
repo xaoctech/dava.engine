@@ -11,20 +11,9 @@ attribute vec2 inTexCoord0;
 
 uniform mat4 worldViewProjMatrix;
 uniform mediump vec2 texture0Tiling;
-#ifndef DETAILMASK
-uniform mediump vec2 texture1Tiling;
-uniform mediump vec2 texture2Tiling;
-uniform mediump vec2 texture3Tiling;
-#endif
 
 varying mediump vec2 varTexCoordOrig;
 varying mediump vec2 varTexCoord0;
-
-#ifndef DETAILMASK
-varying mediump vec2 varTexCoord1;
-varying mediump vec2 varTexCoord2;
-varying mediump vec2 varTexCoord3;
-#endif
 
 #if defined(VERTEX_FOG) || defined(SPECULAR_LAND)
 uniform mat4 worldViewMatrix;
@@ -60,11 +49,6 @@ void main()
 	varTexCoordOrig = inTexCoord0;
 
 	varTexCoord0 = inTexCoord0 * texture0Tiling;
-#ifndef DETAILMASK
-	varTexCoord1 = inTexCoord0 * texture1Tiling;
-	varTexCoord2 = inTexCoord0 * texture2Tiling;
-	varTexCoord3 = inTexCoord0 * texture3Tiling;
-#endif
 	
 #if defined(SPECULAR_LAND) || defined(VERTEX_FOG)
 	vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);

@@ -113,7 +113,7 @@ SelectPathWidgetBase* LandscapeDialog::InitPathWidget(QWidget* parent, int32 wid
 	String fileFilter = HEIGHTMAP_FILTER;
 
 	DAVA::String resFolder = FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname();
-	SelectPathWidgetBase* widget = new SelectPathWidgetBase(parent,resFolder,"", widgetTitle, fileFilter);
+	SelectPathWidgetBase* widget = new SelectPathWidgetBase(parent, true, resFolder,"", widgetTitle, fileFilter);
 
 	if(innerLandscape)
 	{
@@ -253,7 +253,6 @@ void LandscapeDialog::ActionButtonClicked()
 		//	newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
 		//	SafeRelease(pinkTexture);
 		//}
-		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
 		entityToProcess->AddComponent(component);
 

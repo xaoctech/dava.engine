@@ -45,7 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
-#include "Tools/QtWaitDialog/QtWaitDialog.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/PathValidator.h"
+#include "Qt/Settings/SettingsManager.h"
+
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -163,25 +166,8 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 
 	treeStateHelper->SaveTreeViewState(false);
 
-	// Don't remove properties immediately. Just extract them and remove later
-	// this should be done, because we want to remove all properties when propertyEdited signal emited
-	{
-		QtPropertyData *propRoot = ui->materialProperty->GetRootProperty();
-		while(propRoot->ChildCount() > 0)
-		{
-			QtPropertyData *child = propRoot->ChildGet(0);
-			propRoot->ChildExtract(child);
-
-			child->deleteLater();
-		}
-	}
-
-	if(NULL != material)
-	{
-		FillMaterialProperties(material);
-		FillMaterialTextures(material);
-        FillMaterialTemplates(material);
-	}
+	FillMaterialProperties(material);
+    FillMaterialTemplates(material);
 
 	// Restore back the tree view state from the shared storage.
 	if(!treeStateHelper->IsTreeStateStorageEmpty())
@@ -258,182 +244,216 @@ void MaterialEditor::showEvent(QShowEvent * event)
 
 void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 {
-	const DAVA::InspInfo *info = material->GetTypeInfo();
-	const DAVA::InspMember *materialProperties = info->Member("materialProperties");
-	const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
-	const DAVA::InspMember *materialIllumination = info->Member("illuminationParams");
+    // Clear current properties
+    // But don't remove properties immediately. Just extract them and remove later
+    // this should be done, because we want to remove all properties when propertyEdited signal emited
+    {
+        QtPropertyData *propRoot = ui->materialProperty->GetRootProperty();
+        while(propRoot->ChildCount() > 0)
+        {
+            QtPropertyData *child = propRoot->ChildGet(0);
+            propRoot->ChildExtract(child);
 
-	// fill material name
-	const DAVA::InspMember *nameMember = info->Member("materialName");
-	if(NULL != nameMember)
-	{
-		QtPropertyDataInspMember *name = new QtPropertyDataInspMember(material, nameMember);
-		ui->materialProperty->AppendProperty("Name", name);
-	}
+            child->deleteLater();
+        }
+    }
 
-	QtPropertyData *propertiesParent = new QtPropertyData();
+    if(NULL != material)
+    {
+	    const DAVA::InspInfo *info = material->GetTypeInfo();
+	    const DAVA::InspMember *materialProperties = info->Member("materialProperties");
+	    const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
+	    const DAVA::InspMember *materialIllumination = info->Member("illuminationParams");
+        const DAVA::InspMember *materialTextures = info->Member("textures");
 
-	// fill material flags
-	if(NULL != materialFlags)
-	{
-		const DAVA::InspMemberDynamic* dynamicInsp = materialFlags->Dynamic();
+	    // fill material name
+	    const DAVA::InspMember *nameMember = info->Member("materialName");
+	    if(NULL != nameMember)
+	    {
+		    QtPropertyDataInspMember *name = new QtPropertyDataInspMember(material, nameMember);
+		    ui->materialProperty->AppendProperty("Name", name);
+	    }
 
-		if(NULL != dynamicInsp)
-		{
-			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
-			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
+        // fill material group, only for material type
+        if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
+        {
+            const DAVA::InspMember *groupMember = info->Member("materialGroup");
+            if(NULL != groupMember)
+            {
+                QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
+                ui->materialProperty->AppendProperty("Group", group);
+
+                for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
+                {
+                    DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
+                    group->AddAllowedValue(DAVA::VariantType(groupName), groupName.c_str());
+                }
+            }
+        }
+
+	    QtPropertyData *propertiesParent = new QtPropertyData();
+
+	    // fill material flags
+	    if(NULL != materialFlags)
+	    {
+		    const DAVA::InspMemberDynamic* dynamicInsp = materialFlags->Dynamic();
+
+		    if(NULL != dynamicInsp)
+		    {
+			    DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+			    DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 			
-			for(size_t i = 0; i < membersList.size(); ++i)
-			{
-				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
-				propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
-			}
-		}
-	}
+			    for(size_t i = 0; i < membersList.size(); ++i)
+			    {
+				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
+			    }
+		    }
+	    }
 
-	// fill material properties
-	if(NULL != materialProperties)
-	{
-		const DAVA::InspMemberDynamic* dynamicInsp = materialProperties->Dynamic();
+	    // fill material properties
+	    if(NULL != materialProperties)
+	    {
+		    const DAVA::InspMemberDynamic* dynamicInsp = materialProperties->Dynamic();
 
-		if(NULL != dynamicInsp)
-		{
-			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
-			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
+		    if(NULL != dynamicInsp)
+		    {
+			    DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+			    DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-			for(size_t i = 0; i < membersList.size(); ++i)
-			{
-				int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
-				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+			    for(size_t i = 0; i < membersList.size(); ++i)
+			    {
+				    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
+				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
-				// self property
-				if(memberFlags & DAVA::I_EDIT)
-				{
-					QtPropertyToolButton* btn = dynamicMember->AddButton();
-					btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-					btn->setIconSize(QSize(14, 14));
-					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
+				    // self property
+				    if(memberFlags & DAVA::I_EDIT)
+				    {
+					    QtPropertyToolButton* btn = dynamicMember->AddButton();
+					    btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+					    btn->setIconSize(QSize(14, 14));
+					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
 
-					// isn't set in parent or shader
-					if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
-					{
-						dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
-					}
-				}
-				// not self property (is set in parent or shader)
-				else
-				{
-					// disable property and it childs
-					dynamicMember->SetEnabled(false);
-					for(int m = 0; m < dynamicMember->ChildCount(); ++m)
-					{
-						dynamicMember->ChildGet(m)->SetEnabled(false);
-					}
+					    // isn't set in parent or shader
+					    if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+					    {
+						    dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+					    }
+				    }
+				    // not self property (is set in parent or shader)
+				    else
+				    {
+					    // disable property and it childs
+					    dynamicMember->SetEnabled(false);
+					    for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+					    {
+						    dynamicMember->ChildGet(m)->SetEnabled(false);
+					    }
 
-					QtPropertyToolButton* btn = dynamicMember->AddButton();
-					btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-					btn->setIconSize(QSize(14, 14));
-					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
+					    QtPropertyToolButton* btn = dynamicMember->AddButton();
+					    btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+					    btn->setIconSize(QSize(14, 14));
+					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
 
-					dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+					    dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
 
-					// required by shader
-					//if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
-					//{	}
-				}
+					    // required by shader
+					    //if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
+					    //{	}
+				    }
 
-				propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
-			}
-		}
-	}
+				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
+			    }
+		    }
+	    }
 
-	ui->materialProperty->AppendProperty("Properties", propertiesParent);
-	ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
+	    ui->materialProperty->AppendProperty("Properties", propertiesParent);
+	    ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
 
-	// fill illumination params
-	if(NULL != materialIllumination)
-	{
-		QtPropertyData *illumParams = QtPropertyDataIntrospection::CreateMemberData(material, materialIllumination);
+	    // fill illumination params
+	    if(NULL != materialIllumination)
+	    {
+		    QtPropertyData *illumParams = QtPropertyDataIntrospection::CreateMemberData(material, materialIllumination);
 
-		if(illumParams->ChildCount() > 0)
-		{
-			ui->materialProperty->AppendProperty(materialIllumination->Name(), illumParams);
-			ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
-		}
-		else
-		{
-			delete illumParams;
-		}
-	}
-}
+		    if(illumParams->ChildCount() > 0)
+		    {
+			    ui->materialProperty->AppendProperty(materialIllumination->Name(), illumParams);
+			    ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
+		    }
+		    else
+		    {
+			    delete illumParams;
+		    }
+	    }
 
-void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
-{
-	const DAVA::InspInfo *info = material->GetTypeInfo();
-	const DAVA::InspMember *materialTextures = info->Member("textures");
+        // fill own material textures
+        if(NULL != materialTextures)
+        {
+            const DAVA::InspMemberDynamic* dynamicInsp = materialTextures->Dynamic();
+            QtPropertyData *texturesParent = new QtPropertyData();
 
-	// fill own material textures
-	if(NULL != materialTextures)
-	{
-		const DAVA::InspMemberDynamic* dynamicInsp = materialTextures->Dynamic();
-		QtPropertyData *texturesParent = new QtPropertyData();
+            if(NULL != dynamicInsp)
+            {
+                DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
+                DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-		if(NULL != dynamicInsp)
-		{
-			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
-			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
+                for(size_t i = 0; i < membersList.size(); ++i)
+                {
+                    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
+                    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
-			for(size_t i = 0; i < membersList.size(); ++i)
-			{
-				int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
-				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+                    DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+                    dynamicMember->SetDefaultOpenDialogPath(projPath.c_str());
+                    dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
+                    dynamicMember->SetValidator(new PathValidator(projPath.c_str()));
 
-				// self property
-				if(memberFlags & DAVA::I_EDIT)
-				{
-					QtPropertyToolButton* btn = dynamicMember->AddButton();
-					btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-					btn->setIconSize(QSize(14, 14));
-					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
+                    // self property
+                    if(memberFlags & DAVA::I_EDIT)
+                    {
+                        QtPropertyToolButton* btn = dynamicMember->AddButton();
+                        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                        btn->setIconSize(QSize(14, 14));
+                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
 
-					// isn't set in parent or shader
-					if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
-					{
-						dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
-					}
-				}
-				// not self property (is set in parent or shader)
-				else
-				{
-					// disable property and it childs
-					dynamicMember->SetEnabled(false);
-					for(int m = 0; m < dynamicMember->ChildCount(); ++m)
-					{
-						dynamicMember->ChildGet(m)->SetEnabled(false);
-					}
+                        // isn't set in parent or shader
+                        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+                        {
+                            dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+                        }
+                    }
+                    // not self property (is set in parent or shader)
+                    else
+                    {
+                        // disable property and it childs
+                        dynamicMember->SetEnabled(false);
+                        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                        {
+                            dynamicMember->ChildGet(m)->SetEnabled(false);
+                        }
 
-					QtPropertyToolButton* btn = dynamicMember->AddButton();
-					btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-					btn->setIconSize(QSize(14, 14));
-					QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
+                        QtPropertyToolButton* btn = dynamicMember->AddButton();
+                        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                        btn->setIconSize(QSize(14, 14));
+                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
 
-					dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
-				}
+                        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+                    }
 
-				texturesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
-			}
+                    texturesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
+                }
 
-			ui->materialProperty->AppendProperty("Textures", texturesParent);
-			ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
-		}
-	}
+                ui->materialProperty->AppendProperty("Textures", texturesParent);
+                ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
+            }
+        }
+    }
 }
 
 void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
 {
     if(0 == ui->templateBox->count())
     {
-        ui->templateBox->addItem("Unknown", QString());
+        ui->templateBox->addItem("");
 
         const QVector<ProjectManager::AvailableMaterialTemplate> *templates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
         for(int i = 0; i < templates->size(); ++i)
@@ -444,7 +464,7 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
 
     if(NULL != material)
     {
-        int indexToSet = 0;
+        int indexToSet = -1;
         QString curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
 
         for(int i = 0; i < ui->templateBox->count(); ++i)
@@ -456,7 +476,17 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
             }
         }
 
-        ui->templateBox->setCurrentIndex(indexToSet);
+        if(-1 != indexToSet)
+        {
+            ui->templateBox->setCurrentIndex(indexToSet);
+            ui->templateBox->setItemText(0, "");
+        }
+        else
+        {
+            // add template path to the name
+            ui->templateBox->setCurrentIndex(0);
+            ui->templateBox->setItemText(0, "NON-ASSIGNABLE: " + curMaterialTemplate);
+        }
 
         // enable template selection only for real materials, not instances
         ui->templateBox->setEnabled(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL);
@@ -464,6 +494,7 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
     else
     {
         ui->templateBox->setCurrentIndex(0);
+        ui->templateBox->setItemText(0, "");
         ui->templateBox->setEnabled(false);
     }
 }
