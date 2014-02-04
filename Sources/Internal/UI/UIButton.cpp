@@ -350,6 +350,18 @@ namespace DAVA
 		}
     }
 
+    void UIButton::SetStateFittingOption(int32 state, int32 fittingOption)
+    {
+		for(int i = 0; i < DRAW_STATE_COUNT; i++)
+		{
+			if(state & 0x01)
+			{
+				CreateTextForState((eButtonDrawState)i)->SetFittingOption(fittingOption);
+			}
+			state >>= 1;
+		}
+    }
+
 	void UIButton::SetStateText(int32 state, const WideString &text, const Vector2 &requestedTextRectSize/* = Vector2(0,0)*/)
 	{
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
@@ -846,7 +858,13 @@ namespace DAVA
 			{
 				SetStateShadowOffset(stateArray[k], stateShadowOffsetNode->AsVector2());
 			}
-			
+
+            const YamlNode * stateFittingOptionNode = node->Get(Format("stateFittingOption%s", statePostfix[k].c_str()));
+			if (stateFittingOptionNode)
+			{
+				SetStateFittingOption(stateArray[k], stateFittingOptionNode->AsInt32());
+			}
+
 			const YamlNode * colorInheritNode = node->Get(Format("stateColorInherit%s", statePostfix[k].c_str()));
 			if(colorInheritNode)
 			{
@@ -985,6 +1003,10 @@ namespace DAVA
 				Vector2 shadowOffset = this->GetStateTextControl(stateArray[i])->GetShadowOffset();
 				nodeValue->SetVector2(shadowOffset);
 				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
+                
+                int32 fittingOption = this->GetStateTextControl(stateArray[i])->GetFittingOption();
+				nodeValue->SetInt32(fittingOption);
+				node->Set(Format("stateFittingOption%s", statePostfix[i].c_str()), nodeValue);
 			}
 			
 			// State background color
