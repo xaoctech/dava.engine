@@ -113,23 +113,36 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	ui->returnKeyTypeLabel->setVisible(isUITextField);
 	ui->returnKeyTypeComboBox->setVisible(isUITextField);
 	ui->isReturnKeyAutomatically->setVisible(isUITextField);
-		
-	bool enableMultilineContols = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+    ui->isPasswordCheckbox->setVisible(isUITextField);
 
-	multilineCheckBox->setEnabled(enableMultilineContols);
-	multilineCheckBox->setVisible(enableMultilineContols);
+	bool isUIStaticText = (dynamic_cast<UIStaticTextMetadata*>(activeMetadata)	!= NULL);
+
+	multilineCheckBox->setEnabled(isUIStaticText);
+	multilineCheckBox->setVisible(isUIStaticText);
 	multilineBySymbolCheckBox->setEnabled(false); // false by default - this checkbox depends on multilineCheckBox one.
-	multilineBySymbolCheckBox->setVisible(enableMultilineContols);
+	multilineBySymbolCheckBox->setVisible(isUIStaticText);
 
-	// Register checkbox widget for property Multiline only for UIStaticText
-	if (enableMultilineContols)
+    // Fitting is needed for UIStaticText only.
+    ui->fittingTypeComboBox->setVisible(isUIStaticText);
+    ui->fittingLabel->setVisible(isUIStaticText);
+
+	if (isUIStaticText)
 	{
+		// Register checkbox widget for property Multiline only for UIStaticText
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE_BY_SYMBOL, multilineBySymbolCheckBox, false, true);
-	}
+        
+        // Add the Fitting Type.
+        WidgetSignalsBlocker blocker(ui->fittingTypeComboBox);
+        ui->fittingTypeComboBox->clear();
+        int itemsCount = BackgroundGridWidgetHelper::GetFittingTypesCount();
+        for (int i = 0; i < itemsCount; i ++)
+        {
+            ui->fittingTypeComboBox->addItem(BackgroundGridWidgetHelper::GetFittingTypeDesc(i));
+        }
 
-	bool showIsPasswordCheckbox = (dynamic_cast<UITextFieldMetadata*>(activeMetadata) != NULL);
-	ui->isPasswordCheckbox->setVisible(showIsPasswordCheckbox);
+        RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_FITTING_TYPE_PROPERTY_NAME, ui->fittingTypeComboBox, false, true);
+	}
 
     UpdateLocalizationValue();
 
@@ -142,11 +155,11 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	ui->textLineEdit->setVisible(false);
 	ui->textLabel->setVisible(false);
 	
-	this->resize(300, 342);
-    this->setMinimumSize(QSize(300, 342));
+	this->resize(300, 372);
+    this->setMinimumSize(QSize(300, 372));
 
-	ui->groupBox->resize(300, 342);
-    ui->groupBox->setMinimumSize(QSize(300, 342));
+	ui->groupBox->resize(300, 372);
+    ui->groupBox->setMinimumSize(QSize(300, 372));
 	
 	localizationKeyNameLabel = new QLabel(ui->groupBox);
 	localizationKeyNameLabel->setObjectName(QString::fromUtf8("localizationKeyNameLabel"));
@@ -180,17 +193,20 @@ void TextPropertyGridWidget::InsertLocalizationFields()
 	ui->fontNameLabel->setGeometry(QRect(10, 175, 31, 16));
 	ui->fontSizeSpinBox->setGeometry(QRect(234, 171, 57, 25));
 	ui->fontSelectButton->setGeometry(QRect(50, 166, 181, 38));
-	ui->fontColorLabel->setGeometry(QRect(10, 220, 71, 16));
-	ui->textColorWidget->setGeometry(QRect(105, 218, 184, 21));
-	ui->shadowOffsetLabel->setGeometry(QRect(10, 252, 91, 16));
-	ui->offsetYLabel->setGeometry(QRect(210, 252, 36, 16));
-	ui->shadowColorLabel->setGeometry(QRect(10, 282, 91, 16));
-	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 248, 57, 25));
-	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 248, 57, 25));
-	ui->shadowColorWidget->setGeometry(QRect(105, 280, 184, 21));
-	ui->offsetXLabel->setGeometry(QRect(120, 252, 16, 16));
-	ui->AlignLabel->setGeometry(QRect(10, 316, 62, 16));
-	ui->alignComboBox->setGeometry(QRect(80, 310, 209, 26));
+    
+	ui->fontColorLabel->setGeometry(QRect(10, 250, 71, 16));
+	ui->textColorWidget->setGeometry(QRect(105, 248, 184, 21));
+	ui->shadowOffsetLabel->setGeometry(QRect(10, 282, 91, 16));
+	ui->offsetYLabel->setGeometry(QRect(210, 282, 36, 16));
+	ui->shadowColorLabel->setGeometry(QRect(10, 322, 91, 16));
+	ui->shadowOffsetXSpinBox->setGeometry(QRect(140, 278, 57, 25));
+	ui->shadowOffsetYSpinBox->setGeometry(QRect(230, 278, 57, 25));
+    
+	ui->shadowColorWidget->setGeometry(QRect(105, 310, 184, 21));
+	ui->offsetXLabel->setGeometry(QRect(120, 282, 16, 16));
+    
+	ui->AlignLabel->setGeometry(QRect(10, 346, 62, 16));
+	ui->alignComboBox->setGeometry(QRect(80, 340, 211, 26));
 }
 
 void TextPropertyGridWidget::Cleanup()
@@ -273,4 +289,54 @@ void TextPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* ch
     }
 
     UITextFieldPropertyGridWidget::UpdateCheckBoxWidgetWithPropertyValue(checkBoxWidget, curProperty);
+}
+
+void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty)
+{
+	if (!this->activeMetadata)
+    {
+        return;
+    }
+    
+    bool isPropertyValueDiffers = false;
+    const QString& propertyName = curProperty.name();
+    int propertyValue = PropertiesHelper::GetPropertyValue<int>(this->activeMetadata, propertyName, isPropertyValueDiffers);
+    
+    if (comboBoxWidget == ui->fittingTypeComboBox)
+    {
+        return SetComboboxSelectedItem(ui->fittingTypeComboBox, BackgroundGridWidgetHelper::GetFittingTypeDescByType(propertyValue) );
+    }
+    
+    return BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
+}
+
+void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                                               const QString& value)
+{
+    if (senderWidget == NULL)
+    {
+        Logger::Error("TextPropertyGridWidget::ProcessComboboxValueChanged: senderWidget is NULL!");
+        return;
+    }
+    
+    if (senderWidget == ui->fittingTypeComboBox)
+    {
+        int selectedIndex = senderWidget->currentIndex();
+        int curFittingType = PropertiesHelper::GetAllPropertyValues<int>(this->activeMetadata, iter->second.getProperty().name());
+        int newFittingType = BackgroundGridWidgetHelper::GetFittingType(selectedIndex);
+
+        if (curFittingType == newFittingType)
+        {
+            return;
+        }
+
+        BaseCommand* command = new ChangePropertyCommand<int>(activeMetadata, iter->second, newFittingType);
+        CommandsController::Instance()->ExecuteCommand(command);
+        SafeRelease(command);
+
+        return;
+    }
+
+    // No postprocessing was applied - use the generic process.
+    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
 }
