@@ -185,15 +185,12 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		SetTabScene(tabIndex, scene);
 
 		tabBar->setTabToolTip(tabIndex, scenePapth.GetAbsolutePathname().c_str());
-	}
+
+        SetCurrentTab(tabIndex);
+    }
 	else
 	{
         SafeRelease(scene);
-	}
-
-	if(tabBar->count() == 1)
-	{
-		SetCurrentTab(tabIndex);
 	}
 
 	return tabIndex;
@@ -228,12 +225,12 @@ int SceneTabWidget::GetCurrentTab() const
 
 void SceneTabWidget::SetCurrentTab(int index)
 {
-	davaWidget->setEnabled(false);
- 	toolWidgetContainer->setVisible(false);
+    davaWidget->setEnabled(false);
+    toolWidgetContainer->setVisible(false);
 
-	if(index >= 0 && index < tabBar->count())
+    if(index >= 0 && index < tabBar->count())
 	{
-		SceneEditor2 *oldScene = curScene;
+        SceneEditor2 *oldScene = curScene;
 		curScene = GetTabScene(index);
 
 		if(NULL != oldScene)

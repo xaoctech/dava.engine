@@ -205,6 +205,9 @@
     <Filter Include="Classes\Qt\Tools\RunGuard">
       <UniqueIdentifier>{0f62dce1-8be3-4bd5-817b-3589e4f17633}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator">
+      <UniqueIdentifier>{350e9f5d-f695-40ec-9b6e-8e220d768280}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Classes\Qt\QualitySwitcher">
       <UniqueIdentifier>{78cae0e6-5732-4a8b-a860-f44cd544a7df}</UniqueIdentifier>
     </Filter>
@@ -1854,14 +1857,29 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModelFiltering_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\DeleteLODCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\QualitySwitcher\QualitySwitcher.cpp">
       <Filter>Classes\Qt\QualitySwitcher</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QualitySwitcher\QualitySwitcher_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\DeleteLODCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3281,11 +3299,26 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\QualitySwitcher\QualitySwitcher.h">
-      <Filter>Classes\Qt\QualitySwitcher</Filter>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\DeleteLODCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\QualitySwitcher\QualitySwitcher.h">
+      <Filter>Classes\Qt\QualitySwitcher</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

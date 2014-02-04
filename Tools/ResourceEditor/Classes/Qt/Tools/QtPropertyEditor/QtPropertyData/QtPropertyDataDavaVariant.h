@@ -54,6 +54,12 @@ public:
 	void ClearAllowedValues();
 
 	QVariant FromDavaVariant(const DAVA::VariantType &variant) const;
+    
+    void SetOpenDialogFilter(const QString&);
+    QString GetOpenDialogFilter();
+    
+    void SetDefaultOpenDialogPath(const QString&);
+    QString GetDefaultOpenDialogPath();
 
 protected:
 	DAVA::VariantType curVariantValue;
@@ -82,6 +88,9 @@ protected:
 	QVector<AllowedValue> allowedValues;
 	mutable bool allowedValuesLocked;
 	QtPropertyToolButton *allowedButton;
+    
+    QString openDialogFilter;
+    QString defaultOpenDialogPath;
 
 	void InitFlags();
 	void ChildsCreate();
