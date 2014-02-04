@@ -685,7 +685,7 @@ namespace DAVA
 			
 			if(IsTextureActive(textureFastName))
 			{
-                Texture* tx = Texture::CreateFromFile(texturePath);
+                Texture* tx = Texture::CreateFromFile(texturePath, FastName("albedo"));
 				bucket->SetTexture(tx);
                 SafeRelease(tx);
 			}
@@ -1208,7 +1208,7 @@ namespace DAVA
 			{
 				if(NULL == bucket->GetTexture())
 				{
-                    Texture* tx = Texture::CreateFromFile(bucket->GetPath());
+                    Texture* tx = Texture::CreateFromFile(bucket->GetPath(), FastName("albedo"));
 					bucket->SetTexture(tx);
                     SafeRelease(tx);
 				}
