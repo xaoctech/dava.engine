@@ -26,30 +26,14 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
+#include "QtPropertyDataValidator.h"
 
-#include <QDialog>
-
-class QualitySwitcher : public QDialog
+bool QtPropertyDataValidator::Validate(const QVariant &v) const
 {
-    Q_OBJECT
-
-public:
-    static void Show();
-
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
-
-    QPushButton *defBtn;
-    
-    bool applyTx;
-    bool applyMa;
-
-protected slots:
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
-};
-
-#endif // __QUALITY_SWITCHER_H__
+    bool ret = ValidateInternal(v);
+    if(!ret)
+    {
+        ErrorNotifyInternal(v);
+    }
+    return ret;
+}
