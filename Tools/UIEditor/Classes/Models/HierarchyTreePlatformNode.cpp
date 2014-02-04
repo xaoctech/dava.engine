@@ -288,7 +288,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 	dir.mkpath(QString::fromStdString(platformFolder.GetAbsolutePathname()));
 	
 	bool result = true;
-	int relativeDepth = 0;
+	int saveIndex = 0;
 	//save aggregators node before save screens
 	for (HIERARCHYTREENODESCONSTITER iter = GetChildNodes().begin();
 		 iter != GetChildNodes().end();
@@ -303,9 +303,9 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
 		result &= node->Save(aggregator, path, saveAll);
 		// Set additional index node for aggregator to keep its order after save
-		aggregator->Set(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME, relativeDepth);
+		aggregator->Set(YamlNode::SAVE_INDEX_NAME, saveIndex);
 		aggregators->SetNodeToMap(node->GetName().toStdString(), aggregator);
-		relativeDepth++;
+		saveIndex++;
 	}
 	
 	for (HIERARCHYTREENODESCONSTITER iter = GetChildNodes().begin();

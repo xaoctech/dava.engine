@@ -583,7 +583,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 }
 
 YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode,
-                                   int relativeDepth)
+                                   int saveIndex)
 {
     // Save ourselves and all children.
     YamlNode* childNode = parentControl->SaveToYamlNode(this);
@@ -592,24 +592,24 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
         parentNode->AddNodeToMap(parentControl->GetName(), childNode);
     }
 
-    SaveChildren(parentControl, childNode, relativeDepth);
+    SaveChildren(parentControl, childNode, saveIndex);
 
     return childNode;
 }
 
-void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int relativeDepth)
+void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int saveIndex)
 {
     // "Relative Depth" is needed to save the order of the nodes - it is important!
-    parentNode->Set(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME, relativeDepth);
+    parentNode->Set(YamlNode::SAVE_INDEX_NAME, saveIndex);
     
-    int currentDepth = 0;
+    int currentSaveIndex = 0;
     
 	const List<UIControl*>& children = parentControl->GetRealChildren();
 	for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
     {
         UIControl* childControl = (*childIter);
-        SaveToNode(childControl, parentNode, currentDepth);
-        currentDepth ++;
+        SaveToNode(childControl, parentNode, currentSaveIndex);
+        currentSaveIndex ++;
     }
 }
 
