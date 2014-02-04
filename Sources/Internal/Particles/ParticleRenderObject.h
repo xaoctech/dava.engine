@@ -70,6 +70,7 @@ public:
 	virtual void PrepareToRender(Camera *camera);
 	
     void SetEffectMatrix(Matrix4 *matrix);
+    Matrix4 *GetEffectMatrix();
 
 	virtual void RecalcBoundingBox(){}
 	virtual void RecalculateWorldBoundingBox(){

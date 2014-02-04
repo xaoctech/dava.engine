@@ -26,30 +26,44 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
+#include "IntRangeValidator.h"
+#include "Qt/Settings/SettingsManager.h"
 
-#include <QDialog>
-
-class QualitySwitcher : public QDialog
+IntRangeValidator::IntRangeValidator(int minValue, int maxValue)
 {
-    Q_OBJECT
+    innerValidator.setRange(minValue, maxValue);
+}
 
-public:
-    static void Show();
+bool IntRangeValidator::ValidateInternal(const QVariant &value) const
+{
+    QString validateValue = value.toString();
+    int pos = 0;
+    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+}
 
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
+void IntRangeValidator::SetRange(int minValue, int maxValue)
+{
+	innerValidator.setRange(minValue, maxValue);
+}
 
-    QPushButton *defBtn;
-    
-    bool applyTx;
-    bool applyMa;
+int IntRangeValidator::GetMaximum() const
+{
+	return innerValidator.top();
+}
 
-protected slots:
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
-};
+void IntRangeValidator::SetMaximum(int maxValue)
+{
+	innerValidator.setTop(maxValue);
+}
 
-#endif // __QUALITY_SWITCHER_H__
+int IntRangeValidator::GetMinimum() const
+{
+	return innerValidator.bottom();
+}
+
+void IntRangeValidator::SetMinimum(int minValue)
+{
+    innerValidator.setBottom(minValue);
+}
+
+

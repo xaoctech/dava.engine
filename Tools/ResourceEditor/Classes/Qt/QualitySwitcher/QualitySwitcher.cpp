@@ -26,69 +26,175 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Main/mainwindow.h"
 #include "QualitySwitcher.h"
 #include "Project/ProjectManager.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include <QComboBox>
 #include <QPushButton>
 #include <QGridLayout>
+#include <QVBoxLayout>
+#include <QGroupBox>
 #include <QLabel>
 
 QualitySwitcher::QualitySwitcher(QWidget *parent /* = NULL */)
-: QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
+: QDialog(parent , Qt::Tool)
 , defBtn(NULL)
+, applyTx(false)
+, applyMa(false)
 {
-    int i = 0;
+    int mainRow = 0;
     int height = 10;
     const int spacing = 5;
+    const int minColumnW = 150;
 
-    QGridLayout *gridLay = new QGridLayout();
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QGroupBox *texturesGroup = new QGroupBox(this);
+    QGroupBox *materialsGroup = new QGroupBox(this);
 
-    const QVector<ProjectManager::AvailableMaterialQuality>* qualities = ProjectManager::Instance()->GetAvailableMaterialQualities();
-    if(NULL != qualities)
+    // textures quality
     {
-        for(; i < qualities->size(); ++i)
+        QGridLayout *texturesLayout = new QGridLayout(texturesGroup);
+        texturesLayout->setColumnMinimumWidth(0, minColumnW);
+        texturesLayout->setColumnMinimumWidth(1, minColumnW);
+
+        texturesGroup->setTitle("Textures");
+        texturesGroup->setLayout(texturesLayout);
+
+        QLabel *labTx = new QLabel("Textures:", texturesGroup);
+        QComboBox *comboTx = new QComboBox(texturesGroup);
+
+        QObject::connect(comboTx, SIGNAL(activated(int)), this, SLOT(OnTxQualitySelect(int)));
+
+        texturesLayout->addWidget(labTx, 0, 0);
+        texturesLayout->addWidget(comboTx, 0, 1);
+
+        DAVA::FastName curTxQuality = DAVA::QualitySettingsSystem::Instance()->GetCurTxQuality();
+
+        for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetTxQualityCount(); ++i)
         {
-            const ProjectManager::AvailableMaterialQuality &qual = qualities->at(i);
+            DAVA::FastName txQualityName = DAVA::QualitySettingsSystem::Instance()->GetTxQualityName(i);
+            comboTx->addItem(txQualityName.c_str());
 
-            if(qual.values.size() > 0)
+            if(txQualityName == curTxQuality)
             {
-                QLabel *lab = new QLabel(qual.name + ":", this);
-                QComboBox *combo = new QComboBox(this);
+                comboTx->setCurrentIndex(comboTx->count() - 1);
+            }
+        }
+    }
 
-                gridLay->addWidget(lab, i, 0, Qt::AlignRight);
-                gridLay->addWidget(combo, i, 1);
 
-                height += combo->geometry().height() + spacing;
+    // materials quality
+    {
+        QGridLayout *materialsLayout = new QGridLayout(materialsGroup);
+        materialsLayout->setColumnMinimumWidth(0, minColumnW);
+        materialsLayout->setColumnMinimumWidth(1, minColumnW);
 
-                // TODO: get current value
+        materialsGroup->setTitle("Materials");
+        materialsGroup->setLayout(materialsLayout);
 
-                for(int j = 0; j < qual.values.size(); ++j)
+        for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
+        {
+            DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
+            DAVA::FastName curGroupQuality = DAVA::QualitySettingsSystem::Instance()->GetCurMaQuality(groupName);
+            
+            QLabel *labMa = new QLabel(QString(groupName.c_str()) + ":", materialsGroup);
+            QComboBox *comboMa = new QComboBox(materialsGroup);
+
+            QObject::connect(comboMa, SIGNAL(activated(int)), this, SLOT(OnMaQualitySelect(int)));
+
+            materialsLayout->addWidget(labMa, i, 0);
+            materialsLayout->addWidget(comboMa, i, 1);
+
+            for(size_t j = 0; j < DAVA::QualitySettingsSystem::Instance()->GetMaQualityCount(groupName); ++j)
+            {
+                DAVA::FastName maQualityName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityName(groupName, j);
+                comboMa->addItem(maQualityName.c_str(), QString(groupName.c_str()));
+
+                if(curGroupQuality == maQualityName)
                 {
-                    QString qualityValue = qual.prefix + qual.values[j];
-                    combo->addItem(qual.values[j], qualityValue);
+                    comboMa->setCurrentIndex(comboMa->count() - 1);
                 }
             }
         }
     }
 
+    mainLayout->addWidget(texturesGroup);
+    mainLayout->addWidget(materialsGroup);
+    mainLayout->addStretch();
+
     defBtn = new QPushButton("Ok", this);
-    gridLay->addWidget(defBtn, i, 1);
+    defBtn->setMaximumWidth(100);
+    mainLayout->addWidget(defBtn, 0, Qt::AlignRight);
 
-    gridLay->setSpacing(spacing);
-    gridLay->setMargin(5);
+    mainLayout->setSpacing(spacing);
+    mainLayout->setMargin(5);
 
-    setLayout(gridLay);
+    setLayout(mainLayout);
     adjustSize();
-
-    setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 QualitySwitcher::~QualitySwitcher()
-{ }
+{
+    if(applyTx)
+    {
+        QtMainWindow::Instance()->OnReloadTextures();
+    }
+
+    if(applyMa)
+    {
+        SceneTabWidget *tabWidget = QtMainWindow::Instance()->GetSceneWidget();
+        for(int tab = 0; tab < tabWidget->GetTabCount(); ++tab)
+        {
+            SceneEditor2 *sceneEditor = tabWidget->GetTabScene(tab);
+
+            DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > materialsTree;
+            sceneEditor->materialSystem->BuildMaterialsTree(materialsTree);
+
+            DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> >::iterator begin = materialsTree.begin();
+            DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> >::iterator end = materialsTree.end();
+
+            for(; begin != end; begin++)
+            {
+                DAVA::NMaterial *material = begin->first;
+                if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
+                {
+                    material->ReloadQuality();
+                }
+            }
+        }
+    }
+}
 
 void QualitySwitcher::Show()
 {
-    QualitySwitcher *sw = new QualitySwitcher(NULL);
-    sw->show();
+    QualitySwitcher sw(QtMainWindow::Instance());
+    sw.exec();
+}
+
+void QualitySwitcher::OnTxQualitySelect(int index)
+{
+    QComboBox *combo = dynamic_cast<QComboBox *>(QObject::sender());
+    if(NULL != combo)
+    {
+        DAVA::FastName newTxQuality(combo->itemText(index).toAscii());
+        DAVA::QualitySettingsSystem::Instance()->SetCurTxQuality(newTxQuality);
+
+        applyTx = true;
+    }
+}
+
+void QualitySwitcher::OnMaQualitySelect(int index)
+{
+    QComboBox *combo = dynamic_cast<QComboBox *>(QObject::sender());
+    if(NULL != combo)
+    {
+        DAVA::FastName newMaQuality(combo->itemText(index).toAscii());
+        DAVA::FastName group(combo->itemData(index).toString().toAscii());
+
+        DAVA::QualitySettingsSystem::Instance()->SetCurMaQuality(group, newMaQuality);
+
+        applyMa = true;
+    }
 }

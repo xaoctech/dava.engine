@@ -268,7 +268,7 @@ void ParticleEffectSystem::UpdateEffect(ParticleEffectComponent *effect, float32
     if (GetScene())
         worldTransformPtr = &effect->GetEntity()->GetWorldTransform();
     else
-        worldTransformPtr = effect->effectRenderObject->GetWorldTransformPtr();
+        worldTransformPtr = effect->effectRenderObject->GetEffectMatrix();
 
 	effect->effectData.infoSources[0].position = worldTransformPtr->GetTranslationVector();
 	

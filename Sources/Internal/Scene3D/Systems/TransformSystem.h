@@ -69,9 +69,6 @@ private:
     void SortAndThreadSplit();
     
 	Vector<Entity*> updatableEntities;
-    
-    Stack<Entity*> stack1;
-    Stack<Entity*> stack2;
     Vector<Entity*> sendEvent;
     
 	void EntityNeedUpdate(Entity * entity);
