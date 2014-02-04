@@ -1351,9 +1351,11 @@ void QtMainWindow::OnAddLandscape()
     entityToProcess->SetLocked(true);
     Landscape* newLandscape = new Landscape();
     newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
-    RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
+    RenderComponent* component = new RenderComponent();
+    component->SetRenderObject(newLandscape);
+	newLandscape->Release();
     entityToProcess->AddComponent(component);
-    
+
     AABBox3 bboxForLandscape;
     bboxForLandscape.AddPoint(Vector3(-DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, -DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, 0.f));
     bboxForLandscape.AddPoint(Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_HEIGHT));
