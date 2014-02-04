@@ -42,7 +42,7 @@ ShadowVolumeRenderPass::ShadowVolumeRenderPass(RenderSystem * rs, const FastName
     shadowRect = ShadowRect::Create();
 	blendMode = ShadowPassBlendMode::MODE_BLEND_ALPHA;
 	
-	RenderStateData stateData = {0};
+	RenderStateData stateData;
 	
 	stateData.state =	RenderStateData::STATE_BLEND |
 						RenderStateData::STATE_STENCIL_TEST |
@@ -59,12 +59,12 @@ ShadowVolumeRenderPass::ShadowVolumeRenderPass(RenderSystem * rs, const FastName
 	stateData.stencilMask = 15;
 	stateData.stencilRef = 0;
 	
-	blendMultiplyState = RenderManager::Instance()->AddRenderStateData(&stateData);
+	blendMultiplyState = RenderManager::Instance()->CreateRenderState(stateData);
 	
 	stateData.sourceFactor = BLEND_SRC_ALPHA;
 	stateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 
-	blendAlphaState = RenderManager::Instance()->AddRenderStateData(&stateData);
+	blendAlphaState = RenderManager::Instance()->CreateRenderState(stateData);
 }
 
 ShadowVolumeRenderPass::~ShadowVolumeRenderPass()

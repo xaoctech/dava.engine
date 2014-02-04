@@ -40,7 +40,7 @@ namespace DAVA
 	typedef uint32 UniqueHandle;
 	//T is element type
 	//V is comparer type
-	template<typename T, typename V>
+	template<typename T>
 	class UniqueStateSet
 	{
 	public:
@@ -48,9 +48,9 @@ namespace DAVA
 		UniqueStateSet();
 		~UniqueStateSet();
 		
-		UniqueHandle MakeUnique(const T* objRef);
-		const T* GetUnique(UniqueHandle handle);
-		bool IsUnique(const T* objRef);
+		UniqueHandle MakeUnique(const T& objRef);
+		const T& GetUnique(UniqueHandle handle);
+		bool IsUnique(const T& objRef);
 		
 		void RetainUnique(UniqueHandle handle);
 		void ReleaseUnique(UniqueHandle handle);
@@ -60,32 +60,22 @@ namespace DAVA
 		Vector<T> values;
 		Vector<uint32> refCounters;
 		uint32 freeSlotCount;
-		V handler;
 	};
 	
-	template<typename T, typename V>
-	UniqueStateSet<T, V>::UniqueStateSet()
+	template<typename T>
+	UniqueStateSet<T>::UniqueStateSet()
 	{
 		freeSlotCount = 0;
 	}
 	
-	template<typename T, typename V>
-	UniqueStateSet<T, V>::~UniqueStateSet()
+	template<typename T>
+	UniqueStateSet<T>::~UniqueStateSet()
 	{
 		DVASSERT(values.size() == refCounters.size());
-		
-		for(size_t i = 0; i < values.size(); ++i)
-		{
-			if(refCounters[i])
-			{
-				handler.Release(&values[i]);
-				refCounters[i] = 0;
-			}
-		}
 	}
 	
-	template<typename T, typename V>
-	UniqueHandle UniqueStateSet<T, V>::MakeUnique(const T* objRef)
+	template<typename T>
+	UniqueHandle UniqueStateSet<T>::MakeUnique(const T& objRef)
 	{
 		DVASSERT(!IsUnique(objRef));
 		
@@ -100,7 +90,7 @@ namespace DAVA
 				freeSlot = i;
 			}
 				
-			if(handler.Equals(objRef, &values[i]))
+			if(objRef.Equals(values[i]))
 			{
 				handle = i;
 				break;
@@ -117,48 +107,45 @@ namespace DAVA
 			}
 			else
 			{
-				values.push_back(T());
+				values.push_back(T(objRef));
 				refCounters.push_back(0);
 				handle = values.size() - 1;
 			}
-			
-			handler.Assign(&values[handle], objRef);
 		}
 		
 		refCounters[handle] += 1;
 		return handle;
 	}
 	
-	template<typename T, typename V>
-	const T* UniqueStateSet<T, V>::GetUnique(UniqueHandle handle)
+	template<typename T>
+	const T& UniqueStateSet<T>::GetUnique(UniqueHandle handle)
 	{
-		return &values[handle];
+		return values[handle];
 	}
 	
-	template<typename T, typename V>
-	bool UniqueStateSet<T, V>::IsUnique(const T* objRef)
+	template<typename T>
+	bool UniqueStateSet<T>::IsUnique(const T& objRef)
 	{
 		bool unique = ((values.size() != 0) &&
-					   ((objRef >= (&values[0])) &&
-						(objRef < ((&values[0]) + values.size()))));
+					   ((&objRef >= (&values[0])) &&
+						(&objRef < ((&values[0]) + values.size()))));
 		return unique;
 	}
 	
-	template<typename T, typename V>
-	void UniqueStateSet<T, V>::ReleaseUnique(UniqueHandle handle)
+	template<typename T>
+	void UniqueStateSet<T>::ReleaseUnique(UniqueHandle handle)
 	{
-		handler.Release(&values[handle]);
 		refCounters[handle] -= 1;
 		
 		if(0 == refCounters[handle])
 		{
-			handler.Clear(&values[handle]);
+			values[handle].Clear();
 			freeSlotCount++;
 		}
 	}
 
-	template<typename T, typename V>
-	void UniqueStateSet<T, V>::RetainUnique(UniqueHandle handle)
+	template<typename T>
+	void UniqueStateSet<T>::RetainUnique(UniqueHandle handle)
 	{
 		refCounters[handle] += 1;
 	}

@@ -166,7 +166,7 @@ void RenderManager::InitDefaultRenderStates()
 {
 	//VI: do not set up stencil state for default states. It's disabled in them. 
 	
-	RenderStateData defaultStateData = {0};
+	RenderStateData defaultStateData;
 	
 	defaultStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
 	defaultStateData.cullMode = FACE_BACK;
@@ -175,7 +175,7 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 	defaultStateData.fillMode = FILLMODE_SOLID;
 	
-	default2DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	default2DRenderStateHandle = CreateRenderState(defaultStateData);
 	
 	defaultStateData.state = RenderState::DEFAULT_2D_STATE;
 	defaultStateData.cullMode = FACE_BACK;
@@ -184,7 +184,7 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 	defaultStateData.fillMode = FILLMODE_SOLID;
 	
-	default2DNoBlendRenderStateHandle = AddRenderStateData(&defaultStateData);
+	default2DNoBlendRenderStateHandle = CreateRenderState(defaultStateData);
 	
 	defaultStateData.state =	RenderStateData::STATE_BLEND |
 								RenderStateData::STATE_COLORMASK_ALL;
@@ -194,7 +194,7 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 	defaultStateData.fillMode = FILLMODE_SOLID;
 	
-	default2DNoTextureStateHandle = AddRenderStateData(&defaultStateData);
+	default2DNoTextureStateHandle = CreateRenderState(defaultStateData);
 
 	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
 	defaultStateData.cullMode = FACE_BACK;
@@ -203,7 +203,7 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 	defaultStateData.fillMode = FILLMODE_SOLID;
 
-	default3DRenderStateHandle = AddRenderStateData(&defaultStateData);
+	default3DRenderStateHandle = CreateRenderState(defaultStateData);
 	
 	defaultStateData.state = RenderStateData::STATE_COLORMASK_ALL;
 	defaultStateData.cullMode = FACE_COUNT;
@@ -217,14 +217,14 @@ void RenderManager::InitDefaultRenderStates()
 	defaultStateData.stencilPass[0] = defaultStateData.stencilPass[1] = STENCILOP_COUNT;
 	defaultStateData.stencilFail[0] = defaultStateData.stencilFail[1] = STENCILOP_COUNT;
 	defaultStateData.stencilZFail[0] = defaultStateData.stencilZFail[1] = STENCILOP_COUNT;
-	defaultHardwareState = AddRenderStateData(&defaultStateData);
+	defaultHardwareState = CreateRenderState(defaultStateData);
 	hardwareState.stateHandle = defaultHardwareState;
 }
 	
 void RenderManager::InitDefaultTextureStates()
 {
 	TextureStateData textureData;
-	defaultTextureState = AddTextureStateData(&textureData);
+	defaultTextureState = CreateTextureState(textureData);
 }
 	
 void RenderManager::SetDebug(bool isDebugEnabled)

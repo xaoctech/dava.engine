@@ -1699,9 +1699,9 @@ void Sprite::RegisterTextureStates()
         if(textures[i])
         {
 			TextureStateData data;
-			data.textures[0] = textures[i];
+			data.SetTexture(i, textures[i]);
 			
-			textureHandles[i] = RenderManager::Instance()->AddTextureStateData(&data);
+			textureHandles[i] = RenderManager::Instance()->CreateTextureState(data);
 		}
 	}
 }
@@ -1712,7 +1712,7 @@ void Sprite::UnregisterTextureStates()
     {
 		if(textureHandles[i] != InvalidUniqueHandle)
 		{
-			RenderManager::Instance()->ReleaseTextureStateData(textureHandles[i]);
+			RenderManager::Instance()->ReleaseTextureState(textureHandles[i]);
 		}
 	}
 }
