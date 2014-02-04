@@ -34,12 +34,13 @@ PathValidator::PathValidator(const QString& value):
 	RegExpValidator(""),
 	referencePath(value)
 {
-	DAVA::String regExpr = DAVA::Format(".*%s.*", referencePath.toStdString().c_str());
+	DAVA::String regExpr = DAVA::Format(".*%s.*|^$", referencePath.toStdString().c_str());//content of folder([value]) or blank string(for empty fields)
 	SetRegularExpression(regExpr.c_str());
 }
 
 void PathValidator::ErrorNotifyInternal(const QVariant &v) const
 {
-	QString message = v.toString() + " is wrong. It's allowed to select only from " + referencePath;
-	QMessageBox::warning(NULL, "Wrong file selected", message, QMessageBox::Ok);
+	DAVA::String message = DAVA::Format("\"%s\" is wrong. It's allowed to select only from %s", v.toString().toStdString().c_str(),
+                                        referencePath.toStdString().c_str());
+	QMessageBox::warning(NULL, "Wrong file selected", message.c_str(), QMessageBox::Ok);
 }
