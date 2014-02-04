@@ -64,7 +64,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
     , distanceToCamera(0.f)
     , cameraShouldIgnoreKeyboard(false)
 {
-	renderState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_WRITE);
+	renderState = RenderManager::Instance()->Subclass3DRenderState(RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_WRITE);
 	
 	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_0", SettingsManager::DEFAULT).AsFloat());
 	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_1", SettingsManager::DEFAULT).AsFloat());

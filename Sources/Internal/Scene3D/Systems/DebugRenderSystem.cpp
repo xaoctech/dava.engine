@@ -49,11 +49,11 @@ DebugRenderSystem::DebugRenderSystem(Scene * scene)
 :	SceneSystem(scene),
 	camera(0)
 {
-	depthTestState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
+	depthTestState = RenderManager::Instance()->Subclass3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
 																	RenderStateData::STATE_DEPTH_WRITE |
 																	RenderStateData::STATE_DEPTH_TEST);
 	
-	depthWriteState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
+	depthWriteState = RenderManager::Instance()->Subclass3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
 																	RenderStateData::STATE_DEPTH_WRITE);
 }
     
