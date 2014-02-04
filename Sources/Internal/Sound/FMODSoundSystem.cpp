@@ -39,6 +39,12 @@
 
 namespace DAVA
 {
+    
+FMOD_RESULT F_CALLBACK FMOD_FILE_OPENCALLBACK(const char * name, int unicode, unsigned int * filesize, void ** handle, void ** userdata);
+FMOD_RESULT F_CALLBACK FMOD_FILE_READCALLBACK(void * handle, void * buffer, unsigned int sizebytes, unsigned int * bytesread, void * userdata);
+FMOD_RESULT F_CALLBACK FMOD_FILE_SEEKCALLBACK(void * handle, unsigned int pos, void * userdata);
+FMOD_RESULT F_CALLBACK FMOD_FILE_CLOSECALLBACK(void * handle, void * userdata);
+
 
 FMODSoundSystem::FMODSoundSystem(int32 maxChannels /* = 64 */) :
 maxDistanceSq(150.f * 150.f)
@@ -51,6 +57,7 @@ maxDistanceSq(150.f * 150.f)
     FMOD_VERIFY(fmodEventSystem->init(maxChannels, FMOD_INIT_NORMAL, 0));
 #endif
     FMOD_VERIFY(fmodSystem->set3DSettings(1.f, 1.f, 0.4f));
+    FMOD_VERIFY(fmodSystem->setFileSystem(FMOD_FILE_OPENCALLBACK, FMOD_FILE_CLOSECALLBACK, FMOD_FILE_READCALLBACK, FMOD_FILE_SEEKCALLBACK, 0, 0, -1));
 }
 
 FMODSoundSystem::~FMODSoundSystem()
@@ -394,6 +401,42 @@ void FMODSoundSystem::CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEv
         if(it != callbackOnUpdate.end())
             callbackOnUpdate.erase(it);
     }
+}
+
+FMOD_RESULT F_CALLBACK FMOD_FILE_OPENCALLBACK(const char * name, int unicode, unsigned int * filesize, void ** handle, void ** userdata)
+{
+    File * file = File::Create(FilePath(name), File::OPEN | File::READ);
+    if(!file)
+        return FMOD_ERR_FILE_NOTFOUND;
+
+    (*filesize) = file->GetSize();
+    (*handle) = file;
+
+    return FMOD_OK;
+}
+
+FMOD_RESULT F_CALLBACK FMOD_FILE_READCALLBACK(void * handle, void * buffer, unsigned int sizebytes, unsigned int * bytesread, void * userdata)
+{
+    File * file = (File*)handle;
+    (*bytesread) = file->Read(buffer, sizebytes);
+
+    return FMOD_OK;
+}
+
+FMOD_RESULT F_CALLBACK FMOD_FILE_SEEKCALLBACK(void * handle, unsigned int pos, void * userdata)
+{
+    File * file = (File*)handle;
+    file->Seek(pos, File::SEEK_FROM_START);
+
+    return FMOD_OK;
+}
+
+FMOD_RESULT F_CALLBACK FMOD_FILE_CLOSECALLBACK(void * handle, void * userdata)
+{
+    File * file = (File*)handle;
+    SafeRelease(file);
+
+    return FMOD_OK;
 }
 
 };
