@@ -136,6 +136,33 @@ namespace DAVA
             memcpy(stencilZFail, data.stencilZFail, sizeof(stencilZFail));
         }
         
+        RenderStateData& operator=(const RenderStateData& data)
+        {
+            state = data.state;
+            
+            sourceFactor = data.sourceFactor;
+            destFactor = data.destFactor;
+            
+            //cull mode
+            cullMode = data.cullMode;
+            
+            //depth function
+            depthFunc = data.depthFunc;
+            
+            //fill mode
+            fillMode = data.fillMode;
+            
+            //stencil state
+            stencilRef = data.stencilRef;
+            stencilMask = data.stencilMask;
+            memcpy(stencilFunc, data.stencilFunc, sizeof(stencilFunc));
+            memcpy(stencilPass, data.stencilPass, sizeof(stencilPass));
+            memcpy(stencilFail, data.stencilFail, sizeof(stencilFail));
+            memcpy(stencilZFail, data.stencilZFail, sizeof(stencilZFail));
+
+            return *this;
+        }
+        
         void Clear()
         {
             //do nothing here for now. No resources to release.

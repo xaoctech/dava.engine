@@ -65,13 +65,16 @@ namespace DAVA
 			if(this != &src)
 			{
 				minmaxTextureIndex = src.minmaxTextureIndex;
-				
-				ReleaseAll();
-				
-				memcpy(textures, src.textures, sizeof(textures));
-				
-				RetainAll();
-			}
+                
+                for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+                {
+                    Texture* tmp = textures[i];
+                    
+                    textures[i] = SafeRetain(src.textures[i]);
+                    
+                    SafeRelease(tmp);
+                }
+ 			}
 			
 			return *this;
 		}
