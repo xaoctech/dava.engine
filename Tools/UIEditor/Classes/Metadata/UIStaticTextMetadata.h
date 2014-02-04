@@ -44,7 +44,6 @@ class UIStaticTextMetadata : public UITextControlMetadata
 	// Text properties
     Q_PROPERTY(bool Multiline READ GetMultiline WRITE SetMultiline);
     Q_PROPERTY(bool MultilineBySymbol READ GetMultilineBySymbol WRITE SetMultilineBySymbol);
-    Q_PROPERTY(int FittingType READ GetFittingType WRITE SetFittingType);
 
 public:
     UIStaticTextMetadata(QObject* parent = 0);
@@ -95,8 +94,8 @@ protected:
 	virtual bool GetMultilineBySymbol() const;
 	virtual void SetMultilineBySymbol(const bool value);
     
-    int GetFittingType() const;
-    void SetFittingType(int value);
+    virtual int GetFittingType() const;
+    virtual void SetFittingType(int value);
 };
 
 };

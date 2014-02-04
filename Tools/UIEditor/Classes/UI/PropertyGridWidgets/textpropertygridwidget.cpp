@@ -122,17 +122,19 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	multilineBySymbolCheckBox->setEnabled(false); // false by default - this checkbox depends on multilineCheckBox one.
 	multilineBySymbolCheckBox->setVisible(isUIStaticText);
 
-    // Fitting is needed for UIStaticText only.
-    ui->fittingTypeComboBox->setVisible(isUIStaticText);
-    ui->fittingLabel->setVisible(isUIStaticText);
-
 	if (isUIStaticText)
 	{
 		// Register checkbox widget for property Multiline only for UIStaticText
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE, multilineCheckBox, false, true);
 		RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_PROPERTY_MULTILINE_BY_SYMBOL, multilineBySymbolCheckBox, false, true);
-        
-        // Add the Fitting Type.
+	}
+
+    // Fitting Type is needed for all text-aware controls but UITextField.
+    ui->fittingTypeComboBox->setVisible(!isUITextField);
+    ui->fittingLabel->setVisible(!isUITextField);
+
+    if (false == isUITextField)
+    {
         WidgetSignalsBlocker blocker(ui->fittingTypeComboBox);
         ui->fittingTypeComboBox->clear();
         int itemsCount = BackgroundGridWidgetHelper::GetFittingTypesCount();
@@ -140,9 +142,9 @@ void TextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
         {
             ui->fittingTypeComboBox->addItem(BackgroundGridWidgetHelper::GetFittingTypeDesc(i));
         }
-
+        
         RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::TEXT_FITTING_TYPE_PROPERTY_NAME, ui->fittingTypeComboBox, false, true);
-	}
+    }
 
     UpdateLocalizationValue();
 
@@ -304,6 +306,7 @@ void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* co
     
     if (comboBoxWidget == ui->fittingTypeComboBox)
     {
+        UpdateWidgetPalette(comboBoxWidget, propertyName);
         return SetComboboxSelectedItem(ui->fittingTypeComboBox, BackgroundGridWidgetHelper::GetFittingTypeDescByType(propertyValue) );
     }
     
