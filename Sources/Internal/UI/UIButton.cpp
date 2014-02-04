@@ -889,7 +889,8 @@ namespace DAVA
 		String stringValue;
 		
 		UIButton *baseControl = new UIButton();
-		
+		UIStaticText *baseStaticText = new UIStaticText();
+
 		//Control Type
 		SetPreferredNodeType(node, "UIButton");
         
@@ -1005,8 +1006,11 @@ namespace DAVA
 				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
                 
                 int32 fittingOption = this->GetStateTextControl(stateArray[i])->GetFittingOption();
-				nodeValue->SetInt32(fittingOption);
-				node->Set(Format("stateFittingOption%s", statePostfix[i].c_str()), nodeValue);
+                if (baseStaticText->GetFittingOption() != fittingOption)
+                {
+                    nodeValue->SetInt32(fittingOption);
+                    node->Set(Format("stateFittingOption%s", statePostfix[i].c_str()), nodeValue);
+                }
 			}
 			
 			// State background color
@@ -1030,6 +1034,7 @@ namespace DAVA
         
 		SafeDelete(nodeValue);
 		SafeRelease(baseControl);
+        SafeRelease(baseStaticText);
 		      
 		return node;
 	}
