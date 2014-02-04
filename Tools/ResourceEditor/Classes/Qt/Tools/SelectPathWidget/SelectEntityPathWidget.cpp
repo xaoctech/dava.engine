@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 #include "SelectEntityPathWidget.h"
-#include "./../Qt/Tools/MimeDataHelper/MimeDataHelper.h"
+#include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Scene/SceneEditor2.h"
 #include <QFileInfo>
 #include <QKeyEvent>
@@ -104,7 +104,7 @@ void SelectEntityPathWidget::ConvertFromMimeData(const QMimeData* mimeData, DAVA
 void SelectEntityPathWidget::ConvertQMimeDataFromSceneTree(const QMimeData* mimeData,
 														   DAVA::List<DAVA::Entity*>& retList)
 {
-	retList  = MimeDataHelper::GetPointersFromSceneTreeMime(mimeData);
+	retList = MimeDataHelper::GetPointersFromSceneTreeMime(mimeData);
 	SetEntities(retList, true);
 }
 
