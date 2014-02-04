@@ -94,16 +94,23 @@ ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 	return NULL;
 }
 
+LightComponent *GetLightComponent(Entity * fromEntity)
+{
+    if(NULL != fromEntity)
+    {
+        return static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
+    }
+
+    return NULL;
+}
+
 Light * GetLight( Entity * fromEntity )
 {
-	if(NULL != fromEntity)
-	{
-		LightComponent * component = static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
-		if(component)
-		{
-			return component->GetLightObject();
-		}
-	}
+    LightComponent * component = GetLightComponent(fromEntity);
+    if(component)
+    {
+        return component->GetLightObject();
+    }
 
 	return NULL;
 }

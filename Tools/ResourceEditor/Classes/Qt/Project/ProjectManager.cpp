@@ -39,6 +39,7 @@
 #include "SpritesPacker/SpritePackerHelper.h"
 
 #include "FileSystem/YamlParser.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 ProjectManager::ProjectManager()
 	: curProjectPath("")
@@ -195,50 +196,5 @@ void ProjectManager::LoadMaterialsSettings()
     }
 
     // parse available material qualities
-    DAVA::FilePath qualitiesListPath = DAVA::FilePath("~res:/Materials/quality.yaml");
-    if(qualitiesListPath.Exists())
-    {
-        DAVA::YamlParser *parser = DAVA::YamlParser::Create(qualitiesListPath);
-        DAVA::YamlNode *rootNode = parser->GetRootNode();
-
-        if(NULL != rootNode)
-        {
-            for(int i = 0; i < rootNode->GetCount(); ++i)
-            {
-                const DAVA::YamlNode *qualityNode = rootNode->Get(i);
-                if(NULL != qualityNode)
-                {
-                    const DAVA::YamlNode *name = qualityNode->Get("name");
-                    const DAVA::YamlNode *prefix = qualityNode->Get("prefix");
-                    const DAVA::YamlNode *values = qualityNode->Get("values");
-
-                    if(NULL != name && NULL != values &&
-                        name->GetType() == DAVA::YamlNode::TYPE_STRING &&
-                        values->GetType() == DAVA::YamlNode::TYPE_ARRAY)
-                    {
-                        AvailableMaterialQuality amq;
-                        amq.name = name->AsString().c_str();
-
-                        if(NULL != prefix && prefix->GetType() == DAVA::YamlNode::TYPE_STRING)
-                        {
-                            amq.prefix = prefix->AsString().c_str();
-                        }
-
-                        const DAVA::Vector<DAVA::YamlNode *> &v = values->AsVector();
-                        for(size_t j = 0; j < v.size(); ++j)
-                        {
-                            if(v[j]->GetType() == DAVA::YamlNode::TYPE_STRING)
-                            {
-                                amq.values.append(v[j]->AsString().c_str());
-                            }
-                        }
-
-                        qualities.append(amq);
-                    }
-                }
-            }
-        }
-
-        parser->Release();
-    }
+    DAVA::QualitySettingsSystem::Instance()->Load("~res:/quality.yaml");
 }

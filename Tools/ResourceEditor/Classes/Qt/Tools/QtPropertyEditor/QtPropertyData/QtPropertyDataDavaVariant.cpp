@@ -852,7 +852,9 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 
 void QtPropertyDataDavaVariant::FilePathOWPressed()
 {
-	QString path = QtFileDialog::getOpenFileName(GetOWViewport(), "Select file", QString(curVariantValue.AsFilePath().GetAbsolutePathname().c_str()));
+    DAVA::String presentValue = curVariantValue.AsFilePath().GetAbsolutePathname();
+    QString openFilePath = presentValue.empty() ? defaultOpenDialogPath : presentValue.c_str();
+	QString path = QtFileDialog::getOpenFileName(GetOWViewport(), "Select file", openFilePath, openDialogFilter);
 	if(!path.isEmpty())
 	{
 		SetValue(path, QtPropertyData::VALUE_EDITED);
@@ -947,4 +949,24 @@ void QtPropertyDataDavaVariant::ApplyAllowedValueFromEditor(QWidget *editorWidge
 			}
 		}
 	}
+}
+
+void QtPropertyDataDavaVariant::SetOpenDialogFilter(const QString& value)
+{
+    openDialogFilter = value;
+}
+
+QString QtPropertyDataDavaVariant::GetOpenDialogFilter()
+{
+    return openDialogFilter;
+}
+
+void QtPropertyDataDavaVariant::SetDefaultOpenDialogPath(const QString& value)
+{
+    defaultOpenDialogPath = value;
+}
+
+QString QtPropertyDataDavaVariant::GetDefaultOpenDialogPath()
+{
+    return defaultOpenDialogPath;
 }

@@ -104,6 +104,11 @@ void ParticleRenderObject::SetEffectMatrix(Matrix4 *matrix)
     effectMatrix = matrix;
 }
 
+Matrix4 * ParticleRenderObject::GetEffectMatrix()
+{
+    return effectMatrix;
+}
+
 void ParticleRenderObject::PrepareRenderData(Camera * camera)
 {
 	for (int32 i=0, sz = renderGroupCache.size(); i<sz; ++i)
