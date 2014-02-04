@@ -107,10 +107,12 @@ namespace DAVA
 			}
 			else
 			{
-				values.push_back(T(objRef));
+				values.push_back(T());
 				refCounters.push_back(0);
 				handle = values.size() - 1;
 			}
+            
+            values[handle] = objRef;
 		}
 		
 		refCounters[handle] += 1;

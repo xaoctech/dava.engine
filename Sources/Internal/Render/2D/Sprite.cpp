@@ -1760,8 +1760,9 @@ void Sprite::RegisterTextureStates()
     {
         if(textures[i])
         {
+            //VI: always set "0" texture for each sprite part
 			TextureStateData data;
-			data.SetTexture(i, textures[i]);
+			data.SetTexture(0, textures[i]);
 			
 			textureHandles[i] = RenderManager::Instance()->CreateTextureState(data);
 		}
