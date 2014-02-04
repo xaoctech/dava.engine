@@ -126,6 +126,7 @@ void MaterialTree::SelectEntities(DAVA::NMaterial *material)
 			}
 		}
 
+        QtMainWindow::Instance()->GetUI()->sceneTree->LookAtSelection();
 	}
 }
 

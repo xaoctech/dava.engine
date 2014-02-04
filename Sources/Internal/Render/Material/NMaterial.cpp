@@ -28,6 +28,7 @@
 
 
 #include "Scene3D/Systems/MaterialSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderState.h"
@@ -170,7 +171,6 @@ namespace DAVA
 			it != textures.end();
 			++it)
 		{
-			SafeRelease(it->second->texture);
 			SafeDelete(it->second);
 		}
 		textures.clear();
@@ -277,9 +277,9 @@ namespace DAVA
 			//					   parent->materialKey);
 		}
 		
-		if(serializationContext->GetDefaultMaterialQuality() != currentQuality)
+		if(GetMaterialGroup().IsValid())
 		{
-			archive->SetString("materialQuality", currentQuality.c_str());
+			archive->SetString("materialGroup", GetMaterialGroup().c_str());
 		}
 		
 		DVASSERT(materialTemplate);
@@ -306,9 +306,9 @@ namespace DAVA
 			it != textures.end();
 			++it)
 		{
-			if(it->second->texture)
+			if(it->second->GetTexture() != NULL)
 			{
-				String texturePath = it->second->path.GetRelativePathname(serializationContext->GetScenePath());
+				String texturePath = it->second->GetPath().GetRelativePathname(serializationContext->GetScenePath());
 				
 				if(texturePath.size() > 0)
 				{
@@ -396,14 +396,19 @@ namespace DAVA
 			}
 		}
 		
-		if(archive->IsKeyExists("materialQuality"))
+		if(archive->IsKeyExists("materialGroup"))
 		{
-			currentQuality = FastName(archive->GetString("materialQuality"));
+            SetMaterialGroup(FastName(archive->GetString("materialGroup").c_str()));
 		}
 		else
 		{
-			currentQuality = serializationContext->GetDefaultMaterialQuality();
+			SetMaterialGroup(FastName());
 		}
+
+        // orderedQuality will be set, after SetMaterialGroup call
+        // but we are loading now, so currentQuality should be set to orderedQuality
+        // to process loading with exactly ordered quality
+        currentQuality = orderedQuality;
 		
 		String materialTemplateName = archive->GetString("materialTemplate");
 		if(materialTemplateName.size() > 0)
@@ -466,29 +471,46 @@ namespace DAVA
 			serializationContext->AddBinding(parentKey, this);
 		}
 	}
-	
+
 	void NMaterial::SetQuality(const FastName& stateName)
 	{
 		DVASSERT(stateName.IsValid());
 		orderedQuality = stateName;
 	}
+
+    FastName NMaterial::GetEffectiveQuality() const
+    {
+        FastName ret = orderedQuality;
+
+        const NMaterial* parent = GetParent();
+        while(!ret.IsValid() && NULL != parent)
+        {
+            ret = parent->orderedQuality;
+            parent = parent->GetParent();
+        }
+
+        DVASSERT(ret.IsValid());
+        return ret;
+    }
 	
 	bool NMaterial::ReloadQuality(bool force)
 	{
-		DVASSERT(orderedQuality.IsValid());
-		DVASSERT(materialTemplate);
-		
-		if(!orderedQuality.IsValid())
+        bool ret = false;
+
+        DVASSERT(materialTemplate);
+
+        FastName effectiveQuality = GetEffectiveQuality();
+        FastName curGroupQuality = QualitySettingsSystem::Instance()->GetCurMaQuality(materialGroup);
+        if(curGroupQuality != currentQuality)
+        {
+            effectiveQuality = curGroupQuality;
+        }
+        
+		bool hasQuality = (materialTemplate->techniqueStateMap.count(effectiveQuality) > 0);
+		if(hasQuality && (effectiveQuality != currentQuality || force))
 		{
-			orderedQuality = NMaterial::DEFAULT_QUALITY_NAME;
-		}
-		
-		bool result = (materialTemplate->techniqueStateMap.count(orderedQuality) > 0);
-		if(result &&
-		   (orderedQuality != currentQuality ||
-		   force))
-		{
-			currentQuality = orderedQuality;
+            ret = true;
+            currentQuality = effectiveQuality;
 			
 			if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 			{
@@ -522,7 +544,7 @@ namespace DAVA
 			}
 		}
 		
-		return result;
+		return ret;
 	}
 
 	NMaterial* NMaterial::Clone()
@@ -558,7 +580,7 @@ namespace DAVA
 			it != textures.end();
 			++it)
 		{
-			clonedMaterial->SetTexture(it->first, it->second->path);
+			clonedMaterial->SetTexture(it->first, it->second->GetPath());
 		}
 		
 		if(illuminationParams)
@@ -642,7 +664,6 @@ namespace DAVA
         if(bucket)
         {
             textures.erase(textureFastName);
-            SafeRelease(bucket->texture);
             SafeDelete(bucket);
             
             SetTexturesDirty();
@@ -656,18 +677,19 @@ namespace DAVA
 		if(NULL == bucket)
 		{
 			bucket = new TextureBucket();
-			bucket->texture = NULL;
 			textures.insert(textureFastName, bucket);
 		}
 		
-		if(bucket->path != texturePath)
+		if(bucket->GetPath() != texturePath)
 		{
-			SafeRelease(bucket->texture);
-			bucket->path = texturePath;
+            bucket->SetTexture(NULL); //VI: texture WILL NOT BE RELOADED if it's not active in the current quality
+			bucket->SetPath(texturePath);
 			
 			if(IsTextureActive(textureFastName))
 			{
-				bucket->texture = Texture::CreateFromFile(texturePath);
+                Texture* tx = Texture::CreateFromFile(texturePath);
+				bucket->SetTexture(tx);
+                SafeRelease(tx);
 			}
 			
 			SetTexturesDirty();
@@ -684,12 +706,10 @@ namespace DAVA
 			textures.insert(textureFastName, bucket);
 		}
 
-		if(texture != bucket->texture)
+		if(texture != bucket->GetTexture())
 		{
-			SafeRelease(bucket->texture);
-			
-			bucket->texture = SafeRetain(texture);
-			bucket->path = (bucket->texture) ? bucket->texture->texDescriptor->pathname : FilePath();
+			bucket->SetTexture(texture);
+			bucket->SetPath((texture) ? texture->texDescriptor->pathname : FilePath());
 			
 			SetTexturesDirty();
 		}
@@ -702,37 +722,36 @@ namespace DAVA
 		if(NULL == bucket)
 		{
 			bucket = new TextureBucket();
-			bucket->texture = NULL;
 			textures.insert(textureFastName, bucket);
 		}
         
-        bucket->path = texturePath;
+        bucket->SetPath(texturePath);
     }
 	
     Texture * NMaterial::GetTexture(const FastName& textureFastName) const
 	{
 		TextureBucket* bucket = textures.at(textureFastName);
-		return (NULL == bucket) ? NULL : bucket->texture;
+		return (NULL == bucket) ? NULL : bucket->GetTexture();
 	}
 	
 	const FilePath& NMaterial::GetTexturePath(const FastName& textureFastName) const
 	{
 		static FilePath invalidEmptyPath;
 		TextureBucket* bucket = textures.at(textureFastName);
-		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
+		return (NULL == bucket) ? invalidEmptyPath : bucket->GetPath();
 	}
     
     Texture * NMaterial::GetEffectiveTexture(const FastName& textureFastName) const
     {
         TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
-		return (NULL == bucket) ? NULL : bucket->texture;
+		return (NULL == bucket) ? NULL : bucket->GetTexture();
     }
     
 	const FilePath& NMaterial::GetEffectiveTexturePath(const FastName& textureFastName) const
     {
         static FilePath invalidEmptyPath;
 		TextureBucket* bucket = GetEffectiveTextureBucket(textureFastName);
-		return (NULL == bucket) ? invalidEmptyPath : bucket->path;
+		return (NULL == bucket) ? invalidEmptyPath : bucket->GetPath();
     }
 
     Texture * NMaterial::GetTexture(uint32 index) const
@@ -740,7 +759,7 @@ namespace DAVA
 		DVASSERT(index >= 0 && index < textures.size());
 		
 		TextureBucket* bucket = textures.valueByIndex(index);
-		return bucket->texture;
+		return bucket->GetTexture();
 	}
 	
 	const FilePath& NMaterial::GetTexturePath(uint32 index) const
@@ -748,7 +767,7 @@ namespace DAVA
 		DVASSERT(index >= 0 && index < textures.size());
 		
 		TextureBucket* bucket = textures.valueByIndex(index);
-		return bucket->path;
+		return bucket->GetPath();
 	}
 	
 	const FastName& NMaterial::GetTextureName(uint32 index) const
@@ -855,6 +874,25 @@ namespace DAVA
 	{
 		materialName = name;
 	}
+
+    FastName NMaterial::GetMaterialGroup() const
+    {
+        return materialGroup;
+    }
+
+    void NMaterial::SetMaterialGroup(const FastName &group)
+    {
+        if(group.IsValid())
+        {
+            materialGroup = group;
+            const MaterialQuality* curQuality = QualitySettingsSystem::Instance()->GetMaQuality(group, QualitySettingsSystem::Instance()->GetCurMaQuality(group));
+
+            if(NULL != curQuality)
+            {
+                SetQuality(curQuality->qualityName);
+            }
+        }
+    }
 	
 	void NMaterial::SetMaterialTemplate(const NMaterialTemplate* matTemplate,
 										const FastName& defaultQuality)
@@ -1156,7 +1194,7 @@ namespace DAVA
 		{
 			if(!IsTextureActive(it->first))
 			{
-				SafeRelease(it->second->texture);
+				it->second->SetTexture(NULL);
 			}
 		}
 		
@@ -1177,12 +1215,14 @@ namespace DAVA
 			
 			if(bucket)
 			{
-				if(NULL == bucket->texture)
+				if(NULL == bucket->GetTexture())
 				{
-					bucket->texture = Texture::CreateFromFile(bucket->path);
+                    Texture* tx = Texture::CreateFromFile(bucket->GetPath());
+					bucket->SetTexture(tx);
+                    SafeRelease(tx);
 				}
 				
-				tex = bucket->texture;
+				tex = bucket->GetTexture();
 				break;
 			}
 			
@@ -1767,7 +1807,7 @@ namespace DAVA
 		DVASSERT(mat);
 		
 		NMaterial::TextureBucket* bucket = mat->GetEffectiveTextureBucket(textureName);
-		return (bucket) ? bucket->texture : NULL;
+		return (bucket) ? bucket->GetTexture() : NULL;
 	}
 	
 	bool NMaterialHelper::IsAlphatest(const FastName& passName, NMaterial* mat)
@@ -1845,7 +1885,7 @@ namespace DAVA
 					TextureBucket *bucket = it->second;
 
 					data.source |= source;
-					data.path = bucket->path;
+					data.path = bucket->GetPath();
 
 					staticData.Insert(it->first, data);
 				}

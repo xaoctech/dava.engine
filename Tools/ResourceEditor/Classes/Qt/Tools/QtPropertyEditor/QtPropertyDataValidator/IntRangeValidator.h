@@ -1,6 +1,5 @@
 /*==================================================================================
-
-Copyright (c) 2008, binaryzebra
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -29,47 +28,33 @@ Copyright (c) 2008, binaryzebra
 
 
 
-#ifndef __CREATE_PLANE_LOD_COOMAND_H__
-#define __CREATE_PLANE_LOD_COOMAND_H__
+#ifndef __INT_RANGE_VALIDATOR_H__
+#define __INT_RANGE_VALIDATOR_H__
 
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
+#include "../QtPropertyDataValidator.h"
+#include <QIntValidator>
 
-class CreatePlaneLODCommand : public Command2
+class IntRangeValidator : public QtPropertyDataValidator
 {
 public:
-	CreatePlaneLODCommand(DAVA::LodComponent * lodComponent, DAVA::int32 fromLodLayer, DAVA::uint32 textureSize, const DAVA::FilePath & texturePath);
-    ~CreatePlaneLODCommand();
-
-    virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
     
-    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer = -1, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
-
-    DAVA::RenderBatch * GetRenderBatch() const;
-    
+    IntRangeValidator(int minValue, int maxValue);
+	
+	void SetRange(int minValue, int maxValue);
+	
+	int GetMaximum() const;
+	void SetMaximum(int maxValue);
+	
+	int GetMinimum() const;
+	void SetMinimum(int minValue);
+   
 protected:
 
-    void CreatePlaneImage();
-    void CreatePlaneBatch();
+    virtual bool ValidateInternal(const QVariant &v) const;
 
-    void CreateTextureFiles();
-    void DeleteTextureFiles();
+private:
     
-    DAVA::LodComponent * lodComponent;
-    DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
-    
-    DAVA::RenderBatch * planeBatch;
-    DAVA::Image *planeImage;
-    
-    DAVA::int32 newLodIndex;
-    DAVA::int32 newSwitchIndex;
-
-    DAVA::int32 fromLodLayer;
-    DAVA::uint32 textureSize;
-    DAVA::FilePath textureSavePath;
+    QIntValidator  innerValidator;
 };
 
-
-#endif // #ifndef __CREATE_PLANE_LOD_COOMAND_H__
+#endif // __INT_RANGE_VALIDATOR_H__

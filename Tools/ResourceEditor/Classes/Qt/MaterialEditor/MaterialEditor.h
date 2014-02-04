@@ -74,7 +74,6 @@ protected:
 
 	void SetCurMaterial(DAVA::NMaterial *material);
 	void FillMaterialProperties(DAVA::NMaterial *material);
-	void FillMaterialTextures(DAVA::NMaterial *material);
     void FillMaterialTemplates(DAVA::NMaterial *material);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);

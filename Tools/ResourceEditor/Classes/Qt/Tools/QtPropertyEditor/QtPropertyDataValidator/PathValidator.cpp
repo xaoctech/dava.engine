@@ -1,6 +1,5 @@
 /*==================================================================================
-
-Copyright (c) 2008, binaryzebra
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -27,49 +26,20 @@ Copyright (c) 2008, binaryzebra
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "PathValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-
-#ifndef __CREATE_PLANE_LOD_COOMAND_H__
-#define __CREATE_PLANE_LOD_COOMAND_H__
-
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
-
-class CreatePlaneLODCommand : public Command2
+PathValidator::PathValidator(const QString& value):
+	RegExpValidator(""),
+	referencePath(value)
 {
-public:
-	CreatePlaneLODCommand(DAVA::LodComponent * lodComponent, DAVA::int32 fromLodLayer, DAVA::uint32 textureSize, const DAVA::FilePath & texturePath);
-    ~CreatePlaneLODCommand();
+	DAVA::String regExpr = DAVA::Format(".*%s.*", referencePath.toStdString().c_str());
+	SetRegularExpression(regExpr.c_str());
+}
 
-    virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
-    
-    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer = -1, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
-
-    DAVA::RenderBatch * GetRenderBatch() const;
-    
-protected:
-
-    void CreatePlaneImage();
-    void CreatePlaneBatch();
-
-    void CreateTextureFiles();
-    void DeleteTextureFiles();
-    
-    DAVA::LodComponent * lodComponent;
-    DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
-    
-    DAVA::RenderBatch * planeBatch;
-    DAVA::Image *planeImage;
-    
-    DAVA::int32 newLodIndex;
-    DAVA::int32 newSwitchIndex;
-
-    DAVA::int32 fromLodLayer;
-    DAVA::uint32 textureSize;
-    DAVA::FilePath textureSavePath;
-};
-
-
-#endif // #ifndef __CREATE_PLANE_LOD_COOMAND_H__
+void PathValidator::ErrorNotifyInternal(const QVariant &v) const
+{
+	QString message = v.toString() + " is wrong. It's allowed to select only from " + referencePath;
+	QMessageBox::warning(NULL, "Wrong file selected", message, QMessageBox::Ok);
+}

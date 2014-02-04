@@ -1,6 +1,5 @@
 /*==================================================================================
-
-Copyright (c) 2008, binaryzebra
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -27,49 +26,14 @@ Copyright (c) 2008, binaryzebra
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "QtPropertyDataValidator.h"
 
-
-#ifndef __CREATE_PLANE_LOD_COOMAND_H__
-#define __CREATE_PLANE_LOD_COOMAND_H__
-
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
-
-class CreatePlaneLODCommand : public Command2
+bool QtPropertyDataValidator::Validate(const QVariant &v) const
 {
-public:
-	CreatePlaneLODCommand(DAVA::LodComponent * lodComponent, DAVA::int32 fromLodLayer, DAVA::uint32 textureSize, const DAVA::FilePath & texturePath);
-    ~CreatePlaneLODCommand();
-
-    virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
-    
-    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer = -1, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
-
-    DAVA::RenderBatch * GetRenderBatch() const;
-    
-protected:
-
-    void CreatePlaneImage();
-    void CreatePlaneBatch();
-
-    void CreateTextureFiles();
-    void DeleteTextureFiles();
-    
-    DAVA::LodComponent * lodComponent;
-    DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
-    
-    DAVA::RenderBatch * planeBatch;
-    DAVA::Image *planeImage;
-    
-    DAVA::int32 newLodIndex;
-    DAVA::int32 newSwitchIndex;
-
-    DAVA::int32 fromLodLayer;
-    DAVA::uint32 textureSize;
-    DAVA::FilePath textureSavePath;
-};
-
-
-#endif // #ifndef __CREATE_PLANE_LOD_COOMAND_H__
+    bool ret = ValidateInternal(v);
+    if(!ret)
+    {
+        ErrorNotifyInternal(v);
+    }
+    return ret;
+}

@@ -1,6 +1,5 @@
 /*==================================================================================
-
-Copyright (c) 2008, binaryzebra
+    Copyright (c) 2008, binaryzebra
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -27,49 +26,44 @@ Copyright (c) 2008, binaryzebra
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "IntRangeValidator.h"
+#include "Qt/Settings/SettingsManager.h"
 
-
-#ifndef __CREATE_PLANE_LOD_COOMAND_H__
-#define __CREATE_PLANE_LOD_COOMAND_H__
-
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
-
-class CreatePlaneLODCommand : public Command2
+IntRangeValidator::IntRangeValidator(int minValue, int maxValue)
 {
-public:
-	CreatePlaneLODCommand(DAVA::LodComponent * lodComponent, DAVA::int32 fromLodLayer, DAVA::uint32 textureSize, const DAVA::FilePath & texturePath);
-    ~CreatePlaneLODCommand();
+    innerValidator.setRange(minValue, maxValue);
+}
 
-    virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
-    
-    static void DrawToTexture(DAVA::Entity * entity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer = -1, const DAVA::Rect & viewport = DAVA::Rect(0, 0, -1, -1), bool clearTarget = true);
+bool IntRangeValidator::ValidateInternal(const QVariant &value) const
+{
+    QString validateValue = value.toString();
+    int pos = 0;
+    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+}
 
-    DAVA::RenderBatch * GetRenderBatch() const;
-    
-protected:
+void IntRangeValidator::SetRange(int minValue, int maxValue)
+{
+	innerValidator.setRange(minValue, maxValue);
+}
 
-    void CreatePlaneImage();
-    void CreatePlaneBatch();
+int IntRangeValidator::GetMaximum() const
+{
+	return innerValidator.top();
+}
 
-    void CreateTextureFiles();
-    void DeleteTextureFiles();
-    
-    DAVA::LodComponent * lodComponent;
-    DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
-    
-    DAVA::RenderBatch * planeBatch;
-    DAVA::Image *planeImage;
-    
-    DAVA::int32 newLodIndex;
-    DAVA::int32 newSwitchIndex;
+void IntRangeValidator::SetMaximum(int maxValue)
+{
+	innerValidator.setTop(maxValue);
+}
 
-    DAVA::int32 fromLodLayer;
-    DAVA::uint32 textureSize;
-    DAVA::FilePath textureSavePath;
-};
+int IntRangeValidator::GetMinimum() const
+{
+	return innerValidator.bottom();
+}
+
+void IntRangeValidator::SetMinimum(int minValue)
+{
+    innerValidator.setBottom(minValue);
+}
 
 
-#endif // #ifndef __CREATE_PLANE_LOD_COOMAND_H__
