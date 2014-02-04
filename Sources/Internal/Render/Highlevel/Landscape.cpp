@@ -1451,10 +1451,9 @@ void Landscape::SetLandscapeSize(const Vector3 & newLandscapeSize)
 	{
 		return;
 	}
-	AABBox3 bboxForLandscape;
-	bboxForLandscape.AddPoint(Vector3(-newLandscapeSize.x/2.f, -newLandscapeSize.y/2.f, 0.f));
-	bboxForLandscape.AddPoint(Vector3(newLandscapeSize.x/2.f, newLandscapeSize.y/2.f, newLandscapeSize.z));
-	bbox = bboxForLandscape;
+    bbox.Empty();
+	bbox.AddPoint(Vector3(-newLandscapeSize.x/2.f, -newLandscapeSize.y/2.f, 0.f));
+	bbox.AddPoint(Vector3(newLandscapeSize.x/2.f, newLandscapeSize.y/2.f, newLandscapeSize.z));
     BuildLandscape();
 }
     
