@@ -28,6 +28,7 @@
 
 
 #include "Scene3D/Systems/MaterialSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderState.h"
@@ -277,9 +278,9 @@ namespace DAVA
 			//					   parent->materialKey);
 		}
 		
-		if(serializationContext->GetDefaultMaterialQuality() != currentQuality)
+		if(GetMaterialGroup().IsValid())
 		{
-			archive->SetString("materialQuality", currentQuality.c_str());
+			archive->SetString("materialGroup", GetMaterialGroup().c_str());
 		}
 		
 		DVASSERT(materialTemplate);
@@ -396,14 +397,19 @@ namespace DAVA
 			}
 		}
 		
-		if(archive->IsKeyExists("materialQuality"))
+		if(archive->IsKeyExists("materialGroup"))
 		{
-			currentQuality = FastName(archive->GetString("materialQuality"));
+            SetMaterialGroup(FastName(archive->GetString("materialGroup").c_str()));
 		}
 		else
 		{
-			currentQuality = serializationContext->GetDefaultMaterialQuality();
+			SetMaterialGroup(FastName());
 		}
+
+        // orderedQuality will be set, after SetMaterialGroup call
+        // but we are loading now, so currentQuality should be set to orderedQuality
+        // to process loading with exactly ordered quality
+        currentQuality = orderedQuality;
 		
 		String materialTemplateName = archive->GetString("materialTemplate");
 		if(materialTemplateName.size() > 0)
@@ -466,29 +472,46 @@ namespace DAVA
 			serializationContext->AddBinding(parentKey, this);
 		}
 	}
-	
+
 	void NMaterial::SetQuality(const FastName& stateName)
 	{
 		DVASSERT(stateName.IsValid());
 		orderedQuality = stateName;
 	}
+
+    FastName NMaterial::GetEffectiveQuality() const
+    {
+        FastName ret = orderedQuality;
+
+        const NMaterial* parent = GetParent();
+        while(!ret.IsValid() && NULL != parent)
+        {
+            ret = parent->orderedQuality;
+            parent = parent->GetParent();
+        }
+
+        DVASSERT(ret.IsValid());
+        return ret;
+    }
 	
 	bool NMaterial::ReloadQuality(bool force)
 	{
-		DVASSERT(orderedQuality.IsValid());
-		DVASSERT(materialTemplate);
-		
-		if(!orderedQuality.IsValid())
+        bool ret = false;
+
+        DVASSERT(materialTemplate);
+
+        FastName effectiveQuality = GetEffectiveQuality();
+        FastName curGroupQuality = QualitySettingsSystem::Instance()->GetCurMaQuality(materialGroup);
+        if(curGroupQuality != currentQuality)
+        {
+            effectiveQuality = curGroupQuality;
+        }
+        
+		bool hasQuality = (materialTemplate->techniqueStateMap.count(effectiveQuality) > 0);
+		if(hasQuality && (effectiveQuality != currentQuality || force))
 		{
-			orderedQuality = NMaterial::DEFAULT_QUALITY_NAME;
-		}
-		
-		bool result = (materialTemplate->techniqueStateMap.count(orderedQuality) > 0);
-		if(result &&
-		   (orderedQuality != currentQuality ||
-		   force))
-		{
-			currentQuality = orderedQuality;
+            ret = true;
+            currentQuality = effectiveQuality;
 			
 			if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 			{
@@ -522,7 +545,7 @@ namespace DAVA
 			}
 		}
 		
-		return result;
+		return ret;
 	}
 
 	NMaterial* NMaterial::Clone()
@@ -855,6 +878,25 @@ namespace DAVA
 	{
 		materialName = name;
 	}
+
+    FastName NMaterial::GetMaterialGroup() const
+    {
+        return materialGroup;
+    }
+
+    void NMaterial::SetMaterialGroup(const FastName &group)
+    {
+        if(group.IsValid())
+        {
+            materialGroup = group;
+            const MaterialQuality* curQuality = QualitySettingsSystem::Instance()->GetMaQuality(group, QualitySettingsSystem::Instance()->GetCurMaQuality(group));
+
+            if(NULL != curQuality)
+            {
+                SetQuality(curQuality->qualityName);
+            }
+        }
+    }
 	
 	void NMaterial::SetMaterialTemplate(const NMaterialTemplate* matTemplate,
 										const FastName& defaultQuality)

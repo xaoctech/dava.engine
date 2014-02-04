@@ -40,7 +40,7 @@
 #define MIME_URI_LIST_NAME "text/uri-list"
 
 SelectEntityPathWidget::SelectEntityPathWidget(QWidget* _parent, DAVA::String _openDialogDefualtPath, DAVA::String _relativPath)
-:	SelectPathWidgetBase(_parent, _openDialogDefualtPath, _relativPath, "Open Scene File", "Scene File (*.sc2)")
+:	SelectPathWidgetBase(_parent, false,_openDialogDefualtPath, _relativPath, "Open Scene File", "Scene File (*.sc2)")
 {
 	allowedFormatsList.push_back(".sc2");
 }

@@ -191,6 +191,8 @@ public slots:
     void OnMaterialDiffuse(bool state);
     void OnMaterialSpecular(bool state);
 
+    void OnCustomQuality();
+
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);
