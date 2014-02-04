@@ -109,14 +109,14 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, con
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
 	
-	const DAVA::RenderStateData* default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
+	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
 	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default2dState, sizeof(noBlendStateData));
+	memcpy(&noBlendStateData, &default2dState, sizeof(noBlendStateData));
 	
 	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
 	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->CreateRenderState(noBlendStateData);
 
 	Image* originalMask = landscapeProxy->GetTilemaskImageCopy();
 
@@ -137,7 +137,7 @@ ModifyTilemaskCommand::~ModifyTilemaskCommand()
 	SafeRelease(redoImageMask);
 	SafeRelease(landscapeProxy);
 
-	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
+	RenderManager::Instance()->ReleaseRenderState(noBlendDrawState);
 }
 
 void ModifyTilemaskCommand::Undo()
@@ -213,7 +213,7 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
     
     RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
-    RenderManager::Instance()->SetTextureState(RenderManager::Instance()->GetDefaultTextureState());
+    RenderManager::Instance()->SetEmptyTextureState();
     RenderManager::Instance()->FlushState();
 
 	Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),

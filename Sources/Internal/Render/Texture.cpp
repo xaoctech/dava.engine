@@ -41,6 +41,7 @@
 #include "Render/ImageConvert.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/OGLHelpers.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
 #include <CoreGraphics/CoreGraphics.h>
@@ -596,6 +597,51 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
 	isPink = false;
 	state = STATE_DATA_LOADED;
+
+    if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
+    {
+        const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTxQuality());
+        if(NULL != curTxQuality)
+        {
+            // TODO:
+            // this is draft code and should be reimplemented
+            // to use texture group qualities
+            // -->
+
+            int baselevel = curTxQuality->albedoBaseMipMapLevel;
+
+            if(baselevel > 0)
+            {
+                int leaveCount = images->size() - baselevel;
+            
+                // we should leave at last one last image
+                if(leaveCount < 1)
+                {
+                    leaveCount = 1;
+                }
+
+                int leaveOffset = images->size() - leaveCount;
+
+                // release all images, except last one
+                for(int i = 0; i < leaveOffset; ++i)
+                {
+                    SafeRelease(images->operator[](i));
+                }
+
+                // move last items to the beginning of the vector vector
+                for(int i = 0; i < leaveCount; ++i)
+                {
+                    images->operator[](i) = images->operator[](leaveOffset + i);
+                    images->operator[](i)->mipmapLevel = i;
+                }
+
+                images->resize(leaveCount);
+            }
+
+            // <-
+        }
+    }
+
 	return true;
 }
 
@@ -708,9 +754,9 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 }
 
 
-Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHint)
+Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &group, TextureType typeHint)
 {
-	Texture * texture = PureCreate(pathName);
+	Texture * texture = PureCreate(pathName, group);
 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
@@ -722,7 +768,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHin
 	return texture;
 }
 
-Texture * Texture::PureCreate(const FilePath & pathName)
+Texture * Texture::PureCreate(const FilePath & pathName, const FastName &group)
 {
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
@@ -734,6 +780,8 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
+    descriptor->SetQualityGroup(group);
+
 	eGPUFamily gpuForLoading = GetGPUForLoading(defaultGPU, descriptor);
 	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)

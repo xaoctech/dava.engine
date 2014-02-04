@@ -43,6 +43,14 @@ protected:
     ~QualitySwitcher();
 
     QPushButton *defBtn;
+    
+    bool applyTx;
+    bool applyMa;
+
+protected slots:
+    void OnOk();
+    void OnTxQualitySelect(int index);
+    void OnMaQualitySelect(int index);
 };
 
 #endif // __QUALITY_SWITCHER_H__

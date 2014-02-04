@@ -41,7 +41,7 @@ SceneGridSystem::SceneGridSystem(DAVA::Scene * scene)
 	gridMax = 500.0f;
 	gridStep = SettingsManager::Instance()->GetValue("GridStep", SettingsManager::DEFAULT).AsFloat();
 	
-	renderState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::RenderStateData::STATE_COLORMASK_ALL |
+	renderState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::RenderStateData::STATE_COLORMASK_ALL |
 																	   DAVA::RenderStateData::STATE_DEPTH_WRITE |
 																	   DAVA::RenderStateData::STATE_DEPTH_TEST);
 }

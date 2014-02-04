@@ -127,8 +127,11 @@ void FastName::Init(const char * name)
 void FastName::AddRef(int i) const
 {
 	FastNameDB *db = FastNameDB::Instance();
-	DVASSERT(i >= 0 && i < (int)db->namesTable.size());
-	db->namesRefCounts[i]++;
+	DVASSERT(i >= -1 && i < (int)db->namesTable.size());
+    if(i >= 0)
+    {
+        db->namesRefCounts[i]++;
+    }
 }
 
 void FastName::RemRef(int i) const

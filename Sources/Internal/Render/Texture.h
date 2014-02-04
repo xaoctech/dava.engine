@@ -177,14 +177,14 @@ public:
 		If file cannot be opened, returns "pink placeholder" texture.
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * CreateFromFile(const FilePath & pathName, TextureType typeHint = Texture::TEXTURE_2D);
+	static Texture * CreateFromFile(const FilePath & pathName, const FastName &group = FastName(), TextureType typeHint = Texture::TEXTURE_2D);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
 		If file cannot be opened, returns 0
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * PureCreate(const FilePath & pathName);
+	static Texture * PureCreate(const FilePath & pathName, const FastName &group = FastName());
     
 	/**
         \brief Create FBO from given width, height and format
