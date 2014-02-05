@@ -3,7 +3,7 @@ RenderTechnique:
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Default/water"
-        UniqueDefines: ["WATER_PER_PIXEL", "CUBEMAP", "REFLECTION", "REFRACTION"]
+        UniqueDefines: ["PIXEL_LIT", "REFLECTION", "REFRACTION"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

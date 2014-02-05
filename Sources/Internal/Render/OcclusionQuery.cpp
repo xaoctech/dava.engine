@@ -111,6 +111,7 @@ void OcclusionQuery::GetQuery(uint32 * resultValue)
     
 OcclusionQueryManager::OcclusionQueryManager(uint32 _occlusionQueryCount)
 {
+    createdCounter = 0;
     nextFree = 0;
     occlusionQueryCount = _occlusionQueryCount;
     queries.resize(occlusionQueryCount);
@@ -119,6 +120,7 @@ OcclusionQueryManager::OcclusionQueryManager(uint32 _occlusionQueryCount)
         queries[k].query.Init();
         queries[k].next = (k == occlusionQueryCount - 1) ? (INVALID_INDEX) : (k + 1);
         queries[k].salt = 0;
+        //Logger::FrameworkDebug("i: %ld %ld %ld", queries[k].query.GetId(), queries[k].next, queries[k].salt);
     }
 }
     
@@ -147,7 +149,7 @@ OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
             nextFree = k;
         }
     }
-    
+    createdCounter++;
     OcclusionQueryManagerHandle handle;
     handle.index = nextFree;
     handle.salt = queries[nextFree].salt;
@@ -157,6 +159,7 @@ OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
     
 void OcclusionQueryManager::ReleaseQueryObject(OcclusionQueryManagerHandle handle)
 {
+    createdCounter--;
     DVASSERT(handle.salt == queries[handle.index].salt);
     queries[handle.index].salt++;
     queries[handle.index].next = nextFree;

@@ -609,7 +609,7 @@ void Landscape::SetTextureTiling(eTextureLevel level, const Vector2 & tiling)
 {
     if(TILEMASK_TILING_PROPS_NAMES[level] != INVALID_PROPERTY_NAME)
     {
-        tileMaskMaterial->SetPropertyValue(TILEMASK_TILING_PROPS_NAMES[level], Shader::UT_FLOAT_VEC4, 1, &tiling);
+        tileMaskMaterial->SetPropertyValue(TILEMASK_TILING_PROPS_NAMES[level], Shader::UT_FLOAT_VEC2, 1, &tiling);
     }
 }
 
