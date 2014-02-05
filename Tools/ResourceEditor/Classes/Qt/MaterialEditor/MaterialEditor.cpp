@@ -66,6 +66,8 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	ui->materialTree->setDragDropMode(QAbstractItemView::DragDrop);
 
 	ui->materialProperty->SetEditTracking(true);
+    //ui->materialProperty->setSortingEnabled(true);
+    //ui->materialProperty->header()->setSortIndicator(0, Qt::AscendingOrder);
 
 	// global scene manager signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
@@ -490,7 +492,16 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
         }
 
         // enable template selection only for real materials, not instances
-        ui->templateBox->setEnabled(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL);
+        // but don't allow to change template for runtime materials
+        if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL &&
+            material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+        {
+            ui->templateBox->setEnabled(true);
+        }
+        else
+        {
+            ui->templateBox->setEnabled(false);
+        }
     }
     else
     {

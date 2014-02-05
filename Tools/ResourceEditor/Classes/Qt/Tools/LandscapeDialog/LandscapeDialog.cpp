@@ -36,7 +36,6 @@
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
-#include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "Main/QtUtils.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "MaterialEditor/MaterialEditor.h"

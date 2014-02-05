@@ -190,8 +190,8 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 position = batch->GetSortingTransformPtr()->GetTranslationVector();
-                float32 distance = (position - cameraPosition).Length();
-                batch->layerSortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 28);
+                uint32 distance = ((uint32)((position - cameraPosition).Length())) + 31 - batch->GetSortingOffset();                
+                batch->layerSortingKey = (distance & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
             
             std::stable_sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);
@@ -206,8 +206,8 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
-                float32 distance = (position - cameraPosition).Length();
-                uint32 distanceBits = 0x0fffffff - ((uint32)distance) & 0x0fffffff;
+                uint32 distance = ((uint32)((position - cameraPosition).Length())) + 31 - batch->GetSortingOffset();                                
+                uint32 distanceBits = 0x0fffffff - distance & 0x0fffffff;
 
                 batch->layerSortingKey = distanceBits | (batch->GetSortingKey() << 28);
             }

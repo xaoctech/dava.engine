@@ -1,0 +1,46 @@
+textures:
+ default: "High"
+ qualities:
+  - 
+   quality: "High"
+   albedolevel: 0
+   normallevel: 0
+   minsize: 64
+  -
+   quality: "Medium"
+   albedolevel: 2
+   normallevel: 2
+   minsize: 64
+  -
+   quality: "Low"
+   albedolevel: 4
+   normallevel: 4
+   minsize: 64
+  
+
+materials:
+ -
+  group: "Water"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Static object"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Landscap"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Particle"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"
+
+ -
+  group: "Tank"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"
+

@@ -82,20 +82,20 @@ void EditorLODData::ClearForceData()
     forceLayer = DAVA::LodComponent::INVALID_LOD_LAYER;
 }
 
-DAVA::int32 EditorLODData::GetLayersCount() const
+DAVA::uint32 EditorLODData::GetLayersCount() const
 {
     return lodLayersCount;
 }
 
-DAVA::float32 EditorLODData::GetLayerDistance(DAVA::int32 layerNum) const
+DAVA::float32 EditorLODData::GetLayerDistance(DAVA::uint32 layerNum) const
 {
-    DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
+    DVASSERT(layerNum < lodLayersCount)
     return lodDistances[layerNum];
 }
 
-void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distance)
+void EditorLODData::SetLayerDistance(DAVA::uint32 layerNum, DAVA::float32 distance)
 {
-    DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
+    DVASSERT(layerNum < lodLayersCount)
     lodDistances[layerNum] = distance;
 
     DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
@@ -115,20 +115,20 @@ void EditorLODData::SetLayerDistance(DAVA::int32 layerNum, DAVA::float32 distanc
     }
 }
 
-void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::int32, DAVA::float32> & newDistances )
+void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::uint32, DAVA::float32> & newDistances )
 {
 	DAVA::uint32 componentsCount = (DAVA::uint32)lodData.size();
 	if(componentsCount && activeScene && newDistances.size() != 0)
 	{
 		activeScene->BeginBatch("LOD Distances Changed");
 
-		DAVA::Map<DAVA::int32, DAVA::float32>::const_iterator endIt = newDistances.end();
+		DAVA::Map<DAVA::uint32, DAVA::float32>::const_iterator endIt = newDistances.end();
 		for(auto it = newDistances.begin(); it != endIt; ++it)
 		{
-			DAVA::int32 layerNum = it->first;
+			DAVA::uint32 layerNum = it->first;
 			DAVA::float32 distance = it->second;
 
-			DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
+			DVASSERT(layerNum < lodLayersCount)
 			lodDistances[layerNum] = distance;
 
 			for(DAVA::uint32 i = 0; i < componentsCount; ++i)
@@ -146,9 +146,9 @@ void EditorLODData::UpdateDistances( const DAVA::Map<DAVA::int32, DAVA::float32>
 
 
 
-DAVA::uint32 EditorLODData::GetLayerTriangles(DAVA::int32 layerNum) const
+DAVA::uint32 EditorLODData::GetLayerTriangles(DAVA::uint32 layerNum) const
 {
-    DVASSERT(0 <= layerNum && layerNum < lodLayersCount)
+    DVASSERT(layerNum < lodLayersCount)
     return lodTriangles[layerNum];
 }
 

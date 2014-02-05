@@ -97,6 +97,8 @@ private:
 
 	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;
 	DAVA::Set<DAVA::NMaterial *> ownedParents;
+
+    bool IsEditable(DAVA::NMaterial *material) const;
 };
 
 #endif // __EDITOR_MATERIAL_SYSTEM_H__
