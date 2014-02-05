@@ -21,14 +21,14 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 ,	frameStrength(NULL)
 ,	frameTileTexturesPreview(NULL)
 {
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
 	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	memcpy(&noBlendStateData, &default3dState, sizeof(noBlendStateData));
 	
 	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
 	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->CreateRenderState(noBlendStateData);
 
 	InitUI();
 	ConnectToSignals();
@@ -36,7 +36,7 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 
 TilemaskEditorPanel::~TilemaskEditorPanel()
 {
-	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
+	RenderManager::Instance()->ReleaseRenderState(noBlendDrawState);
 }
 
 bool TilemaskEditorPanel::GetEditorEnabled()

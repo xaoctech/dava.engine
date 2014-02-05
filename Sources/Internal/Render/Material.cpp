@@ -177,7 +177,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SerializationContext *s
 		{
             FilePath lName = serializationContext->GetScenePath() + filename;
 
-			Texture* lTexture = Texture::CreateFromFile(lName);
+			Texture* lTexture = Texture::CreateFromFile(lName, FastName("albedo"));
 			SetLightmap(lTexture, lName);
 			lTexture->Release();
 		}
@@ -808,7 +808,7 @@ void Material::Load(KeyedArchive * keyedArchive, SerializationContext * serializ
             	Logger::FrameworkDebug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetAbsolutePathname().c_str());
             
             //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
-            textures[k] = Texture::CreateFromFile(names[k]);
+            textures[k] = Texture::CreateFromFile(names[k], FastName("albedo"));
         }
     }
     
@@ -1260,7 +1260,7 @@ void Material::SetTexture(eTextureLevel level, const FilePath & textureName)
     SafeRelease(textures[level]);
     names[level] = FilePath();
  
-    Texture *t = Texture::CreateFromFile(textureName);
+    Texture *t = Texture::CreateFromFile(textureName, FastName("albedo"));
     if(t)
     {
         textures[level] = t;
