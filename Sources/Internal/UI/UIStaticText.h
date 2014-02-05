@@ -63,6 +63,7 @@ public:
 	bool GetMultilineBySymbol() const;
 
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
+    int32 GetFittingOption() const;
 	
 	//for background sprite
 	virtual void SetAlign(int32 _align);

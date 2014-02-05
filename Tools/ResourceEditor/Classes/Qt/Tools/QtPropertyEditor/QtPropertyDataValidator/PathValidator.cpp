@@ -26,68 +26,21 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "PathValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-
-#ifndef __PROJECT_MANAGER_H__
-#define __PROJECT_MANAGER_H__
-
-#include <QObject>
-#include <QVector>
-#include "DAVAEngine.h"
-#include "Qt/Main/Request.h"
-
-class ProjectManager : public QObject, public DAVA::Singleton<ProjectManager>
+PathValidator::PathValidator(const QString& value):
+	RegExpValidator(""),
+	referencePath(value)
 {
-	Q_OBJECT
+	DAVA::String regExpr = DAVA::Format(".*%s.*|^$", referencePath.toStdString().c_str());//content of folder([value]) or blank string(for empty fields)
+	SetRegularExpression(regExpr.c_str());
+}
 
-public:
-    struct AvailableMaterialTemplate
-    {
-        QString name;
-        QString path;
-    };
-
-    struct AvailableMaterialQuality
-    {
-        QString name;
-        QString prefix;
-        QVector<QString> values;
-    };
-
-	ProjectManager();
-	~ProjectManager();
-
-	bool IsOpened();
-
-	QString CurProjectPath();
-	QString CurProjectDataSourcePath();
-    bool CanCloseProject();
-
-    const QVector<ProjectManager::AvailableMaterialTemplate>* GetAvailableMaterialTemplates() const;
-    const QVector<ProjectManager::AvailableMaterialQuality>* GetAvailableMaterialQualities() const;
-
-public slots:
-	QString ProjectOpenDialog();
-	void ProjectOpen(const QString &path);
-	void ProjectOpenLast();
-	void ProjectClose();
-
-signals:
-	void ProjectOpened(const QString &path);
-	void ProjectClosed();
-    void ProjectWillClose(Request* closeRequest);
-
-private:
-    void InnerProjectClose();
-	
-    QString curProjectPath;
-	QString curProjectPathDataSource;
-
-	void LoadProjectSettings();
-    void LoadMaterialsSettings();
-
-    QVector<AvailableMaterialTemplate> templates;
-    QVector<AvailableMaterialQuality> qualities;
-};
-
-#endif // __PROJECT_MANAGER_H__ 
+void PathValidator::ErrorNotifyInternal(const QVariant &v) const
+{
+	DAVA::String message = DAVA::Format("\"%s\" is wrong. It's allowed to select only from %s", v.toString().toStdString().c_str(),
+                                        referencePath.toStdString().c_str());
+	QMessageBox::warning(NULL, "Wrong file selected", message.c_str(), QMessageBox::Ok);
+}

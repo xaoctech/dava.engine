@@ -109,6 +109,11 @@ void UIStaticText::SetFittingOption(int32 fittingType)
 	PrepareSprite();
 }
 
+int32 UIStaticText::GetFittingOption() const
+{
+    return textBlock->GetFittingOption();
+}
+
 void UIStaticText::SetFont(Font * _font)
 {
 	textBlock->SetRectSize(size);
@@ -252,23 +257,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 	
     if(fittingNode)
     {
-        int32 fittingArray[] = {TextBlock::FITTING_DISABLED, TextBlock::FITTING_ENLARGE, 
-                                TextBlock::FITTING_REDUCE, TextBlock::FITTING_POINTS};
-		String fittingValues[] = {"Disabled", "Enlarge", "Reduce", "Points"};
-
-		const String & fittinOption = fittingNode->AsString();
-        
-        int32 fittingType = 0;
-        for(int32 i = 0 ; i < 4; ++i)
-        {
-            size_t find = fittinOption.find(fittingValues[i]);
-            if(find != fittinOption.npos)
-            {
-                fittingType |= fittingArray[i];
-            }
-        }
-
-        SetFittingOption(fittingType);
+        SetFittingOption(loader->GetFittingOptionFromYamlNode(fittingNode));
     }
     
 	if (textNode)
@@ -342,7 +331,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     //fitting - STRING OF INT???
 	if (baseControl->textBlock->GetFittingOption() != this->textBlock->GetFittingOption())
 	{
-    	node->Set("fitting", this->textBlock->GetFittingOption());
+    	node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
 	}
     
 	// Align
