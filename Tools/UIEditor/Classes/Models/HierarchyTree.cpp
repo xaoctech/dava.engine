@@ -45,6 +45,10 @@
 #include <QFile>
 #include <QDir>
 
+#if defined (__DAVAENGINE_MACOS__)
+#include <utime.h>
+#endif
+
 #define PLATFORMS_NODE "platforms"
 #define LOCALIZATION_NODE "localization"
 #define LOCALIZATION_PATH_NODE "LocalizationPath"
@@ -442,6 +446,8 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	YamlParser* parser = YamlParser::Create();
 	// Create project sub-directories
 	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
+	// Update Data directory last modified datetime - set currrent time
+	UpdateModificationDate(ResourcesManageHelper::GetDataPath(projectPath));
 
 	// Save project file
 	result &= parser->SaveToYamlFile(projectFile.toStdString(), root, true);
@@ -596,4 +602,13 @@ bool HierarchyTree::IsPlatformNamePresent(const QString& name) const
 	}
 
 	return false;
+}
+
+void HierarchyTree::UpdateModificationDate(const QString &path)
+{
+#if defined (__DAVAENGINE_MACOS__)
+	// Update last modification datetime of file or folder with current time
+	// 02/05/2014 - Request only for MACOS
+	utime(path.toStdString().c_str(), NULL);
+#endif
 }

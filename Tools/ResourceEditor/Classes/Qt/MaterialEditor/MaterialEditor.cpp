@@ -45,7 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
-#include "Tools/QtWaitDialog/QtWaitDialog.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/PathValidator.h"
+#include "Qt/Settings/SettingsManager.h"
+
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
@@ -271,6 +274,23 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 		ui->materialProperty->AppendProperty("Name", name);
 	}
 
+    // fill material group, only for material type
+    if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
+    {
+        const DAVA::InspMember *groupMember = info->Member("materialGroup");
+        if(NULL != groupMember)
+        {
+            QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
+            ui->materialProperty->AppendProperty("Group", group);
+
+            for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
+            {
+                DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
+                group->AddAllowedValue(DAVA::VariantType(groupName), groupName.c_str());
+            }
+        }
+    }
+
 	QtPropertyData *propertiesParent = new QtPropertyData();
 
 	// fill material flags
@@ -383,11 +403,18 @@ void MaterialEditor::FillMaterialTextures(DAVA::NMaterial *material)
 			DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
 			DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
+            DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
 			for(size_t i = 0; i < membersList.size(); ++i)
 			{
 				int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
+                dynamicMember->SetDefaultOpenDialogPath(projPath.c_str());
+                dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
+                QStringList path;
+                path.append(projPath.c_str());
+				dynamicMember->SetValidator(new PathValidator(path));
+                
 				// self property
 				if(memberFlags & DAVA::I_EDIT)
 				{
