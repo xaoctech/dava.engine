@@ -102,6 +102,8 @@ public:
 
     void SetRenderObjectVisible(bool visible);
 
+    void SetSortingOffset(uint32 offset);
+
 private:
 	void ClearCurrentGroups();
     void SetGroupsFinishing();
