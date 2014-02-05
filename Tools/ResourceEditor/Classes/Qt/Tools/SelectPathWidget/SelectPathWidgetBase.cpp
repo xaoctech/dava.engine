@@ -172,15 +172,6 @@ DAVA::String SelectPathWidgetBase::getText()
 	return text().toStdString();
 }
 
-void SelectPathWidgetBase::SetRelativePath(const DAVA::String& newRelativPath)
-{
-	relativePath = DAVA::FilePath(newRelativPath);
-	DAVA::String existingPath = text().toStdString();
-	if(!existingPath.empty())
-	{
-		setText(QString(ConvertToRelativPath(existingPath).c_str()));
-	}
-}
 
 DAVA::String SelectPathWidgetBase::ConvertToRelativPath(const DAVA::String& path)
 {
