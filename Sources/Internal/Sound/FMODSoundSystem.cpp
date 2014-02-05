@@ -97,35 +97,10 @@ SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName
     
     return event;
 }
-    
-void FMODSoundSystem::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
-{
-    DVASSERT(dirPath.IsDirectoryPathname());
-
-    DAVA::FileList * list = new DAVA::FileList(dirPath);
-    DAVA::int32 entriesCount = list->GetCount();
-    for(DAVA::int32 i = 0; i < entriesCount; i++)
-    {
-        if(list->IsDirectory(i))
-        {
-            if(!list->IsNavigationDirectory(i))
-                LoadAllFEVsRecursive(list->GetPathname(i));
-        }
-        else
-        {
-            const DAVA::FilePath & filePath = list->GetPathname(i);
-
-            if(filePath.GetExtension() == ".fev")
-                LoadFEV(filePath);
-        }
-    }
-
-    SafeRelease(list);
-}
 
 void FMODSoundSystem::LoadFEV(const FilePath & filePath)
 {
-	FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, 0));
+	FMOD_VERIFY(fmodEventSystem->load(filePath.GetFrameworkPath().c_str(), 0, 0));
 }
 
 void FMODSoundSystem::UnloadFMODProjects()

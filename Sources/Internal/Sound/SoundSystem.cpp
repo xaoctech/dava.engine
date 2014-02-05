@@ -34,7 +34,6 @@
 namespace DAVA
 {
 
-FilePath SoundSystem::soundsDir(DEFAULT_SOUNDS_DIRECTORY);
 SoundSystem::SoundSystemType SoundSystem::type = (SoundSystemType)0;
 SoundSystemInstance * SoundSystem::instance = 0;
 
@@ -70,16 +69,6 @@ void SoundSystem::Release()
         delete instance;
         instance = 0;
     }
-}
-
-const FilePath & SoundSystem::GetSoundsDirectory()
-{
-    return soundsDir;
-}
-
-void SoundSystem::SetSoundsDirectory(const FilePath & _soundsDir)
-{
-    soundsDir = _soundsDir;
 }
 
 };
