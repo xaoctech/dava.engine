@@ -56,8 +56,6 @@
 #include "Classes/Qt/SpeedTreeImport/SpeedTreeImportDialog.h"
 #endif
 
-#include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
-
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../Tools/LandscapeDialog/LandscapeDialog.h"
 

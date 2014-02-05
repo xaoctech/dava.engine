@@ -83,7 +83,7 @@ void ParticleRenderGroup::ClearArrays()
 	times.clear();
 }
 
-ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect)
+ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect), sortingOffset(15)
 {
 	AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
@@ -107,6 +107,13 @@ void ParticleRenderObject::SetEffectMatrix(Matrix4 *matrix)
 Matrix4 * ParticleRenderObject::GetEffectMatrix()
 {
     return effectMatrix;
+}
+
+void ParticleRenderObject::SetSortingOffset(uint32 offset)
+{
+    sortingOffset = offset;
+    for (int32 i=0, sz = renderGroupCache.size(); i<sz; ++i)
+        renderGroupCache[i]->renderBatch->SetSortingOffset(offset);
 }
 
 void ParticleRenderObject::PrepareRenderData(Camera * camera)
@@ -155,6 +162,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			{
 				currRenderGroup = new ParticleRenderGroup();
 				currRenderGroup->renderBatch = new RenderBatch();
+                currRenderGroup->renderBatch->SetSortingOffset(sortingOffset);
 				currRenderGroup->renderBatch->SetRenderObject(this);
 				currRenderGroup->renderBatch->SetRenderDataObject(new RenderDataObject());
 				renderGroupCache.push_back(currRenderGroup);

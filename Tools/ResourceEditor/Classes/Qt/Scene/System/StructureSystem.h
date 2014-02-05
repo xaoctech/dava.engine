@@ -90,8 +90,6 @@ protected:
     void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
 
 	void CheckAndMarkSolid(DAVA::Entity *entity);
-	void CheckAndMarkLocked(DAVA::Entity *entity);
-	void MarkLocked(DAVA::Entity *entity);
 
     void CreateIlluminationParams(DAVA::Entity *entity);
 
