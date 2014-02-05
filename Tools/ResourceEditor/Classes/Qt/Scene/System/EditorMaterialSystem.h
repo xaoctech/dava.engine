@@ -30,6 +30,7 @@
 #define __EDITOR_MATERIAL_SYSTEM_H__
 
 #include "DAVAEngine.h"
+#include "Base/Introspection.h"
 
 class Command2;
 class EditorMaterialSystem : public DAVA::SceneSystem
@@ -62,7 +63,11 @@ public:
     bool GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const;
 
     void SetViewMode(int fullViewMode);
-    int GetViewMode() const;
+    int GetViewMode();
+
+    INTROSPECTION(EditorMaterialSystem,
+        PROPERTY("texturesViewMode", "Textures View Mode", GetViewMode, SetViewMode, DAVA::I_VIEW | DAVA::I_EDIT)
+        )
 
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);
