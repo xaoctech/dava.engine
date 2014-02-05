@@ -31,6 +31,7 @@
 #include "SettingsManager.h"
 #include "Deprecated/ControlsFactory.h"
 #include "Render/RenderManager.h"
+#include "Scene/System/EditorMaterialSystem.h"
 #include <QHeaderView>
 
 #define CONFIG_FILE						"~doc:/ResourceEditorOptions.archive"
@@ -51,7 +52,7 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
 	SettingRow("CameraSpeedValue_2", DAVA::VariantType(250.0f)),
 	SettingRow("CameraSpeedValue_3", DAVA::VariantType(400.0f)),
 	SettingRow("DefaultCameraFOV", DAVA::VariantType(70.0f)),
-	
+    SettingRow("MaterialsViewMode", DAVA::VariantType(EditorMaterialSystem::MVM_ALL)),
 };
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =

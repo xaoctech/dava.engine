@@ -52,7 +52,7 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	DVASSERT(NULL != collSystem);
 	DVASSERT(NULL != selSystem);
 	
-	debugDrawState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::RenderStateData::STATE_BLEND |
+	debugDrawState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::RenderStateData::STATE_BLEND |
 																		  DAVA::RenderStateData::STATE_COLORMASK_ALL |
 																		  DAVA::RenderStateData::STATE_DEPTH_TEST);
 }

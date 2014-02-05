@@ -48,6 +48,7 @@ protected:
     bool applyMa;
 
 protected slots:
+    void OnOk();
     void OnTxQualitySelect(int index);
     void OnMaQualitySelect(int index);
 };

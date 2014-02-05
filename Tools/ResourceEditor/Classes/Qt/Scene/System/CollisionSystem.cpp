@@ -72,7 +72,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	landCollWorld = new btCollisionWorld(landCollDisp, landBroadphase, landCollConf);
 	landCollWorld->setDebugDrawer(landDebugDrawer);
 
-	renderState = DAVA::RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
+	renderState = DAVA::RenderManager::Instance()->Subclass3DRenderState(RenderStateData::STATE_COLORMASK_ALL |
 												   RenderStateData::STATE_DEPTH_WRITE |
 												   RenderStateData::STATE_DEPTH_TEST);
 }

@@ -45,9 +45,7 @@
 #include "Render/Shader.h"
 #include "Render/UniqueStateSet.h"
 #include "Render/RenderStateData.h"
-#include "Render/RenderStateDataUniqueHandler.h"
 #include "Render/TextureStateData.h"
-#include "Render/TextureStateDataUniqueHandler.h"
 
 #include <stack>
 
@@ -549,22 +547,22 @@ public:
     
     void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
 	
-	inline void RetainRenderStateData(UniqueHandle handle)
+	inline void RetainRenderState(UniqueHandle handle)
 	{
 		uniqueRenderStates.RetainUnique(handle);
 	}
 	
-	inline UniqueHandle AddRenderStateData(const RenderStateData* data)
+	inline UniqueHandle CreateRenderState(const RenderStateData& data)
 	{
 		return uniqueRenderStates.MakeUnique(data);
 	}
 
-	inline const RenderStateData* GetRenderStateData(UniqueHandle handle)
+	inline const RenderStateData& GetRenderStateData(UniqueHandle handle)
 	{
 		return uniqueRenderStates.GetUnique(handle);
 	}
 	
-	inline void ReleaseRenderStateData(UniqueHandle handle)
+	inline void ReleaseRenderState(UniqueHandle handle)
 	{
 		uniqueRenderStates.ReleaseUnique(handle);
 	}
@@ -594,43 +592,43 @@ public:
 		return defaultHardwareState;
 	}
 	
-	inline UniqueHandle DeriveRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)
+	inline UniqueHandle SubclassRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)
 	{
-		const RenderStateData* parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
+		const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
 		RenderStateData derivedState;
-		memcpy(&derivedState, parentState, sizeof(derivedState));
+		memcpy(&derivedState, &parentState, sizeof(derivedState));
 		
 		derivedState.state = renderStateFlags;
-		return AddRenderStateData(&derivedState);
+		return CreateRenderState(derivedState);
 	}
 	
-	inline UniqueHandle DeriveRenderState(UniqueHandle parentStateHandle,
+	inline UniqueHandle SubclassRenderState(UniqueHandle parentStateHandle,
 										  eBlendMode srcBlend,
 										  eBlendMode dstBlend)
 	{
-		const RenderStateData* parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
+		const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
 		RenderStateData derivedState;
-		memcpy(&derivedState, parentState, sizeof(derivedState));
+		memcpy(&derivedState, &parentState, sizeof(derivedState));
 		
 		derivedState.sourceFactor = srcBlend;
 		derivedState.destFactor = dstBlend;
-		return AddRenderStateData(&derivedState);
+		return CreateRenderState(derivedState);
 	}
 
-	inline UniqueHandle Derive3DRenderState(eBlendMode srcBlend,
+	inline UniqueHandle Subclass3DRenderState(eBlendMode srcBlend,
 										  eBlendMode dstBlend)
 	{
-		return DeriveRenderState(default3DRenderStateHandle, srcBlend, dstBlend);
+		return SubclassRenderState(default3DRenderStateHandle, srcBlend, dstBlend);
 	}
 	
-	inline UniqueHandle Derive3DRenderState(uint32 renderStateFlags)
+	inline UniqueHandle Subclass3DRenderState(uint32 renderStateFlags)
 	{
-		return DeriveRenderState(default3DRenderStateHandle, renderStateFlags);
+		return SubclassRenderState(default3DRenderStateHandle, renderStateFlags);
 	}
 	
-	inline UniqueHandle Derive2DRenderState(uint32 renderStateFlags)
+	inline UniqueHandle Subclass2DRenderState(uint32 renderStateFlags)
 	{
-		return DeriveRenderState(default2DRenderStateHandle, renderStateFlags);
+		return SubclassRenderState(default2DRenderStateHandle, renderStateFlags);
 	}
 
 	void SetDefault2DState();
@@ -643,19 +641,23 @@ public:
 		currentState.stateHandle = requestedState;
 	}
 	
-	inline UniqueHandle AddTextureStateData(const TextureStateData* data)
+	inline UniqueHandle CreateTextureState(const TextureStateData& data)
 	{
 		return uniqueTextureStates.MakeUnique(data);
 	}
 	
-	inline const TextureStateData* GetTextureStateData(UniqueHandle handle)
+	inline const TextureStateData& GetTextureState(UniqueHandle handle)
 	{
 		return uniqueTextureStates.GetUnique(handle);
 	}
-	
-	inline void ReleaseTextureStateData(UniqueHandle handle)
+
+    inline void RetainTextureState(UniqueHandle handle)
 	{
-		//Logger::FrameworkDebug("[ReleaseTextureStateData] handle %d", handle);
+		uniqueTextureStates.RetainUnique(handle);
+	}
+	
+	inline void ReleaseTextureState(UniqueHandle handle)
+	{
 		uniqueTextureStates.ReleaseUnique(handle);
 	}
 
@@ -664,12 +666,12 @@ public:
 		currentState.textureState = requestedState;
 	}
 	
-	inline void SetDefaultTextureState()
+	inline void SetEmptyTextureState()
 	{
 		SetTextureState(defaultTextureState);
 	}
 	
-	inline UniqueHandle GetDefaultTextureState()
+	inline UniqueHandle GetEmptyTextureState()
 	{
 		return defaultTextureState;
 	}
@@ -761,14 +763,14 @@ public:
 //	Texture *currentTexture[MAX_TEXTURE_LEVELS];                        // Texture that was set
 //  Shader * shader;
 	
-	UniqueStateSet<RenderStateData, RenderStateDataUniqueHandler> uniqueRenderStates;
+	UniqueStateSet<RenderStateData> uniqueRenderStates;
 	UniqueHandle default2DRenderStateHandle;
 	UniqueHandle default2DNoBlendRenderStateHandle;
 	UniqueHandle default2DNoTextureStateHandle;
 	UniqueHandle default3DRenderStateHandle;
 	UniqueHandle defaultHardwareState;
 	
-	UniqueStateSet<TextureStateData, TextureStateDataUniqueHandler> uniqueTextureStates;
+	UniqueStateSet<TextureStateData> uniqueTextureStates;
 	UniqueHandle defaultTextureState;
 	
 	void InitDefaultRenderStates();

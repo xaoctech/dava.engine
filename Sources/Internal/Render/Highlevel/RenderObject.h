@@ -167,6 +167,7 @@ public:
 	void SetLodIndex(int32 lodIndex);
 	void SetSwitchIndex(int32 switchIndex);
     int32 GetMaxLodIndex() const;
+    int32 GetMaxSwitchIndex() const;
 
 	uint8 startClippingPlane;
     

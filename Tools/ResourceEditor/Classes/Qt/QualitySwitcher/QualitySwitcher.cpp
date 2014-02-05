@@ -128,6 +128,8 @@ QualitySwitcher::QualitySwitcher(QWidget *parent /* = NULL */)
     defBtn->setMaximumWidth(100);
     mainLayout->addWidget(defBtn, 0, Qt::AlignRight);
 
+    QObject::connect(defBtn, SIGNAL(clicked()), this, SLOT(OnOk()));
+
     mainLayout->setSpacing(spacing);
     mainLayout->setMargin(5);
 
@@ -171,6 +173,11 @@ void QualitySwitcher::Show()
 {
     QualitySwitcher sw(QtMainWindow::Instance());
     sw.exec();
+}
+
+void QualitySwitcher::OnOk()
+{
+    close();
 }
 
 void QualitySwitcher::OnTxQualitySelect(int index)

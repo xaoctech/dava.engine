@@ -581,14 +581,14 @@ void QuadTree::DebugDraw(const Matrix4& cameraMatrix)
 	if (!worldInitialized) return;
 	if (debugDrawStateHandle == InvalidUniqueHandle) //create debug draw state
 	{
-		RenderStateData debugStateData = {0};
+		RenderStateData debugStateData;
 		debugStateData.state =	RenderStateData::STATE_BLEND | RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_TEST;
 		debugStateData.cullMode = FACE_BACK;
 		debugStateData.depthFunc = CMP_LESS;
 		debugStateData.sourceFactor = BLEND_SRC_ALPHA;
 		debugStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 		debugStateData.fillMode = FILLMODE_SOLID;		
-		debugDrawStateHandle = RenderManager::Instance()->AddRenderStateData(&debugStateData);
+		debugDrawStateHandle = RenderManager::Instance()->CreateRenderState(debugStateData);
 	}
     
 	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
