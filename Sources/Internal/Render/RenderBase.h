@@ -466,8 +466,8 @@ enum eShaderSemantic
     
     PARAM_COLOR,
     PARAM_GLOBAL_TIME,
-    PARAM_WORLD_VIEW_TRANSLATE,
-    PARAM_WORLD_SCALE,
+    PARAM_WORLD_VIEW_TRANSLATE, // NEED TO RENAME TO objectPositionInCameraSpace
+    PARAM_WORLD_SCALE,          
     
     PARAM_CAMERA_POS,
     PARAM_CAMERA_DIR,
