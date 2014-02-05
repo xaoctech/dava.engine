@@ -153,7 +153,7 @@ void UIParticles::Draw(const UIGeometricData & geometricData)
     RenderManager::Instance()->PushMappingMatrix();*/
     
     /*draw particles here*/
-    RenderManager::Instance()->SetDefault3DState();    
+    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     camera->SetupDynamicParameters();
     RenderManager::Instance()->FlushState();    
     RenderManager::Instance()->ClearDepthBuffer();
@@ -166,7 +166,7 @@ void UIParticles::Draw(const UIGeometricData & geometricData)
                        
     /*RenderManager::Instance()->PopDrawMatrix();
     RenderManager::Instance()->PopMappingMatrix();*/
-	RenderManager::Instance()->SetDefault2DState();                
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->Setup2DMatrices();
 	        
 }

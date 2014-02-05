@@ -135,7 +135,6 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	renderContextId = 0;
     
 	InitDefaultRenderStates();
-	InitDefaultTextureStates();
     
     for (uint32 paramIndex = 0; paramIndex < DYNAMIC_PARAMETERS_COUNT; ++paramIndex)
     {
@@ -164,69 +163,11 @@ RenderManager::~RenderManager()
 	
 void RenderManager::InitDefaultRenderStates()
 {
-	//VI: do not set up stencil state for default states. It's disabled in them. 
-	
-	RenderStateData defaultStateData;
-	
-	defaultStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
-	defaultStateData.cullMode = FACE_BACK;
-	defaultStateData.depthFunc = CMP_NEVER;
-	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
-	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
-	defaultStateData.fillMode = FILLMODE_SOLID;
-	
-	default2DRenderStateHandle = CreateRenderState(defaultStateData);
-	
-	defaultStateData.state = RenderState::DEFAULT_2D_STATE;
-	defaultStateData.cullMode = FACE_BACK;
-	defaultStateData.depthFunc = CMP_NEVER;
-	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
-	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
-	defaultStateData.fillMode = FILLMODE_SOLID;
-	
-	default2DNoBlendRenderStateHandle = CreateRenderState(defaultStateData);
-	
-	defaultStateData.state =	RenderStateData::STATE_BLEND |
-								RenderStateData::STATE_COLORMASK_ALL;
-	defaultStateData.cullMode = FACE_BACK;
-	defaultStateData.depthFunc = CMP_NEVER;
-	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
-	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
-	defaultStateData.fillMode = FILLMODE_SOLID;
-	
-	default2DNoTextureStateHandle = CreateRenderState(defaultStateData);
-
-	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
-	defaultStateData.cullMode = FACE_BACK;
-	defaultStateData.depthFunc = CMP_LESS;
-	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
-	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
-	defaultStateData.fillMode = FILLMODE_SOLID;
-
-	default3DRenderStateHandle = CreateRenderState(defaultStateData);
-	
-	defaultStateData.state = RenderStateData::STATE_COLORMASK_ALL;
-	defaultStateData.cullMode = FACE_COUNT;
-	defaultStateData.depthFunc = CMP_TEST_MODE_COUNT;
-	defaultStateData.sourceFactor = BLEND_MODE_COUNT;
-	defaultStateData.destFactor = BLEND_MODE_COUNT;
-	defaultStateData.fillMode = FILLMODE_COUNT;
-	defaultStateData.stencilRef = 0;
-	defaultStateData.stencilMask = 0;
-	defaultStateData.stencilFunc[0] = defaultStateData.stencilFunc[1] = CMP_TEST_MODE_COUNT;
-	defaultStateData.stencilPass[0] = defaultStateData.stencilPass[1] = STENCILOP_COUNT;
-	defaultStateData.stencilFail[0] = defaultStateData.stencilFail[1] = STENCILOP_COUNT;
-	defaultStateData.stencilZFail[0] = defaultStateData.stencilZFail[1] = STENCILOP_COUNT;
-	defaultHardwareState = CreateRenderState(defaultStateData);
-	hardwareState.stateHandle = defaultHardwareState;
+    RenderState::InitDefaultStates();
+    
+	hardwareState.stateHandle = RenderState::RENDERSTATE_DEFAULT;
 }
-	
-void RenderManager::InitDefaultTextureStates()
-{
-	TextureStateData textureData;
-	defaultTextureState = CreateTextureState(textureData);
-}
-	
+
 void RenderManager::SetDebug(bool isDebugEnabled)
 {
 	debugEnabled = isDebugEnabled;
@@ -791,26 +732,6 @@ void RenderManager::ProcessStats()
     }
 }
     
-void RenderManager::SetDefault2DState()
-{
-	currentState.stateHandle = GetDefault2DStateHandle();
-}
-	
-void RenderManager::SetDefault2DNoBlendState()
-{
-	currentState.stateHandle = GetDefault2DNoBlendStateHandle();
-}
-	
-void RenderManager::SetDefault2DNoTextureState()
-{
-	currentState.stateHandle = GetDefault2DNoTextureStateHandle();
-}
-	
-void RenderManager::SetDefault3DState()
-{
-	currentState.stateHandle = GetDefault3DStateHandle();
-}
-
     /*void RenderManager::EnableAlphaTest(bool isEnabled)
 {
     alphaTestEnabled = isEnabled;
