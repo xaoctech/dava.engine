@@ -316,7 +316,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			
 			lastDrawPos = drawState.position;
 
-			RenderManager::Instance()->SetDefault2DState();
+			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			spr->Draw(&drawState);
 		}
 		break;
@@ -356,7 +356,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 //			spr->SetPivotPoint(geometricData.pivotPoint.x / (geometricData.size.x / spr->GetSize().dx), geometricData.pivotPoint.y / (geometricData.size.y / spr->GetSize().dy));
 //			spr->SetAngle(geometricData.angle);
 			
-			RenderManager::Instance()->SetDefault2DState();
+			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			spr->Draw(&drawState);
 		}
 		break;
@@ -456,15 +456,15 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 
 			lastDrawPos = drawState.position;
 			
-			RenderManager::Instance()->SetDefault2DState();
+			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			spr->Draw(&drawState);
 		}
 		break;
 		
 		case DRAW_FILL:
 		{
-		    RenderManager::Instance()->SetDefault2DNoTextureState();
-			RenderManager::Instance()->SetEmptyTextureState();
+		    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+			RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
 			DrawFilled( geometricData );
 		}	
 		break;
@@ -472,12 +472,12 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 		case DRAW_STRETCH_BOTH:
 		case DRAW_STRETCH_HORIZONTAL:
 		case DRAW_STRETCH_VERTICAL:
-			RenderManager::Instance()->SetDefault2DState();
+			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			DrawStretched(drawRect);
 		break;
 		
         case DRAW_TILED:
-            RenderManager::Instance()->SetDefault2DState();
+            RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			DrawTiled(geometricData);
 		break;
 	}

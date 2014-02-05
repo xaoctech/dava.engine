@@ -233,6 +233,9 @@ namespace DAVA
 			rotationZ = archive->GetFloat("skbxro.rotation");
 			nonClippingDistance = archive->GetFloat("skbxro.noclipdist");
 		}
+        
+        //VI: need to rebuild skybox
+        BuildSkybox();
 				
 		bbox = renderBatchArray[0].renderBatch->GetBoundingBox();
 	}
