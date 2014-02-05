@@ -91,6 +91,30 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 		Vector<LodComponent::LodData*> lodData;
 		lod->GetLodData(lodData);
 		uint32 size = lodData.size();
+        
+        //search for same entity in different lods
+        Set<Entity*> uniqueLodEntities;
+        for(uint32 i = 0; i < size; ++i)
+        {
+            LodComponent::LodData * data = lodData[i];
+            uint32 entitiesCount = data->nodes.size();
+            for(uint32 j = 0; j < entitiesCount; ++j)
+            {
+                Entity * sourceEntity = data->nodes[j];
+                if(uniqueLodEntities.end() != uniqueLodEntities.find(sourceEntity))
+                {
+                    Entity * cloned = sourceEntity->Clone();
+                    sourceEntity->GetParent()->AddNode(cloned);
+                    data->nodes.pop_back();
+                    data->nodes.push_back(cloned);
+                }
+                else
+                {
+                    uniqueLodEntities.insert(sourceEntity);
+                }
+            }
+        }
+
 		for(uint32 i = 0; i < size; ++i)
 		{
 			LodComponent::LodData * data = lodData[i];
@@ -145,7 +169,6 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
                 sourceEntity->RemoveComponent(Component::RENDER_COMPONENT);
 				if(sourceEntity->GetChildrenCount() == 0)
 				{
-#pragma message("LodToLod2Converter::MergeLod maybe merge other components")
 					entitiesToRemove.insert(sourceEntity);
 				}
 

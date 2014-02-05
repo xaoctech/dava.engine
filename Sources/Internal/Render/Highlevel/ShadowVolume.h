@@ -84,7 +84,7 @@ private:
     
 public:
     INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
-                         );
+                         0);
 };
 
 }
