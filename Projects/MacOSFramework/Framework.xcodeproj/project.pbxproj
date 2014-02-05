@@ -846,9 +846,6 @@
 		A670F2F11847A99E0030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2EF1847A99E0030E075 /* TextureStateData.h */; };
 		A670F2F21847A99E0030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2EF1847A99E0030E075 /* TextureStateData.h */; };
 		A670F2F31847A99E0030E075 /* TextureStateData.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2EF1847A99E0030E075 /* TextureStateData.h */; };
-		A670F2F41847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */; };
-		A670F2F51847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */; };
-		A670F2F61847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */; };
 		A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
 		A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */; };
@@ -876,9 +873,6 @@
 		A69B7A4B1834CD640093AF7F /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A471834CD640093AF7F /* UniqueStateSet.h */; };
 		A69B7A4C1834CD640093AF7F /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A471834CD640093AF7F /* UniqueStateSet.h */; };
 		A69B7A4D1834CD640093AF7F /* UniqueStateSet.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A471834CD640093AF7F /* UniqueStateSet.h */; };
-		A69B7A4F1834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */; };
-		A69B7A501834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */; };
-		A69B7A511834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */; };
 		A6B0518017E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518117E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
 		A6B0518217E886D8000EED68 /* SerializationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A6B0517F17E886D8000EED68 /* SerializationContext.h */; };
@@ -2161,6 +2155,10 @@
 		EAADA0011892A458001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
 		EAADA01E189FCB09001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
 		EAADA01F189FCB30001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
+		EAADA02818A26524001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
+		EAADA02918A26525001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
+		EAADA02A18A2652A001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
+		EAADA02B18A2652A001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
 		FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
@@ -2333,7 +2331,6 @@
 		A650F4B71864A10100D3278D /* NMaterialTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NMaterialTemplate.h; sourceTree = "<group>"; };
 		A66533E717F98EC100B8906A /* Serializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serializable.h; sourceTree = "<group>"; };
 		A670F2EF1847A99E0030E075 /* TextureStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureStateData.h; sourceTree = "<group>"; };
-		A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A679101D17B3C71B000AA2F2 /* SkyboxRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyboxRenderObject.cpp; sourceTree = "<group>"; };
 		A679101E17B3C71B000AA2F2 /* SkyboxRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxRenderObject.h; sourceTree = "<group>"; };
 		A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerializationContext.cpp; sourceTree = "<group>"; };
@@ -2343,7 +2340,6 @@
 		A6931ACC1868569D00006294 /* RenderTechnique.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderTechnique.h; sourceTree = "<group>"; };
 		A69B7A461834CD640093AF7F /* RenderStateData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateData.h; sourceTree = "<group>"; };
 		A69B7A471834CD640093AF7F /* UniqueStateSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UniqueStateSet.h; sourceTree = "<group>"; };
-		A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStateDataUniqueHandler.h; sourceTree = "<group>"; };
 		A6B0517F17E886D8000EED68 /* SerializationContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerializationContext.h; sourceTree = "<group>"; };
 		A6D82797187716F30006A5DD /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
 		A6DBFA6D1887D804006BE11C /* NMaterialNames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMaterialNames.cpp; sourceTree = "<group>"; };
@@ -3618,7 +3614,6 @@
 			isa = PBXGroup;
 			children = (
 				A670F2EF1847A99E0030E075 /* TextureStateData.h */,
-				A670F2F01847A99E0030E075 /* TextureStateDataUniqueHandler.h */,
 				A69B7A461834CD640093AF7F /* RenderStateData.h */,
 				A69B7A471834CD640093AF7F /* UniqueStateSet.h */,
 				50A5186E17B256250022E8FA /* ShaderCache.cpp */,
@@ -3687,7 +3682,6 @@
 				E8989CAA16BD24E500732C04 /* UberShader.h */,
 				E8989C6C16BD24E400732C04 /* IndexBuffer.h */,
 				E8989CAB16BD24E500732C04 /* VertexBuffer.h */,
-				A69B7A4E1834D4A40093AF7F /* RenderStateDataUniqueHandler.h */,
 			);
 			path = Render;
 			sourceTree = "<group>";
@@ -4425,6 +4419,7 @@
 				CC84B02118211A9000934482 /* JobManager.h in Headers */,
 				176DE9D6174B5561007A983B /* SceneFile.h in Headers */,
 				176DE9D7174B5561007A983B /* SceneFileV2.h in Headers */,
+				EAADA02B18A2652A001E1AA2 /* UIParticles.h in Headers */,
 				176DE9D8174B5561007A983B /* SceneManager.h in Headers */,
 				176DE9D9174B5561007A983B /* SceneNodeAnimation.h in Headers */,
 				176DE9DA174B5561007A983B /* SceneNodeAnimationKey.h in Headers */,
@@ -4555,9 +4550,7 @@
 				EA84E17117FAC0B400304C3C /* SpatialTree.h in Headers */,
 				A69B7A4A1834CD640093AF7F /* RenderStateData.h in Headers */,
 				A69B7A4D1834CD640093AF7F /* UniqueStateSet.h in Headers */,
-				A69B7A511834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2F31847A99E0030E075 /* TextureStateData.h in Headers */,
-				A670F2F61847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4940,10 +4933,8 @@
 				EA84E16F17FAC0B400304C3C /* SpatialTree.h in Headers */,
 				A69B7A481834CD640093AF7F /* RenderStateData.h in Headers */,
 				A69B7A4B1834CD640093AF7F /* UniqueStateSet.h in Headers */,
-				A69B7A4F1834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2F11847A99E0030E075 /* TextureStateData.h in Headers */,
 				E8F43E27186C3D02006796CB /* MaterialSystem.h in Headers */,
-				A670F2F41847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 				9A0114637D598239F4C36EA3 /* GamepadDevice.h in Headers */,
 				9A0114DFC94738EDBF7B7A79 /* GamepadManager.h in Headers */,
 			);
@@ -4986,6 +4977,7 @@
 				E898A07416BD265400732C04 /* IntrospectionProperty.h in Headers */,
 				E898A07516BD265400732C04 /* Mallocator.h in Headers */,
 				E898A07616BD265400732C04 /* Message.h in Headers */,
+				EAADA02A18A2652A001E1AA2 /* UIParticles.h in Headers */,
 				E898A07716BD265400732C04 /* Meta.h in Headers */,
 				E898A07816BD265400732C04 /* ObjectCreator.h in Headers */,
 				E898A07916BD265400732C04 /* ObjectFactory.h in Headers */,
@@ -5312,9 +5304,7 @@
 				EA84E17017FAC0B400304C3C /* SpatialTree.h in Headers */,
 				A69B7A491834CD640093AF7F /* RenderStateData.h in Headers */,
 				A69B7A4C1834CD640093AF7F /* UniqueStateSet.h in Headers */,
-				A69B7A501834D4A40093AF7F /* RenderStateDataUniqueHandler.h in Headers */,
 				A670F2F21847A99E0030E075 /* TextureStateData.h in Headers */,
-				A670F2F51847A99E0030E075 /* TextureStateDataUniqueHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5705,6 +5695,7 @@
 				176DEB41174B5561007A983B /* LandscapeCursor.cpp in Sources */,
 				176DEB42174B5561007A983B /* Light.cpp in Sources */,
 				176DEB43174B5561007A983B /* Mesh.cpp in Sources */,
+				EAADA02918A26525001E1AA2 /* UIParticles.cpp in Sources */,
 				176DEB45174B5561007A983B /* RenderBatch.cpp in Sources */,
 				176DEB46174B5561007A983B /* RenderLayer.cpp in Sources */,
 				176DEB47174B5561007A983B /* RenderObject.cpp in Sources */,
@@ -6122,6 +6113,7 @@
 				E898A1A416BD265400732C04 /* AutotestingSystem.cpp in Sources */,
 				E898A1A516BD265400732C04 /* MongodbUpdateObject.cpp in Sources */,
 				E898A1A716BD265400732C04 /* BaseMath.cpp in Sources */,
+				EAADA02818A26524001E1AA2 /* UIParticles.cpp in Sources */,
 				A6931ACE1868569D00006294 /* RenderTechnique.cpp in Sources */,
 				E898A1A816BD265400732C04 /* BaseObject.cpp in Sources */,
 				E898A1A916BD265400732C04 /* BaseObjectChecker.cpp in Sources */,

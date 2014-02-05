@@ -51,7 +51,7 @@ EditorParticlesSystem::EditorParticlesSystem(DAVA::Scene * scene)
 {
 	DAVA::RenderManager* rm = DAVA::RenderManager::Instance();
 	
-	renderState = rm->Derive3DRenderState(DAVA::RenderStateData::STATE_BLEND |
+	renderState = rm->Subclass3DRenderState(DAVA::RenderStateData::STATE_BLEND |
 										  DAVA::RenderStateData::STATE_COLORMASK_ALL |
 										  DAVA::RenderStateData::STATE_DEPTH_TEST);
 
