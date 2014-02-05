@@ -81,6 +81,10 @@ void UITextFieldPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::KEYBOARD_TYPE_PROPERTY_NAME, ui->keyboardTypeComboBox);
 	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::RETURN_KEY_TYPE_PROPERTY_NAME, ui->returnKeyTypeComboBox);
 	RegisterCheckBoxWidgetForProperty(propertiesMap, PropertyNames::IS_RETURN_KEY_PROPERTY_NAME, ui->isReturnKeyAutomatically);
+    
+    // Fitting is not needed for UITextField.
+    ui->fittingTypeComboBox->setVisible(false);
+    ui->fittingLabel->setVisible(false);
 }
 
 void UITextFieldPropertyGridWidget::Cleanup()

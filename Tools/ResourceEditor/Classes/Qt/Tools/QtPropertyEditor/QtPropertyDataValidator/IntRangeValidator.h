@@ -26,30 +26,35 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
 
-#include <QDialog>
 
-class QualitySwitcher : public QDialog
+#ifndef __INT_RANGE_VALIDATOR_H__
+#define __INT_RANGE_VALIDATOR_H__
+
+#include "../QtPropertyDataValidator.h"
+#include <QIntValidator>
+
+class IntRangeValidator : public QtPropertyDataValidator
 {
-    Q_OBJECT
-
 public:
-    static void Show();
-
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
-
-    QPushButton *defBtn;
     
-    bool applyTx;
-    bool applyMa;
+    IntRangeValidator(int minValue, int maxValue);
+	
+	void SetRange(int minValue, int maxValue);
+	
+	int GetMaximum() const;
+	void SetMaximum(int maxValue);
+	
+	int GetMinimum() const;
+	void SetMinimum(int minValue);
+   
+protected:
 
-protected slots:
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
+    virtual bool ValidateInternal(const QVariant &v) const;
+
+private:
+    
+    QIntValidator  innerValidator;
 };
 
-#endif // __QUALITY_SWITCHER_H__
+#endif // __INT_RANGE_VALIDATOR_H__
