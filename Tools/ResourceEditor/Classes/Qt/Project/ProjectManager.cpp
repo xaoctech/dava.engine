@@ -109,13 +109,13 @@ void ProjectManager::ProjectOpen(const QString &path)
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
+
             LoadProjectSettings();
             LoadMaterialsSettings();
-            
+
             emit ProjectOpened(curProjectPath);
-            
-            DAVA::FilePath::AddTopResourcesFolder(projectPath);
-		}
+        }
 	}
 }
 
