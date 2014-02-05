@@ -57,7 +57,6 @@ void SoundSystem::Init()
     {
         case SOUNDSYSTEM_FMOD:
             instance = new FMODSoundSystem();
-            FMODSoundSystem::GetFMODSoundSystem()->LoadAllFEVsRecursive(soundsDir);
             break;
         default:
             break;
