@@ -35,7 +35,6 @@
 #include "Utils/Utils.h"
 #include "FileSystem/YamlParser.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Render/RenderStateDataUniqueHandler.h"
 
 namespace DAVA
 {
@@ -107,23 +106,22 @@ void RenderState::Reset(bool doHardwareReset)
 	}
 	*/
     shader = 0;
-	scissorRect = Rect(0, 0, 0, 0);
     
     if (doHardwareReset)
     {
 		RenderManager* rm = RenderManager::Instance();
        // RenderManager::Instance()->LockNonMain();
 		
-		const RenderStateData* renderStateData =
+		const RenderStateData& renderStateData =
 				rm->GetRenderStateData(rm->GetDefault2DStateHandle());
 //        Logger::FrameworkDebug("Do hardware reset");
         // PrintBackTraceToLog();
         SetColorInHW();
-        SetEnableBlendingInHW(renderStateData->state);
-        SetBlendModeInHW(renderStateData->sourceFactor, renderStateData->destFactor);
-        SetDepthTestInHW(renderStateData->state);
-        SetDepthWriteInHW(renderStateData->state);
-        SetColorMaskInHW(renderStateData->state);
+        SetEnableBlendingInHW(renderStateData.state);
+        SetBlendModeInHW(renderStateData.sourceFactor, renderStateData.destFactor);
+        SetDepthTestInHW(renderStateData.state);
+        SetDepthWriteInHW(renderStateData.state);
+        SetColorMaskInHW(renderStateData.state);
         
         if (renderer != Core::RENDERER_OPENGL_ES_2_0)
         {
@@ -142,7 +140,7 @@ void RenderState::Reset(bool doHardwareReset)
             }
         }
 		
-		textureState = RenderManager::Instance()->GetDefaultTextureState();
+		textureState = RenderManager::Instance()->GetEmptyTextureState();
 		stateHandle = RenderManager::Instance()->GetDefaultHardwareStateHandle();
 		
     }
@@ -178,11 +176,11 @@ void RenderState::Flush(RenderState * hardwareState) const
 	{
 		RENDERER_UPDATE_STATS(renderStateFullSwitches++);
 		
-		const RenderStateData* currentData = RenderManager::Instance()->GetRenderStateData(stateHandle);
-		const RenderStateData* hardwareData = RenderManager::Instance()->GetRenderStateData(hardwareState->stateHandle);
+		const RenderStateData& currentData = RenderManager::Instance()->GetRenderStateData(stateHandle);
+		const RenderStateData& hardwareData = RenderManager::Instance()->GetRenderStateData(hardwareState->stateHandle);
 		
-		uint32 state = currentData->state;
-		uint32 diffState = state ^ hardwareData->state;
+		uint32 state = currentData.state;
+		uint32 diffState = state ^ hardwareData.state;
 		if (diffState != 0)
 		{
 			if (diffState & RenderStateData::STATE_BLEND)
@@ -212,7 +210,7 @@ void RenderState::Flush(RenderState * hardwareState) const
 				{
 					if (diffState & (RenderStateData::STATE_TEXTURE0 << textureLevel))
 					{
-						if (currentData->state & (RenderStateData::STATE_TEXTURE0 << textureLevel))
+						if (currentData.state & (RenderStateData::STATE_TEXTURE0 << textureLevel))
 						{
 							RENDER_VERIFY(glActiveTexture(GL_TEXTURE0 + textureLevel));
 							RENDER_VERIFY(glEnable(GL_TEXTURE_2D));
@@ -227,51 +225,51 @@ void RenderState::Flush(RenderState * hardwareState) const
 			}
 		}
 		
-		if (currentData->sourceFactor != hardwareData->sourceFactor ||
-			currentData->destFactor != hardwareData->destFactor)
+		if (currentData.sourceFactor != hardwareData.sourceFactor ||
+			currentData.destFactor != hardwareData.destFactor)
         {
-            SetBlendModeInHW(currentData->sourceFactor, currentData->destFactor);
+            SetBlendModeInHW(currentData.sourceFactor, currentData.destFactor);
         }
         
-        if (currentData->cullMode != hardwareData->cullMode)
+        if (currentData.cullMode != hardwareData.cullMode)
         {
-            SetCullModeInHW(currentData->cullMode);
+            SetCullModeInHW(currentData.cullMode);
         }
         
-        if (hardwareData->depthFunc != currentData->depthFunc)
+        if (hardwareData.depthFunc != currentData.depthFunc)
         {
-            SetDepthFuncInHW(currentData->depthFunc);
+            SetDepthFuncInHW(currentData.depthFunc);
         }
 		
-		if(hardwareData->fillMode != currentData->fillMode)
+		if(hardwareData.fillMode != currentData.fillMode)
 		{
-			SetFillModeInHW(currentData->fillMode);
+			SetFillModeInHW(currentData.fillMode);
 		}
 		
-		if (hardwareData->stencilFunc[0] != currentData->stencilFunc[0] ||
-			hardwareData->stencilFunc[1] != currentData->stencilFunc[1] ||
-			hardwareData->stencilMask != currentData->stencilMask ||
-			hardwareData->stencilRef != currentData->stencilRef)
+		if (hardwareData.stencilFunc[0] != currentData.stencilFunc[0] ||
+			hardwareData.stencilFunc[1] != currentData.stencilFunc[1] ||
+			hardwareData.stencilMask != currentData.stencilMask ||
+			hardwareData.stencilRef != currentData.stencilRef)
 		{
-			SetStencilFuncInHW(currentData->stencilFunc[0],
-							   currentData->stencilFunc[1],
-							   currentData->stencilRef,
-							   currentData->stencilMask);
+			SetStencilFuncInHW(currentData.stencilFunc[0],
+							   currentData.stencilFunc[1],
+							   currentData.stencilRef,
+							   currentData.stencilMask);
 		}
 		
-		if (hardwareData->stencilPass[0] != currentData->stencilPass[0] ||
-			hardwareData->stencilPass[1] != currentData->stencilPass[1] ||
-			hardwareData->stencilFail[0] != currentData->stencilFail[0] ||
-			hardwareData->stencilFail[1] != currentData->stencilFail[1] ||
-			hardwareData->stencilZFail[0] != currentData->stencilZFail[0] ||
-			hardwareData->stencilZFail[1] != currentData->stencilZFail[1])
+		if (hardwareData.stencilPass[0] != currentData.stencilPass[0] ||
+			hardwareData.stencilPass[1] != currentData.stencilPass[1] ||
+			hardwareData.stencilFail[0] != currentData.stencilFail[0] ||
+			hardwareData.stencilFail[1] != currentData.stencilFail[1] ||
+			hardwareData.stencilZFail[0] != currentData.stencilZFail[0] ||
+			hardwareData.stencilZFail[1] != currentData.stencilZFail[1])
 		{
-			SetStencilOpInHW(currentData->stencilFail[0],
-							 currentData->stencilZFail[0],
-							 currentData->stencilPass[0],
-							 currentData->stencilFail[1],
-							 currentData->stencilZFail[1],
-							 currentData->stencilPass[1]);
+			SetStencilOpInHW(currentData.stencilFail[0],
+							 currentData.stencilZFail[0],
+							 currentData.stencilPass[0],
+							 currentData.stencilFail[1],
+							 currentData.stencilZFail[1],
+							 currentData.stencilPass[1]);
 		}
 				
 		hardwareState->stateHandle = stateHandle;
@@ -283,29 +281,22 @@ void RenderState::Flush(RenderState * hardwareState) const
 	
         if (color != hardwareState->color)
         {
-            SetColorInHW();
             hardwareState->color = color;
-        }
-
-        if(hardwareState->scissorRect != scissorRect)
-        {
-            SetScissorRectInHW();
-            hardwareState->scissorRect = scissorRect;
         }
 	
 		if(textureState != hardwareState->textureState &&
 		   textureState != InvalidUniqueHandle)
 		{
-			const TextureStateData* currentTextureData = RenderManager::Instance()->GetTextureStateData(textureState);
-			const TextureStateData* hardwareTextureData = RenderManager::Instance()->GetTextureStateData(hardwareState->textureState);
+			const TextureStateData& currentTextureData = RenderManager::Instance()->GetTextureState(textureState);
+			const TextureStateData& hardwareTextureData = RenderManager::Instance()->GetTextureState(hardwareState->textureState);
 			
-			uint32 minIndex = currentTextureData->minmaxTextureIndex & 0x000000FF;
-			uint32 maxIndex = ((currentTextureData->minmaxTextureIndex & 0x0000FF00) >> 8);
+			uint32 minIndex = currentTextureData.minmaxTextureIndex & 0x000000FF;
+			uint32 maxIndex = ((currentTextureData.minmaxTextureIndex & 0x0000FF00) >> 8);
 			for(size_t i = minIndex; i <= maxIndex; ++i)
 			{
-				if(currentTextureData->textures[i] != hardwareTextureData->textures[i])
+				if(currentTextureData.textures[i] != hardwareTextureData.textures[i])
 				{
-					SetTextureLevelInHW(i, currentTextureData->textures[i]);
+					SetTextureLevelInHW(i, currentTextureData.textures[i]);
 				}
 			}
 			
@@ -315,66 +306,9 @@ void RenderState::Flush(RenderState * hardwareState) const
 		}
     
 	
-	
-	/*
-		if (currentTexture[0] != hardwareState->currentTexture[0])
-		{
-            SetTextureLevelInHW(0, currentTexture[0]);
-			hardwareState->SetTexture(currentTexture[0], 0);
-        }
-
-		if (currentTexture[1] != hardwareState->currentTexture[1])
-        {
-            SetTextureLevelInHW(1, currentTexture[1]);
-            hardwareState->SetTexture(currentTexture[1], 1);
-        }
-
-		if (currentTexture[2] != hardwareState->currentTexture[2])
-        {
-            SetTextureLevelInHW(2, currentTexture[2]);
-            hardwareState->SetTexture(currentTexture[2], 2);
-        }
-    
-		if (currentTexture[3] != hardwareState->currentTexture[3])
-		{
-            SetTextureLevelInHW(3, currentTexture[3]);
-            hardwareState->SetTexture(currentTexture[3], 3);
-        }
-		
-	   if (currentTexture[4] != hardwareState->currentTexture[4])
-		{
-			SetTextureLevelInHW(4, currentTexture[4]);
-			hardwareState->SetTexture(currentTexture[4], 4);
-		}
-			
-		if (currentTexture[5] != hardwareState->currentTexture[5])
-		{
-			SetTextureLevelInHW(5, currentTexture[5]);
-			hardwareState->SetTexture(currentTexture[5], 5);
-		}
-		
-	    if (currentTexture[6] != hardwareState->currentTexture[6])
-		{
-			SetTextureLevelInHW(6, currentTexture[6]);
-			hardwareState->SetTexture(currentTexture[6], 6);
-		}
-		
-	    if (currentTexture[7] != hardwareState->currentTexture[7])
-		{
-			SetTextureLevelInHW(7, currentTexture[7]);
-			hardwareState->SetTexture(currentTexture[7], 7);
-		}
-*/
-
 #if defined(__DAVAENGINE_OPENGL__)
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 #endif
-//        if (changeSet & STATE_CHANGED_SHADER)
-//        {
-//            if (shader != previousState->shader)
-//            {
-//            }
-//        }
 
     
     if (shader)shader->Bind();
@@ -606,15 +540,6 @@ inline void RenderState::SetScissorTestInHW(uint32 state) const
 #endif  
 		RENDER_VERIFY(glDisable(GL_SCISSOR_TEST));
 	}
-}
-
-inline void RenderState::SetScissorRectInHW() const
-{
-#if defined (LOG_FINAL_RENDER_STATE)
-    Logger::FrameworkDebug("RenderState::scissor_rect = (%d, %d, %d, %d)", scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
-#endif  
-
-	RENDER_VERIFY(glScissor((GLint)scissorRect.x, (GLint)scissorRect.y, (GLsizei)scissorRect.dx, (GLsizei)scissorRect.dy));
 }
 
 inline void RenderState::SetFillModeInHW(eFillMode fillMode) const
@@ -868,7 +793,7 @@ void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 	if (!rootNode)
 		return;
 
-	RenderStateData stateData = {0};
+	RenderStateData stateData;
 	
 	const YamlNode * renderStateNode = rootNode->Get("RenderState");
 	if(renderStateNode)
@@ -987,7 +912,7 @@ void RenderState::LoadFromYamlNode(const YamlNode * rootNode)
 			}
 		}
 		
-		stateHandle = RenderManager::Instance()->AddRenderStateData(&stateData);
+		stateHandle = RenderManager::Instance()->CreateRenderState(stateData);
 	}
 }
 
@@ -1009,35 +934,35 @@ YamlNode * RenderState::SaveToYamlNode(YamlNode * parentNode /* = 0 */)
 	if(!parentNode)
 		parentNode = new YamlNode(YamlNode::TYPE_MAP);
 	
-	static RenderStateData emptyState = {0};
+	static RenderStateData emptyState;
 	
-	const RenderStateData* renderState = (stateHandle != InvalidUniqueHandle) ? RenderManager::Instance()->GetRenderStateData(stateHandle) : &emptyState;
+	const RenderStateData& renderState = (stateHandle != InvalidUniqueHandle) ? RenderManager::Instance()->GetRenderStateData(stateHandle) : emptyState;
 
 	YamlNode * rootNode = new YamlNode(YamlNode::TYPE_MAP);
 
 	YamlNode * stencilNode = new YamlNode(YamlNode::TYPE_MAP);
-	stencilNode->Add("ref", renderState->stencilRef);
-	stencilNode->Add("mask", (int32)renderState->stencilMask);
-	stencilNode->Add("funcFront", CMP_FUNC_NAMES[(int32)renderState->stencilFunc[FACE_FRONT]]);
-	stencilNode->Add("funcBack", CMP_FUNC_NAMES[(int32)renderState->stencilFunc[FACE_BACK]]);
-	stencilNode->Add("passFront", STENCIL_OP_NAMES[(int32)renderState->stencilPass[FACE_FRONT]]);
-	stencilNode->Add("passBack", STENCIL_OP_NAMES[(int32)renderState->stencilPass[FACE_BACK]]);
-	stencilNode->Add("failFront", STENCIL_OP_NAMES[(int32)renderState->stencilFail[FACE_FRONT]]);
-	stencilNode->Add("failBack", STENCIL_OP_NAMES[(int32)renderState->stencilFail[FACE_BACK]]);
-	stencilNode->Add("zFailFront", STENCIL_OP_NAMES[(int32)renderState->stencilZFail[FACE_FRONT]]);
-	stencilNode->Add("zFailBack", STENCIL_OP_NAMES[(int32)renderState->stencilZFail[FACE_BACK]]);
+	stencilNode->Add("ref", renderState.stencilRef);
+	stencilNode->Add("mask", (int32)renderState.stencilMask);
+	stencilNode->Add("funcFront", CMP_FUNC_NAMES[(int32)renderState.stencilFunc[FACE_FRONT]]);
+	stencilNode->Add("funcBack", CMP_FUNC_NAMES[(int32)renderState.stencilFunc[FACE_BACK]]);
+	stencilNode->Add("passFront", STENCIL_OP_NAMES[(int32)renderState.stencilPass[FACE_FRONT]]);
+	stencilNode->Add("passBack", STENCIL_OP_NAMES[(int32)renderState.stencilPass[FACE_BACK]]);
+	stencilNode->Add("failFront", STENCIL_OP_NAMES[(int32)renderState.stencilFail[FACE_FRONT]]);
+	stencilNode->Add("failBack", STENCIL_OP_NAMES[(int32)renderState.stencilFail[FACE_BACK]]);
+	stencilNode->Add("zFailFront", STENCIL_OP_NAMES[(int32)renderState.stencilZFail[FACE_FRONT]]);
+	stencilNode->Add("zFailBack", STENCIL_OP_NAMES[(int32)renderState.stencilZFail[FACE_BACK]]);
 	rootNode->AddNodeToMap("stencil", stencilNode);
 
-	rootNode->Add("blendSrc", BLEND_MODE_NAMES[(int32)renderState->sourceFactor]);
-	rootNode->Add("blendDest", BLEND_MODE_NAMES[(int32)renderState->destFactor]);
-	rootNode->Add("cullMode", FACE_NAMES[(int32)renderState->cullMode]);
-	rootNode->Add("depthFunc", CMP_FUNC_NAMES[(int32)renderState->depthFunc]);
+	rootNode->Add("blendSrc", BLEND_MODE_NAMES[(int32)renderState.sourceFactor]);
+	rootNode->Add("blendDest", BLEND_MODE_NAMES[(int32)renderState.destFactor]);
+	rootNode->Add("cullMode", FACE_NAMES[(int32)renderState.cullMode]);
+	rootNode->Add("depthFunc", CMP_FUNC_NAMES[(int32)renderState.depthFunc]);
 	rootNode->Add("alphaFunc", CMP_FUNC_NAMES[(int32)0]);
 	rootNode->Add("alphaFuncCmpValue", 0);
-	rootNode->Add("fillMode", FILL_MODE_NAMES[renderState->fillMode]);
+	rootNode->Add("fillMode", FILL_MODE_NAMES[renderState.fillMode]);
 
 	Vector<String> statesStrs;
-	GetCurrentStateStrings(renderState->state, statesStrs);
+	GetCurrentStateStrings(renderState.state, statesStrs);
 	String stateString;
 	for(Vector<String>::const_iterator it = statesStrs.begin(); it != statesStrs.end(); it++)
 	{
@@ -1086,7 +1011,6 @@ void RenderState::CopyTo(RenderState* target) const
 	target->renderer = renderer;
     
     target->color = color;
-	target->scissorRect = scissorRect;
 
 	target->stateHandle = stateHandle;
 	target->textureState = textureState;
@@ -1099,40 +1023,38 @@ void RenderState::CopyTo(RenderState* target) const
 	
 void RenderState::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	static RenderStateData emptyState = {0};
+	static RenderStateData emptyState;
 	
-	const RenderStateData* renderState = (stateHandle != InvalidUniqueHandle) ? RenderManager::Instance()->GetRenderStateData(stateHandle) : &emptyState;
+	const RenderStateData& renderState = (stateHandle != InvalidUniqueHandle) ? RenderManager::Instance()->GetRenderStateData(stateHandle) : emptyState;
 	
-	archive->SetUInt32("state", renderState->state);
+	archive->SetUInt32("state", renderState.state);
 	Vector4 vecColor(color.r, color.g, color.b, color.a);
 	archive->SetVector4("color", vecColor);
-	archive->SetInt32("sourceFactor", (int32)renderState->sourceFactor);
-	archive->SetInt32("destFactor", (int32)renderState->destFactor);
-	archive->SetInt32("cullMode", (int32)renderState->cullMode);
+	archive->SetInt32("sourceFactor", (int32)renderState.sourceFactor);
+	archive->SetInt32("destFactor", (int32)renderState.destFactor);
+	archive->SetInt32("cullMode", (int32)renderState.cullMode);
 	archive->SetInt32("alphaFunc", (int32)0);
 	archive->SetInt32("alphaFuncCmpValue", (int32)0);
-	archive->SetInt32("depthFunc", (int32)renderState->depthFunc);
-	Vector4 rect(scissorRect.x, scissorRect.y, scissorRect.dx, scissorRect.dy);
-	archive->SetVector4("scissorRect", rect);
-	archive->SetInt32("fillMode", (int32)renderState->fillMode);
+	archive->SetInt32("depthFunc", (int32)renderState.depthFunc);
+	archive->SetInt32("fillMode", (int32)renderState.fillMode);
 	
-	archive->SetInt32("stencil_ref", renderState->stencilRef);
-	archive->SetUInt32("stencil_mask", renderState->stencilMask);
+	archive->SetInt32("stencil_ref", renderState.stencilRef);
+	archive->SetUInt32("stencil_mask", renderState.stencilMask);
 	uint8 stencilPackedFuncs[8];
-	stencilPackedFuncs[0] = renderState->stencilFail[0];
-	stencilPackedFuncs[1] = renderState->stencilFail[1];
-	stencilPackedFuncs[2] = renderState->stencilFunc[0];
-	stencilPackedFuncs[3] = renderState->stencilFunc[1];
-	stencilPackedFuncs[4] = renderState->stencilPass[0];
-	stencilPackedFuncs[5] = renderState->stencilPass[1];
-	stencilPackedFuncs[6] = renderState->stencilZFail[0];
-	stencilPackedFuncs[7] = renderState->stencilZFail[1];
+	stencilPackedFuncs[0] = renderState.stencilFail[0];
+	stencilPackedFuncs[1] = renderState.stencilFail[1];
+	stencilPackedFuncs[2] = renderState.stencilFunc[0];
+	stencilPackedFuncs[3] = renderState.stencilFunc[1];
+	stencilPackedFuncs[4] = renderState.stencilPass[0];
+	stencilPackedFuncs[5] = renderState.stencilPass[1];
+	stencilPackedFuncs[6] = renderState.stencilZFail[0];
+	stencilPackedFuncs[7] = renderState.stencilZFail[1];
 	archive->SetByteArray("stencil_funcs", stencilPackedFuncs, 8);
 }
 
 void RenderState::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	RenderStateData renderState = {0};
+	RenderStateData renderState;
 	
 	renderState.state = archive->GetUInt32("state");
 	Vector4 vecColor = archive->GetVector4("color");
@@ -1143,8 +1065,6 @@ void RenderState::Deserialize(KeyedArchive *archive, SerializationContext *seria
 	//alphaFunc = (eCmpFunc)archive->GetInt32("alphaFunc");
 	//alphaFuncCmpValue = (uint8)archive->GetInt32("alphaFuncCmpValue");
 	renderState.depthFunc = (eCmpFunc)archive->GetInt32("depthFunc");
-	Vector4 rect = archive->GetVector4("scissorRect");
-	scissorRect = Rect(rect.x, rect.y, rect.z, rect.w);
 	renderState.fillMode = (eFillMode)archive->GetInt32("fillMode");
 	
 	renderState.stencilRef = archive->GetInt32("stencil_ref");

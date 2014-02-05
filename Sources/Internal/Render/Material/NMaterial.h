@@ -34,6 +34,7 @@
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
 #include "Scene3D/DataNode.h"
+#include "Render/RenderManager.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
 #include "Render/Material/NMaterialTemplate.h"
@@ -302,9 +303,9 @@ public:
     inline uint32 GetRenderLayers() const;
     inline void SetRenderLayers(uint32 bitmask);
     
-	const RenderStateData* GetRenderState(const FastName& passName) const;
-	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
-	void SubclassRenderState(RenderStateData* newState);
+	const RenderStateData& GetRenderState(const FastName& passName) const;
+	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
+	void SubclassRenderState(RenderStateData& newState);
 	
 	static NMaterial* CreateMaterialInstance();
 	
@@ -379,18 +380,9 @@ protected:
 		NMaterialProperty* prop;
 	};
 		
-	struct RenderPassInstance
+	class RenderPassInstance
 	{
-		RenderState renderState;
-		
-		bool dirtyState;
-		bool texturesDirty;
-		
-		HashMap<FastName, int32> textureIndexMap;
-		Vector<UniformCacheEntry> activeUniformsCache;
-		
-		UniformCacheEntry* activeUniformsCachePtr;
-		size_t activeUniformsCacheSize;
+    public:
 		
 		RenderPassInstance() :
 			textureIndexMap(8),
@@ -399,8 +391,44 @@ protected:
 			activeUniformsCachePtr(NULL),
 			activeUniformsCacheSize(0)
 		{
-			
+			renderState.shader = NULL;
 		}
+        
+        ~RenderPassInstance()
+        {
+            SetRenderStateHandle(InvalidUniqueHandle);
+            SetTextureStateHandle(InvalidUniqueHandle);
+            SafeRelease(renderState.shader);
+        }
+        
+        inline void SetShader(Shader* curShader);
+        inline Shader* GetShader() const;
+        inline void SetRenderer(Core::eRenderer renderer);
+        inline Core::eRenderer GetRenderer() const;
+        inline void SetColor(const Color& color);
+        inline const Color& GetColor() const;
+        
+        inline void FlushState();
+        
+        inline UniqueHandle GetRenderStateHandle() const;
+        inline void SetRenderStateHandle(UniqueHandle handle);
+        inline UniqueHandle GetTextureStateHandle() const;
+        inline void SetTextureStateHandle(UniqueHandle handle);
+        
+        
+        bool dirtyState;
+		bool texturesDirty;
+		
+		HashMap<FastName, int32> textureIndexMap;
+		Vector<UniformCacheEntry> activeUniformsCache;
+		
+		UniformCacheEntry* activeUniformsCachePtr;
+		size_t activeUniformsCacheSize;
+
+        
+    private:
+    
+        RenderState renderState;
 	};
 	
 protected:
@@ -643,8 +671,90 @@ public:
         }
     }
     
+    inline void NMaterial::RenderPassInstance::SetShader(Shader* curShader)
+    {
+        if(renderState.shader != curShader)
+        {
+            SafeRelease(renderState.shader);
+            renderState.shader = SafeRetain(curShader);
+        }
+    }
     
+    inline Shader* NMaterial::RenderPassInstance::GetShader() const
+    {
+        return renderState.shader;
+    }
     
+    inline UniqueHandle NMaterial::RenderPassInstance::GetRenderStateHandle() const
+    {
+        return renderState.stateHandle;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetRenderStateHandle(UniqueHandle handle)
+    {
+        if(renderState.stateHandle != handle)
+        {
+            if(renderState.stateHandle != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->ReleaseRenderState(renderState.stateHandle);
+            }
+            
+            renderState.stateHandle = handle;
+            
+            if(renderState.stateHandle != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->RetainRenderState(renderState.stateHandle);
+            }
+        }
+    }
+
+    inline UniqueHandle NMaterial::RenderPassInstance::GetTextureStateHandle() const
+    {
+        return renderState.textureState;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetTextureStateHandle(UniqueHandle handle)
+    {
+        if(renderState.textureState != handle)
+        {
+            if(renderState.textureState != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->ReleaseTextureState(renderState.textureState);
+            }
+            
+            renderState.textureState = handle;
+            
+            if(renderState.textureState != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->RetainTextureState(renderState.textureState);
+            }
+        }
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetRenderer(Core::eRenderer renderer)
+    {
+        renderState.renderer = renderer;
+    }
+    
+    inline Core::eRenderer NMaterial::RenderPassInstance::GetRenderer() const
+    {
+        return renderState.renderer;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetColor(const Color& color)
+    {
+        renderState.color = color;
+    }
+    
+    inline const Color& NMaterial::RenderPassInstance::GetColor() const
+    {
+        return renderState.color;
+    }
+    
+    inline void NMaterial::RenderPassInstance::FlushState()
+    {
+        RenderManager::Instance()->FlushState(&renderState);
+    }
 
 };
 

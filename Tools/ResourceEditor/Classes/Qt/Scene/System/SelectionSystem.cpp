@@ -48,22 +48,22 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, selectionAllowed(true)
 	, selectionHasChanges(false)
 {
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
 	DAVA::RenderStateData selectionStateData;
-	memcpy(&selectionStateData, default3dState, sizeof(selectionStateData));
+	memcpy(&selectionStateData, &default3dState, sizeof(selectionStateData));
 	
 	selectionStateData.state =	DAVA::RenderStateData::STATE_BLEND |
 								DAVA::RenderStateData::STATE_COLORMASK_ALL;
 	selectionStateData.sourceFactor = DAVA::BLEND_SRC_ALPHA;
 	selectionStateData.destFactor = DAVA::BLEND_ONE_MINUS_SRC_ALPHA;
 	
-	selectionNormalDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&selectionStateData);
+	selectionNormalDrawState = DAVA::RenderManager::Instance()->CreateRenderState(selectionStateData);
 
 	selectionStateData.state =	DAVA::RenderStateData::STATE_BLEND |
 								DAVA::RenderStateData::STATE_COLORMASK_ALL |
 								DAVA::RenderStateData::STATE_DEPTH_TEST;
 	
-	selectionDepthDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&selectionStateData);
+	selectionDepthDrawState = DAVA::RenderManager::Instance()->CreateRenderState(selectionStateData);
 }
 
 SceneSelectionSystem::~SceneSelectionSystem()

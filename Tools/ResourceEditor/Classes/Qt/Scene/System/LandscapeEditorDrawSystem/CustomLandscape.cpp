@@ -42,7 +42,7 @@ CustomLandscape::~CustomLandscape()
 	SafeRelease(landscapeRenderer);
     
     if(textureState != InvalidUniqueHandle)
-        RenderManager::Instance()->ReleaseTextureStateData(textureState);
+        RenderManager::Instance()->ReleaseTextureState(textureState);
 }
 
 void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
@@ -59,12 +59,12 @@ LandscapeRenderer* CustomLandscape::GetRenderer()
 void CustomLandscape::UpdateTextureState()
 {
 	TextureStateData textureStateData;
-	textureStateData.textures[0] = GetTexture(TEXTURE_TILE_FULL);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
+	textureStateData.SetTexture(0, GetTexture(TEXTURE_TILE_FULL));
+	UniqueHandle uniqueHandle = RenderManager::Instance()->CreateTextureState(textureStateData);
 
 	if (textureState != InvalidUniqueHandle)
 	{
-		RenderManager::Instance()->ReleaseTextureStateData(textureState);
+		RenderManager::Instance()->ReleaseTextureState(textureState);
 	}
 
 	textureState = uniqueHandle;
