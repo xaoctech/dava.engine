@@ -36,8 +36,6 @@
 #include "Base/EventDispatcher.h"
 #include "Sound/SoundEvent.h"
 
-#define DEFAULT_SOUNDS_DIRECTORY "~res:/Sfx/"
-
 namespace DAVA
 {
 
@@ -79,16 +77,10 @@ public:
     static void Release();
     static SoundSystemInstance * Instance();
     static void SetSoundSystemType(SoundSystemType _type) {type = _type;};
-    static const FilePath & GetSoundsDirectory();
-
-    //SoundsDirectory can be changed before GameCore creation only
-    static void SetSoundsDirectory(const FilePath & soundsDir);
 
 private:
     static SoundSystemType type;
     static SoundSystemInstance * instance;
-
-    static FilePath soundsDir;
 };
 
 };

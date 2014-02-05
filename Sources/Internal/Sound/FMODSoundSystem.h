@@ -77,8 +77,6 @@ public:
     //FMOD Only
     static FMODSoundSystem * GetFMODSoundSystem();
 
-    void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
-
 	void LoadFEV(const FilePath & filePath);
     void UnloadFMODProjects();
 
