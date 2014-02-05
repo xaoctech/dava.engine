@@ -32,10 +32,10 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
-
 #include "Deprecated/ScenePreviewDialog.h"
-
 #include "MaterialEditor/MaterialAssignSystem.h"
+
+#include "Platform/SystemTimer.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
@@ -171,6 +171,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
 	HideScenePreview();
 
+    DAVA::int64 openStartTime = DAVA::SystemTimer::Instance()->AbsoluteMS();
+
 	int tabIndex = FindTab(scenePapth);
 	if(tabIndex != -1)
 	{
@@ -192,6 +194,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	{
         SafeRelease(scene);
 	}
+
+    DAVA::Logger::Instance()->Info("SceneEditor tab opened in %llu\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - openStartTime);
 
 	return tabIndex;
 }
