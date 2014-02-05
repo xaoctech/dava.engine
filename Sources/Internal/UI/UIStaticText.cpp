@@ -360,4 +360,9 @@ Animation * UIStaticText::ShadowColorAnimation(const Color & finalColor, float32
 	return animation;
 }
 
+const Vector<int32> & UIStaticText::GetStringSizes() const
+{
+	return textBlock->GetStringSizes();
+}
+
 };
