@@ -518,8 +518,9 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 	texture->texDescriptor->Initialize(descriptor);
 
     Vector<Image *> * images = new Vector<Image *> ();
+    
 	bool loaded = texture->LoadImages(gpu, images);
-	if(!loaded)
+    if(!loaded)
 	{
 		Logger::Error("[Texture::CreateFromImage] Cannot load texture from image");
 
@@ -583,7 +584,51 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
             *images = img->CreateMipMapsImages();
             SafeRelease(img);
         }
-	}
+
+        if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
+        {
+            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTxQuality());
+            if(NULL != curTxQuality)
+            {
+                // TODO:
+                // this is draft code and should be reimplemented
+                // to use texture group qualities
+                // -->
+                
+                int baselevel = curTxQuality->albedoBaseMipMapLevel;
+                
+                if(baselevel > 0)
+                {
+                    int leaveCount = images->size() - baselevel;
+                    
+                    // we should leave at last one last image
+                    if(leaveCount < 1)
+                    {
+                        leaveCount = 1;
+                    }
+                    
+                    int leaveOffset = images->size() - leaveCount;
+                    
+                    // release all images, except last one
+                    for(int i = 0; i < leaveOffset; ++i)
+                    {
+                        SafeRelease(images->operator[](i));
+                    }
+                    
+                    // move last items to the beginning of the vector vector
+                    for(int i = 0; i < leaveCount; ++i)
+                    {
+                        images->operator[](i) = images->operator[](leaveOffset + i);
+                        images->operator[](i)->mipmapLevel = i;
+                    }
+                    
+                    images->resize(leaveCount);
+                }
+                
+                // <-
+            }
+        }
+    }
 
 	if(0 == images->size())
 		return false;
@@ -597,50 +642,6 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
 	isPink = false;
 	state = STATE_DATA_LOADED;
-
-    if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
-    {
-        const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTxQuality());
-        if(NULL != curTxQuality)
-        {
-            // TODO:
-            // this is draft code and should be reimplemented
-            // to use texture group qualities
-            // -->
-
-            int baselevel = curTxQuality->albedoBaseMipMapLevel;
-
-            if(baselevel > 0)
-            {
-                int leaveCount = images->size() - baselevel;
-            
-                // we should leave at last one last image
-                if(leaveCount < 1)
-                {
-                    leaveCount = 1;
-                }
-
-                int leaveOffset = images->size() - leaveCount;
-
-                // release all images, except last one
-                for(int i = 0; i < leaveOffset; ++i)
-                {
-                    SafeRelease(images->operator[](i));
-                }
-
-                // move last items to the beginning of the vector vector
-                for(int i = 0; i < leaveCount; ++i)
-                {
-                    images->operator[](i) = images->operator[](leaveOffset + i);
-                    images->operator[](i)->mipmapLevel = i;
-                }
-
-                images->resize(leaveCount);
-            }
-
-            // <-
-        }
-    }
 
 	return true;
 }
