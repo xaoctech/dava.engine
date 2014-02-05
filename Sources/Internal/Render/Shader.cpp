@@ -1232,13 +1232,13 @@ Shader * Shader::CompileShader(const FastName & assetName,
     return shader;
 }
 
-void Shader::RequestAsset()
-{
-    //ShaderCache *
-    
-    
-    
-}
+//void Shader::RequestAsset()
+//{
+//    //ShaderCache *
+//    
+//    
+//    
+//}
 
 
 #if defined(__DAVAENGINE_ANDROID__)
