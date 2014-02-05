@@ -310,7 +310,7 @@ void GameObject::Draw()
 	if (sprite)
 	{
 		RenderManager::Instance()->SetColor(color.r, color.g, color.b, color.a);
-		RenderManager::Instance()->SetDefault2DState();
+		RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		sprite->Draw(&globalDrawState);
 
 //		RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);

@@ -73,7 +73,7 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 	
-	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
 	memcpy(&noBlendStateData, &default3dState, sizeof(noBlendStateData));
 	
@@ -189,7 +189,7 @@ void TilemaskEditorSystem::Update(float32 timeElapsed)
 			if (activeDrawingType == TILEMASK_DRAW_NORMAL)
 			{
 				RenderManager::Instance()->SetRenderTarget(toolSprite);
-                RenderManager::Instance()->SetDefault2DState();
+                RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 				toolImageSprite->SetScaleSize(toolSize.x, toolSize.y);
 				toolImageSprite->SetPosition(toolPos.x, toolPos.y);
 				toolImageSprite->Draw();
@@ -480,7 +480,7 @@ Image* TilemaskEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fil
 	RenderManager::Instance()->SetRenderTarget(dstSprite);
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.0f);
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->SetColor(Color::White);
 	
