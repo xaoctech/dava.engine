@@ -402,9 +402,17 @@
     <addaction name="separator"/>
     <addaction name="actionCurrentSceneSettings"/>
    </widget>
+   <widget class="QMenu" name="menuQuality">
+    <property name="title">
+     <string>Quality</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionCustomQuality"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
+   <addaction name="menuQuality"/>
    <addaction name="menuCreateNode"/>
    <addaction name="menuComponent"/>
    <addaction name="menuScene"/>
@@ -1722,6 +1730,14 @@
   <action name="actionQuality">
    <property name="text">
     <string>Quality...</string>
+   </property>
+  </action>
+  <action name="actionCustomQuality">
+   <property name="text">
+    <string>Custom...</string>
+   </property>
+   <property name="toolTip">
+    <string>Custom Quality Settings</string>
    </property>
   </action>
  </widget>

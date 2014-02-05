@@ -44,7 +44,7 @@ class SelectPathWidgetBase: public QLineEdit
 	Q_OBJECT
 
 public:
-	explicit SelectPathWidgetBase( QWidget* parent = 0, DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "",
+	explicit SelectPathWidgetBase( QWidget* parent = 0, bool checkForProjectPath = false,DAVA::String openDialoDefualtPath = "", DAVA::String relativPath = "",
 								  DAVA::String openFileDialogTitle = "Open File", DAVA::String fileFormatDescriotion = "*.*");
 	
 	virtual ~SelectPathWidgetBase();
@@ -134,6 +134,8 @@ protected:
 	DAVA::String			openFileDialogTitle;
 		
 	QMimeData				mimeData;
+    
+    bool                    checkForProjectPath;
 
 protected slots:
 

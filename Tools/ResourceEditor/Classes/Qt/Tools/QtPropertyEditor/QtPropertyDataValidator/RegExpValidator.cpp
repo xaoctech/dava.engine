@@ -26,30 +26,27 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
+#include "RegExpValidator.h"
+#include "Qt/Settings/SettingsManager.h"
 
-#include <QDialog>
-
-class QualitySwitcher : public QDialog
+RegExpValidator::RegExpValidator(const QString& value)
 {
-    Q_OBJECT
+    SetRegularExpression(value);
+}
 
-public:
-    static void Show();
+bool RegExpValidator::ValidateInternal(const QVariant &value) const
+{
+    QString validateValue = value.toString();
+    int pos = 0;
+    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+}
 
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
+QString RegExpValidator::GetRegularExpression() const
+{
+    return innerValidator.regExp().pattern();
+}
 
-    QPushButton *defBtn;
-    
-    bool applyTx;
-    bool applyMa;
-
-protected slots:
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
-};
-
-#endif // __QUALITY_SWITCHER_H__
+void RegExpValidator::SetRegularExpression(const QString& value)
+{
+    innerValidator.setRegExp(QRegExp(value));
+}

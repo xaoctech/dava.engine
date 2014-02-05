@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugQt|Win32">
@@ -496,7 +496,6 @@
     <ClCompile Include="Classes\Qt\Scene\System\VisibilityToolSystem.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsManager.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp" />
-    <ClCompile Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.cpp" />
     <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
@@ -524,6 +523,11 @@
     <ClCompile Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.cpp" />
@@ -658,7 +662,6 @@
     <ClCompile Include="_GeneratedQt\Scene\System\VisibilityToolSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\SoundBrowser\FMODSoundBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
@@ -1110,7 +1113,6 @@
     <ClInclude Include="Classes\Qt\Scene\System\VisibilityToolSystem.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsManager.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h" />
-    <ClInclude Include="Classes\Qt\SoundBrowser\FMODSoundBrowser.h" />
     <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
@@ -1141,6 +1143,12 @@
     <ClInclude Include="Classes\Qt\Tools\QtLabelWithActions\QtLabelWithActions.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.h" />
@@ -1176,9 +1184,6 @@
     <ClInclude Include="_GeneratedQt\ui_mainwindow.h" />
     <ClInclude Include="_GeneratedQt\ui_materialeditor.h" />
     <ClInclude Include="_GeneratedQt\ui_ParticleProperty.h" />
-    <ClInclude Include="_GeneratedQt\ui_planeloddialog.h" />
-    <ClInclude Include="_GeneratedQt\ui_SetSwitchIndexView.h" />
-    <ClInclude Include="_GeneratedQt\ui_soundbrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_texturebrowser.h" />
     <ClInclude Include="_GeneratedQt\ui_treeimportdialog.h" />
     <ClInclude Include="_GeneratedQt\ui_waitdialog.h" />
@@ -1195,7 +1200,6 @@
     <None Include="DataQt\materialeditor.ui" />
     <None Include="DataQt\ModificationWidget.ui" />
     <None Include="DataQt\ParticleProperty.ui" />
-    <None Include="DataQt\soundbrowser.ui" />
     <None Include="DataQt\texturebrowser.ui" />
     <None Include="DataQt\SetSwitchIndexView.ui" />
     <None Include="DataQt\treeimportdialog.ui" />

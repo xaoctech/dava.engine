@@ -57,7 +57,6 @@ class ScenePreviewDialog;
 
 Q_DECLARE_METATYPE(SceneEditor2 *);
 
-class Request;
 class SceneTabWidget : public QWidget
 {
 	Q_OBJECT
@@ -68,7 +67,7 @@ public:
 
 	int OpenTab();
 	int OpenTab(const DAVA::FilePath &scenePapth);
-	void CloseTab(int index);
+	bool CloseTab(int index);
 
 	int GetCurrentTab() const;
 	void SetCurrentTab(int index);
@@ -97,6 +96,7 @@ public slots:
 	void TabBarCloseCurrentRequest();
 	void TabBarDataDropped(const QMimeData *data);
 	void DAVAWidgetDataDropped(const QMimeData *data);
+    void CloseAllTabs(Request* closeRequest);
 
 	// scene signals
 	void MouseOverSelectedEntities(SceneEditor2* scene, const EntityGroup *entities);
