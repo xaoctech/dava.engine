@@ -51,6 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
@@ -78,7 +79,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
-
+    QObject::connect(ui->actionMaterialReload, SIGNAL(triggered(bool)), this, SLOT(OnMaterialReload(bool)));
     QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
 
 	posSaver.Attach(this);
@@ -106,7 +107,7 @@ MaterialEditor::~MaterialEditor()
 	DAVA::VariantType v2(ui->materialProperty->header()->sectionSize(1));
 	posSaver.SaveValue("splitPosProperties", v1);
 	posSaver.SaveValue("splitPosPreview", v2);
-
+    
 	posSaver.SaveState(ui->splitter);
 }
 
@@ -643,4 +644,12 @@ QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
         }
     }
     return QVariant();
+}
+
+void MaterialEditor::OnMaterialReload(bool checked)
+{
+    if (curMaterial != 0)
+    {
+        
+    }
 }
