@@ -458,7 +458,6 @@ void SceneEditor2::Draw()
 		hoodSystem->Draw();
 		textDrawSystem->Draw();
 	}
-    
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)

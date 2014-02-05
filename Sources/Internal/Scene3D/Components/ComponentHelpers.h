@@ -41,6 +41,7 @@ class ParticleEffectComponent;
 class Entity;
 class RenderObject;
 class Light;
+class LightComponent;
 class Landscape;
 class Camera;
 class LodComponent;
@@ -58,6 +59,7 @@ RenderObject * GetRenderObject(const Entity * fromEntity);
 SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
+LightComponent *GetLightComponent(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);
 
 Camera * GetCamera(Entity * fromEntity);

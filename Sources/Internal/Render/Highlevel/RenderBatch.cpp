@@ -46,7 +46,7 @@ namespace DAVA
 
     
 RenderBatch::RenderBatch()
-    :   sortingKey(8)
+    :   sortingKey(0xF8)
     ,   dataSource(0)
     ,   renderDataObject(0)
     ,   material(0)
@@ -197,7 +197,14 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
     
 void RenderBatch::SetSortingKey(uint32 _key)
 {
-    sortingKey = _key;
+    DVASSERT(_key<16);
+    sortingKey = (sortingKey&~0x0f)+_key;
+}
+
+void RenderBatch::SetSortingOffset(uint32 offset)
+{
+    DVASSERT(offset<32);    
+    sortingKey=(sortingKey&~0x1F0)+(offset<<4);
 }
 
 

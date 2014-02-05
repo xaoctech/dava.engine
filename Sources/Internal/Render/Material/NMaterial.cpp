@@ -30,8 +30,6 @@
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/Material/NMaterial.h"
-#include "Render/RenderManager.h"
-#include "Render/RenderState.h"
 #include "Render/3D/PolygonGroup.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/YamlParser.h"
@@ -156,7 +154,7 @@ namespace DAVA
 			it != instancePassRenderStates.end();
 			++it)
 		{
-			RenderManager::Instance()->ReleaseRenderStateData(it->second);
+			RenderManager::Instance()->ReleaseRenderState(it->second);
 		}
 		
 		for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
@@ -294,8 +292,8 @@ namespace DAVA
 			{
 				UniqueHandle currentHandle = it->second;
 				
-				const RenderStateData* stateData = RenderManager::Instance()->GetRenderStateData(currentHandle);
-				materialCustomStates->SetByteArray(it->first.c_str(), (uint8*)stateData, sizeof(RenderStateData));
+				const RenderStateData& stateData = RenderManager::Instance()->GetRenderStateData(currentHandle);
+				materialCustomStates->SetByteArray(it->first.c_str(), (uint8*)&stateData, sizeof(RenderStateData));
 			}
 			archive->SetArchive("materialCustomStates", materialCustomStates);
 			SafeRelease(materialCustomStates);
@@ -391,7 +389,7 @@ namespace DAVA
 				const uint8* array = it->second->AsByteArray();
 				memcpy(&stateData, array, sizeof(RenderStateData));
 				
-				UniqueHandle currentHandle = RenderManager::Instance()->AddRenderStateData(&stateData);
+				UniqueHandle currentHandle = RenderManager::Instance()->CreateRenderState(stateData);
 				instancePassRenderStates.insert(FastName(it->first.c_str()), currentHandle);
 			}
 		}
@@ -612,7 +610,7 @@ namespace DAVA
 				DVASSERT(clonedPass);
 				
 				clonedPass->dirtyState = true;
-				clonedPass->renderState.stateHandle = currentPass->renderState.stateHandle;
+				clonedPass->SetRenderStateHandle(currentPass->GetRenderStateHandle());
 			}
 		}
 		
@@ -621,7 +619,7 @@ namespace DAVA
 			++it)
 		{
 			clonedMaterial->instancePassRenderStates.insert(it->first, it->second);
-			RenderManager::Instance()->RetainRenderStateData(it->second);
+			RenderManager::Instance()->RetainRenderState(it->second);
 		}
 		
 		//DataNode properties
@@ -687,7 +685,7 @@ namespace DAVA
 			
 			if(IsTextureActive(textureFastName))
 			{
-                Texture* tx = Texture::CreateFromFile(texturePath);
+                Texture* tx = Texture::CreateFromFile(texturePath, FastName("albedo"));
 				bucket->SetTexture(tx);
                 SafeRelease(tx);
 			}
@@ -1007,16 +1005,6 @@ namespace DAVA
 			it != instancePasses.end();
 			++it)
 		{
-			RenderPassInstance* passInstance = it->second;
-			
-			//VI: TODO: make sure need to release shader
-			//SafeRelease(passInstance->renderState.shader);
-			
-			if(passInstance->renderState.textureState != InvalidUniqueHandle)
-			{
-				RenderManager::Instance()->ReleaseTextureStateData(passInstance->renderState.textureState);
-			}
-			
 			SafeDelete(it->second);
 		}
 		instancePasses.clear();
@@ -1077,19 +1065,22 @@ namespace DAVA
 		
 		if(passInstance->dirtyState)
 		{
-			passInstance->renderState.stateHandle = instancePassRenderStates.at(passName);
+			passInstance->SetRenderStateHandle(instancePassRenderStates.at(passName));
 		}
 		else
 		{
-			passInstance->renderState.stateHandle = parentRenderState->stateHandle;
+			passInstance->SetRenderStateHandle(parentRenderState->stateHandle);
 		}
 		
-		passInstance->renderState.textureState = InvalidUniqueHandle;
+		passInstance->SetTextureStateHandle(InvalidUniqueHandle);
 		passInstance->texturesDirty = false;
-		passInstance->renderState.shader = pass->CompileShader(instanceDefines);
-		passInstance->renderState.scissorRect = parentRenderState->scissorRect;
-		passInstance->renderState.renderer = parentRenderState->renderer;
-		passInstance->renderState.color = parentRenderState->color;
+        
+        Shader* shader = pass->CompileShader(instanceDefines);
+		passInstance->SetShader(shader);
+        SafeRelease(shader);
+        
+		passInstance->SetRenderer(parentRenderState->renderer);
+		passInstance->SetColor(parentRenderState->color);
 		
 		instancePasses.insert(passName, passInstance);
 		
@@ -1099,7 +1090,7 @@ namespace DAVA
 	
 	void NMaterial::BuildTextureParamsCache(RenderPassInstance* passInstance)
 	{
-		Shader* shader = passInstance->renderState.shader;
+		Shader* shader = passInstance->GetShader();
 		
 		uint32 uniformCount = shader->GetUniformCount();
 		for(uint32 uniformIndex = 0; uniformIndex < uniformCount; ++uniformIndex)
@@ -1121,7 +1112,7 @@ namespace DAVA
 	
 	void NMaterial::BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance)
 	{
-		Shader* shader = passInstance->renderState.shader;
+		Shader* shader = passInstance->GetShader();
 		passInstance->activeUniformsCache.clear();
 		
 		uint32 uniformCount = shader->GetUniformCount();
@@ -1217,7 +1208,7 @@ namespace DAVA
 			{
 				if(NULL == bucket->GetTexture())
 				{
-                    Texture* tx = Texture::CreateFromFile(bucket->GetPath());
+                    Texture* tx = Texture::CreateFromFile(bucket->GetPath(), FastName("albedo"));
 					bucket->SetTexture(tx);
                     SafeRelease(tx);
 				}
@@ -1289,23 +1280,17 @@ namespace DAVA
 			texIt != passInstance->textureIndexMap.end();
 			++texIt)
 		{
-			textureData.textures[texIt->second] = GetOrLoadTextureRecursive(texIt->first);
-			if(NULL == textureData.textures[texIt->second])
+			textureData.SetTexture(texIt->second, GetOrLoadTextureRecursive(texIt->first));
+			if(NULL == textureData.GetTexture(texIt->second))
 			{
 				//VI: this case is mostly for ResEditor
-				textureData.textures[texIt->second] = GetStubTexture(texIt->first);
+				textureData.SetTexture(texIt->second, GetStubTexture(texIt->first));
 			}
 		}
 		
-		//VI: this strange code ensures we do not release textures prematurely
-		//VI: in case if there's such texture state already and it's owned by us only
-		UniqueHandle oldHandle = passInstance->renderState.textureState;
-		passInstance->renderState.textureState = RenderManager::Instance()->AddTextureStateData(&textureData);
-		
-		if(InvalidUniqueHandle != oldHandle)
-		{
-			RenderManager::Instance()->ReleaseTextureStateData(oldHandle);
-		}
+		UniqueHandle textureState = RenderManager::Instance()->CreateTextureState(textureData);
+		passInstance->SetTextureStateHandle(textureState);
+		RenderManager::Instance()->ReleaseTextureState(textureState);
 		
 		passInstance->texturesDirty = false;
 	}
@@ -1353,7 +1338,7 @@ namespace DAVA
 		
 		BindMaterialTextures(activePassInstance);
 		
-		RenderManager::Instance()->FlushState(&activePassInstance->renderState);
+        activePassInstance->FlushState();
 		
 		BindMaterialProperties(activePassInstance);
 	}
@@ -1379,7 +1364,7 @@ namespace DAVA
 	
 	void NMaterial::BindMaterialProperties(RenderPassInstance* passInstance)
 	{
-		Shader* shader = passInstance->renderState.shader;
+		Shader* shader = passInstance->GetShader();
 		for(size_t i = 0; i < passInstance->activeUniformsCacheSize; ++i)
 		{
 			UniformCacheEntry& uniformEntry = passInstance->activeUniformsCachePtr[i];
@@ -1582,44 +1567,34 @@ namespace DAVA
 				NMaterial::PARAM_PROP_SPECULAR_COLOR == propName);
 	}
 	
-	const RenderStateData* NMaterial::GetRenderState(const FastName& passName) const
+	const RenderStateData& NMaterial::GetRenderState(const FastName& passName) const
 	{
 		RenderPassInstance* pass = instancePasses.at(passName);
 		DVASSERT(pass);
-		
-		const RenderStateData* state = NULL;
-		if(pass)
-		{
-			state = RenderManager::Instance()->GetRenderStateData(pass->renderState.stateHandle);
-		}
-		
-		return state;
+				
+		return RenderManager::Instance()->GetRenderStateData(pass->GetRenderStateHandle());;
 	}
 	
-	void NMaterial::SubclassRenderState(const FastName& passName, RenderStateData* newState)
+	void NMaterial::SubclassRenderState(const FastName& passName, RenderStateData& newState)
 	{
-		DVASSERT(newState);
-		
 		RenderPassInstance* pass = instancePasses.at(passName);
 		DVASSERT(pass);
 
 		if(pass)
 		{
-			DVASSERT(!pass->dirtyState || (pass->renderState.stateHandle == instancePassRenderStates.at(passName)));
+			DVASSERT(!pass->dirtyState || (pass->GetRenderStateHandle() == instancePassRenderStates.at(passName)));
+						
+            UniqueHandle stateHandle = RenderManager::Instance()->CreateRenderState(newState);
+            pass->SetRenderStateHandle(stateHandle);
+            RenderManager::Instance()->ReleaseRenderState(stateHandle);
 			
-			if(pass->dirtyState)
-			{
-				RenderManager::Instance()->ReleaseRenderStateData(pass->renderState.stateHandle);
-			}
-			
-			pass->renderState.stateHandle = RenderManager::Instance()->AddRenderStateData(newState);
 			pass->dirtyState = true;
 			
-			instancePassRenderStates.insert(passName, pass->renderState.stateHandle);
+			instancePassRenderStates.insert(passName, pass->GetRenderStateHandle());
 		}
 	}
 	
-	void NMaterial::SubclassRenderState(RenderStateData* newState)
+	void NMaterial::SubclassRenderState(RenderStateData& newState)
 	{
 		for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
 			it != instancePasses.end();
@@ -1644,8 +1619,11 @@ namespace DAVA
 			{
 				RenderPassInstance* pass = it->second;
 				RenderTechniquePass* techniquePass = baseTechnique->GetPassByName(it->first);
-				
-				pass->renderState.shader = techniquePass->CompileShader(effectiveFlags);
+                
+                Shader* shader = techniquePass->CompileShader(effectiveFlags);
+				pass->SetShader(shader);
+                SafeRelease(shader);
+                
 				BuildActiveUniformsCacheParamsCache(pass);
 			}
             
@@ -1752,13 +1730,13 @@ namespace DAVA
 	{
 		DVASSERT(target);
 		
-		const RenderStateData* currentData = target->GetRenderState(passName);
+		const RenderStateData& currentData = target->GetRenderState(passName);
 		RenderStateData newData;
-		memcpy(&newData, currentData, sizeof(RenderStateData));
+		memcpy(&newData, &currentData, sizeof(RenderStateData));
 		
 		newData.state = newData.state | stateFlags;
 		
-		target->SubclassRenderState(passName, &newData);
+		target->SubclassRenderState(passName, newData);
 	}
 	
 	void NMaterialHelper::DisableStateFlags(const FastName& passName,
@@ -1767,13 +1745,13 @@ namespace DAVA
 	{
 		DVASSERT(target);
 		
-		const RenderStateData* currentData = target->GetRenderState(passName);
+		const RenderStateData& currentData = target->GetRenderState(passName);
 		RenderStateData newData;
-		memcpy(&newData, currentData, sizeof(RenderStateData));
+		memcpy(&newData, &currentData, sizeof(RenderStateData));
 		
 		newData.state = newData.state & ~stateFlags;
 		
-		target->SubclassRenderState(passName, &newData);
+		target->SubclassRenderState(passName, newData);
 	}
 	
 	void NMaterialHelper::SetBlendMode(const FastName& passName,
@@ -1783,14 +1761,14 @@ namespace DAVA
 	{
         DVASSERT(target);
         
-		const RenderStateData* currentData = target->GetRenderState(passName);
+		const RenderStateData& currentData = target->GetRenderState(passName);
 		RenderStateData newData;
-		memcpy(&newData, currentData, sizeof(RenderStateData));
+		memcpy(&newData, &currentData, sizeof(RenderStateData));
 		
 		newData.sourceFactor = src;
 		newData.destFactor = dst;
 		
-		target->SubclassRenderState(passName, &newData);
+		target->SubclassRenderState(passName, newData);
 	}
 	
 	void NMaterialHelper::SwitchTemplate(NMaterial* material,
@@ -1829,9 +1807,9 @@ namespace DAVA
 		DVASSERT(mat);
 		
 		bool result = false;
-		const RenderStateData* currentData = mat->GetRenderState(passName);
+		const RenderStateData& currentData = mat->GetRenderState(passName);
 		
-		result = ((currentData->state & RenderStateData::STATE_CULL) == 0);
+		result = ((currentData.state & RenderStateData::STATE_CULL) == 0);
 		
 		return result;
 	}
@@ -1842,21 +1820,21 @@ namespace DAVA
     {
         DVASSERT(mat);
         
-        const RenderStateData* currentData = mat->GetRenderState(passName);
+        const RenderStateData& currentData = mat->GetRenderState(passName);
         RenderStateData newData;
-		memcpy(&newData, currentData, sizeof(RenderStateData));
+		memcpy(&newData, &currentData, sizeof(RenderStateData));
 		
 		newData.fillMode = fillMode;
 		
-		mat->SubclassRenderState(passName, &newData);
+		mat->SubclassRenderState(passName, newData);
     }
     
     eFillMode NMaterialHelper::GetFillMode(const FastName& passName, NMaterial* mat)
     {
         DVASSERT(mat);
         
-        const RenderStateData* currentData = mat->GetRenderState(passName);
-        return currentData->fillMode;
+        const RenderStateData& currentData = mat->GetRenderState(passName);
+        return currentData.fillMode;
     }
         
 	///////////////////////////////////////////////////////////////////////////
@@ -1905,7 +1883,7 @@ namespace DAVA
 
 			for(; it != end; ++it)
 			{
-				Shader *shader = it->second->renderState.shader;
+				Shader *shader = it->second->GetShader();
 				if(NULL != shader)
 				{
 					int32 uniformCount = shader->GetUniformCount();
@@ -2113,7 +2091,7 @@ namespace DAVA
 
 			for(; it != end; ++it)
 			{
-				Shader *shader = it->second->renderState.shader;
+				Shader *shader = it->second->GetShader();
 				if(NULL != shader)
 				{
 					int32 uniformCount = shader->GetUniformCount();

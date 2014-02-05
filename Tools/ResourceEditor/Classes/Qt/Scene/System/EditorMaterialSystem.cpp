@@ -27,6 +27,7 @@
 =====================================================================================*/
 
 #include "EditorMaterialSystem.h"
+#include "Settings/SettingsManager.h"
 #include "Project/ProjectManager.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/MaterialSystem.h"
@@ -39,7 +40,9 @@
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
 , curViewMode(MVM_ALL)
-{ }
+{ 
+    curViewMode = SettingsManager::Instance()->GetValue("MaterialsViewMode", SettingsManager::DEFAULT).AsInt32();
+}
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
@@ -116,7 +119,7 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 	}
 }
 
-int EditorMaterialSystem::GetViewMode() const
+int EditorMaterialSystem::GetViewMode()
 {
     return curViewMode;
 }
@@ -280,7 +283,7 @@ void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *
             //{
             //    if(parentTemplate == availableTemplates->at(j).path)
 
-                if(parent->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+                if(IsEditable(parent))
                 {
                     ownedParents.insert(parent);
                     parent->Retain();
@@ -297,4 +300,10 @@ void EditorMaterialSystem::RemoveMaterial(DAVA::NMaterial *material)
 {
     if(material)
         materialFeedback.erase(material);
+}
+
+bool EditorMaterialSystem::IsEditable(DAVA::NMaterial *material) const
+{
+    return (material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag || 
+            material->GetMaterialTemplateName() == DAVA::FastName("~res:/Materials/TileMask.material"));
 }

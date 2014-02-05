@@ -51,6 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
@@ -65,6 +66,8 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	ui->materialTree->setDragDropMode(QAbstractItemView::DragDrop);
 
 	ui->materialProperty->SetEditTracking(true);
+    //ui->materialProperty->setSortingEnabled(true);
+    //ui->materialProperty->header()->setSortIndicator(0, Qt::AscendingOrder);
 
 	// global scene manager signals
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
@@ -78,7 +81,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
-
+    QObject::connect(ui->actionMaterialReload, SIGNAL(triggered(bool)), this, SLOT(OnMaterialReload(bool)));
     QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
 
 	posSaver.Attach(this);
@@ -106,7 +109,7 @@ MaterialEditor::~MaterialEditor()
 	DAVA::VariantType v2(ui->materialProperty->header()->sectionSize(1));
 	posSaver.SaveValue("splitPosProperties", v1);
 	posSaver.SaveValue("splitPosPreview", v2);
-
+    
 	posSaver.SaveState(ui->splitter);
 }
 
@@ -489,7 +492,16 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
         }
 
         // enable template selection only for real materials, not instances
-        ui->templateBox->setEnabled(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL);
+        // but don't allow to change template for runtime materials
+        if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL &&
+            material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+        {
+            ui->templateBox->setEnabled(true);
+        }
+        else
+        {
+            ui->templateBox->setEnabled(false);
+        }
     }
     else
     {
@@ -643,4 +655,12 @@ QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
         }
     }
     return QVariant();
+}
+
+void MaterialEditor::OnMaterialReload(bool checked)
+{
+    if (curMaterial != 0)
+    {
+        
+    }
 }

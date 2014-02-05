@@ -40,19 +40,19 @@
 namespace DAVA
 {
     
-static const uint32 RENDER_TARGET_WIDTH = 1024;
-static const uint32 RENDER_TARGET_HEIGHT = 512;
+static const uint32 RENDER_TARGET_WIDTH = 1024 / 4;
+static const uint32 RENDER_TARGET_HEIGHT = 512 / 4;
     
     
 StaticOcclusion::StaticOcclusion()
-    : manager(5000)
+    : manager(10000)
 {
     staticOcclusionRenderPass = 0;
     renderTargetSprite = 0;
     renderTargetTexture = 0;
     currentData = 0;
 }
-    
+
 StaticOcclusion::~StaticOcclusion()
 {
     SafeDelete(renderPassBatchArray);
@@ -121,6 +121,8 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
         renderObjects[k]->SetStaticOcclusionIndex((uint16)k);
     
     renderObjectsArray = renderObjects;
+    
+    recordedBatches.reserve(10000);
 }
     
 void StaticOcclusion::SetEqualVisibilityVector(Map<RenderObject*, Vector<RenderObject*> > & equalVisibility)
@@ -218,6 +220,10 @@ uint32 StaticOcclusion::RenderFrame()
         {3, 0, 2},
     };
     
+    uint64 timeTotalWaiting = 0;
+    uint64 timeTotalCulling = 0;
+    uint64 timeTotalRendering = 0;
+
     for (uint32 side = 0; side < 4; ++side)
     {
         Camera * camera = cameras[side];
@@ -273,44 +279,84 @@ uint32 StaticOcclusion::RenderFrame()
                     
                     camera->SetupDynamicParameters();
                     
-                    recordedBatches.clear();
-                    
+                    uint64 timeCulling = SystemTimer::Instance()->GetAbsoluteNano();
+
                     visibilityArray.Clear();
                     renderHierarchy->Clip(camera, &visibilityArray);
 
                     renderPassBatchArray->Clear();
                     renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera);
-                    
+
+                    timeCulling = SystemTimer::Instance()->GetAbsoluteNano() - timeCulling;
+                    timeTotalCulling += timeCulling;
+
+                    uint64 timeRendering = SystemTimer::Instance()->GetAbsoluteNano();
                     staticOcclusionRenderPass->Draw(camera, renderPassBatchArray);
+                    timeRendering = SystemTimer::Instance()->GetAbsoluteNano() - timeRendering;
+                    timeTotalRendering += timeRendering;
                     
+                    RenderManager::Instance()->RestoreRenderTarget();
+
                     size_t size = recordedBatches.size();
-                    for (size_t k = 0; k < size; ++k)
+                    if (size > 8000)
                     {
-                        std::pair<RenderBatch*, OcclusionQueryManagerHandle> & batchInfo = recordedBatches[k];
-                        OcclusionQuery & query = manager.Get(batchInfo.second);
-                        while (!query.IsResultAvailable())
+                        for (size_t k = 0; k < size; ++k)
                         {
+                            std::pair<RenderBatch*, OcclusionQueryManagerHandle> & batchInfo = recordedBatches[k];
+                            OcclusionQuery & query = manager.Get(batchInfo.second);
+                            
+                            uint64 timeWaiting = SystemTimer::Instance()->GetAbsoluteNano();
+                            while (!query.IsResultAvailable())
+                            {
+                            }
+                            timeWaiting = SystemTimer::Instance()->GetAbsoluteNano() - timeWaiting;
+                            timeTotalWaiting += timeWaiting;
+                            
+                            uint32 result;
+                            query.GetQuery(&result);
+                            if (result != 0)
+                            {
+                                frameGlobalVisibleInfo.insert(batchInfo.first->GetRenderObject());
+                            }
+                            manager.ReleaseQueryObject(batchInfo.second);
                         }
-                        uint32 result;
-                        query.GetQuery(&result);
-                        if (result != 0)
-                        {
-                            frameGlobalVisibleInfo.insert(batchInfo.first->GetRenderObject());
-                        }
-                        manager.ReleaseQueryObject(batchInfo.second);
+                        recordedBatches.clear();
                     }
 
-                    RenderManager::Instance()->RestoreRenderTarget();
                     
-                    if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
-                    {
-                        Image * image = renderTargetTexture->CreateImageFromMemory();
-                        ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
-                        SafeRelease(image);
-                    }
+//                    if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
+//                    {
+//                        Image * image = renderTargetTexture->CreateImageFromMemory();
+//                        ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
+//                        SafeRelease(image);
+//                    }
                 }
         
     }
+
+    size_t size = recordedBatches.size();
+    for (size_t k = 0; k < size; ++k)
+    {
+        std::pair<RenderBatch*, OcclusionQueryManagerHandle> & batchInfo = recordedBatches[k];
+        OcclusionQuery & query = manager.Get(batchInfo.second);
+        
+        uint64 timeWaiting = SystemTimer::Instance()->GetAbsoluteNano();
+        while (!query.IsResultAvailable())
+        {
+        }
+        timeWaiting = SystemTimer::Instance()->GetAbsoluteNano() - timeWaiting;
+        timeTotalWaiting += timeWaiting;
+        
+        uint32 result;
+        query.GetQuery(&result);
+        if (result != 0)
+        {
+            frameGlobalVisibleInfo.insert(batchInfo.first->GetRenderObject());
+        }
+        manager.ReleaseQueryObject(batchInfo.second);
+    }
+    recordedBatches.clear();
+
     
     // Invisible on every frame
     uint32 invisibleObjectCount =  (uint32)renderObjectsArray.size() - frameGlobalVisibleInfo.size();
@@ -346,7 +392,12 @@ uint32 StaticOcclusion::RenderFrame()
     
     t1 = SystemTimer::Instance()->GetAbsoluteNano() - t1;
 
-    Logger::FrameworkDebug(Format("Object count:%d Vis Count: %d Invisible Object Count:%d time: %0.9llf", renderObjectsArray.size(), visibleCount, invisibleObjectCount, (double)t1 / 1e+9).c_str());
+    Logger::FrameworkDebug(Format("Object count:%d Vis Count: %d Invisible Object Count:%d time: %0.9llf waitTime: %0.9llf cullTime: %0.9llf renderTime: %0.9llf",
+                                  renderObjectsArray.size(), visibleCount, invisibleObjectCount,
+                                  (double)t1 / 1e+9,
+                                  (double)timeTotalWaiting / 1e+9,
+                                  (double)timeTotalCulling / 1e+9,
+                                  (double)timeTotalRendering / 1e+9).c_str());
     
     //RenderManager::Instance()->SetRenderTarget((Texture*)0);
     

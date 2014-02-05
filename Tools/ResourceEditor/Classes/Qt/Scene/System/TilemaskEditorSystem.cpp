@@ -73,14 +73,14 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 	
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
 	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	memcpy(&noBlendStateData, &default3dState, sizeof(noBlendStateData));
 	
 	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
 	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->CreateRenderState(noBlendStateData);
 }
 
 TilemaskEditorSystem::~TilemaskEditorSystem()
@@ -93,7 +93,7 @@ TilemaskEditorSystem::~TilemaskEditorSystem()
 	SafeRelease(toolSprite);
 	SafeRelease(stencilSprite);
 
-	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
+	RenderManager::Instance()->ReleaseRenderState(noBlendDrawState);
 }
 
 LandscapeEditorDrawSystem::eErrorType TilemaskEditorSystem::IsCanBeEnabled()
@@ -413,13 +413,14 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->SetRenderData(srcSprite->spriteRenderObject);
 
 	TextureStateData textureStateData;
-	textureStateData.textures[0] = srcSprite->GetTexture();
-	textureStateData.textures[1] = toolSprite->GetTexture();
+    
+	textureStateData.SetTexture(0, srcSprite->GetTexture());
+	textureStateData.SetTexture(1, toolSprite->GetTexture());
 	if (activeDrawingType == TILEMASK_DRAW_COPY_PASTE)
 	{
-		textureStateData.textures[2] = stencilSprite->GetTexture();
+		textureStateData.SetTexture(2, stencilSprite->GetTexture());
 	}
-	UniqueHandle textureState = RenderManager::Instance()->AddTextureStateData(&textureStateData);
+	UniqueHandle textureState = RenderManager::Instance()->CreateTextureState(textureStateData);
 
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
 	RenderManager::Instance()->SetTextureState(textureState);
@@ -451,7 +452,7 @@ void TilemaskEditorSystem::UpdateBrushTool()
 	RenderManager::Instance()->RestoreRenderTarget();
 	RenderManager::Instance()->SetColor(Color::White);
 
-	RenderManager::Instance()->ReleaseTextureStateData(textureState);
+	RenderManager::Instance()->ReleaseTextureState(textureState);
 
 //	srcSprite->GetTexture()->GenerateMipmaps();
 //	dstSprite->GetTexture()->GenerateMipmaps();

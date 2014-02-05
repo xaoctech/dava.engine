@@ -223,6 +223,7 @@ public:
 
     void Bind();
     static void Unbind();
+    
 	static bool IsAutobindUniform(eShaderSemantic uniformId);
 
     inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
@@ -241,17 +242,6 @@ public:
     //int32 FindUniformLocationByName(const FastName & name);
     int32 FindUniformIndexByName(const FastName & name);
     
-    /*void SetUniformValue(int32 uniformLocation, int32 value);
-    void SetUniformValue(int32 uniformLocation, float32 value);
-    void SetUniformValue(int32 uniformLocation, int32 count, int32 * value);
-    void SetUniformValue(int32 uniformLocation, int32 count, float32 * value);
-    void SetUniformValue(int32 uniformLocation, const Vector2 & vector);
-    void SetUniformValue(int32 uniformLocation, const Vector3 & vector);
-    void SetUniformColor3(int32 uniformLocation, const Color & color);
-    void SetUniformColor4(int32 uniformLocation, const Color & color);
-    void SetUniformValue(int32 uniformLocation, const Vector4 & vector);
-    void SetUniformValue(int32 uniformLocation, const Matrix4 & matrix);*/
-
     void SetUniformValueByIndex(int32 uniformIndex, eUniformType uniformType, uint32 arraySize, void * data);
 	void SetUniformValueByIndex(int32 uniformIndex, int32 value);
     void SetUniformValueByIndex(int32 uniformIndex, float32 value);
@@ -281,26 +271,14 @@ public:
     /**
         This function return vertex format required by shader
      */
-    //virtual uint32 GetVertexFormat();
-    //virtual uint32 GetAttributeIndex(eVertexFormat fmt);
-    
-//#if defined(__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
-//	virtual void SaveToSystemMemory();
-//	virtual void Lost();
-//	virtual void Invalidate();
-//    String relativeFileName;
-//#endif //#if defined(__DAVAENGINE_ANDROID__) 
 
 #if defined(__DAVAENGINE_ANDROID__)
 	virtual void Lost();
 	virtual void Invalidate();
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
-    
 private:
 #if defined(__DAVAENGINE_DIRECTX9__)
-    
-    
 #elif defined(__DAVAENGINE_OPENGL__)
     String shaderDefines;
     GLuint vertexShader;
@@ -310,12 +288,6 @@ private:
     FastName *attributeNames;
     GLint activeAttributes;
     GLint activeUniforms;
-
-//    eUniform *uniformIDs;
-//    String * uniformNames;
-//    GLint * uniformLocations;
-//    GLint * uniformSizes;
-//    eUniformType * uniformTypes;
 	
 	uint16* uniformOffsets;
 	uint8* uniformData;

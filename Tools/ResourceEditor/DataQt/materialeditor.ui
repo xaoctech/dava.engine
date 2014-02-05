@@ -41,6 +41,7 @@
      <addaction name="separator"/>
      <addaction name="actionAutoExpand"/>
      <addaction name="actionSwitchQuality"/>
+     <addaction name="actionMaterialReload"/>
     </widget>
    </item>
    <item>
@@ -194,6 +195,11 @@
   <action name="actionSwitchQuality">
    <property name="text">
     <string>switchQuality</string>
+   </property>
+  </action>
+  <action name="actionMaterialReload">
+   <property name="text">
+    <string>MaterialReload</string>
    </property>
   </action>
   <actiongroup name="filterType">

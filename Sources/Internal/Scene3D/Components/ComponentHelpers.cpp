@@ -94,16 +94,23 @@ ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 	return NULL;
 }
 
+LightComponent *GetLightComponent(Entity * fromEntity)
+{
+    if(NULL != fromEntity)
+    {
+        return static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
+    }
+
+    return NULL;
+}
+
 Light * GetLight( Entity * fromEntity )
 {
-	if(NULL != fromEntity)
-	{
-		LightComponent * component = static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
-		if(component)
-		{
-			return component->GetLightObject();
-		}
-	}
+    LightComponent * component = GetLightComponent(fromEntity);
+    if(component)
+    {
+        return component->GetLightObject();
+    }
 
 	return NULL;
 }
@@ -160,12 +167,13 @@ SwitchComponent * GetSwitchComponent(Entity *fromEntity)
 uint32 GetLodLayersCount(Entity *fromEntity)
 {
     if (!fromEntity) return 0;
+	
+	if(GetEffectComponent(fromEntity)) 
+		return LodComponent::MAX_LOD_LAYERS;
 
     RenderObject *object = GetRenderObject(fromEntity);
-    if(!object) return 0;
-    
-    if(object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
-        return 0;
+    if(!object) 
+		return 0;
     
     return (object->GetMaxLodIndex() + 1);
 }
@@ -174,11 +182,14 @@ uint32 GetLodLayersCount(LodComponent *fromComponent)
 {
     if(!fromComponent) return 0;
 
-    RenderObject *object = GetRenderObject(fromComponent->GetEntity());
-    if(!object) return 0;
-    
-    if(object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
-        return 0;
+    Entity *entity = fromComponent->GetEntity();
+
+	if(GetEffectComponent(entity)) 
+		return LodComponent::MAX_LOD_LAYERS;
+
+	RenderObject *object = GetRenderObject(entity);
+	if(!object) 
+		return 0;
     
     return (object->GetMaxLodIndex() + 1);
 }
