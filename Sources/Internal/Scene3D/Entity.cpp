@@ -681,7 +681,7 @@ namespace DAVA
 	void Entity::BakeTransforms()
 	{
 		uint32 size = (uint32)children.size();
-		if(size == 1 && (0 == GetComponent(Component::LOD_COMPONENT))) // propagate matrices
+		if(size == 1 && (0 == GetComponent(Component::LOD_COMPONENT)) && (0 == GetComponent(Component::SWITCH_COMPONENT))) // propagate matrices
 		{
 			for (uint32 c = 0; c < size; ++c)
 			{
