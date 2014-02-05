@@ -68,7 +68,7 @@ MoveHood::MoveHood() : HoodObject(4.0f)
 	axisYZ2 = CreateLine(DAVA::Vector3(0, 0, c), DAVA::Vector3(0, c, c));
 	axisYZ2->axis = ST_AXIS_YZ;
 	
-	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData hoodStateData;
 	memcpy(&hoodStateData, &default3dState, sizeof(hoodStateData));
 	

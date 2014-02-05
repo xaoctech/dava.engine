@@ -53,7 +53,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape, Entity* node)
 		texturesEnabled[i] = false;
 	}
 	
-	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
+	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
 	memcpy(&noBlendStateData, &default2dState, sizeof(noBlendStateData));
 	
@@ -205,7 +205,7 @@ void LandscapeProxy::SetRulerToolTextureEnabled(bool enabled)
 
 void LandscapeProxy::UpdateDisplayedTexture()
 {
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->SetTextureState(fullTiledTextureState);
 	RenderManager::Instance()->FlushState();
 
@@ -362,8 +362,8 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 	{
 		SafeRelease(fullTiledTexture);
 
-		RenderManager::Instance()->SetDefault2DState();
-		RenderManager::Instance()->SetEmptyTextureState();
+		RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+		RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
 		RenderManager::Instance()->FlushState();
 //		baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GenerateMipmaps();
 
