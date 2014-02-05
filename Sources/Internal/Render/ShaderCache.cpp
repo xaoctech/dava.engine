@@ -106,7 +106,7 @@ void ShaderAsset::BindShaderDefaults(Shader * shader)
         {
             const DefaultValue & value = defaultValues.at(uniform->name);
             shader->SetUniformValueByIndex(ui, value.int32Value);
-            Logger::Debug("Assign: %s = %d", uniform->name.c_str(), value.int32Value);
+            //Logger::FrameworkDebug("Assign: %s = %d", uniform->name.c_str(), value.int32Value);
         }
     }
     shader->Unbind();

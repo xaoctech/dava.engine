@@ -330,11 +330,6 @@ protected:
 
 public:							// properties for fast access
 
-	FastName		debugInfo;
-
-	TextureInvalidater* invalidater;
-    TextureDescriptor *texDescriptor;
-
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 	uint32		fboID;			// id of frame buffer object
@@ -358,6 +353,11 @@ public:							// properties for fast access
     bool         renderTargetAutosave:1;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
+    FastName		debugInfo;
+	TextureInvalidater* invalidater;
+    TextureDescriptor *texDescriptor;
+
+    
     static TexturesMap textureMap;
     static eGPUFamily defaultGPU;
     
