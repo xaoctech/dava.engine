@@ -72,13 +72,13 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	propEditor->setMinimumHeight(0);
 	propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
 
-	Entity* entityToAdd = new Entity();
-	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(new SwitchComponent());
-	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
-	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
-	SetEntity(entityToAdd);
-	SafeRelease(entityToAdd);
+// 	Entity* entityToAdd = new Entity();
+// 	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
+// 	entityToAdd->AddComponent(new SwitchComponent());
+// 	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
+// 	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+// 	SetEntity(entityToAdd);
+// 	SafeRelease(entityToAdd);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()

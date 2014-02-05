@@ -62,6 +62,7 @@ class ParticleRenderObject : public RenderObject
 	void PrepareRenderData(Camera * camera);
     Matrix4* effectMatrix;
 	Vector<uint16> indices;
+    uint32 sortingOffset;
 public:
 	ParticleRenderObject(ParticleEffectData *effect);
 	~ParticleRenderObject();
@@ -71,6 +72,8 @@ public:
 	
     void SetEffectMatrix(Matrix4 *matrix);
     Matrix4 *GetEffectMatrix();
+
+    void SetSortingOffset(uint32 offset);
 
 	virtual void RecalcBoundingBox(){}
 	virtual void RecalculateWorldBoundingBox(){

@@ -2155,6 +2155,10 @@
 		EAADA0011892A458001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
 		EAADA01E189FCB09001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
 		EAADA01F189FCB30001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
+		EAADA02818A26524001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
+		EAADA02918A26525001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
+		EAADA02A18A2652A001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
+		EAADA02B18A2652A001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
 		FE44432A114D8DF600F5EFD6 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE444329114D8DF600F5EFD6 /* ApplicationServices.framework */; };
 		FE578C601327927C0081BDE9 /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5D1327927C0081BDE9 /* libogg_macos.a */; };
 		FE578C611327927C0081BDE9 /* libvorbis_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5E1327927C0081BDE9 /* libvorbis_macos.a */; };
@@ -4415,6 +4419,7 @@
 				CC84B02118211A9000934482 /* JobManager.h in Headers */,
 				176DE9D6174B5561007A983B /* SceneFile.h in Headers */,
 				176DE9D7174B5561007A983B /* SceneFileV2.h in Headers */,
+				EAADA02B18A2652A001E1AA2 /* UIParticles.h in Headers */,
 				176DE9D8174B5561007A983B /* SceneManager.h in Headers */,
 				176DE9D9174B5561007A983B /* SceneNodeAnimation.h in Headers */,
 				176DE9DA174B5561007A983B /* SceneNodeAnimationKey.h in Headers */,
@@ -4972,6 +4977,7 @@
 				E898A07416BD265400732C04 /* IntrospectionProperty.h in Headers */,
 				E898A07516BD265400732C04 /* Mallocator.h in Headers */,
 				E898A07616BD265400732C04 /* Message.h in Headers */,
+				EAADA02A18A2652A001E1AA2 /* UIParticles.h in Headers */,
 				E898A07716BD265400732C04 /* Meta.h in Headers */,
 				E898A07816BD265400732C04 /* ObjectCreator.h in Headers */,
 				E898A07916BD265400732C04 /* ObjectFactory.h in Headers */,
@@ -5689,6 +5695,7 @@
 				176DEB41174B5561007A983B /* LandscapeCursor.cpp in Sources */,
 				176DEB42174B5561007A983B /* Light.cpp in Sources */,
 				176DEB43174B5561007A983B /* Mesh.cpp in Sources */,
+				EAADA02918A26525001E1AA2 /* UIParticles.cpp in Sources */,
 				176DEB45174B5561007A983B /* RenderBatch.cpp in Sources */,
 				176DEB46174B5561007A983B /* RenderLayer.cpp in Sources */,
 				176DEB47174B5561007A983B /* RenderObject.cpp in Sources */,
@@ -6106,6 +6113,7 @@
 				E898A1A416BD265400732C04 /* AutotestingSystem.cpp in Sources */,
 				E898A1A516BD265400732C04 /* MongodbUpdateObject.cpp in Sources */,
 				E898A1A716BD265400732C04 /* BaseMath.cpp in Sources */,
+				EAADA02818A26524001E1AA2 /* UIParticles.cpp in Sources */,
 				A6931ACE1868569D00006294 /* RenderTechnique.cpp in Sources */,
 				E898A1A816BD265400732C04 /* BaseObject.cpp in Sources */,
 				E898A1A916BD265400732C04 /* BaseObjectChecker.cpp in Sources */,
