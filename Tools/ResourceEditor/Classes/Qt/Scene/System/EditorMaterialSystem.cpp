@@ -283,7 +283,7 @@ void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *
             //{
             //    if(parentTemplate == availableTemplates->at(j).path)
 
-                if(parent->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+                if(IsEditable(parent))
                 {
                     ownedParents.insert(parent);
                     parent->Retain();
@@ -300,4 +300,10 @@ void EditorMaterialSystem::RemoveMaterial(DAVA::NMaterial *material)
 {
     if(material)
         materialFeedback.erase(material);
+}
+
+bool EditorMaterialSystem::IsEditable(DAVA::NMaterial *material) const
+{
+    return (material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag || 
+            material->GetMaterialTemplateName() == DAVA::FastName("~res:/Materials/TileMask.material"));
 }
