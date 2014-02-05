@@ -490,41 +490,6 @@ void StructureSystem::CheckAndMarkSolid(DAVA::Entity *entity)
 	}
 }
 
-void StructureSystem::CheckAndMarkLocked(DAVA::Entity *entity)
-{
-	if(NULL != entity)
-	{
-		// mark lod childs as locked
-		if(NULL != entity->GetComponent(DAVA::Component::LOD_COMPONENT))
-		{
-			for(int i = 0; i < entity->GetChildrenCount(); ++i)
-			{
-				MarkLocked(entity->GetChild(i));
-			}
-		}
-		else
-		{
-			for(int i = 0; i < entity->GetChildrenCount(); ++i)
-			{
-				CheckAndMarkLocked(entity->GetChild(i));
-			}
-		}
-	}
-}
-
-void StructureSystem::MarkLocked(DAVA::Entity *entity)
-{
-	if(NULL != entity)
-	{
-		entity->SetLocked(true);
-
-		for(int i = 0; i < entity->GetChildrenCount(); ++i)
-		{
-			MarkLocked(entity->GetChild(i));
-		}
-	}
-}
-
 DAVA::Entity* StructureSystem::Load(const DAVA::FilePath& sc2path, bool optimize)
 {
 	return LoadInternal(sc2path, optimize, false);
@@ -568,7 +533,6 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 
 				loadedEntity->GetCustomProperties()->SetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, sc2path.GetAbsolutePathname());
                 
-                CheckAndMarkLocked(loadedEntity);
                 CheckAndMarkSolid(loadedEntity);
 			}
 

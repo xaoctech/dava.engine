@@ -83,6 +83,18 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 		{
 			Entity * sourceEntity = entity->GetChild(i);
 			RenderObject * sourceRenderObject = GetRenderObject(sourceEntity);
+			
+			//workaround for custom properties for crashed model
+			if(1 == i) // crash model
+			{
+				KeyedArchive *childProps = sourceEntity->GetCustomProperties();
+				if(childProps->IsKeyExists("CollisionType"))
+				{	
+					KeyedArchive *entityProps = entity->GetCustomProperties();
+					entityProps->SetInt32("CollisionTypeCrashed", childProps->GetInt32("CollisionType", 0));
+				}
+			}
+			//end of custom properties
 
             Vector<std::pair<Entity*, RenderObject*> > renderPairs;
             if(sourceRenderObject)
