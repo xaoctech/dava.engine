@@ -88,6 +88,10 @@ void SwitchSystem::SetSwitchHierarchy(Entity * entity, int32 switchIndex)
     RenderObject * ro = GetRenderObject(entity);
 	if(ro)
     {
+#ifdef __DAVAENGINE_DEBUG__
+        int32 maxSwitchIndex = ro->GetMaxSwitchIndex();
+        DVASSERT(switchIndex <= maxSwitchIndex);
+#endif
         ro->SetSwitchIndex(switchIndex);
     }
 
