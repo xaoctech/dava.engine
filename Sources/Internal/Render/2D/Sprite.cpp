@@ -58,6 +58,49 @@ Vector<Vector2> Sprite::clippedVertices;
 
 Mutex Sprite::spriteMapMutex;
 
+Sprite::DrawState::DrawState()
+{
+    Reset();
+    
+    renderState = RenderState::RENDERSTATE_2D_BLEND;
+    RenderManager::Instance()->RetainRenderState(renderState);
+    shader = SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+}
+
+Sprite::DrawState::~DrawState()
+{
+    RenderManager::Instance()->ReleaseRenderState(renderState);
+    SafeRelease(shader);
+}
+
+void Sprite::DrawState::SetRenderState(UniqueHandle _renderState)
+{
+    if(_renderState != renderState)
+    {
+        if(renderState != InvalidUniqueHandle)
+        {
+            RenderManager::Instance()->ReleaseRenderState(renderState);
+        }
+            
+        renderState = _renderState;
+            
+        if(renderState != InvalidUniqueHandle)
+        {
+            RenderManager::Instance()->RetainRenderState(renderState);
+        }
+    }
+}
+
+void Sprite::DrawState::SetShader(Shader* _shader)
+{
+    if(_shader != shader)
+    {
+        SafeRelease(shader);
+        shader = SafeRetain(_shader);
+    }
+}
+
+
 Sprite::Sprite()
 {
 	textures = 0;
@@ -1204,6 +1247,8 @@ void Sprite::Draw()
 	{
 		return;
 	}
+    
+    RENDERER_UPDATE_STATS(spriteDrawCount++);
 
     PrepareSpriteRenderData(0);
 
@@ -1233,7 +1278,6 @@ void Sprite::Draw()
         RenderManager::Instance()->ClipRect( clipRect );
     }
 
-    //RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
     RenderManager::Instance()->SetRenderData(spriteRenderObject);
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
@@ -1253,6 +1297,8 @@ void Sprite::Draw(DrawState * state)
 	{
 		return;
 	}
+    
+    RENDERER_UPDATE_STATS(spriteDrawCount++);
 
 #if !defined (NEW_PPA)
 	if (state->usePerPixelAccuracy)
@@ -1287,11 +1333,11 @@ void Sprite::Draw(DrawState * state)
 		RenderManager::Instance()->ClipRect( clipRect );
 	}
 
-	//RenderManager::Instance()->SetTexture(textures[frameTextureIndex[frame]]);
+    RenderManager::Instance()->SetRenderState(state->renderState);
 	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
-	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
+    RenderManager::Instance()->SetRenderEffect(state->shader);
+ 	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 
 	if( clipPolygon )
 	{
@@ -1344,6 +1390,8 @@ void Sprite::DrawPoints(Vector2 *verticies)
 	{
 		return;
 	}
+    
+    RENDERER_UPDATE_STATS(spriteDrawCount++);
 
 	float32 x = drawCoord.x;
 	float32 y = drawCoord.y;
@@ -1756,10 +1804,11 @@ void Sprite::RegisterTextureStates()
     {
         if(textures[i])
         {
+            //VI: always set "0" texture for each sprite part
 			TextureStateData data;
-			data.textures[0] = textures[i];
+			data.SetTexture(0, textures[i]);
 			
-			textureHandles[i] = RenderManager::Instance()->AddTextureStateData(&data);
+			textureHandles[i] = RenderManager::Instance()->CreateTextureState(data);
 		}
 	}
 }
@@ -1770,7 +1819,7 @@ void Sprite::UnregisterTextureStates()
     {
 		if(textureHandles[i] != InvalidUniqueHandle)
 		{
-			RenderManager::Instance()->ReleaseTextureStateData(textureHandles[i]);
+			RenderManager::Instance()->ReleaseTextureState(textureHandles[i]);
 		}
 	}
 }

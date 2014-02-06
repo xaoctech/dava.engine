@@ -62,6 +62,7 @@ public:
 
 protected:
 	VisibilityArray * visibilityArray;
+
 };
 
 class LinearRenderHierarchy : public RenderHierarchy

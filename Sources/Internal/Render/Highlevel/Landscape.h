@@ -129,34 +129,11 @@ public:
      */
     void SetLods(const Vector4 & lods);
     
-
-    enum eTiledShaderMode
-    {
-        TILED_MODE_TILEMASK = 0,
-        TILED_MODE_TEXTURE,
-        TILED_MODE_MIXED,
-        TILED_MODE_TILE_DETAIL_MASK, 
-        
-        TILED_MODE_COUNT
-    };
     
     const static FastName PARAM_TILE_COLOR0;
 	const static FastName PARAM_TILE_COLOR1;
 	const static FastName PARAM_TILE_COLOR2;
 	const static FastName PARAM_TILE_COLOR3;
-
-    
-    /**
-     \brief Change rendering mode. 
-     \param[in] renderingMode rendering mode of landscape.
-     */
-    void SetTiledShaderMode(eTiledShaderMode _tiledShaderMode);
-    
-    /**
-     \brief Get rendering mode. 
-     \returns rendering mode of landscape.
-     */
-    inline eTiledShaderMode GetTiledShaderMode();
 
     
     /**
@@ -440,8 +417,6 @@ protected:
     
     int32 flashQueueCounter;
     
-    uint32 tiledShaderMode;
-    
     int32 nearLodIndex;
     int32 farLodIndex;
     
@@ -480,8 +455,6 @@ public:
 
 	    INTROSPECTION_EXTEND(Landscape, RenderObject,
          
-        MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
-
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
         PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
         PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
@@ -495,12 +468,6 @@ public:
     
 };
 
-    
-inline Landscape::eTiledShaderMode Landscape::GetTiledShaderMode()
-{
-    return (eTiledShaderMode)tiledShaderMode;
-}
-    
 };
 
 #endif // __DAVAENGINE_LANDSCAPE_NODE_H__

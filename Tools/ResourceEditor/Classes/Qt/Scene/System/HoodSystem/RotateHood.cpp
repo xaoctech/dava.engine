@@ -70,15 +70,15 @@ RotateHood::RotateHood() : HoodObject(4.0f)
 		ly = y;
 	}
 	
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData hoodStateData;
-	memcpy(&hoodStateData, default3dState, sizeof(hoodStateData));
+	memcpy(&hoodStateData, &default3dState, sizeof(hoodStateData));
 	
 	hoodStateData.state =	DAVA::RenderStateData::STATE_BLEND |
 							DAVA::RenderStateData::STATE_COLORMASK_ALL;
 	hoodStateData.sourceFactor = DAVA::BLEND_SRC_ALPHA;
 	hoodStateData.destFactor = DAVA::BLEND_ONE_MINUS_SRC_ALPHA;
-	hoodDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&hoodStateData);
+	hoodDrawState = DAVA::RenderManager::Instance()->CreateRenderState(hoodStateData);
 }
 
 RotateHood::~RotateHood()

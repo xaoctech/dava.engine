@@ -36,7 +36,6 @@
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/LandscapeSetTexturesCommands.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
-#include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "Main/QtUtils.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "MaterialEditor/MaterialEditor.h"
@@ -253,7 +252,6 @@ void LandscapeDialog::ActionButtonClicked()
 		//	newLandscape->SetTexture((Landscape::eTextureLevel)i, pinkTexture);
 		//	SafeRelease(pinkTexture);
 		//}
-		newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
 		RenderComponent* component = new RenderComponent(ScopedPtr<Landscape>(newLandscape));
 		entityToProcess->AddComponent(component);
 

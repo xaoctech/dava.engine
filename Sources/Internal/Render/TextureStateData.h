@@ -37,12 +37,8 @@ namespace DAVA
 	class Texture;
 	class TextureStateData
 	{
-		friend class TextureStateDataUniqueHandler;
-	public:
-		
-		uint32 minmaxTextureIndex; //VI: calculated in TextureStateDataUniqueHandler::Assign
-		Texture* textures[MAX_TEXTURE_COUNT];
-		
+        friend class RenderState;
+        
 	public:
 		
 		TextureStateData()
@@ -56,24 +52,96 @@ namespace DAVA
 			minmaxTextureIndex = src.minmaxTextureIndex;
 			memcpy(textures, src.textures, sizeof(textures));
 			
-			//RetainAll();
+			RetainAll();
 		}
+        
+        ~TextureStateData()
+        {
+            ReleaseAll();
+        }
 		
 		TextureStateData& operator=(const TextureStateData& src)
 		{
 			if(this != &src)
 			{
 				minmaxTextureIndex = src.minmaxTextureIndex;
-				
-				ReleaseAll();
-				
-				memcpy(textures, src.textures, sizeof(textures));
-				
-				RetainAll();
-			}
+                
+                for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
+                {
+                    Texture* tmp = textures[i];
+                    
+                    textures[i] = SafeRetain(src.textures[i]);
+                    
+                    SafeRelease(tmp);
+                }
+ 			}
 			
 			return *this;
 		}
+        
+        void SetTexture(uint32 index, Texture* tx)
+        {
+            DVASSERT(index >= 0 && index < MAX_TEXTURE_COUNT);
+            
+            if(textures[index] != tx)
+            {
+                SafeRelease(textures[index]);
+                textures[index] = SafeRetain(tx);
+                
+                uint32 minIndex = 0;
+                uint32 maxIndex = 0;
+                GetMinMaxIndices(minIndex, maxIndex);
+                
+                if(index < minIndex)
+                {
+                    minmaxTextureIndex = ((minmaxTextureIndex & 0xFFFFFF00) | index);
+                }
+                else if(index > maxIndex)
+                {
+                    minmaxTextureIndex = ((minmaxTextureIndex & 0xFFFF00FF) | (index << 8));
+                }
+            }
+        }
+        
+        Texture* GetTexture(uint32 index)
+        {
+            DVASSERT(index >= 0 && index < MAX_TEXTURE_COUNT);
+            return textures[index];
+        }
+        
+        inline void GetMinMaxIndices(uint32& minIndex, uint32& maxIndex) const
+        {
+            minIndex = minmaxTextureIndex & 0x000000FF;
+			maxIndex = ((minmaxTextureIndex & 0x0000FF00) >> 8);
+        }
+        
+        void Clear()
+        {
+            ReleaseAll();
+        }
+        
+        bool Equals(const TextureStateData& data) const
+        {
+            bool dataEquals = (minmaxTextureIndex == data.minmaxTextureIndex);
+            if(dataEquals)
+            {
+                uint32 minIndex = 0;
+                uint32 maxIndex = 0;
+                GetMinMaxIndices(minIndex, maxIndex);
+
+                for(uint32 i = minIndex; (i <= maxIndex) && dataEquals; ++i)
+                {
+                    dataEquals = dataEquals && (textures[i] == data.textures[i]);
+                }
+            }
+            
+            return dataEquals;
+        }
+        
+    private:
+    
+        uint32 minmaxTextureIndex;
+		Texture* textures[MAX_TEXTURE_COUNT];
 
 	private:
 		
@@ -84,15 +152,6 @@ namespace DAVA
 				SafeRelease(textures[i]);
 			}
 		}
-
-		void ReleaseAll(Texture* tx[MAX_TEXTURE_COUNT])
-		{
-			for(size_t i = 0; i < MAX_TEXTURE_COUNT; ++i)
-			{
-				SafeRelease(tx[i]);
-			}
-		}
-
 		
 		void RetainAll()
 		{
@@ -100,36 +159,6 @@ namespace DAVA
 			{
 				SafeRetain(textures[i]);
 			}
-		}
-		
-		void CalculateMinMaxTextureIndex()
-		{
-			uint32 minIndex = 0;
-			
-			for(uint32 i = 0; i < MAX_TEXTURE_COUNT; ++i)
-			{
-				if(textures[i])
-				{
-					minIndex = i;
-					break;
-				}
-			}
-			
-			uint32 maxIndex = minIndex;
-			for(uint32 i = MAX_TEXTURE_COUNT - 1; i > 0; --i)
-			{
-				if(textures[i])
-				{
-					maxIndex = i;
-					break;
-				}
-			}
-			
-			DVASSERT(maxIndex >= minIndex);
-			DVASSERT(minIndex >= 0 && minIndex < MAX_TEXTURE_COUNT);
-			DVASSERT(maxIndex >= 0 && maxIndex < MAX_TEXTURE_COUNT);
-			
-			minmaxTextureIndex = (minIndex | (maxIndex << 8));
 		}
 	};
 };

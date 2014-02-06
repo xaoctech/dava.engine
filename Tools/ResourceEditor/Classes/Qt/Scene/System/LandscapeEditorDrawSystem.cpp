@@ -55,14 +55,14 @@ LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 ,	visibilityToolProxy(NULL)
 ,	rulerToolProxy(NULL)
 {
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	memcpy(&noBlendStateData, &default3dState, sizeof(noBlendStateData));
 	
 	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
 	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->CreateRenderState(noBlendStateData);
 }
 
 LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
@@ -77,7 +77,7 @@ LandscapeEditorDrawSystem::~LandscapeEditorDrawSystem()
 
 	SafeDelete(notPassableTerrainProxy);
 
-	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
+	RenderManager::Instance()->ReleaseRenderState(noBlendDrawState);
 }
 
 LandscapeProxy* LandscapeEditorDrawSystem::GetLandscapeProxy()
@@ -619,11 +619,6 @@ void LandscapeEditorDrawSystem::ResetTileMaskTexture()
 	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
 }
 
-Landscape::eTiledShaderMode LandscapeEditorDrawSystem::GetLandscapeTiledShaderMode()
-{
-	return baseLandscape->GetTiledShaderMode();
-}
-
 LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape()
 {
 	//landscape initialization should be handled by AddEntity/RemoveEntity methods
@@ -652,36 +647,10 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape
 
 	Texture* texTile0 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE0);
 	
-	if (baseLandscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK &&
-		(texTile0 == NULL || texTile0->IsPinkPlaceholder()))
+	if ((texTile0 == NULL || texTile0->IsPinkPlaceholder()))
 	{
 		return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_TEXTURE_ABSENT;
-	}
-	else if (baseLandscape->GetTiledShaderMode() != Landscape::TILED_MODE_TILE_DETAIL_MASK)
-	{
-		if (texTile0 == NULL || texTile0->IsPinkPlaceholder())
-		{
-			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE0_TEXTURE_ABSENT;
-		}
-		
-		Texture* texTile1 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE1);
-		if (texTile1 == NULL || texTile1->IsPinkPlaceholder())
-		{
-			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_TEXTURE_ABSENT;
-		}
-
-		Texture* texTile2 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE2);
-		if (texTile2 == NULL || texTile2->IsPinkPlaceholder())
-		{
-			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_TEXTURE_ABSENT;
-		}
-
-		Texture* texTile3 = baseLandscape->GetTexture(Landscape::TEXTURE_TILE3);
-		if (texTile3 == NULL || texTile3->IsPinkPlaceholder())
-		{
-			return LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_TEXTURE_ABSENT;
-		}
-	}
+    }
 
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }

@@ -190,7 +190,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 			
 			Color color;
 
-			RenderManager::Instance()->SetDefault2DNoTextureState();
+			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			RenderManager::Instance()->FlushState();
 
 			if(PickColor(tanRight, color))

@@ -140,7 +140,7 @@ void LODEditor::LODCorrectionChanged(double value)
     if(spinBox)
     {
         //TODO set new value to scene
-        int lodLevel = spinBox->property("tag").toInt();
+//        int lodLevel = spinBox->property("tag").toInt();
         
         UpdateSpinboxColor(spinBox);
     }
@@ -220,12 +220,12 @@ void LODEditor::SceneDeactivated(SceneEditor2 *scene)
 
 void LODEditor::LODDataChanged()
 {
-    DAVA::int32 lodLayersCount = editedLODData->GetLayersCount();
+    DAVA::uint32 lodLayersCount = editedLODData->GetLayersCount();
     
     ui->distanceSlider->SetLayersCount(lodLayersCount);
     SetForceLayerValues(lodLayersCount);
     
-    for (DAVA::int32 i = 0; i < lodLayersCount; ++i)
+    for (DAVA::uint32 i = 0; i < lodLayersCount; ++i)
     {
         distanceWidgets[i].SetVisible(true);
         
@@ -254,7 +254,7 @@ void LODEditor::LODDistanceChangedBySlider(const QVector<int> &changedLayers, bo
 
 	if(changedLayers.size() != 0)
 	{
-		DAVA::Map<DAVA::int32, DAVA::float32> lodDistances;
+		DAVA::Map<DAVA::uint32, DAVA::float32> lodDistances;
 		for (int i = 0; i < changedLayers.size(); i++)
 		{
 			int layer = changedLayers[i];

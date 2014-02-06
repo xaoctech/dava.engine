@@ -48,22 +48,22 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, selectionAllowed(true)
 	, selectionHasChanges(false)
 {
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData selectionStateData;
-	memcpy(&selectionStateData, default3dState, sizeof(selectionStateData));
+	memcpy(&selectionStateData, &default3dState, sizeof(selectionStateData));
 	
 	selectionStateData.state =	DAVA::RenderStateData::STATE_BLEND |
 								DAVA::RenderStateData::STATE_COLORMASK_ALL;
 	selectionStateData.sourceFactor = DAVA::BLEND_SRC_ALPHA;
 	selectionStateData.destFactor = DAVA::BLEND_ONE_MINUS_SRC_ALPHA;
 	
-	selectionNormalDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&selectionStateData);
+	selectionNormalDrawState = DAVA::RenderManager::Instance()->CreateRenderState(selectionStateData);
 
 	selectionStateData.state =	DAVA::RenderStateData::STATE_BLEND |
 								DAVA::RenderStateData::STATE_COLORMASK_ALL |
 								DAVA::RenderStateData::STATE_DEPTH_TEST;
 	
-	selectionDepthDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&selectionStateData);
+	selectionDepthDrawState = DAVA::RenderManager::Instance()->CreateRenderState(selectionStateData);
 }
 
 SceneSelectionSystem::~SceneSelectionSystem()
@@ -199,6 +199,7 @@ void SceneSelectionSystem::Draw()
 		//DAVA::RenderManager::Instance()->SetState(newState);
 		//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
 		
+        DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 		DAVA::RenderManager::Instance()->SetRenderState((!(drawMode & ST_SELDRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState);
 		DAVA::RenderManager::Instance()->FlushState();
 

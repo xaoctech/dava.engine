@@ -80,5 +80,16 @@
  name: "Landscape"
  path: TileMask.material
 -
- name: "Test"
- path: Test.material
+ name: "VertexLit Reflection"
+ path: VertexLit.Reflection.Opaque.material
+-
+ name: "PixelLit SpecularMap Reflection Opaque"
+ path: PixelLit.SpecularMap.Reflection.Opaque.material
+-
+ name: "WaterPerVertex Cubemap"
+ path: WaterPerVertexCubemap.material
+-
+ name: "WaterPerPixel Cubemap"
+ path: WaterPerPixelCubemap.material
+
+ 

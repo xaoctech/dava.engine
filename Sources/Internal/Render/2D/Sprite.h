@@ -53,6 +53,7 @@ enum eSpriteModification
 	ESM_VFLIP = 1<<1
 };
 
+class Shader;
 class Texture;
 
 /**
@@ -65,12 +66,14 @@ class Texture;
 class Sprite : public BaseObject
 {
 public:
-	struct DrawState
+	class DrawState
 	{
-		DrawState()
-		{
-			Reset();
-		}
+        friend class Sprite;
+        
+    public:
+    
+		DrawState();
+        ~DrawState();
 
 		Vector2 position;
 		Vector2 pivotPoint;
@@ -92,6 +95,26 @@ public:
 		inline void SetFlags(uint32 flags);
 		inline void SetPerPixelAccuracyUsage(bool needToUse);
 		void BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState);
+        
+        void SetShader(Shader* _shader);
+        
+        inline Shader* GetShader() const
+        {
+            return shader;
+        }
+        
+        void SetRenderState(UniqueHandle _renderState);
+        
+        inline UniqueHandle GetRenderState()
+        {
+            return renderState;
+        }
+        
+    private:
+    
+        Shader* shader;
+        UniqueHandle renderState;
+
 	};
 
 

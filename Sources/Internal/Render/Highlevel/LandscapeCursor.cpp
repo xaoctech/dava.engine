@@ -31,6 +31,7 @@
 #include "LandscapeCursor.h"
 #include "Render/RenderManager.h"
 #include "FileSystem/FilePath.h"
+#include "Render/ShaderCache.h"
 
 namespace DAVA
 {
@@ -39,22 +40,20 @@ LandscapeCursor::LandscapeCursor()
 {
 	textureHandle = InvalidUniqueHandle;
 
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/Landscape/cursor.shader");
-	shader->Recompile();
+	shader = SafeRetain(ShaderCache::Instance()->Get(FastName("~res:/Materials/Shaders/Landscape/cursor"), FastNameSet()));
 
 	uniformTexture = shader->FindUniformIndexByName(FastName("texture0"));
 	uniformPosition = shader->FindUniformIndexByName(FastName("position"));
 	uniformScale = shader->FindUniformIndexByName(FastName("scale"));
 	
 	RenderManager* rm = RenderManager::Instance();
-	const RenderStateData* default3dState = rm->GetRenderStateData(rm->GetDefault3DStateHandle());
+	const RenderStateData& default3dState = rm->GetRenderStateData(RenderState::RENDERSTATE_3D_BLEND);
 	
 	RenderStateData renderStateData;
-	memcpy(&renderStateData, default3dState, sizeof(renderStateData));
+	memcpy(&renderStateData, &default3dState, sizeof(renderStateData));
 	
 	renderStateData.depthFunc = CMP_LEQUAL;
-	renderState = rm->AddRenderStateData(&renderStateData);
+	renderState = rm->CreateRenderState(renderStateData);
 }
 
 void LandscapeCursor::Prepare()

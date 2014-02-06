@@ -122,12 +122,10 @@
 #include "Render/Image.h"
 #include "Render/ImageLoader.h"
 #include "Render/Shader.h"
+#include "Render/ShaderCache.h"
 
 #include "Core/DisplayMode.h"
 #include "Render/RenderManager.h"
-
-#include "Render/RenderEffect.h"
-#include "Render/RenderGrayscaleEffect.h"
 
 #include "Render/RenderHelper.h"
 
@@ -204,9 +202,6 @@
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/Particle.h"
-#include "Particles/ParticleEmitterObject.h"
-#include "Particles/ParticleEmitter3D.h"
-#include "Particles/ParticleLayer3D.h"
 
 // 3D core classes
 #include "Scene3D/SceneFile.h"

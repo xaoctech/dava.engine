@@ -56,8 +56,6 @@
 #include "Classes/Qt/SpeedTreeImport/SpeedTreeImportDialog.h"
 #endif
 
-#include "Tools/SelectPathWidget/SelectEntityPathWidget.h"
-
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
 #include "../Tools/LandscapeDialog/LandscapeDialog.h"
 
@@ -165,6 +163,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
     
 	LoadGPUFormat();
+    LoadMaterialLightViewMode();
 
     EnableGlobalTimeout(globalInvalidate);
 
@@ -449,18 +448,15 @@ void QtMainWindow::SetupToolBars()
 		reloadTexturesBtn->setAutoRaise(false);
 	}
 
-    // adding menu for textures view mode
+    // adding menu for material light view mode
     {
-        QToolButton *setTexturesMode = new QToolButton();
-        setTexturesMode->setMenu(ui->menuTextures);
-        setTexturesMode->setPopupMode(QToolButton::InstantPopup);
-        //reloadTexturesBtn->setDefaultAction(ui->actionReloadTextures);
-        //reloadTexturesBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-        //reloadTexturesBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-        //ui->mainToolBar->addSeparator();
-        ui->mainToolBar->addWidget(setTexturesMode);
-        setTexturesMode->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-        setTexturesMode->setAutoRaise(false);
+        QToolButton *setLightViewMode = new QToolButton();
+        setLightViewMode->setMenu(ui->menuLightView);
+        setLightViewMode->setPopupMode(QToolButton::InstantPopup);
+        setLightViewMode->setDefaultAction(ui->actionSetLightViewMode);
+        ui->mainToolBar->addWidget(setLightViewMode);
+        setLightViewMode->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        setLightViewMode->setAutoRaise(false);
     }
 
 	//hanging objects	
@@ -506,6 +502,9 @@ void QtMainWindow::SetupStatusBar()
 {
 	QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), ui->statusBar, SLOT(SceneActivated(SceneEditor2 *)));
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), ui->statusBar, SLOT(SceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), ui->statusBar, SLOT(CommandExecuted(SceneEditor2 *, const Command2*, bool)));
+	QObject::connect(SceneSignals::Instance(), SIGNAL(StructureChanged(SceneEditor2 *, DAVA::Entity *)), ui->statusBar, SLOT(StructureChanged(SceneEditor2 *, DAVA::Entity *)));
+
 	QObject::connect(this, SIGNAL(GlobalInvalidateTimeout()), ui->statusBar, SLOT(UpdateByTimer()));
 
 	QToolButton *gizmoStatusBtn = new QToolButton();
@@ -581,10 +580,10 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
 	QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
 
-    QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialAlbedo(bool)));
-    QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialAmbient(bool)));
-    QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialDiffuse(bool)));
-    QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialSpecular(bool)));
+    QObject::connect(ui->actionAlbedo, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
+    QObject::connect(ui->actionAmbient, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
+    QObject::connect(ui->actionDiffuse, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
+    QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
 	
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
 	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
@@ -630,6 +629,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
+    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(OnEditor2DCameraDialog()));
+    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(OnEditorSpriteDialog()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
@@ -729,8 +730,6 @@ void QtMainWindow::SetupShortCuts()
 #if defined (__DAVAENGINE_WIN32__)
 	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
 #endif
-    
-    QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectWillClose(Request*)), ui->sceneTabWidget, SLOT(CloseAllTabs(Request*)));
 }
 
 void QtMainWindow::InitRecent()
@@ -790,7 +789,8 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadLandscapeEditorState(scene);
 	LoadObjectTypes(scene);
 	LoadHangingObjects(scene);
-    LoadMaterialViewMode(scene);
+
+    OnMaterialLightViewChanged(true);
 
 	int32 tools = scene->GetEnabledTools();
 	SetLandscapeSettingsEnabled(tools == 0);
@@ -861,6 +861,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionEnableCameraLight->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
 	ui->actionReloadSprites->setEnabled(enable);
+    ui->actionSetLightViewMode->setEnabled(enable);
 
 	ui->actionLandscape->setEnabled(enable);
 	ui->actionSaveHeightmapToPNG->setEnabled(enable);
@@ -879,6 +880,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuCreateNode->setEnabled(enable);
 	ui->menuComponent->setEnabled(enable);
 	ui->menuScene->setEnabled(enable);
+    ui->menuLightView->setEnabled(enable);
+    ui->menuTexturesForGPU->setEnabled(enable);
     
     ui->sceneToolBar->setEnabled(enable);
 	ui->actionConvertModifiedTextures->setEnabled(enable);
@@ -898,13 +901,21 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 
 void QtMainWindow::OnProjectOpen()
 {
+    if(!ui->sceneTabWidget->CloseAllTabs())
+    {
+        return;
+    }
 	QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
 	ProjectManager::Instance()->ProjectOpen(newPath);
 }
 
 void QtMainWindow::OnProjectClose()
 {
-    //all tabs will be closed in ProjectClose
+    // TODO:
+	// Close all scenes
+	// ...
+	//
+
 	ProjectManager::Instance()->ProjectClose();
 }
 
@@ -1352,7 +1363,6 @@ void QtMainWindow::OnAddLandscape()
     entityToProcess->SetName(ResourceEditor::LANDSCAPE_NODE_NAME);
     entityToProcess->SetLocked(true);
     Landscape* newLandscape = new Landscape();
-    newLandscape->SetTiledShaderMode(Landscape::TILED_MODE_TILE_DETAIL_MASK);
     RenderComponent* component = new RenderComponent();
     component->SetRenderObject(newLandscape);
 	newLandscape->Release();
@@ -1462,6 +1472,62 @@ void QtMainWindow::OnParticleEffectDialog()
 		sceneEditor->selectionSystem->SetSelection(sceneNode);
 	}
 	SafeRelease(sceneNode);
+}
+
+void QtMainWindow::OnEditor2DCameraDialog()
+{
+    Entity* sceneNode = new Entity();
+    Camera * camera = new Camera();
+    
+    float32 w = Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin();
+    float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
+    float32 aspect = w / h;
+    camera->SetupOrtho(w, aspect, 1, 1000);        
+    camera->SetPosition(Vector3(0,-500, 0));
+    camera->SetTarget(Vector3(0, 0, 0));  
+    camera->SetUp(Vector3(0, 0, 1));
+    camera->RebuildCameraFromValues();        
+
+    sceneNode->AddComponent(new CameraComponent(camera));
+    sceneNode->SetName(ResourceEditor::EDITOR_2D_CAMERA);
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(sceneNode);
+    }
+    SafeRelease(sceneNode);
+    SafeRelease(camera);
+}
+void QtMainWindow::OnEditorSpriteDialog()
+{
+    FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+    projectPath += "Data/Gfx/";
+
+    QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.txt)"));
+    if (filePath.isEmpty())
+        return;        
+    filePath.remove(filePath.size() - 4, 4);
+    Sprite* sprite = Sprite::Create(filePath.toStdString());
+    if (!sprite)
+        return;
+
+    Entity *sceneNode = new Entity();
+    sceneNode->SetName(ResourceEditor::EDITOR_SPRITE);
+    SpriteObject *spriteObject = new SpriteObject(sprite, 0, Vector2(1,1), Vector2(0.5f*sprite->GetWidth(), 0.5f*sprite->GetHeight()));
+    spriteObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
+    sceneNode->AddComponent(new RenderComponent(spriteObject));    
+    Matrix4 m = Matrix4(1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1);
+    sceneNode->SetLocalTransform(m);
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(sceneNode);
+    }
+    SafeRelease(sceneNode);
+    SafeRelease(spriteObject);
+    SafeRelease(sprite);
 }
 
 void QtMainWindow::OnAddEntityFromSceneTree()
@@ -1598,6 +1664,16 @@ void QtMainWindow::LoadGPUFormat()
 			actionN->setChecked(false);
 		}
 	}
+}
+
+void QtMainWindow::LoadMaterialLightViewMode()
+{
+    int curViewMode = SettingsManager::Instance()->GetValue("materialsLightViewMode", SettingsManager::INTERNAL).AsInt32();
+
+    ui->actionAlbedo->setChecked((bool) (curViewMode & EditorMaterialSystem::LIGHTVIEW_ALBEDO));
+    ui->actionAmbient->setChecked((bool) (curViewMode & EditorMaterialSystem::LIGHTVIEW_AMBIENT));
+    ui->actionSpecular->setChecked((bool) (curViewMode & EditorMaterialSystem::LIGHTVIEW_SPECULAR));
+    ui->actionDiffuse->setChecked((bool) (curViewMode & EditorMaterialSystem::LIGHTVIEW_DIFFUSE));
 }
 
 void QtMainWindow::LoadLandscapeEditorState(SceneEditor2* scene)
@@ -2478,62 +2554,29 @@ void QtMainWindow::OnHangingObjectsHeight( double value)
 	DebugDrawSystem::HANGING_OBJECTS_HEIGHT = (DAVA::float32) value;
 }
 
-void QtMainWindow::OnMaterialAlbedo(bool state)
+void QtMainWindow::OnMaterialLightViewChanged(bool)
 {
-    SceneEditor2* scene = GetCurrentScene();
-    if(NULL != scene)
-    {
-        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_ALBEDO, state);
-        LoadMaterialViewMode(scene);
-    }
-}
+    int newMode = EditorMaterialSystem::LIGHTVIEW_NOTHING;
 
-void QtMainWindow::OnMaterialAmbient(bool state)
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(NULL != scene)
-    {
-        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_AMBIENT, state);
-        LoadMaterialViewMode(scene);
-    }
-}
+    if(ui->actionAlbedo->isChecked()) newMode |= EditorMaterialSystem::LIGHTVIEW_ALBEDO;
+    if(ui->actionDiffuse->isChecked()) newMode |= EditorMaterialSystem::LIGHTVIEW_DIFFUSE;
+    if(ui->actionAmbient->isChecked()) newMode |= EditorMaterialSystem::LIGHTVIEW_AMBIENT;
+    if(ui->actionSpecular->isChecked()) newMode |= EditorMaterialSystem::LIGHTVIEW_SPECULAR;
 
-void QtMainWindow::OnMaterialDiffuse(bool state)
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(NULL != scene)
+    if(newMode != SettingsManager::Instance()->GetValue("materialsLightViewMode", SettingsManager::INTERNAL).AsInt32())
     {
-        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_DIFFUSE, state);
-        LoadMaterialViewMode(scene);
+        SettingsManager::Instance()->SetValue("materialsLightViewMode", DAVA::VariantType(newMode), SettingsManager::INTERNAL);
     }
-}
 
-void QtMainWindow::OnMaterialSpecular(bool state)
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(NULL != scene)
+    if(NULL != GetCurrentScene())
     {
-        scene->materialSystem->SetViewMode(EditorMaterialSystem::MVM_SPECULAR, state);
-        LoadMaterialViewMode(scene);
+        GetCurrentScene()->materialSystem->SetLightViewMode(newMode);
     }
 }
 
 void QtMainWindow::OnCustomQuality()
 {
     QualitySwitcher::Show();
-}
-
-void QtMainWindow::LoadMaterialViewMode(SceneEditor2 *scene)
-{
-    if(NULL != scene)
-    {
-        int curViewMode = scene->materialSystem->GetViewMode();
-        
-        ui->actionAlbedo->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_ALBEDO));
-        ui->actionAmbient->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_AMBIENT));
-        ui->actionSpecular->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_SPECULAR));
-        ui->actionDiffuse->setChecked((bool) (curViewMode & EditorMaterialSystem::MVM_DIFFUSE));
-    }
 }
 
 void QtMainWindow::UpdateConflictingActionsState(bool enable)

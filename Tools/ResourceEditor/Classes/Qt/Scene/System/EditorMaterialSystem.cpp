@@ -27,20 +27,27 @@
 =====================================================================================*/
 
 #include "EditorMaterialSystem.h"
+#include "Settings/SettingsManager.h"
 #include "Project/ProjectManager.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/MaterialSystem.h"
+#include "Commands2/Command2.h"
+#include "Commands2/CommandBatch.h"
+#include "Commands2/DeleteRenderBatchCommand.h"
+#include "Commands2/DeleteLODCommand.h"
+#include "Commands2/CreatePlaneLODCommand.h"
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
-, curViewMode(MVM_ALL)
+, curViewMode(LIGHTVIEW_ALL)
 { }
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
 	while(materialFeedback.size() > 0)
 	{
-		RemMaterial(materialFeedback.begin()->first);
+        DVASSERT(false);
+		RemoveMaterial(materialFeedback.begin()->first);
 	}
 
 	while(ownedParents.size() > 0)
@@ -64,9 +71,9 @@ DAVA::Entity* EditorMaterialSystem::GetEntity(DAVA::NMaterial* material) const
 	return entity;
 }
 
-DAVA::RenderBatch* EditorMaterialSystem::GetRenderBatch(DAVA::NMaterial* material) const
+const DAVA::RenderBatch* EditorMaterialSystem::GetRenderBatch(DAVA::NMaterial* material) const
 {
-	DAVA::RenderBatch *batch = NULL;
+	const DAVA::RenderBatch *batch = NULL;
 
 	auto it = materialFeedback.find(material);
 	if(it != materialFeedback.end())
@@ -110,17 +117,17 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 	}
 }
 
-int EditorMaterialSystem::GetViewMode() const
+int EditorMaterialSystem::GetLightViewMode()
 {
     return curViewMode;
 }
 
-bool EditorMaterialSystem::GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const
+bool EditorMaterialSystem::GetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode) const
 {
     return (bool) (curViewMode & viewMode);
 }
 
-void EditorMaterialSystem::SetViewMode(int fullViewMode)
+void EditorMaterialSystem::SetLightViewMode(int fullViewMode)
 {
     if(curViewMode != fullViewMode)
     {
@@ -136,7 +143,7 @@ void EditorMaterialSystem::SetViewMode(int fullViewMode)
     }
 }
 
-void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set)
+void EditorMaterialSystem::SetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode, bool set)
 {
     int newMode = curViewMode;
 
@@ -149,7 +156,7 @@ void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode vi
         newMode &= ~viewMode;
     }
 
-    SetViewMode(newMode);
+    SetLightViewMode(newMode);
 }
 
 void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
@@ -157,41 +164,12 @@ void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
 	DAVA::RenderObject *ro = GetRenderObject(entity);
 	if(NULL != ro)
 	{
-        const QVector<ProjectManager::AvailableMaterialTemplate> *availableTemplates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
-
         for(DAVA::uint32 i = 0; i < ro->GetRenderBatchCount(); ++i)
 		{
 			DAVA::RenderBatch *rb  = ro->GetRenderBatch(i);
 			DAVA::NMaterial *material = rb->GetMaterial();
 
-			if(NULL != material)
-			{
-				MaterialFB fb;
-
-				fb.entity = entity;
-				fb.batch = rb;
-
-				materialFeedback[material] = fb;
-
-				// remember parent material, if still isn't
-				DAVA::NMaterial *parent = material->GetParent();
-				if(NULL != parent && 0 == ownedParents.count(parent))
-				{
-                    QString parentTemplate = parent->GetMaterialTemplateName().c_str();
-
-                    for(int j = 0; j < availableTemplates->size(); ++j)
-                    {
-                        if(parentTemplate == availableTemplates->at(j).path)
-                        {
-                            ownedParents.insert(parent);
-                            parent->Retain();
-
-                            ApplyViewMode(parent);
-                            break;
-                        }
-                    }
-				}
-			}
+            AddMaterial(material, entity, rb);
 		}
 	}
 }
@@ -206,10 +184,7 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 			DAVA::RenderBatch *rb = ro->GetRenderBatch(i);
 			DAVA::NMaterial *material = rb->GetMaterial();
 
-			if(NULL != material)
-			{
-				materialFeedback.erase(material);
-			}
+            RemoveMaterial(material);
 		}
 	}
 }
@@ -218,16 +193,16 @@ void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
 {
     DAVA::NMaterial::eFlagValue flag;
 
-    (curViewMode & MVM_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
 
-    (curViewMode & MVM_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
 
-    (curViewMode & MVM_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWSPECULAR, flag);
 
-    (curViewMode & MVM_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWAMBIENT, flag);
 }
 
@@ -243,7 +218,40 @@ void EditorMaterialSystem::Draw()
 
 void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
 {
-
+    //TODO: VK: need to be redesigned after command notification will be changed
+    int commandID = command->GetId();
+    if(commandID == CMDID_LOD_DELETE)
+    {
+        DeleteLODCommand *lodCommand = (DeleteLODCommand *)command;
+        const DAVA::Vector<DeleteRenderBatchCommand *> batchCommands = lodCommand->GetRenderBatchCommands();
+        
+        const DAVA::uint32 count = (const DAVA::uint32)batchCommands.size();
+        for (DAVA::uint32 i = 0; i < count; ++i)
+        {
+            DAVA::RenderBatch *batch = batchCommands[i]->GetRenderBatch();
+            if(redo)
+            {
+                RemoveMaterial(batch->GetMaterial());
+            }
+            else
+            {
+                AddMaterial(batch->GetMaterial(), lodCommand->GetEntity(), batch);
+            }
+        }
+    }
+    else if(commandID == CMDID_LOD_CREATE_PLANE)
+    {
+        CreatePlaneLODCommand *lodCommand = (CreatePlaneLODCommand *)command;
+        DAVA::RenderBatch *batch = lodCommand->GetRenderBatch();
+        if(redo)
+        {
+            AddMaterial(batch->GetMaterial(), lodCommand->GetEntity(), batch);
+        }
+        else
+        {
+            RemoveMaterial(batch->GetMaterial());
+        }
+    }
 }
 
 void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -251,6 +259,49 @@ void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 }
 
-void EditorMaterialSystem::RemMaterial(DAVA::NMaterial *material)
+void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, const DAVA::RenderBatch *rb)
 {
+    if(NULL != material)
+    {
+        MaterialFB fb;
+        
+        fb.entity = entity;
+        fb.batch = rb;
+        
+        materialFeedback[material] = fb;
+        
+        // remember parent material, if still isn't
+        DAVA::NMaterial *parent = material->GetParent();
+        if(NULL != parent && 0 == ownedParents.count(parent))
+        {
+            //const QVector<ProjectManager::AvailableMaterialTemplate> *availableTemplates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
+
+            //QString parentTemplate = parent->GetMaterialTemplateName().c_str();
+            //for(int j = 0; j < availableTemplates->size(); ++j)
+            //{
+            //    if(parentTemplate == availableTemplates->at(j).path)
+
+                if(IsEditable(parent))
+                {
+                    ownedParents.insert(parent);
+                    parent->Retain();
+                    
+                    ApplyViewMode(parent);
+                    //break;
+                }
+            //}
+        }
+    }
+}
+
+void EditorMaterialSystem::RemoveMaterial(DAVA::NMaterial *material)
+{
+    if(material)
+        materialFeedback.erase(material);
+}
+
+bool EditorMaterialSystem::IsEditable(DAVA::NMaterial *material) const
+{
+    return (material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag || 
+            material->GetMaterialTemplateName() == DAVA::FastName("~res:/Materials/TileMask.material"));
 }

@@ -361,7 +361,7 @@ void RulerToolSystem::DrawPoints()
 			Vector3 startPosition = (startPoint - offsetPoint) * koef;
 			Vector3 endPosition = (endPoint - offsetPoint) * koef;
 
-			RenderManager::Instance()->SetDefault2DNoTextureState();
+			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 			RenderManager::Instance()->FlushState();
 
 			RenderHelper::Instance()->DrawLine(DAVA::Vector3(startPosition.x, startPosition.y, 0),

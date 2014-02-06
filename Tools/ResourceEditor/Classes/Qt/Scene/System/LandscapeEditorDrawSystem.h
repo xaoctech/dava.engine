@@ -116,8 +116,6 @@ public:
 	void SaveTileMaskTexture();
 	void ResetTileMaskTexture();
 
-	Landscape::eTiledShaderMode GetLandscapeTiledShaderMode();
-
 	eErrorType VerifyLandscape();
 
 	Landscape * GetBaseLandscape() const;
