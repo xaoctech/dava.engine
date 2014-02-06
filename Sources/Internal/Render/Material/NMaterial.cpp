@@ -943,7 +943,7 @@ namespace DAVA
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
         
-        materialSortKey = materialSortKey = (uint16)((pointer_size)parent);
+        materialSortKey = (uint16)((pointer_size)parent);
 		
 		bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
 		
@@ -1802,6 +1802,22 @@ namespace DAVA
 		
 		return result;
 	}
+    
+    bool NMaterialHelper::IsAlphablend(const FastName& passName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+        
+        bool result = false;
+        
+        if(mat->instancePasses.count(passName) > 0)
+        {
+            RenderStateData currentData = mat->GetRenderState(passName);
+		
+            result = ((currentData.state & RenderStateData::STATE_BLEND) != 0);
+        }
+		
+		return result;
+    }
 	
 	bool NMaterialHelper::IsTwoSided(const FastName& passName, NMaterial* mat)
 	{

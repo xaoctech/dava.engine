@@ -87,8 +87,11 @@ void ProjectManager::ProjectOpen(const QString &path)
 {
 	if(path != curProjectPath)
 	{
-		ProjectClose();
-
+        if (CanCloseProject() == false)
+        {
+            return;
+        }
+        InnerProjectClose();
 		curProjectPath = path;
 
 		if(!curProjectPath.isEmpty())
@@ -131,15 +134,29 @@ void ProjectManager::ProjectOpenLast()
 
 void ProjectManager::ProjectClose()
 {
+    if (CanCloseProject())
+    {
+        InnerProjectClose();
+    }
+}
+
+bool ProjectManager::CanCloseProject()
+{
+    Request closeRequest;
+    emit ProjectWillClose(&closeRequest);
+    
+    return closeRequest.IsAccepted();
+}
+
+void ProjectManager::InnerProjectClose()
+{
 	if("" != curProjectPath)
 	{
 		FilePath path = curProjectPath.toStdString();
 		path.MakeDirectoryPathname();
-
-		DAVA::FilePath::RemoveResourcesFolder(path);
-
-		curProjectPath = "";
-		emit ProjectClosed();
+        DAVA::FilePath::RemoveResourcesFolder(path);
+        curProjectPath = "";
+        emit ProjectClosed();
 	}
 }
 

@@ -27,7 +27,6 @@
 =====================================================================================*/
 
 #include "Main/mainwindow.h"
-#include "Main/Request.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
@@ -200,14 +199,14 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	return tabIndex;
 }
 
-void SceneTabWidget::CloseTab(int index)
+bool SceneTabWidget::CloseTab(int index)
 {
     Request request;
     
     emit CloseTabRequest(index, &request);
     
     if(!request.IsAccepted())
-        return;
+        return false;
     
     
 	SceneEditor2 *scene = GetTabScene(index);
@@ -220,6 +219,7 @@ void SceneTabWidget::CloseTab(int index)
     
     tabBar->removeTab(index);
     SafeRelease(scene);
+    return true;
 }
 
 int SceneTabWidget::GetCurrentTab() const
@@ -576,6 +576,25 @@ int SceneTabWidget::FindTab( const DAVA::FilePath & scenePath )
 	}
 
 	return -1;
+}
+
+void SceneTabWidget::CloseAllTabs(Request* closeRequest)
+{
+    if(!closeRequest->IsAccepted())
+    {
+        return;
+    }
+    uint32 count = GetTabCount();
+    while(count)
+    {
+        if(!CloseTab(GetCurrentTab()))
+        {
+            closeRequest->Cancel();
+            return;
+        }
+        count--;
+    }
+    closeRequest->Accept();
 }
 
 
