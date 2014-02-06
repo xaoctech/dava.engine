@@ -63,7 +63,8 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 	if(NULL != sceneEditor)
 	{
 		EntityGroup curSelection = sceneEditor->selectionSystem->GetSelection();
-		treeModel->SetSelection(&curSelection);
+        OnSelectionChanged( sceneEditor, &curSelection, NULL );
+		//treeModel->SetSelection(&curSelection);
 	}
 	else
 	{

@@ -86,7 +86,6 @@ private slots:
 
 private:
     void initActions();
-    //void autoExpand();
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
