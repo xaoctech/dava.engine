@@ -27,6 +27,7 @@
     <ClCompile Include="Classes\Controllers\CopyPasteController.cpp" />
     <ClCompile Include="Classes\Controllers\HierarchyTreeController.cpp" />
     <ClCompile Include="Classes\Controllers\LibraryController.cpp" />
+    <ClCompile Include="Classes\Controllers\PreviewController.cpp" />
     <ClCompile Include="Classes\Controllers\PropertiesGridController.cpp" />
     <ClCompile Include="Classes\Controllers\UndoRedoController.cpp" />
     <ClCompile Include="Classes\DefaultScreen.cpp" />
@@ -90,8 +91,10 @@
     <ClCompile Include="Classes\UI\createscreendlg.cpp" />
     <ClCompile Include="Classes\UI\davaglwidget.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\createaggregatordlg.cpp" />
+    <ClCompile Include="Classes\UI\Dialogs\editpreviewsettingsdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\importdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\localizationeditordialog.cpp" />
+    <ClCompile Include="Classes\UI\Dialogs\previewsettingsdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\regexpinputdialog.cpp" />
     <ClCompile Include="Classes\UI\fontmanagerdialog.cpp" />
     <ClCompile Include="Classes\UI\hierarchytreecontrol.cpp" />
@@ -187,8 +190,10 @@
     <ClCompile Include="GeneratedFiles\UI\createscreendlg_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\davaglwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\createaggregatordlg_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\editpreviewsettingsdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\importdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationeditordialog_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\previewsettingsdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\regexpinputdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\fontmanagerdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\hierarchytreecontrol_moc.cpp" />
@@ -257,6 +262,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
     <ClInclude Include="Classes\Controllers\LibraryController.h" />
+    <ClInclude Include="Classes\Controllers\PreviewController.h" />
     <ClInclude Include="Classes\Controllers\PropertiesGridController.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">Moc%27ing PropertiesGridController.h...</Message>
@@ -475,7 +481,9 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
     <ClInclude Include="Classes\UI\Dialogs\createaggregatordlg.h" />
+    <ClInclude Include="Classes\UI\Dialogs\editpreviewsettingsdialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\importdialog.h" />
+    <ClInclude Include="Classes\UI\Dialogs\previewsettingsdialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\regexpinputdialog.h" />
     <ClInclude Include="Classes\UI\IconHelper.h" />
     <ClInclude Include="Classes\UI\importdialogfilewidget.h" />
