@@ -464,6 +464,11 @@ void UITextField::Input(UIEvent *currentInput)
 //        UIControlSystem::Instance()->SetFocusedControl(this, true);
 //	}
 
+    if (NULL == delegate)
+    {
+        return;
+    }
+
 	if(this != UIControlSystem::Instance()->GetFocusedControl())
 		return;
 
