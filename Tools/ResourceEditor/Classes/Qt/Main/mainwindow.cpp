@@ -57,7 +57,6 @@
 #endif
 
 #include "../Tools/AddSwitchEntityDialog/AddSwitchEntityDialog.h"
-#include "../Tools/LandscapeDialog/LandscapeDialog.h"
 
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "StringConstants.h"
@@ -117,7 +116,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, waitDialog(NULL)
 	, beastWaitDialog(NULL)
 	, objectTypesLabel(NULL)
-	, landscapeDialog(NULL)
 	, addSwitchEntityDialog(NULL)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
@@ -175,7 +173,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
-	SafeDelete(landscapeDialog);
 	SafeDelete(addSwitchEntityDialog);
     
     TextureBrowser::Instance()->Release();
@@ -620,9 +617,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionVisibilityCheckTool, SIGNAL(triggered()), this, SLOT(OnVisibilityTool()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
 
-	QObject::connect(ui->actionSkyboxEditor, SIGNAL(triggered()), this, SLOT(OnSetSkyboxNode()));
-
-	QObject::connect(ui->actionLandscape, SIGNAL(triggered()), this, SLOT(OnLandscapeDialog()));
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
 	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
 	QObject::connect(ui->actionAddEmptyEntity, SIGNAL(triggered()), this, SLOT(OnEmptyEntity()));
@@ -793,7 +787,6 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
     OnMaterialLightViewChanged(true);
 
 	int32 tools = scene->GetEnabledTools();
-	SetLandscapeSettingsEnabled(tools == 0);
 	UpdateConflictingActionsState(tools == 0);
 }
 
@@ -850,7 +843,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 
 	ui->actionTextureConverter->setEnabled(enable);
 	ui->actionMaterialEditor->setEnabled(enable);
-	ui->actionSkyboxEditor->setEnabled(enable);
 	ui->actionHeightMapEditor->setEnabled(enable);
 	ui->actionTileMapEditor->setEnabled(enable);
 	ui->actionShowNotPassableLandscape->setEnabled(enable);
@@ -863,7 +855,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionReloadSprites->setEnabled(enable);
     ui->actionSetLightViewMode->setEnabled(enable);
 
-	ui->actionLandscape->setEnabled(enable);
 	ui->actionSaveHeightmapToPNG->setEnabled(enable);
 	ui->actionSaveTiledTexture->setEnabled(enable);
 
@@ -1320,17 +1311,6 @@ void QtMainWindow::OnCubemapEditor()
 	dlg.exec();
 }
 
-void QtMainWindow::OnSetSkyboxNode()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if (!scene)
-	{
-		return;
-	}
-	
-	AddSkyboxDialog::Show(this, scene);
-}
-
 void QtMainWindow::OnSwitchEntityDialog()
 {
 	if(NULL != addSwitchEntityDialog)
@@ -1350,10 +1330,6 @@ void QtMainWindow::UnmodalDialogFinished(int)
 	if(sender == addSwitchEntityDialog)
 	{
 		addSwitchEntityDialog = NULL;
-	}
-	else if(sender == landscapeDialog)
-	{
-		landscapeDialog = NULL;
 	}
 }
 
@@ -1395,18 +1371,6 @@ void QtMainWindow::OnAddSkybox()
     skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
     sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
     skyboxEntity->Release();
-}
-
-void QtMainWindow::OnLandscapeDialog()
-{
-	SceneEditor2* sceneEditor = GetCurrentScene();
-	if(!sceneEditor || NULL != landscapeDialog)
-	{
-		return;
-	}
-	landscapeDialog = new LandscapeDialog(FindLandscapeEntity(sceneEditor), this);
-	landscapeDialog->show();
-	connect(landscapeDialog, SIGNAL(finished(int)), this, SLOT(UnmodalDialogFinished(int)));
 }
 
 void QtMainWindow::OnLightDialog()
@@ -2051,7 +2015,6 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	
 	int32 tools = scene->GetEnabledTools();
 
-	SetLandscapeSettingsEnabled(tools == 0);
 	UpdateConflictingActionsState(tools == 0);
 
 	if (tools & SceneEditor2::LANDSCAPE_TOOL_CUSTOM_COLOR)
@@ -2521,15 +2484,6 @@ bool QtMainWindow::IsAnySceneChanged()
 	}
 
 	return false;
-}
-
-void QtMainWindow::SetLandscapeSettingsEnabled(bool enable)
-{
-	ui->actionLandscape->setEnabled(enable);
-	if(NULL != landscapeDialog && !enable)
-	{
-		landscapeDialog->close();
-	}
 }
 
 void QtMainWindow::OnHangingObjects()

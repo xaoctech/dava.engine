@@ -1386,21 +1386,6 @@ void Landscape::SetHeightmapPathname(const FilePath & newHeightMapPath)
 	{
 		return;
 	}
-	
-	if(newHeightMapPath.IsEqualToExtension(".png"))
-	{
-		Vector<Image *> imageVector = ImageLoader::CreateFromFileByExtension(newHeightMapPath);
-		DVASSERT(imageVector.size());
-		
-		PixelFormat format = imageVector[0]->GetPixelFormat();
-
-		for_each(imageVector.begin(), imageVector.end(), SafeRelease<Image>);
-		if( !(format == FORMAT_A8 ||format == FORMAT_A16))
-		{
-			Logger::Error("HeightMapt isn't applied: png file should be in format A8 or A16.");
-			return;
-		}
-	}
 	BuildLandscapeFromHeightmapImage(newHeightMapPath, bbox);
 }
 	

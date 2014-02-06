@@ -26,42 +26,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "TexturePathValidator.h"
+#include "HeightMapValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-
-TexturePathValidator::TexturePathValidator(const QStringList& value)
-:   PathValidator(value)
+HeightMapValidator::HeightMapValidator(const QStringList& value):
+	PathValidator(value),
+    notifyMessage("")
 {
 }
 
-bool TexturePathValidator::ValidateInternal(QVariant &v)
+void HeightMapValidator::ErrorNotifyInternal(const QVariant &v) const
 {
-    bool res = RegExpValidator::ValidateInternal(v);
+    QMessageBox::warning(NULL, "Wrong file selected", notifyMessage.c_str(), QMessageBox::Ok);
+}
 
-    QString val = v.toString();
-    if (res && val != "")
+bool HeightMapValidator::ValidateInternal(QVariant &v)
+{
+    if(!PathValidator::ValidateInternal(v))
     {
-        res = val.endsWith(QString::fromStdString(DAVA::TextureDescriptor::GetDescriptorExtension()));
+        notifyMessage = PrepareErrorMessage(v);
+        return false;
     }
-
-    return res;
-}
-
-void TexturePathValidator::FixupInternal(QVariant& v) const
-{
-    if (v.type() == QVariant::String)
+    
+    DAVA::FilePath path(v.toString().toStdString());
+    if(path.IsEmpty() || path.IsEqualToExtension(".heightmap"))
     {
-        DAVA::String file = v.toString().toStdString();
-        DAVA::FilePath filePath = DAVA::FilePath(file);
-        if (!filePath.IsEmpty() && filePath.Exists())
+        return true;
+    }
+    else if(path.IsEqualToExtension(".png"))
+    {
+        DAVA::Vector<DAVA::Image *> imageVector = DAVA::ImageLoader::CreateFromFileByExtension(path);
+        DVASSERT(imageVector.size());
+        
+        DAVA::PixelFormat format = imageVector[0]->GetPixelFormat();
+        
+        for_each(imageVector.begin(), imageVector.end(), DAVA::SafeRelease<DAVA::Image>);
+        if(format == DAVA::FORMAT_A8 ||format == DAVA::FORMAT_A16)
         {
-            if (filePath.GetExtension() == ".png")
-            {
-                TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
-                DAVA::FilePath texFile = DAVA::TextureDescriptor::GetDescriptorPathname(filePath);
-                v = QVariant(QString::fromStdString(texFile.GetAbsolutePathname()));
-            }
+            return true;
         }
+        notifyMessage = DAVA::Format("\"%s\" is wrong: png file should be in format A8 or A16.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
     }
+    else
+    {
+        notifyMessage = DAVA::Format("\"%s\" is wrong: should be *.png or *.heightmap.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
 }
