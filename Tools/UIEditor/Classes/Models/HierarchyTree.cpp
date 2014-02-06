@@ -142,7 +142,10 @@ bool HierarchyTree::Load(const QString& projectPath)
     {
         iter->first->LoadLocalization(iter->second);
     }
-    
+
+    // Preview Modes are also stored in the project file - update them too.
+    PreviewController::Instance()->LoadPreviewSettings(projectRoot);
+
     // All the data needed is loaded.
     SafeRelease(project);
 
@@ -443,6 +446,8 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		result &= res;
 	}
 
+    PreviewController::Instance()->SavePreviewSettings(root);
+
 	YamlParser* parser = YamlParser::Create();
 	// Create project sub-directories
 	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
@@ -465,6 +470,7 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		rootNode.ResetUnsavedChanges();
 	}
 
+    SafeRelease(parser);
 	return result;
 }
 

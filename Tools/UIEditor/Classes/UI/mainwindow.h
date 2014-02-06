@@ -35,6 +35,8 @@
 #include "ScreenWrapper.h"
 #include "EditorSettings.h"
 
+#include "PreviewController.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -132,6 +134,15 @@ private slots:
     // Pixelization.
     void OnPixelizationStateChanged();
 
+    // Editing mode (Edit/Preview)
+    void OnPreviewTriggered();
+    
+    // Edit Preview Settings..
+    void OnEditPreviewSettings();
+    
+    // Notification from GL widget its resize is done.
+    void OnGLWidgetResized();
+
 private:
 	bool CloseProject();
 
@@ -174,6 +185,14 @@ private:
     // Control Align/Distribute actions.
     void SetAlignEnabled(bool value);
     void SetDistributeEnabled(bool value);
+
+    // Preview handling.
+    void EnablePreview(const PreviewSettingsData& data);
+    void DisablePreview();
+    void UpdatePreviewButton();
+
+    // Enable/disable editing controls for Preview mode.
+    void EnableEditing(bool value);
 
 private:
     Ui::MainWindow *ui;

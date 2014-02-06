@@ -38,6 +38,7 @@
 #include "Render/RenderHelper.h"
 #include "Utils/Utils.h"
 #include "Input/InputSystem.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
@@ -2929,10 +2930,8 @@ namespace DAVA
         outStr += name;
         if (inputProcessorsCount > 0)
         {
-            char buf[256];
-            itoa(inputProcessorsCount, buf, 10);
             outStr += " ";
-            outStr += buf;
+            outStr += Format("%d", inputProcessorsCount);
         }
 
         if (inputEnabled)
