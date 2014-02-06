@@ -57,11 +57,14 @@ TextureCache::~TextureCache()
     TextureConvertor::Instance()->Release();
 }
 
+void TextureCache::getThumbnail( const DAVA::TextureDescriptor *descriptor, QObject *object, const QString& slotName, const QVariant& userData = QVariant() )
+{
+}
 
-DAVA::Vector<QImage>  TextureCache::getThumbnail(const DAVA::TextureDescriptor *descriptor)
+QList<QImage> TextureCache::getThumbnail(const DAVA::TextureDescriptor *descriptor)
 {
     if(NULL == descriptor)
-        return DAVA::Vector<QImage>();
+        return QList<QImage>();
     
     const DAVA::FilePath & path = descriptor->pathname;
 	if(cacheThumbnail.find(path) != cacheThumbnail.end())
@@ -71,14 +74,14 @@ DAVA::Vector<QImage>  TextureCache::getThumbnail(const DAVA::TextureDescriptor *
         return cacheThumbnail[path].info.images;
 	}
     
-	return DAVA::Vector<QImage>();
+	return QList<QImage>();
 }
 
 
-DAVA::Vector<QImage> TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)
+QList<QImage> TextureCache::getOriginal(const DAVA::TextureDescriptor *descriptor)
 {
     if(NULL == descriptor)
-        return DAVA::Vector<QImage>();
+        return QList<QImage>();
 
     const DAVA::FilePath & path = descriptor->pathname;
 	if(cacheOriginal.find(path) != cacheOriginal.end())
@@ -88,13 +91,13 @@ DAVA::Vector<QImage> TextureCache::getOriginal(const DAVA::TextureDescriptor *de
 		return cacheOriginal[path].info.images;
 	}
 
-	return DAVA::Vector<QImage>();
+	return QList<QImage>();
 }
 
-DAVA::Vector<QImage> TextureCache::getConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
+QList<QImage> TextureCache::getConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu)
 {
     if(NULL == descriptor)
-        return DAVA::Vector<QImage>();
+        return QList<QImage>();
 
     const DAVA::FilePath & path = descriptor->pathname;
 	if((gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT) && (cacheConverted[gpu].find(path) != cacheConverted[gpu].end()))
@@ -104,7 +107,7 @@ DAVA::Vector<QImage> TextureCache::getConverted(const DAVA::TextureDescriptor *d
 		return cacheConverted[gpu][path].info.images;
 	}
 
-	return DAVA::Vector<QImage>();
+	return QList<QImage>();
 }
 
 void TextureCache::ClearCache()
@@ -140,7 +143,7 @@ void TextureCache::setThumbnail(const DAVA::TextureDescriptor *descriptor, const
 		info.fileSize = images.fileSize;
 
         info.images.reserve(images.images.size());
-		for(size_t i = 0; i < images.images.size(); ++i)
+		for(int i = 0; i < images.images.size(); ++i)
 		{
             QImage img(THUMBNAIL_SIZE, THUMBNAIL_SIZE, QImage::Format_ARGB32);
             img.fill(QColor(Qt::white));
@@ -226,7 +229,6 @@ void TextureCache::ClearCacheTail(DAVA::Map<const DAVA::FilePath, CacheEntity> &
         }
     }
 }
-
 
 void TextureCache::clearInsteadThumbnails()
 {

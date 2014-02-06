@@ -71,14 +71,10 @@ protected:
 	SceneEditor2 *curScene;
 
 private:
-    void setPreview( QStandardItem *item, const DAVA::NMaterial * material );
-    QImage GetPreview( const DAVA::NMaterial * material ) const;
-    QModelIndex FindItemIndex(const DAVA::TextureDescriptor *descriptor) const;
-    QModelIndex FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const;
+    void setPreview( QStandardItem *item, QImage image );
     bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
 
 private slots:
-    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
 };
 
 
