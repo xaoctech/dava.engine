@@ -33,6 +33,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundEvent.h"
 #include "Sound/FMODSoundSystem.h"
@@ -56,11 +57,16 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
-        SoundEvent * sound = ((SoundComponent *)entity->GetComponent(Component::SOUND_COMPONENT))->GetSoundEvent();
-        if(sound)
+        SoundComponent * sc = GetSoundComponent(entity);
+        if(sc)
         {
-            sound->SetPosition(translation);
-            sound->UpdateInstancesPosition();
+            int32 eventsCount = sc->GetEventsCount();
+            for(int32 i = 0; i < eventsCount; ++i)
+            {
+                SoundEvent * sound = sc->GetSoundEvent(i);
+                sound->SetPosition(translation);
+                sound->UpdateInstancesPosition();
+            }
         }
 	}
 }

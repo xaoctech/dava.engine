@@ -51,13 +51,17 @@ public:
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
     
-    SoundEvent * GetSoundEvent();
-    void SetSoundEvent(SoundEvent * event);
+    int32 GetEventsCount();
+    SoundEvent * GetSoundEvent(int32 index);
+
+    void AddSoundEvent(SoundEvent * event);
+    void RemoveSoundEvent(SoundEvent * event);
+    void RemoveAllEvents();
     
     IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
     
 protected:
-    SoundEvent * event;
+    Vector<SoundEvent *> events;
 
 public:
     INTROSPECTION_EXTEND(SoundComponent, Component, NULL);
