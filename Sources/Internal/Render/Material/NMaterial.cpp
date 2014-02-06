@@ -1815,9 +1815,13 @@ namespace DAVA
 		DVASSERT(mat);
         
         bool result = false;
-		const RenderStateData* currentData = mat->GetRenderState(passName);
+        
+        if(mat->instancePasses.count(passName) > 0)
+        {
+            const RenderStateData* currentData = mat->GetRenderState(passName);
 		
-		result = ((currentData->state & RenderStateData::STATE_BLEND) != 0);
+            result = ((currentData->state & RenderStateData::STATE_BLEND) != 0);
+        }
 		
 		return result;
     }
