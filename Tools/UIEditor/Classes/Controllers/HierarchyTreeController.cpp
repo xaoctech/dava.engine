@@ -36,6 +36,7 @@
 #include "MetadataFactory.h"
 #include "LibraryController.h"
 #include "CommandsController.h"
+#include "PreviewController.h"
 #include "ControlCommands.h"
 #include "ReloadSpritesCommand.h"
 
@@ -722,4 +723,38 @@ void HierarchyTreeController::RepackAndReloadSprites()
     ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode());
     CommandsController::Instance()->ExecuteCommand(cmd);
     SafeRelease(cmd);
+}
+
+void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
+{
+    if (PreviewController::Instance()->IsPreviewEnabled() || !activePlatform ||
+        !activeScreen || !activeScreen->GetScreen())
+    {
+        return;
+    }
+
+    // We are entering Preview Mode - nothing should be selected.
+    ResetSelectedControl();
+
+    uint32 screenDPI = Core::Instance()->GetScreenDPI();
+    const PreviewTransformData& transformData = PreviewController::Instance()->EnablePreview(data, activePlatform->GetSize(), screenDPI);
+    activePlatform->EnablePreview(transformData.screenSize.x, transformData.screenSize.y);
+    activeScreen->GetScreen()->SetSize(transformData.screenSize);
+
+    emit SelectedScreenChanged(activeScreen);
+}
+
+void HierarchyTreeController::DisablePreview()
+{
+    if (!PreviewController::Instance()->IsPreviewEnabled() || !activePlatform ||
+        !activeScreen || !activeScreen->GetScreen())
+    {
+        return;
+    }
+
+    PreviewController::Instance()->DisablePreview();
+    activePlatform->DisablePreview();
+    activeScreen->GetScreen()->SetSize(activePlatform->GetSize());
+    
+    emit SelectedScreenChanged(activeScreen);
 }
