@@ -102,6 +102,7 @@ public:
 
     void SetRenderObjectVisible(bool visible);
 
+     /*sorting offset allowed in 0..31 range, 15 default, more - closer to camera*/
     void SetSortingOffset(uint32 offset);
 
 private:
