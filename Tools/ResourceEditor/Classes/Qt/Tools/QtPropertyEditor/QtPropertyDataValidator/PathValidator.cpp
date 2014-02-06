@@ -37,7 +37,7 @@ PathValidator::PathValidator(const QStringList& value):
     QString regExpr("^$|");
     foreach(QString path, referencePathList)
     {
-        regExpr += ".*" + path + ".*|";
+        regExpr += "^" + path + ".*|";
     }
 	SetRegularExpression(regExpr);
 }

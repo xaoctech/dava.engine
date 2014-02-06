@@ -569,6 +569,7 @@ public:
         static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
 		
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
+        static bool IsAlphablend(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};

@@ -26,25 +26,42 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "TexturePathValidator.h"
 
+#include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
-#ifndef __QT_PROPERTY_DATA_VALIDATOR_H__
-#define __QT_PROPERTY_DATA_VALIDATOR_H__
-
-#include <QVariant>
-
-class QtPropertyDataValidator
+TexturePathValidator::TexturePathValidator(const QStringList& value)
+:   PathValidator(value)
 {
-public:
+}
 
-    bool Validate(QVariant &v) const;
+bool TexturePathValidator::ValidateInternal(QVariant &v) const
+{
+    bool res = RegExpValidator::ValidateInternal(v);
 
-protected:
-    
-    virtual bool ValidateInternal(QVariant &v) const = 0;
-    virtual void FixupInternal(QVariant &v) const {};
+    QString val = v.toString();
+    if (res && val != "")
+    {
+        res = val.endsWith(QString::fromStdString(DAVA::TextureDescriptor::GetDescriptorExtension()));
+    }
 
-    virtual void ErrorNotifyInternal(const QVariant &v) const {}
-};
+    return res;
+}
 
-#endif // __QT_PROPERTY_DATA_VALIDATOR_H__
+void TexturePathValidator::FixupInternal(QVariant& v) const
+{
+    if (v.type() == QVariant::String)
+    {
+        DAVA::String file = v.toString().toStdString();
+        DAVA::FilePath filePath = DAVA::FilePath(file);
+        if (!filePath.IsEmpty() && filePath.Exists())
+        {
+            if (filePath.GetExtension() == ".png")
+            {
+                TextureDescriptorUtils::CreateDescriptorIfNeed(filePath);
+                DAVA::FilePath texFile = DAVA::TextureDescriptor::GetDescriptorPathname(filePath);
+                v = QVariant(QString::fromStdString(texFile.GetAbsolutePathname()));
+            }
+        }
+    }
+}

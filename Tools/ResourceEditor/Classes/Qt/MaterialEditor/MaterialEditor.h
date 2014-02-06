@@ -77,8 +77,6 @@ protected:
 	void FillMaterialTextures(DAVA::NMaterial *material);
     void FillMaterialTemplates(DAVA::NMaterial *material);
 
-    QVariant CheckForTextureDescriptor(const QVariant& value);
-
 private slots:
     void onFilterChanged();
     void onCurrentExpandModeChange( bool mode );
