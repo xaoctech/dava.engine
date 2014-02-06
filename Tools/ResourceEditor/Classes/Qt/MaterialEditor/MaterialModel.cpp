@@ -61,8 +61,6 @@ MaterialModel::MaterialModel(QObject * parent)
 	QStringList headerLabels;
 	headerLabels.append("Materials hierarchy");
 	setHorizontalHeaderLabels(headerLabels);
-
-    connect( TextureCache::Instance(), SIGNAL(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)), SLOT(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)) );
 }
 
 MaterialModel::~MaterialModel()
@@ -200,7 +198,7 @@ void MaterialModel::Sync()
 				}
 			}
 
-            setPreview( item, toAdd );
+            requestPreview( item );
 		}
 
 		// mark materials that can be deleted
@@ -214,105 +212,79 @@ void MaterialModel::Sync()
 	emit dataChanged(QModelIndex(), QModelIndex());
 }
 
-QImage MaterialModel::GetPreview( const DAVA::NMaterial * material ) const
+void MaterialModel::requestPreview( QStandardItem *item )
 {
-    DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-    if(t)
-    {
-        const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
-        if((images.size() > 0) && (images[0].isNull() == false))
-            return images[0];
-        else
-            TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
-    }
-    else if(material->IsFlagEffective(DAVA::NMaterial::FLAG_FLATCOLOR))
-    {
-        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
-        if(prop)
-        {
-            const DAVA::Color color = *(DAVA::Color*)prop->data;
-            
-            QImage img(QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT), QImage::Format_ARGB32);
-            img.fill(ColorToQColor(color));
-            
-            return img;
-        }
-    }
-
-    return QImage();
-}
-
-void MaterialModel::setPreview( QStandardItem *item, const DAVA::NMaterial * material )
-{
+    Q_ASSERT( item );
     item->setData( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::SizeHintRole );
 
-    const QImage& preview = GetPreview( material );
-    if ( !preview.isNull() )
+    MaterialItem *materialItem = (MaterialItem *)item;
+    DAVA::NMaterial * material = materialItem->GetMaterial();
+
+    if ( material->IsFlagEffective(DAVA::NMaterial::FLAG_FLATCOLOR) )
     {
-        QImage scaled = preview.scaled( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
-        QPainter p( &scaled );
-        QRect rc( 0, 0, scaled.width() - 1, scaled.height() - 1 );
-        p.setPen( QColor( 0, 0, 0, 0x30 ) );
-        p.drawRect( rc );
-        item->setData( scaled, Qt::DecorationRole );
+        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty( DAVA::NMaterial::PARAM_FLAT_COLOR );
+        if ( prop )
+        {
+            const DAVA::Color color = *(DAVA::Color*)prop->data;
+            QImage img(QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT), QImage::Format_ARGB32);
+        
+            img.fill(ColorToQColor(color));
+            setPreview( item, img );
+        }
+        return ;
+    }
+
+    DAVA::Texture *t = material->GetTexture( DAVA::NMaterial::TEXTURE_ALBEDO );
+    if ( t )
+    {
+        DAVA::TextureDescriptor *descriptor = t->GetDescriptor();
+        QVariant itemRef = QString( descriptor->pathname.GetAbsolutePathname().c_str() );
+        TextureCache::Instance()->getThumbnail( descriptor, this, "onThumbnailReady", itemRef );
     }
 }
 
-void MaterialModel::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image)
+void MaterialModel::setPreview( QStandardItem *item, QImage image )
 {
-	if(NULL != descriptor)
-	{
-        QModelIndex index = FindItemIndex(descriptor);
-        if ( !index.isValid() )
-            return ;
+    QImage scaled = image.scaled( PREVIEW_HEIGHT, PREVIEW_HEIGHT, Qt::KeepAspectRatio );
+    QPainter p( &scaled );
+    QRect rc( 0, 0, scaled.width() - 1, scaled.height() - 1 );
+    p.setPen( QColor( 0, 0, 0, 0x30 ) );
+    p.drawRect( rc );
 
-        MaterialItem *item = (MaterialItem *)itemFromIndex(index);
-        if ( !item )
-            return ;
-        DAVA::NMaterial* material = item->GetMaterial();
-        setPreview( item, material );
-	}
+    item->setData( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::SizeHintRole );
+    item->setData( scaled, Qt::DecorationRole );
 }
 
-QModelIndex MaterialModel::FindItemIndex(const DAVA::TextureDescriptor *descriptor) const
+void MaterialModel::onThumbnailReady( QList<QImage> images, QVariant userData )
 {
-    int nRows = rowCount();
-    for(int i = 0; i < nRows; ++i)
-    {
-        const QModelIndex idx = index(i, 0);
-        const QModelIndex found = FindItemIndex(idx, descriptor);
-        if(found.isValid())
-            return found;
-    }
-    
-    return QModelIndex();
-}
+    if ( images.size() <= 0 )
+        return ;
 
-QModelIndex MaterialModel::FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const
-{
-    if(parent.isValid() == false)
-        return QModelIndex();
+    const QString key = userData.toString();
     
-    const DAVA::NMaterial *material = GetMaterial(parent);
-    if(material)
-    {
-        DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-        if(t && t->GetDescriptor() == descriptor)
-            return parent;
-    }
-    
-    int nRows = rowCount(parent);
-    for(int i = 0; i < nRows; ++i)
-    {
-        const QModelIndex idx = index(i, 0, parent);
-        const QModelIndex found = FindItemIndex(idx, descriptor);
-        if(found.isValid())
-            return found;
-    }
-    
-    return QModelIndex();
-}
+    //if ( userData.toString().contains( "3_trunk" ) )
+    //    qDebug() << "onThumbnailReady: " << userData.toString();
 
+    const int n = rowCount();
+    for ( int i = 0; i < n; i++ )
+    {
+        MaterialItem *materialItem = (MaterialItem *)item( i );
+        Q_ASSERT( materialItem );
+        DAVA::NMaterial * material = materialItem->GetMaterial();
+        DAVA::Texture *t = material->GetTexture( DAVA::NMaterial::TEXTURE_ALBEDO );
+        if ( !t )
+            continue;
+        DAVA::TextureDescriptor *descriptor = t->GetDescriptor();
+        if ( !descriptor )
+            continue;
+
+        const QString data = QString( descriptor->pathname.GetAbsolutePathname().c_str() );
+        if ( data == key )
+        {
+            setPreview( materialItem, images[0] );
+        }
+    }
+}
 
 DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const
 {
