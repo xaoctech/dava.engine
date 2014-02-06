@@ -36,8 +36,11 @@
 #include "FileSystem/FilePath.h"
 
 #include "TextureInfo.h"
+#include "CacheRequest.h"
 
+#include <QPointer>
 #include <QImage>
+#include <QMap>
 
 class TextureCache : public QObject, public DAVA::Singleton<TextureCache>
 {
@@ -57,6 +60,9 @@ private:
 		TextureInfo info;
 		size_t weight;
 	};
+
+    typedef DAVA::Map<const DAVA::FilePath, CacheEntity> CacheMap;
+    typedef QMap<const DAVA::FilePath, QPointer< CacheRequest > > RequestMap;
     
 public:
     
@@ -71,9 +77,11 @@ public:
     DAVA::uint32 getConvertedSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
     DAVA::uint32 getConvertedFileSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
     
-    DAVA::Vector<QImage> getThumbnail(const DAVA::TextureDescriptor *descriptor);
-	DAVA::Vector<QImage> getOriginal(const DAVA::TextureDescriptor *descriptor);
-	DAVA::Vector<QImage> getConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
+    QList<QImage> getThumbnail(const DAVA::TextureDescriptor *descriptor);
+	QList<QImage> getOriginal(const DAVA::TextureDescriptor *descriptor);
+	QList<QImage> getConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
+
+    void getThumbnail( const DAVA::TextureDescriptor *descriptor, QObject *object, const QString& slotName, const QVariant& userData = QVariant() );
 
 	void clearInsteadThumbnails();
 	void clearConverted(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu);
@@ -81,7 +89,6 @@ public:
 	void clearThumbnail(const DAVA::TextureDescriptor *descriptor);
 
 signals:
-
     void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
     void OriginalLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
     void ConvertedLoaded(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily gpu, const TextureInfo & image);
@@ -112,6 +119,8 @@ private:
     static const size_t maxThumbnailCount = 100;
 	static const size_t maxOrigCount = 20;
 	static const size_t maxConvertedCount = 7; // per gpu
+
+    RequestMap requestThumbnail;
 
     DAVA::Map<const DAVA::FilePath, CacheEntity> cacheThumbnail;
 	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheOriginal;
