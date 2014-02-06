@@ -151,8 +151,9 @@ namespace DAVA {
 				}
 			}
 			
-			float32 width = (charDescription.width) * sizeScale;
-			
+			float32 width = charDescription.width * sizeScale;
+            float32 startX = lastX + charDescription.xOffset * sizeScale;
+
 			float32 startHeight = charDescription.yOffset * sizeScale;
 			float32 fullHeight = (charDescription.height + charDescription.yOffset) * sizeScale;
 			
@@ -161,25 +162,25 @@ namespace DAVA {
 			
 			if (vertexBuffer)
 			{
-				vertexBuffer[vertexAdded].position.x = lastX + charDescription.xOffset;
+				vertexBuffer[vertexAdded].position.x = startX;
 				vertexBuffer[vertexAdded].position.y = startHeight;
 				vertexBuffer[vertexAdded].position.z = 0;
 				vertexBuffer[vertexAdded].texCoord.x = charDescription.u;
 				vertexBuffer[vertexAdded].texCoord.y = charDescription.v;
 				
-				vertexBuffer[vertexAdded + 1].position.x = lastX + width  + charDescription.xOffset;
+				vertexBuffer[vertexAdded + 1].position.x = startX + width;
 				vertexBuffer[vertexAdded + 1].position.y = startHeight;
 				vertexBuffer[vertexAdded + 1].position.z = 0;
 				vertexBuffer[vertexAdded + 1].texCoord.x = charDescription.u2;
 				vertexBuffer[vertexAdded + 1].texCoord.y = charDescription.v;
 				
-				vertexBuffer[vertexAdded + 2].position.x = lastX + width  + charDescription.xOffset;
+				vertexBuffer[vertexAdded + 2].position.x = startX + width;
 				vertexBuffer[vertexAdded + 2].position.y = fullHeight;
 				vertexBuffer[vertexAdded + 2].position.z = 0;
 				vertexBuffer[vertexAdded + 2].texCoord.x = charDescription.u2;
 				vertexBuffer[vertexAdded + 2].texCoord.y = charDescription.v2;
 				
-				vertexBuffer[vertexAdded + 3].position.x = lastX  + charDescription.xOffset;
+				vertexBuffer[vertexAdded + 3].position.x = startX;
 				vertexBuffer[vertexAdded + 3].position.y = fullHeight;
 				vertexBuffer[vertexAdded + 3].position.z = 0;
 				vertexBuffer[vertexAdded + 3].texCoord.x = charDescription.u;
