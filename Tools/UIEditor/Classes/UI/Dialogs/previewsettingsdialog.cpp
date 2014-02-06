@@ -29,8 +29,6 @@ PreviewSettingsDialog::PreviewSettingsDialog(bool selectionMode, QWidget *parent
 
     InitializeTableView();
     ReloadSettings();
-    
-    
 }
 
 PreviewSettingsDialog::~PreviewSettingsDialog()
@@ -46,7 +44,7 @@ void PreviewSettingsDialog::InitializeTableView()
     ui->settingsTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->settingsTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     ui->settingsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    
+
     //Create and set table view model
     tableModel = new QStandardItemModel(this);
 
@@ -57,6 +55,8 @@ void PreviewSettingsDialog::InitializeTableView()
     tableModel->setHorizontalHeaderItem(3, new QStandardItem(QString(PREVIEW_SCREEN_SIZE_COLUMN)));
 
     ui->settingsTableView->setModel(tableModel);
+
+    ui->settingsTableView->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
 }
 
 void PreviewSettingsDialog::ReloadSettings()

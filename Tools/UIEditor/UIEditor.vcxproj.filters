@@ -1213,5 +1213,11 @@
     <None Include="UI\scrollcontrolpropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
     </None>
+    <None Include="UI\editpreviewsettingsdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\previewsettingsdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
   </ItemGroup>
 </Project>
