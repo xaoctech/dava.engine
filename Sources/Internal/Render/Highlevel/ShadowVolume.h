@@ -72,7 +72,7 @@ private:
 		int32 oldEdge[2];
 		int32 newEdge[2][2];
 
-	public:
+    public:
 		EdgeMapping()
 		{
 			Memset(oldEdge, -1, sizeof(oldEdge));
@@ -81,6 +81,10 @@ private:
 	};
 
 	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
+    
+public:
+    INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
+                         0);
 };
 
 }

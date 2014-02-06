@@ -742,8 +742,15 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
         
         uint32 componentCount = currentNode->GetComponentCount();
 
-        if ((componentCount > 0 && (0 == currentNode->GetComponent(Component::TRANSFORM_COMPONENT))) //has only component, not transform
-			|| componentCount > 1)
+        Component * tr = currentNode->GetComponent(Component::TRANSFORM_COMPONENT);
+        Component * cp = currentNode->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
+        if (((componentCount == 2) && (!cp || !tr)) ||
+            (componentCount > 2))
+        {
+            doNotRemove = true;
+        }
+        
+        if(currentNode->GetName().rfind("dummy") != String::npos)
         {
             doNotRemove = true;
         }
@@ -790,7 +797,8 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
             return false;
 		}
         
-        if (currentNode->GetFlags() & Entity::NODE_LOCAL_MATRIX_IDENTITY)
+        
+        if (currentNode->GetLocalTransform() == Matrix4::IDENTITY)
         {
             Entity * parent  = currentNode->GetParent();
 
@@ -803,7 +811,11 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
                 //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
                 
-                childNode->SetName(currentName);
+                //MEGA kostyl
+                if(!childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))//do not rename effects
+                {
+                    childNode->SetName(currentName);
+                }
 				//merge custom properties
 				KeyedArchive * newProperties = childNode->GetCustomProperties();
 				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
@@ -1129,7 +1141,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     rootNode->BakeTransforms();
     
 	//ConvertShadows(rootNode);
-    //RemoveEmptySceneNodes(rootNode);
+    RemoveEmptySceneNodes(rootNode);
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 

@@ -58,6 +58,49 @@ Vector<Vector2> Sprite::clippedVertices;
 
 Mutex Sprite::spriteMapMutex;
 
+Sprite::DrawState::DrawState()
+{
+    Reset();
+    
+    renderState = RenderState::RENDERSTATE_2D_BLEND;
+    RenderManager::Instance()->RetainRenderState(renderState);
+    shader = SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+}
+
+Sprite::DrawState::~DrawState()
+{
+    RenderManager::Instance()->ReleaseRenderState(renderState);
+    SafeRelease(shader);
+}
+
+void Sprite::DrawState::SetRenderState(UniqueHandle _renderState)
+{
+    if(_renderState != renderState)
+    {
+        if(renderState != InvalidUniqueHandle)
+        {
+            RenderManager::Instance()->ReleaseRenderState(renderState);
+        }
+            
+        renderState = _renderState;
+            
+        if(renderState != InvalidUniqueHandle)
+        {
+            RenderManager::Instance()->RetainRenderState(renderState);
+        }
+    }
+}
+
+void Sprite::DrawState::SetShader(Shader* _shader)
+{
+    if(_shader != shader)
+    {
+        SafeRelease(shader);
+        shader = SafeRetain(_shader);
+    }
+}
+
+
 Sprite::Sprite()
 {
 	textures = 0;
@@ -1290,9 +1333,10 @@ void Sprite::Draw(DrawState * state)
 		RenderManager::Instance()->ClipRect( clipRect );
 	}
 
+    RenderManager::Instance()->SetRenderState(state->renderState);
 	RenderManager::Instance()->SetTextureState(textureHandles[frameTextureIndex[frame]]);
 	RenderManager::Instance()->SetRenderData(spriteRenderObject);
-    RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+    RenderManager::Instance()->SetRenderEffect(state->shader);
  	RenderManager::Instance()->DrawArrays(primitiveToDraw, 0, vertexCount);
 
 	if( clipPolygon )

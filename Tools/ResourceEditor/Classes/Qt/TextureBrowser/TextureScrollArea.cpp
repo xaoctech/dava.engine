@@ -390,7 +390,7 @@ QImage TextureScrollArea::getImage()
 	return currentTextureImage;
 }
 
-void TextureScrollArea::setImage(const DAVA::Vector<QImage>& images, int flags)
+void TextureScrollArea::setImage(const QList<QImage>& images, int flags)
 {
 	currentTextureImage = QImage();
 	currentCompositeImages.clear();

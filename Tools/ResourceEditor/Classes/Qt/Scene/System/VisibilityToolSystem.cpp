@@ -554,8 +554,7 @@ void VisibilityToolSystem::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> 
 		uint32 colorIndex = (uint32)points[i].z;
 		Vector2 pos(points[i].x, points[i].y);
 
-		UniqueHandle renderState = manager->GetDefault2DNoTextureStateHandle();
-		manager->SetRenderState(renderState);
+		manager->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		manager->SetColor(areaPointColors[colorIndex]);
 		helper->DrawPoint(pos, 5.f);
 	}

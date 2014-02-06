@@ -281,7 +281,7 @@ void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
 	Sprite* colorSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
 	
 	RenderManager::Instance()->SetRenderTarget(colorSprite);
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->FlushState();
 	
 	RenderManager::Instance()->SetColor(drawColor);
