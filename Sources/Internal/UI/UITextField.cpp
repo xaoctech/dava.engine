@@ -570,8 +570,7 @@ void UITextField::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
         if (font)
         {
             SetFont(font);
-            int32 fontSize = font->GetFontHeight();
-            SetFontSize(fontSize);
+            SetFontSize((float32)font->GetFontHeight());
         }
     }
     
