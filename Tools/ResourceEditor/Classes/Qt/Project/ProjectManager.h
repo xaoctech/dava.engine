@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QVector>
 #include "DAVAEngine.h"
+#include "Qt/Main/Request.h"
 
 class ProjectManager : public QObject, public DAVA::Singleton<ProjectManager>
 {
@@ -60,6 +61,7 @@ public:
 
 	QString CurProjectPath();
 	QString CurProjectDataSourcePath();
+    bool CanCloseProject();
 
     const QVector<ProjectManager::AvailableMaterialTemplate>* GetAvailableMaterialTemplates() const;
     const QVector<ProjectManager::AvailableMaterialQuality>* GetAvailableMaterialQualities() const;
@@ -73,9 +75,12 @@ public slots:
 signals:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
+    void ProjectWillClose(Request* closeRequest);
 
 private:
-	QString curProjectPath;
+    void InnerProjectClose();
+	
+    QString curProjectPath;
 	QString curProjectPathDataSource;
 
 	void LoadProjectSettings();

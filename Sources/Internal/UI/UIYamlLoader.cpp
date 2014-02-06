@@ -35,6 +35,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
+#include "Render/2D/TextBlock.h"
 
 namespace DAVA 
 {
@@ -175,6 +176,37 @@ int32 UIYamlLoader::GetAlignFromYamlNode(const YamlNode * alignNode)
 	return align;
 }
 
+int32 UIYamlLoader::GetFittingOptionFromYamlNode( const YamlNode * fittingNode ) const
+{
+    int32 fitting = TextBlock::FITTING_DISABLED;
+
+    const Vector<YamlNode*> & vec = fittingNode->AsVector();
+
+    for( uint32 index = 0; index < vec.size(); ++index )
+    {
+        const String &value = vec[index]->AsString();
+        if( value == "DISABLED" )
+        {
+            fitting = TextBlock::FITTING_DISABLED;
+            break;
+        }
+        else if( value == "ENLARGE" )
+        {
+            fitting |= TextBlock::FITTING_ENLARGE;
+        }
+        else if( value == "REDUCE" )
+        {
+            fitting |= TextBlock::FITTING_REDUCE;
+        }
+        else if( value == "POINTS" )
+        {
+            fitting |= TextBlock::FITTING_POINTS;
+        }
+    }
+
+    return fitting;
+}
+
 //Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
 YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 {
@@ -213,7 +245,33 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 	
 	return alignNode;
 }
-	
+
+YamlNode * UIYamlLoader::GetFittingOptionNodeValue( int32 fitting ) const
+{
+    YamlNode *fittingNode = new YamlNode(YamlNode::TYPE_ARRAY);
+
+    if( fitting == TextBlock::FITTING_DISABLED )
+    {
+        fittingNode->AddValueToArray("DISABLED");
+    }
+    else
+    {
+        if( fitting & TextBlock::FITTING_ENLARGE )
+        {
+            fittingNode->AddValueToArray("ENLARGE");
+        }
+        if( fitting & TextBlock::FITTING_REDUCE )
+        {
+            fittingNode->AddValueToArray("REDUCE");
+        }
+        if( fitting & TextBlock::FITTING_POINTS )
+        {
+            fittingNode->AddValueToArray("POINTS");
+        }
+    }
+    return fittingNode;
+}
+
 bool UIYamlLoader::GetBoolFromYamlNode(const YamlNode * node, bool defaultValue)
 {
 	if (!node)return defaultValue;
@@ -240,7 +298,7 @@ Color UIYamlLoader::GetColorFromYamlNode(const YamlNode * node)
 	{
 		if (node->GetCount() == 4)
 			return node->AsColor();
-		else return Color(1.0f, 1.0f, 1.0f, 1.0f);
+		else return Color::White;
 	}else
 	{
 		const String & color = node->AsString();
@@ -525,7 +583,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 }
 
 YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode,
-                                   int relativeDepth)
+                                   int saveIndex)
 {
     // Save ourselves and all children.
     YamlNode* childNode = parentControl->SaveToYamlNode(this);
@@ -534,24 +592,24 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
         parentNode->AddNodeToMap(parentControl->GetName(), childNode);
     }
 
-    SaveChildren(parentControl, childNode, relativeDepth);
+    SaveChildren(parentControl, childNode, saveIndex);
 
     return childNode;
 }
 
-void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int relativeDepth)
+void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int saveIndex)
 {
     // "Relative Depth" is needed to save the order of the nodes - it is important!
-    parentNode->Set(YamlNode::YAML_NODE_RELATIVE_DEPTH_NAME, relativeDepth);
+    parentNode->Set(YamlNode::SAVE_INDEX_NAME, saveIndex);
     
-    int currentDepth = 0;
+    int currentSaveIndex = 0;
     
 	const List<UIControl*>& children = parentControl->GetRealChildren();
 	for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
     {
         UIControl* childControl = (*childIter);
-        SaveToNode(childControl, parentNode, currentDepth);
-        currentDepth ++;
+        SaveToNode(childControl, parentNode, currentSaveIndex);
+        currentSaveIndex ++;
     }
 }
 

@@ -312,6 +312,9 @@ public:
     void SetMaterialTemplateName(const FastName& templateName);
     FastName GetMaterialTemplateName() const;
 
+    FastName GetMaterialGroup() const;
+    void SetMaterialGroup(const FastName &group);
+
 protected:
 	
 	struct TextureBucket
@@ -363,6 +366,7 @@ protected:
 protected:
 		
 	FastName materialName;
+    FastName materialGroup;
 	eMaterialType materialType;
 	NMaterialKey materialKey;
 
@@ -445,6 +449,8 @@ protected:
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
 	void SetLightInternal(int index, Light* light, bool forceUpdate);
+
+    FastName GetEffectiveQuality() const;
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
 		
@@ -541,6 +547,7 @@ public:
 	INTROSPECTION_EXTEND(NMaterial, DataNode,
 				  //(DAVA::CreateIspProp("materialName", "Material name", &NMaterial::GetMaterialName, &NMaterial::SetMaterialName, I_SAVE | I_EDIT | I_VIEW),
 				  MEMBER(materialName, "Material name", I_SAVE | I_EDIT | I_VIEW)
+                  PROPERTY("materialGroup", "Material group", GetMaterialGroup, SetMaterialGroup, I_SAVE | I_EDIT | I_VIEW)
                   PROPERTY("materialTemplate", "Material template", GetMaterialTemplateName, SetMaterialTemplateName, I_SAVE)
 				  DYNAMIC(materialSetFlags, "Material flags", new NMaterialStateDynamicFlagsInsp(), I_SAVE | I_EDIT | I_VIEW)
 				  DYNAMIC(textures, "Material textures", new NMaterialStateDynamicTexturesInsp(), I_SAVE | I_EDIT | I_VIEW)
@@ -562,6 +569,7 @@ public:
         static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
 		
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
+        static bool IsAlphablend(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};

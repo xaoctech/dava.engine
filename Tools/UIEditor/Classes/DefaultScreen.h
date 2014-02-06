@@ -140,6 +140,9 @@ private:
 	Rect GetControlRect(const HierarchyTreeControlNode* control) const;
 	void CopySelectedControls();
 
+    // In case Preview mode is enabled, translate mouse UI events directly to the preview screen.
+    UIEvent* PreprocessEventForPreview(UIEvent* event);
+
 private:
 	Vector2 scale;
 	Vector2 pos;
