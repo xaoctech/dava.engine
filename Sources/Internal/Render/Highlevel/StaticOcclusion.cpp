@@ -273,7 +273,7 @@ uint32 StaticOcclusion::RenderFrame()
                     RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
                     RenderManager::Instance()->SetViewport(Rect(0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT), false);
                     
-                    RenderManager::Instance()->SetDefault3DState();
+                    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
                     RenderManager::Instance()->FlushState();
                     RenderManager::Instance()->Clear(Color(0.5f, 0.5f, 0.5f, 1.0f), 1.0f, 0);
                     

@@ -355,6 +355,7 @@
     <ClCompile Include="Classes\Commands2\DeleteRenderBatchCommand.cpp" />
     <ClCompile Include="Classes\Commands2\DynamicShadowCommands.cpp" />
     <ClCompile Include="Classes\Commands2\EntityAddCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\EntityCreateSwitchCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityParentChangeCommand.cpp" />
     <ClCompile Include="Classes\Commands2\EntityRemoveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\HeightmapEditorCommands2.cpp" />
@@ -971,6 +972,7 @@
     <ClInclude Include="Classes\Commands2\DeleteRenderBatchCommand.h" />
     <ClInclude Include="Classes\Commands2\DynamicShadowCommands.h" />
     <ClInclude Include="Classes\Commands2\EntityAddCommand.h" />
+    <ClInclude Include="Classes\Commands2\EntityCreateSwitchCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityParentChangeCommand.h" />
     <ClInclude Include="Classes\Commands2\EntityRemoveCommand.h" />
     <ClInclude Include="Classes\Commands2\HeightmapEditorCommands2.h" />

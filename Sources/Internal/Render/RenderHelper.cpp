@@ -210,7 +210,7 @@ void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Co
 
     vertexStream->Set(TYPE_FLOAT, 2, 0, gridVertices.data());
 
-    RenderManager::Instance()->SetDefault2DNoTextureState();
+    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     Color oldColor = RenderManager::Instance()->GetColor();
     RenderManager::Instance()->SetColor(color);
     
@@ -219,7 +219,6 @@ void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Co
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINELIST, 0, curVertexIndex / 2);
     
     RenderManager::Instance()->SetColor(oldColor);
-    RenderManager::Instance()->SetDefault2DState();
 }
 
 void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
