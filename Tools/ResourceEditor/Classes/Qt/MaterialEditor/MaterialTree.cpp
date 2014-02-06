@@ -164,11 +164,48 @@ void MaterialTree::ShowContextMenu(const QPoint &pos)
 	contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 */
 
-    const QModelIndex proxyIndex = indexAt( pos );
-    DAVA::NMaterial *material = treeModel->GetMaterial(proxyIndex);
-    QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
-    QAction * actionAssign = contextMenu.addAction("Assign to Selection", this, SLOT(OnAssignToSelection()));
-    actionAssign->setData(materialAsVariant);
+    // "Assign to Selection" item
+    {
+        const QModelIndexList& selection = selectionModel()->selectedIndexes();
+        int nMaterials = 0;
+        int nInstances = 0;
+
+        foreach( const QModelIndex& index, selection )
+        {
+            DAVA::NMaterial *material = treeModel->GetMaterial(index);
+            if ( material )
+            {
+                switch ( material->GetMaterialType() )
+                {
+                case DAVA::NMaterial::MATERIALTYPE_MATERIAL:
+                    nMaterials++;
+                    break;
+                case DAVA::NMaterial::MATERIALTYPE_INSTANCE:
+                    nInstances++;
+                    break;
+                default:
+                    break;
+                }
+            }
+            if ( nMaterials > 0 && nInstances > 0 )
+                break;
+        }
+
+        const bool isVisible = nMaterials > 0;
+        const bool isEnabled = ( nMaterials == 1 ) && ( nInstances == 0 );
+        
+        if ( isVisible )
+        {
+            const QModelIndex first = selection[0];
+            DAVA::NMaterial *material = treeModel->GetMaterial(first);
+            QVariant materialAsVariant = QVariant::fromValue<DAVA::NMaterial *>(material);
+            QAction * actionAssign = contextMenu.addAction("Assign to Selection", this, SLOT(OnAssignToSelection()));
+
+            if ( isEnabled )
+                actionAssign->setData(materialAsVariant);
+            actionAssign->setEnabled( isEnabled );
+        }
+    }
 
 	contextMenu.exec(mapToGlobal(pos));
 }
