@@ -54,6 +54,7 @@ namespace DAVA
 			for particular controls it can be changed, but no make sense to make that for all controls.
 		 */
 		inputEnabled = true; 
+        inputProcessorsCount = 1;
 		
 		background = new UIControlBackground();
 		needToRecalcFromAbsoluteCoordinates = false;
@@ -119,6 +120,10 @@ namespace DAVA
 	
 	void UIControl::SetParent(UIControl *newParent)
 	{
+        if (parent)
+        {
+            parent->UnregisterInputProcessors(inputProcessorsCount);
+        }
 		if (!newParent && parent)
 		{
             UIControlSystem::Instance()->CancelInputs(this);
@@ -129,7 +134,10 @@ namespace DAVA
 			relativePosition = absolutePosition - parent->GetGeometricData().position;
 			needToRecalcFromAbsoluteCoordinates = false;
 		}
-		
+        if (parent)
+        {
+            parent->RegisterInputProcessors(inputProcessorsCount);
+        }
 	}
 	UIControl *UIControl::GetParent()
 	{
@@ -957,7 +965,18 @@ namespace DAVA
 	
 	void UIControl::SetInputEnabled(bool isEnabled, bool hierarchic/* = true*/)
 	{
-		inputEnabled = isEnabled;
+        if (isEnabled != inputEnabled)
+        {
+            inputEnabled = isEnabled;
+            if (inputEnabled)
+            {
+                RegisterInputProcessor();
+            }
+            else
+            {
+                UnregisterInputProcessor();
+            }
+        }
 		if(hierarchic)
 		{	
 			List<UIControl*>::iterator it = childs.begin();
@@ -1312,6 +1331,14 @@ namespace DAVA
 		visible = srcControl->visible;
 		visibleForUIEditor = srcControl->visibleForUIEditor;
 		inputEnabled = srcControl->inputEnabled;
+        if (inputEnabled)
+        {
+            inputProcessorsCount = 1;
+        }
+        else
+        {
+            inputProcessorsCount = 0;
+        }
 		clipContents = srcControl->clipContents;
 
 		customControlType = srcControl->GetCustomControlType();
@@ -1500,6 +1527,7 @@ namespace DAVA
 
 	void UIControl::SystemUpdate(float32 timeElapsed)
 	{		
+        UIControlSystem::Instance()->updateCounter++;
 		Update(timeElapsed);
 		isUpdated = true;
 		List<UIControl*>::iterator it = childs.begin();
@@ -1530,6 +1558,7 @@ namespace DAVA
 
 	void UIControl::SystemDraw(const UIGeometricData &geometricData)
 	{
+        UIControlSystem::Instance()->drawCounter++;
 		UIGeometricData drawData;
 		drawData.position = relativePosition;
 		drawData.size = size;
@@ -1915,6 +1944,7 @@ namespace DAVA
 
 	bool UIControl::SystemInput(UIEvent *currentInput)
 	{
+        UIControlSystem::Instance()->inputCounter++;
 		isUpdated = true;
 		//if(currentInput->touchLocker != this)
 		{
@@ -1946,7 +1976,7 @@ namespace DAVA
 				if(!current->isUpdated)
 				{
 					current->Retain();
-					if(current->SystemInput(currentInput))
+					if(current->inputProcessorsCount > 0 && current->SystemInput(currentInput))
 					{
 						current->Release();
 						return true;
@@ -2850,4 +2880,71 @@ namespace DAVA
 	{
 		initialState = newState;
 	}
+
+    void UIControl::RegisterInputProcessor()
+    {
+        inputProcessorsCount++;
+        if (parent)
+        {
+            parent->RegisterInputProcessor();
+        }
+    }
+
+    void UIControl::RegisterInputProcessors(int32 processorsCount)
+    {
+        inputProcessorsCount += processorsCount;
+        if (parent)
+        {
+            parent->RegisterInputProcessors(processorsCount);
+        }
+    }
+
+    void UIControl::UnregisterInputProcessor()
+    {
+        DVASSERT(inputProcessorsCount >= 0);
+        inputProcessorsCount--;
+        if (parent)
+        {
+            parent->UnregisterInputProcessor();
+        }
+    }
+    void UIControl::UnregisterInputProcessors(int32 processorsCount)
+    {
+        DVASSERT(inputProcessorsCount >= 0);
+        inputProcessorsCount -= processorsCount;
+        if (parent)
+        {
+            parent->UnregisterInputProcessors(processorsCount);
+        }
+    }
+
+    void UIControl::DumpInputs(int32 depthLevel)
+    {
+        String outStr;
+        for (int i = 0; i < depthLevel; i++)
+        {
+            outStr += "| ";
+        }
+        outStr += "\\-";
+        outStr += name;
+        if (inputProcessorsCount > 0)
+        {
+            char buf[256];
+            itoa(inputProcessorsCount, buf, 10);
+            outStr += " ";
+            outStr += buf;
+        }
+
+        if (inputEnabled)
+        {
+            outStr += " ***";
+        }
+        Logger::Info("%s", outStr.c_str());
+        List<UIControl*>::iterator it = childs.begin();
+        for(; it != childs.end(); ++it)
+        {
+            (*it)->DumpInputs(depthLevel + 1);
+        }
+    }
+
 }

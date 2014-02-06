@@ -73,7 +73,7 @@ UIList::UIList() : delegate(NULL), orientation(ORIENTATION_VERTICAL), scrollCont
 		
 void UIList::InitAfterYaml()
 {
-	inputEnabled = TRUE;
+    SetInputEnabled(true, false);
 	clipContents = TRUE;
 	Rect r = GetRect();
 	r.x = 0;
@@ -502,7 +502,7 @@ void UIList::Input(UIEvent *currentInput)
 
 bool UIList::SystemInput(UIEvent *currentInput)
 {
-	if(!inputEnabled || !visible || controlState & STATE_DISABLED)
+	if(!GetInputEnabled() || !visible || controlState & STATE_DISABLED)
 	{
 		return false;
 	}

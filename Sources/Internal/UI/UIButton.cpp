@@ -46,7 +46,6 @@ namespace DAVA
 	UIButton::UIButton(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 	: UIControl(rect, rectInAbsoluteCoordinates)
 	{
-		inputEnabled = TRUE;
 		oldState = 0;
 		for(int i = 0; i < DRAW_STATE_COUNT; i++)
 		{
@@ -57,6 +56,7 @@ namespace DAVA
 		selectedBackground = background;
 		selectedText = NULL;
 		exclusiveInput = TRUE;
+        SetInputEnabled(true, false);
 
 	}
 
