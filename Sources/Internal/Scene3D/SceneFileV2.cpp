@@ -750,6 +750,11 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             doNotRemove = true;
         }
         
+        if(currentNode->GetName().rfind("dummy") != String::npos)
+        {
+            doNotRemove = true;
+        }
+        
         if (!doNotRemove)
         {
             Entity * parent  = currentNode->GetParent();
