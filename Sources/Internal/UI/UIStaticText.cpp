@@ -267,14 +267,12 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 
 	if(textColorNode)
 	{
-		Vector4 c = textColorNode->AsVector4();
-		SetTextColor(Color(c.x, c.y, c.z, c.w));
+		SetTextColor(textColorNode->AsColor());
 	}
 
 	if(shadowColorNode)
 	{
-		Vector4 c = shadowColorNode->AsVector4();
-		SetShadowColor(Color(c.x, c.y, c.z, c.w));
+		SetShadowColor(shadowColorNode->AsColor());
 	}
 
 	if(shadowOffsetNode)
@@ -303,17 +301,27 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     nodeValue->SetString(FontManager::Instance()->GetFontName(this->GetFont()));
     node->Set("font", nodeValue);
 
-	//TextColor
-	nodeValue->SetVector4(Vector4(textColor.r, textColor.g, textColor.b, textColor.a));
-	node->Set("textcolor", nodeValue);
+    //TextColor
+    if (baseControl->GetTextColor() != textColor)
+    {
+        nodeValue->SetColor(textColor);
+        node->Set("textcolor", nodeValue);
+    }
 
-	// ShadowColor
-	nodeValue->SetVector4(Vector4(shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a));
-	node->Set("shadowcolor", nodeValue);
+    // ShadowColor
+    if (baseControl->GetShadowColor() != shadowColor)
+    {
+        nodeValue->SetColor(shadowColor);
+        node->Set("shadowcolor", nodeValue);
+    }
 
 	// ShadowOffset
-	nodeValue->SetVector2(GetShadowOffset());
-	node->Set("shadowoffset", nodeValue);
+    const Vector2 &shadowOffset = GetShadowOffset();
+    if (baseControl->GetShadowOffset() != shadowOffset)
+    {
+        nodeValue->SetVector2(shadowOffset);
+        node->Set("shadowoffset", nodeValue);
+    }
 
     //Text
     nodeValue->SetWideString(GetText());
@@ -328,10 +336,10 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	{
     	node->Set("multilineBySymbol", this->textBlock->GetMultilineBySymbol());
 	}
-    //fitting - STRING OF INT???
+    //fitting - Array of strings
 	if (baseControl->textBlock->GetFittingOption() != this->textBlock->GetFittingOption())
 	{
-    	node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
+        node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
 	}
     
 	// Align

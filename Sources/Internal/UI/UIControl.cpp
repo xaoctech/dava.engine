@@ -38,6 +38,7 @@
 #include "Render/RenderHelper.h"
 #include "Utils/Utils.h"
 #include "Input/InputSystem.h"
+#include "Utils/StringFormat.h"
 
 namespace DAVA 
 {
@@ -2114,11 +2115,10 @@ namespace DAVA
 		}
 
 		// Color
-		Color color =  this->GetBackground()->GetColor();
+		const Color &color =  this->GetBackground()->GetColor();
 		if (baseControl->GetBackground()->color != color)
 		{		
-			Vector4 colorVector4(color.r, color.g, color.b, color.a);
-			nodeValue->SetVector4(colorVector4);
+			nodeValue->SetColor(color);
 			node->Set("color", nodeValue);
 		}
 		// Frame
@@ -2929,10 +2929,8 @@ namespace DAVA
         outStr += name;
         if (inputProcessorsCount > 0)
         {
-            char buf[256];
-            itoa(inputProcessorsCount, buf, 10);
             outStr += " ";
-            outStr += buf;
+            outStr += Format("%d", inputProcessorsCount);
         }
 
         if (inputEnabled)
