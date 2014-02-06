@@ -90,6 +90,8 @@ public:
 	void PreDraw();
 
     TextBlock * Clone();
+
+	const Vector<int32> & GetStringSizes() const;
     
 protected:
 	TextBlock();

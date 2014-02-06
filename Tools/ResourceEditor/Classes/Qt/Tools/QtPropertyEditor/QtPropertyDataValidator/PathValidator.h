@@ -26,30 +26,25 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
 
-#include <QDialog>
 
-class QualitySwitcher : public QDialog
+#ifndef __PATH_VALIDATOR_H__
+#define __PATH_VALIDATOR_H__
+
+#include "RegExpValidator.h"
+#include <QStringList>
+
+class PathValidator : public RegExpValidator
 {
-    Q_OBJECT
-
 public:
-    static void Show();
-
-protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
-
-    QPushButton *defBtn;
     
-    bool applyTx;
-    bool applyMa;
-
-protected slots:
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
+    PathValidator(const QStringList& value);
+    
+protected:
+	
+	QStringList referencePathList;
+    
+    virtual void ErrorNotifyInternal(const QVariant &v) const;
 };
 
-#endif // __QUALITY_SWITCHER_H__
+#endif // __PATH_VALIDATOR_H__
