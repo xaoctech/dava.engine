@@ -109,7 +109,7 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, con
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
 	
-	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
+	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
 	memcpy(&noBlendStateData, &default2dState, sizeof(noBlendStateData));
 	
@@ -213,7 +213,7 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
     
     RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
-    RenderManager::Instance()->SetEmptyTextureState();
+    RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
     RenderManager::Instance()->FlushState();
 
 	Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),

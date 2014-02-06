@@ -87,7 +87,7 @@ void UI3DView::Update(float32 timeElapsed)
 void UI3DView::Draw(const UIGeometricData & geometricData)
 {
 #if 1
-	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
 	
     const Rect & viewportRect = geometricData.GetUnrotatedRect();
     viewportRc = viewportRect;
@@ -113,7 +113,7 @@ void UI3DView::Draw(const UIGeometricData & geometricData)
 	RenderManager::Instance()->PopDrawMatrix();
 	RenderManager::Instance()->PopMappingMatrix();
 	
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->Setup2DMatrices();
 	
         //    modelViewSave = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);

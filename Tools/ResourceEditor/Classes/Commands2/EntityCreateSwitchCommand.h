@@ -26,23 +26,31 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_SWITCHTORENDEROBJECTCONVERTER_H__
-#define __DAVAENGINE_SWITCHTORENDEROBJECTCONVERTER_H__
 
+
+#ifndef __ENTITY_CREATE_SWITCH_COMMAND_H__
+#define __ENTITY_CREATE_SWITCH_COMMAND_H__
+
+#include "Commands2/Command2.h"
 #include "DAVAEngine.h"
-using namespace DAVA;
 
-
-class SwitchToRenerObjectConverter
+class EntityCreateSwitchCommand : public Command2
 {
 public:
-	void ConsumeSwitchedRenderObjects(Entity * scene);
-	void SerachForSwitch(Entity * currentNode);
-	bool MergeSwitch(Entity * entity);
+	EntityCreateSwitchCommand(DAVA::Entity* entity, const DAVA::Vector<DAVA::Entity *> & fromEntities);
+	~EntityCreateSwitchCommand();
 
-private:
-    void FindRenderObjectsRecursive(Entity * fromEntity, Vector<std::pair<Entity*, RenderObject*> > & entityAndObjectPairs);
-    Set<PolygonGroup*> bakedPolygonGroups;
+	virtual void Undo();
+	virtual void Redo();
+	virtual DAVA::Entity* GetEntity() const;
+
+protected:
+
+	DAVA::RenderObject * FindRenderObjectsRecursive(DAVA::Entity * fromEntity) const;
+
+
+	DAVA::Entity *entity;
+	DAVA::Vector<DAVA::Entity *> sourceEntities;
 };
 
-#endif //__DAVAENGINE_SWITCHTORENDEROBJECTCONVERTER_H__
+#endif // __ENTITY_CREATE_SWITCH_COMMAND_H__

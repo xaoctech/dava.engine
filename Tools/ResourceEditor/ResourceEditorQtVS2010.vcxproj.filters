@@ -1844,7 +1844,7 @@
     </ClCompile>
     <ClCompile Include="Classes\Commands2\ParticleEmitterMoveCommands.cpp">
       <Filter>Classes\Commands2</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialFilterModel.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
@@ -1888,6 +1888,9 @@
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\DeleteRenderBatchCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\EntityCreateSwitchCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3292,7 +3295,7 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ParticleEmitterMoveCommands.h">
       <Filter>Classes\Commands2</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
@@ -3334,6 +3337,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\EntityCreateSwitchCommand.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -602,7 +602,7 @@ void Scene::Draw()
 		//imposterManager->ProcessQueue();
 	}
  
-	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     //RenderManager::Instance()->SetCullMode(FACE_BACK);
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();

@@ -957,6 +957,8 @@
 		CC84B02B18211A9000934482 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B01518211A9000934482 /* JobWaiter.h */; };
 		CC84B02C18211A9000934482 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B01518211A9000934482 /* JobWaiter.h */; };
 		CC84B02D18211A9000934482 /* JobWaiter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B01518211A9000934482 /* JobWaiter.h */; };
+		CC92A8B3189FBE6900C5DFEF /* ParticleRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EA106061188921FC00CB99A3 /* ParticleRenderObject.h */; };
+		CC92A8B5189FBE6F00C5DFEF /* ParticleGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = EA10605F188921FC00CB99A3 /* ParticleGroup.h */; };
 		CC931B22188EC95F000375F9 /* LodToLod2Converter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC931B1E188EC95F000375F9 /* LodToLod2Converter.cpp */; };
 		CC931B23188EC95F000375F9 /* LodToLod2Converter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC931B1E188EC95F000375F9 /* LodToLod2Converter.cpp */; };
 		CC931B24188EC95F000375F9 /* LodToLod2Converter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC931B1F188EC95F000375F9 /* LodToLod2Converter.h */; };
@@ -2093,6 +2095,8 @@
 		E898A2BE16BD265400732C04 /* libvorbisfile_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE578C5F1327927C0081BDE9 /* libvorbisfile_macos.a */; };
 		E898A2BF16BD265400732C04 /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		E89CE91216C549D2006BEFF4 /* libcurl_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E89CE91116C549D2006BEFF4 /* libcurl_macos.a */; };
+		E8ACC88118A29FBA00F26ABC /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
+		E8ACC88218A29FBB00F26ABC /* ParticleRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = EA106061188921FC00CB99A3 /* ParticleRenderObject.h */; };
 		E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
 		E8B4F8D016EF377D0072442A /* UTF8UtilsMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B4F8CE16EF377D0072442A /* UTF8UtilsMac.mm */; };
 		E8B6B3B01705DB26004F665E /* DeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840D24201703311400267C58 /* DeviceInfo.cpp */; };
@@ -2153,7 +2157,6 @@
 		EA84E17117FAC0B400304C3C /* SpatialTree.h in Headers */ = {isa = PBXBuildFile; fileRef = EA84E16B17FAC0B400304C3C /* SpatialTree.h */; };
 		EAADA0001892A458001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
 		EAADA0011892A458001E1AA2 /* UIParticles.h in Headers */ = {isa = PBXBuildFile; fileRef = EAAD9FFF1892A458001E1AA2 /* UIParticles.h */; };
-		EAADA01E189FCB09001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
 		EAADA01F189FCB30001E1AA2 /* ParticleRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EA106060188921FC00CB99A3 /* ParticleRenderObject.cpp */; };
 		EAADA02818A26524001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
 		EAADA02918A26525001E1AA2 /* UIParticles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAAD9FFE1892A458001E1AA2 /* UIParticles.cpp */; };
@@ -4386,6 +4389,7 @@
 				176DE9B8174B5561007A983B /* GameObject.h in Headers */,
 				176DE9B9174B5561007A983B /* GameObjectAnimations.h in Headers */,
 				176DE9BA174B5561007A983B /* GameObjectManager.h in Headers */,
+				E8ACC88218A29FBB00F26ABC /* ParticleRenderObject.h in Headers */,
 				176DE9BB174B5561007A983B /* TextGameObject.h in Headers */,
 				176DE9BC174B5561007A983B /* BillboardNode.h in Headers */,
 				A650F4BD1864A10100D3278D /* NMaterialTemplate.h in Headers */,
@@ -5023,6 +5027,7 @@
 				E898A09D16BD265400732C04 /* File.h in Headers */,
 				0214140B181984D600925E51 /* DAVAClassRegistrator.h in Headers */,
 				5013F6951859EB0400FB3C51 /* StaticOcclusionSystem.h in Headers */,
+				CC92A8B5189FBE6F00C5DFEF /* ParticleGroup.h in Headers */,
 				E898A09E16BD265400732C04 /* FileList.h in Headers */,
 				E898A09F16BD265400732C04 /* FilePath.h in Headers */,
 				CC84B02018211A9000934482 /* JobManager.h in Headers */,
@@ -5179,6 +5184,7 @@
 				E898A15216BD265400732C04 /* Scene.h in Headers */,
 				E898A15316BD265400732C04 /* SceneAnimationMixer.h in Headers */,
 				E898A15416BD265400732C04 /* SceneFile.h in Headers */,
+				CC92A8B3189FBE6900C5DFEF /* ParticleRenderObject.h in Headers */,
 				E898A15516BD265400732C04 /* SceneFileV2.h in Headers */,
 				E898A15616BD265400732C04 /* SceneManager.h in Headers */,
 				E898A15816BD265400732C04 /* SceneNodeAnimation.h in Headers */,
@@ -6291,7 +6297,6 @@
 				E898A26116BD265400732C04 /* MeshInstance.cpp in Sources */,
 				E898A26216BD265400732C04 /* MeshInstanceNode.cpp in Sources */,
 				E898A26316BD265400732C04 /* ParticleEffectNode.cpp in Sources */,
-				EAADA01E189FCB09001E1AA2 /* ParticleRenderObject.cpp in Sources */,
 				E898A26416BD265400732C04 /* ParticleEmitterNode.cpp in Sources */,
 				E898A26516BD265400732C04 /* PathManip.cpp in Sources */,
 				E898A26616BD265400732C04 /* PolygonGroupInstance.cpp in Sources */,
@@ -6337,6 +6342,7 @@
 				E898A29816BD265400732C04 /* UIHierarchy.cpp in Sources */,
 				E898A29916BD265400732C04 /* UIHierarchyCell.cpp in Sources */,
 				E898A29A16BD265400732C04 /* UIHierarchyNode.cpp in Sources */,
+				E8ACC88118A29FBA00F26ABC /* ParticleRenderObject.cpp in Sources */,
 				E898A29B16BD265400732C04 /* UIHoleTransition.cpp in Sources */,
 				E898A29C16BD265400732C04 /* UIJoypad.cpp in Sources */,
 				E898A29D16BD265400732C04 /* UIList.cpp in Sources */,

@@ -123,7 +123,7 @@ ActionSetVisibilityPoint::~ActionSetVisibilityPoint()
 
 void ActionSetVisibilityPoint::Redo()
 {
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->FlushState();
 
 	Sprite* visibilityToolSprite = visibilityToolProxy->GetSprite();
@@ -215,7 +215,7 @@ void ActionSetVisibilityArea::ApplyImage(DAVA::Image *image)
 
 	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
 
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->FlushState();
 
 	RenderManager::Instance()->ClipPush();

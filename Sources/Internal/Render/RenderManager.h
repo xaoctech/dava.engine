@@ -566,32 +566,8 @@ public:
 	{
 		uniqueRenderStates.ReleaseUnique(handle);
 	}
-	
-	inline UniqueHandle GetDefault2DStateHandle() const
-	{
-		return default2DRenderStateHandle;
-	}
-	
-	inline UniqueHandle GetDefault2DNoBlendStateHandle()
-	{
-		return default2DNoBlendRenderStateHandle;
-	}
-	
-	inline UniqueHandle GetDefault2DNoTextureStateHandle() const
-	{
-		return default2DNoTextureStateHandle;
-	}
-
-	inline UniqueHandle GetDefault3DStateHandle() const
-	{
-		return default3DRenderStateHandle;
-	}
-	
-	inline UniqueHandle GetDefaultHardwareStateHandle() const
-	{
-		return defaultHardwareState;
-	}
-	
+		
+			
 	inline UniqueHandle SubclassRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)
 	{
 		const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
@@ -618,23 +594,18 @@ public:
 	inline UniqueHandle Subclass3DRenderState(eBlendMode srcBlend,
 										  eBlendMode dstBlend)
 	{
-		return SubclassRenderState(default3DRenderStateHandle, srcBlend, dstBlend);
+		return SubclassRenderState(RenderState::RENDERSTATE_3D_BLEND, srcBlend, dstBlend);
 	}
 	
 	inline UniqueHandle Subclass3DRenderState(uint32 renderStateFlags)
 	{
-		return SubclassRenderState(default3DRenderStateHandle, renderStateFlags);
+		return SubclassRenderState(RenderState::RENDERSTATE_3D_BLEND, renderStateFlags);
 	}
 	
 	inline UniqueHandle Subclass2DRenderState(uint32 renderStateFlags)
 	{
-		return SubclassRenderState(default2DRenderStateHandle, renderStateFlags);
+		return SubclassRenderState(RenderState::RENDERSTATE_2D_BLEND, renderStateFlags);
 	}
-
-	void SetDefault2DState();
-	void SetDefault2DNoBlendState();
-	void SetDefault2DNoTextureState();
-	void SetDefault3DState();
 	
 	inline void SetRenderState(UniqueHandle requestedState)
 	{
@@ -665,17 +636,7 @@ public:
 	{
 		currentState.textureState = requestedState;
 	}
-	
-	inline void SetEmptyTextureState()
-	{
-		SetTextureState(defaultTextureState);
-	}
-	
-	inline UniqueHandle GetEmptyTextureState()
-	{
-		return defaultTextureState;
-	}
-	
+		
 protected:
     //
     // general matrices for rendermanager 
@@ -764,18 +725,10 @@ public:
 //  Shader * shader;
 	
 	UniqueStateSet<RenderStateData> uniqueRenderStates;
-	UniqueHandle default2DRenderStateHandle;
-	UniqueHandle default2DNoBlendRenderStateHandle;
-	UniqueHandle default2DNoTextureStateHandle;
-	UniqueHandle default3DRenderStateHandle;
-	UniqueHandle defaultHardwareState;
-	
 	UniqueStateSet<TextureStateData> uniqueTextureStates;
-	UniqueHandle defaultTextureState;
-	
-	void InitDefaultRenderStates();
-	void InitDefaultTextureStates();
     
+    void InitDefaultRenderStates();
+	   
     RenderState currentState;
     RenderState hardwareState;
 

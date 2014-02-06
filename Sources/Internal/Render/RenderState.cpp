@@ -68,6 +68,15 @@ static const String RENDER_STATES_NAMES[] =
 IDirect3DDevice9 * RenderState::direct3DDevice = 0; 
 #endif
 
+UniqueHandle RenderState::RENDERSTATE_2D_BLEND = InvalidUniqueHandle;
+UniqueHandle RenderState::RENDERSTATE_2D_OPAQUE = InvalidUniqueHandle;
+UniqueHandle RenderState::RENDERSTATE_3D_BLEND = InvalidUniqueHandle;
+UniqueHandle RenderState::RENDERSTATE_3D_OPAQUE = InvalidUniqueHandle;
+UniqueHandle RenderState::RENDERSTATE_DEFAULT = InvalidUniqueHandle;
+    
+UniqueHandle RenderState::TEXTURESTATE_EMPTY = InvalidUniqueHandle;
+
+
 RenderState::RenderState()
 {
     renderer = RenderManager::Instance()->GetRenderer();
@@ -113,7 +122,7 @@ void RenderState::Reset(bool doHardwareReset)
        // RenderManager::Instance()->LockNonMain();
 		
 		const RenderStateData& renderStateData =
-				rm->GetRenderStateData(rm->GetDefault2DStateHandle());
+        rm->GetRenderStateData(RenderState::RENDERSTATE_2D_BLEND);
 //        Logger::FrameworkDebug("Do hardware reset");
         // PrintBackTraceToLog();
         SetColorInHW();
@@ -140,8 +149,8 @@ void RenderState::Reset(bool doHardwareReset)
             }
         }
 		
-		textureState = RenderManager::Instance()->GetEmptyTextureState();
-		stateHandle = RenderManager::Instance()->GetDefaultHardwareStateHandle();
+		textureState = RenderState::TEXTURESTATE_EMPTY;
+		stateHandle = RenderState::RENDERSTATE_DEFAULT;
 		
     }
 }
@@ -1079,6 +1088,64 @@ void RenderState::Deserialize(KeyedArchive *archive, SerializationContext *seria
 	renderState.stencilPass[1] = (eStencilOp)stencilPackedFuncs[5];
 	renderState.stencilZFail[0] = (eStencilOp)stencilPackedFuncs[6];
 	renderState.stencilZFail[1] = (eStencilOp)stencilPackedFuncs[7];
+}
+
+void RenderState::InitDefaultStates()
+{
+    RenderStateData defaultStateData;
+	
+	defaultStateData.state = RenderState::DEFAULT_2D_STATE_BLEND;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_NEVER;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+	
+	RenderState::RENDERSTATE_2D_BLEND = RenderManager::Instance()->CreateRenderState(defaultStateData);
+	
+	defaultStateData.state = RenderState::DEFAULT_2D_STATE;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_NEVER;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+	
+	RenderState::RENDERSTATE_2D_OPAQUE = RenderManager::Instance()->CreateRenderState(defaultStateData);
+	
+    defaultStateData.state = RenderState::DEFAULT_3D_STATE;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_LESS;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+
+    RenderState::RENDERSTATE_3D_OPAQUE = RenderManager::Instance()->CreateRenderState(defaultStateData);
+    
+	defaultStateData.state = RenderState::DEFAULT_3D_STATE_BLEND;
+	defaultStateData.cullMode = FACE_BACK;
+	defaultStateData.depthFunc = CMP_LESS;
+	defaultStateData.sourceFactor = BLEND_SRC_ALPHA;
+	defaultStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+	defaultStateData.fillMode = FILLMODE_SOLID;
+    
+	RenderState::RENDERSTATE_3D_BLEND = RenderManager::Instance()->CreateRenderState(defaultStateData);
+	
+	defaultStateData.state = RenderStateData::STATE_COLORMASK_ALL;
+	defaultStateData.cullMode = FACE_COUNT;
+	defaultStateData.depthFunc = CMP_TEST_MODE_COUNT;
+	defaultStateData.sourceFactor = BLEND_MODE_COUNT;
+	defaultStateData.destFactor = BLEND_MODE_COUNT;
+	defaultStateData.fillMode = FILLMODE_COUNT;
+	defaultStateData.stencilRef = 0;
+	defaultStateData.stencilMask = 0;
+	defaultStateData.stencilFunc[0] = defaultStateData.stencilFunc[1] = CMP_TEST_MODE_COUNT;
+	defaultStateData.stencilPass[0] = defaultStateData.stencilPass[1] = STENCILOP_COUNT;
+	defaultStateData.stencilFail[0] = defaultStateData.stencilFail[1] = STENCILOP_COUNT;
+	defaultStateData.stencilZFail[0] = defaultStateData.stencilZFail[1] = STENCILOP_COUNT;
+	RenderState::RENDERSTATE_DEFAULT = RenderManager::Instance()->CreateRenderState(defaultStateData);
+    
+    TextureStateData textureData;
+	RenderState::TEXTURESTATE_EMPTY = RenderManager::Instance()->CreateTextureState(textureData);
 }
 
 };
