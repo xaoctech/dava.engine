@@ -1719,11 +1719,6 @@
     <string>Specular</string>
    </property>
   </action>
-  <action name="actionQuality">
-   <property name="text">
-    <string>Quality...</string>
-   </property>
-  </action>
   <action name="actionEditor_Sprite">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1748,6 +1743,18 @@
    </property>
    <property name="toolTip">
     <string>Custom Quality Settings</string>
+   </property>
+  </action>
+  <action name="actionSetLightViewMode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/light_settings.png</normaloff>:/QtIcons/light_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>setLightViewMode</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Materials LightViewMode</string>
    </property>
   </action>
  </widget>
