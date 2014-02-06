@@ -71,10 +71,12 @@ protected:
 	SceneEditor2 *curScene;
 
 private:
+    void requestPreview( QStandardItem *item );
     void setPreview( QStandardItem *item, QImage image );
     bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
 
 private slots:
+    void onThumbnailReady( QList<QImage> images, QVariant userData );
 };
 
 

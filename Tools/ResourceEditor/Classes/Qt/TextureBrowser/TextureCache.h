@@ -62,7 +62,7 @@ private:
 	};
 
     typedef DAVA::Map<const DAVA::FilePath, CacheEntity> CacheMap;
-    typedef QMap<const DAVA::FilePath, QPointer< CacheRequest > > RequestMap;
+    typedef QMap< DAVA::FilePath, QPointer< CacheRequest > > RequestPool;
     
 public:
     
@@ -117,14 +117,16 @@ private:
 	size_t curConvertedWeight[DAVA::GPU_FAMILY_COUNT];
 
     static const size_t maxThumbnailCount = 100;
-	static const size_t maxOrigCount = 20;
-	static const size_t maxConvertedCount = 7; // per gpu
+	static const size_t maxOrigCount = 1;
+	static const size_t maxConvertedCount = 1; // per gpu
 
-    RequestMap requestThumbnail;
+    RequestPool poolThumbnail;
 
-    DAVA::Map<const DAVA::FilePath, CacheEntity> cacheThumbnail;
-	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheOriginal;
-	DAVA::Map<const DAVA::FilePath, CacheEntity> cacheConverted[DAVA::GPU_FAMILY_COUNT];
+    CacheMap cacheThumbnail;
+	CacheMap cacheOriginal;
+	CacheMap cacheConverted[DAVA::GPU_FAMILY_COUNT];
 };
+
+Q_DECLARE_METATYPE( QList<QImage> )
 
 #endif // __TEXTURE_CACHE_H__
