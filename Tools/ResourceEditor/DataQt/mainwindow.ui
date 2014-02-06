@@ -292,9 +292,9 @@
       <string>Toolbars</string>
      </property>
     </widget>
-    <widget class="QMenu" name="menuTextures">
+    <widget class="QMenu" name="menuLightView">
      <property name="title">
-      <string>Textures</string>
+      <string>Light</string>
      </property>
      <addaction name="actionAlbedo"/>
      <addaction name="actionAmbient"/>
@@ -302,8 +302,7 @@
      <addaction name="actionSpecular"/>
     </widget>
     <addaction name="menuTexturesForGPU"/>
-    <addaction name="menuTextures"/>
-    <addaction name="actionQuality"/>
+    <addaction name="menuLightView"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>

@@ -186,11 +186,7 @@ public slots:
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
 
-    void OnMaterialAlbedo(bool state);
-    void OnMaterialAmbient(bool state);
-    void OnMaterialDiffuse(bool state);
-    void OnMaterialSpecular(bool state);
-
+    void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
 
 protected:
@@ -266,7 +262,7 @@ private:
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
-    void LoadMaterialViewMode(SceneEditor2 *scene);
+    void LoadMaterialLightViewMode();
 
 	bool SaveTilemask(bool forAllTabs = true);
 
