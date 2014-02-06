@@ -842,15 +842,13 @@ namespace DAVA
 			const YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
 			if (stateTextColorNode)
 			{
-				Vector4 c = stateTextColorNode->AsVector4();
-				SetStateFontColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
+				SetStateFontColor(stateArray[k], stateTextColorNode->AsColor());
 			}
 			
 			const YamlNode * stateShadowColorNode = node->Get(Format("stateShadowcolor%s", statePostfix[k].c_str()));
 			if (stateShadowColorNode)
 			{
-				Vector4 c = stateShadowColorNode->AsVector4();
-				SetStateShadowColor(stateArray[k], Color(c.x, c.y, c.z, c.w));
+				SetStateShadowColor(stateArray[k], stateShadowColorNode->AsColor());
 			}			
 			
 			const YamlNode * stateShadowOffsetNode = node->Get(Format("stateShadowoffset%s", statePostfix[k].c_str()));
@@ -990,22 +988,31 @@ namespace DAVA
 				Font *stateFont = this->GetStateTextControl(stateArray[i])->GetFont();
 				node->Set(Format("stateFont%s", statePostfix[i].c_str()), FontManager::Instance()->GetFontName(stateFont));
 
-				nodeValue->SetWideString(this->GetStateTextControl(stateArray[i])->GetText());
-				node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
-				
-				Color textColor = this->GetStateTextControl(stateArray[i])->GetTextColor();
-				nodeValue->SetVector4(Vector4(textColor.r, textColor.g, textColor.b, textColor.a));
-				node->Set(Format("stateTextcolor%s", statePostfix[i].c_str()), nodeValue);
-				
-				Color shadowColor = this->GetStateTextControl(stateArray[i])->GetShadowColor();
-				nodeValue->SetVector4(Vector4(shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a));
-				node->Set(Format("stateShadowcolor%s", statePostfix[i].c_str()), nodeValue);
-				
-				Vector2 shadowOffset = this->GetStateTextControl(stateArray[i])->GetShadowOffset();
-				nodeValue->SetVector2(shadowOffset);
-				node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
-                
-                int32 fittingOption = this->GetStateTextControl(stateArray[i])->GetFittingOption();
+                nodeValue->SetWideString(GetStateTextControl(stateArray[i])->GetText());
+                node->Set(Format("stateText%s", statePostfix[i].c_str()), nodeValue);
+
+                const Color &textColor = GetStateTextControl(stateArray[i])->GetTextColor();
+                if (baseStaticText->GetTextColor() != textColor)
+                {
+                    nodeValue->SetColor(textColor);
+                    node->Set(Format("stateTextcolor%s", statePostfix[i].c_str()), nodeValue);
+                }
+
+                const Color &shadowColor = GetStateTextControl(stateArray[i])->GetShadowColor();
+                if( baseStaticText->GetShadowColor() != shadowColor )
+                {
+                    nodeValue->SetColor(shadowColor);
+                    node->Set(Format("stateShadowcolor%s", statePostfix[i].c_str()), nodeValue);
+                }
+
+                const Vector2 &shadowOffset = GetStateTextControl(stateArray[i])->GetShadowOffset();
+                if (baseStaticText->GetShadowOffset() != shadowOffset)
+                {
+                    nodeValue->SetVector2(shadowOffset);
+                    node->Set(Format("stateShadowoffset%s", statePostfix[i].c_str()), nodeValue);
+                }
+
+                int32 fittingOption = GetStateTextControl(stateArray[i])->GetFittingOption();
                 if (baseStaticText->GetFittingOption() != fittingOption)
                 {
                     nodeValue->SetInt32(fittingOption);
@@ -1014,12 +1021,11 @@ namespace DAVA
 			}
 			
 			// State background color
-			Color color = this->GetActualBackground(stateArray[i])->GetColor();
-			Color baseColor =  baseControl->GetActualBackground(stateArray[i])->GetColor();
+			const Color &color = this->GetActualBackground(stateArray[i])->GetColor();
+			const Color &baseColor =  baseControl->GetActualBackground(stateArray[i])->GetColor();
 			if (baseColor != color)
 			{
-				Vector4 colorVector4(color.r, color.g, color.b, color.a);
-				nodeValue->SetVector4(colorVector4);
+				nodeValue->SetColor(color);
 				node->Set(Format("stateColor%s", statePostfix[i].c_str()), nodeValue);
 			}
 			

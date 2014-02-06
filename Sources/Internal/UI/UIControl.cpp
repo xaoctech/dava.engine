@@ -2115,11 +2115,10 @@ namespace DAVA
 		}
 
 		// Color
-		Color color =  this->GetBackground()->GetColor();
+		const Color &color =  this->GetBackground()->GetColor();
 		if (baseControl->GetBackground()->color != color)
 		{		
-			Vector4 colorVector4(color.r, color.g, color.b, color.a);
-			nodeValue->SetVector4(colorVector4);
+			nodeValue->SetColor(color);
 			node->Set("color", nodeValue);
 		}
 		// Frame
