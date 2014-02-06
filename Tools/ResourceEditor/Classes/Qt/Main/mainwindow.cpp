@@ -724,6 +724,8 @@ void QtMainWindow::SetupShortCuts()
 #if defined (__DAVAENGINE_WIN32__)
 	QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F4), ui->sceneTabWidget), SIGNAL(activated()), ui->sceneTabWidget, SLOT(TabBarCloseCurrentRequest()));
 #endif
+    
+    QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectWillClose(Request*)), ui->sceneTabWidget, SLOT(CloseAllTabs(Request*)));
 }
 
 void QtMainWindow::InitRecent()
@@ -901,11 +903,7 @@ void QtMainWindow::OnProjectOpen()
 
 void QtMainWindow::OnProjectClose()
 {
-	// TODO:
-	// Close all scenes
-	// ...
-	// 
-
+    //all tabs will be closed in ProjectClose
 	ProjectManager::Instance()->ProjectClose();
 }
 
