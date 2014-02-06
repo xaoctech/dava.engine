@@ -1890,14 +1890,14 @@
     <ClCompile Include="Classes\Commands2\DeleteRenderBatchCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands2\EntityCreateSwitchCommand.cpp">
-      <Filter>Classes\Commands2</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\TextureBrowser\CacheRequest.cpp">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\TextureBrowser\CacheRequest_moc.cpp">
       <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\SwitchEntityCreator.cpp">
+      <Filter>Classes\Qt\Tools\AddSwitchEntityDialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -3347,11 +3347,11 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h">
       <Filter>QtGenerated</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Commands2\EntityCreateSwitchCommand.h">
-      <Filter>Classes\Commands2</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\CacheRequest.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\SwitchEntityCreator.h">
+      <Filter>Classes\Qt\Tools\AddSwitchEntityDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
