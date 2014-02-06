@@ -127,7 +127,6 @@ public slots:
 	
 	void OnAddLandscape();
     void OnAddSkybox();
-	void OnLandscapeDialog();
 	void OnLightDialog();
 	void OnCameraDialog();
 	void OnEmptyEntity();
@@ -138,8 +137,6 @@ public slots:
     void OnEditor2DCameraDialog();
     void OnEditorSpriteDialog();
 	void OnAddEntityFromSceneTree();
-
-	void OnSetSkyboxNode();
 	
 	void OnShowGeneralSettings();
 	void OnOpenHelp();
@@ -212,8 +209,6 @@ protected:
 
 	bool IsAnySceneChanged();
 
-	void SetLandscapeSettingsEnabled(bool);
-
 	void DiableUIForFutureUsing();
 	
 	bool SelectCustomColorsTexturePath();
@@ -248,7 +243,6 @@ private:
     QComboBox *objectTypesWidget;
 
 	AddSwitchEntityDialog*	addSwitchEntityDialog;
-	LandscapeDialog*		landscapeDialog;
 	HangingObjectsHeight*	hangingObjectsWidget;
 
 	void EnableSceneActions(bool enable);

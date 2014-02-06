@@ -387,7 +387,6 @@
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
-    <addaction name="actionLandscape"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
@@ -396,7 +395,6 @@
     <addaction name="actionVisibilityCheckTool"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
-    <addaction name="actionSkyboxEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBuildStaticOcclusion"/>
     <addaction name="actionBeastAndSave"/>
@@ -674,8 +672,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionSkyboxEditor"/>
-   <addaction name="actionLandscape"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -793,15 +789,6 @@
   <action name="actionExportTegra">
    <property name="text">
     <string>Tegra</string>
-   </property>
-  </action>
-  <action name="actionLandscape">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>Landscape...</string>
    </property>
   </action>
   <action name="actionLight">
@@ -1371,15 +1358,6 @@
   <action name="actionSetupSkybox">
    <property name="text">
     <string>Setup Skybox</string>
-   </property>
-  </action>
-  <action name="actionSkyboxEditor">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
-   </property>
-   <property name="text">
-    <string>Skybox...</string>
    </property>
   </action>
   <action name="actionSetShadowColor">

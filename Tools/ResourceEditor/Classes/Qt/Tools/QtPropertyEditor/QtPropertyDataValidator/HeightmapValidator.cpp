@@ -26,44 +26,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "FloatRangeValidator.h"
-#include "Qt/Settings/SettingsManager.h"
+#include "HeightMapValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-FloatRangeValidator::FloatRangeValidator(float minValue, float maxValue)
+HeightMapValidator::HeightMapValidator(const QStringList& value):
+	PathValidator(value),
+    notifyMessage("")
 {
-    innerValidator.setRange(minValue, maxValue);
 }
 
-bool FloatRangeValidator::ValidateInternal(const QVariant &value)
+void HeightMapValidator::ErrorNotifyInternal(const QVariant &v) const
 {
-    QString validateValue = value.toString();
-    int pos = 0;
-    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
+    QMessageBox::warning(NULL, "Wrong file selected", notifyMessage.c_str(), QMessageBox::Ok);
 }
 
-void FloatRangeValidator::SetRange(float minValue, float maxValue)
+bool HeightMapValidator::ValidateInternal(QVariant &v)
 {
-	innerValidator.setRange(minValue, maxValue);
+    if(!PathValidator::ValidateInternal(v))
+    {
+        notifyMessage = PrepareErrorMessage(v);
+        return false;
+    }
+    
+    DAVA::FilePath path(v.toString().toStdString());
+    if(path.IsEmpty() || path.IsEqualToExtension(".heightmap"))
+    {
+        return true;
+    }
+    else if(path.IsEqualToExtension(".png"))
+    {
+        DAVA::Vector<DAVA::Image *> imageVector = DAVA::ImageLoader::CreateFromFileByExtension(path);
+        DVASSERT(imageVector.size());
+        
+        DAVA::PixelFormat format = imageVector[0]->GetPixelFormat();
+        
+        for_each(imageVector.begin(), imageVector.end(), DAVA::SafeRelease<DAVA::Image>);
+        if(format == DAVA::FORMAT_A8 ||format == DAVA::FORMAT_A16)
+        {
+            return true;
+        }
+        notifyMessage = DAVA::Format("\"%s\" is wrong: png file should be in format A8 or A16.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    else
+    {
+        notifyMessage = DAVA::Format("\"%s\" is wrong: should be *.png or *.heightmap.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
 }
-
-int FloatRangeValidator::GetMaximum() const
-{
-	return innerValidator.top();
-}
-
-void FloatRangeValidator::SetMaximum(float maxValue)
-{
-	innerValidator.setTop(maxValue);
-}
-
-int FloatRangeValidator::GetMinimum() const
-{
-	return innerValidator.bottom();
-}
-
-void FloatRangeValidator::SetMinimum(float minValue)
-{
-    innerValidator.setBottom(minValue);
-}
-
-

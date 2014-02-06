@@ -38,6 +38,7 @@
 		84A6B1FB18972F64002FD263 /* FloatRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1F918972F64002FD263 /* FloatRangeValidator.cpp */; };
 		84A6B1FE189735AB002FD263 /* IntRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1FC189735AB002FD263 /* IntRangeValidator.cpp */; };
 		84B3D11F18985EF20039A9C0 /* PathValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84B3D11D18985EF20039A9C0 /* PathValidator.cpp */; };
+		84D61E4318A43D0F006E989B /* HeightmapValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84D61E4118A43D0F006E989B /* HeightmapValidator.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6796CD81885702800EB254C /* DDSExtractorTool.cpp */; };
 		A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A69D4042188940CF0093F7AA /* WebKit.framework */; };
@@ -683,6 +684,8 @@
 		84A6B1FD189735AB002FD263 /* IntRangeValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntRangeValidator.h; path = QtPropertyDataValidator/IntRangeValidator.h; sourceTree = "<group>"; };
 		84B3D11D18985EF20039A9C0 /* PathValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathValidator.cpp; path = QtPropertyDataValidator/PathValidator.cpp; sourceTree = "<group>"; };
 		84B3D11E18985EF20039A9C0 /* PathValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathValidator.h; path = QtPropertyDataValidator/PathValidator.h; sourceTree = "<group>"; };
+		84D61E4118A43D0F006E989B /* HeightmapValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapValidator.cpp; path = QtPropertyDataValidator/HeightmapValidator.cpp; sourceTree = "<group>"; };
+		84D61E4218A43D0F006E989B /* HeightmapValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapValidator.h; path = QtPropertyDataValidator/HeightmapValidator.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		A6796CD81885702800EB254C /* DDSExtractorTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DDSExtractorTool.cpp; sourceTree = "<group>"; };
 		A6796CD91885702800EB254C /* DDSExtractorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDSExtractorTool.h; sourceTree = "<group>"; };
@@ -1739,6 +1742,8 @@
 		626D3C7318900B2200E2B744 /* QtPropertyDataValidator */ = {
 			isa = PBXGroup;
 			children = (
+				84D61E4118A43D0F006E989B /* HeightmapValidator.cpp */,
+				84D61E4218A43D0F006E989B /* HeightmapValidator.h */,
 				491BC46A18A393A4001CE353 /* TexturePathValidator.cpp */,
 				491BC46B18A393A4001CE353 /* TexturePathValidator.h */,
 				84B3D11D18985EF20039A9C0 /* PathValidator.cpp */,
@@ -4446,6 +4451,7 @@
 				E8C99342184CD0EC00AFBF3F /* QtColorLineEdit.cpp in Build Sources */,
 				E8BAD6DA1859F50300C98C8D /* mainwindow_moc.cpp in Build Sources */,
 				E8BAD6DF1859F50300C98C8D /* StatusBar_moc.cpp in Build Sources */,
+				84D61E4318A43D0F006E989B /* HeightmapValidator.cpp in Build Sources */,
 				E8BAD7191859F50300C98C8D /* TextureList_moc.cpp in Build Sources */,
 				62C1B999188E913300CD3005 /* MaterialFilterModel.cpp in Build Sources */,
 				E8C992E9184CD0EC00AFBF3F /* mainwindow.cpp in Build Sources */,
