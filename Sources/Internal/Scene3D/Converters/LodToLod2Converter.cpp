@@ -176,8 +176,6 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 				data->nodes.clear();
 			}
 		}
-
-		ro->RecalcBoundingBox();
 	}
 
 	Set<Entity*>::iterator itEnd = entitiesToRemove.end();

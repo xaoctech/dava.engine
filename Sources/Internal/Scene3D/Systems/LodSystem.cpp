@@ -278,7 +278,6 @@ void LodSystem::SetEntityLodRecursive(Entity * entity, int32 currentLod)
 
 bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq, Camera* camera)
 {
-
 	bool usePsSettings = (GetEffectComponent(entity) != NULL);
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
