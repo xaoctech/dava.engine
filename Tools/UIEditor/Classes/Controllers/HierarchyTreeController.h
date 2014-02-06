@@ -45,6 +45,8 @@
 
 #include "AlignDistribute/AlignDistributeEnums.h"
 
+#include "PreviewController.h"
+
 using namespace DAVA;
 
 // Hierarchy Tree Controller for handling UI Editor Project Hierarchy Tree.
@@ -133,6 +135,10 @@ public:
 
     // Repack and reload sprites.
     void RepackAndReloadSprites();
+    
+    // Preview mode control.
+    void EnablePreview(const PreviewSettingsData& data);
+    void DisablePreview();
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
