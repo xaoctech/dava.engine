@@ -33,14 +33,55 @@
 
 #include "Base/StaticSingleton.h"
 #include "Base/FastNameMap.h"
+#include "Math/Vector.h"
 
 namespace DAVA
 {
+
+struct TextureQuality
+{
+    size_t albedoBaseMipMapLevel;
+    size_t normalBaseMipMapLevel;
+    Vector2 minSize;
+    size_t weight;
+};
+
+struct MaterialQuality
+{
+    FastName qualityName;
+    size_t weight;
+};
 
 class QualitySettingsComponent;
 class QualitySettingsSystem: public StaticSingleton<QualitySettingsSystem>
 {
 public:
+    QualitySettingsSystem();
+
+    void Load(const FilePath &path);
+
+    // textures quality
+    size_t GetTxQualityCount() const;
+    FastName GetTxQualityName(size_t index) const;
+
+    FastName GetCurTxQuality() const;
+    void SetCurTxQuality(const FastName &name);
+
+    const TextureQuality* GetTxQuality(const FastName &name) const;
+
+    // materials quality
+    size_t GetMaQualityGroupCount() const;
+    FastName GetMaQualityGroupName(size_t index) const;
+    
+    size_t GetMaQualityCount(const FastName &group) const;
+    FastName GetMaQualityName(const FastName &group, size_t index) const;
+
+    FastName GetCurMaQuality(const FastName &group) const;
+    void SetCurMaQuality(const FastName &group, const FastName &quality);
+
+    const MaterialQuality* GetMaQuality(const FastName &group, const FastName &quality) const;
+
+    // ------------------------------------------
 
 	void EnableOption(const FastName & option, bool enabled);
 	bool IsOptionEnabled(const FastName & option) const;
@@ -55,6 +96,24 @@ protected:
 
 
 protected:
+    struct TXQ
+    {
+        FastName name;
+        TextureQuality quality;
+    };
+
+    struct MAGrQ
+    {
+        size_t curQuality;
+        Vector<MaterialQuality> qualities;
+    };
+
+    // textures
+    int curTextureQuality;
+    Vector<TXQ> textureQualities;
+
+    // materials
+    FastNameMap<MAGrQ> materialGroups;
 
 	FastNameMap<bool> qualityOptions;
 };

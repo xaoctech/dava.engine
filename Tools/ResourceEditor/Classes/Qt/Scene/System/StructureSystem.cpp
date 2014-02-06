@@ -552,8 +552,11 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 			SafeRelease(parentForOptimize);
 		}
 	}
+    else
+    {
+        DAVA::Logger::Instance()->Error("Wrong extension or no such file: %s", sc2path.GetAbsolutePathname().c_str());
+    }
 
-	if(NULL != loadedEntity) printf("%d\n", loadedEntity->GetRetainCount());
 	return loadedEntity;
 }
 

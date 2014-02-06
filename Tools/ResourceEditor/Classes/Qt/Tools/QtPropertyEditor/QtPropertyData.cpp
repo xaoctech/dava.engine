@@ -26,10 +26,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#include <QPushButton>
 #include "QtPropertyData.h"
+#include "QtPropertyDataValidator.h"
 
 QtPropertyData::QtPropertyData()
 	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
@@ -38,6 +36,7 @@ QtPropertyData::QtPropertyData()
 	, model(NULL)
 	, userData(NULL)
 	, optionalButtonsViewport(NULL)
+    , validator(NULL)
 { }
 
 QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
@@ -48,6 +47,7 @@ QtPropertyData::QtPropertyData(const QVariant &value, Qt::ItemFlags flags)
 	, model(NULL)
 	, userData(NULL)
 	, optionalButtonsViewport(NULL)
+    , validator(NULL)
 { }
 
 QtPropertyData::~QtPropertyData()
@@ -58,7 +58,6 @@ QtPropertyData::~QtPropertyData()
 	{
 		delete childrenData.at(i);
 	}
-
 	childrenData.clear();
 
 	for (int i = 0; i < optionalButtons.size(); i++)
@@ -71,6 +70,8 @@ QtPropertyData::~QtPropertyData()
 	{
 		delete userData;
 	}
+    
+    DAVA::SafeDelete(validator);
 }
 
 QVariant QtPropertyData::data(int role) const
@@ -153,10 +154,26 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	QVariant oldValue = curValue;
 
 	// set value
-	SetValueInternal(value);
+    if(reason == VALUE_EDITED && NULL != validator)
+    {
+        QVariant valueToValidate = value;
+
+        if(validator->Validate(valueToValidate))
+        {
+            SetValueInternal(valueToValidate);
+        }
+        else
+        {
+            return;
+        }
+    }
+    else
+    {
+        SetValueInternal(value);
+    }
 
 	// and get what was really set
-	// it can't differ from input "value"
+	// it can differ from input "value"
 	// (example: we are trying to set 10, but accepted range is 0-5
 	//   value is 10
 	//   curValue becomes 0-5)
@@ -385,6 +402,17 @@ void QtPropertyData::SetModel(QtPropertyModel *_model)
 			child->SetModel(model);
 		}
 	}
+}
+
+void QtPropertyData::SetValidator(QtPropertyDataValidator* value)
+{
+    DAVA::SafeDelete(validator);
+    validator = value;
+}
+
+QtPropertyDataValidator* QtPropertyData::GetValidator() const
+{
+    return validator;
 }
 
 QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewItem& option) const
