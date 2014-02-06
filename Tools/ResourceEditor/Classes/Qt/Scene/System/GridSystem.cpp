@@ -41,7 +41,7 @@ SceneGridSystem::SceneGridSystem(DAVA::Scene * scene)
 	gridMax = 500.0f;
 	gridStep = SettingsManager::Instance()->GetValue("GridStep", SettingsManager::DEFAULT).AsFloat();
 	
-	renderState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::RenderStateData::STATE_COLORMASK_ALL |
+	renderState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::RenderStateData::STATE_COLORMASK_ALL |
 																	   DAVA::RenderStateData::STATE_DEPTH_WRITE |
 																	   DAVA::RenderStateData::STATE_DEPTH_TEST);
 }
@@ -69,6 +69,7 @@ void SceneGridSystem::Draw()
 	//DAVA::uint32 oldState = rm->GetState();
 	
 	//rm->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
+    rm->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
 	rm->SetRenderState(renderState);
 	rm->FlushState();
 	

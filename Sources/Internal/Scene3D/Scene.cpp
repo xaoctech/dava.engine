@@ -60,7 +60,6 @@
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
@@ -554,6 +553,7 @@ void Scene::Update(float timeElapsed)
 	}
 	
 	switchSystem->Process(timeElapsed);
+    particleEffectSystem->Process(timeElapsed);
     
 // 	int32 size;
 // 	
@@ -602,7 +602,7 @@ void Scene::Draw()
 		//imposterManager->ProcessQueue();
 	}
  
-	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     //RenderManager::Instance()->SetCullMode(FACE_BACK);
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
@@ -611,28 +611,31 @@ void Scene::Draw()
 	
     if (currentCamera)
     {
-        currentCamera->Set();
+        currentCamera->SetupDynamicParameters();
     }
     
-    Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    //Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
-	actionSystem->Process(timeElapsed); //update action system before particles and render
-	particleEffectSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render	
 	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process(timeElapsed);
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
-
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	
+    //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
+    //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+    //RenderManager::Instance()->SetMatrix(RenderManager::PARAM_VIEW, renderer2d.)
     
-//     if(imposterManager)
-// 	{
-// 		imposterManager->Draw();
-// 	}
+    //    RenderManager::Instance()->GetRenderer2D()->Setup2DMatrices();
+    
+    //     if(imposterManager)
+    // 	{
+    // 		imposterManager->Draw();
+    // 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;

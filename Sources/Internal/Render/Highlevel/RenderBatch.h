@@ -99,6 +99,9 @@ public:
     
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject();
+
+    void SetSortingTransformPtr(Matrix4* worldTransformPtr);
+    inline Matrix4 * GetSortingTransformPtr() const;
     
     inline void SetStartIndex(uint32 _startIndex);
     inline void SetIndexCount(uint32 _indexCount);
@@ -115,8 +118,13 @@ public:
     /*
         \brief This is additional sorting key. It should be from 0 to 15.
      */
+   
     void SetSortingKey(uint32 key);
     inline uint32 GetSortingKey();
+
+    /*sorting offset allowed in 0..31 range, 15 default, more - closer to camera*/
+    void SetSortingOffset(uint32 offset);
+    inline uint32 GetSortingOffset();
 
 	void SetVisibilityCriteria(uint32 criteria);
     bool GetVisible() const;
@@ -130,13 +138,14 @@ protected:
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
     NMaterial * material;                    // Should be replaced to NMaterial
 	RenderObject * renderObject;
+    Matrix4 *sortingTransformPtr;
     
     uint32 startIndex;
     uint32 indexCount;
     
 //    ePrimitiveType type; //TODO: waiting for enums at introspection
     uint32 type;
-    uint32 sortingKey;
+    uint32 sortingKey; //oooookkkk -where o is offset, k is key
     uint32 visiblityCriteria;
 
 	AABBox3 aabbox;
@@ -188,6 +197,11 @@ inline RenderObject * RenderBatch::GetRenderObject()
 	return renderObject;
 }
 
+inline Matrix4 * RenderBatch::GetSortingTransformPtr() const
+{
+    return sortingTransformPtr;
+}
+
 inline void RenderBatch::SetStartIndex(uint32 _startIndex)
 {
     startIndex = _startIndex;
@@ -200,7 +214,12 @@ inline void RenderBatch::SetIndexCount(uint32 _indexCount)
     
 inline uint32 RenderBatch::GetSortingKey()
 {
-    return sortingKey;
+    return sortingKey&0x0f;
+}
+
+inline uint32 RenderBatch::GetSortingOffset()
+{
+    return ((sortingKey>>4)&0x1f);
 }
 
     

@@ -40,6 +40,8 @@
 #include "Debug/Stats.h"
 #include "Scene3D/Systems/TransformSystem.h"
 #include "Scene3D/Components/RenderComponent.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/DebugRenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
@@ -367,7 +369,7 @@ namespace DAVA
 	{
 		uint32 count = 0;
 		for (uint32 k = 0; k < COMPONENTS_IN_VECTOR_COUNT; ++k)
-			if (componentFlags >> k)
+			if ((componentFlags >> k) & 1)
 				count++;
 		
 #if defined(COMPONENT_STORAGE_STDMAP)
@@ -679,7 +681,7 @@ namespace DAVA
 	void Entity::BakeTransforms()
 	{
 		uint32 size = (uint32)children.size();
-		if(size == 1 && (0 == GetComponent(Component::LOD_COMPONENT))) // propagate matrices
+		if(size == 1 && (0 == GetComponent(Component::LOD_COMPONENT)) && (0 == GetComponent(Component::SWITCH_COMPONENT))) // propagate matrices
 		{
 			for (uint32 c = 0; c < size; ++c)
 			{
@@ -1492,6 +1494,10 @@ namespace DAVA
 				renderObject->SetFlags(renderObject->GetFlags() & ~RenderObject::VISIBLE);
 			}
 		}
+        
+        ParticleEffectComponent *effect = GetEffectComponent(this);
+        if (effect)
+            effect->SetRenderObjectVisible(isVisible);
 		
 		int32 count = GetChildrenCount();
 		for(int32 i = 0; i < count; ++i)

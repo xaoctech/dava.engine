@@ -46,7 +46,7 @@ namespace ResourceEditor
 	static const String SWITCH_NODE_NAME = "SwitchNode";
 	static const String PARTICLE_EFFECT_NODE_NAME = "Particle Effect";
 	static const String LAYER_NODE_NAME = "Layer";
-	static const String ENTITY_NAME = "Entity";
+	static const String ENTITY_NAME = "Entity";    
 
 	// Base node names
 	static const String EDITOR_BASE = "editor.";
@@ -54,6 +54,8 @@ namespace ResourceEditor
 	static const String EDITOR_DEBUG_CAMERA = "editor.debug-camera";
 	static const String EDITOR_ARROWS_NODE = "editor.arrows-node";
 	static const String EDITOR_CAMERA_LIGHT = "editor.camera-light";
+    static const String EDITOR_2D_CAMERA = "editor.2d-camera";
+    static const String EDITOR_SPRITE = "editor.sprite";
 	
 	// Headers
 	static const WideString CREATE_NODE_LANDSCAPE = L"createnode.landscape";

@@ -46,7 +46,7 @@ namespace DAVA
 
     
 RenderBatch::RenderBatch()
-    :   sortingKey(8)
+    :   sortingKey(0xF8)
     ,   dataSource(0)
     ,   renderDataObject(0)
     ,   material(0)
@@ -56,6 +56,7 @@ RenderBatch::RenderBatch()
     ,   renderObject(0)
     ,	visiblityCriteria(RenderObject::VISIBILITY_CRITERIA)
     ,   aabbox(Vector3(), Vector3())
+    ,   sortingTransformPtr(NULL)
 {
 	
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
@@ -143,8 +144,7 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //    if(!GetVisible())
 //        return;
 	
-    Matrix4 finalMatrix = (*worldTransformPtr) * camera->GetMatrix();
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)worldTransformPtr);
+    RenderManager::SetDynamicParam(PARAM_WORLD, worldTransformPtr, (pointer_size)worldTransformPtr);
 
     material->BindMaterialTechnique(ownerRenderPass, camera);
 
@@ -160,7 +160,11 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
         else queryRequested++;
     }
 #endif
-    material->Draw(dataSource);
+
+	if (dataSource)
+		material->Draw(dataSource);
+	else
+		material->Draw(renderDataObject);
     
 #if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
     lastFraemDrawn = globalFrameIndex;
@@ -180,6 +184,11 @@ void RenderBatch::SetRenderObject(RenderObject * _renderObject)
 	renderObject = _renderObject;
 }
 
+void RenderBatch::SetSortingTransformPtr(Matrix4 * _worldTransformPtr)
+{
+    sortingTransformPtr = _worldTransformPtr;
+}
+
 const AABBox3 & RenderBatch::GetBoundingBox() const
 {
     return aabbox;
@@ -188,7 +197,14 @@ const AABBox3 & RenderBatch::GetBoundingBox() const
     
 void RenderBatch::SetSortingKey(uint32 _key)
 {
-    sortingKey = _key;
+    DVASSERT(_key<16);
+    sortingKey = (sortingKey&~0x0f)+_key;
+}
+
+void RenderBatch::SetSortingOffset(uint32 offset)
+{
+    DVASSERT(offset<32);    
+    sortingKey=(sortingKey&~0x1F0)+(offset<<4);
 }
 
 

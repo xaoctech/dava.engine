@@ -53,14 +53,14 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape, Entity* node)
 		texturesEnabled[i] = false;
 	}
 	
-	const DAVA::RenderStateData* default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
+	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default2dState, sizeof(noBlendStateData));
+	memcpy(&noBlendStateData, &default2dState, sizeof(noBlendStateData));
 	
 	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
 	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->CreateRenderState(noBlendStateData);
 
 	customLandscape = new CustomLandscape();
 	customLandscape->SetTexture(Landscape::TEXTURE_TILE_FULL, baseLandscape->GetTexture(Landscape::TEXTURE_TILE_FULL));
@@ -80,15 +80,15 @@ LandscapeProxy::~LandscapeProxy()
 
 	if (cursorTextureState != InvalidUniqueHandle)
 	{
-		RenderManager::Instance()->ReleaseTextureStateData(cursorTextureState);
+		RenderManager::Instance()->ReleaseTextureState(cursorTextureState);
 	}
 
 	if (fullTiledTextureState != InvalidUniqueHandle)
 	{
-		RenderManager::Instance()->ReleaseTextureStateData(fullTiledTextureState);
+		RenderManager::Instance()->ReleaseTextureState(fullTiledTextureState);
 	}
 
-	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
+	RenderManager::Instance()->ReleaseRenderState(noBlendDrawState);
 }
 
 void LandscapeProxy::SetMode(LandscapeProxy::eLandscapeMode mode)
@@ -205,7 +205,7 @@ void LandscapeProxy::SetRulerToolTextureEnabled(bool enabled)
 
 void LandscapeProxy::UpdateDisplayedTexture()
 {
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->SetTextureState(fullTiledTextureState);
 	RenderManager::Instance()->FlushState();
 
@@ -325,12 +325,12 @@ void LandscapeProxy::CursorDisable()
 void LandscapeProxy::SetCursorTexture(Texture* texture)
 {
 	TextureStateData textureStateData;
-	textureStateData.textures[0] = texture;
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
+	textureStateData.SetTexture(0, texture);
+	UniqueHandle uniqueHandle = RenderManager::Instance()->CreateTextureState(textureStateData);
 
 	if (cursorTextureState != InvalidUniqueHandle)
 	{
-		RenderManager::Instance()->ReleaseTextureStateData(cursorTextureState);
+		RenderManager::Instance()->ReleaseTextureState(cursorTextureState);
 	}
 
 	customLandscape->SetCursorTexture(uniqueHandle);
@@ -362,8 +362,8 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 	{
 		SafeRelease(fullTiledTexture);
 
-		RenderManager::Instance()->SetDefault2DState();
-		RenderManager::Instance()->SetDefaultTextureState();
+		RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+		RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
 		RenderManager::Instance()->FlushState();
 //		baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GenerateMipmaps();
 
@@ -373,11 +373,11 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 		SetMode(oldMode);
 
 		TextureStateData textureStateData;
-		textureStateData.textures[0] = fullTiledTexture;
-		UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
+		textureStateData.SetTexture(0, fullTiledTexture);
+		UniqueHandle uniqueHandle = RenderManager::Instance()->CreateTextureState(textureStateData);
 		if (fullTiledTextureState != InvalidUniqueHandle)
 		{
-			RenderManager::Instance()->ReleaseTextureStateData(fullTiledTextureState);
+			RenderManager::Instance()->ReleaseTextureState(fullTiledTextureState);
 		}
 		fullTiledTextureState = uniqueHandle;
 
@@ -428,6 +428,7 @@ void LandscapeProxy::InitTilemaskImageCopy()
 	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
 	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
+    RenderManager::Instance()->SetColor(Color::White);
 	RenderManager::Instance()->FlushState();
 	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
 	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);

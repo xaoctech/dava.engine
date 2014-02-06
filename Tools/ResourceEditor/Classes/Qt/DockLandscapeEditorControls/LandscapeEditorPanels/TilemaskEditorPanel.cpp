@@ -21,14 +21,14 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 ,	frameStrength(NULL)
 ,	frameTileTexturesPreview(NULL)
 {
-	const DAVA::RenderStateData* default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
-	memcpy(&noBlendStateData, default3dState, sizeof(noBlendStateData));
+	memcpy(&noBlendStateData, &default3dState, sizeof(noBlendStateData));
 	
 	noBlendStateData.sourceFactor = DAVA::BLEND_ONE;
 	noBlendStateData.destFactor = DAVA::BLEND_ZERO;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->AddRenderStateData(&noBlendStateData);
+	noBlendDrawState = DAVA::RenderManager::Instance()->CreateRenderState(noBlendStateData);
 
 	InitUI();
 	ConnectToSignals();
@@ -36,7 +36,7 @@ TilemaskEditorPanel::TilemaskEditorPanel(QWidget* parent)
 
 TilemaskEditorPanel::~TilemaskEditorPanel()
 {
-	RenderManager::Instance()->ReleaseRenderStateData(noBlendDrawState);
+	RenderManager::Instance()->ReleaseRenderState(noBlendDrawState);
 }
 
 bool TilemaskEditorPanel::GetEditorEnabled()
@@ -296,18 +296,34 @@ void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& 
 	Image* images[CHANNELS_COUNT];
 	for (int32 i = 0; i < CHANNELS_COUNT; ++i)
 	{
-		images[i] = Image::Create(width, height, FORMAT_A8);
+		images[i] = Image::Create(width, height, FORMAT_RGBA8888);
 	}
 
 	int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
 	for(int32 i = 0; i < size; ++i)
 	{
 		int32 offset = i * pixelSize;
-		images[0]->data[i] = image->data[offset];
-		images[1]->data[i] = image->data[offset + 1];
-		images[2]->data[i] = image->data[offset + 2];
-		images[3]->data[i] = image->data[offset + 3];
-	}
+        
+		images[0]->data[offset] = image->data[offset];
+		images[0]->data[offset + 1] = image->data[offset];
+		images[0]->data[offset + 2] = image->data[offset];
+		images[0]->data[offset + 3] = 255;
+        
+		images[1]->data[offset] = image->data[offset + 1];
+		images[1]->data[offset + 1] = image->data[offset + 1];
+		images[1]->data[offset + 2] = image->data[offset + 1];
+		images[1]->data[offset + 3] = 255;
+
+		images[2]->data[offset] = image->data[offset + 2];
+		images[2]->data[offset + 1] = image->data[offset + 2];
+		images[2]->data[offset + 2] = image->data[offset + 2];
+		images[2]->data[offset + 3] = 255;
+        
+		images[3]->data[offset] = image->data[offset + 3];
+		images[3]->data[offset + 1] = image->data[offset + 3];
+		images[3]->data[offset + 2] = image->data[offset + 3];
+		images[3]->data[offset + 3] = 255;
+    }
 
 	r = images[0];
 	g = images[1];
@@ -336,30 +352,15 @@ void TilemaskEditorPanel::UpdateTileTextures()
 	RenderManager::Instance()->SetRenderState(noBlendDrawState);
 	RenderManager::Instance()->FlushState();
 	
-	if (sceneEditor->landscapeEditorDrawSystem->GetLandscapeTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
-	{
-		Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory();
-
-		image->ResizeCanvas(iconSize.width(), iconSize.height());
-
-		SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
-		SafeRelease(image);
-
-		tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITH_COLORS);
-	}
-	else
-	{
-		for (int32 i = 0; i < count; ++i)
-		{
-			Texture* texture = sceneEditor->tilemaskEditorSystem->GetTileTexture(i);
-			images[i] = texture->CreateImageFromMemory();
-			images[i]->ResizeCanvas(iconSize.width(), iconSize.height());
-		}
-		tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITHOUT_COLORS);
-	}
-
-	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
-
+    Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory();
+    
+    image->ResizeCanvas(iconSize.width(), iconSize.height());
+    
+    SplitImageToChannels(image, images[0], images[1], images[2], images[3]);
+    SafeRelease(image);
+    
+    tileTexturePreviewWidget->SetMode(TileTexturePreviewWidget::MODE_WITH_COLORS);
+    
 	for (int32 i = 0; i < count; ++i)
 	{
 		Color color = sceneEditor->tilemaskEditorSystem->GetTileColor(i);

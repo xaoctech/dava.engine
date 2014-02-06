@@ -119,13 +119,6 @@ void Frustum::Build(const Matrix4 & viewProjection)
 	}
 }
 
-void Frustum::Build()
-{
-    const Matrix4 & viewProjection = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-    Build(viewProjection);
-}
-
-
 //! \brief Check axial aligned bounding box visibility
 //! \param min bounding box minimum point
 //! \param max bounding box maximum point

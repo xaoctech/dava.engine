@@ -34,6 +34,7 @@
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
 #include "Scene3D/DataNode.h"
+#include "Render/RenderManager.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
 #include "Render/Material/NMaterialTemplate.h"
@@ -165,9 +166,11 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
-	   
-    static const FastName FLAG_VERTEXFOG;
+	static const FastName FLAG_VERTEXFOG;
+	static const FastName FLAG_FOG_EXP;
+	static const FastName FLAG_FOG_LINEAR;
 	static const FastName FLAG_TEXTURESHIFT;
+	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     
@@ -257,7 +260,13 @@ public:
 	
 	// Work with textures and properties
     void RemoveTexture(const FastName& textureFastName);
+    //When you set texture by path it will be loaded only after it became active in the current material quality.
+    //SetTexture("cubemap", "~res:/cubemap.pvr") will not result in GetTexture("cubemap") returning a valid texture object.
+    //A valid texture object will be returned only if there's actually uniform named "cubemap" in the material.
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
+    //VI: this method leaves texture intact. Allows to manipulate with FBO that has to be saved to some path
+    void SetTexturePath(const FastName& textureFastName, const FilePath& texturePath);
+    //This method doesn't check for uniform in the material and always uses texture provided.
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     
     Texture * GetTexture(const FastName& textureFastName) const;
@@ -294,9 +303,9 @@ public:
     inline uint32 GetRenderLayers() const;
     inline void SetRenderLayers(uint32 bitmask);
     
-	const RenderStateData* GetRenderState(const FastName& passName) const;
-	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
-	void SubclassRenderState(RenderStateData* newState);
+	const RenderStateData& GetRenderState(const FastName& passName) const;
+	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
+	void SubclassRenderState(RenderStateData& newState);
 	
 	static NMaterial* CreateMaterialInstance();
 	
@@ -317,11 +326,43 @@ public:
 
 protected:
 	
-	struct TextureBucket
+	class TextureBucket
 	{
+    public:
+    
 		TextureBucket() : texture(NULL)
 		{ }
+        
+        ~TextureBucket()
+        {
+            SafeRelease(texture);
+        }
+        
+        inline void SetTexture(Texture* tx)
+        {
+            if(tx != texture)
+            {
+                SafeRelease(texture);
+                texture = SafeRetain(tx);
+            }
+        }
+        
+        inline Texture* GetTexture() const
+        {
+            return texture;
+        }
+        
+        inline void SetPath(const FilePath& filePath)
+        {
+            path = filePath;
+        }
+        
+        inline const FilePath& GetPath() const
+        {
+            return path;
+        }
 
+    private:
 		Texture* texture; //VI: can be NULL
 		FilePath path;
 	};
@@ -339,18 +380,9 @@ protected:
 		NMaterialProperty* prop;
 	};
 		
-	struct RenderPassInstance
+	class RenderPassInstance
 	{
-		RenderState renderState;
-		
-		bool dirtyState;
-		bool texturesDirty;
-		
-		HashMap<FastName, int32> textureIndexMap;
-		Vector<UniformCacheEntry> activeUniformsCache;
-		
-		UniformCacheEntry* activeUniformsCachePtr;
-		size_t activeUniformsCacheSize;
+    public:
 		
 		RenderPassInstance() :
 			textureIndexMap(8),
@@ -359,8 +391,44 @@ protected:
 			activeUniformsCachePtr(NULL),
 			activeUniformsCacheSize(0)
 		{
-			
+			renderState.shader = NULL;
 		}
+        
+        ~RenderPassInstance()
+        {
+            SetRenderStateHandle(InvalidUniqueHandle);
+            SetTextureStateHandle(InvalidUniqueHandle);
+            SafeRelease(renderState.shader);
+        }
+        
+        inline void SetShader(Shader* curShader);
+        inline Shader* GetShader() const;
+        inline void SetRenderer(Core::eRenderer renderer);
+        inline Core::eRenderer GetRenderer() const;
+        inline void SetColor(const Color& color);
+        inline const Color& GetColor() const;
+        
+        inline void FlushState();
+        
+        inline UniqueHandle GetRenderStateHandle() const;
+        inline void SetRenderStateHandle(UniqueHandle handle);
+        inline UniqueHandle GetTextureStateHandle() const;
+        inline void SetTextureStateHandle(UniqueHandle handle);
+        
+        
+        bool dirtyState;
+		bool texturesDirty;
+		
+		HashMap<FastName, int32> textureIndexMap;
+		Vector<UniformCacheEntry> activeUniformsCache;
+		
+		UniformCacheEntry* activeUniformsCachePtr;
+		size_t activeUniformsCacheSize;
+
+        
+    private:
+    
+        RenderState renderState;
 	};
 	
 protected:
@@ -569,6 +637,7 @@ public:
         static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
 		
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
+        static bool IsAlphablend(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
@@ -603,8 +672,90 @@ public:
         }
     }
     
+    inline void NMaterial::RenderPassInstance::SetShader(Shader* curShader)
+    {
+        if(renderState.shader != curShader)
+        {
+            SafeRelease(renderState.shader);
+            renderState.shader = SafeRetain(curShader);
+        }
+    }
     
+    inline Shader* NMaterial::RenderPassInstance::GetShader() const
+    {
+        return renderState.shader;
+    }
     
+    inline UniqueHandle NMaterial::RenderPassInstance::GetRenderStateHandle() const
+    {
+        return renderState.stateHandle;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetRenderStateHandle(UniqueHandle handle)
+    {
+        if(renderState.stateHandle != handle)
+        {
+            if(renderState.stateHandle != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->ReleaseRenderState(renderState.stateHandle);
+            }
+            
+            renderState.stateHandle = handle;
+            
+            if(renderState.stateHandle != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->RetainRenderState(renderState.stateHandle);
+            }
+        }
+    }
+
+    inline UniqueHandle NMaterial::RenderPassInstance::GetTextureStateHandle() const
+    {
+        return renderState.textureState;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetTextureStateHandle(UniqueHandle handle)
+    {
+        if(renderState.textureState != handle)
+        {
+            if(renderState.textureState != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->ReleaseTextureState(renderState.textureState);
+            }
+            
+            renderState.textureState = handle;
+            
+            if(renderState.textureState != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->RetainTextureState(renderState.textureState);
+            }
+        }
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetRenderer(Core::eRenderer renderer)
+    {
+        renderState.renderer = renderer;
+    }
+    
+    inline Core::eRenderer NMaterial::RenderPassInstance::GetRenderer() const
+    {
+        return renderState.renderer;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetColor(const Color& color)
+    {
+        renderState.color = color;
+    }
+    
+    inline const Color& NMaterial::RenderPassInstance::GetColor() const
+    {
+        return renderState.color;
+    }
+    
+    inline void NMaterial::RenderPassInstance::FlushState()
+    {
+        RenderManager::Instance()->FlushState(&renderState);
+    }
 
 };
 

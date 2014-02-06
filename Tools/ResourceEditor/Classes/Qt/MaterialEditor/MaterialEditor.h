@@ -68,13 +68,13 @@ protected slots:
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
     void OnSwitchQuality(bool checked);
+    void OnMaterialReload(bool checked);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
 
 	void SetCurMaterial(DAVA::NMaterial *material);
 	void FillMaterialProperties(DAVA::NMaterial *material);
-	void FillMaterialTextures(DAVA::NMaterial *material);
     void FillMaterialTemplates(DAVA::NMaterial *material);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
@@ -86,7 +86,6 @@ private slots:
 
 private:
     void initActions();
-    //void autoExpand();
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;

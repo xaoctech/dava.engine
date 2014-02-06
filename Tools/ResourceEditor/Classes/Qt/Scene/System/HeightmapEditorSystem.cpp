@@ -72,7 +72,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
+	noBlendDrawState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
@@ -298,7 +298,7 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 	
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->FlushState();
 	
 	RenderManager::Instance()->SetColor(Color::White);

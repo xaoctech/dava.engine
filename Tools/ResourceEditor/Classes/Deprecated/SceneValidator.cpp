@@ -165,8 +165,7 @@ void SceneValidator::ValidateSceneNode(Entity *sceneNode, Set<String> &errorsLog
         Entity *node = sceneNode->GetChild(i);
         
         ValidateRenderComponent(node, errorsLog);
-        ValidateLodComponent(node, errorsLog);
-        ValidateParticleEmitterComponent(node, errorsLog);
+        ValidateParticleEffectComponent(node, errorsLog);
         ValidateSceneNode(node, errorsLog);
         ValidateNodeCustomProperties(node);
     }
@@ -251,102 +250,15 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
 }
 
 
-void SceneValidator::ValidateLodComponent(Entity *ownerNode, Set<String> &errorsLog)
-{
-    LodComponent *lodComponent = GetLodComponent(ownerNode);
-    if(!lodComponent) return;
 
-    int32 layersCount = lodComponent->GetLodLayersCount();
-	if (GetEmitter(ownerNode))
-		layersCount = LodComponent::MAX_LOD_LAYERS;
-    
-    if(layersCount == 0)
-    {
-        errorsLog.insert(Format("Node %s: Count of layers is 0", ownerNode->GetName().c_str()));
-    }
-    
-    for(int32 layer = 0; layer < layersCount; ++layer)
-    {
-        float32 distance = lodComponent->GetLodLayerDistance(layer);
-        if(LodComponent::INVALID_DISTANCE == distance)
-        {
-            //TODO: why this function isn't realized for lodcomponent?
-            lodComponent->SetLodLayerDistance(layer, LodComponent::GetDefaultDistance(layer));
-            errorsLog.insert(Format("Node %s: lod distances weren't correct. Re-save.", ownerNode->GetName().c_str()));
-        }
-    }
-    
-    Vector<LodComponent::LodData *>lodLayers;
-    lodComponent->GetLodData(lodLayers);
-    
-    Vector<LodComponent::LodData *>::const_iterator endIt = lodLayers.end();
-    int32 layer = 0;
-    for(Vector<LodComponent::LodData *>::iterator it = lodLayers.begin(); it != endIt; ++it, ++layer)
-    {
-        LodComponent::LodData * ld = *it;
-        
-        if(ld->layer != layer)
-        {
-            ld->layer = layer;
-            errorsLog.insert(Format("Node %s: lod layers weren't correct. Rename childs. Re-save.", ownerNode->GetName().c_str()));
-        }
-    }
-}
-
-void SceneValidator::ValidateParticleEmitterComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateParticleEffectComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
 {
-	ParticleEmitter * emitter = GetEmitter(ownerNode);
-    if(!emitter)
+	ParticleEffectComponent *effect = GetEffectComponent(ownerNode);
+    if(!effect)
 	{
 		return;
 	}
 
-	if (GetLodComponent(ownerNode) == NULL)
-	{
-		ownerNode->AddComponent(new LodComponent());
-	}
-
-	ValidateParticleEmitter(emitter, errorsLog);
-	
-}
-
-bool SceneValidator::ValidateParticleEmitter(ParticleEmitter* emitter, Set<String> &errorsLog)
-{
-	if (!emitter)
-	{
-		return true;
-	}
-
-	//validate layers
-	bool validationResult = true;
-	for (int32 i = 0; i < (int32)emitter->GetLayers().size(); ++i)
-	{
-		if (emitter->GetLayers()[i]->IsFrameBlendEnabled()&&(emitter->GetLayers()[i]->GetSprite()->GetFrameCount()==1))
-		{
-			String validationMsg = emitter->GetConfigPath().GetAbsolutePathname().c_str();			
-			validationMsg += " - layer ";
-			validationMsg += emitter->GetLayers()[i]->layerName;
-			validationMsg += " have \"Enable frame blending\" checked while sprite have only 1 frame. Frame blending would just waste time";
-			errorsLog.insert(validationMsg);
-			validationResult = false;
-		}
-	}
-	
-	if (!emitter->Is3DFlagCorrect())
-	{
-		// Don't use Format() helper here - the string with path might be too long for Format().
-		String validationMsg = ("\"3d\" flag value is wrong for Particle Emitter Configuration file ");
-		validationMsg += emitter->GetConfigPath().GetAbsolutePathname().c_str();
-		validationMsg += ". Please verify whether you are using the correct configuration file.\n\"3d\" flag for this Particle Emitter will be reset to TRUE.";
-		errorsLog.insert(validationMsg);
-
-		// Yuri Coder, 2013/05/08. Since Particle Editor works with 3D Particles only - have to set this flag
-		// manually.
-		emitter->Set3D(true);
-		validationResult = false;
-	}
-			
-	return validationResult;
 }
 
 void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
@@ -401,40 +313,20 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     if(!landscape) return;
     
     
-	if(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)
-	{
-		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
-		{
-			Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
-			if(texLevel == Landscape::TEXTURE_COLOR || texLevel == Landscape::TEXTURE_TILE_MASK || texLevel == Landscape::TEXTURE_TILE0)
-			{
-				ValidateLandscapeTexture(landscape, texLevel, errorsLog);
-			}
-
-			Color color = landscape->GetTileColor(texLevel);
-			if (!ValidateColor(color))
-			{
-				landscape->SetTileColor(texLevel, color);
-			}
-		}
-	}
-	else
-	{
-		for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
-		{
-			Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
-			if(		(Landscape::TEXTURE_DETAIL == texLevel)
-				||	(Landscape::TEXTURE_TILE_FULL == texLevel
-				&&	(landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILEMASK
-				|| landscape->GetTiledShaderMode() == Landscape::TILED_MODE_TILE_DETAIL_MASK)))
-			{
-				continue;
-			}
-
-			ValidateLandscapeTexture(landscape, texLevel, errorsLog);
-		}
-	}
-    
+    for(int32 i = 0; i < Landscape::TEXTURE_COUNT; ++i)
+    {
+        Landscape::eTextureLevel texLevel = (Landscape::eTextureLevel)i;
+        if(texLevel == Landscape::TEXTURE_COLOR || texLevel == Landscape::TEXTURE_TILE_MASK || texLevel == Landscape::TEXTURE_TILE0)
+        {
+            ValidateLandscapeTexture(landscape, texLevel, errorsLog);
+        }
+        
+        Color color = landscape->GetTileColor(texLevel);
+        if (!ValidateColor(color))
+        {
+            landscape->SetTileColor(texLevel, color);
+        }
+    }
 
 	//validate heightmap
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
@@ -460,8 +352,6 @@ void SceneValidator::ValidateLandscapeTexture(Landscape *landscape, Landscape::e
 
 void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NMaterial *material)
 {
-	KeyedArchive * props = ownerNode->GetCustomProperties();
-
     IlluminationParams * params = material->GetIlluminationParams();
 
     VariantType * variant = 0;
@@ -779,7 +669,6 @@ bool SceneValidator::ValidateColor(Color& color)
 	}
 	return ok;
 }
-
 
 
 

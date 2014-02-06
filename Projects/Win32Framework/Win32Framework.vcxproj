@@ -347,12 +347,11 @@
     <ClInclude Include="..\..\Sources\Internal\Network\WFNetworkConnection.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\Particle.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h" />
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h" />
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleForce.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleGroup.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h" />
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h" />
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.h" />
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleRenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\DPIHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\MovieViewControlStub.h" />
@@ -406,7 +405,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Landscape.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Light.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Mesh.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h" />
@@ -510,6 +508,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
@@ -542,7 +542,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\MaterialSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.h" />
@@ -580,6 +579,7 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UILoadingTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIMoveInTransition.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIMovieView.h" />
+    <ClInclude Include="..\..\Sources\Internal\UI\UIParticles.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIPopup.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreen.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UIScreenManager.h" />
@@ -752,12 +752,10 @@
     <ClCompile Include="..\..\Sources\Internal\Network\NetworkPacket.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\Particle.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleForce.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticlePropertyLine.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleRenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\MovieViewControlStub.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\Mutex.cpp" />
@@ -804,7 +802,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Landscape.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Light.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderHierarchy.cpp" />
@@ -901,6 +898,8 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
@@ -933,7 +932,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\MaterialSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEffectSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\QualitySettingsSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp" />
@@ -970,6 +968,7 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UILoadingTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIMoveInTransition.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIMovieView.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\UI\UIParticles.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIPopup.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreen.cpp" />
     <ClCompile Include="..\..\Sources\Internal\UI\UIScreenManagerMacOS.cpp" />

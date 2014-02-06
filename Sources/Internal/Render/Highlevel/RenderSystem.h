@@ -160,8 +160,7 @@ private:
     RenderPassManager renderPassManager;
     
     
-    Vector<RenderObject*> renderObjectArray;
-	Vector<RenderObject*> particleEmitterArray;
+    Vector<RenderObject*> renderObjectArray;	
     Vector<Light*> lights;
     bool forceUpdateLights;
     
@@ -173,9 +172,7 @@ private:
     
     Camera * camera;
     Camera * clipCamera;
-    
-	ParticleEmitterSystem * particleEmitterSystem;
-		
+
     friend class RenderPass;
 };
     

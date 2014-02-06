@@ -115,7 +115,9 @@ public:
 	bool Initialize(const FilePath &filePathname);
 
 	void SetDefaultValues();
-    
+
+    void SetQualityGroup(const FastName &group);
+    FastName GetQualityGroup() const;
     
     bool Load(const FilePath &filePathname); //may be protected?
 
@@ -184,6 +186,8 @@ public:
 
 	//moved from Texture
 	PixelFormat format:8;			// texture format
+
+    FastName qualityGroup;
 };
     
 };

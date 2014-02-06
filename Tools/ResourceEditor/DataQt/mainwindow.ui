@@ -253,6 +253,9 @@
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="separator"/>
+     <addaction name="actionEditor_2D_Camera"/>
+     <addaction name="actionEditor_Sprite"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
     <addaction name="actionParticle_Emitter"/>
@@ -291,9 +294,9 @@
       <string>Toolbars</string>
      </property>
     </widget>
-    <widget class="QMenu" name="menuTextures">
+    <widget class="QMenu" name="menuLightView">
      <property name="title">
-      <string>Textures</string>
+      <string>Light</string>
      </property>
      <addaction name="actionAlbedo"/>
      <addaction name="actionAmbient"/>
@@ -301,8 +304,7 @@
      <addaction name="actionSpecular"/>
     </widget>
     <addaction name="menuTexturesForGPU"/>
-    <addaction name="menuTextures"/>
-    <addaction name="actionQuality"/>
+    <addaction name="menuLightView"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -1719,9 +1721,22 @@
     <string>Specular</string>
    </property>
   </action>
-  <action name="actionQuality">
+  <action name="actionEditor_Sprite">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/map.png</normaloff>:/QtIcons/map.png</iconset>
+   </property>
    <property name="text">
-    <string>Quality...</string>
+    <string>Editor Sprite</string>
+   </property>
+  </action>
+  <action name="actionEditor_2D_Camera">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Editor 2D Camera</string>
    </property>
   </action>
   <action name="actionAddLandscape">
@@ -1754,6 +1769,18 @@
    </property>
    <property name="toolTip">
     <string>Custom Quality Settings</string>
+   </property>
+  </action>
+  <action name="actionSetLightViewMode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/light_settings.png</normaloff>:/QtIcons/light_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>setLightViewMode</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Materials LightViewMode</string>
    </property>
   </action>
  </widget>

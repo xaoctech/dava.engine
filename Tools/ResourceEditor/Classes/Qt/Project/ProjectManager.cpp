@@ -87,11 +87,8 @@ void ProjectManager::ProjectOpen(const QString &path)
 {
 	if(path != curProjectPath)
 	{
-        if (CanCloseProject() == false)
-        {
-            return;
-        }
-        InnerProjectClose();
+		ProjectClose();
+        
 		curProjectPath = path;
 
 		if(!curProjectPath.isEmpty())
@@ -112,13 +109,13 @@ void ProjectManager::ProjectOpen(const QString &path)
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
+
             LoadProjectSettings();
             LoadMaterialsSettings();
-            
+
             emit ProjectOpened(curProjectPath);
-            
-            DAVA::FilePath::AddTopResourcesFolder(projectPath);
-		}
+        }
 	}
 }
 
@@ -134,27 +131,13 @@ void ProjectManager::ProjectOpenLast()
 
 void ProjectManager::ProjectClose()
 {
-    if (CanCloseProject())
-    {
-        InnerProjectClose();
-    }
-}
-
-bool ProjectManager::CanCloseProject()
-{
-    Request closeRequest;
-    emit ProjectWillClose(&closeRequest);
-    
-    return closeRequest.IsAccepted();
-}
-
-void ProjectManager::InnerProjectClose()
-{
 	if("" != curProjectPath)
 	{
 		FilePath path = curProjectPath.toStdString();
 		path.MakeDirectoryPathname();
-        DAVA::FilePath::RemoveResourcesFolder(path);
+        
+		DAVA::FilePath::RemoveResourcesFolder(path);
+        
         curProjectPath = "";
         emit ProjectClosed();
 	}

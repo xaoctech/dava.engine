@@ -35,7 +35,8 @@
 #include "Qt/Settings/SettingsManager.h"
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "Qt/Main/QtUtils.h"
-#include "Commands2/EntityParentChangeCommand.h"
+#include "Commands2/EntityRemoveCommand.h"
+#include "SwitchEntityCreator.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -71,14 +72,6 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 	propEditor->setVisible(false);
 	propEditor->setMinimumHeight(0);
 	propEditor->setMaximumSize(propEditor->maximumWidth(), 0);
-
-	Entity* entityToAdd = new Entity();
-	entityToAdd->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	entityToAdd->AddComponent(new SwitchComponent());
-	KeyedArchive *customProperties = entityToAdd->GetCustomProperties();
-	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
-	SetEntity(entityToAdd);
-	SafeRelease(entityToAdd);
 }
 
 AddSwitchEntityDialog::~AddSwitchEntityDialog()
@@ -132,39 +125,26 @@ void AddSwitchEntityDialog::accept()
 
 	scene->BeginBatch("Unite entities into switch entity.");
 	
-	Entity* switchEntity = new Entity();
-	switchEntity->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	scene->Exec(new EntityAddCommand(switchEntity, scene));
-	
-	SwitchComponent* component = new SwitchComponent();
-	switchEntity->AddComponent(component);
-
-    //TODO AMakovii
-	//SafeRelease(component);
-
-	KeyedArchive *customProperties = switchEntity->GetCustomProperties();
-	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
-	
-	Q_FOREACH(Entity* item, vector)
+	DAVA::uint32 switchCount = (DAVA::uint32)vector.size(); 
+	for(DAVA::uint32 i = 0; i < switchCount; ++i)
 	{
-		if(item)
-		{
-			scene->Exec(new EntityParentChangeCommand(item, switchEntity));
-		}
+		vector[i]->Retain();
+		scene->Exec(new EntityRemoveCommand(vector[i]));
 	}
 
+	SwitchEntityCreator creator;
+	Entity* switchEntity = creator.CreateSwitchEntity(vector);
+
 	scene->Exec(new EntityAddCommand(switchEntity, scene));
+	switchEntity->Release();
+
+	for(DAVA::uint32 i = 0; i < switchCount; ++i)
+	{
+		vector[i]->Release();
+	}
+
 	scene->selectionSystem->SetSelection(switchEntity);
 
-	DAVA::SwitchComponent *swComponent = GetSwitchComponent(switchEntity);
-	if(NULL != swComponent)
-	{
-		// this will case switch component to send event about it state
-		swComponent->SetSwitchIndex(swComponent->GetSwitchIndex());
-	}
-		
-    //TODO AMAkovii
-	//scene->ImmediateEvent(switchEntity, Component::SWITCH_COMPONENT, EventSystem::SWITCH_CHANGED);
 	scene->EndBatch();
 
 	scene->selectionSystem->SetSelection(switchEntity);
@@ -178,3 +158,4 @@ void AddSwitchEntityDialog::reject()
 	CleanupPathWidgets();
 	BaseAddEntityDialog::reject();
 }
+
