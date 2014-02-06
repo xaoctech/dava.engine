@@ -693,6 +693,21 @@
     <ClCompile Include="Classes\Helpers\ColorHelper.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\editpreviewsettingsdialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\previewsettingsdialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\editpreviewsettingsdialog.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\previewsettingsdialog.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Controllers\PreviewController.cpp">
+      <Filter>Sources\Controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1108,6 +1123,15 @@
     </ClInclude>
     <ClInclude Include="Classes\Helpers\ColorHelper.h">
       <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\editpreviewsettingsdialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\previewsettingsdialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Controllers\PreviewController.h">
+      <Filter>Sources\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
