@@ -444,14 +444,14 @@ void QtMainWindow::SetupToolBars()
 		reloadTexturesBtn->setAutoRaise(false);
 	}
 
-    // adding menu for textures view mode
+    // adding menu for material light view mode
     {
         QToolButton *setLightViewMode = new QToolButton();
         setLightViewMode->setMenu(ui->menuLightView);
         setLightViewMode->setPopupMode(QToolButton::InstantPopup);
-        setLightViewMode->setIcon(QIcon(":/QtIcons/light_settings.png"));
+        setLightViewMode->setDefaultAction(ui->actionSetLightViewMode);
         ui->mainToolBar->addWidget(setLightViewMode);
-        setLightViewMode->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        setLightViewMode->setToolButtonStyle(Qt::ToolButtonIconOnly);
         setLightViewMode->setAutoRaise(false);
     }
 
@@ -855,6 +855,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionEnableCameraLight->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
 	ui->actionReloadSprites->setEnabled(enable);
+    ui->actionSetLightViewMode->setEnabled(enable);
 
 	ui->actionLandscape->setEnabled(enable);
 	ui->actionSaveHeightmapToPNG->setEnabled(enable);
@@ -873,6 +874,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuCreateNode->setEnabled(enable);
 	ui->menuComponent->setEnabled(enable);
 	ui->menuScene->setEnabled(enable);
+    ui->menuLightView->setEnabled(enable);
+    ui->menuTexturesForGPU->setEnabled(enable);
     
     ui->sceneToolBar->setEnabled(enable);
 	ui->actionConvertModifiedTextures->setEnabled(enable);
