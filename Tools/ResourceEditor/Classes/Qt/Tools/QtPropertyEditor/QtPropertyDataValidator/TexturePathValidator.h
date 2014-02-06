@@ -26,25 +26,19 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __RESOURCEEDITORQT__TEXTUREPATHVALIDATOR__
+#define __RESOURCEEDITORQT__TEXTUREPATHVALIDATOR__
 
+#include "PathValidator.h"
 
-#ifndef __QT_PROPERTY_DATA_VALIDATOR_H__
-#define __QT_PROPERTY_DATA_VALIDATOR_H__
-
-#include <QVariant>
-
-class QtPropertyDataValidator
+class TexturePathValidator: public PathValidator
 {
 public:
-
-    bool Validate(QVariant &v) const;
+    TexturePathValidator(const QStringList& value);
 
 protected:
-    
-    virtual bool ValidateInternal(QVariant &v) const = 0;
-    virtual void FixupInternal(QVariant &v) const {};
-
-    virtual void ErrorNotifyInternal(const QVariant &v) const {}
+    virtual bool ValidateInternal(QVariant &v) const;
+    virtual void FixupInternal(QVariant& v) const;
 };
 
-#endif // __QT_PROPERTY_DATA_VALIDATOR_H__
+#endif /* defined(__RESOURCEEDITORQT__TEXTUREPATHVALIDATOR__) */
