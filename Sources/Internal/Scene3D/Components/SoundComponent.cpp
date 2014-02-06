@@ -34,23 +34,54 @@
 using namespace DAVA;
 	REGISTER_CLASS(SoundComponent)
 
-SoundComponent::SoundComponent() : event(0) {}
+SoundComponent::SoundComponent() {}
 
 SoundComponent::~SoundComponent()
 {
-    SafeRelease(event);
+    RemoveAllEvents();
 }
 
-SoundEvent * SoundComponent::GetSoundEvent()
+SoundEvent * SoundComponent::GetSoundEvent(int32 index)
 {
-    return event;
+    DVASSERT(index >= 0 && index < events.size());
+    return events[index];
 }
 
-void SoundComponent::SetSoundEvent(SoundEvent * _event)
+void SoundComponent::AddSoundEvent(SoundEvent * _event)
 {
-    SafeRelease(event);
-    
-    event = SafeRetain(_event);
+    DVASSERT(_event);
+
+    SafeRetain(_event);
+    events.push_back(_event);
+}
+
+int32 SoundComponent::GetEventsCount()
+{
+    return events.size();
+}
+
+void SoundComponent::RemoveSoundEvent(SoundEvent * event)
+{
+    Vector<SoundEvent *>::iterator it = events.begin();
+    Vector<SoundEvent *>::const_iterator itEnd = events.end();
+    for(; it != itEnd; ++it)
+    {
+        if((*it) == event)
+        {
+            (*it)->Release();
+            events.erase(it);
+            return;
+        }
+    }
+}
+
+void SoundComponent::RemoveAllEvents()
+{
+    int32 eventsCount = events.size();
+    for(int32 i = 0; i < eventsCount; ++i)
+        SafeRelease(events[i]);
+
+    events.clear();
 }
 
 Component * SoundComponent::Clone(Entity * toEntity)
@@ -58,23 +89,21 @@ Component * SoundComponent::Clone(Entity * toEntity)
     SoundComponent * soundComponent = new SoundComponent();
     soundComponent->SetEntity(toEntity);
     
-    soundComponent->SetSoundEvent(event);
+    int32 eventCount = events.size();
+    for(int32 i = 0; i < eventCount; ++i)
+        soundComponent->AddSoundEvent(events[i]);
     
     return soundComponent;
 }
 
 void SoundComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
+    //IS: TODO serialization
     Component::Serialize(archive, serializationContext);
-    
-    event->Serialize(archive);
 }
 
 void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    event = SoundSystem::Instance()->CreateSoundEventByID("", FastName("FX"));
-    event->Deserialize(archive);
-
-    //TODO
+    //IS: TODO deserialization
     Component::Deserialize(archive, serializationContext);
 }

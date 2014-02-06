@@ -174,17 +174,6 @@ SoundComponent * GetSoundComponent(Entity * fromEntity)
     return NULL;
 }
 
-SoundEvent * GetSoundEvent(Entity * fromEntity)
-{
-    SoundComponent * sc = GetSoundComponent(fromEntity);
-    if(sc)
-    {
-        return sc->GetSoundEvent();
-    }
-
-    return NULL;
-}
-
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *))
 {
 	RenderComponent * comp = (RenderComponent*)curr->GetComponent(Component::RENDER_COMPONENT);

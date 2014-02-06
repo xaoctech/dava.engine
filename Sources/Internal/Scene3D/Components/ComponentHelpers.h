@@ -62,7 +62,6 @@ Landscape *GetLandscape(Entity * fromEntity);
 Camera * GetCamera(Entity * fromEntity);
 
 SoundComponent * GetSoundComponent(Entity * fromEntity);
-SoundEvent * GetSoundEvent(Entity * fromEntity);
 
 LodComponent * GetLodComponent(Entity *fromEntity);
 SwitchComponent* GetSwitchComponent(Entity *fromEntity);

@@ -394,7 +394,9 @@ namespace DAVA
 			SoundComponent* component = static_cast<SoundComponent*>(target->GetComponent(Component::SOUND_COMPONENT));
 			if(component)
 			{
-				component->GetSoundEvent()->Trigger();
+                int32 eventsCount = component->GetEventsCount();
+                for(int32 i = 0; i < eventsCount; ++i)
+                    component->GetSoundEvent(i)->Trigger();
 			}
 
 		}
