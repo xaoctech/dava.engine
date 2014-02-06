@@ -189,6 +189,7 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 	if(isVisible())
 	{
 		ui->materialTree->SetScene(scene);
+        autoExpand();
 	}
 }
 
