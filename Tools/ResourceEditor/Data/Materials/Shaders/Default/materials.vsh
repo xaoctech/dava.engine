@@ -72,6 +72,9 @@ uniform vec3 worldTranslate;
 uniform vec3 worldScale;
 uniform mat4 projectionMatrix;
 uniform float cutDistance;
+uniform lowp vec3 treeLeafColorMul;
+uniform lowp float treeLeafOcclusionOffset;
+uniform lowp float treeLeafOcclusionMul;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -236,6 +239,10 @@ void main()
 	varVertexColor = inColor;
 #endif
 
+#if defined(SPEED_TREE_LEAF)
+    varVertexColor.rgb = varVertexColor.rgb * treeLeafColorMul * treeLeafOcclusionMul + vec3(treeLeafOcclusionOffset);
+#endif
+    
 	varTexCoord0 = inTexCoord0;
 	
 #if defined(TEXTURE0_SHIFT_ENABLED)
