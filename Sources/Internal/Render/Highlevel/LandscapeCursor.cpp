@@ -47,7 +47,7 @@ LandscapeCursor::LandscapeCursor()
 	uniformScale = shader->FindUniformIndexByName(FastName("scale"));
 	
 	RenderManager* rm = RenderManager::Instance();
-	const RenderStateData& default3dState = rm->GetRenderStateData(rm->GetDefault3DStateHandle());
+	const RenderStateData& default3dState = rm->GetRenderStateData(RenderState::RENDERSTATE_3D_BLEND);
 	
 	RenderStateData renderStateData;
 	memcpy(&renderStateData, &default3dState, sizeof(renderStateData));

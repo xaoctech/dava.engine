@@ -63,9 +63,8 @@ public:
 	
 	void SystemDraw(const UIGeometricData &/*geometricData*/)
 	{
-        RenderManager::Instance()->SetDefault2DNoTextureState();
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		RenderHelper::Instance()->DrawRect(GetRect());
-        RenderManager::Instance()->SetDefault2DState();
 	}
 };
 
@@ -107,11 +106,10 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
 {
     Color oldColor = RenderManager::Instance()->GetColor();
 
-    RenderManager::Instance()->SetDefault2DNoTextureState();
+    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
     RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
     RenderManager::Instance()->SetColor(oldColor);
-    RenderManager::Instance()->SetDefault2DState();
 
 	UIScreen::SystemDraw(geometricData);
 	

@@ -77,6 +77,15 @@ public:
 												  RenderStateData::STATE_CULL |
 												  RenderStateData::STATE_TEXTURE0 |
 												  RenderStateData::STATE_COLORMASK_ALL);
+    
+    static UniqueHandle RENDERSTATE_2D_BLEND;
+	static UniqueHandle RENDERSTATE_2D_OPAQUE;
+	static UniqueHandle RENDERSTATE_3D_BLEND;
+    static UniqueHandle RENDERSTATE_3D_OPAQUE;
+	static UniqueHandle RENDERSTATE_DEFAULT;
+    
+    static UniqueHandle TEXTURESTATE_EMPTY;
+
 
     enum
     {
@@ -236,6 +245,8 @@ public:
 	
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+    
+    static void InitDefaultStates();
 
 private:
 	RenderState(const RenderState & renderState);

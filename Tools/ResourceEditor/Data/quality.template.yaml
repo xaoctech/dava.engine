@@ -37,20 +37,20 @@ materials:
  -
   group: "Static object"
   quality: ["HIGH", "LOW"]
-  default: "LOW"
+  default: "HIGH"
 
  -
   group: "Landscap"
   quality: ["HIGH", "LOW"]
-  default: "LOW"
+  default: "HIGH"
 
  -
   group: "Particle"
   quality: ["HIGH", "LOW"]
-  default: "LOW"
+  default: "HIGH"
 
  -
   group: "Tank"
   quality: ["HIGH", "LOW"]
-  default: "LOW"
+  default: "HIGH"
 

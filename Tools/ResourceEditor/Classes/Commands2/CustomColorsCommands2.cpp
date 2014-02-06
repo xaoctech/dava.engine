@@ -145,7 +145,7 @@ void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)
 	
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
 
-	RenderManager::Instance()->SetDefault2DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	RenderManager::Instance()->FlushState();
 	
 	RenderManager::Instance()->ClipPush();

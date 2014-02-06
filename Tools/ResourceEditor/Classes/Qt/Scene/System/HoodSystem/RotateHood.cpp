@@ -70,7 +70,7 @@ RotateHood::RotateHood() : HoodObject(4.0f)
 		ly = y;
 	}
 	
-	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData hoodStateData;
 	memcpy(&hoodStateData, &default3dState, sizeof(hoodStateData));
 	
