@@ -298,7 +298,7 @@ Color UIYamlLoader::GetColorFromYamlNode(const YamlNode * node)
 	{
 		if (node->GetCount() == 4)
 			return node->AsColor();
-		else return Color(1.0f, 1.0f, 1.0f, 1.0f);
+		else return Color::White;
 	}else
 	{
 		const String & color = node->AsString();
