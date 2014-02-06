@@ -74,7 +74,7 @@ public:
 	};
 
     // Predefined node name to store Relative Depth.
-    static const char8* YAML_NODE_RELATIVE_DEPTH_NAME;
+    static const char8* SAVE_INDEX_NAME;
 
 protected:
 	virtual ~YamlNode();

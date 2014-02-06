@@ -26,68 +26,30 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "PathValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-
-#ifndef __PROJECT_MANAGER_H__
-#define __PROJECT_MANAGER_H__
-
-#include <QObject>
-#include <QVector>
-#include "DAVAEngine.h"
-#include "Qt/Main/Request.h"
-
-class ProjectManager : public QObject, public DAVA::Singleton<ProjectManager>
+PathValidator::PathValidator(const QStringList& value):
+	RegExpValidator(""),
+	referencePathList(value)
 {
-	Q_OBJECT
-
-public:
-    struct AvailableMaterialTemplate
+    QString regExpr("^$|");
+    foreach(QString path, referencePathList)
     {
-        QString name;
-        QString path;
-    };
+        regExpr += ".*" + path + ".*|";
+    }
+	SetRegularExpression(regExpr);
+}
 
-    struct AvailableMaterialQuality
+void PathValidator::ErrorNotifyInternal(const QVariant &v) const
+{
+    QString referencePaths;
+    foreach(QString path, referencePathList)
     {
-        QString name;
-        QString prefix;
-        QVector<QString> values;
-    };
-
-	ProjectManager();
-	~ProjectManager();
-
-	bool IsOpened();
-
-	QString CurProjectPath();
-	QString CurProjectDataSourcePath();
-    bool CanCloseProject();
-
-    const QVector<ProjectManager::AvailableMaterialTemplate>* GetAvailableMaterialTemplates() const;
-    const QVector<ProjectManager::AvailableMaterialQuality>* GetAvailableMaterialQualities() const;
-
-public slots:
-	QString ProjectOpenDialog();
-	void ProjectOpen(const QString &path);
-	void ProjectOpenLast();
-	void ProjectClose();
-
-signals:
-	void ProjectOpened(const QString &path);
-	void ProjectClosed();
-    void ProjectWillClose(Request* closeRequest);
-
-private:
-    void InnerProjectClose();
-	
-    QString curProjectPath;
-	QString curProjectPathDataSource;
-
-	void LoadProjectSettings();
-    void LoadMaterialsSettings();
-
-    QVector<AvailableMaterialTemplate> templates;
-    QVector<AvailableMaterialQuality> qualities;
-};
-
-#endif // __PROJECT_MANAGER_H__ 
+        referencePaths += path + " ";
+    }
+	DAVA::String message = DAVA::Format("\"%s\" is wrong. It's allowed to select only from %s", v.toString().toStdString().c_str(),
+                                        referencePaths.toStdString().c_str());
+	QMessageBox::warning(NULL, "Wrong file selected", message.c_str(), QMessageBox::Ok);
+}

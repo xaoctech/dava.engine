@@ -55,9 +55,12 @@ protected:
     virtual void UpdateLocalizationValue();
 
     virtual void HandleChangePropertySucceeded(const QString& propertyName);
-    
     virtual void HandleChangePropertyFailed(const QString& propertyName);
     
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
+    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
+                                             const QString& value);
+
 	// Handle UI Control State is changed - needed for updating Localization Text.
     virtual void HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
 
