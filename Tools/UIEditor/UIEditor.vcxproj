@@ -722,6 +722,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="UI\editpreviewsettingsdialog.ui" />
     <None Include="UI\hierarchytreewidget.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
       </AdditionalInputs>
@@ -776,6 +777,7 @@
   <ItemGroup>
     <None Include="UI\platformimportdialog.ui" />
     <None Include="UI\platformimportfilewidget.ui" />
+    <None Include="UI\previewsettingsdialog.ui" />
     <None Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
       </AdditionalInputs>
