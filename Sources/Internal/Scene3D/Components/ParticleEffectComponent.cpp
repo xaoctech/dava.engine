@@ -330,11 +330,13 @@ void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationCo
 		emitters.resize(emittersCount);
 		for (uint32 i=0; i<emittersCount; ++i)
 		{		
-			emitters[i]=new ParticleEmitter();
+			
             KeyedArchive *emitterArch = emittersArch->GetArchive(KeyedArchive::GenKeyFromIndex(i));
 			String filename = emitterArch->GetString("emitter.filename");
 			if (!filename.empty())
-				emitters[i]->LoadFromYaml(serializationContext->GetScenePath()+filename);			
+				emitters[i] = ParticleEmitter::LoadEmitter(serializationContext->GetScenePath()+filename);
+            else
+                emitters[i]=new ParticleEmitter();
             emitters[i]->position = emittersArch->GetVector3("emitter.position");
 		} 	
         RebuildEffectModifiables();
@@ -361,14 +363,19 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 		if (renderComponent)
 			emitterProxy = static_cast<PartilceEmitterLoadProxy *>(renderComponent->GetRenderObject());
 		if (!emitterProxy) continue;
-		ParticleEmitter *emitter = new ParticleEmitter();
-		emitter->position = (child->GetLocalTransform().GetTranslationVector())*effectScale;
+		
+        ParticleEmitter *emitter;		
 		if (!emitterProxy->emitterFilename.empty())
 		{			
-			emitter->LoadFromYaml(serializationContext->GetScenePath()+emitterProxy->emitterFilename);
+            emitter = ParticleEmitter::LoadEmitter(serializationContext->GetScenePath()+emitterProxy->emitterFilename);			
 			if (effectDuration<emitter->lifeTime)
 				effectDuration = emitter->lifeTime;
 		}
+        else
+        {
+            ParticleEmitter *emitter = new ParticleEmitter();
+        }
+        emitter->position = (child->GetLocalTransform().GetTranslationVector())*effectScale;
 		emitter->name = child->GetName();
 		emitters.push_back(emitter);
 		if (!lodDefined)
