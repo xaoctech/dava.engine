@@ -67,6 +67,7 @@ public:
     virtual float32	GetVolume() = 0;
     
     virtual void SetPosition(const Vector3 & position) = 0;
+    virtual void SetOrientation(const Vector3 & orientation) = 0;
     virtual void UpdateInstancesPosition() = 0;
     
     virtual void SetParameterValue(const FastName & paramName, float32 value) = 0;

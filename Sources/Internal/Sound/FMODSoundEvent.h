@@ -70,6 +70,7 @@ public:
     virtual float32	GetVolume();
     
     virtual void SetPosition(const Vector3 & position);
+    virtual void SetOrientation(const Vector3 & orientation);
     virtual void UpdateInstancesPosition();
     
     virtual void SetParameterValue(const FastName & paramName, float32 value);
@@ -88,6 +89,7 @@ protected:
     String eventName;
     
     Vector3 position;
+    Vector3 orientation;
     float32 volume;
     
     bool is3D;

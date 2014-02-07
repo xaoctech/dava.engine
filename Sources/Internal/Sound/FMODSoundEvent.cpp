@@ -97,11 +97,12 @@ bool FMODSoundEvent::Trigger()
 
         FMOD::Event * fmodEventInfo = 0;
         FMOD_VECTOR pos = {position.x, position.y, position.z};
+        FMOD_VECTOR orient = {orientation.x, orientation.y, orientation.z};
 
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
         if(fmodEventInfo)
         {
-            FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0));
+            FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0, &orient));
             FMOD_VERIFY(fmodEventInfo->setVolume(volume));
             ApplyParamsToEvent(fmodEventInfo);
         }
@@ -133,6 +134,12 @@ void FMODSoundEvent::SetPosition(const Vector3 & _position)
     position = _position;
 }
 
+void FMODSoundEvent::SetOrientation(const Vector3 & _orientation)
+{
+    orientation = _orientation;
+    orientation.Normalize();
+}
+
 void FMODSoundEvent::SetVolume(float32 _volume)
 {
     volume = _volume;
@@ -155,9 +162,10 @@ void FMODSoundEvent::UpdateInstancesPosition()
         Stop();
     
     FMOD_VECTOR pos = {position.x, position.y, position.z};
+    FMOD_VECTOR orient = {orientation.x, orientation.y, orientation.z};
     List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
-        FMOD_VERIFY((*it)->set3DAttributes(&pos, 0));
+        FMOD_VERIFY((*it)->set3DAttributes(&pos, 0, &orient));
 }
     
 void FMODSoundEvent::Stop()
