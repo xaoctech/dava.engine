@@ -126,8 +126,11 @@ void MaterialItem::SetFlag(MaterialFlag flag, bool set)
 			{
 				curFlag &= ~ (int) flag;
 			}
+
+            emitDataChanged();
 		}
 	}
+
 }
 
 bool MaterialItem::GetFlag(MaterialFlag flag) const
