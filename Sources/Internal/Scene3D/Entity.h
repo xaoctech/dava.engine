@@ -162,8 +162,6 @@ public:
 	// properties
 	void SetVisible(const bool & isVisible);
 	inline const bool GetVisible();
-	void SetLodVisible(bool isLodVisible);
-	void SetSwitchVisible(bool isSwitchVisible);
 	inline Entity * GetParent();
 	DAVA_DEPRECATED(void SetUpdatable(bool isUpdatable));
 	DAVA_DEPRECATED(inline bool GetUpdatable(void));
