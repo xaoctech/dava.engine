@@ -207,9 +207,12 @@ void MaterialModel::Sync()
 			MaterialItem *item = (MaterialItem *) root->child(i);
 			item->SetFlag(MaterialItem::IS_MARK_FOR_DELETE, item->rowCount() == 0);
 		}
+
+        const EntityGroup& selection = curScene->selectionSystem->GetSelection();
+        SetSelection( &selection );
 	}
 
-	emit dataChanged(QModelIndex(), QModelIndex());
+	emit dataChanged(QModelIndex(), QModelIndex()); // Review - possible not needed
 }
 
 void MaterialModel::requestPreview( QStandardItem *item )
