@@ -892,9 +892,9 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 
 void QtMainWindow::OnProjectOpen()
 {
-    if(ui->sceneTabWidget->CloseAllTabs())
+    QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
+    if(!newPath.isEmpty() && ui->sceneTabWidget->CloseAllTabs())
     {
-        QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
         ProjectManager::Instance()->ProjectOpen(newPath);
     }
 }
