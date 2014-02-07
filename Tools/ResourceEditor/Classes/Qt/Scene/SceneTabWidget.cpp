@@ -578,23 +578,18 @@ int SceneTabWidget::FindTab( const DAVA::FilePath & scenePath )
 	return -1;
 }
 
-void SceneTabWidget::CloseAllTabs(Request* closeRequest)
+bool SceneTabWidget::CloseAllTabs()
 {
-    if(!closeRequest->IsAccepted())
-    {
-        return;
-    }
     uint32 count = GetTabCount();
     while(count)
     {
         if(!CloseTab(GetCurrentTab()))
         {
-            closeRequest->Cancel();
-            return;
+            return false;
         }
         count--;
     }
-    closeRequest->Accept();
+    return true;
 }
 
 

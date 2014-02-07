@@ -253,7 +253,16 @@ public:
         \returns pathname of heightmap
      */
     const FilePath & GetHeightmapPathname();
+	
+	void SetHeightmapPathname(const FilePath & newPath);
+	
+	float32 GetLandscapeSize();
+	
+	void SetLandscapeSize(float32 newSize);
 
+	float32 GetLandscapeHeight();
+	
+	void SetLandscapeHeight(float32 newHeight);
     
     void Save(KeyedArchive * archive, SerializationContext * serializationContext);
     void Load(KeyedArchive * archive, SerializationContext * serializationContext);
@@ -357,6 +366,8 @@ protected:
 	float32 GetSpecularShininess();
 	void SetSpecularMapPath(const FilePath& path);
 	FilePath GetSpecularMapPath();
+    
+    void SetLandscapeSize(const Vector3 & newSize);
 	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
@@ -412,7 +423,7 @@ protected:
     bool    isFogEnabled;
     //float32 fogDensity;
     //Color   fogColor;
-    
+	
 	NMaterial* tileMaskMaterial;
 	//NMaterial* fullTiledMaterial;
 	//NMaterial* currentMaterial;
@@ -445,6 +456,9 @@ public:
 	    INTROSPECTION_EXTEND(Landscape, RenderObject,
          
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
+        PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
+        PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
         //MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         //MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
 		

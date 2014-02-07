@@ -26,44 +26,28 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include "FloatRangeValidator.h"
-#include "Qt/Settings/SettingsManager.h"
 
-FloatRangeValidator::FloatRangeValidator(float minValue, float maxValue)
+
+#ifndef __TEXTURE_FILE_VALIDATOR_H__
+#define __TEXTURE_FILE_VALIDATOR_H__
+
+#include "PathValidator.h"
+#include <QStringList>
+#include "DAVAEngine.h"
+
+class HeightMapValidator : public PathValidator
 {
-    innerValidator.setRange(minValue, maxValue);
-}
+public:
+    
+    HeightMapValidator(const QStringList& value);
+    
+protected:
+	
+    virtual bool ValidateInternal(QVariant &v);
 
-bool FloatRangeValidator::ValidateInternal(const QVariant &value)
-{
-    QString validateValue = value.toString();
-    int pos = 0;
-    return innerValidator.validate(validateValue, pos) == QValidator::Acceptable;
-}
+    virtual void ErrorNotifyInternal(const QVariant &v) const;
+    
+    DAVA::String notifyMessage;
+};
 
-void FloatRangeValidator::SetRange(float minValue, float maxValue)
-{
-	innerValidator.setRange(minValue, maxValue);
-}
-
-int FloatRangeValidator::GetMaximum() const
-{
-	return innerValidator.top();
-}
-
-void FloatRangeValidator::SetMaximum(float maxValue)
-{
-	innerValidator.setTop(maxValue);
-}
-
-int FloatRangeValidator::GetMinimum() const
-{
-	return innerValidator.bottom();
-}
-
-void FloatRangeValidator::SetMinimum(float minValue)
-{
-    innerValidator.setBottom(minValue);
-}
-
-
+#endif // __TEXTURE_FILE_VALIDATOR_H__

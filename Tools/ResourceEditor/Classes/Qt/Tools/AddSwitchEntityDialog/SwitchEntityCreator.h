@@ -28,29 +28,33 @@
 
 
 
-#ifndef __ENTITY_CREATE_SWITCH_COMMAND_H__
-#define __ENTITY_CREATE_SWITCH_COMMAND_H__
+#ifndef __SWITCH_ENTITY_CREATEOR_H__
+#define __SWITCH_ENTITY_CREATEOR_H__
 
-#include "Commands2/Command2.h"
 #include "DAVAEngine.h"
 
-class EntityCreateSwitchCommand : public Command2
-{
-public:
-	EntityCreateSwitchCommand(DAVA::Entity* entity, const DAVA::Vector<DAVA::Entity *> & fromEntities);
-	~EntityCreateSwitchCommand();
+typedef std::pair<DAVA::Entity*, DAVA::RenderObject*> RENDER_PAIR;
 
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
+class SwitchEntityCreator
+{
+	static const DAVA::uint32 MAX_SWITCH_COUNT = 3;
+
+public:
+
+	DAVA::Entity * CreateSwitchEntity(const DAVA::Vector<DAVA::Entity *> & fromEntities);
 
 protected:
 
-	DAVA::RenderObject * FindRenderObjectsRecursive(DAVA::Entity * fromEntity) const;
+	void CreateSingleObjectData(DAVA::Entity *switchEntity);
+	void CreateMultipleObjectsData();
 
+	void FindRenderObjectsRecursive(DAVA::Entity * fromEntity, DAVA::Vector<RENDER_PAIR> & entityAndObjectPairs);
+	DAVA::uint32 CountSwitchComponentsRecursive(DAVA::Entity * fromEntity);
 
-	DAVA::Entity *entity;
-	DAVA::Vector<DAVA::Entity *> sourceEntities;
+	DAVA::Vector<DAVA::Entity *> clonedEntities;
+	DAVA::Vector<DAVA::Entity *> realChildren;
+
+	DAVA::Vector<RENDER_PAIR> renderPairs[MAX_SWITCH_COUNT];
 };
 
-#endif // __ENTITY_CREATE_SWITCH_COMMAND_H__
+#endif // __SWITCH_ENTITY_CREATEOR_H__
