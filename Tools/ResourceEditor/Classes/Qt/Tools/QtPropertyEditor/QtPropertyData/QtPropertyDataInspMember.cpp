@@ -45,7 +45,6 @@ const DAVA::MetaInfo * QtPropertyDataInspMember::MetaInfo() const
 
 void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 {
-	DAVA::VariantType oldValue = QtPropertyDataDavaVariant::GetVariantValue();
 	QtPropertyDataDavaVariant::SetValueInternal(value);
 	DAVA::VariantType newValue = QtPropertyDataDavaVariant::GetVariantValue();
 
@@ -56,11 +55,6 @@ void QtPropertyDataInspMember::SetValueInternal(const QVariant &value)
 		lastCommand = new InspMemberModifyCommand(member, object, newValue);
 
 		member->SetValue(object, newValue);
-		//setting was not completed due to inner logic
-		if(member->Value(object) != newValue)
-		{
-			curVariantValue = oldValue;
-		}
 	}
 }
 
