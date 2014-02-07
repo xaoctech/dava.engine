@@ -199,7 +199,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -251,6 +251,8 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="actionAddLandscape"/>
+     <addaction name="actionAddSkybox"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
@@ -385,7 +387,6 @@
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
-    <addaction name="actionLandscape"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
@@ -394,7 +395,6 @@
     <addaction name="actionVisibilityCheckTool"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
-    <addaction name="actionSkyboxEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBuildStaticOcclusion"/>
     <addaction name="actionBeastAndSave"/>
@@ -672,8 +672,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionSkyboxEditor"/>
-   <addaction name="actionLandscape"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -791,15 +789,6 @@
   <action name="actionExportTegra">
    <property name="text">
     <string>Tegra</string>
-   </property>
-  </action>
-  <action name="actionLandscape">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>Landscape...</string>
    </property>
   </action>
   <action name="actionLight">
@@ -1371,15 +1360,6 @@
     <string>Setup Skybox</string>
    </property>
   </action>
-  <action name="actionSkyboxEditor">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
-   </property>
-   <property name="text">
-    <string>Skybox...</string>
-   </property>
-  </action>
   <action name="actionSetShadowColor">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1735,6 +1715,30 @@
    </property>
    <property name="text">
     <string>Editor 2D Camera</string>
+   </property>
+  </action>
+  <action name="actionAddLandscape">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Landscape</string>
+   </property>
+   <property name="toolTip">
+    <string>Add landscape</string>
+   </property>
+  </action>
+  <action name="actionAddSkybox">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
+   </property>
+   <property name="text">
+    <string>Skybox</string>
+   </property>
+   <property name="toolTip">
+    <string>Add skybox</string>
    </property>
   </action>
   <action name="actionCustomQuality">

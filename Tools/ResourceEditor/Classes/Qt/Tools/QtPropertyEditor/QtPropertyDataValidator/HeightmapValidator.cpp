@@ -26,31 +26,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "HeightMapValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-
-#ifndef __ENTITY_CREATE_SWITCH_COMMAND_H__
-#define __ENTITY_CREATE_SWITCH_COMMAND_H__
-
-#include "Commands2/Command2.h"
-#include "DAVAEngine.h"
-
-class EntityCreateSwitchCommand : public Command2
+HeightMapValidator::HeightMapValidator(const QStringList& value):
+	PathValidator(value),
+    notifyMessage("")
 {
-public:
-	EntityCreateSwitchCommand(DAVA::Entity* entity, const DAVA::Vector<DAVA::Entity *> & fromEntities);
-	~EntityCreateSwitchCommand();
+}
 
-	virtual void Undo();
-	virtual void Redo();
-	virtual DAVA::Entity* GetEntity() const;
+void HeightMapValidator::ErrorNotifyInternal(const QVariant &v) const
+{
+    QMessageBox::warning(NULL, "Wrong file selected", notifyMessage.c_str(), QMessageBox::Ok);
+}
 
-protected:
-
-	DAVA::RenderObject * FindRenderObjectsRecursive(DAVA::Entity * fromEntity) const;
-
-
-	DAVA::Entity *entity;
-	DAVA::Vector<DAVA::Entity *> sourceEntities;
-};
-
-#endif // __ENTITY_CREATE_SWITCH_COMMAND_H__
+bool HeightMapValidator::ValidateInternal(QVariant &v)
+{
+    if(!PathValidator::ValidateInternal(v))
+    {
+        notifyMessage = PrepareErrorMessage(v);
+        return false;
+    }
+    
+    DAVA::FilePath path(v.toString().toStdString());
+    if(path.IsEmpty() || path.IsEqualToExtension(".heightmap"))
+    {
+        return true;
+    }
+    else if(path.IsEqualToExtension(".png"))
+    {
+        DAVA::Vector<DAVA::Image *> imageVector = DAVA::ImageLoader::CreateFromFileByExtension(path);
+        DVASSERT(imageVector.size());
+        
+        DAVA::PixelFormat format = imageVector[0]->GetPixelFormat();
+        
+        for_each(imageVector.begin(), imageVector.end(), DAVA::SafeRelease<DAVA::Image>);
+        if(format == DAVA::FORMAT_A8 ||format == DAVA::FORMAT_A16)
+        {
+            return true;
+        }
+        notifyMessage = DAVA::Format("\"%s\" is wrong: png file should be in format A8 or A16.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    else
+    {
+        notifyMessage = DAVA::Format("\"%s\" is wrong: should be *.png or *.heightmap.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+}

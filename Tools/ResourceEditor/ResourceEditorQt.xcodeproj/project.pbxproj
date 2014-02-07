@@ -38,6 +38,7 @@
 		84A6B1FB18972F64002FD263 /* FloatRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1F918972F64002FD263 /* FloatRangeValidator.cpp */; };
 		84A6B1FE189735AB002FD263 /* IntRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1FC189735AB002FD263 /* IntRangeValidator.cpp */; };
 		84B3D11F18985EF20039A9C0 /* PathValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84B3D11D18985EF20039A9C0 /* PathValidator.cpp */; };
+		84D61E4318A43D0F006E989B /* HeightmapValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84D61E4118A43D0F006E989B /* HeightmapValidator.cpp */; };
 		A51FBC516D952C0C5AB72EA1 /* QtGui.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 9B8EE51E126C761F3F797428 /* QtGui.framework */; };
 		A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = A6796CD81885702800EB254C /* DDSExtractorTool.cpp */; };
 		A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = A69D4042188940CF0093F7AA /* WebKit.framework */; };
@@ -54,7 +55,7 @@
 		E879F45D189802680008E0B1 /* DeleteLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */; };
 		E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
-		E8ACC87918A29E3E00F26ABC /* EntityCreateSwitchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8ACC87718A29E3E00F26ABC /* EntityCreateSwitchCommand.cpp */; };
+		E8ACC89418A3EA1B00F26ABC /* SwitchEntityCreator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8ACC89218A3EA1B00F26ABC /* SwitchEntityCreator.cpp */; };
 		E8BAD5AB185213A600C98C8D /* QtPropertyDataInspDynamic.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */; };
 		E8BAD5D31859F48600C98C8D /* MaterialAssignSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5CB1859F48600C98C8D /* MaterialAssignSystem.cpp */; };
 		E8BAD5D41859F48600C98C8D /* MaterialEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD5CD1859F48600C98C8D /* MaterialEditor.cpp */; };
@@ -683,6 +684,8 @@
 		84A6B1FD189735AB002FD263 /* IntRangeValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntRangeValidator.h; path = QtPropertyDataValidator/IntRangeValidator.h; sourceTree = "<group>"; };
 		84B3D11D18985EF20039A9C0 /* PathValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PathValidator.cpp; path = QtPropertyDataValidator/PathValidator.cpp; sourceTree = "<group>"; };
 		84B3D11E18985EF20039A9C0 /* PathValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PathValidator.h; path = QtPropertyDataValidator/PathValidator.h; sourceTree = "<group>"; };
+		84D61E4118A43D0F006E989B /* HeightmapValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapValidator.cpp; path = QtPropertyDataValidator/HeightmapValidator.cpp; sourceTree = "<group>"; };
+		84D61E4218A43D0F006E989B /* HeightmapValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapValidator.h; path = QtPropertyDataValidator/HeightmapValidator.h; sourceTree = "<group>"; };
 		9B8EE51E126C761F3F797428 /* QtGui.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtGui.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtGui.framework"; sourceTree = "<absolute>"; };
 		A6796CD81885702800EB254C /* DDSExtractorTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DDSExtractorTool.cpp; sourceTree = "<group>"; };
 		A6796CD91885702800EB254C /* DDSExtractorTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDSExtractorTool.h; sourceTree = "<group>"; };
@@ -706,8 +709,8 @@
 		E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspDynamicModifyCommand.cpp; sourceTree = "<group>"; };
 		E881535018883A630028AFD3 /* InspDynamicModifyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InspDynamicModifyCommand.h; sourceTree = "<group>"; };
 		E89DFD2F163ED2A900B51706 /* DataQt */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DataQt; sourceTree = "<group>"; };
-		E8ACC87718A29E3E00F26ABC /* EntityCreateSwitchCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityCreateSwitchCommand.cpp; sourceTree = "<group>"; };
-		E8ACC87818A29E3E00F26ABC /* EntityCreateSwitchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityCreateSwitchCommand.h; sourceTree = "<group>"; };
+		E8ACC89218A3EA1B00F26ABC /* SwitchEntityCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SwitchEntityCreator.cpp; sourceTree = "<group>"; };
+		E8ACC89318A3EA1B00F26ABC /* SwitchEntityCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchEntityCreator.h; sourceTree = "<group>"; };
 		E8BAD5A9185213A600C98C8D /* QtPropertyDataInspDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyDataInspDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AA185213A600C98C8D /* QtPropertyDataInspDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataInspDynamic.h; sourceTree = "<group>"; };
 		E8BAD5CB1859F48600C98C8D /* MaterialAssignSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialAssignSystem.cpp; sourceTree = "<group>"; };
@@ -1739,6 +1742,8 @@
 		626D3C7318900B2200E2B744 /* QtPropertyDataValidator */ = {
 			isa = PBXGroup;
 			children = (
+				84D61E4118A43D0F006E989B /* HeightmapValidator.cpp */,
+				84D61E4218A43D0F006E989B /* HeightmapValidator.h */,
 				491BC46A18A393A4001CE353 /* TexturePathValidator.cpp */,
 				491BC46B18A393A4001CE353 /* TexturePathValidator.h */,
 				84B3D11D18985EF20039A9C0 /* PathValidator.cpp */,
@@ -2980,8 +2985,6 @@
 		E8C99008184CD0EB00AFBF3F /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
-				E8ACC87718A29E3E00F26ABC /* EntityCreateSwitchCommand.cpp */,
-				E8ACC87818A29E3E00F26ABC /* EntityCreateSwitchCommand.h */,
 				EAADA00C189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp */,
 				EAADA00D189FB59E001E1AA2 /* ParticleEmitterMoveCommands.h */,
 				E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */,
@@ -3590,6 +3593,8 @@
 		E8C99186184CD0EB00AFBF3F /* AddSwitchEntityDialog */ = {
 			isa = PBXGroup;
 			children = (
+				E8ACC89218A3EA1B00F26ABC /* SwitchEntityCreator.cpp */,
+				E8ACC89318A3EA1B00F26ABC /* SwitchEntityCreator.h */,
 				E8C99187184CD0EB00AFBF3F /* AddSwitchEntityDialog.cpp */,
 				E8C99188184CD0EB00AFBF3F /* AddSwitchEntityDialog.h */,
 			);
@@ -4074,6 +4079,7 @@
 				E8BAD70E1859F50300C98C8D /* TextDrawSystem_moc.cpp in Build Sources */,
 				E8C992AD184CD0EC00AFBF3F /* TextureSquarenessChecker.cpp in Build Sources */,
 				E8C991EC184CD0EC00AFBF3F /* btAxisSweep3.cpp in Build Sources */,
+				E8ACC89418A3EA1B00F26ABC /* SwitchEntityCreator.cpp in Build Sources */,
 				E8C9924D184CD0EC00AFBF3F /* btHinge2Constraint.cpp in Build Sources */,
 				E8C991EF184CD0EC00AFBF3F /* btDbvt.cpp in Build Sources */,
 				E8064AC3189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp in Build Sources */,
@@ -4174,7 +4180,6 @@
 				E8BAD6F91859F50300C98C8D /* HeightmapEditorSystem_moc.cpp in Build Sources */,
 				E8C992B6184CD0EC00AFBF3F /* MaterialHelper.cpp in Build Sources */,
 				E8C991F0184CD0EC00AFBF3F /* btDbvtBroadphase.cpp in Build Sources */,
-				E8ACC87918A29E3E00F26ABC /* EntityCreateSwitchCommand.cpp in Build Sources */,
 				E8C992DE184CD0EC00AFBF3F /* PropertyEditor.cpp in Build Sources */,
 				E8BAD6B91859F50300C98C8D /* TilemaskEditorPanel_moc.cpp in Build Sources */,
 				76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */,
@@ -4446,6 +4451,7 @@
 				E8C99342184CD0EC00AFBF3F /* QtColorLineEdit.cpp in Build Sources */,
 				E8BAD6DA1859F50300C98C8D /* mainwindow_moc.cpp in Build Sources */,
 				E8BAD6DF1859F50300C98C8D /* StatusBar_moc.cpp in Build Sources */,
+				84D61E4318A43D0F006E989B /* HeightmapValidator.cpp in Build Sources */,
 				E8BAD7191859F50300C98C8D /* TextureList_moc.cpp in Build Sources */,
 				62C1B999188E913300CD3005 /* MaterialFilterModel.cpp in Build Sources */,
 				E8C992E9184CD0EC00AFBF3F /* mainwindow.cpp in Build Sources */,
