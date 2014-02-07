@@ -136,7 +136,6 @@ void AddSwitchEntityDialog::accept()
 	Entity* switchEntity = creator.CreateSwitchEntity(vector);
 
 	scene->Exec(new EntityAddCommand(switchEntity, scene));
-	switchEntity->Release();
 
 	for(DAVA::uint32 i = 0; i < switchCount; ++i)
 	{
