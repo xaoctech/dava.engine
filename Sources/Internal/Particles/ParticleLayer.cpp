@@ -664,7 +664,8 @@ void ParticleLayer::UpdateSizeLine(PropertyLine<Vector2> *line, bool rescaleSize
 	//conversion from old format
 	if (!line) return;
 	if ((!rescaleSize)&&(!swapXY)) return; //nothing to update
-	Vector<typename PropertyLine<Vector2>::PropertyKey> &keys = line->GetValues();		
+    
+	Vector<typename PropertyLine<Vector2>::PropertyKey> &keys = PropertyLineHelper::GetValueLine(line)->GetValues();		
 	for (int i=0, sz = keys.size(); i<sz; ++i)
 	{			
 		if (rescaleSize)
