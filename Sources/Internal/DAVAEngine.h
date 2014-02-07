@@ -166,6 +166,7 @@
 #include "UI/UISpinner.h"
 #include "UI/VectorSpinnerAdapter.h"
 #include "UI/UISwitch.h"
+#include "UI/UIParticles.h"
 
 #include "UI/UIYamlLoader.h"
 
