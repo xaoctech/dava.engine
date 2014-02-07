@@ -892,22 +892,19 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 
 void QtMainWindow::OnProjectOpen()
 {
-    if(!ui->sceneTabWidget->CloseAllTabs())
+    if(ui->sceneTabWidget->CloseAllTabs())
     {
-        return;
+        QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
+        ProjectManager::Instance()->ProjectOpen(newPath);
     }
-	QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-	ProjectManager::Instance()->ProjectOpen(newPath);
 }
 
 void QtMainWindow::OnProjectClose()
 {
-    // TODO:
-	// Close all scenes
-	// ...
-	//
-
-	ProjectManager::Instance()->ProjectClose();
+    if(ui->sceneTabWidget->CloseAllTabs())
+    {
+        ProjectManager::Instance()->ProjectClose();
+    }
 }
 
 void QtMainWindow::OnSceneNew()
