@@ -60,7 +60,7 @@ public:
 
 	QString CurProjectPath();
 	QString CurProjectDataSourcePath();
-
+    
     const QVector<ProjectManager::AvailableMaterialTemplate>* GetAvailableMaterialTemplates() const;
     const QVector<ProjectManager::AvailableMaterialQuality>* GetAvailableMaterialQualities() const;
 
@@ -73,9 +73,9 @@ public slots:
 signals:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
-
+    
 private:
-	QString curProjectPath;
+    QString curProjectPath;
 	QString curProjectPathDataSource;
 
 	void LoadProjectSettings();

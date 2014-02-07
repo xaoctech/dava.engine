@@ -814,6 +814,56 @@ void UIButtonMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eE
     }
 }
 
+int UIButtonMetadata::GetFittingType() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return TextBlock::FITTING_DISABLED;
+    }
+
+    return GetFittingTypeForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+void UIButtonMetadata::SetFittingType(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(uiControlStates[GetActiveStateIndex()]);
+    if (buttonText)
+    {
+        buttonText->SetFittingOption(value);
+    }
+    
+    UpdatePropertyDirtyFlagForFittingType();
+}
+
+int UIButtonMetadata::GetFittingTypeForState(UIControl::eControlState state) const
+{
+    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(state);
+    if (buttonText)
+    {
+        return buttonText->GetFittingOption();
+    }
+    
+    return TextBlock::FITTING_DISABLED;
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForFittingType()
+{
+	int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+	for (int i = 0; i < statesCount; i ++)
+	{
+		UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        
+		bool curStateDirty = (GetFittingTypeForState(curState) !=
+							  GetFittingTypeForState(GetReferenceState()));
+		SetStateDirtyForProperty(curState, PropertyNames::TEXT_FITTING_TYPE_PROPERTY_NAME, curStateDirty);
+	}
+}
+
 void UIButtonMetadata::RecoverPropertyDirtyFlags()
 {
     UpdatePropertyDirtyFlagForLocalizedText();
@@ -827,4 +877,6 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
     UpdatePropertyDirtyFlagForDrawType();
     UpdatePropertyDirtyFlagForColorInheritType();
     UpdatePropertyDirtyFlagForAlign();
+    
+    UpdatePropertyDirtyFlagForFittingType();
 }

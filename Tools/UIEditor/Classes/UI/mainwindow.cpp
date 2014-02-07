@@ -37,14 +37,18 @@
 #include "createplatformdlg.h"
 #include "createplatformdlg.h"
 #include "createscreendlg.h"
-#include "Dialogs/createaggregatordlg.h"
 #include "fontmanagerdialog.h"
-#include "Dialogs/localizationeditordialog.h"
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 #include "FileSystem/FileSystem.h"
 #include "ResourcesManageHelper.h"
+
+#include "Dialogs/createaggregatordlg.h"
 #include "Dialogs/importdialog.h"
+#include "Dialogs/importdialog.h"
+#include "Dialogs/localizationeditordialog.h"
+#include "Dialogs/previewsettingsdialog.h"
+
 #include "ImportCommands.h"
 #include "AlignDistribute/AlignDistributeEnums.h"
 #include "DefaultScreen.h"
@@ -93,7 +97,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     
 	ui->davaGlWidget->setFocus();
-    
+    connect(ui->davaGlWidget, SIGNAL(DavaGLWidgetResized()), this, SLOT(OnGLWidgetResized()));
+
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
 
 	int32 scalesCount = COUNT_OF(SCALE_PERCENTAGES);
@@ -214,9 +219,20 @@ MainWindow::MainWindow(QWidget *parent) :
 			this,
 			SLOT(OnUnsavedChangesNumberChanged()));
 
+    connect(this->ui->actionPreview,
+            SIGNAL(triggered()),
+            this,
+            SLOT(OnPreviewTriggered()));
+    
+    connect(this->ui->actionEditPreviewSettings,
+            SIGNAL(triggered()),
+            this,
+            SLOT(OnEditPreviewSettings()));
+
 	InitMenu();
 	RestoreMainWindowState();
 	CreateHierarchyDockWidgetToolbar();
+    UpdatePreviewButton();
 
     SetAlignEnabled(false);
     SetDistributeEnabled(false);
@@ -325,6 +341,13 @@ void MainWindow::UpdateScaleControls()
 
 void MainWindow::OnUpdateScaleRequest(float scaleDelta)
 {
+    // TODO! temporary solution to don't add new class variable, should be refactored
+    // together with the new Scale Control.
+    if (!ui->scaleSlider->isVisible())
+    {
+        return;
+    }
+    
 	// Lookup for the next/prev index.
 	int32 curScaleIndex = ui->scaleSlider->value();
 	if (scaleDelta > 0)
@@ -356,6 +379,13 @@ void MainWindow::OnScaleComboIndexChanged(int value)
 
 void MainWindow::OnScaleComboTextEditingFinished()
 {
+    // TODO! temporary solution to don't add new class variable, should be refactored
+    // together with the new Scale Control.
+    if (!ui->scaleCombo->isVisible())
+    {
+        return;
+    }
+
 	// Firstly verify whether the value is already set.
 	QString curTextValue = ui->scaleCombo->currentText().trimmed();
 	int scaleValue = 0;
@@ -806,8 +836,15 @@ void MainWindow::UpdateMenu()
 
 	ui->actionAdjustControlSize->setEnabled(projectNotEmpty);
 
+    ui->actionFontManager->setEnabled(projectNotEmpty);
+    ui->actionLocalizationManager->setEnabled(projectNotEmpty);
+
     // Reload.
     ui->actionRepack_And_Reload->setEnabled(projectNotEmpty);
+    
+    // Preview.
+    ui->actionPreview->setEnabled(projectNotEmpty);
+    ui->actionEditPreviewSettings->setEnabled(projectNotEmpty);
 }
 
 void MainWindow::OnNewProject()
@@ -840,6 +877,9 @@ void MainWindow::OnProjectCreated()
 
     SetAlignEnabled(false);
     SetDistributeEnabled(false);
+
+    DisablePreview();
+    UpdatePreviewButton();
 
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
@@ -1084,8 +1124,10 @@ void MainWindow::OnExitApplication()
 
 bool MainWindow::CloseProject()
 {
-	bool lastChangeSaved = !HierarchyTreeController::Instance()->HasUnsavedChanges();
-	if (!lastChangeSaved)
+	bool hasUnsavedChanged = (HierarchyTreeController::Instance()->HasUnsavedChanges() ||
+                             PreviewController::Instance()->HasUnsavedChanges());
+    
+	if (hasUnsavedChanged)
 	{
 		int ret = QMessageBox::warning(this, qApp->applicationName(),
 									   tr("The project has been modified.\n"
@@ -1395,4 +1437,110 @@ void MainWindow::SetDistributeEnabled(bool value)
     ui->actionEqualBetweenYCenters->setEnabled(value);
     ui->actionEqualBetweenBottomEdges->setEnabled(value);
     ui->actionEqualBetweenYObjects->setEnabled(value);
+}
+
+void MainWindow::OnPreviewTriggered()
+{
+    bool isPreview = ui->actionPreview->isChecked();
+    if (isPreview)
+    {
+        PreviewSettingsDialog* dialog = new PreviewSettingsDialog(true);
+        if (dialog->exec() != QDialog::Accepted)
+        {
+            ui->actionPreview->setChecked(false);
+            delete dialog;
+            return;
+        }
+
+        PreviewSettingsData previewData = dialog->GetSelectedData();
+        EnablePreview(previewData);
+        delete dialog;
+    }
+    else
+    {
+        DisablePreview();
+    }
+
+    UpdatePreviewButton();
+}
+
+void MainWindow::OnGLWidgetResized()
+{
+    UpdateSliders();
+    UpdateScreenPosition();
+}
+
+void MainWindow::EnablePreview(const PreviewSettingsData& data)
+{
+    HierarchyTreeController::Instance()->EnablePreview(data);
+
+    const PreviewTransformData& transformData = PreviewController::Instance()->GetTransformData();
+    ScreenWrapper::Instance()->SetScale(transformData.zoomLevel);
+    UpdateScaleControls();
+
+    EnableEditing(false);
+}
+
+void MainWindow::DisablePreview()
+{
+    EnableEditing(true);
+    HierarchyTreeController::Instance()->DisablePreview();
+
+    ScreenWrapper::Instance()->SetScale(1.0f);
+    UpdateScaleControls();
+    UpdateSliders();
+	UpdateScreenPosition();
+}
+
+void MainWindow::EnableEditing(bool value)
+{
+    ui->hierarchyDockWidget->setVisible(value);
+    ui->libraryDockWidget->setVisible(value);
+    ui->propertiesDockWidget->setVisible(value);
+    ui->scaleCombo->setVisible(value);
+    ui->scaleSlider->setVisible(value);
+
+    ui->mainToolbar->setEnabled(value);
+
+    ui->actionZoomIn->setEnabled(value);
+    ui->actionZoomOut->setEnabled(value);
+
+    ui->horizontalRuler->setVisible(value);
+    ui->verticalRuler->setVisible(value);
+
+    ui->hierarchyDockWidget->toggleViewAction()->setEnabled(value);
+    ui->libraryDockWidget->toggleViewAction()->setEnabled(value);
+    ui->propertiesDockWidget->toggleViewAction()->setEnabled(value);
+
+    if (value)
+    {
+        ui->actionUndo->setEnabled(CommandsController::Instance()->IsUndoAvailable());
+        ui->actionRedo->setEnabled(CommandsController::Instance()->IsRedoAvailable());
+    }
+    else
+    {
+        ui->actionUndo->setEnabled(false);
+        ui->actionRedo->setEnabled(false);
+    }
+}
+
+void MainWindow::UpdatePreviewButton()
+{
+    bool isPreview = ui->actionPreview->isChecked();
+    if (isPreview)
+    {
+        ui->actionPreview->setText("Preview Mode");
+    }
+    else
+    {
+        ui->actionPreview->setText("Editing Mode");
+    }
+}
+
+void MainWindow::OnEditPreviewSettings()
+{
+    // The dialog should be opened in Edit mode, nos Select.
+    PreviewSettingsDialog* dialog = new PreviewSettingsDialog(false);
+    dialog->exec();
+    delete dialog;
 }

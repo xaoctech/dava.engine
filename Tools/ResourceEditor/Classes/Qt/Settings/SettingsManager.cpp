@@ -52,7 +52,6 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
 	SettingRow("CameraSpeedValue_2", DAVA::VariantType(250.0f)),
 	SettingRow("CameraSpeedValue_3", DAVA::VariantType(400.0f)),
 	SettingRow("DefaultCameraFOV", DAVA::VariantType(70.0f)),
-    SettingRow("MaterialsViewMode", DAVA::VariantType(EditorMaterialSystem::MVM_ALL)),
 };
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
@@ -65,6 +64,7 @@ const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
 	SettingRow("recentFiles", DAVA::VariantType((KeyedArchive *)NULL)),
     SettingRow("recentFilesListCount", DAVA::VariantType(5)),
+    SettingRow("materialsLightViewMode", DAVA::VariantType(EditorMaterialSystem::LIGHTVIEW_ALL)),
 };
 
 SettingsManager::SettingsManager()
