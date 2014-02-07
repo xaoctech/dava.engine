@@ -48,6 +48,9 @@
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
 #include "Commands2/MetaObjModifyCommand.h"
 #include "Commands2/InspMemberModifyCommand.h"
+#include "Qt/Settings/SettingsManager.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/HeightmapValidator.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -174,7 +177,7 @@ void PropertyEditor::ResetProperties()
 		ApplyFavorite(root);
 		ApplyModeFilter(root);
 		ApplyModeFilter(favoriteGroup);
-		ApplyCustomButtons(root);
+		ApplyCustomExtensions(root);
 
 		// add not empty rows from root
 		while(0 != root->ChildCount())
@@ -283,7 +286,7 @@ void PropertyEditor::ApplyFavorite(QtPropertyData *data)
 	}
 }
 
-void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
+void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 {
 	if(NULL != data)
 	{
@@ -322,12 +325,37 @@ void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
 
 				QObject::connect(goToMaterialButton, SIGNAL(pressed()), this, SLOT(ActionEditMaterial()));
 			}
+            else if(DAVA::MetaInfo::Instance<DAVA::FilePath>() == meta)
+			{
+                QString dataName = data->GetName();
+                if(dataName == "heightmapPath" || dataName == "texture")
+                {
+                    QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
+                    DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+                    variantData->SetDefaultOpenDialogPath(projPath.c_str());
+                    QStringList pathList;
+                    pathList.append(projPath.c_str());
+                    QString fileFilter = "All (*.*)";
+                    if(dataName == "heightmapPath")
+                    {
+                        fileFilter = "All (*.heightmap *.png);;PNG (*.png);;Height map (*.heightmap)";
+                        variantData->SetValidator(new HeightMapValidator(pathList));
+                    }
+                    else
+                    {
+                        fileFilter = "All (*.tex *.png);;PNG (*.png);;TEX (*.tex)";
+                        variantData->SetValidator(new TexturePathValidator(pathList));
+                    }
+                    variantData->SetOpenDialogFilter(fileFilter);
+                }
+                
+            }
 		}
 
 		// go through childs
 		for(int i = 0; i < data->ChildCount(); ++i)
 		{
-			ApplyCustomButtons(data->ChildGet(i));
+			ApplyCustomExtensions(data->ChildGet(i));
 		}
 	}
 }
@@ -751,7 +779,7 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 						if(canBeAdded)
 						{
 							QtPropertyData *favorite = CreateClone(data);
-							ApplyCustomButtons(favorite);
+							ApplyCustomExtensions(favorite);
 
 							favoriteGroup->ChildAdd(data->GetName(), favorite);
 							userData->associatedData = favorite;

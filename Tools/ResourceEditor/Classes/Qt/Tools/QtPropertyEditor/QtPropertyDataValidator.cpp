@@ -28,12 +28,17 @@
 
 #include "QtPropertyDataValidator.h"
 
-bool QtPropertyDataValidator::Validate(const QVariant &v) const
+bool QtPropertyDataValidator::Validate(QVariant &v)
 {
     bool ret = ValidateInternal(v);
     if(!ret)
     {
-        ErrorNotifyInternal(v);
+        FixupInternal(v);
+        ret = ValidateInternal(v);
+        if (!ret)
+        {
+            ErrorNotifyInternal(v);
+        }
     }
     return ret;
 }

@@ -34,7 +34,7 @@ RegExpValidator::RegExpValidator(const QString& value)
     SetRegularExpression(value);
 }
 
-bool RegExpValidator::ValidateInternal(const QVariant &value) const
+bool RegExpValidator::ValidateInternal(QVariant &value)
 {
     QString validateValue = value.toString();
     int pos = 0;

@@ -88,7 +88,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 	if(path != curProjectPath)
 	{
 		ProjectClose();
-
+        
 		curProjectPath = path;
 
 		if(!curProjectPath.isEmpty())
@@ -135,11 +135,11 @@ void ProjectManager::ProjectClose()
 	{
 		FilePath path = curProjectPath.toStdString();
 		path.MakeDirectoryPathname();
-
+        
 		DAVA::FilePath::RemoveResourcesFolder(path);
-
-		curProjectPath = "";
-		emit ProjectClosed();
+        
+        curProjectPath = "";
+        emit ProjectClosed();
 	}
 }
 
