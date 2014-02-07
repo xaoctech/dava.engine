@@ -401,16 +401,16 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                 DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
                 DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-                DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+                QString projPath = SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString().c_str();
                 for(size_t i = 0; i < membersList.size(); ++i)
                 {
                     int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
                     QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
-                    dynamicMember->SetDefaultOpenDialogPath(projPath.c_str());
-               	    dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
+                    dynamicMember->SetDefaultOpenDialogPath(projPath);
+                    dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
                     QStringList path;
-                    path.append(projPath.c_str());
+                    path.append(projPath);
                     dynamicMember->SetValidator(new TexturePathValidator(path));
                     // self property
                     if(memberFlags & DAVA::I_EDIT)

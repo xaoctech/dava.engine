@@ -331,10 +331,10 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 if(dataName == "heightmapPath" || dataName == "texture")
                 {
                     QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
-                    DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
-                    variantData->SetDefaultOpenDialogPath(projPath.c_str());
+                    QString projPath = SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString().c_str();
+                    variantData->SetDefaultOpenDialogPath(projPath);
                     QStringList pathList;
-                    pathList.append(projPath.c_str());
+                    pathList.append(projPath);
                     QString fileFilter = "All (*.*)";
                     if(dataName == "heightmapPath")
                     {
