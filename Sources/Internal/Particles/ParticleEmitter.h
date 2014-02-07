@@ -58,6 +58,8 @@ public:
 class ParticleEmitter : public BaseObject
 {
 public:
+    static ParticleEmitter *LoadEmitter(const FilePath & filename);
+
 	enum eType
 	{
 		EMITTER_POINT,
@@ -124,28 +126,17 @@ protected:
     virtual ~ParticleEmitter();
 
 private:
-	struct EmitterYamlCacheEntry
-	{
-		YamlParser *parser;
-		int refCount;
-	};
+	bool requireDeepClone;
 
 
 #if defined (USE_FILEPATH_IN_MAP)
-	typedef Map<FilePath, EmitterYamlCacheEntry> YamlCacheMap;
+	typedef Map<FilePath, ParticleEmitter*> EmitterCacheMap;
 #else //#if defined (USE_FILEPATH_IN_MAP)
-	typedef Map<String, EmitterYamlCacheEntry> YamlCacheMap;
-#endif //#if defined (USE_FILEPATH_IN_MAP)
-	static YamlCacheMap emitterYamlCache;
-	
-protected:
-	
-	YamlParser* GetParser(const FilePath &filename);
+	typedef Map<String, ParticleEmitter*> EmitterCacheMap;
+#endif //#if defined (USE_FILEPATH_IN_MAP)		    
+    void ReleaseFromCache(const FilePath& name);
 
-	void RetainInCache(const FilePath & name);
-	void ReleaseFromCache(const FilePath & name);	
-	FilePath emitterFileName;
- 
+    static EmitterCacheMap emitterCache;
 };
 
 }
