@@ -168,24 +168,6 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
     //this check is left here intentionally to protect from second call to UpdateEntityAfterLoad
     if(!(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD))
         return;
-        
-	for (Vector<LodComponent::LodData>::iterator it = lod->lodLayers.begin(); it != lod->lodLayers.end(); ++it)
-	{
-		LodComponent::LodData & ld = *it;
-		size_t size = ld.indexes.size();
-		for (size_t idx = 0; idx < size; ++idx)
-		{
-			int32 desiredIndex = ld.indexes[idx];
-			if(desiredIndex < entity->GetChildrenCount())
-			{
-				Entity * childEntity = entity->GetChild(desiredIndex);
-				ld.nodes.push_back(childEntity);
-				{
-					childEntity->SetLodVisible(false);
-				}
-			}
-		}
-	}
 
 	lod->currentLod = LodComponent::INVALID_LOD_LAYER;
 	ParticleEffectComponent * effect = GetEffectComponent(entity);
