@@ -97,11 +97,109 @@ Scene::Scene()
 
 	CreateComponents();
 	CreateSystems();
+    
+    InitGlobalMaterial();
 }
 
 void Scene::CreateComponents()
 {
     
+}
+
+void Scene::InitGlobalMaterial()
+{
+    sceneGlobalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+    
+    Texture* pinkTexture2d = Texture::CreatePink(Texture::TEXTURE_2D);
+    Texture* pinkTextureCube = Texture::CreatePink(Texture::TEXTURE_CUBE);
+    
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, pinkTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, pinkTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, pinkTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, pinkTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, pinkTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, pinkTextureCube);
+ 
+    SafeRelease(pinkTexture2d);
+    SafeRelease(pinkTextureCube);
+    
+    Vector3 defaultVec3;
+    Color defaultColor(1.0f, 0.0f, 0.0f, 1.0f);
+    float32 defaultFloatValue = 0.5f;
+    Vector2 defaultVec2;
+    
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          defaultVec3.data);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          &defaultColor);
+ 	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT,
+                                          Shader::UT_FLOAT_VEC2,
+                                          1,
+                                          defaultVec2.data);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET,
+                                          Shader::UT_FLOAT_VEC2,
+                                          1,
+                                          defaultVec2.data);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE,
+                                          Shader::UT_FLOAT_VEC2,
+                                          1,
+                                          defaultVec2.data);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
 }
 
 void Scene::CreateSystems()
@@ -616,6 +714,8 @@ void Scene::Draw()
     
     //Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     
+    NMaterial::SetGlobalMaterial(sceneGlobalMaterial);
+    
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
@@ -638,6 +738,9 @@ void Scene::Draw()
     // 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
+    
+    NMaterial::SetGlobalMaterial(NULL);
+    
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);

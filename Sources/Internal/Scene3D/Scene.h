@@ -229,6 +229,10 @@ protected:
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     
+    NMaterial* sceneGlobalMaterial;
+    //TODO: think about data-driven intiialization. Need to set default properties from outside and save/load per scene
+    void InitGlobalMaterial();
+    
 #if defined (USE_FILEPATH_IN_MAP)
     typedef Map<FilePath, ProxyNode*> ProxyNodeMap;
 #else //#if defined (USE_FILEPATH_IN_MAP)
