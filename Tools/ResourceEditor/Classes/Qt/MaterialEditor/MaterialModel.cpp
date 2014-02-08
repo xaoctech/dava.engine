@@ -207,6 +207,9 @@ void MaterialModel::Sync()
 			MaterialItem *item = (MaterialItem *) root->child(i);
 			item->SetFlag(MaterialItem::IS_MARK_FOR_DELETE, item->rowCount() == 0);
 		}
+
+        const EntityGroup& selection = curScene->selectionSystem->GetSelection();
+        SetSelection( &selection );
 	}
 
 	emit dataChanged(QModelIndex(), QModelIndex());
@@ -261,10 +264,6 @@ void MaterialModel::onThumbnailReady( QList<QImage> images, QVariant userData )
         return ;
 
     const QString key = userData.toString();
-    
-    //if ( userData.toString().contains( "3_trunk" ) )
-    //    qDebug() << "onThumbnailReady: " << userData.toString();
-
     const int n = rowCount();
     for ( int i = 0; i < n; i++ )
     {

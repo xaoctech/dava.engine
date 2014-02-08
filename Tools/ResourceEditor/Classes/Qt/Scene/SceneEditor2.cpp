@@ -565,7 +565,7 @@ DAVA::ShadowPassBlendMode::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		GetRenderSystem()->GetShadowBlendMode();
+		return GetRenderSystem()->GetShadowBlendMode();
 	}
 
 	return DAVA::ShadowPassBlendMode::MODE_BLEND_COUNT;

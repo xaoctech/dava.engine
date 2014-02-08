@@ -56,7 +56,7 @@ UISlider::UISlider(const Rect & rect)
 ,   needSetMinDrawType(false)
 ,   needSetMaxDrawType(false)
 {
-	inputEnabled = true;
+    SetInputEnabled(true, false);
 	isEventsContinuos = true;
 	
 	leftInactivePart = 0;
@@ -78,7 +78,7 @@ UISlider::UISlider() :
     needSetMinDrawType(false),
     needSetMaxDrawType(false)
 {
-	inputEnabled = true;
+    SetInputEnabled(true, false);
 	isEventsContinuos = true;
 	
 	InitSubcontrols();

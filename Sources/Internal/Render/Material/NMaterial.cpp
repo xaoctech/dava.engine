@@ -487,7 +487,6 @@ namespace DAVA
             parent = parent->GetParent();
         }
 
-        DVASSERT(ret.IsValid());
         return ret;
     }
 	
@@ -685,7 +684,7 @@ namespace DAVA
 			
 			if(IsTextureActive(textureFastName))
 			{
-                Texture* tx = Texture::CreateFromFile(texturePath, FastName("albedo"));
+                Texture* tx = Texture::CreateFromFile(texturePath, textureFastName);
 				bucket->SetTexture(tx);
                 SafeRelease(tx);
 			}
@@ -1210,7 +1209,7 @@ namespace DAVA
 			{
 				if(NULL == bucket->GetTexture())
 				{
-                    Texture* tx = Texture::CreateFromFile(bucket->GetPath(), FastName("albedo"));
+                    Texture* tx = Texture::CreateFromFile(bucket->GetPath(), textureName);
 					bucket->SetTexture(tx);
                     SafeRelease(tx);
 				}
@@ -1803,6 +1802,22 @@ namespace DAVA
 		
 		return result;
 	}
+    
+    bool NMaterialHelper::IsAlphablend(const FastName& passName, NMaterial* mat)
+	{
+		DVASSERT(mat);
+        
+        bool result = false;
+        
+        if(mat->instancePasses.count(passName) > 0)
+        {
+            RenderStateData currentData = mat->GetRenderState(passName);
+		
+            result = ((currentData.state & RenderStateData::STATE_BLEND) != 0);
+        }
+		
+		return result;
+    }
 	
 	bool NMaterialHelper::IsTwoSided(const FastName& passName, NMaterial* mat)
 	{

@@ -435,10 +435,10 @@ inline Vector4 operator * (const Vector4 & _v, const Matrix4 & _m)
 {
 	Vector4 res;
 	
-	res.x = _v.x * _m._00 + _v.y * _m._10 + _v.z * _m._20 + _m._30;
-	res.y = _v.x * _m._01 + _v.y * _m._11 + _v.z * _m._21 + _m._31;
-	res.z = _v.x * _m._02 + _v.y * _m._12 + _v.z * _m._22 + _m._32;
-	res.w = _v.x * _m._03 + _v.y * _m._13 + _v.z * _m._23 + _m._33;
+	res.x = _v.x * _m._00 + _v.y * _m._10 + _v.z * _m._20 + _v.w * _m._30;
+	res.y = _v.x * _m._01 + _v.y * _m._11 + _v.z * _m._21 + _v.w * _m._31;
+	res.z = _v.x * _m._02 + _v.y * _m._12 + _v.z * _m._22 + _v.w * _m._32;
+	res.w = _v.x * _m._03 + _v.y * _m._13 + _v.z * _m._23 + _v.w * _m._33;
 	
 	return res;
 }

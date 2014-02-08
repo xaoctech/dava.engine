@@ -39,10 +39,8 @@
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
-, curViewMode(MVM_ALL)
-{ 
-    curViewMode = SettingsManager::Instance()->GetValue("MaterialsViewMode", SettingsManager::DEFAULT).AsInt32();
-}
+, curViewMode(LIGHTVIEW_ALL)
+{ }
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
@@ -119,17 +117,17 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 	}
 }
 
-int EditorMaterialSystem::GetViewMode()
+int EditorMaterialSystem::GetLightViewMode()
 {
     return curViewMode;
 }
 
-bool EditorMaterialSystem::GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const
+bool EditorMaterialSystem::GetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode) const
 {
     return (bool) (curViewMode & viewMode);
 }
 
-void EditorMaterialSystem::SetViewMode(int fullViewMode)
+void EditorMaterialSystem::SetLightViewMode(int fullViewMode)
 {
     if(curViewMode != fullViewMode)
     {
@@ -145,7 +143,7 @@ void EditorMaterialSystem::SetViewMode(int fullViewMode)
     }
 }
 
-void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set)
+void EditorMaterialSystem::SetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode, bool set)
 {
     int newMode = curViewMode;
 
@@ -158,7 +156,7 @@ void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode vi
         newMode &= ~viewMode;
     }
 
-    SetViewMode(newMode);
+    SetLightViewMode(newMode);
 }
 
 void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
@@ -195,16 +193,16 @@ void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
 {
     DAVA::NMaterial::eFlagValue flag;
 
-    (curViewMode & MVM_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
 
-    (curViewMode & MVM_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
 
-    (curViewMode & MVM_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWSPECULAR, flag);
 
-    (curViewMode & MVM_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWAMBIENT, flag);
 }
 

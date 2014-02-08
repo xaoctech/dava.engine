@@ -308,3 +308,23 @@ void UIStaticTextMetadata::SetMultilineBySymbol(const bool value)
     bool curMultilineValue = GetActiveStaticText()->GetMultiline();
     GetActiveStaticText()->SetMultiline(curMultilineValue, value);
 }
+
+void UIStaticTextMetadata::SetFittingType(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    GetActiveStaticText()->SetFittingOption(value);
+}
+
+int UIStaticTextMetadata::GetFittingType() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return TextBlock::FITTING_DISABLED;
+    }
+    
+    return GetActiveStaticText()->GetFittingOption();
+}

@@ -118,7 +118,7 @@ protected:
 	void ResetProperties();
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
-	void ApplyCustomButtons(QtPropertyData *data);
+	void ApplyCustomExtensions(QtPropertyData *data);
 
 	void AddFavoriteChilds(QtPropertyData *parent);
 	void RemFavoriteChilds(QtPropertyData *parent);
