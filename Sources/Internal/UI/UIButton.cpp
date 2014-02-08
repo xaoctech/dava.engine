@@ -569,10 +569,10 @@ namespace DAVA
 		UpdateStateTextControlSize();
 	}
 	
-	void UIButton::SystemDraw(const UIGeometricData &geometricData)
+	void UIButton::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 	{
 		background = selectedBackground;
-		UIControl::SystemDraw(geometricData);
+		UIControl::SystemDraw(geometricData, renderState);
 		background = stateBacks[DRAW_STATE_UNPRESSED];
 	}
 	

@@ -93,25 +93,25 @@ void UIScreen::SetFillBorderOrder(UIScreen::eFillBorderOrder fillOrder)
 }
 
 	
-void UIScreen::SystemDraw(const UIGeometricData &geometricData)
+void UIScreen::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	if (fillBorderOrder == FILL_BORDER_BEFORE_DRAW)
 	{
-		FillScreenBorders(geometricData);
-		UIControl::SystemDraw(geometricData);
+		FillScreenBorders(geometricData, renderState);
+		UIControl::SystemDraw(geometricData, renderState);
 	}
 	else if (fillBorderOrder == FILL_BORDER_AFTER_DRAW)
 	{
-		UIControl::SystemDraw(geometricData);
-		FillScreenBorders(geometricData);
+		UIControl::SystemDraw(geometricData, renderState);
+		FillScreenBorders(geometricData, renderState);
 	}
 	else 
 	{
-		UIControl::SystemDraw(geometricData);
+		UIControl::SystemDraw(geometricData, renderState);
 	}
 }
 
-void UIScreen::FillScreenBorders(const UIGeometricData &geometricData)
+void UIScreen::FillScreenBorders(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	RenderManager::Instance()->SetColor(0, 0, 0, 1.0f);
 	UIGeometricData drawData;
@@ -129,12 +129,14 @@ void UIScreen::FillScreenBorders(const UIGeometricData &geometricData)
 													Core::Instance()->GetVirtualScreenXMin()
 												 ,	0
 												 ,	-Core::Instance()->GetVirtualScreenXMin()
-												 ,	Core::Instance()->GetVirtualScreenHeight()));
+												 ,	Core::Instance()->GetVirtualScreenHeight())
+                                                 ,  renderState);
 		RenderHelper::Instance()->FillRect(Rect(
 												 Core::Instance()->GetVirtualScreenWidth()
 												 ,	0
 												 ,	Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenWidth()
-												 ,	Core::Instance()->GetVirtualScreenHeight()));
+												 ,	Core::Instance()->GetVirtualScreenHeight())
+                                                 ,  renderState);
 	}
 	else 
 	{
@@ -142,12 +144,14 @@ void UIScreen::FillScreenBorders(const UIGeometricData &geometricData)
 													0
 												 ,	Core::Instance()->GetVirtualScreenYMin()
 												 ,	Core::Instance()->GetVirtualScreenWidth()+1
-												 ,	-Core::Instance()->GetVirtualScreenYMin()));
+												 ,	-Core::Instance()->GetVirtualScreenYMin())
+                                                 ,  renderState);
 		RenderHelper::Instance()->FillRect(Rect(
 												 0
 												 ,	Core::Instance()->GetVirtualScreenHeight()
 												 ,	Core::Instance()->GetVirtualScreenWidth()+1
-												 ,	Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenHeight()));
+												 ,	Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenHeight())
+                                                 ,  renderState);
 	}
 
 	RenderManager::Instance()->ResetColor();

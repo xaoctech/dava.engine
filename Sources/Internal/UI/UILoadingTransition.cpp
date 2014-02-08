@@ -148,10 +148,16 @@ void UILoadingTransition::Update(float32 timeElapsed)
 	}
 }
 
-void UILoadingTransition::Draw(const UIGeometricData &geometricData)
+void UILoadingTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
+    
 	if (backgroundSprite)
-		backgroundSprite->Draw();
+    {
+        Sprite::DrawState drawState;
+        drawState.SetRenderState(renderState);
+        drawState.SetPosition(geometricData.position);
+ 		backgroundSprite->Draw(&drawState);
+    }
 
 	if (animationSprite)
 	{
@@ -159,8 +165,12 @@ void UILoadingTransition::Draw(const UIGeometricData &geometricData)
 		if (frame > animationSprite->GetFrameCount() - 1)
 			frame = animationSprite->GetFrameCount() - 1;
 		
-		animationSprite->SetFrame(frame);
-		animationSprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetRenderState(renderState);
+        drawState.SetFrame(frame);
+        drawState.SetPosition(geometricData.position);
+        
+		animationSprite->Draw(&drawState);
 	}
 }
 	

@@ -70,7 +70,6 @@ void SceneGridSystem::Draw()
 	
 	//rm->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_WRITE | DAVA::RenderState::STATE_DEPTH_TEST);
     rm->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
-	rm->SetRenderState(renderState);
 	rm->FlushState();
 	
 	rm->SetColor(0.4f, 0.4f, 0.4f, 1.0f);
@@ -84,14 +83,14 @@ void SceneGridSystem::Draw()
 		
 		if (x!= 0.0f)
 		{
-			rh->DrawLine(v1, v2);
-			rh->DrawLine(v3, v4);
+			rh->DrawLine(v1, v2, 1.0f, renderState);
+			rh->DrawLine(v3, v4, 1.0f, renderState);
 		}
 	}
 	
 	rm->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
-	rh->DrawLine(DAVA::Vector3(-gridMax, 0, 0), DAVA::Vector3(gridMax, 0, 0));
-	rh->DrawLine(DAVA::Vector3(0, -gridMax, 0), DAVA::Vector3(0, gridMax, 0));
+	rh->DrawLine(DAVA::Vector3(-gridMax, 0, 0), DAVA::Vector3(gridMax, 0, 0), 1.0f, renderState);
+	rh->DrawLine(DAVA::Vector3(0, -gridMax, 0), DAVA::Vector3(0, gridMax, 0), 1.0f, renderState);
 	
 	rm->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 	//rm->SetState(oldState);

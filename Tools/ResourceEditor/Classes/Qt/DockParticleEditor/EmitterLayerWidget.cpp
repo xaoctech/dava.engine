@@ -608,13 +608,15 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	RenderManager::Instance()->SetRenderTarget(renderSprite);
 	if (sprite)
 	{
-		sprite->SetScaleSize(SPRITE_SIZE, SPRITE_SIZE);
-		sprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE,
+                               sprite->GetWidth(), sprite->GetHeight());
+		sprite->Draw(&drawState);
 	}
 
 	RenderManager::Instance()->RestoreRenderTarget();
 	Texture* texture = renderSprite->GetTexture();
-	Image* image = texture->CreateImageFromMemory();
+	Image* image = texture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::FromDavaImage(image)));
 	SafeRelease(image);
 	SafeRelease(renderSprite);

@@ -456,7 +456,7 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
-    Image * image0 = CreateImageFromMemory();
+    Image * image0 = CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
     Vector<Image *> images = image0->CreateMipMapsImages();
     SafeRelease(image0);
 
@@ -1075,7 +1075,7 @@ Image * Texture::ReadDataToImage()
 }
 
 
-Image * Texture::CreateImageFromMemory()
+Image * Texture::CreateImageFromMemory(UniqueHandle renderState)
 {
     Image *image = NULL;
     if(isRenderTarget)
@@ -1098,12 +1098,14 @@ Image * Texture::CreateImageFromMemory()
 
 		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
 
-        drawTexture->SetPosition(0, 0);
-        drawTexture->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(0, 0);
+        drawState.SetRenderState(renderState);
+        drawTexture->Draw(&drawState);
 
         RenderManager::Instance()->RestoreRenderTarget();
         
-        image = renderTarget->GetTexture()->CreateImageFromMemory();
+        image = renderTarget->GetTexture()->CreateImageFromMemory(renderState);
 
         SafeRelease(renderTarget);
         SafeRelease(drawTexture);
