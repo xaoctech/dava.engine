@@ -241,7 +241,7 @@ protected:
 
 	virtual void SetRect(const Rect &rect, bool rectInAbsoluteCoordinates = FALSE);
 
-	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 
 	
     

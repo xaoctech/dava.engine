@@ -525,9 +525,9 @@ void PolygonGroup::DebugDraw()
         GetCoord(indexArray[k * 3 + 0], v0);
         GetCoord(indexArray[k * 3 + 1], v1);
         GetCoord(indexArray[k * 3 + 2], v2);
-        RenderHelper::Instance()->DrawLine(v0, v1);
-        RenderHelper::Instance()->DrawLine(v1, v2);
-        RenderHelper::Instance()->DrawLine(v0, v2);
+        RenderHelper::Instance()->DrawLine(v0, v1, 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+        RenderHelper::Instance()->DrawLine(v1, v2, 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+        RenderHelper::Instance()->DrawLine(v0, v2, 1.0f, RenderState::RENDERSTATE_2D_BLEND);
     }
 }
 

@@ -944,7 +944,7 @@ namespace DAVA
 		parent = SafeRetain(newParent);
 		SafeRelease(oldParent);
         
-        materialSortKey = materialSortKey = (uint16)((pointer_size)parent);
+        materialSortKey = (uint16)((pointer_size)parent);
 		
 		bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
 		

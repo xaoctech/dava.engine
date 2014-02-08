@@ -56,7 +56,7 @@ void UIFadeTransition::Update(float32 timeElapsed)
 	UIScreenTransition::Update(timeElapsed);
 }
 
-void UIFadeTransition::Draw(const UIGeometricData &geometricData)
+void UIFadeTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	/*
 	 renderTargetPrevScreen->SetScale(0.5f, 1.0f);
@@ -67,26 +67,35 @@ void UIFadeTransition::Draw(const UIGeometricData &geometricData)
 	 renderTargetNextScreen->SetPosition(240, 0);
 	 renderTargetNextScreen->Draw(); 
 	 */
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(renderState);
 	if (type == FADE_MIX)
 	{
 		renderTargetPrevScreen->Reset();
-		renderTargetPrevScreen->Draw();
+        
+        drawState.SetPosition(geometricData.position);
+		renderTargetPrevScreen->Draw(&drawState);
 
 		RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, normalizedTime);
 		renderTargetNextScreen->Reset();
-		renderTargetNextScreen->Draw();
+        
+        drawState.SetPosition(geometricData.position);
+		renderTargetNextScreen->Draw(&drawState);
+        
 	}else if (type == FADE_IN_FADE_OUT)
 	{
 		if (normalizedTime <= 0.5f)
 		{
 			RenderManager::Instance()->SetColor(1.0f - normalizedTime * 2, 1.0f - normalizedTime * 2, 1.0f - normalizedTime * 2, 1.0f);
-			renderTargetPrevScreen->SetPosition(0, 0);
-			renderTargetPrevScreen->Draw();
+			drawState.SetPosition(0, 0);
+            
+			renderTargetPrevScreen->Draw(&drawState);
 		}else
 		{
 			RenderManager::Instance()->SetColor((normalizedTime - 0.5f) * 2, (normalizedTime - 0.5f) * 2, (normalizedTime - 0.5f) * 2, 1.0f);
-			renderTargetNextScreen->SetPosition(0, 0);
-			renderTargetNextScreen->Draw(); 
+			drawState.SetPosition(0, 0);
+            
+			renderTargetNextScreen->Draw(&drawState);
 		}
 	}
 	RenderManager::Instance()->ResetColor();

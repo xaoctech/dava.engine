@@ -84,7 +84,7 @@ void UI3DView::Update(float32 timeElapsed)
         scene->Update(timeElapsed);
 }
 
-void UI3DView::Draw(const UIGeometricData & geometricData)
+void UI3DView::Draw(const UIGeometricData & geometricData, UniqueHandle renderState)
 {
 #if 1
 	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);

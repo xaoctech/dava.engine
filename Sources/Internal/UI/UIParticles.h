@@ -57,7 +57,7 @@ public:
 
     virtual void AddControl(UIControl *control);
     virtual void Update(float32 timeElapsed);
-    virtual void Draw(const UIGeometricData &geometricData);
+    virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 
     
     void Load(const FilePath& path);

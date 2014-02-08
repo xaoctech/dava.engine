@@ -113,7 +113,7 @@ protected:
 	UIControlBackground *shadowBg;
 	UIControlBackground *textBg;
 	
-	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 	
 public:
 	void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);

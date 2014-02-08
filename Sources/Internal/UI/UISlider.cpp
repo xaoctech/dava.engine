@@ -347,7 +347,7 @@ void UISlider::Input(UIEvent *currentInput)
 	currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD); // Drag is handled - see please DF-2508.
 }
 
-void UISlider::Draw(const UIGeometricData &geometricData)
+void UISlider::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	const Rect & aRect =  thumbButton->GetGeometricData().GetUnrotatedRect();
 	float32 clipPointAbsolute = aRect.x + aRect.dx * 0.5f;
@@ -356,7 +356,7 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 		bgMin->GetBackground()->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->ClipRect(Rect(Core::Instance()->GetVirtualScreenXMin(), 0, clipPointAbsolute - Core::Instance()->GetVirtualScreenXMin(), (float32)GetScreenHeight()));
-		bgMin->Draw(geometricData);
+		bgMin->Draw(geometricData, renderState);
 		RenderManager::Instance()->ClipPop();
 	}
 	if (bgMax && bgMax->GetVisible() && bgMax->GetVisibleForUIEditor())
@@ -364,17 +364,17 @@ void UISlider::Draw(const UIGeometricData &geometricData)
 		bgMax->GetBackground()->SetParentColor(GetBackground()->GetDrawColor());
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->ClipRect(Rect(clipPointAbsolute, 0, Core::Instance()->GetVirtualScreenXMax() - clipPointAbsolute, (float32)GetScreenHeight()));
-		bgMax->Draw(geometricData);
+		bgMax->Draw(geometricData, renderState);
 		RenderManager::Instance()->ClipPop();
 	}
 	
 	if (!bgMax && !bgMin)
 	{
-		UIControl::Draw(geometricData);
+		UIControl::Draw(geometricData, renderState);
 	}
 }
 	
-void UISlider::SystemDraw(const UIGeometricData &geometricData)
+void UISlider::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	UIGeometricData drawData;
 	drawData.position = relativePosition;
@@ -402,7 +402,7 @@ void UISlider::SystemDraw(const UIGeometricData &geometricData)
 	// Draw us.
 	if(visible)
 	{
-		Draw(drawData);
+		Draw(drawData, renderState);
 	}
 	
 	// Draw all the child controls BUT the backgrounds.
@@ -415,12 +415,12 @@ void UISlider::SystemDraw(const UIGeometricData &geometricData)
 			continue;
 		}
 		
-		(*it)->SystemDraw(drawData);
+		(*it)->SystemDraw(drawData, renderState);
 	}
 	
 	if(visible)
 	{
-		DrawAfterChilds(drawData);
+		DrawAfterChilds(drawData, renderState);
 	}
 	if(clipContents)
 	{
@@ -431,8 +431,8 @@ void UISlider::SystemDraw(const UIGeometricData &geometricData)
 	{
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->SetColor(debugDrawColor);
-		DrawDebugRect(drawData);
-        DrawPivotPoint(drawData.GetUnrotatedRect());
+		DrawDebugRect(drawData, false, renderState);
+        DrawPivotPoint(drawData.GetUnrotatedRect(), renderState);
 		RenderManager::Instance()->SetColor(oldColor);
 	}
 }

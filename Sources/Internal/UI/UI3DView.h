@@ -54,7 +54,7 @@ public:
 
     virtual void AddControl(UIControl *control);
     virtual void Update(float32 timeElapsed);
-    virtual void Draw(const UIGeometricData &geometricData);
+    virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 
 	inline const Rect & GetLastViewportRect()
 	{

@@ -55,7 +55,7 @@ ScreenControl::~ScreenControl()
 	SafeRelease(background);
 }
 
-void ScreenControl::SystemDraw(const UIGeometricData &geometricData)
+void ScreenControl::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	Rect rect = this->GetRect();
     
@@ -92,15 +92,15 @@ void ScreenControl::SystemDraw(const UIGeometricData &geometricData)
 
     background->SetPosition(backgroundPos);
     background->SetSize(backgroundSize);
-    background->SystemDraw(geometricData);
+    background->SystemDraw(geometricData, renderState);
 
    	RenderManager::Instance()->PopDrawMatrix();
     
     // Draw the control itself.
-	UIControl::SystemDraw(geometricData);
+	UIControl::SystemDraw(geometricData, renderState);
     
     // Draw the grid over the control.
-	GridVisualizer::Instance()->DrawGridIfNeeded(rect);
+	GridVisualizer::Instance()->DrawGridIfNeeded(rect, renderState);
 }
 
 bool ScreenControl::IsPointInside(const Vector2& /*point*/, bool/* expandWithFocus*/)

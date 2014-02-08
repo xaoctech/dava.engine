@@ -136,7 +136,7 @@ void UIParticles::Update(float32 timeElapsed)
     updateTime += timeElapsed;        
 }
 
-void UIParticles::Draw(const UIGeometricData & geometricData)
+void UIParticles::Draw(const UIGeometricData & geometricData, UniqueHandle renderState)
 {
     if ((!effect)||(effect->state == ParticleEffectComponent::STATE_STOPPED)) 
         return;
