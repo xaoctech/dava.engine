@@ -56,6 +56,7 @@ public:
     virtual void Deserialize(KeyedArchive *archive) {};
     
     virtual void SetPosition(const Vector3 & position) {};
+    virtual void SetOrientation(const Vector3 & orientation) {};
     virtual void UpdateInstancesPosition() {};
     
     virtual void SetParameterValue(const FastName & paramName, float32 value) {};
