@@ -34,9 +34,7 @@
 #include "Core/Core.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
-namespace DAVA 
-{
-
+namespace DAVA {
 
 UIParticles::UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)    
@@ -44,6 +42,7 @@ UIParticles::UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates)
     , system(new ParticleEffectSystem(NULL))
     , camera(new Camera())
     , updateTime(0)
+    , isAutostart(false)
 {
     matrix.Identity();
     float32 w = Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin();
@@ -74,8 +73,6 @@ void UIParticles::Start()
     system->AddToActive(effect);
     effect->effectRenderObject->SetEffectMatrix(&matrix);
     system->RunEffect(effect);
-    
-    
 }
 
 void UIParticles::Stop(bool isDeleteAllParticles)
@@ -141,8 +138,6 @@ void UIParticles::Draw(const UIGeometricData & geometricData, UniqueHandle rende
     if ((!effect)||(effect->state == ParticleEffectComponent::STATE_STOPPED)) 
         return;
 
-
-    
     matrix.CreateRotation(Vector3(0,1,0), geometricData.angle);
     //negative y is to make 2d/3d particles look similar (matrix setup)
     matrix.SetTranslationVector(Vector3(geometricData.position.x, 0, -geometricData.position.y));
@@ -171,17 +166,13 @@ void UIParticles::Draw(const UIGeometricData & geometricData, UniqueHandle rende
 	        
 }
 
-
-
-
-
 void UIParticles::Load(const FilePath& path)
 {
     SceneFileV2 *sceneFile = new SceneFileV2();
     sceneFile->EnableDebugLog(false);
     SceneArchive *archive = sceneFile->LoadSceneArchive(path);    
     SafeRelease(sceneFile);
-    if (archive->children.size()>0)
+    if (archive && archive->children.size()>0)
     {
         Entity *e = new Entity();
         SerializationContext serializationContext;
@@ -200,8 +191,89 @@ void UIParticles::Load(const FilePath& path)
     SafeRelease(archive);
 
     if (effect)
+    {
         effect->effectRenderObject->SetEffectMatrix(&matrix);
-    
+        effectPath = path;
+        
+        HandleAutostart();
+    }
+    else
+    {
+        effectPath = FilePath();
+    }
 }
 
+void UIParticles::Reload()
+{
+    if (effectPath.IsEmpty())
+    {
+        DVASSERT_MSG(false, "You have to load UIPartilces effect prior to calling Reload()");
+        return;
+    }
+
+    Load(effectPath);
 }
+
+const FilePath& UIParticles::GetEffectPath() const
+{
+    return effectPath;
+}
+
+void UIParticles::SetAutostart(bool value)
+{
+    isAutostart = value;
+    HandleAutostart();
+}
+
+bool UIParticles::IsAutostart() const
+{
+    return isAutostart;
+}
+   
+YamlNode * UIParticles::SaveToYamlNode(UIYamlLoader * loader)
+{
+    UIParticles* baseControl = new UIParticles();
+
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    SetPreferredNodeType(node, "UIParticles");
+    
+    if (baseControl->GetEffectPath() != effectPath)
+    {
+        node->Set("effectPath", effectPath.GetFrameworkPath());
+    }
+    
+    if (baseControl->IsAutostart() != isAutostart)
+    {
+        node->Set("autoStart", isAutostart);
+    }
+
+    return node;
+}
+
+void UIParticles::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+{
+	UIControl::LoadFromYamlNode(node, loader);
+
+    const YamlNode * effectPathNode = node->Get("effectPath");
+	const YamlNode * autoStartNode = node->Get("autoStart");
+
+    if (effectPathNode)
+    {
+        Load(effectPathNode->AsString());
+    }
+    
+    if (autoStartNode)
+    {
+        SetAutostart(autoStartNode->AsBool());
+    }
+}
+
+void UIParticles::HandleAutostart()
+{
+    if (isAutostart && effect)
+    {
+        Start();
+    }
+}
+
+};

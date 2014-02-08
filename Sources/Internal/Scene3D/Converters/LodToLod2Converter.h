@@ -40,6 +40,9 @@ public:
 	bool MergeLod(Entity * entity);
 
 private:
+
+	void ConvertToShadowRecursive(Entity *entity);
+
     void FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects);
     Set<PolygonGroup*> bakedPolygonGroups;
 };

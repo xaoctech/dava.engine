@@ -107,6 +107,9 @@ protected:
 	virtual int GetTextAlign();
     virtual void SetTextAlign(int align);
 
+    virtual int GetFittingType() const;
+    virtual void SetFittingType(int value);
+
     // For UI Button localized text depends on state, so overriding this function.
     virtual UIControl::eControlState GetCurrentStateForLocalizedText() const;
     
@@ -156,6 +159,10 @@ protected:
 	// Sprite Modification Type
 	int GetSpriteModificationForState(UIControl::eControlState state) const;
 	void UpdatePropertyDirtyFlagForSpriteModification();
+
+    // Fitting Type.
+    int GetFittingTypeForState(UIControl::eControlState state) const;
+    void UpdatePropertyDirtyFlagForFittingType();
 
     // Recover dirty flags.
     void RecoverPropertyDirtyFlags();
