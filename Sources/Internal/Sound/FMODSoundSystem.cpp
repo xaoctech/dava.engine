@@ -39,7 +39,7 @@
 
 namespace DAVA
 {
-    
+
 FMOD_RESULT F_CALLBACK FMOD_FILE_OPENCALLBACK(const char * name, int unicode, unsigned int * filesize, void ** handle, void ** userdata);
 FMOD_RESULT F_CALLBACK FMOD_FILE_READCALLBACK(void * handle, void * buffer, unsigned int sizebytes, unsigned int * bytesread, void * userdata);
 FMOD_RESULT F_CALLBACK FMOD_FILE_SEEKCALLBACK(void * handle, unsigned int pos, void * userdata);
@@ -100,12 +100,35 @@ SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName
 
 void FMODSoundSystem::LoadFEV(const FilePath & filePath)
 {
-	FMOD_VERIFY(fmodEventSystem->load(filePath.GetFrameworkPath().c_str(), 0, 0));
+    FMOD::EventProject * project = 0;
+	FMOD_VERIFY(fmodEventSystem->load(filePath.GetFrameworkPath().c_str(), 0, &project));
+    
+    if(project)
+    {
+        FMOD_EVENT_PROJECTINFO info;
+        FMOD_VERIFY(project->getInfo(&info));
+        String projectName(info.name);
+        
+        int32 groupsCount = 0;
+        FMOD_VERIFY(project->getNumGroups(&groupsCount));
+        for(int32 i = 0; i < groupsCount; ++i)
+        {
+            FMOD::EventGroup * group = 0;
+            FMOD_VERIFY(project->getGroupByIndex(i, false, &group));
+            
+            char * buf = 0;
+            FMOD_VERIFY(group->getInfo(0, &buf));
+            toplevelGroups.push_back(projectName + "/" + buf);
+        }
+    }
+    
 }
 
 void FMODSoundSystem::UnloadFMODProjects()
 {
     FMOD_VERIFY(fmodEventSystem->unload());
+    
+    toplevelGroups.clear();
 }
 
 FMODSoundSystem * FMODSoundSystem::GetFMODSoundSystem()
@@ -285,6 +308,13 @@ void FMODSoundSystem::ReleaseFMODEventGroupData(const String & groupName)
     FMOD_VERIFY(fmodEventSystem->getGroup(groupName.c_str(), false, &eventGroup));
     if(eventGroup)
         FMOD_VERIFY(eventGroup->freeEventData());
+}
+    
+void FMODSoundSystem::ReleaseAllEventWaveData()
+{
+    int32 topCount = toplevelGroups.size();
+    for(int32 i = 0; i < topCount; ++i)
+        ReleaseFMODEventGroupData(toplevelGroups[i]);
 }
     
 void FMODSoundSystem::SetGroupVolume(const FastName & groupName, float32 volume)
