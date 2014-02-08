@@ -82,6 +82,7 @@ public:
 
     void PreloadFMODEventGroupData(const String & groupName);
     void ReleaseFMODEventGroupData(const String & groupName);
+    void ReleaseAllEventWaveData();
     
     void GetAllEventsNames(Vector<String> & names);
 
@@ -108,6 +109,8 @@ protected:
     MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback> callbackOnUpdate;
     Vector<SoundGroup> soundGroups;
 
+    Vector<String> toplevelGroups;
+    
     float32 maxDistanceSq;
     Vector3 listenerPosition;
 
