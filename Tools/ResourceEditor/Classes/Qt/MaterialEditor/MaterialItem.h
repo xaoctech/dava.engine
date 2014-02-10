@@ -33,11 +33,16 @@
 
 #include "Render/Material/NMaterial.h"
 
+#include <QObject>
 #include <QStandardItem>
 
 class MaterialModel;
-class MaterialItem: public QStandardItem
+class MaterialItem
+    : public QObject
+    , public QStandardItem
 {
+    Q_OBJECT
+
 public:
 	enum MaterialFlag
 	{
@@ -53,10 +58,17 @@ public:
 
 	void SetFlag(MaterialFlag flag, bool set);
 	bool GetFlag(MaterialFlag flag) const;
+
+    void requestPreview();
+    void setPreview(QImage image);
     
 private:
     DAVA::NMaterial * material;
 	int curFlag;
+    bool isPreviewRequested;
+
+private slots:
+    void onThumbnailReady( QList<QImage> images, QVariant userData );
 };
 
 

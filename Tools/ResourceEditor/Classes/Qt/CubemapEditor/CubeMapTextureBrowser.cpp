@@ -35,6 +35,7 @@
 #include "../../StringConstants.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
+#include "Project/ProjectManager.h"
 
 #include <QFileDialog>
 #include <QScrollBar>
@@ -58,8 +59,8 @@ CubeMapTextureBrowser::CubeMapTextureBrowser(SceneEditor2* currentScene, QWidget
 	ConnectSignals();
 	
 	FilePath projectPath = CubemapUtils::GetDialogSavedPath(ResourceEditor::SETTINGS_CUBEMAP_LAST_PROJECT_DIR,
-															FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname(),
-															FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname());
+															FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()).GetAbsolutePathname(),
+															FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()).GetAbsolutePathname());
 		
 	ui->textRootPath->setText(projectPath.GetAbsolutePathname().c_str());
 	ReloadTextures(projectPath.GetAbsolutePathname());

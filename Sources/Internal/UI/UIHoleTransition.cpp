@@ -76,7 +76,7 @@ void UIHoleTransition::Update(float32 timeElapsed)
 	}
 }
 
-void UIHoleTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIHoleTransition::Draw(const UIGeometricData &geometricData)
 {
 	/*
 	 renderTargetPrevScreen->SetScale(0.5f, 1.0f);
@@ -94,7 +94,7 @@ void UIHoleTransition::Draw(const UIGeometricData &geometricData, UniqueHandle r
 	 */
 	
     Sprite::DrawState drawState;
-    drawState.SetRenderState(renderState);
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     
 	RenderManager::Instance()->SetColor(0.0f, 0.0f, 0.0f, 1.0f);
 	RenderHelper::Instance()->FillRect(Rect(0.0f, 0.0f, (float32)GetScreenWidth(), (float32)GetScreenHeight()), drawState.GetRenderState());
