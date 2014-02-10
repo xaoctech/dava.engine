@@ -237,16 +237,17 @@ public:
     inline void SetIndexInParent(uint32 index) { flags |= (index & ENTITY_INDEX_MASK) << ENTITY_INDEX_POSITION; };
     
 	// animations 
-	void ExecuteAnimation(SceneNodeAnimation * animation);	
-	void DetachAnimation(SceneNodeAnimation * animation);
-	virtual void StopAllAnimations(bool recursive = true);
+// 	void ExecuteAnimation(SceneNodeAnimation * animation);	
+// 	void DetachAnimation(SceneNodeAnimation * animation);
+// 	virtual void StopAllAnimations(bool recursive = true);
+
 	void RestoreOriginalTransforms();
 
 	
     virtual Entity* Clone(Entity *dstNode = NULL);
 	
     // Do not use variables 
-    std::deque<SceneNodeAnimation *> nodeAnimations;
+    //std::deque<SceneNodeAnimation *> nodeAnimations;
 
     // Do we need enum, or we can use virtual functions? 
     enum

@@ -629,45 +629,45 @@ Entity *	Entity::FindByName(const String & searchName)
 }
 	
 	
-void Entity::ExecuteAnimation(SceneNodeAnimation * _animation)
-{
-	nodeAnimations.push_back(_animation);
-	//	printf("-- add animation: %d node: %s anim: %s\n", nodeAnimations.size(), name.c_str(), _animation->GetParent()->name.c_str());
-	//	if (_animation->GetParent()->name == "a1")
-	//	{
-	//		int k = 0;
-	//		k++;
-	//	}
-}
-	
-void Entity::DetachAnimation(SceneNodeAnimation * animation)
-{
-	//	int32 size = nodeAnimations.size();
-	for (std::deque<SceneNodeAnimation*>::iterator t = nodeAnimations.begin(); t != nodeAnimations.end(); ++t)
-	{
-		if (*t == animation)
-		{
-			nodeAnimations.erase(t);
-			break;
-		}
-	}
-	//	int32 sizeAfter = nodeAnimations.size();
-	//	if (sizeAfter != size - 1)
-	//	{
-	//		printf("******** Error with animation detach");
-	//	}
-}
-	
-void Entity::StopAllAnimations(bool recursive)
-{
-	nodeAnimations.clear();
-	if (recursive)
-	{
-		uint32 size = (uint32)children.size();
-		for (uint32 c = 0; c < size; ++c)
-			children[c]->StopAllAnimations(recursive);
-	}
-}
+// void Entity::ExecuteAnimation(SceneNodeAnimation * _animation)
+// {
+// 	nodeAnimations.push_back(_animation);
+// 	//	printf("-- add animation: %d node: %s anim: %s\n", nodeAnimations.size(), name.c_str(), _animation->GetParent()->name.c_str());
+// 	//	if (_animation->GetParent()->name == "a1")
+// 	//	{
+// 	//		int k = 0;
+// 	//		k++;
+// 	//	}
+// }
+// 	
+// void Entity::DetachAnimation(SceneNodeAnimation * animation)
+// {
+// 	//	int32 size = nodeAnimations.size();
+// 	for (std::deque<SceneNodeAnimation*>::iterator t = nodeAnimations.begin(); t != nodeAnimations.end(); ++t)
+// 	{
+// 		if (*t == animation)
+// 		{
+// 			nodeAnimations.erase(t);
+// 			break;
+// 		}
+// 	}
+// 	//	int32 sizeAfter = nodeAnimations.size();
+// 	//	if (sizeAfter != size - 1)
+// 	//	{
+// 	//		printf("******** Error with animation detach");
+// 	//	}
+// }
+// 	
+// void Entity::StopAllAnimations(bool recursive)
+// {
+// 	nodeAnimations.clear();
+// 	if (recursive)
+// 	{
+// 		uint32 size = (uint32)children.size();
+// 		for (uint32 c = 0; c < size; ++c)
+// 			children[c]->StopAllAnimations(recursive);
+// 	}
+// }
 	
 void Entity::RestoreOriginalTransforms()
 {
@@ -915,7 +915,7 @@ Entity* Entity::Clone(Entity *dstNode)
 	dstNode->tag = tag;
 	//dstNode->flags = flags;
 		
-	dstNode->nodeAnimations = nodeAnimations;
+	//dstNode->nodeAnimations = nodeAnimations;
 		
 	dstNode->RemoveAllChildren();
     dstNode->children.reserve(children.size());
