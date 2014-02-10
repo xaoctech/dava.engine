@@ -733,7 +733,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
             if (parent)
             {
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
-                String currentName = currentNode->GetName();
+                FastName currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
@@ -831,7 +831,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             }
         }
         
-        mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName());
+        mesh->SetOwnerDebugInfo(String(oldMeshInstanceNode->GetName().c_str()));
         
         //
         Entity * parent = oldMeshInstanceNode->GetParent();
@@ -853,7 +853,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
                 newShadowVolume->SetPolygonGroup(pg);
                 mesh->AddRenderBatch(newShadowVolume);
                 
-                mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
+                mesh->SetOwnerDebugInfo(Format("%s shadow:%s", oldMeshInstanceNode->GetName().c_str(), oldShadowVolumeNode->GetName().c_str()));
                 
                 parent->RemoveNode(oldShadowVolumeNode);
                 SafeRelease(newShadowVolume);
