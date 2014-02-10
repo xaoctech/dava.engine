@@ -51,8 +51,8 @@ protected:
 public:
 	DefaultScreen();
 	
-	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
-	virtual void SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState);
+	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void SystemDraw(const UIGeometricData &geometricData);
 	virtual void Update(float32 timeElapsed);
 	virtual bool IsPointInside(const Vector2& point, bool expandWithFocus);
 

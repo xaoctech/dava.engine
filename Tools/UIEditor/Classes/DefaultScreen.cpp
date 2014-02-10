@@ -63,7 +63,7 @@ public:
 		RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);		
 	}
 	
-	void SystemDraw(const UIGeometricData &/*geometricData*/, UniqueHandle renderState)
+	void SystemDraw(const UIGeometricData &/*geometricData*/)
 	{
 		RenderHelper::Instance()->DrawRect(GetRect(), RenderState::RENDERSTATE_2D_BLEND);
 	}
@@ -98,12 +98,12 @@ void DefaultScreen::Update(float32 /*timeElapsed*/)
 	RenderManager::Instance()->SetDrawTranslate(pos);
 }
 
-void DefaultScreen::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void DefaultScreen::Draw(const UIGeometricData &geometricData)
 {
-	UIScreen::Draw(geometricData, renderState);
+	UIScreen::Draw(geometricData);
 }
 
-void DefaultScreen::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
 {
     bool previewEnabled = PreviewController::Instance()->IsPreviewEnabled();
     Color oldColor = RenderManager::Instance()->GetColor();
@@ -122,7 +122,7 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData, UniqueHandl
         RenderManager::Instance()->ClipRect(previewClipRect);
     }
 
-	UIScreen::SystemDraw(geometricData, renderState);
+	UIScreen::SystemDraw(geometricData);
 
     if (previewEnabled)
     {
@@ -130,7 +130,7 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData, UniqueHandl
     }
     else if (inputState == InputStateSelectorControl)
     {
-		selectorControl->SystemDraw(geometricData, renderState);
+		selectorControl->SystemDraw(geometricData);
     }
 }
 

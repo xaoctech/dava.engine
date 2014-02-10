@@ -58,7 +58,7 @@ public:
 
 	virtual void SetType(eType _type, bool moveOver = false);
 	virtual void Update(float32 timeElapsed);
-	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
+	virtual void Draw(const UIGeometricData &geometricData);
 private:
 	eType type;
 	bool isOver;

@@ -71,7 +71,6 @@
 
 #include "Classes/CommandLine/SceneSaver/SceneSaver.h"
 #include "Classes/Qt/Main/Request.h"
-#include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
 
 #include "Classes/Commands2/CustomColorsCommands2.h"
@@ -106,9 +105,6 @@
 
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
-
-#define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
-#define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -541,6 +537,7 @@ void QtMainWindow::SetupActions()
 {
 	// scene file actions
 	QObject::connect(ui->actionOpenProject, SIGNAL(triggered()), this, SLOT(OnProjectOpen()));
+    QObject::connect(ui->actionCloseProject, SIGNAL(triggered()), this, SLOT(OnProjectClose()));
 	QObject::connect(ui->actionOpenScene, SIGNAL(triggered()), this, SLOT(OnSceneOpen()));
 	QObject::connect(ui->actionNewScene, SIGNAL(triggered()), this, SLOT(OnSceneNew()));
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
@@ -549,9 +546,6 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 
-	//edit
-	QObject::connect(ui->actionConvertToShadow, SIGNAL(triggered()), this, SLOT(OnConvertToShadow()));
-    
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
     ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
@@ -804,6 +798,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
+    ui->actionCloseProject->setEnabled(enable);
     
     auto endIt = recentScenes.end();
     for(auto it = recentScenes.begin(); it != endIt; ++it)
@@ -893,7 +888,7 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 void QtMainWindow::OnProjectOpen()
 {
     QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-    if(!newPath.isEmpty() && ui->sceneTabWidget->CloseAllTabs())
+    if(!newPath.isEmpty() && CloseProject())
     {
         ProjectManager::Instance()->ProjectOpen(newPath);
     }
@@ -901,10 +896,7 @@ void QtMainWindow::OnProjectOpen()
 
 void QtMainWindow::OnProjectClose()
 {
-    if(ui->sceneTabWidget->CloseAllTabs())
-    {
-        ProjectManager::Instance()->ProjectClose();
-    }
+    CloseProject();
 }
 
 void QtMainWindow::OnSceneNew()
@@ -1342,8 +1334,11 @@ void QtMainWindow::OnAddLandscape()
     entityToProcess->AddComponent(component);
 
     AABBox3 bboxForLandscape;
-    bboxForLandscape.AddPoint(Vector3(-DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, -DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, 0.f));
-    bboxForLandscape.AddPoint(Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_HEIGHT));
+    float32 defaultLandscapeSize = SettingsManager::Instance()->GetValue("DefaultLandscapeSize", SettingsManager::DEFAULT).AsFloat();
+    float32 defaultLandscapeHeight = SettingsManager::Instance()->GetValue("DefaultLandscapeHeight", SettingsManager::DEFAULT).AsFloat();
+    
+    bboxForLandscape.AddPoint(Vector3(-defaultLandscapeSize/2.f, -defaultLandscapeSize/2.f, 0.f));
+    bboxForLandscape.AddPoint(Vector3(defaultLandscapeSize/2.f, defaultLandscapeSize/2.f, defaultLandscapeHeight));
     newLandscape->BuildLandscapeFromHeightmapImage("", bboxForLandscape);
 
     SceneEditor2* sceneEditor = GetCurrentScene();
@@ -1462,7 +1457,7 @@ void QtMainWindow::OnEditor2DCameraDialog()
 }
 void QtMainWindow::OnEditorSpriteDialog()
 {
-    FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+    FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
     projectPath += "Data/Gfx/";
 
     QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.txt)"));
@@ -1853,57 +1848,6 @@ void QtMainWindow::StartGlobalInvalidateTimer()
     QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
 }
 
-void QtMainWindow::OnConvertToShadow()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-    
-	SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        bool isRenderBatchFound = false;
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
-            {
-                isRenderBatchFound = true;
-                break;
-            }
-        }
-        
-        if(!isRenderBatchFound)
-        {
-            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch (Material)");
-            return;
-        }
-        
-        
-        bool errorHappend = false;
-        scene->BeginBatch("Convert To Shadow");
-        
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            Entity *entity = ss->GetSelectionEntity(i);
-            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
-            {
-                scene->Exec(new ConvertToShadowCommand(entity));
-            }
-            else
-            {
-                errorHappend = true;
-                Logger::Error("Cannot convert %s to shadow", entity->GetName().c_str());
-            }
-        }
-        
-        scene->EndBatch();
-        
-        if(errorHappend)
-        {
-            ShowErrorDialog("Not all entities were converted. See details at console output");
-        }
-    }
-}
-
 void QtMainWindow::EditorLightEnabled( bool enabled )
 {
 	ui->actionEnableCameraLight->setChecked(enabled);
@@ -2105,7 +2049,7 @@ bool QtMainWindow::SelectCustomColorsTexturePath()
 		return false;
 	}
 	
-	String pathToSave = selectedPathname.GetRelativePathname(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	String pathToSave = selectedPathname.GetRelativePathname(ProjectManager::Instance()->CurProjectPath().toStdString());
 	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
 	return true;
 }
@@ -2695,4 +2639,14 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	sceneWidget->SetCurrentTab(lastSceneTab);
 
 	return true;
+}
+
+bool QtMainWindow::CloseProject()
+{
+    if(ui->sceneTabWidget->CloseAllTabs())
+    {
+        ProjectManager::Instance()->ProjectClose();
+        return true;
+    }
+    return false;
 }
