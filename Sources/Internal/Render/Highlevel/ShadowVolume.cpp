@@ -563,5 +563,10 @@ void ShadowVolume::UpdateAABBoxFromSource()
 	}
 }
 
+ShadowVolume * ShadowVolume::CreateShadow()
+{
+	return NULL;
+}
+
 
 };

@@ -67,6 +67,7 @@ class RenderBatch;
 class NMaterial;
 class NMaterialInstance;
 class OcclusionQuery;
+class ShadowVolume;
 
     
 /*
@@ -132,6 +133,9 @@ public:
 	virtual void UpdateAABBoxFromSource();
 	
     pointer_size layerSortingKey;
+
+	virtual ShadowVolume * CreateShadow();
+
 protected:
     uint32 renderLayerIDsBitmaskFromMaterial;
     PolygonGroup * dataSource;

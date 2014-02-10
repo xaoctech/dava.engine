@@ -79,11 +79,13 @@ private:
     ParticleEffectComponent *effect;
     ParticleEffectSystem *system;
     Matrix4 matrix;
-    Camera *camera;
+    //Camera *camera;
     float32 updateTime;
 
     FilePath effectPath;
     bool isAutostart;
+
+    static RefPtr<Camera> defaultCamera;
 };
 	
 };

@@ -83,10 +83,16 @@
 #endif 
 #elif defined(__DAVAENGINE_ANDROID__)
 	#define __DAVAENGINE_OPENGL__
+    #include <android/api-level.h>
 	#include <GLES/gl.h>
 	#include <GLES/glext.h>
- 	#include <GLES2/gl2.h>
- 	#include <GLES2/gl2ext.h>
+#if (__ANDROID_API__ < 18)
+    #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
+#else
+    #include <GLES3/gl3.h>
+    #include <GLES3/gl3ext.h>
+#endif
 
 #else //PLATFORMS
 	//other platforms
