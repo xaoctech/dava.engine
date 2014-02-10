@@ -119,6 +119,7 @@ namespace DAVA
 	
 	Texture* NMaterial::stubCubemapTexture = NULL;
 	Texture* NMaterial::stub2dTexture = NULL;
+    NMaterial* NMaterial::GLOBAL_MATERIAL = NULL;
 		
 ////////////////////////////////////////////////////////////////////////////////
 	
@@ -484,7 +485,7 @@ namespace DAVA
         while(!ret.IsValid() && NULL != parent)
         {
             ret = parent->orderedQuality;
-            parent = parent->GetParent();
+            parent = (NULL == parent->parent && parent->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : parent->parent;
         }
 
         return ret;
@@ -844,7 +845,7 @@ namespace DAVA
 				break;
 			}
 			
-			currentMaterial = currentMaterial->parent;
+			currentMaterial = (NULL == currentMaterial->parent && currentMaterial->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : currentMaterial->parent;
 		}
 		
 		return property;
@@ -1155,7 +1156,7 @@ namespace DAVA
 		{
 			bucket = currentMaterial->textures.at(textureFastName);
 			
-			currentMaterial = currentMaterial->parent;
+			currentMaterial = (NULL == currentMaterial->parent && currentMaterial->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : currentMaterial->parent;
 		}
 		
 		return bucket;
@@ -1218,7 +1219,7 @@ namespace DAVA
 				break;
 			}
 			
-			currentMaterial = currentMaterial->parent;
+			currentMaterial = (NULL == currentMaterial->parent && currentMaterial->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : currentMaterial->parent;
 		}
 		
 		return tex;
@@ -1365,6 +1366,18 @@ namespace DAVA
 	
 	void NMaterial::BindMaterialProperties(RenderPassInstance* passInstance)
 	{
+        //TODO: think of a way to re-bind only changed properties. (Move dirty flag to UniformCacheEntry or something?)
+        if(passInstance->propsDirty)
+        {
+            for(size_t i = 0; i < passInstance->activeUniformsCacheSize; ++i)
+            {
+                UniformCacheEntry& uniformEntry = passInstance->activeUniformsCachePtr[i];
+                uniformEntry.prop = GetPropertyValue(uniformEntry.uniform->name);
+            }
+        
+            passInstance->propsDirty = false;
+        }
+    
 		Shader* shader = passInstance->GetShader();
 		for(size_t i = 0; i < passInstance->activeUniformsCacheSize; ++i)
 		{
@@ -1389,18 +1402,7 @@ namespace DAVA
 			++it)
 		{
 			RenderPassInstance* pass = it->second;
-			if(pass->activeUniformsCachePtr)
-			{
-				for(size_t i = 0; i < pass->activeUniformsCacheSize; ++i)
-				{
-					UniformCacheEntry& cacheEntry = pass->activeUniformsCachePtr[i];
-					if(cacheEntry.uniform->name == propName)
-					{
-						pass->activeUniformsCachePtr[i].prop = GetPropertyValue(propName);
-						break;
-					}
-				}
-			}
+            pass->propsDirty = true;
 		}
 		
 		this->Retain();
@@ -1421,18 +1423,7 @@ namespace DAVA
 			++it)
 		{
 			RenderPassInstance* pass = it->second;
-			if(pass->activeUniformsCachePtr)
-			{
-				for(size_t i = 0; i < pass->activeUniformsCacheSize; ++i)
-				{
-					if(pass->activeUniformsCachePtr[i].uniform->name == propName)
-					{
-						pass->activeUniformsCachePtr[i].prop = GetPropertyValue(propName);
-						
-						break;
-					}
-				}
-			}
+            pass->propsDirty = true;
 		}
 		
 		this->Retain();
@@ -1677,6 +1668,17 @@ namespace DAVA
 		
 		return mat;
 	}
+    
+    NMaterial* NMaterial::CreateGlobalMaterial(const FastName& materialName)
+    {
+        NMaterial* mat = new NMaterial();
+		mat->SetMaterialType(NMaterial::MATERIALTYPE_GLOBAL);
+		mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
+		mat->SetMaterialName(materialName);
+		mat->SetName(mat->GetMaterialName().c_str());
+
+        return mat;
+    }
 
 	//VI: creates material of type MATERIALTYPE_INSTANCE
 	//VI: These methods DO NOT add newly created materials to the material system

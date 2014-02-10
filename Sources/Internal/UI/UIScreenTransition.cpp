@@ -102,7 +102,7 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 	int32 prevScreenGroupId = 0;
 	if (prevScreen)
 	{
-		prevScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
+		prevScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData(), RenderState::RENDERSTATE_2D_BLEND);
 		
 		prevScreen->SystemWillDisappear();
 		// prevScreen->UnloadResources();
@@ -131,7 +131,7 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 
 	float32 timeElapsed = SystemTimer::FrameDelta();
 	nextScreen->SystemUpdate(timeElapsed);
-	nextScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
+	nextScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData(), RenderState::RENDERSTATE_2D_BLEND);
 
 //    RenderManager::Instance()->SetColor(0.0, 1.0, 0.0, 1.0);
 //    RenderHelper::Instance()->FillRect(Rect(screenRect.x, screenRect.y, screenRect.dx / 2, screenRect.dy));
@@ -172,16 +172,21 @@ void UIScreenTransition::Update(float32 timeElapsed)
 	}
 }
 
-void UIScreenTransition::Draw(const UIGeometricData &geometricData)
+void UIScreenTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
-	renderTargetPrevScreen->SetScale(0.5f, 1.0f);
-	renderTargetPrevScreen->SetPosition(0, 0);
-	renderTargetPrevScreen->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(renderState);
+    
+	drawState.SetScale(0.5f, 1.0f);
+	drawState.SetPosition(0, 0);
+    
+	renderTargetPrevScreen->Draw(&drawState);
 
     
-	renderTargetNextScreen->SetScale(0.5f, 1.0f);
-	renderTargetNextScreen->SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
-	renderTargetNextScreen->Draw();
+	drawState.SetScale(0.5f, 1.0f);
+	drawState.SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
+    
+	renderTargetNextScreen->Draw(&drawState);
 }
 	
 void UIScreenTransition::SetDuration(float32 timeInSeconds)

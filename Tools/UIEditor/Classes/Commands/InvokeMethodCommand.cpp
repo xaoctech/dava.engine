@@ -26,30 +26,34 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __GRID_VISUALIZER__H__
-#define __GRID_VISUALIZER__H__
+#include "InvokeMethodCommand.h"
+#include <QMetaObject>
 
-#include "DAVAEngine.h"
-using namespace DAVA;
-
-// This class helps us to visualize UI Editor Grid if needed.
-class GridVisualizer : public Singleton<GridVisualizer>
+InvokeMethodCommand::InvokeMethodCommand(BaseMetadata* metadata, const String& methodName) :
+    commandMetadata(metadata),
+    commandMethodName(methodName)
 {
-public:
-    // Construction/destruction.
-    GridVisualizer();
-    virtual ~GridVisualizer();
-    
-    // Set the current screen scale.
-    void SetScale(float32 scale);
-    
-    // Draw the grid, if needed. Call this method from the Screen Control.
-    void DrawGridIfNeeded(const Rect& rect, UniqueHandle renderState);
-    
-protected:
-    // Current screen scale.
-    float32 curScale;
-};
+}
 
+InvokeMethodCommand::~InvokeMethodCommand()
+{
+}
 
-#endif /* defined(__GRID_VISUALIZER__H__) */
+void InvokeMethodCommand::Execute()
+{
+    if (commandMetadata == NULL)
+    {
+        return;
+    }
+    
+    // Set the same property for all Params inside the metadata.
+    int paramsCount = commandMetadata->GetParamsCount();
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
+    {
+        QMetaObject::invokeMethod(commandMetadata, commandMethodName.c_str());
+    }
+}
+
+void InvokeMethodCommand::Rollback()
+{
+}

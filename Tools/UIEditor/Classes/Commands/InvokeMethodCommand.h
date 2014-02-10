@@ -26,30 +26,26 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __GRID_VISUALIZER__H__
-#define __GRID_VISUALIZER__H__
+#ifndef __INVOKEMETHODCOMMAND__H__
+#define __INVOKEMETHODCOMMAND__H__
 
-#include "DAVAEngine.h"
-using namespace DAVA;
+#include "BaseCommand.h"
 
-// This class helps us to visualize UI Editor Grid if needed.
-class GridVisualizer : public Singleton<GridVisualizer>
+class InvokeMethodCommand : public BaseCommand
 {
 public:
-    // Construction/destruction.
-    GridVisualizer();
-    virtual ~GridVisualizer();
+    InvokeMethodCommand(BaseMetadata* metadata, const String& methodName);
+	virtual ~InvokeMethodCommand();
     
-    // Set the current screen scale.
-    void SetScale(float32 scale);
+    virtual void Execute();
+	virtual void Rollback();
     
-    // Draw the grid, if needed. Call this method from the Screen Control.
-    void DrawGridIfNeeded(const Rect& rect, UniqueHandle renderState);
+	virtual bool IsUndoRedoSupported() {return false;};
     
 protected:
-    // Current screen scale.
-    float32 curScale;
+    BaseMetadata* commandMetadata;
+    String commandMethodName;
 };
 
 
-#endif /* defined(__GRID_VISUALIZER__H__) */
+#endif /* defined(__UIEditor__InvokeMethodCommand__) */

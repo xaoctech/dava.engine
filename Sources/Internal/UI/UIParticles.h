@@ -44,7 +44,7 @@ class UIParticles : public UIControl
 protected:
     virtual ~UIParticles();
 public:
-	UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates = FALSE);        
+	UIParticles(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = FALSE);
 
 
     /*methods analogical to once in ParticleEffectComponent*/
@@ -57,19 +57,35 @@ public:
 
     virtual void AddControl(UIControl *control);
     virtual void Update(float32 timeElapsed);
-    virtual void Draw(const UIGeometricData &geometricData);
+    virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 
-    
+    // Load/save functionality.
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
+
     void Load(const FilePath& path);
+    void Reload();
     
-protected:    	
+    const FilePath& GetEffectPath() const;
+
+    void SetAutostart(bool value);
+    bool IsAutostart() const;
+
+protected:
+    // Start the playback in case Autostart flag is set.
+    void HandleAutostart();
 
 private:
     ParticleEffectComponent *effect;
     ParticleEffectSystem *system;
     Matrix4 matrix;
-    Camera *camera;
+    //Camera *camera;
     float32 updateTime;
+
+    FilePath effectPath;
+    bool isAutostart;
+
+    static RefPtr<Camera> defaultCamera;
 };
 	
 };
