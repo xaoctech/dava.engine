@@ -28,40 +28,64 @@
 
 
 
-#ifndef __DAVAENGINE_SHADOW_RECT_H__
-#define __DAVAENGINE_SHADOW_RECT_H__
+#include "fake_occlusion.h"
 
-#include "Base/StaticSingleton.h"
-#include "Render/Shader.h"
+#if (__ANDROID_API__ < 18)
 
-namespace DAVA
+#include <EGL/egl.h>
+
+void glGenQueries_Fake(GLsizei n, GLuint* ids)
 {
+	DAVA::Logger::Error("calling fake implementation of glGenQueries");
+}
 
-class RenderDataObject;
-class RenderDataStream;
-class Scene;
-class ShadowRect : public BaseObject
+void glDeleteQueries_Fake(GLsizei n, const GLuint* ids)
 {
-public:
-	static ShadowRect * Create();
+	DAVA::Logger::Error("calling fake implementation of glDeleteQueries");
+}
 
-	virtual ~ShadowRect();
+void glBeginQuery_Fake(GLenum target, GLuint id)
+{
+	DAVA::Logger::Error("calling fake implementation of glBeginQuery");
+}
 
-	void Draw();
+void glEndQuery_Fake(GLenum target)
+{
+	DAVA::Logger::Error("calling fake implementation of glEndQuery");
+}
 
-private:
-	ShadowRect();
+void glGetQueryObjectuiv_Fake(GLuint id, GLenum pname, GLuint* params)
+{
+	DAVA::Logger::Error("calling fake implementation of glGetQueryObjectuiv");
+}
 
-	RenderDataObject * rdo;
-	RenderDataStream * vertexStream;
+void InitFakeOcclusion()
+{
+	glGenQueries = NULL;
+	glDeleteQueries = NULL;
+	glBeginQuery = NULL;
+	glEndQuery = NULL;
+	glGetQueryObjectuiv = NULL;
 
-	Shader * shader;
+	glGenQueries = (GL_GEN_QUERIES) eglGetProcAddress("glGenQueries");
+	glDeleteQueries = (GL_DELETE_QUERIES) eglGetProcAddress("glDeleteQueries");
+	glBeginQuery = (GL_BEGIN_QUERY) eglGetProcAddress("glBeginQuery");
+	glEndQuery = (GL_END_QUERY) eglGetProcAddress("glEndQuery");
+	glGetQueryObjectuiv = (GL_GET_QUERY_OBJECTUIV) eglGetProcAddress("glGetQueryObjectuiv");
 
-	float32 vertices[12];
+	if (!glGenQueries    ||
+		!glDeleteQueries ||
+		!glBeginQuery    ||
+		!glEndQuery      ||
+		!glGetQueryObjectuiv)
+	{
+		DAVA::Logger::Error("Replace occlulsion with fake implementation");
+		glGenQueries = &glGenQueries_Fake;
+		glDeleteQueries = &glDeleteQueries_Fake;
+		glBeginQuery = &glBeginQuery_Fake;
+		glEndQuery = &glEndQuery_Fake;
+		glGetQueryObjectuiv = &glGetQueryObjectuiv_Fake;
+	}
+}
 
-	static ShadowRect * instance;
-};
-
-};
-
-#endif //__DAVAENGINE_SHADOW_RECT_H__
+#endif //if (__ANDROID_API__ < 18)
