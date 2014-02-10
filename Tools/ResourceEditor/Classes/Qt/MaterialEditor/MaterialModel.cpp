@@ -212,7 +212,7 @@ void MaterialModel::Sync()
         SetSelection( &selection );
 	}
 
-	emit dataChanged(QModelIndex(), QModelIndex()); // Review - possible not needed
+	emit dataChanged(QModelIndex(), QModelIndex());
 }
 
 void MaterialModel::requestPreview( QStandardItem *item )
@@ -264,10 +264,6 @@ void MaterialModel::onThumbnailReady( QList<QImage> images, QVariant userData )
         return ;
 
     const QString key = userData.toString();
-    
-    //if ( userData.toString().contains( "3_trunk" ) )
-    //    qDebug() << "onThumbnailReady: " << userData.toString();
-
     const int n = rowCount();
     for ( int i = 0; i < n; i++ )
     {

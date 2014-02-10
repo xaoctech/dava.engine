@@ -47,7 +47,7 @@ public:
 
 	virtual void SetPolygon(const Polygon2 & pts);
 	virtual void Update(float32 timeElapsed);
-	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 private:
 	Polygon2 clipPoly;
     Polygon2 realPoly;

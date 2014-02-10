@@ -26,30 +26,47 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __GRID_VISUALIZER__H__
-#define __GRID_VISUALIZER__H__
+#ifndef __UIEditor__UIParticlesMetadata__
+#define __UIEditor__UIParticlesMetadata__
 
-#include "DAVAEngine.h"
-using namespace DAVA;
+#include "UIControlMetadata.h"
 
-// This class helps us to visualize UI Editor Grid if needed.
-class GridVisualizer : public Singleton<GridVisualizer>
+namespace DAVA {
+	
+// Metadata class for DAVA UIParticles.
+class UIParticlesMetadata : public UIControlMetadata
 {
+    Q_OBJECT
+
+    Q_PROPERTY(QString EffectPath READ GetEffectPath WRITE SetEffectPath);
+    Q_PROPERTY(bool Autostart READ GetAutostart WRITE SetAutostart);
+
+    // Invokable methods to control UIParticlesControl
+    Q_INVOKABLE void Start();
+    Q_INVOKABLE void Stop();
+    Q_INVOKABLE void Reload();
+
 public:
-    // Construction/destruction.
-    GridVisualizer();
-    virtual ~GridVisualizer();
-    
-    // Set the current screen scale.
-    void SetScale(float32 scale);
-    
-    // Draw the grid, if needed. Call this method from the Screen Control.
-    void DrawGridIfNeeded(const Rect& rect, UniqueHandle renderState);
-    
+    UIParticlesMetadata(QObject* parent = 0);
+        
 protected:
-    // Current screen scale.
-    float32 curScale;
+    UIParticles* GetActiveUIParticles() const;
+
+    // Getter/setters.
+    QString GetEffectPath() const;
+    void SetEffectPath(const QString& value);
+    
+    bool GetAutostart() const;
+    void SetAutostart(bool value);
+    
+    // Default Flags.
+    virtual bool GetInitialInputEnabled() const {return false;};
+
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
+    virtual QString GetUIControlClassName() { return "UIParticles"; };
 };
+}
 
 
-#endif /* defined(__GRID_VISUALIZER__H__) */
+#endif /* defined(__UIEditor__UIParticlesMetadata__) */

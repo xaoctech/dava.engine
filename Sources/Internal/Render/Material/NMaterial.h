@@ -189,7 +189,8 @@ public:
 	{
 		MATERIALTYPE_NONE = 0,
 		MATERIALTYPE_MATERIAL = 1,
-		MATERIALTYPE_INSTANCE = 2
+		MATERIALTYPE_INSTANCE = 2,
+        MATERIALTYPE_GLOBAL = 3
 	};
 	
 	enum eFlagValue
@@ -306,7 +307,7 @@ public:
 	const RenderStateData& GetRenderState(const FastName& passName) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
 	void SubclassRenderState(RenderStateData& newState);
-	
+    
 	static NMaterial* CreateMaterialInstance();
 	
 	static NMaterial* CreateMaterialInstance(const FastName& parentName,
@@ -316,6 +317,8 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
+    
+    static NMaterial* CreateGlobalMaterial(const FastName& materialName);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
     void SetMaterialTemplateName(const FastName& templateName);
@@ -323,6 +326,12 @@ public:
 
     FastName GetMaterialGroup() const;
     void SetMaterialGroup(const FastName &group);
+    
+    //Stores WEAK reference (actually it's valid during render pass only)
+    //These methods are not thread-safe and used in the Scene::Draw to
+    //provide default values for materials.
+    inline static void SetGlobalMaterial(NMaterial* globalMaterial);
+    inline static NMaterial* GetGlobalMaterial();
 
 protected:
 	
@@ -389,7 +398,8 @@ protected:
 			dirtyState(false),
 			texturesDirty(true),
 			activeUniformsCachePtr(NULL),
-			activeUniformsCacheSize(0)
+			activeUniformsCacheSize(0),
+            propsDirty(true)
 		{
 			renderState.shader = NULL;
 		}
@@ -418,6 +428,7 @@ protected:
         
         bool dirtyState;
 		bool texturesDirty;
+        bool propsDirty;
 		
 		HashMap<FastName, int32> textureIndexMap;
 		Vector<UniformCacheEntry> activeUniformsCache;
@@ -478,6 +489,8 @@ protected:
 	
 	static Texture* stubCubemapTexture;
 	static Texture* stub2dTexture;
+    
+    static NMaterial* GLOBAL_MATERIAL;
 	
 protected:
 	
@@ -642,11 +655,21 @@ public:
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     
+    inline void NMaterial::SetGlobalMaterial(NMaterial* globalMaterial)
+    {
+        NMaterial::GLOBAL_MATERIAL = globalMaterial;
+    }
+    
+    inline NMaterial* NMaterial::GetGlobalMaterial()
+    {
+        return NMaterial::GLOBAL_MATERIAL;
+    }
     
     inline uint32 NMaterial::GetRenderLayers() const
     {
         return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
     }
+    
     
     void NMaterial::SetRenderLayers(uint32 bitmask)
     {

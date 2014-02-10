@@ -276,7 +276,7 @@ void VisibilityToolSystem::SetBrushSize(int32 brushSize)
 void VisibilityToolSystem::StoreOriginalState()
 {
 	DVASSERT(originalImage == NULL);
-	originalImage = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetTexture()->CreateImageFromMemory();
+	originalImage = drawSystem->GetVisibilityToolProxy()->GetSprite()->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	ResetAccumulatorRect();
 }
 
@@ -365,9 +365,11 @@ void VisibilityToolSystem::SetVisibilityPointInternal(const Vector2& point)
 	RenderManager::Instance()->SetRenderTarget(sprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 
-	cursorSprite->SetPosition(0.f, 0.f);
-	cursorSprite->SetScaleSize(sprite->GetWidth(), sprite->GetHeight());
-	cursorSprite->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetPosition(0.f, 0.f);
+	drawState.SetScaleSize(sprite->GetWidth(), sprite->GetHeight(),
+                           cursorSprite->GetWidth(), cursorSprite->GetHeight());
+	cursorSprite->Draw(&drawState);
 
 	RenderManager::Instance()->RestoreRenderTarget();
 
@@ -556,7 +558,7 @@ void VisibilityToolSystem::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> 
 
 		manager->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		manager->SetColor(areaPointColors[colorIndex]);
-		helper->DrawPoint(pos, 5.f);
+		helper->DrawPoint(pos, 5.f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	}
 
 	manager->ResetColor();
@@ -573,7 +575,7 @@ void VisibilityToolSystem::SaveTexture(const FilePath& filePath)
 	Sprite* visibilityToolSprite = drawSystem->GetVisibilityToolProxy()->GetSprite();
 	Texture* visibilityToolTexture = visibilityToolSprite->GetTexture();
 
-	Image* image = visibilityToolTexture->CreateImageFromMemory();
+	Image* image = visibilityToolTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	ImageLoader::Save(image, filePath);
 	SafeRelease(image);
 }
