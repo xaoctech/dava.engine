@@ -83,6 +83,11 @@ public:
 		return NULL;
 	}
 	
+    inline String GetString() const
+    {
+        return c_str()?String(c_str()):"";
+    }
+	
 	inline FastName& operator=(const FastName &_name)
 	{
 		RemRef(index);
@@ -107,6 +112,41 @@ public:
 	{
 		return index != _name.index;
 	}
+	
+    inline bool operator <(const FastName &_name) const
+	{
+		return index < _name.index;
+	}
+    
+    inline bool operator==(const String &_name) const
+	{
+		return index == FastName(_name.c_str()).index;
+	}
+	
+	inline bool operator!=(const String &_name) const
+	{
+		return index != FastName(_name.c_str()).index;
+	}
+
+    inline size_t find(const char* s, size_t pos = 0) const
+    {
+        if(c_str() && s)
+        {
+            const char* q = strstr(c_str() + pos, s);
+            return q ? q - c_str() : String::npos;
+        }
+        return String::npos;
+    }
+    
+    inline size_t find(const String& str, size_t pos = 0) const
+    {
+        return find(str.c_str(), pos);
+    }
+    
+    inline size_t find(const FastName& fn, size_t pos = 0) const
+    {
+        return find(fn.c_str(), pos);
+    }
 	
 	inline const char* operator*() const
 	{
