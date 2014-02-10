@@ -61,8 +61,6 @@ MaterialModel::MaterialModel(QObject * parent)
 	QStringList headerLabels;
 	headerLabels.append("Materials hierarchy");
 	setHorizontalHeaderLabels(headerLabels);
-
-    connect( TextureCache::Instance(), SIGNAL(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)), SLOT(ThumbnailLoaded(const DAVA::TextureDescriptor *, const TextureInfo &)) );
 }
 
 MaterialModel::~MaterialModel()
@@ -199,8 +197,6 @@ void MaterialModel::Sync()
 					}
 				}
 			}
-
-            setPreview( item, toAdd );
 		}
 
 		// mark materials that can be deleted
@@ -209,110 +205,11 @@ void MaterialModel::Sync()
 			MaterialItem *item = (MaterialItem *) root->child(i);
 			item->SetFlag(MaterialItem::IS_MARK_FOR_DELETE, item->rowCount() == 0);
 		}
-	}
 
-	emit dataChanged(QModelIndex(), QModelIndex());
-}
-
-QImage MaterialModel::GetPreview( const DAVA::NMaterial * material ) const
-{
-    DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-    if(t)
-    {
-        const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(t->GetDescriptor());
-        if((images.size() > 0) && (images[0].isNull() == false))
-            return images[0];
-        else
-            TextureConvertor::Instance()->GetThumbnail(t->GetDescriptor());
-    }
-    else if(material->IsFlagEffective(DAVA::NMaterial::FLAG_FLATCOLOR))
-    {
-        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty(DAVA::NMaterial::PARAM_FLAT_COLOR);
-        if(prop)
-        {
-            const DAVA::Color color = *(DAVA::Color*)prop->data;
-            
-            QImage img(QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT), QImage::Format_ARGB32);
-            img.fill(ColorToQColor(color));
-            
-            return img;
-        }
-    }
-
-    return QImage();
-}
-
-void MaterialModel::setPreview( QStandardItem *item, const DAVA::NMaterial * material )
-{
-    item->setData( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::SizeHintRole );
-
-    const QImage& preview = GetPreview( material );
-    if ( !preview.isNull() )
-    {
-        QImage scaled = preview.scaled( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
-        QPainter p( &scaled );
-        QRect rc( 0, 0, scaled.width() - 1, scaled.height() - 1 );
-        p.setPen( QColor( 0, 0, 0, 0x30 ) );
-        p.drawRect( rc );
-        item->setData( scaled, Qt::DecorationRole );
-    }
-}
-
-void MaterialModel::ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image)
-{
-	if(NULL != descriptor)
-	{
-        QModelIndex index = FindItemIndex(descriptor);
-        if ( !index.isValid() )
-            return ;
-
-        MaterialItem *item = (MaterialItem *)itemFromIndex(index);
-        if ( !item )
-            return ;
-        DAVA::NMaterial* material = item->GetMaterial();
-        setPreview( item, material );
+        const EntityGroup& selection = curScene->selectionSystem->GetSelection();
+        SetSelection( &selection );
 	}
 }
-
-QModelIndex MaterialModel::FindItemIndex(const DAVA::TextureDescriptor *descriptor) const
-{
-    int nRows = rowCount();
-    for(int i = 0; i < nRows; ++i)
-    {
-        const QModelIndex idx = index(i, 0);
-        const QModelIndex found = FindItemIndex(idx, descriptor);
-        if(found.isValid())
-            return found;
-    }
-    
-    return QModelIndex();
-}
-
-QModelIndex MaterialModel::FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const
-{
-    if(parent.isValid() == false)
-        return QModelIndex();
-    
-    const DAVA::NMaterial *material = GetMaterial(parent);
-    if(material)
-    {
-        DAVA::Texture *t = material->GetTexture(DAVA::NMaterial::TEXTURE_ALBEDO);
-        if(t && t->GetDescriptor() == descriptor)
-            return parent;
-    }
-    
-    int nRows = rowCount(parent);
-    for(int i = 0; i < nRows; ++i)
-    {
-        const QModelIndex idx = index(i, 0, parent);
-        const QModelIndex found = FindItemIndex(idx, descriptor);
-        if(found.isValid())
-            return found;
-    }
-    
-    return QModelIndex();
-}
-
 
 DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const
 {

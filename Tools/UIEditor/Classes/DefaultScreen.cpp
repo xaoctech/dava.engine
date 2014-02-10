@@ -38,6 +38,8 @@
 #include "Grid/GridController.h"
 #include "Ruler/RulerController.h"
 
+#include "PreviewController.h"
+
 #include <QMenu>
 #include <QAction>
 #include <QApplication>
@@ -63,8 +65,7 @@ public:
 	
 	void SystemDraw(const UIGeometricData &/*geometricData*/)
 	{
-        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-		RenderHelper::Instance()->DrawRect(GetRect());
+		RenderHelper::Instance()->DrawRect(GetRect(), RenderState::RENDERSTATE_2D_BLEND);
 	}
 };
 
@@ -104,17 +105,33 @@ void DefaultScreen::Draw(const UIGeometricData &geometricData)
 
 void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
 {
+    bool previewEnabled = PreviewController::Instance()->IsPreviewEnabled();
     Color oldColor = RenderManager::Instance()->GetColor();
 
-    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
-    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
+    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect(), RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetColor(oldColor);
 
+   // For Preview mode display only what is inside the preview rectangle.
+    if (previewEnabled)
+    {
+        RenderManager::Instance()->ClipPush();
+        
+        Rect previewClipRect;
+        previewClipRect.SetSize(PreviewController::Instance()->GetTransformData().screenSize);
+        RenderManager::Instance()->ClipRect(previewClipRect);
+    }
+
 	UIScreen::SystemDraw(geometricData);
-	
-	if (inputState == InputStateSelectorControl)
+
+    if (previewEnabled)
+    {
+        RenderManager::Instance()->ClipPop();
+    }
+    else if (inputState == InputStateSelectorControl)
+    {
 		selectorControl->SystemDraw(geometricData);
+    }
 }
 
 bool DefaultScreen::IsPointInside(const Vector2& /*point*/, bool /*expandWithFocus*/)
@@ -153,6 +170,12 @@ void DefaultScreen::SetPos(const Vector2& pos)
 
 void DefaultScreen::Input(DAVA::UIEvent* event)
 {
+    if (PreviewController::Instance()->IsPreviewEnabled())
+    {
+        UIScreen::Input(PreprocessEventForPreview(event));
+        return;
+    }
+
 	switch (event->phase)
 	{
 		case UIEvent::PHASE_BEGAN:
@@ -181,6 +204,11 @@ void DefaultScreen::Input(DAVA::UIEvent* event)
 
 bool DefaultScreen::SystemInput(UIEvent *currentInput)
 {
+    if (PreviewController::Instance()->IsPreviewEnabled())
+    {
+        return UIScreen::SystemInput(PreprocessEventForPreview(currentInput));
+    }
+
 	Input(currentInput);
 	return true;
 }
@@ -1323,4 +1351,26 @@ void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& 
 void DefaultScreen::SetScreenControl(ScreenControl* control)
 {
     screenControl = control;
+}
+
+UIEvent* DefaultScreen::PreprocessEventForPreview(UIEvent* event)
+{
+    switch (event->phase)
+    {
+        case UIEvent::PHASE_BEGAN:
+        case UIEvent::PHASE_DRAG:
+        case UIEvent::PHASE_MOVE:
+        case UIEvent::PHASE_ENDED:
+        {
+            event->point = LocalToInternal(event->point);
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    return event;
 }

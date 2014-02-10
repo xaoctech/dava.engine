@@ -97,6 +97,11 @@ public slots:
 	void ActionBakeTransform();
 	void ActionEditMaterial();
 
+	
+	void ConvertToShadow();
+	void DeleteRenderBatch();
+
+
 protected:
 	eViewMode viewMode;
 	bool favoritesEditMode;
@@ -118,7 +123,7 @@ protected:
 	void ResetProperties();
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
-	void ApplyCustomButtons(QtPropertyData *data);
+	void ApplyCustomExtensions(QtPropertyData *data);
 
 	void AddFavoriteChilds(QtPropertyData *parent);
 	void RemFavoriteChilds(QtPropertyData *parent);
@@ -132,6 +137,8 @@ protected:
 	void FindAndCheckFavorite(QtPropertyData *data);
 	bool IsParentFavorite(QtPropertyData *data) const;
 	PropEditorUserData* GetUserData(QtPropertyData *data) const;
+
+	QtPropertyToolButton * CreateButton(QtPropertyData *data, const QIcon & icon, const QString & tooltip);
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__

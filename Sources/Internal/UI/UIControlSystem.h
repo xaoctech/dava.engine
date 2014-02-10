@@ -60,6 +60,7 @@ class UIControlSystem : public Singleton<UIControlSystem>
 	
 	int frameSkip;
 	int transitionType;
+
 	
 	Vector<UIEvent> totalInputs;
 
@@ -72,6 +73,19 @@ protected:
 	UIControlSystem();
 			
 public:
+    /* 
+       Player + 6 ally bots. All visible on the screen
+    Old measures:
+    UIControlSystem::inputs: 309
+    UIControlSystem::updates: 310
+    UIControlSystem::draws: 310
+
+    New measures:
+    UIControlSystem::inputs: 42
+    */
+    int32 updateCounter;
+    int32 drawCounter;
+    int32 inputCounter;
 
 	/**
 	 \brief Sets the requested screen as current.

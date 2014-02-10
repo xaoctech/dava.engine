@@ -174,14 +174,19 @@ void UIScreenTransition::Update(float32 timeElapsed)
 
 void UIScreenTransition::Draw(const UIGeometricData &geometricData)
 {
-	renderTargetPrevScreen->SetScale(0.5f, 1.0f);
-	renderTargetPrevScreen->SetPosition(0, 0);
-	renderTargetPrevScreen->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+    
+	drawState.SetScale(0.5f, 1.0f);
+	drawState.SetPosition(0, 0);
+    
+	renderTargetPrevScreen->Draw(&drawState);
 
     
-	renderTargetNextScreen->SetScale(0.5f, 1.0f);
-	renderTargetNextScreen->SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
-	renderTargetNextScreen->Draw();
+	drawState.SetScale(0.5f, 1.0f);
+	drawState.SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
+    
+	renderTargetNextScreen->Draw(&drawState);
 }
 	
 void UIScreenTransition::SetDuration(float32 timeInSeconds)

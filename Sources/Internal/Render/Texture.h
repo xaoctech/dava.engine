@@ -38,6 +38,7 @@
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -228,7 +229,7 @@ public:
      */
     const FilePath & GetPathname() const;
     
-    Image * CreateImageFromMemory();
+    Image * CreateImageFromMemory(UniqueHandle renderState);
 
 	bool IsPinkPlaceholder();
     

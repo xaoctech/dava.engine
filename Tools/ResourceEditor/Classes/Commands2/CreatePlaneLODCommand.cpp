@@ -216,7 +216,7 @@ void CreatePlaneLODCommand::CreatePlaneImage()
     
     SafeRelease(camera);
 
-    planeImage = fboTexture->CreateImageFromMemory();
+    planeImage = fboTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
     SafeRelease(fboTexture);
 }
 

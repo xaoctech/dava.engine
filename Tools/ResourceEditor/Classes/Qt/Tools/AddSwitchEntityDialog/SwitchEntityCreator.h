@@ -28,68 +28,33 @@
 
 
 
-#include "ShadowRect.h"
-#include "Render/RenderDataObject.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Render/RenderManager.h"
-#include "Scene3D/Scene.h"
+#ifndef __SWITCH_ENTITY_CREATEOR_H__
+#define __SWITCH_ENTITY_CREATEOR_H__
 
-namespace DAVA
+#include "DAVAEngine.h"
+
+typedef std::pair<DAVA::Entity*, DAVA::RenderObject*> RENDER_PAIR;
+
+class SwitchEntityCreator
 {
+	static const DAVA::uint32 MAX_SWITCH_COUNT = 3;
 
-ShadowRect * ShadowRect::instance = 0;
+public:
 
+	DAVA::Entity * CreateSwitchEntity(const DAVA::Vector<DAVA::Entity *> & fromEntities);
 
-ShadowRect * ShadowRect::Create()
-{
-	if(instance)
-	{
-		instance->Retain();
-	}
-	else
-	{
-		instance = new ShadowRect();
-	}
+protected:
 
-	return instance;
-}
+	void CreateSingleObjectData(DAVA::Entity *switchEntity);
+	void CreateMultipleObjectsData();
 
-ShadowRect::ShadowRect()
-{
-	rdo = new RenderDataObject();
+	void FindRenderObjectsRecursive(DAVA::Entity * fromEntity, DAVA::Vector<RENDER_PAIR> & entityAndObjectPairs);
+	DAVA::uint32 CountSwitchComponentsRecursive(DAVA::Entity * fromEntity);
 
-	Vector3 vert3[4] = {Vector3(-100.f, 100.f, -50), Vector3(100.f, 100.f, -50), Vector3(-100.f, -100.f, -50), Vector3(100.f, -100.f, -50)};
+	DAVA::Vector<DAVA::Entity *> clonedEntities;
+	DAVA::Vector<DAVA::Entity *> realChildren;
 
-	for(int32 i = 0; i < 4; ++i)
-	{
-		vertices[i*3] = vert3[i].x;
-		vertices[i*3+1] = vert3[i].y;
-		vertices[i*3+2] = vert3[i].z;
-	}
-
-	rdo->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, vertices);
-
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
-	shader->Recompile();
-}
-
-ShadowRect::~ShadowRect()
-{
-	SafeRelease(shader);
-	SafeRelease(rdo);
-
-	instance = 0;
-}
-
-void ShadowRect::Draw()
-{
-	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->SetRenderData(rdo);
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
-	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-}
-
+	DAVA::Vector<RENDER_PAIR> renderPairs[MAX_SWITCH_COUNT];
 };
+
+#endif // __SWITCH_ENTITY_CREATEOR_H__

@@ -63,6 +63,7 @@ public:
 	bool GetMultilineBySymbol() const;
 
 	void SetFittingOption(int32 fittingType);//may be FITTING_DISABLED, FITTING_ENLARGE, FITTING_REDUCE, FITTING_ENLARGE | FITTING_REDUCE
+    int32 GetFittingOption() const;
 	
 	//for background sprite
 	virtual void SetAlign(int32 _align);
@@ -104,6 +105,8 @@ public:
 	// Animation methods for Text Color and Shadow Color.
 	virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
 	virtual Animation* ShadowColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 1);
+
+	const Vector<int32> & GetStringSizes() const;
 
 protected:
 	Color textColor;

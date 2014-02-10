@@ -26,42 +26,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "HeightMapValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-
-#ifndef __DAVAENGINE_SHADOW_RECT_H__
-#define __DAVAENGINE_SHADOW_RECT_H__
-
-#include "Base/StaticSingleton.h"
-#include "Render/Shader.h"
-
-namespace DAVA
+HeightMapValidator::HeightMapValidator(const QStringList& value):
+	PathValidator(value),
+    notifyMessage("")
 {
+}
 
-class RenderDataObject;
-class RenderDataStream;
-class Scene;
-class ShadowRect : public BaseObject
+void HeightMapValidator::ErrorNotifyInternal(const QVariant &v) const
 {
-public:
-	static ShadowRect * Create();
+    QMessageBox::warning(NULL, "Wrong file selected", notifyMessage.c_str(), QMessageBox::Ok);
+}
 
-	virtual ~ShadowRect();
-
-	void Draw();
-
-private:
-	ShadowRect();
-
-	RenderDataObject * rdo;
-	RenderDataStream * vertexStream;
-
-	Shader * shader;
-
-	float32 vertices[12];
-
-	static ShadowRect * instance;
-};
-
-};
-
-#endif //__DAVAENGINE_SHADOW_RECT_H__
+bool HeightMapValidator::ValidateInternal(QVariant &v)
+{
+    if(!PathValidator::ValidateInternal(v))
+    {
+        notifyMessage = PrepareErrorMessage(v);
+        return false;
+    }
+    
+    DAVA::FilePath path(v.toString().toStdString());
+    if(path.IsEmpty() || path.IsEqualToExtension(".heightmap"))
+    {
+        return true;
+    }
+    else if(path.IsEqualToExtension(".png"))
+    {
+        DAVA::Vector<DAVA::Image *> imageVector = DAVA::ImageLoader::CreateFromFileByExtension(path);
+        DVASSERT(imageVector.size());
+        
+        DAVA::PixelFormat format = imageVector[0]->GetPixelFormat();
+        
+        for_each(imageVector.begin(), imageVector.end(), DAVA::SafeRelease<DAVA::Image>);
+        if(format == DAVA::FORMAT_A8 ||format == DAVA::FORMAT_A16)
+        {
+            return true;
+        }
+        notifyMessage = DAVA::Format("\"%s\" is wrong: png file should be in format A8 or A16.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    else
+    {
+        notifyMessage = DAVA::Format("\"%s\" is wrong: should be *.png or *.heightmap.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+}

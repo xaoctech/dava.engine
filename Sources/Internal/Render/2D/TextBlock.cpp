@@ -896,5 +896,11 @@ const Vector2 & TextBlock::GetTextSize()
     
     return cacheFinalSize;
 }
-	
+
+const Vector<int32> & TextBlock::GetStringSizes() const
+{
+	return stringSizes;
+}
+
+
 };

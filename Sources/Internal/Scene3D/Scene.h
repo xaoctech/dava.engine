@@ -145,7 +145,7 @@ public:
     
     /**
         \brief Function to add root node.
-        \param[in] node node you want to add
+        \param[in] node node you want to addstop
         \param[in] rootNodePath path of this root node
      */
 
@@ -175,7 +175,7 @@ public:
     void ReleaseRootNode(Entity *nodeToRelease);
 
 	
-	virtual void StopAllAnimations(bool recursive = true);
+	//virtual void StopAllAnimations(bool recursive = true);
 	
 	virtual void	Update(float timeElapsed);
 	virtual void	Draw();
@@ -228,6 +228,10 @@ protected:
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
+    
+    NMaterial* sceneGlobalMaterial;
+    //TODO: think about data-driven intiialization. Need to set default properties from outside and save/load per scene
+    void InitGlobalMaterial();
     
 #if defined (USE_FILEPATH_IN_MAP)
     typedef Map<FilePath, ProxyNode*> ProxyNodeMap;

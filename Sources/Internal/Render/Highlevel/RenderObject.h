@@ -65,7 +65,6 @@ public:
 const static uint16 INVALID_STATIC_OCCLUSION_INDEX = (uint16)(-1);
 
 class RenderBatch;
-class ShadowVolume;
 class RenderObject : public AnimatedObject
 {
 public:
@@ -85,8 +84,6 @@ public:
 	{
 		VISIBLE = 1 << 0,
         VISIBLE_AFTER_CLIPPING_THIS_FRAME = 1 << 1,
-		VISIBLE_LOD = 1 << 2,
-		VISIBLE_SWITCH = 1 << 3,
 		ALWAYS_CLIPPING_VISIBLE = 1 << 4,
         VISIBLE_STATIC_OCCLUSION = 1 << 5,
 		TREE_NODE_NEED_UPDATE = 1 << 6,
@@ -98,8 +95,8 @@ public:
         TRANSFORM_UPDATED = 1 << 15,
 	};
 
-	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_LOD | VISIBLE_SWITCH | VISIBLE_STATIC_OCCLUSION;
-	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH | VISIBLE_STATIC_OCCLUSION;
+	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_AFTER_CLIPPING_THIS_FRAME | VISIBLE_STATIC_OCCLUSION;
+	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | VISIBLE_STATIC_OCCLUSION;
     static const uint32 SERIALIZATION_CRITERIA = VISIBLE;
 protected:
     virtual ~RenderObject();
@@ -156,7 +153,6 @@ public:
 	RenderSystem * GetRenderSystem();
 
 	virtual void BakeTransform(const Matrix4 & transform);
-	virtual ShadowVolume * CreateShadow() {return 0;}
 
 	virtual void RecalculateWorldBoundingBox();
     
@@ -290,6 +286,8 @@ inline uint32 RenderObject::GetRenderBatchCount()
 
 inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
 {
+	DVASSERT(batchIndex < renderBatchArray.size());
+
     return renderBatchArray[batchIndex].renderBatch;
 }
 
