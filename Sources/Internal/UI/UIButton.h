@@ -270,7 +270,7 @@ public:
 
 	virtual void Input(UIEvent *currentInput);
 
-	virtual void SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState);
+	virtual void SystemDraw(const UIGeometricData &geometricData);
 	
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);

@@ -456,13 +456,13 @@ void UIList::Update(float32 timeElapsed)
 	
 }
 
-void UIList::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIList::Draw(const UIGeometricData &geometricData)
 {
 	if(needRefresh)
 	{
 		FullRefresh();
 	}
-	UIControl::Draw(geometricData, renderState);
+	UIControl::Draw(geometricData);
 }
 
 void UIList::Input(UIEvent *currentInput)

@@ -93,25 +93,25 @@ void UIScreen::SetFillBorderOrder(UIScreen::eFillBorderOrder fillOrder)
 }
 
 	
-void UIScreen::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIScreen::SystemDraw(const UIGeometricData &geometricData)
 {
 	if (fillBorderOrder == FILL_BORDER_BEFORE_DRAW)
 	{
-		FillScreenBorders(geometricData, renderState);
-		UIControl::SystemDraw(geometricData, renderState);
+		FillScreenBorders(geometricData);
+		UIControl::SystemDraw(geometricData);
 	}
 	else if (fillBorderOrder == FILL_BORDER_AFTER_DRAW)
 	{
-		UIControl::SystemDraw(geometricData, renderState);
-		FillScreenBorders(geometricData, renderState);
+		UIControl::SystemDraw(geometricData);
+		FillScreenBorders(geometricData);
 	}
 	else 
 	{
-		UIControl::SystemDraw(geometricData, renderState);
+		UIControl::SystemDraw(geometricData);
 	}
 }
 
-void UIScreen::FillScreenBorders(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIScreen::FillScreenBorders(const UIGeometricData &geometricData)
 {
 	RenderManager::Instance()->SetColor(0, 0, 0, 1.0f);
 	UIGeometricData drawData;
@@ -130,13 +130,13 @@ void UIScreen::FillScreenBorders(const UIGeometricData &geometricData, UniqueHan
 												 ,	0
 												 ,	-Core::Instance()->GetVirtualScreenXMin()
 												 ,	Core::Instance()->GetVirtualScreenHeight())
-                                                 ,  renderState);
+                                                 ,  RenderState::RENDERSTATE_2D_BLEND);
 		RenderHelper::Instance()->FillRect(Rect(
 												 Core::Instance()->GetVirtualScreenWidth()
 												 ,	0
 												 ,	Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenWidth()
 												 ,	Core::Instance()->GetVirtualScreenHeight())
-                                                 ,  renderState);
+                                                 ,  RenderState::RENDERSTATE_2D_BLEND);
 	}
 	else 
 	{
@@ -145,13 +145,13 @@ void UIScreen::FillScreenBorders(const UIGeometricData &geometricData, UniqueHan
 												 ,	Core::Instance()->GetVirtualScreenYMin()
 												 ,	Core::Instance()->GetVirtualScreenWidth()+1
 												 ,	-Core::Instance()->GetVirtualScreenYMin())
-                                                 ,  renderState);
+                                                 ,  RenderState::RENDERSTATE_2D_BLEND);
 		RenderHelper::Instance()->FillRect(Rect(
 												 0
 												 ,	Core::Instance()->GetVirtualScreenHeight()
 												 ,	Core::Instance()->GetVirtualScreenWidth()+1
 												 ,	Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenHeight())
-                                                 ,  renderState);
+                                                 ,  RenderState::RENDERSTATE_2D_BLEND);
 	}
 
 	RenderManager::Instance()->ResetColor();
