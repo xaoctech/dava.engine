@@ -305,3 +305,7 @@ uint32 BaseMetadata::GetStatesCount() const
 	return uiControlStates.size();
 }
 
+void BaseMetadata::ApplyRename(const QString& /*originalName*/, const QString& newName)
+{
+	SetName(newName);
+}
