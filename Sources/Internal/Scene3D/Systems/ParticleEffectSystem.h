@@ -44,7 +44,7 @@ class ParticleEffectSystem : public SceneSystem
 	friend class ParticleEffectComponent;
     friend class UIParticles;    
 public:
-	ParticleEffectSystem(Scene * scene);
+	ParticleEffectSystem(Scene * scene, bool forceDisableDepthTest = false);
 
 	~ParticleEffectSystem();
 	virtual void Process(float32 timeElapsed);		
@@ -81,6 +81,7 @@ private: //materials stuff
 	NMaterial *particleRegularMaterial, *particleFrameBlendMaterial;
 	Map<uint32, NMaterial *> materialMap;
 	NMaterial *GetMaterial(Texture *texture, bool enableFog, bool enableFrameBlend, eBlendMode srcFactor, eBlendMode dstFactor);
+    bool forceDisableDepthTest;
 };
 
 }
