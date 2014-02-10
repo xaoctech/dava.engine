@@ -33,67 +33,67 @@
 
 namespace DAVA
 {
-	const NMaterialTemplate* NMaterialTemplateCache::Get(const FastName& templateName)
+const NMaterialTemplate* NMaterialTemplateCache::Get(const FastName& templateName)
+{
+	NMaterialTemplate* matTemplate = templateCache.at(templateName);
+	if(NULL == matTemplate)
 	{
-		NMaterialTemplate* matTemplate = templateCache.at(templateName);
+		FilePath path = templateName.c_str();
+		matTemplate = Load(path);
+		
+		//VI: automatically create template with default quality level
 		if(NULL == matTemplate)
 		{
-			FilePath path = templateName.c_str();
-			matTemplate = Load(path);
-			
-			//VI: automatically create template with default quality level
-			if(NULL == matTemplate)
-			{
-				matTemplate = new NMaterialTemplate();
-				matTemplate->techniqueStateMap.insert(NMaterial::DEFAULT_QUALITY_NAME,
-													  templateName);
-			}
-			
-			matTemplate->name = templateName;
-			templateCache.insert(templateName, matTemplate);
+			matTemplate = new NMaterialTemplate();
+			matTemplate->techniqueStateMap.insert(NMaterial::DEFAULT_QUALITY_NAME,
+												  templateName);
 		}
 		
-		DVASSERT(matTemplate);
-		return matTemplate;
+		matTemplate->name = templateName;
+		templateCache.insert(templateName, matTemplate);
 	}
-		
-	NMaterialTemplate* NMaterialTemplateCache::Load(const FilePath& loadPath)
+	
+	DVASSERT(matTemplate);
+	return matTemplate;
+}
+	
+NMaterialTemplate* NMaterialTemplateCache::Load(const FilePath& loadPath)
+{
+	NMaterialTemplate* result = NULL;
+	
+	YamlParser * parser = YamlParser::Create(loadPath);
+	if (!parser)
 	{
-		NMaterialTemplate* result = NULL;
-		
-		YamlParser * parser = YamlParser::Create(loadPath);
-		if (!parser)
-		{
-			Logger::Error("Can't load requested material template: %s", loadPath.GetAbsolutePathname().c_str());
-			return result;
-		}
-		
-		YamlNode * rootNode = parser->GetRootNode();
-		
-		if (!rootNode)
-		{
-			SafeRelease(parser);
-			return result;
-		}
-		
-		const YamlNode * materialTemplateNode = rootNode->Get("MaterialTemplate");
-		
-		//VI: if "MaterialTemplate" is NULL then it's probably a technique itsef.
-		//VI: Fallback to default behavior.
-		if(NULL != materialTemplateNode)
-		{
-			result = new NMaterialTemplate();
-			
-			for(int32 i = 0; i < materialTemplateNode->GetCount(); ++i)
-			{
-				const YamlNode* techniqueNode = materialTemplateNode->Get(i);
-				
-				result->techniqueStateMap.insert(FastName(materialTemplateNode->GetItemKeyName(i)),
-												 FastName(techniqueNode->AsString()));
-			}
-		}
-		
+		Logger::Error("Can't load requested material template: %s", loadPath.GetAbsolutePathname().c_str());
+		return result;
+	}
+	
+	YamlNode * rootNode = parser->GetRootNode();
+	
+	if (!rootNode)
+	{
 		SafeRelease(parser);
 		return result;
 	}
+	
+	const YamlNode * materialTemplateNode = rootNode->Get("MaterialTemplate");
+	
+	//VI: if "MaterialTemplate" is NULL then it's probably a technique itsef.
+	//VI: Fallback to default behavior.
+	if(NULL != materialTemplateNode)
+	{
+		result = new NMaterialTemplate();
+		
+		for(int32 i = 0; i < materialTemplateNode->GetCount(); ++i)
+		{
+			const YamlNode* techniqueNode = materialTemplateNode->Get(i);
+			
+			result->techniqueStateMap.insert(FastName(materialTemplateNode->GetItemKeyName(i)),
+											 FastName(techniqueNode->AsString()));
+		}
+	}
+	
+	SafeRelease(parser);
+	return result;
+}
 };

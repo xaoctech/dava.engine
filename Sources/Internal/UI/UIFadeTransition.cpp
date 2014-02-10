@@ -56,7 +56,7 @@ void UIFadeTransition::Update(float32 timeElapsed)
 	UIScreenTransition::Update(timeElapsed);
 }
 
-void UIFadeTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIFadeTransition::Draw(const UIGeometricData &geometricData)
 {
 	/*
 	 renderTargetPrevScreen->SetScale(0.5f, 1.0f);
@@ -68,7 +68,7 @@ void UIFadeTransition::Draw(const UIGeometricData &geometricData, UniqueHandle r
 	 renderTargetNextScreen->Draw(); 
 	 */
     Sprite::DrawState drawState;
-    drawState.SetRenderState(renderState);
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 	if (type == FADE_MIX)
 	{
 		renderTargetPrevScreen->Reset();

@@ -194,13 +194,13 @@ const Vector2 &UIStaticText::GetShadowOffset() const
 	return shadowOffset;
 }
 
-void UIStaticText::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
     textBlock->SetRectSize(size);
 	PrepareSprite();
 	textBlock->PreDraw();
 
-	UIControl::Draw(geometricData, renderState);
+	UIControl::Draw(geometricData);
 
 	if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
 	{
@@ -212,12 +212,12 @@ void UIStaticText::Draw(const UIGeometricData &geometricData, UniqueHandle rende
 		shadowBg->SetAlign(textBg->GetAlign());
         shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
 		shadowBg->SetDrawColor(shadowColor);
-		shadowBg->Draw(shadowGeomData, renderState);
+		shadowBg->Draw(shadowGeomData);
 	}
 
 	textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
 	textBg->SetDrawColor(textColor);
-	textBg->Draw(geometricData, renderState);
+	textBg->Draw(geometricData);
 }
 
     
