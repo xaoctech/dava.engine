@@ -176,6 +176,11 @@ void PolygonGroupWithMaterial::Draw()
     
 }
 
+ShadowVolume * PolygonGroupWithMaterial::CreateShadow()
+{
+	return NULL;
+}
+
 
 
 MeshInstanceNode::MeshInstanceNode()
