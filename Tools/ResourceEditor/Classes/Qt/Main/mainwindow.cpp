@@ -1770,7 +1770,7 @@ void QtMainWindow::OnSaveTiledTexture()
 			pathToSave.ReplaceExtension(".thumbnail.png");
 		}
 
-		Image *image = landscapeTexture->CreateImageFromMemory();
+		Image *image = landscapeTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
 		if(image)
 		{
 			ImageLoader::Save(image, pathToSave);

@@ -98,13 +98,9 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 					// If this is clip camera - show it as red camera
 					if (entityCamera == entity->GetScene()->GetClipCamera()) camColor = Color(1.0f, 0.0f, 0.0f, 1.0f);
 
-					//RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
-					RenderManager::Instance()->SetRenderState(depthWriteState);
 
-					RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 					RenderManager::Instance()->SetColor(camColor);
-
-					RenderHelper::Instance()->DrawBox(camBox, 2.5f);
+					RenderHelper::Instance()->DrawBox(camBox, 2.5f, depthWriteState);
 
 					//RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 					RenderManager::Instance()->ResetColor();
@@ -128,20 +124,16 @@ void DebugRenderSystem::Process(float32 timeElapsed)
                 RenderManager::SetDynamicParam(PARAM_WORLD, &transformComponent->GetWorldTransform(), UPDATE_SEMANTIC_ALWAYS);
                 RenderManager::SetDynamicParam(PARAM_VIEW, &camera->GetMatrix(), UPDATE_SEMANTIC_ALWAYS);
 
-				
-				RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-				//RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST);
-				RenderManager::Instance()->SetRenderState(depthTestState);
-				
+								
 				RenderManager::Instance()->SetColor(1.f, 1.f, 0, 1.0f);
-				RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(1.f, 0, 0));
+				RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(1.f, 0, 0), 1.0f, depthTestState);
 				RenderManager::Instance()->SetColor(1.f, 0, 1.f, 1.0f);
-				RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(0, 1.f, 0));
+				RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(0, 1.f, 0), 1.0f, depthTestState);
 				RenderManager::Instance()->SetColor(0, 1.f, 1.f, 1.0f);
-				RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(0, 0, 1.f));
+				RenderHelper::Instance()->DrawLine(Vector3(0, 0, 0), Vector3(0, 0, 1.f), 1.0f, depthTestState);
 
 				RenderManager::Instance()->SetColor(dcColor);
-				RenderHelper::Instance()->DrawBox(dcBox);
+				RenderHelper::Instance()->DrawBox(dcBox, 1.0f, depthTestState);
 
 				//RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
 				RenderManager::Instance()->ResetColor();
@@ -164,9 +156,6 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 				{
 					Vector3 lPosition = light->GetPosition();
 
-					RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-					//RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
-					RenderManager::Instance()->SetRenderState(depthWriteState);
 					RenderManager::Instance()->SetColor(1.0f, 1.0f, 0.0f, 1.0f);
 
 					switch (light->GetType())
@@ -176,8 +165,8 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 							Vector3 lDirection = light->GetDirection();
 
 							lDirection.Normalize();
-							RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10, 2.5f);
-							RenderHelper::Instance()->DrawBox(AABBox3(lPosition, 0.5f), 1.5f);
+							RenderHelper::Instance()->DrawArrow(lPosition, lPosition + lDirection * 10, 2.5f, 1.0f, depthWriteState);
+							RenderHelper::Instance()->DrawBox(AABBox3(lPosition, 0.5f), 1.5f, depthWriteState);
 
 							debugBoundigBox = AABBox3(lPosition, 2.5f);
 						}
@@ -185,7 +174,7 @@ void DebugRenderSystem::Process(float32 timeElapsed)
 					default:
 						{
 							AABBox3 lightBox(lPosition, 2.5f);
-							RenderHelper::Instance()->DrawBox(lightBox, 2.5f);
+							RenderHelper::Instance()->DrawBox(lightBox, 2.5f, depthWriteState);
 
 							debugBoundigBox = lightBox;
 						}
@@ -200,26 +189,14 @@ void DebugRenderSystem::Process(float32 timeElapsed)
         
         if ((debugFlags & DebugRenderComponent::DEBUG_DRAW_AABOX_CORNERS))
         {
-            RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-            //RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE | RenderState::STATE_DEPTH_TEST);
-			RenderManager::Instance()->SetRenderState(depthTestState);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderHelper::Instance()->DrawCornerBox(debugBoundigBox);
-            //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
-            //RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
-            //		RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+            RenderHelper::Instance()->DrawCornerBox(debugBoundigBox, 1.0f, depthTestState);
         }
         
         if (debugFlags & DebugRenderComponent::DEBUG_DRAW_RED_AABBOX)
         {
-			RenderManager::Instance()->SetRenderState(depthWriteState);
-
-            RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
-            //RenderManager::Instance()->SetState(RenderState::STATE_COLORMASK_ALL | RenderState::STATE_DEPTH_WRITE);
-			RenderManager::Instance()->SetRenderState(depthWriteState);
             RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);
-            RenderHelper::Instance()->DrawBox(debugBoundigBox);
-            //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
+            RenderHelper::Instance()->DrawBox(debugBoundigBox, 1.0f, depthWriteState);
             RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
         
