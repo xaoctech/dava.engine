@@ -37,6 +37,7 @@
 #include "Qt/Main/QtUtils.h"
 #include "Commands2/EntityRemoveCommand.h"
 #include "SwitchEntityCreator.h"
+#include "Project/ProjectManager.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -45,7 +46,7 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 {
 	setAcceptDrops(true);
 	setAttribute( Qt::WA_DeleteOnClose, true );
-	FilePath defaultPath(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname() + "/DataSource/3d");
+	FilePath defaultPath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString());
 	
 	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
 	if(scene)

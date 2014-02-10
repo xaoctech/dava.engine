@@ -52,12 +52,13 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
 	SettingRow("CameraSpeedValue_2", DAVA::VariantType(250.0f)),
 	SettingRow("CameraSpeedValue_3", DAVA::VariantType(400.0f)),
 	SettingRow("DefaultCameraFOV", DAVA::VariantType(70.0f)),
+    SettingRow("DefaultLandscapeSize", DAVA::VariantType(600.0f)),
+    SettingRow("DefaultLandscapeHeight", DAVA::VariantType(50.0f)),
 };
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 {
-	SettingRow("3dDataSourcePath", DAVA::VariantType(DAVA::String("/"))),
-	SettingRow("ProjectPath", DAVA::VariantType(DAVA::String(""))),
+	SettingRow("LastProjectPath", DAVA::VariantType(DAVA::String(""))),
 	SettingRow("TextureViewGPU", DAVA::VariantType(GPU_UNKNOWN)),
 	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
 	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::String(""))),
