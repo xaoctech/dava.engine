@@ -36,7 +36,8 @@
 #include "Classes/Commands2/EntityAddCommand.h"
 #include "Qt/Main/QtUtils.h"
 #include "Commands2/EntityRemoveCommand.h"
-#include "Commands2/EntityCreateSwitchCommand.h"
+#include "SwitchEntityCreator.h"
+#include "Project/ProjectManager.h"
 
 #include "ui_BaseAddEntityDialog.h"
 
@@ -45,7 +46,7 @@ AddSwitchEntityDialog::AddSwitchEntityDialog( QWidget* parent)
 {
 	setAcceptDrops(true);
 	setAttribute( Qt::WA_DeleteOnClose, true );
-	FilePath defaultPath(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname() + "/DataSource/3d");
+	FilePath defaultPath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString());
 	
 	SceneEditor2 *scene = QtMainWindow::Instance()->GetCurrentScene();
 	if(scene)
@@ -132,25 +133,18 @@ void AddSwitchEntityDialog::accept()
 		scene->Exec(new EntityRemoveCommand(vector[i]));
 	}
 
+	SwitchEntityCreator creator;
+	Entity* switchEntity = creator.CreateSwitchEntity(vector);
 
-	Entity* switchEntity = new Entity();
-	switchEntity->SetName(ResourceEditor::SWITCH_NODE_NAME);
-	KeyedArchive *customProperties = switchEntity->GetCustomProperties();
-	customProperties->SetBool(Entity::SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
-
-	scene->Exec(new EntityCreateSwitchCommand(switchEntity, vector));
+	scene->Exec(new EntityAddCommand(switchEntity, scene));
 
 	for(DAVA::uint32 i = 0; i < switchCount; ++i)
 	{
 		vector[i]->Release();
 	}
 
-	scene->Exec(new EntityAddCommand(switchEntity, scene));
 	scene->selectionSystem->SetSelection(switchEntity);
 
-// 	// this will case switch component to send event about it state
-// 	swComponent->SetSwitchIndex(swComponent->GetSwitchIndex());
-		
 	scene->EndBatch();
 
 	scene->selectionSystem->SetSelection(switchEntity);
@@ -164,3 +158,4 @@ void AddSwitchEntityDialog::reject()
 	CleanupPathWidgets();
 	BaseAddEntityDialog::reject();
 }
+

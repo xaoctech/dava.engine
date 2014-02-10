@@ -225,6 +225,7 @@
      <addaction name="actionImportSpeedTreeXML"/>
     </widget>
     <addaction name="actionOpenProject"/>
+    <addaction name="actionCloseProject"/>
     <addaction name="separator"/>
     <addaction name="actionNewScene"/>
     <addaction name="actionOpenScene"/>
@@ -251,6 +252,8 @@
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
+     <addaction name="actionAddLandscape"/>
+     <addaction name="actionAddSkybox"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
@@ -292,9 +295,9 @@
       <string>Toolbars</string>
      </property>
     </widget>
-    <widget class="QMenu" name="menuTextures">
+    <widget class="QMenu" name="menuLightView">
      <property name="title">
-      <string>Textures</string>
+      <string>Light</string>
      </property>
      <addaction name="actionAlbedo"/>
      <addaction name="actionAmbient"/>
@@ -302,8 +305,7 @@
      <addaction name="actionSpecular"/>
     </widget>
     <addaction name="menuTexturesForGPU"/>
-    <addaction name="menuTextures"/>
-    <addaction name="actionQuality"/>
+    <addaction name="menuLightView"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -326,7 +328,6 @@
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
-    <addaction name="actionConvertToShadow"/>
    </widget>
    <widget class="QMenu" name="menuComponent">
     <property name="title">
@@ -386,7 +387,6 @@
     <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
-    <addaction name="actionLandscape"/>
     <addaction name="actionHeightMapEditor"/>
     <addaction name="actionTileMapEditor"/>
     <addaction name="actionShowNotPassableLandscape"/>
@@ -395,7 +395,6 @@
     <addaction name="actionVisibilityCheckTool"/>
     <addaction name="menuLandscape_2"/>
     <addaction name="separator"/>
-    <addaction name="actionSkyboxEditor"/>
     <addaction name="separator"/>
     <addaction name="actionBuildStaticOcclusion"/>
     <addaction name="actionBeastAndSave"/>
@@ -673,8 +672,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionSkyboxEditor"/>
-   <addaction name="actionLandscape"/>
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
@@ -792,15 +789,6 @@
   <action name="actionExportTegra">
    <property name="text">
     <string>Tegra</string>
-   </property>
-  </action>
-  <action name="actionLandscape">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>Landscape...</string>
    </property>
   </action>
   <action name="actionLight">
@@ -1372,15 +1360,6 @@
     <string>Setup Skybox</string>
    </property>
   </action>
-  <action name="actionSkyboxEditor">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
-   </property>
-   <property name="text">
-    <string>Skybox...</string>
-   </property>
-  </action>
   <action name="actionSetShadowColor">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1720,11 +1699,6 @@
     <string>Specular</string>
    </property>
   </action>
-  <action name="actionQuality">
-   <property name="text">
-    <string>Quality...</string>
-   </property>
-  </action>
   <action name="actionEditor_Sprite">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1743,12 +1717,56 @@
     <string>Editor 2D Camera</string>
    </property>
   </action>
+  <action name="actionAddLandscape">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/land_settings.png</normaloff>:/QtIcons/land_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Landscape</string>
+   </property>
+   <property name="toolTip">
+    <string>Add landscape</string>
+   </property>
+  </action>
+  <action name="actionAddSkybox">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
+   </property>
+   <property name="text">
+    <string>Skybox</string>
+   </property>
+   <property name="toolTip">
+    <string>Add skybox</string>
+   </property>
+  </action>
   <action name="actionCustomQuality">
    <property name="text">
     <string>Custom...</string>
    </property>
    <property name="toolTip">
     <string>Custom Quality Settings</string>
+   </property>
+  </action>
+  <action name="actionSetLightViewMode">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/light_settings.png</normaloff>:/QtIcons/light_settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>setLightViewMode</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Materials LightViewMode</string>
+   </property>
+  </action>
+  <action name="actionCloseProject">
+   <property name="text">
+    <string>Close Project</string>
+   </property>
+   <property name="toolTip">
+    <string>Close Project</string>
    </property>
   </action>
  </widget>

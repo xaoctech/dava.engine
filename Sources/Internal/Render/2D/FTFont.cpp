@@ -75,11 +75,11 @@ public:
 
 	bool IsCharAvaliable(char16 ch) const;
 
-	void SetFTCharSize(float32 size) const;
-
 	virtual int32 Release();
 
 private:
+	void SetFTCharSize(float32 size) const;
+
 	static Mutex drawStringMutex;
 
 	struct Glyph
@@ -297,6 +297,8 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 {
 	drawStringMutex.Lock();
 
+    SetFTCharSize(size);
+    
 	FT_Error error;
 
 	float32 virtualToPhysicalFactor = Core::GetVirtualToPhysicalFactor();
@@ -323,7 +325,6 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 		offsetX = (int32)(virtualToPhysicalFactor * offsetX);
 	}
 
-	SetFTCharSize(size);
 
 	FT_Vector pen;
 	pen.x = offsetX<<6;

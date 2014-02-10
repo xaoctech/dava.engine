@@ -56,10 +56,6 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 	SwitchComponent * sw = GetSwitchComponent(entity);
 	if(sw)
 	{
-        if(entity->GetName() == "MetallBarrels_SN.sc2")
-        {
-            int ii = 0;
-        }
 		RenderComponent * rc = GetRenderComponent(entity);
 		RenderObject * ro = 0;
 		if(!rc)
@@ -150,8 +146,6 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
                 entitiesToRemove.push_back(sourceEntity);
             }
 		}
-
-		ro->RecalcBoundingBox();
 	}
 
 	uint32 entitiesToRemoveCount = entitiesToRemove.size();

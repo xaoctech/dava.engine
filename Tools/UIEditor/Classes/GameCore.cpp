@@ -35,6 +35,7 @@
 #include "CommandsController.h"
 #include "CopyPasteController.h"
 #include "UndoRedoController.h"
+#include "PreviewController.h"
 
 #include "Grid/GridController.h"
 #include "Grid/GridVisualizer.h"
@@ -63,6 +64,7 @@ GameCore::GameCore()
     new PropertiesGridController();
     new CommandsController();
 	new CopyPasteController();
+    new PreviewController();
 
 	// All the controllers are created - initialize them where needed.
 	HierarchyTreeController::Instance()->ConnectToSignals();
@@ -98,6 +100,7 @@ GameCore::~GameCore()
     ScreenWrapper::Instance()->Release();
 
     CopyPasteController::Instance()->Release();
+    PreviewController::Instance()->Release();
     CommandsController::Instance()->Release();
     PropertiesGridController::Instance()->Release();
     

@@ -271,11 +271,14 @@ void TilemaskEditorPanel::SplitImageToChannels(Image* image, Image*& r, Image*& 
 
 		Sprite* sprite = Sprite::CreateAsRenderTarget(width, height, FORMAT_RGBA8888);
 		RenderManager::Instance()->SetRenderTarget(sprite);
-		s->SetPosition(0.f, 0.f);
-		s->Draw();
+        
+        Sprite::DrawState drawState;
+		drawState.SetPosition(0.f, 0.f);
+        drawState.SetRenderState(noBlendDrawState);
+		s->Draw(&drawState);
 		RenderManager::Instance()->RestoreRenderTarget();
 
-		image = sprite->GetTexture()->CreateImageFromMemory();
+		image = sprite->GetTexture()->CreateImageFromMemory(noBlendDrawState);
 		image->ResizeCanvas(width, height);
 
 		SafeRelease(sprite);
@@ -345,14 +348,7 @@ void TilemaskEditorPanel::UpdateTileTextures()
 	int32 count = (int32)sceneEditor->tilemaskEditorSystem->GetTileTextureCount();
 	Image** images = new Image*[count];
 
-	//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-
-	RenderManager::Instance()->SetRenderState(noBlendDrawState);
-	RenderManager::Instance()->FlushState();
-	
-    Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory();
+    Image* image = sceneEditor->tilemaskEditorSystem->GetTileTexture(0)->CreateImageFromMemory(noBlendDrawState);
     
     image->ResizeCanvas(iconSize.width(), iconSize.height());
     

@@ -38,16 +38,16 @@ class EditorMaterialSystem : public DAVA::SceneSystem
 	friend class SceneEditor2;
 
 public:
-    enum MaterialViewMode
+    enum MaterialLightViewMode
     {
-        MVM_NOTHING     = 0x0,
+        LIGHTVIEW_NOTHING     = 0x0,
 
-        MVM_ALBEDO      = 0x1,
-        MVM_AMBIENT     = 0x2,
-        MVM_DIFFUSE     = 0x4,
-        MVM_SPECULAR    = 0x8,
+        LIGHTVIEW_ALBEDO      = 0x1,
+        LIGHTVIEW_AMBIENT     = 0x2,
+        LIGHTVIEW_DIFFUSE     = 0x4,
+        LIGHTVIEW_SPECULAR    = 0x8,
 
-        MVM_ALL         = (MVM_ALBEDO | MVM_AMBIENT | MVM_DIFFUSE | MVM_SPECULAR)
+        LIGHTVIEW_ALL         = (LIGHTVIEW_ALBEDO | LIGHTVIEW_AMBIENT | LIGHTVIEW_DIFFUSE | LIGHTVIEW_SPECULAR)
     };
 
 	EditorMaterialSystem(DAVA::Scene * scene);
@@ -59,15 +59,11 @@ public:
 	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
 	const DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
 
-    void SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set);
-    bool GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const;
+    void SetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode, bool set);
+    bool GetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode) const;
 
-    void SetViewMode(int fullViewMode);
-    int GetViewMode();
-
-    INTROSPECTION(EditorMaterialSystem,
-        PROPERTY("texturesViewMode", "Textures View Mode", GetViewMode, SetViewMode, DAVA::I_VIEW | DAVA::I_EDIT)
-        )
+    void SetLightViewMode(int fullViewMode);
+    int GetLightViewMode();
 
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);

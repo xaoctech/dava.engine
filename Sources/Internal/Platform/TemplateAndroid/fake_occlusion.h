@@ -28,40 +28,44 @@
 
 
 
-#ifndef __DAVAENGINE_SHADOW_RECT_H__
-#define __DAVAENGINE_SHADOW_RECT_H__
+#ifndef __DAVAENGINE_FAKE_OCCLUSION_H__
+#define __DAVAENGINE_FAKE_OCCLUSION_H__
 
-#include "Base/StaticSingleton.h"
-#include "Render/Shader.h"
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-namespace DAVA
-{
+#include <android/api-level.h>
 
-class RenderDataObject;
-class RenderDataStream;
-class Scene;
-class ShadowRect : public BaseObject
-{
-public:
-	static ShadowRect * Create();
+#if (__ANDROID_API__ < 18)
+#include "Render/RenderBase.h"
 
-	virtual ~ShadowRect();
 
-	void Draw();
+typedef void (*GL_GEN_QUERIES) (GLsizei n, GLuint* ids);
+typedef void (*GL_DELETE_QUERIES) (GLsizei n, const GLuint* ids);
+typedef void (*GL_BEGIN_QUERY) (GLenum target, GLuint id);
+typedef void (*GL_END_QUERY) (GLenum target);
+typedef void (*GL_GET_QUERY_OBJECTUIV) (GLuint id, GLenum pname, GLuint* params);
 
-private:
-	ShadowRect();
+static GL_GEN_QUERIES glGenQueries;
+static GL_DELETE_QUERIES glDeleteQueries;
+static GL_BEGIN_QUERY glBeginQuery;
+static GL_END_QUERY glEndQuery;
+static GL_GET_QUERY_OBJECTUIV glGetQueryObjectuiv;
 
-	RenderDataObject * rdo;
-	RenderDataStream * vertexStream;
+#define GL_ANY_SAMPLES_PASSED                            0x8C2F
+#define GL_QUERY_RESULT                                  0x8866
+#define GL_QUERY_RESULT_AVAILABLE                        0x8867
 
-	Shader * shader;
+extern void glGenQueries_Fake(GLsizei n, GLuint* ids);
+extern void glDeleteQueries_Fake(GLsizei n, const GLuint* ids);
+extern void glBeginQuery_Fake(GLenum target, GLuint id);
+extern void glEndQuery_Fake(GLenum target);
+extern void glGetQueryObjectuiv_Fake(GLuint id, GLenum pname, GLuint* params);
 
-	float32 vertices[12];
+extern void InitFakeOcclusion();
 
-	static ShadowRect * instance;
-};
+#endif //#if __ANDROID_API__ < 18
 
-};
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
-#endif //__DAVAENGINE_SHADOW_RECT_H__
+#endif /* defined(__DAVAENGINE_FAKE_OCCLUSION_H__) */

@@ -27,15 +27,14 @@
 =====================================================================================*/
 
 #include "Main/mainwindow.h"
-#include "Main/Request.h"
 #include "Scene/SceneTabWidget.h"
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtLabelWithActions/QtLabelWithActions.h"
 #include "Tools/MimeData/MimeDataHelper2.h"
-
 #include "Deprecated/ScenePreviewDialog.h"
-
 #include "MaterialEditor/MaterialAssignSystem.h"
+
+#include "Platform/SystemTimer.h"
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
@@ -171,6 +170,8 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
 	HideScenePreview();
 
+    DAVA::int64 openStartTime = DAVA::SystemTimer::Instance()->AbsoluteMS();
+
 	int tabIndex = FindTab(scenePapth);
 	if(tabIndex != -1)
 	{
@@ -193,17 +194,19 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
         SafeRelease(scene);
 	}
 
+    DAVA::Logger::Instance()->Info("SceneEditor tab opened in %llu\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - openStartTime);
+
 	return tabIndex;
 }
 
-void SceneTabWidget::CloseTab(int index)
+bool SceneTabWidget::CloseTab(int index)
 {
     Request request;
     
     emit CloseTabRequest(index, &request);
     
     if(!request.IsAccepted())
-        return;
+        return false;
     
     
 	SceneEditor2 *scene = GetTabScene(index);
@@ -216,6 +219,7 @@ void SceneTabWidget::CloseTab(int index)
     
     tabBar->removeTab(index);
     SafeRelease(scene);
+    return true;
 }
 
 int SceneTabWidget::GetCurrentTab() const
@@ -572,6 +576,20 @@ int SceneTabWidget::FindTab( const DAVA::FilePath & scenePath )
 	}
 
 	return -1;
+}
+
+bool SceneTabWidget::CloseAllTabs()
+{
+    uint32 count = GetTabCount();
+    while(count)
+    {
+        if(!CloseTab(GetCurrentTab()))
+        {
+            return false;
+        }
+        count--;
+    }
+    return true;
 }
 
 

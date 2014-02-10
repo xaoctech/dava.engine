@@ -42,13 +42,10 @@ protected:
     QualitySwitcher(QWidget *parent = NULL);
     ~QualitySwitcher();
 
-    QPushButton *defBtn;
-    
-    bool applyTx;
-    bool applyMa;
+    void ApplyTx();
+    void ApplyMa();
 
 protected slots:
-    void OnOk();
     void OnTxQualitySelect(int index);
     void OnMaQualitySelect(int index);
 };

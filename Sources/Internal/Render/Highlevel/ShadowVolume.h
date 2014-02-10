@@ -66,6 +66,9 @@ public:
 
 	virtual void UpdateAABBoxFromSource();
 
+	virtual ShadowVolume * CreateShadow();
+
+
 private:
 	struct EdgeMapping
 	{

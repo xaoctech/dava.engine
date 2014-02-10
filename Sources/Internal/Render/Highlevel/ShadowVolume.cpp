@@ -72,7 +72,7 @@ ShadowVolume::~ShadowVolume()
 //	scene->AddDrawTimeShadowVolume(this);
 //}
 
-static const uint32 SHADOW_VOLUME_VISIBILITY_CRITERIA = RenderObject::VISIBLE | RenderObject::VISIBLE_LOD | RenderObject::VISIBLE_SWITCH;
+static const uint32 SHADOW_VOLUME_VISIBILITY_CRITERIA = RenderObject::VISIBLE;
     
 void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
@@ -561,6 +561,11 @@ void ShadowVolume::UpdateAABBoxFromSource()
 			aabbox.min.y != AABBOX_INFINITY &&
 			aabbox.min.z != AABBOX_INFINITY);
 	}
+}
+
+ShadowVolume * ShadowVolume::CreateShadow()
+{
+	return NULL;
 }
 
 

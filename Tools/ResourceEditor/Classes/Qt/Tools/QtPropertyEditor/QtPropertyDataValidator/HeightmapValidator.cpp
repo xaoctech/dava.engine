@@ -26,70 +26,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "HeightMapValidator.h"
+#include "Utils/StringFormat.h"
+#include <QMessageBox>
 
-
-#include "ShadowRect.h"
-#include "Render/RenderDataObject.h"
-#include "Base/BaseMath.h"
-#include "Render/RenderBase.h"
-#include "Render/RenderManager.h"
-#include "Scene3D/Scene.h"
-
-namespace DAVA
+HeightMapValidator::HeightMapValidator(const QStringList& value):
+	PathValidator(value),
+    notifyMessage("")
 {
-
-ShadowRect * ShadowRect::instance = 0;
-
-
-ShadowRect * ShadowRect::Create()
-{
-	if(instance)
-	{
-		instance->Retain();
-	}
-	else
-	{
-		instance = new ShadowRect();
-	}
-
-	return instance;
 }
 
-ShadowRect::ShadowRect()
+void HeightMapValidator::ErrorNotifyInternal(const QVariant &v) const
 {
-	rdo = new RenderDataObject();
-
-	Vector3 vert3[4] = {Vector3(-100.f, 100.f, -50), Vector3(100.f, 100.f, -50), Vector3(-100.f, -100.f, -50), Vector3(100.f, -100.f, -50)};
-
-	for(int32 i = 0; i < 4; ++i)
-	{
-		vertices[i*3] = vert3[i].x;
-		vertices[i*3+1] = vert3[i].y;
-		vertices[i*3+2] = vert3[i].z;
-	}
-
-	rdo->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, vertices);
-
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
-	shader->Recompile();
+    QMessageBox::warning(NULL, "Wrong file selected", notifyMessage.c_str(), QMessageBox::Ok);
 }
 
-ShadowRect::~ShadowRect()
+bool HeightMapValidator::ValidateInternal(QVariant &v)
 {
-	SafeRelease(shader);
-	SafeRelease(rdo);
-
-	instance = 0;
+    if(!PathValidator::ValidateInternal(v))
+    {
+        notifyMessage = PrepareErrorMessage(v);
+        return false;
+    }
+    
+    DAVA::FilePath path(v.toString().toStdString());
+    if(path.IsEmpty() || path.IsEqualToExtension(".heightmap"))
+    {
+        return true;
+    }
+    else if(path.IsEqualToExtension(".png"))
+    {
+        DAVA::Vector<DAVA::Image *> imageVector = DAVA::ImageLoader::CreateFromFileByExtension(path);
+        DVASSERT(imageVector.size());
+        
+        DAVA::PixelFormat format = imageVector[0]->GetPixelFormat();
+        
+        for_each(imageVector.begin(), imageVector.end(), DAVA::SafeRelease<DAVA::Image>);
+        if(format == DAVA::FORMAT_A8 ||format == DAVA::FORMAT_A16)
+        {
+            return true;
+        }
+        notifyMessage = DAVA::Format("\"%s\" is wrong: png file should be in format A8 or A16.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    else
+    {
+        notifyMessage = DAVA::Format("\"%s\" is wrong: should be *.png or *.heightmap.",
+                                     path.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
 }
-
-void ShadowRect::Draw()
-{
-	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->SetRenderData(rdo);
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
-	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-}
-
-};
