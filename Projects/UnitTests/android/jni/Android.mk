@@ -31,6 +31,9 @@ LOCAL_LDLIBS := -lz -lOpenSLES -landroid
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libInternal
 
+LOCAL_ARM_NEON := true
+LOCAL_NEON_CFLAGS := -mfloat-abi=softfp -mfpu=neon -march=armv7
+
 # build shared library
 include $(BUILD_SHARED_LIBRARY)
 
