@@ -82,7 +82,7 @@ namespace ResourceEditor
 	
 	//settings properties names
 	static const char* SETTINGS_3D_DATA_SOURCEPATH	=	"3dDataSourcePath";
-	static const char* SETTINGS_PROJECT_PATH =			"ProjectPath";
+	static const char* SETTINGS_PROJECT_PATH =			"LastProjectPath";
 	static const char* SETTINGS_CAMERA_SPEED_INDEX =	"CameraSpeedIndex";
 	static const char* SETTINGS_CAMERA_SPEED_VALUE =	"CameraSpeedValue";
 	static const char* SETTINGS_SCREEN_WIDTH =			"ScreenWidth";
