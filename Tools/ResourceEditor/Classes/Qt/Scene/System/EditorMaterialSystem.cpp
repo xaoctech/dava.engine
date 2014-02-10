@@ -34,6 +34,7 @@
 #include "Commands2/Command2.h"
 #include "Commands2/CommandBatch.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
+#include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteLODCommand.h"
 #include "Commands2/CreatePlaneLODCommand.h"
 
@@ -251,6 +252,31 @@ void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
         {
             RemoveMaterial(batch->GetMaterial());
         }
+    }
+    else if(commandID == CMDID_DELETE_RENDER_BATCH)
+    {
+        DeleteRenderBatchCommand *rbCommand = (DeleteRenderBatchCommand *) command;
+        if(redo)
+        {
+            RemoveMaterial(rbCommand->GetRenderBatch()->GetMaterial());
+        }
+        else
+        {
+            AddMaterial(rbCommand->GetRenderBatch()->GetMaterial(), rbCommand->GetEntity(), rbCommand->GetRenderBatch());
+        }
+    }
+    else if(commandID == CMDID_CONVERT_TO_SHADOW)
+    {
+        ConvertToShadowCommand *swCommand = (ConvertToShadowCommand *) command;
+        if(redo)
+        {
+            RemoveMaterial(swCommand->oldBatch->GetMaterial());
+        }
+        else
+        {
+            AddMaterial(swCommand->oldBatch->GetMaterial(), swCommand->GetEntity(), swCommand->oldBatch);
+        }
+
     }
 }
 
