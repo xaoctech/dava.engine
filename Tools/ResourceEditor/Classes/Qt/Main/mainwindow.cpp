@@ -888,7 +888,7 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 void QtMainWindow::OnProjectOpen()
 {
     QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-    if(!newPath.isEmpty() && CloseProject())
+    if(!newPath.isEmpty() && ui->sceneTabWidget->CloseAllTabs())
     {
         ProjectManager::Instance()->ProjectOpen(newPath);
     }
@@ -896,7 +896,10 @@ void QtMainWindow::OnProjectOpen()
 
 void QtMainWindow::OnProjectClose()
 {
-    CloseProject();
+    if(ui->sceneTabWidget->CloseAllTabs())
+    {
+        ProjectManager::Instance()->ProjectClose();
+    }
 }
 
 void QtMainWindow::OnSceneNew()
@@ -2641,12 +2644,3 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	return true;
 }
 
-bool QtMainWindow::CloseProject()
-{
-    if(ui->sceneTabWidget->CloseAllTabs())
-    {
-        ProjectManager::Instance()->ProjectClose();
-        return true;
-    }
-    return false;
-}
