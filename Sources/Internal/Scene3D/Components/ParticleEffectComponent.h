@@ -51,8 +51,8 @@ class ParticleEffectComponent : public Component
 {
 	friend class ParticleEffectSystem;
     friend class UIParticles;
-protected:
-    ~ParticleEffectComponent();
+
+    
 public:
 	IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
 
@@ -65,7 +65,7 @@ public:
 	};
 
 	ParticleEffectComponent();
-
+    ~ParticleEffectComponent();
 
 	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *sceneFile);
