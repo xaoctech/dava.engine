@@ -32,6 +32,7 @@
 #include "Tools/MimeDataHelper/MimeDataHelper.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Project/ProjectManager.h"
 
 #include <QFileInfo>
 #include <QKeyEvent>
@@ -131,7 +132,7 @@ void SelectPathWidgetBase::OpenClicked()
         return;
     }
     
-    DAVA::String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+    DAVA::String projectPath = ProjectManager::Instance()->CurProjectPath().toStdString();
 
     if(checkForProjectPath && DAVA::String::npos == retString.find(projectPath))
     {

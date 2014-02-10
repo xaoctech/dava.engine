@@ -41,6 +41,7 @@
 #include "Scene/SceneSignals.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
+#include "Project/ProjectManager.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -499,7 +500,7 @@ String CustomColorsSystem::GetRelativePathToProjectPath(const FilePath& absolute
 	if(absolutePath.IsEmpty())
 		return String();
 
-	return absolutePath.GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()));
+	return absolutePath.GetRelativePathname(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()));
 }
 
 FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relativePath)
@@ -507,7 +508,7 @@ FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relati
 	if(relativePath.empty())
 		return FilePath();
 	
-	return (FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()) + relativePath);
+	return (FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()) + relativePath);
 }
 
 int32 CustomColorsSystem::GetBrushSize()
