@@ -461,13 +461,6 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 				particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Restart", this, SLOT(RestartEffect()));
 			}
 
-			if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
-			{
-				contextMenu.addSeparator();
-				contextMenu.addAction(QtMainWindow::Instance()->GetUI()->actionConvertToShadow);
-			}
-
-
 			//      Disabled for 0.5.5 version
 			//		SceneEditor2* sceneEditor = treeModel->GetScene();
 			//		if(NULL != sceneEditor)
