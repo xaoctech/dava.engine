@@ -72,6 +72,7 @@ public:
     
     virtual void SetParameterValue(const FastName & paramName, float32 value) = 0;
     virtual float32 GetParameterValue(const FastName & paramName) = 0;
+    virtual bool IsParameterExists(const FastName & paramName) = 0;
 };
 
 };

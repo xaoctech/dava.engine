@@ -226,7 +226,24 @@ float32 FMODSoundEvent::GetParameterValue(const FastName & paramName)
 {
     return paramsValues[paramName];
 }
-    
+
+bool FMODSoundEvent::IsParameterExists(const FastName & paramName)
+{
+    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
+    FMOD::EventSystem * fmodEventSystem = fmodSoundSystem->fmodEventSystem;
+
+    FMOD::Event * fmodEventInfo = 0;
+    FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
+    if(fmodEventInfo)
+    {
+        FMOD::EventParameter * param = 0;
+        fmodEventInfo->getParameter(paramName.c_str(), &param);
+        return param != NULL;
+    }
+
+    return false;
+}
+
 void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
 {
     FastNameMap<float32>::iterator it = paramsValues.begin();

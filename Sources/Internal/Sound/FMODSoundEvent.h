@@ -75,6 +75,7 @@ public:
     
     virtual void SetParameterValue(const FastName & paramName, float32 value);
     virtual float32 GetParameterValue(const FastName & paramName);
+    virtual bool IsParameterExists(const FastName & paramName);
     
     //FMOD only
     void PerformCallback(FMOD::Event  * event, SoundEventCallback callbackType);
