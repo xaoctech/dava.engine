@@ -194,14 +194,7 @@ QIcon SceneTreeItemEntity::ItemIcon() const
 		}
 		else if(NULL != DAVA::GetRenderObject(entity))
 		{
-			if(ConvertToShadowCommand::IsEntityWithShadowVolume(entity))
-			{
-				ret = shadowIcon;
-			}
-			else
-			{
-				ret = renderobjIcon;
-			}
+			ret = renderobjIcon;
 		}
 		else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
 		{
@@ -245,7 +238,7 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 		// remember all particle emitters
 		if(NULL != effect)
 		{			
-			for(size_t i = 0; i < effect->GetEmittersCount(); ++i)
+			for(DAVA::int32 i = 0; i < effect->GetEmittersCount(); ++i)
 			{
 				emitterSet.insert(effect->GetEmitter(i));
 			}
@@ -367,7 +360,7 @@ void SceneTreeItemEntity::DoSync(QStandardItem *rootItem, DAVA::Entity *entity)
 		
 		if(effect)
 		{
-			for(size_t i = 0; i < effect->GetEmittersCount(); ++i)
+			for(DAVA::int32 i = 0; i < effect->GetEmittersCount(); ++i)
 			{
 				bool repeatStep;
 				DAVA::ParticleEmitter* emitter = effect->GetEmitter(i);
@@ -494,7 +487,7 @@ void SceneTreeItemParticleEmitter::DoSync(QStandardItem *rootItem, DAVA::Particl
 			DVASSERT(((SceneTreeItem*)rootItem->child(i))->ItemType() == SceneTreeItem::EIT_Layer);			
 			rootItem->removeRow(i);						
 		}
-		for (int i=0; i<emitter->layers.size(); ++i)
+		for (DAVA::uint32 i=0; i<(DAVA::uint32)emitter->layers.size(); ++i)
 		{
 			rootItem->appendRow(new SceneTreeItemParticleLayer(rootEmitterItem->effect, emitter, emitter->layers[i]));
 		}					

@@ -1546,26 +1546,6 @@ void Landscape::CursorDisable()
 {
 	SafeDelete(cursor);
 }
-
-void Landscape::SetCursorTexture(UniqueHandle texture)
-{
-	cursor->SetCursorTexture(texture);
-}
-
-void Landscape::SetCursorPosition(const Vector2 & position)
-{
-	cursor->SetPosition(position);
-}
-
-void Landscape::SetCursorScale(float32 scale)
-{
-	cursor->SetScale(scale);
-}
-
-void Landscape::SetBigTextureSize(float32 bigSize)
-{
-	cursor->SetBigTextureSize(bigSize);
-}
     
 Heightmap * Landscape::GetHeightmap()
 {

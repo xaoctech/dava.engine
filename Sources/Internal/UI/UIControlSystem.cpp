@@ -274,11 +274,11 @@ void UIControlSystem::Draw()
 //	if(currentScreen && (!currentPopup || currentPopup->isTransparent))
 	if (currentScreen)
 	{
-		currentScreen->SystemDraw(baseGeometricData, RenderState::RENDERSTATE_2D_BLEND);
+		currentScreen->SystemDraw(baseGeometricData);
 //		currentScreen->SystemDraw(Rect(0, 0, RenderManager::Instance()->GetScreenWidth(), RenderManager::Instance()->GetScreenHeight()));
 	}
 
-	popupContainer->SystemDraw(baseGeometricData, RenderState::RENDERSTATE_2D_BLEND);
+	popupContainer->SystemDraw(baseGeometricData);
 	
 	if(frameSkip > 0)
 	{
