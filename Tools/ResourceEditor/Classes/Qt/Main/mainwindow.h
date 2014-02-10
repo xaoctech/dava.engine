@@ -158,8 +158,6 @@ public slots:
     
     void OnBuildStaticOcclusion();
 
-	void OnConvertToShadow();
-
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
 	void OnCameraSpeed2();

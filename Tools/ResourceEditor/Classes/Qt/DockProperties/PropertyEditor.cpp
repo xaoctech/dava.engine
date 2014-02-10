@@ -46,11 +46,13 @@
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
-#include "Commands2/MetaObjModifyCommand.h"
-#include "Commands2/InspMemberModifyCommand.h"
-#include "Qt/Settings/SettingsManager.h"
 #include "Tools/QtPropertyEditor/QtPropertyDataValidator/HeightmapValidator.h"
 #include "Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
+#include "Commands2/MetaObjModifyCommand.h"
+#include "Commands2/InspMemberModifyCommand.h"
+#include "Commands2/ConvertToShadowCommand.h"
+#include "Commands2/DeleteRenderBatchCommand.h"
+#include "Qt/Settings/SettingsManager.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -297,32 +299,43 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 			if(DAVA::MetaInfo::Instance<DAVA::ActionComponent>() == meta)
 			{
 				// Add optional button to edit action component
-				QtPropertyToolButton *editActions = data->AddButton();
-				editActions->setIcon(QIcon(":/QtIcons/settings.png"));
-				editActions->setAutoRaise(true);
-
+				QtPropertyToolButton * editActions = CreateButton(data, QIcon(":/QtIcons/settings.png"), "");
 				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
 			}
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
 				// Add optional button to bake transform render object
-				QtPropertyToolButton *bakeButton = data->AddButton();
-				bakeButton->setToolTip("Bake Transform");
-				bakeButton->setIcon(QIcon(":/QtIcons/transform_bake.png"));
-				bakeButton->setIconSize(QSize(12, 12));
-				bakeButton->setAutoRaise(true);
-
+				QtPropertyToolButton * bakeButton = CreateButton(data, QIcon(":/QtIcons/transform_bake.png"), "Bake Transform");
 				QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(ActionBakeTransform()));
+			}
+			else if(DAVA::MetaInfo::Instance<DAVA::RenderBatch>() == meta)
+			{
+				// Add optional button to bake transform render object
+				QtPropertyToolButton * deleteButton = CreateButton(data, QIcon(":/QtIcons/remove.png"), "Delete RenderBatch");
+				QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(DeleteRenderBatch()));
+
+				QtPropertyDataIntrospection *introData = dynamic_cast<QtPropertyDataIntrospection *>(data);
+				if(NULL != introData)
+				{
+					DAVA::RenderBatch *batch = (DAVA::RenderBatch *) introData->object;
+					DAVA::RenderObject *ro = batch->GetRenderObject();
+					if(ConvertToShadowCommand::CanConvertBatchToShadow(batch) && (ro->GetType() == RenderObject::TYPE_MESH))
+					{
+						QtPropertyToolButton * convertButton = CreateButton(data, QIcon(":/QtIcons/shadow.png"), "Convert To ShadowVolume");
+						QObject::connect(convertButton, SIGNAL(pressed()), this, SLOT(ConvertToShadow()));
+					}
+				}
+			}
+			else if(DAVA::MetaInfo::Instance<DAVA::ShadowVolume>() == meta)
+			{
+				// Add optional button to bake transform render object
+				QtPropertyToolButton * deleteButton = CreateButton(data, QIcon(":/QtIcons/remove.png"), "Delete RenderBatch");
+				QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(DeleteRenderBatch()));
 			}
 			else if(DAVA::MetaInfo::Instance<DAVA::NMaterial>() == meta)
 			{
 				// Add optional button to bake transform render object
-				QtPropertyToolButton *goToMaterialButton = data->AddButton();
-				goToMaterialButton->setToolTip("Edit material");
-				goToMaterialButton->setIcon(QIcon(":/QtIcons/3d.png"));
-				goToMaterialButton->setIconSize(QSize(12, 12));
-				goToMaterialButton->setAutoRaise(true);
-
+				QtPropertyToolButton * goToMaterialButton = CreateButton(data, QIcon(":/QtIcons/3d.png"), "Edit material");
 				QObject::connect(goToMaterialButton, SIGNAL(pressed()), this, SLOT(ActionEditMaterial()));
 			}
             else if(DAVA::MetaInfo::Instance<DAVA::FilePath>() == meta)
@@ -564,7 +577,8 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	case CMDID_COMPONENT_REMOVE:
 	case CMDID_CONVERT_TO_SHADOW:
 	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
-		if(command->GetEntity() == curNode)
+	case CMDID_DELETE_RENDER_BATCH:
+		if((command->GetEntity() == curNode) || (command->GetEntity() == NULL))
 		{
 			ResetProperties();
 		}
@@ -678,6 +692,57 @@ void PropertyEditor::ActionBakeTransform()
 		}
 	}
 }
+
+void PropertyEditor::ConvertToShadow()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+			if(curScene)
+			{
+				DAVA::RenderBatch *batch = (DAVA::RenderBatch *)data->object;
+				curScene->Exec(new ConvertToShadowCommand(batch));
+			}
+		}
+	}
+}
+
+void PropertyEditor::DeleteRenderBatch()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			DAVA::RenderBatch *batch = (DAVA::RenderBatch *)data->object;
+
+			SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+			if(curScene)
+			{
+				DAVA::RenderObject *ro = batch->GetRenderObject();
+				DVASSERT(ro);
+
+				DAVA::uint32 count = ro->GetRenderBatchCount();
+				for(DAVA::uint32 i = 0; i < count; ++i)
+				{
+					DAVA::RenderBatch *b = ro->GetRenderBatch(i);
+					if(b == batch)
+					{
+						curScene->Exec(new DeleteRenderBatchCommand(curNode, batch->GetRenderObject(), i));
+					}
+				}
+			}
+		}
+	}
+}
+
 
 void PropertyEditor::ActionEditMaterial()
 {
@@ -939,4 +1004,17 @@ bool PropertyEditor::ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspM
 	}
 
 	return exclude;
+}
+
+QtPropertyToolButton * PropertyEditor::CreateButton( QtPropertyData *data, const QIcon & icon, const QString & tooltip )
+{
+	DVASSERT(data);
+
+	QtPropertyToolButton *button = data->AddButton();
+	button->setIcon(icon);
+	button->setToolTip(tooltip);
+	button->setIconSize(QSize(12, 12));
+	button->setAutoRaise(true);
+
+	return button;
 }

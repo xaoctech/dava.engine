@@ -71,7 +71,6 @@
 
 #include "Classes/CommandLine/SceneSaver/SceneSaver.h"
 #include "Classes/Qt/Main/Request.h"
-#include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
 
 #include "Classes/Commands2/CustomColorsCommands2.h"
@@ -549,9 +548,6 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 
-	//edit
-	QObject::connect(ui->actionConvertToShadow, SIGNAL(triggered()), this, SLOT(OnConvertToShadow()));
-    
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
     ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
@@ -1848,57 +1844,6 @@ void QtMainWindow::EnableGlobalTimeout(bool enable)
 void QtMainWindow::StartGlobalInvalidateTimer()
 {
     QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
-}
-
-void QtMainWindow::OnConvertToShadow()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-    
-	SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        bool isRenderBatchFound = false;
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
-            {
-                isRenderBatchFound = true;
-                break;
-            }
-        }
-        
-        if(!isRenderBatchFound)
-        {
-            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch (Material)");
-            return;
-        }
-        
-        
-        bool errorHappend = false;
-        scene->BeginBatch("Convert To Shadow");
-        
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            Entity *entity = ss->GetSelectionEntity(i);
-            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
-            {
-                scene->Exec(new ConvertToShadowCommand(entity));
-            }
-            else
-            {
-                errorHappend = true;
-                Logger::Error("Cannot convert %s to shadow", entity->GetName().c_str());
-            }
-        }
-        
-        scene->EndBatch();
-        
-        if(errorHappend)
-        {
-            ShowErrorDialog("Not all entities were converted. See details at console output");
-        }
-    }
 }
 
 void QtMainWindow::EditorLightEnabled( bool enabled )
