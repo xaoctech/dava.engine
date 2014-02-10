@@ -291,9 +291,15 @@ void MaterialTree::GetDropParams(const QPoint &pos, QModelIndex &index, int &row
 
 void MaterialTree::OnCommandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
 {
-	if(QtMainWindow::Instance()->GetCurrentScene() == scene && command->GetId() == CMDID_MATERIAL_SWITCH_PARENT)
+	if(QtMainWindow::Instance()->GetCurrentScene() == scene)
 	{
-		treeModel->Sync();
+		int commandID = command->GetId();
+		if(		(commandID == CMDID_DELETE_RENDER_BATCH) 
+			||	(commandID == CMDID_CONVERT_TO_SHADOW) 
+			||	(commandID == CMDID_MATERIAL_SWITCH_PARENT))
+		{
+			Update();
+		}
 	}
 }
 
