@@ -368,13 +368,13 @@ void UIHierarchy::Update(float32 timeElapsed)
     }
 }
 
-void UIHierarchy::Draw(const UIGeometricData &geometricData)
+void UIHierarchy::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
     if(needRedraw)
     {
         FullRedraw();
     }
-    UIControl::Draw(geometricData);
+    UIControl::Draw(geometricData, renderState);
 }
 
 UIHierarchyCell * UIHierarchy::FindVisibleCellForPoint(Vector2 &point)

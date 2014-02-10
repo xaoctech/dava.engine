@@ -185,23 +185,8 @@ void SceneSelectionSystem::Draw()
 
 	if(curSelections.Size() > 0)
 	{
-		//int oldState = DAVA::RenderManager::Instance()->GetState();
-		//DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
-		//DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
-
-		//int newState = DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL;
-
-		//if(!(drawMode & ST_SELDRAW_NO_DEEP_TEST))
-		//{
-		//	newState |= DAVA::RenderState::STATE_DEPTH_TEST;
-		//}
-
-		//DAVA::RenderManager::Instance()->SetState(newState);
-		//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
-		
         DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
-		DAVA::RenderManager::Instance()->SetRenderState((!(drawMode & ST_SELDRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState);
-		DAVA::RenderManager::Instance()->FlushState();
+        UniqueHandle renderState = (!(drawMode & ST_SELDRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState;
 
 		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
@@ -211,25 +196,22 @@ void SceneSelectionSystem::Draw()
 			if(drawMode & ST_SELDRAW_DRAW_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
-				DAVA::RenderHelper::Instance()->DrawBox(selectionBox);
+				DAVA::RenderHelper::Instance()->DrawBox(selectionBox, 1.0f, renderState);
 			}
 			// draw selection share
 			else if(drawMode & ST_SELDRAW_DRAW_CORNERS)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
-				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox);
+				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox, 1.0f, renderState);
 			}
 
 			// fill selection shape
 			if(drawMode & ST_SELDRAW_FILL_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
-				DAVA::RenderHelper::Instance()->FillBox(selectionBox);
+				DAVA::RenderHelper::Instance()->FillBox(selectionBox, renderState);
 			}
 		}
-
-		//DAVA::RenderManager::Instance()->SetBlendMode(oldBlendSrc, oldBlendDst);
-		//DAVA::RenderManager::Instance()->SetState(oldState);
 	}
 }
 

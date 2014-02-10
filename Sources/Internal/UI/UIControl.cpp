@@ -1557,7 +1557,7 @@ namespace DAVA
 		}
 	}
 
-	void UIControl::SystemDraw(const UIGeometricData &geometricData)
+	void UIControl::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 	{
         UIControlSystem::Instance()->drawCounter++;
 		UIGeometricData drawData;
@@ -1587,27 +1587,27 @@ namespace DAVA
 
 		if(visible && visibleForUIEditor)
 		{
-			Draw(drawData);
+			Draw(drawData, renderState);
 		}
 	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
-			DrawDebugRect(drawData);
+			DrawDebugRect(drawData, false, renderState);
 		}
-		DrawPivotPoint(unrotatedRect);
+		DrawPivotPoint(unrotatedRect, renderState);
 		
 		isIteratorCorrupted = false;
 		List<UIControl*>::iterator it = childs.begin();
         List<UIControl*>::iterator itEnd = childs.end();
 		for(; it != itEnd; ++it)
 		{
-			(*it)->SystemDraw(drawData);
+			(*it)->SystemDraw(drawData, renderState);
 			DVASSERT(!isIteratorCorrupted);
 		}
 		
 		if(visible && visibleForUIEditor)
 		{
-			DrawAfterChilds(drawData);
+			DrawAfterChilds(drawData, renderState);
 		}
 		if(clipContents)
 		{
@@ -1615,24 +1615,23 @@ namespace DAVA
 			
 			if(debugDrawEnabled)
 			{ //TODO: Add debug draw for rotated controls
-				DrawDebugRect(drawData);
+				DrawDebugRect(drawData, false, renderState);
 			}
 		}
 		
-		DrawPivotPoint(unrotatedRect);
+		DrawPivotPoint(unrotatedRect, renderState);
 
 		if(debugDrawEnabled && NULL != parent && parent->GetClipContents())
 		{	
 			RenderManager::Instance()->ClipPush();
 			RenderManager::Instance()->ClipRect(Rect(0, 0, -1, -1));
-			DrawDebugRect(drawData, true);
+			DrawDebugRect(drawData, true, renderState);
 			RenderManager::Instance()->ClipPop();
 		}
 	}
 	
-	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)
+	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha, UniqueHandle renderState)
 	{
-        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 
@@ -1652,18 +1651,18 @@ namespace DAVA
 			Polygon2 poly;
 			gd.GetPolygon( poly );
 
-			RenderHelper::Instance()->DrawPolygon( poly, true );
+			RenderHelper::Instance()->DrawPolygon( poly, true, renderState );
 		}
 		else
 		{
-			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect() );
+			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect(), renderState );
 		}
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
 	}
 
-	void UIControl::DrawPivotPoint(const Rect &drawRect)
+	void UIControl::DrawPivotPoint(const Rect &drawRect, UniqueHandle renderState)
 	{
 		if (drawPivotPointMode == DRAW_NEVER)
 		{
@@ -1678,26 +1677,25 @@ namespace DAVA
 		static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
 		static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
-        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
 
 		Vector2 pivotPointCenter = drawRect.GetPosition() + pivotPoint;
-		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS);
+		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS, renderState);
 
 		// Draw the cross mark.
 		Vector2 lineStartPoint = pivotPointCenter;
 		Vector2 lineEndPoint = pivotPointCenter;
 		lineStartPoint.y -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
 		lineEndPoint.y += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
-		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint, renderState);
 		
 		lineStartPoint = pivotPointCenter;
 		lineEndPoint = pivotPointCenter;
 		lineStartPoint.x -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
 		lineEndPoint.x += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
-		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint, renderState);
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
@@ -2061,11 +2059,11 @@ namespace DAVA
 	{
 		
 	}
-	void UIControl::Draw(const UIGeometricData &geometricData)
+	void UIControl::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 	{
-		background->Draw(geometricData);
+		background->Draw(geometricData, renderState);
 	}
-	void UIControl::DrawAfterChilds(const UIGeometricData &geometricData)
+	void UIControl::DrawAfterChilds(const UIGeometricData &geometricData, UniqueHandle renderState)
 	{
 		
 	}

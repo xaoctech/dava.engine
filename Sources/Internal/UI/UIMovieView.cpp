@@ -106,21 +106,21 @@ bool UIMovieView::IsPlaying()
 	return movieViewControl->IsPlaying();
 }
 
-void UIMovieView::SystemDraw(const UIGeometricData &geometricData)
+void UIMovieView::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
-	UIControl::SystemDraw(geometricData);
+	UIControl::SystemDraw(geometricData, renderState);
 
 #ifdef DRAW_PLACEHOLDER_FOR_STUB_UIMOVIEVIEW
 	Color curDebugDrawColor = GetDebugDrawColor();
 	RenderManager::Instance()->ClipPush();
 
 	RenderManager::Instance()->SetColor(Color(1.0f, 0.4f, 0.8f, 1.0f));
-	RenderHelper::Instance()->DrawRect(GetRect());
+	RenderHelper::Instance()->DrawRect(GetRect(), renderState);
 
 	float32 minRadius = Min(GetSize().x, GetSize().y);
-	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 2);
-	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 3);
-	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 4);
+	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 2, renderState);
+	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 3, renderState);
+	RenderHelper::Instance()->DrawCircle(GetRect().GetCenter(), minRadius / 4, renderState);
 
 	RenderManager::Instance()->ClipPop();
 	SetDebugDrawColor(curDebugDrawColor);

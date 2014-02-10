@@ -592,9 +592,6 @@ void QuadTree::DebugDraw(const Matrix4& cameraMatrix)
 	}
     
 	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
-	RenderManager::Instance()->SetRenderState(debugDrawStateHandle);
-	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);	
-	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->SetColor(0.2f, 1.0f, 0.2f, 1.0f);
 	DebugDrawNode(0);
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -605,10 +602,10 @@ void QuadTree::DebugDrawNode(uint16 nodeId)
 	RenderManager::Instance()->SetColor(0.2f, 0.2f, 1.0f, 1.0f);	
 	for (int32 i = 0, size = nodes[nodeId].objects.size(); i<size; ++i)
 	{
-		RenderHelper::Instance()->DrawBox(nodes[nodeId].objects[i]->GetWorldBoundingBox());
+		RenderHelper::Instance()->DrawBox(nodes[nodeId].objects[i]->GetWorldBoundingBox(), 1.0f, debugDrawStateHandle);
 	}
 	RenderManager::Instance()->SetColor(0.2f, 1.0f, 0.2f, 1.0f);
-	RenderHelper::Instance()->DrawBox(nodes[nodeId].bbox);	
+	RenderHelper::Instance()->DrawBox(nodes[nodeId].bbox, 1.0f, debugDrawStateHandle);
 	for (int32 i=0; i<QuadTreeNode::NODE_NONE; ++i)
 	{
 		if (nodes[nodeId].children[i]!=INVALID_TREE_NODE_INDEX)

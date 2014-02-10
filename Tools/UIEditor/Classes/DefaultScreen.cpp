@@ -63,10 +63,9 @@ public:
 		RenderManager::Instance()->SetColor(1.0f, 0.0f, 0.0f, 1.0f);		
 	}
 	
-	void SystemDraw(const UIGeometricData &/*geometricData*/)
+	void SystemDraw(const UIGeometricData &/*geometricData*/, UniqueHandle renderState)
 	{
-        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-		RenderHelper::Instance()->DrawRect(GetRect());
+		RenderHelper::Instance()->DrawRect(GetRect(), RenderState::RENDERSTATE_2D_BLEND);
 	}
 };
 
@@ -99,22 +98,21 @@ void DefaultScreen::Update(float32 /*timeElapsed*/)
 	RenderManager::Instance()->SetDrawTranslate(pos);
 }
 
-void DefaultScreen::Draw(const UIGeometricData &geometricData)
+void DefaultScreen::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
-	UIScreen::Draw(geometricData);
+	UIScreen::Draw(geometricData, renderState);
 }
 
-void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
+void DefaultScreen::SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
     bool previewEnabled = PreviewController::Instance()->IsPreviewEnabled();
     Color oldColor = RenderManager::Instance()->GetColor();
 
-    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
-    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
+    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect(), RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetColor(oldColor);
 
-    // For Preview mode display only what is inside the preview rectangle.
+   // For Preview mode display only what is inside the preview rectangle.
     if (previewEnabled)
     {
         RenderManager::Instance()->ClipPush();
@@ -124,7 +122,7 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
         RenderManager::Instance()->ClipRect(previewClipRect);
     }
 
-	UIScreen::SystemDraw(geometricData);
+	UIScreen::SystemDraw(geometricData, renderState);
 
     if (previewEnabled)
     {
@@ -132,7 +130,7 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
     }
     else if (inputState == InputStateSelectorControl)
     {
-		selectorControl->SystemDraw(geometricData);
+		selectorControl->SystemDraw(geometricData, renderState);
     }
 }
 

@@ -1043,7 +1043,7 @@ public:
 		Can be overriden to adjust draw hierarchy.
 	 \param[in] geometricData Parent geometric data.
 	 */
-	virtual void SystemDraw(const UIGeometricData &geometricData);// Internal method used by ControlSystem
+	virtual void SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState);// Internal method used by ControlSystem
 	/**
 	 \brief Calls on every input event. Calls SystemInput() for all control children.
 		If no one of the children is processed input. Calls ProcessInput() for the current control.
@@ -1117,14 +1117,14 @@ public:
 		Default realization is drawing UIControlBackground with requested parameters.
 	 \param[in] geometricData Control geometric data.
 	 */
-	virtual void Draw(const UIGeometricData &geometricData);
+	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 	/**
 	 \brief Calls on every frame with UIGeometricData after all children is drawed. 
 		Can be overriden to implement after children drawing.
 		Default realization is empty.
 	 \param[in] geometricData Control geometric data.
 	 */
-	virtual void DrawAfterChilds(const UIGeometricData &geometricData);
+	virtual void DrawAfterChilds(const UIGeometricData &geometricData, UniqueHandle renderState);
 	
 		//TODO: Борода напиши дескрипшн.
 	virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
@@ -1281,9 +1281,8 @@ protected:
     void UnregisterInputProcessor();
     void UnregisterInputProcessors(int32 processorsCount);
 
-
-    void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
-	void DrawPivotPoint(const Rect &drawRect);
+    void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha /*= false*/, UniqueHandle renderState);
+	void DrawPivotPoint(const Rect &drawRect, UniqueHandle renderState);
 
 private:
 	String	name;

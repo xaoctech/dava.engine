@@ -58,7 +58,7 @@ void UIMoveInTransition::Update(float32 timeElapsed)
 	UIScreenTransition::Update(timeElapsed);
 }
 
-void UIMoveInTransition::Draw(const UIGeometricData &geometricData)
+void UIMoveInTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
 	/*
 	 renderTargetPrevScreen->SetScale(0.5f, 1.0f);
@@ -75,6 +75,9 @@ void UIMoveInTransition::Draw(const UIGeometricData &geometricData)
 	 FROM_BOTTOM,
 	 */
 	
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(renderState);
+    
 	if(type <= FROM_BOTTOM)
 	{
 		float32 endXPos[4] = {(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), -(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()), 0.0f, 0.0f};
@@ -86,19 +89,18 @@ void UIMoveInTransition::Draw(const UIGeometricData &geometricData)
 		
 		if(!isOver)
 		{
-			renderTargetPrevScreen->SetPosition(xPrevPosition, yPrevPosition);
+            drawState.SetPosition(xPrevPosition, yPrevPosition);
 		}
 		else 
 		{
-			renderTargetPrevScreen->SetPosition(0, 0);
+			drawState.SetPosition(0, 0);
 		}
-		renderTargetPrevScreen->Draw();
+        
+		renderTargetPrevScreen->Draw(&drawState);
 		
 		
-		
-		
-		renderTargetNextScreen->SetPosition(xNextPosition, yNextPosition);
-		renderTargetNextScreen->Draw(); 
+		drawState.SetPosition(xNextPosition, yNextPosition);
+		renderTargetNextScreen->Draw(&drawState);
 	}
 	else 
 	{
@@ -111,21 +113,18 @@ void UIMoveInTransition::Draw(const UIGeometricData &geometricData)
 		
 		if(!isOver)
 		{
-			renderTargetNextScreen->SetPosition(xNextPosition, yNextPosition);
+			drawState.SetPosition(xNextPosition, yNextPosition);
 		}
 		else 
 		{
-			renderTargetNextScreen->SetPosition(0, 0);
+			drawState.SetPosition(0, 0);
 		}
+        
+		renderTargetNextScreen->Draw(&drawState);
 
-		renderTargetNextScreen->Draw(); 
-
 		
-		renderTargetPrevScreen->SetPosition(xPrevPosition, yPrevPosition);
-		renderTargetPrevScreen->Draw();
-		
-		
-		
+		drawState.SetPosition(xPrevPosition, yPrevPosition);
+		renderTargetPrevScreen->Draw(&drawState);
 		
 	}
 

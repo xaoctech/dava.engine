@@ -69,7 +69,7 @@ public:
     void SetDelegate(UIScrollBarDelegate *newDelegate);
     UIControl *GetSlider();
     
-    virtual void Draw(const UIGeometricData &geometricData);
+    virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
 	virtual void AddControl(UIControl *control);
 	virtual UIControl *Clone();
 	virtual void CopyDataFrom(UIControl *srcControl);

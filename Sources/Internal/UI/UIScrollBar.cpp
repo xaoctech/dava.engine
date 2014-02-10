@@ -258,7 +258,7 @@ void UIScrollBar::CalculateStartOffset(const Vector2& inputPoint)
 	}
 }
 	
-void UIScrollBar::Draw(const UIGeometricData &geometricData)
+void UIScrollBar::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
     if (delegate) 
     {
@@ -336,7 +336,7 @@ void UIScrollBar::Draw(const UIGeometricData &geometricData)
                 break;
         }
     }
-    UIControl::Draw(geometricData);
+    UIControl::Draw(geometricData, renderState);
 }
 
 UIScrollBar::eScrollOrientation UIScrollBar::GetOrientation() const

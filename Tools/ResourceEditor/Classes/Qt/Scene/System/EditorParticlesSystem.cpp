@@ -96,7 +96,7 @@ void EditorParticlesSystem::DrawDebugInfoForEffect(DAVA::Entity* effectEntity)
 			collBox.GetTransformedBox(effectEntity->GetWorldTransform(), wordBox);	
 			// Get sphere radius (size) of debug effect
 			DAVA::float32 radius = (collBox.max - collBox.min).Length() / 3;
-			DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius);
+			DAVA::RenderHelper::Instance()->FillDodecahedron(wordBox.GetCenter(), radius, renderState);
 		}
 		
 		DAVA::RenderManager::Instance()->ResetColor();
@@ -105,16 +105,6 @@ void EditorParticlesSystem::DrawDebugInfoForEffect(DAVA::Entity* effectEntity)
 
 void EditorParticlesSystem::Draw()
 {
-	//int oldState = DAVA::RenderManager::Instance()->GetState();
-	//DAVA::eBlendMode oldBlendSrc = DAVA::RenderManager::Instance()->GetSrcBlend();
-	//DAVA::eBlendMode oldBlendDst = DAVA::RenderManager::Instance()->GetDestBlend();
-
-	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_BLEND | DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
-	//DAVA::RenderManager::Instance()->SetBlendMode(DAVA::BLEND_SRC_ALPHA, DAVA::BLEND_ONE_MINUS_SRC_ALPHA);
-	
-	DAVA::RenderManager::Instance()->SetRenderState(renderState);
-	DAVA::RenderManager::Instance()->FlushState();
-	
 	// Draw debug information for non-selected entities
 	for(size_t i = 0; i < entities.size(); ++i)
 	{				
@@ -133,7 +123,7 @@ void EditorParticlesSystem::Draw()
         center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();		
         
         DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
-		DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.1f);					        
+		DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.1f, renderState);
 		DrawVectorArrow(selectedEffectEntity, selectedEmitter, center);
 
 		switch (selectedEmitter->emitterType)
@@ -169,7 +159,7 @@ void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::Entity *effectEntity, 
 	//float32 time = emitter->GetTime();
 	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(time) : 0.0f;
-	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true);
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true, renderState);
 }
 
 void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
@@ -192,7 +182,7 @@ void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::Par
 		emitterVector = emitterVector * wMat;
 	}
 							
-	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true);
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true, renderState);
 }
 
 void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
@@ -236,42 +226,42 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *effectEntity, DAVA::Partic
 	poly.AddPoint(p[1]);
 	poly.AddPoint(p[2]);
 	poly.AddPoint(p[3]);
-	RenderHelper::Instance()->FillPolygon(poly);
+	RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 	poly.Clear();
 	poly.AddPoint(p[0]);
 	poly.AddPoint(p[1]);
 	poly.AddPoint(p[5]);
 	poly.AddPoint(p[4]);
-	RenderHelper::Instance()->FillPolygon(poly);
+	RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 	poly.Clear();
 	poly.AddPoint(p[1]);
 	poly.AddPoint(p[2]);
 	poly.AddPoint(p[6]);
 	poly.AddPoint(p[5]);
-	RenderHelper::Instance()->FillPolygon(poly);
+	RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 	poly.Clear();
 	poly.AddPoint(p[2]);
 	poly.AddPoint(p[3]);
 	poly.AddPoint(p[7]);
 	poly.AddPoint(p[6]);
-	RenderHelper::Instance()->FillPolygon(poly);
+	RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 	poly.Clear();
 	poly.AddPoint(p[0]);
 	poly.AddPoint(p[3]);
 	poly.AddPoint(p[7]);
 	poly.AddPoint(p[4]);
-	RenderHelper::Instance()->FillPolygon(poly);
+	RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 	poly.Clear();
 	poly.AddPoint(p[4]);
 	poly.AddPoint(p[5]);
 	poly.AddPoint(p[6]);
 	poly.AddPoint(p[7]);
-	RenderHelper::Instance()->FillPolygon(poly);
+	RenderHelper::Instance()->FillPolygon(poly, renderState);
 }
 
 void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
@@ -302,7 +292,7 @@ void EditorParticlesSystem::DrawVectorArrow(DAVA::Entity *effectEntity, DAVA::Pa
 	wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
 	emitterVector = emitterVector * wMat;
 
-	DAVA::RenderHelper::Instance()->FillArrow(center, emitterVector, arrowSize, 1);
+	DAVA::RenderHelper::Instance()->FillArrow(center, emitterVector, arrowSize, 1, renderState);
 }
 
 void EditorParticlesSystem::AddEntity(DAVA::Entity * entity)
