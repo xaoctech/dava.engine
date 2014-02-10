@@ -61,7 +61,8 @@ public:
     
     virtual void SetParameterValue(const FastName & paramName, float32 value) {};
     virtual float32 GetParameterValue(const FastName & paramName) { return 0.f; };
-    
+    virtual bool IsParameterExists(const FastName & paramName) { return false; };
+
 protected:
     MusicIOSSoundEvent(const FilePath & path);
     virtual bool Init();
