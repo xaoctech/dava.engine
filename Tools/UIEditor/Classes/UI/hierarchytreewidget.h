@@ -71,6 +71,7 @@ private slots:
 	void OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &);
 	void OnShowCustomMenu(const QPoint& pos);
 	void OnDeleteControlAction();
+	void OnRenameControlAction();
 	void OnCreateScreenAction();
 	void OnCreateAggregatorAction();
 	void OnCopyAction();
