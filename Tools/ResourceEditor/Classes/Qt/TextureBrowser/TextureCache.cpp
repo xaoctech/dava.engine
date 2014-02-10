@@ -74,10 +74,20 @@ void TextureCache::getThumbnail( const DAVA::TextureDescriptor *descriptor, QObj
     }
     else
     {
-        QPointer< CacheRequest > request = new CacheRequest( key );
-        request->registerObserver( object, slotName, userData );
-        poolThumbnail[key] = request;
-        TextureConvertor::Instance()->GetThumbnail( descriptor );
+        QPointer< CacheRequest > request;
+        RequestPool::iterator i = poolThumbnail.find( key );
+        if ( i == poolThumbnail.end() )
+        {
+            request = new CacheRequest( key );
+            request->registerObserver( object, slotName, userData );
+            poolThumbnail[key] = request;
+            TextureConvertor::Instance()->GetThumbnail( descriptor );
+        }
+        else
+        {
+            request = i.value();
+            request->registerObserver( object, slotName, userData );
+        }
     }
 }
 
@@ -183,7 +193,6 @@ void TextureCache::setThumbnail(const DAVA::TextureDescriptor *descriptor, const
         cacheThumbnail[path] = CacheEntity(info, curThumbnailWeight++);
         ClearCacheTail(cacheThumbnail, curThumbnailWeight, maxThumbnailCount);
 
-        //qDebug() << "TextureCache::setThumbnail " << path.GetBasename().c_str();
         emit ThumbnailLoaded(descriptor, info);
 
         RequestPool::iterator i = poolThumbnail.find( path );
