@@ -540,6 +540,7 @@ void QtMainWindow::SetupActions()
 {
 	// scene file actions
 	QObject::connect(ui->actionOpenProject, SIGNAL(triggered()), this, SLOT(OnProjectOpen()));
+    QObject::connect(ui->actionCloseProject, SIGNAL(triggered()), this, SLOT(OnProjectClose()));
 	QObject::connect(ui->actionOpenScene, SIGNAL(triggered()), this, SLOT(OnSceneOpen()));
 	QObject::connect(ui->actionNewScene, SIGNAL(triggered()), this, SLOT(OnSceneNew()));
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
@@ -800,6 +801,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
+    ui->actionCloseProject->setEnabled(enable);
     
     auto endIt = recentScenes.end();
     for(auto it = recentScenes.begin(); it != endIt; ++it)
@@ -889,7 +891,7 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 void QtMainWindow::OnProjectOpen()
 {
     QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-    if(!newPath.isEmpty() && ui->sceneTabWidget->CloseAllTabs())
+    if(!newPath.isEmpty() && CloseProject())
     {
         ProjectManager::Instance()->ProjectOpen(newPath);
     }
@@ -897,10 +899,7 @@ void QtMainWindow::OnProjectOpen()
 
 void QtMainWindow::OnProjectClose()
 {
-    if(ui->sceneTabWidget->CloseAllTabs())
-    {
-        ProjectManager::Instance()->ProjectClose();
-    }
+    CloseProject();
 }
 
 void QtMainWindow::OnSceneNew()
@@ -2637,4 +2636,14 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	sceneWidget->SetCurrentTab(lastSceneTab);
 
 	return true;
+}
+
+bool QtMainWindow::CloseProject()
+{
+    if(ui->sceneTabWidget->CloseAllTabs())
+    {
+        ProjectManager::Instance()->ProjectClose();
+        return true;
+    }
+    return false;
 }

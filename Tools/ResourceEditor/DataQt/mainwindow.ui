@@ -225,6 +225,7 @@
      <addaction name="actionImportSpeedTreeXML"/>
     </widget>
     <addaction name="actionOpenProject"/>
+    <addaction name="actionCloseProject"/>
     <addaction name="separator"/>
     <addaction name="actionNewScene"/>
     <addaction name="actionOpenScene"/>
@@ -1758,6 +1759,14 @@
    </property>
    <property name="toolTip">
     <string>Set Materials LightViewMode</string>
+   </property>
+  </action>
+  <action name="actionCloseProject">
+   <property name="text">
+    <string>Close Project</string>
+   </property>
+   <property name="toolTip">
+    <string>Close Project</string>
    </property>
   </action>
  </widget>
