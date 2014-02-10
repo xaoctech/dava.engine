@@ -214,10 +214,8 @@ void LodToLod2Converter::ConvertToShadowRecursive( Entity *entity )
 		RenderObject * ro = GetRenderObject(entity);
 		if(ro && (ro->GetRenderBatchCount() == 1) && (typeid(*(ro->GetRenderBatch(0))) == typeid(DAVA::RenderBatch)))
 		{
-			ShadowVolume * shadowVolume = ro->CreateShadow();
-
 			RenderBatch * oldBatch = ro->GetRenderBatch(0);
-			oldBatch->Retain();
+			ShadowVolume * shadowVolume = oldBatch->CreateShadow();
 
 			ro->RemoveRenderBatch(oldBatch);
 			ro->AddRenderBatch(shadowVolume);

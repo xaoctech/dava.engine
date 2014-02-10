@@ -158,8 +158,6 @@ public slots:
     
     void OnBuildStaticOcclusion();
 
-	void OnConvertToShadow();
-
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
 	void OnCameraSpeed2();
@@ -212,6 +210,8 @@ protected:
 	void DiableUIForFutureUsing();
 	
 	bool SelectCustomColorsTexturePath();
+    
+    bool CloseProject();
 	
 protected slots:
 	void ProjectOpened(const QString &path);

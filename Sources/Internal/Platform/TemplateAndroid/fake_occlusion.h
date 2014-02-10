@@ -28,68 +28,44 @@
 
 
 
-#include "ShadowRect.h"
-#include "Render/RenderDataObject.h"
-#include "Base/BaseMath.h"
+#ifndef __DAVAENGINE_FAKE_OCCLUSION_H__
+#define __DAVAENGINE_FAKE_OCCLUSION_H__
+
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
+
+#include <android/api-level.h>
+
+#if (__ANDROID_API__ < 18)
 #include "Render/RenderBase.h"
-#include "Render/RenderManager.h"
-#include "Scene3D/Scene.h"
-
-namespace DAVA
-{
-
-ShadowRect * ShadowRect::instance = 0;
 
 
-ShadowRect * ShadowRect::Create()
-{
-	if(instance)
-	{
-		instance->Retain();
-	}
-	else
-	{
-		instance = new ShadowRect();
-	}
+typedef void (*GL_GEN_QUERIES) (GLsizei n, GLuint* ids);
+typedef void (*GL_DELETE_QUERIES) (GLsizei n, const GLuint* ids);
+typedef void (*GL_BEGIN_QUERY) (GLenum target, GLuint id);
+typedef void (*GL_END_QUERY) (GLenum target);
+typedef void (*GL_GET_QUERY_OBJECTUIV) (GLuint id, GLenum pname, GLuint* params);
 
-	return instance;
-}
+static GL_GEN_QUERIES glGenQueries;
+static GL_DELETE_QUERIES glDeleteQueries;
+static GL_BEGIN_QUERY glBeginQuery;
+static GL_END_QUERY glEndQuery;
+static GL_GET_QUERY_OBJECTUIV glGetQueryObjectuiv;
 
-ShadowRect::ShadowRect()
-{
-	rdo = new RenderDataObject();
+#define GL_ANY_SAMPLES_PASSED                            0x8C2F
+#define GL_QUERY_RESULT                                  0x8866
+#define GL_QUERY_RESULT_AVAILABLE                        0x8867
 
-	Vector3 vert3[4] = {Vector3(-100.f, 100.f, -50), Vector3(100.f, 100.f, -50), Vector3(-100.f, -100.f, -50), Vector3(100.f, -100.f, -50)};
+extern void glGenQueries_Fake(GLsizei n, GLuint* ids);
+extern void glDeleteQueries_Fake(GLsizei n, const GLuint* ids);
+extern void glBeginQuery_Fake(GLenum target, GLuint id);
+extern void glEndQuery_Fake(GLenum target);
+extern void glGetQueryObjectuiv_Fake(GLuint id, GLenum pname, GLuint* params);
 
-	for(int32 i = 0; i < 4; ++i)
-	{
-		vertices[i*3] = vert3[i].x;
-		vertices[i*3+1] = vert3[i].y;
-		vertices[i*3+2] = vert3[i].z;
-	}
+extern void InitFakeOcclusion();
 
-	rdo->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, vertices);
+#endif //#if __ANDROID_API__ < 18
 
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowrect.shader");
-	shader->Recompile();
-}
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
-ShadowRect::~ShadowRect()
-{
-	SafeRelease(shader);
-	SafeRelease(rdo);
-
-	instance = 0;
-}
-
-void ShadowRect::Draw()
-{
-	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->SetRenderData(rdo);
-	RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->AttachRenderData();
-	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
-}
-
-};
+#endif /* defined(__DAVAENGINE_FAKE_OCCLUSION_H__) */
