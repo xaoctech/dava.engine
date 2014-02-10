@@ -57,7 +57,7 @@ public:
 
     virtual void AddControl(UIControl *control);
     virtual void Update(float32 timeElapsed);
-    virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
+    virtual void Draw(const UIGeometricData &geometricData);
 
     // Load/save functionality.
     virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
@@ -79,11 +79,20 @@ private:
     ParticleEffectComponent *effect;
     ParticleEffectSystem *system;
     Matrix4 matrix;
-    Camera *camera;
+    //Camera *camera;
     float32 updateTime;
 
     FilePath effectPath;
     bool isAutostart;
+
+
+    struct ParticleCameraWrap
+    {
+        Camera *camera;
+        ParticleCameraWrap();
+        ~ParticleCameraWrap();
+    };
+    static ParticleCameraWrap defaultCamera;
 };
 	
 };

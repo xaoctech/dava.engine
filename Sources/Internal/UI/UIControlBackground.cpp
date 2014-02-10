@@ -231,7 +231,7 @@ void UIControlBackground::SetParentColor(const Color &parentColor)
 	}	
 }
 
-void UIControlBackground::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIControlBackground::Draw(const UIGeometricData &geometricData)
 {
 	
 
@@ -244,7 +244,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData, UniqueHandl
 	RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 	
 	Sprite::DrawState drawState;
-    drawState.SetRenderState(renderState);
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND); // set state explicitly
 	if (spr)
 	{
 		drawState.frame = frame;

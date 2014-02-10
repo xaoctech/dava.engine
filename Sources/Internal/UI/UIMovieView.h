@@ -50,7 +50,7 @@ public:
 	virtual void SetSize(const Vector2 &newSize);
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
-	virtual void SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState);
+	virtual void SystemDraw(const UIGeometricData &geometricData);
 
 	// Start/stop the video playback.
 	void Play();

@@ -47,6 +47,8 @@ namespace DAVA {
 class BaseMetadata : public QObject
 {
     Q_OBJECT
+	
+	Q_PROPERTY(QString Name READ GetName WRITE SetName);
     
 public:
     // ExtraData update flags.
@@ -96,6 +98,9 @@ public:
     
     // Apply resize for all controls.
     virtual void ApplyResize(const Rect& /*originalRect*/, const Rect& /*newRect*/) {};
+	
+	// Apply rename for controls
+	virtual void ApplyRename(const QString& /*originalName*/, const QString& /*newName*/);
 
     // Accessors to the Tree Node.
     HierarchyTreeNode* GetTreeNode(BaseMetadataParams::METADATAPARAMID paramID) const;
@@ -134,6 +139,10 @@ protected:
 	// as the result of GetActiveStateIndex()
 	static const int32 STATE_INDEX_DEFAULT = -1;
 	static const int32 DEFAULT_STATE_INDEX_VALUE = 0;
+	
+	// Getters/setters.
+    virtual QString GetName() const { return QString(); };
+    virtual void SetName(const QString& /*name*/) {};
 
     // Verify whether Param ID is OK.
     bool VerifyParamID(BaseMetadataParams::METADATAPARAMID paramID) const;

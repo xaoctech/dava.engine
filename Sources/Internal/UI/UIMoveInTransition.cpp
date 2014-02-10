@@ -58,7 +58,7 @@ void UIMoveInTransition::Update(float32 timeElapsed)
 	UIScreenTransition::Update(timeElapsed);
 }
 
-void UIMoveInTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIMoveInTransition::Draw(const UIGeometricData &geometricData)
 {
 	/*
 	 renderTargetPrevScreen->SetScale(0.5f, 1.0f);
@@ -76,7 +76,7 @@ void UIMoveInTransition::Draw(const UIGeometricData &geometricData, UniqueHandle
 	 */
 	
     Sprite::DrawState drawState;
-    drawState.SetRenderState(renderState);
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     
 	if(type <= FROM_BOTTOM)
 	{

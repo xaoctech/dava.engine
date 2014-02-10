@@ -65,7 +65,6 @@ public:
 const static uint16 INVALID_STATIC_OCCLUSION_INDEX = (uint16)(-1);
 
 class RenderBatch;
-class ShadowVolume;
 class RenderObject : public AnimatedObject
 {
 public:
@@ -154,7 +153,6 @@ public:
 	RenderSystem * GetRenderSystem();
 
 	virtual void BakeTransform(const Matrix4 & transform);
-	virtual ShadowVolume * CreateShadow() {return 0;}
 
 	virtual void RecalculateWorldBoundingBox();
     
@@ -288,6 +286,8 @@ inline uint32 RenderObject::GetRenderBatchCount()
 
 inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
 {
+	DVASSERT(batchIndex < renderBatchArray.size());
+
     return renderBatchArray[batchIndex].renderBatch;
 }
 
