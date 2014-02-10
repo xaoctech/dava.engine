@@ -38,7 +38,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape, Entity* node)
 ,	tilemaskImageCopy(NULL)
 ,	fullTiledTexture(NULL)
 ,	fullTiledTextureState(InvalidUniqueHandle)
-,	cursorTextureState(InvalidUniqueHandle)
+,	cursorTexture(NULL)
 {
 	DVASSERT(landscape != NULL);
 
@@ -78,10 +78,7 @@ LandscapeProxy::~LandscapeProxy()
 	SafeRelease(tilemaskSprites[TILEMASK_SPRITE_DESTINATION]);
 	SafeRelease(fullTiledTexture);
 
-	if (cursorTextureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureState(cursorTextureState);
-	}
+    SafeRelease(cursorTexture);
 
 	if (fullTiledTextureState != InvalidUniqueHandle)
 	{
@@ -329,18 +326,14 @@ void LandscapeProxy::CursorDisable()
 
 void LandscapeProxy::SetCursorTexture(Texture* texture)
 {
-	TextureStateData textureStateData;
-	textureStateData.SetTexture(0, texture);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->CreateTextureState(textureStateData);
-
-	if (cursorTextureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureState(cursorTextureState);
-	}
-
-	customLandscape->SetCursorTexture(uniqueHandle);
-	baseLandscape->SetCursorTexture(uniqueHandle);
-	cursorTextureState = uniqueHandle;
+    if(cursorTexture != texture)
+    {
+        SafeRelease(cursorTexture);
+        cursorTexture = SafeRetain(texture);
+    }
+    
+    customLandscape->SetCursorTexture(texture);
+    baseLandscape->SetCursorTexture(texture);
 }
 
 void LandscapeProxy::SetBigTextureSize(float32 size)

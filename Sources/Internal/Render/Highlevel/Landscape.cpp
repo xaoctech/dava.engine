@@ -1547,7 +1547,7 @@ void Landscape::CursorDisable()
 	SafeDelete(cursor);
 }
 
-void Landscape::SetCursorTexture(UniqueHandle texture)
+void Landscape::SetCursorTexture(Texture* texture)
 {
 	cursor->SetCursorTexture(texture);
 }

@@ -273,7 +273,7 @@ public:
 
 	void CursorEnable();
 	void CursorDisable();
-	void SetCursorTexture(UniqueHandle texture);
+	void SetCursorTexture(Texture* texture);
 	void SetBigTextureSize(float32 bigSize);
 	void SetCursorPosition(const Vector2 & position);
 	void SetCursorScale(float32 scale);
