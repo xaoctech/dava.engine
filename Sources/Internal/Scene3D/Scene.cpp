@@ -277,6 +277,8 @@ Scene::~Scene()
     
 	SafeRelease(imposterManager);
 
+    SafeRelease(sceneGlobalMaterial);
+
     transformSystem = 0;
     renderUpdateSystem = 0;
     lodSystem = 0;
