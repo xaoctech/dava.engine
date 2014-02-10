@@ -332,26 +332,26 @@ void LandscapeProxy::SetCursorTexture(Texture* texture)
         cursorTexture = SafeRetain(texture);
     }
     
-    customLandscape->SetCursorTexture(texture);
-    baseLandscape->SetCursorTexture(texture);
+    customLandscape->GetCursor()->SetCursorTexture(texture);
+    baseLandscape->GetCursor()->SetCursorTexture(texture);
 }
 
 void LandscapeProxy::SetBigTextureSize(float32 size)
 {
-	customLandscape->SetBigTextureSize(size);
-	baseLandscape->SetBigTextureSize(size);
+	customLandscape->GetCursor()->SetBigTextureSize(size);
+	baseLandscape->GetCursor()->SetBigTextureSize(size);
 }
 
 void LandscapeProxy::SetCursorScale(float32 scale)
 {
-	customLandscape->SetCursorScale(scale);
-	baseLandscape->SetCursorScale(scale);
+	customLandscape->GetCursor()->SetScale(scale);
+	baseLandscape->GetCursor()->SetScale(scale);
 }
 
 void LandscapeProxy::SetCursorPosition(const Vector2& position)
 {
-	customLandscape->SetCursorPosition(position);
-	baseLandscape->SetCursorPosition(position);
+	customLandscape->GetCursor()->SetPosition(position);
+	baseLandscape->GetCursor()->SetPosition(position);
 }
 
 void LandscapeProxy::UpdateFullTiledTexture(bool force)
