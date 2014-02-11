@@ -53,6 +53,9 @@ public:
     MaterialModel(QObject *parent = 0);
     virtual ~MaterialModel();
     
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    MaterialItem* itemFromIndex(const QModelIndex & index) const;
+
     void SetScene(SceneEditor2 * scene);
     SceneEditor2 *GetScene();
 	void SetSelection(const EntityGroup *group);
@@ -60,7 +63,7 @@ public:
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
 
 	void Sync();
-	
+
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;

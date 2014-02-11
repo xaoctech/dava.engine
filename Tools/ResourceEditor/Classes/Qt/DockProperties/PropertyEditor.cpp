@@ -53,6 +53,7 @@
 #include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Project/ProjectManager.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -344,10 +345,11 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 if(dataName == "heightmapPath" || dataName == "texture")
                 {
                     QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
-                    QString projPath = SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString().c_str();
-                    variantData->SetDefaultOpenDialogPath(projPath);
+                    QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                    
+                    variantData->SetDefaultOpenDialogPath(dataSourcePath);
                     QStringList pathList;
-                    pathList.append(projPath);
+                    pathList.append(dataSourcePath);
                     QString fileFilter = "All (*.*)";
                     if(dataName == "heightmapPath")
                     {
@@ -395,8 +397,9 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 
 		ret = new QtPropertyDataIntrospection(object, info, false);
 
-		// add members is we can
-		if(hasMembers)
+		// add members is there are some
+        // and if we allow to view such introspection type
+		if(hasMembers && IsInspViewAllowed(info))
 		{
 			while(NULL != baseInfo)
 			{
@@ -404,11 +407,8 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 				{
 					const DAVA::InspMember *member = baseInfo->Member(i);
 
-					if(!ExcludeMember(baseInfo, member))
-					{
-						QtPropertyData *memberData = CreateInspMember(object, member);
-						ret->ChildAdd(member->Name(), memberData);
-					}
+                    QtPropertyData *memberData = CreateInspMember(object, member);
+					ret->ChildAdd(member->Name(), memberData);
 				}
 
 				baseInfo = baseInfo->BaseInfo();
@@ -993,17 +993,18 @@ void PropertyEditor::SaveScheme(const DAVA::FilePath &path)
 	}
 }
 
-bool PropertyEditor::ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspMember *member)
+bool PropertyEditor::IsInspViewAllowed(const DAVA::InspInfo *info) const
 {
-	bool exclude = false;
+	bool ret = true;
 
 	if(info->Type() == DAVA::MetaInfo::Instance<DAVA::NMaterial>())
 	{
-		// don't show material properties. they should be edited in materialEditor
-		exclude = true;
+		// Don't show properties for NMaterial.
+        // They should be edited in materialEditor.
+		ret = false;
 	}
 
-	return exclude;
+	return ret;
 }
 
 QtPropertyToolButton * PropertyEditor::CreateButton( QtPropertyData *data, const QIcon & icon, const QString & tooltip )

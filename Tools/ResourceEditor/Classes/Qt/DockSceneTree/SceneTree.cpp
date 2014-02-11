@@ -719,7 +719,7 @@ void SceneTree::ReloadModelAs()
 				}
 				else
 				{
-					ownerPath = FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname();
+					ownerPath = FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()).GetAbsolutePathname();
 				}
 			}
 
@@ -1158,7 +1158,7 @@ void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
 	FilePath yamlPath;
 	if (forceAskFileName)
 	{
-		QString projectPath = QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+		QString projectPath = QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
 		QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
 			projectPath, QString("YAML File (*.yaml)"));
 
@@ -1280,7 +1280,7 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 	FilePath yamlPath;
     if (forceAskFileName)
     {
-        QString projectPath = QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+        QString projectPath = QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
         QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
 		
@@ -1309,7 +1309,7 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 
 QString SceneTree::GetParticlesConfigPath()
 {
-	return QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+	return QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
 }
 
 void SceneTree::CleanupParticleEditorSelectedItems()
