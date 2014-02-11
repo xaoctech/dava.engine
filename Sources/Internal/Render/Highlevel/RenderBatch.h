@@ -99,7 +99,7 @@ public:
     inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmaskFromMaterial; };
     
 	void SetRenderObject(RenderObject * renderObject);
-	inline RenderObject * GetRenderObject();
+	inline RenderObject * GetRenderObject() const;
 
     void SetSortingTransformPtr(Matrix4* worldTransformPtr);
     inline Matrix4 * GetSortingTransformPtr() const;
@@ -196,7 +196,7 @@ inline NMaterial * RenderBatch::GetMaterial()
     return material;
 }
     
-inline RenderObject * RenderBatch::GetRenderObject()
+inline RenderObject * RenderBatch::GetRenderObject() const
 {
 	return renderObject;
 }

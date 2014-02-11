@@ -58,13 +58,100 @@ MaterialModel::MaterialModel(QObject * parent)
     : QStandardItemModel(parent)
 	, curScene(NULL)
 { 
-	QStringList headerLabels;
-	headerLabels.append("Materials hierarchy");
-	setHorizontalHeaderLabels(headerLabels);
+    QStringList headerLabels;
+    headerLabels.append("Materials hierarchy");
+    headerLabels.append("L");
+    headerLabels.append("S");
+    setHorizontalHeaderLabels(headerLabels);
+    horizontalHeaderItem(1)->setToolTip("Material LOD index");
+    horizontalHeaderItem(2)->setToolTip("Material Switch index");
+
+    setColumnCount(3);
 }
 
 MaterialModel::~MaterialModel()
 { }
+
+QVariant MaterialModel::data(const QModelIndex & index, int role) const
+{
+    QVariant ret;
+
+    if(index.column() == 0)
+    {
+        ret = QStandardItemModel::data(index, role);
+    }
+    // LOD
+    else if(index.isValid() && index.column() < columnCount())
+    {
+        MaterialItem *item = itemFromIndex(index.sibling(index.row(), 0));
+        if(NULL != item)
+        {
+            if(index.column() == 1)
+            {
+                switch(role)
+                {
+                    case Qt::DisplayRole:
+                        {
+                            int index = item->GetLodIndex();
+
+                            if(-1 != index)
+                            {
+                                ret = index;
+                            }
+                        }
+                        break;
+                    
+                    case Qt::TextAlignmentRole:
+                        ret = (int) (Qt::AlignCenter | Qt::AlignVCenter);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            // Switch
+            else if(index.column() == 2)
+            {
+                switch(role)
+                {
+                    case Qt::DisplayRole:
+                        {
+                            int index = item->GetSwitchIndex();
+
+                            if(-1 != index)
+                            {
+                                ret = index;
+                            }
+                        }
+                        break;
+
+                    case Qt::TextAlignmentRole:
+                        ret = (int) (Qt::AlignCenter | Qt::AlignVCenter);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+        }
+    }
+    
+
+    return ret;
+}
+
+MaterialItem* MaterialModel::itemFromIndex(const QModelIndex & index) const
+{
+    MaterialItem *ret = NULL;
+
+    if(index.isValid())
+    {
+        ret = (MaterialItem *) QStandardItemModel::itemFromIndex(index.sibling(index.row(), 0));
+    }
+
+    return ret;
+}
 
 void MaterialModel::SetScene(SceneEditor2 *scene)
 {
@@ -182,7 +269,7 @@ void MaterialModel::Sync()
 				// there is already such material in model
 				// we should sync it childs
 
-				item = (MaterialItem *) itemFromIndex(index);
+				item = itemFromIndex(index);
 				auto cit = it->second.begin();
 				auto cend = it->second.end();
 
@@ -200,10 +287,31 @@ void MaterialModel::Sync()
 		}
 
 		// mark materials that can be deleted
+        // setup lod/switch indexes
 		for(int i = 0; i < root->rowCount(); ++i)
 		{
 			MaterialItem *item = (MaterialItem *) root->child(i);
 			item->SetFlag(MaterialItem::IS_MARK_FOR_DELETE, item->rowCount() == 0);
+
+            for(int j = 0; j < item->rowCount(); ++j)
+            {
+                MaterialItem *instanceItem = (MaterialItem *) item->child(j);
+                const DAVA::RenderBatch *rb = curScene->materialSystem->GetRenderBatch(instanceItem->GetMaterial());
+                const DAVA::RenderObject *ro = rb->GetRenderObject();
+
+                for(DAVA::uint32 k = 0; k < ro->GetRenderBatchCount(); ++k)
+                {
+                    int lodIndex, swIndex;
+                    DAVA::RenderBatch *batch = ro->GetRenderBatch(k, lodIndex, swIndex);
+                    if(rb == batch)
+                    {
+                        instanceItem->SetLodIndex(lodIndex);
+                        instanceItem->SetSwitchIndex(swIndex);
+                        break;
+                    }
+                }
+                
+            }
 		}
 
         const EntityGroup& selection = curScene->selectionSystem->GetSelection();
@@ -215,7 +323,7 @@ DAVA::NMaterial * MaterialModel::GetMaterial(const QModelIndex & index) const
 {
     if(!index.isValid()) return NULL;
     
-	MaterialItem *item = (MaterialItem *) itemFromIndex(index);
+	MaterialItem *item = itemFromIndex(index);
     return item->GetMaterial();
 }
 
@@ -223,7 +331,7 @@ QModelIndex MaterialModel::GetIndex(DAVA::NMaterial *material, const QModelIndex
 {
 	QModelIndex ret = QModelIndex();
 
-	MaterialItem* item = (MaterialItem*)itemFromIndex(parent);
+	MaterialItem* item = itemFromIndex(parent);
 	if(NULL != item && item->GetMaterial() == material)
 	{
 		ret = parent;
@@ -284,7 +392,7 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 
     if ( dropCanBeAccepted(data, action, targetIndex.row(), targetIndex.column(), targetIndex.parent()) )
     {
-		MaterialItem *targetMaterialItem = (MaterialItem *)itemFromIndex(targetIndex);
+		MaterialItem *targetMaterialItem = itemFromIndex(targetIndex);
 		DAVA::NMaterial *targetMaterial = targetMaterialItem->GetMaterial();
 
 		if ( materials.size() > 1 )
@@ -296,7 +404,7 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 		// NOTE: model synchronization will be done in OnCommandExecuted handler
 		for(int i = 0; i < materials.size(); ++i)
 		{
-			MaterialItem *sourceMaterialItem = (MaterialItem *) itemFromIndex(GetIndex(materials[i]));
+			MaterialItem *sourceMaterialItem = itemFromIndex(GetIndex(materials[i]));
 			if (NULL != sourceMaterialItem)
 			{
 				curScene->Exec(new MaterialSwitchParentCommand(materials[i], targetMaterial));
@@ -314,6 +422,9 @@ bool MaterialModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 
 bool MaterialModel::dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
+    if(0 != column)
+        return false;
+
 	const QVector<DAVA::NMaterial *> materials = MimeDataHelper2<DAVA::NMaterial>::DecodeMimeData(data);
 
     if ( materials.size() <= 0 )

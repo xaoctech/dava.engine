@@ -119,12 +119,12 @@ public:
 
     virtual void RecalcBoundingBox();
     
-	inline uint32 GetRenderBatchCount();
-    inline RenderBatch * GetRenderBatch(uint32 batchIndex);
-	inline RenderBatch * GetRenderBatch(uint32 batchIndex, int32 & lodIndex, int32 & switchIndex);
+	inline uint32 GetRenderBatchCount() const;
+    inline RenderBatch * GetRenderBatch(uint32 batchIndex) const;
+	inline RenderBatch * GetRenderBatch(uint32 batchIndex, int32 & lodIndex, int32 & switchIndex) const;
 
-	inline uint32 GetActiveRenderBatchCount();
-	inline RenderBatch * GetActiveRenderBatch(uint32 batchIndex);
+	inline uint32 GetActiveRenderBatchCount() const;
+	inline RenderBatch * GetActiveRenderBatch(uint32 batchIndex) const;
     
     inline void SetFlags(uint32 _flags) { flags = _flags; }
     inline uint32 GetFlags() { return flags; }
@@ -279,33 +279,33 @@ inline Matrix4 * RenderObject::GetWorldTransformPtr() const
     return worldTransform;
 }
 
-inline uint32 RenderObject::GetRenderBatchCount()
+inline uint32 RenderObject::GetRenderBatchCount() const
 {
     return (uint32)renderBatchArray.size();
 }
 
-inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex)
+inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex) const
 {
 	DVASSERT(batchIndex < renderBatchArray.size());
 
     return renderBatchArray[batchIndex].renderBatch;
 }
 
-inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex, int32 & _lodIndex, int32 & _switchIndex)
+inline RenderBatch * RenderObject::GetRenderBatch(uint32 batchIndex, int32 & _lodIndex, int32 & _switchIndex) const
 {
-	IndexedRenderBatch & irb = renderBatchArray[batchIndex];
+	const IndexedRenderBatch & irb = renderBatchArray[batchIndex];
 	_lodIndex = irb.lodIndex;
 	_switchIndex = irb.switchIndex;
 
-	return renderBatchArray[batchIndex].renderBatch;
+	return irb.renderBatch;
 }
 
-inline uint32 RenderObject::GetActiveRenderBatchCount()
+inline uint32 RenderObject::GetActiveRenderBatchCount() const
 {
 	return (uint32)activeRenderBatchArray.size();
 }
 
-inline RenderBatch * RenderObject::GetActiveRenderBatch(uint32 batchIndex)
+inline RenderBatch * RenderObject::GetActiveRenderBatch(uint32 batchIndex) const
 {
 	return activeRenderBatchArray[batchIndex];
 }
