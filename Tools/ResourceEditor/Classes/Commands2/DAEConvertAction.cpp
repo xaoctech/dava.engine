@@ -84,10 +84,13 @@ DAVA::Scene * DAEConvertAction::CreateSceneFromSce() const
 	{
 		rootNode = rootNode->Clone();
 		scene->AddNode(rootNode);
-		scene->BakeTransforms();
+
+		ScopedPtr<SceneFileV2> sceneFile(new SceneFileV2());
+		sceneFile->OptimizeScene(scene);
+
 		rootNode->Release();
 	}
-    
+
     return scene;
 }
 
