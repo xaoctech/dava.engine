@@ -46,11 +46,9 @@ public:
 
 	static bool CanConvertBatchToShadow(DAVA::RenderBatch *renderBatch);
 
-protected:
-
-	DAVA::RenderObject *renderObject;
-	DAVA::RenderBatch * oldBatch;
-	DAVA::ShadowVolume * shadowVolume;
+    DAVA::RenderObject *renderObject;
+    DAVA::RenderBatch * oldBatch;
+    DAVA::ShadowVolume * shadowVolume;
 };
 
 

@@ -85,7 +85,14 @@ private:
     FilePath effectPath;
     bool isAutostart;
 
-    static RefPtr<Camera> defaultCamera;
+
+    struct ParticleCameraWrap
+    {
+        Camera *camera;
+        ParticleCameraWrap();
+        ~ParticleCameraWrap();
+    };
+    static ParticleCameraWrap defaultCamera;
 };
 	
 };
