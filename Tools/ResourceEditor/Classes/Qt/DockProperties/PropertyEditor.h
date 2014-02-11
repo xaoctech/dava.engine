@@ -128,7 +128,7 @@ protected:
 	void AddFavoriteChilds(QtPropertyData *parent);
 	void RemFavoriteChilds(QtPropertyData *parent);
 
-	bool ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspMember *member);
+	bool IsInspViewAllowed(const DAVA::InspInfo *info) const;
 
 	virtual void OnItemEdited(const QModelIndex &index);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;

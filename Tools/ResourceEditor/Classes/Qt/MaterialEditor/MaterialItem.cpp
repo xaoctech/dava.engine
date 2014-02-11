@@ -49,6 +49,8 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
     , QObject( NULL )
     , material(_material)
     , isPreviewRequested(false)
+    , lodIndex(-1)
+    , switchIndex(-1)
 {
 	DVASSERT(material);
 
@@ -77,6 +79,8 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 			setDropEnabled(false);
 			break;
 	}
+
+    setColumnCount(3);
 }
 
 MaterialItem::~MaterialItem()
@@ -153,6 +157,34 @@ void MaterialItem::SetFlag(MaterialFlag flag, bool set)
 bool MaterialItem::GetFlag(MaterialFlag flag) const
 {
 	return (bool) (curFlag & flag);
+}
+
+void MaterialItem::SetLodIndex(int index)
+{
+    if(index != lodIndex)
+    {
+        lodIndex = index;
+        emitDataChanged();
+    }
+}
+
+int MaterialItem::GetLodIndex() const
+{
+    return lodIndex;
+}
+
+void MaterialItem::SetSwitchIndex(int index)
+{
+    if(index != switchIndex)
+    {
+        switchIndex = index;
+        emitDataChanged();
+    }
+}
+
+int MaterialItem::GetSwitchIndex() const
+{
+    return switchIndex;
 }
 
 void MaterialItem::requestPreview()

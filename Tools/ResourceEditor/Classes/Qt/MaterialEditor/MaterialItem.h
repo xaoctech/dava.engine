@@ -59,6 +59,12 @@ public:
 	void SetFlag(MaterialFlag flag, bool set);
 	bool GetFlag(MaterialFlag flag) const;
 
+    void SetLodIndex(int index);
+    int GetLodIndex() const;
+
+    void SetSwitchIndex(int index);
+    int GetSwitchIndex() const;
+
     void requestPreview();
     void setPreview(QImage image);
     
@@ -66,6 +72,9 @@ private:
     DAVA::NMaterial * material;
 	int curFlag;
     bool isPreviewRequested;
+
+    int lodIndex;
+    int switchIndex;
 
 private slots:
     void onThumbnailReady( QList<QImage> images, QVariant userData );

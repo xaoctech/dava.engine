@@ -37,7 +37,19 @@
 namespace DAVA {
 
 /* this camera is required just for preparing draw data*/
-RefPtr<Camera> UIParticles::defaultCamera(new Camera());
+UIParticles::ParticleCameraWrap UIParticles::defaultCamera;
+UIParticles::ParticleCameraWrap::ParticleCameraWrap():camera(new Camera())
+{
+    camera->SetPosition(Vector3(0,0,-1));
+    camera->SetUp(Vector3(0,-1,0));    
+    camera->RebuildCameraFromValues();
+    camera->RebuildViewMatrix();
+
+}
+UIParticles::ParticleCameraWrap::~ParticleCameraWrap()
+{
+    SafeRelease(camera);
+}
 
 UIParticles::UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)    
@@ -131,31 +143,14 @@ void UIParticles::Draw(const UIGeometricData & geometricData)
     if ((!effect)||(effect->state == ParticleEffectComponent::STATE_STOPPED)) 
         return;
 
-    
+    matrix.CreateRotation(Vector3(0,0,1), -geometricData.angle);
     matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
     system->Process(updateTime);
-    updateTime = 0;
-    		
-    /*RenderManager::Instance()->PushDrawMatrix();
-    RenderManager::Instance()->PushMappingMatrix();*/
+    updateTime = 0;    		        
     
-    /*draw particles here*/
-    //RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
-    //camera->SetupDynamicParameters();
-    /*RenderManager::Instance()->FlushState();    
-    RenderManager::Instance()->ClearDepthBuffer();*/
-    
-
-    
-    effect->effectRenderObject->PrepareToRender(defaultCamera.Get());
+    effect->effectRenderObject->PrepareToRender(defaultCamera.camera);
     for (int32 i=0, sz = effect->effectRenderObject->GetActiveRenderBatchCount(); i<sz; ++i)
-        effect->effectRenderObject->GetActiveRenderBatch(i)->Draw(PASS_FORWARD, defaultCamera.Get());
-                       
-    /*RenderManager::Instance()->PopDrawMatrix();
-    RenderManager::Instance()->PopMappingMatrix();*/
-	/*RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-    RenderManager::Instance()->Setup2DMatrices();*/
-	        
+        effect->effectRenderObject->GetActiveRenderBatch(i)->Draw(PASS_FORWARD, defaultCamera.camera);
 }
 
 void UIParticles::Load(const FilePath& path)
@@ -185,6 +180,7 @@ void UIParticles::Load(const FilePath& path)
     if (effect)
     {
         effect->effectRenderObject->SetEffectMatrix(&matrix);
+        effect->effectRenderObject->Set2DMode(true);
         effectPath = path;
         
         HandleAutostart();
