@@ -43,7 +43,7 @@ SoundComponent::~SoundComponent()
 
 SoundEvent * SoundComponent::GetSoundEvent(int32 index)
 {
-    DVASSERT(index >= 0 && index < events.size());
+    DVASSERT(index >= 0 && index < (int32)events.size());
     return events[index];
 }
 
@@ -98,12 +98,37 @@ Component * SoundComponent::Clone(Entity * toEntity)
 
 void SoundComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    //IS: TODO serialization
     Component::Serialize(archive, serializationContext);
+
+    if(archive)
+    {
+        uint32 eventsCount = events.size();
+        archive->SetUInt32("sc.eventCount", eventsCount);
+        for(uint32 i = 0; i < eventsCount; ++i)
+        {
+            KeyedArchive* eventArchive = new KeyedArchive();
+            SoundSystem::Instance()->SerializeEvent(events[i], eventArchive);
+            archive->SetArchive(KeyedArchive::GenKeyFromIndex(i), eventArchive);
+            SafeRelease(eventArchive);
+        }
+    }
 }
 
 void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    //IS: TODO deserialization
+    events.clear();
+
+    if(archive)
+    {
+        uint32 eventsCount = archive->GetUInt32("sc.eventCount");
+        for(uint32 i = 0; i < eventsCount; ++i)
+        {
+            KeyedArchive* eventArchive = archive->GetArchive(KeyedArchive::GenKeyFromIndex(i));
+            SoundEvent * sEvent = SoundSystem::Instance()->CreateAndDeserializeEvent(eventArchive);
+            AddSoundEvent(sEvent);
+            SafeRelease(sEvent);
+        }
+    }
+
     Component::Deserialize(archive, serializationContext);
 }

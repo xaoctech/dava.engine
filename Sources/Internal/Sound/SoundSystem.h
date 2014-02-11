@@ -47,6 +47,9 @@ public:
     
     virtual SoundEvent * CreateSoundEventByID(const String & eventName, const FastName & groupName) = 0;
     virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128) = 0;
+    
+    virtual void SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive) = 0;
+    virtual SoundEvent * CreateAndDeserializeEvent(KeyedArchive *archive) = 0;
 
 
     virtual void Update(float32 timeElapsed);

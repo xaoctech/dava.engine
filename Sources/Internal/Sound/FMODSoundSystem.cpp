@@ -98,6 +98,78 @@ SoundEvent * FMODSoundSystem::CreateSoundEventFromFile(const FilePath & fileName
     return event;
 }
 
+void FMODSoundSystem::SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive)
+{
+    if(IsPointerToExactClass<FMODSound>(sEvent))
+    {
+        FMODSound * sound = (FMODSound *)sEvent;
+        toArchive->SetString("EventType", "FMODSound");
+
+        toArchive->SetUInt32("flags", sound->flags);
+        toArchive->SetInt32("priority", sound->priority);
+        toArchive->SetString("filePath", sound->fileName.GetFrameworkPath());
+    }
+    else if(IsPointerToExactClass<FMODSoundEvent>(sEvent))
+    {
+        FMODSoundEvent * sound = (FMODSoundEvent *)sEvent;
+        toArchive->SetString("EventType", "FMODSoundEvent");
+
+        toArchive->SetString("eventName", sound->eventName);
+    }
+#ifdef __DAVAENGINE_IPHONE__
+    else if(IsPointerToExactClass<MusicIOSSoundEvent>(sEvent))
+    {
+        toArchive->SetString("EventType", "FMODSound");
+        //TODO
+    }
+#endif //__DAVAENGINE_IPHONE__
+
+    const char * groupNamePtr = 0;
+    Vector<SoundGroup>::iterator it = soundGroups.begin();
+    while(it != soundGroups.end())
+    {
+        Vector<SoundEvent *> & events = it->events;
+        Vector<SoundEvent *>::iterator itEv = events.begin();
+        Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
+        while(itEv != itEvEnd)
+        {
+            if((*itEv) == sEvent)
+            {
+                groupNamePtr = it->name.c_str();
+                break;
+            }
+            ++itEv;
+        }
+    }
+    if(groupNamePtr)
+    {
+        toArchive->SetString("groupName", String(groupNamePtr));
+    }
+}
+
+SoundEvent * FMODSoundSystem::CreateAndDeserializeEvent(KeyedArchive *archive)
+{
+    String eventType = archive->GetString("EventType");
+    FastName groupName(archive->GetString("groupName"));
+
+    if(eventType == "FMODSound")
+    {
+        uint32 flags = archive->GetUInt32("flags");
+        int32 priority = archive->GetInt32("priority");
+        FilePath path(archive->GetString("filePath"));
+
+        return CreateSoundEventFromFile(path, groupName, flags, priority);
+    }
+    else if(eventType == "FMODSoundEvent")
+    {
+        String eventName = archive->GetString("eventName");
+
+        return CreateSoundEventByID(eventName, groupName);
+    }
+
+    return 0;
+}
+
 void FMODSoundSystem::LoadFEV(const FilePath & filePath)
 {
     FMOD::EventProject * project = 0;
