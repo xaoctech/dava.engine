@@ -119,8 +119,15 @@ void FMODSoundSystem::SerializeEvent(const SoundEvent * sEvent, KeyedArchive *to
 #ifdef __DAVAENGINE_IPHONE__
     else if(IsPointerToExactClass<MusicIOSSoundEvent>(sEvent))
     {
+        MusicIOSSoundEvent * musicEvent = (MusicIOSSoundEvent *)sEvent;
         toArchive->SetString("EventType", "FMODSound");
-        //TODO
+        
+        uint32 flags = SoundEvent::SOUND_EVENT_CREATE_STREAM;
+        if(musicEvent->GetLoopCount() == -1)
+            flags |= SoundEvent::SOUND_EVENT_CREATE_LOOP;
+        
+        toArchive->SetUInt32("flags", flags);
+        toArchive->SetString("filePath", musicEvent->GetFilePath().GetFrameworkPath());
     }
 #endif //__DAVAENGINE_IPHONE__
 
