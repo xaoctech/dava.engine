@@ -44,12 +44,12 @@ $(QT_DIR_OUTPUT)/ui_%.h : $(QT_DIR_UI)/%.ui
 $(QT_DIR_OUTPUT)/%_moc.cpp : $(QT_DIR_MOC)/%.h
 	@echo $@
 	@$(call os_mkdir, "$(dir $@)")
-	@$(OS_MOC) -nn $< -o -nn "$@"
+	@$(OS_MOC) -nn $< -o "$@"
 
 $(QT_DIR_OUTPUT)/%_moca.cpp : $(QT_DIR_MOC)/%.cpp
 	@echo $@
 	@$(call os_mkdir, "$(dir $@)")
-	@$(OS_MOC) -nn $< -o -nn "$@"
+	@$(OS_MOC) -nn $< -o "$@"
 
 $(QT_DIR_OUTPUT)/%_qrc.cpp : $(QT_DIR_QRC)/%.qrc
 	@echo $@
