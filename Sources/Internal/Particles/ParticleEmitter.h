@@ -107,8 +107,7 @@ public:
 	FilePath configPath;	
 	eType	emitterType;	    	
 
-	Vector<ParticleLayer*> layers;
-	Vector3 position;			
+	Vector<ParticleLayer*> layers;	
 	bool shortEffect;	
 	
 	float32 lifeTime;
@@ -120,7 +119,7 @@ public:
 	RefPtr< PropertyLine<float32> > emissionRange;
 	RefPtr< PropertyLine<float32> > radius;
 	RefPtr< PropertyLine<Color> > colorOverLife;
-	RefPtr< PropertyLine<Vector3> > size;	
+	RefPtr< PropertyLine<Vector3> > size;	    
 
 protected:
     virtual ~ParticleEmitter();
@@ -137,6 +136,8 @@ private:
     void ReleaseFromCache(const FilePath& name);
 
     static EmitterCacheMap emitterCache;
+public:
+    static bool FORCE_DEEP_CLONE;
 };
 
 }
