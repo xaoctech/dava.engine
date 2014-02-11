@@ -195,16 +195,6 @@ void FMODSoundEvent::Pause()
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
         (*it)->setPaused(true);
 }
-
-void FMODSoundEvent::Serialize(KeyedArchive *archive)
-{
-    archive->SetString("fmSE.eventID", eventName);
-}
-    
-void FMODSoundEvent::Deserialize(KeyedArchive *archive)
-{
-    eventName = archive->GetString("fmSE.eventID");
-}
     
 void FMODSoundEvent::SetParameterValue(const FastName & paramName, float32 value)
 {

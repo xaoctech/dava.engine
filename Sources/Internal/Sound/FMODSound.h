@@ -59,9 +59,6 @@ public:
     virtual bool IsActive();
     virtual void Stop();
     virtual void Pause();
-
-    virtual void Serialize(KeyedArchive *archive) {};
-    virtual void Deserialize(KeyedArchive *archive) {};
     
 	virtual void SetPosition(const Vector3 & position);
     virtual void SetOrientation(const Vector3 & orientation) {};
@@ -78,16 +75,16 @@ public:
     void PerformCallback(FMOD::Channel * instance);
 
 protected:
-	FMODSound(const FilePath & fileName, int32 priority);
+	FMODSound(const FilePath & fileName, uint32 flags, int32 priority);
 	virtual ~FMODSound();
 
 	static FMODSound * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
 
-	bool is3D;
 	Vector3 position;
 
 	FilePath fileName;
-	int32 priority;
+    int32 priority;
+    uint32 flags;
 
 	FMOD::Sound * fmodSound;
 	FMOD::ChannelGroup * fmodInstanceGroup;

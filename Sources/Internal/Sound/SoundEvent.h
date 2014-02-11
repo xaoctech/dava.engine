@@ -60,9 +60,6 @@ public:
     virtual void Stop() = 0;
     virtual void Pause() = 0;
     
-    virtual void Serialize(KeyedArchive *archive) = 0;
-    virtual void Deserialize(KeyedArchive *archive) = 0;
-    
     virtual void SetVolume(float32 volume) = 0;
     virtual float32	GetVolume() = 0;
     
