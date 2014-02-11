@@ -411,7 +411,6 @@
 		E8C992AA184CD0EC00AFBF3F /* ScenePreviewControl.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99065184CD0EB00AFBF3F /* ScenePreviewControl.cpp */; };
 		E8C992AB184CD0EC00AFBF3F /* ScenePreviewDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99067184CD0EB00AFBF3F /* ScenePreviewDialog.cpp */; };
 		E8C992AC184CD0EC00AFBF3F /* SceneValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99069184CD0EB00AFBF3F /* SceneValidator.cpp */; };
-		E8C992AD184CD0EC00AFBF3F /* TextureSquarenessChecker.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9906B184CD0EB00AFBF3F /* TextureSquarenessChecker.cpp */; };
 		E8C992AE184CD0EC00AFBF3F /* FrameworkMain.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9906D184CD0EB00AFBF3F /* FrameworkMain.cpp */; };
 		E8C992AF184CD0EC00AFBF3F /* GameCore.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9906F184CD0EB00AFBF3F /* GameCore.cpp */; };
 		E8C992B0184CD0EC00AFBF3F /* ImageTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99072184CD0EB00AFBF3F /* ImageTools.cpp */; };
@@ -1360,8 +1359,6 @@
 		E8C99068184CD0EB00AFBF3F /* ScenePreviewDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScenePreviewDialog.h; sourceTree = "<group>"; };
 		E8C99069184CD0EB00AFBF3F /* SceneValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SceneValidator.cpp; sourceTree = "<group>"; };
 		E8C9906A184CD0EB00AFBF3F /* SceneValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SceneValidator.h; sourceTree = "<group>"; };
-		E8C9906B184CD0EB00AFBF3F /* TextureSquarenessChecker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureSquarenessChecker.cpp; sourceTree = "<group>"; };
-		E8C9906C184CD0EB00AFBF3F /* TextureSquarenessChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSquarenessChecker.h; sourceTree = "<group>"; };
 		E8C9906D184CD0EB00AFBF3F /* FrameworkMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FrameworkMain.cpp; path = Classes/FrameworkMain.cpp; sourceTree = "<group>"; };
 		E8C9906E184CD0EB00AFBF3F /* FrameworkMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrameworkMain.h; path = Classes/FrameworkMain.h; sourceTree = "<group>"; };
 		E8C9906F184CD0EB00AFBF3F /* GameCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameCore.cpp; path = Classes/GameCore.cpp; sourceTree = "<group>"; };
@@ -3094,8 +3091,6 @@
 				E8C99068184CD0EB00AFBF3F /* ScenePreviewDialog.h */,
 				E8C99069184CD0EB00AFBF3F /* SceneValidator.cpp */,
 				E8C9906A184CD0EB00AFBF3F /* SceneValidator.h */,
-				E8C9906B184CD0EB00AFBF3F /* TextureSquarenessChecker.cpp */,
-				E8C9906C184CD0EB00AFBF3F /* TextureSquarenessChecker.h */,
 			);
 			name = Deprecated;
 			path = Classes/Deprecated;
@@ -4077,7 +4072,6 @@
 				E8C9925E184CD0EC00AFBF3F /* btGeometryUtil.cpp in Build Sources */,
 				E8C9933A184CD0EC00AFBF3F /* QtPropertyDataKeyedArchiveMember.cpp in Build Sources */,
 				E8BAD70E1859F50300C98C8D /* TextDrawSystem_moc.cpp in Build Sources */,
-				E8C992AD184CD0EC00AFBF3F /* TextureSquarenessChecker.cpp in Build Sources */,
 				E8C991EC184CD0EC00AFBF3F /* btAxisSweep3.cpp in Build Sources */,
 				E8ACC89418A3EA1B00F26ABC /* SwitchEntityCreator.cpp in Build Sources */,
 				E8C9924D184CD0EC00AFBF3F /* btHinge2Constraint.cpp in Build Sources */,
