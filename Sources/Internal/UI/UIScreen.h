@@ -74,7 +74,7 @@ public:
 	virtual void RemoveFromGroup(int32 groupId);
 
 	virtual	int32 GetGroupId();
-	virtual void SystemDraw(const UIGeometricData &geometricData, UniqueHandle renderState);// Internal method used by ControlSystem
+	virtual void SystemDraw(const UIGeometricData &geometricData);// Internal method used by ControlSystem
     
     virtual void SystemWillAppear();
     virtual void SystemScreenSizeDidChanged(const Rect &newFullScreenSize);
@@ -88,7 +88,7 @@ protected:
 	 
 	 \param geometricData Base geometric data. This parameter is'n used in the default realisation.
 	 */	
-	virtual void FillScreenBorders(const UIGeometricData &geometricData, UniqueHandle renderState);
+	virtual void FillScreenBorders(const UIGeometricData &geometricData);
 
 
 	int32 groupId;
