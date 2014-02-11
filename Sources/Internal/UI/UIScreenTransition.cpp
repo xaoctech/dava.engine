@@ -102,7 +102,7 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 	int32 prevScreenGroupId = 0;
 	if (prevScreen)
 	{
-		prevScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData(), RenderState::RENDERSTATE_2D_BLEND);
+		prevScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
 		
 		prevScreen->SystemWillDisappear();
 		// prevScreen->UnloadResources();
@@ -131,7 +131,7 @@ void UIScreenTransition::StartTransition(UIScreen * _prevScreen, UIScreen * _nex
 
 	float32 timeElapsed = SystemTimer::FrameDelta();
 	nextScreen->SystemUpdate(timeElapsed);
-	nextScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData(), RenderState::RENDERSTATE_2D_BLEND);
+	nextScreen->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
 
 //    RenderManager::Instance()->SetColor(0.0, 1.0, 0.0, 1.0);
 //    RenderHelper::Instance()->FillRect(Rect(screenRect.x, screenRect.y, screenRect.dx / 2, screenRect.dy));
@@ -172,10 +172,10 @@ void UIScreenTransition::Update(float32 timeElapsed)
 	}
 }
 
-void UIScreenTransition::Draw(const UIGeometricData &geometricData, UniqueHandle renderState)
+void UIScreenTransition::Draw(const UIGeometricData &geometricData)
 {
     Sprite::DrawState drawState;
-    drawState.SetRenderState(renderState);
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     
 	drawState.SetScale(0.5f, 1.0f);
 	drawState.SetPosition(0, 0);

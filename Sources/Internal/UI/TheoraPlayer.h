@@ -60,7 +60,7 @@ public:
      Default realization is drawing UIControlBackground with requested parameters.
 	 \param[in] geometricData Control geometric data.
 	 */
-	virtual void Draw(const UIGeometricData &geometricData, UniqueHandle renderState);
+	virtual void Draw(const UIGeometricData &geometricData);
     
     /**
      \brief open video file

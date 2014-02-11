@@ -53,6 +53,7 @@
 #include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Project/ProjectManager.h"
 
 #include "PropertyEditorStateHelper.h"
 
@@ -344,10 +345,11 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 if(dataName == "heightmapPath" || dataName == "texture")
                 {
                     QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
-                    QString projPath = SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString().c_str();
-                    variantData->SetDefaultOpenDialogPath(projPath);
+                    QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                    
+                    variantData->SetDefaultOpenDialogPath(dataSourcePath);
                     QStringList pathList;
-                    pathList.append(projPath);
+                    pathList.append(dataSourcePath);
                     QString fileFilter = "All (*.*)";
                     if(dataName == "heightmapPath")
                     {

@@ -32,7 +32,7 @@
 #include "DockSceneInfo/SceneInfo.h"
 #include "../Qt/Settings/SettingsManager.h"
 #include "CommandLine/CommandLineManager.h"
-
+#include "Project/ProjectManager.h"
 
 #include "Main/QtUtils.h"
 
@@ -272,7 +272,7 @@ void SceneInfo::RefreshLODInfoForSelection()
 
 uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
 {
-	String projectPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
+	String projectPath = ProjectManager::Instance()->CurProjectPath().toStdString();
     uint32 textureSize = 0;
     
     TexturesMap::const_iterator endIt = textures.end();

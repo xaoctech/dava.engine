@@ -50,7 +50,7 @@ struct ParticleRenderGroup
 
 	void ClearArrays();
 	void ResizeArrays(uint32 particlesCount);
-	void UpdateRenderBatch();
+	void UpdateRenderBatch(uint32 vertexSize, uint32 vertexStride);
 };
 
 class ParticleRenderObject : public RenderObject
@@ -63,6 +63,8 @@ class ParticleRenderObject : public RenderObject
     Matrix4* effectMatrix;
 	Vector<uint16> indices;
     uint32 sortingOffset;
+
+    uint32 vertexSize, vertexStride;
 public:
 	ParticleRenderObject(ParticleEffectData *effect);
 	~ParticleRenderObject();
@@ -74,6 +76,8 @@ public:
     Matrix4 *GetEffectMatrix();
 
     void SetSortingOffset(uint32 offset);
+
+    void Set2DMode(bool is2d);
 
 	virtual void RecalcBoundingBox(){}
 	virtual void RecalculateWorldBoundingBox(){
