@@ -38,6 +38,7 @@ namespace DAVA
 
 #define PARTICLE_EMITTER_DEFAULT_LIFE_TIME 100.0f
 
+bool ParticleEmitter::FORCE_DEEP_CLONE = false;
 
 PartilceEmitterLoadProxy::PartilceEmitterLoadProxy()
 {
@@ -52,12 +53,12 @@ void PartilceEmitterLoadProxy::Load(KeyedArchive *archive, SerializationContext 
 }
 
 ParticleEmitter::ParticleEmitter() : requireDeepClone(true)
-{    
+{        
 	Cleanup(false);
 }
 
 ParticleEmitter::~ParticleEmitter()
-{
+{    
 	CleanupLayers();	
     ReleaseFromCache(configPath);
 }
@@ -97,7 +98,6 @@ ParticleEmitter * ParticleEmitter::Clone()
 
 	ParticleEmitter* clonedEmitter = new ParticleEmitter();
 	clonedEmitter->configPath = this->configPath;
-	clonedEmitter->position = this->position;
 	
 	clonedEmitter->name = name;
 	clonedEmitter->lifeTime = lifeTime;
@@ -248,11 +248,12 @@ void ParticleEmitter::ReleaseFromCache(const FilePath& name)
 ParticleEmitter *ParticleEmitter::LoadEmitter(const FilePath & filename)
 {
     ParticleEmitter *res;
-#ifdef __DAVAENGINE_RESOURCEEDITOR__ //resource editor do not use emitters cache
-    res = new ParticleEmitter();
-    res->LoadFromYaml(filename);
-    return res;
-#endif    
+    if (FORCE_DEEP_CLONE) //resource and ui editor set this flag not to cache emitters
+    {
+        res = new ParticleEmitter();
+        res->LoadFromYaml(filename);
+        return res;
+    }
 
     EmitterCacheMap::iterator it = emitterCache.find(FILEPATH_MAP_KEY(filename));
     if (it!=emitterCache.end())    
