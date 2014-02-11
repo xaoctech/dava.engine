@@ -133,14 +133,7 @@ void EditorMaterialSystem::SetLightViewMode(int fullViewMode)
     if(curViewMode != fullViewMode)
     {
         curViewMode = fullViewMode;
-
-        DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
-        DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
-
-        for(; i != end; ++i)
-        {
-            ApplyViewMode(*i);
-        }
+        ApplyViewMode();
     }
 }
 
@@ -158,6 +151,20 @@ void EditorMaterialSystem::SetLightViewMode(EditorMaterialSystem::MaterialLightV
     }
 
     SetLightViewMode(newMode);
+}
+
+void EditorMaterialSystem::SetLightmapCanvasVisible(bool enable)
+{
+    if(enable != showLightmapCanvas)
+    {
+        showLightmapCanvas = enable;
+        ApplyViewMode();
+    }
+}
+
+bool EditorMaterialSystem::IsLightmapCanvasVisible() const
+{
+    return showLightmapCanvas;
 }
 
 void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
@@ -190,6 +197,17 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 	}
 }
 
+void EditorMaterialSystem::ApplyViewMode()
+{
+    DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
+    DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
+
+    for(; i != end; ++i)
+    {
+        ApplyViewMode(*i);
+    }
+}
+
 void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
 {
     DAVA::NMaterial::eFlagValue flag;
@@ -201,6 +219,9 @@ void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
     {
         (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOff : flag = DAVA::NMaterial::FlagOn;
         material->SetFlag(DAVA::NMaterial::FLAG_LIGHTMAPONLY, flag);
+
+        (showLightmapCanvas) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+        material->SetFlag(DAVA::NMaterial::FLAG_SETUPLIGHTMAP, flag);
     }
 
     (curViewMode & LIGHTVIEW_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
