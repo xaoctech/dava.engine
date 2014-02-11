@@ -752,16 +752,16 @@ void Scene::Draw()
 }
 
 	
-void Scene::StopAllAnimations(bool recursive )
-{
-	int32 size = (int32)animations.size();
-	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
-	{
-		SceneNodeAnimationList * anim = animations[animationIndex];
-		anim->StopAnimation();
-	}
-	Entity::StopAllAnimations(recursive);
-}
+// void Scene::StopAllAnimations(bool recursive )
+// {
+// 	int32 size = (int32)animations.size();
+// 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
+// 	{
+// 		SceneNodeAnimationList * anim = animations[animationIndex];
+// 		anim->StopAnimation();
+// 	}
+// 	Entity::StopAllAnimations(recursive);
+// }
     
     
 void Scene::SetCurrentCamera(Camera * _camera)

@@ -106,9 +106,6 @@
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
 
-#define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
-#define DEFAULT_LANDSCAPE_HEIGHT		50.0f
-
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -891,7 +888,7 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 void QtMainWindow::OnProjectOpen()
 {
     QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-    if(!newPath.isEmpty() && CloseProject())
+    if(!newPath.isEmpty() && ui->sceneTabWidget->CloseAllTabs())
     {
         ProjectManager::Instance()->ProjectOpen(newPath);
     }
@@ -899,7 +896,10 @@ void QtMainWindow::OnProjectOpen()
 
 void QtMainWindow::OnProjectClose()
 {
-    CloseProject();
+    if(ui->sceneTabWidget->CloseAllTabs())
+    {
+        ProjectManager::Instance()->ProjectClose();
+    }
 }
 
 void QtMainWindow::OnSceneNew()
@@ -1337,8 +1337,11 @@ void QtMainWindow::OnAddLandscape()
     entityToProcess->AddComponent(component);
 
     AABBox3 bboxForLandscape;
-    bboxForLandscape.AddPoint(Vector3(-DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, -DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, 0.f));
-    bboxForLandscape.AddPoint(Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_HEIGHT));
+    float32 defaultLandscapeSize = SettingsManager::Instance()->GetValue("DefaultLandscapeSize", SettingsManager::DEFAULT).AsFloat();
+    float32 defaultLandscapeHeight = SettingsManager::Instance()->GetValue("DefaultLandscapeHeight", SettingsManager::DEFAULT).AsFloat();
+    
+    bboxForLandscape.AddPoint(Vector3(-defaultLandscapeSize/2.f, -defaultLandscapeSize/2.f, 0.f));
+    bboxForLandscape.AddPoint(Vector3(defaultLandscapeSize/2.f, defaultLandscapeSize/2.f, defaultLandscapeHeight));
     newLandscape->BuildLandscapeFromHeightmapImage("", bboxForLandscape);
 
     SceneEditor2* sceneEditor = GetCurrentScene();
@@ -1439,9 +1442,9 @@ void QtMainWindow::OnEditor2DCameraDialog()
     float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
     float32 aspect = w / h;
     camera->SetupOrtho(w, aspect, 1, 1000);        
-    camera->SetPosition(Vector3(0,-500, 0));
+    camera->SetPosition(Vector3(0,0, -500));
     camera->SetTarget(Vector3(0, 0, 0));  
-    camera->SetUp(Vector3(0, 0, 1));
+    camera->SetUp(Vector3(0, -1, 0));
     camera->RebuildCameraFromValues();        
 
     sceneNode->AddComponent(new CameraComponent(camera));
@@ -1457,7 +1460,7 @@ void QtMainWindow::OnEditor2DCameraDialog()
 }
 void QtMainWindow::OnEditorSpriteDialog()
 {
-    FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+    FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
     projectPath += "Data/Gfx/";
 
     QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.txt)"));
@@ -1473,7 +1476,10 @@ void QtMainWindow::OnEditorSpriteDialog()
     SpriteObject *spriteObject = new SpriteObject(sprite, 0, Vector2(1,1), Vector2(0.5f*sprite->GetWidth(), 0.5f*sprite->GetHeight()));
     spriteObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     sceneNode->AddComponent(new RenderComponent(spriteObject));    
-    Matrix4 m = Matrix4(1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1);
+    Matrix4 m = Matrix4(1,0,0,0,
+                        0,1,0,0,
+                        0,0,-1,0,                        
+                        0,0,0,1);
     sceneNode->SetLocalTransform(m);
     SceneEditor2* sceneEditor = GetCurrentScene();
     if(sceneEditor)
@@ -2046,7 +2052,7 @@ bool QtMainWindow::SelectCustomColorsTexturePath()
 		return false;
 	}
 	
-	String pathToSave = selectedPathname.GetRelativePathname(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	String pathToSave = selectedPathname.GetRelativePathname(ProjectManager::Instance()->CurProjectPath().toStdString());
 	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
 	return true;
 }
@@ -2638,12 +2644,3 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	return true;
 }
 
-bool QtMainWindow::CloseProject()
-{
-    if(ui->sceneTabWidget->CloseAllTabs())
-    {
-        ProjectManager::Instance()->ProjectClose();
-        return true;
-    }
-    return false;
-}

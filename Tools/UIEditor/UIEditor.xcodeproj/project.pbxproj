@@ -2003,6 +2003,7 @@
 		8C7174830A1E4DCBA0332EC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks/;
@@ -2037,13 +2038,14 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Libs/fmod/lib/macos\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = UIEditor;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
 		BEC09A62E69C3553534FF35E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks/;
@@ -2082,7 +2084,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../Libs/fmod/lib/macos\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = UIEditor;
-				SDKROOT = macosx10.8;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};

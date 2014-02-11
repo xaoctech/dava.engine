@@ -99,10 +99,8 @@ void ProjectManager::ProjectOpen(const QString &path)
 			DAVA::FilePath dataSource3Dpathname = projectPath + "DataSource/3d/";
 			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
 
-			SettingsManager::Instance()->SetValue("ProjectPath", 
+			SettingsManager::Instance()->SetValue("LastProjectPath",
 				VariantType(projectPath.GetAbsolutePathname()), SettingsManager::INTERNAL);
-			SettingsManager::Instance()->SetValue("3dDataSourcePath", 
-				VariantType(dataSource3Dpathname.GetAbsolutePathname()), SettingsManager::INTERNAL);
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 
@@ -121,7 +119,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 
 void ProjectManager::ProjectOpenLast()
 {
-	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("LastProjectPath", SettingsManager::INTERNAL).AsString());
 
 	if(!projectPath.IsEmpty())
 	{
