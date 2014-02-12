@@ -61,6 +61,8 @@ void EditorFontManager::Reset()
 		Font* font = iter->second;
 		SafeRelease(font);
 	}
+    
+    ResetLocalizedFontsPath();
 }
 
 Font* EditorFontManager::LoadFont(const String& fontPath, const String& fontName)
@@ -95,6 +97,29 @@ void EditorFontManager::SetDefaultFont(Font *font)
 void EditorFontManager::ResetDefaultFont()
 {
 	defaultFont = NULL;
+}
+
+void EditorFontManager::SetDefaultFontsPath(const FilePath& path)
+{
+    //TODO: use current locale
+    defaultFontsPath = path;
+}
+
+const FilePath& EditorFontManager::GetDefaultFontsPath()
+{
+    return defaultFontsPath;
+}
+
+const FilePath& EditorFontManager::GetLocalizedFontsPath()
+{
+    //TODO: get localized fonts path
+    return defaultFontsPath;
+}
+
+void EditorFontManager::ResetLocalizedFontsPath()
+{
+    // TODO: reset localized fonts path (unload localized fonts)
+    defaultFontsPath = FilePath();
 }
 
 Font* EditorFontManager::GetFont(const String& name) const

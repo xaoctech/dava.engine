@@ -73,6 +73,11 @@ public:
 	void InitDefaultFontFromPath(const DefaultFontPath& defaultFontPath);
 	QString GetDefaultFontName() const;
     
+    void SetDefaultFontsPath(const FilePath& path);
+    const FilePath& GetLocalizedFontsPath();
+    const FilePath& GetDefaultFontsPath();
+    void ResetLocalizedFontsPath();
+    
 signals:
     void FontLoaded();
 	
@@ -82,8 +87,10 @@ private:
 private:
 	Font* defaultFont;
 	Font* baseFont;
-	FONTSMAP fonts; 
-
+	FONTSMAP fonts;
+    
+    //TODO: load localized fonts from localizationFontsPath/locale/fonts.yaml
+    FilePath defaultFontsPath;
 };
 
 #endif /* defined(__UIEditor__FontManager__) */
