@@ -45,12 +45,12 @@ namespace DAVA
 ApplicationCore::ApplicationCore()
 	: BaseObject()
 {
-    SoundSystem::Init();
+
 }
 
 ApplicationCore::~ApplicationCore()
 {
-	SoundSystem::Release();
+
 }
 	
 void ApplicationCore::Update(float32 timeElapsed)
