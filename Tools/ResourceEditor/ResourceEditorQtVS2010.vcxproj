@@ -389,7 +389,6 @@
     <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\Deprecated\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Deprecated\SceneValidator.cpp" />
-    <ClCompile Include="Classes\Deprecated\TextureSquarenessChecker.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\ImageTools\ImageTools.cpp" />
@@ -1012,7 +1011,6 @@
     <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h" />
     <ClInclude Include="Classes\Deprecated\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\Deprecated\SceneValidator.h" />
-    <ClInclude Include="Classes\Deprecated\TextureSquarenessChecker.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\ImageTools\ImageTools.h" />
