@@ -66,6 +66,7 @@ const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("recentFiles", DAVA::VariantType((KeyedArchive *)NULL)),
     SettingRow("recentFilesListCount", DAVA::VariantType(5)),
     SettingRow("materialsLightViewMode", DAVA::VariantType(EditorMaterialSystem::LIGHTVIEW_ALL)),
+    SettingRow("materialsShowLightmapCanvas", DAVA::VariantType(false)),
 };
 
 SettingsManager::SettingsManager()
