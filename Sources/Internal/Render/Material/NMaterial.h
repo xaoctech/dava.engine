@@ -69,12 +69,17 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    IlluminationParams() :
+    //this is a weak property since IlluminationParams exists only as a part of parent material
+    NMaterial* parent;
+
+    IlluminationParams(NMaterial* parentMaterial) :
     isUsed(true),
     castShadow(true),
     receiveShadow(true),
-    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
-    {}
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT),
+    parent(parentMaterial)
+    {
+    }
 
     IlluminationParams(const IlluminationParams & params)
     {
@@ -82,13 +87,18 @@ struct IlluminationParams : public InspBase
         castShadow = params.castShadow;
         receiveShadow = params.receiveShadow;
         lightmapSize = params.lightmapSize;
+        parent = params.parent;
     }
+    
+    int32 GetLightmapSize() const;
+    void SetLightmapSize(const int32 &size);
 
-    INTROSPECTION(IlluminationParams, 
+
+    INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(castShadow, "Cast Shadow", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(receiveShadow, "Receive Shadow", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(lightmapSize, "Lightmap Size", I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("lightmapSize", "Lightmap Size", GetLightmapSize, SetLightmapSize, I_SAVE | I_VIEW | I_EDIT)
         );
 };
 
@@ -166,6 +176,8 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
+    static const FastName PARAM_LIGHTMAP_SIZE;
+    
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
@@ -535,6 +547,8 @@ protected:
     FastName GetEffectiveQuality() const;
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
+    static bool IsRuntimeProperty(const FastName& propName);
+    static bool IsNamePartOfArray(const FastName& fastName, FastName* array, uint32 count);
 		
 protected:
 	

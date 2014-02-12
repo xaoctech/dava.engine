@@ -77,6 +77,7 @@ const FastName NMaterial::PARAM_UV_SCALE("uvScale");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
+const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
 const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
@@ -115,11 +116,31 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 	NMaterial::FLAG_VIEWSPECULAR
 };
 
+static FastName RUNTIME_ONLY_PROPERTIES[] =
+{
+    NMaterial::PARAM_LIGHTMAP_SIZE
+};
+
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
 
 Texture* NMaterial::stubCubemapTexture = NULL;
 Texture* NMaterial::stub2dTexture = NULL;
 NMaterial* NMaterial::GLOBAL_MATERIAL = NULL;
+
+int32 IlluminationParams::GetLightmapSize() const
+{
+    return lightmapSize;
+}
+
+void IlluminationParams::SetLightmapSize(const int32 &size)
+{
+    lightmapSize = size;
+    
+    if(parent)
+    {
+        parent->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE, Shader::UT_INT, 1, &lightmapSize);
+    }
+}
 	
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -328,18 +349,21 @@ void NMaterial::Save(KeyedArchive * archive,
 		it != materialProperties.end();
 		++it)
 	{
-		NMaterialProperty* property = it->second;
-		
-		uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
-		uint8* propertyStorage = new uint8[dataSize + sizeof(property->type) + sizeof(property->size)];
-		
-		memcpy(propertyStorage, &property->type, sizeof(property->type));
-		memcpy(propertyStorage + sizeof(property->type), &property->size, sizeof(property->size));
-		memcpy(propertyStorage + sizeof(property->type) + sizeof(property->size), property->data, dataSize);
-		
-		materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(property->type) + sizeof(property->size));
-		
-		SafeDeleteArray(propertyStorage);
+        if(!IsRuntimeProperty(it->first))
+        {
+            NMaterialProperty* property = it->second;
+            
+            uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
+            uint8* propertyStorage = new uint8[dataSize + sizeof(property->type) + sizeof(property->size)];
+            
+            memcpy(propertyStorage, &property->type, sizeof(property->type));
+            memcpy(propertyStorage + sizeof(property->type), &property->size, sizeof(property->size));
+            memcpy(propertyStorage + sizeof(property->type) + sizeof(property->size), property->data, dataSize);
+            
+            materialProps->SetByteArray(it->first.c_str(), propertyStorage, dataSize + sizeof(property->type) + sizeof(property->size));
+            
+            SafeDeleteArray(propertyStorage);
+        }
 	}
 	archive->SetArchive("properties", materialProps);
 	SafeRelease(materialProps);
@@ -448,12 +472,12 @@ void NMaterial::Load(KeyedArchive * archive,
 					
 	if(archive->IsKeyExists("illumination.isUsed"))
 	{
-		illuminationParams = new IlluminationParams();
+		illuminationParams = new IlluminationParams(this);
 		
 		illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
 		illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
 		illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
-		illuminationParams->lightmapSize = archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+		illuminationParams->SetLightmapSize(archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize));
 	}
 					
 	const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
@@ -584,6 +608,7 @@ NMaterial* NMaterial::Clone()
 	if(illuminationParams)
 	{
 		clonedMaterial->illuminationParams = new IlluminationParams(*illuminationParams);
+        clonedMaterial->illuminationParams->parent = clonedMaterial;
 	}
 			
 	if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
@@ -644,7 +669,7 @@ NMaterial* NMaterial::Clone(const String& newName)
 IlluminationParams * NMaterial::GetIlluminationParams()
 {
 	if(!illuminationParams)
-		illuminationParams = new IlluminationParams();
+		illuminationParams = new IlluminationParams(this);
 	
 	return illuminationParams;
 }
@@ -1704,12 +1729,14 @@ NMaterial* NMaterial::CreateMaterialInstance(const FastName& materialName,
 	return mat;
 }
 
-bool NMaterial::IsRuntimeFlag(const FastName& flagName)
+bool NMaterial::IsNamePartOfArray(const FastName& fastName, FastName* array, uint32 count)
 {
-	bool result = false;
-	for(size_t i = 0; i < COUNT_OF(RUNTIME_ONLY_FLAGS); ++i)
+    DVASSERT(array);
+    
+    bool result = false;
+	for(size_t i = 0; i < count; ++i)
 	{
-		if(RUNTIME_ONLY_FLAGS[i] == flagName)
+		if(array[i] == fastName)
 		{
 			result = true;
 			break;
@@ -1717,6 +1744,17 @@ bool NMaterial::IsRuntimeFlag(const FastName& flagName)
 	}
 	
 	return result;
+
+}
+
+bool NMaterial::IsRuntimeFlag(const FastName& flagName)
+{
+    return IsNamePartOfArray(flagName, RUNTIME_ONLY_FLAGS, COUNT_OF(RUNTIME_ONLY_FLAGS));
+}
+
+bool NMaterial::IsRuntimeProperty(const FastName& propName)
+{
+    return IsNamePartOfArray(propName, RUNTIME_ONLY_PROPERTIES, COUNT_OF(RUNTIME_ONLY_PROPERTIES));
 }
 
 void NMaterial::SetMaterialTemplateName(const FastName& templateName)

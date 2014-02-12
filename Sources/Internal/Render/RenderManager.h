@@ -488,7 +488,7 @@ public:
     static Matrix4 invWorldMatrix;
     static Matrix3 worldInvTransposeMatrix;
 
-    static inline void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 updateSemantic);
+    static inline void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, pointer_size updateSemantic);
     
     //void SetMatrix(eShaderSemantic type, void * value, uint32 updateSemantic);
     //void SetMatrix(eShaderSemantic type, const Matrix4 & matrix, uint32 cacheValue);
@@ -857,7 +857,7 @@ public:
     void MakeGLScreenShot();
 };
     
-inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 _updateSemantic)
+inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, pointer_size _updateSemantic)
 {
     //AutobindVariableData * var = &dynamicParameters[shaderSemantic];
     //if (var->updateSemantic
