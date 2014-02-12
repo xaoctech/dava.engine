@@ -73,7 +73,6 @@ public:
     public:
     
 		DrawState();
-        ~DrawState();
         
 		Vector2 position;
 		Vector2 pivotPoint;
@@ -99,6 +98,7 @@ public:
 		inline void SetPerPixelAccuracyUsage(bool needToUse);
 		void BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState);
         
+        //NOTE: be careful: this method doesn't retain shader.
         void SetShader(Shader* _shader);
         
         inline Shader* GetShader() const
@@ -106,6 +106,7 @@ public:
             return shader;
         }
         
+        //NOTE: be careful: this method doesn't retain render state.
         void SetRenderState(UniqueHandle _renderState);
         
         inline UniqueHandle GetRenderState()

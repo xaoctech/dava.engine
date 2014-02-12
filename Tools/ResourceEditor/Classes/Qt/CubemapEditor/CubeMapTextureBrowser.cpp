@@ -75,12 +75,12 @@ CubeMapTextureBrowser::~CubeMapTextureBrowser()
 
 void CubeMapTextureBrowser::ConnectSignals()
 {    
-	QObject::connect(ui->buttonSelectRootPath, SIGNAL(pressed()), this, SLOT(OnChooseDirectoryClicked()));
-	QObject::connect(ui->buttonCreateCube, SIGNAL(pressed()), this, SLOT(OnCreateCubemapClicked()));
-	QObject::connect(ui->buttonReload, SIGNAL(pressed()), this, SLOT(OnReloadClicked()));
+	QObject::connect(ui->buttonSelectRootPath, SIGNAL(clicked()), this, SLOT(OnChooseDirectoryClicked()));
+	QObject::connect(ui->buttonCreateCube, SIGNAL(clicked()), this, SLOT(OnCreateCubemapClicked()));
+	QObject::connect(ui->buttonReload, SIGNAL(clicked()), this, SLOT(OnReloadClicked()));
 	QObject::connect(&cubeListItemDelegate, SIGNAL(OnEditCubemap(const QModelIndex&)), this, SLOT(OnEditCubemap(const QModelIndex&)));
 	QObject::connect(&cubeListItemDelegate, SIGNAL(OnItemCheckStateChanged(const QModelIndex&)), this, SLOT(OnItemCheckStateChanged(const QModelIndex&)));
-	QObject::connect(ui->buttonRemove, SIGNAL(pressed()), this, SLOT(OnDeleteSelectedItemsClicked()));
+	QObject::connect(ui->buttonRemove, SIGNAL(clicked()), this, SLOT(OnDeleteSelectedItemsClicked()));
 }
 
 void CubeMapTextureBrowser::ReloadTextures(const DAVA::String& rootPath)
