@@ -139,7 +139,7 @@ protected:
     virtual void UpdateColorWidgetWithPropertyValue(QColorWidget* colorWidget, const QMetaProperty& curProperty);
 
     // Override this method to get a notification about properties changed from external source.
-    virtual void OnPropertiesChangedFromExternalSource() {};
+    virtual void OnPropertiesChangedFromExternalSource();
 	
 	// For aligns property widget we need it's own update method
 	virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
