@@ -1187,6 +1187,8 @@ public:
 	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
 	virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
 
+    void DumpInputs(int32 depthLevel);
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1211,7 +1213,6 @@ protected:
 	int32 controlState;
 
 	// boolean flags are grouped here to pack them together (see please DF-2149).
-	bool inputEnabled : 1;
 	bool exclusiveInput : 1;
 	bool visible : 1;
 	bool clipContents : 1;
@@ -1230,6 +1231,8 @@ protected:
 	
 	bool isUpdated : 1;
 	bool isIteratorCorrupted : 1;
+
+    int32 inputProcessorsCount;
 
 
 	int32 currentInputID;
@@ -1273,12 +1276,20 @@ protected:
 	Vector2		__oldPosition;
 #endif
 
+    void RegisterInputProcessor();
+    void RegisterInputProcessors(int32 processorsCount);
+    void UnregisterInputProcessor();
+    void UnregisterInputProcessors(int32 processorsCount);
+
+
     void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
 
 private:
 	String	name;
 	int32	tag;
+	bool inputEnabled : 1;
+
 
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();

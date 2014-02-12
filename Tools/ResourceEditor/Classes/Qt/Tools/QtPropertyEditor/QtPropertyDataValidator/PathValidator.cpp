@@ -30,17 +30,26 @@
 #include "Utils/StringFormat.h"
 #include <QMessageBox>
 
-PathValidator::PathValidator(const QString& value):
+PathValidator::PathValidator(const QStringList& value):
 	RegExpValidator(""),
-	referencePath(value)
+	referencePathList(value)
 {
-	DAVA::String regExpr = DAVA::Format(".*%s.*|^$", referencePath.toStdString().c_str());//content of folder([value]) or blank string(for empty fields)
-	SetRegularExpression(regExpr.c_str());
+    QString regExpr("^$|");
+    foreach(QString path, referencePathList)
+    {
+        regExpr += "^" + path + ".*|";
+    }
+	SetRegularExpression(regExpr);
 }
 
 void PathValidator::ErrorNotifyInternal(const QVariant &v) const
 {
+    QString referencePaths;
+    foreach(QString path, referencePathList)
+    {
+        referencePaths += path + " ";
+    }
 	DAVA::String message = DAVA::Format("\"%s\" is wrong. It's allowed to select only from %s", v.toString().toStdString().c_str(),
-                                        referencePath.toStdString().c_str());
+                                        referencePaths.toStdString().c_str());
 	QMessageBox::warning(NULL, "Wrong file selected", message.c_str(), QMessageBox::Ok);
 }

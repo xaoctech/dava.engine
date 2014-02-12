@@ -66,6 +66,7 @@ protected:
 
     // Handle dependent checkboxes.
     virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
+	virtual void OnPropertiesChangedFromExternalSource() {};
 
 private:
 	QLineEdit *localizationKeyNameLineEdit;
