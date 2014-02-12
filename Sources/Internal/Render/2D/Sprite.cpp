@@ -63,19 +63,16 @@ Sprite::DrawState::DrawState()
     Reset();
     
     renderState = RenderState::RENDERSTATE_2D_BLEND;
-    RenderManager::Instance()->RetainRenderState(renderState);
-    shader = SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR);
-}
-
-Sprite::DrawState::~DrawState()
-{
-    RenderManager::Instance()->ReleaseRenderState(renderState);
-    SafeRelease(shader);
+    shader = RenderManager::TEXTURE_MUL_FLAT_COLOR;
+    //RenderManager::Instance()->RetainRenderState(renderState);
+    //shader = SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 }
 
 void Sprite::DrawState::SetRenderState(UniqueHandle _renderState)
 {
-    if(_renderState != renderState)
+    renderState = _renderState;
+    
+    /*if(_renderState != renderState)
     {
         if(renderState != InvalidUniqueHandle)
         {
@@ -88,16 +85,17 @@ void Sprite::DrawState::SetRenderState(UniqueHandle _renderState)
         {
             RenderManager::Instance()->RetainRenderState(renderState);
         }
-    }
+    }*/
 }
 
 void Sprite::DrawState::SetShader(Shader* _shader)
 {
-    if(_shader != shader)
+    shader = _shader;
+    /*if(_shader != shader)
     {
         SafeRelease(shader);
         shader = SafeRetain(_shader);
-    }
+    }*/
 }
 
 
