@@ -219,6 +219,10 @@ bool MusicIOSSoundEvent::IsActive()
     return [((AvSound*)avSound).audioPlayer isPlaying];
 }
 
-};
+const FilePath & MusicIOSSoundEvent::GetFilePath()
+{
+    return filePath;
+}
 
+};
 #endif //#ifdef __DAVAENGINE_IPHONE__
