@@ -85,8 +85,12 @@ DAVA::Scene * DAEConvertAction::CreateSceneFromSce() const
 		rootNode = rootNode->Clone();
 		scene->AddNode(rootNode);
 
+		Logger::Info("Scene Optimization started");
+
 		ScopedPtr<SceneFileV2> sceneFile(new SceneFileV2());
 		sceneFile->OptimizeScene(scene);
+
+		Logger::Info("Scene Optimization finished");
 
 		rootNode->Release();
 	}
