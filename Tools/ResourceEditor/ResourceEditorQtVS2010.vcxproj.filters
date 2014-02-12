@@ -912,9 +912,6 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp">
       <Filter>Classes\Qt\Tools\QtPosSaver</Filter>
     </ClCompile>
@@ -1744,9 +1741,6 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModel_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp">
@@ -2836,9 +2830,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h">
       <Filter>Classes\Qt\Tools\QtPosSaver</Filter>

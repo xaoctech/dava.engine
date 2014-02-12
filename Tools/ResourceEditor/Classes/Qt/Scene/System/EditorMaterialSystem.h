@@ -65,6 +65,9 @@ public:
     void SetLightViewMode(int fullViewMode);
     int GetLightViewMode();
 
+    void SetLightmapCanvasVisible(bool enable);
+    bool IsLightmapCanvasVisible() const;
+
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);
 	virtual void RemoveEntity(DAVA::Entity * entity);
@@ -78,10 +81,12 @@ protected:
 	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, const DAVA::RenderBatch *rb);
 	void RemoveMaterial(DAVA::NMaterial *material);
 
+    void ApplyViewMode();
     void ApplyViewMode(DAVA::NMaterial *material);
 
 private:
     int curViewMode;
+    bool showLightmapCanvas;
 
     struct MaterialFB
 	{

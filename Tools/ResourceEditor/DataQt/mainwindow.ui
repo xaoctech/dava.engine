@@ -310,7 +310,7 @@
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionShowEditorGizmo"/>
-    <addaction name="actionOnSceneSelection"/>
+    <addaction name="actionLightmapCanvas"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -328,6 +328,7 @@
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
+    <addaction name="actionOnSceneSelection"/>
    </widget>
    <widget class="QMenu" name="menuComponent">
     <property name="title">
@@ -1767,6 +1768,17 @@
    </property>
    <property name="toolTip">
     <string>Close Project</string>
+   </property>
+  </action>
+  <action name="actionLightmapCanvas">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Lightmap Canvas</string>
    </property>
   </action>
  </widget>
