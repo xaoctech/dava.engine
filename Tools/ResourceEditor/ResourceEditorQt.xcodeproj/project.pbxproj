@@ -200,7 +200,6 @@
 		E8BAD7381859F50300C98C8D /* QtPropertyItem_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD68A1859F50300C98C8D /* QtPropertyItem_moc.cpp */; };
 		E8BAD7391859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD68B1859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp */; };
 		E8BAD73A1859F50300C98C8D /* QtPropertyModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD68C1859F50300C98C8D /* QtPropertyModel_moc.cpp */; };
-		E8BAD73B1859F50300C98C8D /* QtColorLineEdit_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD68E1859F50300C98C8D /* QtColorLineEdit_moc.cpp */; };
 		E8BAD73C1859F50300C98C8D /* QtWaitDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6901859F50300C98C8D /* QtWaitDialog_moc.cpp */; };
 		E8BAD73D1859F50300C98C8D /* SelectEntityPathWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6921859F50300C98C8D /* SelectEntityPathWidget_moc.cpp */; };
 		E8BAD73E1859F50300C98C8D /* SelectPathWidgetBase_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6931859F50300C98C8D /* SelectPathWidgetBase_moc.cpp */; };
@@ -544,7 +543,6 @@
 		E8C9933F184CD0EC00AFBF3F /* QtPropertyItem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991C1184CD0EB00AFBF3F /* QtPropertyItem.cpp */; };
 		E8C99340184CD0EC00AFBF3F /* QtPropertyItemDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991C3184CD0EB00AFBF3F /* QtPropertyItemDelegate.cpp */; };
 		E8C99341184CD0EC00AFBF3F /* QtPropertyModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991C5184CD0EB00AFBF3F /* QtPropertyModel.cpp */; };
-		E8C99342184CD0EC00AFBF3F /* QtColorLineEdit.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991C8184CD0EB00AFBF3F /* QtColorLineEdit.cpp */; };
 		E8C99343184CD0EC00AFBF3F /* QtWaitDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991CB184CD0EB00AFBF3F /* QtWaitDialog.cpp */; };
 		E8C99344184CD0EC00AFBF3F /* SelectEntityPathWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991CE184CD0EB00AFBF3F /* SelectEntityPathWidget.cpp */; };
 		E8C99345184CD0EC00AFBF3F /* SelectPathWidgetBase.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C991D0184CD0EB00AFBF3F /* SelectPathWidgetBase.cpp */; };
@@ -859,7 +857,6 @@
 		E8BAD68A1859F50300C98C8D /* QtPropertyItem_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyItem_moc.cpp; sourceTree = "<group>"; };
 		E8BAD68B1859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyItemDelegate_moc.cpp; sourceTree = "<group>"; };
 		E8BAD68C1859F50300C98C8D /* QtPropertyModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyModel_moc.cpp; sourceTree = "<group>"; };
-		E8BAD68E1859F50300C98C8D /* QtColorLineEdit_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtColorLineEdit_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6901859F50300C98C8D /* QtWaitDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtWaitDialog_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6921859F50300C98C8D /* SelectEntityPathWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectEntityPathWidget_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6931859F50300C98C8D /* SelectPathWidgetBase_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectPathWidgetBase_moc.cpp; sourceTree = "<group>"; };
@@ -1628,8 +1625,6 @@
 		E8C991C4184CD0EB00AFBF3F /* QtPropertyItemDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyItemDelegate.h; sourceTree = "<group>"; };
 		E8C991C5184CD0EB00AFBF3F /* QtPropertyModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtPropertyModel.cpp; sourceTree = "<group>"; };
 		E8C991C6184CD0EB00AFBF3F /* QtPropertyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyModel.h; sourceTree = "<group>"; };
-		E8C991C8184CD0EB00AFBF3F /* QtColorLineEdit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtColorLineEdit.cpp; sourceTree = "<group>"; };
-		E8C991C9184CD0EB00AFBF3F /* QtColorLineEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtColorLineEdit.h; sourceTree = "<group>"; };
 		E8C991CB184CD0EB00AFBF3F /* QtWaitDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QtWaitDialog.cpp; sourceTree = "<group>"; };
 		E8C991CC184CD0EB00AFBF3F /* QtWaitDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtWaitDialog.h; sourceTree = "<group>"; };
 		E8C991CE184CD0EB00AFBF3F /* SelectEntityPathWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SelectEntityPathWidget.cpp; sourceTree = "<group>"; };
@@ -2338,7 +2333,6 @@
 		E8BAD68D1859F50300C98C8D /* QtPropertyWidgets */ = {
 			isa = PBXGroup;
 			children = (
-				E8BAD68E1859F50300C98C8D /* QtColorLineEdit_moc.cpp */,
 			);
 			path = QtPropertyWidgets;
 			sourceTree = "<group>";
@@ -3744,8 +3738,6 @@
 		E8C991C7184CD0EB00AFBF3F /* QtPropertyWidgets */ = {
 			isa = PBXGroup;
 			children = (
-				E8C991C8184CD0EB00AFBF3F /* QtColorLineEdit.cpp */,
-				E8C991C9184CD0EB00AFBF3F /* QtColorLineEdit.h */,
 			);
 			path = QtPropertyWidgets;
 			sourceTree = "<group>";
@@ -4052,7 +4044,6 @@
 				E8C992ED184CD0EC00AFBF3F /* Request.cpp in Build Sources */,
 				A6796CDA1885702800EB254C /* DDSExtractorTool.cpp in Build Sources */,
 				E8BAD71A1859F50300C98C8D /* TextureListDelegate_moc.cpp in Build Sources */,
-				E8BAD73B1859F50300C98C8D /* QtColorLineEdit_moc.cpp in Build Sources */,
 				E8C992AC184CD0EC00AFBF3F /* SceneValidator.cpp in Build Sources */,
 				E8C992B2184CD0EC00AFBF3F /* CubeListItemDelegate.cpp in Build Sources */,
 				E8C9925A184CD0EC00AFBF3F /* btWheelInfo.cpp in Build Sources */,
@@ -4442,7 +4433,6 @@
 				E8BAD6E01859F50300C98C8D /* MaterialAssignSystem_moc.cpp in Build Sources */,
 				E8C991F2184CD0EC00AFBF3F /* btMultiSapBroadphase.cpp in Build Sources */,
 				E8BAD6B41859F50300C98C8D /* LandscapeEditorControlsPlaceholder_moc.cpp in Build Sources */,
-				E8C99342184CD0EC00AFBF3F /* QtColorLineEdit.cpp in Build Sources */,
 				E8BAD6DA1859F50300C98C8D /* mainwindow_moc.cpp in Build Sources */,
 				E8BAD6DF1859F50300C98C8D /* StatusBar_moc.cpp in Build Sources */,
 				84D61E4318A43D0F006E989B /* HeightmapValidator.cpp in Build Sources */,
