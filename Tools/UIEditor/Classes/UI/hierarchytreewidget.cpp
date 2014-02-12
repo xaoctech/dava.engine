@@ -35,6 +35,7 @@
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeAggregatorControlNode.h"
 #include "ItemsCommand.h"
+#include "ControlCommands.h"
 #include "CommandsController.h"
 #include "CopyPasteController.h"
 #include "IconHelper.h"
@@ -46,11 +47,13 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QInputDialog>
 
 #define ITEM_ID 0, Qt::UserRole
 
 #define MENU_ITEM_DELETE tr("Delete")
 #define MENU_ITEM_COPY tr("Copy")
+#define MENU_ITEM_RENAME tr("Rename")
 #define MENU_ITEM_PASTE tr("Paste")
 #define MENU_ITEM_CREATE_SCREEN tr("Create screen")
 #define MENU_ITEM_CREATE_AGGREGATOR tr("Create aggregator")
@@ -530,6 +533,13 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 		QAction* copyControlAction = new QAction(MENU_ITEM_COPY, &menu);
 		connect(copyControlAction, SIGNAL(triggered()), this, SLOT(OnCopyAction()));
 		menu.addAction(copyControlAction);
+		// Show rename option only if one item is selected
+		if (items.size() == 1)
+		{
+			QAction* renameControlAction = new QAction(MENU_ITEM_RENAME, &menu);
+			connect(renameControlAction, SIGNAL(triggered()), this, SLOT(OnRenameControlAction()));
+			menu.addAction(renameControlAction);
+		}
 	}
 	if (selectedPlatform)
 	{
@@ -565,6 +575,31 @@ void HierarchyTreeWidget::OnShowCustomMenu(const QPoint& pos)
 		}
 	}
 	menu.exec(pos);
+}
+
+void HierarchyTreeWidget::OnRenameControlAction()
+{
+	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
+	if (!items.size() || (items.size() > 1))
+		return;
+		
+	// We are sure that we have only one selected item
+	QTreeWidgetItem* item = items.at(0);	
+	HierarchyTreeNode* node = GetNodeFromTreeItem(item);
+	QString itemName = node->GetName();
+		
+	bool dialogResult;
+    QString newName = QInputDialog::getText(this, tr("Rename control"),
+                                          tr("Enter new control name:"),
+										  QLineEdit::Normal,
+                                          itemName, &dialogResult);
+				
+	if (dialogResult && !newName.isEmpty() && (newName != itemName))
+	{
+		ControlRenameCommand* cmd = new ControlRenameCommand(node->GetId(), itemName, newName);
+		CommandsController::Instance()->ExecuteCommand(cmd);
+		SafeRelease(cmd);
+	}
 }
 
 void HierarchyTreeWidget::OnDeleteControlAction()
