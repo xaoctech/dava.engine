@@ -35,11 +35,11 @@
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Sound/SoundEvent.h"
 
 namespace DAVA 
 {
 
-class SoundEvent;
 class SoundComponent : public Component
 {
 public:
@@ -64,7 +64,9 @@ protected:
     Vector<SoundEvent *> events;
 
 public:
-    INTROSPECTION_EXTEND(SoundComponent, Component, NULL);
+    INTROSPECTION_EXTEND(SoundComponent, Component,
+        COLLECTION(events, "Events Array",  I_VIEW | I_EDIT)
+        );
 };
 
 };
