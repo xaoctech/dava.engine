@@ -498,6 +498,26 @@ void RenderManager::Unlock()
 	glMutex.Unlock();
 }
 
+void RenderManager::LockRenderState()
+{
+    renderStateMutex.Lock();
+}
+
+void RenderManager::UnlockRenderState()
+{
+    renderStateMutex.Unlock();
+}
+    
+void RenderManager::LockTextureState()
+{
+    textureStateMutex.Lock();
+}
+
+void RenderManager::UnlockTexturerState()
+{
+    textureStateMutex.Unlock();
+}
+
 void RenderManager::SetFPS(int32 newFps)
 {
 	fps = newFps;	

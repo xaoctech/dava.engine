@@ -305,6 +305,7 @@ public:
     inline void SetRenderLayers(uint32 bitmask);
     
 	const RenderStateData& GetRenderState(const FastName& passName) const;
+    void GetRenderState(const FastName& passName, RenderStateData& target) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
 	void SubclassRenderState(RenderStateData& newState);
     
