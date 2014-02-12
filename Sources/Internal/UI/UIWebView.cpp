@@ -118,3 +118,8 @@ bool UIWebView::GetBounces() const
 {
 	return this->webViewControl->GetBounces();
 }
+
+void UIWebView::SetGestures(bool value)
+{
+	this->webViewControl->SetGestures(value);    
+}
