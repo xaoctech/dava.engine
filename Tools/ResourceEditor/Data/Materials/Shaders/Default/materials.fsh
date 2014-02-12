@@ -290,13 +290,29 @@ void main()
     #endif
     
 #elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
-    #if defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
-        vec3 color = textureColor1.rgb;
-    #elif defined(MATERIAL_VIEW_TEXTURE_ONLY)
-        vec3 color = textureColor0.rgb;
+
+
+    //ATTENTION:
+    //BE CAREFUL TO MODIFY BOTH PARTS OF THIS CONDITION
+    //THEY SHOULD BE IDENTICAL IN MATH!
+    #if defined(VIEW_DIFFUSE) || defined(VIEW_ALBEDO)
+    
+        #if defined(VIEW_ALBEDO)
+    
+            #if defined(VIEW_DIFFUSE)
+                vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+            #else
+                vec3 color = textureColor0.rgb;
+            #endif
+    
+        #else
+            vec3 color = textureColor1.rgb;
+        #endif
+    
     #else
         vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
     #endif
+
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_SKYBOX)
