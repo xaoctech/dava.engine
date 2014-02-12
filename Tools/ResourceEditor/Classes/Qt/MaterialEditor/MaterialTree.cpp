@@ -140,6 +140,8 @@ void MaterialTree::SelectEntities(DAVA::NMaterial *material)
 void MaterialTree::Update()
 {
 	treeModel->Sync();
+    treeModel->invalidate();
+    emit Updated();
 }
 
 int MaterialTree::getFilterType() const
