@@ -1564,7 +1564,15 @@ const RenderStateData& NMaterial::GetRenderState(const FastName& passName) const
 	RenderPassInstance* pass = instancePasses.at(passName);
 	DVASSERT(pass);
 			
-	return RenderManager::Instance()->GetRenderStateData(pass->GetRenderStateHandle());;
+	return RenderManager::Instance()->GetRenderStateData(pass->GetRenderStateHandle());
+}
+
+void NMaterial::GetRenderState(const FastName& passName, RenderStateData& target) const
+{
+    RenderPassInstance* pass = instancePasses.at(passName);
+	DVASSERT(pass);
+
+    RenderManager::Instance()->GetRenderStateData(pass->GetRenderStateHandle(), target);
 }
 
 void NMaterial::SubclassRenderState(const FastName& passName, RenderStateData& newState)
@@ -1733,9 +1741,8 @@ void NMaterialHelper::EnableStateFlags(const FastName& passName,
 {
 	DVASSERT(target);
 	
-	const RenderStateData& currentData = target->GetRenderState(passName);
 	RenderStateData newData;
-	memcpy(&newData, &currentData, sizeof(RenderStateData));
+	target->GetRenderState(passName, newData);
 	
 	newData.state = newData.state | stateFlags;
 	
@@ -1748,9 +1755,8 @@ void NMaterialHelper::DisableStateFlags(const FastName& passName,
 {
 	DVASSERT(target);
 	
-	const RenderStateData& currentData = target->GetRenderState(passName);
 	RenderStateData newData;
-	memcpy(&newData, &currentData, sizeof(RenderStateData));
+	target->GetRenderState(passName, newData);
 	
 	newData.state = newData.state & ~stateFlags;
 	
@@ -1764,9 +1770,8 @@ void NMaterialHelper::SetBlendMode(const FastName& passName,
 {
 	DVASSERT(target);
 	
-	const RenderStateData& currentData = target->GetRenderState(passName);
 	RenderStateData newData;
-	memcpy(&newData, &currentData, sizeof(RenderStateData));
+	target->GetRenderState(passName, newData);
 	
 	newData.sourceFactor = src;
 	newData.destFactor = dst;
@@ -1839,9 +1844,8 @@ void NMaterialHelper::SetFillMode(const FastName& passName,
 {
 	DVASSERT(mat);
 	
-	const RenderStateData& currentData = mat->GetRenderState(passName);
 	RenderStateData newData;
-	memcpy(&newData, &currentData, sizeof(RenderStateData));
+	mat->GetRenderState(passName, newData);
 	
 	newData.fillMode = fillMode;
 	
