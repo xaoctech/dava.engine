@@ -74,13 +74,18 @@ public:
 	 \brief Get traked font name. Add font to track list.
 	 */
 	String GetFontName(Font *font);
+    
+    /**
+	 \brief Get font by name.
+	 */
+	Font* GetFont(const String &name);
 
 	typedef Set<Font*> TRACKED_FONTS;
 	
 	/**
 	 \brief Reset tracked fonts added by GetFontName().
 	 */
-	void PrepareToSaveFonts();
+	void PrepareToSaveFonts(bool saveAllFonts = false);
 	/**
 	 \brief Get tracked fonts added by GetFontName().
 	 */
@@ -104,6 +109,8 @@ private:
 	
 	TRACKED_FONTS trackedFonts;
 	
+    //TODO: remove this extra map (UIYamlLoader legacy)
+    Map<String, Font*> fontMap;
 };
 	
 };
