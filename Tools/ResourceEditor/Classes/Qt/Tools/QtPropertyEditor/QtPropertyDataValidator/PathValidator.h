@@ -32,16 +32,17 @@
 #define __PATH_VALIDATOR_H__
 
 #include "RegExpValidator.h"
+#include <QStringList>
 
 class PathValidator : public RegExpValidator
 {
 public:
     
-    PathValidator(const QString& value);
+    PathValidator(const QStringList& value);
     
 protected:
 	
-	QString referencePath;
+	QStringList referencePathList;
     
     virtual void ErrorNotifyInternal(const QVariant &v) const;
 };

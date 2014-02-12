@@ -106,6 +106,8 @@ public:
 	virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
 	virtual Animation* ShadowColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 1);
 
+	const Vector<int32> & GetStringSizes() const;
+
 protected:
 	Color textColor;
 	TextBlock *textBlock;
