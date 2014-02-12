@@ -138,7 +138,11 @@ void IlluminationParams::SetLightmapSize(const int32 &size)
     
     if(parent)
     {
-        parent->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE, Shader::UT_INT, 1, &lightmapSize);
+        float32 floatLightmapSize = (float32)lightmapSize;
+        parent->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE,
+                                 Shader::UT_FLOAT,
+                                 1,
+                                 &floatLightmapSize);
     }
 }
 	

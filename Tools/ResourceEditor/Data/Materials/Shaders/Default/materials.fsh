@@ -159,6 +159,7 @@ void main()
     #if defined(SETUP_LIGHTMAP)
         vec3 lightGray = vec3(0.75, 0.75, 0.75);
         vec3 darkGray = vec3(0.25, 0.25, 0.25);
+
         bool isXodd;
         bool isYodd;
         if(fract(floor(varTexCoord1.x*varLightmapSize)/2.0) == 0.0)
@@ -327,7 +328,7 @@ void main()
 #if defined(VERTEX_LIT)
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     gl_FragColor = reflectionColor * 0.9;
-#elif defined(PIXEL_LIT)
+#elif defined(PIXEL_LIT)s
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
     mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
