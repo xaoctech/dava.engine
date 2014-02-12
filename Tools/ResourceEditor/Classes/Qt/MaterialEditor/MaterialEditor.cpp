@@ -202,9 +202,10 @@ void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
 {
-	if(1 == selected.indexes().size())
+	if(1 == selected.size())
 	{
-		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selected.indexes().at(0));
+        QModelIndex selectedIndex = selected.indexes().at(0);
+		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selectedIndex);
 		SetCurMaterial(material);
 	}
 	else

@@ -197,6 +197,12 @@ void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
     (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
 
+    //if(NULL != material->GetTexture(NMaterial::TEXTURE_LIGHTMAP))
+    {
+        (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOff : flag = DAVA::NMaterial::FlagOn;
+        material->SetFlag(DAVA::NMaterial::FLAG_LIGHTMAPONLY, flag);
+    }
+
     (curViewMode & LIGHTVIEW_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
 

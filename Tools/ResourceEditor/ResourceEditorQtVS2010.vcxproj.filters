@@ -1227,9 +1227,6 @@
     <ClCompile Include="Classes\Deprecated\SceneValidator.cpp">
       <Filter>Classes\Deprecated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Deprecated\TextureSquarenessChecker.cpp">
-      <Filter>Classes\Deprecated</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
       <Filter>Classes\Beast\Wrapper</Filter>
     </ClCompile>
@@ -3159,9 +3156,6 @@
       <Filter>Classes\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Deprecated\SceneValidator.h">
-      <Filter>Classes\Deprecated</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Deprecated\TextureSquarenessChecker.h">
       <Filter>Classes\Deprecated</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
