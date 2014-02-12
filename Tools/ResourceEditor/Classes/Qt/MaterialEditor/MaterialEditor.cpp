@@ -77,6 +77,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	
 	// material tree
 	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
+    QObject::connect(ui->materialTree, SIGNAL(Updated()), this, SLOT(autoExpand()));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
