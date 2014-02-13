@@ -124,7 +124,7 @@ void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *se
         for(uint32 i = 0; i < eventsCount; ++i)
         {
             KeyedArchive* eventArchive = archive->GetArchive(KeyedArchive::GenKeyFromIndex(i));
-            SoundEvent * sEvent = SoundSystem::Instance()->CreateAndDeserializeEvent(eventArchive);
+            SoundEvent * sEvent = SoundSystem::Instance()->DeserializeEventFromArchive(eventArchive);
             AddSoundEvent(sEvent);
             SafeRelease(sEvent);
         }
