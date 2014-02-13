@@ -97,6 +97,8 @@ public slots:
 	void ActionBakeTransform();
 	void ActionEditMaterial();
 
+    void ActionEditSoundComponent();
+
 protected:
 	eViewMode viewMode;
 	bool favoritesEditMode;

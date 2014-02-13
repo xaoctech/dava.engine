@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="QtData">
@@ -210,6 +210,9 @@
     </Filter>
     <Filter Include="Classes\Qt\QualitySwitcher">
       <UniqueIdentifier>{78cae0e6-5732-4a8b-a860-f44cd544a7df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\SoundEditor">
+      <UniqueIdentifier>{35afcf69-5850-44e6-92f0-296db84c77ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1881,6 +1884,24 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.cpp">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.cpp">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SoundComponentEditor\FMODSoundBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SoundComponentEditor\SoundComponentEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\SoundComponentEditCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3320,6 +3341,21 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.h">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.h">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\SoundComponentEditCommands.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">
@@ -3359,6 +3395,12 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\materialeditor.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\soundbrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\soundcomponenteditor.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

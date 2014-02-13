@@ -261,12 +261,12 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
 {
 	if(NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT))
 	{
-		AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+		//AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
 
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.3f));
-		DAVA::RenderHelper::Instance()->FillBox(worldBox);
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawBox(worldBox);
+		//DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.3f));
+		//DAVA::RenderHelper::Instance()->FillBox(worldBox);
+		//DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 1.0f));
+		//DAVA::RenderHelper::Instance()->DrawBox(worldBox);
 	}
 }
 

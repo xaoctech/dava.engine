@@ -115,9 +115,9 @@ void ProjectManager::ProjectOpen(const QString &path)
             LoadProjectSettings();
             LoadMaterialsSettings();
             
-            emit ProjectOpened(curProjectPath);
-            
             DAVA::FilePath::AddTopResourcesFolder(projectPath);
+
+            emit ProjectOpened(curProjectPath);
 		}
 	}
 }
