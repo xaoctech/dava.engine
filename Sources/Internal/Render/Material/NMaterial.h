@@ -500,8 +500,8 @@ protected:
 	
     uint32                  renderLayerIDsBitmask;
 	
-	static Texture* stubCubemapTexture;
-	static Texture* stub2dTexture;
+	//static Texture* stubCubemapTexture;
+	//static Texture* stub2dTexture;
     
     static NMaterial* GLOBAL_MATERIAL;
 	
@@ -533,7 +533,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags(bool updateChildren = false);
-	static Texture* GetStubTexture(const FastName& uniformName);
+	//static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);

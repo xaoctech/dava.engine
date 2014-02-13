@@ -123,8 +123,8 @@ static FastName RUNTIME_ONLY_PROPERTIES[] =
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
 
-Texture* NMaterial::stubCubemapTexture = NULL;
-Texture* NMaterial::stub2dTexture = NULL;
+//Texture* NMaterial::stubCubemapTexture = NULL;
+//Texture* NMaterial::stub2dTexture = NULL;
 NMaterial* NMaterial::GLOBAL_MATERIAL = NULL;
 
 int32 IlluminationParams::GetLightmapSize() const
@@ -1312,11 +1312,12 @@ void NMaterial::PrepareTextureState(RenderPassInstance* passInstance)
 		++texIt)
 	{
 		textureData.SetTexture(texIt->second, GetOrLoadTextureRecursive(texIt->first));
-		if(NULL == textureData.GetTexture(texIt->second))
-		{
-			//VI: this case is mostly for ResEditor
-			textureData.SetTexture(texIt->second, GetStubTexture(texIt->first));
-		}
+        //VI: use commented out part of code for debugging texture setting
+		//if(NULL == textureData.GetTexture(texIt->second))
+		//{
+		//	//VI: this case is mostly for ResEditor
+		//	textureData.SetTexture(texIt->second, GetStubTexture(texIt->first));
+		//}
 	}
 	
 	UniqueHandle textureState = RenderManager::Instance()->CreateTextureState(textureData);
@@ -1326,7 +1327,7 @@ void NMaterial::PrepareTextureState(RenderPassInstance* passInstance)
 	passInstance->texturesDirty = false;
 }
 
-Texture* NMaterial::GetStubTexture(const FastName& uniformName)
+/*Texture* NMaterial::GetStubTexture(const FastName& uniformName)
 {
 	Texture* stubTex = NULL;
 	
@@ -1350,7 +1351,7 @@ Texture* NMaterial::GetStubTexture(const FastName& uniformName)
 	}
 	
 	return stubTex;
-}
+}*/
 
 void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
 {
