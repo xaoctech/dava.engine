@@ -98,7 +98,7 @@ ParticleEffectSystem::~ParticleEffectSystem()
 	SafeRelease(particleFrameBlendMaterial);
 }
 
-void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, Vector3 spawnPosition, int32 positionSource)
+void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, const Vector3& spawnPosition, int32 positionSource)
 {
 	for (int32 layerId=0, layersCount = emitter->layers.size(); layerId<layersCount; ++layerId)
 	{

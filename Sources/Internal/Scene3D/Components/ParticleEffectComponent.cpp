@@ -80,9 +80,9 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	newComponent->stopWhenEmpty = stopWhenEmpty;	
 	newComponent->playbackComplete = playbackComplete;
 	newComponent->effectDuration = effectDuration;
-	int emittersCount = emitters.size();
+	uint32 emittersCount = emitters.size();
 	newComponent->emitters.resize(emittersCount);
-	for (int32 i=0; i<emittersCount; ++i)
+	for (uint32 i=0; i<emittersCount; ++i)
 		newComponent->emitters[i] = emitters[i]->Clone();
     newComponent->spawnPositions = spawnPositions;
     newComponent->RebuildEffectModifiables();
