@@ -39,7 +39,6 @@ namespace DAVA
 {
 typedef uint32 UniqueHandle;
 //T is element type
-//V is comparer type
 template<typename T>
 class UniqueStateSet
 {
@@ -56,9 +55,11 @@ public:
 	void ReleaseUnique(UniqueHandle handle);
 	
 private:
+
+    int CountFreeSlots();
 	
 	Vector<T> values;
-	Vector<uint32> refCounters;
+	Vector<int32> refCounters;
 	uint32 freeSlotCount;
 };
 
@@ -85,12 +86,15 @@ UniqueHandle UniqueStateSet<T>::MakeUnique(const T& objRef)
 	size_t count = values.size();
 	for(size_t i = 0; i < count; ++i)
 	{
+        DVASSERT(refCounters[i] >= 0);
+        
 		if(0 == refCounters[i])
 		{
 			freeSlot = i;
 		}
 			
-		if(objRef.Equals(values[i]))
+		if(objRef.Equals(values[i]) &&
+           refCounters[i] > 0)
 		{
 			handle = i;
 			break;
@@ -99,10 +103,12 @@ UniqueHandle UniqueStateSet<T>::MakeUnique(const T& objRef)
 	
 	if(InvalidUniqueHandle == handle)
 	{
-		if(freeSlotCount > 0 &&
-		   freeSlot != InvalidUniqueHandle)
+		if(freeSlot != InvalidUniqueHandle)
 		{
 			freeSlotCount--;
+            
+            DVASSERT(freeSlotCount >= 0);
+            
 			handle = freeSlot;
 		}
 		else
@@ -114,8 +120,10 @@ UniqueHandle UniqueStateSet<T>::MakeUnique(const T& objRef)
 		
 		values[handle] = objRef;
 	}
+    
 	
 	refCounters[handle] += 1;
+    
 	return handle;
 }
 
@@ -138,6 +146,8 @@ template<typename T>
 void UniqueStateSet<T>::ReleaseUnique(UniqueHandle handle)
 {
 	refCounters[handle] -= 1;
+    
+    DVASSERT(refCounters[handle] >= 0);
 	
 	if(0 == refCounters[handle])
 	{
@@ -147,8 +157,27 @@ void UniqueStateSet<T>::ReleaseUnique(UniqueHandle handle)
 }
 
 template<typename T>
+int UniqueStateSet<T>::CountFreeSlots()
+{
+    int slotCount = 0;
+    
+    size_t count = values.size();
+	for(size_t i = 0; i < count; ++i)
+	{
+        DVASSERT(refCounters[i] >= 0);
+        if(refCounters[i] == 0)
+        {
+            slotCount++;
+        }
+    }
+    
+    return slotCount;
+}
+
+template<typename T>
 void UniqueStateSet<T>::RetainUnique(UniqueHandle handle)
 {
+    DVASSERT(refCounters[handle] > 0);
 	refCounters[handle] += 1;
 }
 };

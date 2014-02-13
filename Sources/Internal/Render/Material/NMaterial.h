@@ -72,7 +72,7 @@ struct IlluminationParams : public InspBase
     //this is a weak property since IlluminationParams exists only as a part of parent material
     NMaterial* parent;
 
-    IlluminationParams(NMaterial* parentMaterial) :
+    IlluminationParams(NMaterial* parentMaterial = NULL) :
     isUsed(true),
     castShadow(true),
     receiveShadow(true),
@@ -87,12 +87,13 @@ struct IlluminationParams : public InspBase
         castShadow = params.castShadow;
         receiveShadow = params.receiveShadow;
         lightmapSize = params.lightmapSize;
-        parent = params.parent;
+        parent = NULL;
     }
     
     int32 GetLightmapSize() const;
     void SetLightmapSize(const int32 &size);
-
+    void SetParent(NMaterial* parentMaterial);
+    NMaterial* GetParent() const;
 
     INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)

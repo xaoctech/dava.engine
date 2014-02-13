@@ -145,6 +145,26 @@ void IlluminationParams::SetLightmapSize(const int32 &size)
                                  &floatLightmapSize);
     }
 }
+
+void IlluminationParams::SetParent(NMaterial* parentMaterial)
+{
+    parent = parentMaterial;
+    
+    if(parent)
+    {
+        float32 floatLightmapSize = (float32)lightmapSize;
+        parent->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE,
+                                 Shader::UT_FLOAT,
+                                 1,
+                                 &floatLightmapSize);
+    }
+}
+
+NMaterial* IlluminationParams::GetParent() const
+{
+    return parent;
+}
+
 	
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -612,7 +632,7 @@ NMaterial* NMaterial::Clone()
 	if(illuminationParams)
 	{
 		clonedMaterial->illuminationParams = new IlluminationParams(*illuminationParams);
-        clonedMaterial->illuminationParams->parent = clonedMaterial;
+        clonedMaterial->illuminationParams->SetParent(clonedMaterial);
 	}
 			
 	if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
@@ -1619,8 +1639,21 @@ void NMaterial::SubclassRenderState(const FastName& passName, RenderStateData& n
 		RenderManager::Instance()->ReleaseRenderState(stateHandle);
 		
 		pass->dirtyState = true;
-		
-		instancePassRenderStates.insert(passName, pass->GetRenderStateHandle());
+		      
+        if(instancePassRenderStates.count(passName) > 0)
+        {
+            UniqueHandle currentState = instancePassRenderStates.at(passName);
+            
+            RenderManager::Instance()->RetainRenderState(stateHandle);
+            instancePassRenderStates.insert(passName, stateHandle);
+            
+            RenderManager::Instance()->ReleaseRenderState(currentState);
+        }
+        else
+        {
+            RenderManager::Instance()->RetainRenderState(stateHandle);
+            instancePassRenderStates.insert(passName, stateHandle);
+        }
 	}
 }
 
