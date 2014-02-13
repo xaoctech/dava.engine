@@ -383,7 +383,7 @@ void PolygonGroup::ApplyMatrix(const Matrix4 & matrix)
     normalMatrix4.Transpose();
     Matrix3 normalMatrix3;
     normalMatrix3 = normalMatrix4;
-
+    
     for (int32 vi = 0; vi < vertexCount; ++vi)
     {
         Vector3 vertex;
@@ -395,9 +395,9 @@ void PolygonGroup::ApplyMatrix(const Matrix4 & matrix)
         GetNormal(vi, normal);
         normal = normal * normalMatrix3;
         SetNormal(vi, normal);
-    }    
+    }
 }
-	
+	    
 void PolygonGroup::ReleaseData()
 {
     SafeRelease(renderDataObject);
@@ -411,13 +411,20 @@ void PolygonGroup::ReleaseData()
 	
 void PolygonGroup::BuildBuffers()
 {
-    // Added to rebuild vertex buffer pointers 
-    UpdateDataPointersAndStreams();
+    JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &PolygonGroup::BuildBuffersInternal));
+};
+    
+void PolygonGroup::BuildBuffersInternal(BaseObject * caller, void * param, void *callerData)
+{
+    DVASSERT(Thread::IsMainThread());
 
+    UpdateDataPointersAndStreams();
+    
     renderDataObject->BuildVertexBuffer(vertexCount);
     renderDataObject->SetIndices((eIndexFormat)indexFormat, (uint8*)indexArray, indexCount);
     renderDataObject->BuildIndexBuffer();
-};
+}
+
 
     
 void PolygonGroup::Save(KeyedArchive * keyedArchive, SerializationContext * serializationContext)
@@ -507,6 +514,8 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SerializationContext * seri
     
 void PolygonGroup::RecalcAABBox()
 {
+    aabbox = AABBox3(); // reset bbox
+
     // recalc aabbox
     for (int vi = 0; vi < vertexCount; ++vi)
     {
