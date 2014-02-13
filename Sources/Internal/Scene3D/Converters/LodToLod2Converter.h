@@ -43,7 +43,7 @@ private:
 
 	void ConvertToShadowRecursive(Entity *entity);
 
-    void FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects);
+    void FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<std::pair<Entity*, RenderObject*> > & entitiesAndRenderObjects);
     Set<PolygonGroup*> bakedPolygonGroups;
 };
 
