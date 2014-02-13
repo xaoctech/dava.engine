@@ -27,65 +27,39 @@
 =====================================================================================*/
 
 
-//
-//  UIListTest.h
-//  TemplateProjectMacOS
-//
-//  Created by Denis Bespalov on 4/9/13.
-//
-//
 
-#ifndef __UILIST_TEST_H__
-#define __UILIST_TEST_H__
+#ifndef __DAVAENGINE_FILELISTANDROID_H__
+#define __DAVAENGINE_FILELISTANDROID_H__
 
-#include "DAVAEngine.h"
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_ANDROID__)
 
-using namespace DAVA;
+#include "JniExtensions.h"
 
-#include "TestTemplate.h"
+namespace DAVA {
 
-class UIListTestDelegate: public UIControl, public UIListDelegate
+class JniFileList: public JniExtension
 {
-protected:
-	virtual ~UIListTestDelegate();
 public:
-	UIListTestDelegate(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
+	struct JniFileListEntry
+	{
+		String name;
+		uint32 size;
+		bool isDirectory;
+	};
+	Vector<JniFileListEntry> GetFileList(const String& path);
 
-	// UIListDelegate
-    virtual int32 ElementsCount(UIList *list);
-	virtual UIListCell *CellAtIndex(UIList *list, int32 index);
-	virtual float32 CellWidth(UIList *list, int32 index);
-	virtual float32 CellHeight(UIList *list, int32 index);
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
 
-private:
-	Vector2 cellSize;
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
 };
 
-
-class UIListTest: public TestTemplate<UIListTest>
-{
-protected:
-    ~UIListTest(){}
-public:
-	UIListTest();
-
-	virtual void LoadResources();
-	virtual void UnloadResources();
-	virtual bool RunTest(int32 testNum);
-	
-	virtual void DidAppear();	
-	virtual void Update(float32 timeElapsed);
-	
-	void TestFunction(PerfFuncData * data);
-	
-private:
-	void ButtonPressed(BaseObject *obj, void *data, void *callerData);
-	
-private:
-	UIButton* finishTestBtn;
-	bool testFinished;
-		
-	float32 onScreenTime;
 };
 
-#endif /* defined(__UILIST_TEST_H__) */
+#endif //#if defined(__DAVAENGINE_ANDROID__)
+
+#endif /* defined(__DAVAENGINE_FILELISTANDROID_H__) */
