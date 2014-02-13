@@ -170,6 +170,8 @@ private:
 
     struct Header
     {
+		Header() : version(0), nodeCount(0) {;};
+
         char    signature[4];
         int32   version;
         int32   nodeCount;
