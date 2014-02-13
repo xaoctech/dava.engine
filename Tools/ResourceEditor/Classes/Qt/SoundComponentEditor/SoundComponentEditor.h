@@ -25,60 +25,61 @@
 //    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 //    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //=====================================================================================*/
-//
-//#ifndef __SOUND_BROWSER_H__
-//#define __SOUND_BROWSER_H__
-//
-//#include <QDialog>
-//#include <QTreeWidgetItem>
-//#include "DAVAEngine.h"
-//
-//namespace Ui {
-//class FMODSoundBrowser;
-//}
-//
-//class FMODSoundBrowser : public QDialog, public DAVA::Singleton<FMODSoundBrowser>
-//{
-//    Q_OBJECT
-//    
-//public:
-//    explicit FMODSoundBrowser(QWidget *parent = 0);
-//    virtual ~FMODSoundBrowser();
-//    
-//    void SetEditableComponent(DAVA::FMODSoundComponent * component);
-//
-//private slots:
-//    void OnEventSelected(QTreeWidgetItem * item, int column);
-//
-//    void OnSliderMoved(int value);
-//    void OnSliderPressed();
-//
-//    void OnPlay();
-//    void OnStop();
-//
-//    void OnProjectOpened(const QString & projectPath);
-//    void OnProjectClosed();
-//
-//private:
-//    struct ParamSliderData : public QObjectUserData
-//    {
-//        DAVA::String paramName;
-//        DAVA::float32 minValue;
-//        DAVA::float32 maxValue;
-//    };
-//
-//    void FillEventsTree(const DAVA::Vector<DAVA::String> & names);
-//    void SelectItemAndExpandTreeByEventName(const DAVA::String & eventName);
-//
-//    void AddSliderWidget(const DAVA::FMODSoundComponent::SoundEventParameterInfo & param);
-//    void ClearParamsFrame();
-//
-//    void EventSelected(const DAVA::String & eventPath);
-//    void FillEventParamsFrame();
-//
-//    DAVA::FMODSoundComponent * component;
-//
-//    Ui::FMODSoundBrowser *ui;
-//};
-//
-//#endif // SOUNDBROWSER_H
+
+#ifndef __SOUND_EDITOR_H__
+#define __SOUND_EDITOR_H__
+
+#include <QDialog>
+#include <QListWidgetItem>
+#include "DAVAEngine.h"
+#include "Qt/Scene/SceneEditor2.h"
+
+namespace Ui {
+class SoundComponentEditor;
+}
+
+class SoundComponentEditor : public QDialog
+{
+    Q_OBJECT
+    
+public:
+    explicit SoundComponentEditor(SceneEditor2* scene, QWidget *parent = 0);
+    virtual ~SoundComponentEditor();
+    
+    void SetEditableEntity(DAVA::Entity * entity);
+
+private slots:
+    void OnEventSelected(QListWidgetItem * item);
+
+    void OnSliderMoved(int value);
+    void OnSliderPressed();
+
+    void OnPlay();
+    void OnStop();
+    void OnAddEvent();
+    void OnRemoveEvent();
+
+private:
+    struct ParamSliderData : public QObjectUserData
+    {
+        DAVA::String paramName;
+        DAVA::float32 minValue;
+        DAVA::float32 maxValue;
+    };
+
+    void FillEventsList();
+
+    void AddSliderWidget(const DAVA::FMODSoundEvent::SoundEventParameterInfo & param);
+    void ClearParamsFrame();
+    void FillEventParamsFrame();
+
+    DAVA::Entity * entity;
+    DAVA::SoundComponent * component;
+    DAVA::FMODSoundEvent * selectedEvent;
+
+    SceneEditor2* scene;
+
+    Ui::SoundComponentEditor *ui;
+};
+
+#endif // __SOUND_EDITOR_H__

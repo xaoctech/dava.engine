@@ -53,7 +53,7 @@
 #include "Qt/Project/ProjectManager.h"
 
 #include "ActionComponentEditor.h"
-#include "SoundBrowser/FMODSoundBrowser.h"
+#include "SoundComponentEditor/SoundComponentEditor.h"
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
@@ -302,6 +302,14 @@ void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
 
 				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
 			}
+            if(DAVA::MetaInfo::Instance<DAVA::SoundComponent>() == meta)
+            {
+                QtPropertyToolButton *editSound = data->AddButton();
+                editSound->setIcon(QIcon(":/QtIcons/settings.png"));
+                editSound->setAutoRaise(true);
+
+                QObject::connect(editSound, SIGNAL(pressed()), this, SLOT(ActionEditSoundComponent()));
+            }
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
 				// Add optional button to bake transform render object
@@ -538,6 +546,8 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	case CMDID_COMPONENT_REMOVE:
 	case CMDID_CONVERT_TO_SHADOW:
 	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
+    case CMDID_SOUND_ADD_EVENT:
+    case CMDID_SOUND_REMOVE_EVENT:
 		if(command->GetEntity() == curNode)
 		{
 			ResetProperties();
@@ -666,6 +676,25 @@ void PropertyEditor::ActionEditMaterial()
 			MaterialEditor::Instance()->SelectMaterial((DAVA::NMaterial *) data->object);
 		}
 	}
+}
+
+void PropertyEditor::ActionEditSoundComponent()
+{
+    if(NULL != curNode)
+    {
+        SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
+        if(!scene) return;
+
+        scene->BeginBatch("Edit Sound Component");
+
+        SoundComponentEditor editor(scene, QtMainWindow::Instance());
+        editor.SetEditableEntity(curNode);
+        editor.exec();
+
+        scene->EndBatch();
+
+        ResetProperties();
+    }	
 }
 
 bool PropertyEditor::IsParentFavorite(QtPropertyData *data) const

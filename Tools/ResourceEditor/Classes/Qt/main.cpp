@@ -45,6 +45,7 @@
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "FileSystem/ResourceArchive.h"
 #include "TextureBrowser/TextureCache.h"
+#include "SoundComponentEditor/FMODSoundBrowser.h"
 
 #include "Qt/Settings/SettingsManager.h"
 #include "Qt/Tools/RunGuard/RunGuard.h"

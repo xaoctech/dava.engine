@@ -335,6 +335,9 @@
     <addaction name="actionAddActionComponent"/>
     <addaction name="actionAddQualitySettingsComponent"/>
     <addaction name="actionAddStaticOcclusionComponent"/>
+    <addaction name="separator"/>
+    <addaction name="actionAddSoundComponent"/>
+    <addaction name="actionRemoveSoundComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
