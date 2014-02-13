@@ -82,6 +82,11 @@ namespace DAVA
 		virtual Font * Clone() const;
 		
 		/**
+         \brief Get font texture
+         */
+        Texture* GetTexture();
+
+		/**
 		 \brief Tests if two fonts are the same.
 		 */
 		virtual bool IsEqual(const Font *font) const;
@@ -107,6 +112,7 @@ namespace DAVA
         virtual String GetRawHashString();
         
 	private:		
+        bool LoadTexture(const FilePath& path);
 		bool LoadConfig(const FilePath& path);
 		float32 GetSizeScale() const;
 		
@@ -135,8 +141,8 @@ namespace DAVA
 		float32 spread;
 		
 		FilePath configPath;
-				
 
+        Texture* fontTexture;
 	};
 }
 

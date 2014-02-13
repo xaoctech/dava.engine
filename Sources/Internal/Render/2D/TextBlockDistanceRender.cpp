@@ -61,7 +61,6 @@ TextBlockDistanceRender::TextBlockDistanceRender(TextBlock* textBlock) :
 	renderObject = new RenderDataObject();
 	
 	dfFont = (DFFont*)textBlock->font;
-	fontTexture = Texture::CreateFromFile(dfFont->GetTexturePath());
 	
 	if (shader == NULL)
 	{
@@ -85,7 +84,6 @@ TextBlockDistanceRender::~TextBlockDistanceRender()
 	else
 		shader->Release(); // just decrease ref count
 
-	SafeRelease(fontTexture);
 	SafeRelease(renderObject);
 }
 	
@@ -144,7 +142,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	Matrix4 newModelView = translate * modelView;
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, newModelView);
 	
-	RenderManager::Instance()->SetTexture(fontTexture, 0);
+	RenderManager::Instance()->SetTexture(dfFont->GetTexture(), 0);
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(renderObject);
 	RenderManager::Instance()->FlushState();

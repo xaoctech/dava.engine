@@ -57,7 +57,6 @@ private:
 	
 private:
 	RenderDataObject* renderObject;
-	Texture* fontTexture;
 	DFFont* dfFont;
 
 	static Shader* shader;

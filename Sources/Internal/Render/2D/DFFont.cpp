@@ -36,6 +36,7 @@
 namespace DAVA {
 
 	DFFont::DFFont()
+    :   fontTexture(NULL)
 	{
 		fontType = TYPE_DISTANCE;
 		baseSize = 0;
@@ -46,13 +47,14 @@ namespace DAVA {
 	
 	DFFont::~DFFont()
 	{
+        SafeRelease(fontTexture);
 	}
 	
 	DFFont* DFFont::Create(const FilePath & path)
 	{
 		DFFont* font = new DFFont();
 		
-		if (!font->LoadConfig(path))
+		if (!font->LoadConfig(path) || !font->LoadTexture(font->GetTexturePath()))
 		{
 			SafeRelease(font);
 			return NULL;
@@ -90,6 +92,7 @@ namespace DAVA {
 		dfFont->lineHeight = lineHeight;
 		dfFont->spread = spread;
 		dfFont->configPath = configPath;
+        dfFont->fontTexture = SafeRetain(fontTexture);
 
 		return dfFont;
 	}
@@ -209,6 +212,13 @@ namespace DAVA {
 	{
 		return size / baseSize;
 	}
+
+    bool DFFont::LoadTexture(const FilePath& path)
+    {
+        fontTexture = Texture::CreateFromFile(path);
+
+        return true;
+	}
 	
 	bool DFFont::LoadConfig(const DAVA::FilePath &path)
 	{
@@ -318,5 +328,9 @@ namespace DAVA {
     {
         return configPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
     }
-	
+
+    Texture* DFFont::GetTexture()
+    {
+        return fontTexture;
+    }
 }
