@@ -135,11 +135,16 @@ bool HierarchyTree::Load(const QString& projectPath)
         if(localizationFontsPath)
         {
             EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(localizationFontsPath->AsString()));
-            if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
-            {
-                //TODO: load localized fonts
-                UIYamlLoader::LoadFonts(EditorFontManager::Instance()->GetDefaultFontsPath());
-            }
+        }
+        else
+        {
+            EditorFontManager::Instance()->SetDefaultFontsPath(FilePath("~res:/UI/Fonts/fonts.yaml"));
+        }
+        
+        if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
+        {
+            //TODO: load localized fonts
+            UIYamlLoader::LoadFonts(EditorFontManager::Instance()->GetDefaultFontsPath());
         }
     }
     

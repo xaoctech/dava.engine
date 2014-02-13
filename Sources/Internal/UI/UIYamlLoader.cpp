@@ -570,6 +570,7 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
             
 			//fontMap[t->first] = font;
 			FontManager::Instance()->SetFontName(font, t->first);
+            SafeRelease(font);
 		}
 	}
 }
