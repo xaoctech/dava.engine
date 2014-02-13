@@ -82,7 +82,16 @@ void FontManager::UnregisterFont(Font *font)
 	
 void FontManager::SetFontName(Font* font, const String& name)
 {
-    fontMap[name] = font;
+    Map<String, Font*>::iterator findIt = fontMap.find(name);
+    if(findIt != fontMap.end())
+    {
+        SafeRelease(findIt->second);
+        findIt->second = SafeRetain(font);
+    }
+    else
+    {
+        fontMap[name] = SafeRetain(font);
+    }
     
 	if (registeredFonts.find(font) == registeredFonts.end())
 		return;
@@ -186,8 +195,7 @@ void FontManager::Clear()
     //TODO: remove fontMap legacy from UIYamlLoader
     for (Map<String, Font *>::iterator t = fontMap.begin(); t != fontMap.end(); ++t)
 	{
-		Font * font = t->second;
-		SafeRelease(font);
+		SafeRelease(t->second);
 	}
 	fontMap.clear();
     //
