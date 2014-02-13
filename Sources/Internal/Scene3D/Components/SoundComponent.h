@@ -65,7 +65,7 @@ protected:
 
 public:
     INTROSPECTION_EXTEND(SoundComponent, Component,
-        COLLECTION(events, "Events Array",  I_VIEW | I_EDIT)
+        COLLECTION(events, "Events Array",  I_VIEW)
         );
 };
 

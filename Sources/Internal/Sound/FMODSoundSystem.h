@@ -63,7 +63,7 @@ public:
     virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
     
     virtual void SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive);
-    virtual SoundEvent * CreateAndDeserializeEvent(KeyedArchive *archive);
+    virtual SoundEvent * DeserializeEventFromArchive(KeyedArchive *archive);
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Suspend();

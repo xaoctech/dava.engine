@@ -128,7 +128,12 @@ bool FMODSoundEvent::Trigger()
     
     return fmodEvent != 0;
 }
-    
+
+const String & FMODSoundEvent::GetEventName()
+{
+    return eventName;
+}
+
 void FMODSoundEvent::SetPosition(const Vector3 & _position)
 {
     position = _position;
@@ -257,6 +262,36 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback
     List<FMOD::Event *>::iterator it = std::find(fmodEventInstances.begin(), fmodEventInstances.end(), fmodEvent);
     if(it != fmodEventInstances.end())
         fmodEventInstances.erase(it);
+}
+
+void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo)
+{
+    paramsInfo.clear();
+
+    FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
+    FMOD::Event * event = 0;
+    FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event));
+    if(!event)
+        return;
+
+    int32 paramsCount = 0;
+    FMOD_VERIFY(event->getNumParameters(&paramsCount));
+    for(int32 i = 0; i < paramsCount; i++)
+    {
+        FMOD::EventParameter * param = 0;
+        FMOD_VERIFY(event->getParameterByIndex(i, &param));
+        if(!param)
+            continue;
+
+        char * paramName = 0;
+        FMOD_VERIFY(param->getInfo(0, &paramName));
+
+        SoundEventParameterInfo pInfo;
+        pInfo.name = String(paramName);
+        FMOD_VERIFY(param->getRange(&pInfo.minValue, &pInfo.maxValue));
+
+        paramsInfo.push_back(pInfo);
+    }
 }
 
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)

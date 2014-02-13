@@ -76,8 +76,9 @@ public:
     
     //FMOD only
     void PerformCallback(FMOD::Event  * event, SoundEventCallback callbackType);
-    
-    bool GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
+        
+    const String & GetEventName();
+    void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
     
 protected:
     FMODSoundEvent(const String & eventName);

@@ -147,6 +147,11 @@ void FMODSoundSystem::SerializeEvent(const SoundEvent * sEvent, KeyedArchive *to
             }
             ++itEv;
         }
+
+        if(groupNamePtr)
+            break;
+
+        ++it;
     }
     if(groupNamePtr)
     {
@@ -154,7 +159,7 @@ void FMODSoundSystem::SerializeEvent(const SoundEvent * sEvent, KeyedArchive *to
     }
 }
 
-SoundEvent * FMODSoundSystem::CreateAndDeserializeEvent(KeyedArchive *archive)
+SoundEvent * FMODSoundSystem::DeserializeEventFromArchive(KeyedArchive *archive)
 {
     String eventType = archive->GetString("EventType");
     FastName groupName(archive->GetString("groupName"));
