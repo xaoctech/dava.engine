@@ -128,10 +128,10 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 				TransformComponent * sourceTransform = GetTransformComponent(sourceEntity);
 				RenderObject * sourceRenderObject = GetRenderObject(sourceEntity);
 
-                Vector<RenderObject*> sourceRenderObjects;
+                Vector<std::pair<Entity*, RenderObject*> >sourceRenderObjects;
                 if(sourceRenderObject)
                 {
-                    sourceRenderObjects.push_back(sourceRenderObject);
+                    sourceRenderObjects.push_back(std::make_pair(sourceEntity, sourceRenderObject));
                     sourceRenderObject->Retain();
                 }
                 else
@@ -142,13 +142,14 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
                 uint32 sourceRenderObjectsCount = sourceRenderObjects.size();
                 for(uint32 j = 0; j < sourceRenderObjectsCount; ++j)
                 {
-                    sourceRenderObject = sourceRenderObjects[j];
+                    sourceRenderObject = sourceRenderObjects[j].second;
                     if (sourceTransform->GetLocalTransform() != Matrix4::IDENTITY)
                     {
                         PolygonGroup * pg = sourceRenderObject->GetRenderBatchCount() > 0 ? sourceRenderObject->GetRenderBatch(0)->GetPolygonGroup() : 0;
                         if(pg && bakedPolygonGroups.end() == bakedPolygonGroups.find(pg))
                         {
-                            sourceRenderObject->BakeTransform(sourceTransform->GetLocalTransform());
+                            Matrix4 totalTransform = sourceRenderObjects[j].first->AccamulateLocalTransform(entity);
+                            sourceRenderObject->BakeTransform(totalTransform);
                             bakedPolygonGroups.insert(pg);
                         }
                     }
@@ -189,13 +190,13 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
 	return res;
 }
 
-void LodToLod2Converter::FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects)
+void LodToLod2Converter::FindAndEraseRenderObjectsRecursive(Entity * fromEntity, Vector<std::pair<Entity*, RenderObject*> > & entitiesAndRenderObjects)
 {
     RenderObject * ro = GetRenderObject(fromEntity);
     if(ro && ro->GetType() == RenderObject::TYPE_MESH)
     {
         ro->Retain();
-        renderObjects.push_back(ro);
+        entitiesAndRenderObjects.push_back(std::make_pair(fromEntity, ro));
         fromEntity->RemoveComponent(Component::RENDER_COMPONENT);
     }
 
@@ -203,7 +204,7 @@ void LodToLod2Converter::FindAndEraseRenderObjectsRecursive(Entity * fromEntity,
     for(int32 i = 0; i < size; ++i)
     {
         Entity * child = fromEntity->GetChild(i);
-        FindAndEraseRenderObjectsRecursive(child, renderObjects);
+        FindAndEraseRenderObjectsRecursive(child, entitiesAndRenderObjects);
     }
 }
 
