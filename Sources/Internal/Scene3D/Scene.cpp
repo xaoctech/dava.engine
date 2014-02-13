@@ -83,6 +83,10 @@
 
 namespace DAVA 
 {
+
+Texture* Scene::stubTexture2d = NULL;
+Texture* Scene::stubTextureCube = NULL;
+Texture* Scene::stubTexture2dLightmap = NULL; //this texture should be all-pink without checkers
     
     
 Scene::Scene()
@@ -110,23 +114,33 @@ void Scene::InitGlobalMaterial()
 {
     sceneGlobalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
     
-    Texture* pinkTexture2d = Texture::CreatePink(Texture::TEXTURE_2D);
-    Texture* pinkTextureCube = Texture::CreatePink(Texture::TEXTURE_CUBE);
+    if(NULL == stubTexture2d)
+    {
+        stubTexture2d = Texture::CreatePink(Texture::TEXTURE_2D);
+    }
     
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, pinkTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, pinkTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, pinkTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, pinkTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, pinkTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, pinkTextureCube);
- 
-    SafeRelease(pinkTexture2d);
-    SafeRelease(pinkTextureCube);
+    if(NULL == stubTextureCube)
+    {
+        stubTextureCube = Texture::CreatePink(Texture::TEXTURE_CUBE);
+    }
+    
+    if(NULL == stubTexture2dLightmap)
+    {
+        stubTexture2dLightmap = Texture::CreatePink(Texture::TEXTURE_2D, false);
+    }
+    
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, stubTexture2dLightmap);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, stubTextureCube);
     
     Vector3 defaultVec3;
     Color defaultColor(1.0f, 0.0f, 0.0f, 1.0f);
     float32 defaultFloatValue = 0.5f;
     Vector2 defaultVec2;
+    float32 defaultLightmapSize = 16.0f;
     
     sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0,
                                           Shader::UT_FLOAT_VEC3,
@@ -200,6 +214,10 @@ void Scene::InitGlobalMaterial()
                                           Shader::UT_FLOAT,
                                           1,
                                           &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultLightmapSize);
 }
 
 void Scene::CreateSystems()
