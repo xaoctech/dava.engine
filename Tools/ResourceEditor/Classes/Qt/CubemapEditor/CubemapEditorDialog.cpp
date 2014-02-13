@@ -94,7 +94,7 @@ void CubemapEditorDialog::ConnectSignals()
 
 	//QObject::connect(ui->buttonLoadTexture, SIGNAL(pressed()), this, SLOT(OnLoadTexture()));
 	QObject::connect(ui->buttonSave, SIGNAL(pressed()), this, SLOT(OnSave()));
-	QObject::connect(ui->buttonClose, SIGNAL(pressed()), this, SLOT(OnClose()));
+	QObject::connect(ui->buttonClose, SIGNAL(pressed()), this, SLOT(close()));
 }
 
 void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
@@ -515,24 +515,24 @@ void CubemapEditorDialog::OnSave()
 	
 	this->setUpdatesEnabled(true);
 	ui->lblSaving->setVisible(false);
-	close();
+    QDialog::accept();
 }
 
-void CubemapEditorDialog::OnClose()
+void CubemapEditorDialog::done(int result)
 {
-	int answer = MB_FLAG_YES;
 	if(IsCubemapEdited())
 	{
-		answer = ShowQuestion("Warning",
+	    int answer = ShowQuestion("Warning",
 							  "Cubemap texture was edited. Do you want to close it without saving?",
 							  MB_FLAG_YES | MB_FLAG_NO,
 							  MB_FLAG_NO);
-	}
 
-	if(MB_FLAG_YES == answer)
-	{
-		close();
+       if(answer != MB_FLAG_YES)
+       {
+           return;
+       }
 	}
+    QDialog::done(QDialog::Accepted);
 }
 
 bool CubemapEditorDialog::IsCubemapEdited()
