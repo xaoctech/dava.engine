@@ -678,6 +678,11 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
 	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
+    // Debug functions
+	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), this, SLOT(OnDebugFunctionsGridCopy()));
+    
+    
+    
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
@@ -2715,3 +2720,45 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 
 	return true;
 }
+
+
+void QtMainWindow::OnDebugFunctionsGridCopy()
+{
+    SceneEditor2 * currentScene = GetCurrentScene();
+    float32 x = 0;
+    float32 y = 0;
+    float32 z = 0;
+    const float32 xshift = 10.0;
+    const float32 yshift = 10.0;
+    const float32 zshift = 0.0;
+    
+    if (currentScene->selectionSystem->GetSelectionCount() == 1)
+    {
+        Entity * entity = currentScene->selectionSystem->GetSelectionEntity(0);
+        
+        const Matrix4 & matrix = entity->GetLocalTransform();
+
+        for (uint32 x = 0; x < 10; ++x)
+        {
+            for (uint32 y = 0; y < 10; ++y)
+            {
+                Matrix4 translation;
+                translation.CreateTranslation(Vector3(x * xshift, y * yshift, z * zshift));
+                
+                Matrix4 newMatrix = matrix * translation;
+                Entity * clonedEntity = entity->Clone();
+                clonedEntity->SetLocalTransform(newMatrix);
+                
+                RenderObject * renderObject = GetRenderObject(clonedEntity);
+                NMaterial * material = renderObject->GetRenderBatch(0)->GetMaterial();
+                float32 inGlossiness = (float32)x / 9.0;
+                float32 inSpecularity = (float32)y / 9.0;
+                material->SetPropertyValue(FastName("inGlossiness"), Shader::UT_FLOAT, 1, &inGlossiness);
+                material->SetPropertyValue(FastName("inSpecularity"), Shader::UT_FLOAT, 1, &inSpecularity);
+                
+                currentScene->AddNode(clonedEntity);
+            }
+        }
+    }
+}
+

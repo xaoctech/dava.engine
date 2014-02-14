@@ -192,6 +192,9 @@ public slots:
     void OnMaterialSpecular(bool state);
 
     void OnCustomQuality();
+    
+    // Perform grid copy
+    void OnDebugFunctionsGridCopy();
 
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);

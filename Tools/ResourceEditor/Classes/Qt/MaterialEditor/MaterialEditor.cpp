@@ -406,7 +406,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                     DAVA::String projPath = SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString();
                     dynamicMember->SetDefaultOpenDialogPath(projPath.c_str());
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
-                    dynamicMember->SetValidator(new PathValidator(projPath.c_str()));
+                    //dynamicMember->SetValidator(new PathValidator(projPath.c_str()));
 
                     // self property
                     if(memberFlags & DAVA::I_EDIT)
