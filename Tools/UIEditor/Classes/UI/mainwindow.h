@@ -140,6 +140,12 @@ private slots:
     // Edit Preview Settings..
     void OnEditPreviewSettings();
     
+    // Guides signals.
+    void OnGuideDropped(Qt::DropAction dropAction);
+
+    // Stick mode changed.
+    void OnStickModeChanged();
+
     // Notification from GL widget its resize is done.
     void OnGLWidgetResized();
 

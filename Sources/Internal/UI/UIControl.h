@@ -1285,6 +1285,8 @@ protected:
     void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
 
+   	float32 Round(float32 value) const;
+
 private:
 	String	name;
 	int32	tag;
@@ -1305,7 +1307,6 @@ private:
 	float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
 	float32 GetRelativeY(UIControl *parent, int32 align);
 	float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
-	float32 Round(float32 value);
 };
 };
 

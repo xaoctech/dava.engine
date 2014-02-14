@@ -38,10 +38,12 @@
 #include "createplatformdlg.h"
 #include "createscreendlg.h"
 #include "fontmanagerdialog.h"
-#include "ItemsCommand.h"
-#include "CommandsController.h"
 #include "FileSystem/FileSystem.h"
 #include "ResourcesManageHelper.h"
+
+#include "CommandsController.h"
+#include "ItemsCommand.h"
+#include "GuideCommands.h"
 
 #include "Dialogs/createaggregatordlg.h"
 #include "Dialogs/importdialog.h"
@@ -54,7 +56,6 @@
 #include "DefaultScreen.h"
 #include "ColorHelper.h"
 
-#include "Grid/GridController.h"
 #include "Grid/GridVisualizer.h"
 
 #include "Ruler/RulerController.h"
@@ -228,6 +229,16 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(triggered()),
             this,
             SLOT(OnEditPreviewSettings()));
+
+    connect(this->ui->horizontalRuler,
+            SIGNAL(GuideDropped(Qt::DropAction)),
+            this,
+            SLOT(OnGuideDropped(Qt::DropAction)));
+
+    connect(this->ui->verticalRuler,
+            SIGNAL(GuideDropped(Qt::DropAction)),
+            this,
+            SLOT(OnGuideDropped(Qt::DropAction)));
 
 	InitMenu();
 	RestoreMainWindowState();
@@ -747,6 +758,12 @@ void MainWindow::InitMenu()
     // Pixelization.
     ui->actionPixelized->setChecked(EditorSettings::Instance()->IsPixelized());
     connect(ui->actionPixelized, SIGNAL(triggered()), this, SLOT(OnPixelizationStateChanged()));
+    
+    // Stick Mode.
+    ui->actionStickToCenters->setChecked(false);
+    ui->actionStickToSides->setChecked(false);
+    connect(ui->actionStickToSides, SIGNAL(triggered()), this, SLOT(OnStickModeChanged()));
+    connect(ui->actionStickToCenters, SIGNAL(triggered()), this, SLOT(OnStickModeChanged()));
 	UpdateMenu();
 }
 
@@ -845,6 +862,10 @@ void MainWindow::UpdateMenu()
     // Preview.
     ui->actionPreview->setEnabled(projectNotEmpty);
     ui->actionEditPreviewSettings->setEnabled(projectNotEmpty);
+    
+    // Stick mode.
+    ui->actionStickToSides->setEnabled(projectNotEmpty);
+    ui->actionStickToCenters->setEnabled(projectNotEmpty);
 }
 
 void MainWindow::OnNewProject()
@@ -1343,7 +1364,6 @@ void MainWindow::NotifyScaleUpdated(float32 newScale)
     ScreenWrapper::Instance()->SetScale(newScale);
     GridVisualizer::Instance()->SetScale(newScale);
 
-    GridController::Instance()->SetScale(newScale);
     RulerController::Instance()->SetScale(newScale);
 }
 
@@ -1543,4 +1563,45 @@ void MainWindow::OnEditPreviewSettings()
     PreviewSettingsDialog* dialog = new PreviewSettingsDialog(false);
     dialog->exec();
     delete dialog;
+}
+
+void MainWindow::OnGuideDropped(Qt::DropAction dropAction)
+{
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (!activeScreen)
+    {
+        return;
+    }
+    
+    if (dropAction == Qt::IgnoreAction)
+    {
+        activeScreen->CancelNewGuide();
+        return;
+    }
+    
+    if (!activeScreen->CanAcceptNewGuide())
+    {
+        // New guide is on the same position as existing one - no need to add.
+        return;
+    }
+    
+    // Create the appropriate command.
+    AddNewGuideCommand* command = new AddNewGuideCommand(activeScreen);
+    CommandsController::Instance()->ExecuteCommand(command);
+    SafeRelease(command);
+}
+
+void MainWindow::OnStickModeChanged()
+{
+    int32 stickMode = StickDisabled;
+    if (ui->actionStickToSides->isChecked())
+    {
+        stickMode |= StickToSides;
+    }
+    if (ui->actionStickToCenters->isChecked())
+    {
+        stickMode |= StickToCenters;
+    }
+
+    HierarchyTreeController::Instance()->SetStickMode(stickMode);
 }
