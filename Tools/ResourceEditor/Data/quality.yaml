@@ -1,5 +1,5 @@
 textures:
- default: "Low"
+ default: "High"
  qualities:
   - 
    quality: "High"
@@ -8,13 +8,13 @@ textures:
    minsize: 64
   -
    quality: "Medium"
-   albedolevel: 2
-   normallevel: 2
+   albedolevel: 1
+   normallevel: 1
    minsize: 64
   -
    quality: "Low"
-   albedolevel: 4
-   normallevel: 4
+   albedolevel: 2
+   normallevel: 2
    minsize: 64
   
 

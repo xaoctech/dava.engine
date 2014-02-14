@@ -199,7 +199,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -412,6 +412,12 @@
     <addaction name="separator"/>
     <addaction name="actionCustomQuality"/>
    </widget>
+   <widget class="QMenu" name="menuDebug_Functions">
+    <property name="title">
+     <string>Debug Functions</string>
+    </property>
+    <addaction name="actionGridCopy"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
@@ -421,6 +427,7 @@
    <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuDebug_Functions"/>
   </widget>
   <widget class="QDockWidget" name="dockParticleEditor">
    <property name="sizePolicy">
@@ -1749,6 +1756,11 @@
    </property>
    <property name="toolTip">
     <string>Custom Quality Settings</string>
+   </property>
+  </action>
+  <action name="actionGridCopy">
+   <property name="text">
+    <string>Grid Copy</string>
    </property>
   </action>
  </widget>
