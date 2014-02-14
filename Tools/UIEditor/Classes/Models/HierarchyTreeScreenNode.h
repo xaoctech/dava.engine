@@ -35,7 +35,7 @@
 #include "HierarchyTreeNode.h"
 #include "ScreenControl.h"
 
-#include "GuidesManager.h"
+#include "Guides/GuidesManager.h"
 
 using namespace DAVA;
 

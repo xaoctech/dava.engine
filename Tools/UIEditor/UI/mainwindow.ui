@@ -330,7 +330,7 @@
      <x>0</x>
      <y>0</y>
      <width>1037</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -448,8 +448,7 @@
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
    <addaction name="separator"/>
-   <addaction name="actionStickToSides"/>
-   <addaction name="actionStickToCenters"/>
+   <addaction name="actionStickMode"/>
    <addaction name="separator"/>
    <addaction name="actionAlign_Left"/>
    <addaction name="actionAlign_Horz_Center"/>
@@ -966,34 +965,19 @@
     <string>Preview Settings</string>
    </property>
   </action>
-  <action name="actionStickToSides">
+  <action name="actionStickMode">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../Data/icons.qrc">
-     <normaloff>:/Icons/magnet_sides.png</normaloff>:/Icons/magnet_sides.png</iconset>
+     <normaloff>:/Icons/stickmode.png</normaloff>:/Icons/stickmode.png</iconset>
    </property>
    <property name="text">
-    <string>Stick to Sides</string>
+    <string>Enable Stick Mode</string>
    </property>
    <property name="toolTip">
-    <string>Stick objects by sides to the guidelines</string>
-   </property>
-  </action>
-  <action name="actionStickToCenters">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../Data/icons.qrc">
-     <normaloff>:/Icons/magnet_centers.png</normaloff>:/Icons/magnet_centers.png</iconset>
-   </property>
-   <property name="text">
-    <string>Stick To Centers</string>
-   </property>
-   <property name="toolTip">
-    <string>Stick objects by centers to the guidelines</string>
+    <string>Stick objects by sides/centers to the guidelines</string>
    </property>
   </action>
  </widget>

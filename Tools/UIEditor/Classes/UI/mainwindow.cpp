@@ -759,12 +759,12 @@ void MainWindow::InitMenu()
     ui->actionPixelized->setChecked(EditorSettings::Instance()->IsPixelized());
     connect(ui->actionPixelized, SIGNAL(triggered()), this, SLOT(OnPixelizationStateChanged()));
     
-    // Stick Mode.
-    ui->actionStickToCenters->setChecked(false);
-    ui->actionStickToSides->setChecked(false);
-    connect(ui->actionStickToSides, SIGNAL(triggered()), this, SLOT(OnStickModeChanged()));
-    connect(ui->actionStickToCenters, SIGNAL(triggered()), this, SLOT(OnStickModeChanged()));
-	UpdateMenu();
+    // Stick Mode - enable by default.
+    ui->actionStickMode->setChecked(true);
+    connect(ui->actionStickMode, SIGNAL(triggered()), this, SLOT(OnStickModeChanged()));
+    OnStickModeChanged();
+
+    UpdateMenu();
 }
 
 void MainWindow::SetupViewMenu()
@@ -864,8 +864,7 @@ void MainWindow::UpdateMenu()
     ui->actionEditPreviewSettings->setEnabled(projectNotEmpty);
     
     // Stick mode.
-    ui->actionStickToSides->setEnabled(projectNotEmpty);
-    ui->actionStickToCenters->setEnabled(projectNotEmpty);
+    ui->actionStickMode->setEnabled(projectNotEmpty);
 }
 
 void MainWindow::OnNewProject()
@@ -1593,15 +1592,6 @@ void MainWindow::OnGuideDropped(Qt::DropAction dropAction)
 
 void MainWindow::OnStickModeChanged()
 {
-    int32 stickMode = StickDisabled;
-    if (ui->actionStickToSides->isChecked())
-    {
-        stickMode |= StickToSides;
-    }
-    if (ui->actionStickToCenters->isChecked())
-    {
-        stickMode |= StickToCenters;
-    }
-
+    int32 stickMode = ui->actionStickMode->isChecked() ? StickToSides | StickToCenters : StickDisabled;
     HierarchyTreeController::Instance()->SetStickMode(stickMode);
 }

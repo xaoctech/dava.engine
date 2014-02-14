@@ -31,7 +31,7 @@
 
 #include "BaseCommand.h"
 #include "HierarchyTreeController.h"
-#include "GuideData.h"
+#include "Guides/GuideData.h"
 
 namespace DAVA {
 

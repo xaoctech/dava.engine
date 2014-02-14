@@ -39,7 +39,7 @@
 #include "HierarchyTreeAggregatorControlNode.h"
 
 #include "Ruler/RulerController.h"
-#include "GuidesEnums.h"
+#include "Guides/GuidesEnums.h"
 
 #include "PreviewController.h"
 
