@@ -144,7 +144,6 @@
     <ClCompile Include="GeneratedFiles\EditorSettings_moc.cpp" />
     <ClCompile Include="GeneratedFiles\FrameworkMain_moc.cpp" />
     <ClCompile Include="GeneratedFiles\GameCore_moc.cpp" />
-    <ClCompile Include="GeneratedFiles\Grid\GridController_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Grid\GridVisualizer_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Guides\GuideData_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Guides\GuideMimeData_moc.cpp" />

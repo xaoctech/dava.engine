@@ -672,9 +672,6 @@
     <ClCompile Include="GeneratedFiles\Ruler\RulerWidget_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Grid\GridController_moc.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Grid\GridVisualizer_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
