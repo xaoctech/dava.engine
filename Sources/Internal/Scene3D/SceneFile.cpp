@@ -340,7 +340,9 @@ bool SceneFile::ReadMaterial()
 	
 bool SceneFile::ReadStaticMesh()
 {
-	uint32 polyGroupCount;
+    DVASSERT(false && "This methoud should not be used");
+    
+	/*uint32 polyGroupCount;
 	sceneFP->Read(&polyGroupCount, sizeof(uint32));
 	if (debugLogEnabled)Logger::FrameworkDebug("- Static Mesh: %d\n", polyGroupCount);
 	
@@ -415,12 +417,16 @@ bool SceneFile::ReadStaticMesh()
     staticMeshes.push_back(SafeRetain(mesh));
 	SafeRelease(mesh);
 	
-	return true;
+	return true;*/
+    
+    return false;
 }
 	
 bool SceneFile::ReadAnimatedMesh()
 {
-	int polyGroupCount;
+    DVASSERT(false && "This methoud should not be used");
+    
+	/*int polyGroupCount;
 	sceneFP->Read(&polyGroupCount, sizeof(int));
 	if (debugLogEnabled)Logger::FrameworkDebug("- Animated Mesh: %d\n", polyGroupCount);
 	
@@ -498,7 +504,9 @@ bool SceneFile::ReadAnimatedMesh()
 	}
 	
 	SafeRelease(mesh);
-	return true;
+	return true;*/
+    
+    return false;
 }
 
 

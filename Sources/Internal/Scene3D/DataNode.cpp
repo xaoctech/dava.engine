@@ -64,17 +64,17 @@ void DataNode::SetScene(Scene * _scene)
     scene = _scene;
 }
     
-void DataNode::SetName(const String & _name)
+/*void DataNode::SetName(const String & _name)
 {
     name = _name;
-}
+}*/
     
-const String & DataNode::GetName() const
+/*const String & DataNode::GetName() const
 {
     return name;
-}
+}*/
 
-void DataNode::AddNode(DataNode * node)
+/*void DataNode::AddNode(DataNode * node)
 {
     if (node)
     {
@@ -83,9 +83,9 @@ void DataNode::AddNode(DataNode * node)
         children.push_back(node);
         //node->SetParent(this);
     }
-}
+}*/
 
-DataNode *	DataNode::FindByName(const String & searchName)
+/*DataNode *	DataNode::FindByName(const String & searchName)
 {
     if (name == searchName)
         return this;
@@ -97,9 +97,9 @@ DataNode *	DataNode::FindByName(const String & searchName)
         if (res != 0)return res;
     }
     return 0;
-}
+}*/
 
-void DataNode::RemoveNode(DataNode * node)
+/*void DataNode::RemoveNode(DataNode * node)
 {
     if (!node) 
     {
@@ -130,19 +130,19 @@ void DataNode::RemoveNode(DataNode * node)
     {
         children[c]->index = c;
     }
-}
+}*/
 
-DataNode * DataNode::GetChildNode(int32 index)
+/*DataNode * DataNode::GetChildNode(int32 index)
 {
     return children[index];
-}
+}*/
 
-int32 DataNode::GetChildrenNodeCount()
+/*int32 DataNode::GetChildrenNodeCount()
 {
     return (int32)children.size();
-}
+}*/
 
-void DataNode::RemoveAllChildrenNodes()
+/*void DataNode::RemoveAllChildrenNodes()
 {
     for (Vector<DataNode*>::iterator t = children.begin(); t != children.end(); ++t)
     {
@@ -152,7 +152,7 @@ void DataNode::RemoveAllChildrenNodes()
         node->Release();
     }
     children.clear();
-}
+}*/
 
 int32  DataNode::GetNodeIndex()
 {
@@ -168,7 +168,7 @@ uint64 DataNode::GetPreviousPointer()
 void DataNode::Load(KeyedArchive * archive, SerializationContext * serializationContext)
 {
     BaseObject::Load(archive);
-    name = archive->GetString("name");
+    //name = archive->GetString("name");
     index = archive->GetInt32("#index", -1);
     pointer = archive->GetByteArrayAsType("#id", (uint64)0);
 }
@@ -177,7 +177,7 @@ void DataNode::Save(KeyedArchive * archive, SerializationContext * serialization
 {
     BaseObject::Save(archive);
     archive->SetInt32("#index", index);
-    archive->SetString("name", name);
+    //archive->SetString("name", name);
     pointer = (uint64)this;
     archive->SetByteArrayAsType("#id", pointer);
 }
