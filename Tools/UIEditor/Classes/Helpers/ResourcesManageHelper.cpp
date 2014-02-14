@@ -256,15 +256,15 @@ QString ResourcesManageHelper::GetProjectTitle()
 	QString projectPath = GetProjectPath();
 	if (!projectPath.isNull() && !projectPath.isEmpty())
 	{
-		QString projectFilePath = GetProjectFilePath(projectPath);
-		projectTitleString = QString("%1 - %2").arg(projectTitle).arg(projectFilePath);
+		projectTitleString = GetProjectTitle(GetProjectFilePath(projectPath));
 	}
+
 	return projectTitleString;
 }
 
 QString ResourcesManageHelper::GetProjectTitle(const QString& projectFilePath)
 {
-	return QString("%1 - %2").arg(projectTitle).arg(projectFilePath);
+	return QString("%1 | Project %2").arg(projectTitle).arg(projectFilePath);
 }
 
 QString ResourcesManageHelper::GetDefaultDirectory()
