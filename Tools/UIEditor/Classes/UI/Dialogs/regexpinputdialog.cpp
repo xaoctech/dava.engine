@@ -33,10 +33,10 @@ RegExpInputDialog::RegExpInputDialog(QWidget *parent, int flags) :
     QDialog(parent)
 {
     if(flags!=0)
-	{
-		setWindowFlags((Qt::WindowFlags)flags);
-	}
-     
+    {
+        setWindowFlags(windowFlags() & (Qt::WindowFlags)flags);
+    }
+
     QVBoxLayout *l=new QVBoxLayout(this);
      
     label=new QLabel(this);
