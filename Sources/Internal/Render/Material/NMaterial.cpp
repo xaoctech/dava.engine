@@ -45,6 +45,7 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Highlevel/Landscape.h"
+#include "Render/Material/NMaterialNames.h"
 
 namespace DAVA
 {
@@ -1100,8 +1101,14 @@ void NMaterial::UpdateMaterialTemplate()
 	SafeRelease(baseTechnique);
 	baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(techniqueName);
 	
-	DVASSERT(baseTechnique);
+	//DVASSERT(baseTechnique);
 	//materialSortKey = baseTechnique->GetTechniqueId();
+    
+    if(NULL == baseTechnique)
+    {
+        baseTechnique = RenderTechniqueSingleton::Instance()->CreateTechniqueByName(NMaterialName::TEXTURED_OPAQUE);
+        DVASSERT(baseTechnique);
+    }
 	
 	uint32 passCount = baseTechnique->GetPassCount();
 	for(uint32 i = 0; i < passCount; ++i)
