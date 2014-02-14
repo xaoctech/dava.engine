@@ -32,7 +32,7 @@
 - (BOOL)webView: (UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView;
-
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error;
 - (void)leftGesture;
 - (void)rightGesture;
 
@@ -122,6 +122,15 @@
         delegate->PageLoaded(self->webView);
     }
 }
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    if (delegate && self->webView)
+	{
+        delegate->PageLoaded(self->webView);
+    }
+}
+
 @end
 
 namespace DAVA
