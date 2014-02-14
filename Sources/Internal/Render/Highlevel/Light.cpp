@@ -244,6 +244,26 @@ uint32 Light::GetFlags()
     return flags;
 }
 
+const Vector4 & Light::CalculatePositionDirectionBindVector(Camera * inCamera)
+{
+    uint32 globalFrameIndex = Core::Instance()->GetGlobalFrameIndex();
+    if (inCamera != camera || lastUpdatedFrame != globalFrameIndex)
+    {
+        camera = inCamera;
+        lastUpdatedFrame = globalFrameIndex;
+        if (type == TYPE_DIRECTIONAL)
+        {
+            // Here we prepare direction according to shader direction usage. Shader use as ToLightDirection, so we invert it here
+            resultPositionDirection = - (MultiplyVectorMat3x3(direction, camera->GetMatrix()));
+            resultPositionDirection.w = 0.0f;
+        }else
+        {
+            resultPositionDirection = position * camera->GetMatrix();
+        }
+    }
+    return resultPositionDirection;
+}
+
     
     
 };

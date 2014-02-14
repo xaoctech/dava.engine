@@ -40,7 +40,8 @@
 namespace DAVA 
 {
 class SceneFileV2;
-
+class Camera;
+    
 class Light : public BaseObject
 {
 public:
@@ -86,6 +87,8 @@ public:
     
     void SetPositionDirectionFromMatrix(const Matrix4 & worldTransform);
 
+    const Vector4 & CalculatePositionDirectionBindVector(Camera * camera);
+
     //virtual void Update(float32 timeElapsed);
     //virtual void Draw();
     
@@ -101,18 +104,18 @@ public:
 	//void SetRenderSystem
     
 protected:
+	uint32 flags;
+    Camera * camera;
+    uint32 lastUpdatedFrame;
+    uint32 type;
     Vector3 position;
     Vector3 direction;
-    
-    uint32 type;
+    Vector4 resultPositionDirection;
     
     Color ambientColor;
     Color diffuseColor;
     Color specularColor;
     float32 intensity;
-
-	uint32 flags;
-    
 public:
     
     INTROSPECTION_EXTEND(Light, BaseObject,
