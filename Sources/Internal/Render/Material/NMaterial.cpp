@@ -112,7 +112,7 @@ namespace DAVA
         NMaterial::FLAG_VIEWALBEDO,
         NMaterial::FLAG_VIEWAMBIENT,
         NMaterial::FLAG_VIEWDIFFUSE,
-        NMaterial::FLAG_VIEWSPECULAR
+        NMaterial::FLAG_VIEWSPECULAR,
 	};
 	
 	const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -327,6 +327,8 @@ namespace DAVA
 			it != materialProperties.end();
 			++it)
 		{
+            if (FastName(it->first) == PARAM_LIGHT_POSITION0)continue;
+
 			NMaterialProperty* property = it->second;
 			
 			uint32 dataSize = Shader::GetUniformTypeSize(property->type) * property->size;
@@ -429,7 +431,9 @@ namespace DAVA
 			DVASSERT(propVariant->AsByteArraySize() >= (sizeof(uint32) +sizeof(uint32)));
 			
 			const uint8* ptr = propVariant->AsByteArray();
-			
+            
+            if (FastName(it->first) == PARAM_LIGHT_POSITION0)continue;
+            
 			SetPropertyValue(FastName(it->first),
 							 *(Shader::eUniformType*)ptr,
 							 *(ptr + sizeof(Shader::eUniformType)),
@@ -1334,23 +1338,22 @@ namespace DAVA
 		}
 		
 		//VI: this call is temporary solution. It will be removed once autobind system and lighting system ready
-		SetupPerFrameProperties(camera);
-		
 		BindMaterialTextures(activePassInstance);
 		
         activePassInstance->FlushState();
 		
 		BindMaterialProperties(activePassInstance);
-	}
+
+        SetupPerFrameProperties(camera);
+    }
 	
 	void NMaterial::SetupPerFrameProperties(Camera* camera)
 	{
+        DVASSERT(camera != 0);
 		if(camera && IsDynamicLit() && lights[0])
 		{
-			const Matrix4 & matrix = camera->GetMatrix();
-			Vector3 lightPosition0InCameraSpace = lights[0]->GetPosition() * matrix;
-			
-			SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC3, 1, lightPosition0InCameraSpace.data);
+            const Vector4 & positionDirectionInCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
+            SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC4, 1, positionDirectionInCameraSpace.data);
 		}
 	}
 
@@ -1556,7 +1559,6 @@ namespace DAVA
 		}
 		
 		float32 intensity = (light) ? light->GetIntensity() : 0;
-        intensity = 2.0f;
 		SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
 	}
 	
@@ -2536,9 +2538,12 @@ namespace DAVA
  		{
 			ret.reserve(3);
  			ret.push_back(FLAG_VERTEXFOG);
+ 			ret.push_back(FLAG_FOG_LINEAR);
  			ret.push_back(FLAG_FLATCOLOR);
  			ret.push_back(FLAG_TEXTURESHIFT);
             ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
+ 			ret.push_back(FastName("MY_PBR"));
+ 			ret.push_back(FastName("CORRECT_NORMALIZATION"));
  		}
 		return ret;
 	}
