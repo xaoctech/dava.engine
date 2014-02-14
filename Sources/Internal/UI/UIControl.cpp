@@ -2815,7 +2815,7 @@ namespace DAVA
 		return position;
 	}
 
-	float32 UIControl::Round(float32 value)
+	float32 UIControl::Round(float32 value) const
 	{
 		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
 	}

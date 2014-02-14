@@ -448,6 +448,9 @@
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
    <addaction name="separator"/>
+   <addaction name="actionStickToSides"/>
+   <addaction name="actionStickToCenters"/>
+   <addaction name="separator"/>
    <addaction name="actionAlign_Left"/>
    <addaction name="actionAlign_Horz_Center"/>
    <addaction name="actionAlign_Right"/>
@@ -961,6 +964,36 @@
   <action name="actionEditPreviewSettings">
    <property name="text">
     <string>Preview Settings</string>
+   </property>
+  </action>
+  <action name="actionStickToSides">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/magnet_sides.png</normaloff>:/Icons/magnet_sides.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stick to Sides</string>
+   </property>
+   <property name="toolTip">
+    <string>Stick objects by sides to the guidelines</string>
+   </property>
+  </action>
+  <action name="actionStickToCenters">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Data/icons.qrc">
+     <normaloff>:/Icons/magnet_centers.png</normaloff>:/Icons/magnet_centers.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stick To Centers</string>
+   </property>
+   <property name="toolTip">
+    <string>Stick objects by centers to the guidelines</string>
    </property>
   </action>
  </widget>
