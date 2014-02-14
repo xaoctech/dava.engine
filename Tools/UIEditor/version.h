@@ -26,5 +26,5 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#define UI_EDITOR_VERSION "0.2"
 
+#define UI_EDITOR_VERSION "local build"
