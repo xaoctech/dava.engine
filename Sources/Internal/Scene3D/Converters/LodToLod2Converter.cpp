@@ -148,7 +148,7 @@ bool LodToLod2Converter::MergeLod(Entity * entity)
                         PolygonGroup * pg = sourceRenderObject->GetRenderBatchCount() > 0 ? sourceRenderObject->GetRenderBatch(0)->GetPolygonGroup() : 0;
                         if(pg && bakedPolygonGroups.end() == bakedPolygonGroups.find(pg))
                         {
-                            Matrix4 totalTransform = sourceRenderObjects[j].first->AccamulateLocalTransform(entity);
+                            Matrix4 totalTransform = sourceRenderObjects[j].first->AccamulateTransformUptoFarParent(entity);
                             sourceRenderObject->BakeTransform(totalTransform);
                             bakedPolygonGroups.insert(pg);
                         }
