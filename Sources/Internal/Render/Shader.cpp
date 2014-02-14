@@ -235,6 +235,8 @@ const char * Shader::GetUniformTypeSLName(eUniformType type)
 
 void Shader::ClearLastBindedCaches()
 {
+    //Logger::FrameworkDebug("Frame reset");
+
     for (uint32 k = 0; k < autobindUniformCount; ++k)
     {
         Uniform * currentUniform = autobindUniforms[k];
@@ -303,13 +305,13 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
     
     if (!CompileShader(&vertexShader, GL_VERTEX_SHADER, vertexShaderDataSize, (GLchar*)vertexShaderDataStart, shaderDefines))
     {
-        Logger::Error("Failed to compile vertex shader: %s", assetName.c_str());
+        Logger::Error("Failed to compile vertex shader: %s defines: %s", assetName.c_str(), shaderDefines.c_str());
         return;
     }
     
     if (!CompileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentShaderDataSize, (GLchar*)fragmentShaderDataStart, shaderDefines))
     {
-        Logger::Error("Failed to compile fragment shader: %s", assetName.c_str());
+        Logger::Error("Failed to compile fragment shader: %s defines:%s", assetName.c_str(), shaderDefines.c_str());
         return ;
     }
     
@@ -969,6 +971,7 @@ void Shader::Bind()
 {
     if (activeProgram != program)
     {
+        //Logger::FrameworkDebug(Format("Bind: %d", program).c_str());
         RENDERER_UPDATE_STATS(shaderBindCount++);
         RENDER_VERIFY(glUseProgram(program));
         activeProgram = program;
