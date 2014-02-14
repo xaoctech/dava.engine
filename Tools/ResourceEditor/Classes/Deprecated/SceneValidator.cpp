@@ -290,11 +290,11 @@ void SceneValidator::ValidateMaterials(DAVA::Scene *scene, Set<String> &errorsLo
 			{
 				if(((*it)->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_INSTANCE) && (*it)->GetParent())
 				{
-					texturesMap[tex] = Format("Material: %s (%s). Texture %s.", (*it)->GetName().c_str(), (*it)->GetParent()->GetName().c_str(), (*it)->GetTextureName(t).c_str());
+					texturesMap[tex] = Format("Material: %s (%s). Texture %s.", (*it)->GetMaterialName().c_str(), (*it)->GetParent()->GetMaterialName().c_str(), (*it)->GetTextureName(t).c_str());
 				}
 				else
 				{
-					texturesMap[tex] = Format("Material: %s. Texture %s.", (*it)->GetName().c_str(), (*it)->GetTextureName(t).c_str());
+					texturesMap[tex] = Format("Material: %s. Texture %s.", (*it)->GetMaterialName().c_str(), (*it)->GetTextureName(t).c_str());
 				}
 			}
 		}
