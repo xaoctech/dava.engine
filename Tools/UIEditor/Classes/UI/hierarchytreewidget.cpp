@@ -43,6 +43,8 @@
 #include "ResourcesManageHelper.h"
 #include "WidgetSignalsBlocker.h"
 
+#include "regexpinputdialog.h"
+
 #include <QVariant>
 #include <QMenu>
 #include <QMessageBox>
@@ -587,14 +589,14 @@ void HierarchyTreeWidget::OnRenameControlAction()
 	QTreeWidgetItem* item = items.at(0);	
 	HierarchyTreeNode* node = GetNodeFromTreeItem(item);
 	QString itemName = node->GetName();
-		
-	bool dialogResult;
-    QString newName = QInputDialog::getText(this, tr("Rename control"),
-                                          tr("Enter new control name:"),
-										  QLineEdit::Normal,
-                                          itemName, &dialogResult);
-				
-	if (dialogResult && !newName.isEmpty() && (newName != itemName))
+
+    bool isAccepted = false;
+    QString newName = RegExpInputDialog::getText(this, tr("Rename control"),
+                                              "Enter new control name",
+                                              itemName, HierarchyTreeNode::GetNameRegExp(),
+                                              &isAccepted);
+
+	if (isAccepted && !newName.isEmpty() && (newName != itemName))
 	{
 		ControlRenameCommand* cmd = new ControlRenameCommand(node->GetId(), itemName, newName);
 		CommandsController::Instance()->ExecuteCommand(cmd);
