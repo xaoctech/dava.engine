@@ -31,7 +31,7 @@
 #include <QPainter>
 #include <QApplication>
 
-#include <GuideMimeData.h>
+#include "Guides/GuideMimeData.h"
 
 RulerWidget::RulerWidget(QWidget *parent) :
     QWidget(parent),

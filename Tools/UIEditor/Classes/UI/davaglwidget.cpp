@@ -47,7 +47,7 @@
 #include "ItemsCommand.h"
 #include "CommandsController.h"
 
-#include "GuideMimeData.h"
+#include "Guides/GuideMimeData.h"
 
 #if defined (__DAVAENGINE_MACOS__)
 #include "Platform/Qt/MacOS/QtLayerMacOS.h"
