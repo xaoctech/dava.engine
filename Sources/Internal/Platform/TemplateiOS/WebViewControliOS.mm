@@ -186,7 +186,9 @@ void WebViewControl::OpenURL(const String& urlToOpen)
 	NSURL* url = [NSURL URLWithString:[nsURLPathToOpen stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
 	
 	NSURLRequest* requestObj = [NSURLRequest requestWithURL:url];
-	[(UIWebView*)webViewPtr loadRequest:requestObj];
+    UIWebView* innerWebView = (UIWebView*)webViewPtr;
+    [innerWebView stopLoading];
+    [innerWebView loadRequest:requestObj];
 }
 
 void WebViewControl::SetRect(const Rect& rect)
