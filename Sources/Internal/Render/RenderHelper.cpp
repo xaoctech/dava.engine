@@ -134,7 +134,7 @@ RenderHelper::~RenderHelper()
 	SafeRelease(gDodecObject);
 }
     
-void RenderHelper::FillRect(const Rect & rect)
+void RenderHelper::FillRect(const Rect & rect, UniqueHandle renderState)
 {
 	if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
 	{
@@ -152,12 +152,13 @@ void RenderHelper::FillRect(const Rect & rect)
 
     vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
     
+    RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
 }
 
-void RenderHelper::DrawRect(const Rect & rect)
+void RenderHelper::DrawRect(const Rect & rect, UniqueHandle renderState)
 {
     vertices[0] = rect.x;						
     vertices[1] = rect.y;
@@ -172,12 +173,13 @@ void RenderHelper::DrawRect(const Rect & rect)
 
     vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
     
+    RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 5);
 }
 
-void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Color& color)
+void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Color& color, UniqueHandle renderState)
 {
     // TODO! review with Ivan/Victor whether it is not performance problem!
     Vector<float32> gridVertices;
@@ -210,7 +212,7 @@ void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Co
 
     vertexStream->Set(TYPE_FLOAT, 2, 0, gridVertices.data());
 
-    RenderManager::Instance()->SetDefault2DNoTextureState();
+    RenderManager::Instance()->SetRenderState(renderState);
     Color oldColor = RenderManager::Instance()->GetColor();
     RenderManager::Instance()->SetColor(color);
     
@@ -219,10 +221,9 @@ void RenderHelper::DrawGrid(const Rect & rect, const Vector2& gridSize, const Co
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINELIST, 0, curVertexIndex / 2);
     
     RenderManager::Instance()->SetColor(oldColor);
-    RenderManager::Instance()->SetDefault2DState();
 }
 
-void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
+void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end, UniqueHandle renderState)
 {
     vertices[0] = start.x;						
     vertices[1] = start.y;
@@ -231,12 +232,13 @@ void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
     
     vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
     
+    RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, 2);
 }
 
-	void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end, float32 lineWidth)
+	void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end, float32 lineWidth, UniqueHandle renderState)
 	{
 		vertices[0] = start.x;
 		vertices[1] = start.y;
@@ -245,6 +247,7 @@ void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
 		
 		vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
 		
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 #ifdef __DAVAENGINE_OPENGL__
@@ -258,7 +261,7 @@ void RenderHelper::DrawLine(const Vector2 &start, const Vector2 &end)
 
 	
     
-void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 lineWidth)
+void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 lineWidth, UniqueHandle renderState)
 {
     vertices[0] = start.x;						
     vertices[1] = start.y;
@@ -270,6 +273,8 @@ void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 
 
     
     vertexStream->Set(TYPE_FLOAT, 3, 0, vertices);
+    
+    RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
 
@@ -283,12 +288,14 @@ void RenderHelper::DrawLine(const Vector3 & start, const Vector3 & end, float32 
 }
 
 
-void RenderHelper::DrawPoint(const Vector2 & pt, float32 ptSize)
+void RenderHelper::DrawPoint(const Vector2 & pt, float32 ptSize, UniqueHandle renderState)
 {
 #if defined (__DAVAENGINE_OPENGL__)
     glPointSize(ptSize);
 #endif 
     vertexStream->Set(TYPE_FLOAT, 2, 0, (void*)&pt);
+    
+    RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_POINTLIST, 0, 1);
@@ -297,12 +304,14 @@ void RenderHelper::DrawPoint(const Vector2 & pt, float32 ptSize)
 #endif
 }
 	
-void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize)
+void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize, UniqueHandle renderState)
 {
 #if defined (__DAVAENGINE_OPENGL__)
     glPointSize(ptSize);
 #endif 
     vertexStream->Set(TYPE_FLOAT, 3, 0, (void*)&pt);
+    
+    RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(renderDataObject);
     RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_POINTLIST, 0, 1);
@@ -311,7 +320,7 @@ void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize)
 #endif		
 }
 	
-void RenderHelper::DrawCircle(const Vector2 & center, float32 radius)
+void RenderHelper::DrawCircle(const Vector2 & center, float32 radius, UniqueHandle renderState)
 {
 	Polygon2 pts;
     float32 angle = SEGMENT_LENGTH / radius;
@@ -328,10 +337,10 @@ void RenderHelper::DrawCircle(const Vector2 & center, float32 radius)
 		pts.AddPoint(pos);
 	}
 	
-    DrawPolygon(pts, false);	
+    DrawPolygon(pts, false, renderState);
 }
 
-void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
+void RenderHelper::DrawCircle(const Vector3 & center, float32 radius, UniqueHandle renderState)
 {
 	Polygon3 pts;
     float32 angle = SEGMENT_LENGTH / radius;
@@ -347,10 +356,10 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius)
 
 		pts.AddPoint(pos);
 	}
-    DrawPolygon(pts, false);
+    DrawPolygon(pts, false, renderState);
 }
 
-void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionVector, float32 radius, bool useFilling)
+void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionVector, float32 radius, bool useFilling, UniqueHandle renderState)
 {
 	Polygon3 pts;
     float32 angle = SEGMENT_LENGTH / radius;
@@ -395,15 +404,15 @@ void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionV
 	
 	if (useFilling)
 	{
-		FillPolygon(pts);
+		FillPolygon(pts, renderState);
 	}
 	else
 	{
-    	DrawPolygon(pts, false);
+    	DrawPolygon(pts, false, renderState);
 	}
 }
 
-void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool useFilling)
+void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool useFilling, UniqueHandle renderState)
 {
 	Polygon3 pts;
     float32 angle = SEGMENT_LENGTH / radius;
@@ -433,15 +442,15 @@ void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool use
 	
 	if (useFilling)
 	{
-		FillPolygon(pts);
+		FillPolygon(pts, renderState);
 	}
 	else
 	{
-		DrawPolygon(pts, true);
+		DrawPolygon(pts, true, renderState);
 	}
 }
 
-void RenderHelper::DrawPolygonPoints(const Polygon2 & polygon)
+void RenderHelper::DrawPolygonPoints(const Polygon2 & polygon, UniqueHandle renderState)
 {
 	int ptCount = polygon.pointCount;
 	if (ptCount >= 1)
@@ -449,7 +458,9 @@ void RenderHelper::DrawPolygonPoints(const Polygon2 & polygon)
 #if defined (__DAVAENGINE_OPENGL__)
         glPointSize(3.0f);
 #endif 
+        
 		vertexStream->Set(TYPE_FLOAT, 2, 0, polygon.GetPoints());
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_POINTLIST, 0, ptCount);
@@ -459,7 +470,7 @@ void RenderHelper::DrawPolygonPoints(const Polygon2 & polygon)
 	}
 }
 	
-void RenderHelper::DrawPolygonPoints(const Polygon3 & polygon)
+void RenderHelper::DrawPolygonPoints(const Polygon3 & polygon, UniqueHandle renderState)
 {
 	int ptCount = polygon.pointCount;
 	if (ptCount >= 1)
@@ -468,6 +479,7 @@ void RenderHelper::DrawPolygonPoints(const Polygon3 & polygon)
         glPointSize(3.0f);
 #endif 
 		vertexStream->Set(TYPE_FLOAT, 3, 0, polygon.GetPoints());
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_POINTLIST, 0, ptCount);
@@ -478,12 +490,13 @@ void RenderHelper::DrawPolygonPoints(const Polygon3 & polygon)
 	
 }
 	
-void RenderHelper::DrawPolygon(const Polygon3 & polygon, bool closed)
+void RenderHelper::DrawPolygon(const Polygon3 & polygon, bool closed, UniqueHandle renderState)
 {
     int ptCount = polygon.pointCount;
 	if (ptCount >= 2)
 	{		
 		vertexStream->Set(TYPE_FLOAT, 3, 0, polygon.GetPoints());
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, ptCount);
@@ -500,12 +513,13 @@ void RenderHelper::DrawPolygon(const Polygon3 & polygon, bool closed)
 }
 
 
-void RenderHelper::DrawPolygon( const Polygon2 & polygon, bool closed)
+void RenderHelper::DrawPolygon( const Polygon2 & polygon, bool closed, UniqueHandle renderState)
 {
 	int ptCount = polygon.pointCount;
 	if (ptCount >= 2)
 	{		
 		vertexStream->Set(TYPE_FLOAT, 2, 0, polygon.GetPoints());
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_LINESTRIP, 0, ptCount);
@@ -519,24 +533,26 @@ void RenderHelper::DrawPolygon( const Polygon2 & polygon, bool closed)
 	}
 }
     
-void RenderHelper::FillPolygon(const Polygon2 & polygon)
+void RenderHelper::FillPolygon(const Polygon2 & polygon, UniqueHandle renderState)
 {
     int ptCount = polygon.pointCount;
 	if (ptCount >= 3)
 	{		
 		vertexStream->Set(TYPE_FLOAT, 2, 0, polygon.GetPoints());
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLEFAN, 0, ptCount);
     }
 }
 
-void RenderHelper::FillPolygon(const Polygon3 & polygon)
+void RenderHelper::FillPolygon(const Polygon3 & polygon, UniqueHandle renderState)
 {
     int ptCount = polygon.pointCount;
 	if (ptCount >= 3)
 	{		
 		vertexStream->Set(TYPE_FLOAT, 3, 0, polygon.GetPoints());
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(renderDataObject);
 		RenderManager::Instance()->DrawArrays(PRIMITIVETYPE_TRIANGLEFAN, 0, ptCount);
@@ -544,11 +560,11 @@ void RenderHelper::FillPolygon(const Polygon3 & polygon)
 
 }
 
-void RenderHelper::DrawPolygonTransformed(const Polygon2 & polygon, bool closed, const Matrix3 & transform)
+void RenderHelper::DrawPolygonTransformed(const Polygon2 & polygon, bool closed, const Matrix3 & transform, UniqueHandle renderState)
 {
 	Polygon2 copyPoly = polygon;
 	copyPoly.Transform(transform);
-	RenderHelper::Instance()->DrawPolygon(copyPoly, closed);
+	RenderHelper::Instance()->DrawPolygon(copyPoly, closed, renderState);
 }
 
 #if 0
@@ -652,7 +668,7 @@ void RenderHelper::DrawStrippedLine(Polygon2 & polygon, float lineLen, float spa
 }
 #endif 
     
-void RenderHelper::DrawBSpline(BezierSpline3 * bSpline, int segments, float ts, float te)
+void RenderHelper::DrawBSpline(BezierSpline3 * bSpline, int segments, float ts, float te, UniqueHandle renderState)
 {
 	Polygon3 pts;
     pts.points.reserve(segments);
@@ -660,10 +676,10 @@ void RenderHelper::DrawBSpline(BezierSpline3 * bSpline, int segments, float ts, 
 	{
 		pts.AddPoint(bSpline->Evaluate(0, ts + (te - ts) * ((float)k / (float)(segments - 1))));
 	}
-    DrawPolygon(pts, false);
+    DrawPolygon(pts, false, renderState);
 }
 	
-void RenderHelper::DrawInterpolationFunc(Interpolation::Func func, const Rect & destRect)
+void RenderHelper::DrawInterpolationFunc(Interpolation::Func func, const Rect & destRect, UniqueHandle renderState)
 {
 	Polygon3 pts;
 	int segmentsCount = 20;
@@ -676,90 +692,90 @@ void RenderHelper::DrawInterpolationFunc(Interpolation::Func func, const Rect & 
 		v.z = 0.0f;
 		pts.AddPoint(v);
 	}
-	DrawPolygon(pts, false);
+	DrawPolygon(pts, false, renderState);
 }
 	
-void RenderHelper::DrawBox(const AABBox2 & box, float32 lineWidth)
+void RenderHelper::DrawBox(const AABBox2 & box, float32 lineWidth, UniqueHandle renderState)
 {
-    RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, 0), Vector3(box.max.x, box.min.y, 0), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.min.y, 0), Vector3(box.max.x, box.max.y, 0), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.max.y, 0), Vector3(box.min.x, box.max.y, 0), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, 0), Vector3(box.min.x, box.min.y, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, 0), Vector3(box.max.x, box.min.y, 0), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.min.y, 0), Vector3(box.max.x, box.max.y, 0), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.max.y, 0), Vector3(box.min.x, box.max.y, 0), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, 0), Vector3(box.min.x, box.min.y, 0), lineWidth, renderState);
 }
 	
-void RenderHelper::DrawBox(const AABBox3 & box, float32 lineWidth)
+void RenderHelper::DrawBox(const AABBox3 & box, float32 lineWidth, UniqueHandle renderState)
 {
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.min.z), Vector3(box.min.x, box.min.y, box.max.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.min.z), Vector3(box.min.x, box.max.y, box.min.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.min.x, box.min.y, box.max.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.min.x, box.max.y, box.min.z), lineWidth);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.min.z), Vector3(box.min.x, box.min.y, box.max.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.min.z), Vector3(box.min.x, box.max.y, box.min.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.min.x, box.min.y, box.max.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.min.x, box.max.y, box.min.z), lineWidth, renderState);
 	
-	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.min.y, box.min.z), Vector3(box.max.x, box.min.y, box.max.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.min.y, box.min.z), Vector3(box.max.x, box.max.y, box.min.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.max.y, box.max.z), Vector3(box.max.x, box.min.y, box.max.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.max.y, box.max.z), Vector3(box.max.x, box.max.y, box.min.z), lineWidth);
+	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.min.y, box.min.z), Vector3(box.max.x, box.min.y, box.max.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.min.y, box.min.z), Vector3(box.max.x, box.max.y, box.min.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.max.y, box.max.z), Vector3(box.max.x, box.min.y, box.max.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.max.x, box.max.y, box.max.z), Vector3(box.max.x, box.max.y, box.min.z), lineWidth, renderState);
 	
 	
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.min.z), Vector3(box.max.x, box.min.y, box.min.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.min.z), Vector3(box.max.x, box.max.y, box.min.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.max.z), Vector3(box.max.x, box.min.y, box.max.z), lineWidth);
-	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.max.x, box.max.y, box.max.z), lineWidth);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.min.z), Vector3(box.max.x, box.min.y, box.min.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.min.z), Vector3(box.max.x, box.max.y, box.min.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.min.y, box.max.z), Vector3(box.max.x, box.min.y, box.max.z), lineWidth, renderState);
+	RenderHelper::Instance()->DrawLine(Vector3(box.min.x, box.max.y, box.max.z), Vector3(box.max.x, box.max.y, box.max.z), lineWidth, renderState);
 }
 	
-void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
+void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth, UniqueHandle renderState)
 {
 	float32 offs = ((bbox.max - bbox.min).Length()) * 0.1f + 0.1f;
     
     //1
     Vector3 point = bbox.min;
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth, renderState);
     
     //2
     point = bbox.max;
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth, renderState);
     
     //3
     point = Vector3(bbox.min.x, bbox.max.y, bbox.min.z);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth, renderState);
     
     //4
     point = Vector3(bbox.max.x, bbox.max.y, bbox.min.z);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth, renderState);
     
     //5
     point = Vector3(bbox.max.x, bbox.min.y, bbox.min.z);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth, renderState);
     
     //6
     point = Vector3(bbox.min.x, bbox.max.y, bbox.max.z);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth, renderState);
     
     //7
     point = Vector3(bbox.min.x, bbox.min.y, bbox.max.z);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(offs, 0, 0), lineWidth, renderState);
     
     //8
     point = Vector3(bbox.max.x, bbox.min.y, bbox.max.z);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth);
-    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth);	
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(0, 0, offs), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point + Vector3(0, offs, 0), lineWidth, renderState);
+    RenderHelper::Instance()->DrawLine(point, point - Vector3(offs, 0, 0), lineWidth, renderState);
 }
 	
-	void RenderHelper::DrawSphere(const Vector3 &center, float32 radius, float32 lineWidth)
+	void RenderHelper::DrawSphere(const Vector3 &center, float32 radius, float32 lineWidth, UniqueHandle renderState)
 	{
 		int32 n = 2;
         Vector<Vector3> points;
@@ -831,21 +847,21 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 			Vector3 p2 = points[triangleIndices[i + 1]] + center;
 			Vector3 p3 = points[triangleIndices[i + 2]] + center;
 						
-			RenderHelper::Instance()->DrawLine(p1, p2, lineWidth);
-			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
-			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);
+			RenderHelper::Instance()->DrawLine(p1, p2, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth, renderState);
 		
 			p1.y = -p1.y;
 			p2.y = -p2.y;
 			p3.y = -p3.y;
 		
-			RenderHelper::Instance()->DrawLine(p1, p2, lineWidth);
-			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
-			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);			
+			RenderHelper::Instance()->DrawLine(p1, p2, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth, renderState);
 		}			
 	}
 
-	void RenderHelper::FillSphere(const Vector3 &center, float32 radius)
+	void RenderHelper::FillSphere(const Vector3 &center, float32 radius, UniqueHandle renderState)
 	{
 		int32 n = 2;
 		Vector<Vector3> points;
@@ -901,7 +917,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 			poly.AddPoint(p1);
 			poly.AddPoint(p3);
 			poly.AddPoint(p2);
-			RenderHelper::Instance()->FillPolygon(poly);
+			RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 			p1.y = -p1.y;
 			p2.y = -p2.y;
@@ -911,11 +927,11 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 			poly.AddPoint(p1);
 			poly.AddPoint(p3);
 			poly.AddPoint(p2);
-			RenderHelper::Instance()->FillPolygon(poly);
+			RenderHelper::Instance()->FillPolygon(poly, renderState);
 		}			
 	}
 
-	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth)
+	void RenderHelper::DrawArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth, UniqueHandle renderState)
 	{
 		if(0 != lineWidth && from != to)
 		{
@@ -948,20 +964,20 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 			Vector3 p3 = c + nd;
 			Vector3 p4 = c - nd;
 
-			RenderHelper::Instance()->DrawLine(from, c, lineWidth);
+			RenderHelper::Instance()->DrawLine(from, c, lineWidth, renderState);
 
-			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth);
-			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth);
-			RenderHelper::Instance()->DrawLine(p1, p4, lineWidth);
-			RenderHelper::Instance()->DrawLine(p2, p4, lineWidth);
-			RenderHelper::Instance()->DrawLine(p1, to, lineWidth);
-			RenderHelper::Instance()->DrawLine(p2, to, lineWidth);		
-			RenderHelper::Instance()->DrawLine(p3, to, lineWidth);
-			RenderHelper::Instance()->DrawLine(p4, to, lineWidth);
+			RenderHelper::Instance()->DrawLine(p1, p3, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p2, p3, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p1, p4, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p2, p4, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p1, to, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p2, to, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p3, to, lineWidth, renderState);
+			RenderHelper::Instance()->DrawLine(p4, to, lineWidth, renderState);
 		}
 	}
 
-	void RenderHelper::FillArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth)
+	void RenderHelper::FillArrow(const Vector3 &from, const Vector3 &to, float32 arrowLength, float32 lineWidth, UniqueHandle renderState)
 	{
 		Vector3 d = to - from;
 		Vector3 c = to - (d * arrowLength / d.Length());
@@ -996,45 +1012,45 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		poly.AddPoint(p1);
 		poly.AddPoint(p3);
 		poly.AddPoint(p2);
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(p1);
 		poly.AddPoint(p4);
 		poly.AddPoint(p2);
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(p1);
 		poly.AddPoint(p3);
 		poly.AddPoint(to);
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(p1);
 		poly.AddPoint(p4);
 		poly.AddPoint(to);
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(p2);
 		poly.AddPoint(p3);
 		poly.AddPoint(to);
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(p2);
 		poly.AddPoint(p4);
 		poly.AddPoint(to);
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		if(0 != lineWidth)
 		{
-			RenderHelper::Instance()->DrawLine(from, c, lineWidth);
+			RenderHelper::Instance()->DrawLine(from, c, lineWidth, renderState);
 		}
 	}
 
-	void RenderHelper::FillBox(const AABBox3 & box)
+	void RenderHelper::FillBox(const AABBox3 & box, UniqueHandle renderState)
 	{
 		DAVA::Vector3 min = box.min;
 		DAVA::Vector3 max = box.max;
@@ -1046,45 +1062,45 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(min);
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
 		poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
 		poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(min);
 		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
 		poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
 		poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(max);
 		poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
 		poly.AddPoint(DAVA::Vector3(max.x, min.y, min.z));
 		poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(max);
 		poly.AddPoint(DAVA::Vector3(max.x, max.y, min.z));
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, min.z));
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 
 		poly.Clear();
 		poly.AddPoint(max);
 		poly.AddPoint(DAVA::Vector3(max.x, min.y, max.z));
 		poly.AddPoint(DAVA::Vector3(min.x, min.y, max.z));
 		poly.AddPoint(DAVA::Vector3(min.x, max.y, max.z));
-		RenderHelper::Instance()->FillPolygon(poly);
+		RenderHelper::Instance()->FillPolygon(poly, renderState);
 	}
 
-	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */)
+	void RenderHelper::DrawDodecahedron(const Vector3 &center, float32 radius, float32 lineWidth /* = 1.f */, UniqueHandle renderState)
 	{
         if (gDodecObject->GetIndexBufferID() != 0)
         {
@@ -1097,6 +1113,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		drawMatrix.SetTranslationVector(center);
 
 		RenderManager::Instance()->SetDynamicParam(PARAM_WORLD, &drawMatrix, UPDATE_SEMANTIC_ALWAYS);
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();
@@ -1112,7 +1129,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		}
 	}
 
-	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius)
+	void RenderHelper::FillDodecahedron(const Vector3 &center, float32 radius, UniqueHandle renderState)
 	{
         if (gDodecObject->GetIndexBufferID() != 0)
         {
@@ -1125,6 +1142,7 @@ void RenderHelper::DrawCornerBox(const AABBox3 & bbox, float32 lineWidth)
 		drawMatrix.SetTranslationVector(center);
 
 		RenderManager::Instance()->SetDynamicParam(PARAM_WORLD, &drawMatrix, UPDATE_SEMANTIC_ALWAYS);
+        RenderManager::Instance()->SetRenderState(renderState);
 		RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
 		RenderManager::Instance()->SetRenderData(gDodecObject);
 		RenderManager::Instance()->AttachRenderData();

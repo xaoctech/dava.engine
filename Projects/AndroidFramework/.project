@@ -3102,6 +3102,16 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>Internal/Platform/TemplateAndroid/FileListAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/FileListAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/FileListAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/FileListAndroid.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/Platform/TemplateAndroid/JniExtensions.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/JniExtensions.cpp</locationURI>
@@ -3130,6 +3140,16 @@
 			<name>Internal/Platform/TemplateAndroid/WebViewControl.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/WebViewControl.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/fake_occlusion.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/fake_occlusion.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/fake_occlusion.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/fake_occlusion.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/TemplateMacOS/AppDelegate.h</name>

@@ -1379,6 +1379,53 @@ const FilePath & Landscape::GetHeightmapPathname()
 {
     return heightmapPath;
 }
+	
+void Landscape::SetHeightmapPathname(const FilePath & newHeightMapPath)
+{
+	if(newHeightMapPath == heightmapPath)
+	{
+		return;
+	}
+	BuildLandscapeFromHeightmapImage(newHeightMapPath, bbox);
+}
+	
+float32 Landscape::GetLandscapeSize()
+{
+	return bbox.GetSize().x;
+}
+	
+void Landscape::SetLandscapeSize(float32 newSize)
+{
+	Vector3 newLandscapeSize(newSize, newSize, bbox.GetSize().z);
+	SetLandscapeSize(newLandscapeSize);
+}
+	
+float32 Landscape::GetLandscapeHeight()
+{
+	return bbox.GetSize().z;
+}
+	
+void Landscape::SetLandscapeHeight(float32 newHeight)
+{
+	Vector3 newLandscapeSize(bbox.GetSize().x, bbox.GetSize().y, newHeight);
+	SetLandscapeSize(newLandscapeSize);
+}
+
+void Landscape::SetLandscapeSize(const Vector3 & newLandscapeSize)
+{
+    if(newLandscapeSize.z < 0.0f || newLandscapeSize.x <0 || newLandscapeSize.y < 0)
+	{
+		return;
+	}
+    if(newLandscapeSize == bbox.GetSize())
+	{
+		return;
+	}
+    bbox.Empty();
+	bbox.AddPoint(Vector3(-newLandscapeSize.x/2.f, -newLandscapeSize.y/2.f, 0.f));
+	bbox.AddPoint(Vector3(newLandscapeSize.x/2.f, newLandscapeSize.y/2.f, newLandscapeSize.z));
+    BuildLandscape();
+}
     
 void Landscape::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
@@ -1498,26 +1545,6 @@ void Landscape::CursorEnable()
 void Landscape::CursorDisable()
 {
 	SafeDelete(cursor);
-}
-
-void Landscape::SetCursorTexture(UniqueHandle texture)
-{
-	cursor->SetCursorTexture(texture);
-}
-
-void Landscape::SetCursorPosition(const Vector2 & position)
-{
-	cursor->SetPosition(position);
-}
-
-void Landscape::SetCursorScale(float32 scale)
-{
-	cursor->SetScale(scale);
-}
-
-void Landscape::SetBigTextureSize(float32 bigSize)
-{
-	cursor->SetBigTextureSize(bigSize);
 }
     
 Heightmap * Landscape::GetHeightmap()

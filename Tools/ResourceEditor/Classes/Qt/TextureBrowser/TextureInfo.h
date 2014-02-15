@@ -32,13 +32,15 @@
 #define __TEXTURE_INFO_H__
 
 #include "Base/BaseTypes.h"
+
+#include <QList>
 #include <QImage>
 
 struct TextureInfo
 {
 	TextureInfo(): dataSize(0), fileSize(0) {};
 
-	DAVA::Vector<QImage> images;
+	QList<QImage> images;
 	DAVA::uint32 dataSize;
 	DAVA::uint32 fileSize;
 };

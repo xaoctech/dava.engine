@@ -66,6 +66,7 @@ void LibraryController::Init(LibraryWidget* widget)
 	AddControl("UIScrollView", new UIScrollView());
 	AddControl("UISpinner", new UISpinner());
 	AddControl("UISwitch", new UISwitch());
+    AddControl("UIParticles", new UIParticles());
 }
 
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)

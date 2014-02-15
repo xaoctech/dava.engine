@@ -161,7 +161,12 @@ public:
 	 \param[in] newBackground control background you want to use for draw of the states.
 	 */
 	virtual void SetStateBackground(int32 state, UIControlBackground *newBackground);
-
+	/**
+	 \brief Sets the fitting option for the text background of the requested states.
+	 \param[in] state state bit mask to set value for.
+	 \param[in] Fitting option.
+	 */
+    virtual void SetStateFittingOption(int32 state, int32 fittingOption);
 	/**
 	 \brief This method is invalid for the UIButton. Don't try to call this method.
 	 */

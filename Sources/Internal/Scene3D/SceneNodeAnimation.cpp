@@ -128,9 +128,10 @@ void SceneNodeAnimation::Update(float32 timeElapsed)
 	
 void SceneNodeAnimation::Execute()
 {
-	startIdx = 0;
-	currentTime = 0;
-	bindNode->ExecuteAnimation(this);
+    DVASSERT(0);
+// 	startIdx = 0;
+// 	currentTime = 0;
+// 	bindNode->ExecuteAnimation(this);
 }
 	
 Vector3 SceneNodeAnimation::SetStartPosition(const Vector3 & position)

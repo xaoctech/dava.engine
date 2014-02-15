@@ -244,6 +244,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 	RenderManager::Instance()->SetColor(drawColor.r, drawColor.g, drawColor.b, drawColor.a);
 	
 	Sprite::DrawState drawState;
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND); // set state explicitly
 	if (spr)
 	{
 		drawState.frame = frame;
@@ -316,7 +317,6 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 			
 			lastDrawPos = drawState.position;
 
-			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
@@ -356,7 +356,6 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 //			spr->SetPivotPoint(geometricData.pivotPoint.x / (geometricData.size.x / spr->GetSize().dx), geometricData.pivotPoint.y / (geometricData.size.y / spr->GetSize().dy));
 //			spr->SetAngle(geometricData.angle);
 			
-			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
@@ -456,29 +455,25 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 
 			lastDrawPos = drawState.position;
 			
-			RenderManager::Instance()->SetDefault2DState();
 			spr->Draw(&drawState);
 		}
 		break;
 		
 		case DRAW_FILL:
 		{
-		    RenderManager::Instance()->SetDefault2DNoTextureState();
-			RenderManager::Instance()->SetEmptyTextureState();
-			DrawFilled( geometricData );
+			RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
+			DrawFilled( geometricData, drawState.GetRenderState() );
 		}	
 		break;
 			
 		case DRAW_STRETCH_BOTH:
 		case DRAW_STRETCH_HORIZONTAL:
 		case DRAW_STRETCH_VERTICAL:
-			RenderManager::Instance()->SetDefault2DState();
-			DrawStretched(drawRect);
+			DrawStretched(drawRect, drawState.GetRenderState());
 		break;
 		
         case DRAW_TILED:
-            RenderManager::Instance()->SetDefault2DState();
-			DrawTiled(geometricData);
+			DrawTiled(geometricData, drawState.GetRenderState());
 		break;
 	}
 	
@@ -486,7 +481,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 	
 }
 	
-void UIControlBackground::DrawStretched(const Rect &drawRect)
+void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle renderState)
 {
 	if (!spr)return;
 	UniqueHandle textureHandle = spr->GetTextureHandle(frame);
@@ -651,6 +646,7 @@ void UIControlBackground::DrawStretched(const Rect &drawRect)
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, texCoords);
 
 	RenderManager::Instance()->SetTextureState(textureHandle);
+    RenderManager::Instance()->SetRenderState(renderState);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, vertInTriCount, EIF_16, indeces);
@@ -667,7 +663,7 @@ void UIControlBackground::ReleaseDrawData()
 	SafeDelete(tiledData);
 }
 
-void UIControlBackground::DrawTiled(const UIGeometricData &gd)
+void UIControlBackground::DrawTiled(const UIGeometricData &gd, UniqueHandle renderState)
 {
 	if (!spr)return;
 
@@ -723,23 +719,24 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd)
 	texCoordStream->Set(TYPE_FLOAT, 2, 0, &td.texCoords[0]);
 
 	RenderManager::Instance()->SetTextureState(textureHandle);
+    RenderManager::Instance()->SetRenderState(renderState);
 	RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
 	RenderManager::Instance()->SetRenderData(rdoObject);
 	RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, td.indeces.size(), EIF_32, &td.indeces[0]);
 }
 
-void UIControlBackground::DrawFilled( const UIGeometricData &gd )
+void UIControlBackground::DrawFilled( const UIGeometricData &gd, UniqueHandle renderState )
 {
 	if( gd.angle != 0.0f ) 
 	{
 		Polygon2 poly;
 		gd.GetPolygon( poly );
 
-		RenderHelper::Instance()->FillPolygon( poly );
+		RenderHelper::Instance()->FillPolygon( poly, renderState );
 	}
 	else
 	{
-		RenderHelper::Instance()->FillRect( gd.GetUnrotatedRect() );
+		RenderHelper::Instance()->FillRect( gd.GetUnrotatedRect(), renderState );
 	}
 }
 

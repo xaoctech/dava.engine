@@ -69,12 +69,17 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    IlluminationParams() :
+    //this is a weak property since IlluminationParams exists only as a part of parent material
+    NMaterial* parent;
+
+    IlluminationParams(NMaterial* parentMaterial = NULL) :
     isUsed(true),
     castShadow(true),
     receiveShadow(true),
-    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
-    {}
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT),
+    parent(parentMaterial)
+    {
+    }
 
     IlluminationParams(const IlluminationParams & params)
     {
@@ -82,13 +87,19 @@ struct IlluminationParams : public InspBase
         castShadow = params.castShadow;
         receiveShadow = params.receiveShadow;
         lightmapSize = params.lightmapSize;
+        parent = NULL;
     }
+    
+    int32 GetLightmapSize() const;
+    void SetLightmapSize(const int32 &size);
+    void SetParent(NMaterial* parentMaterial);
+    NMaterial* GetParent() const;
 
-    INTROSPECTION(IlluminationParams, 
+    INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(castShadow, "Cast Shadow", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(receiveShadow, "Receive Shadow", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(lightmapSize, "Lightmap Size", I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("lightmapSize", "Lightmap Size", GetLightmapSize, SetLightmapSize, I_SAVE | I_VIEW | I_EDIT)
         );
 };
 
@@ -166,6 +177,8 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
+    static const FastName PARAM_LIGHTMAP_SIZE;
+    
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
@@ -189,7 +202,8 @@ public:
 	{
 		MATERIALTYPE_NONE = 0,
 		MATERIALTYPE_MATERIAL = 1,
-		MATERIALTYPE_INSTANCE = 2
+		MATERIALTYPE_INSTANCE = 2,
+        MATERIALTYPE_GLOBAL = 3
 	};
 	
 	enum eFlagValue
@@ -304,9 +318,10 @@ public:
     inline void SetRenderLayers(uint32 bitmask);
     
 	const RenderStateData& GetRenderState(const FastName& passName) const;
+    void GetRenderState(const FastName& passName, RenderStateData& target) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
 	void SubclassRenderState(RenderStateData& newState);
-	
+    
 	static NMaterial* CreateMaterialInstance();
 	
 	static NMaterial* CreateMaterialInstance(const FastName& parentName,
@@ -316,6 +331,8 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
+    
+    static NMaterial* CreateGlobalMaterial(const FastName& materialName);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
     void SetMaterialTemplateName(const FastName& templateName);
@@ -323,6 +340,12 @@ public:
 
     FastName GetMaterialGroup() const;
     void SetMaterialGroup(const FastName &group);
+    
+    //Stores WEAK reference (actually it's valid during render pass only)
+    //These methods are not thread-safe and used in the Scene::Draw to
+    //provide default values for materials.
+    inline static void SetGlobalMaterial(NMaterial* globalMaterial);
+    inline static NMaterial* GetGlobalMaterial();
 
 protected:
 	
@@ -389,7 +412,8 @@ protected:
 			dirtyState(false),
 			texturesDirty(true),
 			activeUniformsCachePtr(NULL),
-			activeUniformsCacheSize(0)
+			activeUniformsCacheSize(0),
+            propsDirty(true)
 		{
 			renderState.shader = NULL;
 		}
@@ -418,6 +442,7 @@ protected:
         
         bool dirtyState;
 		bool texturesDirty;
+        bool propsDirty;
 		
 		HashMap<FastName, int32> textureIndexMap;
 		Vector<UniformCacheEntry> activeUniformsCache;
@@ -476,8 +501,10 @@ protected:
 	
     uint32                  renderLayerIDsBitmask;
 	
-	static Texture* stubCubemapTexture;
-	static Texture* stub2dTexture;
+	//static Texture* stubCubemapTexture;
+	//static Texture* stub2dTexture;
+    
+    static NMaterial* GLOBAL_MATERIAL;
 	
 protected:
 	
@@ -507,7 +534,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags(bool updateChildren = false);
-	static Texture* GetStubTexture(const FastName& uniformName);
+	//static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
@@ -521,6 +548,8 @@ protected:
     FastName GetEffectiveQuality() const;
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
+    static bool IsRuntimeProperty(const FastName& propName);
+    static bool IsNamePartOfArray(const FastName& fastName, FastName* array, uint32 count);
 		
 protected:
 	
@@ -637,15 +666,26 @@ public:
         static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
 		
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
+        static bool IsAlphablend(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     
+    inline void NMaterial::SetGlobalMaterial(NMaterial* globalMaterial)
+    {
+        NMaterial::GLOBAL_MATERIAL = globalMaterial;
+    }
+    
+    inline NMaterial* NMaterial::GetGlobalMaterial()
+    {
+        return NMaterial::GLOBAL_MATERIAL;
+    }
     
     inline uint32 NMaterial::GetRenderLayers() const
     {
         return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
     }
+    
     
     void NMaterial::SetRenderLayers(uint32 bitmask)
     {
