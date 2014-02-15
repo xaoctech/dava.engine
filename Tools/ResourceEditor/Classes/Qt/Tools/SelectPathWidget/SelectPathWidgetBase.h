@@ -54,43 +54,6 @@ public:
 	DAVA::String getText();
 
 	virtual void EraseWidget();
-	
-	DAVA::FilePath GetRelativPath()
-	{
-		return relativePath;
-	}
-
-	void SetRelativePath(const DAVA::String& );
-
-	DAVA::String GetOpenDialogDefaultPath()
-	{
-		return openDialogDefaultPath;
-	}
-
-	void SetOpenDialogDefaultPath(const DAVA::String& newPath)
-	{
-		openDialogDefaultPath = newPath;
-	}
-	
-	void SetOpenFileDialogTitle(const DAVA::String& value)
-	{
-		openFileDialogTitle = value;
-	}
-	
-	DAVA::String GetOpenFileDialogTitle()
-	{
-		return openFileDialogTitle;
-	}
-	
-	void SetFileFormatFilter(const DAVA::String& value)
-	{
-		fileFormatFilter = value;
-	}
-	
-	DAVA::String GetFileFormatFilter()
-	{
-		return fileFormatFilter;
-	}
 
 	void SetAllowedFormatsList(const DAVA::List<DAVA::String>& _allowedFormatsList)
 	{

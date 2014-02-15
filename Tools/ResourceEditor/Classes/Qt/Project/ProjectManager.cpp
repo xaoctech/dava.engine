@@ -88,7 +88,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 	if(path != curProjectPath)
 	{
 		ProjectClose();
-
+        
 		curProjectPath = path;
 
 		if(!curProjectPath.isEmpty())
@@ -99,29 +99,27 @@ void ProjectManager::ProjectOpen(const QString &path)
 			DAVA::FilePath dataSource3Dpathname = projectPath + "DataSource/3d/";
 			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
 
-			SettingsManager::Instance()->SetValue("ProjectPath", 
+			SettingsManager::Instance()->SetValue("LastProjectPath",
 				VariantType(projectPath.GetAbsolutePathname()), SettingsManager::INTERNAL);
-			SettingsManager::Instance()->SetValue("3dDataSourcePath", 
-				VariantType(dataSource3Dpathname.GetAbsolutePathname()), SettingsManager::INTERNAL);
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
+
             LoadProjectSettings();
             LoadMaterialsSettings();
-            
+
             emit ProjectOpened(curProjectPath);
-            
-            DAVA::FilePath::AddTopResourcesFolder(projectPath);
-		}
+        }
 	}
 }
 
 void ProjectManager::ProjectOpenLast()
 {
-	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("LastProjectPath", SettingsManager::INTERNAL).AsString());
 
 	if(!projectPath.IsEmpty())
 	{
@@ -135,11 +133,11 @@ void ProjectManager::ProjectClose()
 	{
 		FilePath path = curProjectPath.toStdString();
 		path.MakeDirectoryPathname();
-
+        
 		DAVA::FilePath::RemoveResourcesFolder(path);
-
-		curProjectPath = "";
-		emit ProjectClosed();
+        
+        curProjectPath = "";
+        emit ProjectClosed();
 	}
 }
 

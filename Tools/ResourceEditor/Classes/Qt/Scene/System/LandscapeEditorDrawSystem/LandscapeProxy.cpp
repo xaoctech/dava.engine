@@ -38,7 +38,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape, Entity* node)
 ,	tilemaskImageCopy(NULL)
 ,	fullTiledTexture(NULL)
 ,	fullTiledTextureState(InvalidUniqueHandle)
-,	cursorTextureState(InvalidUniqueHandle)
+,	cursorTexture(NULL)
 {
 	DVASSERT(landscape != NULL);
 
@@ -53,7 +53,7 @@ LandscapeProxy::LandscapeProxy(Landscape* landscape, Entity* node)
 		texturesEnabled[i] = false;
 	}
 	
-	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
+	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
 	memcpy(&noBlendStateData, &default2dState, sizeof(noBlendStateData));
 	
@@ -78,10 +78,7 @@ LandscapeProxy::~LandscapeProxy()
 	SafeRelease(tilemaskSprites[TILEMASK_SPRITE_DESTINATION]);
 	SafeRelease(fullTiledTexture);
 
-	if (cursorTextureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureState(cursorTextureState);
-	}
+    SafeRelease(cursorTexture);
 
 	if (fullTiledTextureState != InvalidUniqueHandle)
 	{
@@ -205,9 +202,9 @@ void LandscapeProxy::SetRulerToolTextureEnabled(bool enabled)
 
 void LandscapeProxy::UpdateDisplayedTexture()
 {
-	RenderManager::Instance()->SetDefault2DState();
-	RenderManager::Instance()->SetTextureState(fullTiledTextureState);
-	RenderManager::Instance()->FlushState();
+	//RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+	//RenderManager::Instance()->SetTextureState(fullTiledTextureState);
+	//RenderManager::Instance()->FlushState();
 
 	int32 fullTiledWidth = fullTiledTexture->GetWidth();
 	int32 fullTiledHeight = fullTiledTexture->GetHeight();
@@ -217,8 +214,9 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)fullTiledWidth, (float32)fullTiledHeight, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(dstSprite);
 	
-	fullTiledSprite->SetPosition(0.f, 0.f);
-	fullTiledSprite->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetPosition(0.f, 0.f);
+	fullTiledSprite->Draw(&drawState);
 	SafeRelease(fullTiledSprite);
 
 	Texture* notPassableTexture = texturesToBlend[TEXTURE_TYPE_NOT_PASSABLE];
@@ -227,8 +225,9 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	{
 		RenderManager::Instance()->SetColor(Color::White);
 		notPassableSprite = Sprite::CreateFromTexture(notPassableTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
-		notPassableSprite->SetPosition(0.f, 0.f);
-		notPassableSprite->Draw();
+        
+        drawState.Reset();
+		notPassableSprite->Draw(&drawState);
 	}
 	SafeRelease(notPassableSprite);
 	
@@ -238,8 +237,9 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	{
 		RenderManager::Instance()->SetColor(1.f, 1.f, 1.f, .5f);
 		customColorsSprite = Sprite::CreateFromTexture(customColorsTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
-		customColorsSprite->SetPosition(0.f, 0.f);
-		customColorsSprite->Draw();
+        
+        drawState.Reset();
+		customColorsSprite->Draw(&drawState);
 		RenderManager::Instance()->SetColor(Color::White);
 	}
 	SafeRelease(customColorsSprite);
@@ -250,8 +250,9 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	{
 		RenderManager::Instance()->SetColor(Color::White);
 		visibilityCheckToolSprite = Sprite::CreateFromTexture(visibilityCheckToolTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
-		visibilityCheckToolSprite->SetPosition(0.f, 0.f);
-		visibilityCheckToolSprite->Draw();
+        
+        drawState.Reset();
+		visibilityCheckToolSprite->Draw(&drawState);
 	}
 	SafeRelease(visibilityCheckToolSprite);
 
@@ -261,8 +262,9 @@ void LandscapeProxy::UpdateDisplayedTexture()
 	{
 		RenderManager::Instance()->SetColor(Color::White);
 		rulerToolSprite = Sprite::CreateFromTexture(rulerToolTexture, 0, 0, (float32)fullTiledWidth, (float32)fullTiledHeight);
-		rulerToolSprite->SetPosition(0.f, 0.f);
-		rulerToolSprite->Draw();
+        
+        drawState.Reset();
+		rulerToolSprite->Draw(&drawState);
 	}
 	SafeRelease(rulerToolSprite);
 
@@ -324,36 +326,32 @@ void LandscapeProxy::CursorDisable()
 
 void LandscapeProxy::SetCursorTexture(Texture* texture)
 {
-	TextureStateData textureStateData;
-	textureStateData.SetTexture(0, texture);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->CreateTextureState(textureStateData);
-
-	if (cursorTextureState != InvalidUniqueHandle)
-	{
-		RenderManager::Instance()->ReleaseTextureState(cursorTextureState);
-	}
-
-	customLandscape->SetCursorTexture(uniqueHandle);
-	baseLandscape->SetCursorTexture(uniqueHandle);
-	cursorTextureState = uniqueHandle;
+    if(cursorTexture != texture)
+    {
+        SafeRelease(cursorTexture);
+        cursorTexture = SafeRetain(texture);
+    }
+    
+    customLandscape->GetCursor()->SetCursorTexture(texture);
+    baseLandscape->GetCursor()->SetCursorTexture(texture);
 }
 
 void LandscapeProxy::SetBigTextureSize(float32 size)
 {
-	customLandscape->SetBigTextureSize(size);
-	baseLandscape->SetBigTextureSize(size);
+	customLandscape->GetCursor()->SetBigTextureSize(size);
+	baseLandscape->GetCursor()->SetBigTextureSize(size);
 }
 
 void LandscapeProxy::SetCursorScale(float32 scale)
 {
-	customLandscape->SetCursorScale(scale);
-	baseLandscape->SetCursorScale(scale);
+	customLandscape->GetCursor()->SetScale(scale);
+	baseLandscape->GetCursor()->SetScale(scale);
 }
 
 void LandscapeProxy::SetCursorPosition(const Vector2& position)
 {
-	customLandscape->SetCursorPosition(position);
-	baseLandscape->SetCursorPosition(position);
+	customLandscape->GetCursor()->SetPosition(position);
+	baseLandscape->GetCursor()->SetPosition(position);
 }
 
 void LandscapeProxy::UpdateFullTiledTexture(bool force)
@@ -362,8 +360,8 @@ void LandscapeProxy::UpdateFullTiledTexture(bool force)
 	{
 		SafeRelease(fullTiledTexture);
 
-		RenderManager::Instance()->SetDefault2DState();
-		RenderManager::Instance()->SetEmptyTextureState();
+		RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+		RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
 		RenderManager::Instance()->FlushState();
 //		baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->GenerateMipmaps();
 
@@ -424,14 +422,8 @@ void LandscapeProxy::InitTilemaskImageCopy()
 {
 	SafeRelease(tilemaskImageCopy);
 
-	//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
-	//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
-	//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-	RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
-	RenderManager::Instance()->FlushState();
-	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
-	//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
+	tilemaskImageCopy = baseLandscape->GetTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory(noBlendDrawState);
 }
 
 Image* LandscapeProxy::GetTilemaskImageCopy()

@@ -51,8 +51,8 @@ class ParticleEffectComponent : public Component
 {
 	friend class ParticleEffectSystem;
     friend class UIParticles;
-protected:
-    ~ParticleEffectComponent();
+
+    
 public:
 	IMPLEMENT_COMPONENT_TYPE(PARTICLE_EFFECT_COMPONENT);
 
@@ -65,7 +65,7 @@ public:
 	};
 
 	ParticleEffectComponent();
-
+    ~ParticleEffectComponent();
 
 	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *sceneFile);
@@ -101,6 +101,9 @@ public:
 	int32 GetActiveParticlesCount();
 
     void SetRenderObjectVisible(bool visible);
+
+     /*sorting offset allowed in 0..31 range, 15 default, more - closer to camera*/
+    void SetSortingOffset(uint32 offset);
 
 private:
 	void ClearCurrentGroups();

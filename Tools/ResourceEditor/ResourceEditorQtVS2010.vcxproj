@@ -389,7 +389,6 @@
     <ClCompile Include="Classes\Deprecated\ScenePreviewControl.cpp" />
     <ClCompile Include="Classes\Deprecated\ScenePreviewDialog.cpp" />
     <ClCompile Include="Classes\Deprecated\SceneValidator.cpp" />
-    <ClCompile Include="Classes\Deprecated\TextureSquarenessChecker.cpp" />
     <ClCompile Include="Classes\FrameworkMain.cpp" />
     <ClCompile Include="Classes\GameCore.cpp" />
     <ClCompile Include="Classes\ImageTools\ImageTools.cpp" />
@@ -500,6 +499,7 @@
     <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp" />
     <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp" />
     <ClCompile Include="Classes\Qt\SpritesPacker\SpritePackerHelper.cpp" />
+    <ClCompile Include="Classes\Qt\TextureBrowser\CacheRequest.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureBrowser.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureCache.cpp" />
     <ClCompile Include="Classes\Qt\TextureBrowser\TextureConvertor.cpp" />
@@ -512,6 +512,7 @@
     <ClCompile Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\SwitchEntityCreator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
     <ClCompile Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.cpp" />
@@ -527,9 +528,11 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.cpp" />
@@ -537,7 +540,6 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModel.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant.cpp" />
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspColl.cpp" />
@@ -666,6 +668,7 @@
     <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpritesPacker\SpritePackerHelper_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\TextureBrowser\CacheRequest_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureCache_moc.cpp" />
     <ClCompile Include="_GeneratedQt\TextureBrowser\TextureConvertorWork_moc.cpp" />
@@ -704,7 +707,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModelFiltering_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModel_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectEntityPathWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp" />
@@ -1007,7 +1009,6 @@
     <ClInclude Include="Classes\Deprecated\ScenePreviewControl.h" />
     <ClInclude Include="Classes\Deprecated\ScenePreviewDialog.h" />
     <ClInclude Include="Classes\Deprecated\SceneValidator.h" />
-    <ClInclude Include="Classes\Deprecated\TextureSquarenessChecker.h" />
     <ClInclude Include="Classes\FrameworkMain.h" />
     <ClInclude Include="Classes\GameCore.h" />
     <ClInclude Include="Classes\ImageTools\ImageTools.h" />
@@ -1119,6 +1120,7 @@
     <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h" />
     <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h" />
     <ClInclude Include="Classes\Qt\SpritesPacker\SpritePackerHelper.h" />
+    <ClInclude Include="Classes\Qt\TextureBrowser\CacheRequest.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureBrowser.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureCache.h" />
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertor.h" />
@@ -1132,6 +1134,7 @@
     <ClInclude Include="Classes\Qt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog.h" />
+    <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\SwitchEntityCreator.h" />
     <ClInclude Include="Classes\Qt\Tools\BaseAddEntityDialog\BaseAddEntityDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
     <ClInclude Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.h" />
@@ -1149,10 +1152,12 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\FloatRangeValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.h" />
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspMember.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataKeyedArchiveMember.h" />
@@ -1160,7 +1165,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyItemDelegate.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModel.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyModelFiltering.h" />
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaKeyedArchive.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataDavaVariant.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspColl.h" />

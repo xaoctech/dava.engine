@@ -43,10 +43,10 @@ static Vector3 basisVectors[7*2] = {Vector3(), Vector3(),
 									Vector3(1,0,0), Vector3(0,0,1), 
 									Vector3(0,1,0), Vector3(1,0,0)};
 
-void ParticleRenderGroup::UpdateRenderBatch()
+void ParticleRenderGroup::UpdateRenderBatch(uint32 vertexSize, uint32 vertexStride)
 {
 	RenderDataObject *renderDataObject = renderBatch->GetRenderDataObject();
-	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, 0, &vertices.front());
+	renderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, vertexSize, vertexStride, &vertices.front());
 	renderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, &texcoords.front());
 	renderDataObject->SetStream(EVF_COLOR, TYPE_UNSIGNED_BYTE, 4, 0, &colors.front());				
 	if (enableFrameBlend)
@@ -83,7 +83,7 @@ void ParticleRenderGroup::ClearArrays()
 	times.clear();
 }
 
-ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect)
+ParticleRenderObject::ParticleRenderObject(ParticleEffectData *effect): effectData(effect), sortingOffset(15), vertexSize(3), vertexStride(0)
 {
 	AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
@@ -107,6 +107,27 @@ void ParticleRenderObject::SetEffectMatrix(Matrix4 *matrix)
 Matrix4 * ParticleRenderObject::GetEffectMatrix()
 {
     return effectMatrix;
+}
+
+void ParticleRenderObject::SetSortingOffset(uint32 offset)
+{
+    sortingOffset = offset;
+    for (int32 i=0, sz = renderGroupCache.size(); i<sz; ++i)
+        renderGroupCache[i]->renderBatch->SetSortingOffset(offset);
+}
+
+void ParticleRenderObject::Set2DMode(bool is2d)
+{
+    if (is2d)
+    {
+        vertexSize=2;
+        vertexStride=3*sizeof(float32);
+    }
+    else
+    {
+        vertexSize=3;
+        vertexStride=0;
+    }
 }
 
 void ParticleRenderObject::PrepareRenderData(Camera * camera)
@@ -155,6 +176,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 			{
 				currRenderGroup = new ParticleRenderGroup();
 				currRenderGroup->renderBatch = new RenderBatch();
+                currRenderGroup->renderBatch->SetSortingOffset(sortingOffset);
 				currRenderGroup->renderBatch->SetRenderObject(this);
 				currRenderGroup->renderBatch->SetRenderDataObject(new RenderDataObject());
 				renderGroupCache.push_back(currRenderGroup);
@@ -196,7 +218,7 @@ void ParticleRenderObject::PrepareRenderData(Camera * camera)
 	{
 		if (renderGroupCache[i]->currParticlesCount)
 		{
-			renderGroupCache[i]->UpdateRenderBatch();
+			renderGroupCache[i]->UpdateRenderBatch(vertexSize, vertexStride);
 			renderGroupCache[i]->renderBatch->SetIndexCount(renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);		
 			renderGroupCache[i]->renderBatch->GetRenderDataObject()->SetIndices(EIF_16, (uint8*)(&indices.front()), renderGroupCache[i]->currParticlesCount*INDICES_PER_PARTICLE);
             renderGroupCache[i]->renderBatch->SetSortingTransformPtr(effectMatrix);
@@ -269,7 +291,7 @@ void ParticleRenderObject::AppendParticleGroup(const ParticleGroup &group, Parti
 			top*=0.5f*current->currSize.y*(1+group.layer->layerPivotPoint.y);
 			bot*=0.5f*current->currSize.y*(1-group.layer->layerPivotPoint.y);			
 
-			Vector3 particlePosition = current->position;
+			Vector3 particlePosition = current->position;            
 			if (group.layer->inheritPosition)
 				particlePosition+=effectData->infoSources[group.positionSource].position;
 			particlePos[0] = particlePosition+left+bot;

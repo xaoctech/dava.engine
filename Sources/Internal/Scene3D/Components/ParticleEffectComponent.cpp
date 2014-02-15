@@ -88,6 +88,11 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	return newComponent;
 }
 
+void ParticleEffectComponent::SetSortingOffset(uint32 offset)
+{
+    effectRenderObject->SetSortingOffset(offset);
+}
+
 void ParticleEffectComponent::Start()
 {
 	isPaused = false;

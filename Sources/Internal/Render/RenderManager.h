@@ -488,7 +488,7 @@ public:
     static Matrix4 invWorldMatrix;
     static Matrix3 worldInvTransposeMatrix;
 
-    static inline void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 updateSemantic);
+    static inline void SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, pointer_size updateSemantic);
     
     //void SetMatrix(eShaderSemantic type, void * value, uint32 updateSemantic);
     //void SetMatrix(eShaderSemantic type, const Matrix4 & matrix, uint32 cacheValue);
@@ -546,57 +546,58 @@ public:
 #endif //#if defined(__DAVAENGINE_OPENGL__)
     
     void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
+    
+    void LockRenderState();
+	void UnlockRenderState();
+
+    void LockTextureState();
+	void UnlockTexturerState();
 	
 	inline void RetainRenderState(UniqueHandle handle)
 	{
+        LockRenderState();
 		uniqueRenderStates.RetainUnique(handle);
+        UnlockRenderState();
 	}
 	
 	inline UniqueHandle CreateRenderState(const RenderStateData& data)
 	{
-		return uniqueRenderStates.MakeUnique(data);
+        LockRenderState();
+		UniqueHandle renderStateHandle = uniqueRenderStates.MakeUnique(data);
+        UnlockRenderState();
+        
+        return renderStateHandle;
 	}
 
+    //this method is not thread safe since array element could be modified in background
 	inline const RenderStateData& GetRenderStateData(UniqueHandle handle)
 	{
 		return uniqueRenderStates.GetUnique(handle);
 	}
+    
+    //this method is thread safe
+    inline const void GetRenderStateData(UniqueHandle handle, RenderStateData& target)
+	{
+		LockRenderState();
+		const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(handle);
+		memcpy(&target, &parentState, sizeof(target));
+        UnlockRenderState();
+	}
 	
 	inline void ReleaseRenderState(UniqueHandle handle)
 	{
+        LockRenderState();
 		uniqueRenderStates.ReleaseUnique(handle);
+        UnlockRenderState();
 	}
-	
-	inline UniqueHandle GetDefault2DStateHandle() const
-	{
-		return default2DRenderStateHandle;
-	}
-	
-	inline UniqueHandle GetDefault2DNoBlendStateHandle()
-	{
-		return default2DNoBlendRenderStateHandle;
-	}
-	
-	inline UniqueHandle GetDefault2DNoTextureStateHandle() const
-	{
-		return default2DNoTextureStateHandle;
-	}
-
-	inline UniqueHandle GetDefault3DStateHandle() const
-	{
-		return default3DRenderStateHandle;
-	}
-	
-	inline UniqueHandle GetDefaultHardwareStateHandle() const
-	{
-		return defaultHardwareState;
-	}
-	
+				
 	inline UniqueHandle SubclassRenderState(UniqueHandle parentStateHandle, uint32 renderStateFlags)
 	{
+        LockRenderState();
 		const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
 		RenderStateData derivedState;
 		memcpy(&derivedState, &parentState, sizeof(derivedState));
+        UnlockRenderState();
 		
 		derivedState.state = renderStateFlags;
 		return CreateRenderState(derivedState);
@@ -606,9 +607,11 @@ public:
 										  eBlendMode srcBlend,
 										  eBlendMode dstBlend)
 	{
+        LockRenderState();
 		const RenderStateData& parentState = RenderManager::Instance()->GetRenderStateData(parentStateHandle);
 		RenderStateData derivedState;
 		memcpy(&derivedState, &parentState, sizeof(derivedState));
+        UnlockRenderState();
 		
 		derivedState.sourceFactor = srcBlend;
 		derivedState.destFactor = dstBlend;
@@ -618,23 +621,18 @@ public:
 	inline UniqueHandle Subclass3DRenderState(eBlendMode srcBlend,
 										  eBlendMode dstBlend)
 	{
-		return SubclassRenderState(default3DRenderStateHandle, srcBlend, dstBlend);
+		return SubclassRenderState(RenderState::RENDERSTATE_3D_BLEND, srcBlend, dstBlend);
 	}
 	
 	inline UniqueHandle Subclass3DRenderState(uint32 renderStateFlags)
 	{
-		return SubclassRenderState(default3DRenderStateHandle, renderStateFlags);
+		return SubclassRenderState(RenderState::RENDERSTATE_3D_BLEND, renderStateFlags);
 	}
 	
 	inline UniqueHandle Subclass2DRenderState(uint32 renderStateFlags)
 	{
-		return SubclassRenderState(default2DRenderStateHandle, renderStateFlags);
+		return SubclassRenderState(RenderState::RENDERSTATE_2D_BLEND, renderStateFlags);
 	}
-
-	void SetDefault2DState();
-	void SetDefault2DNoBlendState();
-	void SetDefault2DNoTextureState();
-	void SetDefault3DState();
 	
 	inline void SetRenderState(UniqueHandle requestedState)
 	{
@@ -643,9 +641,14 @@ public:
 	
 	inline UniqueHandle CreateTextureState(const TextureStateData& data)
 	{
-		return uniqueTextureStates.MakeUnique(data);
+        LockTextureState();
+		UniqueHandle textureStateHandle = uniqueTextureStates.MakeUnique(data);
+        UnlockTexturerState();
+        
+        return textureStateHandle;
 	}
 	
+    //this method is not thread safe since array element could be modified in background
 	inline const TextureStateData& GetTextureState(UniqueHandle handle)
 	{
 		return uniqueTextureStates.GetUnique(handle);
@@ -653,29 +656,23 @@ public:
 
     inline void RetainTextureState(UniqueHandle handle)
 	{
+        LockTextureState();
 		uniqueTextureStates.RetainUnique(handle);
+        UnlockTexturerState();
 	}
 	
 	inline void ReleaseTextureState(UniqueHandle handle)
 	{
+        LockTextureState();
 		uniqueTextureStates.ReleaseUnique(handle);
+        UnlockTexturerState();
 	}
 
 	inline void SetTextureState(UniqueHandle requestedState)
 	{
 		currentState.textureState = requestedState;
 	}
-	
-	inline void SetEmptyTextureState()
-	{
-		SetTextureState(defaultTextureState);
-	}
-	
-	inline UniqueHandle GetEmptyTextureState()
-	{
-		return defaultTextureState;
-	}
-	
+		
 protected:
     //
     // general matrices for rendermanager 
@@ -764,18 +761,10 @@ public:
 //  Shader * shader;
 	
 	UniqueStateSet<RenderStateData> uniqueRenderStates;
-	UniqueHandle default2DRenderStateHandle;
-	UniqueHandle default2DNoBlendRenderStateHandle;
-	UniqueHandle default2DNoTextureStateHandle;
-	UniqueHandle default3DRenderStateHandle;
-	UniqueHandle defaultHardwareState;
-	
 	UniqueStateSet<TextureStateData> uniqueTextureStates;
-	UniqueHandle defaultTextureState;
-	
-	void InitDefaultRenderStates();
-	void InitDefaultTextureStates();
     
+    void InitDefaultRenderStates();
+	   
     RenderState currentState;
     RenderState hardwareState;
 
@@ -810,6 +799,8 @@ public:
 	bool isInsideDraw;
 
 	Mutex glMutex;
+    Mutex renderStateMutex;
+    Mutex textureStateMutex;
 	
 	Rect currentClip;
 	
@@ -866,7 +857,7 @@ public:
     void MakeGLScreenShot();
 };
     
-inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, uint32 _updateSemantic)
+inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const void * value, pointer_size _updateSemantic)
 {
     //AutobindVariableData * var = &dynamicParameters[shaderSemantic];
     //if (var->updateSemantic

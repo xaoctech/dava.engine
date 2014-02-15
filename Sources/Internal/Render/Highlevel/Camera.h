@@ -287,6 +287,10 @@ public:
      */
 	void ExtractCameraToValues();
 	
+
+    void RebuildProjectionMatrix();
+	void RebuildViewMatrix();
+
     /**
         \brief Clone current camera
         TODO: remove, make adjustments in copy constructor instead. Clone() is evil, see Effective Java for details.
@@ -390,10 +394,7 @@ public:
 	
 	void ExtractValuesFromMatrix();
 	void ConstructMatrixFromValues();
-	void Recalc();
-
-	void RebuildProjectionMatrix();
-	void RebuildViewMatrix();
+	void Recalc();	
     
 	
 	/** calls glFrustum for projection matrix */

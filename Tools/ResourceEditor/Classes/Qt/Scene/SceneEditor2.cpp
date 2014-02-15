@@ -39,7 +39,7 @@
 #include "Commands2/TilemaskEditorCommands.h"
 #include "Commands2/RulerToolActions.h"
 #include "Commands2/LandscapeEditorDrawSystemActions.h"
-
+#include "Project/ProjectManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
 #include "Scene/FogSettingsChangedReceiver.h"
@@ -241,7 +241,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 {
 	SceneExporter exporter;
 	
-	FilePath projectPath( SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
@@ -565,7 +565,7 @@ DAVA::ShadowPassBlendMode::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		GetRenderSystem()->GetShadowBlendMode();
+		return GetRenderSystem()->GetShadowBlendMode();
 	}
 
 	return DAVA::ShadowPassBlendMode::MODE_BLEND_COUNT;

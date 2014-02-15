@@ -109,7 +109,7 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, con
 	this->updatedRect = updatedRect;
 	this->landscapeProxy = SafeRetain(landscapeProxy);
 	
-	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault2DStateHandle());
+	const DAVA::RenderStateData& default2dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
 	memcpy(&noBlendStateData, &default2dState, sizeof(noBlendStateData));
 	
@@ -122,10 +122,8 @@ ModifyTilemaskCommand::ModifyTilemaskCommand(LandscapeProxy* landscapeProxy, con
 
 	undoImageMask = Image::CopyImageRegion(originalMask, updatedRect);
 
-	RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
-	RenderManager::Instance()->FlushState();
-	Image* currentImageMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory();
+	Image* currentImageMask = landscapeProxy->GetLandscapeTexture(Landscape::TEXTURE_TILE_MASK)->CreateImageFromMemory(noBlendDrawState);
 
 	redoImageMask = Image::CopyImageRegion(currentImageMask, updatedRect);
 	SafeRelease(currentImageMask);
@@ -199,28 +197,32 @@ Sprite* ModifyTilemaskCommand::ApplyImageToTexture(DAVA::Image *image, DAVA::Tex
 	Sprite* resSprite = Sprite::CreateAsRenderTarget((float32)width, (float32)height, FORMAT_RGBA8888);
 	RenderManager::Instance()->SetRenderTarget(resSprite);
     
-	RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
     
 	Sprite* s = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height);
-	s->SetPosition(0.f, 0.f);
-	s->Draw();
+    
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(noBlendDrawState);
+	drawState.SetPosition(0.f, 0.f);
+	s->Draw(&drawState);
 	SafeRelease(s);
     
     RenderManager::Instance()->Reset();
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
     
-    RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
-    RenderManager::Instance()->SetEmptyTextureState();
-    RenderManager::Instance()->FlushState();
+    RenderManager::Instance()->SetTextureState(RenderState::TEXTURESTATE_EMPTY);
 
 	Texture* t = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 										 image->GetWidth(), image->GetHeight(), false);
 	s = Sprite::CreateFromTexture(t, 0, 0, (float32)t->GetWidth(), (float32)t->GetHeight());
-	s->SetPosition(updatedRect.x, updatedRect.y);
-	s->Draw();
+    
+    drawState.Reset();
+	drawState.SetPosition(updatedRect.x, updatedRect.y);
+    drawState.SetRenderState(noBlendDrawState);
+	s->Draw(&drawState);
+    
 	SafeRelease(s);
 	SafeRelease(t);
     
@@ -237,16 +239,16 @@ void ModifyTilemaskCommand::ApplyImageToSprite(Image* image, Sprite* dstSprite)
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
 
-	RenderManager::Instance()->SetRenderState(noBlendDrawState);
     RenderManager::Instance()->SetColor(Color::White);
-	RenderManager::Instance()->FlushState();
 	
 	Texture* texture = Texture::CreateFromData(image->GetPixelFormat(), image->GetData(),
 											   image->GetWidth(), image->GetHeight(), false);
 	Sprite* srcSprite = Sprite::CreateFromTexture(texture, 0, 0, image->GetWidth(), image->GetHeight());
 	
-	srcSprite->SetPosition(updatedRect.x, updatedRect.y);
-	srcSprite->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(noBlendDrawState);
+	drawState.SetPosition(updatedRect.x, updatedRect.y);
+	srcSprite->Draw(&drawState);
     
 	RenderManager::Instance()->ClipPop();
 	RenderManager::Instance()->RestoreRenderTarget();

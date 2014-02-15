@@ -40,6 +40,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/LodSystem.h"
 #include "Render/Material/NMaterialNames.h"
+#include "Particles/ParticleRenderObject.h"
 
 
 namespace DAVA
@@ -71,6 +72,8 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 		else
 			material->SetParent(particleRegularMaterial);		
 		material->SetTexture(NMaterial::TEXTURE_ALBEDO, texture);
+        if (forceDisableDepthTest)
+            NMaterialHelper::DisableStateFlags(PASS_FORWARD, material, RenderStateData::STATE_DEPTH_TEST);
 		NMaterialHelper::SetBlendMode(PASS_FORWARD, material, srcFactor, dstFactor);
 		materialMap[materialKey] = material;
 		return material;
@@ -78,7 +81,7 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 }
 
 
-ParticleEffectSystem::ParticleEffectSystem(Scene * scene) :	SceneSystem(scene)	
+ParticleEffectSystem::ParticleEffectSystem(Scene * scene, bool _forceDisableDepthTest) :	SceneSystem(scene), forceDisableDepthTest(_forceDisableDepthTest)	
 {	
     if (scene) //for 2d particles there would be no scene
 	    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);

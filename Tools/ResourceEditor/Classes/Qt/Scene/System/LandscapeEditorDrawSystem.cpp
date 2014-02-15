@@ -55,7 +55,7 @@ LandscapeEditorDrawSystem::LandscapeEditorDrawSystem(Scene* scene)
 ,	visibilityToolProxy(NULL)
 ,	rulerToolProxy(NULL)
 {
-	const DAVA::RenderStateData default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderManager::Instance()->GetDefault3DStateHandle());
+	const DAVA::RenderStateData default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData noBlendStateData;
 	memcpy(&noBlendStateData, &default3dState, sizeof(noBlendStateData));
 	
@@ -591,9 +591,8 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 		//eBlendMode srcBlend = RenderManager::Instance()->GetSrcBlend();
 		//eBlendMode dstBlend = RenderManager::Instance()->GetDestBlend();
 		//RenderManager::Instance()->SetBlendMode(BLEND_ONE, BLEND_ZERO);
-		RenderManager::Instance()->SetRenderState(noBlendDrawState);
-		RenderManager::Instance()->FlushState();
-		Image *image = texture->CreateImageFromMemory();
+		
+		Image *image = texture->CreateImageFromMemory(noBlendDrawState);
 		//RenderManager::Instance()->SetBlendMode(srcBlend, dstBlend);
 
 		if(image)

@@ -41,6 +41,7 @@
 #include "Scene/SceneSignals.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Deprecated/EditorConfig.h"
+#include "Project/ProjectManager.h"
 
 CustomColorsSystem::CustomColorsSystem(Scene* scene)
 :	SceneSystem(scene)
@@ -281,17 +282,17 @@ void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
 	Sprite* colorSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
 	
 	RenderManager::Instance()->SetRenderTarget(colorSprite);
-	RenderManager::Instance()->SetDefault2DState();
-	RenderManager::Instance()->FlushState();
-	
+
 	RenderManager::Instance()->SetColor(drawColor);
 
 	Vector2 spriteSize = Vector2(cursorSize, cursorSize);
 	Vector2 spritePos = cursorPosition - spriteSize / 2.f;
 	
-	toolImageSprite->SetScaleSize(spriteSize.x, spriteSize.y);
-	toolImageSprite->SetPosition(spritePos.x, spritePos.y);
-	toolImageSprite->Draw();
+    Sprite::DrawState drawState;
+	drawState.SetScaleSize(spriteSize.x, spriteSize.y,
+                           toolImageSprite->GetWidth(), toolImageSprite->GetHeight());
+	drawState.SetPosition(spritePos.x, spritePos.y);
+	toolImageSprite->Draw(&drawState);
 	
 	RenderManager::Instance()->RestoreRenderTarget();
 	RenderManager::Instance()->SetColor(Color::White);
@@ -348,7 +349,7 @@ void CustomColorsSystem::SetColor(int32 colorIndex)
 void CustomColorsSystem::StoreOriginalState()
 {
 	DVASSERT(originalImage == NULL);
-	originalImage = drawSystem->GetCustomColorsProxy()->GetSprite()->GetTexture()->CreateImageFromMemory();
+	originalImage = drawSystem->GetCustomColorsProxy()->GetSprite()->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	ResetAccumulatorRect();
 }
 
@@ -374,7 +375,7 @@ void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 	Sprite* customColorsSprite = drawSystem->GetCustomColorsProxy()->GetSprite();
 	Texture* customColorsTexture = customColorsSprite->GetTexture();
 
-	Image* image = customColorsTexture->CreateImageFromMemory();
+	Image* image = customColorsTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	ImageLoader::Save(image, filePath);
 	SafeRelease(image);
 
@@ -406,7 +407,10 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool create
 			StoreOriginalState();
 		}
 		RenderManager::Instance()->SetRenderTarget(drawSystem->GetCustomColorsProxy()->GetSprite());
-		sprite->Draw();
+        
+        Sprite::DrawState drawState;
+		sprite->Draw(&drawState);
+        
 		RenderManager::Instance()->RestoreRenderTarget();
 		AddRectToAccumulator(Rect(Vector2(0.f, 0.f), Vector2(texture->GetWidth(), texture->GetHeight())));
 
@@ -496,7 +500,7 @@ String CustomColorsSystem::GetRelativePathToProjectPath(const FilePath& absolute
 	if(absolutePath.IsEmpty())
 		return String();
 
-	return absolutePath.GetRelativePathname(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()));
+	return absolutePath.GetRelativePathname(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()));
 }
 
 FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relativePath)
@@ -504,7 +508,7 @@ FilePath CustomColorsSystem::GetAbsolutePathFromProjectPath(const String& relati
 	if(relativePath.empty())
 		return FilePath();
 	
-	return (FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()) + relativePath);
+	return (FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()) + relativePath);
 }
 
 int32 CustomColorsSystem::GetBrushSize()

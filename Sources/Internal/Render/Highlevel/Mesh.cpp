@@ -108,14 +108,4 @@ void Mesh::BakeTransform(const Matrix4 & transform)
 	RecalcBoundingBox();
 }
 
-ShadowVolume * Mesh::CreateShadow()
-{
-	DVASSERT(renderBatchArray.size() == 1);
-
-	ShadowVolume * newShadowVolume = new ShadowVolume();
-	newShadowVolume->MakeShadowVolumeFromPolygonGroup(GetRenderBatch(0)->GetPolygonGroup());
-
-	return newShadowVolume;
-}
-
 };

@@ -77,20 +77,36 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 		int32 size = entity->GetChildrenCount();
 		for(int32 i = 0; i < size; ++i)
 		{
-			Entity * child = entity->GetChild(i);
-			RenderObject * sourceRenderObject = GetRenderObject(child);
+			Entity * sourceEntity = entity->GetChild(i);
+			RenderObject * sourceRenderObject = GetRenderObject(sourceEntity);
+			
+			//workaround for custom properties for crashed model
+			if(1 == i) // crash model
+			{
+				KeyedArchive *childProps = sourceEntity->GetCustomProperties();
+				if(childProps->IsKeyExists("CollisionType"))
+				{	
+					KeyedArchive *entityProps = entity->GetCustomProperties();
+					entityProps->SetInt32("CollisionTypeCrashed", childProps->GetInt32("CollisionType", 0));
+				}
+			}
+			//end of custom properties
 
-            if(!sourceRenderObject)
+            Vector<std::pair<Entity*, RenderObject*> > renderPairs;
+            if(sourceRenderObject)
             {
-                Vector<RenderObject*> renderObjects;
-                FindRenderObjectsRecursive(child, renderObjects);
-                DVASSERT(renderObjects.size() == 1);
-                sourceRenderObject = renderObjects[0];
+                renderPairs.push_back(std::make_pair(sourceEntity, sourceRenderObject));
+            }
+            else
+            {
+                FindRenderObjectsRecursive(sourceEntity, renderPairs);
+                DVASSERT(renderPairs.size() == 1);
+                sourceRenderObject = renderPairs[0].second;
             }
 
 			if(sourceRenderObject)
 			{
-                TransformComponent * sourceTransform = GetTransformComponent(child);
+                TransformComponent * sourceTransform = GetTransformComponent(sourceEntity);
                 if (sourceTransform->GetLocalTransform() != Matrix4::IDENTITY)
                 {
                     PolygonGroup * pg = sourceRenderObject->GetRenderBatchCount() > 0 ? sourceRenderObject->GetRenderBatch(0)->GetPolygonGroup() : 0;
@@ -114,17 +130,22 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 				}
 			}
 
-            LodComponent * lc = GetLodComponent(child);
+            renderPairs[0].first->RemoveComponent(Component::RENDER_COMPONENT);
+
+            LodComponent * lc = GetLodComponent(sourceEntity);
             if((0 != lc) && (0 == GetLodComponent(entity)))
             {
                 LodComponent * newLod = (LodComponent*)lc->Clone(entity);
                 entity->AddComponent(newLod);
             }
 
-			entitiesToRemove.push_back(child);
-		}
+            renderPairs[0].first->RemoveComponent(Component::LOD_COMPONENT);
 
-		ro->RecalcBoundingBox();
+            if(sourceEntity->GetChildrenCount() == 0)
+            {
+                entitiesToRemove.push_back(sourceEntity);
+            }
+		}
 	}
 
 	uint32 entitiesToRemoveCount = entitiesToRemove.size();
@@ -136,18 +157,18 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 	return false;
 }
 
-void SwitchToRenerObjectConverter::FindRenderObjectsRecursive(Entity * fromEntity, Vector<RenderObject*> & renderObjects)
+void SwitchToRenerObjectConverter::FindRenderObjectsRecursive(Entity * fromEntity, Vector<std::pair<Entity*, RenderObject*> > & entityAndObjectPairs)
 {
     RenderObject * ro = GetRenderObject(fromEntity);
     if(ro && ro->GetType() == RenderObject::TYPE_MESH)
     {
-        renderObjects.push_back(ro);
+        entityAndObjectPairs.push_back(std::make_pair(fromEntity, ro));
     }
 
     int32 size = fromEntity->GetChildrenCount();
     for(int32 i = 0; i < size; ++i)
     {
         Entity * child = fromEntity->GetChild(i);
-        FindRenderObjectsRecursive(child, renderObjects);
+        FindRenderObjectsRecursive(child, entityAndObjectPairs);
     }
 }

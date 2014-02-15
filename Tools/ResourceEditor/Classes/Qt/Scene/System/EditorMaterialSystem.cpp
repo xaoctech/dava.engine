@@ -34,15 +34,14 @@
 #include "Commands2/Command2.h"
 #include "Commands2/CommandBatch.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
+#include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteLODCommand.h"
 #include "Commands2/CreatePlaneLODCommand.h"
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
-, curViewMode(MVM_ALL)
-{ 
-    curViewMode = SettingsManager::Instance()->GetValue("MaterialsViewMode", SettingsManager::DEFAULT).AsInt32();
-}
+, curViewMode(LIGHTVIEW_ALL)
+{ }
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
@@ -119,33 +118,26 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 	}
 }
 
-int EditorMaterialSystem::GetViewMode()
+int EditorMaterialSystem::GetLightViewMode()
 {
     return curViewMode;
 }
 
-bool EditorMaterialSystem::GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const
+bool EditorMaterialSystem::GetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode) const
 {
     return (bool) (curViewMode & viewMode);
 }
 
-void EditorMaterialSystem::SetViewMode(int fullViewMode)
+void EditorMaterialSystem::SetLightViewMode(int fullViewMode)
 {
     if(curViewMode != fullViewMode)
     {
         curViewMode = fullViewMode;
-
-        DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
-        DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
-
-        for(; i != end; ++i)
-        {
-            ApplyViewMode(*i);
-        }
+        ApplyViewMode();
     }
 }
 
-void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set)
+void EditorMaterialSystem::SetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode, bool set)
 {
     int newMode = curViewMode;
 
@@ -158,7 +150,21 @@ void EditorMaterialSystem::SetViewMode(EditorMaterialSystem::MaterialViewMode vi
         newMode &= ~viewMode;
     }
 
-    SetViewMode(newMode);
+    SetLightViewMode(newMode);
+}
+
+void EditorMaterialSystem::SetLightmapCanvasVisible(bool enable)
+{
+    if(enable != showLightmapCanvas)
+    {
+        showLightmapCanvas = enable;
+        ApplyViewMode();
+    }
+}
+
+bool EditorMaterialSystem::IsLightmapCanvasVisible() const
+{
+    return showLightmapCanvas;
 }
 
 void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
@@ -191,20 +197,40 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 	}
 }
 
+void EditorMaterialSystem::ApplyViewMode()
+{
+    DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
+    DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
+
+    for(; i != end; ++i)
+    {
+        ApplyViewMode(*i);
+    }
+}
+
 void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
 {
     DAVA::NMaterial::eFlagValue flag;
 
-    (curViewMode & MVM_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
 
-    (curViewMode & MVM_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    //if(NULL != material->GetTexture(NMaterial::TEXTURE_LIGHTMAP))
+    {
+        (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOff : flag = DAVA::NMaterial::FlagOn;
+        material->SetFlag(DAVA::NMaterial::FLAG_LIGHTMAPONLY, flag);
+
+        (showLightmapCanvas) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+        material->SetFlag(DAVA::NMaterial::FLAG_SETUPLIGHTMAP, flag);
+    }
+
+    (curViewMode & LIGHTVIEW_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
 
-    (curViewMode & MVM_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_SPECULAR) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWSPECULAR, flag);
 
-    (curViewMode & MVM_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+    (curViewMode & LIGHTVIEW_AMBIENT) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWAMBIENT, flag);
 }
 
@@ -254,6 +280,31 @@ void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
             RemoveMaterial(batch->GetMaterial());
         }
     }
+    else if(commandID == CMDID_DELETE_RENDER_BATCH)
+    {
+        DeleteRenderBatchCommand *rbCommand = (DeleteRenderBatchCommand *) command;
+        if(redo)
+        {
+            RemoveMaterial(rbCommand->GetRenderBatch()->GetMaterial());
+        }
+        else
+        {
+            AddMaterial(rbCommand->GetRenderBatch()->GetMaterial(), rbCommand->GetEntity(), rbCommand->GetRenderBatch());
+        }
+    }
+    else if(commandID == CMDID_CONVERT_TO_SHADOW)
+    {
+        ConvertToShadowCommand *swCommand = (ConvertToShadowCommand *) command;
+        if(redo)
+        {
+            RemoveMaterial(swCommand->oldBatch->GetMaterial());
+        }
+        else
+        {
+            AddMaterial(swCommand->oldBatch->GetMaterial(), swCommand->GetEntity(), swCommand->oldBatch);
+        }
+
+    }
 }
 
 void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
@@ -283,7 +334,7 @@ void EditorMaterialSystem::AddMaterial(DAVA::NMaterial *material, DAVA::Entity *
             //{
             //    if(parentTemplate == availableTemplates->at(j).path)
 
-                if(parent->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+                if(IsEditable(parent))
                 {
                     ownedParents.insert(parent);
                     parent->Retain();
@@ -300,4 +351,10 @@ void EditorMaterialSystem::RemoveMaterial(DAVA::NMaterial *material)
 {
     if(material)
         materialFeedback.erase(material);
+}
+
+bool EditorMaterialSystem::IsEditable(DAVA::NMaterial *material) const
+{
+    return (material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag || 
+            material->GetMaterialTemplateName() == DAVA::FastName("~res:/Materials/TileMask.material"));
 }

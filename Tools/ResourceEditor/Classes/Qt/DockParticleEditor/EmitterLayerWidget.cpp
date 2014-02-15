@@ -33,6 +33,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
+#include "Project/ProjectManager.h"
 
 #include <QHBoxLayout>
 #include <QGraphicsWidget>
@@ -608,13 +609,15 @@ void EmitterLayerWidget::Init(SceneEditor2* scene, ParticleEmitter* emitter, DAV
 	RenderManager::Instance()->SetRenderTarget(renderSprite);
 	if (sprite)
 	{
-		sprite->SetScaleSize(SPRITE_SIZE, SPRITE_SIZE);
-		sprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetScaleSize(SPRITE_SIZE, SPRITE_SIZE,
+                               sprite->GetWidth(), sprite->GetHeight());
+		sprite->Draw(&drawState);
 	}
 
 	RenderManager::Instance()->RestoreRenderTarget();
 	Texture* texture = renderSprite->GetTexture();
-	Image* image = texture->CreateImageFromMemory();
+	Image* image = texture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	spriteLabel->setPixmap(QPixmap::fromImage(TextureConvertor::FromDavaImage(image)));
 	SafeRelease(image);
 	SafeRelease(renderSprite);
@@ -858,7 +861,7 @@ void EmitterLayerWidget::StoreVisualState(KeyedArchive* visualStateProps)
 
 void EmitterLayerWidget::OnSpriteBtn()
 {
-	FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
 	projectPath += "Data/Gfx/Particles/";
     
 	QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open particle sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Effect File (*.txt)"));
