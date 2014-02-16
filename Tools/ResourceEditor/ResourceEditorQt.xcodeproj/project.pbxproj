@@ -35,6 +35,8 @@
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
+		8464251E18B16B2800A2BE35 /* ImageSplitterDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */; };
+		8464252018B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8464251F18B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp */; };
 		84A6B1FB18972F64002FD263 /* FloatRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1F918972F64002FD263 /* FloatRangeValidator.cpp */; };
 		84A6B1FE189735AB002FD263 /* IntRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1FC189735AB002FD263 /* IntRangeValidator.cpp */; };
 		84B3D11F18985EF20039A9C0 /* PathValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84B3D11D18985EF20039A9C0 /* PathValidator.cpp */; };
@@ -675,6 +677,10 @@
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
+		8464251A18B16A2500A2BE35 /* ui_ImageSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ImageSplitter.h; path = _GeneratedQt/ui_ImageSplitter.h; sourceTree = "<group>"; };
+		8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitterDialog.cpp; path = ImageSplitterDialog/ImageSplitterDialog.cpp; sourceTree = "<group>"; };
+		8464251D18B16B2800A2BE35 /* ImageSplitterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSplitterDialog.h; path = ImageSplitterDialog/ImageSplitterDialog.h; sourceTree = "<group>"; };
+		8464251F18B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitterDialog_moc.cpp; path = _GeneratedQt/ImageSplitterDialog/ImageSplitterDialog_moc.cpp; sourceTree = "<group>"; };
 		84A6B1F918972F64002FD263 /* FloatRangeValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FloatRangeValidator.cpp; path = QtPropertyDataValidator/FloatRangeValidator.cpp; sourceTree = "<group>"; };
 		84A6B1FA18972F64002FD263 /* FloatRangeValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FloatRangeValidator.h; path = QtPropertyDataValidator/FloatRangeValidator.h; sourceTree = "<group>"; };
 		84A6B1FC189735AB002FD263 /* IntRangeValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IntRangeValidator.cpp; path = QtPropertyDataValidator/IntRangeValidator.cpp; sourceTree = "<group>"; };
@@ -1750,6 +1756,23 @@
 			name = QtPropertyDataValidator;
 			sourceTree = "<group>";
 		};
+		84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */ = {
+			isa = PBXGroup;
+			children = (
+				8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */,
+				8464251D18B16B2800A2BE35 /* ImageSplitterDialog.h */,
+			);
+			name = ImageSplitterDialog;
+			sourceTree = "<group>";
+		};
+		84EB52C818B1625B0094DAD9 /* ImageSplitterDialog */ = {
+			isa = PBXGroup;
+			children = (
+				8464251F18B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp */,
+			);
+			name = ImageSplitterDialog;
+			sourceTree = "<group>";
+		};
 		A6796CD71885702800EB254C /* DDSExtractor */ = {
 			isa = PBXGroup;
 			children = (
@@ -1808,6 +1831,8 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				8464251A18B16A2500A2BE35 /* ui_ImageSplitter.h */,
+				84EB52C818B1625B0094DAD9 /* ImageSplitterDialog */,
 				A6CCB65218990C5500F5DA38 /* QualitySwitcher */,
 				A6D827A6187717A60006A5DD /* PlaneLODDialog */,
 				E8BAD5D71859F50200C98C8D /* CubemapEditor */,
@@ -3103,6 +3128,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */,
 				A6CCB64718990C3000F5DA38 /* QualitySwitcher */,
 				A6D8279B1877175E0006A5DD /* PlaneLODDialog */,
 				E8BAD5CA1859F48600C98C8D /* MaterialEditor */,
@@ -4303,6 +4329,7 @@
 				E8C99240184CD0EC00AFBF3F /* btGjkEpaPenetrationDepthSolver.cpp in Build Sources */,
 				E8BAD7461859F50300C98C8D /* ToolButtonWithWidget_moc.cpp in Build Sources */,
 				E8C992A3184CD0EC00AFBF3F /* DraggableDialog.cpp in Build Sources */,
+				8464252018B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp in Build Sources */,
 				E8C99209184CD0EC00AFBF3F /* btSphereSphereCollisionAlgorithm.cpp in Build Sources */,
 				E8C9934D184CD0EC00AFBF3F /* ToolButtonWithWidget.cpp in Build Sources */,
 				E8C992A9184CD0EC00AFBF3F /* ParticlesEditorNodeNameHelper.cpp in Build Sources */,
@@ -4556,6 +4583,7 @@
 				E8C99330184CD0EC00AFBF3F /* MimeDataHelper.cpp in Build Sources */,
 				E8C991ED184CD0EC00AFBF3F /* btBroadphaseProxy.cpp in Build Sources */,
 				E8C99213184CD0EC00AFBF3F /* btConcaveShape.cpp in Build Sources */,
+				8464251E18B16B2800A2BE35 /* ImageSplitterDialog.cpp in Build Sources */,
 				E8C99271184CD0EC00AFBF3F /* BeastCommandLineTool.cpp in Build Sources */,
 				E8C9924B184CD0EC00AFBF3F /* btGeneric6DofConstraint.cpp in Build Sources */,
 				E8C992CE184CD0EC00AFBF3F /* DistanceSlider.cpp in Build Sources */,
