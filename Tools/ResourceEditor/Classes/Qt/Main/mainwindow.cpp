@@ -48,6 +48,7 @@
 #include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
 #include "../Tools/AddSkyboxDialog/AddSkyboxDialog.h"
+#include "../ImageSplitterDialog/ImageSplitterDialog.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
@@ -370,6 +371,24 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 			ui->sceneTabWidget->setFocus(Qt::ActiveWindowFocusReason);
 		}
 	}
+    
+    if(QEvent::KeyPress == eventType)
+    {
+        QKeyEvent *keyEvent = (QKeyEvent *)event;
+        int32 keyValue = keyEvent->key();
+        // check chars of russion alphabet(unicode table)
+        if(keyValue >= 0x410 && keyValue <=0x44F)
+        {
+            // according to reference of QKeyEvent, it's impossible to get scanCode on mac os
+            int32 systemKeyCode = keyEvent->nativeVirtualKey();
+            KeyboardDevice *kd = DAVA::InputSystem::Instance()->GetKeyboard();
+            int32 davaKey = kd->GetDavaKeyForSystemKey(systemKeyCode);
+            // translate davaKey to ascii to findout real key pressed
+            int32 qtKey = davaKey + 29;
+            QKeyEvent eventNew = QKeyEvent(QEvent::KeyPress, qtKey, keyEvent->modifiers());
+            QApplication::sendEvent(this, &eventNew);
+        }
+    }
 
 	return QMainWindow::eventFilter(obj, event);
 }
@@ -610,6 +629,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
+    QObject::connect(ui->actionImageSplitter, SIGNAL(triggered()), this, SLOT(OnImageSplitter()));
 
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionCustomColorsEditor, SIGNAL(triggered()), this, SLOT(OnCustomColorsEditor()));
@@ -805,6 +825,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
+    ui->actionImageSplitter->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
     ui->actionCloseProject->setEnabled(enable);
     
@@ -1322,6 +1343,12 @@ void QtMainWindow::OnCubemapEditor()
 	SceneEditor2* scene = GetCurrentScene();
 	
 	CubeMapTextureBrowser dlg(scene, dynamic_cast<QWidget*>(parent()));
+	dlg.exec();
+}
+
+void QtMainWindow::OnImageSplitter()
+{
+	ImageSplitterDialog dlg( dynamic_cast<QWidget*>(parent()));
 	dlg.exec();
 }
 
