@@ -212,6 +212,8 @@ void AnimationManager::Update(float timeElapsed)
 	for (int k = 0; k < (int)animations.size(); ++k)
 	{
 		Animation * animation = animations[k];
+        animationMutex.Unlock();
+
 		if (animation->state & Animation::STATE_IN_PROGRESS)
 		{
 			if(!(animation->state & Animation::STATE_PAUSED))
@@ -219,6 +221,8 @@ void AnimationManager::Update(float timeElapsed)
 				animation->Update(timeElapsed);
 			}	
 		}
+        
+        animationMutex.Lock();
 	}
 	animationMutex.Unlock();
 
@@ -227,6 +231,8 @@ void AnimationManager::Update(float timeElapsed)
 	for (int k = 0; k < (int)animations.size(); ++k)
 	{
 		Animation * animation = animations[k];
+        animationMutex.Unlock();
+
 		if (animation->state & Animation::STATE_FINISHED)
 		{
 			//#ifdef ANIMATIONS_DEBUG
@@ -238,6 +244,7 @@ void AnimationManager::Update(float timeElapsed)
 			//#endif
 			animation->Stop(); 
 		}
+        animationMutex.Lock();
 	}
 	animationMutex.Unlock();
 
@@ -246,6 +253,7 @@ void AnimationManager::Update(float timeElapsed)
 	for (int k = 0; k < (int)animations.size(); ++k)
 	{
 		Animation * animation = animations[k];
+        animationMutex.Unlock();
 
 		if (animation->state & Animation::STATE_DELETE_ME)
 		{
@@ -294,6 +302,8 @@ void AnimationManager::Update(float timeElapsed)
 //				Logger::FrameworkDebug("ANIMATION LOGGER: AnimationManager::After Deleting index %d", k);
 //			}
 //#endif
+            
+            animationMutex.Lock();
 		}
 	}
 	animationMutex.Unlock();
