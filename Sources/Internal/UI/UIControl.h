@@ -1285,8 +1285,6 @@ protected:
     void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
 
-   	float32 Round(float32 value) const;
-
 private:
 	String	name;
 	int32	tag;

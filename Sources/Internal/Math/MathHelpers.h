@@ -183,7 +183,12 @@ namespace DAVA
 		vec *=(vl/vec.Length());
 		return vec;
 	}
-	
+
+    inline float32 Round(float32 value)
+	{
+		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
+	}
+
 } // end of namespace DAVA
 
 #endif 

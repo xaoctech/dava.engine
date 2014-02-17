@@ -1581,6 +1581,7 @@ void MainWindow::OnGuideDropped(Qt::DropAction dropAction)
     if (!activeScreen->CanAcceptNewGuide())
     {
         // New guide is on the same position as existing one - no need to add.
+        activeScreen->CancelNewGuide();
         return;
     }
     

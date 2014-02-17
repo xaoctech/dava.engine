@@ -328,13 +328,8 @@ Vector2 DavaGLWidget::GuideToInternal(const QPoint& pos)
     Vector2 internalPos = ScreenWrapper::Instance()->LocalToInternal(curPos);
     
     // Allow moving per-pixel only.
-    internalPos.x =  ToNearestInteger(internalPos.x);
-    internalPos.y = ToNearestInteger(internalPos.y);
+    internalPos.x =  Round(internalPos.x);
+    internalPos.y = Round(internalPos.y);
     
     return internalPos;
-}
-
-float32 DavaGLWidget::ToNearestInteger(float32 value)
-{
-    return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
 }
