@@ -32,7 +32,7 @@
 
 #ifdef __DAVAENGINE_ANDROID__
 #include "Debug/DVAssert.h"
-#include "Platform/TemplateAndroid/fake_occlusion.h"
+#include "Platform/TemplateAndroid/FakeOcclusionQuery.h"
 #endif
 
 #define __ENABLE_OGL_DEBUG_BREAK__
