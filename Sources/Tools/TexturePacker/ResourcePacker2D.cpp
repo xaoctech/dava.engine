@@ -320,9 +320,9 @@ Vector<String> ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
         return Vector<String>();
 	}
-    
-	char flagsTmpBuffer[4096] = {0};
-	int flagsSize = 0;
+
+	Vector<char> flagsTmpVector;
+	flagsTmpVector.reserve(file->GetSize() + 1);
 	while(!file->IsEof())
 	{
 		char c = 0x00;
@@ -335,13 +335,13 @@ Vector<String> ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 				break;
 			}
 
-			flagsTmpBuffer[flagsSize++] = c;
+			flagsTmpVector.push_back(c);
 		}	
 	}
-	flagsTmpBuffer[flagsSize++] = 0;
-	
-	currentFlags = flagsTmpBuffer;
-	String flags = flagsTmpBuffer;
+	flagsTmpVector.push_back(0);
+
+	currentFlags = flagsTmpVector.data();
+	String flags = flagsTmpVector.data();
 	
 	const String & delims=" ";
 	
