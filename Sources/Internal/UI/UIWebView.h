@@ -61,6 +61,7 @@ public:
 	// Enable/disable bounces.
 	void SetBounces(bool value);
 	bool GetBounces() const;
+	void SetGestures(bool value);
 
 protected:
 
