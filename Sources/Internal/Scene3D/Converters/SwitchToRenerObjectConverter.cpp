@@ -83,11 +83,14 @@ bool SwitchToRenerObjectConverter::MergeSwitch(Entity * entity)
 			//workaround for custom properties for crashed model
 			if(1 == i) // crash model
 			{
-				KeyedArchive *childProps = sourceEntity->GetCustomProperties();
-				if(childProps->IsKeyExists("CollisionType"))
+				KeyedArchive *childProps = GetCustomPropertiesArchieve(sourceEntity);
+				if(childProps && childProps->IsKeyExists("CollisionType"))
 				{	
-					KeyedArchive *entityProps = entity->GetCustomProperties();
-					entityProps->SetInt32("CollisionTypeCrashed", childProps->GetInt32("CollisionType", 0));
+					KeyedArchive *entityProps = GetCustomPropertiesArchieve(entity);
+                    if(entityProps)
+                    {
+                        entityProps->SetInt32("CollisionTypeCrashed", childProps->GetInt32("CollisionType", 0));
+                    }
 				}
 			}
 			//end of custom properties

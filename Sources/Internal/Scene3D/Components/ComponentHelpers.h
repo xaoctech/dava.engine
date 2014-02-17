@@ -50,7 +50,8 @@ class SwitchComponent;
 class QualitySettingsComponent;
 class RenderComponent;
 class TransformComponent;
-
+class CustomPropertiesComponent;
+class KeyedArchive;
 
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 TransformComponent * GetTransformComponent(Entity * fromEntity);
@@ -79,6 +80,10 @@ Landscape * FindLandscape(Entity * rootEntity);
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);
     
+CustomPropertiesComponent * GetCustomProperties(const Entity *fromEntity);
+CustomPropertiesComponent * GetOrCreateCustomProperties(Entity *fromEntity);
+KeyedArchive * GetCustomPropertiesArchieve(const Entity *fromEntity);
+
 }
 
 #endif //__DAVAENGINE_COMPONENT_HELPERS_H__

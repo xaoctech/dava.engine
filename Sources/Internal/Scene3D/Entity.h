@@ -305,13 +305,7 @@ public:
         \brief Function to get node description for debug printing
      */
     virtual String GetDebugDescription();
-    
-    /**
-        \brief Function returns keyed archive of custom properties for this object. 
-        Custom properties can be set for each node in editor, and used in the game later to implement game logic.
-     */
-    KeyedArchive* GetCustomProperties();
-    
+        
     /**
         \brief This function should be implemented in each node that have data nodes inside it.
      */
@@ -373,7 +367,6 @@ protected:
 protected:
 
     String RecursiveBuildFullName(Entity * node, Entity * endNode);
-	CustomPropertiesComponent* GetCustomPropertiesComponent();
 
 //    virtual Entity* CopyDataTo(Entity *dstNode);
 	void SetParent(Entity * node);

@@ -2090,15 +2090,13 @@ bool QtMainWindow::SelectCustomColorsTexturePath()
 	{
 		return false;
 	}
-	KeyedArchive* customProps = landscape->GetCustomProperties();
-	if(NULL == customProps)
-	{
-		return false;
-	}
-	
+    
 	String pathToSave = selectedPathname.GetRelativePathname(ProjectManager::Instance()->CurProjectPath().toStdString());
+
+	KeyedArchive* customProps = GetOrCreateCustomProperties(landscape)->GetArchive();
 	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
-	return true;
+	
+    return true;
 }
 
 void QtMainWindow::OnHeightmapEditor()

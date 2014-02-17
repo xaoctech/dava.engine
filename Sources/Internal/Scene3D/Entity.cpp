@@ -49,6 +49,7 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Utils/Random.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 
 #define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
@@ -700,7 +701,7 @@ void Entity::BakeTransforms()
 	
 void Entity::PropagateBoolProperty(String name, bool value)
 {
-	KeyedArchive *currentProperties = GetCustomProperties();
+	KeyedArchive *currentProperties = GetOrCreateCustomProperties(this)->GetArchive();
 	currentProperties->SetBool(name, value);
 		
 	uint32 size = (uint32)children.size();
@@ -1169,13 +1170,12 @@ void Entity::Load(KeyedArchive * archive, SerializationContext * serializationCo
 	if(serializationContext->GetVersion() < CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION)
 	{
 		KeyedArchive* customProps = archive->GetArchiveFromByteArray("customprops");
-			
 		if(customProps != NULL)
 		{
-			CustomPropertiesComponent* customPropsComponent = GetCustomPropertiesComponent();
+			CustomPropertiesComponent* customPropsComponent = GetOrCreateCustomProperties(this);
 			customPropsComponent->LoadFromArchive(*customProps, serializationContext);
 				
-			SafeRelease(customProps);
+			customProps->Release();
 		}
 	}
 }
@@ -1220,19 +1220,7 @@ void Entity::LoadComponentsV6(KeyedArchive *compsArch, SerializationContext * se
 		}
 	}		
 }
-	
-CustomPropertiesComponent* Entity::GetCustomPropertiesComponent()
-{
-	CustomPropertiesComponent* component = (CustomPropertiesComponent *) GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
-	if(NULL == component)
-	{
-		component = new CustomPropertiesComponent();
-		AddComponent(component);
-	}
 		
-	return component;
-}
-	
 void Entity::LoadComponentsV7(KeyedArchive *compsArch, SerializationContext * serializationContext)
 {
 	if(NULL != compsArch)
@@ -1259,31 +1247,37 @@ void Entity::LoadComponentsV7(KeyedArchive *compsArch, SerializationContext * se
 		}
 	}
 }
-	
-KeyedArchive * Entity::GetCustomProperties()
-{
-	CustomPropertiesComponent* component = GetCustomPropertiesComponent();
-	return component->GetArchive();
-}
-    
+	    
 void Entity::SetSolid(bool isSolid)
 {
-	GetCustomProperties()->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
+    KeyedArchive *props = GetOrCreateCustomProperties(this)->GetArchive();
+	props->SetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, isSolid);
 }
     
 bool Entity::GetSolid()
 {
-	return GetCustomProperties()->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+    KeyedArchive *props = GetCustomPropertiesArchieve(this);
+    if(props)
+    {
+        return props->GetBool(SCENE_NODE_IS_SOLID_PROPERTY_NAME, false);
+    }
+	return false;
 }
 	
 void Entity::SetLocked(bool isLocked)
 {
-	GetCustomProperties()->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
+    KeyedArchive *props = GetOrCreateCustomProperties(this)->GetArchive();
+	props->SetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, isLocked);
 }
 	
 bool Entity::GetLocked()
 {
-	return GetCustomProperties()->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
+    KeyedArchive *props = GetCustomPropertiesArchieve(this);
+    if(props)
+    {
+        return props->GetBool(SCENE_NODE_IS_LOCKED_PROPERTY_NAME, false);
+    }
+	return false;
 }
 	
 void Entity::GetDataNodes(Set<DataNode*> & dataNodes)
