@@ -61,16 +61,16 @@ void UIScreenTransition::CreateRenderTargets()
 		Logger::FrameworkDebug("Render targets already created");
 		return;
 	}
-    uint32 width = Core::Instance()->GetPhysicalScreenWidth();//(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin());
-    uint32 height = Core::Instance()->GetPhysicalScreenHeight();//(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin());
+    uint32 width = (uint32)Core::Instance()->GetPhysicalScreenWidth();//(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin());
+    uint32 height = (uint32)Core::Instance()->GetPhysicalScreenHeight();//(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin());
     
     Texture * tex1 = Texture::CreateFBO(width, height, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
     Texture * tex2 = Texture::CreateFBO(width, height, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
 	
-	renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, width, height);
+	renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, (float32)width, (float32)height);
 	renderTargetPrevScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 	
-	renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, width, height);
+	renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, (float32)width, (float32)height);
 	renderTargetNextScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 
     SafeRelease(tex1);
@@ -174,14 +174,19 @@ void UIScreenTransition::Update(float32 timeElapsed)
 
 void UIScreenTransition::Draw(const UIGeometricData &geometricData)
 {
-	renderTargetPrevScreen->SetScale(0.5f, 1.0f);
-	renderTargetPrevScreen->SetPosition(0, 0);
-	renderTargetPrevScreen->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
+    
+	drawState.SetScale(0.5f, 1.0f);
+	drawState.SetPosition(0, 0);
+    
+	renderTargetPrevScreen->Draw(&drawState);
 
     
-	renderTargetNextScreen->SetScale(0.5f, 1.0f);
-	renderTargetNextScreen->SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
-	renderTargetNextScreen->Draw();
+	drawState.SetScale(0.5f, 1.0f);
+	drawState.SetPosition((Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin()) / 2.0f, 0);
+    
+	renderTargetNextScreen->Draw(&drawState);
 }
 	
 void UIScreenTransition::SetDuration(float32 timeInSeconds)

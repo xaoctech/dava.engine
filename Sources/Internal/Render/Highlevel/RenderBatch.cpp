@@ -40,6 +40,7 @@
 #include "Scene3D/Systems/MaterialSystem.h"
 #include "Render/OcclusionQuery.h"
 #include "Debug/Stats.h"
+#include "Render/Highlevel/ShadowVolume.h"
 
 namespace DAVA
 {
@@ -370,5 +371,14 @@ bool RenderBatch::GetVisible() const
     uint32 flags = renderObject->GetFlags();
     return ((flags & visiblityCriteria) == visiblityCriteria);
 }
+
+ShadowVolume * RenderBatch::CreateShadow()
+{
+	ShadowVolume * newShadowVolume = new ShadowVolume();
+	newShadowVolume->MakeShadowVolumeFromPolygonGroup(dataSource);
+
+	return newShadowVolume;
+}
+
 
 };

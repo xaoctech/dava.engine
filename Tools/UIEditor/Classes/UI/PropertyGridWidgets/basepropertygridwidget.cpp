@@ -40,6 +40,7 @@
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
+#include "InvokeMethodCommand.h"
 
 BasePropertyGridWidget::BasePropertyGridWidget(QWidget *parent) :
     QWidget(parent),
@@ -280,6 +281,12 @@ void BasePropertyGridWidget::RegisterColorWidgetForProperty(const PROPERTIESMAP 
     connect(colorWidget, SIGNAL(colorChanged(const QColor&)), this, SLOT(OnColorChanged(const QColor&)));
 }
 
+void BasePropertyGridWidget::RegisterPushButtonWidgetForInvokeMethod(QPushButton *pushButton, const String& methodName)
+{
+    invokableMethodsMap.insert(std::make_pair(pushButton, methodName));
+    connect(pushButton, SIGNAL(clicked()), this, SLOT(OnInvokeMethodRequested()));
+}
+
 void BasePropertyGridWidget::UnregisterLineEditWidget(QLineEdit* lineEdit)
 {
     disconnect(lineEdit, SIGNAL(editingFinished()), this, SLOT(OnLineEditEditingFinished()));
@@ -308,6 +315,11 @@ void BasePropertyGridWidget::UnregisterComboBoxWidget(QComboBox* comboBoxWidget)
 void BasePropertyGridWidget::UnregisterPushButtonWidget(QPushButton *pushButtonWidget)
 {
     disconnect(pushButtonWidget, SIGNAL(clicked()), this, SLOT(OnPushButtonClicked()));
+}
+
+void BasePropertyGridWidget::UnregisterPushButtonWidgetForInvokeMethod(QPushButton *pushButton)
+{
+    disconnect(pushButton, SIGNAL(clicked()), this, SLOT(OnInvokeMethodRequested()));
 }
 
 void BasePropertyGridWidget::UnregisterColorWidget(QColorWidget* colorWidget)
@@ -523,6 +535,38 @@ void BasePropertyGridWidget::OnPushButtonClicked()
     }
     
     ProcessPushButtonClicked(senderWidget);
+}
+
+void BasePropertyGridWidget::OnInvokeMethodRequested()
+{
+    QPushButton* senderWidget = dynamic_cast<QPushButton*>(QObject::sender());
+    if (senderWidget == NULL)
+    {
+        Logger::Error("OnInvokeMethodRequested - sender is NULL!");
+        return;
+    }
+
+    Map<QWidget*, String>::iterator iter = invokableMethodsMap.find(senderWidget);
+    if (iter == invokableMethodsMap.end())
+    {
+        Logger::Error("OnInvokeMethodRequested - no method registered for this control!");
+        return;
+    }
+
+    ProcessInvokeMethodRequested(senderWidget, iter->second);
+}
+
+void BasePropertyGridWidget::ProcessInvokeMethodRequested(QWidget* /*widget*/, const String& methodName)
+{
+    if (!activeMetadata)
+    {
+        Logger::Error("ProcessInvokeMethodRequested - active metadata is not set!");
+        return;
+    }
+    
+    InvokeMethodCommand* command = new InvokeMethodCommand(activeMetadata, methodName);
+    CommandsController::Instance()->ExecuteCommand(command);
+    SafeRelease(command);
 }
 
 void BasePropertyGridWidget::ProcessAttachedData(const PropertyGridWidgetData& attachedData)
@@ -743,6 +787,16 @@ void BasePropertyGridWidget::SetComboboxSelectedItem(QComboBox* comboBoxWidget, 
     if ( index != -1 )
     {
         comboBoxWidget->setCurrentIndex(index);
+    }
+}
+
+void BasePropertyGridWidget::OnPropertiesChangedFromExternalSource()
+{
+    // Re-read all the properties related to this grid.
+    for (PROPERTYGRIDWIDGETSITER iter = this->propertyGridWidgetsMap.begin();
+         iter != this->propertyGridWidgetsMap.end(); iter ++)
+    {
+        UpdateWidgetWithPropertyValue(iter);
     }
 }
 

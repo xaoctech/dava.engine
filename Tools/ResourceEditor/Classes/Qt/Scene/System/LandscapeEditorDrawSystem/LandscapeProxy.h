@@ -150,7 +150,7 @@ protected:
 	
 	UniqueHandle noBlendDrawState;
 	UniqueHandle fullTiledTextureState;
-	UniqueHandle cursorTextureState;
+	Texture* cursorTexture;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__LANDSCAPEPROXY__) */

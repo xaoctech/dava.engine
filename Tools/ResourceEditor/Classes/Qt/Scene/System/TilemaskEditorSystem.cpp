@@ -189,10 +189,13 @@ void TilemaskEditorSystem::Update(float32 timeElapsed)
 			if (activeDrawingType == TILEMASK_DRAW_NORMAL)
 			{
 				RenderManager::Instance()->SetRenderTarget(toolSprite);
-                RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-				toolImageSprite->SetScaleSize(toolSize.x, toolSize.y);
-				toolImageSprite->SetPosition(toolPos.x, toolPos.y);
-				toolImageSprite->Draw();
+                
+                Sprite::DrawState drawState;
+				drawState.SetScaleSize(toolSize.x, toolSize.y,
+                                       toolImageSprite->GetWidth(), toolImageSprite->GetHeight());
+				drawState.SetPosition(toolPos.x, toolPos.y);
+				toolImageSprite->Draw(&drawState);
+                
 				RenderManager::Instance()->RestoreRenderTarget();
 
 				toolSpriteUpdated = true;
@@ -219,23 +222,29 @@ void TilemaskEditorSystem::Update(float32 timeElapsed)
 					return;
 				}
 
-				RenderManager::Instance()->SetRenderState(noBlendDrawState);
-				RenderManager::Instance()->FlushState();
-
 				RenderManager::Instance()->SetRenderTarget(toolSprite);
 				RenderManager::Instance()->ClipPush();
 				RenderManager::Instance()->SetClip(dstRect);
-				dstSprite->SetPosition(spriteDeltaPos.x, spriteDeltaPos.y);
-				dstSprite->Draw();
+                
+                Sprite::DrawState drawState;
+                drawState.SetPosition(spriteDeltaPos.x, spriteDeltaPos.y);
+                drawState.SetRenderState(noBlendDrawState);
+				dstSprite->Draw(&drawState);
+                
 				RenderManager::Instance()->ClipPop();
 				RenderManager::Instance()->RestoreRenderTarget();
 
 				RenderManager::Instance()->SetRenderTarget(stencilSprite);
 				RenderManager::Instance()->ClipPush();
 				RenderManager::Instance()->SetClip(dstRect);
-				toolImageSprite->SetScaleSize(toolSize.x, toolSize.y);
-				toolImageSprite->SetPosition(toolPos.x, toolPos.y);
-				toolImageSprite->Draw();
+                
+                drawState.Reset();
+				drawState.SetScaleSize(toolSize.x, toolSize.y,
+                                       toolImageSprite->GetWidth(), toolImageSprite->GetHeight());
+				drawState.SetPosition(toolPos.x, toolPos.y);
+                drawState.SetRenderState(noBlendDrawState);
+				toolImageSprite->Draw(&drawState);
+                
 				RenderManager::Instance()->ClipPop();
 				RenderManager::Instance()->RestoreRenderTarget();
 
@@ -409,7 +418,9 @@ void TilemaskEditorSystem::UpdateBrushTool()
 
 	RenderManager::Instance()->SetShader(shader);
 
-	srcSprite->PrepareSpriteRenderData(0);
+    Sprite::DrawState drawState;
+    drawState.SetRenderState(noBlendDrawState);
+	srcSprite->PrepareSpriteRenderData(&drawState);
 	RenderManager::Instance()->SetRenderData(srcSprite->spriteRenderObject);
 
 	TextureStateData textureStateData;
@@ -480,19 +491,19 @@ Image* TilemaskEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fil
 	RenderManager::Instance()->SetRenderTarget(dstSprite);
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.0f);
-	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->SetColor(Color::White);
 	
-	srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
-	srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f,
+    Sprite::DrawState drawState;
+    drawState.SetScaleSize((float32)sideSize, (float32)sideSize,
+                           srcSprite->GetWidth(), srcSprite->GetHeight());
+	drawState.SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f,
 								   (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
-	srcSprite->Draw();
+	srcSprite->Draw(&drawState);
 	RenderManager::Instance()->RestoreRenderTarget();
 	
 	SafeRelease(toolImageSprite);
 	toolImageSprite = SafeRetain(dstSprite);
-	Image *retImage = dstSprite->GetTexture()->CreateImageFromMemory();
+	Image *retImage = dstSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	
 	SafeRelease(srcSprite);
 	SafeRelease(srcTex);
@@ -597,15 +608,15 @@ void TilemaskEditorSystem::CreateMaskFromTexture(Texture* texture)
 
 	if(texture)
 	{
-		RenderManager::Instance()->SetRenderState(noBlendDrawState);
-		RenderManager::Instance()->FlushState();
-		
 		Sprite *oldMask = Sprite::CreateFromTexture(texture, 0, 0,
 													(float32)texture->GetWidth(), (float32)texture->GetHeight());
 		
 		RenderManager::Instance()->SetRenderTarget(sprite);
-		oldMask->SetPosition(0.f, 0.f);
-		oldMask->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(0.f, 0.f);
+        drawState.SetRenderState(noBlendDrawState);
+		oldMask->Draw(&drawState);
+        
 		RenderManager::Instance()->RestoreRenderTarget();
 		
 		SafeRelease(oldMask);

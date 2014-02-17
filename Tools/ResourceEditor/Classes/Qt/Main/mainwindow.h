@@ -102,6 +102,7 @@ public slots:
 	void OnRedo();
 
 	void OnEditorGizmoToggle(bool show);
+    void OnViewLightmapCanvas(bool show);
 	void OnAllowOnSceneSelectionToggle(bool allow);
 
 	void OnReloadTextures();
@@ -157,8 +158,6 @@ public slots:
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
-
-	void OnConvertToShadow();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();

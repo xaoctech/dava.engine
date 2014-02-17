@@ -1592,7 +1592,7 @@ namespace DAVA
 	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
-			DrawDebugRect(drawData);
+			DrawDebugRect(drawData, false);
 		}
 		DrawPivotPoint(unrotatedRect);
 		
@@ -1615,7 +1615,7 @@ namespace DAVA
 			
 			if(debugDrawEnabled)
 			{ //TODO: Add debug draw for rotated controls
-				DrawDebugRect(drawData);
+				DrawDebugRect(drawData, false);
 			}
 		}
 		
@@ -1632,7 +1632,6 @@ namespace DAVA
 	
 	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)
 	{
-        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 
@@ -1652,11 +1651,11 @@ namespace DAVA
 			Polygon2 poly;
 			gd.GetPolygon( poly );
 
-			RenderHelper::Instance()->DrawPolygon( poly, true );
+			RenderHelper::Instance()->DrawPolygon( poly, true, RenderState::RENDERSTATE_2D_BLEND );
 		}
 		else
 		{
-			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect() );
+			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect(), RenderState::RENDERSTATE_2D_BLEND );
 		}
 
 		RenderManager::Instance()->ClipPop();
@@ -1678,26 +1677,25 @@ namespace DAVA
 		static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
 		static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
-        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
 
 		Vector2 pivotPointCenter = drawRect.GetPosition() + pivotPoint;
-		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS);
+		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS, RenderState::RENDERSTATE_2D_BLEND);
 
 		// Draw the cross mark.
 		Vector2 lineStartPoint = pivotPointCenter;
 		Vector2 lineEndPoint = pivotPointCenter;
 		lineStartPoint.y -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
 		lineEndPoint.y += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
-		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint, RenderState::RENDERSTATE_2D_BLEND);
 		
 		lineStartPoint = pivotPointCenter;
 		lineEndPoint = pivotPointCenter;
 		lineStartPoint.x -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
 		lineEndPoint.x += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
-		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint, RenderState::RENDERSTATE_2D_BLEND);
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
@@ -2899,8 +2897,8 @@ namespace DAVA
 
     void UIControl::UnregisterInputProcessor()
     {
-        DVASSERT(inputProcessorsCount >= 0);
         inputProcessorsCount--;
+        DVASSERT(inputProcessorsCount >= 0);
         if (parent)
         {
             parent->UnregisterInputProcessor();
@@ -2908,8 +2906,8 @@ namespace DAVA
     }
     void UIControl::UnregisterInputProcessors(int32 processorsCount)
     {
-        DVASSERT(inputProcessorsCount >= 0);
         inputProcessorsCount -= processorsCount;
+        DVASSERT(inputProcessorsCount >= 0);
         if (parent)
         {
             parent->UnregisterInputProcessors(processorsCount);
@@ -2919,7 +2917,7 @@ namespace DAVA
     void UIControl::DumpInputs(int32 depthLevel)
     {
         String outStr;
-        for (int i = 0; i < depthLevel; i++)
+        for (int32 i = 0; i < depthLevel; i++)
         {
             outStr += "| ";
         }

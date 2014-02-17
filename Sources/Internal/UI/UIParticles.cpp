@@ -34,35 +34,39 @@
 #include "Core/Core.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
-namespace DAVA 
-{
+namespace DAVA {
 
+/* this camera is required just for preparing draw data*/
+UIParticles::ParticleCameraWrap UIParticles::defaultCamera;
+UIParticles::ParticleCameraWrap::ParticleCameraWrap():camera(new Camera())
+{
+    camera->SetPosition(Vector3(0,0,-1));
+    camera->SetUp(Vector3(0,-1,0));    
+    camera->RebuildCameraFromValues();
+    camera->RebuildViewMatrix();
+
+}
+UIParticles::ParticleCameraWrap::~ParticleCameraWrap()
+{
+    SafeRelease(camera);
+}
 
 UIParticles::UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates)
     :   UIControl(rect, rectInAbsoluteCoordinates)    
     , effect(NULL)
-    , system(new ParticleEffectSystem(NULL))
-    , camera(new Camera())
+    , system(new ParticleEffectSystem(NULL, true))
     , updateTime(0)
+    , isAutostart(false)
 {
-    matrix.Identity();
-    float32 w = Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin();
-    float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
-    float32 aspect = w / h;
-    camera->SetupOrtho(w, aspect, 1, 1000);        
-    camera->SetPosition(Vector3(w/2,-500, -h/2));
-    camera->SetTarget(Vector3(w/2, 0, -h/2));      
-    camera->SetUp(Vector3(0, 0, 1));
-    camera->RebuildCameraFromValues();        
+    matrix.Identity();    
 }
 
 UIParticles::~UIParticles()
 {    
     if (effect&&effect->state!=ParticleEffectComponent::STATE_STOPPED)
         system->RemoveFromActive(effect);
-    delete system;
-    delete effect;        
-    SafeRelease(camera);
+    SafeDelete(system);
+    SafeDelete(effect);
 }
 
 
@@ -74,8 +78,6 @@ void UIParticles::Start()
     system->AddToActive(effect);
     effect->effectRenderObject->SetEffectMatrix(&matrix);
     system->RunEffect(effect);
-    
-    
 }
 
 void UIParticles::Stop(bool isDeleteAllParticles)
@@ -141,39 +143,15 @@ void UIParticles::Draw(const UIGeometricData & geometricData)
     if ((!effect)||(effect->state == ParticleEffectComponent::STATE_STOPPED)) 
         return;
 
-
-    
-    matrix.CreateRotation(Vector3(0,1,0), geometricData.angle);
-    //negative y is to make 2d/3d particles look similar (matrix setup)
-    matrix.SetTranslationVector(Vector3(geometricData.position.x, 0, -geometricData.position.y));
+    matrix.CreateRotation(Vector3(0,0,1), -geometricData.angle);
+    matrix.SetTranslationVector(Vector3(geometricData.position.x, geometricData.position.y, 0));
     system->Process(updateTime);
-    updateTime = 0;
-    		
-    /*RenderManager::Instance()->PushDrawMatrix();
-    RenderManager::Instance()->PushMappingMatrix();*/
+    updateTime = 0;    		        
     
-    /*draw particles here*/
-    RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
-    camera->SetupDynamicParameters();
-    RenderManager::Instance()->FlushState();    
-    RenderManager::Instance()->ClearDepthBuffer();
-    
-
-    
-    effect->effectRenderObject->PrepareToRender(camera);
+    effect->effectRenderObject->PrepareToRender(defaultCamera.camera);
     for (int32 i=0, sz = effect->effectRenderObject->GetActiveRenderBatchCount(); i<sz; ++i)
-        effect->effectRenderObject->GetActiveRenderBatch(i)->Draw(PASS_FORWARD, camera);
-                       
-    /*RenderManager::Instance()->PopDrawMatrix();
-    RenderManager::Instance()->PopMappingMatrix();*/
-	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-    RenderManager::Instance()->Setup2DMatrices();
-	        
+        effect->effectRenderObject->GetActiveRenderBatch(i)->Draw(PASS_FORWARD, defaultCamera.camera);
 }
-
-
-
-
 
 void UIParticles::Load(const FilePath& path)
 {
@@ -181,7 +159,7 @@ void UIParticles::Load(const FilePath& path)
     sceneFile->EnableDebugLog(false);
     SceneArchive *archive = sceneFile->LoadSceneArchive(path);    
     SafeRelease(sceneFile);
-    if (archive->children.size()>0)
+    if (archive && archive->children.size()>0)
     {
         Entity *e = new Entity();
         SerializationContext serializationContext;
@@ -200,8 +178,90 @@ void UIParticles::Load(const FilePath& path)
     SafeRelease(archive);
 
     if (effect)
+    {
         effect->effectRenderObject->SetEffectMatrix(&matrix);
-    
+        effect->effectRenderObject->Set2DMode(true);
+        effectPath = path;
+        
+        HandleAutostart();
+    }
+    else
+    {
+        effectPath = FilePath();
+    }
 }
 
+void UIParticles::Reload()
+{
+    if (effectPath.IsEmpty())
+    {
+        DVASSERT_MSG(false, "You have to load UIPartilces effect prior to calling Reload()");
+        return;
+    }
+
+    Load(effectPath);
 }
+
+const FilePath& UIParticles::GetEffectPath() const
+{
+    return effectPath;
+}
+
+void UIParticles::SetAutostart(bool value)
+{
+    isAutostart = value;
+    HandleAutostart();
+}
+
+bool UIParticles::IsAutostart() const
+{
+    return isAutostart;
+}
+   
+YamlNode * UIParticles::SaveToYamlNode(UIYamlLoader * loader)
+{
+    UIParticles* baseControl = new UIParticles();
+
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    SetPreferredNodeType(node, "UIParticles");
+    
+    if (baseControl->GetEffectPath() != effectPath)
+    {
+        node->Set("effectPath", effectPath.GetFrameworkPath());
+    }
+    
+    if (baseControl->IsAutostart() != isAutostart)
+    {
+        node->Set("autoStart", isAutostart);
+    }
+
+    return node;
+}
+
+void UIParticles::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
+{
+	UIControl::LoadFromYamlNode(node, loader);
+
+    const YamlNode * effectPathNode = node->Get("effectPath");
+	const YamlNode * autoStartNode = node->Get("autoStart");
+
+    if (effectPathNode)
+    {
+        Load(effectPathNode->AsString());
+    }
+    
+    if (autoStartNode)
+    {
+        SetAutostart(autoStartNode->AsBool());
+    }
+}
+
+void UIParticles::HandleAutostart()
+{
+    if (isAutostart && effect)
+    {
+        Start();
+    }
+}
+
+};

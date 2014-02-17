@@ -38,6 +38,7 @@
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
 
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -196,7 +197,7 @@ public:
      */
 	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
-	static Texture * CreatePink(TextureType requestedType = Texture::TEXTURE_2D);
+	static Texture * CreatePink(TextureType requestedType = Texture::TEXTURE_2D, bool checkers = true);
 
 
 	virtual int32 Release();
@@ -228,7 +229,7 @@ public:
      */
     const FilePath & GetPathname() const;
     
-    Image * CreateImageFromMemory();
+    Image * CreateImageFromMemory(UniqueHandle renderState);
 
 	bool IsPinkPlaceholder();
     
@@ -291,7 +292,7 @@ protected:
 	void FlushDataToRenderer(Vector<Image *> * images);
 	void ReleaseImages(Vector<Image *> * images);
     
-    void MakePink(TextureType requestedType = Texture::TEXTURE_2D);
+    void MakePink(TextureType requestedType = Texture::TEXTURE_2D, bool checkers = true);
 	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
     
 	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);

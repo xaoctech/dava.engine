@@ -361,12 +361,10 @@ void RulerToolSystem::DrawPoints()
 			Vector3 startPosition = (startPoint - offsetPoint) * koef;
 			Vector3 endPosition = (endPoint - offsetPoint) * koef;
 
-			RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-			RenderManager::Instance()->FlushState();
-
 			RenderHelper::Instance()->DrawLine(DAVA::Vector3(startPosition.x, startPosition.y, 0),
 											   DAVA::Vector3(endPosition.x, endPosition.y, 0),
-											   (float32)lineWidth);
+											   (float32)lineWidth,
+                                               DAVA::RenderState::RENDERSTATE_2D_BLEND);
 
 			startPoint = endPoint;
 		}

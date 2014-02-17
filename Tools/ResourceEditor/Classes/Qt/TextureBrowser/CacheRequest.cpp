@@ -3,6 +3,7 @@
 #include <QMetaObject>
 #include <string>
 #include <QList>
+#include <QDebug>
 
 
 CacheRequest::CacheRequest( const DAVA::FilePath _key )
@@ -25,7 +26,7 @@ void CacheRequest::registerObserver( QObject *object, const QString& slot, const
 
 void CacheRequest::invoke( QList< QImage > images )
 {
-	for ( ObserverMap::iterator i = observers.begin(); i != observers.end(); i++ )
+    for ( ObserverMap::iterator i = observers.begin(); i != observers.end(); i++ )
 	{
 		QObject *obj = i.key();
 		const SlotList& slotList = i.value();
