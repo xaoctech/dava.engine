@@ -2897,8 +2897,8 @@ namespace DAVA
 
     void UIControl::UnregisterInputProcessor()
     {
-        DVASSERT(inputProcessorsCount >= 0);
         inputProcessorsCount--;
+        DVASSERT(inputProcessorsCount >= 0);
         if (parent)
         {
             parent->UnregisterInputProcessor();
@@ -2906,8 +2906,8 @@ namespace DAVA
     }
     void UIControl::UnregisterInputProcessors(int32 processorsCount)
     {
-        DVASSERT(inputProcessorsCount >= 0);
         inputProcessorsCount -= processorsCount;
+        DVASSERT(inputProcessorsCount >= 0);
         if (parent)
         {
             parent->UnregisterInputProcessors(processorsCount);
@@ -2917,7 +2917,7 @@ namespace DAVA
     void UIControl::DumpInputs(int32 depthLevel)
     {
         String outStr;
-        for (int i = 0; i < depthLevel; i++)
+        for (int32 i = 0; i < depthLevel; i++)
         {
             outStr += "| ";
         }
