@@ -106,7 +106,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>150</y>
+     <y>120</y>
      <width>141</width>
      <height>131</height>
     </rect>
@@ -116,7 +116,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>150</y>
+     <y>120</y>
      <width>141</width>
      <height>131</height>
     </rect>
@@ -126,7 +126,7 @@
    <property name="geometry">
     <rect>
      <x>350</x>
-     <y>150</y>
+     <y>120</y>
      <width>141</width>
      <height>131</height>
     </rect>
@@ -136,7 +136,7 @@
    <property name="geometry">
     <rect>
      <x>520</x>
-     <y>150</y>
+     <y>120</y>
      <width>141</width>
      <height>131</height>
     </rect>
@@ -146,7 +146,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>120</y>
+     <y>90</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -162,7 +162,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>120</y>
+     <y>90</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -178,7 +178,7 @@
    <property name="geometry">
     <rect>
      <x>410</x>
-     <y>120</y>
+     <y>90</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -194,7 +194,7 @@
    <property name="geometry">
     <rect>
      <x>580</x>
-     <y>120</y>
+     <y>90</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -204,6 +204,163 @@
    </property>
    <property name="pixmap">
     <pixmap resource="QtIcons.qrc">:/QtIconsTextureDialog/alpha.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select png:</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>260</y>
+     <width>53</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>258</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fill</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>290</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Restorte</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>258</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fill</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_2">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>260</y>
+     <width>53</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_4">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>290</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Restorte</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_5">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>258</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fill</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_3">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>260</y>
+     <width>53</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_6">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>290</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Restorte</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_4">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>262</y>
+     <width>53</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_7">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>292</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Restorte</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_8">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>260</y>
+     <width>71</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fill</string>
    </property>
   </widget>
  </widget>
