@@ -129,10 +129,10 @@ int32 PolygonGroupWithMaterial::GetPolygroupIndex()
     return polygroupIndex;
 }
 
-/*PolygonGroup * PolygonGroupWithMaterial::GetPolygonGroup()
+PolygonGroup * PolygonGroupWithMaterial::GetPolygonGroup()
 {
     return mesh->GetPolygonGroup(polygroupIndex);
-}*/
+}
 
 Material * PolygonGroupWithMaterial::GetMaterial()
 {

@@ -64,7 +64,7 @@ public:
     
     StaticMesh * GetMesh();
     int32 GetPolygroupIndex();
-    //PolygonGroup * GetPolygonGroup();
+    PolygonGroup * GetPolygonGroup();
     Material * GetMaterial();
     NMaterial * GetNMaterial();
     NMaterialInstance * GetNMaterialInstance();

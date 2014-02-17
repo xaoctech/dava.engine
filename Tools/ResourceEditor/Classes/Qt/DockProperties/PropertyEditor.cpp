@@ -346,8 +346,13 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 {
                     QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
                     QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
-                    
-                    variantData->SetDefaultOpenDialogPath(dataSourcePath);
+                    SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+                    QString defaultPath = dataSourcePath;
+                    if(NULL != editor)
+                    {
+                        defaultPath = editor->GetScenePath().GetAbsolutePathname().c_str();
+                    }
+                    variantData->SetDefaultOpenDialogPath(defaultPath);
                     QStringList pathList;
                     pathList.append(dataSourcePath);
                     QString fileFilter = "All (*.*)";
