@@ -75,7 +75,7 @@ public:
     //const String & GetName() const;
     
     DataNode *	FindByName(const String & searchName);
-	//virtual void	AddNode(DataNode * node);
+	virtual void	AddNode(DataNode * node);
 	//virtual void	RemoveNode(DataNode * node);
 	//virtual DataNode * GetChildNode(int32 index);
 	//virtual int32   GetChildrenNodeCount();
@@ -109,6 +109,11 @@ public:
         \brief virtual function to load node to KeyedArchive
      */
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+    
+    inline void SetDataIndex(int32 idx)
+    {
+        index = idx;
+    }
     
 protected:
     uint64 pointer;

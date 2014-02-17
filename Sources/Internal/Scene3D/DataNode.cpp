@@ -63,6 +63,11 @@ void DataNode::SetScene(Scene * _scene)
     DVASSERT(scene == 0 || scene == _scene);
     scene = _scene;
 }
+  
+void DataNode::AddNode(DataNode * node)
+{
+    DVASSERT(false && "DataNode::AddNode is deprecated!");
+}
     
 /*void DataNode::SetName(const String & _name)
 {

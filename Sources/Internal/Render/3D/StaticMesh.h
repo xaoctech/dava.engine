@@ -49,12 +49,14 @@ public:
     virtual void SetScene(Scene * _scene);
     virtual int32 Release();
 	
-    //virtual void AddNode(DataNode * node);
+    virtual void AddNode(DataNode * node);
 	
-	//uint32			GetPolygonGroupCount();
-	//PolygonGroup *	GetPolygonGroup(uint32 index);
+	uint32			GetPolygonGroupCount();
+	PolygonGroup *	GetPolygonGroup(uint32 index);
 	
-protected:	
+protected:
+    
+    Vector<DataNode*> children;
 };
 
 };

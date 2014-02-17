@@ -76,24 +76,26 @@ StaticMesh::~StaticMesh()
     
 }   
     
-/*void StaticMesh::AddNode(DataNode * node)
+void StaticMesh::AddNode(DataNode * node)
 {
     PolygonGroup * group = dynamic_cast<PolygonGroup*>(node);
     DVASSERT(group != 0);
     if (group)
     {
-        DataNode::AddNode(group);
+        group->Retain();
+        group->SetDataIndex(children.size());
+        children.push_back(node);
     }
-}*/
+}
 	
-/*uint32 StaticMesh::GetPolygonGroupCount()
+uint32 StaticMesh::GetPolygonGroupCount()
 {
     return (uint32)children.size();
-}*/
+}
 
-/*PolygonGroup * StaticMesh::GetPolygonGroup(uint32 index)
+PolygonGroup * StaticMesh::GetPolygonGroup(uint32 index)
 {
     return reinterpret_cast<PolygonGroup*>(children[index]);
-}*/
+}
 
 };
