@@ -362,8 +362,11 @@ QMimeData * MaterialModel::mimeData(const QModelIndexList & indexes) const
         QVector<DAVA::NMaterial*> data;
         foreach(QModelIndex index, indexes)
         {
-            DAVA::NMaterial *material = GetMaterial(index);
-            data.push_back(material);
+            if(0 == index.column())
+            {
+                DAVA::NMaterial *material = GetMaterial(index);
+                data.push_back(material);
+            }
         }
         
         return MimeDataHelper2<DAVA::NMaterial>::EncodeMimeData(data);

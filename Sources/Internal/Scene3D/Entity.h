@@ -186,6 +186,7 @@ public:
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     //inline void InvalidateLocalTransform();
 	Matrix4 AccamulateLocalTransform(Entity * fromParent);
+    Matrix4 AccamulateTransformUptoFarParent(Entity * farParent);
     
     /*
         \brief Go down by hierarchy and bake all transforms.
