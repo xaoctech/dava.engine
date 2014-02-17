@@ -52,11 +52,10 @@ UIControlBackground::UIControlBackground()
 ,	perPixelAccuracyType(PER_PIXEL_ACCURACY_DISABLED)
 ,	lastDrawPos(0, 0)
 ,	tiledData(NULL)
+,   rdoObject(NULL)
+,   vertexStream(NULL)
+,   texCoordStream(NULL)
 {
-	rdoObject = new RenderDataObject();
-    vertexStream = rdoObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
-    texCoordStream = rdoObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);
-	//rdoObject->SetStream()
 }
 	
 UIControlBackground *UIControlBackground::Clone()
@@ -72,7 +71,10 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 	spr = SafeRetain(srcBackground->spr);
 	frame = srcBackground->frame;
 	align = srcBackground->align;
-	type = srcBackground->type;
+    
+    SafeRelease(rdoObject);
+    SetDrawType((UIControlBackground::eDrawType)srcBackground->type);
+    
 	color = srcBackground->color;
 	spriteModification = srcBackground->spriteModification;
 	colorInheritType = srcBackground->colorInheritType;
@@ -152,6 +154,22 @@ void UIControlBackground::SetAlign(int32 drawAlign)
 void UIControlBackground::SetDrawType(UIControlBackground::eDrawType drawType)
 {
 	type = drawType;
+    switch(type)
+    {
+    case DRAW_STRETCH_BOTH:
+    case DRAW_STRETCH_HORIZONTAL:
+    case DRAW_STRETCH_VERTICAL:
+    case DRAW_TILED:
+        {
+            if (!rdoObject)
+            {
+                rdoObject = new RenderDataObject();
+                vertexStream = rdoObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 2, 0, 0);
+                texCoordStream = rdoObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, 0, 0);
+                //rdoObject->SetStream()
+            }
+        }
+    }
 	ReleaseDrawData();
 }
 
@@ -483,6 +501,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 	
 void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle renderState)
 {
+    DVASSERT(rdoObject);
 	if (!spr)return;
 	UniqueHandle textureHandle = spr->GetTextureHandle(frame);
 	Texture* texture = spr->GetTexture(frame);
@@ -665,6 +684,7 @@ void UIControlBackground::ReleaseDrawData()
 
 void UIControlBackground::DrawTiled(const UIGeometricData &gd, UniqueHandle renderState)
 {
+    DVASSERT(rdoObject);
 	if (!spr)return;
 
 	const Vector2 &size = gd.size;

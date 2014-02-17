@@ -41,13 +41,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#include <android/api-level.h>
-#   if (__ANDROID_API__ < 18)
-#       include "Platform/TemplateAndroid/fake_occlusion.h"
-#   endif
-#endif
-
 #ifdef __DAVAENGINE_OPENGL__
 
 namespace DAVA
