@@ -456,7 +456,7 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
-    Image * image0 = CreateImageFromMemory();
+    Image * image0 = CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
     Vector<Image *> images = image0->CreateMipMapsImages();
     SafeRelease(image0);
 
@@ -1075,7 +1075,7 @@ Image * Texture::ReadDataToImage()
 }
 
 
-Image * Texture::CreateImageFromMemory()
+Image * Texture::CreateImageFromMemory(UniqueHandle renderState)
 {
     Image *image = NULL;
     if(isRenderTarget)
@@ -1098,12 +1098,14 @@ Image * Texture::CreateImageFromMemory()
 
 		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
 
-        drawTexture->SetPosition(0, 0);
-        drawTexture->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(0, 0);
+        drawState.SetRenderState(renderState);
+        drawTexture->Draw(&drawState);
 
         RenderManager::Instance()->RestoreRenderTarget();
         
-        image = renderTarget->GetTexture()->CreateImageFromMemory();
+        image = renderTarget->GetTexture()->CreateImageFromMemory(renderState);
 
         SafeRelease(renderTarget);
         SafeRelease(drawTexture);
@@ -1125,17 +1127,17 @@ uint32 Texture::GetDataSize() const
     return allocSize;
 }
 
-Texture * Texture::CreatePink(TextureType requestedType)
+Texture * Texture::CreatePink(TextureType requestedType, bool checkers)
 {
 	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
 	//pink textures at game is invalid situation
 	Texture *tex = new Texture();
-	tex->MakePink(requestedType);
+	tex->MakePink(requestedType, checkers);
 
 	return tex;
 }
 
-void Texture::MakePink(TextureType requestedType)
+void Texture::MakePink(TextureType requestedType, bool checkers)
 {
 	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
 
@@ -1145,7 +1147,7 @@ void Texture::MakePink(TextureType requestedType)
 		texDescriptor->Initialize(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
-            Image *img = Image::CreatePinkPlaceholder();
+            Image *img = Image::CreatePinkPlaceholder(checkers);
 			img->cubeFaceID = i;
 			img->mipmapLevel = 0;
 
@@ -1157,7 +1159,7 @@ void Texture::MakePink(TextureType requestedType)
 	else
 	{
 		texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
-		images->push_back(Image::CreatePinkPlaceholder());
+		images->push_back(Image::CreatePinkPlaceholder(checkers));
 	}
 
 	texDescriptor->pathname = savePath;

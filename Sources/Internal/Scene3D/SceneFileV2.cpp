@@ -760,7 +760,12 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-                parent->RemoveNode(currentNode);
+				if(GetVersion() < 11 && GetLodComponent(parent))
+				{
+					return false;
+				}
+
+				parent->RemoveNode(currentNode);
                 removedNodeCount++;
                 return true;
             }
@@ -804,6 +809,12 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
             if (parent)
             {
+				if(GetVersion() < 11 && GetLodComponent(parent))
+				{
+					return false;
+				}
+
+
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
@@ -963,8 +974,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		lod->Entity::Clone(newNode);
 		Entity * parent = lod->GetParent();
 
-		newNode->AddComponent(new LodComponent());
-		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
+		LodComponent *lc = new LodComponent();
+		newNode->AddComponent(lc);
 
 		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
 		{
@@ -982,7 +993,23 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 			newLodDataItem.indexes = oldDataItem->indexes;
 			newLodDataItem.isDummy = oldDataItem->isDummy;
 			newLodDataItem.layer = oldDataItem->layer;
-			newLodDataItem.nodes = oldDataItem->nodes;
+			
+//			newLodDataItem.nodes = oldDataItem->nodes;
+			for(uint32 n = 0; n < oldDataItem->nodes.size(); ++n)
+			{
+				Entity *nn = oldDataItem->nodes[n];
+
+				int32 childrenCount = lod->GetChildrenCount();
+				for(int32 c = 0; c < childrenCount; ++c)
+				{
+					if(nn == lod->GetChild(c))
+					{
+						newLodDataItem.nodes.push_back(newNode->GetChild(c));
+						break;
+					}
+				}
+			}
+
 
 			lc->lodLayers.push_back(newLodDataItem);
 		}

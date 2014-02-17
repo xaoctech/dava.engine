@@ -71,7 +71,6 @@
 
 #include "Classes/CommandLine/SceneSaver/SceneSaver.h"
 #include "Classes/Qt/Main/Request.h"
-#include "Classes/Commands2/ConvertToShadowCommand.h"
 #include "Classes/Commands2/BeastAction.h"
 
 #include "Classes/Commands2/CustomColorsCommands2.h"
@@ -106,9 +105,6 @@
 
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
-
-#define DEFAULT_LANDSCAPE_SIDE_LENGTH	600.0f
-#define DEFAULT_LANDSCAPE_HEIGHT		50.0f
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -374,7 +370,26 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 			ui->sceneTabWidget->setFocus(Qt::ActiveWindowFocusReason);
 		}
 	}
-
+    
+    if(obj == this && QEvent::KeyPress == eventType)
+    {
+        QKeyEvent *keyEvent = (QKeyEvent *)event;
+        int32 keyValue = keyEvent->key();
+        // check chars of russian alphabet(unicode table)
+        if(keyValue >= 0x410 && keyValue <=0x44F)
+        {
+            // according to reference of QKeyEvent, it's impossible to get scanCode on mac os
+            // so we use platform depending nativeVirtualKey()
+            int32 systemKeyCode = keyEvent->nativeVirtualKey();
+            int32 davaKey = DAVA::InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey(systemKeyCode);
+            // translate davaKey to ascii to find out real key pressed
+            // offset between ascii and letters in davakey table - 29 positions
+            int32 qtKey = davaKey + 29;
+            QKeyEvent eventNew = QKeyEvent(QEvent::KeyPress, qtKey, keyEvent->modifiers());
+            QApplication::sendEvent(obj, &eventNew);
+        }
+    }
+    
 	return QMainWindow::eventFilter(obj, event);
 }
 
@@ -510,6 +525,12 @@ void QtMainWindow::SetupStatusBar()
 	gizmoStatusBtn->setMaximumSize(QSize(16, 16));
 	ui->statusBar->insertPermanentWidget(0, gizmoStatusBtn);
 
+    QToolButton *lighmapCanvasStatusBtn = new QToolButton();
+    lighmapCanvasStatusBtn->setDefaultAction(ui->actionLightmapCanvas);
+    lighmapCanvasStatusBtn->setAutoRaise(true);
+    lighmapCanvasStatusBtn->setMaximumSize(QSize(16, 16));
+    ui->statusBar->insertPermanentWidget(0, lighmapCanvasStatusBtn);
+
 	QToolButton *onSceneSelectStatusBtn = new QToolButton();
 	onSceneSelectStatusBtn->setDefaultAction(ui->actionOnSceneSelection);
 	onSceneSelectStatusBtn->setAutoRaise(true);
@@ -541,6 +562,7 @@ void QtMainWindow::SetupActions()
 {
 	// scene file actions
 	QObject::connect(ui->actionOpenProject, SIGNAL(triggered()), this, SLOT(OnProjectOpen()));
+    QObject::connect(ui->actionCloseProject, SIGNAL(triggered()), this, SLOT(OnProjectClose()));
 	QObject::connect(ui->actionOpenScene, SIGNAL(triggered()), this, SLOT(OnSceneOpen()));
 	QObject::connect(ui->actionNewScene, SIGNAL(triggered()), this, SLOT(OnSceneNew()));
 	QObject::connect(ui->actionSaveScene, SIGNAL(triggered()), this, SLOT(OnSceneSave()));
@@ -549,9 +571,6 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(ui->menuFile, SIGNAL(triggered(QAction *)), this, SLOT(OnRecentTriggered(QAction *)));
 
-	//edit
-	QObject::connect(ui->actionConvertToShadow, SIGNAL(triggered()), this, SLOT(OnConvertToShadow()));
-    
 	// export
 	QObject::connect(ui->menuExport, SIGNAL(triggered(QAction *)), this, SLOT(ExportMenuTriggered(QAction *)));
     ui->actionExportPVRIOS->setData(GPU_POWERVR_IOS);
@@ -583,6 +602,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
 	
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
+    QObject::connect(ui->actionLightmapCanvas, SIGNAL(toggled(bool)), this, SLOT(OnViewLightmapCanvas(bool)));
 	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
 
 	// scene undo/redo
@@ -785,6 +805,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadHangingObjects(scene);
 
     OnMaterialLightViewChanged(true);
+    OnViewLightmapCanvas(true);
 
 	int32 tools = scene->GetEnabledTools();
 	UpdateConflictingActionsState(tools == 0);
@@ -804,6 +825,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
+    ui->actionCloseProject->setEnabled(enable);
     
     auto endIt = recentScenes.end();
     for(auto it = recentScenes.begin(); it != endIt; ++it)
@@ -892,22 +914,19 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 
 void QtMainWindow::OnProjectOpen()
 {
-    if(!ui->sceneTabWidget->CloseAllTabs())
+    QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
+    if(!newPath.isEmpty() && ui->sceneTabWidget->CloseAllTabs())
     {
-        return;
+        ProjectManager::Instance()->ProjectOpen(newPath);
     }
-	QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-	ProjectManager::Instance()->ProjectOpen(newPath);
 }
 
 void QtMainWindow::OnProjectClose()
 {
-    // TODO:
-	// Close all scenes
-	// ...
-	//
-
-	ProjectManager::Instance()->ProjectClose();
+    if(ui->sceneTabWidget->CloseAllTabs())
+    {
+        ProjectManager::Instance()->ProjectClose();
+    }
 }
 
 void QtMainWindow::OnSceneNew()
@@ -1116,6 +1135,20 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 	{
 		scene->SetHUDVisible(show);
 	}
+}
+
+void QtMainWindow::OnViewLightmapCanvas(bool show)
+{
+    bool showCanvas = ui->actionLightmapCanvas->isChecked();
+    if(showCanvas != SettingsManager::Instance()->GetValue("materialsShowLightmapCanvas", SettingsManager::INTERNAL).AsBool())
+    {
+        SettingsManager::Instance()->SetValue("materialsShowLightmapCanvas", DAVA::VariantType(showCanvas), SettingsManager::INTERNAL);
+    }
+
+    if(NULL != GetCurrentScene())
+    {
+        GetCurrentScene()->materialSystem->SetLightmapCanvasVisible(showCanvas);
+    }
 }
 
 void QtMainWindow::OnAllowOnSceneSelectionToggle(bool allow)
@@ -1345,8 +1378,11 @@ void QtMainWindow::OnAddLandscape()
     entityToProcess->AddComponent(component);
 
     AABBox3 bboxForLandscape;
-    bboxForLandscape.AddPoint(Vector3(-DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, -DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, 0.f));
-    bboxForLandscape.AddPoint(Vector3(DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_SIDE_LENGTH/2.f, DEFAULT_LANDSCAPE_HEIGHT));
+    float32 defaultLandscapeSize = SettingsManager::Instance()->GetValue("DefaultLandscapeSize", SettingsManager::DEFAULT).AsFloat();
+    float32 defaultLandscapeHeight = SettingsManager::Instance()->GetValue("DefaultLandscapeHeight", SettingsManager::DEFAULT).AsFloat();
+    
+    bboxForLandscape.AddPoint(Vector3(-defaultLandscapeSize/2.f, -defaultLandscapeSize/2.f, 0.f));
+    bboxForLandscape.AddPoint(Vector3(defaultLandscapeSize/2.f, defaultLandscapeSize/2.f, defaultLandscapeHeight));
     newLandscape->BuildLandscapeFromHeightmapImage("", bboxForLandscape);
 
     SceneEditor2* sceneEditor = GetCurrentScene();
@@ -1447,9 +1483,9 @@ void QtMainWindow::OnEditor2DCameraDialog()
     float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
     float32 aspect = w / h;
     camera->SetupOrtho(w, aspect, 1, 1000);        
-    camera->SetPosition(Vector3(0,-500, 0));
+    camera->SetPosition(Vector3(0,0, -500));
     camera->SetTarget(Vector3(0, 0, 0));  
-    camera->SetUp(Vector3(0, 0, 1));
+    camera->SetUp(Vector3(0, -1, 0));
     camera->RebuildCameraFromValues();        
 
     sceneNode->AddComponent(new CameraComponent(camera));
@@ -1465,7 +1501,7 @@ void QtMainWindow::OnEditor2DCameraDialog()
 }
 void QtMainWindow::OnEditorSpriteDialog()
 {
-    FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+    FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
     projectPath += "Data/Gfx/";
 
     QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.txt)"));
@@ -1481,7 +1517,10 @@ void QtMainWindow::OnEditorSpriteDialog()
     SpriteObject *spriteObject = new SpriteObject(sprite, 0, Vector2(1,1), Vector2(0.5f*sprite->GetWidth(), 0.5f*sprite->GetHeight()));
     spriteObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     sceneNode->AddComponent(new RenderComponent(spriteObject));    
-    Matrix4 m = Matrix4(1,0,0,0,0,0,-1,0,0,1,0,0,0,0,0,1);
+    Matrix4 m = Matrix4(1,0,0,0,
+                        0,1,0,0,
+                        0,0,-1,0,                        
+                        0,0,0,1);
     sceneNode->SetLocalTransform(m);
     SceneEditor2* sceneEditor = GetCurrentScene();
     if(sceneEditor)
@@ -1528,6 +1567,9 @@ void QtMainWindow::LoadViewState(SceneEditor2 *scene)
 	{
 		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
 		ui->actionOnSceneSelection->setChecked(scene->selectionSystem->IsSelectionAllowed());
+     
+        bool viewLMCanvas = SettingsManager::Instance()->GetValue("materialsShowLightmapCanvas", SettingsManager::INTERNAL).AsBool();
+        ui->actionLightmapCanvas->setChecked(viewLMCanvas);
 	}
 }
 
@@ -1773,7 +1815,7 @@ void QtMainWindow::OnSaveTiledTexture()
 			pathToSave.ReplaceExtension(".thumbnail.png");
 		}
 
-		Image *image = landscapeTexture->CreateImageFromMemory();
+		Image *image = landscapeTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
 		if(image)
 		{
 			ImageLoader::Save(image, pathToSave);
@@ -1851,57 +1893,6 @@ void QtMainWindow::EnableGlobalTimeout(bool enable)
 void QtMainWindow::StartGlobalInvalidateTimer()
 {
     QTimer::singleShot(GLOBAL_INVALIDATE_TIMER_DELTA, this, SLOT(OnGlobalInvalidateTimeout()));
-}
-
-void QtMainWindow::OnConvertToShadow()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-    
-	SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        bool isRenderBatchFound = false;
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(ss->GetSelectionEntity(i)))
-            {
-                isRenderBatchFound = true;
-                break;
-            }
-        }
-        
-        if(!isRenderBatchFound)
-        {
-            ShowErrorDialog("Entities must have RenderObject and with only one RenderBatch (Material)");
-            return;
-        }
-        
-        
-        bool errorHappend = false;
-        scene->BeginBatch("Convert To Shadow");
-        
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            Entity *entity = ss->GetSelectionEntity(i);
-            if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
-            {
-                scene->Exec(new ConvertToShadowCommand(entity));
-            }
-            else
-            {
-                errorHappend = true;
-                Logger::Error("Cannot convert %s to shadow", entity->GetName().c_str());
-            }
-        }
-        
-        scene->EndBatch();
-        
-        if(errorHappend)
-        {
-            ShowErrorDialog("Not all entities were converted. See details at console output");
-        }
-    }
 }
 
 void QtMainWindow::EditorLightEnabled( bool enabled )
@@ -2105,7 +2096,7 @@ bool QtMainWindow::SelectCustomColorsTexturePath()
 		return false;
 	}
 	
-	String pathToSave = selectedPathname.GetRelativePathname(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	String pathToSave = selectedPathname.GetRelativePathname(ProjectManager::Instance()->CurProjectPath().toStdString());
 	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
 	return true;
 }
@@ -2696,3 +2687,4 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 
 	return true;
 }
+

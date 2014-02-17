@@ -366,8 +366,9 @@ void TextureBrowser::updateInfoConverted()
 		int datasize = TextureCache::Instance()->getConvertedSize(curDescriptor, curTextureView);
 		int filesize = TextureCache::Instance()->getConvertedFileSize(curDescriptor, curTextureView);
 		QSize imgSize(0, 0);
-
-		if(curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID)
+        
+        bool isFormatValid = curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID;
+		if(isFormatValid)
 		{
 			formatStr = GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(curDescriptor->compression[curTextureView].format);
 			
@@ -382,7 +383,8 @@ void TextureBrowser::updateInfoConverted()
 				imgSize = QSize(curTexture->width, curTexture->height);
 			}
 		}
-
+        ui->convertToolButton->setEnabled(isFormatValid);
+        
 		sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, imgSize.width(), imgSize.height(),
 			SizeInBytesToString(datasize).c_str(),
 			SizeInBytesToString(filesize).c_str());

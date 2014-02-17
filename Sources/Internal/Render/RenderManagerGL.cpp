@@ -160,6 +160,11 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
 	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
+    
+#   if (__ANDROID_API__ < 18)
+    InitFakeOcclusion();
+#   endif
+
 #elif defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
 	caps.isPVRTCSupported = false;

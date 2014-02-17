@@ -59,6 +59,7 @@ public:
     void AssignMaterialToSelection( DAVA::NMaterial *material );
 
 signals:
+    void Updated();
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);

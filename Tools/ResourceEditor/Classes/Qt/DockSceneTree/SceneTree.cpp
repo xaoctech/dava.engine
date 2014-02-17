@@ -461,13 +461,6 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 				particleEffectMenu->addAction(QIcon(":/QtIcons/restart.png"), "Restart", this, SLOT(RestartEffect()));
 			}
 
-			if(ConvertToShadowCommand::IsAvailableForConvertionToShadowVolume(entity))
-			{
-				contextMenu.addSeparator();
-				contextMenu.addAction(QtMainWindow::Instance()->GetUI()->actionConvertToShadow);
-			}
-
-
 			//      Disabled for 0.5.5 version
 			//		SceneEditor2* sceneEditor = treeModel->GetScene();
 			//		if(NULL != sceneEditor)
@@ -726,7 +719,7 @@ void SceneTree::ReloadModelAs()
 				}
 				else
 				{
-					ownerPath = FilePath(SettingsManager::Instance()->GetValue("3dDataSourcePath", SettingsManager::INTERNAL).AsString()).GetAbsolutePathname();
+					ownerPath = FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()).GetAbsolutePathname();
 				}
 			}
 
@@ -1165,7 +1158,7 @@ void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
 	FilePath yamlPath;
 	if (forceAskFileName)
 	{
-		QString projectPath = QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+		QString projectPath = QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
 		QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
 			projectPath, QString("YAML File (*.yaml)"));
 
@@ -1287,7 +1280,7 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 	FilePath yamlPath;
     if (forceAskFileName)
     {
-        QString projectPath = QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+        QString projectPath = QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
         QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
                                                         projectPath, QString("YAML File (*.yaml)"));
 		
@@ -1316,7 +1309,7 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 
 QString SceneTree::GetParticlesConfigPath()
 {
-	return QString(FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+	return QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
 }
 
 void SceneTree::CleanupParticleEditorSelectedItems()
@@ -1347,10 +1340,8 @@ void SceneTree::SetEntityNameAsFilter()
 void SceneTree::AddCameraActions(QMenu &menu)
 {
     menu.addAction(QIcon(":/QtIcons/eye.png"), "Look from", this, SLOT(SetCurrentCamera()));
-    menu.addAction(QIcon(":/QtIcons/camera.png"), "Set view camera", this, SLOT(SetViewCamera()));
     menu.addAction(QIcon(":/QtIcons/camera.png"), "Set clip camera", this, SLOT(SetClipCamera()));
 }
-
 
 void SceneTree::SetCurrentCamera()
 {
@@ -1361,24 +1352,6 @@ void SceneTree::SetCurrentCamera()
 		if(NULL != camera)
 		{
 			sceneEditor->SetCurrentCamera(camera);
-		}
-	}
-}
-
-void SceneTree::SetViewCamera()
-{
-	SceneEditor2 *sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		DAVA::Camera *camera = GetCamera(sceneEditor->selectionSystem->GetSelectionEntity(0));
-		if(NULL != camera)
-		{
-            DAVA::Camera *clipCamera = SafeRetain(sceneEditor->GetClipCamera());
-
-			sceneEditor->SetCurrentCamera(camera);
-            sceneEditor->SetClipCamera(clipCamera);
-            
-            SafeRelease(clipCamera);
 		}
 	}
 }

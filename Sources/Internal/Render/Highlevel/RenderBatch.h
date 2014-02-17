@@ -67,6 +67,7 @@ class RenderBatch;
 class NMaterial;
 class NMaterialInstance;
 class OcclusionQuery;
+class ShadowVolume;
 
     
 /*
@@ -98,7 +99,7 @@ public:
     inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmaskFromMaterial; };
     
 	void SetRenderObject(RenderObject * renderObject);
-	inline RenderObject * GetRenderObject();
+	inline RenderObject * GetRenderObject() const;
 
     void SetSortingTransformPtr(Matrix4* worldTransformPtr);
     inline Matrix4 * GetSortingTransformPtr() const;
@@ -132,6 +133,9 @@ public:
 	virtual void UpdateAABBoxFromSource();
 	
     pointer_size layerSortingKey;
+
+	virtual ShadowVolume * CreateShadow();
+
 protected:
     uint32 renderLayerIDsBitmaskFromMaterial;
     PolygonGroup * dataSource;
@@ -192,7 +196,7 @@ inline NMaterial * RenderBatch::GetMaterial()
     return material;
 }
     
-inline RenderObject * RenderBatch::GetRenderObject()
+inline RenderObject * RenderBatch::GetRenderObject() const
 {
 	return renderObject;
 }
