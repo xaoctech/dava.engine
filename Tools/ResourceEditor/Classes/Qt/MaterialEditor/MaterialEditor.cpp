@@ -404,12 +404,18 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                 DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
                 QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+                QString defaultPath = dataSourcePath;
+                if(NULL != editor)
+                {
+                    defaultPath = editor->GetScenePath().GetAbsolutePathname().c_str();
+                }
                 for(size_t i = 0; i < membersList.size(); ++i)
                 {
                     int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
                     QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
-                    dynamicMember->SetDefaultOpenDialogPath(dataSourcePath);
+                    dynamicMember->SetDefaultOpenDialogPath(defaultPath);
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
                     QStringList path;
                     path.append(dataSourcePath);
