@@ -139,7 +139,7 @@ public:
 	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
+    void SetOwnerDebugInfo(const FastName & str) { ownerDebugInfo = str; };
 
     virtual void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
@@ -167,7 +167,7 @@ protected:
     AABBox3 bbox;
     AABBox3 worldBBox;
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms
-    String ownerDebugInfo;
+    FastName ownerDebugInfo;
 //    Sphere bsphere;
     
     Vector<RenderBatch*> renderBatchArray;

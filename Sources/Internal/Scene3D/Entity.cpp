@@ -611,7 +611,7 @@ namespace DAVA
 	
 	Entity *	Entity::FindByName(const String & searchName)
 	{
-		if (name == searchName)
+		if (name == FastName(searchName.c_str()))
 			return this;
 		
 		uint32 size = (uint32)children.size();

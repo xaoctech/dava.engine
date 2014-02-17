@@ -406,7 +406,7 @@ namespace DAVA
 	
 	Entity* ActionComponent::GetTargetEntity(const String& name, Entity* parent)
 	{
-		if(parent->GetName() == name)
+		if(parent->GetName() == FastName(name.c_str()))
 		{
 			return parent;
 		}

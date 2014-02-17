@@ -73,95 +73,38 @@ public:
 	void Reset();
 	
 	const char* c_str() const
-	{
-		DVASSERT(index >= -1 && index < (int)FastNameDB::Instance()->namesTable.size());
-		if(index >= 0)
-		{
-			return FastNameDB::Instance()->namesTable[index];
-		}
-		
-		return NULL;
-	}
-	
-    inline String GetString() const
     {
-        return c_str()?String(c_str()):"";
+	    DVASSERT(index >= -1 && index < (int)FastNameDB::Instance()->namesTable.size());
+	    if(index >= 0)
+	    {
+		    return FastNameDB::Instance()->namesTable[index];
+	    }
+		
+	    return NULL;
     }
 	
-	inline FastName& operator=(const FastName &_name)
-	{
-		RemRef(index);
-		
-		index = _name.index;
-		
-#ifdef DAVA_DEBUG
-		debug_str_ptr = _name.debug_str_ptr;
-#endif
-		
-		AddRef(index);
-		return *this;
-	}
+	inline FastName& operator=(const FastName &_name);
 
+	inline bool operator==(const FastName &_name) const;
 	
-	inline bool operator==(const FastName &_name) const
-	{
-		return index == _name.index;
-	}
+	inline bool operator!=(const FastName &_name) const;
 	
-	inline bool operator!=(const FastName &_name) const
-	{
-		return index != _name.index;
-	}
-	
-    inline bool operator <(const FastName &_name) const
-	{
-		return index < _name.index;
-	}
-    
-    inline bool operator==(const String &_name) const
-	{
-		return index == FastName(_name.c_str()).index;
-	}
-	
-	inline bool operator!=(const String &_name) const
-	{
-		return index != FastName(_name.c_str()).index;
-	}
+    /**
+        \brief This operator doesn't compare strings, it compares only FastName index.
+     */
+    inline bool operator <(const FastName &_name) const;
 
-    inline size_t find(const char* s, size_t pos = 0) const
-    {
-        if(c_str() && s)
-        {
-            const char* q = strstr(c_str() + pos, s);
-            return q ? q - c_str() : String::npos;
-        }
-        return String::npos;
-    }
+    inline size_t find(const char* s, size_t pos = 0) const;
     
-    inline size_t find(const String& str, size_t pos = 0) const
-    {
-        return find(str.c_str(), pos);
-    }
+    inline size_t find(const String& str, size_t pos = 0) const;
     
-    inline size_t find(const FastName& fn, size_t pos = 0) const
-    {
-        return find(fn.c_str(), pos);
-    }
+    inline size_t find(const FastName& fn, size_t pos = 0) const;
 	
-	inline const char* operator*() const
-	{
-		return c_str();
-	}
+	inline const char* operator*() const;
 	
-	inline int Index() const
-	{
-		return index;
-	}
+	inline int Index() const;
 	
-	inline bool IsValid() const
-	{
-		return (index >= 0);
-	}
+	inline bool IsValid() const;
 
     
 private:
@@ -175,7 +118,72 @@ private:
 	void AddRef(int i) const;
 	void RemRef(int i) const;
 };
+	
+FastName& FastName::operator=(const FastName &_name)
+{
+	RemRef(index);
+		
+	index = _name.index;
+		
+#ifdef DAVA_DEBUG
+	debug_str_ptr = _name.debug_str_ptr;
+#endif
+		
+	AddRef(index);
+	return *this;
+}
+
+bool FastName::operator==(const FastName &_name) const
+{
+	return index == _name.index;
+}
+	
+bool FastName::operator!=(const FastName &_name) const
+{
+	return index != _name.index;
+}
+	
+bool FastName::operator <(const FastName &_name) const
+{
+	return index < _name.index;
+}
+
+size_t FastName::find(const char* s, size_t pos) const
+{
+    if(c_str() && s)
+    {
+        const char* q = strstr(c_str() + pos, s);
+        return q ? q - c_str() : String::npos;
+    }
+    return String::npos;
+}
+    
+size_t FastName::find(const String& str, size_t pos) const
+{
+    return find(str.c_str(), pos);
+}
+    
+size_t FastName::find(const FastName& fn, size_t pos) const
+{
+    return find(fn.c_str(), pos);
+}
+	
+const char* FastName::operator*() const
+{
+	return c_str();
+}
+	
+int FastName::Index() const
+{
+	return index;
+}
+	
+bool FastName::IsValid() const
+{
+	return (index >= 0);
+}
 
 };
+
 
 #endif // __DAVAENGINE_FAST_NAME__

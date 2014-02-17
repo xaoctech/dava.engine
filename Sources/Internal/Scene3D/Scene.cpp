@@ -377,7 +377,7 @@ SceneNodeAnimationList * Scene::GetAnimation(int32 index)
 	return animations[index];
 }
 	
-SceneNodeAnimationList * Scene::GetAnimation(const String & name)
+SceneNodeAnimationList * Scene::GetAnimation(const FastName & name)
 {
 	int32 size = (int32)animations.size();
 	for (int32 k = 0; k < size; ++k)

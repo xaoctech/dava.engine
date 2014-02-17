@@ -831,7 +831,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             }
         }
         
-        mesh->SetOwnerDebugInfo(String(oldMeshInstanceNode->GetName().c_str()));
+        mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName());
         
         //
         Entity * parent = oldMeshInstanceNode->GetParent();
@@ -853,7 +853,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
                 newShadowVolume->SetPolygonGroup(pg);
                 mesh->AddRenderBatch(newShadowVolume);
                 
-                mesh->SetOwnerDebugInfo(Format("%s shadow:%s", oldMeshInstanceNode->GetName().c_str(), oldShadowVolumeNode->GetName().c_str()));
+                mesh->SetOwnerDebugInfo(FastName(Format("%s shadow:%s", oldMeshInstanceNode->GetName().c_str(), oldShadowVolumeNode->GetName().c_str()).c_str()));
                 
                 parent->RemoveNode(oldShadowVolumeNode);
                 SafeRelease(newShadowVolume);
