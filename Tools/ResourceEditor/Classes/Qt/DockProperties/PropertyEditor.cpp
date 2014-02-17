@@ -108,11 +108,11 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
 	SafeRelease(curNode);
     if(NULL != selected && selected->Size() == 1)
  	{
-         curNode = SafeRetain(selected->GetEntity(0));
+        curNode = SafeRetain(selected->GetEntity(0));
 
-		 // ensure that custom properties exist
-		 // this call will create them if they are not created yet
-		 curNode->GetCustomProperties();
+        // ensure that custom properties exist
+        // this call will create them if they are not created yet
+        GetOrCreateCustomProperties(curNode);
  	}
 
     ResetProperties();

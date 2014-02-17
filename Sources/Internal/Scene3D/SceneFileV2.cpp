@@ -690,7 +690,12 @@ Entity * SceneFileV2::LoadLight(Scene * scene, KeyedArchive * archive)
 {
     Entity * lightEntity = LoadEntity(scene, archive);
     
-    bool isDynamic = lightEntity->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+    bool isDynamic = true;
+    KeyedArchive *props = GetCustomPropertiesArchieve(lightEntity);
+    if(props)
+    {
+        isDynamic = props->GetBool("editor.dynamiclight.enable", true);
+    }
     
     Light * light = new Light();
     light->Load(archive, &serializationContext);
@@ -737,7 +742,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
     }
     if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(Entity)))
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
+        KeyedArchive *customProperties = GetCustomPropertiesArchieve(currentNode);
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
         uint32 componentCount = currentNode->GetComponentCount();
@@ -817,7 +822,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 String currentName = currentNode->GetName();
-				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
+				KeyedArchive * currentProperties = GetCustomPropertiesArchieve(currentNode);
                 
                 //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
@@ -828,13 +833,17 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
                     childNode->SetName(currentName);
                 }
 				//merge custom properties
-				KeyedArchive * newProperties = childNode->GetCustomProperties();
-				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
-				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
-				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
-				{
-					newProperties->SetVariant(it->first, *it->second);
-				}
+                
+                if(currentProperties)
+                {
+                    KeyedArchive * newProperties = GetOrCreateCustomProperties(childNode)->GetArchive();
+                    const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
+                    Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
+                    for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
+                    {
+                        newProperties->SetVariant(it->first, *it->second);
+                    }
+                }
 				
 				//VI: remove node after copying its properties since properties become invalid after node removal
 				parent->RemoveNode(currentNode);

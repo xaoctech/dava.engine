@@ -525,8 +525,8 @@ void SceneEditor2::UpdateShadowColorFromLandscape()
 	Entity *land = FindLandscapeEntity(this);
 	if(!land || !GetRenderSystem()) return;
 
-	KeyedArchive * props = land->GetCustomProperties();
-	if (props->IsKeyExists("ShadowColor"))
+	KeyedArchive * props = GetCustomPropertiesArchieve(land);
+	if (props && props->IsKeyExists("ShadowColor"))
 	{
 		GetRenderSystem()->SetShadowRectColor(props->GetVariant("ShadowColor")->AsColor());
 	}
@@ -537,9 +537,7 @@ void SceneEditor2::SetShadowColor( const Color &color )
 	Entity *land = FindLandscapeEntity(this);
 	if(!land) return;
 
-	KeyedArchive * props = land->GetCustomProperties();
-	if(!props) return;
-
+	KeyedArchive * props = GetOrCreateCustomProperties(land)->GetArchive();
 	props->SetVariant("ShadowColor", VariantType(color));
 
 	UpdateShadowColorFromLandscape();
