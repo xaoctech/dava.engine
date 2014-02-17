@@ -48,8 +48,6 @@ DAVA::Entity *SwitchEntityCreator::CreateSwitchEntity(const DAVA::Vector<DAVA::E
 	bool singleMode = true;
 	for(DAVA::uint32 i = 0; i < count; ++i)
 	{
-		DVASSERT(0 == CountSwitchComponentsRecursive(fromEntities[i]));
-
 		clonedEntities.push_back(fromEntities[i]->Clone());
 
 		FindRenderObjectsRecursive(clonedEntities[i], renderPairs[i]);
