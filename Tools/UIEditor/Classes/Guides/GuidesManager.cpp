@@ -82,20 +82,14 @@ void GuidesManager::MoveNewGuide(const Vector2& pos)
     newGuide->SetPosition(pos);
 }
 
-bool GuidesManager::CanAcceptNewGuide()
+bool GuidesManager::CanAcceptNewGuide() const
 {
-    if (!newGuide)
-    {
-        return false;
-    }
-    
     // Don't allow to add guides with the same coords.
-    if (IsGuideExist(newGuide))
+    if (!newGuide || IsGuideExist(newGuide))
     {
-        CancelNewGuide();
         return false;
     }
-    
+
     return true;
 }
 
@@ -103,6 +97,7 @@ const GuideData* GuidesManager::AcceptNewGuide()
 {
     if (!CanAcceptNewGuide())
     {
+        CancelNewGuide();
         return NULL;
     }
 
@@ -131,7 +126,7 @@ const List<GuideData*> GuidesManager::GetGuides(bool includeNewGuide) const
 
 void GuidesManager::AddGuide(const GuideData& guideData)
 {
-    GuideData* newGuideData = new GuideData(guideData.GetType(), guideData.GetPosition());
+    GuideData* newGuideData = new GuideData(guideData);
     activeGuides.push_back(newGuideData);
 }
 
@@ -166,14 +161,15 @@ bool GuidesManager::UpdateGuidePosition(const GuideData& guideData, const Vector
     return false;
 }
 
-bool GuidesManager::IsGuideExist(GuideData* guideData)
+bool GuidesManager::IsGuideExist(GuideData* guideData) const
 {
     if (!guideData)
     {
-        return true;
+        DVASSERT(false);
+        return false;
     }
-    
-    for (List<GuideData*>::iterator iter = activeGuides.begin(); iter != activeGuides.end(); iter ++)
+
+    for (List<GuideData*>::const_iterator iter = activeGuides.begin(); iter != activeGuides.end(); iter ++)
     {
         GuideData* curGuide = *iter;
         if (!curGuide || curGuide->GetType() != guideData->GetType())
@@ -271,7 +267,7 @@ const GuideData* GuidesManager::AcceptMoveGuide()
     return resultData;
 }
 
-bool GuidesManager::IsGuideOnPosition(GuideData* guide, const Vector2& pos)
+bool GuidesManager::IsGuideOnPosition(GuideData* guide, const Vector2& pos) const
 {
     if (!guide)
     {
@@ -353,6 +349,7 @@ bool GuidesManager::Load(const FilePath& fileName)
     if (!rootNode)
     {
         Logger::Warning("GuidesManager::Load: YAML file: %s is empty", fileName.GetAbsolutePathname().c_str());
+        SafeRelease(parser);
         return false;
     }
 
@@ -361,6 +358,7 @@ bool GuidesManager::Load(const FilePath& fileName)
     if (!guidesNode)
     {
         // No Guides needed in this document - this is OK.
+        SafeRelease(parser);
         return true;
     }
     

@@ -53,7 +53,7 @@ public:
     void MoveNewGuide(const Vector2& pos);
     
     // Can we accept the new guide?
-    bool CanAcceptNewGuide();
+    bool CanAcceptNewGuide() const;
     
     // New guide is accepted and finally can be added to the guides list.
     const GuideData* AcceptNewGuide();
@@ -95,10 +95,10 @@ public:
 
 protected:
     // Check whether the same guide exists.
-    bool IsGuideExist(GuideData* guideData);
+    bool IsGuideExist(GuideData* guideData) const;
 
     // Check whether the guide passed is on position passed.
-    bool IsGuideOnPosition(GuideData* guide, const Vector2& pos);
+    bool IsGuideOnPosition(GuideData* guide, const Vector2& pos) const;
 
     // Calculate the distance from rect to guide depending on magnet mode.
     Vector2 CalculateDistanceToGuide(GuideData* guide, const Rect& rect) const;
