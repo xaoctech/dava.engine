@@ -28,7 +28,7 @@
 
 
 
-#include "fake_occlusion.h"
+#include "FakeOcclusionQuery.h"
 
 #if (__ANDROID_API__ < 18)
 
