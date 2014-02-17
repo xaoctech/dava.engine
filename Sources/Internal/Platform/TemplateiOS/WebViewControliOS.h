@@ -58,6 +58,7 @@ public:
 	// Bounces control.
 	virtual bool GetBounces() const;
 	virtual void SetBounces(bool value);
+    virtual void SetGestures(bool value);
 
 protected:
 	// Get the scale divider for Retina devices.
@@ -71,10 +72,15 @@ protected:
 
 	void* webViewURLDelegatePtr;
 
+    void *rightSwipeGesturePtr;
+    void *leftSwipeGesturePtr;
+
+    
 	Map<void*, bool> subviewVisibilityMap;
 
 	void HideSubviewImages(void* view);
 	void RestoreSubviewImages();
+    bool gesturesEnabled;
 };
 
 };

@@ -842,9 +842,11 @@ void MainWindow::UpdateMenu()
     // Reload.
     ui->actionRepack_And_Reload->setEnabled(projectNotEmpty);
     
-    // Preview.
-    ui->actionPreview->setEnabled(projectNotEmpty);
-    ui->actionEditPreviewSettings->setEnabled(projectNotEmpty);
+    // Preview - enabling for Screens only - not for Aggregators.
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    bool enablePreview = projectNotEmpty && activeScreen && IsPointerToExactClass<HierarchyTreeScreenNode>(activeScreen);
+    ui->actionPreview->setEnabled(enablePreview);
+    ui->actionEditPreviewSettings->setEnabled(enablePreview);
 }
 
 void MainWindow::OnNewProject()
