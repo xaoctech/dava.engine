@@ -60,9 +60,8 @@ ControlPropertyGridWidget::ControlPropertyGridWidget(QWidget *parent) :
 	this->ui->frameCustomControlData->setHidden(true);
 	this->ui->frameMorphToCustomControl->setHidden(true);
 
-    QRegExp acceptAsciiOnly("[ -~]+");
-    this->ui->objectNameLineEdit->setValidator(new QRegExpValidator(acceptAsciiOnly, this));
-    this->ui->customControlLineEdit->setValidator(new QRegExpValidator(acceptAsciiOnly, this));
+    this->ui->objectNameLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+    this->ui->customControlLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
     this->ui->tagLineEdit->setValidator(new QIntValidator(-INT_MAX, INT_MAX, this));
 
 	SetWidgetState(STATE_DEFAULT_CONTROL, true);

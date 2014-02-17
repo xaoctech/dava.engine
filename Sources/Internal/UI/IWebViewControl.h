@@ -53,6 +53,7 @@ public:
 	virtual eAction URLChanged(DAVA::UIWebView* webview, const String& newURL, bool isRedirectedByMouseClick) = 0;
 	
 	virtual void PageLoaded(DAVA::UIWebView* webview) = 0;
+	virtual void SwipeGesture(bool left){};
 };
 
 
@@ -78,6 +79,8 @@ public:
 	// Bounces settings.
 	virtual bool GetBounces() const {return false;};
 	virtual void SetBounces(bool value) {};
+    virtual void SetGestures(bool value){};
+
 };
 
 };
