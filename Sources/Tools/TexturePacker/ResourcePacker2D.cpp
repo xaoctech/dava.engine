@@ -440,10 +440,15 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	// DF-2961 - If "flags.txt" do not exist - try to use previous flags command line
 	if (!flagsProcessed)
 	{
+		currentFlags = "";
 		if (flags.size() > 0)
 		{
 			CommandLineParser::Instance()->SetArguments(flags);
 			currentCommandFlags = flags;
+			for (uint32 k = 0; k < flags.size(); ++k)
+			{
+				currentFlags += " " + flags[k];
+			}
 		}
 	}
 	
