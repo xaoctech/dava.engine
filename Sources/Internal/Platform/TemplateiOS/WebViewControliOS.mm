@@ -32,7 +32,7 @@
 - (BOOL)webView: (UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView;
-
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error;
 - (void)leftGesture;
 - (void)rightGesture;
 
@@ -91,18 +91,18 @@
 			
 			switch (action) {
 				case DAVA::IUIWebViewDelegate::PROCESS_IN_WEBVIEW:
-					DAVA::Logger::Debug("PROCESS_IN_WEBVIEW");
+					DAVA::Logger::FrameworkDebug("PROCESS_IN_WEBVIEW");
 					process = YES;
 					break;
 					
 				case DAVA::IUIWebViewDelegate::PROCESS_IN_SYSTEM_BROWSER:
-					DAVA::Logger::Debug("PROCESS_IN_SYSTEM_BROWSER");
+					DAVA::Logger::FrameworkDebug("PROCESS_IN_SYSTEM_BROWSER");
 					[[UIApplication sharedApplication] openURL:[request URL]];
 					process = NO;
 					break;
 					
 				case DAVA::IUIWebViewDelegate::NO_PROCESS:
-					DAVA::Logger::Debug("NO_PROCESS");
+					DAVA::Logger::FrameworkDebug("NO_PROCESS");
 					
 				default:
 					process = NO;
@@ -122,6 +122,15 @@
         delegate->PageLoaded(self->webView);
     }
 }
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    if (delegate && self->webView)
+	{
+        delegate->PageLoaded(self->webView);
+    }
+}
+
 @end
 
 namespace DAVA
@@ -154,6 +163,9 @@ WebViewControl::~WebViewControl()
     SetGestures(NO);
 	UIWebView* innerWebView = (UIWebView*)webViewPtr;
 
+    [innerWebView setDelegate:nil];
+    [innerWebView stopLoading];
+    [innerWebView loadHTMLString:@"" baseURL:nil];
 	[innerWebView removeFromSuperview];
 	[innerWebView release];
 	webViewPtr = nil;
@@ -183,7 +195,9 @@ void WebViewControl::OpenURL(const String& urlToOpen)
 	NSURL* url = [NSURL URLWithString:[nsURLPathToOpen stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
 	
 	NSURLRequest* requestObj = [NSURLRequest requestWithURL:url];
-	[(UIWebView*)webViewPtr loadRequest:requestObj];
+    UIWebView* innerWebView = (UIWebView*)webViewPtr;
+    [innerWebView stopLoading];
+    [innerWebView loadRequest:requestObj];
 }
 
 void WebViewControl::SetRect(const Rect& rect)
