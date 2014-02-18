@@ -73,7 +73,7 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 	align = srcBackground->align;
     
     SafeRelease(rdoObject);
-    SetDrawType((UIControlBackground::eDrawType)srcBackground->type);
+    SetDrawType((eDrawType)srcBackground->type);
     
 	color = srcBackground->color;
 	spriteModification = srcBackground->spriteModification;
