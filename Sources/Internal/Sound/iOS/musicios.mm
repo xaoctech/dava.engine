@@ -196,12 +196,8 @@ void MusicIOSSoundEvent::Pause()
     
 void MusicIOSSoundEvent::SetVolume(float32 _volume)
 {
+	volume = _volume;
 	((AvSound*)avSound).audioPlayer.volume = Clamp(_volume, 0.f, 1.f);
-}
-
-float32 MusicIOSSoundEvent::GetVolume()
-{
-	return ((AvSound*)avSound).audioPlayer.volume;
 }
     
 void MusicIOSSoundEvent::SetLoopCount(int32 looping)
@@ -209,19 +205,14 @@ void MusicIOSSoundEvent::SetLoopCount(int32 looping)
     ((AvSound*)avSound).audioPlayer.numberOfLoops = looping;
 }
     
-int32 MusicIOSSoundEvent::GetLoopCount()
+int32 MusicIOSSoundEvent::GetLoopCount() const
 {
     return ((AvSound*)avSound).audioPlayer.numberOfLoops;
 }
 
-bool MusicIOSSoundEvent::IsActive()
+bool MusicIOSSoundEvent::IsActive() const
 {
     return [((AvSound*)avSound).audioPlayer isPlaying];
-}
-
-const FilePath & MusicIOSSoundEvent::GetFilePath()
-{
-    return filePath;
 }
 
 };

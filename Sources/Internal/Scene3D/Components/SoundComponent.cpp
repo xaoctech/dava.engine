@@ -31,20 +31,16 @@
 #include "Sound/SoundEvent.h"
 #include "Base/FastName.h"
 
-using namespace DAVA;
-	REGISTER_CLASS(SoundComponent)
+namespace DAVA
+{
+
+REGISTER_CLASS(SoundComponent)
 
 SoundComponent::SoundComponent() {}
 
 SoundComponent::~SoundComponent()
 {
     RemoveAllEvents();
-}
-
-SoundEvent * SoundComponent::GetSoundEvent(int32 index)
-{
-    DVASSERT(index >= 0 && index < (int32)events.size());
-    return events[index];
 }
 
 void SoundComponent::AddSoundEvent(SoundEvent * _event)
@@ -55,21 +51,16 @@ void SoundComponent::AddSoundEvent(SoundEvent * _event)
     events.push_back(_event);
 }
 
-int32 SoundComponent::GetEventsCount()
-{
-    return events.size();
-}
-
 void SoundComponent::RemoveSoundEvent(SoundEvent * event)
 {
-    Vector<SoundEvent *>::iterator it = events.begin();
+    Vector<SoundEvent *>::const_iterator it = events.begin();
     Vector<SoundEvent *>::const_iterator itEnd = events.end();
     for(; it != itEnd; ++it)
     {
         if((*it) == event)
         {
-            (*it)->Release();
             events.erase(it);
+            SafeRelease(event);
             return;
         }
     }
@@ -77,8 +68,8 @@ void SoundComponent::RemoveSoundEvent(SoundEvent * event)
 
 void SoundComponent::RemoveAllEvents()
 {
-    int32 eventsCount = events.size();
-    for(int32 i = 0; i < eventsCount; ++i)
+    uint32 eventsCount = events.size();
+    for(uint32 i = 0; i < eventsCount; ++i)
         SafeRelease(events[i]);
 
     events.clear();
@@ -124,7 +115,7 @@ void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *se
         for(uint32 i = 0; i < eventsCount; ++i)
         {
             KeyedArchive* eventArchive = archive->GetArchive(KeyedArchive::GenKeyFromIndex(i));
-            SoundEvent * sEvent = SoundSystem::Instance()->DeserializeEventFromArchive(eventArchive);
+            SoundEvent * sEvent = SoundSystem::Instance()->DeserializeEvent(eventArchive);
             AddSoundEvent(sEvent);
             SafeRelease(sEvent);
         }
@@ -132,3 +123,5 @@ void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *se
 
     Component::Deserialize(archive, serializationContext);
 }
+
+};

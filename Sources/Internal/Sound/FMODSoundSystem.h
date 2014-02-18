@@ -38,9 +38,9 @@
 
 namespace FMOD
 {
-class System;
-class EventSystem;
-class EventGroup;
+    class System;
+    class EventSystem;
+    class EventGroup;
 };
 
 namespace DAVA
@@ -50,6 +50,8 @@ class FMODSoundSystem : public SoundSystemInstance
 {
     struct SoundGroup
     {
+        SoundGroup() : volume(1.f) {};
+
         FastName name;
         float32 volume;
         Vector<SoundEvent *> events;
@@ -59,11 +61,11 @@ public:
 	FMODSoundSystem(int32 maxChannels = 64);
 	virtual ~FMODSoundSystem();
 
-    virtual SoundEvent * CreateSoundEventByID(const String & eventName, const FastName & groupName);
+    virtual SoundEvent * CreateSoundEventByID(const FastName & eventName, const FastName & groupName);
     virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
     
     virtual void SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive);
-    virtual SoundEvent * DeserializeEventFromArchive(KeyedArchive *archive);
+    virtual SoundEvent * DeserializeEvent(KeyedArchive *archive);
 
 	virtual void Update(float32 timeElapsed);
 	virtual void Suspend();
@@ -89,18 +91,15 @@ public:
     
     void GetAllEventsNames(Vector<String> & names);
 
-    void SetMaxDistance(float32 distance);
-    float32 GetMaxDistanceSquare();
-
-    uint32 GetMemoryUsageBytes();
+    uint32 GetMemoryUsageBytes() const;
     
 protected:
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
     
     void ReleaseOnUpdate(SoundEvent * sound);
     
-    void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
-    void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::SoundEventCallback type);
+    void PerformCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::eSoundEventCallbackType type);
+    void CancelCallbackOnUpdate(FMODSoundEvent * event, FMODSoundEvent::eSoundEventCallbackType type);
 
     void AddSoundEventToGroup(const FastName & groupName, SoundEvent * event);
     void RemoveSoundEventFromGroups(SoundEvent * event);
@@ -109,17 +108,13 @@ protected:
 	FMOD::EventSystem * fmodEventSystem;
 
     Vector<SoundEvent *> soundsToReleaseOnUpdate;
-    MultiMap<FMODSoundEvent *, FMODSoundEvent::SoundEventCallback> callbackOnUpdate;
+    MultiMap<FMODSoundEvent *, FMODSoundEvent::eSoundEventCallbackType> callbackOnUpdate;
     Vector<SoundGroup> soundGroups;
 
     Vector<String> toplevelGroups;
-    
-    float32 maxDistanceSq;
-    Vector3 listenerPosition;
 
 friend class FMODSound;
 friend class FMODSoundEvent;
-friend class SoundComponent;
 };
 
 };
