@@ -91,32 +91,31 @@ QString ProjectManager::ProjectOpenDialog()
 
 void ProjectManager::ProjectOpen(const QString &path)
 {
-	if(path != curProjectPath.GetAbsolutePathname().c_str())
+    FilePath incomePath(PathnameToDAVAStyle(path));
+    incomePath.MakeDirectoryPathname();
+	if(incomePath != curProjectPath)
 	{
 		ProjectClose();
         
-		curProjectPath = path.toStdString();
-
-		if(!curProjectPath.IsEmpty())
+        curProjectPath = incomePath;
+        
+		if(!path.isEmpty())
 		{
-			DAVA::FilePath projectPath = PathnameToDAVAStyle(path);
-            projectPath.MakeDirectoryPathname();
-
-			DAVA::FilePath dataSource3Dpathname = projectPath + "DataSource/3d/";
+			DAVA::FilePath dataSource3Dpathname = curProjectPath + "DataSource/3d/";
 			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
 
-            DAVA::FilePath particlesPathname = projectPath + "Data/Configs/Particles/";
+            DAVA::FilePath particlesPathname = curProjectPath + "Data/Configs/Particles/";
 			curProjectPathParticles = particlesPathname.GetAbsolutePathname().c_str();
 
 			SettingsManager::Instance()->SetValue("LastProjectPath",
-				VariantType(projectPath), SettingsManager::INTERNAL);
+				VariantType(curProjectPath), SettingsManager::INTERNAL);
 
-			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
+			EditorConfig::Instance()->ParseConfig(curProjectPath + "EditorConfig.yaml");
 
-			SceneValidator::Instance()->SetPathForChecking(projectPath);
+			SceneValidator::Instance()->SetPathForChecking(curProjectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
-            DAVA::FilePath::AddTopResourcesFolder(projectPath);
+            DAVA::FilePath::AddTopResourcesFolder(curProjectPath);
 
             LoadProjectSettings();
             LoadMaterialsSettings();
