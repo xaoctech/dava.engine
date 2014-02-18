@@ -345,7 +345,7 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 if(dataName == "heightmapPath" || dataName == "texture")
                 {
                     QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
-                    QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                    QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath().GetAbsolutePathname().c_str();
                     QString defaultPath = dataSourcePath;
                     SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
                     if(NULL != editor)

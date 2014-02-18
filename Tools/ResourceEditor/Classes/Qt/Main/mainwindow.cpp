@@ -125,8 +125,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupTitle();
 
 	qApp->installEventFilter(this);
-	EditorConfig::Instance()->ParseConfig(SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_PROJECT_PATH, SettingsManager::INTERNAL).AsString()
-		+ "EditorConfig.yaml");
+    VariantType projPathValue = SettingsManager::Instance()->GetValue("LastProjectPath", SettingsManager::INTERNAL);
+    // for old format of serialyzed settings check of inner type needed
+    String projPathStr = projPathValue.GetType() == VariantType::TYPE_STRING ? projPathValue.AsString() : projPathValue.AsFilePath().GetAbsolutePathname();
+	EditorConfig::Instance()->ParseConfig( projPathStr + "EditorConfig.yaml");
 
 	SetupMainMenu();
 	SetupToolBars();
@@ -240,7 +242,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 		DAVA::FilePath saveAsPath = scene->GetScenePath();
 		if(!saveAsPath.Exists())
 		{
-            DAVA::FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath().toStdString();
+            DAVA::FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
 			saveAsPath = dataSourcePath.MakeDirectoryPathname() + scene->GetScenePath().GetFilename();
 		}
 
@@ -401,7 +403,7 @@ void QtMainWindow::SetupTitle()
 	if(ProjectManager::Instance()->IsOpened())
 	{
 		title += " | Project - ";
-		title += ProjectManager::Instance()->CurProjectPath();
+		title += ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname().c_str();
 	}
 
 	this->setWindowTitle(title);
@@ -936,7 +938,7 @@ void QtMainWindow::OnSceneNew()
 
 void QtMainWindow::OnSceneOpen()
 {
-	QString path = QtFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath(), "DAVA Scene V2 (*.sc2)");
+	QString path = QtFileDialog::getOpenFileName(this, "Open scene file", ProjectManager::Instance()->CurProjectDataSourcePath().GetAbsolutePathname().c_str(), "DAVA Scene V2 (*.sc2)");
 	OpenScene(path);
 }
 
@@ -1501,7 +1503,7 @@ void QtMainWindow::OnEditor2DCameraDialog()
 }
 void QtMainWindow::OnEditorSpriteDialog()
 {
-    FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
+    FilePath projectPath = ProjectManager::Instance()->CurProjectPath();
     projectPath += "Data/Gfx/";
 
     QString filePath = QtFileDialog::getOpenFileName(NULL, QString("Open sprite"), QString::fromStdString(projectPath.GetAbsolutePathname()), QString("Sprite File (*.txt)"));
@@ -2096,7 +2098,7 @@ bool QtMainWindow::SelectCustomColorsTexturePath()
 		return false;
 	}
 	
-	String pathToSave = selectedPathname.GetRelativePathname(ProjectManager::Instance()->CurProjectPath().toStdString());
+	String pathToSave = selectedPathname.GetRelativePathname(ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname());
 	customProps->SetString(ResourceEditor::CUSTOM_COLOR_TEXTURE_PROP,pathToSave);
 	return true;
 }
@@ -2380,7 +2382,7 @@ bool QtMainWindow::OpenScene( const QString & path )
 
 	if(!path.isEmpty())
 	{
-		FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
+		FilePath projectPath(ProjectManager::Instance()->CurProjectPath());
 		FilePath argumentPath(path.toStdString());
 
 		if(!FilePath::ContainPath(argumentPath, projectPath))
