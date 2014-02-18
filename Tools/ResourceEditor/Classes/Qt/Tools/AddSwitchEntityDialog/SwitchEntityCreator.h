@@ -42,6 +42,7 @@ class SwitchEntityCreator
 public:
 
 	DAVA::Entity * CreateSwitchEntity(const DAVA::Vector<DAVA::Entity *> & fromEntities);
+	DAVA::uint32 CountSwitchComponentsRecursive(DAVA::Entity * fromEntity);
 
 protected:
 
@@ -49,7 +50,6 @@ protected:
 	void CreateMultipleObjectsData();
 
 	void FindRenderObjectsRecursive(DAVA::Entity * fromEntity, DAVA::Vector<RENDER_PAIR> & entityAndObjectPairs);
-	DAVA::uint32 CountSwitchComponentsRecursive(DAVA::Entity * fromEntity);
 
 	DAVA::Vector<DAVA::Entity *> clonedEntities;
 	DAVA::Vector<DAVA::Entity *> realChildren;

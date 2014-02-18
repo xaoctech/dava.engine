@@ -72,7 +72,7 @@ struct IlluminationParams : public InspBase
     //this is a weak property since IlluminationParams exists only as a part of parent material
     NMaterial* parent;
 
-    IlluminationParams(NMaterial* parentMaterial) :
+    IlluminationParams(NMaterial* parentMaterial = NULL) :
     isUsed(true),
     castShadow(true),
     receiveShadow(true),
@@ -87,12 +87,13 @@ struct IlluminationParams : public InspBase
         castShadow = params.castShadow;
         receiveShadow = params.receiveShadow;
         lightmapSize = params.lightmapSize;
-        parent = params.parent;
+        parent = NULL;
     }
     
     int32 GetLightmapSize() const;
     void SetLightmapSize(const int32 &size);
-
+    void SetParent(NMaterial* parentMaterial);
+    NMaterial* GetParent() const;
 
     INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
@@ -500,8 +501,8 @@ protected:
 	
     uint32                  renderLayerIDsBitmask;
 	
-	static Texture* stubCubemapTexture;
-	static Texture* stub2dTexture;
+	//static Texture* stubCubemapTexture;
+	//static Texture* stub2dTexture;
     
     static NMaterial* GLOBAL_MATERIAL;
 	
@@ -533,7 +534,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags(bool updateChildren = false);
-	static Texture* GetStubTexture(const FastName& uniformName);
+	//static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);

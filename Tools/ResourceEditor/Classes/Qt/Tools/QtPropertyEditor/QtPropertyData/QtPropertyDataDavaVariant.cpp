@@ -957,8 +957,12 @@ void QtPropertyDataDavaVariant::ColorOWPressed()
 
 void QtPropertyDataDavaVariant::FilePathOWPressed()
 {
-    DAVA::String presentValue = curVariantValue.AsFilePath().GetAbsolutePathname();
-    QString openFilePath = presentValue.empty() ? defaultOpenDialogPath : presentValue.c_str();
+    DAVA::FilePath currPath = curVariantValue.AsFilePath();
+    QString openFilePath = currPath.GetAbsolutePathname().c_str();
+    if(currPath.IsEmpty() || !currPath.Exists())
+    {
+        openFilePath = defaultOpenDialogPath;
+    }
 	QString path = QtFileDialog::getOpenFileName(GetOWViewport(), "Select file", openFilePath, openDialogFilter);
 	if(!path.isEmpty())
 	{
