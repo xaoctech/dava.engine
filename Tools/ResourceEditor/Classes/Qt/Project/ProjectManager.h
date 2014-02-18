@@ -58,8 +58,9 @@ public:
 
 	bool IsOpened();
 
-	QString CurProjectPath();
-	QString CurProjectDataSourcePath();
+	DAVA::FilePath CurProjectPath();
+	DAVA::FilePath CurProjectDataSourcePath();
+    DAVA::FilePath CurProjectDataParticles();
     
     const QVector<ProjectManager::AvailableMaterialTemplate>* GetAvailableMaterialTemplates() const;
     const QVector<ProjectManager::AvailableMaterialQuality>* GetAvailableMaterialQualities() const;
@@ -75,8 +76,9 @@ signals:
 	void ProjectClosed();
     
 private:
-    QString curProjectPath;
-	QString curProjectPathDataSource;
+    DAVA::FilePath curProjectPath;
+	DAVA::FilePath curProjectPathDataSource;
+    DAVA::FilePath curProjectPathParticles;
 
 	void LoadProjectSettings();
     void LoadMaterialsSettings();

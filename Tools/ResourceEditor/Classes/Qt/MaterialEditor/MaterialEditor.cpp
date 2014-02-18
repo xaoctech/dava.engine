@@ -403,7 +403,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                 DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
                 DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-                QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath().GetAbsolutePathname().c_str();
                 QString defaultPath = dataSourcePath;
                 SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
                 if(NULL != editor)
