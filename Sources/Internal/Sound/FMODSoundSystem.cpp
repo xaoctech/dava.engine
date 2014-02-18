@@ -130,7 +130,7 @@ void FMODSoundSystem::SerializeEvent(const SoundEvent * sEvent, KeyedArchive *to
             flags |= SoundEvent::SOUND_EVENT_CREATE_LOOP;
         
         toArchive->SetUInt32("flags", flags);
-        toArchive->SetString("filePath", musicEvent->GetFilePath().GetFrameworkPath());
+        toArchive->SetString("filePath", musicEvent->GetEventName());
     }
 #endif //__DAVAENGINE_IPHONE__
 

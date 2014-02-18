@@ -71,11 +71,6 @@ protected:
     void * avSound;
     FilePath filePath;
 };
-    
-inline const FilePath & MusicIOSSoundEvent::GetFilePath() const
-{
-    return filePath;
-}
 
 };
 

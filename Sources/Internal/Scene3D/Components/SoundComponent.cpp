@@ -53,8 +53,8 @@ void SoundComponent::AddSoundEvent(SoundEvent * _event)
 
 void SoundComponent::RemoveSoundEvent(SoundEvent * event)
 {
-    Vector<SoundEvent *>::const_iterator it = events.begin();
-    Vector<SoundEvent *>::const_iterator itEnd = events.end();
+    Vector<SoundEvent *>::iterator it = events.begin();
+    Vector<SoundEvent *>::iterator itEnd = events.end();
     for(; it != itEnd; ++it)
     {
         if((*it) == event)
