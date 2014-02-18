@@ -35,12 +35,13 @@
 #include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
 #include "Sound/SoundEvent.h"
+#include "Platform/Mutex.h"
 
 namespace FMOD
 {
-class Sound;
-class ChannelGroup;
-class Channel;
+    class Sound;
+    class ChannelGroup;
+    class Channel;
 };
 
 namespace DAVA
@@ -53,10 +54,9 @@ public:
 	virtual int32 Release();
 
 	virtual void SetVolume(float32 volume);
-	virtual float32	GetVolume();
 
+    virtual bool IsActive() const;
     virtual bool Trigger();
-    virtual bool IsActive();
     virtual void Stop();
     virtual void Pause();
     
@@ -70,7 +70,11 @@ public:
     virtual void SetParameterValue(const FastName & paramName, float32 value) {};
     virtual float32 GetParameterValue(const FastName & paramName) { return 0.f; };
     virtual bool IsParameterExists(const FastName & paramName) {return false; };
-    
+
+    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const { return; };
+
+    virtual String GetEventName() const { return fileName.GetFrameworkPath(); };
+
     //FMOD only
     void PerformCallback(FMOD::Channel * instance);
 
@@ -79,6 +83,8 @@ protected:
 	virtual ~FMODSound();
 
 	static FMODSound * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
+
+    static Mutex soundMapMutex;
 
 	Vector3 position;
 

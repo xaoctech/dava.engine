@@ -69,13 +69,13 @@ private:
 
     void FillEventsList();
 
-    void AddSliderWidget(const DAVA::FMODSoundEvent::SoundEventParameterInfo & param);
+    void AddSliderWidget(const DAVA::SoundEvent::SoundEventParameterInfo & param);
     void ClearParamsFrame();
     void FillEventParamsFrame();
 
     DAVA::Entity * entity;
     DAVA::SoundComponent * component;
-    DAVA::FMODSoundEvent * selectedEvent;
+    DAVA::SoundEvent * selectedEvent;
 
     SceneEditor2* scene;
 

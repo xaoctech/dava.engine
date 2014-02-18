@@ -31,35 +31,31 @@
 #include "Sound/FMODSoundEvent.h"
 #include "Sound/SoundSystem.h"
 #include "Sound/FMODSoundSystem.h"
-#include "Sound/FMODUtils.h"
 #include "Scene3D/Entity.h"
+#include "Sound/FMODUtils.h"
 
 namespace DAVA
 {
     
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
     
-FMODSoundEvent::FMODSoundEvent(const String & _eventName)
+FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
+    is3D(false)
 {
-    if(_eventName.size())
-    {
-        if(_eventName[0] == '/')
-            eventName = _eventName.substr(1);
-        else
-            eventName = _eventName;
+    DVASSERT(_eventName.c_str()[0] != '/');
+    eventName = _eventName;
 
-        FMOD::Event * fmodEventInfo = 0;
-        FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
-        if(fmodEventInfo)
-        {
-            FMOD_MODE mode = 0;
-            fmodEventInfo->getPropertyByIndex(FMOD_EVENTPROPERTY_MODE, &mode);
-            is3D = (mode == FMOD_3D);
-        }
-        else
-        {
-            Logger::Debug(eventName.c_str());
-        }
+    FMOD::Event * fmodEventInfo = 0;
+    FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
+    if(fmodEventInfo)
+    {
+        FMOD_MODE mode = 0;
+        fmodEventInfo->getPropertyByIndex(FMOD_EVENTPROPERTY_MODE, &mode);
+        is3D = (mode == FMOD_3D);
+    }
+    else
+    {
+        Logger::FrameworkDebug(eventName.c_str());
     }
 }
 
@@ -92,17 +88,11 @@ bool FMODSoundEvent::Trigger()
     
     if(is3D)
     {
-        if((position - fmodSoundSystem->listenerPosition).SquareLength() > fmodSoundSystem->maxDistanceSq)
-            return false;
-
         FMOD::Event * fmodEventInfo = 0;
-        FMOD_VECTOR pos = {position.x, position.y, position.z};
-        FMOD_VECTOR orient = {orientation.x, orientation.y, orientation.z};
-
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
         if(fmodEventInfo)
         {
-            FMOD_VERIFY(fmodEventInfo->set3DAttributes(&pos, 0, &orient));
+            FMOD_VERIFY(fmodEventInfo->set3DAttributes((FMOD_VECTOR*)&position, 0, (FMOD_VECTOR*)&orientation));
             FMOD_VERIFY(fmodEventInfo->setVolume(volume));
             ApplyParamsToEvent(fmodEventInfo);
         }
@@ -123,54 +113,48 @@ bool FMODSoundEvent::Trigger()
     }
     else if(result != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
     {
-        Logger::Debug("[FMODSoundEvent::Trigger()] Failed by %d on eventID: %s", result, eventName.c_str());
+        Logger::Error("[FMODSoundEvent::Trigger()] Failed by %d on eventID: %s", result, eventName.c_str());
     }
     
     return fmodEvent != 0;
 }
 
-const String & FMODSoundEvent::GetEventName()
-{
-    return eventName;
-}
-
 void FMODSoundEvent::SetPosition(const Vector3 & _position)
 {
-    position = _position;
+    position.x = _position.x;
+    position.y = _position.y;
+    position.z = _position.z;
 }
 
 void FMODSoundEvent::SetOrientation(const Vector3 & _orientation)
 {
-    orientation = _orientation;
-    orientation.Normalize();
+    orientation.x = _orientation.x;
+    orientation.y = _orientation.y;
+    orientation.z = _orientation.z;
 }
 
 void FMODSoundEvent::SetVolume(float32 _volume)
 {
-    volume = _volume;
-    
-    List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
-    for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
-        FMOD_VERIFY((*it)->setVolume(volume));
-}
-    
-float32	FMODSoundEvent::GetVolume()
-{
-    return volume;
+    if(volume != _volume)
+    {
+        volume = _volume;
+
+        List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
+        for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
+            FMOD_VERIFY((*it)->setVolume(volume));
+    }
 }
     
 void FMODSoundEvent::UpdateInstancesPosition()
 {
-    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
-    
-    if(fmodEventInstances.size() && (fmodSoundSystem->listenerPosition - position).SquareLength() > fmodSoundSystem->maxDistanceSq)
-        Stop();
-    
-    FMOD_VECTOR pos = {position.x, position.y, position.z};
-    FMOD_VECTOR orient = {orientation.x, orientation.y, orientation.z};
-    List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
-    for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
-        FMOD_VERIFY((*it)->set3DAttributes(&pos, 0, &orient));
+    if(is3D)
+    {
+        FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
+
+        List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
+        for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
+            FMOD_VERIFY((*it)->set3DAttributes((FMOD_VECTOR*)&position, 0, (FMOD_VECTOR*)&orientation));
+    }
 }
     
 void FMODSoundEvent::Stop()
@@ -189,7 +173,7 @@ void FMODSoundEvent::Stop()
     fmodEventInstances.clear();
 }
 
-bool FMODSoundEvent::IsActive()
+bool FMODSoundEvent::IsActive() const
 {
     return fmodEventInstances.size() != 0;
 }
@@ -243,17 +227,16 @@ void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
 {
     FastNameMap<float32>::iterator it = paramsValues.begin();
     FastNameMap<float32>::iterator itEnd = paramsValues.end();
-    while(it != itEnd)
+    for(;it != itEnd; ++it)
     {
         FMOD::EventParameter * param = 0;
         FMOD_VERIFY(event->getParameter(it->first.c_str(), &param));
         if(param)
             FMOD_VERIFY(param->setValue(it->second));
-        ++it;
     }
 }
     
-void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback callbackType)
+void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, eSoundEventCallbackType callbackType)
 {
     FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
     fmodSoundSystem->ReleaseOnUpdate(this);
@@ -264,7 +247,7 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, SoundEventCallback
         fmodEventInstances.erase(it);
 }
 
-void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo)
+void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const
 {
     paramsInfo.clear();
 
@@ -276,6 +259,7 @@ void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & pa
 
     int32 paramsCount = 0;
     FMOD_VERIFY(event->getNumParameters(&paramsCount));
+    paramsInfo.reserve(paramsCount);
     for(int32 i = 0; i < paramsCount; i++)
     {
         FMOD::EventParameter * param = 0;
@@ -292,6 +276,11 @@ void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & pa
 
         paramsInfo.push_back(pInfo);
     }
+}
+
+String FMODSoundEvent::GetEventName() const
+{
+     return String(eventName.c_str());
 }
 
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)

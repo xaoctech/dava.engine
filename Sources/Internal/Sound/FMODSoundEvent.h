@@ -39,7 +39,7 @@
 
 namespace FMOD
 {
-	class Event;
+    class Event;
 };
 
 namespace DAVA
@@ -48,23 +48,14 @@ namespace DAVA
 class FMODSoundEvent : public SoundEvent
 {
 public:
-    struct SoundEventParameterInfo
-    {
-        String name;
-        float32 maxValue;
-        float32 minValue;
-        float32 currentValue;
-    };
-    
-	~FMODSoundEvent();
+	virtual ~FMODSoundEvent();
 
+    virtual bool IsActive() const;
     virtual bool Trigger();
-    virtual bool IsActive();
 	virtual void Stop();
     virtual void Pause();
     
     virtual void SetVolume(float32 volume);
-    virtual float32	GetVolume();
     
     virtual void SetPosition(const Vector3 & position);
     virtual void SetOrientation(const Vector3 & orientation);
@@ -73,23 +64,23 @@ public:
     virtual void SetParameterValue(const FastName & paramName, float32 value);
     virtual float32 GetParameterValue(const FastName & paramName);
     virtual bool IsParameterExists(const FastName & paramName);
-    
+
+    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const;
+
+    virtual String GetEventName() const;
+
     //FMOD only
-    void PerformCallback(FMOD::Event  * event, SoundEventCallback callbackType);
-        
-    const String & GetEventName();
-    void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo);
+    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
     
 protected:
-    FMODSoundEvent(const String & eventName);
+    FMODSoundEvent(const FastName & eventName);
     void ApplyParamsToEvent(FMOD::Event * event);
 
     List<FMOD::Event *> fmodEventInstances;
-    String eventName;
+    FastName eventName;
     
     Vector3 position;
     Vector3 orientation;
-    float32 volume;
     
     bool is3D;
 

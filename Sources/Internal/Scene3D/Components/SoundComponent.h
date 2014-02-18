@@ -51,8 +51,8 @@ public:
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
     
-    int32 GetEventsCount();
-    SoundEvent * GetSoundEvent(int32 index);
+    inline uint32 GetEventsCount() const;
+    inline SoundEvent * GetSoundEvent(uint32 index) const;
 
     void AddSoundEvent(SoundEvent * event);
     void RemoveSoundEvent(SoundEvent * event);
@@ -68,6 +68,18 @@ public:
         COLLECTION(events, "Events Array",  I_VIEW)
         );
 };
+
+//Inline
+inline SoundEvent * SoundComponent::GetSoundEvent(uint32 index) const
+{
+    DVASSERT(index >= 0 && index < (uint32)events.size());
+    return events[index];
+}
+
+inline uint32 SoundComponent::GetEventsCount() const
+{
+    return events.size();
+}
 
 };
 

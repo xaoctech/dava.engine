@@ -49,6 +49,9 @@ class SoundEvent;
 class SkyboxRenderObject;
 class SwitchComponent;
 class QualitySettingsComponent;
+class TransformComponent;
+
+TransformComponent * GetTransformComponent(Entity * fromEntity);
 
 ParticleEmitter * GetEmitter(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);

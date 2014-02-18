@@ -54,14 +54,14 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
 	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
 	{
-		Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+		Matrix4 * worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
 		Vector3 translation = worldTransformPointer->GetTranslationVector();
 
         SoundComponent * sc = GetSoundComponent(entity);
         if(sc)
         {
-            int32 eventsCount = sc->GetEventsCount();
-            for(int32 i = 0; i < eventsCount; ++i)
+            uint32 eventsCount = sc->GetEventsCount();
+            for(uint32 i = 0; i < eventsCount; ++i)
             {
                 SoundEvent * sound = sc->GetSoundEvent(i);
                 sound->SetPosition(translation);

@@ -87,7 +87,7 @@ void SoundComponentEditor::OnEventSelected(QListWidgetItem * item)
         if(!data.isNull())
         {
             DAVA::int32 index = data.toInt();
-            selectedEvent = (DAVA::FMODSoundEvent*)component->GetSoundEvent(index);
+            selectedEvent = component->GetSoundEvent(index);
         }
         ui->removeEventBut->setDisabled(false);
     }
@@ -110,7 +110,7 @@ void SoundComponentEditor::FillEventsList()
     DAVA::int32 eventsCount = component->GetEventsCount();
     for(DAVA::int32 i = 0; i < eventsCount; ++i)
     {
-        DAVA::FMODSoundEvent * event = (DAVA::FMODSoundEvent *)component->GetSoundEvent(i);
+        DAVA::SoundEvent * event = component->GetSoundEvent(i);
         QListWidgetItem * item = new QListWidgetItem(QString(event->GetEventName().c_str()));
         item->setData(Qt::UserRole, i);
         ui->listWidget->addItem(item);
@@ -129,12 +129,12 @@ void SoundComponentEditor::FillEventParamsFrame()
     ui->playButton->setDisabled(false);
     ui->stopButton->setDisabled(false);
 
-    DAVA::Vector<DAVA::FMODSoundEvent::SoundEventParameterInfo> params;
+    DAVA::Vector<DAVA::SoundEvent::SoundEventParameterInfo> params;
     selectedEvent->GetEventParametersInfo(params);
     DAVA::int32 paramsCount = params.size();
     for(DAVA::int32 i = 0; i < paramsCount; i++)
     {
-        DAVA::FMODSoundEvent::SoundEventParameterInfo & param = params[i];
+        DAVA::SoundEvent::SoundEventParameterInfo & param = params[i];
         if(param.name != "(distance)")
             AddSliderWidget(param);
     }
@@ -160,7 +160,7 @@ void SoundComponentEditor::OnAddEvent()
         if(browser->exec() == QDialog::Accepted)
         {
             DAVA::String selectedEvent = browser->GetSelectSoundEvent();
-            DAVA::SoundEvent * sEvent = DAVA::SoundSystem::Instance()->CreateSoundEventByID(selectedEvent, DAVA::FastName("FX"));
+            DAVA::SoundEvent * sEvent = DAVA::SoundSystem::Instance()->CreateSoundEventByID(FastName(selectedEvent), DAVA::FastName("FX"));
 
             scene->Exec(new AddSoundEventCommand(component->GetEntity(), sEvent));
 
@@ -211,7 +211,7 @@ void SoundComponentEditor::OnSliderMoved(int value)
         selectedEvent->SetParameterValue(DAVA::FastName(paramName), newParamValue);
 }
 
-void SoundComponentEditor::AddSliderWidget(const DAVA::FMODSoundEvent::SoundEventParameterInfo & param)
+void SoundComponentEditor::AddSliderWidget(const DAVA::SoundEvent::SoundEventParameterInfo & param)
 {
     QGridLayout * layout = dynamic_cast<QGridLayout *>(ui->paramsFrame->layout());
     

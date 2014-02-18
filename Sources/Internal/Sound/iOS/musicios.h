@@ -42,15 +42,14 @@ public:
     static MusicIOSSoundEvent * CreateMusicEvent(const FilePath & path);
     
     virtual bool Trigger();
-    virtual bool IsActive();
+    virtual bool IsActive() const;
     virtual void Stop();
     virtual void Pause();
     
     virtual void SetVolume(float32 volume);
-    virtual float32	GetVolume();
     
     virtual void SetLoopCount(int32 looping); // -1 = infinity
-    virtual int32 GetLoopCount();
+    virtual int32 GetLoopCount() const;
     
     virtual void SetPosition(const Vector3 & position) {};
     virtual void SetOrientation(const Vector3 & orientation) {};
@@ -60,8 +59,9 @@ public:
     virtual float32 GetParameterValue(const FastName & paramName) { return 0.f; };
     virtual bool IsParameterExists(const FastName & paramName) { return false; };
 
-    //MusicIOSSoundEvent only
-    const FilePath & GetFilePath();
+    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const { return; };
+
+    virtual String GetEventName() const { return filePath.GetFrameworkPath(); };
     
 protected:
     MusicIOSSoundEvent(const FilePath & path);
@@ -72,6 +72,11 @@ protected:
     FilePath filePath;
 };
     
+inline const FilePath & MusicIOSSoundEvent::GetFilePath() const
+{
+    return filePath;
+}
+
 };
 
 #endif //#ifdef __DAVAENGINE_IPHONE__

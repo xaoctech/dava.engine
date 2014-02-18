@@ -40,7 +40,15 @@ namespace DAVA
 class SoundEvent : public EventDispatcher
 {
 public:
-    enum SoundEventCallback
+    struct SoundEventParameterInfo
+    {
+        String name;
+        float32 maxValue;
+        float32 minValue;
+        float32 currentValue;
+    };
+
+    enum eSoundEventCallbackType
     {
         EVENT_END,     /* Called when an event is stopped for any reason. */
 
@@ -50,18 +58,20 @@ public:
     enum SoundEventCreateFlags
     {
         SOUND_EVENT_CREATE_DEFAULT = 0, //2D; static; no loop
-        SOUND_EVENT_CREATE_STREAM = (1 << 1),
-        SOUND_EVENT_CREATE_3D = (1 << 2),
-        SOUND_EVENT_CREATE_LOOP = (1 << 3)
+        SOUND_EVENT_CREATE_STREAM = (1 << 0),
+        SOUND_EVENT_CREATE_3D = (1 << 1),
+        SOUND_EVENT_CREATE_LOOP = (1 << 2)
     };
     
+    SoundEvent() : volume(1.f) {};
+
+    virtual bool IsActive() const = 0;
     virtual bool Trigger() = 0;
-    virtual bool IsActive() = 0;
     virtual void Stop() = 0;
     virtual void Pause() = 0;
     
     virtual void SetVolume(float32 volume) = 0;
-    virtual float32	GetVolume() = 0;
+    inline float32 GetVolume() const;
     
     virtual void SetPosition(const Vector3 & position) = 0;
     virtual void SetOrientation(const Vector3 & orientation) = 0;
@@ -70,7 +80,19 @@ public:
     virtual void SetParameterValue(const FastName & paramName, float32 value) = 0;
     virtual float32 GetParameterValue(const FastName & paramName) = 0;
     virtual bool IsParameterExists(const FastName & paramName) = 0;
+
+    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const = 0;
+
+    virtual String GetEventName() const = 0;
+
+protected:
+    float32 volume;
 };
+
+inline float32 SoundEvent::GetVolume() const
+{
+    return volume;
+}
 
 };
 
