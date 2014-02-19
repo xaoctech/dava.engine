@@ -393,7 +393,7 @@ void UITextField::SetText(const WideString & _text)
     needRedraw = true;
 }
 
-const WideString & UITextField::GetText() const
+const WideString & UITextField::GetText()
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->GetText(text);
