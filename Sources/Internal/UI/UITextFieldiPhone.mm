@@ -629,7 +629,7 @@ namespace DAVA
                                             encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ] autorelease]; 
     }
 	
-    void UITextFieldiPhone::GetText(std::wstring & string)
+    void UITextFieldiPhone::GetText(std::wstring & string) const
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         int length = [textFieldHolder->textField.text length];

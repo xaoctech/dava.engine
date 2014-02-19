@@ -393,7 +393,7 @@ void UITextField::SetText(const WideString & _text)
     needRedraw = true;
 }
 
-const WideString & UITextField::GetText()
+const WideString & UITextField::GetText() const
 {
 #ifdef __DAVAENGINE_IPHONE__
 	textFieldiPhone->GetText(text);
@@ -423,7 +423,7 @@ const Color &UITextField::GetTextColor() const
 #endif
 }
 
-Vector2 UITextField::GetShadowOffset()
+Vector2 UITextField::GetShadowOffset() const
 {
 #if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_IPHONE__)
     return Vector2(0, 0);
@@ -810,7 +810,7 @@ WideString UITextField::GetVisibleText() const
     return text;
 }
 	
-UITextField::eAutoCapitalizationType UITextField::GetAutoCapitalizationType()
+UITextField::eAutoCapitalizationType UITextField::GetAutoCapitalizationType() const
 {
 	return autoCapitalizationType;
 }
@@ -825,7 +825,7 @@ void UITextField::SetAutoCapitalizationType(eAutoCapitalizationType value)
 #endif
 }
 
-UITextField::eAutoCorrectionType UITextField::GetAutoCorrectionType()
+UITextField::eAutoCorrectionType UITextField::GetAutoCorrectionType() const
 {
 	return autoCorrectionType;
 }
@@ -840,7 +840,7 @@ void UITextField::SetAutoCorrectionType(eAutoCorrectionType value)
 #endif
 }
 
-UITextField::eSpellCheckingType UITextField::GetSpellCheckingType()
+UITextField::eSpellCheckingType UITextField::GetSpellCheckingType() const
 {
 	return spellCheckingType;
 }
@@ -855,7 +855,7 @@ void UITextField::SetSpellCheckingType(eSpellCheckingType value)
 #endif
 }
 
-UITextField::eKeyboardAppearanceType UITextField::GetKeyboardAppearanceType()
+UITextField::eKeyboardAppearanceType UITextField::GetKeyboardAppearanceType() const
 {
 	return keyboardAppearanceType;
 }
@@ -870,7 +870,7 @@ void UITextField::SetKeyboardAppearanceType(eKeyboardAppearanceType value)
 #endif
 }
 
-UITextField::eKeyboardType UITextField::GetKeyboardType()
+UITextField::eKeyboardType UITextField::GetKeyboardType() const
 {
 	return keyboardType;
 }
@@ -885,7 +885,7 @@ void UITextField::SetKeyboardType(eKeyboardType value)
 #endif
 }
 
-UITextField::eReturnKeyType UITextField::GetReturnKeyType()
+UITextField::eReturnKeyType UITextField::GetReturnKeyType() const
 {
 	return returnKeyType;
 }
@@ -900,7 +900,7 @@ void UITextField::SetReturnKeyType(eReturnKeyType value)
 #endif
 }
 
-bool UITextField::IsEnableReturnKeyAutomatically()
+bool UITextField::IsEnableReturnKeyAutomatically() const
 {
 	return enableReturnKeyAutomatically;
 }
