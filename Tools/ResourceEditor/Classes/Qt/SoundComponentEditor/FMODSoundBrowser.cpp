@@ -239,7 +239,7 @@ void FMODSoundBrowser::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
         {
             const DAVA::FilePath & filePath = list->GetPathname(i);
 
-            if(filePath.GetExtension() == ".fev")
+            if(filePath.IsEqualToExtension(".fev"))
                 soundsystem->LoadFEV(filePath);
         }
     }
