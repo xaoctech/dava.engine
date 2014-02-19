@@ -22,15 +22,15 @@
 namespace DAVA
 {
     
-	int32 AtomicIncrement( int32 &value )
-	{
-		return (int32)OSAtomicIncrement32Barrier((volatile int32_t *)&value);
-	}
-    
-	int32 AtomicDecrement( int32 &value )
-	{
-		return (int32)OSAtomicDecrement32Barrier((volatile int32_t *)&value);
-	}
+int32 AtomicIncrement( int32 &value )
+{
+    return (int32)OSAtomicIncrement32Barrier((volatile int32_t *)&value);
+}
+
+int32 AtomicDecrement( int32 &value )
+{
+    return (int32)OSAtomicDecrement32Barrier((volatile int32_t *)&value);
+}
     
 };
 

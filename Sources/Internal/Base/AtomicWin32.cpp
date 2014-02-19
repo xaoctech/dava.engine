@@ -34,15 +34,15 @@
 namespace DAVA 
 {
 
-	int32 AtomicIncrement( int32 &value )
-	{
-		return (int32)InterlockedIncrement((LONG volatile*)&value);
-	}
+int32 AtomicIncrement( int32 &value )
+{
+    return (int32)InterlockedIncrement((LONG volatile*)&value);
+}
 
-	int32 AtomicDecrement( int32 &value )
-	{
-		return (int32)InterlockedDecrement((LONG volatile*)&value);
-	}
+int32 AtomicDecrement( int32 &value )
+{
+    return (int32)InterlockedDecrement((LONG volatile*)&value);
+}
 
 };
 
