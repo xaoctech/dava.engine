@@ -17,6 +17,7 @@
 		1767A19B183D227A000DE581 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1767A19A183D227A000DE581 /* CoreMedia.framework */; };
 		1770DF5917DF6CC200000391 /* UIMovieTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF5717DF6CC200000391 /* UIMovieTest.cpp */; };
 		495B67091797DCA30017D8DD /* TransparentWebViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 495B67071797DCA30017D8DD /* TransparentWebViewTest.cpp */; };
+		49637DFA18B20D79008A3398 /* RectSpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49637DF818B20D79008A3398 /* RectSpriteTest.cpp */; };
 		49B774CD16B188A900A80FA3 /* DLCSystemTests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B774CB16B188A900A80FA3 /* DLCSystemTests.cpp */; };
 		49C2B8F816F75A39006E24CB /* DeviceInfoTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C2B8F616F75A39006E24CB /* DeviceInfoTest.cpp */; };
 		49C432081675E370000EA877 /* DXTTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C432061675E370000EA877 /* DXTTest.cpp */; };
@@ -125,6 +126,8 @@
 		32CA4F630368D1EE00C91783 /* TemplateProjectMacOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemplateProjectMacOS_Prefix.pch; sourceTree = "<group>"; };
 		495B67071797DCA30017D8DD /* TransparentWebViewTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransparentWebViewTest.cpp; path = Classes/TransparentWebViewTest.cpp; sourceTree = "<group>"; };
 		495B67081797DCA30017D8DD /* TransparentWebViewTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransparentWebViewTest.h; path = Classes/TransparentWebViewTest.h; sourceTree = "<group>"; };
+		49637DF818B20D79008A3398 /* RectSpriteTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RectSpriteTest.cpp; path = Classes/RectSpriteTest.cpp; sourceTree = "<group>"; };
+		49637DF918B20D79008A3398 /* RectSpriteTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RectSpriteTest.h; path = Classes/RectSpriteTest.h; sourceTree = "<group>"; };
 		49B774CB16B188A900A80FA3 /* DLCSystemTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DLCSystemTests.cpp; path = Classes/DLCSystemTests.cpp; sourceTree = "<group>"; };
 		49B774CC16B188A900A80FA3 /* DLCSystemTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DLCSystemTests.h; path = Classes/DLCSystemTests.h; sourceTree = "<group>"; };
 		49C2B8F616F75A39006E24CB /* DeviceInfoTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceInfoTest.cpp; path = Classes/DeviceInfoTest.cpp; sourceTree = "<group>"; };
@@ -344,6 +347,15 @@
 			name = TransparentWebViewTest;
 			sourceTree = "<group>";
 		};
+		49637DF518B20D4A008A3398 /* RectSpriteTest */ = {
+			isa = PBXGroup;
+			children = (
+				49637DF818B20D79008A3398 /* RectSpriteTest.cpp */,
+				49637DF918B20D79008A3398 /* RectSpriteTest.h */,
+			);
+			name = RectSpriteTest;
+			sourceTree = "<group>";
+		};
 		49B774CA16B1889A00A80FA3 /* DLCTest */ = {
 			isa = PBXGroup;
 			children = (
@@ -374,6 +386,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				49637DF518B20D4A008A3398 /* RectSpriteTest */,
 				E8583EDB183E41B2009DEEB6 /* ComponentsTest */,
 				1770DF5217DF6CAD00000391 /* UIMovieTest */,
 				02F8B01717CF994900D5A334 /* ThreadSyncTest */,
@@ -755,6 +768,7 @@
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
 				5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */,
 				FEA8F6EB159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp in Sources */,
+				49637DFA18B20D79008A3398 /* RectSpriteTest.cpp in Sources */,
 				FEA8F70915A0A55600EED3DC /* HashMapTest.cpp in Sources */,
 				5C44737715B5A0FD00028948 /* SoundTest.cpp in Sources */,
 				029E4D8A15D403BA004A4167 /* SplitTest.cpp in Sources */,
