@@ -41,13 +41,13 @@
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
 , curViewMode(LIGHTVIEW_ALL)
+, showLightmapCanvas(false)
 { }
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
 	while(materialFeedback.size() > 0)
 	{
-        DVASSERT(false);
 		RemoveMaterial(materialFeedback.begin()->first);
 	}
 
