@@ -188,7 +188,7 @@ public:
 	
 	virtual void SetSpriteAlign(int32 align);
     
-	virtual const WideString & GetText() const;
+	virtual const WideString & GetText();
 	virtual void SetText(const WideString & text);
     
     virtual WideString GetAppliedChanges(int32 replacementLocation, int32 replacementLength, const WideString & replacementString);
