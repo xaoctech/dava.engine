@@ -260,7 +260,7 @@ void SceneCameraSystem::Update(float timeElapsed)
         if(curSceneCamera)
         {
             SoundSystem::Instance()->SetListenerPosition(curSceneCamera->GetPosition());
-            SoundSystem::Instance()->SetListenerOrientation(curSceneCamera->GetTarget() - curSceneCamera->GetPosition(), curSceneCamera->GetLeft());
+            SoundSystem::Instance()->SetListenerOrientation(curSceneCamera->GetDirection(), curSceneCamera->GetLeft());
         }
 
 		ProcessKeyboardMove(timeElapsed);
