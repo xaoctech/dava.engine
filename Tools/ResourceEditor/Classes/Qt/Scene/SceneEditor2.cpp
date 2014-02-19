@@ -725,6 +725,12 @@ void SceneEditor2::RemoveSystems()
 		RemoveSystem(collisionSystem);
 		SafeDelete(collisionSystem);
 	}
+
+    if(materialSystem)
+    {
+        RemoveSystem(materialSystem);
+        SafeDelete(materialSystem);
+    }
 	
 }
 
