@@ -376,6 +376,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 				QImage qimg(targetFullPath.c_str());
 				QImage rotatedImage = qimg.transformed(transform);
 				rotatedImage.save(targetFullPath.c_str());
+                faceLabel->SetRotation(0);
 			}
 		}
 	}
