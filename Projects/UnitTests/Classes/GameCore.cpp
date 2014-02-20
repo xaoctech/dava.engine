@@ -62,6 +62,7 @@
 #include "ThreadSyncTest.h"
 #include "UIMovieTest.h"
 #include "ComponentsTest.h"
+#include "RectSpriteTest.h"
 
 using namespace DAVA;
 
@@ -86,6 +87,8 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
+
+    new RectSpriteTest();
 
 	new ComponentsTest();
     new FilePathTest();
