@@ -54,22 +54,22 @@ ProjectManager::~ProjectManager()
 
 }
 
-bool ProjectManager::IsOpened()
+bool ProjectManager::IsOpened() const
 {
 	return (curProjectPath != "");
 }
 
-FilePath ProjectManager::CurProjectPath()
+FilePath ProjectManager::CurProjectPath() const
 {
 	return curProjectPath;
 }
 
-FilePath ProjectManager::CurProjectDataSourcePath()
+FilePath ProjectManager::CurProjectDataSourcePath() const
 {
 	return curProjectPathDataSource;
 }
 
-FilePath ProjectManager::CurProjectDataParticles()
+FilePath ProjectManager::CurProjectDataParticles() const
 {
     return curProjectPathParticles;
 }
@@ -84,22 +84,30 @@ const QVector<ProjectManager::AvailableMaterialQuality>* ProjectManager::GetAvai
     return &qualities;
 }
 
-QString ProjectManager::ProjectOpenDialog()
+FilePath ProjectManager::ProjectOpenDialog()
 {
-	return QtFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
+    QString  newPathStr = QtFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
+    FilePath incomePath(PathnameToDAVAStyle(newPathStr));
+    incomePath.MakeDirectoryPathname();
+	return incomePath;
 }
 
 void ProjectManager::ProjectOpen(const QString &path)
 {
     FilePath incomePath(PathnameToDAVAStyle(path));
+    ProjectOpen(incomePath);
+}
+
+void ProjectManager::ProjectOpen(const FilePath &incomePath)
+{
     incomePath.MakeDirectoryPathname();
-	if(incomePath != curProjectPath)
+    if(incomePath != curProjectPath)
 	{
 		ProjectClose();
         
         curProjectPath = incomePath;
         
-		if(!path.isEmpty())
+		if(!incomePath.IsEmpty())
 		{
 			DAVA::FilePath dataSource3Dpathname = curProjectPath + "DataSource/3d/";
 			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
@@ -141,13 +149,10 @@ void ProjectManager::ProjectClose()
 {
 	if(!curProjectPath.IsEmpty())
 	{
-		FilePath path = curProjectPath;
-		path.MakeDirectoryPathname();
-        
-		DAVA::FilePath::RemoveResourcesFolder(path);
-        
+		DAVA::FilePath::RemoveResourcesFolder(curProjectPath.MakeDirectoryPathname());
         curProjectPath = FilePath();
-        bool test = curProjectPath.IsEmpty();
+        curProjectPathDataSource = FilePath();
+        curProjectPathParticles = FilePath();
         emit ProjectClosed();
 	}
 }
