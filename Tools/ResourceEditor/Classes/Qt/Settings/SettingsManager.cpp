@@ -54,6 +54,8 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
 	SettingRow("DefaultCameraFOV", DAVA::VariantType(70.0f)),
     SettingRow("DefaultLandscapeSize", DAVA::VariantType(600.0f)),
     SettingRow("DefaultLandscapeHeight", DAVA::VariantType(50.0f)),
+	SettingRow("DefaultFogColor", DAVA::VariantType(DAVA::Color(1.f, 0, 0.f, 1.f))),
+	SettingRow("DefaultFogDensity", DAVA::VariantType(1.0f)),
 };
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
