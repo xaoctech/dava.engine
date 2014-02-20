@@ -40,6 +40,8 @@ namespace DAVA
 {
 	REGISTER_CLASS(ActionComponent)
 
+    const String ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME = "*** Self ***";
+
 	ActionComponent::ActionComponent() : started(false), allActionsActive(false)
 	{
 		
@@ -404,6 +406,9 @@ namespace DAVA
 	
 	Entity* ActionComponent::GetTargetEntity(const String& name, Entity* parent)
 	{
+        if(name == ACTION_COMPONENT_SELF_ENTITY_NAME)
+            return parent;
+
 		if(parent->GetName() == name)
 		{
 			return parent;
