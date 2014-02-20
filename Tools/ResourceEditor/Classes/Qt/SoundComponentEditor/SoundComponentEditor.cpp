@@ -135,7 +135,7 @@ void SoundComponentEditor::FillEventParamsFrame()
     for(DAVA::int32 i = 0; i < paramsCount; i++)
     {
         DAVA::SoundEvent::SoundEventParameterInfo & param = params[i];
-        if(param.name != "(distance)")
+        if(param.name != "(distance)" && param.name != "(event angle)" && param.name != "(listener angle)")
             AddSliderWidget(param);
     }
 }
