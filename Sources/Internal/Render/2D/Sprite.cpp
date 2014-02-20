@@ -500,7 +500,7 @@ Sprite* Sprite::CreateFromImage(const Image* image)
     return sprite;
 }
 
-Sprite* Sprite::CreateFromPNG(uint8* data, uint32 size)
+Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size)
 {
     if (data == NULL || size == 0)
     {
