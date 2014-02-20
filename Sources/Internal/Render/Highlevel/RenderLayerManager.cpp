@@ -29,6 +29,7 @@
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/RenderLayer.h"
+#include "Render/Highlevel/ShadowVolumeRenderPass.h"
 
 namespace DAVA
 {
@@ -59,17 +60,7 @@ void RenderLayerManager::InsertLayer(RenderLayer * renderLayer)
     array[renderLayer->GetRenderLayerID()] = renderLayer;
     map[renderLayer->GetName()] = renderLayer;
     layerIDmap[renderLayer->GetName()] = renderLayer->GetRenderLayerID();
-}
-    
-void RenderLayerManager::Release()
-{
-    size_t size = array.size();
-    for (size_t i = 0; i < size; ++i)
-        SafeDelete(array[i]);
-    array.clear();
-    map.clear();
-}
-
+}    
 
 RenderLayerManager::RenderLayerManager()
     : array(RENDER_LAYER_ID_COUNT)
@@ -100,7 +91,7 @@ RenderLayerManager::RenderLayerManager()
                                                            RENDER_LAYER_AFTER_TRANSLUCENT_ID);
     InsertLayer(renderLayerAfterTranslucent);
 
-    RenderLayer * renderLayerShadowVolume = new RenderLayer(LAYER_SHADOW_VOLUME,
+    RenderLayer * renderLayerShadowVolume = new ShadowVolumeRenderLayer(LAYER_SHADOW_VOLUME,
                                                             0,
                                                             RENDER_LAYER_SHADOW_VOLUME_ID);
     InsertLayer(renderLayerShadowVolume);
@@ -109,7 +100,11 @@ RenderLayerManager::RenderLayerManager()
 
 RenderLayerManager::~RenderLayerManager()
 {
-    Release();
+	size_t size = array.size();
+	for (size_t i = 0; i < size; ++i)
+		SafeDelete(array[i]);
+	array.clear();
+	map.clear();
 }
 
 

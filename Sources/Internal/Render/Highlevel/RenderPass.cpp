@@ -96,4 +96,62 @@ void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArr
     }
 }
 
+#ifdef dfsfds
+void MainForwardRenderPass::Draw(Camera * camera, RenderHierarchy *renderHierarchy)
+{
+	visibilityArray.Clear();
+	renderHierarchy->Clip(camera, &visibilityArray);
+	renderPassBatchArray->Clear();
+	renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera); 
+
+	/*one global water pass*/
+	RenderLayerBatchArray *waterLayer = renderPassBatchArray->Get(LAYER_WATER);
+	bool needWaterPrepass = false;
+	uint32 waterBatchesCount = waterLayer->GetRenderBatchCount();
+	AABBox3 waterBox;
+	if (waterBatchesCount)
+	{
+		for (uint32 i=0; i<waterBatchesCount; ++i)
+		{
+			RenderBatch *batch = waterLayer->Get(i);
+			if (batch->GetMaterial()/*->GetSomePropertyToUnderstandThisWaterTypeRequiresRealReflectionRefractionRender()*/)
+			{
+				needWaterPrepass = true;
+				waterBox.AddAABBox(batch->GetRenderObject()->GetWorldBoundingBox());
+			}
+		}
+	}
+
+	if (needWaterPrepass)
+	{
+		waterPass->SetWaterRanges(waterBox.min.z, waterBox.max.z);
+		waterPass->Draw(camera, renderHierarchy);
+		Texture *reflection = waterPass->GetReflectionTexture();
+		Texture *refraction = waterPass->GetRefractionTexture();
+		for (uint32 i=0; i<waterBatchesCount; ++i)
+		{
+			NMaterial *mat = waterLayer->Get(i)->GetMaterial();
+			mat->SetTexture(FastName("reflection"), reflection);
+			mat->SetTexture(FastName("refraction"), refraction);
+		}
+	}
+
+	/*base draw*/
+	uint32 size = (uint32)renderLayers.size();
+	for (uint32 k = 0; k < size; ++k)
+	{
+		RenderLayer * layer = renderLayers[k];
+		RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetRenderLayerID());
+		if (renderLayerBatchArray)
+		{
+			layer->Draw(name, camera, renderLayerBatchArray);
+		}
+	}
+
+	/*shadow*/
+	RenderPass *shadow = RenderPassManager::Instance()->GetRenderPass(PASS_SHADOW_VOLUME);
+	shadow->Draw(camera, visibilityArray);
+}
+#endif
+
 };

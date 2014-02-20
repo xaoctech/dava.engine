@@ -164,7 +164,7 @@ void Core::CreateRenderManager()
 {
     eRenderer renderer = (eRenderer)options->GetInt32("renderer");
     
-    RenderManager::Create(renderer);
+    RenderManager::Create(renderer);	
 }
         
 void Core::ReleaseSingletons()
@@ -185,6 +185,7 @@ void Core::ReleaseSingletons()
 //	Logger::FrameworkDebug("[Core::Release] successfull");
 	FileSystem::Instance()->Release();
 	Random::Instance()->Release();
+	RenderLayerManager::Instance()->Release();
 	RenderManager::Instance()->Release();
 #ifdef __DAVAENGINE_AUTOTESTING__
     AutotestingSystem::Instance()->Release();

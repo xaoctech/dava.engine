@@ -59,7 +59,7 @@ RenderSystem::RenderSystem()
     ,   forceUpdateLights(false)
 {
     renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_FORWARD));
-    renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    //renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
 
     renderHierarchy = new QuadTree(10);
 	hierarchyInitialized = false;
@@ -402,7 +402,7 @@ void RenderSystem::Render()
     
 void RenderSystem::SetShadowRectColor(const Color &color)
 {
-    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    ShadowVolumeRenderLayer *shadowVolume = static_cast<ShadowVolumeRenderLayer *>(RenderLayerManager::Instance()->GetRenderLayer(LAYER_SHADOW_RECT));
     DVASSERT(shadowVolume);
 
     ShadowRect *shadowRect = shadowVolume->GetShadowRect();
@@ -413,7 +413,7 @@ void RenderSystem::SetShadowRectColor(const Color &color)
     
 const Color & RenderSystem::GetShadowRectColor() const
 {
-    ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+    ShadowVolumeRenderLayer *shadowVolume = static_cast<ShadowVolumeRenderLayer *>(RenderLayerManager::Instance()->GetRenderLayer(LAYER_SHADOW_RECT));
     DVASSERT(shadowVolume);
     
     ShadowRect *shadowRect = shadowVolume->GetShadowRect();
@@ -424,7 +424,7 @@ const Color & RenderSystem::GetShadowRectColor() const
 	
 void RenderSystem::SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode)
 {
-	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+	ShadowVolumeRenderLayer *shadowVolume = static_cast<ShadowVolumeRenderLayer *>(RenderLayerManager::Instance()->GetRenderLayer(LAYER_SHADOW_RECT));
     DVASSERT(shadowVolume);
 
 	shadowVolume->SetBlendMode(blendMode);
@@ -432,7 +432,7 @@ void RenderSystem::SetShadowBlendMode(ShadowPassBlendMode::eBlend blendMode)
 	
 ShadowPassBlendMode::eBlend RenderSystem::GetShadowBlendMode()
 {
-	ShadowVolumeRenderPass *shadowVolume = static_cast<ShadowVolumeRenderPass *>(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
+	ShadowVolumeRenderLayer *shadowVolume = static_cast<ShadowVolumeRenderLayer *>(RenderLayerManager::Instance()->GetRenderLayer(LAYER_SHADOW_RECT));
     DVASSERT(shadowVolume);
 
 	return shadowVolume->GetBlendMode();
