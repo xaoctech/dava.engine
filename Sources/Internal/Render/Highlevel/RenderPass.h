@@ -67,6 +67,8 @@ protected:
     FastName name;
     RenderPassID id;
 
+	RenderPassBatchArray * renderPassBatchArray;
+	VisibilityArray visibilityArray;
 public:
     
     INTROSPECTION(RenderPass,
@@ -97,6 +99,22 @@ inline RenderLayer * RenderPass::GetRenderLayer(uint32 index) const
     return renderLayers[index];
 }
 
+class WaterReflectionRefractionRenderPass  : public RenderPass
+{
+public:
+	virtual void Draw(Camera * camera, RenderHierarchy *renderHeirarchy);
+	
+	void SetWaterRanges(float32 bot, float32 top);
+	Texture *GetReflectionTexture();
+	Texture *GetRefractionTexture();
+};
+
+class MainForwardRenderPass : public RenderPass
+{
+	WaterReflectionRefractionRenderPass *waterPass;
+public:
+	virtual void Draw(Camera * camera, RenderHierarchy *renderHeirarchy);
+};
 
 } // ns
 
