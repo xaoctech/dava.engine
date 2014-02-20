@@ -43,6 +43,8 @@ namespace DAVA
 	{
 	public:
 		
+        const static DAVA::String ACTION_COMPONENT_SELF_ENTITY_NAME;
+
 		struct Action
 		{
 			enum eType
