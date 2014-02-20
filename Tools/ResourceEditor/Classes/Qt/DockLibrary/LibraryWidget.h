@@ -102,7 +102,6 @@ protected slots:
     void OnAddModel();
     void OnEditModel();
     void OnConvertDae();
-    void OnConvertGeometry();
     void OnEditTextureDescriptor();
     void OnRevealAtFolder();
 

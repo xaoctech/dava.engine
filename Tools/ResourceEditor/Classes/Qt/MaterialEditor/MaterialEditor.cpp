@@ -77,6 +77,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	
 	// material tree
 	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
+    QObject::connect(ui->materialTree, SIGNAL(Updated()), this, SLOT(autoExpand()));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
@@ -201,9 +202,10 @@ void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
 {
-	if(1 == selected.indexes().size())
+	if(1 == selected.size())
 	{
-		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selected.indexes().at(0));
+        QModelIndex selectedIndex = selected.indexes().at(0);
+		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selectedIndex);
 		SetCurMaterial(material);
 	}
 	else
@@ -402,12 +404,22 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                 DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
                 QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                QString defaultPath = dataSourcePath;
+                SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+                if(NULL != editor)
+                {
+                    DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
+                    if(String::npos != scenePath.find(dataSourcePath.toStdString()))
+                    {
+                        defaultPath = scenePath.c_str();
+                    }
+                }
                 for(size_t i = 0; i < membersList.size(); ++i)
                 {
                     int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
                     QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
-                    dynamicMember->SetDefaultOpenDialogPath(dataSourcePath);
+                    dynamicMember->SetDefaultOpenDialogPath(defaultPath);
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
                     QStringList path;
                     path.append(dataSourcePath);
