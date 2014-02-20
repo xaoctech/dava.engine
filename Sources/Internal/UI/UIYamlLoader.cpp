@@ -156,10 +156,13 @@ String UIYamlLoader::GetColorInheritTypeNodeValue(int32 colorInheritType)
 	
 int32 UIYamlLoader::GetAlignFromYamlNode(const YamlNode * alignNode)
 {
-	if (!alignNode)return ALIGN_HCENTER | ALIGN_VCENTER;
-	
+	if (!alignNode)
+    {
+        return ALIGN_LEFT | ALIGN_TOP;
+    }
+
 	const Vector<YamlNode*> & vec = alignNode->AsVector();
-	if (vec.size() != 2)return ALIGN_HCENTER | ALIGN_VCENTER;
+	if (vec.size() != 2)return ALIGN_LEFT | ALIGN_TOP;
 	
 	const String & horzAlign = vec[0]->AsString();
 	const String & vertAlign = vec[1]->AsString();
