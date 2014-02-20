@@ -151,6 +151,7 @@ public:
     
     //DataNode * GetNodeByPointer(uint64 pointer);
     
+	void SetVersion(int32 version);
     int32 GetVersion();
     void SetError(eError error);
     eError GetError();
