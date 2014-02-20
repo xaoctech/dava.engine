@@ -229,6 +229,9 @@ protected:
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
     
+    static Texture* stubTexture2d;
+    static Texture* stubTextureCube;
+    static Texture* stubTexture2dLightmap; //this texture should be all-pink without checkers
     NMaterial* sceneGlobalMaterial;
     //TODO: think about data-driven intiialization. Need to set default properties from outside and save/load per scene
     void InitGlobalMaterial();

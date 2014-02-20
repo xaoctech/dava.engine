@@ -43,6 +43,7 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	treeModel = new MaterialFilteringModel(new MaterialModel());
 	setModel(treeModel);
 	setContextMenuPolicy(Qt::CustomContextMenu);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
 
 	QObject::connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 
@@ -51,6 +52,10 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(OnSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
 
     header()->setSortIndicator( 0, Qt::AscendingOrder );
+    header()->setStretchLastSection(false);
+    header()->setResizeMode(0, QHeaderView::Stretch);
+    header()->resizeSection(1, 25);
+    header()->resizeSection(2, 25);
 }
 
 MaterialTree::~MaterialTree()
@@ -70,7 +75,8 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 	{
 		treeModel->SetSelection(NULL);
 	}
-    sortByColumn( 0 );
+
+    sortByColumn(0);
 }
 
 void MaterialTree::AssignMaterialToSelection( DAVA::NMaterial *material )
@@ -134,6 +140,8 @@ void MaterialTree::SelectEntities(DAVA::NMaterial *material)
 void MaterialTree::Update()
 {
 	treeModel->Sync();
+    treeModel->invalidate();
+    emit Updated();
 }
 
 int MaterialTree::getFilterType() const

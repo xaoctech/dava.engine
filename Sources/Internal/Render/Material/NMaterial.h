@@ -69,12 +69,17 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    IlluminationParams() :
+    //this is a weak property since IlluminationParams exists only as a part of parent material
+    NMaterial* parent;
+
+    IlluminationParams(NMaterial* parentMaterial = NULL) :
     isUsed(true),
     castShadow(true),
     receiveShadow(true),
-    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
-    {}
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT),
+    parent(parentMaterial)
+    {
+    }
 
     IlluminationParams(const IlluminationParams & params)
     {
@@ -82,13 +87,19 @@ struct IlluminationParams : public InspBase
         castShadow = params.castShadow;
         receiveShadow = params.receiveShadow;
         lightmapSize = params.lightmapSize;
+        parent = NULL;
     }
+    
+    int32 GetLightmapSize() const;
+    void SetLightmapSize(const int32 &size);
+    void SetParent(NMaterial* parentMaterial);
+    NMaterial* GetParent() const;
 
-    INTROSPECTION(IlluminationParams, 
+    INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(castShadow, "Cast Shadow", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(receiveShadow, "Receive Shadow", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(lightmapSize, "Lightmap Size", I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("lightmapSize", "Lightmap Size", GetLightmapSize, SetLightmapSize, I_SAVE | I_VIEW | I_EDIT)
         );
 };
 
@@ -166,6 +177,8 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
+    static const FastName PARAM_LIGHTMAP_SIZE;
+    
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
@@ -305,6 +318,7 @@ public:
     inline void SetRenderLayers(uint32 bitmask);
     
 	const RenderStateData& GetRenderState(const FastName& passName) const;
+    void GetRenderState(const FastName& passName, RenderStateData& target) const;
 	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
 	void SubclassRenderState(RenderStateData& newState);
     
@@ -487,8 +501,8 @@ protected:
 	
     uint32                  renderLayerIDsBitmask;
 	
-	static Texture* stubCubemapTexture;
-	static Texture* stub2dTexture;
+	//static Texture* stubCubemapTexture;
+	//static Texture* stub2dTexture;
     
     static NMaterial* GLOBAL_MATERIAL;
 	
@@ -520,7 +534,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags(bool updateChildren = false);
-	static Texture* GetStubTexture(const FastName& uniformName);
+	//static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
@@ -534,6 +548,8 @@ protected:
     FastName GetEffectiveQuality() const;
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
+    static bool IsRuntimeProperty(const FastName& propName);
+    static bool IsNamePartOfArray(const FastName& fastName, FastName* array, uint32 count);
 		
 protected:
 	

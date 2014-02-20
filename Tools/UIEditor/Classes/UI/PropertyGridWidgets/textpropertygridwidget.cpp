@@ -310,7 +310,7 @@ void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* co
         return SetComboboxSelectedItem(ui->fittingTypeComboBox, BackgroundGridWidgetHelper::GetFittingTypeDescByType(propertyValue) );
     }
     
-    return BasePropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
+    return UITextFieldPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(comboBoxWidget, curProperty);
 }
 
 void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
@@ -341,5 +341,5 @@ void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget
     }
 
     // No postprocessing was applied - use the generic process.
-    BasePropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
+    UITextFieldPropertyGridWidget::ProcessComboboxValueChanged(senderWidget, iter, value);
 }

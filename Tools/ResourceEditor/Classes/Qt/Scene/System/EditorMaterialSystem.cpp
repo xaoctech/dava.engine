@@ -34,19 +34,20 @@
 #include "Commands2/Command2.h"
 #include "Commands2/CommandBatch.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
+#include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteLODCommand.h"
 #include "Commands2/CreatePlaneLODCommand.h"
 
 EditorMaterialSystem::EditorMaterialSystem(DAVA::Scene * scene)
 : DAVA::SceneSystem(scene)
 , curViewMode(LIGHTVIEW_ALL)
+, showLightmapCanvas(false)
 { }
 
 EditorMaterialSystem::~EditorMaterialSystem()
 {
 	while(materialFeedback.size() > 0)
 	{
-        DVASSERT(false);
 		RemoveMaterial(materialFeedback.begin()->first);
 	}
 
@@ -132,14 +133,7 @@ void EditorMaterialSystem::SetLightViewMode(int fullViewMode)
     if(curViewMode != fullViewMode)
     {
         curViewMode = fullViewMode;
-
-        DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
-        DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
-
-        for(; i != end; ++i)
-        {
-            ApplyViewMode(*i);
-        }
+        ApplyViewMode();
     }
 }
 
@@ -157,6 +151,20 @@ void EditorMaterialSystem::SetLightViewMode(EditorMaterialSystem::MaterialLightV
     }
 
     SetLightViewMode(newMode);
+}
+
+void EditorMaterialSystem::SetLightmapCanvasVisible(bool enable)
+{
+    if(enable != showLightmapCanvas)
+    {
+        showLightmapCanvas = enable;
+        ApplyViewMode();
+    }
+}
+
+bool EditorMaterialSystem::IsLightmapCanvasVisible() const
+{
+    return showLightmapCanvas;
 }
 
 void EditorMaterialSystem::AddEntity(DAVA::Entity * entity)
@@ -189,12 +197,32 @@ void EditorMaterialSystem::RemoveEntity(DAVA::Entity * entity)
 	}
 }
 
+void EditorMaterialSystem::ApplyViewMode()
+{
+    DAVA::Set<DAVA::NMaterial *>::const_iterator i = ownedParents.begin();
+    DAVA::Set<DAVA::NMaterial *>::const_iterator end = ownedParents.end();
+
+    for(; i != end; ++i)
+    {
+        ApplyViewMode(*i);
+    }
+}
+
 void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
 {
     DAVA::NMaterial::eFlagValue flag;
 
     (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWALBEDO, flag);
+
+    //if(NULL != material->GetTexture(NMaterial::TEXTURE_LIGHTMAP))
+    {
+        (curViewMode & LIGHTVIEW_ALBEDO) ? flag = DAVA::NMaterial::FlagOff : flag = DAVA::NMaterial::FlagOn;
+        material->SetFlag(DAVA::NMaterial::FLAG_LIGHTMAPONLY, flag);
+
+        (showLightmapCanvas) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
+        material->SetFlag(DAVA::NMaterial::FLAG_SETUPLIGHTMAP, flag);
+    }
 
     (curViewMode & LIGHTVIEW_DIFFUSE) ? flag = DAVA::NMaterial::FlagOn : flag = DAVA::NMaterial::FlagOff;
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWDIFFUSE, flag);
@@ -251,6 +279,31 @@ void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
         {
             RemoveMaterial(batch->GetMaterial());
         }
+    }
+    else if(commandID == CMDID_DELETE_RENDER_BATCH)
+    {
+        DeleteRenderBatchCommand *rbCommand = (DeleteRenderBatchCommand *) command;
+        if(redo)
+        {
+            RemoveMaterial(rbCommand->GetRenderBatch()->GetMaterial());
+        }
+        else
+        {
+            AddMaterial(rbCommand->GetRenderBatch()->GetMaterial(), rbCommand->GetEntity(), rbCommand->GetRenderBatch());
+        }
+    }
+    else if(commandID == CMDID_CONVERT_TO_SHADOW)
+    {
+        ConvertToShadowCommand *swCommand = (ConvertToShadowCommand *) command;
+        if(redo)
+        {
+            RemoveMaterial(swCommand->oldBatch->GetMaterial());
+        }
+        else
+        {
+            AddMaterial(swCommand->oldBatch->GetMaterial(), swCommand->GetEntity(), swCommand->oldBatch);
+        }
+
     }
 }
 

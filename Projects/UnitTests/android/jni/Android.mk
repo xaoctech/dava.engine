@@ -28,6 +28,9 @@ LOCAL_SRC_FILES := \
 
 LOCAL_LDLIBS := -lz -lOpenSLES -landroid
 
+LOCAL_ARM_NEON := true
+LOCAL_NEON_CFLAGS := -mfloat-abi=softfp -mfpu=neon -march=armv7
+
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libInternal
 

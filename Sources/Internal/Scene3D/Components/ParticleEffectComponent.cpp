@@ -306,7 +306,7 @@ void ParticleEffectComponent::Serialize(KeyedArchive *archive, SerializationCont
 		KeyedArchive *emitterArch = new KeyedArchive();
 		String filename = emitters[i]->configPath.GetRelativePathname(serializationContext->GetScenePath());
 		emitterArch->SetString("emitter.filename", filename);
-        emittersArch->SetVector3("emitter.position", spawnPositions[i]);
+        emitterArch->SetVector3("emitter.position", spawnPositions[i]);
 		emittersArch->SetArchive(KeyedArchive::GenKeyFromIndex(i), emitterArch);
 		emitterArch->Release();
 	} 
@@ -339,7 +339,7 @@ void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationCo
 				emitters[i] = ParticleEmitter::LoadEmitter(serializationContext->GetScenePath()+filename);
             else
                 emitters[i]=new ParticleEmitter();
-            spawnPositions[i] = emittersArch->GetVector3("emitter.position");
+            spawnPositions[i] = emitterArch->GetVector3("emitter.position");
 		} 	
         RebuildEffectModifiables();
 	}

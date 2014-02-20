@@ -51,7 +51,6 @@
 
 #include "Deprecated/EditorConfig.h"
 #include "Deprecated/SceneValidator.h"
-#include "Deprecated/TextureSquarenessChecker.h"
 #include "Deprecated/ControlsFactory.h"
 
 #include "Scene/FogSettingsChangedReceiver.h"
@@ -139,7 +138,6 @@ int main(int argc, char *argv[])
 		new SettingsManager();
 		new EditorConfig();
 		new SceneValidator();
-		new TextureSquarenessChecker();
         new TextureCache();
 		new FogSettingsChangedReceiver();
 
@@ -167,7 +165,6 @@ int main(int argc, char *argv[])
 		QtMainWindow::Instance()->Release();
 		ControlsFactory::ReleaseFonts();
 
-		TextureSquarenessChecker::Instance()->Release();
 		SceneValidator::Instance()->Release();
 		EditorConfig::Instance()->Release();
 		SettingsManager::Instance()->Release();

@@ -108,7 +108,6 @@ public slots:
 	void CollapseAll();
     
 	void SetCurrentCamera();
-    void SetViewCamera();
     void SetClipCamera();
 
 protected slots:

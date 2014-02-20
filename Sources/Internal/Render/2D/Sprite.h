@@ -73,7 +73,6 @@ public:
     public:
     
 		DrawState();
-        ~DrawState();
         
 		Vector2 position;
 		Vector2 pivotPoint;
@@ -99,6 +98,7 @@ public:
 		inline void SetPerPixelAccuracyUsage(bool needToUse);
 		void BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState);
         
+        //NOTE: be careful: this method doesn't retain shader.
         void SetShader(Shader* _shader);
         
         inline Shader* GetShader() const
@@ -106,6 +106,7 @@ public:
             return shader;
         }
         
+        //NOTE: be careful: this method doesn't retain render state.
         void SetRenderState(UniqueHandle _renderState);
         
         inline UniqueHandle GetRenderState()
@@ -189,6 +190,9 @@ public:
 
 	void InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded = false, const FilePath &spriteName = FilePath());
 
+    static Sprite* CreateFromImage(const Image* image);
+    static Sprite* CreateFromPNG(const FilePath& path);
+    static Sprite* CreateFromPNG(const uint8* data, uint32 size);
 
 	/*
 	 \brief Function to prepare sprite tiling. Shifts texture coordinates by approximately 1 pixel to the center. Tiled sprites can be drawn using scale and there will be no empty pixels between them.

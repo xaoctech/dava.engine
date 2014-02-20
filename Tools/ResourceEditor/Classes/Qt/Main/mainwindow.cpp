@@ -370,7 +370,26 @@ bool QtMainWindow::eventFilter(QObject *obj, QEvent *event)
 			ui->sceneTabWidget->setFocus(Qt::ActiveWindowFocusReason);
 		}
 	}
-
+    
+    if(obj == this && QEvent::KeyPress == eventType)
+    {
+        QKeyEvent *keyEvent = (QKeyEvent *)event;
+        int32 keyValue = keyEvent->key();
+        // check chars of russian alphabet(unicode table)
+        if(keyValue >= 0x410 && keyValue <=0x44F)
+        {
+            // according to reference of QKeyEvent, it's impossible to get scanCode on mac os
+            // so we use platform depending nativeVirtualKey()
+            int32 systemKeyCode = keyEvent->nativeVirtualKey();
+            int32 davaKey = DAVA::InputSystem::Instance()->GetKeyboard()->GetDavaKeyForSystemKey(systemKeyCode);
+            // translate davaKey to ascii to find out real key pressed
+            // offset between ascii and letters in davakey table - 29 positions
+            int32 qtKey = davaKey + 29;
+            QKeyEvent eventNew = QKeyEvent(QEvent::KeyPress, qtKey, keyEvent->modifiers());
+            QApplication::sendEvent(obj, &eventNew);
+        }
+    }
+    
 	return QMainWindow::eventFilter(obj, event);
 }
 
@@ -506,6 +525,12 @@ void QtMainWindow::SetupStatusBar()
 	gizmoStatusBtn->setMaximumSize(QSize(16, 16));
 	ui->statusBar->insertPermanentWidget(0, gizmoStatusBtn);
 
+    QToolButton *lighmapCanvasStatusBtn = new QToolButton();
+    lighmapCanvasStatusBtn->setDefaultAction(ui->actionLightmapCanvas);
+    lighmapCanvasStatusBtn->setAutoRaise(true);
+    lighmapCanvasStatusBtn->setMaximumSize(QSize(16, 16));
+    ui->statusBar->insertPermanentWidget(0, lighmapCanvasStatusBtn);
+
 	QToolButton *onSceneSelectStatusBtn = new QToolButton();
 	onSceneSelectStatusBtn->setDefaultAction(ui->actionOnSceneSelection);
 	onSceneSelectStatusBtn->setAutoRaise(true);
@@ -577,6 +602,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionSpecular, SIGNAL(toggled(bool)), this, SLOT(OnMaterialLightViewChanged(bool)));
 	
 	QObject::connect(ui->actionShowEditorGizmo, SIGNAL(toggled(bool)), this, SLOT(OnEditorGizmoToggle(bool)));
+    QObject::connect(ui->actionLightmapCanvas, SIGNAL(toggled(bool)), this, SLOT(OnViewLightmapCanvas(bool)));
 	QObject::connect(ui->actionOnSceneSelection, SIGNAL(toggled(bool)), this, SLOT(OnAllowOnSceneSelectionToggle(bool)));
 
 	// scene undo/redo
@@ -779,6 +805,7 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 	LoadHangingObjects(scene);
 
     OnMaterialLightViewChanged(true);
+    OnViewLightmapCanvas(true);
 
 	int32 tools = scene->GetEnabledTools();
 	UpdateConflictingActionsState(tools == 0);
@@ -1108,6 +1135,20 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 	{
 		scene->SetHUDVisible(show);
 	}
+}
+
+void QtMainWindow::OnViewLightmapCanvas(bool show)
+{
+    bool showCanvas = ui->actionLightmapCanvas->isChecked();
+    if(showCanvas != SettingsManager::Instance()->GetValue("materialsShowLightmapCanvas", SettingsManager::INTERNAL).AsBool())
+    {
+        SettingsManager::Instance()->SetValue("materialsShowLightmapCanvas", DAVA::VariantType(showCanvas), SettingsManager::INTERNAL);
+    }
+
+    if(NULL != GetCurrentScene())
+    {
+        GetCurrentScene()->materialSystem->SetLightmapCanvasVisible(showCanvas);
+    }
 }
 
 void QtMainWindow::OnAllowOnSceneSelectionToggle(bool allow)
@@ -1526,6 +1567,9 @@ void QtMainWindow::LoadViewState(SceneEditor2 *scene)
 	{
 		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
 		ui->actionOnSceneSelection->setChecked(scene->selectionSystem->IsSelectionAllowed());
+     
+        bool viewLMCanvas = SettingsManager::Instance()->GetValue("materialsShowLightmapCanvas", SettingsManager::INTERNAL).AsBool();
+        ui->actionLightmapCanvas->setChecked(viewLMCanvas);
 	}
 }
 

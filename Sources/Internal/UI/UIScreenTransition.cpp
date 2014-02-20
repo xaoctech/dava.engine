@@ -61,16 +61,16 @@ void UIScreenTransition::CreateRenderTargets()
 		Logger::FrameworkDebug("Render targets already created");
 		return;
 	}
-    uint32 width = Core::Instance()->GetPhysicalScreenWidth();//(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin());
-    uint32 height = Core::Instance()->GetPhysicalScreenHeight();//(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin());
+    uint32 width = (uint32)Core::Instance()->GetPhysicalScreenWidth();//(Core::Instance()->GetVirtualScreenXMax() - Core::Instance()->GetVirtualScreenXMin());
+    uint32 height = (uint32)Core::Instance()->GetPhysicalScreenHeight();//(Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin());
     
     Texture * tex1 = Texture::CreateFBO(width, height, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
     Texture * tex2 = Texture::CreateFBO(width, height, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);
 	
-	renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, width, height);
+	renderTargetPrevScreen = Sprite::CreateFromTexture(tex1, 0, 0, (float32)width, (float32)height);
 	renderTargetPrevScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 	
-	renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, width, height);
+	renderTargetNextScreen = Sprite::CreateFromTexture(tex2, 0, 0, (float32)width, (float32)height);
 	renderTargetNextScreen->SetDefaultPivotPoint(-Core::Instance()->GetVirtualScreenXMin(), -Core::Instance()->GetVirtualScreenYMin());
 
     SafeRelease(tex1);
