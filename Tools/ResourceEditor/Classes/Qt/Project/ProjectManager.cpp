@@ -98,8 +98,9 @@ void ProjectManager::ProjectOpen(const QString &path)
     ProjectOpen(incomePath);
 }
 
-void ProjectManager::ProjectOpen(const FilePath &incomePath)
+void ProjectManager::ProjectOpen(const FilePath & value)
 {
+    FilePath incomePath(value);
     incomePath.MakeDirectoryPathname();
     if(incomePath != curProjectPath)
 	{
@@ -107,7 +108,7 @@ void ProjectManager::ProjectOpen(const FilePath &incomePath)
         
         curProjectPath = incomePath;
         
-		if(!incomePath.IsEmpty())
+		if(incomePath.Exists())
 		{
 			DAVA::FilePath dataSource3Dpathname = curProjectPath + "DataSource/3d/";
 			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
@@ -149,10 +150,10 @@ void ProjectManager::ProjectClose()
 {
 	if(!curProjectPath.IsEmpty())
 	{
-		DAVA::FilePath::RemoveResourcesFolder(curProjectPath.MakeDirectoryPathname());
-        curProjectPath = FilePath();
-        curProjectPathDataSource = FilePath();
-        curProjectPathParticles = FilePath();
+		DAVA::FilePath::RemoveResourcesFolder(curProjectPath);
+        curProjectPath = "";
+        curProjectPathDataSource = "";
+        curProjectPathParticles = "";
         emit ProjectClosed();
 	}
 }
