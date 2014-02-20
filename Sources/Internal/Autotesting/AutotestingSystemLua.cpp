@@ -90,11 +90,8 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
             errors += ", LoadWrappedLuaObjects failed";
         }
         
-        //FilePath pathToAutotesting = "~res:/Autotesting/";
-		FilePath pathToAutotesting = "~res:/Autotesting/";
-		String setPackagePathScript = Format("SetPackagePath(\"%s\")", pathToAutotesting.GetAbsolutePathname().c_str());
+		String setPackagePathScript = Format("SetPackagePath('~res:/Autotesting/')");
 
-        //String setPackagePathScript = Format("LoadModules()");
         if(isOk)
         {
             isOk = RunScript(setPackagePathScript);
@@ -107,7 +104,6 @@ void AutotestingSystemLua::InitFromFile(const String &luaFilePath)
         if(isOk)
         {
             isOk = RunScriptFromFile(luaFilePath);
-			//isOk = RunScriptFromFile(setPackagePathScript);
         }
         else
         {
@@ -186,7 +182,7 @@ const char *AutotestingSystemLua::findfile (lua_State *L, const char *name, cons
 
 int AutotestingSystemLua::ReqModule(lua_State* L)
 {
-	String module = lua_tostring(L, 1);
+	String module = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	FilePath path = AutotestingSystemLua::Instance()->findfile(L, module.c_str(), "path");
 
@@ -682,9 +678,12 @@ bool AutotestingSystemLua::LoadScriptFromFile(const FilePath &luaFilePath)
 	{
 		char *data = new char[file->GetSize()];
 		file->Read(data, file->GetSize());
-		bool result = luaL_loadbuffer(luaState, data, file->GetSize(), luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK;
+		uint32 fileSize = file->GetSize();
 		file->Release();
-		delete data;
+		file = NULL;
+
+		bool result = luaL_loadbuffer(luaState, data, fileSize, luaFilePath.GetAbsolutePathname().c_str()) == LUA_OK;
+		delete [] data;
 		if (result)
 		{
 			return true;

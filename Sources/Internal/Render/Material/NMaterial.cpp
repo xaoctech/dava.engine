@@ -259,8 +259,8 @@ void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
 			newParent->children.push_back(this);
 		}
 		
-		parent = SafeRetain(newParent);;
-		
+		parent = SafeRetain(newParent);
+        
 		OnParentChanged(newParent, inheritTemplate);
 	}
 }
@@ -1013,9 +1013,16 @@ void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 	
 	bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
 	
-	if(newParent && useParentTemplate)
+	if(newParent)
 	{
-		SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
+        if(useParentTemplate)
+        {
+            SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
+        }
+        else
+        {
+            UpdateShaderWithFlags(true);
+        }
 	}
 	
 	SetTexturesDirty();

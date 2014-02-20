@@ -1193,6 +1193,11 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
+void SceneFileV2::SetVersion( int32 version )
+{
+	header.version = version;
+}
+
 
 
 SceneArchive::~SceneArchive()
