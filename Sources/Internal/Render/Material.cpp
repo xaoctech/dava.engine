@@ -318,8 +318,6 @@ Material * Material::Clone(Material *newMaterial /* = NULL */)
     
     newMaterial->pointer = pointer;
     newMaterial->scene = scene;
-    //newMaterial->name = name;
-    //newMaterial->children = children;
     newMaterial->index = index;
 
 	newMaterial->CopySettings(this);
