@@ -916,14 +916,13 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 
 void QtMainWindow::OnProjectOpen()
 {
-    QString newPath = ProjectManager::Instance()->ProjectOpenDialog();
-    FilePath incomePath(PathnameToDAVAStyle(newPath));
-    incomePath.MakeDirectoryPathname();
-    if(!newPath.isEmpty() &&
+    FilePath incomePath = ProjectManager::Instance()->ProjectOpenDialog();
+    
+    if(!incomePath.IsEmpty() &&
        ProjectManager::Instance()->CurProjectPath() != incomePath &&
        ui->sceneTabWidget->CloseAllTabs())
     {
-        ProjectManager::Instance()->ProjectOpen(newPath);
+        ProjectManager::Instance()->ProjectOpen(incomePath);
     }
 }
 
