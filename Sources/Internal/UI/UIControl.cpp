@@ -1332,14 +1332,6 @@ namespace DAVA
 		visible = srcControl->visible;
 		visibleForUIEditor = srcControl->visibleForUIEditor;
 		inputEnabled = srcControl->inputEnabled;
-        if (inputEnabled)
-        {
-            inputProcessorsCount = 1;
-        }
-        else
-        {
-            inputProcessorsCount = 0;
-        }
 		clipContents = srcControl->clipContents;
 
 		customControlType = srcControl->GetCustomControlType();
@@ -1356,6 +1348,14 @@ namespace DAVA
 		}
 		
 		RemoveAllControls();
+        if (inputEnabled)
+        {
+            inputProcessorsCount = 1;
+        }
+        else
+        {
+            inputProcessorsCount = 0;
+        }
         
         // Yuri Coder, 2012/11/30. Use Real Children List to avoid copying
         // unnecessary children we have on the for example UIButton.

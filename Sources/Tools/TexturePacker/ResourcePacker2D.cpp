@@ -320,9 +320,9 @@ Vector<String> ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
         return Vector<String>();
 	}
-    
-	char flagsTmpBuffer[4096] = {0};
-	int flagsSize = 0;
+
+	Vector<char> flagsTmpVector;
+	flagsTmpVector.reserve(file->GetSize() + 1);
 	while(!file->IsEof())
 	{
 		char c = 0x00;
@@ -335,13 +335,13 @@ Vector<String> ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 				break;
 			}
 
-			flagsTmpBuffer[flagsSize++] = c;
+			flagsTmpVector.push_back(c);
 		}	
 	}
-	flagsTmpBuffer[flagsSize++] = 0;
-	
-	currentFlags = flagsTmpBuffer;
-	String flags = flagsTmpBuffer;
+	flagsTmpVector.push_back(0);
+
+	currentFlags = flagsTmpVector.data();
+	String flags = flagsTmpVector.data();
 	
 	const String & delims=" ";
 	
@@ -390,8 +390,8 @@ bool ResourcePacker2D::isRecursiveFlagSet(const Vector<String> & flags)
 
 void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FilePath & outputPath, const Vector<String> & flags)
 {
-	// DF-2961 - Local list for flags command arguments
-	Vector<String> currentCommandFlags = Vector<String>();
+	// Local list for flags command arguments
+	Vector<String> currentCommandFlags = flags;
 
     DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
     
@@ -420,7 +420,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	CommandLineParser::Instance()->Clear();
 	List<DefinitionFile *> definitionFileList;
 
-	// DF-2961 - Reset processed flag
+	// Reset processed flag
 	bool flagsProcessed = false;
 	// Find flags and setup them
 	FileList * fileList = new FileList(inputPath);
@@ -437,13 +437,21 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		}
 	}
 	
-	// DF-2961 - If "flags.txt" do not exist - try to use previous flags command line
+	// If "flags.txt" do not exist - try to use previous flags command line
 	if (!flagsProcessed)
 	{
-		if (flags.size() > 0)
+		currentFlags = "";
+		if (currentCommandFlags.size() > 0)
 		{
-			CommandLineParser::Instance()->SetArguments(flags);
-			currentCommandFlags = flags;
+			CommandLineParser::Instance()->SetArguments(currentCommandFlags);
+			for (uint32 k = 0; k < currentCommandFlags.size(); ++k)
+			{
+				currentFlags += currentCommandFlags[k];
+				if (k != (currentCommandFlags.size() - 1))
+				{
+					 currentFlags += " ";
+				}
+			}
 		}
 	}
 	
