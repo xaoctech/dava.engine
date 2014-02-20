@@ -54,17 +54,32 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
 	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
 	{
-		Matrix4 * worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
-		Vector3 translation = worldTransformPointer->GetTranslationVector();
+		const Matrix4 & worldTransform = GetTransformComponent(entity)->GetWorldTransform();
+		Vector3 translation = worldTransform.GetTranslationVector();
 
         SoundComponent * sc = GetSoundComponent(entity);
         if(sc)
         {
+            Vector3 worldDirection;
+            bool needCalcDirection = true;
+
             uint32 eventsCount = sc->GetEventsCount();
             for(uint32 i = 0; i < eventsCount; ++i)
             {
                 SoundEvent * sound = sc->GetSoundEvent(i);
                 sound->SetPosition(translation);
+                if(sound->IsDirectional())
+                {
+                    if(needCalcDirection)
+                    {
+                        Vector4 localDirection = Vector4(sc->GetLocalDirection());
+                        localDirection.w = 0;
+                        Vector4 worldDirection4 = localDirection * worldTransform;
+                        worldDirection = Vector3(worldDirection4.x, worldDirection4.y, worldDirection4.z);
+                        needCalcDirection = false;
+                    }
+                    sound->SetDirection(worldDirection);
+                }
                 sound->UpdateInstancesPosition();
             }
         }

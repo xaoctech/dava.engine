@@ -36,7 +36,9 @@ namespace DAVA
 
 REGISTER_CLASS(SoundComponent)
 
-SoundComponent::SoundComponent() {}
+SoundComponent::SoundComponent() :
+    localDirection(1.f, 0.f, 0.f)
+{}
 
 SoundComponent::~SoundComponent()
 {
@@ -73,6 +75,11 @@ void SoundComponent::RemoveAllEvents()
         SafeRelease(events[i]);
 
     events.clear();
+}
+
+void SoundComponent::SetLocalDirection(const Vector3 & direction)
+{
+    localDirection = direction;
 }
 
 Component * SoundComponent::Clone(Entity * toEntity)

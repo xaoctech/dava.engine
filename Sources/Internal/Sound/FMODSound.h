@@ -61,7 +61,7 @@ public:
     virtual void Pause();
     
 	virtual void SetPosition(const Vector3 & position);
-    virtual void SetOrientation(const Vector3 & orientation) {};
+    virtual void SetDirection(const Vector3 & direction) {};
 	virtual void UpdateInstancesPosition();
 
 	virtual void SetLoopCount(int32 looping); // -1 = infinity

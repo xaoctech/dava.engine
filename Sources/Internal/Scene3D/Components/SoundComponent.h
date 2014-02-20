@@ -58,10 +58,14 @@ public:
     void RemoveSoundEvent(SoundEvent * event);
     void RemoveAllEvents();
     
+    void SetLocalDirection(const Vector3 & direction);
+    inline Vector3 GetLocalDirection() const;
+
     IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
     
 protected:
     Vector<SoundEvent *> events;
+    Vector3 localDirection;
 
 public:
     INTROSPECTION_EXTEND(SoundComponent, Component,
@@ -79,6 +83,11 @@ inline SoundEvent * SoundComponent::GetSoundEvent(uint32 index) const
 inline uint32 SoundComponent::GetEventsCount() const
 {
     return events.size();
+}
+
+inline Vector3 SoundComponent::GetLocalDirection() const
+{
+    return localDirection;
 }
 
 };
