@@ -768,12 +768,7 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
             UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
             button->SetStateFont(state, EditorFontManager::Instance()->GetDefaultFont());
             button->SetStateText(state, controlText);
-
-            UIStaticText* staticText = button->GetStateTextControl(state);
-            if (staticText)
-            {
-                staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-            }
+            button->SetStateTextAlign(state, ALIGN_HCENTER | ALIGN_VCENTER);
 
             // Button is state-aware.
             activeNode->GetExtraData().SetLocalizationKey(controlText, state);
