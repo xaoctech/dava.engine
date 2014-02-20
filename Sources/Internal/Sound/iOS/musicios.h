@@ -52,7 +52,7 @@ public:
     virtual int32 GetLoopCount() const;
     
     virtual void SetPosition(const Vector3 & position) {};
-    virtual void SetOrientation(const Vector3 & orientation) {};
+    virtual void SetDirection(const Vector3 & direction) {};
     virtual void UpdateInstancesPosition() {};
     
     virtual void SetParameterValue(const FastName & paramName, float32 value) {};

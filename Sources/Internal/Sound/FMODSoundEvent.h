@@ -58,7 +58,7 @@ public:
     virtual void SetVolume(float32 volume);
     
     virtual void SetPosition(const Vector3 & position);
-    virtual void SetOrientation(const Vector3 & orientation);
+    virtual void SetDirection(const Vector3 & direction);
     virtual void UpdateInstancesPosition();
     
     virtual void SetParameterValue(const FastName & paramName, float32 value);
@@ -80,7 +80,7 @@ protected:
     FastName eventName;
     
     Vector3 position;
-    Vector3 orientation;
+    Vector3 direction;
     
     bool is3D;
 

@@ -37,6 +37,8 @@
 namespace DAVA
 {
     
+static const FastName FMOD_SYSTEM_EVENTANGLE_PARAMETER("(event angle)");
+
 FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
     
 FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
@@ -57,6 +59,8 @@ FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
     {
         Logger::FrameworkDebug(eventName.c_str());
     }
+
+    isDirectional = IsParameterExists(FMOD_SYSTEM_EVENTANGLE_PARAMETER);
 }
 
 FMODSoundEvent::~FMODSoundEvent()
@@ -92,7 +96,7 @@ bool FMODSoundEvent::Trigger()
         FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
         if(fmodEventInfo)
         {
-            FMOD_VERIFY(fmodEventInfo->set3DAttributes((FMOD_VECTOR*)&position, 0, (FMOD_VECTOR*)&orientation));
+            FMOD_VERIFY(fmodEventInfo->set3DAttributes((FMOD_VECTOR*)&position, 0, isDirectional ? (FMOD_VECTOR*)&direction : NULL));
             FMOD_VERIFY(fmodEventInfo->setVolume(volume));
             ApplyParamsToEvent(fmodEventInfo);
         }
@@ -121,16 +125,12 @@ bool FMODSoundEvent::Trigger()
 
 void FMODSoundEvent::SetPosition(const Vector3 & _position)
 {
-    position.x = _position.x;
-    position.y = _position.y;
-    position.z = _position.z;
+    position = _position;
 }
 
-void FMODSoundEvent::SetOrientation(const Vector3 & _orientation)
+void FMODSoundEvent::SetDirection(const Vector3 & _direction)
 {
-    orientation.x = _orientation.x;
-    orientation.y = _orientation.y;
-    orientation.z = _orientation.z;
+    direction = _direction;
 }
 
 void FMODSoundEvent::SetVolume(float32 _volume)
@@ -153,7 +153,7 @@ void FMODSoundEvent::UpdateInstancesPosition()
 
         List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
         for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
-            FMOD_VERIFY((*it)->set3DAttributes((FMOD_VECTOR*)&position, 0, (FMOD_VECTOR*)&orientation));
+            FMOD_VERIFY((*it)->set3DAttributes((FMOD_VECTOR*)&position, 0, isDirectional ? (FMOD_VECTOR*)&direction : NULL));
     }
 }
     

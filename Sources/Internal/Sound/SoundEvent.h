@@ -63,7 +63,7 @@ public:
         SOUND_EVENT_CREATE_LOOP = (1 << 2)
     };
     
-    SoundEvent() : volume(1.f) {};
+    SoundEvent() : volume(1.f), isDirectional(false) {};
 
     virtual bool IsActive() const = 0;
     virtual bool Trigger() = 0;
@@ -74,9 +74,11 @@ public:
     inline float32 GetVolume() const;
     
     virtual void SetPosition(const Vector3 & position) = 0;
-    virtual void SetOrientation(const Vector3 & orientation) = 0;
+    virtual void SetDirection(const Vector3 & direction) = 0;
     virtual void UpdateInstancesPosition() = 0;
     
+    inline bool IsDirectional() const;
+
     virtual void SetParameterValue(const FastName & paramName, float32 value) = 0;
     virtual float32 GetParameterValue(const FastName & paramName) = 0;
     virtual bool IsParameterExists(const FastName & paramName) = 0;
@@ -87,11 +89,17 @@ public:
 
 protected:
     float32 volume;
+    bool isDirectional;
 };
 
 inline float32 SoundEvent::GetVolume() const
 {
     return volume;
+}
+
+inline bool SoundEvent::IsDirectional() const
+{
+    return isDirectional;
 }
 
 };
