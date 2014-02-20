@@ -369,7 +369,7 @@ void UITextFieldAndroid::CloseKeyboard()
 	jniTextField.CloseKeyboard();
 }
 
-void UITextFieldAndroid::GetText(WideString & string)
+void UITextFieldAndroid::GetText(WideString & string) const
 {
 	string = text;
 }
