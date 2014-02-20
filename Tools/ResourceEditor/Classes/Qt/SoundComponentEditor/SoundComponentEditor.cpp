@@ -44,6 +44,7 @@ SoundComponentEditor::SoundComponentEditor(SceneEditor2* _scene, QWidget *parent
     scene(_scene)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint);
 
     ui->playButton->setIcon(QIcon(":/QtIcons/play.png"));
     ui->stopButton->setIcon(QIcon(":/QtIcons/stop.png"));
@@ -114,6 +115,12 @@ void SoundComponentEditor::FillEventsList()
         QListWidgetItem * item = new QListWidgetItem(QString(event->GetEventName().c_str()));
         item->setData(Qt::UserRole, i);
         ui->listWidget->addItem(item);
+
+        if(event == selectedEvent)
+        {
+            item->setSelected(true);
+            OnEventSelected(item);
+        }
     }
 }
 
@@ -159,15 +166,17 @@ void SoundComponentEditor::OnAddEvent()
         FMODSoundBrowser * browser = FMODSoundBrowser::Instance();
         if(browser->exec() == QDialog::Accepted)
         {
-            DAVA::String selectedEvent = browser->GetSelectSoundEvent();
-            DAVA::SoundEvent * sEvent = DAVA::SoundSystem::Instance()->CreateSoundEventByID(FastName(selectedEvent), DAVA::FastName("FX"));
+            DAVA::String selectedEventName = browser->GetSelectSoundEvent();
+            DAVA::SoundEvent * sEvent = DAVA::SoundSystem::Instance()->CreateSoundEventByID(FastName(selectedEventName), DAVA::FastName("FX"));
 
             scene->Exec(new AddSoundEventCommand(component->GetEntity(), sEvent));
+
+            selectedEvent = sEvent;
 
             SafeRelease(sEvent);
         }
     }
-    
+
     FillEventsList();
 }
 
