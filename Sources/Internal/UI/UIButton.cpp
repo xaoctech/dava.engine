@@ -392,18 +392,6 @@ namespace DAVA
 		oldState = 0;
 	}
 	
-    void UIButton::SetStateTextAlign(int32 state, int32 align)
-	{
-		for(int i = 0; i < DRAW_STATE_COUNT; i++)
-		{
-			if(state & 0x01)
-			{
-				CreateTextForState((eButtonDrawState)i)->SetTextAlign(align);
-			}
-			state >>= 1;
-		}
-	}
-
 //	FTFont *UIButton::GetStateFont(int32 state)
 //	{
 //		UIStaticText *tx = GetActualText(state);
@@ -850,12 +838,7 @@ namespace DAVA
 			{
 				SetStateText(stateArray[k], LocalizedString(stateTextNode->AsWString()));
 			}
-
-            const YamlNode * stateTextAlignNode = node->Get(Format("stateTextAlign%s", statePostfix[k].c_str()));
-            // No need to check stateTextAlignNode for NULL here - this is OK, check will be
-            // performed by GetAlignFromYamlNode().
-            SetStateTextAlign(stateArray[k], loader->GetAlignFromYamlNode(stateTextAlignNode));
-
+			
 			const YamlNode * stateTextColorNode = node->Get(Format("stateTextcolor%s", statePostfix[k].c_str()));
 			if (stateTextColorNode)
 			{
@@ -1034,12 +1017,6 @@ namespace DAVA
                 {
                     nodeValue->SetInt32(fittingOption);
                     node->Set(Format("stateFittingOption%s", statePostfix[i].c_str()), nodeValue);
-                }
-
-                int32 textAlign = GetStateTextControl(stateArray[i])->GetTextAlign();
-                if (baseStaticText->GetAlign() != textAlign)
-                {
-                    node->SetNodeToMap(Format("stateTextAlign%s", statePostfix[i].c_str()), loader->GetAlignNodeValue(textAlign));
                 }
 			}
 			
