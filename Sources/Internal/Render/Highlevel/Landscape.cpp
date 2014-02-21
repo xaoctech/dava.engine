@@ -1733,11 +1733,14 @@ void Landscape::SetFogDensity(float32 _fogDensity)
 
 float32 Landscape::GetFogDensity() const
 {
-    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY);
-    DVASSERT(propValue);
-    
     float32 fogDensity = DEFAULT_FOG_DENSITY;
-    memcpy(&fogDensity, propValue->data, sizeof(float32));
+
+    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY);
+    if(NULL != propValue)
+    {
+        memcpy(&fogDensity, propValue->data, sizeof(float32));
+    }
+    
     return fogDensity;
 }
 
@@ -1748,11 +1751,13 @@ void Landscape::SetFogColor(const Color & _fogColor)
 
 Color Landscape::GetFogColor() const
 {
-    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR);
-    DVASSERT(propValue);
-
     Color fogColor = Color::White;
-    memcpy(&fogColor, propValue->data, Shader::GetUniformTypeSize(propValue->type) * propValue->size);
+    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR);
+    
+    if(NULL != propValue)
+    {
+        memcpy(&fogColor, propValue->data, Shader::GetUniformTypeSize(propValue->type) * propValue->size);
+    }
     return fogColor;
 }
 

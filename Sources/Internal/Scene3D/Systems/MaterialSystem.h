@@ -62,16 +62,9 @@ public:
 	const FastName& GetCurrentMaterialQuality() const;
 	void SwitchMaterialQuality(const FastName& qualityLevelName, bool force = false);
 			
-    inline float32 GetFogDensity() const { return fogDensity; };
-    inline const Color & GetFogColor() const { return fogColor; };
-    
 private:
-	
 	FastName currentMaterialQuality;
 	FastName defaultMaterialQuality;
-    
-    float32 fogDensity;
-    Color fogColor;
 };
 
 };
