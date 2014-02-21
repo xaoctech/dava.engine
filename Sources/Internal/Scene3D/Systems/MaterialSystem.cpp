@@ -61,37 +61,16 @@ void MaterialSystem::AddEntity(Entity * entity)
     RenderObject *ro = GetRenderObject(entity);
     if(!ro) return;
 
-    // try to retrive fog settings from scene settings
+    // try to retrieve fog settings from scene settings
     if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
         Landscape *land = static_cast<Landscape *>(ro);
         fogDensity = land->GetFogDensity();
         fogColor = land->GetFogColor();
-    }
-    
-    //set fog at materials if need
-    uint32 count = ro->GetRenderBatchCount();
-    for(uint32 i = 0; i < count; ++i)
-    {
-        RenderBatch *rb = ro->GetRenderBatch(i);
-        NMaterial *instance = rb->GetMaterial();
-        if(instance)
-        {
-            NMaterial * parent = instance->GetParent();
-            if(parent)
-            {
-                bool fogEnabled = parent->IsFlagEffective(NMaterial::FLAG_VERTEXFOG);
-                if(fogEnabled)
-                {
-                    NMaterialProperty *property = parent->GetMaterialProperty(NMaterial::PARAM_FOG_COLOR);
-                    if(!property)
-                    {
-                        parent->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
-                        parent->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
-                    }
-                }
-            }
-        }
+
+		NMaterial * globalMaterial = GetScene()->GetGlobalMaterial();
+		globalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+		globalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
     }
 }
 

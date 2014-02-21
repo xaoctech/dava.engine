@@ -998,7 +998,7 @@ void Scene::OptimizeBeforeExport()
 
     Entity::OptimizeBeforeExport();
 }
-    
+
 };
 
 
