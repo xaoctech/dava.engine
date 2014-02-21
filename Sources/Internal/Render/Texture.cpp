@@ -158,6 +158,7 @@ static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
 TexturesMap Texture::textureMap;
 
+Mutex Texture::textureMapMutex;
 
 static int32 textureFboCounter = 0;
 
@@ -166,14 +167,22 @@ bool Texture::pixelizationFlag = false;
 // Main constructors
 Texture * Texture::Get(const FilePath & pathName)
 {
+    textureMapMutex.Lock();
+
 	Texture * texture = NULL;
 	TexturesMap::iterator it = textureMap.find(FILEPATH_MAP_KEY(pathName));
 	if (it != textureMap.end())
 	{
 		texture = it->second;
 		texture->Retain();
+
+        textureMapMutex.Unlock();
+
 		return texture;
 	}
+
+    textureMapMutex.Unlock();
+
 	return 0;
 }
 
@@ -181,7 +190,9 @@ void Texture::AddToMap(Texture *tex)
 {
     if(!tex->texDescriptor->pathname.IsEmpty())
     {
+        textureMapMutex.Lock();
 		textureMap[FILEPATH_MAP_KEY(tex->texDescriptor->pathname)] = tex;
+        textureMapMutex.Unlock();
     }
 }
 
@@ -807,7 +818,9 @@ int32 Texture::Release()
 {
 	if(GetRetainCount() == 1)
 	{
+        textureMapMutex.Lock();
 		textureMap.erase(FILEPATH_MAP_KEY(texDescriptor->pathname));
+        textureMapMutex.Unlock();
 	}
 	return BaseObject::Release();
 }
@@ -909,6 +922,8 @@ void Texture::DumpTextures()
 	int32 cnt = 0;
 	Logger::FrameworkDebug("============================================================");
 	Logger::FrameworkDebug("--------------- Currently allocated textures ---------------");
+
+    textureMapMutex.Lock();
 	for(TexturesMap::iterator it = textureMap.begin(); it != textureMap.end(); ++it)
 	{
 		Texture *t = it->second;
@@ -921,6 +936,8 @@ void Texture::DumpTextures()
             allocSize += t->width * t->height * GetPixelFormatSizeInBits(t->texDescriptor->format);
         }
 	}
+    textureMapMutex.Unlock();
+
 	Logger::FrameworkDebug("      Total allocated textures %d    memory size %d", cnt, allocSize/8);
 	Logger::FrameworkDebug("============================================================");
 }
@@ -1345,6 +1362,7 @@ void Texture::SetPixelization(bool value)
     pixelizationFlag = value;
     const TexturesMap& texturesMap = GetTextureMap();
 
+    textureMapMutex.Lock();
     for (Map<FilePath, Texture *>::const_iterator iter = texturesMap.begin(); iter != texturesMap.end(); iter ++)
     {
         Texture* texture = iter->second;
@@ -1352,6 +1370,7 @@ void Texture::SetPixelization(bool value)
         TextureFilter magFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.magFilter;
         texture->SetMinMagFilter(minFilter, magFilter);
     }
+    textureMapMutex.Unlock();
 }
 
 };
