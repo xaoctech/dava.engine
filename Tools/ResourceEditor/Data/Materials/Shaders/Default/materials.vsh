@@ -272,7 +272,7 @@ void main()
         varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
         varFogFactor = clamp(varFogFactor, 0.0, 1.0);
     #else
-        varFogFactor = clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
+        varFogFactor = 1.0 - clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
     #endif
 	//varFogFactor = 1.0;
 #endif
