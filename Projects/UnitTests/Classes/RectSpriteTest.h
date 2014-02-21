@@ -26,5 +26,46 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#define UI_EDITOR_VERSION "0.2"
+#ifndef __TEMPLATEPROJECTMACOS__RECTSPRITETEST__
+#define __TEMPLATEPROJECTMACOS__RECTSPRITETEST__
 
+#include "DAVAEngine.h"
+#include "TestTemplate.h"
+
+using namespace DAVA;
+
+class RectSpriteTest: public TestTemplate<RectSpriteTest>
+{
+protected:
+    ~RectSpriteTest(){}
+
+public:
+    RectSpriteTest();
+
+    virtual void LoadResources();
+    virtual void UnloadResources();
+    virtual bool RunTest(int32 testNum);
+
+    virtual void Draw(const UIGeometricData &geometricData);
+
+    void TestFunction(PerfFuncData * data);
+
+	virtual void DidAppear();
+	virtual void Update(float32 timeElapsed);
+
+private:
+
+    UIButton* testButton;
+    Vector<Sprite*> sprites;
+    Vector<Image*> images;
+
+    bool testFinished;
+	float onScreenTime;
+
+    void AddImage(const FilePath& filePath);
+    Sprite* LoadSpriteFromFileBuf(const FilePath& filePath);
+
+    void ButtonPressed(BaseObject *obj, void *data, void *callerData);
+};
+
+#endif /* defined(__TEMPLATEPROJECTMACOS__RECTSPRITETEST__) */

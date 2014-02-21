@@ -179,9 +179,7 @@ int SceneTreeModel::GetCustomFlags(const QModelIndex &index) const
 
 	if(NULL != entity)
 	{
-		if( entity->GetName().find("editor.") != DAVA::String::npos ||
-			NULL != DAVA::GetLandscape(entity) ||
-			NULL != DAVA::GetSkybox(entity))
+		if(entity->GetName().find("editor.") != DAVA::String::npos)
 		{
 			ret |= CF_Disabled;
 		}
