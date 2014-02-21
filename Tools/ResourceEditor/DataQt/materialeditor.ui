@@ -21,16 +21,7 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>3</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>3</number>
    </property>
    <item>
@@ -51,6 +42,7 @@
      <addaction name="actionAutoExpand"/>
      <addaction name="actionSwitchQuality"/>
      <addaction name="actionMaterialReload"/>
+     <addaction name="actionSetFog"/>
     </widget>
    </item>
    <item>
@@ -69,16 +61,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -116,16 +99,7 @@
        <property name="spacing">
         <number>3</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -227,6 +201,11 @@
   <action name="actionMaterialReload">
    <property name="text">
     <string>MaterialReload</string>
+   </property>
+  </action>
+  <action name="actionSetFog">
+   <property name="text">
+    <string>Set Fog</string>
    </property>
   </action>
   <actiongroup name="filterType">
