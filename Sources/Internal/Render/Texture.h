@@ -37,6 +37,7 @@
 #include "Base/FastName.h"
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
+#include "Platform/Mutex.h"
 
 
 namespace DAVA
@@ -318,7 +319,6 @@ protected:
     
 	static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
     
-    
     struct ReleaseTextureDataContainer
 	{
 		uint32 textureType;
@@ -358,6 +358,7 @@ public:							// properties for fast access
     bool         renderTargetAutosave:1;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
+    static Mutex textureMapMutex;
     static TexturesMap textureMap;
     static eGPUFamily defaultGPU;
     
