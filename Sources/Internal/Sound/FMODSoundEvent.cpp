@@ -105,7 +105,7 @@ bool FMODSoundEvent::Trigger()
     
     FMOD::Event * fmodEvent = 0;
     FMOD_RESULT result = fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_DEFAULT, &fmodEvent);
-    if(fmodEvent)
+    if(result == FMOD_OK)
     {
         ApplyParamsToEvent(fmodEvent);
         fmodEventInstances.push_back(fmodEvent);
