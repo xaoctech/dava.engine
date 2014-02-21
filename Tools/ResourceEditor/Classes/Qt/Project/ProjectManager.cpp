@@ -56,7 +56,7 @@ ProjectManager::~ProjectManager()
 
 bool ProjectManager::IsOpened() const
 {
-	return (curProjectPath != "");
+	return (!curProjectPath.IsEmpty());
 }
 
 FilePath ProjectManager::CurProjectPath() const
@@ -98,11 +98,9 @@ void ProjectManager::ProjectOpen(const QString &path)
     ProjectOpen(incomePath);
 }
 
-void ProjectManager::ProjectOpen(const FilePath & value)
+void ProjectManager::ProjectOpen(const FilePath & incomePath)
 {
-    FilePath incomePath(value);
-    incomePath.MakeDirectoryPathname();
-    if(incomePath != curProjectPath)
+    if(incomePath.IsDirectoryPathname() && incomePath != curProjectPath)
 	{
 		ProjectClose();
         
