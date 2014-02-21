@@ -442,7 +442,7 @@ FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
     if(properties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
         entityPath = FilePath(properties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, entityPath.GetAbsolutePathname()));
 
-    String entityName = entity->GetName();
+    String entityName = entity->GetName().c_str();
     FilePath textureFolder = entityPath.GetDirectory() + "images/";
 
     String texturePostfix = "_planes.png";

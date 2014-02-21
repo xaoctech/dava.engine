@@ -118,6 +118,11 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 	}
 }
 
+void EditorMaterialSystem::BuildMaterialsList(DAVA::Set<DAVA::NMaterial *> &in) const
+{
+    in = ownedParents;
+}
+
 int EditorMaterialSystem::GetLightViewMode()
 {
     return curViewMode;

@@ -1914,6 +1914,20 @@ bool NMaterialHelper::IsAlphatest(const FastName& passName, NMaterial* mat)
 	
 	return result;
 }
+    
+bool NMaterialHelper::IsOpaque(const FastName& passName, NMaterial* mat)
+{
+	DVASSERT(mat);
+	DVASSERT(mat->baseTechnique);
+	
+	bool result = false;
+	if(mat->baseTechnique)
+	{
+		result = (mat->baseTechnique->GetLayersSet().count(DAVA::LAYER_OPAQUE) > 0);
+	}
+	
+	return result;
+}
 
 bool NMaterialHelper::IsAlphablend(const FastName& passName, NMaterial* mat)
 {
