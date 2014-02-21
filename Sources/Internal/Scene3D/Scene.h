@@ -139,7 +139,7 @@ public:
 	
 	void AddAnimation(SceneNodeAnimationList * animation);
 	SceneNodeAnimationList * GetAnimation(int32 index);
-	SceneNodeAnimationList * GetAnimation(const String & name);
+	SceneNodeAnimationList * GetAnimation(const FastName & name);
 	inline int32 GetAnimationCount();
     
     

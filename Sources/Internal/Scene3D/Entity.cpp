@@ -611,7 +611,7 @@ namespace DAVA
 	
 	Entity *	Entity::FindByName(const String & searchName)
 	{
-		if (name == searchName)
+		if (name == FastName(searchName.c_str()))
 			return this;
 		
 		uint32 size = (uint32)children.size();
@@ -974,9 +974,14 @@ namespace DAVA
 		}
 	}
 	
-	void Entity::SetName(const String & _name)
+    void Entity::SetName(const FastName & _name)
 	{
 		name = _name;
+	}
+	
+	void Entity::SetName(const String & _name)
+	{
+		name = FastName(_name.c_str());
 	}
 	
 	String Entity::GetFullName()
@@ -991,10 +996,10 @@ namespace DAVA
         
 		if (node->GetParent() != endNode)
 		{
-			return RecursiveBuildFullName(node->GetParent(), endNode) + String("->") + node->name;
+			return RecursiveBuildFullName(node->GetParent(), endNode) + String("->") + String(node->name.c_str());
 		}else
 		{
-			return node->name;
+			return String(node->name.c_str());
 		}
 	}
     
@@ -1058,7 +1063,7 @@ namespace DAVA
 		// Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
 		BaseObject::Save(archive);
         
-		archive->SetString("name", name);
+		archive->SetString("name", String(name.c_str()));
 		archive->SetInt32("tag", tag);
 		archive->SetByteArrayAsType("localTransform", GetLocalTransform());
 		archive->SetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
@@ -1139,7 +1144,7 @@ namespace DAVA
 	{
 		BaseObject::Load(archive);
         
-		name = archive->GetString("name", "");
+		name = FastName(archive->GetString("name", "").c_str());
 		tag = archive->GetInt32("tag", 0);
 		
 		flags = archive->GetUInt32("flags", NODE_VISIBLE);
