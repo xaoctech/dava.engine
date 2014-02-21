@@ -316,7 +316,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         Logger::FrameworkDebug("+ load hierarchy");
 	   
     Entity * rootNode = new Entity();
-    rootNode->SetName(rootNodePathName.GetFilename());
+    rootNode->SetName(rootNodePathName.GetFilename().c_str());
 	rootNode->SetScene(0);
     
     rootNode->children.reserve(header.nodeCount);
@@ -711,7 +711,7 @@ void SceneFileV2::ConvertShadows(Entity * currentNode)
 		if(String::npos != childNode->GetName().find("_shadow"))
 		{
 			DVASSERT(childNode->GetChildrenCount() == 1);
-			Entity * svn = childNode->FindByName("dynamicshadow.shadowvolume");
+			Entity * svn = childNode->FindByName(FastName("dynamicshadow.shadowvolume"));
 			if(!svn)
 			{
 				MeshInstanceNode * mi = dynamic_cast<MeshInstanceNode*>(childNode->GetChild(0));
@@ -750,7 +750,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             doNotRemove = true;
         }
         
-        if(currentNode->GetName().rfind("dummy") != String::npos)
+        if(currentNode->GetName().find("dummy") != String::npos)
         {
             doNotRemove = true;
         }
@@ -816,7 +816,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
 
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
-                String currentName = currentNode->GetName();
+                FastName currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
@@ -939,7 +939,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
                 newShadowVolume->SetPolygonGroup(pg);
                 mesh->AddRenderBatch(newShadowVolume);
                 
-                mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
+                mesh->SetOwnerDebugInfo(FastName(Format("%s shadow:%s", oldMeshInstanceNode->GetName().c_str(), oldShadowVolumeNode->GetName().c_str()).c_str()));
                 
                 parent->RemoveNode(oldShadowVolumeNode);
                 SafeRelease(newShadowVolume);
