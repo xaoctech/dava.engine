@@ -66,7 +66,6 @@ RenderObject::~RenderObject()
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
 	AddRenderBatch(batch, -1, -1);
-    activeRenderBatchArray.push_back(batch);
 }
   
 void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _switchIndex)

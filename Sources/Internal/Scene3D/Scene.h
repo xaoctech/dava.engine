@@ -216,6 +216,7 @@ public:
 
     virtual void OptimizeBeforeExport();
 
+	inline NMaterial * GetGlobalMaterial() const;
 protected:	
     
     void UpdateLights();
@@ -233,7 +234,7 @@ protected:
     static Texture* stubTextureCube;
     static Texture* stubTexture2dLightmap; //this texture should be all-pink without checkers
     NMaterial* sceneGlobalMaterial;
-    //TODO: think about data-driven intiialization. Need to set default properties from outside and save/load per scene
+    //TODO: think about data-driven initialization. Need to set default properties from outside and save/load per scene
     void InitGlobalMaterial();
     
 #if defined (USE_FILEPATH_IN_MAP)
@@ -270,6 +271,13 @@ int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
 }  
+
+inline NMaterial * Scene::GetGlobalMaterial() const
+{
+	return sceneGlobalMaterial; 
+}
+
+
 
 };
 
