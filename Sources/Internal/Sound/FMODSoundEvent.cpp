@@ -54,13 +54,14 @@ FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
         FMOD_MODE mode = 0;
         fmodEventInfo->getPropertyByIndex(FMOD_EVENTPROPERTY_MODE, &mode);
         is3D = (mode == FMOD_3D);
+
+        isDirectional = IsParameterExists(FMOD_SYSTEM_EVENTANGLE_PARAMETER);
     }
     else
     {
         Logger::FrameworkDebug(eventName.c_str());
     }
 
-    isDirectional = IsParameterExists(FMOD_SYSTEM_EVENTANGLE_PARAMETER);
 }
 
 FMODSoundEvent::~FMODSoundEvent()
