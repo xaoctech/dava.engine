@@ -136,6 +136,7 @@ void Core::CreateSingletons()
 	new SoundSystem(64);
 	new InputSystem();
 	new RenderHelper();
+    new RenderLayerManager();
 	new PerformanceSettings();
 	
 #if defined __DAVAENGINE_IPHONE__

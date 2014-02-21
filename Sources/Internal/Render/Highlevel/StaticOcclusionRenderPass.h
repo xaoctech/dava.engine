@@ -53,10 +53,10 @@ public:
 class StaticOcclusionRenderPass : public RenderPass
 {
 public:
-    StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * occlusion, RenderPassID id);
+    StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * occlusion, RenderPassID id);
     ~StaticOcclusionRenderPass();
 
-    void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
+    void Draw(Camera * camera, RenderSystem * renderSystem);
 
     StaticOcclusion * occlusion;
     Set<RenderObject*> visibleObjectSet;

@@ -37,34 +37,39 @@ namespace DAVA
 {
     
 ShadowVolumeRenderLayer::ShadowVolumeRenderLayer(const FastName & name, uint32 sortingFlags, RenderLayerID id)
-    :   RenderLayer(name, sortingFlags, id)
+    :   RenderLayer(name, sortingFlags, id), shadowRect(NULL)
 {
-    shadowRect = ShadowRect::Create();
+    
 	blendMode = ShadowPassBlendMode::MODE_BLEND_ALPHA;
 	
-	RenderStateData stateData;
-	
-	stateData.state =	RenderStateData::STATE_BLEND |
-						RenderStateData::STATE_STENCIL_TEST |
-						RenderStateData::STATE_COLORMASK_ALL;
-	stateData.sourceFactor = BLEND_DST_COLOR;
-	stateData.destFactor = BLEND_ZERO;
-	stateData.depthFunc = CMP_LEQUAL;
-	stateData.cullMode = FACE_BACK;
-	stateData.fillMode = FILLMODE_SOLID;
-	stateData.stencilFail[0] = stateData.stencilFail[1] = STENCILOP_KEEP;
-	stateData.stencilPass[0] = stateData.stencilPass[1] = STENCILOP_KEEP;
-	stateData.stencilZFail[0] = stateData.stencilZFail[1] = STENCILOP_KEEP;
-	stateData.stencilFunc[0] = stateData.stencilFunc[1] = CMP_NOTEQUAL;
-	stateData.stencilMask = 15;
-	stateData.stencilRef = 0;
-	
-	blendMultiplyState = RenderManager::Instance()->CreateRenderState(stateData);
-	
-	stateData.sourceFactor = BLEND_SRC_ALPHA;
-	stateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+}
 
-	blendAlphaState = RenderManager::Instance()->CreateRenderState(stateData);
+void ShadowVolumeRenderLayer::CreateShadowRect()
+{
+    shadowRect = ShadowRect::Create();
+    RenderStateData stateData;
+
+    stateData.state =	RenderStateData::STATE_BLEND |
+        RenderStateData::STATE_STENCIL_TEST |
+        RenderStateData::STATE_COLORMASK_ALL;
+    stateData.sourceFactor = BLEND_DST_COLOR;
+    stateData.destFactor = BLEND_ZERO;
+    stateData.depthFunc = CMP_LEQUAL;
+    stateData.cullMode = FACE_BACK;
+    stateData.fillMode = FILLMODE_SOLID;
+    stateData.stencilFail[0] = stateData.stencilFail[1] = STENCILOP_KEEP;
+    stateData.stencilPass[0] = stateData.stencilPass[1] = STENCILOP_KEEP;
+    stateData.stencilZFail[0] = stateData.stencilZFail[1] = STENCILOP_KEEP;
+    stateData.stencilFunc[0] = stateData.stencilFunc[1] = CMP_NOTEQUAL;
+    stateData.stencilMask = 15;
+    stateData.stencilRef = 0;
+
+    blendMultiplyState = RenderManager::Instance()->CreateRenderState(stateData);
+
+    stateData.sourceFactor = BLEND_SRC_ALPHA;
+    stateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
+
+    blendAlphaState = RenderManager::Instance()->CreateRenderState(stateData);
 }
 
 ShadowVolumeRenderLayer::~ShadowVolumeRenderLayer()
@@ -79,7 +84,10 @@ void ShadowVolumeRenderLayer::SetBlendMode(ShadowPassBlendMode::eBlend _blendMod
 
 void ShadowVolumeRenderLayer::Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
 {	
-    
+    if (!shadowRect)
+    {
+        CreateShadowRect();
+    }
     if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SHADOWVOLUME_DRAW))
 	{
 		RenderLayer::Draw(ownerRenderPass, camera, renderLayerBatchArray);			
@@ -156,8 +164,12 @@ void ShadowVolumeRenderLayer::Draw(const FastName & ownerRenderPass, Camera * ca
 #endif
 }
     
-ShadowRect * ShadowVolumeRenderLayer::GetShadowRect() const
+ShadowRect * ShadowVolumeRenderLayer::GetShadowRect()
 {
+    if (!shadowRect)
+    {
+        CreateShadowRect();
+    }
     return shadowRect;
 }
 

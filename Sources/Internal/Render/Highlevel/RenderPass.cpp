@@ -36,17 +36,17 @@
 namespace DAVA
 {
     
-RenderPass::RenderPass(RenderSystem * _renderSystem, const FastName & _name, RenderPassID _id)
-    :   renderSystem(_renderSystem)
-    ,   name(_name)
+RenderPass::RenderPass(const FastName & _name, RenderPassID _id)    
+    :   name(_name)
     ,   id(_id)
 {
+    renderPassBatchArray = new RenderPassBatchArray();
     renderLayers.reserve(RENDER_LAYER_ID_COUNT);
 }
 
 RenderPass::~RenderPass()
 {
-    
+    SafeDelete(renderPassBatchArray);
 }
     
 void RenderPass::AddRenderLayer(RenderLayer * layer, const FastName & afterLayer)
@@ -79,10 +79,22 @@ void RenderPass::RemoveRenderLayer(RenderLayer * layer)
 	renderLayers.erase(it);
 }
 
-void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+void RenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
+{    
+    PrepareVisibilityArrays(camera, renderSystem);
+    DrawLayers(camera);
+}
+
+void RenderPass::PrepareVisibilityArrays(Camera *camera, RenderSystem * renderSystem)
 {
-    // Set Render Target
-    
+    visibilityArray.Clear();
+    renderSystem->GetRenderHierarchy()->Clip(camera, &visibilityArray);
+    renderPassBatchArray->Clear();
+    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera); 
+}
+
+void RenderPass::DrawLayers(Camera *camera)
+{
     // Draw all layers with their materials
     uint32 size = (uint32)renderLayers.size();
     for (uint32 k = 0; k < size; ++k)
@@ -91,21 +103,22 @@ void RenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArr
         RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetRenderLayerID());
         if (renderLayerBatchArray)
         {
-            layer->Draw(name, camera, renderLayerBatchArray);
+            layer->Draw(name, camera, renderLayerBatchArray); //why camera here?
         }
     }
 }
 
-#ifdef dfsfds
-void MainForwardRenderPass::Draw(Camera * camera, RenderHierarchy *renderHierarchy)
+
+MainForwardRenderPass::MainForwardRenderPass(const FastName & name, RenderPassID id):RenderPass(name, id)
 {
-	visibilityArray.Clear();
-	renderHierarchy->Clip(camera, &visibilityArray);
-	renderPassBatchArray->Clear();
-	renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera); 
+}
+
+void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
+{
+	PrepareVisibilityArrays(camera, renderSystem);
 
 	/*one global water pass*/
-	RenderLayerBatchArray *waterLayer = renderPassBatchArray->Get(LAYER_WATER);
+	RenderLayerBatchArray *waterLayer = renderPassBatchArray->Get(RenderLayerManager::Instance()->GetLayerIDByName(LAYER_WATER));
 	bool needWaterPrepass = false;
 	uint32 waterBatchesCount = waterLayer->GetRenderBatchCount();
 	AABBox3 waterBox;
@@ -124,34 +137,78 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderHierarchy *renderHierarc
 
 	if (needWaterPrepass)
 	{
-		waterPass->SetWaterRanges(waterBox.min.z, waterBox.max.z);
-		waterPass->Draw(camera, renderHierarchy);
-		Texture *reflection = waterPass->GetReflectionTexture();
-		Texture *refraction = waterPass->GetRefractionTexture();
+        if (!reflectionTexture)
+        { 
+            /*create FBOs*/
+        }
+        //attach reflection FBO
+        reflectionPass->SetWaterLevel(waterBox.min.z);
+        reflectionPass->Draw(camera, renderSystem);
+        
+        //attach refraction FBO
+        refractionPass->SetWaterLevel(waterBox.max.z);
+        refractionPass->Draw(camera, renderSystem);
+
+        camera->SetupDynamicParameters();
+		
 		for (uint32 i=0; i<waterBatchesCount; ++i)
 		{
 			NMaterial *mat = waterLayer->Get(i)->GetMaterial();
-			mat->SetTexture(FastName("reflection"), reflection);
-			mat->SetTexture(FastName("refraction"), refraction);
+			mat->SetTexture(FastName("reflection"), reflectionTexture);
+			mat->SetTexture(FastName("refraction"), refractionTexture);
 		}
-	}
+	}	
 
-	/*base draw*/
-	uint32 size = (uint32)renderLayers.size();
-	for (uint32 k = 0; k < size; ++k)
-	{
-		RenderLayer * layer = renderLayers[k];
-		RenderLayerBatchArray * renderLayerBatchArray = renderPassBatchArray->Get(layer->GetRenderLayerID());
-		if (renderLayerBatchArray)
-		{
-			layer->Draw(name, camera, renderLayerBatchArray);
-		}
-	}
-
-	/*shadow*/
-	RenderPass *shadow = RenderPassManager::Instance()->GetRenderPass(PASS_SHADOW_VOLUME);
-	shadow->Draw(camera, visibilityArray);
+    
+	DrawLayers(camera);
 }
-#endif
+
+WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(name, id), passCamera(NULL)
+{
+}
+WaterPrePass::~WaterPrePass()
+{
+    SafeRelease(passCamera);
+}
+
+WaterReflectionRenderPass::WaterReflectionRenderPass(const FastName & name, RenderPassID id):WaterPrePass(name, id)
+{
+}
+
+
+
+void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
+{    
+    if (!passCamera)
+        passCamera = new Camera();    
+    passCamera->CopyMathOnly(*camera);
+    Vector3 v;
+    v = passCamera->GetDirection();
+    v.z*=-1;
+    passCamera->SetDirection(v);
+    v = passCamera->GetPosition();
+    v.z = waterLevel - (v.z - waterLevel);
+    passCamera->SetPosition(v);
+    passCamera->SetupDynamicParameters();
+    //add clipping plane
+    PrepareVisibilityArrays(passCamera, renderSystem);
+    DrawLayers(passCamera);
+}
+
+
+WaterRefractionRenderPass::WaterRefractionRenderPass(const FastName & name, RenderPassID id) : WaterPrePass(name, id)
+{
+}
+
+void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
+{
+    if (!passCamera)
+        passCamera = new Camera();    
+    passCamera->CopyMathOnly(*camera);
+    //add clipping plane
+    PrepareVisibilityArrays(passCamera, renderSystem);
+    DrawLayers(passCamera);
+}
+
 
 };

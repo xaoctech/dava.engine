@@ -69,8 +69,8 @@ void StaticOcclusionRenderLayer::Draw(const FastName & ownerRenderPass, Camera *
     //Logger::FrameworkDebug(Format("Pass: %s Layer: %s - objects: %d", ownerRenderPass.c_str(), name.c_str(), size));
 }
 
-StaticOcclusionRenderPass::StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * _occlusion, RenderPassID id)
-    : RenderPass(rs, name, id)
+StaticOcclusionRenderPass::StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * _occlusion, RenderPassID id)
+    : RenderPass(name, id)
     , occlusion(_occlusion)
 {
 }
@@ -80,8 +80,9 @@ StaticOcclusionRenderPass::~StaticOcclusionRenderPass()
     
 }
 
-void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 {
+    PrepareVisibilityArrays(camera, renderSystem);
     uint32 size = (uint32)renderLayers.size();
     for (uint32 k = 0; k < size; ++k)
     {

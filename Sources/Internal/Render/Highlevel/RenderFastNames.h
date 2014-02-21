@@ -44,7 +44,6 @@ typedef uint32 RenderPassID;
 // GLOBAL PASSES
 static const FastName PASS_FORWARD("ForwardPass");
 static const FastName PASS_SHADOW_VOLUME("ShadowVolumePass");
-static const FastName PASS_WATER_REFLECTION_REFRACTION("WaterPrePass");
 static const FastName PASS_DEFERRED("DeferredPass");
 static const FastName PASS_STATIC_OCCLUSION("StaticOcclusionPass");
     
@@ -67,7 +66,7 @@ static const FastName LAYER_WATER("WaterLayer");
 static const FastName LAYER_TRANSLUCENT("TransclucentRenderLayer");
 static const FastName LAYER_AFTER_TRANSLUCENT("AfterTransclucentRenderLayer");
 static const FastName LAYER_SHADOW_VOLUME("ShadowVolumeRenderLayer");
-static const FastName LAYER_SHADOW_RECT("ShadowRectRenderLayer");
+
     
 enum eRenderLayerID
 {
