@@ -113,8 +113,9 @@ const DAVA::String& CubemapUtils::GetDefaultFaceExtension()
 
 DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const DAVA::String& initialValue, const DAVA::String& defaultValue)
 {
-	DAVA::FilePath path(SettingsManager::Instance()->GetValue(key, SettingsManager::INTERNAL).AsString());
-    
+    DAVA::VariantType settinsValue = SettingsManager::Instance()->GetValue(key, SettingsManager::INTERNAL);
+    DAVA::FilePath path = settinsValue.GetType() == VariantType::TYPE_STRING ? settinsValue.AsString() : settinsValue.AsFilePath();
+        
     DAVA::FilePath defaultPath(defaultValue);
     DAVA::FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
     bool isInProject = FilePath::ContainPath(path, projectPath);
@@ -122,7 +123,7 @@ DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const D
 	if(!path.Exists() || !isInProject)
 	{
 		path = defaultPath.Exists() ? defaultPath : projectPath;
-		SettingsManager::Instance()->SetValue(key, VariantType(path.GetAbsolutePathname()), SettingsManager::INTERNAL);
+		SettingsManager::Instance()->SetValue(key, VariantType(path), SettingsManager::INTERNAL);
 	}
 
 	return path;

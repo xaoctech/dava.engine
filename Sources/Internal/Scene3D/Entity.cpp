@@ -610,9 +610,8 @@ void Entity::RemoveAllChildren()
 	}
 	children.clear();
 }
-	
-	
-Entity *	Entity::FindByName(const String & searchName)
+
+Entity *	Entity::FindByName(const FastName & searchName)
 {
 	if (name == searchName)
 		return this;
@@ -627,6 +626,11 @@ Entity *	Entity::FindByName(const String & searchName)
 		}
 	}
 	return 0;
+}
+
+Entity *	Entity::FindByName(const char * searchName)
+{
+    return FindByName(FastName(searchName));
 }
 	
 	
@@ -963,7 +967,7 @@ void Entity::SetDebugFlags(uint32 debugFlags, bool isRecursive)
 		}
 	}
 }
-	
+
 uint32 Entity::GetDebugFlags() const
 {
 	DebugRenderComponent * debugComponent = cast_if_equal<DebugRenderComponent*>(GetComponent(Component::DEBUG_RENDER_COMPONENT));
@@ -971,15 +975,18 @@ uint32 Entity::GetDebugFlags() const
 	{
 		return debugComponent->GetDebugFlags();
 	}
-	else
-	{
-		return 0;
-	}
+
+    return 0;
 }
-	
-void Entity::SetName(const String & _name)
+
+void Entity::SetName(const FastName & _name)
 {
 	name = _name;
+}
+
+void Entity::SetName(const char * _name)
+{
+	name = FastName(_name);
 }
 	
 String Entity::GetFullName()
@@ -994,10 +1001,10 @@ String Entity::RecursiveBuildFullName(Entity * node, Entity * endNode)
         
 	if (node->GetParent() != endNode)
 	{
-		return RecursiveBuildFullName(node->GetParent(), endNode) + String("->") + node->name;
+		return RecursiveBuildFullName(node->GetParent(), endNode) + String("->") + String(node->name.c_str());
 	}else
 	{
-		return node->name;
+		return String(node->name.c_str());
 	}
 }
     
@@ -1060,8 +1067,8 @@ void Entity::Save(KeyedArchive * archive, SerializationContext * serializationCo
 {
 	// Perform refactoring and add Matrix4, Vector4 types to VariantType and KeyedArchive
 	BaseObject::Save(archive);
-        
-	archive->SetString("name", name);
+
+	archive->SetString("name", String(name.c_str()));
 	archive->SetInt32("tag", tag);
 	archive->SetByteArrayAsType("localTransform", GetLocalTransform());
 	archive->SetByteArrayAsType("defaultLocalTransform", defaultLocalTransform);
@@ -1142,7 +1149,7 @@ void Entity::Load(KeyedArchive * archive, SerializationContext * serializationCo
 {
 	BaseObject::Load(archive);
         
-	name = archive->GetString("name", "");
+	name = FastName(archive->GetString("name", "").c_str());
 	tag = archive->GetInt32("tag", 0);
 		
 	flags = archive->GetUInt32("flags", NODE_VISIBLE);
