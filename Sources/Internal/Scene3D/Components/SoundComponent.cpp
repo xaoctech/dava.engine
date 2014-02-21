@@ -91,6 +91,8 @@ Component * SoundComponent::Clone(Entity * toEntity)
     for(int32 i = 0; i < eventCount; ++i)
         soundComponent->AddSoundEvent(events[i]);
     
+    soundComponent->localDirection = localDirection;
+
     return soundComponent;
 }
 
@@ -109,6 +111,8 @@ void SoundComponent::Serialize(KeyedArchive *archive, SerializationContext *seri
             archive->SetArchive(KeyedArchive::GenKeyFromIndex(i), eventArchive);
             SafeRelease(eventArchive);
         }
+
+        archive->SetVector3("sc.localDirection", localDirection);
     }
 }
 
@@ -126,6 +130,8 @@ void SoundComponent::Deserialize(KeyedArchive *archive, SerializationContext *se
             AddSoundEvent(sEvent);
             SafeRelease(sEvent);
         }
+
+        localDirection = archive->GetVector3("sc.localDirection", Vector3(1.f, 0.f, 0.f));
     }
 
     Component::Deserialize(archive, serializationContext);

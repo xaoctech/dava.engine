@@ -69,7 +69,7 @@ protected:
 
 public:
     INTROSPECTION_EXTEND(SoundComponent, Component,
-        COLLECTION(events, "Events Array",  I_VIEW)
+        MEMBER(localDirection, "localDirection", I_SAVE | I_VIEW | I_EDIT)
         );
 };
 
