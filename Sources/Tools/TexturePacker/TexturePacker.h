@@ -92,6 +92,8 @@ public:
 
 	void SetMaxTextureSize(int32 maxTextureSize);
 	
+	Set<String> GetErrors();
+	
 private:
     
     void ExportImage(PngImageExt *image, const FilePath &exportedPathname, eGPUFamily forGPU);
@@ -115,6 +117,8 @@ private:
 	bool onlySquareTextures;
     bool NeedSquareTextureForCompression(eGPUFamily forGPU);
 	bool IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU);
+	
+	Set<String> errors;
 };
 
 };

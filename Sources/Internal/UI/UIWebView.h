@@ -46,6 +46,7 @@ public:
 		
 	// Open the URL.
 	void OpenURL(const String& urlToOpen);
+	void CancelLoading(const String& urlToOpen);
 
 	// Overloaded virtual methods.
 	virtual void WillAppear();
