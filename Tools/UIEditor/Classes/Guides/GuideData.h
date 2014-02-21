@@ -45,7 +45,7 @@ public:
     };
 
     GuideData();
-    GuideData(eGuideType type, const Vector2& pos);
+    GuideData(eGuideType type, const Vector2& pos, bool selected = false);
     
     inline bool operator == (const GuideData& right) const
     {

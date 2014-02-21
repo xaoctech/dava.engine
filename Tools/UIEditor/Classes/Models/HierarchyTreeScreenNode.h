@@ -116,6 +116,10 @@ public:
 
     const List<GuideData*> GetGuides(bool includeNewGuide) const;
 
+    // Set the guide enabled mode.
+    bool AreGuidesEnabled() const;
+    void SetGuidesEnabled(bool value);
+
     // Set the stick mode.
     void SetStickMode(int32 stickMode);
 

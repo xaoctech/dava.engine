@@ -146,6 +146,9 @@ private slots:
     // Stick mode changed.
     void OnStickModeChanged();
 
+    // Enable/disable guides.
+    void OnEnableGuidesChanged();
+
     // Notification from GL widget its resize is done.
     void OnGLWidgetResized();
 

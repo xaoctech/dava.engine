@@ -93,6 +93,10 @@ public:
     // Set the stick mode.
     void SetStickMode(int32 mode);
 
+    // Enable/disable guides.
+    bool AreGuidesEnabled() const;
+    void SetGuidesEnabled(bool value);
+
 protected:
     // Check whether the same guide exists.
     bool IsGuideExist(GuideData* guideData) const;
@@ -118,6 +122,9 @@ private:
     
     // Current stick mode (may be a combination of different ones).
     int32 stickMode;
+    
+    // Whether the guides are enabled?
+    bool guidesEnabled;
 };
 
 };

@@ -567,12 +567,12 @@ void MainWindow::showEvent(QShowEvent * event)
 void MainWindow::OnSelectedScreenChanged()
 {
 	screenChangeUpdate = true;
-	if (HierarchyTreeController::Instance()->GetActiveScreen())
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+	if (activeScreen)
 	{
 		UpdateSliders();
 		UpdateScaleControls();
 
-		HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
 		float posX = activeScreen->GetPosX();
 		float posY = activeScreen->GetPosY();
 
@@ -591,10 +591,13 @@ void MainWindow::OnSelectedScreenChanged()
 
 		// Enable library widget for selected screen
 		ui->libraryDockWidget->setEnabled(true);
+        
+        ui->actionEnable_Guides->setChecked(activeScreen->AreGuidesEnabled());
 	}
 	else
 	{	// Disable library widget if no screen is selected
 		ui->libraryDockWidget->setEnabled(false);
+        ui->actionEnable_Guides->setEnabled(false);
 	}
 	
 	screenChangeUpdate = false;
@@ -764,6 +767,7 @@ void MainWindow::InitMenu()
     connect(ui->actionStickMode, SIGNAL(triggered()), this, SLOT(OnStickModeChanged()));
     OnStickModeChanged();
 
+    connect(ui->actionEnable_Guides, SIGNAL(triggered()), this, SLOT(OnEnableGuidesChanged()));
     UpdateMenu();
 }
 
@@ -863,7 +867,8 @@ void MainWindow::UpdateMenu()
     ui->actionPreview->setEnabled(projectNotEmpty);
     ui->actionEditPreviewSettings->setEnabled(projectNotEmpty);
     
-    // Stick mode.
+    // Guides.
+    ui->actionEnable_Guides->setEnabled(projectNotEmpty);
     ui->actionStickMode->setEnabled(projectNotEmpty);
 }
 
@@ -1595,4 +1600,13 @@ void MainWindow::OnStickModeChanged()
 {
     int32 stickMode = ui->actionStickMode->isChecked() ? StickToSides | StickToCenters : StickDisabled;
     HierarchyTreeController::Instance()->SetStickMode(stickMode);
+}
+
+void MainWindow::OnEnableGuidesChanged()
+{
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (activeScreen)
+    {
+        activeScreen->SetGuidesEnabled(ui->actionEnable_Guides->isChecked());
+    }
 }
