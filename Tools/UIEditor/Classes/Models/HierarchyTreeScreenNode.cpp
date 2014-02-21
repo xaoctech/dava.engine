@@ -354,3 +354,13 @@ void HierarchyTreeScreenNode::SetStickMode(int32 stickMode)
 {
     guides.SetStickMode(stickMode);
 }
+
+bool HierarchyTreeScreenNode::AreGuidesEnabled() const
+{
+    return guides.AreGuidesEnabled();
+}
+
+void HierarchyTreeScreenNode::SetGuidesEnabled(bool value)
+{
+    guides.SetGuidesEnabled(value);
+}

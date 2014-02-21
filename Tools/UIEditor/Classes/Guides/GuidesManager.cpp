@@ -39,7 +39,8 @@ namespace DAVA {
 GuidesManager::GuidesManager() :
     newGuide(NULL),
     moveGuide(NULL),
-    stickMode(NotSticked)
+    stickMode(NotSticked),
+    guidesEnabled(true)
 {
 }
 
@@ -69,7 +70,13 @@ void GuidesManager::StartNewGuide(GuideData::eGuideType guideType)
         return;
     }
 
-    newGuide = new GuideData(guideType, Vector2());
+    // Deselect all the existing guides - we are adding new one which should be selected.
+    for (List<GuideData*>::iterator iter = activeGuides.begin(); iter != activeGuides.end(); iter ++)
+    {
+        (*iter)->SetSelected(false);
+    }
+
+    newGuide = new GuideData(guideType, Vector2(), true);
 }
     
 void GuidesManager::MoveNewGuide(const Vector2& pos)
@@ -554,5 +561,15 @@ Vector2 GuidesManager::CalculateDistanceToGuide(GuideData* guide, const Rect& re
  
     return resultVector;
 }
+
+bool GuidesManager::AreGuidesEnabled() const
+{
+    return guidesEnabled;
+}
     
+void GuidesManager::SetGuidesEnabled(bool value)
+{
+    guidesEnabled = value;
+}
+
 };

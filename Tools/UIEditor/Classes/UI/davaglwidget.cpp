@@ -239,7 +239,7 @@ void DavaGLWidget::dragMoveEvent(QDragMoveEvent *event)
 	{
 		event->accept();
 	}
-	else if (activeScreen && guideData)
+	else if (activeScreen && activeScreen->AreGuidesEnabled() && guideData)
     {
         Vector2 curPos = GuideToInternal(event->pos());
         activeScreen->MoveNewGuide(curPos);
@@ -268,7 +268,7 @@ void DavaGLWidget::dragEnterEvent(QDragEnterEvent *event)
     }
 
     const GuideMimeData* guideData = dynamic_cast<const GuideMimeData*>(data);
-    if (guideData)
+    if (guideData && activeScreen->AreGuidesEnabled())
     {
         activeScreen->StartNewGuide(guideData->GetGuideType());
         event->acceptProposedAction();

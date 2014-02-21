@@ -37,10 +37,10 @@ GuideData::GuideData() :
 {
 }
 
-GuideData::GuideData(GuideData::eGuideType type, const Vector2& pos) :
+GuideData::GuideData(GuideData::eGuideType type, const Vector2& pos, bool selected) :
     guideType(type),
     position(pos),
-    isSelected(false)
+    isSelected(selected)
 {
 }
 

@@ -857,7 +857,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 	Vector2 point = LocalToInternal(localPoint);
 
     HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
-	if (screenNode && event->tid == UIEvent::BUTTON_1 && screenNode->StartMoveGuide(point))
+	if (screenNode && event->tid == UIEvent::BUTTON_1 && screenNode->AreGuidesEnabled() && screenNode->StartMoveGuide(point))
 	{
 		inputState = InputStateGuideMove;
         return;
@@ -1207,7 +1207,7 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 		case DVKEY_BACKSPACE:
 		{
             HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
-            if (screenNode->AreGuidesSelected())
+            if (screenNode->AreGuidesEnabled() && screenNode->AreGuidesSelected())
             {
                 DeleteSelectedGuides(screenNode);
             }
@@ -1263,9 +1263,10 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 Vector2 DefaultScreen::GetInputDelta(const Vector2& point, bool applyScale)
 {
     Vector2 delta = AlignToNearestScale(point - inputPos);
-
+    HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+    
     // Currently sticking to guides is supported for Drag only.
-    if (inputState == InputStateDrag)
+    if (inputState == InputStateDrag && screenNode && screenNode->AreGuidesEnabled())
     {
         Vector2 alignOffset;
         int32 stickMode = CalculateStickToGuidesDrag(alignOffset);
@@ -1524,7 +1525,8 @@ UIEvent* DefaultScreen::PreprocessEventForPreview(UIEvent* event)
 
 void DefaultScreen::DrawGuides()
 {
-    if (!HierarchyTreeController::Instance()->GetActiveScreen())
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (!activeScreen || !activeScreen->AreGuidesEnabled())
     {
         return;
     }
@@ -1536,7 +1538,7 @@ void DefaultScreen::DrawGuides()
     Vector<float32> unselectedGuides;
     Rect rect = ScreenWrapper::Instance()->GetBackgroundFrameRect();
     
-    const List<GuideData*> guides = HierarchyTreeController::Instance()->GetActiveScreen()->GetGuides(true);
+    const List<GuideData*> guides = activeScreen->GetGuides(true);
     for (List<GuideData*>::const_iterator iter = guides.begin(); iter != guides.end(); iter ++)
     {
         GuideData* curData = *iter;
