@@ -749,7 +749,7 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
     }
     for (List<Entity*>::iterator it = lodNodes.begin(); it != lodNodes.end(); it++)
     {
-        String nodeName((*it)->GetName(), 0, (*it)->GetName().find("_lod0"));
+        String nodeName(String((*it)->GetName().c_str()), 0, (*it)->GetName().find("_lod0"));
         if (debugLogEnabled) 
         {
             Logger::FrameworkDebug("Processing LODs for %s", nodeName.c_str());
