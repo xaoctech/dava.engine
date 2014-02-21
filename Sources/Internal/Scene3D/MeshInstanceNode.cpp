@@ -732,7 +732,7 @@ void MeshInstanceNode::CreateDynamicShadowNode()
 
 void MeshInstanceNode::DeleteDynamicShadowNode()
 {
-	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName("dynamicshadow.shadowvolume");
+	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName(FastName("dynamicshadow.shadowvolume"));
 	RemoveNode(shadowVolume);
 }
 

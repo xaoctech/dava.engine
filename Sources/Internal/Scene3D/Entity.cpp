@@ -610,9 +610,9 @@ void Entity::RemoveAllChildren()
 	children.clear();
 }
 
-Entity *	Entity::FindByName(const String & searchName)
+Entity *	Entity::FindByName(const FastName & searchName)
 {
-	if (name == FastName(searchName.c_str()))
+	if (name == searchName)
 		return this;
 		
 	uint32 size = (uint32)children.size();
@@ -625,6 +625,11 @@ Entity *	Entity::FindByName(const String & searchName)
 		}
 	}
 	return 0;
+}
+
+Entity *	Entity::FindByName(const char * searchName)
+{
+    return FindByName(FastName(searchName));
 }
 	
 	
@@ -969,20 +974,18 @@ uint32 Entity::GetDebugFlags() const
 	{
 		return debugComponent->GetDebugFlags();
 	}
-	else
-	{
-		return 0;
-	}
-}
-	
-void Entity::SetName(const String & _name)
-{
-	name = FastName(_name.c_str());
+
+    return 0;
 }
 
 void Entity::SetName(const FastName & _name)
 {
 	name = _name;
+}
+
+void Entity::SetName(const char * _name)
+{
+	name = FastName(_name);
 }
 	
 String Entity::GetFullName()
