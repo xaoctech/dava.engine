@@ -59,7 +59,7 @@ RenderPassManager::RenderPassManager(RenderSystem * renderSystem)
 {
     const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
 
-    RenderPass * forwardPass = new RenderPass(renderSystem, PASS_FORWARD, RENDER_PASS_FORWARD_ID);
+    RenderPass * forwardPass = new RenderPass(PASS_FORWARD, RENDER_PASS_FORWARD_ID);
     InsertPass(forwardPass);
     
     forwardPass->AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);

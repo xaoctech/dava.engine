@@ -50,12 +50,13 @@ public:
     
     virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
     
-    ShadowRect * GetShadowRect() const;
+    ShadowRect * GetShadowRect();
 
 	void SetBlendMode(ShadowPassBlendMode::eBlend blendMode);
 	ShadowPassBlendMode::eBlend GetBlendMode() const;
     
 private:
+    void CreateShadowRect();
     ShadowRect * shadowRect;
 	ShadowPassBlendMode::eBlend blendMode;
 	
