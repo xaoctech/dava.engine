@@ -369,7 +369,7 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 			if (effectDuration<emitter->lifeTime)
 				effectDuration = emitter->lifeTime;
 		}
-		emitter->name = child->GetName();
+		emitter->name = (child->GetName().c_str() ? String(child->GetName().c_str()) : "");
 		emitters.push_back(emitter);
 		if (!lodDefined)
 		{
