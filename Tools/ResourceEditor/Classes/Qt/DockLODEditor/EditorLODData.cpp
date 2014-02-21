@@ -178,6 +178,7 @@ void EditorLODData::ResetForceState(DAVA::Entity *entity)
     {
         lods[i]->SetForceDistance(DAVA::LodComponent::INVALID_DISTANCE);
         lods[i]->SetForceLodLayer(DAVA::LodComponent::INVALID_LOD_LAYER);
+		lods[i]->currentLod = -1;
     }
 }
 

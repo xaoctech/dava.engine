@@ -43,6 +43,8 @@
 #include "ResourcesManageHelper.h"
 #include "WidgetSignalsBlocker.h"
 
+#include "regexpinputdialog.h"
+
 #include <QVariant>
 #include <QMenu>
 #include <QMessageBox>
@@ -76,6 +78,8 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 	
 	connect(ui->treeWidget, SIGNAL(ShowCustomMenu(const QPoint&)), this, SLOT(OnShowCustomMenu(const QPoint&)));
 	connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(OnTreeItemChanged(QTreeWidgetItem*, int)));
+	
+	InitializeTreeWidgetActions();
 
 	internalSelectionChanged = false;
 }
@@ -83,6 +87,24 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 HierarchyTreeWidget::~HierarchyTreeWidget()
 {
     delete ui;
+}
+
+void HierarchyTreeWidget::InitializeTreeWidgetActions()
+{
+	QAction* deleteNodeAction = new QAction(MENU_ITEM_DELETE, ui->treeWidget);
+	connect(deleteNodeAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
+	deleteNodeAction->setShortcut(Qt::Key_Delete);
+	ui->treeWidget->addAction(deleteNodeAction);
+	
+	QAction* copyNodeAction = new QAction(MENU_ITEM_COPY, ui->treeWidget);
+	connect(copyNodeAction, SIGNAL(triggered()), this, SLOT(OnCopyAction()));
+	copyNodeAction->setShortcut(Qt::CTRL + Qt::Key_C);
+	ui->treeWidget->addAction(copyNodeAction);
+	
+	QAction* pasteNodeAction = new QAction(MENU_ITEM_PASTE, ui->treeWidget);
+	connect(pasteNodeAction, SIGNAL(triggered()), this, SLOT(OnPasteAction()));
+	pasteNodeAction->setShortcut(Qt::CTRL + Qt::Key_V);
+	ui->treeWidget->addAction(pasteNodeAction);
 }
 
 void HierarchyTreeWidget::OnTreeUpdated(bool needRestoreSelection)
@@ -587,14 +609,14 @@ void HierarchyTreeWidget::OnRenameControlAction()
 	QTreeWidgetItem* item = items.at(0);	
 	HierarchyTreeNode* node = GetNodeFromTreeItem(item);
 	QString itemName = node->GetName();
-		
-	bool dialogResult;
-    QString newName = QInputDialog::getText(this, tr("Rename control"),
-                                          tr("Enter new control name:"),
-										  QLineEdit::Normal,
-                                          itemName, &dialogResult);
-				
-	if (dialogResult && !newName.isEmpty() && (newName != itemName))
+
+    bool isAccepted = false;
+    QString newName = RegExpInputDialog::getText(this, tr("Rename control"),
+                                              "Enter new control name",
+                                              itemName, HierarchyTreeNode::GetNameRegExp(),
+                                              &isAccepted);
+
+	if (isAccepted && !newName.isEmpty() && (newName != itemName))
 	{
 		ControlRenameCommand* cmd = new ControlRenameCommand(node->GetId(), itemName, newName);
 		CommandsController::Instance()->ExecuteCommand(cmd);
@@ -604,6 +626,12 @@ void HierarchyTreeWidget::OnRenameControlAction()
 
 void HierarchyTreeWidget::OnDeleteControlAction()
 {
+	// Do not handle to avoid double delete action
+	if (!ui->treeWidget->hasFocus())
+	{
+		return;
+	}
+	
 	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 	if (!items.size())
 		return;
@@ -714,6 +742,12 @@ void HierarchyTreeWidget::OnCreateAggregatorAction()
 
 void HierarchyTreeWidget::OnCopyAction()
 {
+	// Do not handle to avoid double copy action
+	if (!ui->treeWidget->hasFocus())
+	{
+		return;
+	}
+
 	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 	if (!items.size())
 		return;
@@ -748,6 +782,12 @@ void HierarchyTreeWidget::OnCopyAction()
 
 void HierarchyTreeWidget::OnPasteAction()
 {
+	// Do not handle to avoid double paste action
+	if (!ui->treeWidget->hasFocus())
+	{
+		return;
+	}
+	
 	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 	if (!items.size())
 		return;

@@ -1541,6 +1541,15 @@ Matrix4 Entity::AccamulateLocalTransform(Entity * fromParent)
 	}
 	return GetLocalTransform() * parent->AccamulateLocalTransform(fromParent);
 }
+
+Matrix4 Entity::AccamulateTransformUptoFarParent(Entity * farParent)
+{
+    if (farParent == this)
+    {
+        return Matrix4::IDENTITY;
+    }
+    return GetLocalTransform() * parent->AccamulateTransformUptoFarParent(farParent);
+}
 	
 void Entity::FindComponentsByTypeRecursive(Component::eType type, List<DAVA::Entity*> & components)
 {
