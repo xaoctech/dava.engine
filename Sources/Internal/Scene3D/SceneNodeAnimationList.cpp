@@ -220,7 +220,7 @@ void SceneNodeAnimationList::SetWeight(float32 weight)
 	}
 }
 
-SceneNodeAnimation * SceneNodeAnimationList::GetNode(const String & name)
+SceneNodeAnimation * SceneNodeAnimationList::GetNode(const FastName & name)
 {
 	int32 size = (int32)animations.size();
 	for (int32 k = 0; k < size; ++k)

@@ -55,6 +55,7 @@ public:
 
 	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const;
 	void BuildInstancesList(DAVA::NMaterial* parentMaterial, DAVA::Set<DAVA::NMaterial *> &in) const;
+    void BuildMaterialsList(DAVA::Set<DAVA::NMaterial *> &in) const;
 
 	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
 	const DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
