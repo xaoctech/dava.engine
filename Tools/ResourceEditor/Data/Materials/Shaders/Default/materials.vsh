@@ -147,6 +147,20 @@ void main()
 	vec4 vecPos = (worldViewProjMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
+
+#if defined (CUT_LEAF)
+    vec3 position;
+    vec4 tangentInCameraSpace = modelViewMatrix * vec4(inTangent, 1);
+    if (tangentInCameraSpace.z < -cutDistance)
+    {
+        position = /*worldScale * vec3(0,0,0) +*/ worldTranslate;
+    }
+    else
+    {
+        position = worldScale * (inPosition.xyz - inTangent) + worldTranslate;
+    }
+    gl_Position = projectionMatrix * vec4(position, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
+#else
     //mat4 mvp = worldMatrix * viewMatrix * projMatrix;
     //mat4 mvp = projMatrix * worldViewMatrix;
     //gl_Position = mvp * inPosition;
@@ -167,6 +181,7 @@ void main()
 //    gl_Position = projMatrix * vec4(position, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
     
 	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
+#endif
 #else
 	gl_Position = worldViewProjMatrix * inPosition;
 #endif
@@ -272,7 +287,7 @@ void main()
         varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
         varFogFactor = clamp(varFogFactor, 0.0, 1.0);
     #else
-        varFogFactor = clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
+        varFogFactor = 1.0 - clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
     #endif
 	//varFogFactor = 1.0;
 #endif

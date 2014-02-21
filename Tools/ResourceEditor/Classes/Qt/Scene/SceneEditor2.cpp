@@ -126,6 +126,13 @@ SceneEditor2::SceneEditor2()
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
+	//setup fog for scene
+	DAVA::Color fogColor = SettingsManager::Instance()->GetValue("DefaultFogColor", SettingsManager::DEFAULT).AsColor();
+	DAVA::float32 fogDensity = SettingsManager::Instance()->GetValue("DefaultFogDensity", SettingsManager::DEFAULT).AsFloat();
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+
+
 	SceneSignals::Instance()->EmitOpened(this);
 
 	wasChanged = false;
