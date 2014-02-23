@@ -27,19 +27,37 @@
 =====================================================================================*/
 
 
-#include "ImageSplitterDialog/ImageSplitterDialog.h"
+#ifndef __QT_IMAGE_AREA_H__
+#define __QT_IMAGE_AREA_H__
 
-#include "ui_ImageSplitter.h"
+#include <QLabel>
 
-ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ImageSplitter)
+class QMimeData;
+
+class ImageArea : public QLabel
 {
-    ui->setupUi(this);
-    ui->selectPathWidget->SetClearButtonVisible(false);
-}
+    Q_OBJECT
+    
+public:
+    ImageArea(QWidget *parent = 0);
+    
+public slots:
+    void clear();
+    void UpdatePreviewPicture();
+    
+signals:
+    void changed();
+    
+protected:
 
-ImageSplitterDialog::~ImageSplitterDialog()
-{
-    delete ui;
-}
+    void dragEnterEvent(QDragEnterEvent *event);
+
+
+    void ConnectSignals();
+    
+private:
+    QLabel *label;
+    QPixmap image;
+};
+
+#endif /* defined(__QT_IMAGE_AREA_H__) */

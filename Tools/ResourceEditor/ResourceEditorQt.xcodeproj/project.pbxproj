@@ -35,6 +35,8 @@
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
+		8406D38718BA583100AFF8E3 /* ImageArea.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8406D38518BA583100AFF8E3 /* ImageArea.cpp */; };
+		8406D39018BA5A4500AFF8E3 /* ImageArea_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8406D38F18BA5A4500AFF8E3 /* ImageArea_moc.cpp */; };
 		8464251E18B16B2800A2BE35 /* ImageSplitterDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */; };
 		8464252018B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8464251F18B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp */; };
 		84A6B1FB18972F64002FD263 /* FloatRangeValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 84A6B1F918972F64002FD263 /* FloatRangeValidator.cpp */; };
@@ -677,6 +679,9 @@
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
 		82153068A36B6EA46DD82A06 /* QtNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtNetwork.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework"; sourceTree = "<absolute>"; };
+		8406D38518BA583100AFF8E3 /* ImageArea.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageArea.cpp; path = ImageSplitterDialog/ImageArea.cpp; sourceTree = "<group>"; };
+		8406D38618BA583100AFF8E3 /* ImageArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageArea.h; path = ImageSplitterDialog/ImageArea.h; sourceTree = "<group>"; };
+		8406D38F18BA5A4500AFF8E3 /* ImageArea_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageArea_moc.cpp; path = _GeneratedQt/ImageSplitterDialog/ImageArea_moc.cpp; sourceTree = "<group>"; };
 		8464251A18B16A2500A2BE35 /* ui_ImageSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_ImageSplitter.h; path = _GeneratedQt/ui_ImageSplitter.h; sourceTree = "<group>"; };
 		8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitterDialog.cpp; path = ImageSplitterDialog/ImageSplitterDialog.cpp; sourceTree = "<group>"; };
 		8464251D18B16B2800A2BE35 /* ImageSplitterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSplitterDialog.h; path = ImageSplitterDialog/ImageSplitterDialog.h; sourceTree = "<group>"; };
@@ -1759,6 +1764,8 @@
 		84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */ = {
 			isa = PBXGroup;
 			children = (
+				8406D38518BA583100AFF8E3 /* ImageArea.cpp */,
+				8406D38618BA583100AFF8E3 /* ImageArea.h */,
 				8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */,
 				8464251D18B16B2800A2BE35 /* ImageSplitterDialog.h */,
 			);
@@ -1768,6 +1775,7 @@
 		84EB52C818B1625B0094DAD9 /* ImageSplitterDialog */ = {
 			isa = PBXGroup;
 			children = (
+				8406D38F18BA5A4500AFF8E3 /* ImageArea_moc.cpp */,
 				8464251F18B16B8B00A2BE35 /* ImageSplitterDialog_moc.cpp */,
 			);
 			name = ImageSplitterDialog;
@@ -4099,6 +4107,7 @@
 				E8C99308184CD0EC00AFBF3F /* ScaleHood.cpp in Build Sources */,
 				E8C99295184CD0EC00AFBF3F /* MetaObjModifyCommand.cpp in Build Sources */,
 				E8C9930C184CD0EC00AFBF3F /* HeightmapProxy.cpp in Build Sources */,
+				8406D39018BA5A4500AFF8E3 /* ImageArea_moc.cpp in Build Sources */,
 				E8C992E8184CD0EC00AFBF3F /* davaglwidget.cpp in Build Sources */,
 				E8C992D7184CD0EC00AFBF3F /* ParticleEmitterPropertiesWidget.cpp in Build Sources */,
 				E8BAD5D51859F48600C98C8D /* MaterialItem.cpp in Build Sources */,
@@ -4510,6 +4519,7 @@
 				E8C992FF184CD0EC00AFBF3F /* EditorLightSystem.cpp in Build Sources */,
 				E8C99232184CD0EC00AFBF3F /* btGenericPoolAllocator.cpp in Build Sources */,
 				E8C99282184CD0EC00AFBF3F /* Command2.cpp in Build Sources */,
+				8406D38718BA583100AFF8E3 /* ImageArea.cpp in Build Sources */,
 				E8C99309184CD0EC00AFBF3F /* HoodSystem.cpp in Build Sources */,
 				E8C992F8184CD0EC00AFBF3F /* CollisionBox.cpp in Build Sources */,
 				E8BAD6DC1859F50300C98C8D /* QTreeViewStateHelper_moc.cpp in Build Sources */,

@@ -27,19 +27,54 @@
 =====================================================================================*/
 
 
-#include "ImageSplitterDialog/ImageSplitterDialog.h"
+#include "ImageArea.h"
+#include <QtGui>
 
-#include "ui_ImageSplitter.h"
-
-ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ImageSplitter)
+ImageArea::ImageArea(QWidget *parent)
+: QLabel(parent)
 {
-    ui->setupUi(this);
-    ui->selectPathWidget->SetClearButtonVisible(false);
+    setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
+    setAcceptDrops(true);
+    setAutoFillBackground(true);
+    ConnectSignals();
+    clear();
 }
 
-ImageSplitterDialog::~ImageSplitterDialog()
+void ImageArea::dragEnterEvent(QDragEnterEvent *event)
 {
-    delete ui;
+    const QMimeData *mimeData = event->mimeData();
+    
+    if (!mimeData->hasFormat("text/uri-list"))
+    {
+        return;
+    }
+    image.load(mimeData->urls().first().toLocalFile());
+        
+    if (image.isNull())
+    {
+        return;
+    }
+    
+    emit changed();
+    
+    event->acceptProposedAction();
+}
+
+void ImageArea::ConnectSignals()
+{
+    connect(this, SIGNAL(changed()), this, SLOT(UpdatePreviewPicture()));
+}
+
+void ImageArea::clear()
+{
+    //TODO: to test!
+    image = QPixmap();
+    setBackgroundRole(QPalette::Dark);
+    emit changed();
+}
+
+void ImageArea::UpdatePreviewPicture()
+{
+    QPixmap scaledImage = image.scaled(this->width(), this->height());
+    setPixmap(scaledImage);
 }

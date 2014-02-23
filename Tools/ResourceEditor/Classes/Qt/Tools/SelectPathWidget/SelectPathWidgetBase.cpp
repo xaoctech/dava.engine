@@ -77,7 +77,8 @@ void SelectPathWidgetBase::resizeEvent(QResizeEvent *)
 	clearButton->move(rect().right() - frameWidth - sz.width(),(rect().bottom() + 1 - sz.height())/2);
 	
 	QSize szOpenBtn = openButton->sizeHint();
-	openButton->move(rect().right() - sz.width() - frameWidth - szOpenBtn.width(),(rect().bottom() + 1 - szOpenBtn.height())/2);
+    int offsetFromRight = clearButton->isVisible() ? sz.width() : 0;
+	openButton->move(rect().right() - offsetFromRight - frameWidth - szOpenBtn.width(),(rect().bottom() + 1 - szOpenBtn.height())/2);
 }
 
 QToolButton* SelectPathWidgetBase::CreateToolButton(const DAVA::String& iconPath)
@@ -229,4 +230,25 @@ void SelectPathWidgetBase::dragEnterEvent(QDragEnterEvent* event)
 	{
 		event->acceptProposedAction();
 	}
+}
+
+
+bool SelectPathWidgetBase::IsOpenButtonVisible() const
+{
+    return openButton->isVisible();
+}
+
+void SelectPathWidgetBase::SetOpenButtonVisible(bool value)
+{
+    openButton->setVisible(value);
+}
+
+bool SelectPathWidgetBase::IsClearButtonVisible() const
+{
+    return clearButton->isVisible();
+}
+
+void SelectPathWidgetBase::SetClearButtonVisible(bool value)
+{
+    clearButton->setVisible(value);
 }
