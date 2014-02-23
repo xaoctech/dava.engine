@@ -59,6 +59,14 @@ public:
 	{
 		allowedFormatsList = _allowedFormatsList;
 	}
+    
+    bool IsOpenButtonVisible() const;
+    
+    void SetOpenButtonVisible(bool value);
+    
+    bool IsClearButtonVisible() const;
+    
+    void SetClearButtonVisible(bool value);
 	
 public slots:
 
