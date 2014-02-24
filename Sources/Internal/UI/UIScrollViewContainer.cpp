@@ -133,9 +133,13 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		return false;
 	}
 
-    visible = false;//this funny code is written to fix bugs with calling Input() twice.
+    bool oldVisible = visible;
+    if (currentTouch->touchLocker != this)
+    {
+        visible = false;//this funny code is written to fix bugs with calling Input() twice.
+    }
 	bool systemInput = UIControl::SystemInput(currentTouch);
-    visible = true;//All this control must be reingeneried
+    visible = oldVisible;//All this control must be reengeneried
 	if (currentTouch->GetInputHandledType() == UIEvent::INPUT_HANDLED_HARD)
 	{
 		// Can't scroll - some child control already processed this input.
@@ -155,7 +159,7 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 	}
 	else if(currentTouch->tid == mainTouch && currentTouch->phase == UIEvent::PHASE_DRAG)
 	{
-		// Don't scroll if touchTreshold is not exceeded 
+		// Don't scroll if touchTreshold is not exceeded
 		if ((abs(currentTouch->point.x - scrollStartInitialPosition.x) > touchTreshold) ||
 			(abs(currentTouch->point.y - scrollStartInitialPosition.y) > touchTreshold))
 		{
@@ -200,6 +204,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 	{
 		return;
 	}
+
 	
 	UIScrollView *scrollView = cast_if_equal<UIScrollView*>(this->GetParent());
 	if (scrollView)
@@ -231,7 +236,7 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
             {
                 contentRect.y = scrollView->GetVerticalScroll()->GetPosition(0, timeElapsed, false);
             }
-        } 
+        }
 
 		this->SetRect(contentRect);
 		// Change state when scrolling is not active
@@ -263,6 +268,10 @@ void UIScrollViewContainer::WillDisappear()
 {
     mainTouch = -1;
     lockTouch = false;
+	UIScrollView *scrollView = cast_if_equal<UIScrollView*>(this->GetParent());
+    scrollView->GetHorizontalScroll()->GetPosition(0, 1.0f, true);
+    scrollView->GetVerticalScroll()->GetPosition(0, 1.0f, true);
+    state = STATE_NONE;
 }
 
 };
