@@ -139,7 +139,7 @@ protected:
     
     static DAVA::uint32 CalculateTextureSize(const DAVA::TexturesMap &textures);
 
-    static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool checkVisibility);
+    static DAVA::uint32 GetTrianglesForNotLODEntityRecursive(DAVA::Entity *entity, bool onlyVisibleBatches);
     
     static SpeedTreeInfo GetSpeedTreeLeafsSquare(DAVA::RenderObject *forEntity);
     

@@ -42,7 +42,7 @@ CustomLandscape::~CustomLandscape()
 	SafeRelease(landscapeRenderer);
     
     if(textureState != InvalidUniqueHandle)
-        RenderManager::Instance()->ReleaseTextureStateData(textureState);
+        RenderManager::Instance()->ReleaseTextureState(textureState);
 }
 
 void CustomLandscape::SetRenderer(LandscapeRenderer *renderer)
@@ -59,12 +59,12 @@ LandscapeRenderer* CustomLandscape::GetRenderer()
 void CustomLandscape::UpdateTextureState()
 {
 	TextureStateData textureStateData;
-	textureStateData.textures[0] = GetTexture(TEXTURE_TILE_FULL);
-	UniqueHandle uniqueHandle = RenderManager::Instance()->AddTextureStateData(&textureStateData);
+	textureStateData.SetTexture(0, GetTexture(TEXTURE_TILE_FULL));
+	UniqueHandle uniqueHandle = RenderManager::Instance()->CreateTextureState(textureStateData);
 
 	if (textureState != InvalidUniqueHandle)
 	{
-		RenderManager::Instance()->ReleaseTextureStateData(textureState);
+		RenderManager::Instance()->ReleaseTextureState(textureState);
 	}
 
 	textureState = uniqueHandle;
@@ -77,7 +77,7 @@ void CustomLandscape::Draw(DAVA::Camera *camera)
 		return;
 	}
 	
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, camera->GetMatrix());
+	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 
 	landscapeRenderer->BindMaterial(textureState);
 	landscapeRenderer->DrawLandscape();

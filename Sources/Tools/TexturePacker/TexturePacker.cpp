@@ -37,6 +37,7 @@
 #include "TextureCompression/TextureConverter.h"
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
+#include "Utils/StringFormat.h"
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -49,6 +50,7 @@ TexturePacker::TexturePacker()
 {
 	maxTextureSize = TEXTURE_SIZE;
 	onlySquareTextures = false;
+	errors.clear();
 }
 
 bool TexturePacker::TryToPack(const Rect2i & textureRect, List<DefinitionFile*> & /*defsList*/)
@@ -467,7 +469,9 @@ bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const Fi
 
 		if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
         {
-            Logger::Error("In sprite %s.psd frame %d has size bigger than sprite size!", defFile->filename.GetBasename().c_str(), frame);
+			String errorMsg = Format("In sprite %s.psd frame %d has size bigger than sprite size!", defFile->filename.GetBasename().c_str(), frame);
+			errors.insert(errorMsg);
+            Logger::Error(errorMsg.c_str());
         }
 	}
 	
@@ -760,5 +764,9 @@ void TexturePacker::WriteDefinitionString(FILE *fp, const Rect2i & writeRect, co
 	}
 }
 
+Set<String> TexturePacker::GetErrors()
+{
+	return errors;
+}
 
 };

@@ -40,7 +40,7 @@ void SpeedTreeObject::RecalcBoundingBox()
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        RenderBatch * rb = renderBatchArray[k];
+        RenderBatch * rb = renderBatchArray[k].renderBatch;
         PolygonGroup * pg = rb->GetPolygonGroup();
         if(pg)
         {

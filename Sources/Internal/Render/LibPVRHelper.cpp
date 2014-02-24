@@ -1794,8 +1794,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
 	
 bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel)
 {
-	bool bIsLegacyPVR=false;
-    
     //Texture setup
     PVRHeaderV3 compressedHeader;
     uint8* pTextureData=NULL;
@@ -1807,8 +1805,6 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
         
         //Get the texture data.
         pTextureData = (uint8*)pvrData + *(uint32*)pvrData;
-        
-        bIsLegacyPVR=true;
     }
     else
     {
@@ -1877,14 +1873,14 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
 				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
 			
 				//Get the face offset. Varies per MIP level.
-				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
+//				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
+//				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
 				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
 				//{
 				PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
 				//Move forward through the pointers.
-				pTempDecompData+=decompressedFaceOffset;
-				pTempCompData+=compressedFaceOffset;
+//				pTempDecompData+=decompressedFaceOffset;
+//				pTempCompData+=compressedFaceOffset;
 				//}
 				image->format = FORMAT_RGBA8888;
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -1921,15 +1917,15 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
 				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
 			
 				//Get the face offset. Varies per MIP level.
-				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
+//				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
+//				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
 				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
 				//{
 				PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
                 
 				//Move forward through the pointers.
-				pTempDecompData += decompressedFaceOffset;
-				pTempCompData += compressedFaceOffset;
+//				pTempDecompData += decompressedFaceOffset;
+//				pTempCompData += compressedFaceOffset;
 				//}
 				image->format = FORMAT_RGBA8888;
 #endif //defined (__DAVAENGINE_ANDROID__)

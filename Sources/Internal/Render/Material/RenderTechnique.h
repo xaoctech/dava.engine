@@ -81,29 +81,29 @@ public:
 								const FastNameSet & _uniqueDefines,
 								RenderState * _renderState);
 
-    inline const FastName & GetName() { return name; };
-    inline uint32 GetIndexByName(const FastName & fastName) { return nameIndexMap.at(fastName); };
-    inline RenderTechniquePass * GetPassByIndex(uint32 index) { return renderTechniqueArray[index]; }
+    inline const FastName & GetName() const { return name; };
+    inline uint32 GetIndexByName(const FastName & fastName) const { return nameIndexMap.at(fastName); };
+    inline RenderTechniquePass * GetPassByIndex(uint32 index) const { return renderTechniquePassArray[index]; }
 	inline const FastNameSet & GetLayersSet() const { return layersSet; };
 //    inline const Vector<RenderLayerID> & GetLayersIDs() const { return layerIDs; };
 
-	inline const FastName& GetPassName(uint32 index)
+	inline const FastName& GetPassName(uint32 index) const
 	{
 		return nameIndexMap.keyByIndex(index);
 	}
 	
-	inline RenderTechniquePass* GetPassByName(const FastName & fastName)
+	inline RenderTechniquePass* GetPassByName(const FastName & fastName) const
 	{
 		uint32 index = GetIndexByName(fastName);
 		return GetPassByIndex(index);
 	}
 	
-	inline uint32 GetPassCount()
+	inline uint32 GetPassCount() const
 	{
-		return renderTechniqueArray.size();
+		return renderTechniquePassArray.size();
 	}
 	
-	inline uint16 GetTechniqueId()
+	inline uint16 GetTechniqueId() const
 	{
 		return techniqueId;
 	}
@@ -115,7 +115,7 @@ protected:
 protected:
 	
     FastName name;
-    Vector<RenderTechniquePass*> renderTechniqueArray;
+    Vector<RenderTechniquePass*> renderTechniquePassArray;
     HashMap<FastName, uint32> nameIndexMap;
 	FastNameSet layersSet;
 	uint16 techniqueId;

@@ -79,10 +79,7 @@ public:
     //! \brief Set view frustum from matrix information
 	//! \param viewProjection view * projection matrix
     void Build(const Matrix4 & viewProjection);
-    
-    // from active model view projection
-    void Build();
-    
+        
 	//! \brief Check axial aligned bounding box visibility
 	//! \param min bounding box minimum point
 	//! \param max bounding box maximum point
