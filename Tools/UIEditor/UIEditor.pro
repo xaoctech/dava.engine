@@ -67,6 +67,7 @@ SOURCES += \
     Classes/UI/PropertyGridWidgets/scrollviewpropertygridwidget.cpp \
     Classes/UI/PropertyGridWidgets/previewsettingsdialog.cpp \
     Classes/UI/PropertyGridWidgets/editeditorsettingsdialog.cpp
+    Classes/UI/particleeffectpropertygridwidget.cpp
 
 HEADERS  += \
         Classes/AppScreens.h \
@@ -120,6 +121,7 @@ HEADERS  += \
     Classes/UI/PropertyGridWidgets/scrollviewpropertygridwidget.h \
     Classes/UI/PropertyGridWidgets/previewsettingsdialog.h \
     Classes/UI/PropertyGridWidgets/editeditorsettingsdialog.h
+    Classes/UI/particleeffectpropertygridwidget.h
 
 FORMS    += \
         UI/mainwindow.ui \
@@ -165,6 +167,7 @@ FORMS    += \
     UI/scrollcontrolpropertygridwidget.ui \
     UI/previewsettingsdialog.ui \
     UI/editeditorsettingsdialog.ui
+    UI/particleeffectpropertygridwidget.ui
 
 
 #debug dependent

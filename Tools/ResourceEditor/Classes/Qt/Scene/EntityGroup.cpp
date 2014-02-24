@@ -145,7 +145,7 @@ DAVA::Vector3 EntityGroup::GetZeroPos(size_t i) const
 {
 	DAVA::Vector3 ret;
 
-	if(i >= 0 && i < entities.size())
+	if(i < entities.size())
 	{
 		ret = entities[i].entity->GetWorldTransform().GetTranslationVector();
 	}

@@ -81,7 +81,7 @@ void SpriteRenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 	{
 	case SpriteObject::SPRITE_OBJECT:
 		{
-			finalMatrix = (*worldTransformPtr) * cameraMatrix;
+			finalMatrix = (*worldTransformPtr);
 			break;
 		};
 	case SpriteObject::SPRITE_BILLBOARD:
@@ -100,7 +100,7 @@ void SpriteRenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 			inverse._21 = cameraMatrix._12;
 			inverse._22 = cameraMatrix._22;
 
-			finalMatrix = inverse * (*worldTransformPtr) * cameraMatrix;
+			finalMatrix = inverse * (*worldTransformPtr);
 			break;
 		};
 	case SpriteObject::SPRITE_BILLBOARD_TO_CAMERA:
@@ -123,12 +123,12 @@ void SpriteRenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 			matrix._21 = look.y;
 			matrix._22 = look.z;
 
-			finalMatrix = matrix * (*worldTransformPtr) * cameraMatrix;
+			finalMatrix = matrix * (*worldTransformPtr);
 			break;
 		};   
 	}
 
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, finalMatrix, (pointer_size)worldTransformPtr);
+	RenderManager::SetDynamicParam(PARAM_WORLD, &finalMatrix, (pointer_size)worldTransformPtr);
 
 	
 	material->BindMaterialTechnique(ownerRenderPass, camera);
