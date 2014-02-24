@@ -26,8 +26,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_GRASSRENDEROBJECT_H__
-#define __DAVAENGINE_GRASSRENDEROBJECT_H__
+#ifndef __DAVAENGINE_VEGETATIONRENDEROBJECT_H__
+#define __DAVAENGINE_VEGETATIONRENDEROBJECT_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -46,7 +46,7 @@
 namespace DAVA
 {
     
-typedef Image GrassMap;
+typedef Image VegetationMap;
     
 struct TextureSheetCell
 {
@@ -54,10 +54,15 @@ struct TextureSheetCell
     Vector2 t1;
     Vector2 t2;
     Vector2 t3;
-};
     
+    inline TextureSheetCell& operator=(const TextureSheetCell& src);
+};
+ 
+class Heightmap;
 class TextureSheet
 {
+public:
+    
     Vector<TextureSheetCell> cells;
     
     inline TextureSheet();
@@ -66,37 +71,62 @@ class TextureSheet
     inline void SetTexture(Texture* tx);
     inline Texture* GetTexture() const;
     
+    inline TextureSheet& operator=(const TextureSheet& src);
+    
 private:
     
     Texture* texture;
 };
 
-class GrassRenderObject : public RenderObject
+class VegetationRenderObject : public RenderObject
 {
 public:
         
-    GrassRenderObject();
-    virtual ~GrassRenderObject();
+    VegetationRenderObject();
+    virtual ~VegetationRenderObject();
         
     RenderObject * Clone(RenderObject *newObject);
     virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
+    void PrepareRenderData();
     
     virtual void PrepareToRender(Camera *camera);
+    
+    void SetHeightmap(Heightmap* _heightmap);
+    Heightmap* GetHeightmap() const;
 
-    void SetGrassMap(GrassMap* grassMap);
-    const GrassMap* GetGrassMap() const;
+    void SetVegetationMap(VegetationMap* grassMap);
+    const VegetationMap* GetVegetationMap() const;
     
+    void SetTextureSheet(const TextureSheet& sheet);
+    const TextureSheet& GetTextureSheet() const;
     
+    void SetClusterLimit(uint32 maxClusters);
+    uint32 GetClusterLimit() const;
     
 private:
     
-    void BuildGrassBrush(uint32 width, uint32 length);
+    void BuildGrassBrush(uint32 maxClusters);
     
 private:
     
-    GrassMap* grassMap;
+    Heightmap* heightmap;
+    VegetationMap* vegetationMap;
+    TextureSheet textureSheet;
+    uint32 clusterLimit;
+    
+    PolygonGroup* clusterBrush;
 };
+    
+inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src)
+{
+    t0 = src.t0;
+    t1 = src.t1;
+    t2 = src.t2;
+    t3 = src.t3;
+    
+    return *this;
+}
     
 inline TextureSheet::TextureSheet() : texture(NULL)
 {
@@ -107,7 +137,7 @@ inline TextureSheet::~TextureSheet()
     SafeRelease(texture);
 }
     
-void TextureSheet::SetTexture(Texture* tx)
+inline void TextureSheet::SetTexture(Texture* tx)
 {
     if(tx != texture)
     {
@@ -116,9 +146,23 @@ void TextureSheet::SetTexture(Texture* tx)
     }
 }
 
-Texture* TextureSheet::GetTexture() const
+inline Texture* TextureSheet::GetTexture() const
 {
     return texture;
+}
+    
+inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
+{
+    SetTexture(src.texture);
+    cells.resize(src.cells.size());
+    
+    size_t size = cells.size();
+    for(size_t i = 0; i < size; ++i)
+    {
+        cells[i] = src.cells[i];
+    }
+    
+    return *this;
 }
 
 };
