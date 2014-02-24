@@ -32,58 +32,101 @@
 #include "Base/Singleton.h"
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 #include "FileSystem/FilePath.h"
 #include "Base/EventDispatcher.h"
+#include "Base/FastName.h"
 #include "Sound/SoundEvent.h"
+
+#ifdef DAVA_FMOD
+namespace FMOD
+{
+class EventGroup;
+class System;
+class EventSystem;
+};
+#endif
 
 namespace DAVA
 {
 
+#ifdef DAVA_FMOD
+class FMODFileSoundEvent;
+class FMODSoundEvent;
+#endif
+
 class Component;
-class SoundSystemInstance
+class SoundSystem : public Singleton<SoundSystem>
 {
 public:
-    virtual ~SoundSystemInstance() {};
+    SoundSystem();
+    ~SoundSystem();
     
-    virtual SoundEvent * CreateSoundEventByID(const FastName & eventName, const FastName & groupName) = 0;
-    virtual SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128) = 0;
+    SoundEvent * CreateSoundEventByID(const FastName & eventName, const FastName & groupName);
+    SoundEvent * CreateSoundEventFromFile(const FilePath & fileName, const FastName & groupName, uint32 createFlags = SoundEvent::SOUND_EVENT_CREATE_DEFAULT, int32 priority = 128);
     
-    virtual void SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive) = 0;
-    virtual SoundEvent * DeserializeEvent(KeyedArchive *archive) = 0;
+    void SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive);
+    SoundEvent * DeserializeEvent(KeyedArchive *archive);
 
 
-    virtual void Update(float32 timeElapsed);
-    virtual void Suspend() = 0;
-    virtual void Resume() = 0;
+    void Update(float32 timeElapsed);
+    void Suspend();
+    void Resume();
 
-    virtual void SetCurrentLocale(const String & langID) = 0;
+    void SetCurrentLocale(const String & langID);
 
-    virtual void SetListenerPosition(const Vector3 & position) = 0;
-    virtual void SetListenerOrientation(const Vector3 & forward, const Vector3 & left) = 0;
+    void SetListenerPosition(const Vector3 & position);
+    void SetListenerOrientation(const Vector3 & forward, const Vector3 & left);
 
-    virtual void SetGroupVolume(const FastName & groupName, float32 volume) = 0;
-    virtual float32 GetGroupVolume(const FastName & groupName) = 0;
-};
+    void SetGroupVolume(const FastName & groupName, float32 volume);
+    float32 GetGroupVolume(const FastName & groupName);
 
-class SoundSystem
-{
-public:
-    enum SoundSystemType
+#ifdef DAVA_FMOD
+protected:
+    struct SoundGroup
     {
-        SOUNDSYSTEM_FMOD = 0,
+        SoundGroup() : volume(1.f) {};
 
-        SOUNDSYSTEM_COUNT
+        FastName name;
+        float32 volume;
+        Vector<SoundEvent *> events;
     };
 
 public:
-    static void Init();
-    static void Release();
-    static SoundSystemInstance * Instance();
-    static void SetSoundSystemType(SoundSystemType _type) {type = _type;};
+    void LoadFEV(const FilePath & filePath);
+    void UnloadFMODProjects();
 
-private:
-    static SoundSystemType type;
-    static SoundSystemInstance * instance;
+    void PreloadFMODEventGroupData(const String & groupName);
+    void ReleaseFMODEventGroupData(const String & groupName);
+    void ReleaseAllEventWaveData();
+
+    void GetAllEventsNames(Vector<String> & names);
+
+    uint32 GetMemoryUsageBytes() const;
+
+protected:
+    void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
+
+    void ReleaseOnUpdate(SoundEvent * sound);
+
+    void PerformCallbackOnUpdate(SoundEvent * event, uint32 callbackType);
+    void CancelCallbackOnUpdate(SoundEvent * event, uint32 callbackType);
+
+    void AddSoundEventToGroup(const FastName & groupName, SoundEvent * event);
+    void RemoveSoundEventFromGroups(SoundEvent * event);
+
+    FMOD::System * fmodSystem;
+    FMOD::EventSystem * fmodEventSystem;
+
+    Vector<SoundEvent *> soundsToReleaseOnUpdate;
+    MultiMap<SoundEvent *, uint32> callbackOnUpdate;
+    Vector<SoundGroup> soundGroups;
+
+    Vector<String> toplevelGroups;
+
+    friend class FMODFileSoundEvent;
+    friend class FMODSoundEvent;
+#endif
 };
 
 };

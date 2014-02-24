@@ -63,8 +63,9 @@ FMODSoundBrowser::FMODSoundBrowser(QWidget *parent) :
 
 FMODSoundBrowser::~FMODSoundBrowser()
 {
-    DAVA::FMODSoundSystem::GetFMODSoundSystem()->UnloadFMODProjects();
-
+#ifdef DAVA_FMOD
+    DAVA::SoundSystem::Instance()->UnloadFMODProjects();
+#endif
     delete ui;
 }
 
@@ -82,8 +83,10 @@ DAVA::String FMODSoundBrowser::GetSelectSoundEvent()
 
 void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
 {
-    DAVA::FMODSoundSystem * soundsystem = DAVA::FMODSoundSystem::GetFMODSoundSystem();
-    
+#ifdef DAVA_FMOD
+    DAVA::SoundSystem * soundsystem = DAVA::SoundSystem::Instance();
+#endif
+
     soundsystem->UnloadFMODProjects();
 
     LoadAllFEVsRecursive("~res:/Sfx/");
@@ -96,8 +99,9 @@ void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
 
 void FMODSoundBrowser::OnProjectClosed()
 {
-    DAVA::FMODSoundSystem::GetFMODSoundSystem()->UnloadFMODProjects();
-
+#ifdef DAVA_FMOD
+    DAVA::SoundSystem::Instance()->UnloadFMODProjects();
+#endif
     ui->treeWidget->clear();
 }
 
@@ -225,7 +229,8 @@ void FMODSoundBrowser::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
 {
     DVASSERT(dirPath.IsDirectoryPathname());
 
-    DAVA::FMODSoundSystem * soundsystem = DAVA::FMODSoundSystem::GetFMODSoundSystem();
+#ifdef DAVA_FMOD
+    DAVA::SoundSystem * soundsystem = DAVA::SoundSystem::Instance();
 
     DAVA::FileList * list = new DAVA::FileList(dirPath);
     DAVA::int32 entriesCount = list->GetCount();
@@ -245,4 +250,5 @@ void FMODSoundBrowser::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
         }
     }
     SafeRelease(list);
+#endif //DAVA_FMOD
 }

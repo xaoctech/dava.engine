@@ -117,7 +117,7 @@ void Core::CreateSingletons()
 	FileSystem::Instance()->SetDefaultDocumentsDirectory();
     FileSystem::Instance()->CreateDirectory(FileSystem::Instance()->GetCurrentDocumentsDirectory(), true);
 	
-    SoundSystem::Init();
+    new SoundSystem();
 
 	if (isConsoleMode)
 	{
@@ -184,7 +184,7 @@ void Core::ReleaseSingletons()
 	LocalizationSystem::Instance()->Release();
 //	Logger::FrameworkDebug("[Core::Release] successfull");
     FileSystem::Instance()->Release();
-    SoundSystem::Release();
+    SoundSystem::Instance()->Release();
 	Random::Instance()->Release();
 	RenderManager::Instance()->Release();
 #ifdef __DAVAENGINE_AUTOTESTING__

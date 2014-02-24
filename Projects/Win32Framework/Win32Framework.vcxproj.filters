@@ -1293,9 +1293,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundSystem.h">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundEvent.h">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
@@ -1398,9 +1395,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpeedTreeObject.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSound.h">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderPassManager.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1412,6 +1406,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialNames.h">
       <Filter>Internal\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.h">
+      <Filter>Internal\Sound\FMOD</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2336,9 +2333,6 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2417,9 +2411,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundSystem.cpp">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
@@ -2431,9 +2422,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\DAVAClassRegistrator.cpp">
       <Filter>Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEvent.cpp">
-      <Filter>Internal\Sound</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
@@ -2522,11 +2510,14 @@
     <ClCompile Include="..\..\Sources\Internal\Math\Color.cpp">
       <Filter>Internal\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSound.cpp">
-      <Filter>Internal\Sound\FMOD</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialNames.cpp">
       <Filter>Internal\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundSystem.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

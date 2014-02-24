@@ -26,20 +26,16 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
+#ifdef DAVA_FMOD
 
 #include "Sound/FMODSoundEvent.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/FMODSoundSystem.h"
 #include "Scene3D/Entity.h"
-#include "Sound/FMODUtils.h"
 
 namespace DAVA
 {
     
 static const FastName FMOD_SYSTEM_EVENTANGLE_PARAMETER("(event angle)");
-
-FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
     
 FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
     is3D(false)
@@ -48,7 +44,7 @@ FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
     eventName = _eventName;
 
     FMOD::Event * fmodEventInfo = 0;
-    FMOD_VERIFY(FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
+    FMOD_VERIFY(SoundSystem::Instance()->fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
     if(fmodEventInfo)
     {
         FMOD_MODE mode = 0;
@@ -74,18 +70,18 @@ FMODSoundEvent::~FMODSoundEvent()
         FMOD_VERIFY(fmodEvent->setCallback(0, 0));
         FMOD_VERIFY(fmodEvent->stop());
 
-        FMODSoundSystem::GetFMODSoundSystem()->CancelCallbackOnUpdate(this, SoundEvent::EVENT_END);
+        SoundSystem::Instance()->CancelCallbackOnUpdate(this, SoundEvent::EVENT_END);
     }
 
     fmodEventInstances.clear();
 
-    FMODSoundSystem::GetFMODSoundSystem()->RemoveSoundEventFromGroups(this);
+    SoundSystem::Instance()->RemoveSoundEventFromGroups(this);
 }
 
 bool FMODSoundEvent::Trigger()
 {
-    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
-    FMOD::EventSystem * fmodEventSystem = fmodSoundSystem->fmodEventSystem;
+    SoundSystem * soundSystem = SoundSystem::Instance();
+    FMOD::EventSystem * fmodEventSystem = soundSystem->fmodEventSystem;
 
     List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
@@ -150,7 +146,7 @@ void FMODSoundEvent::UpdateInstancesPosition()
 {
     if(is3D)
     {
-        FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
+        SoundSystem * soundSystem = SoundSystem::Instance();
 
         List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
         for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
@@ -160,7 +156,7 @@ void FMODSoundEvent::UpdateInstancesPosition()
     
 void FMODSoundEvent::Stop()
 {
-    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
+    SoundSystem * soundSystem = SoundSystem::Instance();
 
     List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
     for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
@@ -168,7 +164,7 @@ void FMODSoundEvent::Stop()
         FMOD::Event * fEvent = (*it);
         FMOD_VERIFY(fEvent->setCallback(0, 0));
         FMOD_VERIFY(fEvent->stop());
-        fmodSoundSystem->ReleaseOnUpdate(this);
+        soundSystem->ReleaseOnUpdate(this);
         PerformEvent(SoundEvent::EVENT_END);
     }
     fmodEventInstances.clear();
@@ -209,8 +205,8 @@ float32 FMODSoundEvent::GetParameterValue(const FastName & paramName)
 
 bool FMODSoundEvent::IsParameterExists(const FastName & paramName)
 {
-    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
-    FMOD::EventSystem * fmodEventSystem = fmodSoundSystem->fmodEventSystem;
+    SoundSystem * soundSystem = SoundSystem::Instance();
+    FMOD::EventSystem * fmodEventSystem = soundSystem->fmodEventSystem;
 
     FMOD::Event * fmodEventInfo = 0;
     FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &fmodEventInfo));
@@ -239,9 +235,9 @@ void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
     
 void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, eSoundEventCallbackType callbackType)
 {
-    FMODSoundSystem * fmodSoundSystem = FMODSoundSystem::GetFMODSoundSystem();
-    fmodSoundSystem->ReleaseOnUpdate(this);
-    fmodSoundSystem->PerformCallbackOnUpdate(this, callbackType);
+    SoundSystem * soundSystem = SoundSystem::Instance();
+    soundSystem->ReleaseOnUpdate(this);
+    soundSystem->PerformCallbackOnUpdate(this, callbackType);
     
     List<FMOD::Event *>::iterator it = std::find(fmodEventInstances.begin(), fmodEventInstances.end(), fmodEvent);
     if(it != fmodEventInstances.end())
@@ -252,7 +248,7 @@ void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & pa
 {
     paramsInfo.clear();
 
-    FMOD::EventSystem * fmodEventSystem = FMODSoundSystem::GetFMODSoundSystem()->fmodEventSystem;
+    FMOD::EventSystem * fmodEventSystem = SoundSystem::Instance()->fmodEventSystem;
     FMOD::Event * event = 0;
     FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event));
     if(!event)
@@ -284,7 +280,7 @@ String FMODSoundEvent::GetEventName() const
      return String(eventName.c_str());
 }
 
-FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
+FMOD_RESULT F_CALLBACK FMODSoundEvent::FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
     if(/*type == FMOD_EVENT_CALLBACKTYPE_STOLEN || */type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
     {
@@ -297,3 +293,5 @@ FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKT
 }
     
 };
+
+#endif //DAVA_FMOD

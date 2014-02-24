@@ -257,12 +257,6 @@ void SceneCameraSystem::Update(float timeElapsed)
 			RecalcCameraViewAngles();
 		}
 
-        if(curSceneCamera)
-        {
-            SoundSystem::Instance()->SetListenerPosition(curSceneCamera->GetPosition());
-            SoundSystem::Instance()->SetListenerOrientation(curSceneCamera->GetDirection(), curSceneCamera->GetLeft());
-        }
-
 		ProcessKeyboardMove(timeElapsed);
 	}
 

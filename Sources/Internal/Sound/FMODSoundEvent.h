@@ -26,7 +26,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
+#ifdef DAVA_FMOD
 
 #ifndef __DAVAENGINE_FMOD_SOUND_EVENT_H__
 #define __DAVAENGINE_FMOD_SOUND_EVENT_H__
@@ -36,6 +36,7 @@
 #include "Base/EventDispatcher.h"
 #include "Base/FastNameMap.h"
 #include "Sound/SoundEvent.h"
+#include "Sound/FMODUtils.h"
 
 namespace FMOD
 {
@@ -48,6 +49,8 @@ namespace DAVA
 class FMODSoundEvent : public SoundEvent
 {
 public:
+    static FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
+
 	virtual ~FMODSoundEvent();
 
     virtual bool IsActive() const;
@@ -68,13 +71,12 @@ public:
     virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const;
 
     virtual String GetEventName() const;
-
-    //FMOD only
-    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
     
 protected:
     FMODSoundEvent(const FastName & eventName);
     void ApplyParamsToEvent(FMOD::Event * event);
+
+    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
 
     List<FMOD::Event *> fmodEventInstances;
     FastName eventName;
@@ -86,9 +88,11 @@ protected:
 
     FastNameMap<float32> paramsValues;
     
-friend class FMODSoundSystem;
+friend class SoundSystem;
 };
 
 };
 
 #endif
+
+#endif //DAVA_FMOD
