@@ -119,10 +119,10 @@ private:
 	void setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor *descriptor);
 	void setTextureView(DAVA::eGPUFamily view, bool forceConvert = false);
 
-	void updateConvertedImageAndInfo(const DAVA::Vector<QImage> &images, DAVA::TextureDescriptor& descriptor);
+	void updateConvertedImageAndInfo(const QList<QImage> &images, DAVA::TextureDescriptor& descriptor);
 	void updateInfoColor(QLabel *label, const QColor &color = QColor());
 	void updateInfoPos(QLabel *label, const QPoint &pos = QPoint());
-	void updateInfoOriginal(const DAVA::Vector<QImage> &images);
+	void updateInfoOriginal(const QList<QImage> &images);
 	void updateInfoConverted();
 	void updatePropertiesWarning();
 

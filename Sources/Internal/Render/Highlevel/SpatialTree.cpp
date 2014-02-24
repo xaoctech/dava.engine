@@ -53,8 +53,9 @@ bool QuadTree::CheckBoxIntersectChild(const AABBox3& objBox, const AABBox3& node
 	case QuadTreeNode::NODE_LT:
 		return (0.5f*(nodeBox.min.x+nodeBox.max.x)>=objBox.min.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);		
 	case QuadTreeNode::NODE_RT:
-		return (0.5f*(nodeBox.min.x+nodeBox.max.x)<=objBox.max.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);		
-	}			
+		return (0.5f*(nodeBox.min.x+nodeBox.max.x)<=objBox.max.x)&&(0.5f*(nodeBox.min.y+nodeBox.max.y)<=objBox.max.y);
+    default: break;
+	}
 	return false;
 }
 
@@ -78,6 +79,7 @@ void QuadTree::UpdateChildBox(AABBox3 &parentBox, QuadTreeNode::eNodeType childT
 		parentBox.min.x = (parentBox.max.x+parentBox.min.x)*0.5f;
 		parentBox.min.y = (parentBox.max.y+parentBox.min.y)*0.5f;
 		break;
+    default: break;
 	}
 }
 
@@ -101,6 +103,7 @@ void QuadTree::UpdateParentBox(AABBox3 &childtBox, QuadTreeNode::eNodeType child
 		childtBox.min.x -= (childtBox.max.x-childtBox.min.x);
 		childtBox.min.y -= (childtBox.max.y-childtBox.min.y);
 		break;
+    default: break;
 	}
 }
 
@@ -239,6 +242,7 @@ void QuadTree::AddRenderObject(RenderObject * renderObject)
 	}
 
 	const AABBox3& objBox = renderObject->GetWorldBoundingBox();
+	DVASSERT(!objBox.IsEmpty());
 	
 	//ALWAYS_CLIPPING_VISIBLE should be added to root to prevent being clipped by tree
 	//special treatment for root - as it can contain objects outside the world
@@ -478,6 +482,7 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 void QuadTree::Clip(Camera * camera, VisibilityArray * _visibilityArray)
 {
 	DVASSERT(worldInitialized);
+	currCamera = camera;
 	currFrustum = camera->GetFrustum();	
 	visibilityArray = _visibilityArray;
 	ProcessNodeClipping(0, 0x3f); 
@@ -576,19 +581,17 @@ void QuadTree::DebugDraw(const Matrix4& cameraMatrix)
 	if (!worldInitialized) return;
 	if (debugDrawStateHandle == InvalidUniqueHandle) //create debug draw state
 	{
-		RenderStateData debugStateData = {0};
+		RenderStateData debugStateData;
 		debugStateData.state =	RenderStateData::STATE_BLEND | RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_TEST;
 		debugStateData.cullMode = FACE_BACK;
 		debugStateData.depthFunc = CMP_LESS;
 		debugStateData.sourceFactor = BLEND_SRC_ALPHA;
 		debugStateData.destFactor = BLEND_ONE_MINUS_SRC_ALPHA;
 		debugStateData.fillMode = FILLMODE_SOLID;		
-		debugDrawStateHandle = RenderManager::Instance()->AddRenderStateData(&debugStateData);
+		debugDrawStateHandle = RenderManager::Instance()->CreateRenderState(debugStateData);
 	}
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, cameraMatrix);
-	RenderManager::Instance()->SetRenderState(debugDrawStateHandle);
-	RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);	
-	RenderManager::Instance()->FlushState();
+    
+	RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
 	RenderManager::Instance()->SetColor(0.2f, 1.0f, 0.2f, 1.0f);
 	DebugDrawNode(0);
 	RenderManager::Instance()->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -599,10 +602,10 @@ void QuadTree::DebugDrawNode(uint16 nodeId)
 	RenderManager::Instance()->SetColor(0.2f, 0.2f, 1.0f, 1.0f);	
 	for (int32 i = 0, size = nodes[nodeId].objects.size(); i<size; ++i)
 	{
-		RenderHelper::Instance()->DrawBox(nodes[nodeId].objects[i]->GetWorldBoundingBox());
+		RenderHelper::Instance()->DrawBox(nodes[nodeId].objects[i]->GetWorldBoundingBox(), 1.0f, debugDrawStateHandle);
 	}
 	RenderManager::Instance()->SetColor(0.2f, 1.0f, 0.2f, 1.0f);
-	RenderHelper::Instance()->DrawBox(nodes[nodeId].bbox);	
+	RenderHelper::Instance()->DrawBox(nodes[nodeId].bbox, 1.0f, debugDrawStateHandle);
 	for (int32 i=0; i<QuadTreeNode::NODE_NONE; ++i)
 	{
 		if (nodes[nodeId].children[i]!=INVALID_TREE_NODE_INDEX)

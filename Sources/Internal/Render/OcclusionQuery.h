@@ -55,7 +55,7 @@ public:
 
     bool IsResultAvailable();
     void GetQuery(uint32 * resultValue);
-
+    GLuint GetId() const { return id; };
 private:
     GLuint id;
 };
@@ -74,12 +74,12 @@ public:
     uint32 salt: M;
 };
     
-typedef SmartHandle<16, 16> OcclusionQueryManagerHandle;
+typedef SmartHandle<32, 32> OcclusionQueryManagerHandle;
     
 class OcclusionQueryManager
 {
 public:
-    static const uint32 INVALID_INDEX = 0xFFFF;
+    static const uint32 INVALID_INDEX = 0xFFFFFFFF;
     
     OcclusionQueryManager(uint32 occlusionQueryCount);
     ~OcclusionQueryManager();
@@ -89,6 +89,7 @@ public:
     void ReleaseQueryObject(OcclusionQueryManagerHandle handle);
     
 private:
+    uint32 createdCounter;
     uint32 occlusionQueryCount;
     uint32 nextFree;
     struct OcclusionQueryItem

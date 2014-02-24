@@ -145,7 +145,7 @@ public:
     
     /**
         \brief Function to add root node.
-        \param[in] node node you want to add
+        \param[in] node node you want to addstop
         \param[in] rootNodePath path of this root node
      */
 
@@ -175,7 +175,7 @@ public:
     void ReleaseRootNode(Entity *nodeToRelease);
 
 	
-	virtual void StopAllAnimations(bool recursive = true);
+	//virtual void StopAllAnimations(bool recursive = true);
 	
 	virtual void	Update(float timeElapsed);
 	virtual void	Draw();
@@ -216,6 +216,7 @@ public:
 
     virtual void OptimizeBeforeExport();
 
+	inline NMaterial * GetGlobalMaterial() const;
 protected:	
     
     void UpdateLights();
@@ -228,6 +229,13 @@ protected:
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
 	Vector<SceneNodeAnimationList*> animations;
+    
+    static Texture* stubTexture2d;
+    static Texture* stubTextureCube;
+    static Texture* stubTexture2dLightmap; //this texture should be all-pink without checkers
+    NMaterial* sceneGlobalMaterial;
+    //TODO: think about data-driven initialization. Need to set default properties from outside and save/load per scene
+    void InitGlobalMaterial();
     
 #if defined (USE_FILEPATH_IN_MAP)
     typedef Map<FilePath, ProxyNode*> ProxyNodeMap;
@@ -263,6 +271,13 @@ int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
 }  
+
+inline NMaterial * Scene::GetGlobalMaterial() const
+{
+	return sceneGlobalMaterial; 
+}
+
+
 
 };
 

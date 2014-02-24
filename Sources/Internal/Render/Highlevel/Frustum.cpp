@@ -119,13 +119,6 @@ void Frustum::Build(const Matrix4 & viewProjection)
 	}
 }
 
-void Frustum::Build()
-{
-    const Matrix4 & viewProjection = RenderManager::Instance()->GetUniformMatrix(RenderManager::UNIFORM_MATRIX_MODELVIEWPROJECTION);
-    Build(viewProjection);
-}
-
-
 //! \brief Check axial aligned bounding box visibility
 //! \param min bounding box minimum point
 //! \param max bounding box maximum point
@@ -418,20 +411,20 @@ void Frustum::DebugDraw()
 								planeArray[EFP_TOP]);
 
 
-    RenderHelper::Instance()->DrawLine(	p[0], p[1]);
-	RenderHelper::Instance()->DrawLine(	p[1], p[2]);
-	RenderHelper::Instance()->DrawLine(	p[2], p[3]);
-	RenderHelper::Instance()->DrawLine(	p[3], p[0]);
+    RenderHelper::Instance()->DrawLine(	p[0], p[1], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[1], p[2], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[2], p[3], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[3], p[0], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
 	
-	RenderHelper::Instance()->DrawLine(	p[4], p[5]);
-	RenderHelper::Instance()->DrawLine(	p[5], p[6]);
-	RenderHelper::Instance()->DrawLine( p[6], p[7]);
-	RenderHelper::Instance()->DrawLine(	p[7], p[4]);
+	RenderHelper::Instance()->DrawLine(	p[4], p[5], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[5], p[6], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine( p[6], p[7], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[7], p[4], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
 
-	RenderHelper::Instance()->DrawLine(	p[0], p[4]);
-	RenderHelper::Instance()->DrawLine(	p[1], p[5]);
-	RenderHelper::Instance()->DrawLine(	p[2], p[6]);
-	RenderHelper::Instance()->DrawLine(	p[3], p[7]);
+	RenderHelper::Instance()->DrawLine(	p[0], p[4], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[1], p[5], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[2], p[6], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
+	RenderHelper::Instance()->DrawLine(	p[3], p[7], 1.0f, RenderState::RENDERSTATE_2D_BLEND);
 }
 
 }; 

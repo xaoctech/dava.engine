@@ -106,7 +106,6 @@ public:
 	
 	inline bool IsValid() const;
 
-    
 private:
     void Init(const char * name);
 	int index;

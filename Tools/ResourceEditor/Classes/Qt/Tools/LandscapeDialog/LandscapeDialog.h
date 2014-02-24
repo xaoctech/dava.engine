@@ -38,10 +38,8 @@
 #include "DAVAEngine.h"
 #include "Qt/Scene/SceneEditor2.h"
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "./../Qt/Tools/SelectPathWidget/SelectPathWidgetBase.h"
+#include "Tools/SelectPathWidget/SelectPathWidgetBase.h"
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
-
-class SelectEntityPathWidget;
 
 class LandscapeDialog: public BaseAddEntityDialog
 {

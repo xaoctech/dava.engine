@@ -35,7 +35,7 @@ TexturePathValidator::TexturePathValidator(const QStringList& value)
 {
 }
 
-bool TexturePathValidator::ValidateInternal(QVariant &v) const
+bool TexturePathValidator::ValidateInternal(QVariant &v)
 {
     bool res = RegExpValidator::ValidateInternal(v);
 

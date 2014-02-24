@@ -34,7 +34,7 @@ IntRangeValidator::IntRangeValidator(int minValue, int maxValue)
     innerValidator.setRange(minValue, maxValue);
 }
 
-bool IntRangeValidator::ValidateInternal(const QVariant &value) const
+bool IntRangeValidator::ValidateInternal(const QVariant &value)
 {
     QString validateValue = value.toString();
     int pos = 0;

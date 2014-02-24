@@ -53,6 +53,9 @@ public:
     MaterialModel(QObject *parent = 0);
     virtual ~MaterialModel();
     
+    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
+    MaterialItem* itemFromIndex(const QModelIndex & index) const;
+
     void SetScene(SceneEditor2 * scene);
     SceneEditor2 *GetScene();
 	void SetSelection(const EntityGroup *group);
@@ -60,7 +63,7 @@ public:
 	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
 
 	void Sync();
-	
+
     // drag and drop support
 	QMimeData *	mimeData(const QModelIndexList & indexes) const;
 	QStringList	mimeTypes() const;
@@ -71,14 +74,7 @@ protected:
 	SceneEditor2 *curScene;
 
 private:
-    void setPreview( QStandardItem *item, const DAVA::NMaterial * material );
-    QImage GetPreview( const DAVA::NMaterial * material ) const;
-    QModelIndex FindItemIndex(const DAVA::TextureDescriptor *descriptor) const;
-    QModelIndex FindItemIndex(const QModelIndex &parent, const DAVA::TextureDescriptor *descriptor) const;
     bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
-
-private slots:
-    void ThumbnailLoaded(const DAVA::TextureDescriptor *descriptor, const TextureInfo & image);
 };
 
 

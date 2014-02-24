@@ -73,7 +73,7 @@ public:
 	static Image * Create(uint32 width, uint32 height, PixelFormat format);
 	static Image * CreateFromData(uint32 width, uint32 height, PixelFormat format, const uint8 *data);
     
-    static Image * CreatePinkPlaceholder();
+    static Image * CreatePinkPlaceholder(bool checkers = true);
     
     // \todo Change function name to Image::Create for consistency
 	static Vector2 GetImageSize(const FilePath & pathName);
