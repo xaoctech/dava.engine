@@ -67,6 +67,11 @@ void UIWebView::OpenURL(const String& urlToOpen)
 	this->webViewControl->OpenURL(urlToOpen);
 }
 
+void UIWebView::OpenFromBuffer(const String& string, const FilePath& basePath)
+{
+    this->webViewControl->OpenFromBuffer(string, basePath);
+}
+
 void UIWebView::WillAppear()
 {
     UIControl::WillAppear();
