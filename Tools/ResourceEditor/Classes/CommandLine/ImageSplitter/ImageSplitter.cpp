@@ -48,7 +48,7 @@ bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
         return false;
     }
     
-
+/*
     Image *red = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
     Image *green = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
     Image *blue = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
@@ -63,7 +63,12 @@ bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
         green->data[i] = loadedImage->data[offset + 1];
         blue->data[i] = loadedImage->data[offset + 2];
         alpha->data[i] = loadedImage->data[offset + 3];
-    }
+    }*/
+    Image *red = NULL;
+    Image *green = NULL;
+    Image *blue = NULL;
+    Image *alpha = NULL;
+    CreateSplittedImages(loadedImage, &red, &green, &blue,  &alpha);
     
     FilePath folder(pathname.GetDirectory());
     
@@ -71,7 +76,6 @@ bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
     SaveImage(green, folder + "g.png");
     SaveImage(blue, folder + "b.png");
     SaveImage(alpha, folder + "a.png");
-
 
     ReleaseImages(red, green, blue, alpha);
     SafeRelease(loadedImage);
@@ -144,6 +148,25 @@ void ImageSplitter::ReleaseImages(Image *r, Image *g, Image *b, Image *a)
     SafeRelease(g);
     SafeRelease(b);
     SafeRelease(a);
+}
+
+void ImageSplitter::CreateSplittedImages(DAVA::Image* originalImage,DAVA::Image **r, DAVA::Image **g, DAVA::Image **b, DAVA::Image **a)
+{
+    *r = Image::Create(originalImage->width, originalImage->height, FORMAT_A8);
+    *g = Image::Create(originalImage->width, originalImage->height, FORMAT_A8);
+    *b = Image::Create(originalImage->width, originalImage->height, FORMAT_A8);
+    *a = Image::Create(originalImage->width, originalImage->height, FORMAT_A8);
+    
+    int32 size = originalImage->width * originalImage->height;
+    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    for(int32 i = 0; i < size; ++i)
+    {
+        int32 offset = i * pixelSize;
+        (*r)->data[i] = originalImage->data[offset];
+        (*g)->data[i] = originalImage->data[offset + 1];
+        (*b)->data[i] = originalImage->data[offset + 2];
+        (*a)->data[i] = originalImage->data[offset + 3];
+    }
 }
 
 

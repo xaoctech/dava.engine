@@ -39,13 +39,15 @@ public:
 
     static bool SplitImage(const DAVA::FilePath &pathname, DAVA::Set<DAVA::String> &errorLog);
     static bool MergeImages(const DAVA::FilePath &folder, DAVA::Set<DAVA::String> &errorLog);
-    
+    static void CreateSplittedImages(DAVA::Image* originalImage,DAVA::Image **r, DAVA::Image **g, DAVA::Image **b, DAVA::Image **a);
 private:
     
     static void SaveImage(DAVA::Image *image, const DAVA::FilePath &pathname);
     static DAVA::Image * LoadImage(const DAVA::FilePath &pathname);
     
     static void ReleaseImages(DAVA::Image *r, DAVA::Image *g, DAVA::Image *b, DAVA::Image *a);
+    
+    
 };
 
 
