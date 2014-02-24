@@ -49,6 +49,7 @@ UIScrollViewContainer::UIScrollViewContainer(const Rect &rect, bool rectInAbsolu
 {
 	this->SetInputEnabled(true);
 	this->SetMultiInput(true);
+    SetFocusEnabled(false);
 }
 
 UIScrollViewContainer::~UIScrollViewContainer()
@@ -132,7 +133,9 @@ bool UIScrollViewContainer::SystemInput(UIEvent *currentTouch)
 		return false;
 	}
 
+    visible = false;//this funny code is written to fix bugs with calling Input() twice.
 	bool systemInput = UIControl::SystemInput(currentTouch);
+    visible = true;//All this control must be reingeneried
 	if (currentTouch->GetInputHandledType() == UIEvent::INPUT_HANDLED_HARD)
 	{
 		// Can't scroll - some child control already processed this input.
