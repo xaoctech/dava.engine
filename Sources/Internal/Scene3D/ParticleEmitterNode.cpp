@@ -33,8 +33,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Material.h"
-#include "Particles/ParticleEmitter3D.h"
-#include "Particles/ParticleLayer3D.h"
+
 
 namespace DAVA
 {
@@ -65,7 +64,7 @@ void ParticleEmitterNode::LoadFromYaml(const FilePath& _yamlPath)
 {
 	yamlPath = _yamlPath;
 	SafeRelease(emitter);
-	emitter = new ParticleEmitter3D();
+	emitter = new ParticleEmitter();
 	emitter->LoadFromYaml(yamlPath);
 }
 

@@ -40,9 +40,6 @@
 
 QualitySwitcher::QualitySwitcher(QWidget *parent /* = NULL */)
 : QDialog(parent , Qt::Tool)
-, defBtn(NULL)
-, applyTx(false)
-, applyMa(false)
 {
     int mainRow = 0;
     int height = 10;
@@ -123,45 +120,40 @@ QualitySwitcher::QualitySwitcher(QWidget *parent /* = NULL */)
     mainLayout->addWidget(texturesGroup);
     mainLayout->addWidget(materialsGroup);
     mainLayout->addStretch();
-
-    defBtn = new QPushButton("Ok", this);
-    defBtn->setMaximumWidth(100);
-    mainLayout->addWidget(defBtn, 0, Qt::AlignRight);
-
-    mainLayout->setSpacing(spacing);
     mainLayout->setMargin(5);
+    mainLayout->setSpacing(spacing);
 
     setLayout(mainLayout);
     adjustSize();
 }
 
 QualitySwitcher::~QualitySwitcher()
+{ }
+
+void QualitySwitcher::ApplyTx()
 {
-    if(applyTx)
-    {
-        QtMainWindow::Instance()->OnReloadTextures();
-    }
+    QtMainWindow::Instance()->OnReloadTextures();
+}
 
-    if(applyMa)
+void QualitySwitcher::ApplyMa()
+{
+    SceneTabWidget *tabWidget = QtMainWindow::Instance()->GetSceneWidget();
+    for(int tab = 0; tab < tabWidget->GetTabCount(); ++tab)
     {
-        SceneTabWidget *tabWidget = QtMainWindow::Instance()->GetSceneWidget();
-        for(int tab = 0; tab < tabWidget->GetTabCount(); ++tab)
+        SceneEditor2 *sceneEditor = tabWidget->GetTabScene(tab);
+
+        DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > materialsTree;
+        sceneEditor->materialSystem->BuildMaterialsTree(materialsTree);
+
+        DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> >::iterator begin = materialsTree.begin();
+        DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> >::iterator end = materialsTree.end();
+
+        for(; begin != end; begin++)
         {
-            SceneEditor2 *sceneEditor = tabWidget->GetTabScene(tab);
-
-            DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > materialsTree;
-            sceneEditor->materialSystem->BuildMaterialsTree(materialsTree);
-
-            DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> >::iterator begin = materialsTree.begin();
-            DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> >::iterator end = materialsTree.end();
-
-            for(; begin != end; begin++)
+            DAVA::NMaterial *material = begin->first;
+            if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
             {
-                DAVA::NMaterial *material = begin->first;
-                if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
-                {
-                    material->ReloadQuality();
-                }
+                material->ReloadQuality();
             }
         }
     }
@@ -179,9 +171,11 @@ void QualitySwitcher::OnTxQualitySelect(int index)
     if(NULL != combo)
     {
         DAVA::FastName newTxQuality(combo->itemText(index).toAscii());
-        DAVA::QualitySettingsSystem::Instance()->SetCurTxQuality(newTxQuality);
-
-        applyTx = true;
+        if(newTxQuality != DAVA::QualitySettingsSystem::Instance()->GetCurTxQuality())
+        {
+            DAVA::QualitySettingsSystem::Instance()->SetCurTxQuality(newTxQuality);
+            ApplyTx();
+        }
     }
 }
 
@@ -193,8 +187,10 @@ void QualitySwitcher::OnMaQualitySelect(int index)
         DAVA::FastName newMaQuality(combo->itemText(index).toAscii());
         DAVA::FastName group(combo->itemData(index).toString().toAscii());
 
-        DAVA::QualitySettingsSystem::Instance()->SetCurMaQuality(group, newMaQuality);
-
-        applyMa = true;
+        if(newMaQuality != DAVA::QualitySettingsSystem::Instance()->GetCurMaQuality(group))
+        {
+            DAVA::QualitySettingsSystem::Instance()->SetCurMaQuality(group, newMaQuality);
+            ApplyMa();
+        }
     }
 }

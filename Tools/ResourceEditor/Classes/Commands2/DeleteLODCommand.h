@@ -32,31 +32,30 @@
 #define __DELETE_LOD_COMMAND_H__
 
 #include "Command2.h"
+#include "Render/Highlevel/RenderBatch.h"
 #include "Scene3D/Components/LodComponent.h"
 
-class EntityRemoveCommand;
+class DeleteRenderBatchCommand;
 class DeleteLODCommand: public Command2
 {
 public:
-	DeleteLODCommand(DAVA::LodComponent *lod, DAVA::int32 lodIndex);
+	DeleteLODCommand(DAVA::LodComponent *lod, DAVA::int32 lodIndex, DAVA::int32 switchIndex);
     virtual ~DeleteLODCommand();
 
 	virtual void Undo();
 	virtual void Redo();
 	virtual DAVA::Entity* GetEntity() const;
 
-protected:
+    const DAVA::Vector<DeleteRenderBatchCommand *> & GetRenderBatchCommands() const;
     
-    DAVA::int32 CountOccurence(DAVA::Entity *entity) const;
+protected:
 
 	DAVA::LodComponent *lodComponent;
     DAVA::int32 deletedLodIndex;
+    DAVA::int32 requestedSwitchIndex;
     
-	DAVA::Vector<DAVA::LodComponent::LodData> lodLayers;
-	DAVA::Vector<DAVA::LodComponent::LodDistance> lodLayersArray;
-    
-    DAVA::Vector<DAVA::Entity *>nodes;
-    DAVA::Vector<EntityRemoveCommand *> commands;
+	DAVA::Vector<DAVA::LodComponent::LodDistance> savedDistances;
+    DAVA::Vector<DeleteRenderBatchCommand *> deletedBatches;
 };
 
 

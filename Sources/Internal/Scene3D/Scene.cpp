@@ -60,7 +60,6 @@
 #include "Scene3D/Systems/LodSystem.h"
 #include "Scene3D/Systems/DebugRenderSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/ParticleEmitterSystem.h"
 #include "Scene3D/Systems/ParticleEffectSystem.h"
 #include "Scene3D/Systems/UpdateSystem.h"
 #include "Scene3D/Systems/LightUpdateSystem.h"
@@ -84,6 +83,10 @@
 
 namespace DAVA 
 {
+
+Texture* Scene::stubTexture2d = NULL;
+Texture* Scene::stubTextureCube = NULL;
+Texture* Scene::stubTexture2dLightmap = NULL; //this texture should be all-pink without checkers
     
     
 Scene::Scene()
@@ -98,11 +101,123 @@ Scene::Scene()
 
 	CreateComponents();
 	CreateSystems();
+    
+    InitGlobalMaterial();
 }
 
 void Scene::CreateComponents()
 {
     
+}
+
+void Scene::InitGlobalMaterial()
+{
+    sceneGlobalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+    
+    if(NULL == stubTexture2d)
+    {
+        stubTexture2d = Texture::CreatePink(Texture::TEXTURE_2D);
+    }
+    
+    if(NULL == stubTextureCube)
+    {
+        stubTextureCube = Texture::CreatePink(Texture::TEXTURE_CUBE);
+    }
+    
+    if(NULL == stubTexture2dLightmap)
+    {
+        stubTexture2dLightmap = Texture::CreatePink(Texture::TEXTURE_2D, false);
+    }
+    
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, stubTexture2dLightmap);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, stubTexture2d);
+    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, stubTextureCube);
+    
+    Vector3 defaultVec3;
+    Color defaultColor(1.0f, 0.0f, 0.0f, 1.0f);
+    float32 defaultFloatValue = 0.5f;
+    Vector2 defaultVec2;
+    float32 defaultLightmapSize = 16.0f;
+    
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          defaultVec3.data);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR,
+                                          Shader::UT_FLOAT_VEC3,
+                                          1,
+                                          &defaultColor);
+ 	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT,
+                                          Shader::UT_FLOAT_VEC2,
+                                          1,
+                                          defaultVec2.data);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET,
+                                          Shader::UT_FLOAT_VEC2,
+                                          1,
+                                          defaultVec2.data);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE,
+                                          Shader::UT_FLOAT_VEC2,
+                                          1,
+                                          defaultVec2.data);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL,
+                                          Shader::UT_FLOAT_VEC4,
+                                          1,
+                                          &defaultColor);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE,
+                                          Shader::UT_FLOAT,
+                                          1,
+                                          &defaultLightmapSize);
 }
 
 void Scene::CreateSystems()
@@ -179,6 +294,8 @@ Scene::~Scene()
 	RemoveAllChildren();
     
 	SafeRelease(imposterManager);
+
+    SafeRelease(sceneGlobalMaterial);
 
     transformSystem = 0;
     renderUpdateSystem = 0;
@@ -540,8 +657,6 @@ void Scene::Update(float timeElapsed)
     
     staticOcclusionSystem->SetCamera(clipCamera);
     staticOcclusionSystem->Process(timeElapsed);
-    
-	updatableSystem->UpdatePreTransform(timeElapsed);
 
 	updatableSystem->UpdatePreTransform(timeElapsed);
     transformSystem->Process(timeElapsed);
@@ -554,6 +669,7 @@ void Scene::Update(float timeElapsed)
 	}
 	
 	switchSystem->Process(timeElapsed);
+    particleEffectSystem->Process(timeElapsed);
     
 // 	int32 size;
 // 	
@@ -602,7 +718,7 @@ void Scene::Draw()
 		//imposterManager->ProcessQueue();
 	}
  
-	RenderManager::Instance()->SetDefault3DState();
+	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     //RenderManager::Instance()->SetCullMode(FACE_BACK);
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
@@ -611,30 +727,38 @@ void Scene::Draw()
 	
     if (currentCamera)
     {
-        currentCamera->Set();
+        currentCamera->SetupDynamicParameters();
     }
     
-    Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    //Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
+    
+    NMaterial::SetGlobalMaterial(sceneGlobalMaterial);
+    
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
-	actionSystem->Process(timeElapsed); //update action system before particles and render
-	particleEffectSystem->Process(timeElapsed);
+	actionSystem->Process(timeElapsed); //update action system before particles and render	
 	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
 	//renderSystem->DebugDrawHierarchy(currentCamera->GetMatrix());
     debugRenderSystem->SetCamera(currentCamera);
     debugRenderSystem->Process(timeElapsed);
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
-
-    RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+	
+    //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, currentCamera->GetMatrix());
+    //RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+    //RenderManager::Instance()->SetMatrix(RenderManager::PARAM_VIEW, renderer2d.)
     
-//     if(imposterManager)
-// 	{
-// 		imposterManager->Draw();
-// 	}
+    //    RenderManager::Instance()->GetRenderer2D()->Setup2DMatrices();
+    
+    //     if(imposterManager)
+    // 	{
+    // 		imposterManager->Draw();
+    // 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
+    
+    NMaterial::SetGlobalMaterial(NULL);
+    
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
 	//Image * image = Image::Create(512, 512, FORMAT_RGBA8888);
@@ -644,16 +768,16 @@ void Scene::Draw()
 }
 
 	
-void Scene::StopAllAnimations(bool recursive )
-{
-	int32 size = (int32)animations.size();
-	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
-	{
-		SceneNodeAnimationList * anim = animations[animationIndex];
-		anim->StopAnimation();
-	}
-	Entity::StopAllAnimations(recursive);
-}
+// void Scene::StopAllAnimations(bool recursive )
+// {
+// 	int32 size = (int32)animations.size();
+// 	for (int32 animationIndex = 0; animationIndex < size; ++animationIndex)
+// 	{
+// 		SceneNodeAnimationList * anim = animations[animationIndex];
+// 		anim->StopAnimation();
+// 	}
+// 	Entity::StopAllAnimations(recursive);
+// }
     
     
 void Scene::SetCurrentCamera(Camera * _camera)
@@ -872,7 +996,7 @@ void Scene::OptimizeBeforeExport()
 
     Entity::OptimizeBeforeExport();
 }
-    
+
 };
 
 

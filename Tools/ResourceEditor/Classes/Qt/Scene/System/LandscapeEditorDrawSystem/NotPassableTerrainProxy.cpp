@@ -190,19 +190,16 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 			
 			Color color;
 
-			RenderManager::Instance()->SetDefault2DNoTextureState();
-			RenderManager::Instance()->FlushState();
-
 			if(PickColor(tanRight, color))
 			{
 				renderManager->SetColor(color);
-				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2((xdx + dx), ydx));
+				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2((xdx + dx), ydx), DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			}
 			
 			if(PickColor(tanBottom, color))
 			{
 				renderManager->SetColor(color);
-				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2(xdx, (ydx + dx)));
+				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2(xdx, (ydx + dx)), DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			}
 			
 		}

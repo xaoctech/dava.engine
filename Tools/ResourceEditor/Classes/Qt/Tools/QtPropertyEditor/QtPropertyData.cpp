@@ -153,7 +153,9 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 {
 	QVariant oldValue = curValue;
 
-	// set value
+    updatingValue = true;
+
+    // set value
     if(reason == VALUE_EDITED && NULL != validator)
     {
         QVariant valueToValidate = value;
@@ -171,6 +173,8 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
     {
         SetValueInternal(value);
     }
+
+    updatingValue = false;
 
 	// and get what was really set
 	// it can differ from input "value"

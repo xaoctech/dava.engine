@@ -45,11 +45,8 @@ namespace DAVA
 ShadowVolumeNode::ShadowVolumeNode()
 : shadowPolygonGroup(0)
 {
-	shader = new Shader();
-	shader->LoadFromYaml("~res:/Shaders/ShadowVolume/shadowvolume.shader");
-	shader->Recompile();
-
-    uniformLightPosition0 = shader->FindUniformIndexByName(FastName("lightPosition0"));
+	shader = 0; //ShaderCache::Instance->Get("~res:/Shaders/ShadowVolume/shadowvolume.shader");
+    uniformLightPosition0 = -1; //shader->FindUniformIndexByName(FastName("lightPosition0"));
 }
 
 DAVA::ShadowVolumeNode::~ShadowVolumeNode()
@@ -65,7 +62,8 @@ void DAVA::ShadowVolumeNode::Draw()
 
 void DAVA::ShadowVolumeNode::DrawShadow()
 {
-	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW); 
+#if 0
+	Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
 	Matrix4 meshFinalMatrix = GetWorldTransform() * prevMatrix;
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, meshFinalMatrix);
 
@@ -97,6 +95,7 @@ void DAVA::ShadowVolumeNode::DrawShadow()
 	}
 
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, prevMatrix);
+#endif
 }
 
 int32 ShadowVolumeNode::FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count)

@@ -33,6 +33,7 @@
 
 #include "Base/StaticSingleton.h"
 #include "Render/Shader.h"
+#include "Base/FastName.h"
 
 namespace DAVA
 {
@@ -42,6 +43,7 @@ namespace DAVA
 	class Scene;
 	class ShadowRect : public BaseObject
 	{
+        static FastName SHADOW_RECT_SHADER;
 	protected:
 		virtual ~ShadowRect();
 		
