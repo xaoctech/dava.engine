@@ -51,7 +51,7 @@ public:
         
     };
     
-    ImageArea(QWidget *parent = 0);
+    ImageArea(QWidget *parent = 0, eColorCmponents value = COMPONENTS_ALL);
     ~ImageArea();
     
     void SetColorComponent(eColorCmponents value);

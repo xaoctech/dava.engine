@@ -34,13 +34,13 @@
 
 #include <QtGui>
 
-ImageArea::ImageArea(QWidget *parent)
-: QLabel(parent)
+ImageArea::ImageArea(QWidget *parent /*= 0*/, eColorCmponents value /*= COMPONENTS_ALL*/)
+    :QLabel(parent),
+    colorComponent(value)
 {
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
     setAcceptDrops(true);
     setAutoFillBackground(true);
-    colorComponent = ImageArea::COMPONENTS_GREEN;
     ConnectSignals();
     image = NULL;
     clear();
