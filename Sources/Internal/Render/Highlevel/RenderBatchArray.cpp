@@ -31,6 +31,7 @@
 #include "Debug/Stats.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderLayerManager.h"
+#include "Render/Highlevel/RenderPass.h"
 
 namespace DAVA
 {
@@ -42,6 +43,27 @@ RenderPassBatchArray::RenderPassBatchArray(RenderSystem * rs)
     {
         RenderLayerBatchArray* batchArray = new RenderLayerBatchArray( manager->GetRenderLayer(id)->GetFlags() );
         layerBatchArrays[id] = batchArray;
+    }
+}
+    
+void RenderPassBatchArray::InitPassLayers(RenderPass * renderPass)
+{
+    // const RenderLayerManager * manager = RenderLayerManager::Instance();
+    for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
+    {
+        RenderLayer * layer = 0;
+        for (uint32 k = 0; k < renderPass->GetRenderLayerCount(); ++k)
+        {
+            if (renderPass->GetRenderLayer(k)->GetRenderLayerID() == id)
+            {
+                layer = renderPass->GetRenderLayer(k);
+                break;
+            }
+        }
+        if (layer)
+        {
+            layerBatchArrays[id]->SetFlags(layer->GetFlags());
+        }
     }
 }
     
@@ -61,19 +83,21 @@ void RenderPassBatchArray::Clear()
     }
 }
 
-void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray)
+void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera)
 {
     cameraWorldMatrices.clear();
     uint32 size = (uint32)visibilityArray->visibilityArray.size();
     for (uint32 ro = 0; ro < size; ++ro)
     {
         RenderObject * renderObject = visibilityArray->visibilityArray[ro];
+        if (renderObject->GetFlags()&RenderObject::CUSTOM_PREPARE_TO_RENDER)
+		    renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         
-        uint32 batchCount = renderObject->GetRenderBatchCount();
+        uint32 batchCount = renderObject->GetActiveRenderBatchCount();
 		for (uint32 batchIndex = 0; batchIndex < batchCount; ++batchIndex)
 		{
-			RenderBatch * batch = renderObject->GetRenderBatch(batchIndex);
+			RenderBatch * batch = renderObject->GetActiveRenderBatch(batchIndex);
             //batch->SetCameraWorldTransformPtr(&cameraWorldMatrices[ro]);
 
 			NMaterial * material = batch->GetMaterial();
@@ -165,9 +189,9 @@ void RenderLayerBatchArray::Sort(Camera * camera)
             {
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
-                Vector3 position = renderObject->GetWorldTransformPtr()->GetTranslationVector();
-                float32 distance = (position - cameraPosition).Length();
-                batch->layerSortingKey = (((uint32)distance) & 0x0fffffff) | (batch->GetSortingKey() << 28);
+                Vector3 position = batch->GetSortingTransformPtr()->GetTranslationVector();
+                uint32 distance = ((uint32)((position - cameraPosition).Length())) + 31 - batch->GetSortingOffset();                
+                batch->layerSortingKey = (distance & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
             
             std::stable_sort(renderBatchArray.begin(), renderBatchArray.end(), MaterialCompareFunction);
@@ -182,8 +206,8 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
-                float32 distance = (position - cameraPosition).Length();
-                uint32 distanceBits = 0x0fffffff - ((uint32)distance) & 0x0fffffff;
+                uint32 distance = ((uint32)((position - cameraPosition).Length())) + 31 - batch->GetSortingOffset();                                
+                uint32 distanceBits = 0x0fffffff - distance & 0x0fffffff;
 
                 batch->layerSortingKey = distanceBits | (batch->GetSortingKey() << 28);
             }

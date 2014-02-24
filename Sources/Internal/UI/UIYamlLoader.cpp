@@ -159,6 +159,8 @@ int32 UIYamlLoader::GetAlignFromYamlNode(const YamlNode * alignNode)
 	if (!alignNode)return ALIGN_HCENTER | ALIGN_VCENTER;
 	
 	const Vector<YamlNode*> & vec = alignNode->AsVector();
+    
+    if (vec.size() == 1 && vec[0]->AsString() == "HJUSTIFY") return ALIGN_HJUSTIFY;
 	if (vec.size() != 2)return ALIGN_HCENTER | ALIGN_VCENTER;
 	
 	const String & horzAlign = vec[0]->AsString();
@@ -213,7 +215,13 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 	YamlNode *alignNode = new YamlNode(YamlNode::TYPE_ARRAY);
 	String horzAlign = "HCENTER";
 	String vertAlign = "VCENTER";
-	
+
+    if (align == ALIGN_HJUSTIFY)
+    {
+        alignNode->AddValueToArray("HJUSTIFY");
+        return alignNode;
+    }
+
 	if (align & ALIGN_LEFT)
 	{
 		horzAlign = "LEFT";

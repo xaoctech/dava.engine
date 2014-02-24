@@ -41,6 +41,7 @@
 #include "Render/ImageConvert.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/OGLHelpers.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #if defined(__DAVAENGINE_IPHONE__) 
 #include <CoreGraphics/CoreGraphics.h>
@@ -58,6 +59,7 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "Job/JobManager.h"
 #include "Job/JobWaiter.h"
+#include "Math/MathHelpers.h"
 
 
 #ifdef __DAVAENGINE_ANDROID__
@@ -465,7 +467,7 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
-    Image * image0 = CreateImageFromMemory();
+    Image * image0 = CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
     Vector<Image *> images = image0->CreateMipMapsImages();
     SafeRelease(image0);
 
@@ -527,8 +529,9 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 	texture->texDescriptor->Initialize(descriptor);
 
     Vector<Image *> * images = new Vector<Image *> ();
+    
 	bool loaded = texture->LoadImages(gpu, images);
-	if(!loaded)
+    if(!loaded)
 	{
 		Logger::Error("[Texture::CreateFromImage] Cannot load texture from image");
 
@@ -592,7 +595,51 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
             *images = img->CreateMipMapsImages();
             SafeRelease(img);
         }
-	}
+
+        if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
+        {
+            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTxQuality());
+            if(NULL != curTxQuality)
+            {
+                // TODO:
+                // this is draft code and should be reimplemented
+                // to use texture group qualities
+                // -->
+                
+                int baselevel = curTxQuality->albedoBaseMipMapLevel;
+                
+                if(baselevel > 0)
+                {
+                    int leaveCount = images->size() - baselevel;
+                    
+                    // we should leave at last one last image
+                    if(leaveCount < 1)
+                    {
+                        leaveCount = 1;
+                    }
+                    
+                    int leaveOffset = images->size() - leaveCount;
+                    
+                    // release all images, except last one
+                    for(int i = 0; i < leaveOffset; ++i)
+                    {
+                        SafeRelease(images->operator[](i));
+                    }
+                    
+                    // move last items to the beginning of the vector vector
+                    for(int i = 0; i < leaveCount; ++i)
+                    {
+                        images->operator[](i) = images->operator[](leaveOffset + i);
+                        images->operator[](i)->mipmapLevel = i;
+                    }
+                    
+                    images->resize(leaveCount);
+                }
+                
+                // <-
+            }
+        }
+    }
 
 	if(0 == images->size())
 		return false;
@@ -606,6 +653,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
 	isPink = false;
 	state = STATE_DATA_LOADED;
+
 	return true;
 }
 
@@ -718,9 +766,9 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 }
 
 
-Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHint)
+Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &group, TextureType typeHint)
 {
-	Texture * texture = PureCreate(pathName);
+	Texture * texture = PureCreate(pathName, group);
 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
@@ -732,7 +780,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, TextureType typeHin
 	return texture;
 }
 
-Texture * Texture::PureCreate(const FilePath & pathName)
+Texture * Texture::PureCreate(const FilePath & pathName, const FastName &group)
 {
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
@@ -744,6 +792,8 @@ Texture * Texture::PureCreate(const FilePath & pathName)
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return NULL;
     
+    descriptor->SetQualityGroup(group);
+
 	eGPUFamily gpuForLoading = GetGPUForLoading(defaultGPU, descriptor);
 	texture = CreateFromImage(descriptor, gpuForLoading);
 	if(texture)
@@ -827,8 +877,12 @@ int32 Texture::Release()
 	
 Texture * Texture::CreateFBO(uint32 w, uint32 h, PixelFormat format, DepthFormat _depthFormat)
 {
-	uint32 dx = ConvertToPower2Value(w, 8);
-	uint32 dy = ConvertToPower2Value(h, 8);
+	int32 dx = Max((int32)w, 8);
+    EnsurePowerOf2(dx);
+    
+	int32 dy = Max((int32)h, 8);
+    EnsurePowerOf2(dy);
+    
 
 #if defined(__DAVAENGINE_OPENGL__)
 
@@ -1038,7 +1092,7 @@ Image * Texture::ReadDataToImage()
 }
 
 
-Image * Texture::CreateImageFromMemory()
+Image * Texture::CreateImageFromMemory(UniqueHandle renderState)
 {
     Image *image = NULL;
     if(isRenderTarget)
@@ -1057,14 +1111,18 @@ Image * Texture::CreateImageFromMemory()
         Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
+        RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
+
 		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
 
-        drawTexture->SetPosition(0, 0);
-        drawTexture->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(0, 0);
+        drawState.SetRenderState(renderState);
+        drawTexture->Draw(&drawState);
 
         RenderManager::Instance()->RestoreRenderTarget();
         
-        image = renderTarget->GetTexture()->CreateImageFromMemory();
+        image = renderTarget->GetTexture()->CreateImageFromMemory(renderState);
 
         SafeRelease(renderTarget);
         SafeRelease(drawTexture);
@@ -1086,17 +1144,17 @@ uint32 Texture::GetDataSize() const
     return allocSize;
 }
 
-Texture * Texture::CreatePink(TextureType requestedType)
+Texture * Texture::CreatePink(TextureType requestedType, bool checkers)
 {
 	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
 	//pink textures at game is invalid situation
 	Texture *tex = new Texture();
-	tex->MakePink(requestedType);
+	tex->MakePink(requestedType, checkers);
 
 	return tex;
 }
 
-void Texture::MakePink(TextureType requestedType)
+void Texture::MakePink(TextureType requestedType, bool checkers)
 {
 	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
 
@@ -1106,7 +1164,7 @@ void Texture::MakePink(TextureType requestedType)
 		texDescriptor->Initialize(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
-            Image *img = Image::CreatePinkPlaceholder();
+            Image *img = Image::CreatePinkPlaceholder(checkers);
 			img->cubeFaceID = i;
 			img->mipmapLevel = 0;
 
@@ -1118,7 +1176,7 @@ void Texture::MakePink(TextureType requestedType)
 	else
 	{
 		texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
-		images->push_back(Image::CreatePinkPlaceholder());
+		images->push_back(Image::CreatePinkPlaceholder(checkers));
 	}
 
 	texDescriptor->pathname = savePath;

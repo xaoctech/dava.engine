@@ -100,7 +100,7 @@ void ScreenControl::SystemDraw(const UIGeometricData &geometricData)
 	UIControl::SystemDraw(geometricData);
     
     // Draw the grid over the control.
-	GridVisualizer::Instance()->DrawGridIfNeeded(rect);
+	GridVisualizer::Instance()->DrawGridIfNeeded(rect, RenderState::RENDERSTATE_2D_BLEND);
 }
 
 bool ScreenControl::IsPointInside(const Vector2& /*point*/, bool/* expandWithFocus*/)

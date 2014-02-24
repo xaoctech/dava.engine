@@ -66,18 +66,16 @@ public:
 
 	virtual void UpdateAABBoxFromSource();
 
+	virtual ShadowVolume * CreateShadow();
+
+
 private:
-	//Shader * shader;
-
-	//shadow mesh generation
-	PolygonGroup * shadowPolygonGroup;
-
 	struct EdgeMapping
 	{
 		int32 oldEdge[2];
 		int32 newEdge[2][2];
 
-	public:
+    public:
 		EdgeMapping()
 		{
 			Memset(oldEdge, -1, sizeof(oldEdge));
@@ -88,10 +86,8 @@ private:
 	int32 FindEdgeInMappingTable(int32 nV1, int32 nV2, EdgeMapping* mapping, int32 count);
     
 public:
-    
     INTROSPECTION_EXTEND(ShadowVolume, RenderBatch,
-        MEMBER(shadowPolygonGroup, "Shadow Polygon Group", I_VIEW | I_EDIT | I_SAVE )
-    );
+                         0);
 };
 
 }

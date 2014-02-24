@@ -92,7 +92,6 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * ren
             layer->Draw(name, camera, renderLayerBatchArray);
         }
     }
-
 }
 
 

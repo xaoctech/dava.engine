@@ -431,7 +431,7 @@ void UISlider::SystemDraw(const UIGeometricData &geometricData)
 	{
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->SetColor(debugDrawColor);
-		DrawDebugRect(drawData);
+		DrawDebugRect(drawData, false);
         DrawPivotPoint(drawData.GetUnrotatedRect());
 		RenderManager::Instance()->SetColor(oldColor);
 	}

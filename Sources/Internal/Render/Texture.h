@@ -39,6 +39,7 @@
 #include "FileSystem/FilePath.h"
 #include "Platform/Mutex.h"
 
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -178,14 +179,14 @@ public:
 		If file cannot be opened, returns "pink placeholder" texture.
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * CreateFromFile(const FilePath & pathName, TextureType typeHint = Texture::TEXTURE_2D);
+	static Texture * CreateFromFile(const FilePath & pathName, const FastName &group = FastName(), TextureType typeHint = Texture::TEXTURE_2D);
 
 	/**
         \brief Create texture from given file. Supported formats .png, .pvr (only on iOS). 
 		If file cannot be opened, returns 0
         \param[in] pathName path to the png or pvr file
      */
-	static Texture * PureCreate(const FilePath & pathName);
+	static Texture * PureCreate(const FilePath & pathName, const FastName &group = FastName());
     
 	/**
         \brief Create FBO from given width, height and format
@@ -197,7 +198,7 @@ public:
      */
 	static Texture * CreateFBO(uint32 width, uint32 height, PixelFormat format, DepthFormat depthFormat);
 	
-	static Texture * CreatePink(TextureType requestedType = Texture::TEXTURE_2D);
+	static Texture * CreatePink(TextureType requestedType = Texture::TEXTURE_2D, bool checkers = true);
 
 
 	virtual int32 Release();
@@ -229,7 +230,7 @@ public:
      */
     const FilePath & GetPathname() const;
     
-    Image * CreateImageFromMemory();
+    Image * CreateImageFromMemory(UniqueHandle renderState);
 
 	bool IsPinkPlaceholder();
     
@@ -292,7 +293,7 @@ protected:
 	void FlushDataToRenderer(Vector<Image *> * images);
 	void ReleaseImages(Vector<Image *> * images);
     
-    void MakePink(TextureType requestedType = Texture::TEXTURE_2D);
+    void MakePink(TextureType requestedType = Texture::TEXTURE_2D, bool checkers = true);
 	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
     
 	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
@@ -330,11 +331,6 @@ protected:
 
 public:							// properties for fast access
 
-	FastName		debugInfo;
-
-	TextureInvalidater* invalidater;
-    TextureDescriptor *texDescriptor;
-
 #if defined(__DAVAENGINE_OPENGL__)
 	uint32		id;				// OpenGL id for texture
 	uint32		fboID;			// id of frame buffer object
@@ -358,7 +354,12 @@ public:							// properties for fast access
     bool         renderTargetAutosave:1;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 
+    FastName		debugInfo;
+	TextureInvalidater* invalidater;
+    TextureDescriptor *texDescriptor;
+
     static Mutex textureMapMutex;
+
     static TexturesMap textureMap;
     static eGPUFamily defaultGPU;
     

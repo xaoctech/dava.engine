@@ -34,6 +34,7 @@
 #include "Base/HashMap.h"
 #include "Base/FastNameMap.h"
 #include "Scene3D/DataNode.h"
+#include "Render/RenderManager.h"
 #include "Render/RenderState.h"
 #include "Render/Material/NMaterialConsts.h"
 #include "Render/Material/NMaterialTemplate.h"
@@ -68,12 +69,17 @@ struct IlluminationParams : public InspBase
     bool receiveShadow;
     int32 lightmapSize;
 
-    IlluminationParams() :
+    //this is a weak property since IlluminationParams exists only as a part of parent material
+    NMaterial* parent;
+
+    IlluminationParams(NMaterial* parentMaterial = NULL) :
     isUsed(true),
     castShadow(true),
     receiveShadow(true),
-    lightmapSize(LIGHTMAP_SIZE_DEFAULT)
-    {}
+    lightmapSize(LIGHTMAP_SIZE_DEFAULT),
+    parent(parentMaterial)
+    {
+    }
 
     IlluminationParams(const IlluminationParams & params)
     {
@@ -81,13 +87,19 @@ struct IlluminationParams : public InspBase
         castShadow = params.castShadow;
         receiveShadow = params.receiveShadow;
         lightmapSize = params.lightmapSize;
+        parent = NULL;
     }
+    
+    int32 GetLightmapSize() const;
+    void SetLightmapSize(const int32 &size);
+    void SetParent(NMaterial* parentMaterial);
+    NMaterial* GetParent() const;
 
-    INTROSPECTION(IlluminationParams, 
+    INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(castShadow, "Cast Shadow", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(receiveShadow, "Receive Shadow", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(lightmapSize, "Lightmap Size", I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("lightmapSize", "Lightmap Size", GetLightmapSize, SetLightmapSize, I_SAVE | I_VIEW | I_EDIT)
         );
 };
 
@@ -165,9 +177,13 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
-	   
-    static const FastName FLAG_VERTEXFOG;
+    static const FastName PARAM_LIGHTMAP_SIZE;
+    
+	static const FastName FLAG_VERTEXFOG;
+	static const FastName FLAG_FOG_EXP;
+	static const FastName FLAG_FOG_LINEAR;
 	static const FastName FLAG_TEXTURESHIFT;
+	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     
@@ -186,7 +202,8 @@ public:
 	{
 		MATERIALTYPE_NONE = 0,
 		MATERIALTYPE_MATERIAL = 1,
-		MATERIALTYPE_INSTANCE = 2
+		MATERIALTYPE_INSTANCE = 2,
+        MATERIALTYPE_GLOBAL = 3
 	};
 	
 	enum eFlagValue
@@ -257,7 +274,13 @@ public:
 	
 	// Work with textures and properties
     void RemoveTexture(const FastName& textureFastName);
+    //When you set texture by path it will be loaded only after it became active in the current material quality.
+    //SetTexture("cubemap", "~res:/cubemap.pvr") will not result in GetTexture("cubemap") returning a valid texture object.
+    //A valid texture object will be returned only if there's actually uniform named "cubemap" in the material.
     void SetTexture(const FastName& textureFastName, const FilePath& texturePath);
+    //VI: this method leaves texture intact. Allows to manipulate with FBO that has to be saved to some path
+    void SetTexturePath(const FastName& textureFastName, const FilePath& texturePath);
+    //This method doesn't check for uniform in the material and always uses texture provided.
 	void SetTexture(const FastName& textureFastName, Texture* texture);
     
     Texture * GetTexture(const FastName& textureFastName) const;
@@ -294,10 +317,11 @@ public:
     inline uint32 GetRenderLayers() const;
     inline void SetRenderLayers(uint32 bitmask);
     
-	const RenderStateData* GetRenderState(const FastName& passName) const;
-	void SubclassRenderState(const FastName& passName, RenderStateData* newState);
-	void SubclassRenderState(RenderStateData* newState);
-	
+	const RenderStateData& GetRenderState(const FastName& passName) const;
+    void GetRenderState(const FastName& passName, RenderStateData& target) const;
+	void SubclassRenderState(const FastName& passName, RenderStateData& newState);
+	void SubclassRenderState(RenderStateData& newState);
+    
 	static NMaterial* CreateMaterialInstance();
 	
 	static NMaterial* CreateMaterialInstance(const FastName& parentName,
@@ -307,6 +331,8 @@ public:
 	static NMaterial* CreateMaterial(const FastName& materialName,
 									 const FastName& templateName,
 									 const FastName& defaultQuality);
+    
+    static NMaterial* CreateGlobalMaterial(const FastName& materialName);
 
 	const NMaterialTemplate* GetMaterialTemplate() const {return materialTemplate;}
     void SetMaterialTemplateName(const FastName& templateName);
@@ -314,14 +340,52 @@ public:
 
     FastName GetMaterialGroup() const;
     void SetMaterialGroup(const FastName &group);
+    
+    //Stores WEAK reference (actually it's valid during render pass only)
+    //These methods are not thread-safe and used in the Scene::Draw to
+    //provide default values for materials.
+    inline static void SetGlobalMaterial(NMaterial* globalMaterial);
+    inline static NMaterial* GetGlobalMaterial();
 
 protected:
 	
-	struct TextureBucket
+	class TextureBucket
 	{
+    public:
+    
 		TextureBucket() : texture(NULL)
 		{ }
+        
+        ~TextureBucket()
+        {
+            SafeRelease(texture);
+        }
+        
+        inline void SetTexture(Texture* tx)
+        {
+            if(tx != texture)
+            {
+                SafeRelease(texture);
+                texture = SafeRetain(tx);
+            }
+        }
+        
+        inline Texture* GetTexture() const
+        {
+            return texture;
+        }
+        
+        inline void SetPath(const FilePath& filePath)
+        {
+            path = filePath;
+        }
+        
+        inline const FilePath& GetPath() const
+        {
+            return path;
+        }
 
+    private:
 		Texture* texture; //VI: can be NULL
 		FilePath path;
 	};
@@ -339,28 +403,57 @@ protected:
 		NMaterialProperty* prop;
 	};
 		
-	struct RenderPassInstance
+	class RenderPassInstance
 	{
-		RenderState renderState;
-		
-		bool dirtyState;
-		bool texturesDirty;
-		
-		HashMap<FastName, int32> textureIndexMap;
-		Vector<UniformCacheEntry> activeUniformsCache;
-		
-		UniformCacheEntry* activeUniformsCachePtr;
-		size_t activeUniformsCacheSize;
+    public:
 		
 		RenderPassInstance() :
 			textureIndexMap(8),
 			dirtyState(false),
 			texturesDirty(true),
 			activeUniformsCachePtr(NULL),
-			activeUniformsCacheSize(0)
+			activeUniformsCacheSize(0),
+            propsDirty(true)
 		{
-			
+			renderState.shader = NULL;
 		}
+        
+        ~RenderPassInstance()
+        {
+            SetRenderStateHandle(InvalidUniqueHandle);
+            SetTextureStateHandle(InvalidUniqueHandle);
+            SafeRelease(renderState.shader);
+        }
+        
+        inline void SetShader(Shader* curShader);
+        inline Shader* GetShader() const;
+        inline void SetRenderer(Core::eRenderer renderer);
+        inline Core::eRenderer GetRenderer() const;
+        inline void SetColor(const Color& color);
+        inline const Color& GetColor() const;
+        
+        inline void FlushState();
+        
+        inline UniqueHandle GetRenderStateHandle() const;
+        inline void SetRenderStateHandle(UniqueHandle handle);
+        inline UniqueHandle GetTextureStateHandle() const;
+        inline void SetTextureStateHandle(UniqueHandle handle);
+        
+        
+        bool dirtyState;
+		bool texturesDirty;
+        bool propsDirty;
+		
+		HashMap<FastName, int32> textureIndexMap;
+		Vector<UniformCacheEntry> activeUniformsCache;
+		
+		UniformCacheEntry* activeUniformsCachePtr;
+		size_t activeUniformsCacheSize;
+
+        
+    private:
+    
+        RenderState renderState;
 	};
 	
 protected:
@@ -408,8 +501,10 @@ protected:
 	
     uint32                  renderLayerIDsBitmask;
 	
-	static Texture* stubCubemapTexture;
-	static Texture* stub2dTexture;
+	//static Texture* stubCubemapTexture;
+	//static Texture* stub2dTexture;
+    
+    static NMaterial* GLOBAL_MATERIAL;
 	
 protected:
 	
@@ -439,7 +534,7 @@ protected:
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
 	void UpdateShaderWithFlags(bool updateChildren = false);
-	static Texture* GetStubTexture(const FastName& uniformName);
+	//static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
@@ -453,6 +548,8 @@ protected:
     FastName GetEffectiveQuality() const;
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
+    static bool IsRuntimeProperty(const FastName& propName);
+    static bool IsNamePartOfArray(const FastName& fastName, FastName* array, uint32 count);
 		
 protected:
 	
@@ -571,14 +668,25 @@ public:
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
         static bool IsAlphablend(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
+        static bool IsOpaque(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     
+    inline void NMaterial::SetGlobalMaterial(NMaterial* globalMaterial)
+    {
+        NMaterial::GLOBAL_MATERIAL = globalMaterial;
+    }
+    
+    inline NMaterial* NMaterial::GetGlobalMaterial()
+    {
+        return NMaterial::GLOBAL_MATERIAL;
+    }
     
     inline uint32 NMaterial::GetRenderLayers() const
     {
         return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
     }
+    
     
     void NMaterial::SetRenderLayers(uint32 bitmask)
     {
@@ -604,8 +712,90 @@ public:
         }
     }
     
+    inline void NMaterial::RenderPassInstance::SetShader(Shader* curShader)
+    {
+        if(renderState.shader != curShader)
+        {
+            SafeRelease(renderState.shader);
+            renderState.shader = SafeRetain(curShader);
+        }
+    }
     
+    inline Shader* NMaterial::RenderPassInstance::GetShader() const
+    {
+        return renderState.shader;
+    }
     
+    inline UniqueHandle NMaterial::RenderPassInstance::GetRenderStateHandle() const
+    {
+        return renderState.stateHandle;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetRenderStateHandle(UniqueHandle handle)
+    {
+        if(renderState.stateHandle != handle)
+        {
+            if(renderState.stateHandle != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->ReleaseRenderState(renderState.stateHandle);
+            }
+            
+            renderState.stateHandle = handle;
+            
+            if(renderState.stateHandle != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->RetainRenderState(renderState.stateHandle);
+            }
+        }
+    }
+
+    inline UniqueHandle NMaterial::RenderPassInstance::GetTextureStateHandle() const
+    {
+        return renderState.textureState;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetTextureStateHandle(UniqueHandle handle)
+    {
+        if(renderState.textureState != handle)
+        {
+            if(renderState.textureState != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->ReleaseTextureState(renderState.textureState);
+            }
+            
+            renderState.textureState = handle;
+            
+            if(renderState.textureState != InvalidUniqueHandle)
+            {
+                RenderManager::Instance()->RetainTextureState(renderState.textureState);
+            }
+        }
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetRenderer(Core::eRenderer renderer)
+    {
+        renderState.renderer = renderer;
+    }
+    
+    inline Core::eRenderer NMaterial::RenderPassInstance::GetRenderer() const
+    {
+        return renderState.renderer;
+    }
+    
+    inline void NMaterial::RenderPassInstance::SetColor(const Color& color)
+    {
+        renderState.color = color;
+    }
+    
+    inline const Color& NMaterial::RenderPassInstance::GetColor() const
+    {
+        return renderState.color;
+    }
+    
+    inline void NMaterial::RenderPassInstance::FlushState()
+    {
+        RenderManager::Instance()->FlushState(&renderState);
+    }
 
 };
 

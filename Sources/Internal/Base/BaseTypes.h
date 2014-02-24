@@ -322,6 +322,14 @@ enum eAlign
 #ifndef COUNT_OF
 #define COUNT_OF(x) (sizeof(x)/sizeof(*x))
 #endif
+    
+#ifndef REMOVE_IN_RELEASE
+    #if defined(__DAVAENGINE_DEBUG__)
+        #define REMOVE_IN_RELEASE (x) x
+    #else
+        #define REMOVE_IN_RELEASE (x) 
+    #endif
+#endif
 
     
 //#if defined(__DAVAENGINE_IPHONE__)

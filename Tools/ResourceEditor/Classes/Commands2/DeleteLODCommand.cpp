@@ -29,82 +29,72 @@
 
 
 #include "DeleteLODCommand.h"
-#include "EntityRemoveCommand.h"
+#include "DeleteRenderBatchCommand.h"
 
 
-DeleteLODCommand::DeleteLODCommand(DAVA::LodComponent *lod, DAVA::int32 lodIndex)
-	: Command2(CMDID_LOD_DELETE, "Delete first LOD")
+#include "Render/Highlevel/RenderObject.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+
+DeleteLODCommand::DeleteLODCommand(DAVA::LodComponent *lod, DAVA::int32 lodIndex, DAVA::int32 switchIndex)
+	: Command2(CMDID_LOD_DELETE, "Delete LOD")
 	, lodComponent(lod)
     , deletedLodIndex(lodIndex)
+    , requestedSwitchIndex(switchIndex)
 {
-    if(lodComponent)
-    {
-        lodLayers = lodComponent->lodLayers;
-        lodLayersArray = lodComponent->lodLayersArray;
+    DVASSERT(lodComponent);
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(GetEntity());
+    DVASSERT(ro);
+    DVASSERT(ro->GetType() != DAVA::RenderObject::TYPE_PARTICLE_EMTITTER);
 
-        if(lodLayers.size())
-        {
-            DAVA::uint32 nodesSize = lodLayers[deletedLodIndex].nodes.size();
-            for(DAVA::uint32 i = 0; i < nodesSize; ++i)
-            {
-                nodes.push_back(DAVA::SafeRetain(lodLayers[deletedLodIndex].nodes[i]));
-
-                //we need remove entities from scene
-                if(nodes[i]->GetParent())
-                {
-                    //we need remove entiies with only one layer occurence
-                    DAVA::int32 occurenceCount = CountOccurence(nodes[i]);
-                    if(occurenceCount == 1)
-                    {
-                        EntityRemoveCommand *removeCommand = new EntityRemoveCommand(nodes[i]);
-                        commands.push_back(removeCommand);
-                    }
-                }
-            }
-        }
-    }
+    savedDistances = lodComponent->lodLayersArray;
 }
 
 DeleteLODCommand::~DeleteLODCommand()
 {
-    DAVA::uint32 nodesSize = nodes.size();
-    for(DAVA::uint32 i = 0; i < nodesSize; ++i)
+    DAVA::uint32 count = (DAVA::uint32)deletedBatches.size();
+    for(DAVA::uint32 i = 0; i < count; ++i)
     {
-        DAVA::SafeRelease(nodes[i]);
+        DAVA::SafeDelete(deletedBatches[i]);
     }
-    nodes.clear();
-    
-    DAVA::uint32 commandsSize = commands.size();
-    for(DAVA::uint32 i = 0; i < commandsSize; ++i)
-    {
-        DAVA::SafeDelete(commands[i]);
-    }
-    commands.clear();
+    deletedBatches.clear();
 }
 
 void DeleteLODCommand::Redo()
 {
-	if(!lodComponent) return;
-    
-    //remove nodes from scene
-    DAVA::uint32 commandsSize = commands.size();
-    for(DAVA::uint32 i = 0; i < commandsSize; ++i)
+    DVASSERT(deletedBatches.size() == 0);
+
+    DAVA::Entity *entity = GetEntity();
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(entity);
+
+    //save renderbatches
+    DAVA::int32 count = (DAVA::int32)ro->GetRenderBatchCount();
+    for(DAVA::int32 i = count-1; i >= 0; --i)
     {
-        RedoInternalCommand(commands[i]);
+        DAVA::int32 lodIndex = 0, switchIndex = 0;
+        DAVA::RenderBatch *batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+        if(lodIndex == deletedLodIndex && (requestedSwitchIndex == switchIndex || requestedSwitchIndex == -1))
+        {
+            DeleteRenderBatchCommand *command = new DeleteRenderBatchCommand(entity, ro, i);
+            deletedBatches.push_back(command);
+
+            RedoInternalCommand(command);
+        }
     }
     
-    //remove lodlayer
-    DAVA::Vector<DAVA::LodComponent::LodData>::iterator deleteIt = lodComponent->lodLayers.begin();
-    std::advance(deleteIt, deletedLodIndex);
-    lodComponent->lodLayers.erase(deleteIt);
-
-    //update layer indexes
-    DAVA::int32 layersSize = lodComponent->GetLodLayersCount();
-    for(DAVA::int32 i = 0; i < layersSize; ++i)
+    //update indexes
+    count = ro->GetRenderBatchCount();
+    for(DAVA::int32 i = (DAVA::int32)count - 1; i >= 0; --i)
     {
-        if(lodComponent->lodLayers[i].layer >= deletedLodIndex)
+        DAVA::int32 lodIndex = 0, switchIndex = 0;
+        DAVA::RenderBatch *batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+        if(lodIndex > deletedLodIndex && (requestedSwitchIndex == switchIndex || requestedSwitchIndex == -1))
         {
-            --lodComponent->lodLayers[i].layer;
+            batch->Retain();
+            
+            ro->RemoveRenderBatch(i);
+            ro->AddRenderBatch(batch, lodIndex - 1, switchIndex);
+            
+            batch->Release();
         }
     }
 
@@ -114,8 +104,8 @@ void DeleteLODCommand::Redo()
         lodComponent->lodLayersArray[i] = lodComponent->lodLayersArray[i+1];
     }
     
-
     //last lod
+    DAVA::uint32 layersSize = ro->GetMaxLodIndex() + 1;
     if(layersSize)
     {
         lodComponent->lodLayersArray[layersSize-1].SetFarDistance(2 * DAVA::LodComponent::MAX_LOD_DISTANCE);
@@ -132,49 +122,47 @@ void DeleteLODCommand::Redo()
 
 void DeleteLODCommand::Undo()
 {
-	if(!lodComponent) return;
-    
-    //restore entities
-    DAVA::uint32 commandsSize = commands.size();
-    for(DAVA::uint32 i = 0; i < commandsSize; ++i)
-    {
-        UndoInternalCommand(commands[i]);
-        
-        commands[i]->GetEntity()->SetLodVisible(false);
-    }
-    
-    //restore lodlayers and disatnces
-    lodComponent->lodLayers = lodLayers;
-    lodComponent->lodLayersArray = lodLayersArray;
-}
+    DAVA::RenderObject *ro = DAVA::GetRenderObject(GetEntity());
 
-DAVA::int32 DeleteLODCommand::CountOccurence(DAVA::Entity *entity) const
-{
-    DAVA::int32 occurenceCounter = 0;
-    
-    DAVA::uint32 layersSize = lodLayers.size();
-    for(DAVA::uint32 layer = 0; layer < layersSize; ++layer)
+    //restore lodindexes
+    DAVA::uint32 count = ro->GetRenderBatchCount();
+    for(DAVA::int32 i = (DAVA::int32)count - 1; i >= 0; --i)
     {
-        DAVA::uint32 nodesSize = lodLayers[layer].nodes.size();
-        for(DAVA::uint32 node = 0; node < nodesSize; ++node)
+        DAVA::int32 lodIndex = 0, switchIndex = 0;
+        DAVA::RenderBatch *batch = ro->GetRenderBatch(i, lodIndex, switchIndex);
+        if(lodIndex >= deletedLodIndex && (requestedSwitchIndex == switchIndex || requestedSwitchIndex == -1))
         {
-            if(entity == lodLayers[layer].nodes[node])
-            {
-                ++occurenceCounter;
-            }
+            batch->Retain();
+            
+            ro->RemoveRenderBatch(i);
+            ro->AddRenderBatch(batch, lodIndex + 1, switchIndex);
+            
+            batch->Release();
         }
     }
-    
-    return occurenceCounter;
+
+    //restore batches
+    count = (DAVA::uint32)deletedBatches.size();
+    for(DAVA::uint32 i = 0; i < count; ++i)
+    {
+        UndoInternalCommand(deletedBatches[i]);
+        DAVA::SafeDelete(deletedBatches[i]);
+    }
+    deletedBatches.clear();
+
+    //restore lodlayers and disatnces
+    lodComponent->lodLayersArray = savedDistances;
 }
 
 
 DAVA::Entity * DeleteLODCommand::GetEntity() const
 {
-	if(lodComponent)
-		return lodComponent->GetEntity();
+    return lodComponent->GetEntity();
+}
 
-	return NULL;
+const DAVA::Vector<DeleteRenderBatchCommand *> & DeleteLODCommand::GetRenderBatchCommands() const
+{
+    return deletedBatches;
 }
 
 

@@ -44,11 +44,11 @@ attribute mediump vec3 inTangent;
 #endif
 
 // UNIFORMS
-uniform mediump mat4 modelViewProjectionMatrix;
+uniform mediump mat4 worldViewProjMatrix;
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
-uniform mediump mat4 modelViewMatrix;
-uniform mediump mat3 normalMatrix;
+uniform mediump mat4 worldViewMatrix;
+uniform mediump mat3 worldViewInvTransposeMatrix;
 #endif 
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
@@ -103,10 +103,10 @@ ADDITIONAL_VARYINGS
 
 void main()
 {
-	gl_Position = modelViewProjectionMatrix * inPosition;
+	gl_Position = worldViewProjMatrix * inPosition;
 #if defined(VERTEX_LIT)
-    mediump vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
-    mediump vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
+    mediump vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
+    mediump vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal); // normal in eye coordinates
     
     
     vec3 lightDir = lightPosition[0] - eyeCoordsPosition;
@@ -140,11 +140,11 @@ void main()
 #endif
 
 #if defined(PIXEL_LIT)
-	vec3 n = normalize (normalMatrix * inNormal);
-	vec3 t = normalize (normalMatrix * inTangent);
+	vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
+	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
 	vec3 b = -cross (n, t);
 
-    vec3 eyeCoordsPosition = vec3(modelViewMatrix *  inPosition);
+    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
     
     vec3 lightDir = lightPosition[0] - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
@@ -184,7 +184,7 @@ void main()
     #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
         float fogFragCoord = length(eyeCoordsPosition);
     #else
-        vec3 eyeCoordsPosition = vec3(modelViewMatrix * inPosition);
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
         float fogFragCoord = length(eyeCoordsPosition);
     #endif
     varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);

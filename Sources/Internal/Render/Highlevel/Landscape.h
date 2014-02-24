@@ -129,34 +129,11 @@ public:
      */
     void SetLods(const Vector4 & lods);
     
-
-    enum eTiledShaderMode
-    {
-        TILED_MODE_TILEMASK = 0,
-        TILED_MODE_TEXTURE,
-        TILED_MODE_MIXED,
-        TILED_MODE_TILE_DETAIL_MASK, 
-        
-        TILED_MODE_COUNT
-    };
     
     const static FastName PARAM_TILE_COLOR0;
 	const static FastName PARAM_TILE_COLOR1;
 	const static FastName PARAM_TILE_COLOR2;
 	const static FastName PARAM_TILE_COLOR3;
-
-    
-    /**
-     \brief Change rendering mode. 
-     \param[in] renderingMode rendering mode of landscape.
-     */
-    void SetTiledShaderMode(eTiledShaderMode _tiledShaderMode);
-    
-    /**
-     \brief Get rendering mode. 
-     \returns rendering mode of landscape.
-     */
-    inline eTiledShaderMode GetTiledShaderMode();
 
     
     /**
@@ -276,7 +253,16 @@ public:
         \returns pathname of heightmap
      */
     const FilePath & GetHeightmapPathname();
+	
+	void SetHeightmapPathname(const FilePath & newPath);
+	
+	float32 GetLandscapeSize();
+	
+	void SetLandscapeSize(float32 newSize);
 
+	float32 GetLandscapeHeight();
+	
+	void SetLandscapeHeight(float32 newHeight);
     
     void Save(KeyedArchive * archive, SerializationContext * serializationContext);
     void Load(KeyedArchive * archive, SerializationContext * serializationContext);
@@ -287,10 +273,6 @@ public:
 
 	void CursorEnable();
 	void CursorDisable();
-	void SetCursorTexture(UniqueHandle texture);
-	void SetBigTextureSize(float32 bigSize);
-	void SetCursorPosition(const Vector2 & position);
-	void SetCursorScale(float32 scale);
 
     Heightmap *GetHeightmap();
     virtual void SetHeightmap(Heightmap *height);
@@ -380,6 +362,8 @@ protected:
 	float32 GetSpecularShininess();
 	void SetSpecularMapPath(const FilePath& path);
 	FilePath GetSpecularMapPath();
+    
+    void SetLandscapeSize(const Vector3 & newSize);
 	
     Vector<LandscapeVertex *> landscapeVerticesArray;
     Vector<RenderDataObject *> landscapeRDOArray;
@@ -429,15 +413,13 @@ protected:
     
     int32 flashQueueCounter;
     
-    uint32 tiledShaderMode;
-    
     int32 nearLodIndex;
     int32 farLodIndex;
     
     bool    isFogEnabled;
     //float32 fogDensity;
     //Color   fogColor;
-    
+	
 	NMaterial* tileMaskMaterial;
 	//NMaterial* fullTiledMaterial;
 	//NMaterial* currentMaterial;
@@ -469,9 +451,10 @@ public:
 
 	    INTROSPECTION_EXTEND(Landscape, RenderObject,
          
-        MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
-
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
+        PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
+        PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
         //MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
         //MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
 		
@@ -481,12 +464,6 @@ public:
     
 };
 
-    
-inline Landscape::eTiledShaderMode Landscape::GetTiledShaderMode()
-{
-    return (eTiledShaderMode)tiledShaderMode;
-}
-    
 };
 
 #endif // __DAVAENGINE_LANDSCAPE_NODE_H__

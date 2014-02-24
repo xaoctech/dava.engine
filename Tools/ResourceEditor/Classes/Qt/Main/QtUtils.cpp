@@ -153,7 +153,13 @@ bool IsKeyModificatorsPressed()
 
 QColor ColorToQColor(const DAVA::Color& color)
 {
-	return QColor::fromRgbF(color.r, color.g, color.b, color.a);
+    DAVA::float32 maxC = 1.0;
+
+    if(maxC < color.r) maxC = color.r;
+    if(maxC < color.g) maxC = color.g;
+    if(maxC < color.b) maxC = color.b;
+
+	return QColor::fromRgbF(color.r / maxC, color.g / maxC, color.b / maxC, DAVA::Clamp(color.a, 0.0f, 1.0f));
 }
 
 DAVA::Color QColorToColor(const QColor &qcolor)
