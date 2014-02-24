@@ -33,12 +33,13 @@
 #include "Base/Singleton.h"
 #include "Base/FastName.h"
 #include "Base/FastNameMap.h"
+#include "Base/BaseMath.h"
+#include "Render/Shader.h"
 
 namespace DAVA
 {
     
 class Data;
-class Shader;
     
 // TODO: LRU cache for shaders or other type of resources
 class ShaderAsset
@@ -46,10 +47,17 @@ class ShaderAsset
 public:
     struct DefaultValue
     {
+        Shader::eUniformType type;
         union
         {
             int32 int32Value;
             float32 float32Value;
+            float32 vector2Value[3];
+            float32 vector3Value[3];
+            float32 vector4Value[4];
+            float32 matrix2Value[2 * 2];
+            float32 matrix3Value[3 * 3];
+            float32 matrix4Value[4 * 4];
         };
     };
     
@@ -102,7 +110,8 @@ public:
 
 private:
     ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
-
+    void ParseDefaultVariable(ShaderAsset * asset, const String & inputLine);
+    
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };
 };

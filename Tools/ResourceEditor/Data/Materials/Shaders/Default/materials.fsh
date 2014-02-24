@@ -1,10 +1,14 @@
 <CONFIG>
-albedo = 0
-cubemap = 2
-decal = 1
-detail = 1
-lightmap = 1
-normalmap = 1
+uniform sampler2D albedo = 0;
+uniform sampler2D cubemap = 2;
+uniform sampler2D decal = 1;
+uniform sampler2D detail = 1;
+uniform sampler2D lightmap = 1;
+uniform sampler2D normalmap = 1;
+
+uniform float inGlossiness = 0.5;
+uniform float inSpecularity = 1.0;
+uniform vec3 metalFresnelReflectance = vec3(0.5, 0.5, 0.5);
 <FRAGMENT_SHADER>
 
 #ifdef GL_ES
@@ -16,8 +20,6 @@ precision highp float;
 #define mediump
 #endif
 
-//#define MATERIAL_TEXTURE
-//#define VERTEX_COLOR
 //#define ALPHABLEND
 //#define FLATCOLOR
 //#define VERTEX_FOG
@@ -54,7 +56,7 @@ uniform sampler2D detail;
 
 //#if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
 #if defined(MATERIAL_LIGHTMAP)
-uniform sampler2D lightmap; //[1]:ONCE
+uniform sampler2D lightmap;
 #endif
 
 //#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
@@ -63,7 +65,7 @@ varying highp vec2 varTexCoord1;
 #endif
 
 #if defined(PIXEL_LIT)
-uniform sampler2D normalmap; // [1]:ONCE
+uniform sampler2D normalmap;
 uniform float materialSpecularShininess;
 uniform float lightIntensity0;
 uniform float inSpecularity;
@@ -244,23 +246,27 @@ void main()
 #elif defined(NORMALIZED_BLINN_PHONG)
    
     vec3 color = vec3(0.0);
-    #if defined(VIEW_AMBIENT)
+    #if defined(VIEW_AMBIENT) && !defined(MATERIAL_LIGHTMAP)
         color += materialLightAmbientColor;
     #endif
         
     #if defined(VIEW_DIFFUSE)
-        color += varDiffuseColor;
+        #if defined(MATERIAL_LIGHTMAP)
+            color = textureColor1.rgb * 2.0;
+        #else
+            color += varDiffuseColor;
+        #endif
     #endif
         
     #if defined(VIEW_ALBEDO)
         color *= textureColor0.rgb;
     #endif
-
-        
+    
     #if defined(VIEW_SPECULAR)
         float glossiness = pow(5000.0, inGlossiness * textureColor0.a); //textureColor0.a;
+        //float glossiness = pow(5000.0, 0.5 * textureColor0.a); //textureColor0.a;
         float specularNorm = (glossiness + 2.0) / 8.0;
-        color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
+        color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm * textureColor1.rgb / 2.0;
     #endif
     
 #endif
@@ -304,7 +310,8 @@ void main()
     vec3 fresnelOut = FresnelShlickVec3(LdotH, metalFresnelReflectance);
     float specularity = inSpecularity;
     float glossiness = pow(5000.0, inGlossiness * textureColor0.a); //textureColor0.a;
-	//float glossiness = inGlossiness * 0.999;
+    
+   	//float glossiness = inGlossiness * 0.999;
 	//glossiness = 200.0 * glossiness / (1.0 - glossiness);
 
 	float diffuse = NdotL / _PI;// * (1.0 - fresnelIn * specularity);
@@ -431,7 +438,7 @@ void main()
 #if defined(VERTEX_LIT)
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     gl_FragColor = reflectionColor * 0.9;
-#elif defined(PIXEL_LIT)s
+#elif defined(PIXEL_LIT)
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
     mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
