@@ -604,6 +604,7 @@ DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		modifPosWithLocedAxis.z = newPos3d.z;
 		modifPosWithLocedAxis.y = newPos3d.y;
 		break;
+    default: break;
 	}
 
 	moveOffset = modifPosWithLocedAxis - modifStartPos3d;
@@ -762,7 +763,6 @@ void EntityModificationSystem::CloneEnd()
 	if(modifEntities.size() > 0 && clonedEntities.size() == modifEntities.size())
 	{
 		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
-		StructureSystem *structureSystem = sceneEditor->structureSystem;
 		SceneSelectionSystem *selectionSystem = sceneEditor->selectionSystem;
 
 		selectionSystem->Clear();

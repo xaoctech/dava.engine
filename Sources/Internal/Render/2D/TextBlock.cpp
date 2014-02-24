@@ -667,8 +667,12 @@ void TextBlock::Prepare()
 		int32 dy = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * h);
 		
 		cacheUseJustify = useJustify;
-		cacheDx = ConvertToPower2Value(dx, 1);
-		cacheDy = ConvertToPower2Value(dy, 1);
+		cacheDx = dx;
+        EnsurePowerOf2(cacheDx);
+        
+		cacheDy = dy;
+        EnsurePowerOf2(cacheDy);
+        
 		cacheW = w;
 		cacheFinalSize.x = (float32)dx / Core::GetVirtualToPhysicalFactor();
         cacheFinalSize.y = (float32)dy / Core::GetVirtualToPhysicalFactor();

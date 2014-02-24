@@ -50,7 +50,7 @@ public:
    
 protected:
 
-    virtual bool ValidateInternal(const QVariant &v) const;
+    virtual bool ValidateInternal(const QVariant &v);
 
 private:
     

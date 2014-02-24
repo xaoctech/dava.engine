@@ -224,7 +224,7 @@ void ImposterNode::UpdateImposter()
 
 	Rect viewport = RenderManager::Instance()->GetViewport();
 	
-	const Matrix4 & mvp = imposterCamera->GetUniformProjModelMatrix();
+	const Matrix4 & mvp = imposterCamera->GetViewProjMatrix();
 
 	AABBox3 screenBounds;
 	GetOOBBoxScreenCoords(child, mvp, screenBounds);
@@ -321,7 +321,7 @@ void ImposterNode::UpdateImposter()
 
 
 	imposterCamera->SetTarget(center);
-	imposterCamera->Set();
+	imposterCamera->SetupDynamicParameters();
 
 	//TODO: remove this call
 	HierarchicalRemoveCull(child);
@@ -376,6 +376,7 @@ void ImposterNode::HierarchicalRemoveCull(Entity * node)
 
 void ImposterNode::DrawImposter()
 {
+#if 0
 	if(!block)
 	{
 		return;
@@ -412,6 +413,7 @@ void ImposterNode::DrawImposter()
 	//RenderManager::Instance()->SetBlendMode(src, dst);
 
 	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelViewMatrix, matrixCache);
+#endif 
 }
 
 Entity* ImposterNode::Clone(Entity *dstNode /*= NULL*/)

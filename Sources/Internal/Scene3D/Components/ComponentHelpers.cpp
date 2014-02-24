@@ -41,10 +41,20 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
-
+#include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
 {
+
+RenderComponent * GetRenderComponent(const Entity *fromEntity)
+{
+	return static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
+}
+
+TransformComponent * GetTransformComponent(Entity * fromEntity)
+{
+	return static_cast<TransformComponent*>(fromEntity->GetComponent(Component::TRANSFORM_COMPONENT));
+}
 
 RenderObject * GetRenderObject(const Entity * fromEntity)
 {
@@ -52,7 +62,7 @@ RenderObject * GetRenderObject(const Entity * fromEntity)
 
 	if(NULL != fromEntity)
 	{
-		RenderComponent * component = static_cast<RenderComponent*>(fromEntity->GetComponent(Component::RENDER_COMPONENT));
+		RenderComponent * component = GetRenderComponent(fromEntity);
 		if(component)
 		{
 			object = component->GetRenderObject();
@@ -72,23 +82,7 @@ SkyboxRenderObject * GetSkybox(const Entity * fromEntity)
     
     return NULL;
 }
-
-    
-ParticleEmitter * GetEmitter(Entity * fromEntity)
-{
-	ParticleEmitter * emitter = 0;
-
-	if(NULL != fromEntity)
-	{
-		RenderObject * object = GetRenderObject(fromEntity);
-		if(object && object->GetType() == RenderObject::TYPE_PARTICLE_EMTITTER)
-		{
-			emitter = static_cast<ParticleEmitter*>(object);
-		}
-	}
-
-	return emitter;
-}
+   
 
 ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 {
@@ -100,16 +94,23 @@ ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 	return NULL;
 }
 
+LightComponent *GetLightComponent(Entity * fromEntity)
+{
+    if(NULL != fromEntity)
+    {
+        return static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
+    }
+
+    return NULL;
+}
+
 Light * GetLight( Entity * fromEntity )
 {
-	if(NULL != fromEntity)
-	{
-		LightComponent * component = static_cast<LightComponent*>(fromEntity->GetComponent(Component::LIGHT_COMPONENT));
-		if(component)
-		{
-			return component->GetLightObject();
-		}
-	}
+    LightComponent * component = GetLightComponent(fromEntity);
+    if(component)
+    {
+        return component->GetLightObject();
+    }
 
 	return NULL;
 }
@@ -161,6 +162,36 @@ SwitchComponent * GetSwitchComponent(Entity *fromEntity)
 	}
 
 	return NULL;
+}
+
+uint32 GetLodLayersCount(Entity *fromEntity)
+{
+    if (!fromEntity) return 0;
+	
+	if(GetEffectComponent(fromEntity)) 
+		return LodComponent::MAX_LOD_LAYERS;
+
+    RenderObject *object = GetRenderObject(fromEntity);
+    if(!object) 
+		return 0;
+    
+    return (object->GetMaxLodIndex() + 1);
+}
+    
+uint32 GetLodLayersCount(LodComponent *fromComponent)
+{
+    if(!fromComponent) return 0;
+
+    Entity *entity = fromComponent->GetEntity();
+
+	if(GetEffectComponent(entity)) 
+		return LodComponent::MAX_LOD_LAYERS;
+
+	RenderObject *object = GetRenderObject(entity);
+	if(!object) 
+		return 0;
+    
+    return (object->GetMaxLodIndex() + 1);
 }
 
 void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *))

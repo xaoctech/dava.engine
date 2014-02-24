@@ -41,6 +41,8 @@
      <addaction name="separator"/>
      <addaction name="actionAutoExpand"/>
      <addaction name="actionSwitchQuality"/>
+     <addaction name="actionMaterialReload"/>
+     <addaction name="actionSetFog"/>
     </widget>
    </item>
    <item>
@@ -74,7 +76,7 @@
           <bool>true</bool>
          </property>
          <property name="selectionMode">
-          <enum>QAbstractItemView::ExtendedSelection</enum>
+          <enum>QAbstractItemView::SingleSelection</enum>
          </property>
          <property name="uniformRowHeights">
           <bool>false</bool>
@@ -194,6 +196,16 @@
   <action name="actionSwitchQuality">
    <property name="text">
     <string>switchQuality</string>
+   </property>
+  </action>
+  <action name="actionMaterialReload">
+   <property name="text">
+    <string>MaterialReload</string>
+   </property>
+  </action>
+  <action name="actionSetFog">
+   <property name="text">
+    <string>Set Fog</string>
    </property>
   </action>
   <actiongroup name="filterType">

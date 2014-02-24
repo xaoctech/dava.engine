@@ -122,8 +122,8 @@ void QualitySettingsSystem::Load(const FilePath &path)
                     {
                         const YamlNode *qualityNode = qualitiesNode->Get(i);
                         const YamlNode *name = qualityNode->Get("quality");
-                        const YamlNode *albedoNode = qualityNode->Get("albedolevel");
-                        const YamlNode *normalNode = qualityNode->Get("normallevel");
+                        const YamlNode *albedoNode = qualityNode->Get("albedo");
+                        const YamlNode *normalNode = qualityNode->Get("normalmap");
                         const YamlNode *sizeNode = qualityNode->Get("minsize");
 
                         if(NULL != name && name->GetType() == YamlNode::TYPE_STRING &&
@@ -137,7 +137,7 @@ void QualitySettingsSystem::Load(const FilePath &path)
                             txq.quality.weight = i;
                             txq.quality.albedoBaseMipMapLevel = albedoNode->AsUInt32();
                             txq.quality.normalBaseMipMapLevel = normalNode->AsUInt32();
-                            txq.quality.minSize = Vector2(sizeNode->AsUInt32(), sizeNode->AsUInt32());
+                            txq.quality.minSize = Vector2(sizeNode->AsFloat(), sizeNode->AsFloat());
 
                             textureQualities.push_back(txq);
 

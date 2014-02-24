@@ -33,7 +33,6 @@
 
 #include "Scene3D/Entity.h"
 #include "Particles/ParticleEmitter.h"
-#include "Particles/ParticleEmitter3D.h"
 #include "FileSystem/FilePath.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 
@@ -63,7 +62,7 @@ protected:
 	void LoadFromYaml(const FilePath & yamlPath);
 
 private:
-	ParticleEmitter3D * emitter;
+	ParticleEmitter * emitter;
 	FilePath yamlPath;
 };
 
