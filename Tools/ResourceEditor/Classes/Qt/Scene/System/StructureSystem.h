@@ -40,6 +40,7 @@
 #include "Scene3D/Entity.h"
 #include "Particles/ParticleLayer.h"
 #include "Particles/ParticleEmitter.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "UI/UIEvent.h"
 #include "Render/Highlevel/Landscape.h"
 
@@ -55,8 +56,9 @@ public:
 
 	void Move(const EntityGroup& entityGroup, DAVA::Entity *newParent, DAVA::Entity *newBefore);
 	void Remove(const EntityGroup& entityGroup);
-	void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
-	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers);
+    void MoveEmitter(const DAVA::Vector<DAVA::ParticleEmitter *> &emitters, const DAVA::Vector<DAVA::ParticleEffectComponent *>& oldEffects, DAVA::ParticleEffectComponent *newEffect, int dropAfter);    
+	void MoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, const DAVA::Vector<DAVA::ParticleEmitter *>& oldEmitters, DAVA::ParticleEmitter *newEmitter, DAVA::ParticleLayer *newBefore);
+	void RemoveLayer(const DAVA::Vector<DAVA::ParticleLayer *> &layers, const DAVA::Vector<DAVA::ParticleEmitter *>& oldEmitters);
 	void MoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &oldLayers, DAVA::ParticleLayer *newLayer);
 	void RemoveForce(const DAVA::Vector<DAVA::ParticleForce *> &forces, const DAVA::Vector<DAVA::ParticleLayer *> &layers);
 	void ReloadEntities(const EntityGroup& entityGroup, bool saveLightmapSettings = false);
@@ -88,8 +90,6 @@ protected:
     void FindMeshesRecursive(DAVA::Entity *entity, DAVA::Vector<DAVA::RenderObject *> & objects) const;
 
 	void CheckAndMarkSolid(DAVA::Entity *entity);
-	void CheckAndMarkLocked(DAVA::Entity *entity);
-	void MarkLocked(DAVA::Entity *entity);
 
     void CreateIlluminationParams(DAVA::Entity *entity);
 

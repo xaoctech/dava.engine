@@ -199,7 +199,7 @@ void TextureBrowser::setTexture(DAVA::Texture *texture, DAVA::TextureDescriptor 
 		else
 		{
 			// set empty info
-			DAVA::Vector<QImage> emptyImages;
+			QList<QImage> emptyImages;
 			emptyImages.push_back(QImage());
 			updateInfoOriginal(emptyImages);
 
@@ -248,7 +248,7 @@ void TextureBrowser::setTextureView(DAVA::eGPUFamily view, bool forceConvert /* 
 		if(!forceConvert)
 		{
 			// try to find image in cache
-			const DAVA::Vector<QImage>& images = TextureCache::Instance()->getConverted(curDescriptor, view);
+			const QList<QImage>& images = TextureCache::Instance()->getConverted(curDescriptor, view);
 
 			if(images.size() > 0 &&
 			   !images[0].isNull())
@@ -289,7 +289,7 @@ void TextureBrowser::updatePropertiesWarning()
 	}
 }
 
-void TextureBrowser::updateConvertedImageAndInfo(const DAVA::Vector<QImage> &images, DAVA::TextureDescriptor& descriptor)
+void TextureBrowser::updateConvertedImageAndInfo(const QList<QImage> &images, DAVA::TextureDescriptor& descriptor)
 {
 	if(!descriptor.IsCubeMap())
 	{
@@ -333,7 +333,7 @@ void TextureBrowser::updateInfoPos(QLabel *label, const QPoint &pos /* = QPoint(
 	}
 }
 
-void TextureBrowser::updateInfoOriginal(const DAVA::Vector<QImage> &images)
+void TextureBrowser::updateInfoOriginal(const QList<QImage> &images)
 {
 	if(NULL != curTexture && NULL != curDescriptor)
 	{
@@ -366,8 +366,9 @@ void TextureBrowser::updateInfoConverted()
 		int datasize = TextureCache::Instance()->getConvertedSize(curDescriptor, curTextureView);
 		int filesize = TextureCache::Instance()->getConvertedFileSize(curDescriptor, curTextureView);
 		QSize imgSize(0, 0);
-
-		if(curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID)
+        
+        bool isFormatValid = curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID;
+		if(isFormatValid)
 		{
 			formatStr = GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(curDescriptor->compression[curTextureView].format);
 			
@@ -382,7 +383,8 @@ void TextureBrowser::updateInfoConverted()
 				imgSize = QSize(curTexture->width, curTexture->height);
 			}
 		}
-
+        ui->convertToolButton->setEnabled(isFormatValid);
+        
 		sprintf(tmp, "Format: %s\nSize: %dx%d\nData size: %s\nFile size: %s", formatStr, imgSize.width(), imgSize.height(),
 			SizeInBytesToString(datasize).c_str(),
 			SizeInBytesToString(filesize).c_str());
@@ -412,7 +414,7 @@ void TextureBrowser::setupStatusBar()
 	statusBar->layout()->setMargin(0);
 	statusBar->layout()->setSpacing(1);
 	statusBar->layout()->setContentsMargins(0, 0, 0, 0);
-	statusBar->setMaximumHeight(16);
+	statusBar->setMaximumHeight(20);
 
 	ui->mainLayout->addWidget(statusBar);
 
@@ -588,7 +590,7 @@ void TextureBrowser::resetTextureInfo()
 	updateInfoColor(ui->labelConvertedRGBA);
 	updateInfoPos(ui->labelConvertedXY);
 
-	DAVA::Vector<QImage> emptyImages;
+	QList<QImage> emptyImages;
 	emptyImages.push_back(QImage());
 	updateInfoOriginal(emptyImages);
 	updateInfoConverted();

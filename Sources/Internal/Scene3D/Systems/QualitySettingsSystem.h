@@ -84,6 +84,7 @@ public:
     // ------------------------------------------
 
 	void EnableOption(const FastName & option, bool enabled);
+    
 	bool IsOptionEnabled(const FastName & option) const;
 
     bool NeedLoadEntity(const Entity *entity);

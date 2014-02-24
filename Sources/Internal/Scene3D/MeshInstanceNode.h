@@ -70,6 +70,9 @@ public:
     NMaterialInstance * GetNMaterialInstance();
     
     //Component * Clone();
+	
+	virtual ShadowVolume * CreateShadow();
+
 private:
 	Material * material;
     NMaterial * nMaterial;

@@ -915,9 +915,6 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.cpp">
       <Filter>Classes\Qt\Tools\QtPosSaver</Filter>
     </ClCompile>
@@ -1228,9 +1225,6 @@
       <Filter>Classes\Deprecated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Deprecated\SceneValidator.cpp">
-      <Filter>Classes\Deprecated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Deprecated\TextureSquarenessChecker.cpp">
       <Filter>Classes\Deprecated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.cpp">
@@ -1752,9 +1746,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyModel_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1845,6 +1836,9 @@
     <ClCompile Include="Classes\Commands2\InspDynamicModifyCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands2\ParticleEmitterMoveCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialFilterModel.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
@@ -1875,14 +1869,14 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\QualitySwitcher\QualitySwitcher.cpp">
       <Filter>Classes\Qt\QualitySwitcher</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\QualitySwitcher\QualitySwitcher_moc.cpp">
       <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.cpp">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.cpp">
       <Filter>Classes\Qt\SoundEditor</Filter>
@@ -1895,12 +1889,30 @@
     </ClCompile>
     <ClCompile Include="_GeneratedQt\SoundComponentEditor\SoundComponentEditor_moc.cpp">
       <Filter>QtGenerated</Filter>
+	</ClCompile>
+    <ClCompile Include="Classes\Commands2\DeleteLODCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\DeleteRenderBatchCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\TextureBrowser\CacheRequest.cpp">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\TextureBrowser\CacheRequest_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\AddSwitchEntityDialog\SwitchEntityCreator.cpp">
+      <Filter>Classes\Qt\Tools\AddSwitchEntityDialog</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Commands2\SoundComponentEditCommands.cpp">
       <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2837,9 +2849,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataMetaObject.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyData</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\QtColorLineEdit.h">
-      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPosSaver\QtPosSaver.h">
       <Filter>Classes\Qt\Tools\QtPosSaver</Filter>
     </ClInclude>
@@ -3158,9 +3167,6 @@
     <ClInclude Include="Classes\Deprecated\SceneValidator.h">
       <Filter>Classes\Deprecated</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Deprecated\TextureSquarenessChecker.h">
-      <Filter>Classes\Deprecated</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastDebug.h">
       <Filter>Classes\Beast\Wrapper</Filter>
     </ClInclude>
@@ -3302,6 +3308,9 @@
     <ClInclude Include="Classes\Qt\Scene\FogSettingsChangedReceiver.h">
       <Filter>Classes\Qt\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands2\ParticleEmitterMoveCommands.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\EditorMaterialSystem.h">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClInclude>
@@ -3332,6 +3341,9 @@
     <ClInclude Include="Classes\Commands2\DeleteLODCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands2\DeleteRenderBatchCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor</Filter>
     </ClInclude>
@@ -3350,11 +3362,20 @@
     <ClInclude Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.h">
       <Filter>Classes\Qt\SoundEditor</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\CacheRequest.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\AddSwitchEntityDialog\SwitchEntityCreator.h">
+      <Filter>Classes\Qt\Tools\AddSwitchEntityDialog</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\SoundComponentEditCommands.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

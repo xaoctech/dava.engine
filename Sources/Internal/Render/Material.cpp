@@ -177,7 +177,7 @@ void InstanceMaterialState::Load(KeyedArchive * archive, SerializationContext *s
 		{
             FilePath lName = serializationContext->GetScenePath() + filename;
 
-			Texture* lTexture = Texture::CreateFromFile(lName);
+			Texture* lTexture = Texture::CreateFromFile(lName, FastName("albedo"));
 			SetLightmap(lTexture, lName);
 			lTexture->Release();
 		}
@@ -297,24 +297,7 @@ Material::Material()
 //        materialsNode->AddNode(this);
 //    }
     
-    if (!uberShader)
-    {
-        uberShader = new UberShader();
-        uberShader->LoadShader("~res:/Shaders/Default/materials.shader");
-        
-        
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE");
-        //uberShader->CompileShaderCombination("MATERIAL_DECAL");
-        //uberShader->CompileShaderCombination("MATERIAL_DETAIL");
-        //
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;VERTEX_LIT");
-        //uberShader->CompileShaderCombination("MATERIAL_DECAL;VERTEX_LIT");
-        //uberShader->CompileShaderCombination("MATERIAL_DETAIL;VERTEX_LIT");
-        //
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;");
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;");
-        //uberShader->CompileShaderCombination("MATERIAL_TEXTURE;PIXEL_LIT;DIFFUSE;SPECULAR;GLOSS;");
-    }
+
     
 //    type = MATERIAL_UNLIT_TEXTURE;
 //    shader = uberShader->GetShader("MATERIAL_TEXTURE");
@@ -825,7 +808,7 @@ void Material::Load(KeyedArchive * keyedArchive, SerializationContext * serializ
             	Logger::FrameworkDebug("--- load material texture: %s src:%s", relativePathname.c_str(), names[k].GetAbsolutePathname().c_str());
             
             //textures[k] = Texture::CreateFromFile(names[k].GetAbsolutePath());
-            textures[k] = Texture::CreateFromFile(names[k]);
+            textures[k] = Texture::CreateFromFile(names[k], FastName("albedo"));
         }
     }
     
@@ -1277,7 +1260,7 @@ void Material::SetTexture(eTextureLevel level, const FilePath & textureName)
     SafeRelease(textures[level]);
     names[level] = FilePath();
  
-    Texture *t = Texture::CreateFromFile(textureName);
+    Texture *t = Texture::CreateFromFile(textureName, FastName("albedo"));
     if(t)
     {
         textures[level] = t;

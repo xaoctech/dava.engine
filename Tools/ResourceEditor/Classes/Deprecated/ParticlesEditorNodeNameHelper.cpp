@@ -82,6 +82,7 @@ bool ParticlesEditorNodeNameHelper::IsNodeNameExist(const String &name, Entity *
 		return false;
 		
 	int32 childrenCount = parentNode->GetChildrenCount();
+    FastName fastName = FastName(name);
 
 	for (int32 i = 0; i < childrenCount; ++i)
 	{
@@ -90,7 +91,7 @@ bool ParticlesEditorNodeNameHelper::IsNodeNameExist(const String &name, Entity *
 		if (!childNode)
 			continue;
 		
-		if (childNode->GetName() == name)
+		if (childNode->GetName() == fastName)
 		{
 			return true;
 		}
@@ -122,7 +123,7 @@ bool ParticlesEditorNodeNameHelper::IsLayerNameExist(const String &name, Particl
 	if (!emitter)
 		return false;	
 	
-	for (std::vector<ParticleLayer*>::const_iterator t = emitter->GetLayers().begin(); t != emitter->GetLayers().end(); ++t)
+	for (std::vector<ParticleLayer*>::const_iterator t = emitter->layers.begin(); t != emitter->layers.end(); ++t)
 	{
         ParticleLayer *layer = *t;
 		

@@ -133,6 +133,9 @@
     <Filter Include="Internal\Job">
       <UniqueIdentifier>{94116b3a-757d-4e56-95a2-a621c48f12e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Scene3D\Converters">
+      <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -439,9 +442,6 @@
       <Filter>Internal\Particles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.h">
       <Filter>Internal\Particles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer.h">
@@ -894,12 +894,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.h">
       <Filter>Internal\Scene3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleLayer3D.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.h">
-      <Filter>Internal\Particles</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
@@ -1038,9 +1032,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.h">
-      <Filter>Internal\Scene3D\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1054,9 +1045,6 @@
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderDataSource.h">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\IRenderUpdatable.h">
@@ -1344,6 +1332,12 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleGroup.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Particles\ParticleRenderObject.h">
+      <Filter>Internal\Particles</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobWaiter.h">
       <Filter>Internal\Job</Filter>
     </ClInclude>
@@ -1409,6 +1403,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.h">
       <Filter>Internal\Sound\FMOD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.h">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.h">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\UI\UIParticles.h">
+      <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
+      <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1614,9 +1620,6 @@
       <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitterObject.cpp">
       <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer.cpp">
@@ -2051,12 +2054,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ParticleEmitterNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleLayer3D.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleEmitter3D.cpp">
-      <Filter>Internal\Particles</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
@@ -2159,9 +2156,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\ParticleEmitterSystem.cpp">
-      <Filter>Internal\Scene3D\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\CullingSystem.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2172,9 +2166,6 @@
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\LandscapeCursor.cpp">
-      <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\ParticleLayerBatch.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\ParticleEffectComponent.cpp">
@@ -2447,6 +2438,9 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Particles\ParticleRenderObject.cpp">
+      <Filter>Internal\Particles</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\Job.cpp">
       <Filter>Internal\Job</Filter>
     </ClCompile>
@@ -2518,6 +2512,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.cpp">
       <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.cpp">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.cpp">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\UI\UIParticles.cpp">
+      <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\AtomicWin32.cpp">
+      <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

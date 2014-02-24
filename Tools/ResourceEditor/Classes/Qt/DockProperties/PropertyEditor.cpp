@@ -46,8 +46,14 @@
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/HeightmapValidator.h"
+#include "Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Commands2/MetaObjModifyCommand.h"
 #include "Commands2/InspMemberModifyCommand.h"
+#include "Commands2/ConvertToShadowCommand.h"
+#include "Commands2/DeleteRenderBatchCommand.h"
+#include "Qt/Settings/SettingsManager.h"
+#include "Project/ProjectManager.h"
 
 #include "PropertyEditorStateHelper.h"
 #include "Qt/Project/ProjectManager.h"
@@ -176,7 +182,7 @@ void PropertyEditor::ResetProperties()
 		ApplyFavorite(root);
 		ApplyModeFilter(root);
 		ApplyModeFilter(favoriteGroup);
-		ApplyCustomButtons(root);
+		ApplyCustomExtensions(root);
 
 		// add not empty rows from root
 		while(0 != root->ChildCount())
@@ -285,7 +291,7 @@ void PropertyEditor::ApplyFavorite(QtPropertyData *data)
 	}
 }
 
-void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
+void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 {
 	if(NULL != data)
 	{
@@ -296,13 +302,10 @@ void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
 			if(DAVA::MetaInfo::Instance<DAVA::ActionComponent>() == meta)
 			{
 				// Add optional button to edit action component
-				QtPropertyToolButton *editActions = data->AddButton();
-				editActions->setIcon(QIcon(":/QtIcons/settings.png"));
-				editActions->setAutoRaise(true);
-
+				QtPropertyToolButton * editActions = CreateButton(data, QIcon(":/QtIcons/settings.png"), "");
 				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
 			}
-            if(DAVA::MetaInfo::Instance<DAVA::SoundComponent>() == meta)
+            else if(DAVA::MetaInfo::Instance<DAVA::SoundComponent>() == meta)
             {
                 QtPropertyToolButton *editSound = data->AddButton();
                 editSound->setIcon(QIcon(":/QtIcons/settings.png"));
@@ -313,31 +316,80 @@ void PropertyEditor::ApplyCustomButtons(QtPropertyData *data)
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
 				// Add optional button to bake transform render object
-				QtPropertyToolButton *bakeButton = data->AddButton();
-				bakeButton->setToolTip("Bake Transform");
-				bakeButton->setIcon(QIcon(":/QtIcons/transform_bake.png"));
-				bakeButton->setIconSize(QSize(12, 12));
-				bakeButton->setAutoRaise(true);
-
+				QtPropertyToolButton * bakeButton = CreateButton(data, QIcon(":/QtIcons/transform_bake.png"), "Bake Transform");
 				QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(ActionBakeTransform()));
+			}
+			else if(DAVA::MetaInfo::Instance<DAVA::RenderBatch>() == meta)
+			{
+				// Add optional button to bake transform render object
+				QtPropertyToolButton * deleteButton = CreateButton(data, QIcon(":/QtIcons/remove.png"), "Delete RenderBatch");
+				QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(DeleteRenderBatch()));
+
+				QtPropertyDataIntrospection *introData = dynamic_cast<QtPropertyDataIntrospection *>(data);
+				if(NULL != introData)
+				{
+					DAVA::RenderBatch *batch = (DAVA::RenderBatch *) introData->object;
+					DAVA::RenderObject *ro = batch->GetRenderObject();
+					if(ConvertToShadowCommand::CanConvertBatchToShadow(batch) && (ro->GetType() == RenderObject::TYPE_MESH))
+					{
+						QtPropertyToolButton * convertButton = CreateButton(data, QIcon(":/QtIcons/shadow.png"), "Convert To ShadowVolume");
+						QObject::connect(convertButton, SIGNAL(pressed()), this, SLOT(ConvertToShadow()));
+					}
+				}
+			}
+			else if(DAVA::MetaInfo::Instance<DAVA::ShadowVolume>() == meta)
+			{
+				// Add optional button to bake transform render object
+				QtPropertyToolButton * deleteButton = CreateButton(data, QIcon(":/QtIcons/remove.png"), "Delete RenderBatch");
+				QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(DeleteRenderBatch()));
 			}
 			else if(DAVA::MetaInfo::Instance<DAVA::NMaterial>() == meta)
 			{
 				// Add optional button to bake transform render object
-				QtPropertyToolButton *goToMaterialButton = data->AddButton();
-				goToMaterialButton->setToolTip("Edit material");
-				goToMaterialButton->setIcon(QIcon(":/QtIcons/3d.png"));
-				goToMaterialButton->setIconSize(QSize(12, 12));
-				goToMaterialButton->setAutoRaise(true);
-
+				QtPropertyToolButton * goToMaterialButton = CreateButton(data, QIcon(":/QtIcons/3d.png"), "Edit material");
 				QObject::connect(goToMaterialButton, SIGNAL(pressed()), this, SLOT(ActionEditMaterial()));
 			}
+            else if(DAVA::MetaInfo::Instance<DAVA::FilePath>() == meta)
+			{
+                QString dataName = data->GetName();
+                if(dataName == "heightmapPath" || dataName == "texture")
+                {
+                    QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
+                    QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+                    QString defaultPath = dataSourcePath;
+                    SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+                    if(NULL != editor)
+                    {
+                        DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
+                        if(String::npos != scenePath.find(dataSourcePath.toStdString()))
+                        {
+                            defaultPath = scenePath.c_str();
+                        }
+                    }
+                    variantData->SetDefaultOpenDialogPath(defaultPath);
+                    QStringList pathList;
+                    pathList.append(dataSourcePath);
+                    QString fileFilter = "All (*.*)";
+                    if(dataName == "heightmapPath")
+                    {
+                        fileFilter = "All (*.heightmap *.png);;PNG (*.png);;Height map (*.heightmap)";
+                        variantData->SetValidator(new HeightMapValidator(pathList));
+                    }
+                    else
+                    {
+                        fileFilter = "All (*.tex *.png);;PNG (*.png);;TEX (*.tex)";
+                        variantData->SetValidator(new TexturePathValidator(pathList));
+                    }
+                    variantData->SetOpenDialogFilter(fileFilter);
+                }
+                
+            }
 		}
 
 		// go through childs
 		for(int i = 0; i < data->ChildCount(); ++i)
 		{
-			ApplyCustomButtons(data->ChildGet(i));
+			ApplyCustomExtensions(data->ChildGet(i));
 		}
 	}
 }
@@ -364,8 +416,9 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 
 		ret = new QtPropertyDataIntrospection(object, info, false);
 
-		// add members is we can
-		if(hasMembers)
+		// add members is there are some
+        // and if we allow to view such introspection type
+		if(hasMembers && IsInspViewAllowed(info))
 		{
 			while(NULL != baseInfo)
 			{
@@ -373,11 +426,8 @@ QtPropertyData* PropertyEditor::CreateInsp(void *object, const DAVA::InspInfo *i
 				{
 					const DAVA::InspMember *member = baseInfo->Member(i);
 
-					if(!ExcludeMember(baseInfo, member))
-					{
-						QtPropertyData *memberData = CreateInspMember(object, member);
-						ret->ChildAdd(member->Name(), memberData);
-					}
+                    QtPropertyData *memberData = CreateInspMember(object, member);
+					ret->ChildAdd(member->Name(), memberData);
 				}
 
 				baseInfo = baseInfo->BaseInfo();
@@ -548,7 +598,8 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
     case CMDID_SOUND_ADD_EVENT:
     case CMDID_SOUND_REMOVE_EVENT:
-		if(command->GetEntity() == curNode)
+	case CMDID_DELETE_RENDER_BATCH:
+		if((command->GetEntity() == curNode) || (command->GetEntity() == NULL))
 		{
 			ResetProperties();
 		}
@@ -662,6 +713,57 @@ void PropertyEditor::ActionBakeTransform()
 		}
 	}
 }
+
+void PropertyEditor::ConvertToShadow()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+			if(curScene)
+			{
+				DAVA::RenderBatch *batch = (DAVA::RenderBatch *)data->object;
+				curScene->Exec(new ConvertToShadowCommand(batch));
+			}
+		}
+	}
+}
+
+void PropertyEditor::DeleteRenderBatch()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+		if(NULL != data)
+		{
+			DAVA::RenderBatch *batch = (DAVA::RenderBatch *)data->object;
+
+			SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+			if(curScene)
+			{
+				DAVA::RenderObject *ro = batch->GetRenderObject();
+				DVASSERT(ro);
+
+				DAVA::uint32 count = ro->GetRenderBatchCount();
+				for(DAVA::uint32 i = 0; i < count; ++i)
+				{
+					DAVA::RenderBatch *b = ro->GetRenderBatch(i);
+					if(b == batch)
+					{
+						curScene->Exec(new DeleteRenderBatchCommand(curNode, batch->GetRenderObject(), i));
+					}
+				}
+			}
+		}
+	}
+}
+
 
 void PropertyEditor::ActionEditMaterial()
 {
@@ -782,7 +884,7 @@ void PropertyEditor::SetFavorite(QtPropertyData *data, bool favorite)
 						if(canBeAdded)
 						{
 							QtPropertyData *favorite = CreateClone(data);
-							ApplyCustomButtons(favorite);
+							ApplyCustomExtensions(favorite);
 
 							favoriteGroup->ChildAdd(data->GetName(), favorite);
 							userData->associatedData = favorite;
@@ -931,15 +1033,29 @@ void PropertyEditor::SaveScheme(const DAVA::FilePath &path)
 	}
 }
 
-bool PropertyEditor::ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspMember *member)
+bool PropertyEditor::IsInspViewAllowed(const DAVA::InspInfo *info) const
 {
-	bool exclude = false;
+	bool ret = true;
 
 	if(info->Type() == DAVA::MetaInfo::Instance<DAVA::NMaterial>())
 	{
-		// don't show material properties. they should be edited in materialEditor
-		exclude = true;
+		// Don't show properties for NMaterial.
+        // They should be edited in materialEditor.
+		ret = false;
 	}
 
-	return exclude;
+	return ret;
+}
+
+QtPropertyToolButton * PropertyEditor::CreateButton( QtPropertyData *data, const QIcon & icon, const QString & tooltip )
+{
+	DVASSERT(data);
+
+	QtPropertyToolButton *button = data->AddButton();
+	button->setIcon(icon);
+	button->setToolTip(tooltip);
+	button->setIconSize(QSize(12, 12));
+	button->setAutoRaise(true);
+
+	return button;
 }

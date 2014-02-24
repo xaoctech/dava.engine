@@ -122,18 +122,31 @@ public:
         \param[in] name name of object you want to find. 
         \returns pointer to the object if object with such name available, 0 in case if it's not exists.
      */
-	virtual Entity *	FindByName(const String & name);
+	virtual Entity *	FindByName(const FastName & name);
+
+    /**
+        \brief Find node by it's name inside this scene node.
+        \param[in] name name of object you want to find. 
+        \returns pointer to the object if object with such name available, 0 in case if it's not exists.
+     */
+	virtual Entity *	FindByName(const char * name);
     /**
         \brief Set name of this particular node.
         \param[in] new name for this node
      */
-    virtual void SetName(const String & name);
+    virtual void SetName(const FastName & name);
+
+    /**
+        \brief Set name of this particular node.
+        \param[in] new name for this node
+     */
+    virtual void SetName(const char * name);
 
     /**
         \brief Get name of this particular node.
         \returns name of this node
      */
-    inline const String & GetName() const;
+    inline const FastName & GetName() const;
 
     /**
         \brief Get full name of this node from root. This function is slow because it go up by hierarchy and make full node name.
@@ -161,8 +174,6 @@ public:
 	// properties
 	void SetVisible(const bool & isVisible);
 	inline const bool GetVisible();
-	void SetLodVisible(bool isLodVisible);
-	void SetSwitchVisible(bool isSwitchVisible);
 	inline Entity * GetParent();
 	DAVA_DEPRECATED(void SetUpdatable(bool isUpdatable));
 	DAVA_DEPRECATED(inline bool GetUpdatable(void));
@@ -187,6 +198,7 @@ public:
     inline void SetDefaultLocalTransform(const Matrix4 & newMatrix);
     //inline void InvalidateLocalTransform();
 	Matrix4 AccamulateLocalTransform(Entity * fromParent);
+    Matrix4 AccamulateTransformUptoFarParent(Entity * farParent);
     
     /*
         \brief Go down by hierarchy and bake all transforms.
@@ -238,16 +250,17 @@ public:
     inline void SetIndexInParent(uint32 index) { flags |= (index & ENTITY_INDEX_MASK) << ENTITY_INDEX_POSITION; };
     
 	// animations 
-	void ExecuteAnimation(SceneNodeAnimation * animation);	
-	void DetachAnimation(SceneNodeAnimation * animation);
-	virtual void StopAllAnimations(bool recursive = true);
+// 	void ExecuteAnimation(SceneNodeAnimation * animation);	
+// 	void DetachAnimation(SceneNodeAnimation * animation);
+// 	virtual void StopAllAnimations(bool recursive = true);
+
 	void RestoreOriginalTransforms();
 
 	
     virtual Entity* Clone(Entity *dstNode = NULL);
 	
     // Do not use variables 
-    std::deque<SceneNodeAnimation *> nodeAnimations;
+    //std::deque<SceneNodeAnimation *> nodeAnimations;
 
     // Do we need enum, or we can use virtual functions? 
     enum
@@ -381,7 +394,7 @@ protected:
 	Entity * parent;
 	
 
-	String	name;
+	FastName	name;
 	int32	tag;
 
     uint32 flags;
@@ -456,7 +469,7 @@ inline Entity * Entity::GetParent()
 	return parent;
 }
     
-inline const String & Entity::GetName() const
+inline const FastName & Entity::GetName() const
 {
     return name;
 }

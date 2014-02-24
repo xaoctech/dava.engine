@@ -123,15 +123,13 @@ ActionSetVisibilityPoint::~ActionSetVisibilityPoint()
 
 void ActionSetVisibilityPoint::Redo()
 {
-	RenderManager::Instance()->SetDefault2DState();
-	RenderManager::Instance()->FlushState();
-
 	Sprite* visibilityToolSprite = visibilityToolProxy->GetSprite();
 	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 
-	cursorSprite->SetPosition(redoVisibilityPoint - cursorSprite->GetSize() / 2.f);
-	cursorSprite->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetPosition(redoVisibilityPoint - cursorSprite->GetSize() / 2.f);
+	cursorSprite->Draw(&drawState);
 
 	RenderManager::Instance()->RestoreRenderTarget();
 
@@ -176,7 +174,7 @@ ActionSetVisibilityArea::ActionSetVisibilityArea(Image* originalImage,
 												 const Rect& updatedRect)
 :	CommandAction(CMDID_VISIBILITY_TOOL_SET_AREA, "Set Visibility Area")
 {
-	Image* currentImage = visibilityToolProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
+	Image* currentImage = visibilityToolProxy->GetSprite()->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 
 //	undoImage = Image::CopyImageRegion(originalImage, updatedRect);
 	redoImage = Image::CopyImageRegion(currentImage, updatedRect);
@@ -215,15 +213,14 @@ void ActionSetVisibilityArea::ApplyImage(DAVA::Image *image)
 
 	RenderManager::Instance()->SetRenderTarget(visibilityToolSprite);
 
-	RenderManager::Instance()->SetDefault2DState();
-	RenderManager::Instance()->FlushState();
-
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
 
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-	sprite->SetPosition(updatedRect.x, updatedRect.y);
-	sprite->Draw();
+    
+    Sprite::DrawState drawState;
+    drawState.SetPosition(updatedRect.x, updatedRect.y);
+	sprite->Draw(&drawState);
 
 	RenderManager::Instance()->ClipPop();
 	RenderManager::Instance()->RestoreRenderTarget();

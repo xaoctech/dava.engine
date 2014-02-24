@@ -108,7 +108,7 @@ ModifyCustomColorsCommand::ModifyCustomColorsCommand(Image* originalImage,
 	this->updatedRect = updatedRect;
 	this->customColorsProxy = SafeRetain(customColorsProxy);
 	
-	Image* currentImage = customColorsProxy->GetSprite()->GetTexture()->CreateImageFromMemory();
+	Image* currentImage = customColorsProxy->GetSprite()->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	
 	undoImage = Image::CopyImageRegion(originalImage, updatedRect);
 	redoImage = Image::CopyImageRegion(currentImage, updatedRect);
@@ -144,15 +144,13 @@ void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)
 	Sprite* sprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)texture->GetWidth(), (float32)texture->GetHeight());
 	
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
-
-	RenderManager::Instance()->SetDefault2DState();
-	RenderManager::Instance()->FlushState();
 	
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(updatedRect);
 
-	sprite->SetPosition(updatedRect.x, updatedRect.y);
-	sprite->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetPosition(updatedRect.x, updatedRect.y);
+	sprite->Draw(&drawState);
 	
 	RenderManager::Instance()->ClipPop();
 	RenderManager::Instance()->RestoreRenderTarget();
