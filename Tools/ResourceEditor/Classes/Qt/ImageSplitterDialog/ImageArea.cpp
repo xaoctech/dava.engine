@@ -28,6 +28,10 @@
 
 
 #include "ImageArea.h"
+
+#include "CommandLine/ImageSplitter/ImageSplitter.h"
+#include "Qt/TextureBrowser/TextureConvertor.h"
+
 #include <QtGui>
 
 ImageArea::ImageArea(QWidget *parent)
@@ -36,8 +40,15 @@ ImageArea::ImageArea(QWidget *parent)
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
     setAcceptDrops(true);
     setAutoFillBackground(true);
+    colorComponent = ImageArea::COMPONENTS_GREEN;
     ConnectSignals();
+    image = NULL;
     clear();
+}
+
+ImageArea::~ImageArea()
+{
+    DAVA::SafeRelease(image);
 }
 
 void ImageArea::dragEnterEvent(QDragEnterEvent *event)
@@ -48,15 +59,18 @@ void ImageArea::dragEnterEvent(QDragEnterEvent *event)
     {
         return;
     }
-    image.load(mimeData->urls().first().toLocalFile());
-        
-    if (image.isNull())
+    
+    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(mimeData->urls().first().toLocalFile().toStdString());
+    if (images.size() != 0)
     {
-        return;
+        for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+        event->acceptProposedAction();
     }
-    
-    emit changed();
-    
+}
+
+void ImageArea::dropEvent(QDropEvent *event)
+{
+    SetImage(event->mimeData()->urls().first().toLocalFile().toStdString());
     event->acceptProposedAction();
 }
 
@@ -65,16 +79,87 @@ void ImageArea::ConnectSignals()
     connect(this, SIGNAL(changed()), this, SLOT(UpdatePreviewPicture()));
 }
 
+void ImageArea::SetColorComponent(eColorCmponents value)
+{
+    colorComponent = value;
+    emit changed();
+}
+
+void ImageArea::SetImage(const DAVA::FilePath& filePath)
+{
+    if(!filePath.Exists())
+    {
+        return;
+    }
+    
+    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(filePath);
+    if (images.size() == 0)
+    {
+        return;
+    }
+    DAVA::SafeRelease(image);
+    image = images[0];
+    image->Retain();
+    for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+    emit changed();
+}
+
 void ImageArea::clear()
 {
-    //TODO: to test!
-    image = QPixmap();
+    DAVA::SafeRelease(image);
     setBackgroundRole(QPalette::Dark);
     emit changed();
 }
 
+DAVA::Image* ImageArea::GetComponentImage( DAVA::Image* originalImage)
+{
+    if(colorComponent == COMPONENTS_ALL)
+    {
+        return DAVA::Image::CopyImageRegion(originalImage, originalImage->GetWidth(), originalImage->GetHeight());
+    }
+    
+    DAVA::Image* r = NULL;
+    DAVA::Image* g = NULL;
+    DAVA::Image* b = NULL;
+    DAVA::Image* a = NULL;
+    DAVA::Image* outputImage = NULL;
+    ImageSplitter::CreateSplittedImages(originalImage, &r, &g, &b, &a);
+    switch (colorComponent)
+    {
+        case COMPONENTS_RED:
+            outputImage = r;
+            break;
+        case COMPONENTS_GREEN:
+            outputImage = g;
+            break;
+        case COMPONENTS_BLUE:
+            outputImage = b;
+            break;
+        case COMPONENTS_ALPHA:
+            outputImage = a;
+            break;
+        default:
+            break;
+    }
+    outputImage->Retain();
+    SafeRelease(r);
+    SafeRelease(g);
+    SafeRelease(b);
+    SafeRelease(a);
+    return outputImage;
+}
+
 void ImageArea::UpdatePreviewPicture()
 {
-    QPixmap scaledImage = image.scaled(this->width(), this->height());
-    setPixmap(scaledImage);
+    if(NULL == image)
+    {
+        return;
+    }
+    DAVA::Image* scaledImage = DAVA::Image::CopyImageRegion(image, image->GetWidth(), image->GetHeight());
+    scaledImage->ResizeImage(this->width(), this->height());
+    DAVA::Image* splittedImage = GetComponentImage(scaledImage);
+    DAVA::SafeRelease(scaledImage);
+    QPixmap scaledPixmap = QPixmap::fromImage(TextureConvertor::FromDavaImage(splittedImage));
+    DAVA::SafeRelease(splittedImage);
+    setPixmap(scaledPixmap);
 }

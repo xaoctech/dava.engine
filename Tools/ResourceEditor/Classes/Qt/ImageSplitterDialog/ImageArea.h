@@ -31,6 +31,7 @@
 #define __QT_IMAGE_AREA_H__
 
 #include <QLabel>
+#include "DAVAEngine.h"
 
 class QMimeData;
 
@@ -39,25 +40,43 @@ class ImageArea : public QLabel
     Q_OBJECT
     
 public:
+    
+    enum eColorCmponents
+    {
+        COMPONENTS_RED = 0,
+        COMPONENTS_GREEN,
+        COMPONENTS_BLUE,
+        COMPONENTS_ALPHA,
+        COMPONENTS_ALL
+        
+    };
+    
     ImageArea(QWidget *parent = 0);
+    ~ImageArea();
+    
+    void SetColorComponent(eColorCmponents value);
+    
+    void SetImage(const DAVA::FilePath& filePath);
     
 public slots:
     void clear();
     void UpdatePreviewPicture();
     
 signals:
+    
     void changed();
     
 protected:
 
     void dragEnterEvent(QDragEnterEvent *event);
-
+    void dropEvent(QDropEvent *event);
+    
+    DAVA::Image* GetComponentImage(DAVA::Image* originalImage);
 
     void ConnectSignals();
     
-private:
-    QLabel *label;
-    QPixmap image;
+    eColorCmponents colorComponent;
+    DAVA::Image* image;
 };
 
 #endif /* defined(__QT_IMAGE_AREA_H__) */
