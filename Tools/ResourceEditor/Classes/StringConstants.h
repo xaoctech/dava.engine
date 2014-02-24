@@ -36,24 +36,26 @@ using namespace DAVA;
 namespace ResourceEditor 
 {
 	// Node names
-	static const String LANDSCAPE_NODE_NAME = "Landscape";
-	static const String LIGHT_NODE_NAME = "Light";
-	static const String SERVICE_NODE_NAME = "Servicenode";
-	static const String CAMERA_NODE_NAME = "Camera";
-	static const String IMPOSTER_NODE_NAME = "Imposter";
-	static const String PARTICLE_EMITTER_NODE_NAME = "Particle Emitter";
-	static const String USER_NODE_NAME = "UserNode";
-	static const String SWITCH_NODE_NAME = "SwitchNode";
-	static const String PARTICLE_EFFECT_NODE_NAME = "Particle Effect";
+	static const DAVA::FastName LANDSCAPE_NODE_NAME = DAVA::FastName("Landscape");
+	static const DAVA::FastName LIGHT_NODE_NAME = DAVA::FastName("Light");
+	static const DAVA::FastName SERVICE_NODE_NAME = DAVA::FastName("Servicenode");
+	static const DAVA::FastName CAMERA_NODE_NAME = DAVA::FastName("Camera");
+	static const DAVA::FastName IMPOSTER_NODE_NAME = DAVA::FastName("Imposter");
+	static const DAVA::FastName PARTICLE_EMITTER_NODE_NAME = DAVA::FastName("Particle Emitter");
+	static const DAVA::FastName USER_NODE_NAME = DAVA::FastName("UserNode");
+	static const DAVA::FastName SWITCH_NODE_NAME = DAVA::FastName("SwitchNode");
+	static const DAVA::FastName PARTICLE_EFFECT_NODE_NAME = DAVA::FastName("Particle Effect");
 	static const String LAYER_NODE_NAME = "Layer";
-	static const String ENTITY_NAME = "Entity";
+	static const DAVA::FastName ENTITY_NAME = DAVA::FastName("Entity");
 
 	// Base node names
 	static const String EDITOR_BASE = "editor.";
 	static const String EDITOR_MAIN_CAMERA = "editor.main-camera";
-	static const String EDITOR_DEBUG_CAMERA = "editor.debug-camera";
+	static const DAVA::FastName EDITOR_DEBUG_CAMERA = DAVA::FastName("editor.debug-camera");
 	static const String EDITOR_ARROWS_NODE = "editor.arrows-node";
-	static const String EDITOR_CAMERA_LIGHT = "editor.camera-light";
+	static const DAVA::FastName EDITOR_CAMERA_LIGHT = DAVA::FastName("editor.camera-light");
+    static const DAVA::FastName EDITOR_2D_CAMERA = DAVA::FastName("editor.2d-camera");
+    static const DAVA::FastName EDITOR_SPRITE = DAVA::FastName("editor.sprite");
 	
 	// Headers
 	static const WideString CREATE_NODE_LANDSCAPE = L"createnode.landscape";
@@ -80,7 +82,7 @@ namespace ResourceEditor
 	
 	//settings properties names
 	static const char* SETTINGS_3D_DATA_SOURCEPATH	=	"3dDataSourcePath";
-	static const char* SETTINGS_PROJECT_PATH =			"ProjectPath";
+	static const char* SETTINGS_PROJECT_PATH =			"LastProjectPath";
 	static const char* SETTINGS_CAMERA_SPEED_INDEX =	"CameraSpeedIndex";
 	static const char* SETTINGS_CAMERA_SPEED_VALUE =	"CameraSpeedValue";
 	static const char* SETTINGS_SCREEN_WIDTH =			"ScreenWidth";

@@ -73,13 +73,13 @@ RenderTechnique::RenderTechnique(const FastName & _name)
     
 RenderTechnique::~RenderTechnique()
 {
-    size_t size = renderTechniqueArray.size();
+    size_t size = renderTechniquePassArray.size();
     for (size_t rt = 0; rt < size; ++rt)
     {
-        SafeDelete(renderTechniqueArray[rt]);
+        SafeDelete(renderTechniquePassArray[rt]);
     }
     
-    renderTechniqueArray.clear();
+    renderTechniquePassArray.clear();
     nameIndexMap.clear();
 }
     
@@ -91,8 +91,8 @@ void RenderTechnique::AddRenderTechniquePass(const FastName& passName,
     RenderTechniquePass * technique = new RenderTechniquePass(_shaderName,
 															  _uniqueDefines,
 															  _renderState);
-    nameIndexMap.insert(passName, (uint32)renderTechniqueArray.size());
-    renderTechniqueArray.push_back(technique);
+    nameIndexMap.insert(passName, (uint32)renderTechniquePassArray.size());
+    renderTechniquePassArray.push_back(technique);
 }
 
 bool RenderTechniqueSingleton::LoadRenderTechniqueFromYamlNode(const YamlNode * rootNode, RenderTechnique * targetTechnique)
@@ -202,16 +202,17 @@ RenderTechnique * RenderTechniqueSingleton::CreateTechniqueByName(const FastName
 		}
         Logger::Debug("Load render technique: %s", renderTechniquePathname.GetRelativePathname().c_str());
 		YamlNode * rootNode = parser->GetRootNode();
-        
-        renderTechnique = new RenderTechnique(renderTechniquePathInFastName);
-        LoadRenderTechniqueFromYamlNode(rootNode, renderTechnique);
-        renderTechniqueMap.insert(renderTechniquePathInFastName, renderTechnique);
-        
 		if (!rootNode)
 		{
 			SafeRelease(parser);
 			return 0;
 		}
+        
+        renderTechnique = new RenderTechnique(renderTechniquePathInFastName);
+        LoadRenderTechniqueFromYamlNode(rootNode, renderTechnique);
+        renderTechniqueMap.insert(renderTechniquePathInFastName, renderTechnique);
+     
+        SafeRelease(parser);
     }
 	//else
     //{
@@ -223,11 +224,11 @@ RenderTechnique * RenderTechniqueSingleton::CreateTechniqueByName(const FastName
     
 void RenderTechniqueSingleton::ReleaseRenderTechnique(RenderTechnique * renderTechnique)
 {
-    SafeRelease(renderTechnique);
+    renderTechnique->Release();
     if (renderTechnique->GetRetainCount() == 1)
     {
-        SafeRelease(renderTechnique);
         renderTechniqueMap.erase(renderTechnique->GetName());
+        renderTechnique->Release();
     }
 }
 

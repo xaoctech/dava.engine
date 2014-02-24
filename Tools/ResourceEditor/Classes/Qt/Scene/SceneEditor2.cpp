@@ -39,7 +39,7 @@
 #include "Commands2/TilemaskEditorCommands.h"
 #include "Commands2/RulerToolActions.h"
 #include "Commands2/LandscapeEditorDrawSystemActions.h"
-
+#include "Project/ProjectManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
 #include "Scene/FogSettingsChangedReceiver.h"
@@ -125,6 +125,13 @@ SceneEditor2::SceneEditor2()
 	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT);
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
+
+	//setup fog for scene
+	DAVA::Color fogColor = SettingsManager::Instance()->GetValue("DefaultFogColor", SettingsManager::DEFAULT).AsColor();
+	DAVA::float32 fogDensity = SettingsManager::Instance()->GetValue("DefaultFogDensity", SettingsManager::DEFAULT).AsFloat();
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
+	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
+
 
 	SceneSignals::Instance()->EmitOpened(this);
 
@@ -241,7 +248,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 {
 	SceneExporter exporter;
 	
-	FilePath projectPath( SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	FilePath projectPath(ProjectManager::Instance()->CurProjectPath().toStdString());
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
@@ -441,8 +448,12 @@ void SceneEditor2::Draw()
 
 		materialSystem->Draw();
 	}
-
+ 
+    //VI: need to call Setup2DDrawing in order to draw 2d to render targets correctly
+    Setup2DDrawing();
 	tilemaskEditorSystem->Draw();
+    //VI: restore 3d camera state
+    Setup3DDrawing();
 
 	if(isHUDVisible)
 	{
@@ -454,7 +465,6 @@ void SceneEditor2::Draw()
 		hoodSystem->Draw();
 		textDrawSystem->Draw();
 	}
-    
 }
 
 void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
@@ -562,7 +572,7 @@ DAVA::ShadowPassBlendMode::eBlend SceneEditor2::GetShadowBlendMode() const
 {
 	if(GetRenderSystem())
 	{
-		GetRenderSystem()->GetShadowBlendMode();
+		return GetRenderSystem()->GetShadowBlendMode();
 	}
 
 	return DAVA::ShadowPassBlendMode::MODE_BLEND_COUNT;
@@ -724,6 +734,12 @@ void SceneEditor2::RemoveSystems()
 		RemoveSystem(collisionSystem);
 		SafeDelete(collisionSystem);
 	}
+
+    if(materialSystem)
+    {
+        RemoveSystem(materialSystem);
+        SafeDelete(materialSystem);
+    }
 	
 }
 
@@ -735,4 +751,18 @@ void SceneEditor2::MarkAsChanged()
 		SceneSignals::Instance()->EmitModifyStatusChanged(this, wasChanged);
 	}
 }
+
+void SceneEditor2::Setup2DDrawing()
+{
+    RenderManager::Instance()->Setup2DMatrices();
+}
+
+void SceneEditor2::Setup3DDrawing()
+{
+    if (currentCamera)
+    {
+        currentCamera->SetupDynamicParameters();
+    }
+}
+
 

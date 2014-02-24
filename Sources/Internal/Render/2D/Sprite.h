@@ -53,6 +53,7 @@ enum eSpriteModification
 	ESM_VFLIP = 1<<1
 };
 
+class Shader;
 class Texture;
 
 /**
@@ -65,13 +66,14 @@ class Texture;
 class Sprite : public BaseObject
 {
 public:
-	struct DrawState
+	class DrawState
 	{
-		DrawState()
-		{
-			Reset();
-		}
-
+        friend class Sprite;
+        
+    public:
+    
+		DrawState();
+        
 		Vector2 position;
 		Vector2 pivotPoint;
 		Vector2 scale;
@@ -85,16 +87,41 @@ public:
 
 		inline void Reset();
 		inline void SetPosition(float32 x, float32 y);
+        inline void SetPosition(const Vector2 &drawPos);
 		inline void SetPivotPoint(float32 x, float32 y);
 		inline void SetScale(float32 x, float32 y);
+        inline void SetScaleSize(float32 x, float32 y,
+                                float32 width, float32 height);
 		inline void SetAngle(float32 a);
 		inline void SetFrame(uint32 frame);
 		inline void SetFlags(uint32 flags);
 		inline void SetPerPixelAccuracyUsage(bool needToUse);
 		void BuildStateFromParentAndLocal(const Sprite::DrawState &parentState, const Sprite::DrawState &localState);
+        
+        //NOTE: be careful: this method doesn't retain shader.
+        void SetShader(Shader* _shader);
+        
+        inline Shader* GetShader() const
+        {
+            return shader;
+        }
+        
+        //NOTE: be careful: this method doesn't retain render state.
+        void SetRenderState(UniqueHandle _renderState);
+        
+        inline UniqueHandle GetRenderState()
+        {
+            return renderState;
+        }
+        
+    private:
+    
+        Shader* shader;
+        UniqueHandle renderState;
+
 	};
 
-
+    friend class DrawState;
 
 	enum eSpriteType
 	{
@@ -163,9 +190,9 @@ public:
 
 	void InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded = false, const FilePath &spriteName = FilePath());
 
-    static Sprite* CreateFromImage(const Image* image);
-    static Sprite* CreateFromPNG(const FilePath& path);
-    static Sprite* CreateFromPNG(const uint8* data, uint32 size);
+    static Sprite* CreateFromImage(const Image* image, bool contentScaleIncluded = false);
+    static Sprite* CreateFromPNG(const FilePath& path, bool contentScaleIncluded = false);
+    static Sprite* CreateFromPNG(const uint8* data, uint32 size, bool contentScaleIncluded = false);
 
 	/*
 	 \brief Function to prepare sprite tiling. Shifts texture coordinates by approximately 1 pixel to the center. Tiled sprites can be drawn using scale and there will be no empty pixels between them.
@@ -190,47 +217,47 @@ public:
 
 	const Vector2 &GetDefaultPivotPoint() const;
 
-	void SetFrame(int32 frm);
+	//void SetFrame(int32 frm);
 
 	void SetDefaultPivotPoint(float32 x, float32 y);
 	void SetDefaultPivotPoint(const Vector2 &newPivotPoint);
 
-	void SetPivotPoint(float32 x, float32 y);
-	void SetPivotPoint(const Vector2 &newPivotPoint);
+	//void SetPivotPoint(float32 x, float32 y);
+	//void SetPivotPoint(const Vector2 &newPivotPoint);
 
-	void SetPosition(float32 x, float32 y);
-	void SetPosition(const Vector2 &drawPos);
+	//void SetPosition(float32 x, float32 y);
+	//void SetPosition(const Vector2 &drawPos);
 
-	void SetAngle(float32 angleInRadians);
+	//void SetAngle(float32 angleInRadians);
 
-	void SetScale(float32 xScale, float32 yScale);
-	void SetScale(const Vector2 &newScale);
+	//void SetScale(float32 xScale, float32 yScale);
+	//void SetScale(const Vector2 &newScale);
 
-	void SetScaleSize(float32 width, float32 height);//scale size overrides standart scale
-	void SetScaleSize(const Vector2 &drawSize);
+	//void SetScaleSize(float32 width, float32 height);//scale size overrides standart scale
+	//void SetScaleSize(const Vector2 &drawSize);
 
 	void SetModification(int32 modif);
 
-	void ResetPivotPoint();
+	//void ResetPivotPoint();
 
-	void ResetAngle();
+	//void ResetAngle();
 	void ResetModification();
-	void ResetScale();
+	//void ResetScale();
 	void Reset();//Reset do not resets the pivot point
 
 	void BeginBatching();
 	void EndBatching();
 
-	void Draw();
+	//void Draw();
 	void Draw(DrawState * state);
 	/**
 	 \brief	Draw sprite by the 4 verticies.
 		The vertices sequence is (xLeft,yTop), (xRight,yTop), (xLeft,yBottom), (xRight,yBottom)
 	 \param v poiterto the array of the four Vector2 objects.
 	 */
-	void DrawPoints(Vector2 *verticies);
+	void DrawPoints(Vector2 *verticies, DrawState* drawState);
 
-	void DrawPoints(Vector2 *verticies, Vector2 *textureCoordinates);
+	void DrawPoints(Vector2 *verticies, Vector2 *textureCoordinates, DrawState* drawState);
 
 	inline int32 GetResourceSizeIndex() const;
 
@@ -338,6 +365,7 @@ protected:
 	Polygon2 * clipPolygon;
 
 	void PrepareForNewSize();
+    void SetFrame(int32 frm);
 
 	Vector2	size;
 //	Vector2 originalSize;
@@ -346,13 +374,13 @@ protected:
 	int32	frame;
 
 	Vector2	defaultPivotPoint;
-	Vector2	pivotPoint;
+	//Vector2	pivotPoint;
 
-	Vector2	drawCoord;
+	//Vector2	drawCoord;
 
-	float32	rotateAngle;
+	//float32	rotateAngle;
 
-	Vector2	scale;
+	//Vector2	scale;
 
 	bool isPreparedForTiling;
 
@@ -396,7 +424,7 @@ inline void Sprite::DrawState::Reset()
 	scale.x = 1.0f;
 	scale.y = 1.0f;
 	angle = 0.0f;
-	frame = 0;
+	//frame = 0;
 	flags = 0;
 	usePerPixelAccuracy = false;
 	precomputedAngle = 0.0f;
@@ -410,6 +438,11 @@ inline void Sprite::DrawState::SetPosition(float32 x, float32 y)
 	position.y = y;
 }
 
+inline void Sprite::DrawState::SetPosition(const Vector2 &drawPos)
+{
+    position = drawPos;
+}
+
 inline void Sprite::DrawState::SetPivotPoint(float32 x, float32 y)
 {
 	pivotPoint.x = x;
@@ -421,6 +454,13 @@ inline void Sprite::DrawState::SetScale(float32 x, float32 y)
 	scale.x = x;
 	scale.y = y;
 }
+
+inline void Sprite::DrawState::SetScaleSize(float32 x, float32 y, float32 width, float32 height)
+{
+    scale.x = x / width;
+	scale.y = y / height;
+}
+
 
 inline void Sprite::DrawState::SetAngle(float32 a)
 {
@@ -441,7 +481,6 @@ inline void Sprite::DrawState::SetPerPixelAccuracyUsage(bool needToUse)
 {
 	usePerPixelAccuracy = needToUse;
 }
-
 
 inline int32 Sprite::GetResourceSizeIndex() const
 {

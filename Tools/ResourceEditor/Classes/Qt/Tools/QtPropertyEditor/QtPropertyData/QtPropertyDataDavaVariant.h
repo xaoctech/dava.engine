@@ -91,6 +91,7 @@ protected:
     
     QString openDialogFilter;
     QString defaultOpenDialogPath;
+    bool isSettingMeFromChilds;
 
 	void InitFlags();
 	void ChildsCreate();
@@ -100,6 +101,7 @@ protected:
 	void SetColorIcon();
 
 	QVariant FromKeyedArchive(DAVA::KeyedArchive *archive) const;
+    QVariant FromFloat(DAVA::float32 value) const;
 	QVariant FromVector4(const DAVA::Vector4 &vector) const;
 	QVariant FromVector3(const DAVA::Vector3 &vector) const;
 	QVariant FromVector2(const DAVA::Vector2 &vector) const;
@@ -110,6 +112,7 @@ protected:
 	QVariant FromAABBox3(const DAVA::AABBox3 &aabbox) const;
 
 	void ToKeyedArchive(const QVariant &value);
+    void ToFloat(const QVariant &value);
 	void ToVector4(const QVariant &value);
 	void ToVector3(const QVariant &value);
 	void ToVector2(const QVariant &value);
@@ -120,8 +123,8 @@ protected:
 	void ToAABBox3(const QVariant &value);
 	int ParseFloatList(const QString &str, int maxCount, DAVA::float32 *dest);
 
-	void SubValueAdd(const QString &key, const QVariant &value);
-	void SubValueSet(const QString &key, const QVariant &value);
+	void SubValueAdd(const QString &key, const DAVA::VariantType &subvalue);
+	void SubValueSet(const QString &key, const QVariant &subvalue);
 	QVariant SubValueGet(const QString &key);
 
 	QWidget* CreateAllowedValuesEditor(QWidget *parent) const;
@@ -129,11 +132,11 @@ protected:
 	void ApplyAllowedValueFromEditor(QWidget *editorWidget);
 };
 
-class QtPropertyDataDavaVariantSubValue : public QtPropertyData
+class QtPropertyDataDavaVariantSubValue : public QtPropertyDataDavaVariant
 {
 public:
-	QtPropertyDataDavaVariantSubValue(QtPropertyDataDavaVariant *_parentVariant, const QVariant &value)
-		: QtPropertyData(value)
+	QtPropertyDataDavaVariantSubValue(QtPropertyDataDavaVariant *_parentVariant, const DAVA::VariantType &subvalue)
+		: QtPropertyDataDavaVariant(subvalue)
 		, parentVariant(_parentVariant)
 		, trackParent(true)
 	{ }
@@ -143,7 +146,7 @@ public:
 
 	virtual void SetValueInternal(const QVariant &value)
 	{
-		QtPropertyData::SetValueInternal(value);
+		QtPropertyDataDavaVariant::SetValueInternal(value);
 		if(NULL != parentVariant && trackParent)
 		{
 			parentVariant->MeSetFromChilds();

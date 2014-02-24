@@ -32,7 +32,7 @@
 #include "Debug/DVAssert.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/RenderComponent.h"
-#include "Particles/ParticleEmitter.h"
+#include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Platform/SystemTimer.h"
 #include "Core/PerformanceSettings.h"
@@ -122,6 +122,22 @@ void LodSystem::PorcessEntityRecursive(Entity * entity, float32 psLodOffsetSq, f
 	}
 }
 
+void LodSystem::UpdateEntitiesAfterLoad(Entity * parentEntity)
+{
+	int32 size = parentEntity->GetChildrenCount();
+	for(int32 i = 0; i < size; ++i)
+	{
+		Entity * entity = parentEntity->GetChild(i);
+		LodComponent * lod = static_cast<LodComponent*>(entity->GetComponent(Component::LOD_COMPONENT));
+		if(lod && lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
+		{
+			UpdateEntityAfterLoad(entity);
+			continue; //we assume there is only one lod in hoerarchy
+		}
+		UpdateEntitiesAfterLoad(entity);
+	}
+}
+
 void LodSystem::AddEntity(Entity * entity)
 {
 	entities.push_back(entity);
@@ -152,35 +168,33 @@ void LodSystem::UpdateEntityAfterLoad(Entity * entity)
     //this check is left here intentionally to protect from second call to UpdateEntityAfterLoad
     if(!(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD))
         return;
-        
-	for (Vector<LodComponent::LodData>::iterator it = lod->lodLayers.begin(); it != lod->lodLayers.end(); ++it)
-	{
-		LodComponent::LodData & ld = *it;
-		size_t size = ld.indexes.size();
-		for (size_t idx = 0; idx < size; ++idx)
-		{
-			int32 desiredIndex = ld.indexes[idx];
-			if(desiredIndex < entity->GetChildrenCount())
-			{
-				Entity * childEntity = entity->GetChild(desiredIndex);
-				ld.nodes.push_back(childEntity);
-				{
-					childEntity->SetLodVisible(false);
-				}
-			}
-		}
-	}
+
+    for (Vector<LodComponent::LodData>::iterator it = lod->lodLayers.begin(); it != lod->lodLayers.end(); ++it)
+    {
+        LodComponent::LodData & ld = *it;
+        size_t size = ld.indexes.size();
+        for (size_t idx = 0; idx < size; ++idx)
+        {
+            int32 desiredIndex = ld.indexes[idx];
+            if(desiredIndex < entity->GetChildrenCount())
+            {
+                Entity * childEntity = entity->GetChild(desiredIndex);
+                ld.nodes.push_back(childEntity);
+            }
+        }
+    }
 
 	lod->currentLod = LodComponent::INVALID_LOD_LAYER;
-	ParticleEmitter * emmiter = GetEmitter(entity);
-	if (emmiter)
+	ParticleEffectComponent * effect = GetEffectComponent(entity);
+	if (effect)
 	{
 		lod->currentLod = LodComponent::MAX_LOD_LAYERS-1;
-		emmiter->SetDesiredLodLevel(lod->currentLod);
+		effect->SetDesiredLodLevel(lod->currentLod);
 	}
 	else if(lod->lodLayers.size() > 0)
 	{
-		lod->SetCurrentLod(lod->lodLayers.size()-1);
+        lod->currentLod = lod->lodLayers.size()-1;
+        SetEntityLod(entity, lod->currentLod);
 	}
     
     lod->flags &= ~LodComponent::NEED_UPDATE_AFTER_LOAD;
@@ -208,14 +222,13 @@ void LodSystem::UpdatePartialUpdateIndices()
 
 void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq, Camera* camera)
 {
-	//LodComponent * lodComponent = GetLodComponent(entity);
 	int32 oldLod = lodComponent->currentLod;
 	if(!RecheckLod(entity, lodComponent, psLodOffsetSq, psLodMultSq, camera))
 	{
-		if (oldLod != LodComponent::INVALID_LOD_LAYER)
-		{
-			lodComponent->SetLayerVisibility(oldLod, false);
-		}
+//		if (oldLod != LodComponent::INVALID_LOD_LAYER)
+//		{
+//			lodComponent->SetLayerVisibility(oldLod, false);
+//		}
 
 		lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
 		return;
@@ -223,49 +236,59 @@ void LodSystem::UpdateLod(Entity * entity, LodComponent* lodComponent, float32 p
 
 	if (oldLod != lodComponent->currentLod) 
 	{
-		ParticleEmitter * emmiter = GetEmitter(entity);
-		if (emmiter)
-		{
-			emmiter->SetDesiredLodLevel(lodComponent->currentLod);
+		ParticleEffectComponent * effect = GetEffectComponent(entity);
+		if (effect)
+		{			
+			effect->SetDesiredLodLevel(lodComponent->currentLod);
 			return;
 		}
-		
-		if (oldLod != LodComponent::INVALID_LOD_LAYER)
-		{
-			lodComponent->SetLayerVisibility(oldLod, false);
-		}
-
-		lodComponent->SetLayerVisibility(lodComponent->currentLod, true);
+        
+        int32 layerNum = lodComponent->currentLod;
+        DVASSERT(0 <= layerNum && layerNum < LodComponent::MAX_LOD_LAYERS);
+        
+        if(lodComponent->IsRecursiveUpdate())
+        {
+            SetEntityLodRecursive(entity, layerNum);
+        }
+        else
+        {
+            SetEntityLod(entity, layerNum);
+        }
 	}
+}
+    
+void LodSystem::SetEntityLodRecursive(Entity * entity, int32 currentLod)
+{
+    RenderObject * ro = GetRenderObject(entity);
+    if(ro)
+    {
+        ro->SetLodIndex(currentLod);
+    }
+    
+    int32 count = entity->GetChildrenCount();
+    for(int32 i = 0; i < count; ++i)
+    {
+        SetEntityLodRecursive(entity->GetChild(i), currentLod);
+    }
+    
 }
 
 bool LodSystem::RecheckLod(Entity * entity, LodComponent* lodComponent, float32 psLodOffsetSq, float32 psLodMultSq, Camera* camera)
 {
-	//LodComponent * lodComponent = GetLodComponent(entity);
-	bool usePsSettings = (GetEmitter(entity) != NULL);
+	bool usePsSettings = (GetEffectComponent(entity) != NULL);
 
 	if(LodComponent::INVALID_LOD_LAYER != lodComponent->forceLodLayer) 
 	{
-		if (usePsSettings)
-			lodComponent->currentLod = lodComponent->forceLodLayer;
-		else if(lodComponent->lodLayers.size())
-		{
-			lodComponent->currentLod = Min((int32)lodComponent->lodLayers.size() - 1, lodComponent->forceLodLayer);
-		}
-		else
-		{
-			lodComponent->currentLod = LodComponent::INVALID_LOD_LAYER;
-		}
+		lodComponent->currentLod = lodComponent->forceLodLayer;
 		return true;
 	}
 
-	int32 layersCount = lodComponent->GetLodLayersCount();	
+	int32 layersCount = LodComponent::MAX_LOD_LAYERS;
 	float32 dst = CalculateDistanceToCamera(entity, lodComponent, camera);
 
 	
 	if (usePsSettings)
 	{
-		layersCount = LodComponent::MAX_LOD_LAYERS;
 		if (dst>lodComponent->GetLodLayerFarSquare(0)) //preserv lod 0 from degrade
 			dst = dst*psLodMultSq+psLodOffsetSq;
 	}
@@ -339,6 +362,7 @@ LodSystem::LodMerger::LodMerger(Entity * _toEntity)
 void LodSystem::LodMerger::MergeChildLods()
 {
 	LodComponent * toLod = (LodComponent*)toEntity->GetOrCreateComponent(Component::LOD_COMPONENT);
+    toLod->EnableRecursiveUpdate();
 	
 
 	Vector<Entity*> allLods;
@@ -347,42 +371,35 @@ void LodSystem::LodMerger::MergeChildLods()
 	uint32 count = allLods.size();
 	for(uint32 i = 0; i < count; ++i)
 	{
-		LodComponent * fromLod = GetLodComponent(allLods[i]);
-		int32 fromLodsCount = fromLod->GetMaxLodLayer();
-		for(int32 l = 0; l <= fromLodsCount; ++l)
-		{
-			LodComponent::LodData & fromData = fromLod->lodLayers[l];
-			int32 lodLayerIndex = fromData.layer;
-
-			LodComponent::LodData * toData = 0;
-
-			int32 maxLod = toLod->GetMaxLodLayer();
-			//create loddata if needed
-			if(lodLayerIndex > maxLod)
-			{
-				DVASSERT(maxLod == lodLayerIndex-1);
-
-				toLod->lodLayers.push_back(fromData);
-				toData = &(toLod->lodLayers[lodLayerIndex]);
-				toData->nodes.clear();
-				toData->indexes.clear(); //indeces will not have any sense after lod merge
-
-				toLod->lodLayersArray = fromLod->lodLayersArray;
-			}
-			else
-			{
-				toData = &(toLod->lodLayers[lodLayerIndex]);
-			}
-
-			uint32 nodesToCopy = fromData.nodes.size();
-            toData->nodes.reserve(nodesToCopy);
-			for(uint32 j = 0; j < nodesToCopy; ++j)
-			{
-				toData->nodes.push_back(fromData.nodes[j]); 
-			}
-		}
-
-		allLods[i]->RemoveComponent(Component::LOD_COMPONENT);
+        LodComponent * fromLod = GetLodComponent(allLods[i]);
+        int32 fromLodsCount = fromLod->GetMaxLodLayer();
+        for(int32 l = 0; l <= fromLodsCount; ++l)
+        {
+            LodComponent::LodData & fromData = fromLod->lodLayers[l];
+            int32 lodLayerIndex = fromData.layer;
+            
+            LodComponent::LodData * toData = 0;
+            
+            int32 maxLod = toLod->GetMaxLodLayer();
+            //create loddata if needed
+            if(lodLayerIndex > maxLod)
+            {
+                DVASSERT(maxLod == lodLayerIndex-1);
+                
+                toLod->lodLayers.push_back(fromData);
+                toData = &(toLod->lodLayers[lodLayerIndex]);
+                toData->nodes.clear();
+                toData->indexes.clear(); //indeces will not have any sense after lod merge
+                
+                toLod->lodLayersArray = fromLod->lodLayersArray;
+            }
+            else
+            {
+                toData = &(toLod->lodLayers[lodLayerIndex]);
+            }
+        }
+        
+        allLods[i]->RemoveComponent(Component::LOD_COMPONENT);
 	}
 }
 
@@ -391,8 +408,8 @@ void LodSystem::LodMerger::GetLodComponentsRecursive(Entity * fromEntity, Vector
 	if(fromEntity != toEntity)
 	{
 		LodComponent * lod = GetLodComponent(fromEntity);
-		ParticleEmitter *emitter = GetEmitter(fromEntity);
-		if(lod&&(!emitter)) //as emitters have separate LOD logic
+		ParticleEffectComponent *effect = GetEffectComponent(fromEntity);
+		if(lod&&(!effect)) //as emitters have separate LOD logic
 		{
 			if(lod->flags & LodComponent::NEED_UPDATE_AFTER_LOAD)
 			{

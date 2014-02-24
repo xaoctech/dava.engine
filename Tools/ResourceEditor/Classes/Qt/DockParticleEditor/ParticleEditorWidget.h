@@ -54,10 +54,10 @@ public:
 	
 protected slots:
 	// SceneTree-specific slots.
-	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* effectNode);
-	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::Entity* emitterNode);
-	void OnInnerEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
-	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, bool forceRefresh);
+	void OnEffectSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect);
+	void OnEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect, DAVA::ParticleEmitter* emitter);
+	void OnInnerEmitterSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect, DAVA::ParticleEmitter* emitter);
+	void OnLayerSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleEffectComponent *effect, DAVA::ParticleEmitter* emitter, DAVA::ParticleLayer* layer, bool forceRefresh);
     void OnForceSelectedFromSceneTree(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
 	void OnUpdate();
@@ -103,7 +103,7 @@ private:
 	// Switch editor to the particular mode.
 	void SwitchEditorToEffectMode(SceneEditor2* scene, ParticleEffectComponent* effect);
 	void SwitchEditorToEmitterMode(SceneEditor2* scene, DAVA::ParticleEmitter* emitter);
-	void SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::ParticleLayer* layer);
+	void SwitchEditorToLayerMode(SceneEditor2* scene, DAVA::ParticleEmitter* emitter, DAVA::ParticleLayer* layer);
 	void SwitchEditorToForceMode(SceneEditor2* scene, DAVA::ParticleLayer* layer, DAVA::int32 forceIndex);
 
 	// Reset the editor mode, hide/disconnect appropriate widgets.

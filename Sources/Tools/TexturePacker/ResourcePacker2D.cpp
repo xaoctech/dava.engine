@@ -390,8 +390,8 @@ bool ResourcePacker2D::isRecursiveFlagSet(const Vector<String> & flags)
 
 void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FilePath & outputPath, const Vector<String> & flags)
 {
-	// DF-2961 - Local list for flags command arguments
-	Vector<String> currentCommandFlags = Vector<String>();
+	// Local list for flags command arguments
+	Vector<String> currentCommandFlags = flags;
 
     DVASSERT(inputPath.IsDirectoryPathname() && outputPath.IsDirectoryPathname());
     
@@ -420,7 +420,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	CommandLineParser::Instance()->Clear();
 	List<DefinitionFile *> definitionFileList;
 
-	// DF-2961 - Reset processed flag
+	// Reset processed flag
 	bool flagsProcessed = false;
 	// Find flags and setup them
 	FileList * fileList = new FileList(inputPath);
@@ -437,17 +437,20 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 		}
 	}
 	
-	// DF-2961 - If "flags.txt" do not exist - try to use previous flags command line
+	// If "flags.txt" do not exist - try to use previous flags command line
 	if (!flagsProcessed)
 	{
 		currentFlags = "";
-		if (flags.size() > 0)
+		if (currentCommandFlags.size() > 0)
 		{
-			CommandLineParser::Instance()->SetArguments(flags);
-			currentCommandFlags = flags;
-			for (uint32 k = 0; k < flags.size(); ++k)
+			CommandLineParser::Instance()->SetArguments(currentCommandFlags);
+			for (uint32 k = 0; k < currentCommandFlags.size(); ++k)
 			{
-				currentFlags += " " + flags[k];
+				currentFlags += currentCommandFlags[k];
+				if (k != (currentCommandFlags.size() - 1))
+				{
+					 currentFlags += " ";
+				}
 			}
 		}
 	}
@@ -534,6 +537,12 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			{
 				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
+			
+			Set<String> currentErrors = packer.GetErrors();
+			if (!currentErrors.empty())
+			{
+				errors.insert(currentErrors.begin(), currentErrors.end());
+			}
 		}
 	}	
 
@@ -589,5 +598,9 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	SafeRelease(fileList);
 }
 
+Set<String> ResourcePacker2D::GetErrors()
+{
+	return errors;
+}
 
 };

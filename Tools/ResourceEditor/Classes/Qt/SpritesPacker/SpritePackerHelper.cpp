@@ -31,7 +31,7 @@
 #include "SpritePackerHelper.h"
 #include "SpritesPacker.h"
 #include "Qt/Settings/SettingsManager.h"
-
+#include "Project/ProjectManager.h"
 #include <QtConcurrentRun>
 
 #include "TexturePacker/ResourcePacker2D.h"
@@ -49,7 +49,7 @@ SpritePackerHelper::SpritePackerHelper()
 
 void SpritePackerHelper::UpdateParticleSprites(DAVA::eGPUFamily gpu)
 {
-	FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
     if(projectPath.IsEmpty())
     {
         Logger::Warning("[ParticlesEditorSpritePackerHelper::UpdateParticleSprites] Project path not set.");
@@ -64,7 +64,7 @@ void SpritePackerHelper::UpdateParticleSprites(DAVA::eGPUFamily gpu)
 void SpritePackerHelper::Pack(DAVA::eGPUFamily gpu)
 {
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
-	FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	FilePath projectPath = FilePath(ProjectManager::Instance()->CurProjectPath().toStdString());
 	FilePath inputDir = projectPath + "DataSource/Gfx/Particles/";
 	FilePath outputDir = projectPath + "Data/Gfx/Particles/";
 
@@ -135,12 +135,10 @@ void SpritePackerHelper::EnumerateSpritesForReloading(Scene * scene, Map<String,
 		}
         
 		// All the children of this Scene Node must have Emitter components.
-		int32 emittersCount = curNode->GetChildrenCount();
+		int32 emittersCount = effectComponent->GetEmittersCount();
 		for (int32 i = 0; i < emittersCount; i ++)
 		{
-			Entity* childNode = curNode->GetChild(i);
-			ParticleEmitter * emitter = GetEmitter(childNode);
-			
+			ParticleEmitter * emitter = effectComponent->GetEmitter(i);			
 			EnumerateSpritesForParticleEmitter(emitter, sprites);
 		}
         
@@ -174,21 +172,20 @@ void SpritePackerHelper::EnumerateSpritesForParticleEmitter(ParticleEmitter* emi
 		return;
 	}
 	
-	Vector<ParticleLayer*> & layers = emitter->GetLayers();
-	int32 layersCount = layers.size();
+	int32 layersCount = emitter->layers.size();
 	for (int il = 0; il < layersCount; ++il)
 	{
-		ParticleLayer* curLayer = layers[il];
-		Sprite *sprite = curLayer->GetSprite();
+		ParticleLayer* curLayer = emitter->layers[il];
+		Sprite *sprite = curLayer->sprite;
 		if (sprite)
 		{
 			sprites[sprite->GetRelativePathname().GetAbsolutePathname()] = sprite;
 		}
 		
 		// Superemitter layers might have inner emitter with its own sprites.
-		if (curLayer->GetInnerEmitter())
+		if (curLayer->innerEmitter)
 		{
-			EnumerateSpritesForParticleEmitter(curLayer->GetInnerEmitter(), sprites);
+			EnumerateSpritesForParticleEmitter(curLayer->innerEmitter, sprites);
 		}
 	}
 }

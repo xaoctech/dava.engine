@@ -110,6 +110,14 @@ const char* PropertyNames::SCROLL_CONTENT_SIZE_Y = "ContentSizeY";
 const char* PropertyNames::UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
 const char* PropertyNames::UISPINNER_NEXT_BUTTON_TEXT = "NextButtonText";
 
+// UI Partice effect properties and invokable methods.
+const char* PropertyNames::UIPARTICLES_AUTOSTART_PROPERTY = "Autostart";
+const char* PropertyNames::UIPARTICLES_EFFECT_PATH_PROPERTY = "EffectPath";
+
+const char* PropertyNames::UIPARTICLES_START_METHOD_NAME = "Start";
+const char* PropertyNames::UIPARTICLES_STOP_METHOD_NAME = "Stop";
+const char* PropertyNames::UIPARTICLES_RELOAD_METHOD_NAME = "Reload";
+
 // Custom Control properties.
 const char* PropertyNames::CUSTOM_CONTROL_NAME = "CustomControlName";
 

@@ -176,6 +176,11 @@ void PolygonGroupWithMaterial::Draw()
     
 }
 
+ShadowVolume * PolygonGroupWithMaterial::CreateShadow()
+{
+	return NULL;
+}
+
 
 
 MeshInstanceNode::MeshInstanceNode()
@@ -727,7 +732,7 @@ void MeshInstanceNode::CreateDynamicShadowNode()
 
 void MeshInstanceNode::DeleteDynamicShadowNode()
 {
-	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName("dynamicshadow.shadowvolume");
+	ShadowVolumeNode * shadowVolume = (ShadowVolumeNode*)FindByName(FastName("dynamicshadow.shadowvolume"));
 	RemoveNode(shadowVolume);
 }
 

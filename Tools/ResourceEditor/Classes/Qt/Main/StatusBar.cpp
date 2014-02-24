@@ -33,6 +33,7 @@
 #include "Scene/EntityGroup.h"
 #include "Scene/SceneEditor2.h"
 #include "Scene/System/SelectionSystem.h"
+#include "Commands2/Command2.h"
 
 #include <QLabel>
 #include <QLayout>
@@ -107,6 +108,29 @@ void StatusBar::SceneActivated( SceneEditor2 *scene )
 void StatusBar::SceneSelectionChanged( SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected )
 {
 	UpdateDistanceToCamera();
+    UpdateSelectionBoxSize(scene);
+}
+
+void StatusBar::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
+{
+    int id = command->GetId();
+    if(id == CMDID_BATCH)
+    {
+		CommandBatch *batch = (CommandBatch *)command;
+		Command2 *firstCommand = batch->GetCommand(0);
+		if(firstCommand && (firstCommand->GetId() == CMDID_TRANSFORM))
+		{
+            UpdateSelectionBoxSize(scene);
+		}
+    }
+    else if(id == CMDID_TRANSFORM)
+    {
+        UpdateSelectionBoxSize(scene);
+    }
+}
+
+void StatusBar::StructureChanged(SceneEditor2 *scene, DAVA::Entity *parent)
+{
     UpdateSelectionBoxSize(scene);
 }
 
