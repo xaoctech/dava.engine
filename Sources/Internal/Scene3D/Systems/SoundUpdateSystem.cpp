@@ -35,8 +35,6 @@
 #include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/FMODSoundEvent.h"
-#include "Sound/FMODSoundSystem.h"
 
 namespace DAVA
 {
@@ -86,4 +84,16 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 	}
 }
     
+void SoundUpdateSystem::Process(float32 timeElapsed)
+{
+    Camera * activeCamera = GetScene()->GetCurrentCamera();
+
+    if(activeCamera)
+    {
+        SoundSystem * ss = SoundSystem::Instance();
+//        ss->SetListenerPosition(activeCamera->GetPosition());
+//        ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
+    }
+}
+
 };

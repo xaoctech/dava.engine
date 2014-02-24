@@ -26,8 +26,10 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifndef __DAVAENGINE_FMOD_SOUND_H__
-#define __DAVAENGINE_FMOD_SOUND_H__
+#ifdef DAVA_FMOD
+
+#ifndef __DAVAENGINE_FMOD_FILE_SOUND_EVENT_H__
+#define __DAVAENGINE_FMOD_FILE_SOUND_EVENT_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -36,6 +38,7 @@
 #include "Base/EventDispatcher.h"
 #include "Sound/SoundEvent.h"
 #include "Platform/Mutex.h"
+#include "Sound/FMODUtils.h"
 
 namespace FMOD
 {
@@ -47,10 +50,11 @@ namespace FMOD
 namespace DAVA
 {
 
-class FMODSoundSystem;
-class FMODSound : public SoundEvent
+class FMODFileSoundEvent : public SoundEvent
 {
 public:
+    static FMOD_RESULT F_CALLBACK SoundInstanceEndPlaying(FMOD_CHANNEL *channel, FMOD_CHANNEL_CALLBACKTYPE type, void *commanddata1, void *commanddata2);
+
 	virtual int32 Release();
 
 	virtual void SetVolume(float32 volume);
@@ -79,10 +83,10 @@ public:
     void PerformCallback(FMOD::Channel * instance);
 
 protected:
-	FMODSound(const FilePath & fileName, uint32 flags, int32 priority);
-	virtual ~FMODSound();
+	FMODFileSoundEvent(const FilePath & fileName, uint32 flags, int32 priority);
+	virtual ~FMODFileSoundEvent();
 
-	static FMODSound * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
+	static FMODFileSoundEvent * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
 
     static Mutex soundMapMutex;
 
@@ -97,9 +101,11 @@ protected:
 
     uint8 * soundData;
 
-friend class FMODSoundSystem;
+friend class SoundSystem;
 };
 
 };
 
-#endif //__DAVAENGINE_SOUND_H__
+#endif //__DAVAENGINE_FMOD_FILE_SOUND_EVENT_H__
+
+#endif //DAVA_FMOD
