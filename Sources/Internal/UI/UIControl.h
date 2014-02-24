@@ -549,9 +549,23 @@ public:
 	 \param[in] isEnabled is control should process inputs?
 	 \param[in] hierarchic use true if you want to all control children change input ability.
 	 */
-
 	virtual void SetInputEnabled(bool isEnabled, bool hierarchic = true);
-	
+
+    /**
+	 \brief Returns control focusing ability.
+     Be ware! Base control can be focused by default.
+	 \returns true if control can be focused.
+	 */
+	virtual bool GetFocusEnabled() const;
+    
+	/**
+	 \brief Sets contol focusing ability.
+     If focus possibility is disabled control can't be focused. Disable focusing for scroll 
+     controls (like UIScrollView, UIScrollList, etc.)
+	 \param[in] isEnabled is control can be focused?
+	 */
+	virtual void SetFocusEnabled(bool isEnabled);
+
 	/**
 	 \brief Returns control enabling state.
 		Disabled control don't process any inputs. But allows input processing for their children.
@@ -1289,6 +1303,7 @@ private:
 	String	name;
 	int32	tag;
 	bool inputEnabled : 1;
+	bool focusEnabled : 1;
 
 
 	void RecalculateAlignProperties();
