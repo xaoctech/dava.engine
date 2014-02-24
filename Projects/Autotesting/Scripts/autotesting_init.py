@@ -104,7 +104,7 @@ copy_file(currentDir, luaScriptDestFolder, "autotesting_api.lua")
 copy_file(currentDir, luaScriptDestFolder, "coxpcall.lua")
 
 copy_file(autotestingSrcFolder, autotestingDestFolder, "dbConfig.yaml")
-copy_file(scriptsSrcFolder, autotestingDestFolder, "id.yaml")
+copy_file(".", autotestingDestFolder, "id.yaml")
 
 os.chdir(projectDir)
 
