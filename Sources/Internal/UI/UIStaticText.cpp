@@ -54,7 +54,7 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	shadowBg = new UIControlBackground();
 	textBg = new UIControlBackground();
 	textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-	textBlock->SetAlign(ALIGN_TOP|ALIGN_LEFT);
+    SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 }
 
 UIStaticText::~UIStaticText()
@@ -243,6 +243,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 	const YamlNode * textColorNode = node->Get("textcolor");
 	const YamlNode * shadowColorNode = node->Get("shadowcolor");
 	const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+	const YamlNode * textAlignNode = node->Get("textalign");
 
 	if (fontNode)
 	{
@@ -280,8 +281,10 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 		SetShadowOffset(shadowOffsetNode->AsVector2());
 	}
 
-	const YamlNode * alignNode = node->Get("textalign");
-	SetTextAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
+    if (textAlignNode)
+    {
+        SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
+    }
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
@@ -341,12 +344,18 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	{
         node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
 	}
-    
+
 	// Align
-	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+    if (baseControl->GetTextAlign() != this->GetTextAlign())
+    {
+        node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+    }
 
 	// Draw type. Must be overriden for UITextControls.
-	node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
+    if (baseControl->GetBackground()->GetDrawType() != this->GetBackground()->GetDrawType())
+    {
+        node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
+    }
 
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);
