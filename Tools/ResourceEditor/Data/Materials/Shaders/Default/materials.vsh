@@ -44,7 +44,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -76,6 +76,10 @@ uniform mediump vec2 uvScale;
 uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
 uniform mat4 projMatrix;
+uniform float cutDistance;
+uniform lowp vec3 treeLeafColorMul;
+uniform lowp float treeLeafOcclusionOffset;
+uniform lowp float treeLeafOcclusionMul;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -150,16 +154,16 @@ void main()
 
 #if defined (CUT_LEAF)
     vec3 position;
-    vec4 tangentInCameraSpace = modelViewMatrix * vec4(inTangent, 1);
+    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inTangent, 1);
     if (tangentInCameraSpace.z < -cutDistance)
     {
-        position = /*worldScale * vec3(0,0,0) +*/ worldTranslate;
+        position = /*worldScale * vec3(0,0,0) +*/ worldViewTranslate;
     }
     else
     {
-        position = worldScale * (inPosition.xyz - inTangent) + worldTranslate;
+        position = worldScale * (inPosition.xyz - inTangent) + worldViewTranslate;
     }
-    gl_Position = projectionMatrix * vec4(position, inPosition.w) + modelViewProjectionMatrix * vec4(inTangent, 0.0);
+    gl_Position = projMatrix * vec4(position, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 #else
     //mat4 mvp = worldMatrix * viewMatrix * projMatrix;
     //mat4 mvp = projMatrix * worldViewMatrix;
