@@ -465,7 +465,7 @@ void CommandAddParticleEmitterLayer::Redo()
 	createdLayer->startTime = 0;
     createdLayer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
 	createdLayer->life = new PropertyLineValue<float32>(1.0f);
-    createdLayer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, selectedEmitter);
+    createdLayer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME.c_str(), selectedEmitter);
 
 	createdLayer->loopEndTime = selectedEmitter->lifeTime;	
     selectedEmitter->AddLayer(createdLayer);	
