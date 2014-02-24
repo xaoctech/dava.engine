@@ -1295,7 +1295,6 @@ protected:
     void UnregisterInputProcessor();
     void UnregisterInputProcessors(int32 processorsCount);
 
-
     void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
 

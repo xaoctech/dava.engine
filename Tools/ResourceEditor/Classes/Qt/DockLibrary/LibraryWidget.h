@@ -32,11 +32,11 @@
 #define __LIBRARY_WIDGET_H__
 
 #include <QWidget>
+#include <QTreeView>
 #include <QItemSelection>
 
 class QVBoxLayout;
 class QToolBar;
-class QTreeView;
 class QAction;
 class QLineEdit;
 class QComboBox;
@@ -46,6 +46,27 @@ class QSpacerItem;
 
 class LibraryFileSystemModel;
 class LibraryFilteringModel;
+
+//TreeView with custom signals
+class LibraryTreeView : public QTreeView
+{
+    Q_OBJECT
+    
+public:
+    explicit LibraryTreeView(QWidget *parent = 0): QTreeView(parent) {};
+    
+signals:
+    void DragStarted();
+    
+protected:
+    
+    virtual void startDrag(Qt::DropActions supportedActions)
+    {
+        emit DragStarted();
+        QTreeView::startDrag(supportedActions);
+    }
+};
+
 class LibraryWidget : public QWidget
 {
 	Q_OBJECT
@@ -81,12 +102,12 @@ protected slots:
     void OnAddModel();
     void OnEditModel();
     void OnConvertDae();
-    void OnConvertGeometry();
     void OnEditTextureDescriptor();
     void OnRevealAtFolder();
 
 //    void OnModelLoaded();
     
+    void OnTreeDragStarted();
 private:
     
     void SetupFileTypes();

@@ -264,7 +264,14 @@ void VariantType::SetKeyedArchive(KeyedArchive *archive)
 {
     ReleasePointer();
     type = TYPE_KEYED_ARCHIVE;
-    pointerValue = new KeyedArchive(*archive);
+    if(archive)
+    {
+        pointerValue = new KeyedArchive(*archive);
+    }
+    else
+    {
+        pointerValue = new KeyedArchive();
+    }
 }
     
 void VariantType::SetInt64(const int64 & value)

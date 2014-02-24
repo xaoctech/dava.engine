@@ -28,13 +28,29 @@
 
 
 #include <QSet>
+#include <QPainter>
+#include <QImage>
+#include <QDebug>
 
 #include "MaterialItem.h"
 #include "MaterialModel.h"
+#include "Main/QtUtils.h"
+#include "TextureBrowser/TextureCache.h"
+
+namespace
+{
+    
+    const int PREVIEW_HEIGHT = 24;
+
+}
 
 MaterialItem::MaterialItem(DAVA::NMaterial * _material)
     : QStandardItem()
+    , QObject( NULL )
     , material(_material)
+    , isPreviewRequested(false)
+    , lodIndex(-1)
+    , switchIndex(-1)
 {
 	DVASSERT(material);
 
@@ -63,6 +79,8 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 			setDropEnabled(false);
 			break;
 	}
+
+    setColumnCount(3);
 }
 
 MaterialItem::~MaterialItem()
@@ -70,7 +88,6 @@ MaterialItem::~MaterialItem()
 
 QVariant MaterialItem::data(int role) const
 {
-
 	QVariant ret;
 
 	switch(role)
@@ -78,6 +95,10 @@ QVariant MaterialItem::data(int role) const
 		case Qt::DisplayRole:
 			ret = QString(material->GetMaterialName().c_str());
 			break;
+        case Qt::DecorationRole:
+            const_cast< MaterialItem * >( this )->requestPreview();
+            ret = QStandardItem::data(role);
+            break;
 		default:
 			ret = QStandardItem::data(role);
 			break;
@@ -126,11 +147,93 @@ void MaterialItem::SetFlag(MaterialFlag flag, bool set)
 			{
 				curFlag &= ~ (int) flag;
 			}
+
+            emitDataChanged();
 		}
 	}
+
 }
 
 bool MaterialItem::GetFlag(MaterialFlag flag) const
 {
 	return (bool) (curFlag & flag);
+}
+
+void MaterialItem::SetLodIndex(int index)
+{
+    if(index != lodIndex)
+    {
+        lodIndex = index;
+        emitDataChanged();
+    }
+}
+
+int MaterialItem::GetLodIndex() const
+{
+    return lodIndex;
+}
+
+void MaterialItem::SetSwitchIndex(int index)
+{
+    if(index != switchIndex)
+    {
+        switchIndex = index;
+        emitDataChanged();
+    }
+}
+
+int MaterialItem::GetSwitchIndex() const
+{
+    return switchIndex;
+}
+
+void MaterialItem::requestPreview()
+{
+    if ( isPreviewRequested )
+        return ;
+
+    isPreviewRequested = true;
+
+    if ( material->IsFlagEffective(DAVA::NMaterial::FLAG_FLATCOLOR) )
+    {
+        const DAVA::NMaterialProperty *prop = material->GetMaterialProperty( DAVA::NMaterial::PARAM_FLAT_COLOR );
+        if ( prop )
+        {
+            const DAVA::Color color = *(DAVA::Color*)prop->data;
+            QImage img(QSize(PREVIEW_HEIGHT, PREVIEW_HEIGHT), QImage::Format_ARGB32);
+        
+            img.fill(ColorToQColor(color));
+            setPreview( img );
+        }
+        return ;
+    }
+
+    DAVA::Texture *t = material->GetTexture( DAVA::NMaterial::TEXTURE_ALBEDO );
+    if ( t )
+    {
+        DAVA::TextureDescriptor *descriptor = t->GetDescriptor();
+        QVariant itemRef = QString( descriptor->pathname.GetAbsolutePathname().c_str() );
+        TextureCache::Instance()->getThumbnail( descriptor, this, "onThumbnailReady", itemRef );
+    }
+}
+
+void MaterialItem::setPreview(QImage image)
+{
+    QImage scaled = image.scaled( PREVIEW_HEIGHT, PREVIEW_HEIGHT, Qt::KeepAspectRatio );
+    QPainter p( &scaled );
+    QRect rc( 0, 0, scaled.width() - 1, scaled.height() - 1 );
+    p.setPen( QColor( 0, 0, 0, 0x30 ) );
+    p.drawRect( rc );
+
+    setData( QSize( PREVIEW_HEIGHT, PREVIEW_HEIGHT ), Qt::SizeHintRole );
+    setData( scaled, Qt::DecorationRole );
+}
+
+void MaterialItem::onThumbnailReady( QList<QImage> images, QVariant userData )
+{
+    if ( images.size() <= 0 )
+        return ;
+
+    const QString key = userData.toString();
+    setPreview( images[0] );
 }

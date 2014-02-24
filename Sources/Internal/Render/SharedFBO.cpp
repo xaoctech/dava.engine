@@ -46,8 +46,8 @@ SharedFBO::SharedFBO(Setup * setup)
 	texture = Texture::CreateFBO((uint32)setup->size.x, (uint32)setup->size.y, setup->pixelFormat, setup->depthFormat);
 	
 	TextureStateData textureState;
-	textureState.textures[0] = texture;
-	fboTextureState = RenderManager::Instance()->AddTextureStateData(&textureState);
+	textureState.SetTexture(0, texture);
+	fboTextureState = RenderManager::Instance()->CreateTextureState(textureState);
 
 	int32 blocksCount = setup->blocks.size();
 	for(int32 i = 0; i < blocksCount; ++i)
@@ -92,7 +92,7 @@ SharedFBO::SharedFBO(Setup * setup)
 
 SharedFBO::~SharedFBO()
 {
-	RenderManager::Instance()->ReleaseTextureStateData(fboTextureState);
+	RenderManager::Instance()->ReleaseTextureState(fboTextureState);
 	SafeRelease(texture);
 
 	int32 blocksSize = blocks.size();

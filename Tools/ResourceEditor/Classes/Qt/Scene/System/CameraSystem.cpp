@@ -64,7 +64,7 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
     , distanceToCamera(0.f)
     , cameraShouldIgnoreKeyboard(false)
 {
-	renderState = RenderManager::Instance()->Derive3DRenderState(RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_WRITE);
+	renderState = RenderManager::Instance()->Subclass3DRenderState(RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_WRITE);
 	
 	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_0", SettingsManager::DEFAULT).AsFloat());
 	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_1", SettingsManager::DEFAULT).AsFloat());
@@ -307,8 +307,6 @@ void SceneCameraSystem::Draw()
 	//int oldState = DAVA::RenderManager::Instance()->GetState();
 	//DAVA::RenderManager::Instance()->SetState(DAVA::RenderState::STATE_COLORMASK_ALL | DAVA::RenderState::STATE_DEPTH_TEST);
 	
-	DAVA::RenderManager::Instance()->SetRenderState(renderState);
-
 	SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 	if(NULL != sceneEditor)
 	{
@@ -333,7 +331,7 @@ void SceneCameraSystem::Draw()
 					transform.Identity();
 					transform.SetTranslationVector(camera->GetPosition());
 					collBox.GetTransformedBox(transform, worldBox);	
-					DAVA::RenderHelper::Instance()->FillBox(worldBox);
+					DAVA::RenderHelper::Instance()->FillBox(worldBox, renderState);
 				}
 			}
 

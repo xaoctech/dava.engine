@@ -195,7 +195,7 @@ bool SceneFile::LoadScene(const FilePath & filename, Scene * _scene, bool relToB
 				if (debugLogEnabled)Logger::Error("*** ERROR: animation: %d can't find anim: %s\n", animationIndex, aList->GetName().c_str());
 				continue;
 			}
-			String & name = anim->bindName;
+			FastName & name = anim->bindName;
 			Entity * bindNode = rootNode->FindByName(name);
 			anim->SetBindNode(bindNode);
 			if (!bindNode)
@@ -494,7 +494,7 @@ bool SceneFile::ReadAnimatedMesh()
 	{
 		char8 boneNodeName[512];
 		sceneFP->ReadString(boneNodeName, 512);
-		mesh->boneNames.push_back(boneNodeName);
+		mesh->boneNames.push_back(FastName(boneNodeName));
 	}
 	
 	SafeRelease(mesh);
@@ -698,7 +698,7 @@ bool SceneFile::ReadAnimation()
 		sceneFP->Read(&keyCount, sizeof(int32));
 
 		SceneNodeAnimation * anim = new SceneNodeAnimation(keyCount);
-		anim->SetBindName(name);	
+		anim->SetBindName(FastName(name));	
 		anim->SetDuration(duration); 
 		if (debugLogEnabled)Logger::FrameworkDebug("-- scene node %d anim: %s keyCount: %d duration: %f seconds\n", nodeIndex, name, keyCount, duration); 
 
@@ -757,10 +757,10 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
 
         Entity *oldParent = (*it)->GetParent();
         LodNode *lodNode = new LodNode();
-        lodNode->SetName(nodeName);
+        lodNode->SetName(nodeName.c_str());
         for (int i = maxLodCount; i >= 0; i--) 
         {
-            Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i));
+            Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%d", nodeName.c_str(), i).c_str());
             if (ln) 
             {//if layer is not a dummy
                 if (debugLogEnabled) 
@@ -775,7 +775,7 @@ void SceneFile::ProcessLOD(Entity *forRootNode)
             }
             else 
             {//if layer is dummy
-                Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i));
+                Entity *ln = (*it)->GetParent()->FindByName(Format("%s_lod%ddummy", nodeName.c_str(), i).c_str());
                 if (ln) 
                 {
                     if (debugLogEnabled) 
