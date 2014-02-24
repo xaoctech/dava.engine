@@ -38,26 +38,22 @@ OcclusionQuery::OcclusionQuery()
     
 void OcclusionQuery::Init()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
         RENDER_VERIFY(glGenQueries(1, &id));
 #else
         RENDER_VERIFY(glGenQueriesEXT(1, &id));
 #endif
         //Logger::Debug("Init query: %d", id);
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 void OcclusionQuery::Release()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
         RENDER_VERIFY(glDeleteQueries(1, &id));
 #else
         RENDER_VERIFY(glDeleteQueriesEXT(1, &id));
 #endif
         //Logger::Debug("Release query: %d", id);
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
 
 OcclusionQuery::~OcclusionQuery()
@@ -67,36 +63,37 @@ OcclusionQuery::~OcclusionQuery()
 
 void OcclusionQuery::BeginQuery()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 // Temporarly written, should be refactored and moved to RenderBase.h defines
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glBeginQuery(GL_SAMPLES_PASSED, id));
 #else
     RENDER_VERIFY(glBeginQueryEXT(GL_ANY_SAMPLES_PASSED_EXT, id));
 #endif
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 void OcclusionQuery::EndQuery()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 // Temporarly written, should be refactored and moved to RenderBase.h defines
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glEndQuery(GL_SAMPLES_PASSED));
 #else
     RENDER_VERIFY(glEndQueryEXT(GL_ANY_SAMPLES_PASSED_EXT));
 #endif
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 bool OcclusionQuery::IsResultAvailable()
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
 #if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
     GLint available;
     RENDER_VERIFY(glGetQueryObjectiv(id,
                           GL_QUERY_RESULT_AVAILABLE_ARB,
                           &available));
+    return (available != 0);
+#elif defined(__DAVAENGINE_ANDROID__)
+    GLuint available;
+    RENDER_VERIFY(glGetQueryObjectuiv(id,
+                                     GL_QUERY_RESULT_AVAILABLE,
+                                     &available));
     return (available != 0);
 #else
     GLuint available;
@@ -105,25 +102,22 @@ bool OcclusionQuery::IsResultAvailable()
                                      &available));
     return (available != 0);
 #endif
-#else
 	return false;
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
 void OcclusionQuery::GetQuery(uint32 * resultValue)
 {
-#ifdef __DAVA_USE_OCCLUSION_QUERY__
-#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__)
+#if defined(__DAVAENGINE_WIN32__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
     RENDER_VERIFY(glGetQueryObjectuiv(id, GL_QUERY_RESULT_ARB, resultValue));
 #else
     RENDER_VERIFY(glGetQueryObjectuivEXT(id, GL_QUERY_RESULT_EXT, resultValue));
 #endif
-#endif //__DAVA_USE_OCCLUSION_QUERY__
 }
     
     
 OcclusionQueryManager::OcclusionQueryManager(uint32 _occlusionQueryCount)
 {
+    createdCounter = 0;
     nextFree = 0;
     occlusionQueryCount = _occlusionQueryCount;
     queries.resize(occlusionQueryCount);
@@ -132,6 +126,7 @@ OcclusionQueryManager::OcclusionQueryManager(uint32 _occlusionQueryCount)
         queries[k].query.Init();
         queries[k].next = (k == occlusionQueryCount - 1) ? (INVALID_INDEX) : (k + 1);
         queries[k].salt = 0;
+        //Logger::FrameworkDebug("i: %ld %ld %ld", queries[k].query.GetId(), queries[k].next, queries[k].salt);
     }
 }
     
@@ -160,7 +155,7 @@ OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
             nextFree = k;
         }
     }
-    
+    createdCounter++;
     OcclusionQueryManagerHandle handle;
     handle.index = nextFree;
     handle.salt = queries[nextFree].salt;
@@ -170,6 +165,7 @@ OcclusionQueryManagerHandle OcclusionQueryManager::CreateQueryObject()
     
 void OcclusionQueryManager::ReleaseQueryObject(OcclusionQueryManagerHandle handle)
 {
+    createdCounter--;
     DVASSERT(handle.salt == queries[handle.index].salt);
     queries[handle.index].salt++;
     queries[handle.index].next = nextFree;

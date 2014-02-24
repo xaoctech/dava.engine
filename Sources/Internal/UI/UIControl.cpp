@@ -56,6 +56,7 @@ namespace DAVA
 		 */
 		inputEnabled = true; 
         inputProcessorsCount = 1;
+        focusEnabled = true;
 		
 		background = new UIControlBackground();
 		needToRecalcFromAbsoluteCoordinates = false;
@@ -987,6 +988,17 @@ namespace DAVA
 			}
 		}
 	}
+    
+    bool UIControl::GetFocusEnabled() const
+    {
+        return focusEnabled;
+    }
+    
+	void UIControl::SetFocusEnabled(bool isEnabled)
+    {
+        focusEnabled = isEnabled;
+    }
+
 	
 	bool UIControl::GetDisabled() const
 	{
@@ -1592,7 +1604,7 @@ namespace DAVA
 	
 		if (debugDrawEnabled && !clipContents)
 		{	//TODO: Add debug draw for rotated controls
-			DrawDebugRect(drawData);
+			DrawDebugRect(drawData, false);
 		}
 		DrawPivotPoint(unrotatedRect);
 		
@@ -1615,7 +1627,7 @@ namespace DAVA
 			
 			if(debugDrawEnabled)
 			{ //TODO: Add debug draw for rotated controls
-				DrawDebugRect(drawData);
+				DrawDebugRect(drawData, false);
 			}
 		}
 		
@@ -1632,7 +1644,6 @@ namespace DAVA
 	
 	void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)
 	{
-        RenderManager::Instance()->SetDefault2DNoTextureState();
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 
@@ -1652,16 +1663,15 @@ namespace DAVA
 			Polygon2 poly;
 			gd.GetPolygon( poly );
 
-			RenderHelper::Instance()->DrawPolygon( poly, true );
+			RenderHelper::Instance()->DrawPolygon( poly, true, RenderState::RENDERSTATE_2D_BLEND );
 		}
 		else
 		{
-			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect() );
+			RenderHelper::Instance()->DrawRect( gd.GetUnrotatedRect(), RenderState::RENDERSTATE_2D_BLEND );
 		}
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
-        RenderManager::Instance()->SetDefault2DState();
 	}
 
 	void UIControl::DrawPivotPoint(const Rect &drawRect)
@@ -1679,30 +1689,28 @@ namespace DAVA
 		static const float32 PIVOT_POINT_MARK_RADIUS = 10.0f;
 		static const float32 PIVOT_POINT_MARK_HALF_LINE_LENGTH = 13.0f;
 
-        RenderManager::Instance()->SetDefault2DNoTextureState();
 		Color oldColor = RenderManager::Instance()->GetColor();
 		RenderManager::Instance()->ClipPush();
 		RenderManager::Instance()->SetColor(Color(1.0f, 0.0f, 0.0f, 1.0f));
 
 		Vector2 pivotPointCenter = drawRect.GetPosition() + pivotPoint;
-		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS);
+		RenderHelper::Instance()->DrawCircle(pivotPointCenter, PIVOT_POINT_MARK_RADIUS, RenderState::RENDERSTATE_2D_BLEND);
 
 		// Draw the cross mark.
 		Vector2 lineStartPoint = pivotPointCenter;
 		Vector2 lineEndPoint = pivotPointCenter;
 		lineStartPoint.y -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
 		lineEndPoint.y += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
-		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint, RenderState::RENDERSTATE_2D_BLEND);
 		
 		lineStartPoint = pivotPointCenter;
 		lineEndPoint = pivotPointCenter;
 		lineStartPoint.x -= PIVOT_POINT_MARK_HALF_LINE_LENGTH;
 		lineEndPoint.x += PIVOT_POINT_MARK_HALF_LINE_LENGTH;
-		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint);
+		RenderHelper::Instance()->DrawLine(lineStartPoint, lineEndPoint, RenderState::RENDERSTATE_2D_BLEND);
 
 		RenderManager::Instance()->ClipPop();
 		RenderManager::Instance()->SetColor(oldColor);
-        RenderManager::Instance()->SetDefault2DState();
 	}
 	
 	bool UIControl::IsPointInside(const Vector2 &_point, bool expandWithFocus/* = false*/)
@@ -1900,7 +1908,7 @@ namespace DAVA
 #endif
 								if (IsPointInside(currentInput->point, true))
 								{
-                                    if (UIControlSystem::Instance()->GetFocusedControl() != this) 
+                                    if (UIControlSystem::Instance()->GetFocusedControl() != this && focusEnabled)
                                     {
                                         UIControlSystem::Instance()->SetFocusedControl(this, false);
                                     }

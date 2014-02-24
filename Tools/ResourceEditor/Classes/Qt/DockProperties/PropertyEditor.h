@@ -96,8 +96,10 @@ public slots:
 	void ActionEditComponent();
 	void ActionBakeTransform();
 	void ActionEditMaterial();
-
     void ActionEditSoundComponent();
+	
+	void ConvertToShadow();
+	void DeleteRenderBatch();
 
 protected:
 	eViewMode viewMode;
@@ -120,12 +122,12 @@ protected:
 	void ResetProperties();
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
-	void ApplyCustomButtons(QtPropertyData *data);
+	void ApplyCustomExtensions(QtPropertyData *data);
 
 	void AddFavoriteChilds(QtPropertyData *parent);
 	void RemFavoriteChilds(QtPropertyData *parent);
 
-	bool ExcludeMember(const DAVA::InspInfo *info, const DAVA::InspMember *member);
+	bool IsInspViewAllowed(const DAVA::InspInfo *info) const;
 
 	virtual void OnItemEdited(const QModelIndex &index);
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
@@ -134,6 +136,8 @@ protected:
 	void FindAndCheckFavorite(QtPropertyData *data);
 	bool IsParentFavorite(QtPropertyData *data) const;
 	PropEditorUserData* GetUserData(QtPropertyData *data) const;
+
+	QtPropertyToolButton * CreateButton(QtPropertyData *data, const QIcon & icon, const QString & tooltip);
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__

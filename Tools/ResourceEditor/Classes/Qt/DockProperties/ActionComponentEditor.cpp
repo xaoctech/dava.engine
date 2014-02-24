@@ -261,10 +261,11 @@ QWidget* ActionItemEditDelegate::createEditor(QWidget *parent, const QStyleOptio
 			DAVA::Vector<DAVA::String> childrenNames;
             childrenNames.reserve(allChildren.size() + 1);
             
-			childrenNames.push_back(DAVA::ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME);
+			childrenNames.push_back(DAVA::ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME.c_str());
+
 			for(int i = 0; i < (int)allChildren.size(); ++i)
 			{
-				childrenNames.push_back(allChildren[i]->GetName());
+				childrenNames.push_back(allChildren[i]->GetName().c_str());
 			}
 			
 			std::sort(childrenNames.begin(), childrenNames.end());
@@ -432,7 +433,7 @@ void ActionItemEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 		case COLUMN_ENTITY_NAME:
 		{
 			QComboBox* combo = static_cast<QComboBox*>(editor);
-			currentAction.entityName = combo->currentText().toStdString();
+			currentAction.entityName = DAVA::FastName(combo->currentText().toStdString());
 			model->setData(index, combo->currentText(), Qt::EditRole);
 			
 			break;

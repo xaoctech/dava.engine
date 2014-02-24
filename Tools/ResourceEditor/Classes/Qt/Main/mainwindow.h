@@ -102,6 +102,7 @@ public slots:
 	void OnRedo();
 
 	void OnEditorGizmoToggle(bool show);
+    void OnViewLightmapCanvas(bool show);
 	void OnAllowOnSceneSelectionToggle(bool allow);
 
 	void OnReloadTextures();
@@ -124,8 +125,9 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
-		
-	void OnLandscapeDialog();
+	
+	void OnAddLandscape();
+    void OnAddSkybox();
 	void OnLightDialog();
 	void OnCameraDialog();
 	void OnEmptyEntity();
@@ -133,9 +135,9 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
+    void OnEditor2DCameraDialog();
+    void OnEditorSpriteDialog();
 	void OnAddEntityFromSceneTree();
-
-	void OnSetSkyboxNode();
 	
 	void OnShowGeneralSettings();
 	void OnOpenHelp();
@@ -156,8 +158,6 @@ public slots:
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
-
-	void OnConvertToShadow();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
@@ -186,11 +186,7 @@ public slots:
 	void OnHangingObjects();
 	void OnHangingObjectsHeight(double value);
 
-    void OnMaterialAlbedo(bool state);
-    void OnMaterialAmbient(bool state);
-    void OnMaterialDiffuse(bool state);
-    void OnMaterialSpecular(bool state);
-
+    void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
 
 protected:
@@ -213,8 +209,6 @@ protected:
 	void RunBeast();
 
 	bool IsAnySceneChanged();
-
-	void SetLandscapeSettingsEnabled(bool);
 
 	void DiableUIForFutureUsing();
 	
@@ -250,7 +244,6 @@ private:
     QComboBox *objectTypesWidget;
 
 	AddSwitchEntityDialog*	addSwitchEntityDialog;
-	LandscapeDialog*		landscapeDialog;
 	HangingObjectsHeight*	hangingObjectsWidget;
 
 	void EnableSceneActions(bool enable);
@@ -266,7 +259,7 @@ private:
 	void LoadLandscapeEditorState(SceneEditor2* scene);
 	void LoadObjectTypes(SceneEditor2 *scene);
 	void LoadHangingObjects(SceneEditor2 *scene);
-    void LoadMaterialViewMode(SceneEditor2 *scene);
+    void LoadMaterialLightViewMode();
 
 	bool SaveTilemask(bool forAllTabs = true);
 

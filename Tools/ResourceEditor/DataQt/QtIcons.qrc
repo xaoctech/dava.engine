@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/light_settings.png</file>
     <file>QtIcons/sphere_add.png</file>
     <file>QtIcons/sphere-clone.png</file>
     <file>QtIcons/3d.png</file>

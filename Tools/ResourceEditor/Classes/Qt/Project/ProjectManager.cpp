@@ -87,11 +87,8 @@ void ProjectManager::ProjectOpen(const QString &path)
 {
 	if(path != curProjectPath)
 	{
-        if (CanCloseProject() == false)
-        {
-            return;
-        }
-        InnerProjectClose();
+		ProjectClose();
+        
 		curProjectPath = path;
 
 		if(!curProjectPath.isEmpty())
@@ -102,20 +99,18 @@ void ProjectManager::ProjectOpen(const QString &path)
 			DAVA::FilePath dataSource3Dpathname = projectPath + "DataSource/3d/";
 			curProjectPathDataSource = dataSource3Dpathname.GetAbsolutePathname().c_str();
 
-			SettingsManager::Instance()->SetValue("ProjectPath", 
+			SettingsManager::Instance()->SetValue("LastProjectPath",
 				VariantType(projectPath.GetAbsolutePathname()), SettingsManager::INTERNAL);
-			SettingsManager::Instance()->SetValue("3dDataSourcePath", 
-				VariantType(dataSource3Dpathname.GetAbsolutePathname()), SettingsManager::INTERNAL);
 
 			EditorConfig::Instance()->ParseConfig(projectPath + "EditorConfig.yaml");
 
 			SceneValidator::Instance()->SetPathForChecking(projectPath);
             SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
+            DAVA::FilePath::AddTopResourcesFolder(projectPath);
+
             LoadProjectSettings();
             LoadMaterialsSettings();
-            
-            DAVA::FilePath::AddTopResourcesFolder(projectPath);
 
             emit ProjectOpened(curProjectPath);
 		}
@@ -124,7 +119,7 @@ void ProjectManager::ProjectOpen(const QString &path)
 
 void ProjectManager::ProjectOpenLast()
 {
-	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("ProjectPath", SettingsManager::INTERNAL).AsString());
+	DAVA::FilePath projectPath = FilePath(SettingsManager::Instance()->GetValue("LastProjectPath", SettingsManager::INTERNAL).AsString());
 
 	if(!projectPath.IsEmpty())
 	{
@@ -134,27 +129,13 @@ void ProjectManager::ProjectOpenLast()
 
 void ProjectManager::ProjectClose()
 {
-    if (CanCloseProject())
-    {
-        InnerProjectClose();
-    }
-}
-
-bool ProjectManager::CanCloseProject()
-{
-    Request closeRequest;
-    emit ProjectWillClose(&closeRequest);
-    
-    return closeRequest.IsAccepted();
-}
-
-void ProjectManager::InnerProjectClose()
-{
 	if("" != curProjectPath)
 	{
 		FilePath path = curProjectPath.toStdString();
 		path.MakeDirectoryPathname();
-        DAVA::FilePath::RemoveResourcesFolder(path);
+        
+		DAVA::FilePath::RemoveResourcesFolder(path);
+        
         curProjectPath = "";
         emit ProjectClosed();
 	}

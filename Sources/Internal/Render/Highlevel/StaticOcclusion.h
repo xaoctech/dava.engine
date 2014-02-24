@@ -92,7 +92,10 @@ public:
     
     void RecordFrameQuery(RenderBatch * batch, OcclusionQueryManagerHandle handle);
     
+    //Vector<Vector3> renderPositions;
+    //Vector<Vector3> renderDirections;
 private:
+    void ProcessRecordedBatches();
     AABBox3 GetCellBox(uint32 x, uint32 y, uint32 z);
     
     RenderHierarchy * renderHierarchy;
