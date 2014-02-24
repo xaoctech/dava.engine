@@ -184,6 +184,8 @@ public:
 	static const FastName FLAG_FOG_LINEAR;
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
+	static const FastName FLAG_WAVE_ANIMATION;
+    
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     

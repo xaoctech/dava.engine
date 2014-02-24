@@ -163,8 +163,45 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent));
 }
 
-void main()
+#if defined(WAVE_ANIMATION)
+uniform float globalTime;
+#endif
+
+vec4 Wave(float time, vec4 pos, vec2 uv)
 {
+//	float time = globalTime;
+//	vec4 pos = inPosition;
+//	vec2 uv = inTexCoord0;
+#if 1
+    vec4 off;
+    float sinOff = pos.x + pos.y + pos.z;
+    float t = -time * 3.0;
+    float cos1 = cos(t * 1.45 + sinOff);
+    float cos2 = cos(t * 3.12 + sinOff);
+    float cos3 = cos(t * 2.2 + sinOff);
+    float fx= uv.x;
+    float fy= uv.x * uv.y;
+    
+    off.y = pos.y + cos2 * fx * 0.5 - fy * 0.9;
+    off.x = pos.x + cos1 * fx * 0.5;
+    off.z = pos.z + cos3 * fx * 0.5;
+    off.w = pos.w;
+#else
+    vec4 off;
+    float t = -time;
+    float sin2 = sin(4.0 * sqrt(uv.x + uv.x + uv.y * uv.y) + time);
+    
+    off.x = pos.x;// + cos1 * fx * 0.5;
+    off.y = pos.y + sin2 * 0.5;// - fy * 0.9;
+    off.z = pos.z;// + cos3 * fx * 0.5;
+    off.w = pos.w;
+#endif
+    
+    return off;
+}
+
+void main()
+{	
 #if defined(MATERIAL_SKYBOX)
 	vec4 vecPos = (worldViewProjMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
@@ -190,7 +227,12 @@ void main()
     
 	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 #else
+#if defined(WAVE_ANIMATION)
+	gl_Position = worldViewProjMatrix * Wave(globalTime, inPosition, inTexCoord0);
+#else
 	gl_Position = worldViewProjMatrix * inPosition;
+#endif
+    
 #endif
 
 #if defined(VERTEX_LIT)
