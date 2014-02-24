@@ -34,13 +34,18 @@ AutotestingSystem::AutotestingSystem()
     , isRunning(false)
     , needExitApp(false)
     , timeBeforeExit(0.0f)
-    , testsDate(0)
+    , testsDate("not_found")
     , testIndex(0)
     , isDB(false)
     , needClearGroupInDB(false)
     , groupName("default")
 	, deviceId("not-initialized")
 	, deviceName("not-initialized")
+	, buildId("zero-build")
+	, branch("branch")
+	, framework("framework")
+	, branchRev("0")
+	, frameworkRev("0")
     , isMaster(true)
     , requestedHelpers(0)
     , isWaiting(false)
@@ -79,7 +84,7 @@ void AutotestingSystem::OnAppStarted()
 		SetUpConnectionToDB();
 
 		FetchParametersFromDB();
-		ClearTestInDB();
+		SetUpTestArchive();
 		
 		String testFilePath = Format("~res:/Autotesting/Tests/%s/%s", groupName.c_str(), testFileName.c_str());
 		AutotestingSystemLua::Instance()->InitFromFile(testFilePath);
@@ -127,52 +132,24 @@ String AutotestingSystem::GetDeviceName()
 		return WStringToString(DeviceInfo::GetName());
 	}	
 }
+
 // Get test parameters from id.tx
 void AutotestingSystem::FetchParametersFromIdTxt()
 {
-	Logger::Debug("AutotestingSystem::FetchParametersFromIdTxt");
-
-	//TODO: read autotesting id from ~res:/Autotesting/autotesting.archive
-	File* file = File::Create("~res:/Autotesting/id.txt", File::OPEN | File::READ);
-	
-	if(file)
+	FilePath file = "~res:/Autotesting/id.yaml";
+	Logger::Debug("AutotestingSystem::FetchParametersFromIdTxt %s", file.GetAbsolutePathname().c_str());
+	KeyedArchive *option = new KeyedArchive();
+	bool res = option->LoadFromYamlFile(file);
+	if (!res)
 	{
-		if(!file->IsEof())
-		{
-			char tempBuf[1024];
-			file->ReadLine(tempBuf, 1024);
-			sscanf(tempBuf, "%d", &testsDate);
-			
-			if(!file->IsEof())
-			{
-				char projectCharName[1024];
-				file->ReadLine(tempBuf, 1024);
-				sscanf(tempBuf, "%s", &projectCharName);
-				String pName = projectCharName;
-				if(!pName.empty())
-				{
-					projectName = pName;
-					isDB = true;
-				}		
+		ForceQuit("Couldn't open file " + file.GetAbsolutePathname());
+	}
 
-				Logger::Debug("AutotestingSystem::FetchParametersFromIdTxt date=%d, project=%s", testsDate, projectName.c_str());
-			}
-			else
-			{
-				SafeRelease(file);
-				ForceQuit("Couldn't read test project from id.txt");
-			}
-		}
-		else
-		{
-			SafeRelease(file);
-			ForceQuit("Couldn't read test date from id.txt");
-		}
-	}
-	else
-	{
-		ForceQuit("Couldn't open id.txt");
-	}
+	buildId = option->GetString("buildId");
+	branch = option->GetString("branch");
+	framework = option->GetString("framework");
+	branchRev = option->GetString("branchRev");
+	frameworkRev = option->GetString("frameworkRev");
 }
 
 // Get test parameters from autotesting db
@@ -197,7 +174,13 @@ void AutotestingSystem::FetchParametersFromDB()
 		ForceQuit("Couldn't get Number parameter from DB.");
 	}
 
-	Logger::Debug("AutotestingSystem::FetchParametersFromDB Group=%s Filename=%s TestIndex=%d", groupName.c_str(), testFileName.c_str(), testIndex);
+	testsDate = AutotestingDB::Instance()->GetStringTestParameter(deviceName, "Date");
+	if (testsDate == "not_found")
+	{
+		ForceQuit("Couldn't get Date parameter from DB.");
+	}
+
+	Logger::Debug("AutotestingSystem::FetchParametersFromDB Date=%s Group=%s Filename=%s TestIndex=%d", testsDate.c_str(), groupName.c_str(), testFileName.c_str(), testIndex);
 }
 
 // Read DB parameters from config file and set connection to it
@@ -207,31 +190,37 @@ void AutotestingSystem::SetUpConnectionToDB()
 	bool res = option->LoadFromYamlFile("~res:/Autotesting/dbConfig.yaml");
 	if (!res)
 	{
-		DVASSERT(false);
+		ForceQuit("Couldn't open file ~res:/Autotesting/dbConfig.yaml");
 	}
 
 	String dbName = option->GetString("name");
 	String dbAddress = option->GetString("hostname");
+	String collection = option->GetString("collection");
 	int32 dbPort = option->GetInt32("port");
-	Logger::Debug("AutotestingSystem::SetUpConnectionToDB %s[%s:%d]", dbName.c_str(), dbAddress.c_str(), dbPort);
+	Logger::Debug("AutotestingSystem::SetUpConnectionToDB %s -> %s[%s:%d]", collection.c_str(), dbName.c_str(), dbAddress.c_str(), dbPort);
 
-	if(! AutotestingDB::Instance()->ConnectToDB(projectName, dbName, dbAddress, dbPort))
+	if(! AutotestingDB::Instance()->ConnectToDB(collection, dbName, dbAddress, dbPort))
 	{
 		ForceQuit("Couldn't connect to Test DB");
 	}
 }
 
-void AutotestingSystem::ClearTestInDB()
+void AutotestingSystem::SetUpTestArchive()
 {
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
     
     // clear test
     String testId = GetTestId();
-    KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(dbUpdateObject, testId, testName, needClearGroupInDB);
-    
-    // Create document for step 0 -  'Precondition'
+	
+	KeyedArchive* currentBuildArchive = AutotestingDB::Instance()->FindOrInsertBuildArchive(dbUpdateObject, "");
+	KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindInsertGroupArchive(currentBuildArchive, groupName);
+	//AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
+	//KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentBuildArchive, testId);
+    KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentGroupArchive, testId);
+	//AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
+    // Create document for step 0 - 'Precondition'
     String stepId = GetStepId();
-    AutotestingDB::Instance()->InsertStepArchive(currentTestArchive, stepId, "Precondition");
+    KeyedArchive* currentStepArchive = AutotestingDB::Instance()->InsertStepArchive(currentTestArchive, stepId, "Precondition");
 
     AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
     SafeRelease(dbUpdateObject);
@@ -320,7 +309,7 @@ void AutotestingSystem::OnStepFinished()
 	KeyedArchive* currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);
 	if(currentTestArchive)
 	{
-		KeyedArchive* currentStepArchive = AutotestingDB::Instance()->FindOrInsertTestStepArchive(currentTestArchive, stepId);
+		KeyedArchive* currentStepArchive = AutotestingDB::Instance()->FindOrInsertStepArchive(currentTestArchive, stepId);
 
 		if (currentStepArchive)
 		{
@@ -345,7 +334,7 @@ void AutotestingSystem::SaveScreenShotNameToDB()
 
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);
-	KeyedArchive* currentStepArchive = AutotestingDB::Instance()->FindOrInsertTestStepArchive(currentTestArchive, stepId);
+	KeyedArchive* currentStepArchive = AutotestingDB::Instance()->FindOrInsertStepArchive(currentTestArchive, stepId);
 
 	currentStepArchive->SetString("screenshot", screenShotName);
 
