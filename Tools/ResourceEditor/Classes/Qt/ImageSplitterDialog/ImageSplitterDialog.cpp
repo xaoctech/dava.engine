@@ -27,9 +27,9 @@
 =====================================================================================*/
 
 
-#include "ImageSplitterDialog/ImageSplitterDialog.h"
-
 #include "ui_ImageSplitter.h"
+#include "ImageSplitterDialog/ImageSplitterDialog.h"
+#include "Project/ProjectManager.h"
 
 ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
     QDialog(parent),
@@ -37,9 +37,36 @@ ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->selectPathWidget->SetClearButtonVisible(false);
+    DAVA::List<DAVA::String> allowedFormats;
+	allowedFormats.push_back(".png");
+    ui->selectPathWidget->SetAllowedFormatsList(allowedFormats);
+    ui->selectPathWidget->SetFileFormatFilter("PNG(*.png)");
+    DAVA::FilePath defaultPath = ProjectManager::Instance()->CurProjectPath().toStdString();
+    ui->selectPathWidget->SetOpenDialogDefaultPath(defaultPath);
+    ui->redImgLbl->SetColorComponent(ImageArea::COMPONENTS_RED);
+    ui->greenImgLbl->SetColorComponent(ImageArea::COMPONENTS_GREEN);
+    ui->blueImgLbl->SetColorComponent(ImageArea::COMPONENTS_BLUE);
+    ui->alphaImgLbl->SetColorComponent(ImageArea::COMPONENTS_ALPHA);
+    ConnectSignals();
 }
 
 ImageSplitterDialog::~ImageSplitterDialog()
 {
     delete ui;
+}
+
+void ImageSplitterDialog::ConnectSignals()
+{
+    connect(ui->selectPathWidget, SIGNAL(PathSelected(DAVA::String)),
+			this, SLOT(PathSelected(DAVA::String)));
+}
+
+void ImageSplitterDialog::PathSelected(DAVA::String path)
+{
+    DAVA::FilePath fp(path);
+    
+    ui->redImgLbl->SetImage(fp);
+    ui->greenImgLbl->SetImage(fp);
+    ui->blueImgLbl->SetImage(fp);
+    ui->alphaImgLbl->SetImage(fp);
 }

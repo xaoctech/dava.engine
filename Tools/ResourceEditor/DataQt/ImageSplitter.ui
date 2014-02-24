@@ -64,10 +64,6 @@
          <height>30</height>
         </size>
        </property>
-       <zorder>horizontalLayoutWidget_3</zorder>
-       <zorder>horizontalLayoutWidget_3</zorder>
-       <zorder>label_2</zorder>
-       <zorder>horizontalLayoutWidget_3</zorder>
       </widget>
      </item>
      <item>
@@ -118,6 +114,65 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
+      <layout class="QVBoxLayout" name="verticalLayout_12">
+       <item>
+        <widget class="QLabel" name="redIconLbl">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="QtIcons.qrc">:/QtIconsTextureDialog/red.png</pixmap>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="ImageArea" name="redImgLbl">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>150</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Drag png or click to select file.</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QSpinBox" name="redSpinBox"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="redFillBtn">
+           <property name="text">
+            <string>Fill</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -135,7 +190,7 @@
           </widget>
          </item>
          <item>
-          <widget class="ImageArea" name="label_3">
+          <widget class="ImageArea" name="greenImgLbl">
            <property name="minimumSize">
             <size>
              <width>150</width>
@@ -196,7 +251,7 @@
         </widget>
        </item>
        <item>
-        <widget class="ImageArea" name="label_4">
+        <widget class="ImageArea" name="blueImgLbl">
          <property name="minimumSize">
           <size>
            <width>150</width>
@@ -240,65 +295,6 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_12">
-       <item>
-        <widget class="QLabel" name="redIconLbl">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="QtIcons.qrc">:/QtIconsTextureDialog/red.png</pixmap>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignHCenter|Qt::AlignTop</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="ImageArea" name="label_5">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>150</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>150</width>
-           <height>150</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Drag png or click to select file.</string>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
-         <item>
-          <widget class="QSpinBox" name="redSpinBox"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="redFillBtn">
-           <property name="text">
-            <string>Fill</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-     <item>
       <layout class="QVBoxLayout" name="verticalLayout_13">
        <item>
         <widget class="QLabel" name="blackIconLbl">
@@ -314,7 +310,7 @@
         </widget>
        </item>
        <item>
-        <widget class="ImageArea" name="label_6">
+        <widget class="ImageArea" name="alphaImgLbl">
          <property name="minimumSize">
           <size>
            <width>150</width>

@@ -166,7 +166,7 @@ void SelectPathWidgetBase::setText(const QString& filePath)
 
 void SelectPathWidgetBase::setText(const DAVA::String &filePath)
 {
-	setText(QString(filePath.c_str()));
+    SelectPathWidgetBase::setText(QString(filePath.c_str()));
 }
 
 DAVA::String SelectPathWidgetBase::getText()
@@ -251,4 +251,24 @@ bool SelectPathWidgetBase::IsClearButtonVisible() const
 void SelectPathWidgetBase::SetClearButtonVisible(bool value)
 {
     clearButton->setVisible(value);
+}
+
+DAVA::String SelectPathWidgetBase::GetOpenDialogDefaultPath() const
+{
+    return openDialogDefaultPath;
+}
+
+void SelectPathWidgetBase::SetOpenDialogDefaultPath(const DAVA::FilePath& path)
+{
+    openDialogDefaultPath = path.GetAbsolutePathname();
+}
+
+DAVA::String SelectPathWidgetBase::GetFileFormatFilter() const
+{
+    return fileFormatFilter;
+}
+
+void SelectPathWidgetBase::SetFileFormatFilter(const DAVA::String& filter)
+{
+    fileFormatFilter = filter;
 }

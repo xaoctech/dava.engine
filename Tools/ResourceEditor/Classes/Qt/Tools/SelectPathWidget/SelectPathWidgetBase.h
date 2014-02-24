@@ -67,6 +67,14 @@ public:
     bool IsClearButtonVisible() const;
     
     void SetClearButtonVisible(bool value);
+    
+    DAVA::String GetOpenDialogDefaultPath() const;
+    
+    void SetOpenDialogDefaultPath(const DAVA::FilePath& path);
+    
+    DAVA::String GetFileFormatFilter() const;
+    
+    void SetFileFormatFilter(const DAVA::String& filter);
 	
 public slots:
 

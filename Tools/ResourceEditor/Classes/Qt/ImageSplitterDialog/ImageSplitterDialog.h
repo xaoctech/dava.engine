@@ -31,7 +31,7 @@
 #define __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
 
 #include <QDialog>
-
+#include "DAVAEngine.h"
 
 namespace Ui {
 class ImageSplitter;
@@ -44,7 +44,15 @@ class ImageSplitterDialog : public QDialog
 public:
     explicit ImageSplitterDialog(QWidget *parent = 0);
     ~ImageSplitterDialog();
+
+protected slots:
     
+    void PathSelected(DAVA::String path);
+    
+protected:
+    
+    void ConnectSignals();
+
 private:
     Ui::ImageSplitter *ui;
 };
