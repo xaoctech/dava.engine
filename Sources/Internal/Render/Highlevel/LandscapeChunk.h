@@ -52,6 +52,8 @@ public:
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Draw(const FastName & ownerPassName, Camera * camera);
 
+	virtual ShadowVolume * CreateShadow();
+
 private:
     Landscape * landscape;
     

@@ -109,7 +109,8 @@ void ResourcePacker2D::PackResources(eGPUFamily forGPU)
 		}
 		if (!result && Core::Instance()->IsConsoleMode() && CommandLineParser::Instance()->GetVerbose())
 		{
-			Logger::Error("[ERROR: Can't delete directory %s]", outputGfxDirectory.GetAbsolutePathname().c_str());
+			AddError(Format("[ERROR: Can't delete directory %s]",
+									outputGfxDirectory.GetAbsolutePathname().c_str()));
 		}
 	}
 
@@ -217,7 +218,8 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 		
 		if (layers.size() == 0)
 		{
-			Logger::Error("Number of layers is too low: %s", psdPathname.GetAbsolutePathname().c_str());
+			AddError(Format("Number of layers is too low: %s", psdPathname.GetAbsolutePathname().c_str()));
+			
 			return 0;
 		}
 		
@@ -306,7 +308,8 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 	}
 	catch( Magick::Exception &error_ )
     {
-        Logger::Error("Caught exception: %s file: %s", error_.what(), psdPathname.GetAbsolutePathname().c_str());
+		AddError(Format("Caught exception: %s file: %s", error_.what(), psdPathname.GetAbsolutePathname().c_str()));
+
 		return 0;
     }
 	return 0;
@@ -317,7 +320,8 @@ Vector<String> ResourcePacker2D::ProcessFlags(const FilePath & flagsPathname)
 	File * file = File::Create(flagsPathname, File::READ | File::OPEN);
 	if (!file)
 	{
-		Logger::Error("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str());
+		AddError(Format("Failed to open file: %s", flagsPathname.GetAbsolutePathname().c_str()));
+		
         return Vector<String>();
 	}
 
@@ -537,6 +541,12 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			{
 				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
+			
+			Set<String> currentErrors = packer.GetErrors();
+			if (!currentErrors.empty())
+			{
+				errors.insert(currentErrors.begin(), currentErrors.end());
+			}
 		}
 	}	
 
@@ -590,6 +600,17 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	}
 	
 	SafeRelease(fileList);
+}
+
+const Set<String>& ResourcePacker2D::GetErrors() const
+{
+	return errors;
+}
+
+void ResourcePacker2D::AddError(const String& errorMsg)
+{
+	Logger::Error(errorMsg.c_str());
+	errors.insert(errorMsg);
 }
 
 

@@ -290,6 +290,7 @@ namespace DAVA
 			if(oldMaterial->IsFogEnabled())
 			{
 				material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
+                material->SetFlag(NMaterial::FLAG_FOG_EXP, NMaterial::FlagOn);
 			}
 						
 			if(oldMaterial->IsTextureShiftEnabled())
@@ -404,7 +405,7 @@ namespace DAVA
 			{
 				float32 shininess = oldMaterial->GetShininess();
 				material->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &shininess);
-				
+
 				Color ambientColor = oldMaterial->GetAmbientColor();
 				Color diffuseColor = oldMaterial->GetDiffuseColor();
 				Color specularColor = oldMaterial->GetSpecularColor();

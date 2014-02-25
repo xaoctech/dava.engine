@@ -37,7 +37,7 @@ public:
     TexturePathValidator(const QStringList& value);
 
 protected:
-    virtual bool ValidateInternal(QVariant &v) const;
+    virtual bool ValidateInternal(QVariant &v);
     virtual void FixupInternal(QVariant& v) const;
 };
 

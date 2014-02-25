@@ -75,6 +75,9 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
+#include "Scene3D/Converters/LodToLod2Converter.h"
+#include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
+
 namespace DAVA
 {
     
@@ -171,7 +174,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 10;
+    header.version = 11;
     header.nodeCount = _scene->GetChildrenCount();
 	
 	descriptor.size = sizeof(descriptor.fileType); // + sizeof(descriptor.additionalField1) + sizeof(descriptor.additionalField1) +....
@@ -313,7 +316,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         Logger::FrameworkDebug("+ load hierarchy");
 	   
     Entity * rootNode = new Entity();
-    rootNode->SetName(rootNodePathName.GetFilename());
+    rootNode->SetName(rootNodePathName.GetFilename().c_str());
 	rootNode->SetScene(0);
     
     rootNode->children.reserve(header.nodeCount);
@@ -335,6 +338,62 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     SafeRelease(rootNode);
     SafeRelease(file);
     return GetError();
+}
+
+SceneArchive *SceneFileV2::LoadSceneArchive(const FilePath & filename)
+{
+    SceneArchive *res = NULL;
+    File * file = File::Create(filename, File::OPEN | File::READ);
+    if (!file)
+    {
+        Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.GetAbsolutePathname().c_str());        
+        return res;
+    }   
+        
+
+    file->Read(&header, sizeof(Header));
+    int requiredVersion = 3;
+    if (    (header.signature[0] != 'S') 
+        ||  (header.signature[1] != 'F') 
+        ||  (header.signature[2] != 'V') 
+        ||  (header.signature[3] != '2'))
+    {
+        Logger::Error("SceneFileV2::LoadScene header version is wrong: %d, required: %d", header.version, requiredVersion);
+        SafeRelease(file);        
+        return res;
+    }
+
+    if(header.version >= 10)
+    {
+        ReadDescriptor(file, descriptor);
+    }
+
+   res = new SceneArchive();
+
+    if (GetVersion() >= 2)
+    {
+        int32 dataNodeCount = 0;
+        file->Read(&dataNodeCount, sizeof(int32));
+        for (int k = 0; k < dataNodeCount; ++k)
+        {
+            KeyedArchive * archive = new KeyedArchive();
+            archive->Load(file);
+            res->dataNodes.push_back(archive);
+        }
+    }
+
+    
+
+    res->children.reserve(header.nodeCount);
+    for (int ci = 0; ci < header.nodeCount; ++ci)
+    {                
+        SceneArchive::SceneArchiveHierarchyNode * child = new SceneArchive::SceneArchiveHierarchyNode();
+        child->LoadHierarchy(file);
+        res->children.push_back(child);
+        
+    }    
+    SafeRelease(file);
+    return res;
 }
 
 void SceneFileV2::WriteDescriptor(File* file, const Descriptor& descriptor) const
@@ -565,6 +624,11 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
         String name = archive->GetString("name");
         Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), name.c_str(), node->GetClassName().c_str());
     }
+
+    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
+    {
+        parent->AddNode(node);
+    }
     
     int32 childrenCount = archive->GetInt32("#childrenCount", 0);
     node->children.reserve(childrenCount);
@@ -576,12 +640,12 @@ void SceneFileV2::LoadHierarchy(Scene * scene, Entity * parent, File * file, int
     if (removeChildren && childrenCount)
     {
         node->RemoveAllChildren();
-    }
 
-    if(!skipNode && QualitySettingsSystem::Instance()->NeedLoadEntity(node))
-    {
-        parent->AddNode(node);
-    }
+    }	   
+    
+    ParticleEffectComponent *effect = static_cast<ParticleEffectComponent*>(node->GetComponent(Component::PARTICLE_EFFECT_COMPONENT));
+    if (effect && (effect->loadedVersion == 0))
+        effect->CollapseOldEffect(&serializationContext);   
     
     SafeRelease(node);
     SafeRelease(archive);
@@ -647,7 +711,7 @@ void SceneFileV2::ConvertShadows(Entity * currentNode)
 		if(String::npos != childNode->GetName().find("_shadow"))
 		{
 			DVASSERT(childNode->GetChildrenCount() == 1);
-			Entity * svn = childNode->FindByName("dynamicshadow.shadowvolume");
+			Entity * svn = childNode->FindByName(FastName("dynamicshadow.shadowvolume"));
 			if(!svn)
 			{
 				MeshInstanceNode * mi = dynamic_cast<MeshInstanceNode*>(childNode->GetChild(0));
@@ -678,8 +742,15 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
         
         uint32 componentCount = currentNode->GetComponentCount();
 
-        if ((componentCount > 0 && (0 == currentNode->GetComponent(Component::TRANSFORM_COMPONENT))) //has only component, not transform
-			|| componentCount > 1)
+        Component * tr = currentNode->GetComponent(Component::TRANSFORM_COMPONENT);
+        Component * cp = currentNode->GetComponent(Component::CUSTOM_PROPERTIES_COMPONENT);
+        if (((componentCount == 2) && (!cp || !tr)) ||
+            (componentCount > 2))
+        {
+            doNotRemove = true;
+        }
+        
+        if(currentNode->GetName().find("dummy") != String::npos)
         {
             doNotRemove = true;
         }
@@ -689,7 +760,12 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-                parent->RemoveNode(currentNode);
+				if(GetVersion() < 11 && GetLodComponent(parent))
+				{
+					return false;
+				}
+
+				parent->RemoveNode(currentNode);
                 removedNodeCount++;
                 return true;
             }
@@ -726,20 +802,31 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
             return false;
 		}
         
-        if (currentNode->GetFlags() & Entity::NODE_LOCAL_MATRIX_IDENTITY)
+        
+        if (currentNode->GetLocalTransform() == Matrix4::IDENTITY)
         {
             Entity * parent  = currentNode->GetParent();
 
             if (parent)
             {
+				if(GetVersion() < 11 && GetLodComponent(parent))
+				{
+					return false;
+				}
+
+
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
-                String currentName = currentNode->GetName();
+                FastName currentName = currentNode->GetName();
 				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
                 
                 //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
                 
-                childNode->SetName(currentName);
+                //MEGA kostyl
+                if(!childNode->GetComponent(Component::PARTICLE_EFFECT_COMPONENT))//do not rename effects
+                {
+                    childNode->SetName(currentName);
+                }
 				//merge custom properties
 				KeyedArchive * newProperties = childNode->GetCustomProperties();
 				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
@@ -819,7 +906,6 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             if (oldMeshInstanceNode->GetLightmapCount() > 0)
             {
                 RenderBatch * batch = mesh->GetRenderBatch(k);
-                NMaterial * material = batch->GetMaterial();
                 //MaterialTechnique * tech = material->GetTechnique(PASS_FORWARD);
 
                 //tech->GetRenderState()->SetTexture(oldMeshInstanceNode->GetLightmapDataForIndex(k)->lightmap, 1);
@@ -853,7 +939,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
                 newShadowVolume->SetPolygonGroup(pg);
                 mesh->AddRenderBatch(newShadowVolume);
                 
-                mesh->SetOwnerDebugInfo(oldMeshInstanceNode->GetName() + " shadow:" + oldShadowVolumeNode->GetName());
+                mesh->SetOwnerDebugInfo(FastName(Format("%s shadow:%s", oldMeshInstanceNode->GetName().c_str(), oldShadowVolumeNode->GetName().c_str()).c_str()));
                 
                 parent->RemoveNode(oldShadowVolumeNode);
                 SafeRelease(newShadowVolume);
@@ -888,8 +974,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		lod->Entity::Clone(newNode);
 		Entity * parent = lod->GetParent();
 
-		newNode->AddComponent(new LodComponent());
-		LodComponent * lc = DynamicTypeCheck<LodComponent*>(newNode->GetComponent(Component::LOD_COMPONENT));
+		LodComponent *lc = new LodComponent();
+		newNode->AddComponent(lc);
 
 		for(int32 iLayer = 0; iLayer < LodComponent::MAX_LOD_LAYERS; ++iLayer)
 		{
@@ -907,7 +993,23 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 			newLodDataItem.indexes = oldDataItem->indexes;
 			newLodDataItem.isDummy = oldDataItem->isDummy;
 			newLodDataItem.layer = oldDataItem->layer;
-			newLodDataItem.nodes = oldDataItem->nodes;
+			
+//			newLodDataItem.nodes = oldDataItem->nodes;
+			for(uint32 n = 0; n < oldDataItem->nodes.size(); ++n)
+			{
+				Entity *nn = oldDataItem->nodes[n];
+
+				int32 childrenCount = lod->GetChildrenCount();
+				for(int32 c = 0; c < childrenCount; ++c)
+				{
+					if(nn == lod->GetChild(c))
+					{
+						newLodDataItem.nodes.push_back(newNode->GetChild(c));
+						break;
+					}
+				}
+			}
+
 
 			lc->lodLayers.push_back(newLodDataItem);
 		}
@@ -933,9 +1035,10 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
 		Entity * parent = particleEmitterNode->GetParent();
 
 		ParticleEmitter * emitter = particleEmitterNode->GetEmitter();
-		RenderComponent * renderComponent = new RenderComponent();
+		//!NB emitter is not render component anymore
+		/*RenderComponent * renderComponent = new RenderComponent();
 		newNode->AddComponent(renderComponent);
-		renderComponent->SetRenderObject(emitter);
+		renderComponent->SetRenderObject(emitter);*/
 		
 		DVASSERT(parent);
 		if(parent)
@@ -1065,9 +1168,17 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     rootNode->BakeTransforms();
     
 	//ConvertShadows(rootNode);
-    //RemoveEmptySceneNodes(rootNode);
+    RemoveEmptySceneNodes(rootNode);
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
+
+    if(GetVersion() < 11)
+    {
+	    LodToLod2Converter lodConverter;
+	    lodConverter.ConvertLodToV2(rootNode);
+	    SwitchToRenerObjectConverter switchConverter;
+	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
+    }
 	
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
@@ -1080,4 +1191,51 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
+
+void SceneFileV2::SetVersion( int32 version )
+{
+	header.version = version;
+}
+
+
+
+SceneArchive::~SceneArchive()
+{    
+    for (int32 i=0, sz = dataNodes.size(); i<sz; ++i)
+    {
+        SafeRelease(dataNodes[i]);
+    }
+    for (int32 i=0, sz = children.size(); i<sz; ++i)
+    {
+        SafeRelease(children[i]);
+    }
+}
+
+SceneArchive::SceneArchiveHierarchyNode::SceneArchiveHierarchyNode():archive(NULL)
+{
+}
+
+void SceneArchive::SceneArchiveHierarchyNode::LoadHierarchy(File *file)
+{
+    archive = new KeyedArchive();
+    archive->Load(file);
+    int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+    children.reserve(childrenCount);
+    for (int ci = 0; ci < childrenCount; ++ci)
+    {
+        SceneArchiveHierarchyNode * child = new SceneArchiveHierarchyNode();
+        child->LoadHierarchy(file);
+        children.push_back(child);
+    }
+}
+
+SceneArchive::SceneArchiveHierarchyNode::~SceneArchiveHierarchyNode()
+{
+    SafeRelease(archive);
+    for (int32 i=0, sz = children.size(); i<sz; ++i)
+    {
+        SafeRelease(children[i]);
+    }
+}
+
 };

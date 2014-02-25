@@ -123,7 +123,16 @@ void TextureDescriptor::SetDefaultValues()
 
 	format = FORMAT_INVALID;
 }
-    
+
+void TextureDescriptor::SetQualityGroup(const FastName &group)
+{
+    qualityGroup = group;
+}
+
+FastName TextureDescriptor::GetQualityGroup() const
+{
+    return qualityGroup;
+}
     
 bool TextureDescriptor::IsCompressedTextureActual(eGPUFamily forGPU) const
 {
@@ -618,6 +627,7 @@ void TextureDescriptor::Initialize( const TextureDescriptor *descriptor )
 		compression[i] = descriptor->compression[i];
 	}
 
+    qualityGroup = descriptor->qualityGroup;
 	exportedAsGpuFamily = descriptor->exportedAsGpuFamily;
 	exportedAsPixelFormat = descriptor->exportedAsPixelFormat;
 	isCompressedFile = descriptor->isCompressedFile;

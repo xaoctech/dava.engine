@@ -72,7 +72,7 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
 	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 	
-	noBlendDrawState = DAVA::RenderManager::Instance()->Derive3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
+	noBlendDrawState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
@@ -297,19 +297,18 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	RenderManager::Instance()->SetRenderTarget(dstSprite);
 	
 	RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
-	
-	RenderManager::Instance()->SetDefault2DState();
-	RenderManager::Instance()->FlushState();
-	
+		
 	RenderManager::Instance()->SetColor(Color::White);
 	
-	srcSprite->SetScaleSize((float32)sideSize, (float32)sideSize);
-	srcSprite->SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f,
-								   (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
-	srcSprite->Draw();
+    Sprite::DrawState drawState;
+    drawState.SetScaleSize((float32)sideSize, (float32)sideSize,
+                           srcSprite->GetWidth(), srcSprite->GetHeight());
+    drawState.SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f,
+                                  (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
+	srcSprite->Draw(&drawState);
 	RenderManager::Instance()->RestoreRenderTarget();
 	
-	Image *retImage = dstSprite->GetTexture()->CreateImageFromMemory();
+	Image *retImage = dstSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
 	
 	SafeRelease(srcSprite);
 	SafeRelease(srcTex);

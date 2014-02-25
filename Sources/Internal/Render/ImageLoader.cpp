@@ -195,7 +195,7 @@ Vector<Image *> ImageLoader::CreateFromDDS(DAVA::File *file)
 
 Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 {
-    uint64 loadTime = SystemTimer::Instance()->AbsoluteMS();
+//    uint64 loadTime = SystemTimer::Instance()->AbsoluteMS();
 
     int32 mipMapLevelsCount = LibPVRHelper::GetMipMapLevelsCount(file);
 	int32 faceCount = LibPVRHelper::GetCubemapFaceCount(file);
@@ -225,7 +225,7 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
             return Vector<Image *>();
         }
-        loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
+//        loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
 //        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
         return imageSet;
     }
