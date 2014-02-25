@@ -524,7 +524,17 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool nee
     
 void Scene::RemoveSystem(SceneSystem * sceneSystem)
 {
-    Vector<SceneSystem*>::const_iterator endIt = systems.end();
+    Vector<SceneSystem*>::iterator endIt = systemsToUpdate.end();
+    for(Vector<SceneSystem*>::iterator it = systemsToUpdate.begin(); it != endIt; ++it)
+    {
+        if(*it == sceneSystem)
+        {
+            systemsToUpdate.erase(it);
+            break;;
+        }
+    }
+
+    endIt = systems.end();
     for(Vector<SceneSystem*>::iterator it = systems.begin(); it != endIt; ++it)
     {
         if(*it == sceneSystem)
