@@ -58,9 +58,13 @@ public:
     
     void SetImage(const DAVA::FilePath& filePath);
     
+    DAVA::Vector2 GetAcceptableSize() const;
+    
 public slots:
     void clear();
     void UpdatePreviewPicture();
+    
+    void SetAcceptableSize(const DAVA::Vector2& size);
     
 signals:
     
@@ -68,6 +72,7 @@ signals:
     
 protected:
 
+    void mousePressEvent(QMouseEvent * event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     
@@ -77,6 +82,7 @@ protected:
     
     eColorCmponents colorComponent;
     DAVA::Image* image;
+    DAVA::Vector2 acceptableSize;
 };
 
 #endif /* defined(__QT_IMAGE_AREA_H__) */

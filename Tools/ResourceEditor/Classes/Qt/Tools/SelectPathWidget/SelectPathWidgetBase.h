@@ -82,6 +82,8 @@ public slots:
 		
 	void acceptEditing();
 
+    void setVisible(bool);
+    
 signals:
 	
 	void PathSelected(DAVA::String selectedFile);
