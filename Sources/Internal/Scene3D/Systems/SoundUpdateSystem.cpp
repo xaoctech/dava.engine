@@ -91,8 +91,8 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
     if(activeCamera)
     {
         SoundSystem * ss = SoundSystem::Instance();
-//        ss->SetListenerPosition(activeCamera->GetPosition());
-//        ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
+        ss->SetListenerPosition(activeCamera->GetPosition());
+        ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
     }
 }
 
