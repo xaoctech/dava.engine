@@ -79,14 +79,13 @@ public:
 
     virtual String GetEventName() const { return fileName.GetFrameworkPath(); };
 
-    //FMOD only
-    void PerformCallback(FMOD::Channel * instance);
-
 protected:
 	FMODFileSoundEvent(const FilePath & fileName, uint32 flags, int32 priority);
 	virtual ~FMODFileSoundEvent();
 
 	static FMODFileSoundEvent * CreateWithFlags(const FilePath & fileName, uint32 flags, int32 priority = 128);
+
+    void PerformCallback(FMOD::Channel * instance);
 
     static Mutex soundMapMutex;
 
