@@ -2823,11 +2823,6 @@ namespace DAVA
 		return position;
 	}
 
-	float32 UIControl::Round(float32 value)
-	{
-		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
-	}
-	
 	void UIControl::RecalculatePivotPoint(const Rect &newRect)
 	{
 		Rect oldRect = this->GetRect();
