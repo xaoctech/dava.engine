@@ -106,7 +106,7 @@ void SceneNodeAnimation::SetBindNode(Entity * _bindNode)
 	bindNode = _bindNode;
 }
 	
-void SceneNodeAnimation::SetBindName(const String & _bindName)
+void SceneNodeAnimation::SetBindName(const FastName & _bindName)
 {
 	bindName = _bindName;
 }
