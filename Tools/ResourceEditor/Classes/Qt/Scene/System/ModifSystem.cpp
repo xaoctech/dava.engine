@@ -158,7 +158,7 @@ bool EntityModificationSystem::InCloneState() const
 	return (cloneState == CLONE_NEED);
 }
 
-void EntityModificationSystem::Update(DAVA::float32 timeElapsed)
+void EntityModificationSystem::Process(DAVA::float32 timeElapsed)
 { }
 
 void EntityModificationSystem::ProcessUIEvent(DAVA::UIEvent *event)
