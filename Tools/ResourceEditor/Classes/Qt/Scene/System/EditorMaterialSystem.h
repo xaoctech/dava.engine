@@ -30,6 +30,7 @@
 #define __EDITOR_MATERIAL_SYSTEM_H__
 
 #include "DAVAEngine.h"
+#include "Base/Introspection.h"
 
 class Command2;
 class EditorMaterialSystem : public DAVA::SceneSystem
@@ -37,16 +38,16 @@ class EditorMaterialSystem : public DAVA::SceneSystem
 	friend class SceneEditor2;
 
 public:
-    enum MaterialViewMode
+    enum MaterialLightViewMode
     {
-        MVM_NOTHING     = 0x0,
+        LIGHTVIEW_NOTHING     = 0x0,
 
-        MVM_ALBEDO      = 0x1,
-        MVM_AMBIENT     = 0x2,
-        MVM_DIFFUSE     = 0x4,
-        MVM_SPECULAR    = 0x8,
+        LIGHTVIEW_ALBEDO      = 0x1,
+        LIGHTVIEW_AMBIENT     = 0x2,
+        LIGHTVIEW_DIFFUSE     = 0x4,
+        LIGHTVIEW_SPECULAR    = 0x8,
 
-        MVM_ALL         = (MVM_ALBEDO | MVM_AMBIENT | MVM_DIFFUSE | MVM_SPECULAR)
+        LIGHTVIEW_ALL         = (LIGHTVIEW_ALBEDO | LIGHTVIEW_AMBIENT | LIGHTVIEW_DIFFUSE | LIGHTVIEW_SPECULAR)
     };
 
 	EditorMaterialSystem(DAVA::Scene * scene);
@@ -54,15 +55,19 @@ public:
 
 	void BuildMaterialsTree(DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > &in) const;
 	void BuildInstancesList(DAVA::NMaterial* parentMaterial, DAVA::Set<DAVA::NMaterial *> &in) const;
+    void BuildMaterialsList(DAVA::Set<DAVA::NMaterial *> &in) const;
 
 	DAVA::Entity* GetEntity(DAVA::NMaterial*) const;
-	DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
+	const DAVA::RenderBatch *GetRenderBatch(DAVA::NMaterial*) const;
 
-    void SetViewMode(EditorMaterialSystem::MaterialViewMode viewMode, bool set);
-    bool GetViewMode(EditorMaterialSystem::MaterialViewMode viewMode) const;
+    void SetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode, bool set);
+    bool GetLightViewMode(EditorMaterialSystem::MaterialLightViewMode viewMode) const;
 
-    void SetViewMode(int fullViewMode);
-    int GetViewMode() const;
+    void SetLightViewMode(int fullViewMode);
+    int GetLightViewMode();
+
+    void SetLightmapCanvasVisible(bool enable);
+    bool IsLightmapCanvasVisible() const;
 
 protected:
 	virtual void AddEntity(DAVA::Entity * entity);
@@ -74,24 +79,28 @@ protected:
 	void ProcessUIEvent(DAVA::UIEvent *event);
 	void ProcessCommand(const Command2 *command, bool redo);
 
-	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, DAVA::RenderBatch *rb);
-	void RemMaterial(DAVA::NMaterial *material);
+	void AddMaterial(DAVA::NMaterial *material, DAVA::Entity *entity, const DAVA::RenderBatch *rb);
+	void RemoveMaterial(DAVA::NMaterial *material);
 
+    void ApplyViewMode();
     void ApplyViewMode(DAVA::NMaterial *material);
 
 private:
     int curViewMode;
+    bool showLightmapCanvas;
 
     struct MaterialFB
 	{
 		MaterialFB() : entity(NULL), batch(NULL) {}
 
 		DAVA::Entity *entity;
-		DAVA::RenderBatch *batch;
+		const DAVA::RenderBatch *batch;
 	};
 
 	DAVA::Map<DAVA::NMaterial *, MaterialFB> materialFeedback;
 	DAVA::Set<DAVA::NMaterial *> ownedParents;
+
+    bool IsEditable(DAVA::NMaterial *material) const;
 };
 
 #endif // __EDITOR_MATERIAL_SYSTEM_H__

@@ -43,7 +43,6 @@
 #include <QToolBar>
 #include <QLineEdit>
 #include <QComboBox>
-#include <QTreeView>
 #include <QHeaderView>
 #include <QProgressBar>
 #include <QLabel>
@@ -55,8 +54,6 @@
 #include <QStringList>
 
 Q_DECLARE_METATYPE( QFileInfo )
-
-
 
 struct FileType
 {
@@ -186,13 +183,16 @@ void LibraryWidget::SetupView()
     filesModel = new LibraryFileSystemModel(this);
 //    proxyModel = new LibraryFilteringModel(this);
 
-    filesView = new QTreeView(this);
+    filesView = new LibraryTreeView(this);
     filesView->setContextMenuPolicy(Qt::CustomContextMenu);
     filesView->setDragDropMode(QAbstractItemView::DragOnly);
 	filesView->setDragEnabled(true);
     filesView->setUniformRowHeights(true);
     
     filesView->setModel(filesModel);
+    
+    QObject::connect(filesView, SIGNAL(DragStarted()), this, SLOT(OnTreeDragStarted()));
+    
 //    QObject::connect(filesModel, SIGNAL(ModelLoaded()), this, SLOT(OnModelLoaded()));
     
 // 	notFoundMessage = new QLabel("Nothing found", this);
@@ -340,12 +340,9 @@ void LibraryWidget::ShowContextMenu(const QPoint & point)
     else if(pathname.IsEqualToExtension(".dae"))
     {
         QAction * actionConvert = contextMenu.addAction("Convert", this, SLOT(OnConvertDae()));
-        QAction * actionConvertGeometry = contextMenu.addAction("Convert geometry", this, SLOT(OnConvertGeometry()));
-        
         actionConvert->setData(fileInfoAsVariant);
-        actionConvertGeometry->setData(fileInfoAsVariant);
     }
-//TODO: disabled for furure realization of this code
+//TODO: disabled for future realization of this code
 //    else if(pathname.IsEqualToExtension(".tex"))
 //    {
 //        QAction * actionEdit = contextMenu.addAction("Edit", this, SLOT(OnEditTextureDescriptor()));
@@ -537,19 +534,6 @@ void LibraryWidget::OnConvertDae()
     QtMainWindow::Instance()->WaitStop();
 }
 
-void LibraryWidget::OnConvertGeometry()
-{
-    QVariant indexAsVariant = ((QAction *)sender())->data();
-    const QFileInfo fileInfo = indexAsVariant.value<QFileInfo>();
-    
-    QtMainWindow::Instance()->WaitStart("DAE to SC2 conversion of geometry", fileInfo.absoluteFilePath());
-    
-    Command2 *daeCmd = new DAEConvertWithSettingsAction(fileInfo.absoluteFilePath().toStdString());
-    daeCmd->Redo();
-    delete daeCmd;
-    
-    QtMainWindow::Instance()->WaitStop();
-}
 
 void LibraryWidget::OnEditTextureDescriptor()
 {
@@ -620,4 +604,9 @@ void LibraryWidget::ShowPreview(const QString & pathname) const
 //     
 //     return wasExpanded;
 // }
+
+void LibraryWidget::OnTreeDragStarted()
+{
+    HidePreview();
+}
 

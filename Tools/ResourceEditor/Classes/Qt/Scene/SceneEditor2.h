@@ -171,6 +171,7 @@ public:
 	INTROSPECTION(SceneEditor2, 
 		MEMBER(cameraSystem, "CameraSystem", I_VIEW | I_EDIT)
 		MEMBER(gridSystem, "GridSystem", I_VIEW | I_EDIT)
+        MEMBER(materialSystem, "Material System", I_VIEW | I_EDIT)
 		)
 
 protected:
@@ -193,6 +194,9 @@ protected:
 	void RemoveSystems();
 
 	bool wasChanged; //deprecated
+    
+    void Setup2DDrawing();
+    void Setup3DDrawing();
 
 private:
 	friend struct EditorCommandNotify;

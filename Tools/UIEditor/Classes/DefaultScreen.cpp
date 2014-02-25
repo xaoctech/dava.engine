@@ -65,9 +65,7 @@ public:
 	
 	void SystemDraw(const UIGeometricData &/*geometricData*/)
 	{
-        RenderManager::Instance()->SetDefault2DNoTextureState();
-		RenderHelper::Instance()->DrawRect(GetRect());
-        RenderManager::Instance()->SetDefault2DState();
+		RenderHelper::Instance()->DrawRect(GetRect(), RenderState::RENDERSTATE_2D_BLEND);
 	}
 };
 
@@ -110,13 +108,11 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
     bool previewEnabled = PreviewController::Instance()->IsPreviewEnabled();
     Color oldColor = RenderManager::Instance()->GetColor();
 
-    RenderManager::Instance()->SetDefault2DNoTextureState();
     RenderManager::Instance()->SetColor(ScreenWrapper::Instance()->GetBackgroundFrameColor());
-    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect());
+    RenderHelper::Instance()->FillRect(ScreenWrapper::Instance()->GetBackgroundFrameRect(), RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetColor(oldColor);
-    RenderManager::Instance()->SetDefault2DState();
 
-    // For Preview mode display only what is inside the preview rectangle.
+   // For Preview mode display only what is inside the preview rectangle.
     if (previewEnabled)
     {
         RenderManager::Instance()->ClipPush();

@@ -97,18 +97,22 @@ void TransformSystem::FindNodeThatRequireUpdate(Entity * entity)
         Entity * entity = stack[--stackPosition];
         
         if (entity->GetFlags() & Entity::TRANSFORM_NEED_UPDATE)
-        TransformAllChildEntities(entity);
-        
-        entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE | Entity::TRANSFORM_DIRTY);
-        
-        uint32 size = entity->GetChildrenCount();
-        for(uint32 i = 0; i < size; ++i)
         {
-            Entity * childEntity = entity->GetChild(i);
-            if(childEntity->GetFlags() & Entity::TRANSFORM_DIRTY)
+            TransformAllChildEntities(entity);
+        }
+        else{
+            entity->RemoveFlag(Entity::TRANSFORM_NEED_UPDATE | Entity::TRANSFORM_DIRTY);
+            
+            // We already marked all children as non-dirty if we entered to TransformAllChildEntities()
+            uint32 size = entity->GetChildrenCount();
+            for(uint32 i = 0; i < size; ++i)
             {
-                DVASSERT(stackPosition < STACK_SIZE - 1);
-                stack[stackPosition++] = childEntity;
+                Entity * childEntity = entity->GetChild(i);
+                if(childEntity->GetFlags() & Entity::TRANSFORM_DIRTY)
+                {
+                    DVASSERT(stackPosition < STACK_SIZE - 1);
+                    stack[stackPosition++] = childEntity;
+                }
             }
         }
     }

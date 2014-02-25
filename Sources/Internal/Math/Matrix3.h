@@ -75,6 +75,7 @@ struct Matrix3
 	inline void	BuildTranslation(const Vector2 & vec);
 	inline void	BuildScale(const Vector2 & vec);
 	inline bool GetInverse(Matrix3 & out, float32 fTolerance = 1e-06) const;
+    inline void Transpose();
 	inline void Decomposition(Matrix3 &kQ, Vector3 &kD, Vector3 &kU) const;
 
 	inline Matrix3& operator *= (const Matrix3 & arg);
@@ -315,6 +316,15 @@ inline bool Matrix3::GetInverse(Matrix3 & out, float32 fTolerance) const
 	}
 	
 	return true;
+}
+
+inline void Matrix3::Transpose()
+{
+    Matrix3 t;
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            t._data[i][j] = _data[j][i];
+    *this = t;
 }
 
 inline void Matrix3::Decomposition(Matrix3 &kQ, Vector3 &kD, Vector3 &kU) const

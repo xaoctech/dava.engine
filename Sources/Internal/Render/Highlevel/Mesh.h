@@ -62,7 +62,6 @@ public:
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
 	virtual void BakeTransform(const Matrix4 & transform);
-	virtual ShadowVolume * CreateShadow();
 
 protected:
 };

@@ -142,7 +142,7 @@ void TextureListDelegate::drawPreviewBig(QPainter *painter, const QStyleOptionVi
 		painter->setPen(BORDER_COLOR);
 		painter->drawRect(borderRect);
 
-		const DAVA::Vector<QImage>& images = TextureCache::Instance()->getThumbnail(curTextureDescriptor);
+		const QList<QImage>& images = TextureCache::Instance()->getThumbnail(curTextureDescriptor);
 		if(images.size() > 0 &&
 		   !images[0].isNull())
 		{
