@@ -91,5 +91,8 @@
 -
  name: "WaterPerPixel Cubemap"
  path: WaterPerPixelCubemap.material
+-
+ name: "WaterPerPixel Real Reflections"
+ path: WaterPerPixelRealReflections.material
 
  

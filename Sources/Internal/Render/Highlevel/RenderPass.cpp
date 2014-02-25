@@ -32,6 +32,7 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
+#include "Render/ImageLoader.h"
 
 namespace DAVA
 {
@@ -109,8 +110,18 @@ void RenderPass::DrawLayers(Camera *camera)
 }
 
 
-MainForwardRenderPass::MainForwardRenderPass(const FastName & name, RenderPassID id):RenderPass(name, id)
+MainForwardRenderPass::MainForwardRenderPass(const FastName & name, RenderPassID id):RenderPass(name, id),
+    reflectionTexture(NULL), reflectionSprite(NULL), refractionTexture(NULL), refractionSprite(NULL),
+    reflectionPass(NULL), refractionPass(NULL)
 {
+    const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_OPAQUE), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_WATER), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
 }
 
 void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
@@ -137,34 +148,73 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 
 	if (needWaterPrepass)
 	{
-        if (!reflectionTexture)
-        { 
-            /*create FBOs*/
+        const static int32 TEX_SIZE = 1024;
+        if (!reflectionPass)
+        {             
+            reflectionPass = new WaterReflectionRenderPass(PASS_FORWARD, RENDER_PASS_WATER_REFLECTION);
+            reflectionTexture = Texture::CreateFBO(TEX_SIZE, TEX_SIZE, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);          
+            reflectionSprite = Sprite::CreateFromTexture(reflectionTexture, 0, 0, TEX_SIZE, TEX_SIZE);
+            
+            refractionPass = new WaterRefractionRenderPass(PASS_FORWARD, RENDER_PASS_WATER_REFRACTION);
+            refractionTexture = Texture::CreateFBO(TEX_SIZE, TEX_SIZE, FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER);          
+            refractionSprite = Sprite::CreateFromTexture(refractionTexture, 0, 0, TEX_SIZE, TEX_SIZE);
         }
-        //attach reflection FBO
+        Rect viewportSave = RenderManager::Instance()->GetViewport();
+        RenderManager::Instance()->SetRenderTarget(reflectionSprite);
+        RenderManager::Instance()->SetViewport(Rect(0, 0, TEX_SIZE, TEX_SIZE), true);        
+        RenderManager::Instance()->Clear(Color(0.0f, 1.0f, 0.0f, 1.0f), 1.0f, 0);     
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();
         reflectionPass->SetWaterLevel(waterBox.min.z);
         reflectionPass->Draw(camera, renderSystem);
-        
-        //attach refraction FBO
+        RenderManager::Instance()->RestoreRenderTarget();
+                
+        RenderManager::Instance()->SetRenderTarget(refractionSprite);
+        RenderManager::Instance()->SetViewport(Rect(0, 0, TEX_SIZE, TEX_SIZE), true);        
+        RenderManager::Instance()->Clear(Color(1.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();
         refractionPass->SetWaterLevel(waterBox.max.z);
         refractionPass->Draw(camera, renderSystem);
+        RenderManager::Instance()->RestoreRenderTarget();
+        RenderManager::Instance()->SetViewport(viewportSave, true);                
 
         camera->SetupDynamicParameters();
 		
 		for (uint32 i=0; i<waterBatchesCount; ++i)
 		{
 			NMaterial *mat = waterLayer->Get(i)->GetMaterial();
-			mat->SetTexture(FastName("reflection"), reflectionTexture);
-			mat->SetTexture(FastName("refraction"), refractionTexture);
+			mat->SetTexture(FastName("reflTex"), reflectionTexture);
+			mat->SetTexture(FastName("refrTex"), refractionTexture);
 		}
 	}	
 
     
 	DrawLayers(camera);
+
+    if (needWaterPrepass)
+    {
+        static int t=0;        
+        if ((t%700) == 0)
+        {
+            Image * img = reflectionTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
+            ImageLoader::Save(img, "reflectionTexture.png");
+            img = refractionTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
+            ImageLoader::Save(img, "refractiontest.png");
+        }
+        t++;
+    }
 }
 
 WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(name, id), passCamera(NULL)
 {
+    const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_OPAQUE), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
 }
 WaterPrePass::~WaterPrePass()
 {
@@ -173,6 +223,7 @@ WaterPrePass::~WaterPrePass()
 
 WaterReflectionRenderPass::WaterReflectionRenderPass(const FastName & name, RenderPassID id):WaterPrePass(name, id)
 {
+    
 }
 
 
@@ -182,14 +233,19 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
     if (!passCamera)
         passCamera = new Camera();    
     passCamera->CopyMathOnly(*camera);
-    Vector3 v;
+    passCamera->SetCullInvert(false);    
+    /*Vector3 v;
     v = passCamera->GetDirection();
     v.z*=-1;
     passCamera->SetDirection(v);
     v = passCamera->GetPosition();
     v.z = waterLevel - (v.z - waterLevel);
     passCamera->SetPosition(v);
+    //v = passCamera->GetUp();
+    //v*=-1;
+    //passCamera->SetUp(v);*/
     passCamera->SetupDynamicParameters();
+    RenderManager::Instance()->SetCullOrder(ORDER_CCW);
     //add clipping plane
     PrepareVisibilityArrays(passCamera, renderSystem);
     DrawLayers(passCamera);
@@ -203,11 +259,15 @@ WaterRefractionRenderPass::WaterRefractionRenderPass(const FastName & name, Rend
 void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 {
     if (!passCamera)
-        passCamera = new Camera();    
+        passCamera = new Camera();        
     passCamera->CopyMathOnly(*camera);
+    passCamera->SetCullInvert(true);
+    passCamera->SetupDynamicParameters();
+    RenderManager::Instance()->SetCullOrder(ORDER_CW);
     //add clipping plane
     PrepareVisibilityArrays(passCamera, renderSystem);
     DrawLayers(passCamera);
+    
 }
 
 

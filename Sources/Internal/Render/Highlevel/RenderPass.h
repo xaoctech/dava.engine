@@ -132,6 +132,7 @@ class MainForwardRenderPass : public RenderPass
 	WaterReflectionRenderPass *reflectionPass;
     WaterRefractionRenderPass *refractionPass;
     Texture *reflectionTexture, *refractionTexture;
+    Sprite *reflectionSprite, *refractionSprite;
 public:
     MainForwardRenderPass(const FastName & name, RenderPassID id);
 	virtual void Draw(Camera * camera, RenderSystem * renderSystem);

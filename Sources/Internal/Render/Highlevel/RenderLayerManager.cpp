@@ -80,6 +80,9 @@ RenderLayerManager::RenderLayerManager()
                                                            RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL,
                                                            RENDER_LAYER_ALPHA_TEST_LAYER_ID);
     InsertLayer(renderLayerAlphaTest);
+
+    RenderLayer * renderLayerWater = new RenderLayer(LAYER_WATER, 0, RENDER_LAYER_WATER_ID);
+    InsertLayer(renderLayerWater);
     
     RenderLayer * renderLayerTranslucent = new RenderLayer(LAYER_TRANSLUCENT,
                                                          RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_BACK_TO_FRONT,

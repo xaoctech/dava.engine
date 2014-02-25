@@ -58,7 +58,8 @@ RenderSystem::RenderSystem()
     ,   clipCamera(0)
     ,   forceUpdateLights(false)
 {
-    mainRenderPass = GetRenderPassManager()->GetRenderPass(PASS_FORWARD);
+    //mainRenderPass = GetRenderPassManager()->GetRenderPass(PASS_FORWARD);
+    mainRenderPass = new MainForwardRenderPass(PASS_FORWARD, RENDER_PASS_FORWARD_ID);
     //renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
 
     renderHierarchy = new QuadTree(10);
