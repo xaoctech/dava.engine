@@ -68,12 +68,14 @@
 		audioPlayer	= [[AVAudioPlayer alloc] initWithContentsOfURL: url error: &error];
 		if(error)
         {
-            printf("AvSound::initWithFileName error %s", [[error localizedDescription] cStringUsingEncoding:NSASCIIStringEncoding]);
+            NSLog(@"AvSound::initWithFileName error %s", [[error localizedDescription] cStringUsingEncoding:NSASCIIStringEncoding]);
             initSuccess = false;
         }
-        
-		audioPlayer.delegate = self;
-		[audioPlayer prepareToPlay];
+        else
+        {
+            audioPlayer.delegate = self;
+            [audioPlayer prepareToPlay];
+        }
 	}
 	
     return self;  
@@ -144,7 +146,7 @@ MusicIOSSoundEvent * MusicIOSSoundEvent::CreateMusicEvent(const FilePath & path)
     if(event->Init())
         return event;
     
-    Logger::FrameworkDebug("[MusicIOSSoundEvent::CreateMusicEvent] failed to create music event: %s",
+    Logger::Error("[MusicIOSSoundEvent::CreateMusicEvent] failed to create music event: %s",
                            path.GetAbsolutePathname().c_str());
     
     SafeRelease(event);
