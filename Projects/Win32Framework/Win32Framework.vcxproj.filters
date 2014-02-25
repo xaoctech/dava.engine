@@ -1329,9 +1329,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\UniqueStateSet.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateDataUniqueHandler.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateData.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
