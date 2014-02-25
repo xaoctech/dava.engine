@@ -214,7 +214,7 @@ WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(na
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
+    //AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
 }
 WaterPrePass::~WaterPrePass()
 {
@@ -232,8 +232,7 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
 {    
     if (!passCamera)
         passCamera = new Camera();    
-    passCamera->CopyMathOnly(*camera);
-    passCamera->SetCullInvert(false);    
+    passCamera->CopyMathOnly(*camera);    
     /*Vector3 v;
     v = passCamera->GetDirection();
     v.z*=-1;
@@ -244,8 +243,7 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
     //v = passCamera->GetUp();
     //v*=-1;
     //passCamera->SetUp(v);*/
-    passCamera->SetupDynamicParameters();
-    RenderManager::Instance()->SetCullOrder(ORDER_CCW);
+    passCamera->SetupDynamicParameters();    
     //add clipping plane
     PrepareVisibilityArrays(passCamera, renderSystem);
     DrawLayers(passCamera);
@@ -260,10 +258,8 @@ void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
 {
     if (!passCamera)
         passCamera = new Camera();        
-    passCamera->CopyMathOnly(*camera);
-    passCamera->SetCullInvert(true);
-    passCamera->SetupDynamicParameters();
-    RenderManager::Instance()->SetCullOrder(ORDER_CW);
+    passCamera->CopyMathOnly(*camera);    
+    passCamera->SetupDynamicParameters();    
     //add clipping plane
     PrepareVisibilityArrays(passCamera, renderSystem);
     DrawLayers(passCamera);
