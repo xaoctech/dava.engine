@@ -92,7 +92,7 @@ public:
 
 	void SetMaxTextureSize(int32 maxTextureSize);
 	
-	Set<String> GetErrors();
+	const Set<String>& GetErrors() const;
 	
 private:
     
@@ -119,6 +119,7 @@ private:
 	bool IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU);
 	
 	Set<String> errors;
+	void AddError(const String& errorMsg);
 };
 
 };

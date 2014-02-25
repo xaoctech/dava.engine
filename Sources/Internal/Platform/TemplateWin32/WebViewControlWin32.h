@@ -111,7 +111,9 @@ public:
 	// Open the URL requested.
 	virtual void OpenURL(const String& urlToOpen);
 	
-	// Size/pos/visibility changes.
+    void OpenFromBuffer(const String& string, const FilePath& basePath);
+
+    // Size/pos/visibility changes.
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
