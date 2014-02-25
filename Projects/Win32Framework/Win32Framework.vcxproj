@@ -459,7 +459,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\RenderResource.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderState.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateData.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateDataUniqueHandler.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\RGBColor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Shader.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ShaderCache.h" />
