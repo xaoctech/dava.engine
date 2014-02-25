@@ -85,7 +85,6 @@ void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
 {
 #ifdef DAVA_FMOD
     DAVA::SoundSystem * soundsystem = DAVA::SoundSystem::Instance();
-#endif
 
     soundsystem->UnloadFMODProjects();
 
@@ -95,6 +94,7 @@ void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
     soundsystem->GetAllEventsNames(names);
 
     FillEventsTree(names);
+#endif
 }
 
 void FMODSoundBrowser::OnProjectClosed()
