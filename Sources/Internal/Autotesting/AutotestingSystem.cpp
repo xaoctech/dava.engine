@@ -213,7 +213,7 @@ void AutotestingSystem::SetUpTestArchive()
     String testId = GetTestId();
 	
 	KeyedArchive* currentBuildArchive = AutotestingDB::Instance()->FindOrInsertBuildArchive(dbUpdateObject, "");
-	KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindInsertGroupArchive(currentBuildArchive, groupName);
+	KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindOrInsertGroupArchive(currentBuildArchive, groupName);
 	//AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
 	//KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentBuildArchive, testId);
     KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentGroupArchive, testId);

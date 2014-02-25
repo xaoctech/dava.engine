@@ -43,7 +43,7 @@ public:
 	KeyedArchive *FindBuildArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg);
 	KeyedArchive *FindOrInsertBuildArchive(MongodbUpdateObject* dbUpdateObject, const String &auxArg);
 
-	KeyedArchive *AutotestingDB::FindInsertGroupArchive(KeyedArchive* buildArchive, const String &groupId);
+	KeyedArchive *FindOrInsertGroupArchive(KeyedArchive* buildArchive, const String &groupId);
 	KeyedArchive *InsertTestArchive(KeyedArchive* currentGroupArchive, const String &testId);
 	KeyedArchive *InsertStepArchive(KeyedArchive *testArchive, const String &stepId, const String &description);
 

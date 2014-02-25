@@ -201,7 +201,7 @@ namespace DAVA
 
 
 	// GROUP Level
-	KeyedArchive *AutotestingDB::FindInsertGroupArchive(KeyedArchive* buildArchive, const String &groupId)
+	KeyedArchive *AutotestingDB::FindOrInsertGroupArchive(KeyedArchive* buildArchive, const String &groupId)
 	{
 		Logger::Debug("AutotestingDB::FindInsertGroupArchive Group=%s", groupId.c_str());
 
@@ -464,7 +464,7 @@ namespace DAVA
 		MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 
 		KeyedArchive* currentBuildArchive = AutotestingDB::Instance()->FindOrInsertBuildArchive(dbUpdateObject, "");
-		KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindInsertGroupArchive(currentBuildArchive, AutotestingSystem::Instance()->groupName);
+		KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindOrInsertGroupArchive(currentBuildArchive, AutotestingSystem::Instance()->groupName);
 
 		currentGroupArchive->SetArchive(archiveName.c_str(), archive);
 		currentGroupArchive->SetString("Map", docName.c_str());
