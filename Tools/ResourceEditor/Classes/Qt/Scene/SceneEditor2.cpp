@@ -47,6 +47,7 @@
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "Scene3D/Systems/RenderUpdateSystem.h"
 
 const FastName MATERIAL_FOR_REBIND = FastName("Global");
 
@@ -65,49 +66,49 @@ SceneEditor2::SceneEditor2()
 	AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT));
 
 	gridSystem = new SceneGridSystem(this);
-	AddSystem(gridSystem, 0);
+	AddSystem(gridSystem, 0, true);
 	
 	collisionSystem = new SceneCollisionSystem(this);
-	AddSystem(collisionSystem, 0);
+	AddSystem(collisionSystem, 0, true);
 
 	hoodSystem = new HoodSystem(this, cameraSystem);
-	AddSystem(hoodSystem, 0);
+	AddSystem(hoodSystem, 0, true);
 
 	selectionSystem = new SceneSelectionSystem(this, collisionSystem, hoodSystem);
-	AddSystem(selectionSystem, 0);
+	AddSystem(selectionSystem, 0, true);
 	
 	particlesSystem = new EditorParticlesSystem(this);
-	AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT));
+	AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT), true);
 
 	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);
-	AddSystem(modifSystem, 0);
+	AddSystem(modifSystem, 0, true);
 
 	landscapeEditorDrawSystem = new LandscapeEditorDrawSystem(this);
-	AddSystem(landscapeEditorDrawSystem, 0);
+	AddSystem(landscapeEditorDrawSystem, 0, true);
 
 	heightmapEditorSystem = new HeightmapEditorSystem(this);
-	AddSystem(heightmapEditorSystem, 0);
+	AddSystem(heightmapEditorSystem, 0, true);
 
 	tilemaskEditorSystem = new TilemaskEditorSystem(this);
-	AddSystem(tilemaskEditorSystem, 0);
+	AddSystem(tilemaskEditorSystem, 0, true);
 
 	customColorsSystem = new CustomColorsSystem(this);
-	AddSystem(customColorsSystem, 0);
+	AddSystem(customColorsSystem, 0, true);
 
 	visibilityToolSystem = new VisibilityToolSystem(this);
-	AddSystem(visibilityToolSystem, 0);
+	AddSystem(visibilityToolSystem, 0, true);
 
 	rulerToolSystem = new RulerToolSystem(this);
-	AddSystem(rulerToolSystem, 0);
+	AddSystem(rulerToolSystem, 0, true);
 
 	structureSystem = new StructureSystem(this);
-	AddSystem(structureSystem, 0);
+	AddSystem(structureSystem, 0, true);
 
 	editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT);
+	AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT, true);
 
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
-	AddSystem(textDrawSystem, 0);
+	AddSystem(textDrawSystem, 0, true);
 
 	debugDrawSystem = new DebugDrawSystem(this);
 	AddSystem(debugDrawSystem, 0);
@@ -119,10 +120,10 @@ SceneEditor2::SceneEditor2()
 	AddSystem(ownersSignatureSystem, 0);
     
     staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
-    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT));
+    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT), true,renderUpdateSystem);
 
 	materialSystem = new EditorMaterialSystem(this);
-	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT);
+	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT, true);
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
@@ -354,39 +355,10 @@ void SceneEditor2::SetChanged(bool changed)
 
 void SceneEditor2::Update(float timeElapsed)
 {
-	Scene::Update(timeElapsed);
-	gridSystem->Update(timeElapsed);
-	cameraSystem->Update(timeElapsed);
-	
-	if(collisionSystem)
-		collisionSystem->Update(timeElapsed);
-
-	hoodSystem->Update(timeElapsed);
-	selectionSystem->Update(timeElapsed);
-	modifSystem->Update(timeElapsed);
-
-	if(landscapeEditorDrawSystem)
-		landscapeEditorDrawSystem->Update(timeElapsed);
-
-	heightmapEditorSystem->Update(timeElapsed);
-	tilemaskEditorSystem->Update(timeElapsed);
-	customColorsSystem->Update(timeElapsed);
-	visibilityToolSystem->Update(timeElapsed);
-	rulerToolSystem->Update(timeElapsed);
-	
-	if(structureSystem)
-		structureSystem->Update(timeElapsed);
-	
-	particlesSystem->Update(timeElapsed);
-	textDrawSystem->Update(timeElapsed);
-	
-	if(editorLightSystem)
-		editorLightSystem->Process();
+    cameraSystem->Process(timeElapsed);
 
     staticOcclusionBuildSystem->SetCamera(GetClipCamera());
-    staticOcclusionBuildSystem->Process(timeElapsed);
-
-	materialSystem->Update(timeElapsed);
+    Scene::Update(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)

@@ -418,7 +418,7 @@ void StructureSystem::EmitChanged()
 	structureChanged = true;
 }
 
-void StructureSystem::Update(DAVA::float32 timeElapsed)
+void StructureSystem::Process(DAVA::float32 timeElapsed)
 {
 	if(structureChanged)
 	{
