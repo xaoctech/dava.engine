@@ -45,9 +45,13 @@ public:
     explicit ImageSplitterDialog(QWidget *parent = 0);
     ~ImageSplitterDialog();
 
+    void SetAcceptableImageSize(const DAVA::Vector2& newSize);
+    
 protected slots:
     
     void PathSelected(DAVA::String path);
+    
+    void ImageAreaChanged();
     
 protected:
     
@@ -55,6 +59,8 @@ protected:
 
 private:
     Ui::ImageSplitter *ui;
+    
+    DAVA::Vector2 acceptableSize;
 };
 
 #endif // __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__

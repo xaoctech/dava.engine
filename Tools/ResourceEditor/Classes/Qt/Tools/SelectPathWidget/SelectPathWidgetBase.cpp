@@ -116,6 +116,12 @@ void SelectPathWidgetBase::acceptEditing()
 	this->setText(getText());
 }
 
+void SelectPathWidgetBase::setVisible(bool value)
+{
+    QLineEdit::setVisible(value);
+    SelectPathWidgetBase::resizeEvent(NULL);
+}
+
 void SelectPathWidgetBase::OpenClicked()
 {
 	DAVA::FilePath presentPath(text().toStdString());

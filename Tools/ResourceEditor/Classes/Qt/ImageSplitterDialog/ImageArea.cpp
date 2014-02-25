@@ -33,16 +33,19 @@
 #include "Qt/TextureBrowser/TextureConvertor.h"
 
 #include <QtGui>
+#include <QFileDialog>
+#include "Project/ProjectManager.h"
 
 ImageArea::ImageArea(QWidget *parent /*= 0*/, eColorCmponents value /*= COMPONENTS_ALL*/)
     :QLabel(parent),
-    colorComponent(value)
+    colorComponent(value),
+    image(NULL),
+    acceptableSize(0,0)
 {
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
     setAcceptDrops(true);
     setAutoFillBackground(true);
     ConnectSignals();
-    image = NULL;
     clear();
 }
 
@@ -85,6 +88,21 @@ void ImageArea::SetColorComponent(eColorCmponents value)
     emit changed();
 }
 
+void ImageArea::mousePressEvent (QMouseEvent * ev)
+{
+    if(ev->button() == Qt::LeftButton)
+	{
+        DAVA::FilePath defaultPath = ProjectManager::Instance()->CurProjectPath().toStdString();
+		DAVA::String retString = QFileDialog::getOpenFileName(this, "Select png", defaultPath.GetAbsolutePathname().c_str(),"PNG(*.png)").toStdString();
+        if(!retString.empty())
+        {
+            SetImage(retString);
+        }
+	}
+	
+	QLabel::mousePressEvent(ev);
+}
+
 void ImageArea::SetImage(const DAVA::FilePath& filePath)
 {
     if(!filePath.Exists())
@@ -97,17 +115,32 @@ void ImageArea::SetImage(const DAVA::FilePath& filePath)
     {
         return;
     }
-    DAVA::SafeRelease(image);
-    image = images[0];
-    image->Retain();
+    DAVA::Image* selectedImage = images[0];
+    DAVA::Vector2 selectedImageSize(selectedImage->GetWidth(), selectedImage->GetHeight());
+    if(acceptableSize.IsZero())
+    {
+        acceptableSize = selectedImageSize;
+    }
+    if(selectedImageSize == acceptableSize)
+    {
+        DAVA::SafeRelease(image);
+        image = selectedImage;
+        image->Retain();
+        emit changed();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Size error", "Selected image has incorrect size.", QMessageBox::Ok);
+    }
+    
     for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
-    emit changed();
 }
 
 void ImageArea::clear()
 {
     DAVA::SafeRelease(image);
     setBackgroundRole(QPalette::Dark);
+    acceptableSize.SetZero();
     emit changed();
 }
 
@@ -162,4 +195,14 @@ void ImageArea::UpdatePreviewPicture()
     QPixmap scaledPixmap = QPixmap::fromImage(TextureConvertor::FromDavaImage(splittedImage));
     DAVA::SafeRelease(splittedImage);
     setPixmap(scaledPixmap);
+}
+
+void ImageArea::SetAcceptableSize(const DAVA::Vector2& newSize)
+{
+    acceptableSize = newSize;
+}
+
+DAVA::Vector2 ImageArea::GetAcceptableSize() const
+{
+    return acceptableSize;
 }

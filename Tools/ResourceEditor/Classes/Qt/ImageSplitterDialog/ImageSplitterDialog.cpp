@@ -30,16 +30,16 @@
 #include "ui_ImageSplitter.h"
 #include "ImageSplitterDialog/ImageSplitterDialog.h"
 #include "Project/ProjectManager.h"
+#include <QMessageBox>
 
 ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ImageSplitter)
+    ui(new Ui::ImageSplitter),
+    acceptableSize(0,0)
 {
     ui->setupUi(this);
     ui->selectPathWidget->SetClearButtonVisible(false);
-    DAVA::List<DAVA::String> allowedFormats;
-	allowedFormats.push_back(".png");
-    ui->selectPathWidget->SetAllowedFormatsList(allowedFormats);
+    ui->selectPathWidget->setAcceptDrops(false);
     ui->selectPathWidget->SetFileFormatFilter("PNG(*.png)");
     DAVA::FilePath defaultPath = ProjectManager::Instance()->CurProjectPath().toStdString();
     ui->selectPathWidget->SetOpenDialogDefaultPath(defaultPath);
@@ -47,6 +47,7 @@ ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
     ui->greenImgLbl->SetColorComponent(ImageArea::COMPONENTS_GREEN);
     ui->blueImgLbl->SetColorComponent(ImageArea::COMPONENTS_BLUE);
     ui->alphaImgLbl->SetColorComponent(ImageArea::COMPONENTS_ALPHA);
+    ui->saveBtn->setFocus();
     ConnectSignals();
 }
 
@@ -57,16 +58,54 @@ ImageSplitterDialog::~ImageSplitterDialog()
 
 void ImageSplitterDialog::ConnectSignals()
 {
-    connect(ui->selectPathWidget, SIGNAL(PathSelected(DAVA::String)),
-			this, SLOT(PathSelected(DAVA::String)));
+    connect(ui->selectPathWidget, SIGNAL(PathSelected(DAVA::String)), this, SLOT(PathSelected(DAVA::String)));
+
+    connect(ui->redImgLbl, SIGNAL(changed()), this, SLOT(ImageAreaChanged()));
+    connect(ui->greenImgLbl, SIGNAL(changed()), this, SLOT(ImageAreaChanged()));
+    connect(ui->blueImgLbl, SIGNAL(changed()), this, SLOT(ImageAreaChanged()));
+    connect(ui->alphaImgLbl, SIGNAL(changed()), this, SLOT(ImageAreaChanged()));
 }
 
 void ImageSplitterDialog::PathSelected(DAVA::String path)
 {
-    DAVA::FilePath fp(path);
+    DAVA::FilePath imagePath(path);
+    if(!imagePath.Exists())
+    {
+        return;
+    }
+    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(imagePath);
+    if (images.size() == 0)
+    {
+        QMessageBox::warning(this, "File error", "Cann't load image.", QMessageBox::Ok);
+        return;
+    }
+    DAVA::Vector2 size(images[0]->GetWidth(), images[0]->GetHeight());
+    for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+    SetAcceptableImageSize(size);
+    ui->redImgLbl->SetImage(imagePath);
+    ui->greenImgLbl->SetImage(imagePath);
+    ui->blueImgLbl->SetImage(imagePath);
+    ui->alphaImgLbl->SetImage(imagePath);
+}
+
+void ImageSplitterDialog::ImageAreaChanged()
+{
+    ImageArea* sender = dynamic_cast<ImageArea*>(QObject::sender());
     
-    ui->redImgLbl->SetImage(fp);
-    ui->greenImgLbl->SetImage(fp);
-    ui->blueImgLbl->SetImage(fp);
-    ui->alphaImgLbl->SetImage(fp);
+    DAVA::Vector2 senderImageSize  = sender->GetAcceptableSize();
+    if(acceptableSize.IsZero())
+    {
+        SetAcceptableImageSize(senderImageSize);
+    }
+}
+
+void ImageSplitterDialog::SetAcceptableImageSize(const DAVA::Vector2& newSize)
+{
+    acceptableSize = newSize;
+    DAVA::String lblText = DAVA::Format("%.f * %.f", acceptableSize.x, acceptableSize.y);
+    ui->ImageSizeLbl->setText(lblText.c_str());
+    ui->redImgLbl->SetAcceptableSize(acceptableSize);
+    ui->greenImgLbl->SetAcceptableSize(acceptableSize);
+    ui->blueImgLbl->SetAcceptableSize(acceptableSize);
+    ui->alphaImgLbl->SetAcceptableSize(acceptableSize);
 }
