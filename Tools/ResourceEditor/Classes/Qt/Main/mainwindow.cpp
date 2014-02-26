@@ -636,6 +636,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTileMapEditor, SIGNAL(triggered()), this, SLOT(OnTilemaskEditor()));
 	QObject::connect(ui->actionVisibilityCheckTool, SIGNAL(triggered()), this, SLOT(OnVisibilityTool()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
+    QObject::connect(ui->actionGrasEditor, SIGNAL(triggered()), this, SLOT(OnGrasEditor()));
 
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
 	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
@@ -2224,6 +2225,32 @@ void QtMainWindow::OnNotPassableTerrain()
 			OnLandscapeEditorToggled(sceneEditor);
 		}
 	}
+}
+
+void QtMainWindow::OnGrasEditor()
+{
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(!sceneEditor)
+    {
+        return;
+    }
+
+    if(sceneEditor->landscapeEditorDrawSystem->IsNotPassableTerrainEnabled())
+    {
+        sceneEditor->Exec(new ActionDisableNotPassable(sceneEditor));
+    }
+    else
+    {
+        sceneEditor->grassEditorSystem->EnableGrassEdit(true);
+//         if(LoadAppropriateTextureFormat())
+//         {
+//             sceneEditor->Exec(new ActionEnableNotPassable(sceneEditor));
+//         }
+//         else
+//         {
+//             OnLandscapeEditorToggled(sceneEditor);
+//         }
+    }
 }
 
 void QtMainWindow::OnAddActionComponent()

@@ -676,6 +676,7 @@
    <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
+   <addaction name="actionGrasEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
    <addaction name="actionCustomColorsEditor"/>
@@ -1779,6 +1780,15 @@
    </property>
    <property name="text">
     <string>Show Lightmap Canvas</string>
+   </property>
+  </action>
+  <action name="actionGrasEditor">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/land_gras.png</normaloff>:/QtIcons/land_gras.png</iconset>
+   </property>
+   <property name="text">
+    <string>GrasEditor</string>
    </property>
   </action>
  </widget>
