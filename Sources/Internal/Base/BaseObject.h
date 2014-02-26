@@ -37,6 +37,7 @@
 #include "DAVAConfig.h"
 #include "Base/RefPtr.h"
 #include "Base/ScopedPtr.h"
+#include "Base/Atomic.h"
 #include <typeinfo>
 
 namespace DAVA
@@ -88,7 +89,7 @@ public:
 	 */
 	virtual void Retain()
 	{
-		++referenceCount;
+		AtomicIncrement(referenceCount);
 	}
 	
 	/** 
@@ -104,8 +105,7 @@ public:
 		}	
 #endif		
 
-		--referenceCount;
-		int32 refCounter = referenceCount;
+		int32 refCounter = AtomicDecrement(referenceCount);
 		if (!refCounter)
 		{
 			delete this;
