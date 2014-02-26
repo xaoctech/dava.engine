@@ -26,77 +26,51 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RULER_WIDGET__H__
-#define __RULER_WIDGET__H__
+#ifndef __GUIDEDATA__H__
+#define __GUIDEDATA__H__
 
-#include "RulerSettings.h"
+#include <DAVAEngine.h>
 
-#include <QWidget>
-#include <QPixmap>
-#include <QMouseEvent>
-
-class RulerWidget : public QWidget
+namespace DAVA {
+// Class which describes UI Editor's Guide.
+class GuideData
 {
-    Q_OBJECT
-
 public:
-    enum eOrientation
+    // Guide type.
+    enum eGuideType
     {
         Horizontal,
-        Vertical
+        Vertical,
+        Both
     };
 
-    explicit RulerWidget(QWidget *parent = 0);
-    virtual ~RulerWidget();
-
-    // Whether the ruler horisontal or vertical?
-    void SetOrientation(eOrientation rulerOrientation);
-
-    // Set the initial Ruler Settings.
-    void SetRulerSettings(const RulerSettings& rulerSettings);
-
-    // Update the rulers by sending appropriate events.
-    void UpdateRulers();
-
-    virtual void paintEvent(QPaintEvent *event);
-
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-
-signals:
-    // Guide drag is completed.
-    void GuideDropped(Qt::DropAction dropAction);
+    GuideData();
+    GuideData(eGuideType type, const Vector2& pos, bool selected = false);
     
-public slots:
-    // Ruler Settings are changed.
-    void OnRulerSettingsChanged(const RulerSettings& rulerSettings);
+    inline bool operator == (const GuideData& right) const
+    {
+        return (guideType == right.guideType) && (position == right.position);
+    }
 
-    // Marker Position is changed.
-    void OnMarkerPositionChanged(int position);
+    // Accessors.
+    eGuideType GetType() const {return guideType;};
 
-protected:
-    // We are using double buffering to avoid flicker and excessive updates.
-    void UpdateDoubleBufferImage();
-    
-    // Draw different types of scales.
-    void DrawScale(QPainter& painter, int tickStep, int tickStartPos, int tickEndPos,
-                   bool drawValues, bool isHorizontal);
-    
+    const Vector2& GetPosition() const {return position;};
+    void SetPosition(const Vector2& pos);
+
+    bool IsSelected() const {return isSelected;};
+    void SetSelected(bool value);
+
 private:
-    // Ruler orientation.
-    eOrientation orientation;
+    // Guide type.
+    eGuideType guideType;
     
-    // Ruler settings.
-    RulerSettings settings;
+    // Guide position.
+    Vector2 position;
     
-    // Ruler double buffer.
-    QPixmap* doubleBuffer;
-    
-    // Marker position.
-    int markerPosition;
-    
-    // Drag start position (for Guides).
-    QPoint dragStartPos;
+    // Whether the guide is selected?
+    bool isSelected;
 };
 
-#endif /* defined(__RULER_WIDGET__H__) */
+};
+#endif /* defined(__GUIDEDATA__H__) */
