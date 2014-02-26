@@ -78,6 +78,7 @@ class ActionUpdateSystem;
 class SkyboxSystem;
 class MaterialSystem;
 class StaticOcclusionSystem;
+class SpeedTreeUpdateSystem;
     
 /**
     \ingroup scene3d
@@ -126,6 +127,7 @@ public:
 	SkyboxSystem* skyboxSystem;
 	StaticOcclusionSystem * staticOcclusionSystem;
     MaterialSystem *materialSystem;
+    SpeedTreeUpdateSystem* speedTreeUpdateSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

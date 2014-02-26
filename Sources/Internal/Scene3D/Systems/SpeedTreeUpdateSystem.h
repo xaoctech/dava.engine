@@ -27,48 +27,63 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SPEEDTREE_OBJECT_H__
-#define __DAVAENGINE_SPEEDTREE_OBJECT_H__
+#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Render/Highlevel/Mesh.h"
+#include "Base/HashMap.h"
+#include "Base/FastNameMap.h"
+#include "Entity/SceneSystem.h"
+#include "Base/BaseMath.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
 
-namespace DAVA 
+namespace DAVA
 {
-
-class SpeedTreeObject: public Mesh
+class Entity;
+class SpeedTreeObject;
+class SpeedTreeUpdateSystem : public SceneSystem
 {
 public:
-
-    SpeedTreeObject();
-    virtual ~SpeedTreeObject();
-
-    virtual void RecalcBoundingBox();
-    virtual RenderObject * Clone(RenderObject *newObject);
-
-    virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
-	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
+    struct TreeInfo
+    {
+        TreeInfo(SpeedTreeObject * object) :
+        treeObject(object)
+        {}
+        
+        Vector3 position;
+        SpeedTreeObject * treeObject;
+        SpeedTreeComponent * component;
+    };
     
-    void SetTreeAnimationParams(const Vector3 & trunkOscillationParams, const Vector2 & leafOscillationParams);
-    void SetAnimationEnabled(bool isEnabled);
+    struct Force
+    {
+        float32 time;
+        float32 value;
+        Vector3 position;
+    };
+    
+    SpeedTreeUpdateSystem(Scene * scene);
+    virtual ~SpeedTreeUpdateSystem();
+    
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
+    
+    void AddForce(const Vector3 & position, float32 forceValue);
     
 private:
-    AABBox3 CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * rb);
-    void CollectMaterials();
-
-    bool isAnimationEnabled;
+    Vector<TreeInfo *> allTrees;
+    Vector<Force> activeForces;
     
-    Vector<NMaterial *> materials;
+    Vector3 windDirection;
     
-public:
-
-	INTROSPECTION_EXTEND(SpeedTreeObject, Mesh, 
-		NULL
-	);
+    float32 globalTime;
+    float32 timerTime;
+    float32 timerTime2;
 };
+    
+} // ns
 
+#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
 
-};
-
-#endif // __DAVAENGINE_SPEEDTREE_OBJECT_H__

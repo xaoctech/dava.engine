@@ -33,6 +33,15 @@
 namespace DAVA 
 {
 
+SpeedTreeObject::SpeedTreeObject() :
+    isAnimationEnabled(false)
+{
+}
+    
+SpeedTreeObject::~SpeedTreeObject()
+{
+}
+    
 void SpeedTreeObject::RecalcBoundingBox()
 {
     bbox = AABBox3();
@@ -51,7 +60,113 @@ void SpeedTreeObject::RecalcBoundingBox()
         }   
     }
 }
+    
+void SpeedTreeObject::SetTreeAnimationParams(const Vector3 & trunkOscillationParams, const Vector2 & leafOscillationParams)
+{
+    uint32 matCount = materials.size();
+    for(uint32 i = 0; i < matCount; ++i)
+    {
+        NMaterial * material = materials[i];
+        material->SetPropertyValue(FastName("trunkOscillationParams"), Shader::UT_FLOAT_VEC3, 1, &trunkOscillationParams);
+        material->SetPropertyValue(FastName("leafOscillationParams"), Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
+    }
+}
+    
+void SpeedTreeObject::SetAnimationEnabled(bool isEnabled)
+{
+    if(isAnimationEnabled != isEnabled)
+    {
+        isAnimationEnabled = isEnabled;
+        
+        NMaterial::eFlagValue flagValue = NMaterial::FlagOff;
+        if(isAnimationEnabled) flagValue = NMaterial::FlagOn;
+        
+        uint32 matCount = materials.size();
+        for(uint32 i = 0; i < matCount; ++i)
+            materials[i]->SetFlag(FastName("WIND_ANIMATION"), flagValue);
+    }
+}
+    
+void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Mesh::Save(archive, serializationContext);
+}
+    
+void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Mesh::Load(archive, serializationContext);
+    
+    float32 treeHeight = bbox.GetSize().z;
 
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        RenderBatch * rb = renderBatchArray[k].renderBatch;
+        PolygonGroup * pg = rb->GetPolygonGroup();
+        if(pg)
+        {
+            int32 vertexFormat = pg->GetFormat();
+            
+            bool isLeaf = ((vertexFormat & EVF_TANGENT) > 0); //speedtree leaf batch
+            int32 vxCount = pg->GetVertexCount();
+            int32 indCount = pg->GetIndexCount();
+            PolygonGroup * newPG = new PolygonGroup();
+            
+            newPG->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
+            
+            //copy indicies
+            for(int32 i = 0; i < indCount; ++i)
+            {
+                int32 index;
+                pg->GetIndex(i, index);
+                newPG->SetIndex(i, index);
+            }
+            
+            //copy vertex data
+            for(int32 i = 0; i < vxCount; ++i)
+            {
+                Vector3 vxPosition;
+                uint32 color;
+                Vector2 vxTx;
+                
+                pg->GetCoord(i, vxPosition);
+                if((vertexFormat & EVF_COLOR) > 0)
+                    pg->GetColor(i, color);
+                if((vertexFormat & EVF_TEXCOORD0) > 0)
+                    pg->GetTexcoord(0, i, vxTx);
+                
+                newPG->SetCoord(i, vxPosition);
+                if((vertexFormat & EVF_COLOR) > 0)
+                    newPG->SetColor(i, color);
+                if((vertexFormat & EVF_TEXCOORD0) > 0)
+                    newPG->SetTexcoord(0, i, vxTx);
+                
+                float32 t0 = 0.f;
+                if(isLeaf)
+                {
+                    Vector3 vxTangent;
+                    pg->GetTangent(i, vxTangent);
+                    newPG->SetTangent(i, vxTangent);
+                    
+                    t0 = vxPosition.Length() * 100;
+                }
+                
+                float32 x = vxPosition.z / treeHeight;
+                float32 flexebility = logf((expf(1.0) - 1) * x + 1);
+                
+                //Binormal: x: cos(T0);  y: sin(T0); z - flexebility
+                Vector3 binormal(cosf(t0) * (.5f + x/2), sinf(t0) * (.5f + x/2), flexebility);
+                
+                newPG->SetBinormal(i, binormal);
+            }
+            
+            rb->SetPolygonGroup(newPG);
+        }
+    }
+    
+    CollectMaterials();
+}
+    
 RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
 {
     if(!newObject)
@@ -60,9 +175,30 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
         newObject = new SpeedTreeObject();
     }
 
-    return Mesh::Clone(newObject);
+    Mesh::Clone(newObject);
+    
+    ((SpeedTreeObject *)newObject)->CollectMaterials();
+    
+    return newObject;
 }
+    
+void SpeedTreeObject::CollectMaterials()
+{
+    materials.clear();
 
+    Set<NMaterial *> materialSet;
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        RenderBatch * rb = renderBatchArray[k].renderBatch;
+        materialSet.insert(rb->GetMaterial());
+    }
+
+    Set<NMaterial *>::const_iterator endIt = materialSet.end();
+    for(Set<NMaterial *>::const_iterator it = materialSet.begin(); it != endIt; ++it)
+        materials.push_back(*it);
+}
+    
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * pg)
 {
     AABBox3 pgBbox;

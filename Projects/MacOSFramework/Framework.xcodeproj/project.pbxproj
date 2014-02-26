@@ -16,12 +16,24 @@
 		0214140B181984D600925E51 /* DAVAClassRegistrator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02141406181984D600925E51 /* DAVAClassRegistrator.h */; };
 		0214140C181984D600925E51 /* DAVAClassRegistrator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02141406181984D600925E51 /* DAVAClassRegistrator.h */; };
 		0224B70015989F7400CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B6FF15989F7400CDEF9E /* libtheora_macos.a */; };
+		0282B84E18B81978006F1EE4 /* SpeedTreeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0282B84C18B81978006F1EE4 /* SpeedTreeComponent.cpp */; };
+		0282B84F18B81978006F1EE4 /* SpeedTreeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0282B84C18B81978006F1EE4 /* SpeedTreeComponent.cpp */; };
+		0282B85018B81978006F1EE4 /* SpeedTreeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0282B84C18B81978006F1EE4 /* SpeedTreeComponent.cpp */; };
+		0282B85118B81978006F1EE4 /* SpeedTreeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */; };
+		0282B85218B81978006F1EE4 /* SpeedTreeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */; };
+		0282B85318B81978006F1EE4 /* SpeedTreeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */; };
 		02A03DA91871C37B00FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */; };
 		02A03DAA1871C37B00FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */; };
 		02A03DAB1871C49C00FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */; };
 		02A03DAC1871C49C00FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */; };
 		02A03DAD1871C49E00FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */; };
 		02A03DAE1871C49F00FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */; };
+		02C1121518B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
+		02C1121618B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
+		02C1121718B3AA350018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
+		02C1121818B3AA370018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
+		02C1121918B3AA3A0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
+		02C1121A18B3AA3B0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
 		02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
 		02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
 		02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
@@ -2235,8 +2247,12 @@
 		02141405181984D600925E51 /* DAVAClassRegistrator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DAVAClassRegistrator.cpp; sourceTree = "<group>"; };
 		02141406181984D600925E51 /* DAVAClassRegistrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DAVAClassRegistrator.h; sourceTree = "<group>"; };
 		0224B6FF15989F7400CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
+		0282B84C18B81978006F1EE4 /* SpeedTreeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeComponent.cpp; sourceTree = "<group>"; };
+		0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeComponent.h; sourceTree = "<group>"; };
 		02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeObject.cpp; sourceTree = "<group>"; };
 		02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
+		02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeUpdateSystem.cpp; sourceTree = "<group>"; };
+		02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeUpdateSystem.h; sourceTree = "<group>"; };
 		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		02E9E40817395FDD00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E40917395FDD00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
@@ -3935,6 +3951,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				0282B84C18B81978006F1EE4 /* SpeedTreeComponent.cpp */,
+				0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */,
 				E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */,
 				E8FC12F1186972560095D8FE /* QualitySettingsComponent.h */,
 				50ED33481858B5A200A917D5 /* StaticOcclusionComponent.cpp */,
@@ -3976,6 +3994,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */,
+				02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */,
 				E8F43E22186C3D02006796CB /* MaterialSystem.cpp */,
 				E8F43E23186C3D02006796CB /* MaterialSystem.h */,
 				E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */,
@@ -4259,6 +4279,7 @@
 				176DE932174B5561007A983B /* Backtrace.h in Headers */,
 				176DE933174B5561007A983B /* DVAssert.h in Headers */,
 				176DE934174B5561007A983B /* List.h in Headers */,
+				02C1121A18B3AA3B0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */,
 				176DE935174B5561007A983B /* ListAllocator.h in Headers */,
 				176DE936174B5561007A983B /* MemoryManager.h in Headers */,
 				176DE937174B5561007A983B /* Replay.h in Headers */,
@@ -4431,6 +4452,7 @@
 				176DE9D3174B5561007A983B /* ProxyNode.h in Headers */,
 				176DE9D4174B5561007A983B /* Scene.h in Headers */,
 				176DE9D5174B5561007A983B /* SceneAnimationMixer.h in Headers */,
+				0282B85318B81978006F1EE4 /* SpeedTreeComponent.h in Headers */,
 				CC84B02118211A9000934482 /* JobManager.h in Headers */,
 				176DE9D6174B5561007A983B /* SceneFile.h in Headers */,
 				176DE9D7174B5561007A983B /* SceneFileV2.h in Headers */,
@@ -4675,6 +4697,7 @@
 				E8989E6A16BD24E500732C04 /* MathDefines.h in Headers */,
 				E8989E6B16BD24E500732C04 /* MathHelpers.h in Headers */,
 				E8989E6C16BD24E500732C04 /* Matrix2.h in Headers */,
+				02C1121618B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h in Headers */,
 				E8989E6D16BD24E500732C04 /* Matrix3.h in Headers */,
 				E8989E6F16BD24E500732C04 /* Matrix4.h in Headers */,
 				02A03DAA1871C37B00FA72CE /* SpeedTreeObject.h in Headers */,
@@ -4796,6 +4819,7 @@
 				E8989FA816BD24E500732C04 /* MeshInstanceNode.h in Headers */,
 				E8989FAA16BD24E500732C04 /* ParticleEffectNode.h in Headers */,
 				E8989FAC16BD24E500732C04 /* ParticleEmitterNode.h in Headers */,
+				0282B85118B81978006F1EE4 /* SpeedTreeComponent.h in Headers */,
 				E8989FAE16BD24E500732C04 /* PathManip.h in Headers */,
 				E8989FB016BD24E500732C04 /* PolygonGroupInstance.h in Headers */,
 				50ED334D1858B5A200A917D5 /* StaticOcclusionComponent.h in Headers */,
@@ -4982,6 +5006,8 @@
 				E898A06B16BD265400732C04 /* FastName.h in Headers */,
 				E898A06C16BD265400732C04 /* FastNameMap.h in Headers */,
 				E898A06D16BD265400732C04 /* FixedSizePoolAllocator.h in Headers */,
+				02C1121918B3AA3A0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */,
+				0282B85218B81978006F1EE4 /* SpeedTreeComponent.h in Headers */,
 				E898A06E16BD265400732C04 /* Hash.h in Headers */,
 				7A169357180EE75A005F1FBC /* GameAPI.h in Headers */,
 				E898A06F16BD265400732C04 /* HashMap.h in Headers */,
@@ -5510,6 +5536,7 @@
 				176DEA84174B5561007A983B /* AABBox2.cpp in Sources */,
 				176DEA85174B5561007A983B /* AABBox3.cpp in Sources */,
 				176DEA86174B5561007A983B /* BezierSpline.cpp in Sources */,
+				02C1121818B3AA370018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				176DEA87174B5561007A983B /* Math2D.cpp in Sources */,
 				176DEA88174B5561007A983B /* Matrix4.cpp in Sources */,
 				176DEA89174B5561007A983B /* NeonMath.cpp in Sources */,
@@ -5738,6 +5765,7 @@
 				E8F43E26186C3D02006796CB /* MaterialSystem.cpp in Sources */,
 				176DEB57174B5561007A983B /* SoundEvent.cpp in Sources */,
 				176DEB58174B5561007A983B /* SoundEventCategory.cpp in Sources */,
+				0282B85018B81978006F1EE4 /* SpeedTreeComponent.cpp in Sources */,
 				176DEB59174B5561007A983B /* VolumeAnimatedObject.cpp in Sources */,
 				176DEB5A174B5561007A983B /* SoundComponent.cpp in Sources */,
 				176DEB5B174B5561007A983B /* SoundUpdateSystem.cpp in Sources */,
@@ -6005,6 +6033,7 @@
 				E898A01F16BD24E500732C04 /* UIJoypad.cpp in Sources */,
 				E898A02116BD24E500732C04 /* UIList.cpp in Sources */,
 				E898A02316BD24E500732C04 /* UIListCell.cpp in Sources */,
+				0282B84E18B81978006F1EE4 /* SpeedTreeComponent.cpp in Sources */,
 				E898A02516BD24E500732C04 /* UILoadingTransition.cpp in Sources */,
 				E898A02716BD24E500732C04 /* UIMoveInTransition.cpp in Sources */,
 				E898A02916BD24E500732C04 /* UIPopup.cpp in Sources */,
@@ -6058,6 +6087,7 @@
 				02A03DA91871C37B00FA72CE /* SpeedTreeObject.cpp in Sources */,
 				CCC7A44F16F1D6170061EA5D /* RenderBatch.cpp in Sources */,
 				CCC7A45716F1D6170061EA5D /* RenderLayer.cpp in Sources */,
+				02C1121518B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				CCC7A45B16F1D6170061EA5D /* RenderObject.cpp in Sources */,
 				CCC7A45F16F1D6170061EA5D /* RenderPass.cpp in Sources */,
 				CCC7A46316F1D6170061EA5D /* RenderSystem.cpp in Sources */,
@@ -6178,6 +6208,7 @@
 				E898A1C916BD265400732C04 /* File.cpp in Sources */,
 				E898A1CA16BD265400732C04 /* FileList.cpp in Sources */,
 				E898A1CB16BD265400732C04 /* FilePath.cpp in Sources */,
+				02C1121718B3AA350018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				E898A1CC16BD265400732C04 /* FileSystem.cpp in Sources */,
 				E898A1CD16BD265400732C04 /* FileSystemObjective.mm in Sources */,
 				E898A1CE16BD265400732C04 /* KeyedArchive.cpp in Sources */,
@@ -6203,6 +6234,7 @@
 				E898A1E116BD265400732C04 /* Math2D.cpp in Sources */,
 				E898A1E216BD265400732C04 /* Matrix4.cpp in Sources */,
 				E898A1E316BD265400732C04 /* NeonMath.cpp in Sources */,
+				0282B84F18B81978006F1EE4 /* SpeedTreeComponent.cpp in Sources */,
 				E898A1E416BD265400732C04 /* Polygon2.cpp in Sources */,
 				E898A1E516BD265400732C04 /* Polygon3.cpp in Sources */,
 				E898A1E616BD265400732C04 /* RectPacker.cpp in Sources */,

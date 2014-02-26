@@ -42,6 +42,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
 
 namespace DAVA
 {
@@ -241,8 +242,16 @@ void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*pr
 	}
 }
 
-
-
+SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity)
+{
+    if(fromEntity)
+    {
+        return static_cast<SpeedTreeComponent *>(fromEntity->GetComponent(Component::SPEEDTREE_COMPONENT));
+    }
+    
+    return NULL;
+}
+    
 Entity * FindLandscapeEntity(Entity * rootEntity)
 {
 	if(GetLandscape(rootEntity))
