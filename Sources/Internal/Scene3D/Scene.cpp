@@ -657,8 +657,6 @@ void Scene::Update(float timeElapsed)
     
     staticOcclusionSystem->SetCamera(clipCamera);
     staticOcclusionSystem->Process(timeElapsed);
-    
-	updatableSystem->UpdatePreTransform(timeElapsed);
 
 	updatableSystem->UpdatePreTransform(timeElapsed);
     transformSystem->Process(timeElapsed);

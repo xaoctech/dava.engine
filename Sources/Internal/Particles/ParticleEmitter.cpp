@@ -76,7 +76,7 @@ void ParticleEmitter::Cleanup(bool needCleanupLayers)
 	size = RefPtr<PropertyLineValue<Vector3> >(0);
 	colorOverLife = 0;
 	radius = 0;
-	name = "Particle Emitter";
+	name = FastName("Particle Emitter");
 	
 	if (needCleanupLayers)
 	{
@@ -313,7 +313,7 @@ void ParticleEmitter::LoadFromYaml(const FilePath & filename, bool preserveInher
 
 		const YamlNode * nameNode = emitterNode->Get("name");
 		if (nameNode)		
-			name = nameNode->AsString();
+			name = FastName(nameNode->AsString().c_str());
 		if (emitterNode->Get("emissionAngle"))
 			emissionAngle = PropertyLineYamlReader::CreatePropertyLine<float32>(emitterNode->Get("emissionAngle"));
         
@@ -416,7 +416,7 @@ void ParticleEmitter::SaveToYaml(const FilePath & filename)
     YamlNode* emitterYamlNode = new YamlNode(YamlNode::TYPE_MAP);
     rootYamlNode->AddNodeToMap("emitter", emitterYamlNode);
         
-	emitterYamlNode->Set("name", name);
+	emitterYamlNode->Set("name", (name.c_str() ? String(name.c_str()) : ""));
     emitterYamlNode->Set("type", GetEmitterTypeName());
 	emitterYamlNode->Set("shortEffect", shortEffect);
     
