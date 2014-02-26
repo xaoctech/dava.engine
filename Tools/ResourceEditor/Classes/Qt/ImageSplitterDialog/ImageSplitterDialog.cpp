@@ -42,6 +42,7 @@ ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
     acceptableSize(0,0)
 {
     ui->setupUi(this);
+	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->selectPathWidget->SetClearButtonVisible(false);
     ui->selectPathWidget->setAcceptDrops(false);
     ui->selectPathWidget->SetFileFormatFilter("PNG(*.png)");
@@ -149,7 +150,10 @@ void ImageSplitterDialog::OnRestoreClicked()
 void ImageSplitterDialog::OnSaveAsClicked(bool saveSplittedImages)
 {
     DAVA::FilePath retPath = QFileDialog::getSaveFileName(this, "Select png", ProjectManager::Instance()->CurProjectPath(),"PNG(*.png)").toStdString();
-    Save(retPath, saveSplittedImages);
+    if(!retPath.IsEmpty())
+    {
+        Save(retPath, saveSplittedImages);
+    }
 }
 
 void ImageSplitterDialog::OnSaveClicked()
@@ -183,7 +187,7 @@ void ImageSplitterDialog::OnSaveChannelsClicked()
         dialog.exec();
         DAVA::FilePath selectedFolder = dialog.selectedFiles().first().toStdString();
         selectedFolder.MakeDirectoryPathname();
-        if(!selectedFolder.Exists())
+        if(!selectedFolder.Exists() || dialog.result() == QDialog::Rejected)
         {
             return;
         }
