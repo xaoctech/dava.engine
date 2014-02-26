@@ -1329,9 +1329,6 @@
     <ClInclude Include="..\..\Sources\Internal\Render\UniqueStateSet.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderStateDataUniqueHandler.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RenderStateData.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -1415,6 +1412,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIParticles.h">
       <Filter>Internal\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
+      <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2530,6 +2530,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\UIParticles.cpp">
       <Filter>Internal\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Base\AtomicWin32.cpp">
+      <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

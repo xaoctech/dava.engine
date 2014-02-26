@@ -191,7 +191,7 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	position.z = positionZSpinBox->value();
 
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
-	commandUpdateEmitter->Init(emitterNameLineEdit->text().toStdString(), 
+	commandUpdateEmitter->Init(FastName(emitterNameLineEdit->text().toStdString().c_str()),
 							   position,
 							   type,
 							   emissionRange.GetPropLine(),
@@ -217,7 +217,7 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 
 	blockSignals = true;
 
-	emitterNameLineEdit->setText(QString::fromStdString(emitter->name));
+	emitterNameLineEdit->setText(QString::fromStdString(emitter->name.c_str()));
 	shortEffectCheckBox->setChecked(emitter->shortEffect);
 
 	float32 emitterLifeTime = emitter->lifeTime;

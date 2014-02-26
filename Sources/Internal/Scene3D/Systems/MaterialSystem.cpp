@@ -45,8 +45,6 @@ namespace DAVA
     
 MaterialSystem::MaterialSystem(Scene * scene)
     : SceneSystem(scene)
-    , fogDensity(0.001f)
-    , fogColor(1.f, 0.f, 1.f, 1.f)
 {
     SetDefaultMaterialQuality(NMaterial::DEFAULT_QUALITY_NAME); //TODO: add code setting material quality based on device specs
 }
@@ -65,8 +63,8 @@ void MaterialSystem::AddEntity(Entity * entity)
     if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
         Landscape *land = static_cast<Landscape *>(ro);
-        fogDensity = land->GetFogDensity();
-        fogColor = land->GetFogColor();
+        float32 fogDensity = land->GetFogDensity();
+        Color fogColor = land->GetFogColor();
 
 		NMaterial * globalMaterial = GetScene()->GetGlobalMaterial();
 		globalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
