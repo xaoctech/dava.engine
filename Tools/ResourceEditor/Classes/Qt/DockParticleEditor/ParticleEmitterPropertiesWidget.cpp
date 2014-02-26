@@ -217,7 +217,7 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEm
 
 	blockSignals = true;
 
-	emitterNameLineEdit->setText(QString::fromStdString(emitter->name));
+	emitterNameLineEdit->setText(QString::fromStdString(emitter->name.c_str()));
 	shortEffectCheckBox->setChecked(emitter->shortEffect);
 
 	float32 emitterLifeTime = emitter->lifeTime;

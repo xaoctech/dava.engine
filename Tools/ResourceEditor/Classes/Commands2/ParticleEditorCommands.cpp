@@ -95,7 +95,7 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 void CommandUpdateEmitter::Redo()
 {
 	DVASSERT(emitter);
-	emitter->name = name;
+	emitter->name = FastName(name);
 	emitter->position = position;
 	emitter->emitterType = emitterType;
 	PropertyLineHelper::SetValueLine(emitter->emissionRange, emissionRange);
