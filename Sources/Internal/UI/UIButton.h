@@ -252,6 +252,12 @@ public:
 	 */
 	virtual void SetStateText(int32 state, const WideString &text, const Vector2 &requestedTextRectSize = Vector2(0,0));
 	/**
+	 \brief Sets text align what will be shown for the requested states.
+	 \param[in] state state text bit mask to set value for.
+	 \param[in] align the align .
+	 */
+    virtual void SetStateTextAlign(int32 state, int32 align);
+	/**
 	 \brief Sets text control what will be used for the requested states. 
 		UIStaticText is cloned inside button.
 	 \param[in] state state bit mask to set value for.

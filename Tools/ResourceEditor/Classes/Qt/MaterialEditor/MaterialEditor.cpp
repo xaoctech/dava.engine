@@ -84,6 +84,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
     QObject::connect(ui->actionMaterialReload, SIGNAL(triggered(bool)), this, SLOT(OnMaterialReload(bool)));
     QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
+    QObject::connect(ui->actionSetFog, SIGNAL(triggered(bool)), this, SLOT(OnMaterialSetFog(bool)));
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
@@ -672,5 +673,243 @@ void MaterialEditor::OnMaterialReload(bool checked)
     if (curMaterial != 0)
     {
         
+    }
+}
+
+void MaterialEditor::OnMaterialSetFog(bool checked)
+{
+   MaterialEditorFogDialog dlg;
+   SceneEditor2 *sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+   DAVA::Landscape *landscape = sceneEditor->collisionSystem->GetLandscape();
+
+   if(NULL != landscape)
+   {
+       MaterialEditorFogDialog::FogParams params;
+
+       params.type = MaterialEditorFogDialog::FOG_DISABLED;
+       if(landscape->IsFogEnabled())
+       {
+            params.type = MaterialEditorFogDialog::FOG_EXPONENTIAL;
+       }
+
+       params.color = landscape->GetFogColor();
+       params.density = landscape->GetFogDensity();
+       dlg.SetFogParams(params);
+
+       if(QDialog::Accepted == dlg.exec())
+       {
+           params = dlg.GetFogParams();
+
+           // set to landscape (will be saved)
+           landscape->SetFogColor(params.color);
+           landscape->SetFogDensity(params.density);
+           landscape->SetFog(params.type != MaterialEditorFogDialog::FOG_DISABLED);
+
+           // set to global material (runtime)
+           DAVA::NMaterial *globalMaterial = sceneEditor->GetGlobalMaterial();
+           globalMaterial->SetPropertyValue(DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::Shader::UT_FLOAT, 1, &params.density);
+           globalMaterial->SetPropertyValue(DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::Shader::UT_FLOAT_VEC4, 1, &params.color);
+
+           DAVA::Set<DAVA::NMaterial *> materials;
+           sceneEditor->materialSystem->BuildMaterialsList(materials);
+
+           DAVA::Set<DAVA::NMaterial *>::const_iterator i = materials.begin();
+           DAVA::Set<DAVA::NMaterial *>::const_iterator end = materials.end();
+
+           sceneEditor->BeginBatch("Set scene fog");
+           // set flags for materials
+           for(; i != end; ++i)
+           {
+               DAVA::NMaterial *material = *i;
+               const DAVA::InspInfo *insp = material->GetTypeInfo();
+               const DAVA::InspMemberDynamic *dynamicFlags = insp->Member("materialSetFlags")->Dynamic();
+               const DAVA::InspMemberDynamic *dynamicProps = insp->Member("materialProperties")->Dynamic();
+
+               if(params.type != MaterialEditorFogDialog::FOG_DISABLED)
+               {
+                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicFlags->GetDynamicInfo(), material, DAVA::NMaterial::FLAG_VERTEXFOG, DAVA::VariantType(true)));
+                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::VariantType(params.density)));
+                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::VariantType(params.color)));
+               }
+               else
+               {
+                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicFlags->GetDynamicInfo(), material, DAVA::NMaterial::FLAG_VERTEXFOG, DAVA::VariantType(false)));
+                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::VariantType()));
+                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::VariantType()));
+               }
+           }
+           sceneEditor->EndBatch();
+       }
+   }
+}
+
+// ==============================================================================
+// MaterialEditorFogDialog
+// ==============================================================================
+
+MaterialEditorFogDialog::MaterialEditorFogDialog()
+: QDialog(NULL, Qt::Tool)
+{
+    int row = 0;
+    QGridLayout *layout = new QGridLayout(this);
+    QGroupBox *groupBox = new QGroupBox(this);
+
+    disabled = new QRadioButton("Disabled");
+    exponential = new QRadioButton("Exponential");
+    //linear = new QRadioButton("Linear");
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(disabled);
+    vbox->addWidget(exponential);
+    //vbox->addWidget(linear);
+    vbox->addStretch(1);
+    groupBox->setLayout(vbox);
+    disabled->setChecked(true);
+
+    layout->addWidget(groupBox, row, 0, 1, 2);
+
+    row++;
+    labelColor = new QLabel("Color:", this);
+    layout->addWidget(labelColor, row, 0, Qt::AlignRight);
+    fogColor = new QPushButton(this);
+    fogColor->setFlat(true);
+    fogColor->setAutoFillBackground(true);
+    layout->addWidget(fogColor, row, 1);
+
+    QObject::connect(fogColor, SIGNAL(pressed()), this, SLOT(OnColorPick()));
+
+    row++;
+    labelDensity = new QLabel("Density:", this);
+    layout->addWidget(labelDensity, row, 0, Qt::AlignRight);
+    fogDensity = new QDoubleSpinBox(this);
+    fogDensity->setDecimals(5);
+    layout->addWidget(fogDensity, row, 1);
+
+    row++;
+    labelStart = new QLabel("Start at:", this);
+    layout->addWidget(labelStart, row, 0, Qt::AlignRight);
+    fogStart = new QDoubleSpinBox(this);
+    fogStart->setDecimals(5);
+    fogStart->setMaximum(9999);
+    fogStart->setMinimum(-9999);
+    layout->addWidget(fogStart, row, 1);
+
+    row++;
+    labelEnd = new QLabel("End at:", this);
+    layout->addWidget(labelEnd, row, 0, Qt::AlignRight);
+    fogEnd = new QDoubleSpinBox(this);
+    fogEnd->setDecimals(5);
+    fogEnd->setMaximum(9999);
+    fogEnd->setMinimum(-9999);
+    layout->addWidget(fogEnd, row, 1);
+
+    row++;
+    QPushButton *okBtn = new QPushButton("Set", this);
+    layout->addWidget(okBtn, row, 1);
+
+    okBtn->setDefault(true);
+
+    QObject::connect(okBtn, SIGNAL(pressed()), this, SLOT(accept()));
+    QObject::connect(disabled, SIGNAL(toggled(bool)), this, SLOT(OnModeSwitch(bool)));
+    QObject::connect(exponential, SIGNAL(toggled(bool)), this, SLOT(OnModeSwitch(bool)));
+    //QObject::connect(linear, SIGNAL(toggled(bool)), this, SLOT(OnModeSwitch(bool)));
+}
+
+
+void MaterialEditorFogDialog::SetFogParams(const MaterialEditorFogDialog::FogParams &params)
+{
+    switch(params.type)
+    {
+        case FOG_EXPONENTIAL:
+            exponential->click();
+            break;
+        case FOG_LINEAR:
+            //linear->click();
+            //break;
+        case FOG_DISABLED:
+        default:
+            disabled->click();
+            break;
+    }
+
+    QColor c = ColorToQColor(params.color);
+    fogColor->setPalette(QPalette(c));
+    fogDensity->setValue(params.density);
+    fogStart->setValue(params.start);
+    fogEnd->setValue(params.end);
+
+    OnModeSwitch(true);
+}
+
+MaterialEditorFogDialog::FogParams MaterialEditorFogDialog::GetFogParams() const
+{
+    FogParams ret;
+
+    ret.type = FOG_DISABLED;
+    if(exponential->isChecked())
+    {
+        ret.type = FOG_EXPONENTIAL;
+    }
+    //else if(linear->isChecked())
+    //{
+    //    ret.type = FOG_LINEAR;
+    //}
+
+    QColor c = fogColor->palette().color(QPalette::Button);
+    ret.color = QColorToColor(c);
+    ret.density = (DAVA::float32) fogDensity->value();
+    ret.start = (DAVA::float32) fogStart->value();
+    ret.end = (DAVA::float32) fogEnd->value();
+
+    return ret;
+}
+
+void MaterialEditorFogDialog::OnColorPick()
+{
+    QColor c = fogColor->palette().color(QPalette::Button);
+    c = QColorDialog::getColor(c);
+
+    if(c.isValid())
+    {
+        fogColor->setPalette(QPalette(c));
+    }
+}
+
+void MaterialEditorFogDialog::OnModeSwitch(bool state)
+{
+    if(disabled->isChecked())
+    {
+        labelColor->setVisible(false);
+        fogColor->setVisible(false);
+        labelDensity->setVisible(false);
+        fogDensity->setVisible(false);
+        labelStart->setVisible(false);
+        fogStart->setVisible(false);
+        labelEnd->setVisible(false);
+        fogEnd->setVisible(false);
+    }
+    else
+    {
+        labelColor->setVisible(true);
+        fogColor->setVisible(true);
+
+        if(exponential->isChecked())
+        {
+            labelDensity->setVisible(true);
+            fogDensity->setVisible(true);
+            labelStart->setVisible(false);
+            fogStart->setVisible(false);
+            labelEnd->setVisible(false);
+            fogEnd->setVisible(false);
+        }
+        else
+        {
+            labelDensity->setVisible(false);
+            fogDensity->setVisible(false);
+            labelStart->setVisible(true);
+            fogStart->setVisible(true);
+            labelEnd->setVisible(true);
+            fogEnd->setVisible(true);
+        }
     }
 }
