@@ -537,6 +537,12 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			{
 				packer.PackToTextures(excludeDirectory, outputPath, definitionFileList, requestedGPUFamily);
 			}
+			
+			Set<String> currentErrors = packer.GetErrors();
+			if (!currentErrors.empty())
+			{
+				errors.insert(currentErrors.begin(), currentErrors.end());
+			}
 		}
 	}	
 
@@ -592,5 +598,9 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 	SafeRelease(fileList);
 }
 
+Set<String> ResourcePacker2D::GetErrors()
+{
+	return errors;
+}
 
 };
