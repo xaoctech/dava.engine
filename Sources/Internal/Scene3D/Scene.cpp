@@ -68,6 +68,7 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
+#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
@@ -263,6 +264,9 @@ void Scene::CreateSystems()
     
     materialSystem = new MaterialSystem(this);
     AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
+    
+    speedTreeUpdateSystem = new SpeedTreeUpdateSystem(this);
+    AddSystem(speedTreeUpdateSystem, (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()
@@ -311,6 +315,7 @@ Scene::~Scene()
     skyboxSystem = 0;
     staticOcclusionSystem = 0;
     materialSystem = 0;
+    speedTreeUpdateSystem = 0;
     
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)
@@ -737,6 +742,7 @@ void Scene::Draw()
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
+    speedTreeUpdateSystem->Process(timeElapsed);
 	actionSystem->Process(timeElapsed); //update action system before particles and render	
 	skyboxSystem->Process(timeElapsed);
     renderSystem->Render();
