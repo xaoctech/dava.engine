@@ -268,6 +268,14 @@ int32 TextBlock::GetAlign()
 	return align;
 }
 
+const Vector2& TextBlock::GetRequestedRectSize()
+{
+    mutex.Lock();
+    mutex.Unlock();
+
+    return requestedSize;
+}
+
 Sprite * TextBlock::GetSprite()
 {
     mutex.Lock();

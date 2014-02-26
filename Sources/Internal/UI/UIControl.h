@@ -1192,6 +1192,7 @@ public:
 
 	// Get the framework path for sprite, don't process it if it is empty.
 	static String GetSpriteFrameworkPath( const Sprite* sprite);
+    static String GetSpriteFrameworkPath(const FilePath& relativeSpritePath);
 
 	// Get/set the Initial State.
 	int32 GetInitialState() const;
