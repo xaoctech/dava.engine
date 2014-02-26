@@ -435,6 +435,9 @@
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeItem.cpp" />
     <ClCompile Include="Classes\Qt\DockSceneTree\SceneTreeModel.cpp" />
+    <ClCompile Include="Classes\Qt\ImageSplitterDialog\ImageArea.cpp" />
+    <ClCompile Include="Classes\Qt\ImageSplitterDialog\ImageSplitterDialog.cpp" />
+    <ClCompile Include="Classes\Qt\ImageSplitterDialog\ImageSplitterHelper.cpp" />
     <ClCompile Include="Classes\Qt\main.cpp" />
     <ClCompile Include="Classes\Qt\Main\davaglwidget.cpp" />
     <ClCompile Include="Classes\Qt\Main\mainwindow.cpp" />
@@ -603,6 +606,9 @@
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeItem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTreeModel_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockSceneTree\SceneTree_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ImageSplitterDialog\ImageArea_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ImageSplitterDialog\ImageSplitterDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\ImageSplitterDialog\ImageSplitterHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\davaglwidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\mainwindow_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Main\ModificationWidget_moc.cpp" />
@@ -1055,6 +1061,9 @@
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeDelegate.h" />
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeItem.h" />
     <ClInclude Include="Classes\Qt\DockSceneTree\SceneTreeModel.h" />
+    <ClInclude Include="Classes\Qt\ImageSplitterDialog\ImageArea.h" />
+    <ClInclude Include="Classes\Qt\ImageSplitterDialog\ImageSplitterDialog.h" />
+    <ClInclude Include="Classes\Qt\ImageSplitterDialog\ImageSplitterHelper.h" />
     <ClInclude Include="Classes\Qt\Main\davaglwidget.h" />
     <ClInclude Include="Classes\Qt\Main\mainwindow.h" />
     <ClInclude Include="Classes\Qt\Main\ModificationWidget.h" />
@@ -1201,6 +1210,7 @@
     <None Include="DataQt\BaseAddEntityDialog.ui" />
     <None Include="DataQt\CubemapEditorDialog.ui" />
     <None Include="DataQt\CubeMapTextureBrowser.ui" />
+    <None Include="DataQt\ImageSplitter.ui" />
     <None Include="DataQt\mainwindow.ui">
       <SubType>Designer</SubType>
     </None>
