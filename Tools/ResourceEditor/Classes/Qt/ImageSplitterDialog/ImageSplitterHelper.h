@@ -27,56 +27,39 @@
 =====================================================================================*/
 
 
-#ifndef __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
-#define __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
+#ifndef __QT_IMAGE_SPLITTER_HELPER_H__
+#define __QT_IMAGE_SPLITTER_HELPER_H__
 
-#include <QDialog>
 #include "DAVAEngine.h"
-
 #include <QtGui>
 
-namespace Ui {
-class ImageSplitter;
-}
-
-class ImageSplitterDialog : public QDialog
+class ImageSplitterHelper
 {
-    Q_OBJECT
-    
 public:
     
-    explicit ImageSplitterDialog(QWidget *parent = 0);
-    
-    ~ImageSplitterDialog();
-    
-protected slots:
-    
-    void PathSelected(DAVA::String path);
-    
-    void ImageAreaChanged();
-    
-    void OnRestoreClicked();
-    
-    void OnSaveAsClicked(bool saveSplittedImages = false);
-    
-    void OnSaveClicked();
-    
-    void OnSaveChannelsClicked();
-    
-    void OnFillBtnClicked();
-    
-protected:
-    
-    void ConnectSignals();
-
-    void SetAcceptableImageSize(const DAVA::Vector2& newSize);
-    
-    void Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparatelly);
-    
-    Ui::ImageSplitter *ui;
-    
-    DAVA::Vector2 acceptableSize;
-    DAVA::String  lastSelectedFile;
+    static DAVA::Image* CreateImageFromFile(const DAVA::FilePath& filePath);
 };
 
-#endif // __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
+class SizeDialog : public QDialog
+{
+public:
+    
+    explicit SizeDialog(QWidget *parent = 0);
+    
+    ~SizeDialog();
+    
+    DAVA::Vector2 GetSize();
+    
+private:
+    
+    QVBoxLayout *verticalLayout;
+    QLabel* messageLbl;
+    QHBoxLayout *horLayout;
+    QLabel* widthLbl;
+    QSpinBox* widthSpinBox;
+    QLabel* heightLbl;
+    QSpinBox* heightSpinBox;
+    QDialogButtonBox* buttonBox;
+};
+
+#endif /* defined(__QT_IMAGE_SPLITTER_HELPER_H__) */

@@ -41,11 +41,10 @@ class ImageArea : public QLabel
     
 public:
     
-    
     ImageArea(QWidget *parent = 0);
+    
     ~ImageArea();
-    
-    
+        
     void SetImage(const DAVA::FilePath& filePath);
 
     void SetImage(DAVA::Image* image);

@@ -159,7 +159,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
-          <widget class="QSpinBox" name="redSpinBox"/>
+          <widget class="QSpinBox" name="redSpinBox">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="redFillBtn">
@@ -220,7 +224,11 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <item>
-            <widget class="QSpinBox" name="greenSpinBox"/>
+            <widget class="QSpinBox" name="greenSpinBox">
+             <property name="maximum">
+              <number>255</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QPushButton" name="greenFillBtn">
@@ -281,7 +289,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <item>
-          <widget class="QSpinBox" name="blueSpinBox"/>
+          <widget class="QSpinBox" name="blueSpinBox">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="blueFillBtn">
@@ -340,7 +352,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_12">
          <item>
-          <widget class="QSpinBox" name="alphaSpinBox"/>
+          <widget class="QSpinBox" name="alphaSpinBox">
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="alphaFillBtn">

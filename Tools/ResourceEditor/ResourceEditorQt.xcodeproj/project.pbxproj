@@ -31,6 +31,7 @@
 		62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C1B9A1188E947200CD3005 /* MaterialFilterModel_moc.cpp */; };
 		62C47F75189A9CBC008996F1 /* QtPropertyDataValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C47F73189A9CBB008996F1 /* QtPropertyDataValidator.cpp */; };
 		62C8751B189698E5000E398E /* RegExpValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C87519189698E5000E398E /* RegExpValidator.cpp */; };
+		62CF7A8618BE4F43009BF400 /* ImageSplitterHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62CF7A8418BE4F43009BF400 /* ImageSplitterHelper.cpp */; };
 		76741C8818A3BDE20044A0BF /* CacheRequest.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C8618A3BDE20044A0BF /* CacheRequest.cpp */; };
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
@@ -670,6 +671,8 @@
 		62C47F74189A9CBB008996F1 /* QtPropertyDataValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QtPropertyDataValidator.h; sourceTree = "<group>"; };
 		62C87519189698E5000E398E /* RegExpValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RegExpValidator.cpp; path = QtPropertyDataValidator/RegExpValidator.cpp; sourceTree = "<group>"; };
 		62C8751A189698E5000E398E /* RegExpValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RegExpValidator.h; path = QtPropertyDataValidator/RegExpValidator.h; sourceTree = "<group>"; };
+		62CF7A8418BE4F43009BF400 /* ImageSplitterHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageSplitterHelper.cpp; path = ImageSplitterDialog/ImageSplitterHelper.cpp; sourceTree = "<group>"; };
+		62CF7A8518BE4F43009BF400 /* ImageSplitterHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageSplitterHelper.h; path = ImageSplitterDialog/ImageSplitterHelper.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		76741C8618A3BDE20044A0BF /* CacheRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest.cpp; sourceTree = "<group>"; };
@@ -1764,6 +1767,8 @@
 		84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */ = {
 			isa = PBXGroup;
 			children = (
+				62CF7A8418BE4F43009BF400 /* ImageSplitterHelper.cpp */,
+				62CF7A8518BE4F43009BF400 /* ImageSplitterHelper.h */,
 				8406D38518BA583100AFF8E3 /* ImageArea.cpp */,
 				8406D38618BA583100AFF8E3 /* ImageArea.h */,
 				8464251C18B16B2800A2BE35 /* ImageSplitterDialog.cpp */,
@@ -4398,6 +4403,7 @@
 				E8C99275184CD0EC00AFBF3F /* ImageSplitterTool.cpp in Build Sources */,
 				E8C992D4184CD0EC00AFBF3F /* LayerForceWidget.cpp in Build Sources */,
 				E8C99200184CD0EC00AFBF3F /* btConvexConvexAlgorithm.cpp in Build Sources */,
+				62CF7A8618BE4F43009BF400 /* ImageSplitterHelper.cpp in Build Sources */,
 				E8C9929B184CD0EC00AFBF3F /* RemoveComponentCommand.cpp in Build Sources */,
 				E8C9926D184CD0EC00AFBF3F /* ColladaScene.cpp in Build Sources */,
 				E8C992F7184CD0EC00AFBF3F /* CameraSystem.cpp in Build Sources */,
