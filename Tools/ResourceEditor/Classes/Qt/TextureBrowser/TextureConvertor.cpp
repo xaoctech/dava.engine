@@ -200,6 +200,11 @@ void TextureConvertor::WaitConvertedAll(QWidget *parent)
 {
 	if(convertJobQueueSize > 0)
 	{
+        if(NULL == parent)
+        {
+            parent = QtMainWindow::Instance();
+        }
+
 		waitDialog = new QtWaitDialog(parent);
 		bool hasCancel = false;
 		
