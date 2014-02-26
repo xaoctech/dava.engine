@@ -47,7 +47,8 @@ namespace DAVA
 
     
 RenderBatch::RenderBatch()
-    :   sortingKey(0xF8)
+    :   renderLayerIDsBitmaskFromMaterial(0)
+    ,   sortingKey(0xF8)
     ,   dataSource(0)
     ,   renderDataObject(0)
     ,   material(0)

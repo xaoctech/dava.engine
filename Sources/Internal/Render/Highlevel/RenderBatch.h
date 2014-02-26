@@ -96,7 +96,7 @@ public:
     
     void SetMaterial(NMaterial * _material);
     inline NMaterial * GetMaterial();
-    inline uint32 GetRenderLayerIDsBitmask() const { return renderLayerIDsBitmaskFromMaterial; };
+    inline uint32 GetRenderLayerIDsBitmask() const;
     
 	void SetRenderObject(RenderObject * renderObject);
 	inline RenderObject * GetRenderObject() const;
@@ -179,6 +179,11 @@ public:
                          
         PROPERTY("sortingKey", "Key for the sorting inside render layer", GetSortingKey, SetSortingKey, I_SAVE | I_VIEW | I_EDIT)
     );
+};
+    
+inline uint32 RenderBatch::GetRenderLayerIDsBitmask() const
+{
+    return renderLayerIDsBitmaskFromMaterial;
 };
 
 inline PolygonGroup * RenderBatch::GetPolygonGroup()

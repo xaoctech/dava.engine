@@ -302,7 +302,7 @@ void RenderSystem::AddLight(Light * light)
     
 void RenderSystem::RemoveLight(Light * light)
 {
-    lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
+    FindAndRemoveExchangingWithLast(lights, light);
     FindNearestLights();
     
     SafeRelease(light);
@@ -386,19 +386,6 @@ void RenderSystem::Render()
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
 }
-
-//RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer)
-//{
-//	DVASSERT(false == renderLayersMap.count(layerName));
-//
-//	RenderLayer * newLayer = new RenderLayer(layerName, sortingFlags);
-//	renderLayersMap.Insert(layerName, newLayer);
-//
-//	RenderPass * inPass = renderPassesMap[passName];
-//	inPass->AddRenderLayer(newLayer, afterLayer);
-//
-//	return newLayer;
-//}
     
 void RenderSystem::SetShadowRectColor(const Color &color)
 {
