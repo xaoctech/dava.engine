@@ -27,52 +27,39 @@
 =====================================================================================*/
 
 
-#ifndef __QT_IMAGE_AREA_H__
-#define __QT_IMAGE_AREA_H__
+#ifndef __QT_IMAGE_SPLITTER_HELPER_H__
+#define __QT_IMAGE_SPLITTER_HELPER_H__
 
-#include <QLabel>
 #include "DAVAEngine.h"
+#include <QtGui>
 
-class QMimeData;
-
-class ImageArea : public QLabel
+class ImageSplitterHelper
 {
-    Q_OBJECT
-    
 public:
     
-    ImageArea(QWidget *parent = 0);
-    
-    ~ImageArea();
-        
-    void SetImage(const DAVA::FilePath& filePath);
-
-    void SetImage(DAVA::Image* image);
-
-    DAVA::Image* GetImage();
-    
-    DAVA::Vector2 GetAcceptableSize() const;
-    
-public slots:
-    void clear();
-    void UpdatePreviewPicture();
-    
-    void SetAcceptableSize(const DAVA::Vector2& size);
-    
-signals:
-    
-    void changed();
-    
-protected:
-
-    void mousePressEvent(QMouseEvent * event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-        
-    void ConnectSignals();
-    
-    DAVA::Image* image;
-    DAVA::Vector2 acceptableSize;
+    static DAVA::Image* CreateImageFromFile(const DAVA::FilePath& filePath);
 };
 
-#endif /* defined(__QT_IMAGE_AREA_H__) */
+class SizeDialog : public QDialog
+{
+public:
+    
+    explicit SizeDialog(QWidget *parent = 0);
+    
+    ~SizeDialog();
+    
+    DAVA::Vector2 GetSize();
+    
+private:
+    
+    QVBoxLayout *verticalLayout;
+    QLabel* messageLbl;
+    QHBoxLayout *horLayout;
+    QLabel* widthLbl;
+    QSpinBox* widthSpinBox;
+    QLabel* heightLbl;
+    QSpinBox* heightSpinBox;
+    QDialogButtonBox* buttonBox;
+};
+
+#endif /* defined(__QT_IMAGE_SPLITTER_HELPER_H__) */

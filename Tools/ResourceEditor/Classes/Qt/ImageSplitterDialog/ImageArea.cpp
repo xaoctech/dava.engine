@@ -31,6 +31,7 @@
 
 #include "CommandLine/ImageSplitter/ImageSplitter.h"
 #include "Qt/TextureBrowser/TextureConvertor.h"
+#include "ImageSplitterHelper.h"
 
 #include <QtGui>
 #include <QFileDialog>
@@ -61,11 +62,10 @@ void ImageArea::dragEnterEvent(QDragEnterEvent *event)
     {
         return;
     }
-    
-    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(mimeData->urls().first().toLocalFile().toStdString());
-    if (images.size() != 0)
+    DAVA::Image* image = ImageSplitterHelper::CreateImageFromFile(mimeData->urls().first().toLocalFile().toStdString());
+    if(NULL != image )
     {
-        for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+        DAVA::SafeRelease(image);
         event->acceptProposedAction();
     }
 }
@@ -117,20 +117,12 @@ void ImageArea::SetImage(DAVA::Image* selectedImage)
 
 void ImageArea::SetImage(const DAVA::FilePath& filePath)
 {
-    //***
-    if(!filePath.Exists())
-    {
-        return;
-    }
-    
-    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(filePath);
-    if (images.size() == 0)
+    DAVA::Image* selectedImage = ImageSplitterHelper::CreateImageFromFile(filePath);
+    if(NULL == selectedImage)
     {
         QMessageBox::warning(this, "File error", "Cann't load image.", QMessageBox::Ok);
         return;
     }
-    //*** - in separate func!
-    DAVA::Image* selectedImage = images[0];
     if(selectedImage->GetPixelFormat() == DAVA::FORMAT_A8)
     {
         SetImage(selectedImage);
@@ -139,8 +131,7 @@ void ImageArea::SetImage(const DAVA::FilePath& filePath)
     {
         QMessageBox::warning(this, "Format error", "Selected image must be in A8 format.", QMessageBox::Ok);
     }
-    
-    for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+    DAVA::SafeRelease(selectedImage);
 }
 
 DAVA::Image* ImageArea::GetImage()
