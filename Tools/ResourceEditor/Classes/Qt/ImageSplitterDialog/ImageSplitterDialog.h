@@ -53,14 +53,26 @@ protected slots:
     
     void ImageAreaChanged();
     
+    void OnRestoreClicked();
+    
+    void OnSaveAsClicked(bool saveSplittedImages = false);
+    
+    void OnSaveClicked();
+    
+    void OnSaveChannelsClicked();
+    
 protected:
     
     void ConnectSignals();
+    void DisconnectSignals();
+    
+    void Save(const DAVA::FilePath& filePath, bool saveSplittedImages);
 
 private:
     Ui::ImageSplitter *ui;
     
     DAVA::Vector2 acceptableSize;
+    DAVA::String  lastSelectedFile;
 };
 
 #endif // __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__

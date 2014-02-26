@@ -36,9 +36,8 @@
 #include <QFileDialog>
 #include "Project/ProjectManager.h"
 
-ImageArea::ImageArea(QWidget *parent /*= 0*/, eColorCmponents value /*= COMPONENTS_ALL*/)
+ImageArea::ImageArea(QWidget *parent /*= 0*/)
     :QLabel(parent),
-    colorComponent(value),
     image(NULL),
     acceptableSize(0,0)
 {
@@ -82,12 +81,6 @@ void ImageArea::ConnectSignals()
     connect(this, SIGNAL(changed()), this, SLOT(UpdatePreviewPicture()));
 }
 
-void ImageArea::SetColorComponent(eColorCmponents value)
-{
-    colorComponent = value;
-    emit changed();
-}
-
 void ImageArea::mousePressEvent (QMouseEvent * ev)
 {
     if(ev->button() == Qt::LeftButton)
@@ -102,20 +95,8 @@ void ImageArea::mousePressEvent (QMouseEvent * ev)
 	
 	QLabel::mousePressEvent(ev);
 }
-
-void ImageArea::SetImage(const DAVA::FilePath& filePath)
+void ImageArea::SetImage(DAVA::Image* selectedImage)
 {
-    if(!filePath.Exists())
-    {
-        return;
-    }
-    
-    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(filePath);
-    if (images.size() == 0)
-    {
-        return;
-    }
-    DAVA::Image* selectedImage = images[0];
     DAVA::Vector2 selectedImageSize(selectedImage->GetWidth(), selectedImage->GetHeight());
     if(acceptableSize.IsZero())
     {
@@ -132,54 +113,48 @@ void ImageArea::SetImage(const DAVA::FilePath& filePath)
     {
         QMessageBox::warning(this, "Size error", "Selected image has incorrect size.", QMessageBox::Ok);
     }
+}
+
+void ImageArea::SetImage(const DAVA::FilePath& filePath)
+{
+    //***
+    if(!filePath.Exists())
+    {
+        return;
+    }
+    
+    DAVA::Vector<DAVA::Image*> images = DAVA::ImageLoader::CreateFromFileByContent(filePath);
+    if (images.size() == 0)
+    {
+        QMessageBox::warning(this, "File error", "Cann't load image.", QMessageBox::Ok);
+        return;
+    }
+    //*** - in separate func!
+    DAVA::Image* selectedImage = images[0];
+    if(selectedImage->GetPixelFormat() == DAVA::FORMAT_A8)
+    {
+        SetImage(selectedImage);
+    }
+    else
+    {
+        QMessageBox::warning(this, "Format error", "Selected image must be in A8 format.", QMessageBox::Ok);
+    }
     
     for_each(images.begin(), images.end(), DAVA::SafeRelease<DAVA::Image>);
+}
+
+DAVA::Image* ImageArea::GetImage()
+{
+    return image;
 }
 
 void ImageArea::clear()
 {
     DAVA::SafeRelease(image);
     setBackgroundRole(QPalette::Dark);
+    setPixmap(QPixmap());
     acceptableSize.SetZero();
     emit changed();
-}
-
-DAVA::Image* ImageArea::GetComponentImage( DAVA::Image* originalImage)
-{
-    if(colorComponent == COMPONENTS_ALL)
-    {
-        return DAVA::Image::CopyImageRegion(originalImage, originalImage->GetWidth(), originalImage->GetHeight());
-    }
-    
-    DAVA::Image* r = NULL;
-    DAVA::Image* g = NULL;
-    DAVA::Image* b = NULL;
-    DAVA::Image* a = NULL;
-    DAVA::Image* outputImage = NULL;
-    ImageSplitter::CreateSplittedImages(originalImage, &r, &g, &b, &a);
-    switch (colorComponent)
-    {
-        case COMPONENTS_RED:
-            outputImage = r;
-            break;
-        case COMPONENTS_GREEN:
-            outputImage = g;
-            break;
-        case COMPONENTS_BLUE:
-            outputImage = b;
-            break;
-        case COMPONENTS_ALPHA:
-            outputImage = a;
-            break;
-        default:
-            break;
-    }
-    outputImage->Retain();
-    SafeRelease(r);
-    SafeRelease(g);
-    SafeRelease(b);
-    SafeRelease(a);
-    return outputImage;
 }
 
 void ImageArea::UpdatePreviewPicture()
@@ -190,10 +165,8 @@ void ImageArea::UpdatePreviewPicture()
     }
     DAVA::Image* scaledImage = DAVA::Image::CopyImageRegion(image, image->GetWidth(), image->GetHeight());
     scaledImage->ResizeImage(this->width(), this->height());
-    DAVA::Image* splittedImage = GetComponentImage(scaledImage);
+    QPixmap scaledPixmap = QPixmap::fromImage(TextureConvertor::FromDavaImage(scaledImage));
     DAVA::SafeRelease(scaledImage);
-    QPixmap scaledPixmap = QPixmap::fromImage(TextureConvertor::FromDavaImage(splittedImage));
-    DAVA::SafeRelease(splittedImage);
     setPixmap(scaledPixmap);
 }
 
