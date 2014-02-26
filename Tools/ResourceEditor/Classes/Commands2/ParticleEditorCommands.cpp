@@ -69,7 +69,7 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	this->emitter = emitter;
 }
 
-	void CommandUpdateEmitter::Init(const String& name,
+	void CommandUpdateEmitter::Init(const FastName& name,
 								const Vector3& position,
 								ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > emissionRange,
@@ -465,7 +465,7 @@ void CommandAddParticleEmitterLayer::Redo()
 	createdLayer->startTime = 0;
     createdLayer->endTime = LIFETIME_FOR_NEW_PARTICLE_EMITTER;
 	createdLayer->life = new PropertyLineValue<float32>(1.0f);
-    createdLayer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME, selectedEmitter);
+    createdLayer->layerName = ParticlesEditorNodeNameHelper::GetNewLayerName(ResourceEditor::LAYER_NODE_NAME.c_str(), selectedEmitter);
 
 	createdLayer->loopEndTime = selectedEmitter->lifeTime;	
     selectedEmitter->AddLayer(createdLayer);	
