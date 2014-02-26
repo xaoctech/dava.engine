@@ -1896,6 +1896,12 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\GrassEditorSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\GrassEditorProxy.cpp">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3349,6 +3355,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\GrassEditorSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\GrassEditorProxy.h">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

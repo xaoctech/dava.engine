@@ -97,6 +97,9 @@ SceneEditor2::SceneEditor2()
 	visibilityToolSystem = new VisibilityToolSystem(this);
 	AddSystem(visibilityToolSystem, 0);
 
+    grassEditorSystem = new GrassEditorSystem(this);
+    AddSystem(grassEditorSystem, 0);
+
 	rulerToolSystem = new RulerToolSystem(this);
 	AddSystem(rulerToolSystem, 0);
 
@@ -373,6 +376,7 @@ void SceneEditor2::Update(float timeElapsed)
 	customColorsSystem->Update(timeElapsed);
 	visibilityToolSystem->Update(timeElapsed);
 	rulerToolSystem->Update(timeElapsed);
+    grassEditorSystem->Update(timeElapsed);
 	
 	if(structureSystem)
 		structureSystem->Update(timeElapsed);
@@ -403,6 +407,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
 	rulerToolSystem->ProcessUIEvent(event);
+    grassEditorSystem->ProcessUIEvent(event);
 
 	if(structureSystem)
 		structureSystem->ProcessUIEvent(event);
