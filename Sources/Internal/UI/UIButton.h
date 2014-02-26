@@ -296,7 +296,7 @@ public:
 	 \brief Creates the background for the UIButton for particular state and caches it.
      Will create the background once only and then cache it.
 	 */
-//    virtual void CreateBackgroundForState(int32 state);
+    virtual void CreateBackgroundForState(int32 state);
 	
 	/**
 	 \brief Returns list of control children without internal controls.
@@ -316,99 +316,22 @@ protected:
 		
 		,	DRAW_STATE_COUNT
 	};
-
-    class BaseButtonControlData
-    {
-    public:
-        BaseButtonControlData();
-        
-        virtual bool IsInitialized() const;
-        virtual void Initialize();
-        
-    protected:
-        bool isInitialized;
-    };
-    
-    class UIStaticTextData : public BaseButtonControlData
-    {
-    public:
-        WideString text;
-        int32 textAlign;
-        Vector2 requestedTextRectSize;
-        
-        Font* font;
-        Color fontColor;
-        Color shadowColor;
-        Vector2 shadowOffset;
-        int32 fittingOption;
-        
-        UIStaticTextData();
-        UIStaticTextData(UIStaticText* staticText);
-        
-        bool operator == (const UIStaticTextData& right) const;
-    };
-    
-    class UIControlBackgroundData : public BaseButtonControlData
-    {
-    public:
-        FilePath spriteName;
-        int32 spriteFrame;
-        
-        Color color;
-        UIControlBackground::eDrawType drawType;
-        UIControlBackground::eColorInheritType colorInheritType;
-        int32 align;
-        int32 modification;
-        
-        float32 leftRightStretchCap;
-        float32 topBottomStretchCap;
-        
-        UIControlBackgroundData();
-        UIControlBackgroundData(UIControlBackground* background);
-        
-        bool operator == (const UIControlBackgroundData& right) const;
-        UIControlBackgroundData* Clone() const;
-    };
-    
-    struct ButtonStateData
-    {
-        UIStaticTextData staticTextData;
-        UIStaticText* staticText;
-        UIControlBackgroundData controlBackgoundData;
-        UIControlBackground* controlBackground;
-    };
-
-    ButtonStateData buttonStates[DRAW_STATE_COUNT];
-
+	UIControlBackground *stateBacks[DRAW_STATE_COUNT];
+	UIStaticText	*stateTexts[DRAW_STATE_COUNT];
+	
 	int32 oldState;
 	UIControlBackground *selectedBackground;
 	UIStaticText	*selectedText;
 	
 	virtual ~UIButton();
-    void Cleanup();
 	eButtonDrawState GetDrawStateForControlState(int32 state);
-    
-    void UpdateInnerControls();
-    void UpdateBackgroundControl(int32 state);
-    void UpdateStaticTextControl(int32 state);
-
-    UIControlBackgroundData& CreateBackgroundData(eButtonDrawState state);
-    UIStaticTextData& CreateStaticTextData(eButtonDrawState state);
-
-    void UpdateStaticText(int32 state, const UIStaticTextData& stateData);
-    void UpdateBackground(int32 state, const UIControlBackgroundData& stateData);
-
-    void RemoveSelectedText();
-    void RestoreSelectedText();
-    
-    void SaveTexts(UIYamlLoader* loader, YamlNode *node, const Map<int32, UIStaticTextData>& texts);
-    void SaveBackgrounds(UIYamlLoader* loader, YamlNode *node, const Map<int32, UIControlBackgroundData>& backgrounds);
-
 private:
 
 	int32 BackgroundIndexForState(eButtonDrawState buttonState);
 	UIControlBackground *GetActualBackground(int32 state);
+	UIControlBackground *CreateBackForState(eButtonDrawState buttonState);
 
+	virtual UIStaticText *CreateTextForState(eButtonDrawState buttonState);
 	UIStaticText *GetActualText(int32 state);
 	int32 TextIndexForState(eButtonDrawState buttonState);
 	void UpdateStateTextControlSize();

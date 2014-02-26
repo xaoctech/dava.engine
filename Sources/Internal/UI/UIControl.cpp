@@ -284,13 +284,8 @@ namespace DAVA
 			return "";
 		}
 
-		return GetSpriteFrameworkPath(sprite->GetRelativePathname());
-	}
-
-    String UIControl::GetSpriteFrameworkPath(const FilePath& relativeSpritePath)
-	{
+		FilePath path(sprite->GetRelativePathname());
 		String pathName = "";
-        FilePath path = relativeSpritePath;
 		if (!path.IsEmpty())
 		{
 			path.TruncateExtension();
