@@ -41,22 +41,16 @@ class ImageArea : public QLabel
     
 public:
     
-    enum eColorCmponents
-    {
-        COMPONENTS_RED = 0,
-        COMPONENTS_GREEN,
-        COMPONENTS_BLUE,
-        COMPONENTS_ALPHA,
-        COMPONENTS_ALL
-        
-    };
     
-    ImageArea(QWidget *parent = 0, eColorCmponents value = COMPONENTS_ALL);
+    ImageArea(QWidget *parent = 0);
     ~ImageArea();
     
-    void SetColorComponent(eColorCmponents value);
     
     void SetImage(const DAVA::FilePath& filePath);
+
+    void SetImage(DAVA::Image* image);
+
+    DAVA::Image* GetImage();
     
     DAVA::Vector2 GetAcceptableSize() const;
     
@@ -75,12 +69,9 @@ protected:
     void mousePressEvent(QMouseEvent * event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-    
-    DAVA::Image* GetComponentImage(DAVA::Image* originalImage);
-
+        
     void ConnectSignals();
     
-    eColorCmponents colorComponent;
     DAVA::Image* image;
     DAVA::Vector2 acceptableSize;
 };

@@ -48,22 +48,6 @@ bool ImageSplitter::SplitImage(const FilePath &pathname, Set<String> &errorLog)
         return false;
     }
     
-/*
-    Image *red = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
-    Image *green = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
-    Image *blue = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
-    Image *alpha = Image::Create(loadedImage->width, loadedImage->height, FORMAT_A8);
-
-    int32 size = loadedImage->width * loadedImage->height;
-    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-    for(int32 i = 0; i < size; ++i)
-    {
-        int32 offset = i * pixelSize;
-        red->data[i] = loadedImage->data[offset];
-        green->data[i] = loadedImage->data[offset + 1];
-        blue->data[i] = loadedImage->data[offset + 2];
-        alpha->data[i] = loadedImage->data[offset + 3];
-    }*/
     Image *red = NULL;
     Image *green = NULL;
     Image *blue = NULL;
@@ -113,17 +97,7 @@ bool ImageSplitter::MergeImages(const FilePath &folder, Set<String> &errorLog)
         return false;
     }
 
-    Image *mergedImage = Image::Create(red->width, red->height, FORMAT_RGBA8888);
-    int32 size = mergedImage->width * mergedImage->height;
-    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-    for(int32 i = 0; i < size; ++i)
-    {
-        int32 offset = i * pixelSize;
-        mergedImage->data[offset] = red->data[i];
-        mergedImage->data[offset + 1] = green->data[i];
-        mergedImage->data[offset + 2] = blue->data[i];
-        mergedImage->data[offset + 3] = alpha->data[i];
-    }
+    Image *mergedImage = CreateMergedImage(red, green, blue, alpha);
 
     ImageLoader::Save(mergedImage, folder + "merged.png");
     
@@ -169,4 +143,19 @@ void ImageSplitter::CreateSplittedImages(DAVA::Image* originalImage,DAVA::Image 
     }
 }
 
+DAVA::Image* ImageSplitter::CreateMergedImage(DAVA::Image *red, DAVA::Image *green, DAVA::Image *blue, DAVA::Image *alpha)
+{
+    Image *mergedImage = Image::Create(red->width, red->height, FORMAT_RGBA8888);
+    int32 size = mergedImage->width * mergedImage->height;
+    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    for(int32 i = 0; i < size; ++i)
+    {
+        int32 offset = i * pixelSize;
+        mergedImage->data[offset] = red->data[i];
+        mergedImage->data[offset + 1] = green->data[i];
+        mergedImage->data[offset + 2] = blue->data[i];
+        mergedImage->data[offset + 3] = alpha->data[i];
+    }
+    return mergedImage;
+}
 
