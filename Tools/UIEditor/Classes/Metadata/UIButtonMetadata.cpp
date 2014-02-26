@@ -760,18 +760,19 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
         WideString controlText = StringToWString(button->GetName());
         HierarchyTreeNode* activeNode = GetTreeNode(i);
     
-        // Initialize the button extra data for all states.
+        // Initialize the button for all states.
         int statesCount = UIControlStateHelper::GetUIControlStatesCount();
         for (int stateID = 0; stateID < statesCount; stateID ++)
         {
             UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
+            button->SetStateFont(state, EditorFontManager::Instance()->GetDefaultFont());
+            button->SetStateText(state, controlText);
+            button->SetStateTextAlign(state, ALIGN_HCENTER | ALIGN_VCENTER);
+
+            // Button is state-aware.
             activeNode->GetExtraData().SetLocalizationKey(controlText, state);
         }
-
-        button->SetStateFont(UIControl::STATE_NORMAL, EditorFontManager::Instance()->GetDefaultFont());
-        button->SetStateText(UIControl::STATE_NORMAL, controlText);
-        button->SetStateTextAlign(UIControl::STATE_NORMAL, ALIGN_HCENTER | ALIGN_VCENTER);
-
+        
         // Define some properties for the reference state.
         button->SetStateDrawType(GetReferenceState(), UIControlBackground::DRAW_SCALE_TO_RECT);
     }

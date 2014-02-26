@@ -68,8 +68,6 @@ public:
 	virtual void SetAlign(int32 align);
 	virtual int32 GetAlign();
 	
-    const Vector2& GetRequestedRectSize();
-
 	//[DO NOT ACTUAL ANYMORE] if requested size is 0 - text creates in the rect with size of the drawRect on draw phase
 	//if requested size is >0 - text creates int the rect with the requested size
 	//if requested size in <0 - rect creates for the all text size	
