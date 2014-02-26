@@ -306,6 +306,16 @@ void RenderObject::SetSwitchIndex(int32 _switchIndex)
 	}
 }
 
+int32 RenderObject::GetLodIndex()
+{
+    return lodIndex;
+}
+
+int32 RenderObject::GetSwitchIndex()
+{
+    return switchIndex;
+}
+
 void RenderObject::UpdateActiveRenderBatches()
 {
 	activeRenderBatchArray.clear();
