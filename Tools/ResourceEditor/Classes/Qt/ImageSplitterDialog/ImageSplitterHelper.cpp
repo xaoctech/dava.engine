@@ -63,7 +63,7 @@ QDialog(parent)
     widthLbl->setText("Width:");
     
     widthSpinBox = new QSpinBox(this);
-    widthSpinBox->setMinimum(0);
+    widthSpinBox->setMinimum(1);
     widthSpinBox->setMaximum(99999);
     widthSpinBox->setSingleStep(1);
     
@@ -71,7 +71,7 @@ QDialog(parent)
     heightLbl->setText("Width:");
     
     heightSpinBox = new QSpinBox(this);
-    heightSpinBox->setMinimum(0);
+    heightSpinBox->setMinimum(1);
     heightSpinBox->setMaximum(99999);
     heightSpinBox->setSingleStep(1);
     
