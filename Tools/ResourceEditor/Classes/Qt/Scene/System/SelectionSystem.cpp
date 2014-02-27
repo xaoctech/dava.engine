@@ -47,6 +47,7 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 	, applyOnPhaseEnd(false)
 	, selectionAllowed(true)
 	, selectionHasChanges(false)
+    , invalidSelectionBoxes(false)
 {
 	const DAVA::RenderStateData& default3dState = DAVA::RenderManager::Instance()->GetRenderStateData(DAVA::RenderState::RENDERSTATE_3D_BLEND);
 	DAVA::RenderStateData selectionStateData;
@@ -64,11 +65,30 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 								DAVA::RenderStateData::STATE_DEPTH_TEST;
 	
 	selectionDepthDrawState = DAVA::RenderManager::Instance()->CreateRenderState(selectionStateData);
+
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
 }
 
 SceneSelectionSystem::~SceneSelectionSystem()
 {
 
+}
+
+void SceneSelectionSystem::ImmediateEvent(DAVA::Entity * entity, DAVA::uint32 event)
+{
+    if(EventSystem::SWITCH_CHANGED == event)
+    {
+        for(DAVA::uint32 i = 0; i < curSelections.Size(); i++)
+        {
+            DAVA::Entity *selectedEntity = curSelections.GetEntity(i);
+
+            // if switched entity selected - update it bounding box
+            if(selectedEntity == entity)
+            {
+                invalidSelectionBoxes = true;
+            }
+        }
+    }
 }
 
 void SceneSelectionSystem::Process(DAVA::float32 timeElapsed)
@@ -79,6 +99,20 @@ void SceneSelectionSystem::Process(DAVA::float32 timeElapsed)
 	{
 		return;
 	}
+
+    // if boxes are invalid we should request them from collision system
+    // and store them in selection entityGroup
+    if(invalidSelectionBoxes)
+    {
+        for(DAVA::uint32 i = 0; i < curSelections.Size(); i++)
+        {
+            EntityGroupItem *item = curSelections.GetItem(i);
+            item->bbox = GetSelectionAABox(curSelections.GetEntity(i));
+        }
+
+        invalidSelectionBoxes = false;
+    }
+
 
 	UpdateHoodPos();
 }
@@ -190,7 +224,7 @@ void SceneSelectionSystem::Draw()
 
 		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
-			DAVA::AABBox3 selectionBox = curSelections.GetBbox(i);
+            DAVA::AABBox3 selectionBox = curSelections.GetBbox(i);
 
 			// draw selection share
 			if(drawMode & ST_SELDRAW_DRAW_SHAPE)
