@@ -191,7 +191,7 @@ void ParticleEmitterPropertiesWidget::OnValueChanged()
 	position.z = positionZSpinBox->value();
 
 	CommandUpdateEmitter* commandUpdateEmitter = new CommandUpdateEmitter(emitter);
-	commandUpdateEmitter->Init(emitterNameLineEdit->text().toStdString(), 
+	commandUpdateEmitter->Init(FastName(emitterNameLineEdit->text().toStdString().c_str()),
 							   position,
 							   type,
 							   emissionRange.GetPropLine(),
