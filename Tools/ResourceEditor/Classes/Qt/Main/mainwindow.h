@@ -172,6 +172,7 @@ public slots:
 	void OnTilemaskEditor();
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
+    void OnGrasEditor();
 	
 	void OnAddActionComponent();
     void OnAddStaticOcclusionComponent();

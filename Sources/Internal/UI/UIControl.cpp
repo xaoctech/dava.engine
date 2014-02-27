@@ -56,6 +56,7 @@ namespace DAVA
 		 */
 		inputEnabled = true; 
         inputProcessorsCount = 1;
+        focusEnabled = true;
 		
 		background = new UIControlBackground();
 		needToRecalcFromAbsoluteCoordinates = false;
@@ -987,6 +988,17 @@ namespace DAVA
 			}
 		}
 	}
+    
+    bool UIControl::GetFocusEnabled() const
+    {
+        return focusEnabled;
+    }
+    
+	void UIControl::SetFocusEnabled(bool isEnabled)
+    {
+        focusEnabled = isEnabled;
+    }
+
 	
 	bool UIControl::GetDisabled() const
 	{
@@ -1896,7 +1908,7 @@ namespace DAVA
 #endif
 								if (IsPointInside(currentInput->point, true))
 								{
-                                    if (UIControlSystem::Instance()->GetFocusedControl() != this) 
+                                    if (UIControlSystem::Instance()->GetFocusedControl() != this && focusEnabled)
                                     {
                                         UIControlSystem::Instance()->SetFocusedControl(this, false);
                                     }
@@ -2811,11 +2823,6 @@ namespace DAVA
 		return position;
 	}
 
-	float32 UIControl::Round(float32 value)
-	{
-		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
-	}
-	
 	void UIControl::RecalculatePivotPoint(const Rect &newRect)
 	{
 		Rect oldRect = this->GetRect();
