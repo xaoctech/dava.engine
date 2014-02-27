@@ -97,7 +97,10 @@ void ImageSplitterDialog::PathSelected(DAVA::String path)
         DAVA::Image* g = NULL;
         DAVA::Image* b = NULL;
         DAVA::Image* a = NULL;
+        
         ImageSplitter::CreateSplittedImages(image, &r, &g, &b, &a);
+        DAVA::SafeRelease(image);
+        
         ui->redImgLbl->SetImage(r);
         ui->greenImgLbl->SetImage(g);
         ui->blueImgLbl->SetImage(b);
@@ -117,12 +120,11 @@ void ImageSplitterDialog::PathSelected(DAVA::String path)
         {
             QMessageBox::warning(this, "File error", "Cann't load image.", QMessageBox::Ok);
         }
-        else
+        else if(image->GetPixelFormat() != DAVA::FORMAT_RGBA8888)
         {
             QMessageBox::warning(this, "File error", "Image must be in RGBA8888 format.", QMessageBox::Ok);
         }
     }
-    DAVA::SafeRelease(image);
 }
 
 void ImageSplitterDialog::ImageAreaChanged()
@@ -233,15 +235,11 @@ void ImageSplitterDialog::OnFillBtnClicked()
     if(acceptableSize.IsZero())
     {
         SizeDialog sizeDlg(this);
-        int res = sizeDlg.exec();
-        if(res == QDialog::Accepted)
-        {
-            acceptableSize = sizeDlg.GetSize();
-        }
-        if(res == QDialog::Rejected || acceptableSize.IsZero())
+        if(sizeDlg.exec() == QDialog::Rejected)
         {
             return;
         }
+        acceptableSize = sizeDlg.GetSize();
     }
     
     DAVA::uint32 height = acceptableSize.x;
@@ -273,9 +271,9 @@ void ImageSplitterDialog::SetAcceptableImageSize(const DAVA::Vector2& newSize)
     ui->alphaImgLbl->SetAcceptableSize(acceptableSize);
 }
 
-void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparatelly)
+void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparately)
 {
-    if(!filePath.IsEqualToExtension(".png") && !saveSplittedImagesSeparatelly)
+    if(!filePath.IsEqualToExtension(".png") && !saveSplittedImagesSeparately)
     {
         QMessageBox::warning(this, "Save error", "Wrong file name.", QMessageBox::Ok);
         return;
@@ -292,7 +290,7 @@ void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplitted
         return;
     }
     
-    if (saveSplittedImagesSeparatelly)
+    if (saveSplittedImagesSeparately)
     {
         DAVA::String directory = filePath.GetDirectory().GetAbsolutePathname();
         DAVA::String baseName = filePath.GetBasename();

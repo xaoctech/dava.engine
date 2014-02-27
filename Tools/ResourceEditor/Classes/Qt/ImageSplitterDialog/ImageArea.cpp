@@ -105,8 +105,7 @@ void ImageArea::SetImage(DAVA::Image* selectedImage)
     if(selectedImageSize == acceptableSize)
     {
         DAVA::SafeRelease(image);
-        image = selectedImage;
-        image->Retain();
+        image = SafeRetain(selectedImage);        
         emit changed();
     }
     else

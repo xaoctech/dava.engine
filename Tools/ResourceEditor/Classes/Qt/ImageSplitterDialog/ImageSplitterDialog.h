@@ -71,7 +71,7 @@ protected:
 
     void SetAcceptableImageSize(const DAVA::Vector2& newSize);
     
-    void Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparatelly);
+    void Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparately);
     
     Ui::ImageSplitter *ui;
     
