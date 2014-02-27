@@ -619,9 +619,6 @@ void TextureBrowser::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
 	setTextureView(curTextureView);
-
-	// zoom fit selected texture
-	textureZoomFit(true);
 }
 
 void TextureBrowser::textureListViewText(bool checked)
@@ -726,6 +723,9 @@ void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descrip
 
 			// set info about loaded image
 			updateInfoOriginal(images.images);
+
+            // zoom fit selected texture
+            textureZoomFit(true);
 		}
 	}
 }
