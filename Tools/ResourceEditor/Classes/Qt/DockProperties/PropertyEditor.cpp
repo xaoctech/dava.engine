@@ -745,6 +745,7 @@ void PropertyEditor::DeleteRenderBatch()
 					if(b == batch)
 					{
 						curScene->Exec(new DeleteRenderBatchCommand(curNode, batch->GetRenderObject(), i));
+                        break;
 					}
 				}
 			}

@@ -147,7 +147,7 @@ public:
 	virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetOwnerDebugInfo(const String & str) { ownerDebugInfo = str; };
+    void SetOwnerDebugInfo(const FastName & str) { ownerDebugInfo = str; };
 
     virtual void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
@@ -160,8 +160,10 @@ public:
     inline void SetStaticOcclusionIndex(uint16 index);
 	virtual void PrepareToRender(Camera *camera); //objects passed all tests and is going to be rendered this frame - by default calculates final matrix	
 
-	void SetLodIndex(int32 lodIndex);
-	void SetSwitchIndex(int32 switchIndex);
+	void SetLodIndex(const int32 lodIndex);
+	void SetSwitchIndex(const int32 switchIndex);
+    int32 GetLodIndex();
+    int32 GetSwitchIndex();
     int32 GetMaxLodIndex() const;
     int32 GetMaxSwitchIndex() const;
 
@@ -179,10 +181,12 @@ protected:
     uint16 staticOcclusionIndex;    
     AABBox3 bbox;
     AABBox3 worldBBox;
+
     Matrix4 * worldTransform;                    // temporary - this should me moved directly to matrix uniforms	
-    String ownerDebugInfo;
+    FastName ownerDebugInfo;
 	int32 lodIndex;
 	int32 switchIndex;
+
 //    Sphere bsphere;
     
 	struct IndexedRenderBatch
@@ -218,8 +222,8 @@ public:
         MEMBER(bbox, "Box", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(worldBBox, "World Box", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(worldTransform, "World Transform", I_SAVE | I_VIEW | I_EDIT)
-		MEMBER(lodIndex, "Lod Index", I_VIEW | I_EDIT)
-		MEMBER(switchIndex, "Switch Index", I_VIEW | I_EDIT)
+		PROPERTY("lodIndex", "Lod Index", GetLodIndex, SetLodIndex, I_VIEW | I_EDIT)
+		PROPERTY("switchIndex", "Switch Index", GetSwitchIndex, SetSwitchIndex, I_VIEW | I_EDIT)
                  
         COLLECTION(renderBatchArray, "Render Batch Array", I_SAVE | I_VIEW | I_EDIT)
         COLLECTION(activeRenderBatchArray, "Render Batch Array", I_VIEW)

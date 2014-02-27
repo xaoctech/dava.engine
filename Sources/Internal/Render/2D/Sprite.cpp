@@ -40,6 +40,9 @@
 #include "Render/RenderManagerGL20.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "Render/Image.h"
+#include "Render/ImageLoader.h"
+#include "FileSystem/DynamicMemoryFile.h"
 
 #define NEW_PPA
 
@@ -469,6 +472,82 @@ Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTex
 	DVASSERT_MSG(spr, "Render Target Sprite Creation failed");
 	spr->InitFromTexture(fromTexture, (int32)textureRegionOffset.x, (int32)textureRegionOffset.y, textureRegionSize.x, textureRegionSize.y, (int32)spriteSize.x, (int32)spriteSize.y, false, spriteName);
 	return spr;
+}
+
+Sprite* Sprite::CreateFromImage(const Image* image, bool contentScaleIncluded /* = false*/)
+{
+    uint32 width = image->GetWidth();
+    uint32 height = image->GetHeight();
+
+    int32 size = (int32)Max(width, height);
+    EnsurePowerOf2(size);
+
+    Image* img = Image::Create((uint32)size, (uint32)size, image->GetPixelFormat());
+
+    img->InsertImage(image, 0, 0);
+
+    Texture* texture = Texture::CreateFromData(img->GetPixelFormat(), img->GetData(), size, size, false);
+
+    Sprite* sprite = NULL;
+    if (texture)
+    {
+        float32 sprWidth = width * Core::GetPhysicalToVirtualFactor();
+		float32 sprHeight = height * Core::GetPhysicalToVirtualFactor();
+        sprite = Sprite::CreateFromTexture(texture, 0, 0, sprWidth, sprHeight, contentScaleIncluded);
+        sprite->ConvertToVirtualSize();
+    }
+
+    SafeRelease(texture);
+    SafeRelease(img);
+
+    return sprite;
+}
+
+Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleIncluded /* = false*/)
+{
+    if (data == NULL || size == 0)
+    {
+        return NULL;
+    }
+
+    DynamicMemoryFile* file = DynamicMemoryFile::Create(data, size, File::OPEN | File::READ);
+    if (!file)
+    {
+        return NULL;
+    }
+
+    Vector<Image*> images = ImageLoader::CreateFromFileByContent(file);
+    if (images.size() == 0)
+    {
+        return NULL;
+    }
+
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded);
+    
+    for_each(images.begin(), images.end(), SafeRelease<Image>);
+    SafeRelease(file);
+
+    return sprite;
+}
+
+Sprite* Sprite::CreateFromPNG(const FilePath& path, bool contentScaleIncluded /* = false*/)
+{
+    if (path.GetExtension() != ".png")
+    {
+        return NULL;
+    }
+
+    Vector<Image*> images = ImageLoader::CreateFromFileByExtension(path);
+    if (images.size() == 0)
+    {
+        return NULL;
+    }
+
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded);
+
+    for_each(images.begin(), images.end(), SafeRelease<Image>);
+
+    return sprite;
 }
 
 void Sprite::InitFromTexture(Texture *fromTexture, int32 xOffset, int32 yOffset, float32 sprWidth, float32 sprHeight, int32 targetWidth, int32 targetHeight, bool contentScaleIncluded, const FilePath &spriteName /* = FilePath() */)

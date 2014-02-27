@@ -31,6 +31,7 @@
 #include "Render/Texture.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Qt/Main/QtUtils.h"
+#include "Project/ProjectManager.h"
 
 #define CUBEMAPEDITOR_MAXFACES 6
 
@@ -112,13 +113,18 @@ const DAVA::String& CubemapUtils::GetDefaultFaceExtension()
 
 DAVA::FilePath CubemapUtils::GetDialogSavedPath(const DAVA::String& key, const DAVA::String& defaultValue)
 {
-	DAVA::FilePath projectPath(SettingsManager::Instance()->GetValue(key, SettingsManager::INTERNAL).AsString());
-	
-	if(!projectPath.Exists())
+    DAVA::VariantType settinsValue = SettingsManager::Instance()->GetValue(key, SettingsManager::INTERNAL);
+    DAVA::FilePath path = settinsValue.GetType() == VariantType::TYPE_STRING ? settinsValue.AsString() : settinsValue.AsFilePath();
+        
+    DAVA::FilePath defaultPath(defaultValue);
+    DAVA::FilePath projectPath = ProjectManager::Instance()->CurProjectPath();
+    bool isInProject = FilePath::ContainPath(path, projectPath);
+    
+	if(!path.Exists() || !isInProject)
 	{
-		projectPath = defaultValue;
-		SettingsManager::Instance()->SetValue(key, VariantType(defaultValue), SettingsManager::INTERNAL);
+		path = defaultPath.Exists() ? defaultPath : projectPath;
+		SettingsManager::Instance()->SetValue(key, VariantType(path), SettingsManager::INTERNAL);
 	}
 
-	return projectPath;
+	return path;
 }

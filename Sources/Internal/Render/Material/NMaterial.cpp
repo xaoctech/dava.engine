@@ -254,8 +254,8 @@ void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
 			newParent->children.push_back(this);
 		}
 		
-		parent = SafeRetain(newParent);;
-		
+		parent = SafeRetain(newParent);
+        
 		OnParentChanged(newParent, inheritTemplate);
 	}
 }
@@ -691,9 +691,9 @@ NMaterial* NMaterial::Clone(const String& newName)
 	return clonedMaterial;
 }
 
-IlluminationParams * NMaterial::GetIlluminationParams()
+IlluminationParams * NMaterial::GetIlluminationParams(bool createIfNeeded /*= true*/)
 {
-	if(!illuminationParams)
+	if(createIfNeeded && !illuminationParams)
 		illuminationParams = new IlluminationParams(this);
 	
 	return illuminationParams;
@@ -1008,9 +1008,16 @@ void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 	
 	bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
 	
-	if(newParent && useParentTemplate)
+	if(newParent)
 	{
-		SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
+        if(useParentTemplate)
+        {
+            SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
+        }
+        else
+        {
+            UpdateShaderWithFlags(true);
+        }
 	}
 	
 	SetTexturesDirty();
@@ -1898,6 +1905,20 @@ bool NMaterialHelper::IsAlphatest(const FastName& passName, NMaterial* mat)
 	if(mat->baseTechnique)
 	{
 		result = (mat->baseTechnique->GetLayersSet().count(DAVA::LAYER_ALPHA_TEST_LAYER) > 0);
+	}
+	
+	return result;
+}
+    
+bool NMaterialHelper::IsOpaque(const FastName& passName, NMaterial* mat)
+{
+	DVASSERT(mat);
+	DVASSERT(mat->baseTechnique);
+	
+	bool result = false;
+	if(mat->baseTechnique)
+	{
+		result = (mat->baseTechnique->GetLayersSet().count(DAVA::LAYER_OPAQUE) > 0);
 	}
 	
 	return result;

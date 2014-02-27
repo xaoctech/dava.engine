@@ -698,11 +698,10 @@ void UIButtonMetadata::SetTextAlign(int align)
         return;
     }
 	
-    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(GetActiveStateIndex());
-    if (buttonText)
-    {
-        buttonText->SetTextAlign(align);
-    }
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+		GetActiveUIButton()->SetStateTextAlign(this->uiControlStates[i], align);
+	}
 
 	UpdatePropertyDirtyFlagForTextAlign();
 }
@@ -768,12 +767,7 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
             UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
             button->SetStateFont(state, EditorFontManager::Instance()->GetDefaultFont());
             button->SetStateText(state, controlText);
-
-            UIStaticText* staticText = button->GetStateTextControl(state);
-            if (staticText)
-            {
-                staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-            }
+            button->SetStateTextAlign(state, ALIGN_HCENTER | ALIGN_VCENTER);
 
             // Button is state-aware.
             activeNode->GetExtraData().SetLocalizationKey(controlText, state);
@@ -864,6 +858,111 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForFittingType()
 	}
 }
 
+float UIButtonMetadata::GetLeftRightStretchCap()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+
+    return GetLeftRightStretchCapForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+void UIButtonMetadata::SetLeftRightStretchCap(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControlBackground* background = GetActiveUIButton()->GetStateBackground(uiControlStates[i]);
+        if (background)
+        {
+            background->SetLeftRightStretchCap(value);
+        }
+	}
+
+    UpdatePropertyDirtyFlagForLeftRightStretchCap();
+}
+
+float UIButtonMetadata::GetTopBottomStretchCap()
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+    
+    return GetTopBottomStretchCapForState(uiControlStates[GetActiveStateIndex()]);
+}
+
+void UIButtonMetadata::SetTopBottomStretchCap(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIControlBackground* background = GetActiveUIButton()->GetStateBackground(uiControlStates[i]);
+        if (background)
+        {
+            background->SetTopBottomStretchCap(value);
+        }
+	}
+    
+    UpdatePropertyDirtyFlagForTopBottomStretchCap();
+}
+
+float UIButtonMetadata::GetLeftRightStretchCapForState(UIControl::eControlState state) const
+{
+	UIControlBackground* background = GetActiveUIButton()->GetStateBackground(state);
+	if (!background)
+	{
+		return 0.0f;
+	}
+    
+	return background->GetLeftRightStretchCap();
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForLeftRightStretchCap()
+{
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        
+        bool curStateDirty = (GetLeftRightStretchCapForState(curState) !=
+                              GetLeftRightStretchCapForState(GetReferenceState()));
+        SetStateDirtyForProperty(curState, PropertyNames::STRETCH_HORIZONTAL_PROPERTY_NAME, curStateDirty);
+    }
+}
+
+float UIButtonMetadata::GetTopBottomStretchCapForState(UIControl::eControlState state) const
+{
+	UIControlBackground* background = GetActiveUIButton()->GetStateBackground(state);
+	if (!background)
+	{
+		return 0.0f;
+	}
+    
+	return background->GetTopBottomStretchCap();
+}
+
+void UIButtonMetadata::UpdatePropertyDirtyFlagForTopBottomStretchCap()
+{
+    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+    for (int i = 0; i < statesCount; i ++)
+    {
+        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+        
+        bool curStateDirty = (GetTopBottomStretchCapForState(curState) !=
+                              GetTopBottomStretchCapForState(GetReferenceState()));
+        SetStateDirtyForProperty(curState, PropertyNames::STRETCH_VERTICAL_PROPERTY_NAME, curStateDirty);
+    }
+}
+
 void UIButtonMetadata::RecoverPropertyDirtyFlags()
 {
     UpdatePropertyDirtyFlagForLocalizedText();
@@ -879,4 +978,7 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
     UpdatePropertyDirtyFlagForAlign();
     
     UpdatePropertyDirtyFlagForFittingType();
+    
+    UpdatePropertyDirtyFlagForLeftRightStretchCap();
+    UpdatePropertyDirtyFlagForTopBottomStretchCap();
 }

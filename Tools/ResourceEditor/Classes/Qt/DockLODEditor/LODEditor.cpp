@@ -305,16 +305,15 @@ void LODEditor::SetForceLayerValues(int layersCount)
     ui->forceLayer->clear();
     
     ui->forceLayer->addItem("Auto", QVariant(DAVA::LodComponent::INVALID_LOD_LAYER));
-    for(DAVA::int32 i = 0; i < layersCount; ++i)
+
+	int requestedIndex = editedLODData->GetForceLayer() + 1;
+	int itemsCount = Max(requestedIndex, layersCount);
+	for(DAVA::int32 i = 0; i < itemsCount; ++i)
     {
         ui->forceLayer->addItem(Format("%d", i).c_str(), QVariant(i));
     }
     
-    int requestedIndex = editedLODData->GetForceLayer() + 1;
-    if(requestedIndex <= layersCount)
-    {
-        ui->forceLayer->setCurrentIndex(requestedIndex);
-    }
+	ui->forceLayer->setCurrentIndex(requestedIndex);
 }
 
 void LODEditor::GlobalSettingsButtonReleased()

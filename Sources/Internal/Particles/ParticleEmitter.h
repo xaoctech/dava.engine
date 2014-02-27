@@ -111,7 +111,7 @@ public:
 	
 	float32 lifeTime;
 
-	String name;
+	FastName name;
 
 	RefPtr< PropertyLine<Vector3> > emissionVector;
     RefPtr< PropertyLine<float32> > emissionAngle;

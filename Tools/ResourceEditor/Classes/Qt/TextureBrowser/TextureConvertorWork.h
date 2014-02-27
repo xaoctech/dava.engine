@@ -39,15 +39,13 @@ struct JobItem
 	int id;
 	int type;
 	bool force;
-	void* data;
-	const void* identity;
+	const DAVA::TextureDescriptor* descriptor;
 
 	JobItem()
 		: id(0)
 		, type(0)
 		, force(false)
-		, data(NULL)
-		, identity(NULL)
+		, descriptor(NULL)
 	{ }
 };
 
