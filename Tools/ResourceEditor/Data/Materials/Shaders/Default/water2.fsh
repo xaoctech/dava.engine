@@ -25,6 +25,9 @@ uniform float fresnelPow;
 uniform float eta;
 uniform float cubmapOffset;
 
+uniform float reflectionDistortion;
+uniform float refractionDistortion;
+
 uniform mediump vec2 rcpScreenSize;
 uniform sampler2D reflTex;
 uniform sampler2D refrTex;
@@ -136,10 +139,11 @@ void main()
     mediump vec3 refractedVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * refractedVectorInTangentSpace);
     lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
 	
-	mediump vec2 screenPos = gl_FragCoord.xy*rcpScreenSize-normal.xy/eyeDist;
-	lowp vec3 reflectionColor = texture2D(reflTex, screenPos).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/	
+	lowp vec2 waveOffset = normal.xy/eyeDist;
+	mediump vec2 screenPos = gl_FragCoord.xy*rcpScreenSize;
+	lowp vec3 reflectionColor = texture2D(reflTex, screenPos+waveOffset*reflectionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/	
 	screenPos.y=1-screenPos.y;
-	lowp vec3 refractionColor = texture2D(refrTex, screenPos).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
+	lowp vec3 refractionColor = texture2D(refrTex, screenPos+waveOffset*refractionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
 
     
     float facing = 1.0 - lambertFactor;
