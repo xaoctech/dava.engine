@@ -1349,7 +1349,7 @@ void QtMainWindow::OnCubemapEditor()
 
 void QtMainWindow::OnImageSplitter()
 {
-	ImageSplitterDialog dlg( dynamic_cast<QWidget*>(parent()));
+	ImageSplitterDialog dlg(this);
 	dlg.exec();
 }
 

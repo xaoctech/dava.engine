@@ -49,7 +49,7 @@ public:
 
     void SetImage(DAVA::Image* image);
 
-    DAVA::Image* GetImage();
+    inline DAVA::Image* GetImage() const;
     
     DAVA::Vector2 GetAcceptableSize() const;
     
@@ -74,5 +74,10 @@ protected:
     DAVA::Image* image;
     DAVA::Vector2 acceptableSize;
 };
+
+inline DAVA::Image* ImageArea::GetImage() const
+{
+    return image;
+}
 
 #endif /* defined(__QT_IMAGE_AREA_H__) */

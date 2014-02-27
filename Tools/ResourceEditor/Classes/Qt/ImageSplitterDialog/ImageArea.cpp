@@ -29,13 +29,14 @@
 
 #include "ImageArea.h"
 
-#include "CommandLine/ImageSplitter/ImageSplitter.h"
 #include "Qt/TextureBrowser/TextureConvertor.h"
-#include "ImageSplitterHelper.h"
+#include "SizeDialog.h"
+#include "Project/ProjectManager.h"
+#include "QtUtils.h"
 
 #include <QtGui>
 #include <QFileDialog>
-#include "Project/ProjectManager.h"
+
 
 ImageArea::ImageArea(QWidget *parent /*= 0*/)
     :QLabel(parent),
@@ -62,7 +63,7 @@ void ImageArea::dragEnterEvent(QDragEnterEvent *event)
     {
         return;
     }
-    DAVA::Image* image = ImageSplitterHelper::CreateImageFromFile(mimeData->urls().first().toLocalFile().toStdString());
+    DAVA::Image* image = CreateTopLevelImage(mimeData->urls().first().toLocalFile().toStdString());
     if(NULL != image )
     {
         DAVA::SafeRelease(image);
@@ -116,7 +117,7 @@ void ImageArea::SetImage(DAVA::Image* selectedImage)
 
 void ImageArea::SetImage(const DAVA::FilePath& filePath)
 {
-    DAVA::Image* selectedImage = ImageSplitterHelper::CreateImageFromFile(filePath);
+    DAVA::Image* selectedImage = CreateTopLevelImage(filePath);
     if(NULL == selectedImage)
     {
         QMessageBox::warning(this, "File error", "Cann't load image.", QMessageBox::Ok);
@@ -131,11 +132,6 @@ void ImageArea::SetImage(const DAVA::FilePath& filePath)
         QMessageBox::warning(this, "Format error", "Selected image must be in A8 format.", QMessageBox::Ok);
     }
     DAVA::SafeRelease(selectedImage);
-}
-
-DAVA::Image* ImageArea::GetImage()
-{
-    return image;
 }
 
 void ImageArea::clear()
