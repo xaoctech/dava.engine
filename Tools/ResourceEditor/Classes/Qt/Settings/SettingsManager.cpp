@@ -54,6 +54,8 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
 	SettingRow("DefaultCameraFOV", DAVA::VariantType(70.0f)),
     SettingRow("DefaultLandscapeSize", DAVA::VariantType(600.0f)),
     SettingRow("DefaultLandscapeHeight", DAVA::VariantType(50.0f)),
+	SettingRow("DefaultFogColor", DAVA::VariantType(DAVA::Color(1.f, 0, 0.f, 1.f))),
+	SettingRow("DefaultFogDensity", DAVA::VariantType(1.0f)),
 };
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
@@ -61,8 +63,8 @@ const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 	SettingRow("LastProjectPath", DAVA::VariantType(DAVA::FilePath())),
 	SettingRow("TextureViewGPU", DAVA::VariantType(GPU_UNKNOWN)),
 	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
-	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::String(""))),
-	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::String(""))),
+	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::FilePath())),
+	SettingRow("cubemap_last_proj_dir", DAVA::VariantType(DAVA::FilePath())),
 	SettingRow("recentFiles", DAVA::VariantType((KeyedArchive *)NULL)),
     SettingRow("recentFilesListCount", DAVA::VariantType(5)),
     SettingRow("materialsLightViewMode", DAVA::VariantType(EditorMaterialSystem::LIGHTVIEW_ALL)),

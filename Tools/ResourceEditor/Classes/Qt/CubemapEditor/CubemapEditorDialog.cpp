@@ -113,8 +113,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 		LoadImageTo(stdFilePath, face, false);
 		
 		projectPath = stdFilePath;
-		SettingsManager::Instance()->SetValue("cubemap_last_face_dir", 
-			VariantType(projectPath.GetDirectory().GetAbsolutePathname()), SettingsManager::INTERNAL);
+		SettingsManager::Instance()->SetValue("cubemap_last_face_dir", VariantType(projectPath.GetDirectory()), SettingsManager::INTERNAL);
 		
 		if(AllFacesLoaded())
 		{
@@ -375,6 +374,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 				QImage qimg(targetFullPath.c_str());
 				QImage rotatedImage = qimg.transformed(transform);
 				rotatedImage.save(targetFullPath.c_str());
+                faceLabel->SetRotation(0);
 			}
 		}
 	}

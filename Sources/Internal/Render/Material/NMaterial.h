@@ -269,7 +269,7 @@ public:
 	NMaterial* Clone();
 	NMaterial* Clone(const String& newName);
 		
-    IlluminationParams * GetIlluminationParams();
+    IlluminationParams * GetIlluminationParams(bool createIfNeeded = true);
     void ReleaseIlluminationParams();
 	
 	// Work with textures and properties
@@ -668,6 +668,7 @@ public:
 		static bool IsAlphatest(const FastName& passName, NMaterial* mat);
         static bool IsAlphablend(const FastName& passName, NMaterial* mat);
 		static bool IsTwoSided(const FastName& passName, NMaterial* mat);
+        static bool IsOpaque(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
     

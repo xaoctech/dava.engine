@@ -78,6 +78,8 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 	
 	connect(ui->treeWidget, SIGNAL(ShowCustomMenu(const QPoint&)), this, SLOT(OnShowCustomMenu(const QPoint&)));
 	connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(OnTreeItemChanged(QTreeWidgetItem*, int)));
+	
+	InitializeTreeWidgetActions();
 
 	internalSelectionChanged = false;
 }
@@ -85,6 +87,24 @@ HierarchyTreeWidget::HierarchyTreeWidget(QWidget *parent) :
 HierarchyTreeWidget::~HierarchyTreeWidget()
 {
     delete ui;
+}
+
+void HierarchyTreeWidget::InitializeTreeWidgetActions()
+{
+	QAction* deleteNodeAction = new QAction(MENU_ITEM_DELETE, ui->treeWidget);
+	connect(deleteNodeAction, SIGNAL(triggered()), this, SLOT(OnDeleteControlAction()));
+	deleteNodeAction->setShortcut(Qt::Key_Delete);
+	ui->treeWidget->addAction(deleteNodeAction);
+	
+	QAction* copyNodeAction = new QAction(MENU_ITEM_COPY, ui->treeWidget);
+	connect(copyNodeAction, SIGNAL(triggered()), this, SLOT(OnCopyAction()));
+	copyNodeAction->setShortcut(Qt::CTRL + Qt::Key_C);
+	ui->treeWidget->addAction(copyNodeAction);
+	
+	QAction* pasteNodeAction = new QAction(MENU_ITEM_PASTE, ui->treeWidget);
+	connect(pasteNodeAction, SIGNAL(triggered()), this, SLOT(OnPasteAction()));
+	pasteNodeAction->setShortcut(Qt::CTRL + Qt::Key_V);
+	ui->treeWidget->addAction(pasteNodeAction);
 }
 
 void HierarchyTreeWidget::OnTreeUpdated(bool needRestoreSelection)
@@ -606,6 +626,12 @@ void HierarchyTreeWidget::OnRenameControlAction()
 
 void HierarchyTreeWidget::OnDeleteControlAction()
 {
+	// Do not handle to avoid double delete action
+	if (!ui->treeWidget->hasFocus())
+	{
+		return;
+	}
+	
 	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 	if (!items.size())
 		return;
@@ -716,6 +742,12 @@ void HierarchyTreeWidget::OnCreateAggregatorAction()
 
 void HierarchyTreeWidget::OnCopyAction()
 {
+	// Do not handle to avoid double copy action
+	if (!ui->treeWidget->hasFocus())
+	{
+		return;
+	}
+
 	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 	if (!items.size())
 		return;
@@ -750,6 +782,12 @@ void HierarchyTreeWidget::OnCopyAction()
 
 void HierarchyTreeWidget::OnPasteAction()
 {
+	// Do not handle to avoid double paste action
+	if (!ui->treeWidget->hasFocus())
+	{
+		return;
+	}
+	
 	QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 	if (!items.size())
 		return;

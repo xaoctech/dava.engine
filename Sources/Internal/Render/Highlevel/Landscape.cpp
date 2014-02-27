@@ -1464,6 +1464,16 @@ void Landscape::Save(KeyedArchive * archive, SerializationContext * serializatio
     archive->SetByteArrayAsType("fogcolor", GetFogColor());
     archive->SetFloat("fogdencity", GetFogDensity());
     archive->SetBool("isFogEnabled", isFogEnabled);
+
+    DVASSERT(GetRenderBatch(0));
+    IlluminationParams * illuminationParams = GetRenderBatch(0)->GetMaterial()->GetIlluminationParams(false);
+    if(illuminationParams)
+    {
+        archive->SetBool("illumination.isUsed", illuminationParams->isUsed);
+        archive->SetBool("illumination.castShadow", illuminationParams->castShadow);
+        archive->SetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+        archive->SetInt32("illumination.lightmapSize", illuminationParams->lightmapSize);
+    }
 }
     
 void Landscape::Load(KeyedArchive * archive, SerializationContext * serializationContext)
@@ -1521,6 +1531,17 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     }
 	
 	SetupMaterialProperties();
+
+    if(archive->IsKeyExists("illumination.isUsed"))
+    {
+        DVASSERT(GetRenderBatch(0));
+        IlluminationParams * illuminationParams = GetRenderBatch(0)->GetMaterial()->GetIlluminationParams();
+
+        illuminationParams->isUsed = archive->GetBool("illumination.isUsed", illuminationParams->isUsed);
+        illuminationParams->castShadow = archive->GetBool("illumination.castShadow", illuminationParams->castShadow);
+        illuminationParams->receiveShadow = archive->GetBool("illumination.receiveShadow", illuminationParams->receiveShadow);
+        illuminationParams->SetLightmapSize(archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize));
+    }
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1733,11 +1754,14 @@ void Landscape::SetFogDensity(float32 _fogDensity)
 
 float32 Landscape::GetFogDensity() const
 {
-    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY);
-    DVASSERT(propValue);
-    
     float32 fogDensity = DEFAULT_FOG_DENSITY;
-    memcpy(&fogDensity, propValue->data, sizeof(float32));
+
+    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY);
+    if(NULL != propValue)
+    {
+        memcpy(&fogDensity, propValue->data, sizeof(float32));
+    }
+    
     return fogDensity;
 }
 
@@ -1748,11 +1772,13 @@ void Landscape::SetFogColor(const Color & _fogColor)
 
 Color Landscape::GetFogColor() const
 {
-    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR);
-    DVASSERT(propValue);
-
     Color fogColor = Color::White;
-    memcpy(&fogColor, propValue->data, Shader::GetUniformTypeSize(propValue->type) * propValue->size);
+    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR);
+    
+    if(NULL != propValue)
+    {
+        memcpy(&fogColor, propValue->data, Shader::GetUniformTypeSize(propValue->type) * propValue->size);
+    }
     return fogColor;
 }
 
@@ -1805,6 +1831,16 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
     }
 	
 	newLandscape->SetupMaterialProperties();
+
+    IlluminationParams * params = GetRenderBatch(0)->GetMaterial()->GetIlluminationParams(false);
+    if(params)
+    {
+        IlluminationParams * newParams = newLandscape->GetRenderBatch(0)->GetMaterial()->GetIlluminationParams();
+        newParams->SetLightmapSize(params->GetLightmapSize());
+        newParams->isUsed = params->isUsed;
+        newParams->castShadow = params->castShadow;
+        newParams->receiveShadow = params->receiveShadow;
+    }
 
 	return newObject;
 }

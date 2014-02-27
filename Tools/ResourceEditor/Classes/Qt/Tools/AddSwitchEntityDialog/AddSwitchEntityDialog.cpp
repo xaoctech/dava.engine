@@ -124,31 +124,47 @@ void AddSwitchEntityDialog::accept()
 	
 	CleanupPathWidgets();
 
-	scene->BeginBatch("Unite entities into switch entity.");
-	
+	SwitchEntityCreator creator;
+
+	bool canCreateSwitch = true;
+
 	DAVA::uint32 switchCount = (DAVA::uint32)vector.size(); 
 	for(DAVA::uint32 i = 0; i < switchCount; ++i)
 	{
-		vector[i]->Retain();
-		scene->Exec(new EntityRemoveCommand(vector[i]));
+		if(creator.CountSwitchComponentsRecursive(vector[i]) > 0)
+		{
+			canCreateSwitch = false;
+			Logger::Error("Can't create switch in switch: %s", vector[i]->GetName().c_str());
+			break;
+		}
 	}
 
-	SwitchEntityCreator creator;
-	Entity* switchEntity = creator.CreateSwitchEntity(vector);
-
-	scene->Exec(new EntityAddCommand(switchEntity, scene));
-
-	for(DAVA::uint32 i = 0; i < switchCount; ++i)
+	if(canCreateSwitch)
 	{
-		vector[i]->Release();
+		scene->BeginBatch("Unite entities into switch entity.");
+
+		for(DAVA::uint32 i = 0; i < switchCount; ++i)
+		{
+			vector[i]->Retain();
+			scene->Exec(new EntityRemoveCommand(vector[i]));
+		}
+
+		Entity* switchEntity = creator.CreateSwitchEntity(vector);
+
+		scene->Exec(new EntityAddCommand(switchEntity, scene));
+
+		for(DAVA::uint32 i = 0; i < switchCount; ++i)
+		{
+			vector[i]->Release();
+		}
+
+		scene->selectionSystem->SetSelection(switchEntity);
+
+		scene->EndBatch();
+
+		scene->selectionSystem->SetSelection(switchEntity);
+		SafeRelease(switchEntity);
 	}
-
-	scene->selectionSystem->SetSelection(switchEntity);
-
-	scene->EndBatch();
-
-	scene->selectionSystem->SetSelection(switchEntity);
-	SafeRelease(switchEntity);
 	
 	BaseAddEntityDialog::accept();
 }
