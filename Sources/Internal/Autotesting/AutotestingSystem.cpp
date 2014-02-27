@@ -35,6 +35,7 @@ AutotestingSystem::AutotestingSystem()
     , needExitApp(false)
     , timeBeforeExit(0.0f)
     , testsDate("not_found")
+	, buildDate("not_found")
     , testIndex(0)
     , isDB(false)
     , needClearGroupInDB(false)
@@ -73,13 +74,11 @@ void AutotestingSystem::OnAppStarted()
 {
 	Logger::Debug("AutotestingSystem::OnAppStarted");
 	
-	//isInit = true; //for debbug
 	
 	if(!isInit)
 	{
 		FetchParametersFromIdTxt();
 		deviceName = GetDeviceName();
-		//Logger::Debug("AutotestingSystem::OnAppStarted DeviceName=empty");
 		
 		SetUpConnectionToDB();
 
@@ -146,6 +145,7 @@ void AutotestingSystem::FetchParametersFromIdTxt()
 	}
 
 	buildId = option->GetString("buildId");
+	buildDate = option->GetString("date");
 	branch = option->GetString("branch");
 	framework = option->GetString("framework");
 	branchRev = option->GetString("branchRev");
@@ -214,11 +214,9 @@ void AutotestingSystem::SetUpTestArchive()
 	
 	KeyedArchive* currentBuildArchive = AutotestingDB::Instance()->FindOrInsertBuildArchive(dbUpdateObject, "");
 	KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindOrInsertGroupArchive(currentBuildArchive, groupName);
-	//AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-	//KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentBuildArchive, testId);
     KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentGroupArchive, testId);
-	//AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-    // Create document for step 0 - 'Precondition'
+
+	// Create document for step 0 - 'Precondition'
     String stepId = GetStepId();
     KeyedArchive* currentStepArchive = AutotestingDB::Instance()->InsertStepArchive(currentTestArchive, stepId, "Precondition");
 

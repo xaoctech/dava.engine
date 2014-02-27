@@ -162,13 +162,13 @@ namespace DAVA
 
 		KeyedArchive* dbUpdateData;
 		bool isFound = dbClient->FindObjectByKey(testsName, dbUpdateObject);
-		//dbUpdateObject->SetObjectName(testsName);
+
 		if(!isFound)
 		{
 			dbUpdateObject->SetObjectName(testsName);
 
 			dbUpdateObject->AddString("Platform", AUTOTESTING_PLATFORM_NAME);
-			dbUpdateObject->AddString("Date", AutotestingSystem::Instance()->testsDate.c_str());
+			dbUpdateObject->AddString("Date", AutotestingSystem::Instance()->buildDate.c_str());
 			dbUpdateObject->AddString("Device", AutotestingSystem::Instance()->deviceName.c_str());			
 			dbUpdateObject->AddString("BuildId", AutotestingSystem::Instance()->buildId.c_str());
 			dbUpdateObject->AddString("Branch", AutotestingSystem::Instance()->branch.c_str());
@@ -177,24 +177,10 @@ namespace DAVA
 			dbUpdateObject->AddString("FramewrokRevision", AutotestingSystem::Instance()->frameworkRev.c_str());
 
 			Logger::Debug("AutotestingSystem::InsertTestArchive new MongodbUpdateObject %s", testsName.c_str());
-			//dbUpdateObject->LoadData();
-			//dbUpdateData = dbUpdateObject->GetData();
+		}
 
-			//SaveToDB(dbUpdateObject);
-		}
-		else
-		{
-			//dbUpdateObject->AddString("_id", testsName.c_str());
-			
-		}
 		dbUpdateObject->LoadData();
 		dbUpdateData = dbUpdateObject->GetData();
-		/*
-		dbUpdateData->SetString("Platform", AUTOTESTING_PLATFORM_NAME);
-		dbUpdateData->SetString("Date", Format("%s", AutotestingSystem::Instance()->testsDate.c_str()));
-		dbUpdateData->SetString("Group", AutotestingSystem::Instance()->groupName.c_str());
-		dbUpdateData->SetString("Device", AutotestingSystem::Instance()->deviceName.c_str());
-		*/
 
 		return dbUpdateData;
 	}
@@ -205,7 +191,6 @@ namespace DAVA
 	{
 		Logger::Debug("AutotestingDB::FindInsertGroupArchive Group=%s", groupId.c_str());
 
-		//KeyedArchive* dbUpdateData = FindOrInsertBuildArchive(dbUpdateObject, "");
 		KeyedArchive* currentGroupArchive = NULL;
 		currentGroupArchive = SafeRetain(buildArchive->GetArchive(groupId, NULL));
 
@@ -214,9 +199,9 @@ namespace DAVA
 			currentGroupArchive = new KeyedArchive();
 
 			currentGroupArchive->SetString("Name", groupId);
+			currentGroupArchive->SetString("Date", AutotestingSystem::Instance()->testsDate);
 
 			buildArchive->SetArchive(groupId, currentGroupArchive);
-			//currentGroupArchive = buildArchive->GetArchive(groupId);
 			Logger::Debug("AutotestingDB::FindInsertGroupArchive new Group=%s", groupId.c_str());
 		}
 		SafeRelease(currentGroupArchive);
@@ -231,16 +216,11 @@ namespace DAVA
 	KeyedArchive *AutotestingDB::FindOrInsertTestArchive(MongodbUpdateObject* dbUpdateObject, const String &testId)
 	{
 		Logger::Debug("AutotestingDB::FindOrInsertTestArchive testId=%s", testId.c_str());
-		//KeyedArchive* currentTestArchive = NULL;
 
 		KeyedArchive* dbUpdateData = FindOrInsertBuildArchive(dbUpdateObject, "");
 
 		KeyedArchive* currentGroupArchive = SafeRetain(dbUpdateData->GetArchive(AutotestingSystem::Instance()->groupName, NULL));
-		/*
-		if(!currentGroupArchive)
-		{
-			currentGroupArchive->SetArchive(AutotestingSystem::Instance()->groupName, new KeyedArchive());
-		}*/
+
 		KeyedArchive* currentTestArchive = SafeRetain(currentGroupArchive->GetArchive(testId, NULL));
 
 		if(!currentTestArchive)
@@ -256,7 +236,6 @@ namespace DAVA
 		SafeRelease(currentTestArchive);
 		currentTestArchive = currentGroupArchive->GetArchive(testId);
 
-		//Logger::Debug("AutotestingDB::FindOrInsertTestArchive finish");
 		return currentTestArchive;
 	}
 
