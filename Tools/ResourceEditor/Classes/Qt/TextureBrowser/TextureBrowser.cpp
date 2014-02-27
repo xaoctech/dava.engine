@@ -514,6 +514,9 @@ void TextureBrowser::setupTextureListToolbar()
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
 	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
 	QObject::connect(ui->actionFilterSelectedNode, SIGNAL(triggered(bool)), this, SLOT(textureListFilterSelectedNodeChanged(bool)));
+
+    // set sorting type appropriate to current value in combobox
+    textureListSortChanged(texturesSortCombo->itemText(texturesSortCombo->currentIndex()));
 }
 
 void TextureBrowser::setupTextureListFilter()
