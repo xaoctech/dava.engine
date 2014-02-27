@@ -1902,6 +1902,12 @@
     <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\GrassEditorProxy.cpp">
       <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\GrassEditorPanel.cpp">
+      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\GrassEditorPanel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3361,6 +3367,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\GrassEditorProxy.h">
       <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\GrassEditorPanel.h">
+      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

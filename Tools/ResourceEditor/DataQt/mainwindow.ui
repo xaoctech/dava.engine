@@ -1783,6 +1783,9 @@
    </property>
   </action>
   <action name="actionGrasEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
      <normaloff>:/QtIcons/land_gras.png</normaloff>:/QtIcons/land_gras.png</iconset>
