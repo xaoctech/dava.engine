@@ -87,30 +87,43 @@ void GrassEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
     }
 }
 
-void GrassEditorSystem::EnableGrassEdit(bool enable)
+bool GrassEditorSystem::EnableGrassEdit(bool enable)
 {
-    if(enable != enabled)
+    bool ret = false;
+
+    if(LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS == drawSystem->VerifyLandscape())
     {
-        enabled = enable;
-
-        if(enable)
+        if(enable != enabled)
         {
-            selectionSystem->SetLocked(true);
-            modifSystem->SetLocked(true);
+            enabled = enable;
+            ret = true;
 
-            drawSystem->EnableCursor(128);
-            drawSystem->SetCursorTexture(cursorTexture);
-            drawSystem->SetCursorSize(1);
-        }
-        else
-        {
-            selectionSystem->SetLocked(false);
-            modifSystem->SetLocked(false);
+            if(enable)
+            {
+                selectionSystem->SetLocked(true);
+                modifSystem->SetLocked(true);
 
-            drawSystem->DisableCursor();
-            drawSystem->DisableCustomDraw();
+                drawSystem->EnableCursor(128);
+                drawSystem->SetCursorTexture(cursorTexture);
+                drawSystem->SetCursorSize(1);
+            }
+            else
+            {
+                selectionSystem->SetLocked(false);
+                modifSystem->SetLocked(false);
+
+                drawSystem->DisableCursor();
+                drawSystem->DisableCustomDraw();
+            }
         }
     }
+
+    return ret;
+}
+
+bool GrassEditorSystem::IsEnabledGrassEdit() const
+{
+    return enabled;
 }
 
 void GrassEditorSystem::UpdateCursorPosition(int32 landscapeSize)

@@ -49,7 +49,8 @@ public:
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
 
-    void EnableGrassEdit(bool enable);
+    bool EnableGrassEdit(bool enable);
+    bool IsEnabledGrassEdit() const;
 
 protected:
 	bool enabled;
