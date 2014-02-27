@@ -43,6 +43,8 @@
 
 #include "Scene3D/SceneFile/SerializationContext.h"
 
+#define MAX_CELL_TEXTURE_COORDS 4
+
 namespace DAVA
 {
     
@@ -50,10 +52,7 @@ typedef Image VegetationMap;
     
 struct TextureSheetCell
 {
-    Vector2 t0;
-    Vector2 t1;
-    Vector2 t2;
-    Vector2 t3;
+    Vector2 coords[MAX_CELL_TEXTURE_COORDS];
     
     inline TextureSheetCell& operator=(const TextureSheetCell& src);
 };
@@ -92,10 +91,9 @@ public:
     
     virtual void PrepareToRender(Camera *camera);
     
-    void SetHeightmap(Heightmap* _heightmap);
-    Heightmap* GetHeightmap() const;
+    void SetHeightmap(Texture* _heightmap);
 
-    void SetVegetationMap(VegetationMap* grassMap);
+    void SetVegetationMap(VegetationMap* map);
     const VegetationMap* GetVegetationMap() const;
     
     void SetTextureSheet(const TextureSheet& sheet);
@@ -104,26 +102,41 @@ public:
     void SetClusterLimit(uint32 maxClusters);
     uint32 GetClusterLimit() const;
     
+    void SetWorldSize(const Vector3 size);
+    const Vector3& GetWorldSize() const;
+    
 private:
     
-    void BuildGrassBrush(uint32 maxClusters);
+    void BuildVegetationBrush(uint32 maxClusters);
+    RenderBatch* GetRenderBatchFromPool(NMaterial* material);
+    void ReturnToPool(int32 batchCount);
+
+    bool IsValidData() const;
+    
+    Vector4 GetVisibleArea(Camera* cam);
+    Vector2 GetVegetationUnitWorldSize() const;
     
 private:
     
-    Heightmap* heightmap;
     VegetationMap* vegetationMap;
     TextureSheet textureSheet;
     uint32 clusterLimit;
+    Vector3 worldSize;
     
-    PolygonGroup* clusterBrush;
+    Vector<RenderBatch*> renderBatchPool;
+    int32 renderBatchPoolLine;
+    
+    NMaterial* vegetationMaterial;
+    
+    Vector<PolygonGroup*> clusterBrushes;
 };
     
 inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src)
 {
-    t0 = src.t0;
-    t1 = src.t1;
-    t2 = src.t2;
-    t3 = src.t3;
+    coords[0] = src.coords[0];
+    coords[1] = src.coords[1];
+    coords[2] = src.coords[2];
+    coords[3] = src.coords[3];
     
     return *this;
 }

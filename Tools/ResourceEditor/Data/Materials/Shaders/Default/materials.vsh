@@ -89,7 +89,7 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
 varying vec2 varTexCoord1;
 #endif
 
@@ -144,6 +144,13 @@ uniform float globalTime;
 uniform vec2 tex0ShiftPerSecond;
 #endif
 
+#if defined(MATERIAL_GRASS)
+uniform vec4 tilePos;
+uniform vec3 worldSize;
+
+uniform sampler2D detail;
+#endif
+
 
 void main()
 {
@@ -187,7 +194,23 @@ void main()
 	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 #endif
 #else
-	gl_Position = worldViewProjMatrix * inPosition;
+    
+    #if defined(MATERIAL_GRASS)
+        vec4 pos = inPosition;
+        pos.xy = pos.xy + tilePos.xy;
+    
+        vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
+                        clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
+    
+        pos.z += texture2DLod(detail, hUV, 0.0).r * worldSize.z;
+    
+        gl_Position = worldViewProjMatrix * pos;
+        varTexCoord1 = hUV;
+    
+    #else
+        gl_Position = worldViewProjMatrix * inPosition;
+    #endif
+    
 #endif
 
 #if defined(VERTEX_LIT)
@@ -325,6 +348,5 @@ void main()
 #if defined(FRAME_BLEND)
 	varTime = inTime;
 #endif
-
 
 }

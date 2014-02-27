@@ -1711,6 +1711,7 @@ void NMaterial::UpdateShaderWithFlags(bool updateChildren)
 			pass->SetShader(shader);
 			SafeRelease(shader);
 			
+            BuildTextureParamsCache(pass);
 			BuildActiveUniformsCacheParamsCache(pass);
 		}
 		

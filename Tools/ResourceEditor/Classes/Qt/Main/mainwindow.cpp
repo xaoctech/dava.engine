@@ -106,6 +106,8 @@
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
 
+#include "Render/Highlevel/VegetationRenderObject.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -1396,7 +1398,7 @@ void QtMainWindow::OnAddLandscape()
 
 void QtMainWindow::OnAddSkybox()
 {
-    SceneEditor2* sceneEditor = GetCurrentScene();
+    /*SceneEditor2* sceneEditor = GetCurrentScene();
     if(!sceneEditor)
     {
         return;
@@ -1406,7 +1408,57 @@ void QtMainWindow::OnAddSkybox()
     
     skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
     sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
-    skyboxEntity->Release();
+    skyboxEntity->Release();*/
+    
+
+    TextureSheetCell tc0;
+    tc0.coords[0] = Vector2(0.0f, 0.0f);
+    tc0.coords[1] = Vector2(0.5f, 0.0f);
+    tc0.coords[2] = Vector2(0.5f, 0.5f);
+    tc0.coords[3] = Vector2(0.0f, 0.5f);
+    
+    TextureSheetCell tc1;
+    tc1.coords[0] = Vector2(0.5f, 0.0f);
+    tc1.coords[1] = Vector2(1.0f, 0.0f);
+    tc1.coords[2] = Vector2(1.0f, 0.5f);
+    tc1.coords[3] = Vector2(0.5f, 0.5f);
+    
+    TextureSheetCell tc2;
+    tc2.coords[0] = Vector2(0.0f, 0.5f);
+    tc2.coords[1] = Vector2(1.0f, 0.5f);
+    tc2.coords[2] = Vector2(1.0f, 1.0f);
+    tc2.coords[3] = Vector2(0.0f, 1.0f);
+
+    
+    TextureSheet ts;
+    ts.SetTexture(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex"));
+    ts.cells.push_back(tc0);
+    ts.cells.push_back(tc1);
+    ts.cells.push_back(tc1);
+    ts.cells.push_back(tc0);
+    
+    DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png")[0];
+    
+    DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
+    vro->SetClusterLimit(16);
+    vro->SetTextureSheet(ts);
+    vro->SetHeightmap(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/heightmap.tex"));
+    vro->SetVegetationMap(vegMap);
+    vro->SetWorldSize(DAVA::Vector3(600, 600, 100));
+
+    RenderComponent* rc = new RenderComponent();
+    rc->SetRenderObject(vro);
+    
+    Entity* sceneNode = new Entity();
+    sceneNode->AddComponent(rc);
+    sceneNode->SetName(FastName("Vegetation"));
+    
+    SceneEditor2* sceneEditor = GetCurrentScene();
+	if(sceneEditor)
+	{
+		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
+		sceneEditor->selectionSystem->SetSelection(sceneNode);
+	}
 }
 
 void QtMainWindow::OnLightDialog()
