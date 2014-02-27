@@ -592,11 +592,9 @@ struct SortBatches
 	}
 };
 
-DAVA::Vector<BatchInfo> CreateBatchesInfo(DAVA::RenderObject *object)
+void CreateBatchesInfo(DAVA::RenderObject *object, DAVA::Vector<BatchInfo> & batches)
 {
-	if(!object) return DAVA::Vector<BatchInfo>();
-
-	DAVA::Vector<BatchInfo> batches;
+	if(!object) return;
 
 	DAVA::uint32 batchesCount = object->GetRenderBatchCount();
 	for(DAVA::uint32 i = 0; i < batchesCount; ++i)
@@ -607,8 +605,6 @@ DAVA::Vector<BatchInfo> CreateBatchesInfo(DAVA::RenderObject *object)
 	}
 
 	std::sort(batches.begin(), batches.end(), SortBatches());
-
-	return batches;
 }
 
 bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entity *toEntity) const
@@ -624,8 +620,12 @@ bool StructureSystem::CopyLightmapSettings(DAVA::Entity *fromEntity, DAVA::Entit
         DAVA::uint32 meshCount = (DAVA::uint32)fromMeshes.size();
         for(DAVA::uint32 m = 0; m < meshCount; ++m)
         {
-			DAVA::Vector<BatchInfo> fromBatches = CreateBatchesInfo(fromMeshes[m]);
-			DAVA::Vector<BatchInfo> toBatches = CreateBatchesInfo(toMeshes[m]);
+			DAVA::Vector<BatchInfo> fromBatches;
+			CreateBatchesInfo(fromMeshes[m], fromBatches);
+
+			DAVA::Vector<BatchInfo> toBatches;
+			CreateBatchesInfo(toMeshes[m], toBatches);
+
 			DAVA::uint32 rbFromCount = fromMeshes[m]->GetRenderBatchCount();
 			DAVA::uint32 rbToCount = toMeshes[m]->GetRenderBatchCount();
 
