@@ -666,7 +666,7 @@ void SceneTree::ReloadModel()
 		dlg->setWindowTitle("Reload Model options");
 		dlg->setLayout(dlgLayout);
 	
-		QCheckBox *lightmapsChBox = new QCheckBox("Reload lightmaps", dlg);
+		QCheckBox *lightmapsChBox = new QCheckBox("Leave lightmap settings", dlg);
 		dlgLayout->addWidget(lightmapsChBox);
 		lightmapsChBox->setCheckState(Qt::Checked);
 
