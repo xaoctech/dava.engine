@@ -786,9 +786,6 @@
     <ClCompile Include="Classes\CommandLine\CommandLineTool.cpp">
       <Filter>Classes\CommandLine</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitter.cpp">
-      <Filter>Classes\CommandLine\ImageSplitter</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.cpp">
       <Filter>Classes\CommandLine\ImageSplitter</Filter>
     </ClCompile>
@@ -1905,16 +1902,16 @@
     <ClCompile Include="Classes\Qt\ImageSplitterDialog\ImageSplitterDialog.cpp">
       <Filter>Classes\Qt\ImageSplitterDialog</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\ImageSplitterDialog\ImageSplitterHelper.cpp">
-      <Filter>Classes\Qt\ImageSplitterDialog</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\ImageSplitterDialog\ImageArea_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\ImageSplitterDialog\ImageSplitterDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\ImageSplitterDialog\ImageSplitterHelper_moc.cpp">
+    <ClCompile Include="Classes\Qt\ImageSplitterDialog\SizeDialog.cpp">
+      <Filter>Classes\Qt\ImageSplitterDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\ImageSplitterDialog\SizeDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -2714,9 +2711,6 @@
     <ClInclude Include="Classes\CommandLine\CommandLineTool.h">
       <Filter>Classes\CommandLine</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitter.h">
-      <Filter>Classes\CommandLine\ImageSplitter</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\CommandLine\ImageSplitter\ImageSplitterTool.h">
       <Filter>Classes\CommandLine\ImageSplitter</Filter>
     </ClInclude>
@@ -3377,7 +3371,7 @@
     <ClInclude Include="Classes\Qt\ImageSplitterDialog\ImageSplitterDialog.h">
       <Filter>Classes\Qt\ImageSplitterDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\ImageSplitterDialog\ImageSplitterHelper.h">
+    <ClInclude Include="Classes\Qt\ImageSplitterDialog\SizeDialog.h">
       <Filter>Classes\Qt\ImageSplitterDialog</Filter>
     </ClInclude>
   </ItemGroup>
