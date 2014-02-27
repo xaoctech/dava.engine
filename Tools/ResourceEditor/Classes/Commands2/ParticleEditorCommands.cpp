@@ -69,7 +69,7 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 	this->emitter = emitter;
 }
 
-	void CommandUpdateEmitter::Init(const String& name,
+	void CommandUpdateEmitter::Init(const FastName& name,
 								const Vector3& position,
 								ParticleEmitter::eType emitterType,
 								RefPtr<PropertyLine<float32> > emissionRange,
@@ -95,7 +95,7 @@ CommandUpdateEmitter::CommandUpdateEmitter(ParticleEmitter* emitter):
 void CommandUpdateEmitter::Redo()
 {
 	DVASSERT(emitter);
-	emitter->name = name;
+	emitter->name = FastName(name);
 	emitter->position = position;
 	emitter->emitterType = emitterType;
 	PropertyLineHelper::SetValueLine(emitter->emissionRange, emissionRange);
