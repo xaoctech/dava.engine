@@ -158,6 +158,9 @@ public:
     static const FastName TEXTURE_LIGHTMAP;
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
+    
+    static const FastName TEXTURE_DYNAMIC_REFLECTION;
+    static const FastName TEXTURE_DYNAMIC_REFRACTION;
 	
 	static const FastName PARAM_LIGHT_POSITION0;
 	static const FastName PARAM_PROP_AMBIENT_COLOR;
@@ -549,6 +552,7 @@ protected:
 	
 	static bool IsRuntimeFlag(const FastName& flagName);
     static bool IsRuntimeProperty(const FastName& propName);
+    static bool IsRuntimeTexture(const FastName& textureName);
     static bool IsNamePartOfArray(const FastName& fastName, FastName* array, uint32 count);
 		
 protected:

@@ -202,8 +202,8 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         {
             NMaterial *mat = waterLayer->Get(i)->GetMaterial();
             mat->SetPropertyValue(rss, Shader::UT_FLOAT_VEC2, 1, &rssVal);
-            mat->SetTexture(FastName("reflTex"), reflectionTexture);
-            mat->SetTexture(FastName("refrTex"), refractionTexture);
+            mat->SetTexture(NMaterial::TEXTURE_DYNAMIC_REFLECTION, reflectionTexture);
+            mat->SetTexture(NMaterial::TEXTURE_DYNAMIC_REFRACTION, refractionTexture);
         }
     }
 	DrawLayers(camera);

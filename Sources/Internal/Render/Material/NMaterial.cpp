@@ -60,6 +60,9 @@ const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 
+const FastName NMaterial::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
+const FastName NMaterial::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
+
 const FastName NMaterial::PARAM_LIGHT_POSITION0("lightPosition0");
 const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("ambientColor");
 const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("diffuseColor");
@@ -120,6 +123,12 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 static FastName RUNTIME_ONLY_PROPERTIES[] =
 {
 	NMaterial::PARAM_LIGHTMAP_SIZE
+};
+
+static FastName RUNTIME_ONLY_TEXTURES[] =
+{
+    NMaterial::TEXTURE_DYNAMIC_REFLECTION,
+    NMaterial::TEXTURE_DYNAMIC_REFRACTION
 };
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -351,7 +360,7 @@ void NMaterial::Save(KeyedArchive * archive,
 		it != textures.end();
 		++it)
 	{
-		if(it->second->GetTexture() != NULL)
+		if ((it->second->GetTexture() != NULL)&&(!IsRuntimeTexture(it->first)))
 		{
 			String texturePath = it->second->GetPath().GetRelativePathname(serializationContext->GetScenePath());
 			
@@ -1817,6 +1826,11 @@ bool NMaterial::IsRuntimeFlag(const FastName& flagName)
 bool NMaterial::IsRuntimeProperty(const FastName& propName)
 {
 	return IsNamePartOfArray(propName, RUNTIME_ONLY_PROPERTIES, COUNT_OF(RUNTIME_ONLY_PROPERTIES));
+}
+
+bool NMaterial::IsRuntimeTexture(const FastName& textureName)
+{
+    return IsNamePartOfArray(textureName, RUNTIME_ONLY_TEXTURES, COUNT_OF(RUNTIME_ONLY_TEXTURES));
 }
 
 void NMaterial::SetMaterialTemplateName(const FastName& templateName)
