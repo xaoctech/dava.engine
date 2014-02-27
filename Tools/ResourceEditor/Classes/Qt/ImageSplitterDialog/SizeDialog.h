@@ -27,18 +27,11 @@
 =====================================================================================*/
 
 
-#ifndef __QT_IMAGE_SPLITTER_HELPER_H__
-#define __QT_IMAGE_SPLITTER_HELPER_H__
+#ifndef __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
+#define __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
 
 #include "DAVAEngine.h"
 #include <QtGui>
-
-class ImageSplitterHelper
-{
-public:
-    
-    static DAVA::Image* CreateImageFromFile(const DAVA::FilePath& filePath);
-};
 
 class SizeDialog : public QDialog
 {
@@ -48,7 +41,7 @@ public:
     
     ~SizeDialog();
     
-    DAVA::Vector2 GetSize();
+    DAVA::Vector2 GetSize() const;
     
 private:
     
@@ -62,4 +55,4 @@ private:
     QDialogButtonBox* buttonBox;
 };
 
-#endif /* defined(__QT_IMAGE_SPLITTER_HELPER_H__) */
+#endif /* defined(__QT_IMAGE_SPLITTER_SIZE_DIALOG_H__) */

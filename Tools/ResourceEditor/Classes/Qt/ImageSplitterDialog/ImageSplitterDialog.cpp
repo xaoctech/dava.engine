@@ -30,8 +30,9 @@
 #include "ui_ImageSplitter.h"
 #include "ImageSplitterDialog/ImageSplitterDialog.h"
 #include "Project/ProjectManager.h"
-#include "CommandLine/ImageSplitter/ImageSplitter.h"
-#include "ImageSplitterHelper.h"
+#include "ImageTools/ImageTools.h"
+#include "SizeDialog.h"
+#include "QtUtils.h"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -87,29 +88,21 @@ void ImageSplitterDialog::PathSelected(DAVA::String path)
     }
     
     DAVA::FilePath imagePath(path);
-    DAVA::Image* image = ImageSplitterHelper::CreateImageFromFile(imagePath);
+    DAVA::Image* image = CreateTopLevelImage(imagePath);
     if(NULL != image && image->GetPixelFormat() == DAVA::FORMAT_RGBA8888)
     {
         lastSelectedFile = imagePath.GetAbsolutePathname();
         SetAcceptableImageSize(DAVA::Vector2(image->GetWidth(), image->GetHeight()));
         
-        DAVA::Image* r = NULL;
-        DAVA::Image* g = NULL;
-        DAVA::Image* b = NULL;
-        DAVA::Image* a = NULL;
-        
-        ImageSplitter::CreateSplittedImages(image, &r, &g, &b, &a);
+        Channels channels =  ImageTools::CreateSplittedImages(image);
         DAVA::SafeRelease(image);
         
-        ui->redImgLbl->SetImage(r);
-        ui->greenImgLbl->SetImage(g);
-        ui->blueImgLbl->SetImage(b);
-        ui->alphaImgLbl->SetImage(a);
+        ui->redImgLbl->SetImage(channels.red);
+        ui->greenImgLbl->SetImage(channels.green);
+        ui->blueImgLbl->SetImage(channels.blue);
+        ui->alphaImgLbl->SetImage(channels.alpha);
         
-        SafeRelease(r);
-        SafeRelease(g);
-        SafeRelease(b);
-        SafeRelease(a);
+        channels.ReleaseImages();
     }
     else
     {
@@ -279,12 +272,12 @@ void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplitted
         return;
     }
     
-    DAVA::Image* r = ui->redImgLbl->GetImage();
-    DAVA::Image* g = ui->greenImgLbl->GetImage();
-    DAVA::Image* b = ui->blueImgLbl->GetImage();
-    DAVA::Image* a = ui->alphaImgLbl->GetImage();
+    Channels channels(ui->redImgLbl->GetImage(),
+                      ui->greenImgLbl->GetImage(),
+                      ui->blueImgLbl->GetImage(),
+                      ui->alphaImgLbl->GetImage());
     
-    if(!r || !g || !b || !a)
+    if(channels.IsEmpty())
     {
         QMessageBox::warning(this, "Save error", "One or more channel is incorrect.", QMessageBox::Ok);
         return;
@@ -295,14 +288,14 @@ void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplitted
         DAVA::String directory = filePath.GetDirectory().GetAbsolutePathname();
         DAVA::String baseName = filePath.GetBasename();
         
-        DAVA::ImageLoader::Save(r, directory + baseName + "_red.png");
-        DAVA::ImageLoader::Save(g, directory + baseName + "_green.png");
-        DAVA::ImageLoader::Save(b, directory + baseName + "_blue.png");
-        DAVA::ImageLoader::Save(a, directory + baseName + "_alpha.png");
+        DAVA::ImageLoader::Save(channels.red, directory + baseName + "_red.png");
+        DAVA::ImageLoader::Save(channels.green, directory + baseName + "_green.png");
+        DAVA::ImageLoader::Save(channels.blue, directory + baseName + "_blue.png");
+        DAVA::ImageLoader::Save(channels.alpha, directory + baseName + "_alpha.png");
     }
     else
     {
-        DAVA::Image* mergedImage = ImageSplitter::CreateMergedImage(r,g,b,a);
+        DAVA::Image* mergedImage = ImageTools::CreateMergedImage(channels);
         DAVA::ImageLoader::Save(mergedImage, filePath);
         DAVA::SafeRelease(mergedImage);
     }
