@@ -169,7 +169,7 @@ class CommandUpdateEmitter: public CommandAction
 {
 public:
 	CommandUpdateEmitter(ParticleEmitter* emitter);
-	void Init(const String& name,
+	void Init(const FastName& name,
 			  const Vector3& position,
 			  ParticleEmitter::eType emitterType,
 			  RefPtr<PropertyLine<float32> > emissionRange,
@@ -185,7 +185,7 @@ public:
 	virtual void Redo();
 
 protected:
-	String name;
+	FastName name;
 	Vector3 position;
 	ParticleEmitter* emitter;
 
