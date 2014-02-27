@@ -1,8 +1,8 @@
 <CONFIG>
 albedo = 0
 normalmap = 1
-reflTex = 2
-refrTex = 3
+dynamicReflection = 2
+dynamicRefraction = 3
 <FRAGMENT_SHADER>
 
 #ifdef GL_ES
@@ -19,7 +19,8 @@ varying mediump vec2 varTexCoord0;
 varying mediump vec2 varTexCoord1;
 varying mediump float eyeDist;
 uniform samplerCube cubemap;
-uniform lowp vec3 waterColor;
+uniform lowp vec3 reflectionTintColor;
+uniform lowp vec3 refractionTintColor;
 uniform float fresnelBias;
 uniform float fresnelPow;
 uniform float eta;
@@ -29,8 +30,8 @@ uniform float reflectionDistortion;
 uniform float refractionDistortion;
 
 uniform mediump vec2 rcpScreenSize;
-uniform sampler2D reflTex;
-uniform sampler2D refrTex;
+uniform sampler2D dynamicReflection;
+uniform sampler2D dynamicRefraction;
 
 #if defined(VERTEX_LIT)
 varying mediump vec3 reflectionDirectionInWorldSpace;
@@ -139,11 +140,11 @@ void main()
     mediump vec3 refractedVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * refractedVectorInTangentSpace);
     lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
 	
-	lowp vec2 waveOffset = normal.xy/eyeDist;
+	lowp vec2 waveOffset = normal.xy/max(1.0, eyeDist);
 	mediump vec2 screenPos = gl_FragCoord.xy*rcpScreenSize;
-	lowp vec3 reflectionColor = texture2D(reflTex, screenPos+waveOffset*reflectionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/	
+	lowp vec3 reflectionColor = texture2D(dynamicReflection, screenPos+waveOffset*reflectionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/	
 	screenPos.y=1-screenPos.y;
-	lowp vec3 refractionColor = texture2D(refrTex, screenPos+waveOffset*refractionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
+	lowp vec3 refractionColor = texture2D(dynamicRefraction, screenPos+waveOffset*refractionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
 
     
     float facing = 1.0 - lambertFactor;
@@ -157,7 +158,8 @@ void main()
     //gl_FragColor = vec4(fresnel,fresnel,fresnel,1.0);
 	//gl_FragColor = vec4(texture2D(refrTex, gl_FragCoord.xz/100.0).rgb, 1.0);
 	//gl_FragColor = vec4(1.0, 0.2, 1.0, 1.0);
-	gl_FragColor = vec4(waterColor * mix(refractionColor, reflectionColor, fresnel) + vec3(shininess), 1.0);
+	gl_FragColor = vec4(mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel) + vec3(shininess), 1.0);	
+	//gl_FragColor = vec4(reflectionColor, 1.0);
 	//gl_FragColor = vec4(refractionColor, 1.0);
 #endif
 #endif
