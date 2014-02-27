@@ -171,6 +171,13 @@ void main()
         #endif
         if (alpha < 0.5)discard;
     #endif
+    #if defined(ALPHATESTVALUE)
+        float alpha = textureColor0.a;
+        #if defined(VERTEX_COLOR)
+            alpha *= varVertexColor.a;
+        #endif
+        if (alpha < ALPHATESTVALUE)discard;
+    #endif
 #endif
     
 #if defined(MATERIAL_DECAL)
@@ -439,10 +446,12 @@ void main()
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     gl_FragColor = reflectionColor * 0.9;
 #elif defined(PIXEL_LIT)
+    vec3 fresnelRefl = FresnelShlickVec3(NdotV, metalFresnelReflectance);
+
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
     mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    gl_FragColor = reflectionColor;
+    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;
 #endif
 #endif
     
