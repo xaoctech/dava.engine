@@ -50,6 +50,7 @@ uniform float materialSpecularShininess;
 
 varying vec2 varTexCoord0;
 varying vec2 varTexCoord1;
+varying float eyeDist;
 
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
@@ -141,6 +142,8 @@ void main()
 
     vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
     
+	eyeDist = length(eyeCoordsPosition);
+	
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
     lightDir = normalize(lightDir);

@@ -35,7 +35,7 @@
 
 namespace DAVA
 {
-	class SkyboxRenderObject : public RenderObject, public IRenderUpdatable
+	class SkyboxRenderObject : public RenderObject
 	{
 	public:
 		
@@ -46,7 +46,8 @@ namespace DAVA
 		//after adding skybox to scene and setting up its paramaters it becames self-sufficent
 		void Initialize(AABBox3& box);
 		
-		virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
+		//virtual void RenderUpdate(Camera *camera, float32 timeElapsed);
+        virtual void PrepareToRender(Camera *camera);
 		
 		RenderObject * Clone(RenderObject *newObject);
 		virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
