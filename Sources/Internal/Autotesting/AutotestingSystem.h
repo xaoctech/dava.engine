@@ -169,6 +169,7 @@ public:
     String testFileName;
     String testFilePath;
 
+	String buildDate;
 	String buildId;
 	String branch;
 	String framework;
