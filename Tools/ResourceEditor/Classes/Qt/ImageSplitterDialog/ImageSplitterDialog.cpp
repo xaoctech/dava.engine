@@ -32,7 +32,7 @@
 #include "Project/ProjectManager.h"
 #include "ImageTools/ImageTools.h"
 #include "SizeDialog.h"
-#include "QtUtils.h"
+#include "Main/QtUtils.h"
 
 #include <QMessageBox>
 #include <QFileDialog>

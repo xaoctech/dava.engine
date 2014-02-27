@@ -32,7 +32,7 @@
 #include "Qt/TextureBrowser/TextureConvertor.h"
 #include "SizeDialog.h"
 #include "Project/ProjectManager.h"
-#include "QtUtils.h"
+#include "Main/QtUtils.h"
 
 #include <QtGui>
 #include <QFileDialog>
