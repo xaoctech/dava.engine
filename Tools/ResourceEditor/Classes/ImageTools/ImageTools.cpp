@@ -204,7 +204,7 @@ Channels ImageTools::CreateSplittedImages(DAVA::Image* originalImage)
     return Channels(r,g,b,a);
 }
 
-DAVA::Image* ImageTools::CreateMergedImage(Channels& channels)
+DAVA::Image* ImageTools::CreateMergedImage(const Channels& channels)
 {
     if(!channels.ChannelesResolutionEqual() || !channels.HasFormat(FORMAT_A8))
     {
@@ -232,25 +232,10 @@ void ImageTools::SetChannel(DAVA::Image* image, DAVA::uint32 channel, DAVA::uint
     }
     int32 size = image->width * image->height;
     int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-    for(int32 i = 0; i < size; ++i)
+    int32 offset = channel;
+    for( int32 i = 0; i < size; ++i, offset += pixelSize)
     {
-        int32 offset = i * pixelSize;
-        if (channel & COLOR_RED)
-        {
-            image->data[offset] = value;
-        }
-        if (channel & COLOR_GREEN)
-        {
-            image->data[offset + 1] = value;
-        }
-        if (channel & COLOR_BLUE)
-        {
-            image->data[offset + 2] = value;
-        }
-        if (channel & COLOR_ALPHA)
-        {
-            image->data[offset + 3] = value;
-        }
+        image->data[offset] = value;
     }
 }
 
