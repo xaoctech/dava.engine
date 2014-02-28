@@ -273,7 +273,12 @@ void main()
         float glossiness = pow(5000.0, inGlossiness * textureColor0.a); //textureColor0.a;
         //float glossiness = pow(5000.0, 0.5 * textureColor0.a); //textureColor0.a;
         float specularNorm = (glossiness + 2.0) / 8.0;
-        color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm * textureColor1.rgb / 2.0;
+    
+        #if defined(MATERIAL_LIGHTMAP)
+            color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm * textureColor1.rgb / 2.0;
+        #else
+            color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
+        #endif
     #endif
     
 #endif
