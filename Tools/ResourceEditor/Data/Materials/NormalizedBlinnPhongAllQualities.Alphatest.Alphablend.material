@@ -1,0 +1,3 @@
+MaterialTemplate:    
+    HIGH : "~res:/Materials/NormalizedBlinnPhongPerPixel.Alphatest.Alphablend.material"
+    LOW : "~res:/Materials/NormalizedBlinnPhongPerVertex.Alphatest.Alphablend.material"
