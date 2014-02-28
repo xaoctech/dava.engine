@@ -94,7 +94,7 @@ varying float varNdotH;
 #if defined(PIXEL_LIT)
 varying vec3 varToLightVec;
 
-    #if !defined(CORRECT_NORMALIZATION)
+    #if defined(FAST_NORMALIZATION)
     varying vec3 varHalfVec;
     #endif
 
@@ -290,7 +290,7 @@ void main()
         attenuation /= (varPerPixelAttenuation * varPerPixelAttenuation);
     #endif
     
-#if defined(CORRECT_NORMALIZATION)
+#if !defined(FAST_NORMALIZATION)
     vec3 toLightNormalized = normalize(varToLightVec);
     vec3 toCameraNormalized = normalize(varToCameraVec);
     vec3 H = toCameraNormalized + toLightNormalized;
