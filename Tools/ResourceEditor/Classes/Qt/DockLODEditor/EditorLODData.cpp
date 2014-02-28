@@ -178,6 +178,7 @@ void EditorLODData::ResetForceState(DAVA::Entity *entity)
     {
         lods[i]->SetForceDistance(DAVA::LodComponent::INVALID_DISTANCE);
         lods[i]->SetForceLodLayer(DAVA::LodComponent::INVALID_LOD_LAYER);
+		lods[i]->currentLod = -1;
     }
 }
 
@@ -441,7 +442,7 @@ FilePath EditorLODData::GetDefaultTexturePathForPlaneEntity()
     if(properties->IsKeyExists(ResourceEditor::EDITOR_REFERENCE_TO_OWNER))
         entityPath = FilePath(properties->GetString(ResourceEditor::EDITOR_REFERENCE_TO_OWNER, entityPath.GetAbsolutePathname()));
 
-    String entityName = entity->GetName();
+    String entityName = entity->GetName().c_str();
     FilePath textureFolder = entityPath.GetDirectory() + "images/";
 
     String texturePostfix = "_planes.png";
