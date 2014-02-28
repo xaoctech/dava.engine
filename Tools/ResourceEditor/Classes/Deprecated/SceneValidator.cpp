@@ -365,8 +365,6 @@ void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NM
     variant = GetCustomPropertyFromParentsTree(ownerNode, "lightmap.size");
     if(variant)
         params->lightmapSize = variant->AsInt32();
-    else if(IsPointerToExactClass<Landscape>(GetRenderObject(ownerNode)))
-        params->lightmapSize = 1024;
 }
 
 VariantType* SceneValidator::GetCustomPropertyFromParentsTree(Entity *ownerNode, const String & key)
