@@ -269,7 +269,7 @@ public:
 	NMaterial* Clone();
 	NMaterial* Clone(const String& newName);
 		
-    IlluminationParams * GetIlluminationParams();
+    IlluminationParams * GetIlluminationParams(bool createIfNeeded = true);
     void ReleaseIlluminationParams();
 	
 	// Work with textures and properties
