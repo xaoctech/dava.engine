@@ -167,7 +167,7 @@ SoundEvent * SoundSystem::DeserializeEvent(KeyedArchive *archive)
     DVASSERT(archive);
 
     FastName eventType = archive->GetFastName("EventType");
-    FastName groupName = archive->GetFastName("groupName");
+    FastName groupName = archive->GetFastName("groupName", FastName(""));
 
     if(eventType == SEREALIZE_EVENTTYPE_EVENTFILE)
     {
