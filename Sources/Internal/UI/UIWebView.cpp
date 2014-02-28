@@ -50,6 +50,7 @@ UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
 {
     Rect newRect = GetRect(true);
     this->webViewControl->Initialize(newRect);
+    this->webViewControl->SetVisible(false, true); // will be displayed in WillAppear.
 }
 
 UIWebView::~UIWebView()
@@ -65,6 +66,11 @@ void UIWebView::SetDelegate(IUIWebViewDelegate* delegate)
 void UIWebView::OpenURL(const String& urlToOpen)
 {
 	this->webViewControl->OpenURL(urlToOpen);
+}
+
+void UIWebView::OpenFromBuffer(const String& string, const FilePath& basePath)
+{
+    this->webViewControl->OpenFromBuffer(string, basePath);
 }
 
 void UIWebView::WillAppear()
@@ -100,7 +106,8 @@ void UIWebView::SetSize(const Vector2 &newSize)
 void UIWebView::SetVisible(bool isVisible, bool hierarchic)
 {
 	UIControl::SetVisible(isVisible, hierarchic);
-	this->webViewControl->SetVisible(isVisible, hierarchic);
+    if (IsOnScreen())
+        this->webViewControl->SetVisible(isVisible, hierarchic);
 }
 
 void UIWebView::SetBackgroundTransparency(bool enabled)

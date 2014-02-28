@@ -37,6 +37,7 @@
 #include "Base/FastName.h"
 #include "Render/RenderResource.h"
 #include "FileSystem/FilePath.h"
+#include "Platform/Mutex.h"
 
 #include "Render/UniqueStateSet.h"
 
@@ -319,7 +320,6 @@ protected:
     
 	static eGPUFamily GetGPUForLoading(const eGPUFamily requestedGPU, const TextureDescriptor *descriptor);
     
-    
     struct ReleaseTextureDataContainer
 	{
 		uint32 textureType;
@@ -358,7 +358,8 @@ public:							// properties for fast access
 	TextureInvalidater* invalidater;
     TextureDescriptor *texDescriptor;
 
-    
+    static Mutex textureMapMutex;
+
     static TexturesMap textureMap;
     static eGPUFamily defaultGPU;
     

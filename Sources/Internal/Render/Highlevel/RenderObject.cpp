@@ -66,7 +66,6 @@ RenderObject::~RenderObject()
 void RenderObject::AddRenderBatch(RenderBatch * batch)
 {
 	AddRenderBatch(batch, -1, -1);
-    activeRenderBatchArray.push_back(batch);
 }
   
 void RenderObject::AddRenderBatch(RenderBatch * batch, int32 _lodIndex, int32 _switchIndex)
@@ -305,6 +304,16 @@ void RenderObject::SetSwitchIndex(int32 _switchIndex)
 		switchIndex = _switchIndex;
 		UpdateActiveRenderBatches();
 	}
+}
+
+int32 RenderObject::GetLodIndex()
+{
+    return lodIndex;
+}
+
+int32 RenderObject::GetSwitchIndex()
+{
+    return switchIndex;
 }
 
 void RenderObject::UpdateActiveRenderBatches()
