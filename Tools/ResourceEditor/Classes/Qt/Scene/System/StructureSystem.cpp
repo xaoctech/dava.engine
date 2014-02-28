@@ -544,14 +544,16 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 void StructureSystem::CopyLightmapSettings(DAVA::NMaterial *fromState, DAVA::NMaterial *toState) const
 {
 	Texture* lightmap = fromState->GetTexture(NMaterial::TEXTURE_LIGHTMAP);
+	bool needReleaseTexture = false;
 	if(!lightmap)
 	{
 		lightmap = Texture::CreatePink();
+		needReleaseTexture = true;
 	}
 	
 	toState->SetTexture(NMaterial::TEXTURE_LIGHTMAP, lightmap);
 	
-	if(lightmap->isPink)
+	if(needReleaseTexture)
 	{
 		SafeRelease(lightmap);
 	}
