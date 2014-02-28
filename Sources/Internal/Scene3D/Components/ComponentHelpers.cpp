@@ -43,6 +43,7 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/WindComponent.h"
 
 namespace DAVA
 {
@@ -251,7 +252,17 @@ SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity)
     
     return NULL;
 }
+
+WindComponent * GetWindComponent(Entity * fromEntity)
+{
+    if(fromEntity)
+    {
+        return static_cast<WindComponent *>(fromEntity->GetComponent(Component::WIND_COMPONENT));
+    }
     
+    return NULL;
+}
+
 Entity * FindLandscapeEntity(Entity * rootEntity)
 {
 	if(GetLandscape(rootEntity))

@@ -45,10 +45,44 @@ float32 GetForceOsscilation(float32 t, float32 phi)
     return (pow((5.f - t), 3.f) / 150.f * sinf(t * phi));
 }
     
+Vector3 Vec4ToVec3(const Vector4 & v)
+{
+    return Vector3(v.x, v.y, v.z);
+}
+    
+Vector4 Vec3ToVec4(const Vector3 & v)
+{
+    return Vector4(v.x, v.y, v.z, 0.f);
+}
+    
+WindSystem::WindSystem(Scene * scene)
+    : SceneSystem(scene),
+    activeWindComponent(0)
+{
+//    activeWindComponent = new WindComponent();
+}
+    
+WindSystem::~WindSystem() {}
+    
+void WindSystem::AddEntity(Entity * entity)
+{
+    activeWindComponent = GetWindComponent(entity);
+}
+    
+void WindSystem::RemoveEntity(Entity * entity)
+{
+    if(activeWindComponent == GetWindComponent(entity))
+        activeWindComponent = 0;
+}
+ 
+WindComponent * WindSystem::GetActiveWind()
+{
+    return activeWindComponent;
+}
+    
 SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 :	SceneSystem(scene),
     globalTime(0.f),
-    windDirection(Vector3(1.f, 0.f, 0.f)),
     timerTime(0.f),
     timerTime2(0.f)
 {
@@ -115,6 +149,10 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
 {
     globalTime += timeElapsed;
     
+    WindComponent * activeWind = GetScene()->windSystem->GetActiveWind();
+    if(!activeWind)
+        return;
+    
     //Update forces
     Vector<Force>::iterator it = activeForces.begin();
     while(it != activeForces.end())
@@ -164,7 +202,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
             forcesOffset += direction2D / squareDistance * force.value * linearOscillation * params.trunkForceOscillationAmplitude;
         }
         
-        Vector3 windOffset = windDirection * ((sinf(globalTime * params.trunkOscillationSpeed) + .5f) * params.trunkOscillationAmplitude);
+        Vector3 windOffset = activeWind->GetWindDirection();
+        windOffset *= ((sinf(globalTime * params.trunkOscillationSpeed) + .5f) * params.trunkOscillationAmplitude);
         Vector3 trunkOscillationParams = windOffset + Vector3(forcesOffset.x, forcesOffset.y, 0.f);
         
         float32 sine, cosine;
@@ -174,13 +213,13 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         info->treeObject->SetTreeAnimationParams(trunkOscillationParams, leafOscillationParams);
     }
     
-//    timerTime += timeElapsed;
-//    if(timerTime > 15.f)
-//    {
-//        timerTime = 0.f;
-//        AddForce(Vector3(1.f, 0.f, 0.f), 1.f);
-//    }
-//    
+    timerTime += timeElapsed;
+    if(timerTime > 15.f)
+    {
+        timerTime = 0.f;
+        AddForce(Vector3(1.f, 0.f, 0.f), 1.f);
+    }
+//
 //    timerTime2 += timeElapsed;
 //    if(timerTime2 > 16.f)
 //    {

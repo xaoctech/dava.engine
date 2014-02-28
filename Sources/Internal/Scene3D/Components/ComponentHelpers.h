@@ -51,6 +51,7 @@ class QualitySettingsComponent;
 class RenderComponent;
 class TransformComponent;
 class SpeedTreeComponent;
+class WindComponent;
 
 
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
@@ -76,6 +77,7 @@ void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Ent
 void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
 
 SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity);
+WindComponent * GetWindComponent(Entity * fromEntity);
     
 Entity * FindLandscapeEntity(Entity * rootEntity);
 Landscape * FindLandscape(Entity * rootEntity);

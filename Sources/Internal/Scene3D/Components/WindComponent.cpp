@@ -27,78 +27,62 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
-#include "Entity/SceneSystem.h"
-#include "Base/BaseMath.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Scene3D/Components/WindComponent.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class Entity;
-class SpeedTreeObject;
-    
-class WindSystem : public SceneSystem
+	REGISTER_CLASS(WindComponent)
+
+WindComponent::WindComponent()
 {
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
+    windDirection = Vector3(1.f, 0.f, 0.f);
+}
+
+WindComponent::~WindComponent()
+{
     
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
+}
+ 
+Component * WindComponent::Clone(Entity * toEntity)
+{
+    WindComponent * component = new WindComponent();
+	component->SetEntity(toEntity);
     
-    WindComponent * GetActiveWind();
+    return component;
+}
+
+void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+
+	if(archive != 0)
+	{
+        archive->SetVector3("wc.windDirection", windDirection);
+    }
+}
     
-private:
-    WindComponent * activeWindComponent;
+void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	if(archive)
+	{
+        windDirection = archive->GetVector3("wc.windDirection");
+	}
+
+	Component::Deserialize(archive, serializationContext);
+}
+    
+void WindComponent::SetWindDirection(const Vector3 & direction)
+{
+    windDirection = direction;
+}
+    
+const Vector3 & WindComponent::GetWindDirection()
+{
+    return windDirection;
+}
+    
 };
-    
-class SpeedTreeUpdateSystem : public SceneSystem
-{
-public:
-    struct TreeInfo
-    {
-        TreeInfo(SpeedTreeObject * object) :
-        treeObject(object)
-        {}
-        
-        Vector3 position;
-        SpeedTreeObject * treeObject;
-        SpeedTreeComponent * component;
-    };
-    
-    struct Force
-    {
-        float32 time;
-        float32 value;
-        Vector3 position;
-    };
-    
-    SpeedTreeUpdateSystem(Scene * scene);
-    virtual ~SpeedTreeUpdateSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    virtual void ImmediateEvent(Entity * entity, uint32 event);
-    virtual void Process(float32 timeElapsed);
-    
-    void AddForce(const Vector3 & position, float32 forceValue);
-    
-private:
-    Vector<TreeInfo *> allTrees;
-    Vector<Force> activeForces;
-    
-    float32 globalTime;
-    float32 timerTime;
-    float32 timerTime2;
-};
-    
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
-
