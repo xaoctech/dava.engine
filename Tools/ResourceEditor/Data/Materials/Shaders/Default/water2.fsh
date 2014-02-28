@@ -143,7 +143,7 @@ void main()
 	lowp vec2 waveOffset = normal.xy/max(1.0, eyeDist);
 	mediump vec2 screenPos = gl_FragCoord.xy*rcpScreenSize;
 	lowp vec3 reflectionColor = texture2D(dynamicReflection, screenPos+waveOffset*reflectionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/	
-	screenPos.y=1-screenPos.y;
+	screenPos.y=1.0-screenPos.y;
 	lowp vec3 refractionColor = texture2D(dynamicRefraction, screenPos+waveOffset*refractionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
 
     
