@@ -84,6 +84,11 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 
 SceneCollisionSystem::~SceneCollisionSystem()
 {
+	if(GetScene())
+	{
+		GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
+	}
+
 	QMapIterator<DAVA::Entity*, CollisionBaseObject*> i(entityToCollision);
 	while(i.hasNext())
 	{
