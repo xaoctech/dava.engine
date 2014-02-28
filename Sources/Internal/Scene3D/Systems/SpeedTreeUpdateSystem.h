@@ -36,11 +36,28 @@
 #include "Entity/SceneSystem.h"
 #include "Base/BaseMath.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/WindComponent.h"
 
 namespace DAVA
 {
 class Entity;
 class SpeedTreeObject;
+    
+class WindSystem : public SceneSystem
+{
+public:
+    WindSystem(Scene * scene);
+    virtual ~WindSystem();
+    
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    
+    WindComponent * GetActiveWind();
+    
+private:
+    WindComponent * activeWindComponent;
+};
+    
 class SpeedTreeUpdateSystem : public SceneSystem
 {
 public:
@@ -75,8 +92,6 @@ public:
 private:
     Vector<TreeInfo *> allTrees;
     Vector<Force> activeForces;
-    
-    Vector3 windDirection;
     
     float32 globalTime;
     float32 timerTime;

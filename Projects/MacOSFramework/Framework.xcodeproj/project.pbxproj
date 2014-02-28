@@ -28,6 +28,12 @@
 		02A03DAC1871C49C00FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */; };
 		02A03DAD1871C49E00FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */; };
 		02A03DAE1871C49F00FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */; };
+		02A0860D18C077C900B7D169 /* WindComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0860B18C077C900B7D169 /* WindComponent.cpp */; };
+		02A0860E18C077C900B7D169 /* WindComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0860B18C077C900B7D169 /* WindComponent.cpp */; };
+		02A0860F18C077C900B7D169 /* WindComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0860B18C077C900B7D169 /* WindComponent.cpp */; };
+		02A0861018C077C900B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0860C18C077C900B7D169 /* WindComponent.h */; };
+		02A0861118C077C900B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0860C18C077C900B7D169 /* WindComponent.h */; };
+		02A0861218C077C900B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0860C18C077C900B7D169 /* WindComponent.h */; };
 		02C1121518B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
 		02C1121618B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
 		02C1121718B3AA350018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
@@ -2251,6 +2257,8 @@
 		0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeComponent.h; sourceTree = "<group>"; };
 		02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeObject.cpp; sourceTree = "<group>"; };
 		02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
+		02A0860B18C077C900B7D169 /* WindComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindComponent.cpp; sourceTree = "<group>"; };
+		02A0860C18C077C900B7D169 /* WindComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindComponent.h; sourceTree = "<group>"; };
 		02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeUpdateSystem.cpp; sourceTree = "<group>"; };
 		02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeUpdateSystem.h; sourceTree = "<group>"; };
 		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
@@ -3951,6 +3959,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				02A0860B18C077C900B7D169 /* WindComponent.cpp */,
+				02A0860C18C077C900B7D169 /* WindComponent.h */,
 				0282B84C18B81978006F1EE4 /* SpeedTreeComponent.cpp */,
 				0282B84D18B81978006F1EE4 /* SpeedTreeComponent.h */,
 				E8FC12F0186972560095D8FE /* QualitySettingsComponent.cpp */,
@@ -4398,6 +4408,7 @@
 				176DE9A1174B5561007A983B /* PVRDefines.h in Headers */,
 				176DE9A2174B5561007A983B /* RenderBase.h in Headers */,
 				176DE9A3174B5561007A983B /* RenderDataObject.h in Headers */,
+				02A0861218C077C900B7D169 /* WindComponent.h in Headers */,
 				176DE9A4174B5561007A983B /* RenderEffect.h in Headers */,
 				176DE9A5174B5561007A983B /* RenderGrayscaleEffect.h in Headers */,
 				176DE9A6174B5561007A983B /* RenderHelper.h in Headers */,
@@ -4667,6 +4678,7 @@
 				E8989E0B16BD24E500732C04 /* Component.h in Headers */,
 				E8989E0D16BD24E500732C04 /* SceneSystem.h in Headers */,
 				E8989E2D16BD24E500732C04 /* Bitstream.h in Headers */,
+				02A0861018C077C900B7D169 /* WindComponent.h in Headers */,
 				E8989E2F16BD24E500732C04 /* DynamicMemoryFile.h in Headers */,
 				E8989E3116BD24E500732C04 /* File.h in Headers */,
 				E8989E3316BD24E500732C04 /* FileList.h in Headers */,
@@ -5235,6 +5247,7 @@
 				E898A15F16BD265400732C04 /* SwitchNode.h in Headers */,
 				E898A16016BD265400732C04 /* BaseProcessSystem.h in Headers */,
 				E898A16116BD265400732C04 /* DebugRenderSystem.h in Headers */,
+				02A0861118C077C900B7D169 /* WindComponent.h in Headers */,
 				E898A16316BD265400732C04 /* EventSystem.h in Headers */,
 				E898A16416BD265400732C04 /* LightUpdateSystem.h in Headers */,
 				E898A16516BD265400732C04 /* LodSystem.h in Headers */,
@@ -5546,6 +5559,7 @@
 				176DEA8D174B5561007A983B /* Spline.cpp in Sources */,
 				176DEA8E174B5561007A983B /* BaseNetworkConnection.mm in Sources */,
 				176DEA8F174B5561007A983B /* BTNetworkConnection.mm in Sources */,
+				02A0860F18C077C900B7D169 /* WindComponent.cpp in Sources */,
 				176DEA90174B5561007A983B /* NetworkConnection.cpp in Sources */,
 				176DEA91174B5561007A983B /* NetworkConnectionIPhone.mm in Sources */,
 				176DEA92174B5561007A983B /* NetworkDelegate.cpp in Sources */,
@@ -5802,6 +5816,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8989D9A16BD24E500732C04 /* AnimatedObject.cpp in Sources */,
+				02A0860D18C077C900B7D169 /* WindComponent.cpp in Sources */,
 				A6D82798187716F30006A5DD /* Color.cpp in Sources */,
 				E8989D9C16BD24E500732C04 /* Animation.cpp in Sources */,
 				E8989D9E16BD24E500732C04 /* AnimationManager.cpp in Sources */,
@@ -6195,6 +6210,7 @@
 				E8FC12FC186972740095D8FE /* QualitySettingsComponent.cpp in Sources */,
 				E898A1BD16BD265400732C04 /* DAVAEngine.cpp in Sources */,
 				E898A1BE16BD265400732C04 /* Backtrace.cpp in Sources */,
+				02A0860E18C077C900B7D169 /* WindComponent.cpp in Sources */,
 				E898A1BF16BD265400732C04 /* MemoryManager.cpp in Sources */,
 				E898A1C016BD265400732C04 /* Replay.cpp in Sources */,
 				E898A1C116BD265400732C04 /* Stats.cpp in Sources */,
