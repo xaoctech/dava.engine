@@ -1319,7 +1319,6 @@ private:
 	float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
 	float32 GetRelativeY(UIControl *parent, int32 align);
 	float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
-	float32 Round(float32 value);
 };
 };
 
