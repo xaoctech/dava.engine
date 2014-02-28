@@ -701,9 +701,9 @@ NMaterial* NMaterial::Clone(const String& newName)
 	return clonedMaterial;
 }
 
-IlluminationParams * NMaterial::GetIlluminationParams()
+IlluminationParams * NMaterial::GetIlluminationParams(bool createIfNeeded /*= true*/)
 {
-	if(!illuminationParams)
+	if(createIfNeeded && !illuminationParams)
 		illuminationParams = new IlluminationParams(this);
 	
 	return illuminationParams;
