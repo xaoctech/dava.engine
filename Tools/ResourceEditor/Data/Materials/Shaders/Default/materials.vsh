@@ -323,7 +323,7 @@ void main()
 	v.y = dot (toLightDir, b);
 	v.z = dot (toLightDir, n);
     
-#if defined(CORRECT_NORMALIZATION)
+#if !defined(FAST_NORMALIZATION)
 	varToLightVec = v;
 #else
     varToLightVec = normalize(v);
@@ -334,7 +334,7 @@ void main()
     v.x = dot (toCameraDir, t);
 	v.y = dot (toCameraDir, b);
 	v.z = dot (toCameraDir, n);
-#if defined(CORRECT_NORMALIZATION)
+#if !defined(FAST_NORMALIZATION)
 	varToCameraVec = v;
 #else
     varToCameraVec = normalize(v);
@@ -343,7 +343,7 @@ void main()
     /* Normalize the halfVector to pass it to the fragment shader */
 	// No need to divide by two, the result is normalized anyway.
 	// vec3 halfVector = normalize((E + lightDir) / 2.0);
-#if !defined(CORRECT_NORMALIZATION)
+#if defined(FAST_NORMALIZATION)
 	vec3 halfVector = normalize(normalize(toCameraDir) + normalize(toLightDir));
 	v.x = dot (halfVector, t);
 	v.y = dot (halfVector, b);
