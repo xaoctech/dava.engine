@@ -245,14 +245,13 @@ void main()
     
 	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 #endif
-#else
-#if defined(WAVE_ANIMATION)
+
+#elif defined(WAVE_ANIMATION)
 	gl_Position = worldViewProjMatrix * Wave(globalTime, inPosition, inTexCoord0);
 #else
 	gl_Position = worldViewProjMatrix * inPosition;
 #endif
     
-#endif
 
 #if defined(VERTEX_LIT)
     vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition); // view direction in view space
