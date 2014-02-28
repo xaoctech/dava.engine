@@ -74,10 +74,10 @@ public:
     
      enum eComponentsRGBA
      {
-         COLOR_RED		= 1 << 0,
-         COLOR_GREEN	= 1 << 1,
-         COLOR_BLUE		= 1 << 2,
-         COLOR_ALPHA	= 1 << 3
+         COLOR_RED		= 0,
+         COLOR_GREEN,
+         COLOR_BLUE,
+         COLOR_ALPHA,
      };
     
     static DAVA::uint32 GetTexturePhysicalSize(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU);
@@ -90,7 +90,7 @@ public:
     
     static Channels CreateSplittedImages(DAVA::Image* originalImage);
     
-    static DAVA::Image* CreateMergedImage(Channels& channes);
+    static DAVA::Image* CreateMergedImage(const Channels& channes);
     
     static void SetChannel(DAVA::Image* image, DAVA::uint32 channelFlags,  DAVA::uint8 value);
 
