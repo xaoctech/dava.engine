@@ -62,53 +62,53 @@ SceneEditor2::SceneEditor2()
 	commandStack.SetNotify(notify);
 	SafeRelease(notify);
 
-	cameraSystem = new SceneCameraSystem(this);
-	AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT));
-
 	gridSystem = new SceneGridSystem(this);
-	AddSystem(gridSystem, 0, true);
-	
+	AddSystem(gridSystem, 0, true, renderUpdateSystem);
+
+    cameraSystem = new SceneCameraSystem(this);
+    AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT));
+
 	collisionSystem = new SceneCollisionSystem(this);
-	AddSystem(collisionSystem, 0, true);
+	AddSystem(collisionSystem, 0, true, renderUpdateSystem);
 
 	hoodSystem = new HoodSystem(this, cameraSystem);
-	AddSystem(hoodSystem, 0, true);
+	AddSystem(hoodSystem, 0, true, renderUpdateSystem);
 
 	selectionSystem = new SceneSelectionSystem(this, collisionSystem, hoodSystem);
-	AddSystem(selectionSystem, 0, true);
-	
-	particlesSystem = new EditorParticlesSystem(this);
-	AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT), true);
+	AddSystem(selectionSystem, 0, true, renderUpdateSystem);
 
 	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);
-	AddSystem(modifSystem, 0, true);
+	AddSystem(modifSystem, 0, true, renderUpdateSystem);
 
 	landscapeEditorDrawSystem = new LandscapeEditorDrawSystem(this);
-	AddSystem(landscapeEditorDrawSystem, 0, true);
+	AddSystem(landscapeEditorDrawSystem, 0, true, renderUpdateSystem);
 
 	heightmapEditorSystem = new HeightmapEditorSystem(this);
-	AddSystem(heightmapEditorSystem, 0, true);
+	AddSystem(heightmapEditorSystem, 0, true, renderUpdateSystem);
 
 	tilemaskEditorSystem = new TilemaskEditorSystem(this);
-	AddSystem(tilemaskEditorSystem, 0, true);
+	AddSystem(tilemaskEditorSystem, 0, true, renderUpdateSystem);
 
 	customColorsSystem = new CustomColorsSystem(this);
-	AddSystem(customColorsSystem, 0, true);
+	AddSystem(customColorsSystem, 0, true, renderUpdateSystem);
 
 	visibilityToolSystem = new VisibilityToolSystem(this);
-	AddSystem(visibilityToolSystem, 0, true);
+	AddSystem(visibilityToolSystem, 0, true, renderUpdateSystem);
 
 	rulerToolSystem = new RulerToolSystem(this);
-	AddSystem(rulerToolSystem, 0, true);
+	AddSystem(rulerToolSystem, 0, true, renderUpdateSystem);
 
 	structureSystem = new StructureSystem(this);
-	AddSystem(structureSystem, 0, true);
+	AddSystem(structureSystem, 0, true, renderUpdateSystem);
 
-	editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT, true);
+    particlesSystem = new EditorParticlesSystem(this);
+    AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT), true, renderUpdateSystem);
 
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
-	AddSystem(textDrawSystem, 0, true);
+    AddSystem(textDrawSystem, 0, true, renderUpdateSystem);
+
+    editorLightSystem = new EditorLightSystem(this);
+    AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT, true, renderUpdateSystem);
 
 	debugDrawSystem = new DebugDrawSystem(this);
 	AddSystem(debugDrawSystem, 0);
@@ -120,10 +120,10 @@ SceneEditor2::SceneEditor2()
 	AddSystem(ownersSignatureSystem, 0);
     
     staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
-    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT), true,renderUpdateSystem);
+    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT), true, renderUpdateSystem);
 
 	materialSystem = new EditorMaterialSystem(this);
-	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT, true);
+	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT, true, renderUpdateSystem);
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
@@ -358,6 +358,7 @@ void SceneEditor2::Update(float timeElapsed)
     cameraSystem->Process(timeElapsed);
 
     staticOcclusionBuildSystem->SetCamera(GetClipCamera());
+
     Scene::Update(timeElapsed);
 }
 
