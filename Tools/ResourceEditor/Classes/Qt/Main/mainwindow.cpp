@@ -1860,12 +1860,15 @@ void QtMainWindow::OnConvertModifiedTextures()
 		{
 			continue;
 		}
-		
+
+        DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality", SettingsManager::DEFAULT);
+        
 		Vector<eGPUFamily> updatedGPUs = it->second;
 		WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
 		foreach(eGPUFamily gpu, updatedGPUs)
 		{
-			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true);
+
+			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, (TextureConverter::eConvertQuality)quality.AsInt32());
 			WaitSetValue(++convretedNumber);
 		}
 	}
