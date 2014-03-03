@@ -64,11 +64,11 @@ public:
     /**
         \brief Get Render Pass Manager to have ability to get all render passes from RenderSystem.
      */
-    const RenderPassManager * GetRenderPassManager() const;
+    inline const RenderPassManager * GetRenderPassManager() const;
     /**
         \brief Get Render Hierarchy. It allow you to work with current render hierarchy and perform all main tasks with geometry on the level.
      */
-    RenderHierarchy * GetRenderHierarchy() const;
+    inline RenderHierarchy * GetRenderHierarchy() const;
 
     /**
         \brief Register render objects for permanent rendering
@@ -176,12 +176,12 @@ private:
     friend class RenderPass;
 };
     
-const RenderPassManager * RenderSystem::GetRenderPassManager() const
+inline const RenderPassManager * RenderSystem::GetRenderPassManager() const
 {
     return &renderPassManager;
 };
 
-RenderHierarchy * RenderSystem::GetRenderHierarchy() const
+inline RenderHierarchy * RenderSystem::GetRenderHierarchy() const
 {
     return renderHierarchy;
 }
