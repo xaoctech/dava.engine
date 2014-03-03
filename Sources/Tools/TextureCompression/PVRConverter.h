@@ -61,6 +61,8 @@ protected:
 	
 	void GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args);
 
+	String GenerateInputName(const TextureDescriptor& descriptor, const FilePath & fileToConvert);
+
 protected:
 	
     Map<PixelFormat, String> pixelFormatToPVRFormat;

@@ -1734,6 +1734,18 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
         {
             return FORMAT_INVALID;
         }
+        case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
+        {
+            return FORMAT_RGBA4444;
+        }
+		case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
+		{
+			return FORMAT_RGBA5551;
+		}
+		case PVRTGENPIXELID3('r','g','b',5,6,5):
+		{
+			return FORMAT_RGB565;
+		}
     }
 
     return FORMAT_INVALID;
@@ -2578,6 +2590,10 @@ bool LibPVRHelper::ReadFile(File *file, const Vector<Image *> &imageSet)
     return read;
 }
 
+
+
+
+
 uint32 LibPVRHelper::GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
 {
 	uint32 layout = 0;
@@ -2707,6 +2723,82 @@ const char* LibPVRHelper::GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char*
 	
 	return metadata;
 }
-    
+
+PVRFile * LibPVRHelper::ReadFile( File *file, bool readMetaData /*= false*/, bool readData /*= false*/)
+{
+	if(!file) return false;
+
+	PVRFile *pvrFile = new PVRFile();
+
+	uint32 readSize = file->Read(&pvrFile->header, PVRTEX3_HEADERSIZE);
+	if(readSize != PVRTEX3_HEADERSIZE)
+	{
+		Logger::Error("[LibPVRHelper::ReadFile]: cannot read from file");
+		delete pvrFile;
+		return NULL;
+	}
+
+	PrepareHeader(&pvrFile->header);
+
+	if(readMetaData)
+	{
+
+	}
+
+	if(readData)
+	{
+
+	}
+
+
+	return pvrFile;
+}
+
+void LibPVRHelper::PrepareHeader( PVRHeaderV3 *header )
+{
+	if((PVRTEX_CURR_IDENT != header->u32Version) && (PVRTEX_CURR_IDENT_REV != header->u32Version))
+	{	//legacy pvr
+		uint32 u32HeaderSize = PVRTEX3_HEADERSIZE;
+		if(!PVRTIsLittleEndian())
+		{
+			u32HeaderSize = Min(u32HeaderSize, (uint32)PVRTByteSwap32(header->u32Version));
+			uint8 *headerData = (uint8 *)&header->u32Version;
+			for (uint32 i=0; i < u32HeaderSize; i += sizeof(uint32))
+			{
+				PVRTByteSwap( headerData + i, sizeof(uint32));
+			}
+		}
+
+		//Get a pointer to the header.
+		PVRHeaderV2* sLegacyTextureHeader=(PVRHeaderV2*)header->u32Version;
+
+		//We only really need the channel type.
+		uint64 tempFormat;
+		EPVRTColourSpace tempColourSpace;
+		bool tempIsPreMult;
+
+		//Map the enum to get the channel type.
+		EPVRTVariableType u32CurrentChannelType=ePVRTVarTypeUnsignedByte;
+		MapLegacyTextureEnumToNewFormat( (PVRTPixelType)( sLegacyTextureHeader->dwpfFlags&0xff),tempFormat,tempColourSpace, u32CurrentChannelType, tempIsPreMult);
+		header->u32ChannelType = u32CurrentChannelType;
+	}
+	else if(PVRTEX_CURR_IDENT_REV == header->u32Version)
+	{	// need swap endianess
+		header->u32ChannelType = PVRTByteSwap32(header->u32ChannelType);
+		header->u32ColourSpace = PVRTByteSwap32(header->u32ColourSpace);
+		header->u32Depth = PVRTByteSwap32(header->u32Depth);
+		header->u32Flags = PVRTByteSwap32(header->u32Flags);
+		header->u32Height = PVRTByteSwap32(header->u32Height);
+		header->u32MetaDataSize = PVRTByteSwap32(header->u32MetaDataSize);
+		header->u32MIPMapCount = PVRTByteSwap32(header->u32MIPMapCount);
+		header->u32NumFaces = PVRTByteSwap32(header->u32NumFaces);
+		header->u32NumSurfaces = PVRTByteSwap32(header->u32NumSurfaces);
+		header->u32Version = PVRTByteSwap32(header->u32Version);
+		header->u32Width = PVRTByteSwap32(header->u32Width);
+		PVRTByteSwap((uint8*)&header->u64PixelFormat,sizeof(uint64));
+	}
+}
+
+
 };
 
