@@ -101,10 +101,10 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 }
 
 
-void ImageTools::ConvertImage(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU, const DAVA::PixelFormat format)
+void ImageTools::ConvertImage(const DAVA::TextureDescriptor *descriptor, const DAVA::eGPUFamily forGPU, const DAVA::PixelFormat format, DAVA::TextureConverter::eConvertQuality quality)
 {
 	if(!descriptor || (format == FORMAT_INVALID)) return;
 
 	TextureConverter::CleanupOldTextures(descriptor, forGPU, format);
-	TextureConverter::ConvertTexture(*descriptor, forGPU, true);
+	TextureConverter::ConvertTexture(*descriptor, forGPU, true, quality);
 }
