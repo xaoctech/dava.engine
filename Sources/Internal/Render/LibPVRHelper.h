@@ -107,11 +107,23 @@ struct PVRHeaderV2
 };
 
     
-    
-class Texture;
+class PVRFile
+{
+public:
+
+	PVRFile() : compressedDataSize(0), compressedData(NULL) {;} ;
+	~PVRFile() { SafeDeleteArray(compressedData); compressedDataSize = 0; }; 
+	
+	PVRHeaderV3 header;
+	Vector<MetaDataBlock> blocks;
+
+	uint32 compressedDataSize;
+	uint8 *compressedData;
+};
+
 class Image;
-class ImageSet;
 class File;
+
 class LibPVRHelper
 {
 public:
@@ -127,9 +139,15 @@ public:
 	
 	static bool AddCRCIntoMetaData(const FilePath &filePathname);
 	static uint32 GetCRCFromFile(const FilePath &filePathname);
-    
+
+
+	static PVRFile * ReadFile(File *file, bool readMetaData = false, bool readData = false);
+
 protected:
 		
+	static void PrepareHeader(PVRHeaderV3 *header);
+
+
 	static uint32 ReadNextMetadata(DAVA::File* file, uint32* crc);
 	
 	static bool GetCRCFromMetaData(const FilePath &filePathname, uint32* outputCRC);

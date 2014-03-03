@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	DAVA::Core::Run(argc, argv, hInstance);
 	new DAVA::QtLayerWin32();
-	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
+	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCLI.exe"));
 #else
 	DVASSERT(false && "Wrong platform")
 #endif
