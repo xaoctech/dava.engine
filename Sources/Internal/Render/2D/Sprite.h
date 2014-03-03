@@ -203,7 +203,6 @@ public:
 
 
 	virtual int32 Release();
-
 	Texture* GetTexture();
 	Texture* GetTexture(int32 frameNumber);
 

@@ -1628,7 +1628,6 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         case ePVRTPF_PVRTCI_2bpp_RGBA:
         {
             return FORMAT_PVR2;
-            break;
         }
         case ePVRTPF_PVRTCI_4bpp_RGB:
         {
@@ -1637,6 +1636,14 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         case ePVRTPF_PVRTCI_4bpp_RGBA:
         {
             return FORMAT_PVR4;
+        }
+        case ePVRTPF_PVRTCII_2bpp:
+        {
+            return FORMAT_INVALID;
+        }
+        case ePVRTPF_PVRTCII_4bpp:
+        {
+            return FORMAT_INVALID;
         }
         case ePVRTPF_ETC1:
         {
@@ -1877,7 +1884,9 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
 //				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
 				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
 				//{
-				PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
+                
+                int do2bitMode = (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0;
+				PVRTDecompressPVRTC(pTempCompData, do2bitMode, image->width, image->height, pTempDecompData);
 				//Move forward through the pointers.
 //				pTempDecompData+=decompressedFaceOffset;
 //				pTempCompData+=compressedFaceOffset;
