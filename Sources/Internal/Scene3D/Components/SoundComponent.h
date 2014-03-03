@@ -59,7 +59,7 @@ public:
     void RemoveAllEvents();
     
     void SetLocalDirection(const Vector3 & direction);
-    inline Vector3 GetLocalDirection() const;
+    inline const Vector3 & GetLocalDirection() const;
 
     IMPLEMENT_COMPONENT_TYPE(SOUND_COMPONENT);
     
@@ -85,7 +85,7 @@ inline uint32 SoundComponent::GetEventsCount() const
     return events.size();
 }
 
-inline Vector3 SoundComponent::GetLocalDirection() const
+inline const Vector3 & SoundComponent::GetLocalDirection() const
 {
     return localDirection;
 }
