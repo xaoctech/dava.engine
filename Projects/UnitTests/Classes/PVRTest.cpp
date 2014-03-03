@@ -52,7 +52,6 @@ PVRTest::PVRTest()
     FilePath testFolder = FileSystem::Instance()->GetCurrentDocumentsDirectory() + "PVRTest/";
     FileSystem::Instance()->CreateDirectory(testFolder, true);
 
-    
     pngSprite = NULL;
     pvrSprite = NULL;
     decompressedPNGSprite = NULL;
@@ -63,18 +62,6 @@ PVRTest::PVRTest()
         PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[i]);
         RegisterFunction(this, &PVRTest::TestFunction, Format("PVRTest of %s", formatDescriptor.name.c_str()), NULL);
     }
-    
-    
-//Temporary code for descriptors generation 
-//    String documentsPath = FileSystem::Instance()->GetUserDocumentsPath();
-//    TextureDescriptor *descriptor = new TextureDescriptor();
-//    descriptor->textureFileFormat = Texture::PNG_FILE;
-//    descriptor->Export(documentsPath + "/TemplatePNGDescriptor.tex");
-//
-//    descriptor->textureFileFormat = Texture::PVR_FILE;
-//    descriptor->Export(documentsPath + "/TemplatePVRDescriptor.tex");
-//
-//    SafeRelease(descriptor);
 }
 
 void PVRTest::LoadResources()
@@ -185,20 +172,20 @@ void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
 {
     RenderManager::Instance()->ClearWithColor(0.f, 0.0f, 0.f, 1.f);
     
-//    RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-
     if(pngSprite)
     {
-        pngSprite->SetPosition(0, 0);
-        pngSprite->SetScaleSize(256.f, 256.f);
-        pngSprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(0.f, 0.f);
+        drawState.SetScaleSize(pngSprite->GetWidth(), pngSprite->GetHeight(), 256.f, 256.f);
+        pngSprite->Draw(&drawState);
     }
     
     if(pvrSprite)
     {
-        pvrSprite->SetPosition(260.f, 0);
-        pvrSprite->SetScaleSize(256.f, 256.f);
-        pvrSprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(260.f, 0.f);
+        drawState.SetScaleSize(pvrSprite->GetWidth(), pvrSprite->GetHeight(), 256.f, 256.f);
+        pvrSprite->Draw(&drawState);
     }
     
     TestTemplate<PVRTest>::Draw(geometricData);

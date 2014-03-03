@@ -190,16 +190,19 @@ void DXTTest::Draw(const DAVA::UIGeometricData &geometricData)
 
     if(pngSprite)
     {
-        pngSprite->SetPosition(0, 0);
-        pngSprite->SetScaleSize(256.f, 256.f);
-        pngSprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(0.f, 0.f);
+        drawState.SetScaleSize(pngSprite->GetWidth(), pngSprite->GetHeight(), 256.f, 256.f);
+        pngSprite->Draw(&drawState);
     }
 
     if(dxtSprite)
     {
-        dxtSprite->SetPosition(260.f, 0);
-        dxtSprite->SetScaleSize(256.f, 256.f);
-        dxtSprite->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(260.f, 0.f);
+        drawState.SetScaleSize(dxtSprite->GetWidth(), dxtSprite->GetHeight(), 256.f, 256.f);
+
+        dxtSprite->Draw(&drawState);
     }
 
     TestTemplate<DXTTest>::Draw(geometricData);
