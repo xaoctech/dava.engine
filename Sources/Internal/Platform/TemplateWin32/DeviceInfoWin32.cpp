@@ -151,6 +151,7 @@ String DeviceInfo::GetUDID()
             DVASSERT(false && "Invalid UDID");
             res = "Invalid UDID";
         }
+        SafeDeleteArray(buf);
     }
 
     MD5 md5;
