@@ -259,15 +259,6 @@ DAVA::Landscape* SceneCollisionSystem::GetLandscape() const
 
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 {
-	if(NULL != entity)
-	{
-		// make sure that WorldTransform is up to date
-		if(NULL != entity->GetScene())
-		{
-			entity->GetScene()->transformSystem->Process(.001f);
-		}
-	}
-
 	RemoveEntity(entity);
 	AddEntity(entity);
 }
@@ -510,7 +501,9 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj &&
 		NULL != renderObject && entity->IsLodMain(0))
 	{
-		cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+        RenderObject::eType objType = renderObject->GetType();
+        if (objType!=RenderObject::TYPE_SPRITE) 
+		    cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
 	}
 
 	DAVA::Camera *camera = DAVA::GetCamera(entity);
