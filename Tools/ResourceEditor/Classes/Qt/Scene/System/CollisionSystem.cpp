@@ -259,15 +259,6 @@ DAVA::Landscape* SceneCollisionSystem::GetLandscape() const
 
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 {
-	if(NULL != entity)
-	{
-		// make sure that WorldTransform is up to date
-		if(NULL != entity->GetScene())
-		{
-			entity->GetScene()->transformSystem->Process(.001f);
-		}
-	}
-
 	RemoveEntity(entity);
 	AddEntity(entity);
 }
