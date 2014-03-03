@@ -80,12 +80,11 @@ int TextureConvertor::GetThumbnail(const DAVA::TextureDescriptor *descriptor)
 	if(NULL != descriptor)
 	{
 		// check if requested texture isn't the same that is loading now
-		if(NULL == curJobThumbnail || curJobThumbnail->identity != descriptor)
+		if(NULL == curJobThumbnail || curJobThumbnail->descriptor != descriptor)
 		{
 			JobItem newJob;
 			newJob.id = jobIdCounter++;
-			newJob.data = new TextureDescriptor(*descriptor);
-			newJob.identity = descriptor;
+			newJob.descriptor = descriptor;
 
 			jobStackThumbnail.push(newJob);
 			jobRunNextThumbnail();
@@ -104,12 +103,11 @@ int TextureConvertor::GetOriginal(const DAVA::TextureDescriptor *descriptor)
 	if(NULL != descriptor)
 	{
 		// check if requested texture isn't the same that is loading now
-		if(NULL == curJobOriginal || curJobOriginal->identity != descriptor)
+		if(NULL == curJobOriginal || curJobOriginal->descriptor != descriptor)
 		{
 			JobItem newJob;
 			newJob.id = jobIdCounter++;
-			newJob.data = new TextureDescriptor(*descriptor);
-			newJob.identity = descriptor;
+			newJob.descriptor = descriptor;
 
 			jobStackOriginal.push(newJob);
 			jobRunNextOriginal();
@@ -131,8 +129,7 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 		newJob.id = jobIdCounter++;
 		newJob.force = forceConver;
 		newJob.type = gpu;
-		newJob.data = new TextureDescriptor(*descriptor);
-		newJob.identity = descriptor;
+		newJob.descriptor = descriptor;
 
 		if(jobStackConverted.push(newJob))
 		{
@@ -178,7 +175,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 
 						JobItem newJob;
 						newJob.id = jobIdCounter++;
-						newJob.data = new DAVA::TextureDescriptor(*descriptor);
+						newJob.descriptor = descriptor;
 						newJob.force = forceConvert;
 						newJob.type = gpu;
 
@@ -204,6 +201,11 @@ void TextureConvertor::WaitConvertedAll(QWidget *parent)
 {
 	if(convertJobQueueSize > 0)
 	{
+        if(NULL == parent)
+        {
+            parent = QtMainWindow::Instance();
+        }
+
 		waitDialog = new QtWaitDialog(parent);
 		bool hasCancel = false;
 		
@@ -232,9 +234,6 @@ void TextureConvertor::CancelConvert()
 
 	while (NULL != item)
 	{
-		TextureDescriptor* desc = (TextureDescriptor*) item->data;
-		SafeDelete(desc);
-
 		delete item;
 		item = jobStackConverted.pop();
 	}
@@ -282,7 +281,7 @@ void TextureConvertor::jobRunNextConvert()
 		curJobConverted = jobStackConverted.pop();
 		if(NULL != curJobConverted)
 		{
-			TextureDescriptor *desc = (TextureDescriptor *) curJobConverted->data;
+			TextureDescriptor *desc = (TextureDescriptor *) curJobConverted->descriptor;
 
 			QFuture< TextureInfo > f = QtConcurrent::run(this, &TextureConvertor::GetConvertedThread, curJobConverted);
 			convertedWatcher.setFuture(f);
@@ -339,13 +338,11 @@ void TextureConvertor::threadThumbnailFinished()
 {
 	if(thumbnailWatcher.isFinished() && NULL != curJobThumbnail)
 	{
-		const DAVA::TextureDescriptor *thumbnailDescriptor = (DAVA::TextureDescriptor *) curJobThumbnail->identity;
-		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor *) curJobThumbnail->data;
+		const DAVA::TextureDescriptor *thumbnailDescriptor = (DAVA::TextureDescriptor *) curJobThumbnail->descriptor;
 
 		TextureInfo watcherResult = thumbnailWatcher.result();
 		emit ReadyThumbnail(thumbnailDescriptor, watcherResult);
 
-		SafeDelete(descriptor);
 		delete curJobThumbnail;
 		curJobThumbnail = NULL;
 	}
@@ -358,13 +355,11 @@ void TextureConvertor::threadOriginalFinished()
 {
 	if(originalWatcher.isFinished() && NULL != curJobOriginal)
 	{
-		const DAVA::TextureDescriptor *originalDescriptor = (DAVA::TextureDescriptor *) curJobOriginal->identity;
-		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor *) curJobOriginal->data;
+		const DAVA::TextureDescriptor *originalDescriptor = (DAVA::TextureDescriptor *) curJobOriginal->descriptor;
 
 		TextureInfo watcherResult = originalWatcher.result();
 		emit ReadyOriginal(originalDescriptor, watcherResult);
 
-		SafeDelete(descriptor);
 		delete curJobOriginal;
 		curJobOriginal = NULL;
 	}
@@ -376,13 +371,11 @@ void TextureConvertor::threadConvertedFinished()
 {
 	if(convertedWatcher.isFinished() && NULL != curJobConverted)
 	{
-		const DAVA::TextureDescriptor *convertedDescriptor = (DAVA::TextureDescriptor *) curJobConverted->identity;
-		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor *) curJobConverted->data;
+		const DAVA::TextureDescriptor *convertedDescriptor = (DAVA::TextureDescriptor *) curJobConverted->descriptor;
 
 		TextureInfo watcherResult = convertedWatcher.result();
 		emit ReadyConverted(convertedDescriptor, (DAVA::eGPUFamily) curJobConverted->type, watcherResult);
 
-		SafeDelete(descriptor);
 		delete curJobConverted;
 		curJobConverted = NULL;
 	}
@@ -401,9 +394,9 @@ TextureInfo TextureConvertor::GetThumbnailThread(JobItem *item)
 
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
 
-	if(NULL != item && NULL != item->data)
+	if(NULL != item && NULL != item->descriptor)
 	{
-		TextureDescriptor *descriptor = (TextureDescriptor *) item->data;
+		TextureDescriptor *descriptor = (TextureDescriptor *) item->descriptor;
 
 		DAVA::uint32 fileSize = 0;
 		if(descriptor->IsCubeMap())
@@ -446,9 +439,9 @@ TextureInfo TextureConvertor::GetOriginalThread(JobItem *item)
 
 	void *pool = DAVA::QtLayer::Instance()->CreateAutoreleasePool();
     
-	if(NULL != item && NULL != item->data)
+	if(NULL != item && NULL != item->descriptor)
 	{
-		TextureDescriptor *descriptor = (TextureDescriptor *) item->data;
+		TextureDescriptor *descriptor = (TextureDescriptor *) item->descriptor;
 		
 		DAVA::uint32 fileSize = 0;
 		if(descriptor->IsCubeMap())
@@ -496,7 +489,7 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 
 	if(NULL != item)
 	{
-		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor*) item->data;
+		DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor*) item->descriptor;
 		DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) item->type;
 
 		if( NULL != descriptor &&
@@ -559,7 +552,7 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 		int stubImageCount = Texture::CUBE_FACE_MAX_COUNT;
 		if(NULL != item)
 		{
-			DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor*) item->data;
+			DAVA::TextureDescriptor *descriptor = (DAVA::TextureDescriptor*) item->descriptor;
 			if(NULL != descriptor &&
 			   !descriptor->IsCubeMap())
 			{

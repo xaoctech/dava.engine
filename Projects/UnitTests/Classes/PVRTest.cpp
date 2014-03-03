@@ -172,20 +172,21 @@ void PVRTest::Draw(const DAVA::UIGeometricData &geometricData)
 {
     RenderManager::Instance()->ClearWithColor(0.f, 0.0f, 0.f, 1.f);
     
+    Sprite::DrawState state;
+    state.SetFrame(0);
+
     if(pngSprite)
     {
-        Sprite::DrawState drawState;
-        drawState.SetPosition(0.f, 0.f);
-        drawState.SetScaleSize(pngSprite->GetWidth(), pngSprite->GetHeight(), 256.f, 256.f);
-        pngSprite->Draw(&drawState);
+        state.SetPosition(0.f, 0.f);
+        state.SetScaleSize(256.f, 256.f, pngSprite->GetWidth(), pngSprite->GetHeight());
+        pngSprite->Draw(&state);
     }
     
     if(pvrSprite)
     {
-        Sprite::DrawState drawState;
-        drawState.SetPosition(260.f, 0.f);
-        drawState.SetScaleSize(pvrSprite->GetWidth(), pvrSprite->GetHeight(), 256.f, 256.f);
-        pvrSprite->Draw(&drawState);
+        state.SetPosition(260.f, 0.f);
+        state.SetScaleSize(256.f, 256.f, pvrSprite->GetWidth(), pvrSprite->GetHeight());
+        pvrSprite->Draw(&state);
     }
     
     TestTemplate<PVRTest>::Draw(geometricData);

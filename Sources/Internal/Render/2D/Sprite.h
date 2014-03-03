@@ -296,6 +296,11 @@ public:
 	inline float32 GetResourceToPhysicalFactor() const;
 
 	/**
+	 \brief Returns multiplyer to convert sprite to the virtual coordinates.
+	 */
+    inline float32 GetResourceToVirtualFactor() const;
+
+	/**
 	 \brief Returns texture coordinates for the requested frame.
 	 */
 	float32 *GetTextureVerts(int32 frame);
@@ -489,6 +494,11 @@ inline int32 Sprite::GetResourceSizeIndex() const
 inline float32 Sprite::GetResourceToPhysicalFactor() const
 {
 	return resourceToPhysicalFactor;
+}
+
+inline float32 Sprite::GetResourceToVirtualFactor() const
+{
+    return resourceToVirtualFactor;
 }
 
 };//end of namespace

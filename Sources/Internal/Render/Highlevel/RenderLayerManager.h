@@ -47,10 +47,9 @@ public:
     ~RenderLayerManager();
     
     void InsertLayer(RenderLayer * renderLayer);
-    inline RenderLayer * GetRenderLayer(uint32 index) const { return array[index]; };
-    inline RenderLayer * GetRenderLayer(const FastName & name) const { return map.at(name); };
-
-    static RenderLayerID GetLayerIDByName(const FastName & fastname) { return layerIDmap[fastname]; };
+    inline RenderLayer * GetRenderLayer(uint32 index) const;
+    inline RenderLayer * GetRenderLayer(const FastName & name) const;
+    static RenderLayerID GetLayerIDByName(const FastName & fastname);
     static uint32 GetLayerIDMaskBySet(const FastNameSet & set);
 private:
     void Release();
@@ -60,6 +59,9 @@ private:
     static HashMap<FastName, RenderLayerID> layerIDmap;
 };
 
+// Implementation
+inline RenderLayer * RenderLayerManager::GetRenderLayer(uint32 index) const { return array[index]; };
+inline RenderLayer * RenderLayerManager::GetRenderLayer(const FastName & name) const { return map.at(name); };
     
 } // ns
 

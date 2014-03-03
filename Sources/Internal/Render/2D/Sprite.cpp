@@ -499,7 +499,10 @@ Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = fal
     Sprite* sprite = NULL;
     if (texture)
     {
-        sprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height, contentScaleIncluded);
+        float32 sprWidth = width * Core::GetPhysicalToVirtualFactor();
+		float32 sprHeight = height * Core::GetPhysicalToVirtualFactor();
+        sprite = Sprite::CreateFromTexture(texture, 0, 0, sprWidth, sprHeight, contentScaleIncluded);
+        sprite->ConvertToVirtualSize();
     }
 
     SafeRelease(texture);

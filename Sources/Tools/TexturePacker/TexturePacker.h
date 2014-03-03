@@ -93,9 +93,9 @@ public:
 
 	void SetMaxTextureSize(int32 maxTextureSize);
 	
-	Set<String> GetErrors();
-    
     void SetConvertQuality(TextureConverter::eConvertQuality quality);
+
+	const Set<String>& GetErrors() const;
 	
 private:
     
@@ -124,6 +124,7 @@ private:
     TextureConverter::eConvertQuality quality;
     
 	Set<String> errors;
+	void AddError(const String& errorMsg);
 };
 
 };
