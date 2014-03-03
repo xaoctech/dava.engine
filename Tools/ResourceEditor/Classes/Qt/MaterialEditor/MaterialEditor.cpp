@@ -752,7 +752,8 @@ MaterialEditorFogDialog::MaterialEditorFogDialog()
 {
     int row = 0;
     QGridLayout *layout = new QGridLayout(this);
-    QGroupBox *groupBox = new QGroupBox(this);
+
+	QGroupBox *groupBox = new QGroupBox(this);
 
     disabled = new QRadioButton("Disabled");
     exponential = new QRadioButton("Exponential");
@@ -763,7 +764,8 @@ MaterialEditorFogDialog::MaterialEditorFogDialog()
     vbox->addWidget(exponential);
     //vbox->addWidget(linear);
     vbox->addStretch(1);
-    groupBox->setLayout(vbox);
+
+	groupBox->setLayout(vbox);
     disabled->setChecked(true);
 
     layout->addWidget(groupBox, row, 0, 1, 2);

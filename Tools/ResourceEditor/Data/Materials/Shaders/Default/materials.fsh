@@ -94,7 +94,7 @@ varying float varNdotH;
 #if defined(PIXEL_LIT)
 varying vec3 varToLightVec;
 
-    #if !defined(CORRECT_NORMALIZATION)
+    #if defined(FAST_NORMALIZATION)
     varying vec3 varHalfVec;
     #endif
 
@@ -170,6 +170,13 @@ void main()
             alpha *= varVertexColor.a;
         #endif
         if (alpha < 0.5)discard;
+    #endif
+    #if defined(ALPHATESTVALUE)
+        float alpha = textureColor0.a;
+        #if defined(VERTEX_COLOR)
+            alpha *= varVertexColor.a;
+        #endif
+        if (alpha < ALPHATESTVALUE)discard;
     #endif
 #endif
     
@@ -266,7 +273,12 @@ void main()
         float glossiness = pow(5000.0, inGlossiness * textureColor0.a); //textureColor0.a;
         //float glossiness = pow(5000.0, 0.5 * textureColor0.a); //textureColor0.a;
         float specularNorm = (glossiness + 2.0) / 8.0;
-        color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm * textureColor1.rgb / 2.0;
+    
+        #if defined(MATERIAL_LIGHTMAP)
+            color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm * textureColor1.rgb / 2.0;
+        #else
+            color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
+        #endif
     #endif
     
 #endif
@@ -283,7 +295,7 @@ void main()
         attenuation /= (varPerPixelAttenuation * varPerPixelAttenuation);
     #endif
     
-#if defined(CORRECT_NORMALIZATION)
+#if !defined(FAST_NORMALIZATION)
     vec3 toLightNormalized = normalize(varToLightVec);
     vec3 toCameraNormalized = normalize(varToCameraVec);
     vec3 H = toCameraNormalized + toLightNormalized;
@@ -439,10 +451,12 @@ void main()
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     gl_FragColor = reflectionColor * 0.9;
 #elif defined(PIXEL_LIT)
+    vec3 fresnelRefl = FresnelShlickVec3(NdotV, metalFresnelReflectance);
+
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
     mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    gl_FragColor = reflectionColor;
+    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;
 #endif
 #endif
     

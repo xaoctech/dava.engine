@@ -291,6 +291,13 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
 
+    // Align has different default value for static text, so should be saved separately,
+    const YamlNode *alignNode = node->Get("align");
+    if (alignNode)
+    {
+        node->RemoveNodeFromMap("align");
+    }
+
 	UIStaticText *baseControl = new UIStaticText();	
 
     //Temp variable
@@ -345,7 +352,13 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
         node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
 	}
 
-	// Align
+    // Align
+    if (baseControl->GetSpriteAlign() != this->GetSpriteAlign())
+    {
+        node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetSpriteAlign()));
+    }
+
+	// Text Align
     if (baseControl->GetTextAlign() != this->GetTextAlign())
     {
         node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
