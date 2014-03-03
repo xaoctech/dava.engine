@@ -70,10 +70,7 @@ void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
                 {
                     if(needCalcDirection)
                     {
-                        Vector4 localDirection = Vector4(sc->GetLocalDirection());
-                        localDirection.w = 0;
-                        Vector4 worldDirection4 = localDirection * worldTransform;
-                        worldDirection = Vector3(worldDirection4.x, worldDirection4.y, worldDirection4.z);
+                        worldDirection = MultiplyVectorMat3x3(sc->GetLocalDirection(), worldTransform);
                         needCalcDirection = false;
                     }
                     sound->SetDirection(worldDirection);
