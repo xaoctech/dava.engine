@@ -86,10 +86,10 @@ void RenderPassBatchArray::Clear()
 void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera)
 {
     cameraWorldMatrices.clear();
-    uint32 size = (uint32)visibilityArray->visibilityArray.size();
+    uint32 size = (uint32)visibilityArray->GetCount();
     for (uint32 ro = 0; ro < size; ++ro)
     {
-        RenderObject * renderObject = visibilityArray->visibilityArray[ro];
+        RenderObject * renderObject = visibilityArray->Get(ro);
         if (renderObject->GetFlags()&RenderObject::CUSTOM_PREPARE_TO_RENDER)
 		    renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
