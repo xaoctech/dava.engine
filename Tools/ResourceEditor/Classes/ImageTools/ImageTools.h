@@ -92,7 +92,7 @@ public:
     
     static DAVA::Image* CreateMergedImage(const Channels& channes);
     
-    static void SetChannel(DAVA::Image* image, DAVA::uint32 channelFlags,  DAVA::uint8 value);
+    static void SetChannel(DAVA::Image* image, eComponentsRGBA channel,  DAVA::uint8 value);
 
 private:
     
