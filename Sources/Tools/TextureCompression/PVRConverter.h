@@ -34,19 +34,20 @@
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
+#include "TextureCompression/TextureConverter.h"
+
 
 namespace DAVA
 {
-
+    
 class TextureDescriptor;
 class PVRConverter: public StaticSingleton<PVRConverter>
 {    
 public:
- 
 	PVRConverter();
 	virtual ~PVRConverter();
 
-	FilePath ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily);
+	FilePath ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality);
 
 	void SetPVRTexTool(const FilePath &textToolPathname);
 
@@ -58,10 +59,7 @@ protected:
 	void CleanupCubemapAfterConversion(const TextureDescriptor& descriptor);
 	void InitFileSuffixes();
 	
-	void GetToolCommandLine(const TextureDescriptor &descriptor,
-							  FilePath fileToConvert,
-							  eGPUFamily gpuFamily,
-							  Vector<String>& args);
+	void GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args);
 
 protected:
 	

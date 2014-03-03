@@ -36,9 +36,10 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/LibPVRHelper.h"
 
+#include "Base/GlobalEnum.h"
+
 namespace DAVA
 {
-
 static String CUBEMAP_TMP_DIR = "~doc:/ResourceEditor_Cubemap_Tmp/";
 	
 static String PVRTOOL_INPUT_NAMES[] =
@@ -59,6 +60,15 @@ static DAVA::String PVRTOOL_MAP_NAMES[] =
 	String("_nx"), //4
 	String("_ny"), //5
 	String("_py"), //6
+};
+    
+static DAVA::String QUALITY_SETTING[] =
+{
+    "-pvrtcfastest",
+    "-pvrtcfast",
+    "-pvrtcnormal",
+    "-pvrtcbetter",
+    "-pvrtcbest"
 };
 
 PVRConverter::PVRConverter()
@@ -82,12 +92,12 @@ PVRConverter::~PVRConverter()
 
 }
 
-FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
+FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality)
 {
 	FilePath outputName = (descriptor.IsCubeMap()) ? PrepareCubeMapForPvrConvert(descriptor) : FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 
 	Vector<String> args;
-	GetToolCommandLine(descriptor, outputName, gpuFamily, args);
+	GetToolCommandLine(descriptor, outputName, gpuFamily, quality, args);
 	Process process(pvrTexToolPathname, args);
 	if(process.Run(false))
 	{
@@ -117,10 +127,7 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 }
 
 
-void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
-										FilePath fileToConvert,
-										eGPUFamily gpuFamily,
-										Vector<String>& args)
+void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args)
 {
 	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
 	FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
@@ -134,8 +141,8 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 	args.push_back(String("\"") + fileToConvert.GetAbsolutePathname() + String("\""));
 #endif //MAC-WIN
 
-	args.push_back("-pvrtcbest");
-
+    args.push_back(QUALITY_SETTING[quality]);
+    
 	if(descriptor.IsCubeMap())
 	{
 		args.push_back("-s");

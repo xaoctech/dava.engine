@@ -34,6 +34,7 @@
 #include "Render/RenderBase.h"
 #include "Render/Texture.h"
 #include "Math/Math2D.h"
+#include "TextureCompression/TextureConverter.h"
 
 namespace DAVA
 {
@@ -93,6 +94,8 @@ public:
 	void SetMaxTextureSize(int32 maxTextureSize);
 	
 	Set<String> GetErrors();
+    
+    void SetConvertQuality(TextureConverter::eConvertQuality quality);
 	
 private:
     
@@ -118,6 +121,8 @@ private:
     bool NeedSquareTextureForCompression(eGPUFamily forGPU);
 	bool IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU);
 	
+    TextureConverter::eConvertQuality quality;
+    
 	Set<String> errors;
 };
 
