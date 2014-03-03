@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 #if defined (__DAVAENGINE_MACOS__)
     DAVA::Core::Run(argc, argv);
 	new DAVA::QtLayerMacOS();
-	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
+	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCLI"));
 #elif defined (__DAVAENGINE_WIN32__)
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	DAVA::Core::Run(argc, argv, hInstance);
