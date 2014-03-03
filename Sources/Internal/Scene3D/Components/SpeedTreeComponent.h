@@ -52,27 +52,21 @@ public:
         trunkOscillationSpeed(1.f),
         leafsOscillationAmplitude(0.03f),
         leafsOscillationSpeed(3.f),
-        trunkForceOscillationAmplitude(.6f),
-        trunkForceOscillationSpeed(5.f),
-        leafsForceOscillation(4.f)
+        movingOscillationLeafsSpeed(1.f)
         {}
         
         float32 trunkOscillationAmplitude;
         float32 trunkOscillationSpeed;
         float32 leafsOscillationAmplitude;
         float32 leafsOscillationSpeed;
-        float32 trunkForceOscillationAmplitude;
-        float32 trunkForceOscillationSpeed;
-        float32 leafsForceOscillation;
+        float32 movingOscillationLeafsSpeed;
         
         INTROSPECTION(OscillationParams,
                       MEMBER(trunkOscillationAmplitude, "trunkOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(trunkOscillationSpeed, "trunkOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(leafsOscillationAmplitude, "leafsOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(leafsOscillationSpeed, "leafsOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(trunkForceOscillationAmplitude, "trunkForceOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(trunkForceOscillationSpeed, "trunkForceOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(leafsForceOscillation, "leafsForceOscillation", I_VIEW | I_EDIT | I_SAVE)
+                      MEMBER(movingOscillationLeafsSpeed, "movingOscillationLeafsSpeed", I_VIEW | I_EDIT | I_SAVE)
                       );
     };
     

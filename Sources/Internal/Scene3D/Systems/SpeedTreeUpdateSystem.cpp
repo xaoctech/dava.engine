@@ -40,9 +40,14 @@
 namespace DAVA
 {
     
-float32 GetForceOsscilation(float32 t, float32 phi)
+Vector2 Vec3ToVec2(const Vector3 & v)
 {
-    return (pow((5.f - t), 3.f) / 150.f * sinf(t * phi));
+    return Vector2(v.x, v.y);
+}
+
+Vector3 Vec2ToVec3(const Vector2 & v)
+{
+    return Vector3(v.x, v.y, 0.f);
 }
     
 Vector3 Vec4ToVec3(const Vector4 & v)
@@ -55,42 +60,183 @@ Vector4 Vec3ToVec4(const Vector3 & v)
     return Vector4(v.x, v.y, v.z, 0.f);
 }
     
+////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////WindSystem/////////////////////////////////////////////
+    
 WindSystem::WindSystem(Scene * scene)
-    : SceneSystem(scene),
-    activeWindComponent(0)
+    : SceneSystem(scene)
 {
-//    activeWindComponent = new WindComponent();
+    WindTreeOscillator * wind = new WindTreeOscillator(Vector3(1.f, 0.f, 0.f), 0.5f);
+    GetScene()->speedTreeUpdateSystem->AddTreeOscillator(wind);
+    wind->Release();
 }
     
 WindSystem::~WindSystem() {}
     
 void WindSystem::AddEntity(Entity * entity)
 {
-    activeWindComponent = GetWindComponent(entity);
+    
 }
     
 void WindSystem::RemoveEntity(Entity * entity)
 {
-    if(activeWindComponent == GetWindComponent(entity))
-        activeWindComponent = 0;
+    
 }
- 
-WindComponent * WindSystem::GetActiveWind()
+
+////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////TreeOscillator//////////////////////////////////////////
+
+TreeOscillator::TreeOscillator(float32 _distance, const Vector3 & _worldPosition) :
+    position(_worldPosition)
 {
-    return activeWindComponent;
+    influenceSqDistance = _distance * _distance;
+}
+
+bool TreeOscillator::HasInfluence(const Vector3 & forPosition, float32 * outSqDistance /* = 0 */) const
+{
+    Vector2 direction2D = Vec3ToVec2(position - forPosition);
+    float32 sqDistance = direction2D.SquareLength();
+    
+    if(outSqDistance)
+        (*outSqDistance) = sqDistance;
+    
+    return sqDistance < influenceSqDistance;
 }
     
-SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
-:	SceneSystem(scene),
-    globalTime(0.f),
-    timerTime(0.f),
-    timerTime2(0.f)
+////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////ImpulseOscillator//////////////////////////////////////////
+    
+ImpulseTreeOscillator::ImpulseTreeOscillator(float32 _distance, const Vector3 & _worldPosition, float32 _forceValue) :
+    TreeOscillator(_distance, _worldPosition),
+    forceValue(_forceValue),
+    time(0.f)
+{}
+    
+void ImpulseTreeOscillator::Update(float32 timeElapsed)
 {
-//    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    time += timeElapsed;
+}
+    
+Vector3 ImpulseTreeOscillator::GetOsscilationTrunkOffset(const Vector3 & forPosition) const
+{
+    float32 squareDistance = 0.f;
+    if(!HasInfluence(forPosition, &squareDistance))
+        return Vector3();
+    
+    Vector2 direction2D = Vec3ToVec2(position - forPosition);
+    squareDistance = Max(1.f, squareDistance);
+    direction2D.Normalize();
+    
+    Vector2 ret = direction2D / squareDistance * (pow((5.f - time), 3.f) / 150.f * sinf(time * 5.f)) * forceValue;
+    
+    return Vec2ToVec3(ret);
+}
+    
+float32 ImpulseTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition) const
+{
+    if(!HasInfluence(forPosition))
+        return 0.f;
+    
+    if(time < 1.f)
+    {
+        return 2.8f * (1.25f - .5f/(time + .5f) - (time - .5f) * (time - .5f));
+    }
+    else
+    {
+        return 4.f/(time + 0.5) - .8f;
+    }
+}
+    
+bool ImpulseTreeOscillator::IsActive() const
+{
+    return time < 5.f;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////WindOscillator///////////////////////////////////////////
+    
+WindTreeOscillator::WindTreeOscillator(const Vector3 & _windDirection, float32 _windForce) :
+    TreeOscillator(0.f, Vector3()),
+    windForce(_windForce),
+    windDirection(_windDirection)
+{
+    windForce = 0.25f;
+    windDirection = Vector3(1.f, 0.f, 0.f);
+}
+    
+void WindTreeOscillator::Update(float32 timeElapsed)
+{
+    time += timeElapsed;
+}
+    
+Vector3 WindTreeOscillator::GetOsscilationTrunkOffset(const Vector3 & forPosition) const
+{
+    return windDirection * windForce * (sinf(time) + .5f);
+}
+    
+float32 WindTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition) const
+{
+    return 1.f;
+}
+    
+bool WindTreeOscillator::IsActive() const
+{
+    return true;
+}
+    
+////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////MovingOscillator/////////////////////////////////////////
+    
+MovingTreeOscillator::MovingTreeOscillator(float32 distance, Entity * entity) :
+    TreeOscillator(distance, Vector3()),
+    movingEntity(entity)
+{}
+    
+MovingTreeOscillator::~MovingTreeOscillator()
+{}
+    
+void MovingTreeOscillator::Update(float32 timeElapsed)
+{
+    Vector3 currPos = GetTransformComponent(movingEntity)->GetWorldTransform().GetTranslationVector();
+    currentSpeed = (currPos - position).Length() / timeElapsed;
+    position = currPos;
+}
+    
+Vector3 MovingTreeOscillator::GetOsscilationTrunkOffset(const Vector3 & forPosition) const
+{
+    return Vector3();
+}
+    
+float32 MovingTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition) const
+{
+    if(!HasInfluence(forPosition))
+        return 0.f;
+    
+    return Min(currentSpeed, 1.f);
+}
+    
+bool MovingTreeOscillator::IsActive() const
+{
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////SpeedTreeUpdateSystem///////////////////////////////////////
+    
+SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
+:	SceneSystem(scene)
+{
 }
 
 SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
 {
+    uint32 oscCount = activeOscillators.size();
+    for(uint32 oi = 0; oi < oscCount; ++oi)
+    {
+        SafeRelease(activeOscillators[oi]);
+    }
+    
+    activeOscillators.clear();
 }
 
 void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
@@ -135,33 +281,43 @@ void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
     }
 }
 
-void SpeedTreeUpdateSystem::AddForce(const Vector3 & position, float32 forceValue)
+void SpeedTreeUpdateSystem::AddTreeOscillator(TreeOscillator * oscillator)
 {
-    Force force;
-    force.position = position;
-    force.value = forceValue;
-    force.time = 0.f;
-    
-    activeForces.push_back(force);
+    if(oscillator->IsActive())
+    {
+        activeOscillators.push_back(oscillator);
+        SafeRetain(oscillator);
+    }
 }
-    
+
+void SpeedTreeUpdateSystem::ForceRemoveTreeOscillator(TreeOscillator * oscillator)
+{
+    Vector<TreeOscillator *>::iterator it = activeOscillators.begin();
+    Vector<TreeOscillator *>::iterator itEnd = activeOscillators.begin();
+    while(it != itEnd)
+    {
+        TreeOscillator * osc = (*it);
+        if(oscillator == osc)
+        {
+            activeOscillators.erase(it);
+            SafeRelease(osc);
+            break;
+        }
+    }
+}
+
 void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
 {
-    globalTime += timeElapsed;
-    
-    WindComponent * activeWind = GetScene()->windSystem->GetActiveWind();
-    if(!activeWind)
-        return;
-    
-    //Update forces
-    Vector<Force>::iterator it = activeForces.begin();
-    while(it != activeForces.end())
+    //Update oscillators
+    Vector<TreeOscillator *>::iterator it = activeOscillators.begin();
+    while(it != activeOscillators.end())
     {
-        Force & force = (*it);
-        force.time += timeElapsed;
-        if(force.time > 5.f)
+        TreeOscillator * oscillator = (*it);
+        oscillator->Update(timeElapsed);
+        if(!oscillator->IsActive())
         {
-            it = activeForces.erase(it);
+            it = activeOscillators.erase(it);
+            SafeRelease(oscillator);
         }
         else
         {
@@ -180,52 +336,33 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         
         const SpeedTreeComponent::OscillationParams & params = info->component->GetOcciliationParameters();
         
-        Vector2 forcesOffset;
-        float32 forcesAngleOffset = 0.f;
-        uint32 forcesCount = activeForces.size();
-        for(uint32 fi = 0; fi < forcesCount; ++fi)
+        Vector3 oscillationOffsetAll;
+        float32 leafSpeedAll = 0.f;
+        
+        uint32 oscCount = activeOscillators.size();
+        for(uint32 oi = 0; oi < oscCount; ++oi)
         {
-            Force & force = activeForces[fi];
+            TreeOscillator * osc = activeOscillators[oi];
             
-            Vector3 direction = force.position - info->position;
-            Vector2 direction2D = Vector2(direction.x, direction.y);
-            float32 squareDistance = direction2D.SquareLength();
-            if(squareDistance > 100.f)
-                continue;
+            oscillationOffsetAll += osc->GetOsscilationTrunkOffset(info->position) * params.trunkOscillationAmplitude;
             
-            squareDistance = Max(1.f, squareDistance);
-            direction2D.Normalize();
+            float32 leafSpeed = osc->GetOsscilationLeafsSpeed(info->position);
+            if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_MOVING)
+            {
+                leafSpeed *= params.movingOscillationLeafsSpeed;
+            }
             
-            float32 linearOscillation = GetForceOsscilation(force.time, 5.f);
-            forcesAngleOffset += linearOscillation * params.leafsForceOscillation;
-
-            forcesOffset += direction2D / squareDistance * force.value * linearOscillation * params.trunkForceOscillationAmplitude;
+            leafSpeedAll += leafSpeed;
         }
         
-        Vector3 windOffset = activeWind->GetWindDirection();
-        windOffset *= ((sinf(globalTime * params.trunkOscillationSpeed) + .5f) * params.trunkOscillationAmplitude);
-        Vector3 trunkOscillationParams = windOffset + Vector3(forcesOffset.x, forcesOffset.y, 0.f);
+        info->elapsedTime += timeElapsed * (params.leafsOscillationSpeed * leafSpeedAll);
         
         float32 sine, cosine;
-        SinCosFast(globalTime * params.leafsOscillationSpeed + forcesAngleOffset, sine, cosine);
+        SinCosFast(info->elapsedTime, sine, cosine);
         Vector2 leafOscillationParams(params.leafsOscillationAmplitude * sine, params.leafsOscillationAmplitude * cosine);
         
-        info->treeObject->SetTreeAnimationParams(trunkOscillationParams, leafOscillationParams);
+        info->treeObject->SetTreeAnimationParams(oscillationOffsetAll, leafOscillationParams);
     }
-    
-    timerTime += timeElapsed;
-    if(timerTime > 15.f)
-    {
-        timerTime = 0.f;
-        AddForce(Vector3(1.f, 0.f, 0.f), 1.f);
-    }
-//
-//    timerTime2 += timeElapsed;
-//    if(timerTime2 > 16.f)
-//    {
-//        timerTime2 = 1.f;
-//        AddForce(Vector3(-1.f, 0.f, 0.f), 3.f);
-//    }
 }
 
 };
