@@ -51,11 +51,96 @@ public:
     
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
+};
     
-    WindComponent * GetActiveWind();
     
-private:
-    WindComponent * activeWindComponent;
+class TreeOscillator: public BaseObject
+{
+public:
+    enum eType
+    {
+        OSCILLATION_TYPE_WIND = 0,
+        OSCILLATION_TYPE_IMPULSE,
+        OSCILLATION_TYPE_MOVING,
+        
+        OSCILLATION_TYPE_COUNT
+    };
+    
+    TreeOscillator(float32 distance, const Vector3 & worldPosition);
+    virtual ~TreeOscillator() {};
+    
+    virtual uint32 GetType() const = 0;
+    
+    virtual void Update(float32 timeElapsed) {};
+    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const = 0;
+    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const = 0;
+    virtual bool IsActive() const = 0;
+    
+    inline const float32 & GetInfluenceSqDistance() const;
+    inline const Vector3 & GetCurrentPosition() const;
+    
+    bool HasInfluence(const Vector3 & forPosition, float32 * outSqDistance = 0) const;
+    
+protected:
+    float32 influenceSqDistance;
+    Vector3 position;
+};
+    
+class ImpulseTreeOscillator : public TreeOscillator
+{
+public:
+    ImpulseTreeOscillator(float32 distance, const Vector3 & worldPosition, float32 forceValue);
+    virtual ~ImpulseTreeOscillator() {};
+    
+    virtual uint32 GetType() const {return OSCILLATION_TYPE_IMPULSE; };
+    
+    virtual void Update(float32 timeElapsed);
+    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
+    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
+    virtual bool IsActive() const;
+    
+protected:
+    float32 time;
+    float32 forceValue;
+};
+    
+class WindTreeOscillator : public TreeOscillator
+{
+public:
+    WindTreeOscillator(const Vector3 & windVector, float32 windForce);
+    virtual ~WindTreeOscillator() {};
+    
+    virtual uint32 GetType() const {return OSCILLATION_TYPE_WIND; };
+    
+    virtual void Update(float32 timeElapsed);
+    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
+    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
+    virtual bool IsActive() const;
+    
+protected:
+    float32 time;
+    Vector3 windDirection;
+    float32 windForce;
+};
+    
+class MovingTreeOscillator : public TreeOscillator
+{
+public:
+    MovingTreeOscillator(float32 distance, Entity * entity);
+    virtual ~MovingTreeOscillator();
+    
+    virtual uint32 GetType() const {return OSCILLATION_TYPE_MOVING; };
+    
+    virtual void Update(float32 timeElapsed);
+    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
+    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
+    virtual bool IsActive() const;
+    
+protected:
+    //weak link
+    Entity * movingEntity;
+    
+    float32 currentSpeed;
 };
     
 class SpeedTreeUpdateSystem : public SceneSystem
@@ -70,13 +155,7 @@ public:
         Vector3 position;
         SpeedTreeObject * treeObject;
         SpeedTreeComponent * component;
-    };
-    
-    struct Force
-    {
-        float32 time;
-        float32 value;
-        Vector3 position;
+        float32 elapsedTime;
     };
     
     SpeedTreeUpdateSystem(Scene * scene);
@@ -87,15 +166,12 @@ public:
     virtual void ImmediateEvent(Entity * entity, uint32 event);
     virtual void Process(float32 timeElapsed);
     
-    void AddForce(const Vector3 & position, float32 forceValue);
+    void AddTreeOscillator(TreeOscillator * oscillator);
+    void ForceRemoveTreeOscillator(TreeOscillator * oscillator);
     
 private:
     Vector<TreeInfo *> allTrees;
-    Vector<Force> activeForces;
-    
-    float32 globalTime;
-    float32 timerTime;
-    float32 timerTime2;
+    Vector<TreeOscillator *> activeOscillators;
 };
     
 } // ns

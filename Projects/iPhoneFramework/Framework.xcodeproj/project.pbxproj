@@ -13,6 +13,12 @@
 		0224B7341598AC2800CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7321598AC2800CDEF9E /* libtheora_macos.a */; };
 		0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7481598B40100CDEF9E /* libogg_ios.a */; };
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
+		02A0863218C0DE9400B7D169 /* SpeedTreeComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0862E18C0DE9400B7D169 /* SpeedTreeComponent.cpp */; };
+		02A0863318C0DE9400B7D169 /* SpeedTreeComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0862F18C0DE9400B7D169 /* SpeedTreeComponent.h */; };
+		02A0863418C0DE9400B7D169 /* WindComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0863018C0DE9400B7D169 /* WindComponent.cpp */; };
+		02A0863518C0DE9400B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0863118C0DE9400B7D169 /* WindComponent.h */; };
+		02A0863818C0DEA100B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0863618C0DEA100B7D169 /* SpeedTreeUpdateSystem.cpp */; };
+		02A0863918C0DEA100B7D169 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0863718C0DEA100B7D169 /* SpeedTreeUpdateSystem.h */; };
 		02E9E3A11729669200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3A01729669200C501BC /* FMODUtils.h */; };
 		02E9E3DA1734176200C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D41734176100C501BC /* SoundEvent.cpp */; };
 		02E9E3DB1734176200C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D51734176200C501BC /* SoundEvent.h */; };
@@ -786,6 +792,12 @@
 		0224B7321598AC2800CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		0224B7481598B40100CDEF9E /* libogg_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_ios.a; path = ../../Libs/libs/libogg_ios.a; sourceTree = "<group>"; };
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		02A0862E18C0DE9400B7D169 /* SpeedTreeComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeComponent.cpp; sourceTree = "<group>"; };
+		02A0862F18C0DE9400B7D169 /* SpeedTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeComponent.h; sourceTree = "<group>"; };
+		02A0863018C0DE9400B7D169 /* WindComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindComponent.cpp; sourceTree = "<group>"; };
+		02A0863118C0DE9400B7D169 /* WindComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindComponent.h; sourceTree = "<group>"; };
+		02A0863618C0DEA100B7D169 /* SpeedTreeUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeUpdateSystem.cpp; sourceTree = "<group>"; };
+		02A0863718C0DEA100B7D169 /* SpeedTreeUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeUpdateSystem.h; sourceTree = "<group>"; };
 		02E9E3A01729669200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphoneos.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphoneos.a; sourceTree = "<group>"; };
 		02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphonesimulator.a; sourceTree = "<group>"; };
@@ -2390,6 +2402,10 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				02A0862E18C0DE9400B7D169 /* SpeedTreeComponent.cpp */,
+				02A0862F18C0DE9400B7D169 /* SpeedTreeComponent.h */,
+				02A0863018C0DE9400B7D169 /* WindComponent.cpp */,
+				02A0863118C0DE9400B7D169 /* WindComponent.h */,
 				E8FC1301186972B60095D8FE /* QualitySettingsComponent.cpp */,
 				E8FC1302186972B60095D8FE /* QualitySettingsComponent.h */,
 				50C7D5FA186082B100D8936D /* StaticOcclusionComponent.cpp */,
@@ -2431,6 +2447,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				02A0863618C0DEA100B7D169 /* SpeedTreeUpdateSystem.cpp */,
+				02A0863718C0DEA100B7D169 /* SpeedTreeUpdateSystem.h */,
 				E8F43E2B186C5D4E006796CB /* MaterialSystem.cpp */,
 				E8F43E2C186C5D4E006796CB /* MaterialSystem.h */,
 				E8FC1305186972C80095D8FE /* QualitySettingsSystem.cpp */,
@@ -2709,6 +2727,7 @@
 				E8B3CAC816B9326E002BD35F /* Collisions.h in Headers */,
 				E8B3CACA16B9326E002BD35F /* ApplicationCore.h in Headers */,
 				E8B3CACC16B9326E002BD35F /* Core.h in Headers */,
+				02A0863918C0DEA100B7D169 /* SpeedTreeUpdateSystem.h in Headers */,
 				E8B3CAD216B9326E002BD35F /* DisplayMode.h in Headers */,
 				E8B3CAD416B9326E002BD35F /* MongodbClient.h in Headers */,
 				E8B3CAD616B9326E002BD35F /* MongodbObject.h in Headers */,
@@ -2780,6 +2799,7 @@
 				E8B3CB6016B9326E002BD35F /* RectPacker.h in Headers */,
 				E8B3CB6116B9326E002BD35F /* Sphere.h in Headers */,
 				E8B3CB6316B9326E002BD35F /* Spline.h in Headers */,
+				02A0863318C0DE9400B7D169 /* SpeedTreeComponent.h in Headers */,
 				E8B3CB6416B9326E002BD35F /* Vector.h in Headers */,
 				E8B3CB6516B9326E002BD35F /* BaseNetworkConnection.h in Headers */,
 				E8B3CB6716B9326E002BD35F /* BTNetworkConnection.h in Headers */,
@@ -3013,6 +3033,7 @@
 				02E9E3DF1734176200C501BC /* VolumeAnimatedObject.h in Headers */,
 				02E9E3E31734176D00C501BC /* SoundComponent.h in Headers */,
 				02F64042173A5A950053F038 /* SoundUpdateSystem.h in Headers */,
+				02A0863518C0DE9400B7D169 /* WindComponent.h in Headers */,
 				CCEB543D1886FF0C0018491F /* LodToLod2Converter.h in Headers */,
 				84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */,
 				84E5E102174D02F60001C74F /* OpenUDIDios.h in Headers */,
@@ -3244,6 +3265,7 @@
 				E8B3CBF216B9326E002BD35F /* Light.cpp in Sources */,
 				E8B3CBF416B9326E002BD35F /* Mesh.cpp in Sources */,
 				E8B3CBF816B9326E002BD35F /* RenderBatch.cpp in Sources */,
+				02A0863218C0DE9400B7D169 /* SpeedTreeComponent.cpp in Sources */,
 				E8B3CBFB16B9326E002BD35F /* RenderLayer.cpp in Sources */,
 				A61171471860C24D00E18F8C /* StaticOcclusion.cpp in Sources */,
 				50C7D602186082D600D8936D /* StaticOcclusion.cpp in Sources */,
@@ -3387,6 +3409,7 @@
 				E8B3CD2516B9326E002BD35F /* UITextFieldiPhone.mm in Sources */,
 				E8B3CD2616B9326E002BD35F /* UIYamlLoader.cpp in Sources */,
 				E8B3CD2916B9326E002BD35F /* HTTPDownloader.mm in Sources */,
+				02A0863418C0DE9400B7D169 /* WindComponent.cpp in Sources */,
 				E8B3CD2B16B9326E002BD35F /* MD5.cpp in Sources */,
 				CCEB543C1886FF0C0018491F /* LodToLod2Converter.cpp in Sources */,
 				E8B3CD2E16B9326E002BD35F /* StringFormat.cpp in Sources */,
@@ -3457,6 +3480,7 @@
 				17DC600B17DE16D40075813E /* UIMovieView.cpp in Sources */,
 				17DC600F17DE18460075813E /* MovieViewControliOS.mm in Sources */,
 				EA84E17517FAC20100304C3C /* SpatialTree.cpp in Sources */,
+				02A0863818C0DEA100B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				7A8F772917E73E720048A43D /* AutotestingDB.cpp in Sources */,
 				7A8F772B17E73E720048A43D /* GameAPI.cpp in Sources */,
 				A695E5221811317E008A0F20 /* NMaterialConsts.cpp in Sources */,
