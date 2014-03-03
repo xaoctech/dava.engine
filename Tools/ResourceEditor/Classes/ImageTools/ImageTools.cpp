@@ -224,7 +224,7 @@ DAVA::Image* ImageTools::CreateMergedImage(const Channels& channels)
     return mergedImage;
 }
 
-void ImageTools::SetChannel(DAVA::Image* image, DAVA::uint32 channel, DAVA::uint8 value)
+void ImageTools::SetChannel(DAVA::Image* image, eComponentsRGBA channel, DAVA::uint8 value)
 {
     if(image->format != FORMAT_RGBA8888)
     {
