@@ -57,8 +57,8 @@ void RectSpriteTest::LoadResources()
     AddImage("~res:/TestData/RectSpriteTest/3.png");
     AddImage("~res:/TestData/RectSpriteTest/4.png");
 
-    sprites.push_back(Sprite::CreateFromPNG("~res:/TestData/RectSpriteTest/1.png"));
-    sprites.push_back(Sprite::CreateFromPNG("~res:/TestData/RectSpriteTest/2.png"));
+    sprites.push_back(Sprite::CreateFromSourceFile("~res:/TestData/RectSpriteTest/1.png"));
+    sprites.push_back(Sprite::CreateFromSourceFile("~res:/TestData/RectSpriteTest/2.png"));
     sprites.push_back(LoadSpriteFromFileBuf("~res:/TestData/RectSpriteTest/3.png"));
     sprites.push_back(LoadSpriteFromFileBuf("~res:/TestData/RectSpriteTest/4.png"));
 }
@@ -88,7 +88,7 @@ Sprite* RectSpriteTest::LoadSpriteFromFileBuf(const FilePath& filePath)
     uint8* buf = new uint8[file->GetSize()];
     file->Read(buf, file->GetSize());
 
-    Sprite* sprite = Sprite::CreateFromPNG(buf, file->GetSize());
+    Sprite* sprite = Sprite::CreateFromSourceData(buf, file->GetSize());
 
     SafeRelease(file);
     SafeDeleteArray(buf);
@@ -116,26 +116,33 @@ void RectSpriteTest::Draw(const DAVA::UIGeometricData &geometricData)
 
     if (sprites[1])
     {
-        sprites[1]->SetAngle(0.1f);
-        sprites[1]->SetPosition(70.f, 40.f);
-        sprites[1]->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetAngle(0.1f);
+        drawState.SetPosition(70.f, 40.f);
+        
+        sprites[1]->Draw(&drawState);
     }
     if (sprites[2])
     {
-        sprites[2]->SetAngle(0.785398f);
-        sprites[2]->SetPosition(200.f, 50.f);
-        sprites[2]->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetAngle(0.785398f);
+        drawState.SetPosition(200.f, 50.f);
+
+        sprites[2]->Draw(&drawState);
     }
     if (sprites[3])
     {
-        sprites[3]->SetPosition(110.f, 60.f);
-        sprites[3]->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetPosition(110.f, 60.f);
+        sprites[3]->Draw(&drawState);
     }
     if (sprites[0])
     {
-        sprites[0]->SetAngle(-0.2f);
-        sprites[0]->SetPosition(300.f, 200.f);
-        sprites[0]->Draw();
+        Sprite::DrawState drawState;
+        drawState.SetAngle(-0.2f);
+        drawState.SetPosition(300.f, 200.f);
+
+        sprites[0]->Draw(&drawState);
     }
 
     TestTemplate<RectSpriteTest>::Draw(geometricData);
