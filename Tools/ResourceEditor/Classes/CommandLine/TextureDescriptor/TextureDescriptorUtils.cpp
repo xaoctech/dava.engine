@@ -30,7 +30,10 @@
 
 #include "TextureDescriptorUtils.h"
 
-#include "Classes/ImageTools/ImageTools.h"
+#include "ImageTools/ImageTools.h"
+#include "Settings/SettingsManager.h"
+
+
 using namespace DAVA;
 
 void TextureDescriptorUtils::ResaveDescriptorsForFolder(const FilePath &folderPathname)
@@ -188,7 +191,8 @@ void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPat
 
 			if(convertionEnabled)
 			{
-				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu].format);
+                DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality", SettingsManager::DEFAULT);
+				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu].format, (DAVA::TextureConverter::eConvertQuality)quality.AsInt32());
 			}
 		}
 	}

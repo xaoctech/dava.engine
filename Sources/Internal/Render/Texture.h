@@ -159,8 +159,18 @@ public:
         \param[in] data desired data 
         \param[in] width width of new texture
         \param[in] height height of new texture
+        \param[in] generateMipMaps generate mipmaps or not
      */
 	static Texture * CreateFromData(PixelFormat format, const uint8 *data, uint32 width, uint32 height, bool generateMipMaps);
+
+    /**
+        \brief Create texture from data arrray stored at Image
+        This function creates texture from given image
+     
+        \param[in] image stores data
+        \param[in] generateMipMaps generate mipmaps or not
+     */
+	static Texture * CreateFromData(Image *img, bool generateMipMaps);
 
     /**
         \brief Create text texture from data arrray

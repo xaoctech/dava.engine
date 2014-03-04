@@ -88,6 +88,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+    
     new RectSpriteTest();
 
 	new ComponentsTest();

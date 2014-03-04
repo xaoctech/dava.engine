@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
 #if defined (__DAVAENGINE_MACOS__)
     DAVA::Core::Run(argc, argv);
 	new DAVA::QtLayerMacOS();
-	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
+	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCLI"));
 #elif defined (__DAVAENGINE_WIN32__)
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	DAVA::Core::Run(argc, argv, hInstance);
 	new DAVA::QtLayerWin32();
-	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
+	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCLI.exe"));
 #else
 	DVASSERT(false && "Wrong platform")
 #endif
@@ -99,8 +99,11 @@ int main(int argc, char *argv[])
 	new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 
+
 	new SettingsManager();
 	new EditorConfig();
+    ParticleEmitter::FORCE_DEEP_CLONE = true;
+
 
     const QString appUid = "{AA5497E4-6CE2-459A-B26F-79AAF05E0C6B}";
     const QString appUidPath = QCryptographicHash::hash( (appUid + a.applicationDirPath() ).toUtf8(), QCryptographicHash::Sha1 ).toHex();

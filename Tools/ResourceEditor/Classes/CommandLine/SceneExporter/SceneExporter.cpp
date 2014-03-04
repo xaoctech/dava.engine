@@ -376,7 +376,7 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         
 		eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
 		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
-		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true, TextureConverter::ECQ_VERY_HIGH);
         
         DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
         DAVA::Texture *tex = texturesMap[FILEPATH_MAP_KEY(descriptor->pathname)];

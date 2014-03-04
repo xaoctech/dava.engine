@@ -91,6 +91,7 @@ void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityAr
     {
         RenderObject * renderObject = visibilityArray->Get(ro);
         if (renderObject->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
+
 		    renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         

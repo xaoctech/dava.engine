@@ -107,11 +107,24 @@ struct PVRHeaderV2
 };
 
     
-    
-class Texture;
+class PVRFile
+{
+public:
+
+	PVRFile() : metaData(NULL), compressedDataSize(0), compressedData(NULL) {;} ;
+	~PVRFile();
+	
+	PVRHeaderV3 header;
+	Vector<MetaDataBlock *> metaDatablocks;
+    uint8 *metaData;
+
+	uint32 compressedDataSize;
+	uint8 *compressedData;
+};
+
 class Image;
-class ImageSet;
 class File;
+
 class LibPVRHelper
 {
 public:
@@ -127,9 +140,29 @@ public:
 	
 	static bool AddCRCIntoMetaData(const FilePath &filePathname);
 	static uint32 GetCRCFromFile(const FilePath &filePathname);
+
+
+	static PVRFile * ReadFile(File *file, bool readMetaData = false, bool readData = false);
+    static bool LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet, uint32 fromMipMap);
+
     
 protected:
-		
+
+    static bool DetectIfNeedSwapBytes(PVRHeaderV3 *header);
+	static void PrepareHeader(PVRHeaderV3 *header, const bool swapBytes);
+
+    static void ReadMetaData(File *file, PVRFile *pvrFile, const bool swapBytes);
+
+    static void SwapDataBytes(const PVRHeaderV3 &header, uint8 *data, const uint32 dataSize);
+
+  	static bool LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLevel, const uint32 startMipMapLevel, Vector<Image *> &imageSet);
+  	static uint32 GetCubemapLayout(const PVRFile *pvrFile);
+    static const MetaDataBlock * GetCubemapMetadata(const PVRFile *pvrFile);
+
+
+    
+//
+    
 	static uint32 ReadNextMetadata(DAVA::File* file, uint32* crc);
 	
 	static bool GetCRCFromMetaData(const FilePath &filePathname, uint32* outputCRC);

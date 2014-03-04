@@ -54,6 +54,23 @@
 
 namespace DAVA 
 {
+    
+PVRFile::~PVRFile()
+{
+    uint32 count = (uint32)metaDatablocks.size();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        metaDatablocks[i]->Data = NULL; //it is stored at this->metaData
+        delete metaDatablocks[i];
+    }
+    metaDatablocks.clear();
+    
+    SafeDeleteArray(metaData);
+    SafeDeleteArray(compressedData);
+    compressedDataSize = 0;
+}
+    
+    
 	
 const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
@@ -1628,7 +1645,6 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         case ePVRTPF_PVRTCI_2bpp_RGBA:
         {
             return FORMAT_PVR2;
-            break;
         }
         case ePVRTPF_PVRTCI_4bpp_RGB:
         {
@@ -1637,6 +1653,14 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         case ePVRTPF_PVRTCI_4bpp_RGBA:
         {
             return FORMAT_PVR4;
+        }
+        case ePVRTPF_PVRTCII_2bpp:
+        {
+            return FORMAT_INVALID;
+        }
+        case ePVRTPF_PVRTCII_4bpp:
+        {
+            return FORMAT_INVALID;
         }
         case ePVRTPF_ETC1:
         {
@@ -1727,6 +1751,18 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
         {
             return FORMAT_INVALID;
         }
+        case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
+        {
+            return FORMAT_RGBA4444;
+        }
+		case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
+		{
+			return FORMAT_RGBA5551;
+		}
+		case PVRTGENPIXELID3('r','g','b',5,6,5):
+		{
+			return FORMAT_RGB565;
+		}
     }
 
     return FORMAT_INVALID;
@@ -1877,7 +1913,9 @@ bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize,
 //				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
 				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
 				//{
-				PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
+                
+                int do2bitMode = (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0;
+				PVRTDecompressPVRTC(pTempCompData, do2bitMode, image->width, image->height, pTempDecompData);
 				//Move forward through the pointers.
 //				pTempDecompData+=decompressedFaceOffset;
 //				pTempCompData+=compressedFaceOffset;
@@ -2091,7 +2129,7 @@ bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceInde
     {
         //Setup temporary variables.
         uint8* data = (uint8*)pvrData + GetMipMapLayerOffset(mipMapLevel, faceIndex, header);
-        Memcpy(image->data, data, image->dataSize * sizeof(uint8));
+        Memcpy(image->data, data, image->dataSize);
 
         return true;
     }
@@ -2493,7 +2531,7 @@ bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
         return false;
     }
     
-    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    const RenderManager::Caps & deviceCaps = RenderManager::Instance()->GetCaps();
     if ((FORMAT_RGBA16161616 == format.formatID) && !deviceCaps.isFloat16Supported)
     {
         Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_RGBA16161616 is unsupported");
@@ -2505,6 +2543,14 @@ bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
         Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_RGBA32323232 is unsupported");
         return false;
     }
+    
+#if defined (__DAVAENGINE_IPHONE__)
+    if(FORMAT_ETC1 == format.formatID)
+    {
+        Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_ETC1 not supported for IOS");
+        return false;
+    }
+#endif
     
     return true;
 }
@@ -2568,6 +2614,10 @@ bool LibPVRHelper::ReadFile(File *file, const Vector<Image *> &imageSet)
     SafeDeleteArray(fileData);
     return read;
 }
+
+
+
+
 
 uint32 LibPVRHelper::GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
 {
@@ -2648,6 +2698,75 @@ uint32 LibPVRHelper::GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrDat
 	
 	return layout;
 }
+    
+uint32 LibPVRHelper::GetCubemapLayout(const PVRFile *pvrFile)
+{
+    uint32 layout = 0;
+
+    const MetaDataBlock *cubeMetaData = GetCubemapMetadata(pvrFile);
+    if(cubeMetaData)
+    {
+        for(uint32 index = 0; index < cubeMetaData->u32DataSize; ++index)
+        {
+            switch(cubeMetaData->Data[index])
+            {
+                case 'X':
+                {
+                    layout = layout | (Texture::CUBE_FACE_POSITIVE_X << (index * 4));
+                    break;
+                }
+                    
+                case 'x':
+                {
+                    layout = layout | (Texture::CUBE_FACE_NEGATIVE_X << (index * 4));
+                    break;
+                }
+                    
+                case 'Y':
+                {
+                    layout = layout | (Texture::CUBE_FACE_POSITIVE_Y << (index * 4));
+                    break;
+                }
+                    
+                case 'y':
+                {
+                    layout = layout | (Texture::CUBE_FACE_NEGATIVE_Y << (index * 4));
+                    break;
+                }
+                    
+                case 'Z':
+                {
+                    layout = layout | (Texture::CUBE_FACE_POSITIVE_Z << (index * 4));
+                    break;
+                }
+                    
+                case 'z':
+                {
+                    layout = layout | (Texture::CUBE_FACE_NEGATIVE_Z << (index * 4));
+                    break;
+                }
+            }
+        }
+    }
+    else if(pvrFile->header.u32NumFaces > 1)
+	{
+		static uint32 faces[] = {
+			Texture::CUBE_FACE_POSITIVE_X,
+			Texture::CUBE_FACE_NEGATIVE_X,
+			Texture::CUBE_FACE_POSITIVE_Y,
+			Texture::CUBE_FACE_NEGATIVE_Y,
+			Texture::CUBE_FACE_POSITIVE_Z,
+			Texture::CUBE_FACE_NEGATIVE_Z
+		};
+		for(uint32 i = 0; i < pvrFile->header.u32NumFaces; ++i)
+		{
+			layout = layout | (faces[i] << (i * 4));
+		}
+	}
+
+    return layout;
+}
+
 	
 bool LibPVRHelper::IsCubemap(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
 {
@@ -2657,6 +2776,21 @@ bool LibPVRHelper::IsCubemap(PVRHeaderV3* pvrHeader, const char* pvrData, const 
 	return (metadata != NULL);
 }
 	
+const MetaDataBlock * LibPVRHelper::GetCubemapMetadata(const PVRFile *pvrFile)
+{
+    uint32 count = (uint32)pvrFile->metaDatablocks.size();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        if(pvrFile->metaDatablocks[i]->DevFOURCC == PVRTEX3_METADATAIDENT && pvrFile->metaDatablocks[i]->u32DataSize == 6)
+        {
+            return pvrFile->metaDatablocks[i];
+        }
+    }
+    
+    return NULL;
+}
+
+    
 const char* LibPVRHelper::GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize, uint32* outDataSize)
 {
 	const char* metadata = NULL;
@@ -2698,6 +2832,303 @@ const char* LibPVRHelper::GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char*
 	
 	return metadata;
 }
+
+PVRFile * LibPVRHelper::ReadFile( File *file, bool readMetaData /*= false*/, bool readData /*= false*/)
+{
+	if(!file) return false;
+
+	PVRFile *pvrFile = new PVRFile();
+
+	uint32 readSize = file->Read(&pvrFile->header, PVRTEX3_HEADERSIZE);
+	if(readSize != PVRTEX3_HEADERSIZE)
+	{
+		Logger::Error("[LibPVRHelper::ReadFile]: cannot read header from file");
+		delete pvrFile;
+		return NULL;
+	}
     
+    const bool needSwapBytes = DetectIfNeedSwapBytes(&pvrFile->header);
+	PrepareHeader(&pvrFile->header, needSwapBytes);
+
+	if(readMetaData && pvrFile->header.u32MetaDataSize)
+	{
+        ReadMetaData(file, pvrFile, needSwapBytes);
+	}
+    else if(pvrFile->header.u32MetaDataSize)
+    {
+        file->Seek(pvrFile->header.u32MetaDataSize, File::SEEK_FROM_CURRENT);
+    }
+
+    pvrFile->compressedDataSize = GetTextureDataSize(pvrFile->header, PVRTEX_ALLMIPLEVELS, true, true);
+	if(readData)
+	{
+        pvrFile->compressedData = new uint8[pvrFile->compressedDataSize];
+        readSize = file->Read(&pvrFile->compressedData, pvrFile->compressedDataSize);
+        if(readSize != pvrFile->compressedDataSize)
+        {
+            Logger::Error("[LibPVRHelper::ReadFile]: cannot read data from file");
+            delete pvrFile;
+            return NULL;
+        }
+        
+        if(needSwapBytes)
+        {
+            SwapDataBytes(pvrFile->header, pvrFile->compressedData, pvrFile->compressedDataSize);
+        }
+	}
+
+	return pvrFile;
+}
+    
+bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet, uint32 fromMipMap)
+{
+    if(pvrFile == NULL) return false;
+    
+    const uint32 & mipmapLevelCount = pvrFile->header.u32MIPMapCount;
+    DVASSERT(fromMipMap < mipmapLevelCount);
+    
+    bool loadAllPvrData = true;
+    for (uint32 i = fromMipMap; i < mipmapLevelCount; ++i)
+    {
+        loadAllPvrData &= LoadMipMapLevel(pvrFile, i, fromMipMap, imageSet);
+    }
+
+    return loadAllPvrData;
+}
+    
+bool LibPVRHelper::DetectIfNeedSwapBytes(PVRHeaderV3 *header)
+{
+	if((PVRTEX_CURR_IDENT != header->u32Version) && (PVRTEX_CURR_IDENT_REV != header->u32Version))
+    {
+        return (PVRTIsLittleEndian() == false);
+    }
+
+    return (PVRTEX_CURR_IDENT_REV == header->u32Version);
+}
+
+void LibPVRHelper::PrepareHeader(PVRHeaderV3 *header, const bool swapBytes)
+{
+	if((PVRTEX_CURR_IDENT != header->u32Version) && (PVRTEX_CURR_IDENT_REV != header->u32Version))
+	{	//legacy pvr
+		uint32 u32HeaderSize = PVRTEX3_HEADERSIZE;
+		if(swapBytes)
+		{
+			u32HeaderSize = Min(u32HeaderSize, (uint32)PVRTByteSwap32(header->u32Version));
+			uint8 *headerData = (uint8 *)&header->u32Version;
+			for (uint32 i=0; i < u32HeaderSize; i += sizeof(uint32))
+			{
+				PVRTByteSwap( headerData + i, sizeof(uint32));
+			}
+		}
+
+		//Get a pointer to the header.
+		PVRHeaderV2* sLegacyTextureHeader=(PVRHeaderV2*)header;
+
+		//We only really need the channel type.
+		uint64 tempFormat;
+		EPVRTColourSpace tempColourSpace;
+		bool tempIsPreMult;
+
+		//Map the enum to get the channel type.
+		EPVRTVariableType u32CurrentChannelType=ePVRTVarTypeUnsignedByte;
+		MapLegacyTextureEnumToNewFormat( (PVRTPixelType)( sLegacyTextureHeader->dwpfFlags&0xff),tempFormat,tempColourSpace, u32CurrentChannelType, tempIsPreMult);
+		header->u32ChannelType = u32CurrentChannelType;
+	}
+	else if(swapBytes)
+	{
+		header->u32ChannelType = PVRTByteSwap32(header->u32ChannelType);
+		header->u32ColourSpace = PVRTByteSwap32(header->u32ColourSpace);
+		header->u32Depth = PVRTByteSwap32(header->u32Depth);
+		header->u32Flags = PVRTByteSwap32(header->u32Flags);
+		header->u32Height = PVRTByteSwap32(header->u32Height);
+		header->u32MetaDataSize = PVRTByteSwap32(header->u32MetaDataSize);
+		header->u32MIPMapCount = PVRTByteSwap32(header->u32MIPMapCount);
+		header->u32NumFaces = PVRTByteSwap32(header->u32NumFaces);
+		header->u32NumSurfaces = PVRTByteSwap32(header->u32NumSurfaces);
+		header->u32Version = PVRTByteSwap32(header->u32Version);
+		header->u32Width = PVRTByteSwap32(header->u32Width);
+		PVRTByteSwap((uint8*)&header->u64PixelFormat,sizeof(uint64));
+	}
+}
+    
+void LibPVRHelper::ReadMetaData(File *file, PVRFile *pvrFile, const bool swapBytes)
+{
+    const uint32 & metaDataSize = pvrFile->header.u32MetaDataSize;
+    
+    pvrFile->metaData = new uint8[metaDataSize];
+    uint32 readSize = file->Read(pvrFile->metaData, metaDataSize);
+    if(readSize != metaDataSize)
+    {
+        SafeDeleteArray(pvrFile->metaData);
+        return;
+    }
+
+    uint8 *metaDataPtr = pvrFile->metaData;
+    while((metaDataPtr - pvrFile->metaData) < metaDataSize)
+    {
+        MetaDataBlock * block = new MetaDataBlock();
+        
+        uint32 fourCC = *(uint32*)metaDataPtr;
+        block->DevFOURCC = (swapBytes) ? PVRTByteSwap32(fourCC): fourCC;
+        
+        metaDataPtr += sizeof(uint32);
+
+        uint32 dataKey = *(uint32*)metaDataPtr;
+        block->u32Key = (swapBytes) ? PVRTByteSwap32(dataKey): dataKey;
+
+        metaDataPtr += sizeof(uint32);
+
+        uint32 dataSize = *(uint32*)metaDataPtr;
+        block->u32DataSize = (swapBytes) ? PVRTByteSwap32(dataSize): dataSize;
+        
+        metaDataPtr += sizeof(uint32);
+
+        if(swapBytes)
+        {
+            PVRTByteSwap( metaDataPtr, dataSize);
+        }
+        
+        block->Data = metaDataPtr;
+        metaDataPtr += dataSize;
+        
+        pvrFile->metaDatablocks.push_back(block);
+    }
+}
+
+    
+void LibPVRHelper::SwapDataBytes(const PVRHeaderV3 &header, uint8 *data, const uint32 dataSize)
+{
+    uint32 ui32VariableSize=0;
+    switch(header.u32ChannelType)
+    {
+        case ePVRTVarTypeFloat:
+        case ePVRTVarTypeUnsignedInteger:
+        case ePVRTVarTypeUnsignedIntegerNorm:
+        case ePVRTVarTypeSignedInteger:
+        case ePVRTVarTypeSignedIntegerNorm:
+        {
+            ui32VariableSize=4;
+            break;
+        }
+        case ePVRTVarTypeUnsignedShort:
+        case ePVRTVarTypeUnsignedShortNorm:
+        case ePVRTVarTypeSignedShort:
+        case ePVRTVarTypeSignedShortNorm:
+        {
+            ui32VariableSize=2;
+            break;
+        }
+        case ePVRTVarTypeUnsignedByte:
+        case ePVRTVarTypeUnsignedByteNorm:
+        case ePVRTVarTypeSignedByte:
+        case ePVRTVarTypeSignedByteNorm:
+        {
+            ui32VariableSize=1;
+            break;
+        }
+            
+        default:    return;
+    }
+    
+    //If the size of the variable type is greater than 1, then we need to byte swap.
+    //Loop through and byte swap all the data. It's swapped in place so no need to do anything special.
+    for(uint32 i = 0; i < dataSize; i += ui32VariableSize)
+    {
+        PVRTByteSwap(data + i, ui32VariableSize);
+    }
+}
+
+bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLevel, const uint32 startMipMapLevel, Vector<Image *> &imageSet)
+{
+    //Texture setup
+    const PVRHeaderV3 & compressedHeader = pvrFile->header;
+    uint8 * pTextureData = pvrFile->compressedData;
+    
+    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
+    if(!IsFormatSupported(formatDescriptor))
+    {
+        Logger::Error("[LibPVRHelper::ReadMipMapLevel] Unsupported format");
+        return false;
+    }
+    
+    const RenderManager::Caps & deviceCaps = RenderManager::Instance()->GetCaps();
+    const PixelFormat & formatID = formatDescriptor.formatID;
+
+	uint32 cubemapLayout = GetCubemapLayout(pvrFile);
+	for(uint32 faceIndex = 0; faceIndex < compressedHeader.u32NumFaces; ++faceIndex)
+    {
+		Image* image = new Image();
+		
+		image->width = PVRT_MAX(1, compressedHeader.u32Width >> mipMapLevel);
+		image->height = PVRT_MAX(1, compressedHeader.u32Height >> mipMapLevel);
+		image->format = formatDescriptor.formatID;
+		image->mipmapLevel = mipMapLevel - startMipMapLevel;
+		
+		if(cubemapLayout != 0)
+		{
+			image->cubeFaceID = (cubemapLayout & (0x0000000F << (faceIndex * 4))) >> (faceIndex * 4);
+		}
+        
+        if(     (((FORMAT_PVR4 == formatID) || (FORMAT_PVR2 == formatID)) && deviceCaps.isPVRTCSupported)
+           ||   (FORMAT_ETC1 == formatID && deviceCaps.isETCSupported)
+           ||   (FORMAT_ETC1 != formatID && FORMAT_PVR2 != formatID && FORMAT_PVR4 != formatID))
+        {
+            bool imageLoaded = CopyToImage(image, mipMapLevel, faceIndex, compressedHeader, pTextureData);
+            if(!imageLoaded)
+            {
+                image->Release();
+                return false;
+            }
+        }
+        else
+        {
+            //Create a near-identical texture header for the decompressed header.
+            PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
+            if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
+            {
+                image->Release();
+                return false;
+            }
+
+            image->format = FORMAT_RGBA8888;
+
+            //Setup temporary variables.
+            uint8* pTempDecompData = image->data;
+            uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
+
+            if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
+            {
+#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+                DVASSERT_MSG(false, "Must be hardware supported PVR Compression");
+                image->Release();
+                return false;
+#else //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+                
+                int do2bitMode = (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0;
+                PVRTDecompressPVRTC(pTempCompData, do2bitMode, image->width, image->height, pTempDecompData);
+#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+            }
+#if !defined(__DAVAENGINE_IPHONE__)
+            else if (FORMAT_ETC1 == formatDescriptor.formatID)
+            {
+                //Create a near-identical texture header for the decompressed header.
+#if defined (__DAVAENGINE_ANDROID__)
+                DVASSERT_MSG(false, "Must be hardware supported ETC1");
+                image->Release();
+                return false;
+#else
+                PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
+#endif //defined (__DAVAENGINE_ANDROID__)
+            }
+#endif //#if !defined(__DAVAENGINE_IPHONE__)
+        }
+        
+        imageSet.push_back(image);
+	}
+    
+    return true;
+}
+
+
 };
 

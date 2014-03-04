@@ -406,7 +406,23 @@ Texture * Texture::CreateFromData(PixelFormat _format, const uint8 *_data, uint3
 	texture->FlushDataToRenderer(images);
 
 	return texture;
-}		
+}
+    
+Texture * Texture::CreateFromData(Image *image, bool generateMipMaps)
+{
+	Texture * texture = new Texture();
+	texture->texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, generateMipMaps);
+    
+    Vector<Image *> *images = new Vector<Image *>();
+    image->Retain();
+    images->push_back(image);
+	
+    texture->SetParamsFromImages(images);
+	texture->FlushDataToRenderer(images);
+    
+	return texture;
+}
+
 	
 void Texture::SetWrapMode(TextureWrap wrapS, TextureWrap wrapT)
 {
@@ -832,7 +848,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
-        
+
 		SetParamsFromImages(images);
 		FlushDataToRenderer(images);
 	}
@@ -1212,13 +1228,14 @@ void Texture::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_PVR4, String("PVR4"), 4, 0, 0, 0);
 #endif
 
-    
 #if defined (GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG)
     SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG);
 #else
     SetPixelDescription(FORMAT_PVR2, String("PVR2"), 2, 0, 0, 0);
 #endif
 
+
+    
 #if defined (GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
 	SetPixelDescription(FORMAT_DXT1,     "DXT1", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT);
 	SetPixelDescription(FORMAT_DXT1NM, "DXT1nm", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT);

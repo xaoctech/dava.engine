@@ -124,9 +124,9 @@ void ProcessRecourcePacker()
     }
     
 #if defined (__DAVAENGINE_MACOS__)
-	String toolName = String("/PVRTexToolCL");
+	String toolName = String("/PVRTexToolCLI");
 #elif defined (__DAVAENGINE_WIN32__)
-	String toolName = String("/PVRTexToolCL.exe");
+	String toolName = String("/PVRTexToolCLI.exe");
 #endif
     PVRConverter::Instance()->SetPVRTexTool(resourcePacker->excludeDirectory + (commandLine[2] + toolName));
     
