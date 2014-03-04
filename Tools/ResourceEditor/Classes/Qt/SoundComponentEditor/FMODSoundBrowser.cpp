@@ -27,8 +27,10 @@
 //=====================================================================================*/
 
 #include "FMODSoundBrowser.h"
+#include "Qt/Scene/SceneSignals.h"
 #include "Qt/Project/ProjectManager.h"
 #include "ui_soundbrowser.h"
+#include "Scene/SceneEditor2.h"
 
 #include <QTreeWidget>
 #include <QMessageBox>
@@ -53,9 +55,9 @@ FMODSoundBrowser::FMODSoundBrowser(QWidget *parent) :
     QObject::connect(this, SIGNAL(accepted()), this, SLOT(OnAccepted()));
     QObject::connect(this, SIGNAL(rejected()), this, SLOT(OnRejected()));
 
-    QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectOpened(const QString &)), this, SLOT(OnProjectOpened(const QString &)));
-    QObject::connect(ProjectManager::Instance(), SIGNAL(ProjectClosed()), this, SLOT(OnProjectClosed()));
-    
+    QObject::connect(SceneSignals::Instance(), SIGNAL(Loaded(SceneEditor2 *)), this, SLOT(OnSceneLoaded(SceneEditor2 *)));
+    QObject::connect(SceneSignals::Instance(), SIGNAL(Closed(SceneEditor2 *)), this, SLOT(OnSceneClosed(SceneEditor2 *)));
+
     SetSelectedItem(0);
 
     setModal(true);
@@ -81,29 +83,79 @@ DAVA::String FMODSoundBrowser::GetSelectSoundEvent()
     return "";
 }
 
-void FMODSoundBrowser::OnProjectOpened(const QString & projectPath)
+void FMODSoundBrowser::OnSceneLoaded(SceneEditor2 * scene)
 {
 #ifdef DAVA_FMOD
-    DAVA::SoundSystem * soundsystem = DAVA::SoundSystem::Instance();
+    FilePath fevPath = MakeFEVPathFromScenePath(scene->GetScenePath());
+    if(!fevPath.IsEmpty() && fevPath.Exists())
+    {
+        if(projectsRefs.find(fevPath) == projectsRefs.end())
+        {
+            SoundSystem::Instance()->LoadFEV(fevPath);
+            projectsRefs[fevPath] = 1;
 
-    soundsystem->UnloadFMODProjects();
+            UpdateEventTree();
+        }
+        else
+        {
+            projectsRefs[fevPath]++;
+        }
+    }
+#endif //DAVA_FMOD
+}
 
-    LoadAllFEVsRecursive("~res:/Sfx/");
+void FMODSoundBrowser::OnSceneClosed(SceneEditor2 * scene)
+{
+#ifdef DAVA_FMOD
+    FilePath fevPath = MakeFEVPathFromScenePath(scene->GetScenePath());
+    if(!fevPath.IsEmpty() && fevPath.Exists())
+    {
+        projectsRefs[fevPath]--;
+        if(projectsRefs[fevPath] == 0)
+        {
+            SoundSystem::Instance()->UnloadFEV(fevPath);
+            projectsRefs.erase(projectsRefs.find(fevPath));
 
+            UpdateEventTree();
+        }
+    }
+#endif //DAVA_FMOD
+
+}
+
+void FMODSoundBrowser::UpdateEventTree()
+{
+#ifdef DAVA_FMOD
     DAVA::Vector<DAVA::String> names;
-    soundsystem->GetAllEventsNames(names);
+    SoundSystem::Instance()->GetAllEventsNames(names);
 
     FillEventsTree(names);
-#endif
+#endif //DAVA_FMOD
 }
 
-void FMODSoundBrowser::OnProjectClosed()
-{
 #ifdef DAVA_FMOD
-    DAVA::SoundSystem::Instance()->UnloadFMODProjects();
-#endif
-    ui->treeWidget->clear();
+FilePath FMODSoundBrowser::MakeFEVPathFromScenePath(const FilePath & scenePath)
+{
+    String sceneDir = scenePath.GetDirectory().GetAbsolutePathname();
+    String mapsPath(ProjectManager::Instance()->CurProjectPath().toStdString() + "DataSource/3d/Maps/");
+    String sfxMapsPath(ProjectManager::Instance()->CurProjectPath().toStdString() + "DataSource/Sfx/Maps/");
+    if(sceneDir.find(mapsPath) != String::npos)
+    {
+        String mapDir = sceneDir.substr(mapsPath.length());
+        Vector<String> dirs;
+        Split(mapDir, "/", dirs);
+        DVASSERT(dirs.size());
+        String mapName = dirs[0];
+
+        FilePath fevPath = FilePath(sfxMapsPath + mapName + "/iOS/" + mapName + ".fev");
+        return fevPath;
+    }
+    else
+    {
+        return FilePath();
+    }
 }
+#endif
 
 void FMODSoundBrowser::OnEventSelected(QTreeWidgetItem * item, int column)
 {
@@ -223,32 +275,4 @@ void FMODSoundBrowser::FillEventsTree(const DAVA::Vector<DAVA::String> & names)
             currentItem = findedItem;
         }
     }
-}
-
-void FMODSoundBrowser::LoadAllFEVsRecursive(const DAVA::FilePath & dirPath)
-{
-    DVASSERT(dirPath.IsDirectoryPathname());
-
-#ifdef DAVA_FMOD
-    DAVA::SoundSystem * soundsystem = DAVA::SoundSystem::Instance();
-
-    DAVA::FileList * list = new DAVA::FileList(dirPath);
-    DAVA::int32 entriesCount = list->GetCount();
-    for(DAVA::int32 i = 0; i < entriesCount; i++)
-    {
-        if(list->IsDirectory(i))
-        {
-            if(!list->IsNavigationDirectory(i))
-                LoadAllFEVsRecursive(list->GetPathname(i));
-        }
-        else
-        {
-            const DAVA::FilePath & filePath = list->GetPathname(i);
-
-            if(filePath.IsEqualToExtension(".fev"))
-                soundsystem->LoadFEV(filePath);
-        }
-    }
-    SafeRelease(list);
-#endif //DAVA_FMOD
 }

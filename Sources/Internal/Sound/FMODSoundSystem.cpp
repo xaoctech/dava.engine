@@ -189,8 +189,18 @@ SoundEvent * SoundSystem::DeserializeEvent(KeyedArchive *archive)
 
 void SoundSystem::LoadFEV(const FilePath & filePath)
 {
+    if(projectsMap.find(filePath) != projectsMap.end())
+        return;
+
     FMOD::EventProject * project = 0;
-	FMOD_VERIFY(fmodEventSystem->load(filePath.GetFrameworkPath().c_str(), 0, &project));
+    if(filePath.GetType() == FilePath::PATH_IN_RESOURCES)
+    {
+	    FMOD_VERIFY(fmodEventSystem->load(filePath.GetFrameworkPath().c_str(), 0, &project));
+    }
+    else
+    {
+        FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, &project));
+    }
     
     if(project)
     {
@@ -209,14 +219,26 @@ void SoundSystem::LoadFEV(const FilePath & filePath)
             FMOD_VERIFY(group->getInfo(0, &buf));
             toplevelGroups.push_back(projectName + "/" + buf);
         }
+
+        projectsMap[filePath] = project;
     }
-    
+}
+
+void SoundSystem::UnloadFEV(const FilePath & filePath)
+{
+    Map<FilePath, FMOD::EventProject *>::iterator it = projectsMap.find(filePath);
+    if(it != projectsMap.end())
+    {
+        FMOD_VERIFY(it->second->release());
+        projectsMap.erase(it);
+    }
 }
 
 void SoundSystem::UnloadFMODProjects()
 {
     FMOD_VERIFY(fmodEventSystem->unload());
     
+    projectsMap.clear();
     toplevelGroups.clear();
 }
 

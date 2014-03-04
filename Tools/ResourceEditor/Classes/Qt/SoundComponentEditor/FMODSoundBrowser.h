@@ -37,6 +37,8 @@ namespace Ui {
 class FMODSoundBrowser;
 }
 
+class SceneEditor2;
+
 class FMODSoundBrowser : public QDialog, public DAVA::Singleton<FMODSoundBrowser>
 {
     Q_OBJECT
@@ -47,26 +49,30 @@ public:
 
     DAVA::String GetSelectSoundEvent();
 
+#ifdef DAVA_FMOD
+    static DAVA::FilePath MakeFEVPathFromScenePath(const DAVA::FilePath & scenePath);
+#endif
+
 private slots:
     void OnEventSelected(QTreeWidgetItem * item, int column);
     void OnEventDoubleClicked(QTreeWidgetItem * item, int column);
 
-    void OnProjectOpened(const QString & projectPath);
-    void OnProjectClosed();
+    void OnSceneLoaded(SceneEditor2 * scene);
+    void OnSceneClosed(SceneEditor2 * scene);
 
     void OnAccepted();
     void OnRejected();
 
 private:
-    void LoadAllFEVsRecursive(const DAVA::FilePath & dirPath);
+    void UpdateEventTree();
 
     void FillEventsTree(const DAVA::Vector<DAVA::String> & names);
     void SelectItemAndExpandTreeByEventName(const DAVA::String & eventName);
     
     void SetSelectedItem(QTreeWidgetItem * item);
 
+    DAVA::Map<DAVA::FilePath, DAVA::uint32> projectsRefs;
     QTreeWidgetItem * selectedItem;
-
     Ui::FMODSoundBrowser *ui;
 };
 

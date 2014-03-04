@@ -41,6 +41,8 @@
 
 #include "../Qt/Main/QtUtils.h"
 
+#include "Qt/SoundComponentEditor/FMODSoundBrowser.h"
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -62,6 +64,12 @@ void SceneExporter::SetInFolder(const FilePath &folderPathname)
 void SceneExporter::SetOutFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetOutFolder(folderPathname);
+}
+
+void SceneExporter::SetOutSoundsFolder(const FilePath &folderPathname)
+{
+    DVASSERT(folderPathname.IsDirectoryPathname());
+    soundsOutFolder = folderPathname;
 }
 
 void SceneExporter::SetGPUForExporting(const String &newGPU)
@@ -143,6 +151,8 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 		errorLog.insert(Format("Can't move file %s", fileName.GetAbsolutePathname().c_str()));
 	}
     
+    ExportSounds(fileName);
+
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
 
@@ -344,7 +354,23 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
     SafeRelease(fileList);
 }
 
+void SceneExporter::ExportSounds(const FilePath &scenePath)
+{
+#ifdef DAVA_FMOD
+    FilePath sfxDir = FMODSoundBrowser::MakeFEVPathFromScenePath(scenePath).GetDirectory();
+    if(exportForGPU != GPU_POWERVR_IOS && exportForGPU != GPU_UNKNOWN)
+    {
+        String pathStr = sfxDir.GetAbsolutePathname();
+        pathStr = pathStr.substr(0, pathStr.length() - 4) + "Android/";
+        sfxDir = FilePath(pathStr);
+    }
 
+    if(!soundsOutFolder.Exists())
+        FileSystem::Instance()->CreateDirectory(soundsOutFolder, true);
+
+    FileSystem::Instance()->CopyDirectory(sfxDir, soundsOutFolder, true);
+#endif
+}
 
 void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
