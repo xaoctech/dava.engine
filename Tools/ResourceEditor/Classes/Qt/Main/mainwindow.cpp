@@ -1414,18 +1414,21 @@ void QtMainWindow::OnAddSkybox()
     
 
     TextureSheetCell tc0;
+    tc0.geometryId = 1;
     tc0.coords[0] = Vector2(0.0f, 0.0f);
     tc0.coords[1] = Vector2(0.5f, 0.0f);
     tc0.coords[2] = Vector2(0.5f, 0.5f);
     tc0.coords[3] = Vector2(0.0f, 0.5f);
     
     TextureSheetCell tc1;
+    tc1.geometryId = 1;
     tc1.coords[0] = Vector2(0.5f, 0.0f);
     tc1.coords[1] = Vector2(1.0f, 0.0f);
     tc1.coords[2] = Vector2(1.0f, 0.5f);
     tc1.coords[3] = Vector2(0.5f, 0.5f);
     
     TextureSheetCell tc2;
+    tc2.geometryId = 1;
     tc2.coords[0] = Vector2(0.0f, 0.5f);
     tc2.coords[1] = Vector2(1.0f, 0.5f);
     tc2.coords[2] = Vector2(1.0f, 1.0f);
@@ -1437,12 +1440,12 @@ void QtMainWindow::OnAddSkybox()
     ts.cells.push_back(tc0);
     ts.cells.push_back(tc1);
     ts.cells.push_back(tc1);
-    ts.cells.push_back(tc0);
+    ts.cells.push_back(tc2);
     
     DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("D:/Temp/Test/d_colormap.png")[0];
     
     DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
-    vro->SetClusterLimit(16);
+    vro->SetClusterLimit(4);
     vro->SetTextureSheet(ts);
     vro->SetHeightmap(Texture::CreateFromFile("D:/Temp/Test/heightmap.tex"));
     vro->SetVegetationMap(vegMap);

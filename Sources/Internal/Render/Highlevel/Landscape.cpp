@@ -925,7 +925,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippi
     
     if (currentNode->data.size >= 2)
 		if (clippingFlags)
-			frustumRes = frustum->Classify(currentNode->data.bbox, clippingFlags, currentNode->data.startClipPlane);		
+			frustumRes = frustum->Classify(currentNode->data.bbox, clippingFlags, currentNode->data.startClipPlane);
     
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
