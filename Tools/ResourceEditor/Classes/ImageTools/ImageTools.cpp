@@ -76,7 +76,6 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 			return 0;
 		}
 		
-		
 		if(ImageLoader::IsPNGFile(imageFile))
 		{
 			size += LibPngWrapper::GetDataSize(imagePathname);
