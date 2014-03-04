@@ -253,6 +253,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
+    exporter.SetOutSoundsFolder(projectPath + String("Data/Sfx/"));
 	exporter.SetGPUForExporting(newGPU);
 	Set<String> errorLog;
 

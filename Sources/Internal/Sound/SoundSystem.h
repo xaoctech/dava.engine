@@ -44,6 +44,7 @@ namespace FMOD
 class EventGroup;
 class System;
 class EventSystem;
+class EventProject;
 };
 #endif
 
@@ -94,6 +95,7 @@ protected:
 
 public:
     void LoadFEV(const FilePath & filePath);
+    void UnloadFEV(const FilePath & filePath);
     void UnloadFMODProjects();
 
     void PreloadFMODEventGroupData(const String & groupName);
@@ -121,6 +123,8 @@ protected:
     Vector<SoundEvent *> soundsToReleaseOnUpdate;
     MultiMap<SoundEvent *, uint32> callbackOnUpdate;
     Vector<SoundGroup> soundGroups;
+
+    Map<FilePath, FMOD::EventProject *> projectsMap;
 
     Vector<String> toplevelGroups;
 
