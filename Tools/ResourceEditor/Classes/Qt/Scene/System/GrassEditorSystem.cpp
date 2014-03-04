@@ -45,8 +45,9 @@ GrassEditorSystem::GrassEditorSystem(Scene* scene)
 , inDrawState(false)
 , vegetationMap(NULL)
 , vegetationMapCopy(NULL)
-, curBrush(0xf0)
+, curBrush(0x11)
 , curLayer(0)
+, curVegetation(NULL)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/squareCursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -62,6 +63,7 @@ GrassEditorSystem::~GrassEditorSystem()
 	SafeRelease(cursorTexture);
     SafeRelease(vegetationMap);
     SafeRelease(vegetationMapCopy);
+    SafeRelease(curVegetation);
 }
 
 void GrassEditorSystem::Update(DAVA::float32 timeElapsed)
@@ -134,6 +136,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
             if(enable)
             {
                 DAVA::VegetationRenderObject *veg = SearchVegetation(GetScene());
+                curVegetation = SafeRetain(veg);
 
                 if(NULL != veg && NULL !=veg->GetVegetationMap())
                 {
@@ -162,6 +165,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
 
                 SafeRelease(vegetationMap);
                 SafeRelease(vegetationMapCopy);
+                SafeRelease(curVegetation);
 
                 isEnabled = false;
                 ret = true;
@@ -213,6 +217,20 @@ DAVA::VegetationRenderObject* GrassEditorSystem::SearchVegetation(DAVA::Entity *
     }
 
     return ret;
+}
+
+void GrassEditorSystem::SetLayerVisible(uint8 layer, bool visible)
+{
+    // TODO:
+    // ...
+}
+
+bool GrassEditorSystem::IsLayerVisible(uint8 layer) const
+{
+    // TODO:
+    // ...
+
+    return true;
 }
 
 void GrassEditorSystem::SetCurrentLayer(uint8 layer)
@@ -300,4 +318,9 @@ void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)
             vegetationMapCopy->InsertImage(vegetationMap, r.GetPosition(), r);
         }
     }
+}
+
+DAVA::VegetationRenderObject* GrassEditorSystem::GetCurrentVegetationObject() const
+{
+    return curVegetation;
 }

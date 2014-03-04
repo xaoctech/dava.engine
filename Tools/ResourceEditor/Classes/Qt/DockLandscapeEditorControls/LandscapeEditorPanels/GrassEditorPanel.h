@@ -8,6 +8,7 @@
 #include "Scene/System/GrassEditorSystem.h"
 
 #define LAYERS_COUNT 3
+#define BRUSH_COUNT
 
 class GrassEditorPanel: public LandscapeEditorBasePanel
 {
@@ -33,8 +34,15 @@ protected:
 	virtual void ConnectToShortcuts();
 	virtual void DisconnectFromShortcuts();
 
+protected slots:
+    void OnLayerSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void OnBrushSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void OnHeightChanged(int value);
+    void OnDensityChanged(int value);
+
 private:
     QTableWidget *layersList;
+    QTableWidget *brushList;
 
     QCheckBox *layerCheckBoxes[LAYERS_COUNT];
     QSlider *grassHeight;
