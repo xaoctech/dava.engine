@@ -296,21 +296,25 @@ void MaterialModel::Sync()
             for(int j = 0; j < item->rowCount(); ++j)
             {
                 MaterialItem *instanceItem = (MaterialItem *) item->child(j);
+                
                 const DAVA::RenderBatch *rb = curScene->materialSystem->GetRenderBatch(instanceItem->GetMaterial());
-                const DAVA::RenderObject *ro = rb->GetRenderObject();
-
-                for(DAVA::uint32 k = 0; k < ro->GetRenderBatchCount(); ++k)
+                
+                if(rb)
                 {
-                    int lodIndex, swIndex;
-                    DAVA::RenderBatch *batch = ro->GetRenderBatch(k, lodIndex, swIndex);
-                    if(rb == batch)
+                    const DAVA::RenderObject *ro = rb->GetRenderObject();
+                    
+                    for(DAVA::uint32 k = 0; k < ro->GetRenderBatchCount(); ++k)
                     {
-                        instanceItem->SetLodIndex(lodIndex);
-                        instanceItem->SetSwitchIndex(swIndex);
-                        break;
+                        int lodIndex, swIndex;
+                        DAVA::RenderBatch *batch = ro->GetRenderBatch(k, lodIndex, swIndex);
+                        if(rb == batch)
+                        {
+                            instanceItem->SetLodIndex(lodIndex);
+                            instanceItem->SetSwitchIndex(swIndex);
+                            break;
+                        }
                     }
                 }
-                
             }
 		}
 
