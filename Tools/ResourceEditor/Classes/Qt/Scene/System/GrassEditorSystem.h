@@ -33,10 +33,12 @@
 
 #include "DAVAEngine.h"
 #include "LandscapeEditorDrawSystem.h"
+#include "Render/Highlevel/VegetationRenderObject.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;
 class EntityModificationSystem;
+class Command2;
 
 using namespace DAVA;
 
@@ -48,12 +50,32 @@ public:
 
 	void Update(DAVA::float32 timeElapsed);
 	void ProcessUIEvent(DAVA::UIEvent *event);
+    void ProcessCommand(const Command2 *command, bool redo);
 
     bool EnableGrassEdit(bool enable);
     bool IsEnabledGrassEdit() const;
 
+    void SetCurrentLayer(uint8 layer);
+    uint8 GetCurrentLayer() const;
+
+    void SetBrushType(uint8 type);
+    uint8 GetBrushType() const;
+
+    void SetBrushHeight(uint8 height);
+    uint8 GetBrushHeight() const;
+
+    void SetBrushDensity(uint8 density);
+    uint8 GetBrushDensity() const;
+
 protected:
-	bool enabled;
+	bool isEnabled;
+    bool inDrawState;
+
+    DAVA::Vector2 curCursorPos;
+    DAVA::AABBox2 affectedArea;
+    
+    uint8 curBrush;
+    uint8 curLayer;
 
 	SceneCollisionSystem* collisionSystem;
 	SceneSelectionSystem* selectionSystem;
@@ -62,8 +84,15 @@ protected:
 
 	Texture* cursorTexture;
     DAVA::Vector2 cursorPosition;
+    DAVA::VegetationMap *vegetationMap;
+    DAVA::VegetationMap *vegetationMapCopy;
 
-    void UpdateCursorPosition(int32 landscapeSize);
+    void UpdateCursorPos();
+    void DrawGrass(DAVA::Vector2 pos);
+    void DrawGrassEnd();
+    void BuildGrassCopy(DAVA::AABBox2 area = DAVA::AABBox2());
+
+    DAVA::VegetationRenderObject* SearchVegetation(DAVA::Entity *entity) const;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__GRASSEDITORSYSTEM__) */

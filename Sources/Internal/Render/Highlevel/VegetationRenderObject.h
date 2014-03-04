@@ -94,7 +94,7 @@ public:
     void SetHeightmap(Texture* _heightmap);
 
     void SetVegetationMap(VegetationMap* map);
-    const VegetationMap* GetVegetationMap() const;
+    VegetationMap* GetVegetationMap() const;
     
     void SetTextureSheet(const TextureSheet& sheet);
     const TextureSheet& GetTextureSheet() const;

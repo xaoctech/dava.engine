@@ -108,7 +108,7 @@ VegetationRenderObject::VegetationRenderObject() :
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
     
-    type = RenderObject::TYPE_CUSTOM_DRAW;
+    type = RenderObject::TYPE_VEGETATION;
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
     
@@ -245,7 +245,7 @@ void VegetationRenderObject::SetVegetationMap(VegetationMap* map)
     }
 }
     
-const VegetationMap* VegetationRenderObject::GetVegetationMap() const
+VegetationMap* VegetationRenderObject::GetVegetationMap() const
 {
     return vegetationMap;
 }
@@ -305,7 +305,7 @@ void VegetationRenderObject::BuildVegetationBrush(uint32 maxClusters)
     uint32 clusterTypeCount = textureSheet.cells.size();
     Vector2 unitSize = GetVegetationUnitWorldSize();
     
-    uint32 clusterPerRow = sqrt(maxClusters) * MAX_VEGETATION_LAYERS;
+    uint32 clusterPerRow = sqrt((float32) maxClusters) * MAX_VEGETATION_LAYERS;
     uint32 totalRows = clusterPerRow; //maybe: clusterLimits / clusterPerRow
     uint32 maxClusterCount = clusterPerRow * totalRows;
 

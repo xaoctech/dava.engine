@@ -483,6 +483,7 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 	selectionSystem->ProcessCommand(command, redo);
 	hoodSystem->ProcessCommand(command, redo);
 	modifSystem->ProcessCommand(command, redo);
+    grassEditorSystem->ProcessCommand(command, redo);
 	
 	if(structureSystem)
 		structureSystem->ProcessCommand(command, redo);
@@ -706,6 +707,8 @@ int32 SceneEditor2::GetEnabledTools()
     {
         toolFlags |= LANDSCAPE_TOOL_GRASS_EDITOR;
     }
+
+    toolFlags |= LANDSCAPE_TOOL_GRASS_EDITOR;
 
 	return toolFlags;
 }

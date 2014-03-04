@@ -37,10 +37,16 @@
 #include "LandscapeEditorDrawSystem/HeightmapProxy.h"
 #include "LandscapeEditorDrawSystem/GrassEditorProxy.h"
 #include "Scene/SceneSignals.h"
+#include "Commands2/ImageRegionCopyCommand.h"
 
 GrassEditorSystem::GrassEditorSystem(Scene* scene)
-:	SceneSystem(scene)
-,	enabled(false)
+: SceneSystem(scene)
+, isEnabled(false)
+, inDrawState(false)
+, vegetationMap(NULL)
+, vegetationMapCopy(NULL)
+, curBrush(0xf0)
+, curLayer(0)
 {
 	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/squareCursor.tex");
 	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
@@ -54,6 +60,8 @@ GrassEditorSystem::GrassEditorSystem(Scene* scene)
 GrassEditorSystem::~GrassEditorSystem()
 {
 	SafeRelease(cursorTexture);
+    SafeRelease(vegetationMap);
+    SafeRelease(vegetationMapCopy);
 }
 
 void GrassEditorSystem::Update(DAVA::float32 timeElapsed)
@@ -61,29 +69,57 @@ void GrassEditorSystem::Update(DAVA::float32 timeElapsed)
 
 void GrassEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 {
-    if(enabled)
+    if(isEnabled && NULL != vegetationMap)
     {
-	    UpdateCursorPosition(128);
+        UpdateCursorPos();
 
-	    if (UIEvent::PHASE_KEYCHAR == event->phase)
-	    {
-	    }
-	    else if (event->tid == UIEvent::BUTTON_1)
+        if (event->tid == UIEvent::BUTTON_1)
 	    {
 		    Vector3 point;
 
 		    switch(event->phase)
 		    {
-			    case UIEvent::PHASE_BEGAN:
+                case UIEvent::PHASE_BEGAN:
+                    {
+                        inDrawState = true;
+                        affectedArea.Empty();
+                        affectedArea.AddPoint(curCursorPos);
+                        DrawGrass(curCursorPos);
+                    }
 				    break;
 
 			    case UIEvent::PHASE_DRAG:
+                    if(inDrawState)
+                    {
+                        affectedArea.AddPoint(curCursorPos);
+                        DrawGrass(curCursorPos);
+                    }
 				    break;
 
 			    case UIEvent::PHASE_ENDED:
+                    if(inDrawState)
+                    {
+                        inDrawState = false;
+                        DrawGrassEnd();
+                    }
 				    break;
 		    }
 	    }
+    }
+}
+
+void GrassEditorSystem::ProcessCommand(const Command2 *command, bool redo)
+{
+    if(NULL != command)
+    {
+        int cmdId = command->GetId();
+        if(cmdId == CMDID_IMAGE_REGION_COPY)
+        {
+            ImageRegionCopyCommand* imCmd = (ImageRegionCopyCommand *) command;
+
+            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width - 1, imCmd->pos.y + imCmd->orig->height - 1)));
+            ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
+        }
     }
 }
 
@@ -93,19 +129,28 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
 
     if(LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS == drawSystem->VerifyLandscape())
     {
-        if(enable != enabled)
+        if(enable != isEnabled)
         {
-            enabled = enable;
-            ret = true;
-
             if(enable)
             {
-                selectionSystem->SetLocked(true);
-                modifSystem->SetLocked(true);
+                DAVA::VegetationRenderObject *veg = SearchVegetation(GetScene());
 
-                drawSystem->EnableCursor(128);
-                drawSystem->SetCursorTexture(cursorTexture);
-                drawSystem->SetCursorSize(1);
+                if(NULL != veg && NULL !=veg->GetVegetationMap())
+                {
+                    isEnabled = true;
+                    ret = true;
+
+                    vegetationMap = SafeRetain(veg->GetVegetationMap());
+
+                    selectionSystem->SetLocked(true);
+                    modifSystem->SetLocked(true);
+
+                    drawSystem->EnableCursor(vegetationMap->width);
+                    drawSystem->SetCursorTexture(cursorTexture);
+                    drawSystem->SetCursorSize(1);
+
+                    BuildGrassCopy();
+                }
             }
             else
             {
@@ -114,6 +159,12 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
 
                 drawSystem->DisableCursor();
                 drawSystem->DisableCustomDraw();
+
+                SafeRelease(vegetationMap);
+                SafeRelease(vegetationMapCopy);
+
+                isEnabled = false;
+                ret = true;
             }
         }
     }
@@ -123,31 +174,130 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
 
 bool GrassEditorSystem::IsEnabledGrassEdit() const
 {
-    return enabled;
+    return isEnabled;
 }
 
-void GrassEditorSystem::UpdateCursorPosition(int32 landscapeSize)
+void GrassEditorSystem::UpdateCursorPos()
 {
-	Vector3 landPos;
-	if (collisionSystem->LandRayTestFromCamera(landPos))
-	{
-		Vector2 point(landPos.x, landPos.y);
+    Vector3 landPos;
+    if(NULL != vegetationMap && collisionSystem->LandRayTestFromCamera(landPos))
+    {
+        Vector2 point(landPos.x, landPos.y);
+        AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 
-		//point.x = (float32)((int32)point.x);
-		//point.y = (float32)((int32)point.y);
+        curCursorPos.x = (point.x - box.min.x) * vegetationMap->width / (box.max.x - box.min.x);
+        curCursorPos.y = (point.y - box.min.y) * vegetationMap->height / (box.max.y - box.min.y);
+        curCursorPos.x = (int32) curCursorPos.x;
+        curCursorPos.y = (int32) curCursorPos.y;
 
-		AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
+        drawSystem->SetCursorPosition(curCursorPos);
+    }
+    else
+    {
+        curCursorPos = DAVA::Vector2(-100, -100);
+    }
 
-		cursorPosition.x = (point.x - box.min.x) * landscapeSize / (box.max.x - box.min.x);
-		cursorPosition.y = (point.y - box.min.y) * landscapeSize / (box.max.y - box.min.y);
-		cursorPosition.x = (int32)cursorPosition.x;
-		cursorPosition.y = (int32)cursorPosition.y;
+    drawSystem->SetCursorPosition(curCursorPos);
+}
 
-		drawSystem->SetCursorPosition(cursorPosition);
-	}
-	else
-	{
-		// hide cursor
-		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
-	}
+DAVA::VegetationRenderObject* GrassEditorSystem::SearchVegetation(DAVA::Entity *entity) const
+{
+    DAVA::VegetationRenderObject* ret = DAVA::GetVegetation(entity);
+
+    if(NULL == ret && NULL != entity)
+    {
+        for(int i = 0; NULL == ret && i < entity->GetChildrenCount(); ++i)
+        {
+            ret = SearchVegetation(entity->GetChild(i));
+        }
+    }
+
+    return ret;
+}
+
+void GrassEditorSystem::SetCurrentLayer(uint8 layer)
+{
+    DVASSERT(layer < 3);
+
+    curLayer = layer;
+}
+
+uint8 GrassEditorSystem::GetCurrentLayer() const
+{
+    return curLayer;
+}
+
+void GrassEditorSystem::SetBrushType(uint8 type)
+{
+    curBrush |= ((type & 0x3) << 6);
+}
+
+uint8 GrassEditorSystem::GetBrushType() const
+{
+    return ((curBrush >> 6) & 0x3);
+}
+
+void GrassEditorSystem::SetBrushHeight(uint8 height)
+{
+    curBrush |= ((height & 0x3) << 4);
+}
+
+uint8 GrassEditorSystem::GetBrushHeight() const
+{
+    return ((curBrush >> 4) & 0x3);
+}
+
+void GrassEditorSystem::SetBrushDensity(uint8 density)
+{
+    curBrush |= (density & 0xf);
+}
+
+uint8 GrassEditorSystem::GetBrushDensity() const
+{
+    return (curBrush & 0xf);
+}
+
+void GrassEditorSystem::DrawGrass(DAVA::Vector2 pos)
+{
+    if(NULL != vegetationMap)
+    {
+        DVASSERT(pos.x < vegetationMap->width);
+        DVASSERT(pos.y < vegetationMap->height);
+
+        DAVA::uint32 offset = (pos.y * vegetationMap->width + pos.x);
+        DAVA::uint32 ps = offset * Texture::GetPixelFormatSizeInBytes(vegetationMap->format);
+
+        vegetationMap->data[ps + curLayer] = curBrush;
+    }
+}
+
+void GrassEditorSystem::DrawGrassEnd()
+{
+    if(!affectedArea.IsEmpty() && NULL != vegetationMapCopy)
+    {
+        SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
+
+        DAVA::Rect affectedRect = affectedArea.GetRect();
+        DAVA::Image *orig = DAVA::Image::CopyImageRegion(vegetationMapCopy, affectedRect);
+        sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, orig));
+
+        //BuildGrassCopy(affectedArea);
+        //ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
+    }
+}
+
+void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)
+{
+    if(NULL != vegetationMap)
+    {
+        if(NULL == vegetationMapCopy)
+        {
+            vegetationMapCopy = DAVA::Image::CreateFromData(vegetationMap->width, vegetationMap->height, vegetationMap->format, vegetationMap->data);
+        }
+        else
+        {
+            DAVA::Rect r = area.GetRect();
+            vegetationMapCopy->InsertImage(vegetationMap, r.GetPosition(), r);
+        }
+    }
 }
