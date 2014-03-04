@@ -55,7 +55,7 @@ class TexturePacker
 {
 public:
 
-	static const int32 TEXTURE_SIZE = 2048;
+	static const uint32 DEFAULT_TEXTURE_SIZE = 2048;
 	
 	struct FilterItem
 	{
@@ -90,7 +90,7 @@ public:
 
 	void UseOnlySquareTextures();
 
-	void SetMaxTextureSize(int32 maxTextureSize);
+	void SetMaxTextureSize(uint32 maxTextureSize);
 	
 	const Set<String>& GetErrors() const;
 	
@@ -112,7 +112,7 @@ private:
 	Vector<ImagePacker*> usedPackers;
 
 	Vector<SizeSortItem> sortVector;
-	int32 maxTextureSize;
+	uint32 maxTextureSize;
 
 	bool onlySquareTextures;
     bool NeedSquareTextureForCompression(eGPUFamily forGPU);
