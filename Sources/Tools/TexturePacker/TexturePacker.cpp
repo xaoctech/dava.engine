@@ -48,7 +48,7 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
-	maxTextureSize = TEXTURE_SIZE;
+	maxTextureSize = DEFAULT_TEXTURE_SIZE;
 	onlySquareTextures = false;
 	errors.clear();
 }
@@ -596,7 +596,7 @@ void TexturePacker::UseOnlySquareTextures()
 	onlySquareTextures = true;
 }
 
-void TexturePacker::SetMaxTextureSize(int32 _maxTextureSize)
+void TexturePacker::SetMaxTextureSize(uint32 _maxTextureSize)
 {
 	maxTextureSize = _maxTextureSize;
 }
