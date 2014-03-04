@@ -48,6 +48,8 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
+    SetConvertQuality(TextureConverter::ECQ_VERY_HIGH);
+    
 	maxTextureSize = TEXTURE_SIZE;
 	onlySquareTextures = false;
 	errors.clear();
@@ -613,7 +615,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
     eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
     if(gpuFamily != GPU_UNKNOWN)
     {
-		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false, quality);
         
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
@@ -789,6 +791,12 @@ const Set<String>& TexturePacker::GetErrors() const
 {
 	return errors;
 }
+    
+void TexturePacker::SetConvertQuality(TextureConverter::eConvertQuality _quality)
+{
+    quality = _quality;
+}
+
 
 void TexturePacker::AddError(const String& errorMsg)
 {

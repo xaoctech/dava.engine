@@ -36,23 +36,21 @@
 #include "FileSystem/VariantType.h"
 #include "../StringConstants.h"
 
+#include "Base/EnumMap.h"
+
 struct SettingRow
 {
 	DAVA::String key;
 	DAVA::VariantType defValue;
+    const EnumMap *enumMap;
 
-	SettingRow(const char* _key,const DAVA::VariantType& _defaultValue)
+	SettingRow(const char* _key,const DAVA::VariantType& _defaultValue, const EnumMap *_enumMap = NULL)
 	{
 		key = _key;
 		defValue  = _defaultValue;
+        enumMap = _enumMap;
 	}
 };
-
-extern const SettingRow SETTINGS_GROUP_GENERAL_MAP[];
-
-extern const SettingRow SETTINGS_GROUP_DEFAULT_MAP[];
-
-extern const SettingRow SETTINGS_GROUP_INTERNAL_MAP[];
 
 class SettingsManager: public DAVA::Singleton<SettingsManager>
 {
@@ -74,6 +72,7 @@ public:
 	DAVA::KeyedArchive* GetSettingsGroup(eSettingsGroups group);
 
 	DAVA::VariantType GetValue(const DAVA::String& _name, eSettingsGroups group) const;
+    const EnumMap * GetAllowedValues(const DAVA::String& _name, eSettingsGroups group) const;
 
 	void SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, eSettingsGroups group);
 
