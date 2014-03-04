@@ -47,6 +47,7 @@ namespace DAVA
 	{
 		parent = NULL;
 		controlState = STATE_NORMAL;
+        recursiveVisible = true;
 		visible = true;
 		visibleForUIEditor = true;
 		/* 
@@ -947,6 +948,21 @@ namespace DAVA
 		}
 	}
 
+    bool UIControl::GetRecursiveVisible() const
+    {
+        return recursiveVisible;
+    }
+
+    void UIControl::SetRecursiveVisible(bool isVisible)
+    {
+        if (!isVisible && recursiveVisible)
+        {
+            UIControlSystem::Instance()->CancelInputs(this);
+        }
+
+        recursiveVisible = isVisible;
+    }
+
 	void UIControl::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
 	{
 		visibleForUIEditor = value;
@@ -1341,6 +1357,7 @@ namespace DAVA
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
 		controlState = srcControl->controlState;
+        recursiveVisible = srcControl->recursiveVisible;
 		visible = srcControl->visible;
 		visibleForUIEditor = srcControl->visibleForUIEditor;
 		inputEnabled = srcControl->inputEnabled;
@@ -1571,6 +1588,9 @@ namespace DAVA
 
 	void UIControl::SystemDraw(const UIGeometricData &geometricData)
 	{
+        if( !recursiveVisible )
+            return;
+
         UIControlSystem::Instance()->drawCounter++;
 		UIGeometricData drawData;
 		drawData.position = relativePosition;
@@ -1955,6 +1975,10 @@ namespace DAVA
 	{
         UIControlSystem::Instance()->inputCounter++;
 		isUpdated = true;
+
+        if( !recursiveVisible )
+            return false;
+
 		//if(currentInput->touchLocker != this)
 		{
 			if(clipContents 
@@ -2095,6 +2119,11 @@ namespace DAVA
 
 		// Control name
 		//node->Set("name", this->GetName());
+        // Recursive Visible
+        if (baseControl->GetRecursiveVisible() != GetRecursiveVisible())
+        {
+            node->Set("recursiveVisible", GetRecursiveVisible());
+        }
 		// Visible
 		if (baseControl->GetVisible() != this->GetVisible())
 		{
@@ -2345,6 +2374,13 @@ namespace DAVA
 			bool clipContents = loader->GetBoolFromYamlNode(clipNode, false); 
 			SetClipContents(clipContents);
 		}
+
+        const YamlNode * recursiveVisibleNode = node->Get("recursiveVisible");
+        if(recursiveVisibleNode)
+        {
+            bool isVisible = loader->GetBoolFromYamlNode(recursiveVisibleNode, true);
+            SetRecursiveVisible(isVisible);
+        }
 		
 		const YamlNode * visibleNode = node->Get("visible");
 		if(visibleNode)
