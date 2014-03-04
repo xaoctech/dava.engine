@@ -18,8 +18,9 @@ namespace DAVA
     
 static const FastName UNIFORM_TILEPOS = FastName("tilePos");
 static const FastName UNIFORM_WORLD_SIZE = FastName("worldSize");
-static const FastName UNIFORM_VEGETATIONLAYERS = FastName("vegetationLayers");
-    
+static const FastName UNIFORM_CLUSTER_SCALE_MAP = FastName("clusterScaleMap");
+static const FastName UNIFORM_CLUSTER_DENSITY_MAP = FastName("clusterDensityMap");
+
 static const FastName UNIFORM_SAMPLER_VEGETATIONMAP = FastName("vegetationmap");
     
 static const uint32 MAX_VEGETATION_LAYERS = 3;
@@ -27,46 +28,51 @@ static const uint32 MAX_VERTEX_PER_CLUSTER = 12;
 static const uint32 MAX_INDEX_PER_CLUSTER = 18;
 static const uint32 MAX_CLUSTER_TYPES = 4;
 static const uint32 MAX_DENSITY_LEVELS = 16;
+static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 3.0f;
     
 static const uint32 MAX_BRUSH_DIVERSITY = 4;
     
-static const float32 MAX_ROTATION_ANGLE = 30.0f;
-static const Vector3 MAX_DISPLACEMENT = Vector3(0.5f, 0.5f, 0.0f);
+static const size_t MAX_RENDER_CELLS = 40;
+static const float32 MAX_VISIBLE_DISTANCE = 180.0f * 180.0f; //meters * meters (square length)
+    
+static const float32 MAX_ROTATION_ANGLE = 0.0f;
+static const Vector3 MAX_DISPLACEMENT = Vector3(0.0f, 0.0f, 0.0f);
+    
     
 static const Vector3 CLUSTER_TYPE_0[] =
 {
-    Vector3(-0.5f, 0.0f, 0.5f),
-    Vector3(0.5f, 0.0f, 0.5f),
-    Vector3(0.5f, 0.0f, -0.5f),
-    Vector3(-0.5f, 0.0f, -0.5f),
+    Vector3(-0.5f, 0.0f, 1.0f),
+    Vector3(0.5f, 0.0f, 1.0f),
+    Vector3(0.5f, 0.0f, 0.0f),
+    Vector3(-0.5f, 0.0f, 0.0f),
     
-    Vector3(-0.35f, -0.35f, 0.5f),
-    Vector3(0.35f, 0.35f, 0.5f),
-    Vector3(0.35f, 0.35f, -0.5f),
-    Vector3(-0.35f, -0.35f, -0.5f),
+    Vector3(-0.35f, -0.35f, 1.0f),
+    Vector3(0.35f, 0.35f, 1.0f),
+    Vector3(0.35f, 0.35f, 0.0f),
+    Vector3(-0.35f, -0.35f, 0.0f),
 
-    Vector3(-0.35f, 0.35f, 0.5f),
-    Vector3(0.35f, -0.35f, 0.5f),
-    Vector3(0.35f, -0.35f, -0.5f),
-    Vector3(-0.35f, 0.35f, -0.5f),
+    Vector3(-0.35f, 0.35f, 1.0f),
+    Vector3(0.35f, -0.35f, 1.0f),
+    Vector3(0.35f, -0.35f, 0.0f),
+    Vector3(-0.35f, 0.35f, 0.0f),
 };
 
 static const Vector3 CLUSTER_TYPE_1[] =
 {
-    Vector3(-0.5f, 0.1f, 0.5f),
-    Vector3(0.5f, 0.1f, 0.5f),
-    Vector3(0.5f, 0.1f, -0.5f),
-    Vector3(-0.5f, 0.1f, -0.5f),
+    Vector3(-0.5f, 0.1f, 1.0f),
+    Vector3(0.5f, 0.1f, 1.0f),
+    Vector3(0.5f, 0.1f, 0.0f),
+    Vector3(-0.5f, 0.1f, 0.0f),
     
-    Vector3(-0.15f, -0.53f, 0.5f),
-    Vector3(0.35f, 0.33f, 0.5f),
-    Vector3(0.35f, 0.33f, -0.5f),
-    Vector3(-0.15f, -0.53f, -0.5f),
+    Vector3(-0.15f, -0.53f, 1.0f),
+    Vector3(0.35f, 0.33f, 1.0f),
+    Vector3(0.35f, 0.33f, 0.0f),
+    Vector3(-0.15f, -0.53f, 0.0f),
     
-    Vector3(-0.35f, 0.33f, 0.5f),
-    Vector3(0.15f, -0.53f, 0.5f),
-    Vector3(0.15f, -0.53f, -0.5f),
-    Vector3(-0.35f, 0.33f, -0.5f),
+    Vector3(-0.35f, 0.33f, 1.0f),
+    Vector3(0.15f, -0.53f, 1.0f),
+    Vector3(0.15f, -0.53f, 0.0f),
+    Vector3(-0.35f, 0.33f, 0.0f),
 };
     
 static const int16 CLUSTER_INDICES[] =
@@ -99,6 +105,11 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
     COUNT_OF(CLUSTER_INDICES),
     COUNT_OF(CLUSTER_INDICES)
 };
+    
+int32 RandomShuffleFunc(int32 limit)
+{
+    return (Random::Instance()->Rand() % limit);
+}
 
     
 VegetationRenderObject::VegetationRenderObject() :
@@ -175,15 +186,12 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
 {
     DVASSERT(clusterBrushes.size() > 0);
     
-    Vector4 visibleArea = GetVisibleArea(camera);
+    visibleCells.clear();
+    BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
+    std::stable_sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
-    int32 visibleX = (int32)visibleArea.x;
-    int32 visibleY = (int32)visibleArea.y;
-    int32 visibleWidth = (int32)visibleArea.z;
-    int32 visibleHeight = (int32)visibleArea.w;
-    
-    int32 requestedBatchCount = (int32)(visibleWidth * visibleHeight);
-    int32 currentBatchCount = GetRenderBatchCount();
+    uint32 requestedBatchCount = Min(visibleCells.size(), MAX_RENDER_CELLS);
+    uint32 currentBatchCount = GetRenderBatchCount();
     
     if(requestedBatchCount > currentBatchCount)
     {
@@ -192,7 +200,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         for(int32 i = 0; i < batchesToAdd; ++i)
         {
             RenderBatch* rb = GetRenderBatchFromPool(vegetationMaterial);
-        
+            
             AddRenderBatch(rb);
         }
     }
@@ -207,24 +215,39 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         
         ReturnToPool(batchesToRemove);
     }
-
-    int32 renderBatchIndex = 0;
-    Vector2 vegetationUnitSize = GetVegetationUnitWorldSize();
-    for(int32 y = visibleY; y < (visibleY + visibleHeight); ++y)
+    
+    Matrix4 scaleMap;
+    Matrix4 densityMap;
+    
+    for(size_t i = 0; i < requestedBatchCount; ++i)
     {
-        for(int32 x = visibleX; x < (visibleX + visibleWidth); ++x)
+        RenderBatch* rb = GetRenderBatch(i);
+        NMaterial* mat = rb->GetMaterial();
+        SpatialData* spatialData = visibleCells[i];
+        
+        Vector4 posScale(spatialData->bbox.min.x,
+                         spatialData->bbox.min.y,
+                         worldSize.x,
+                         worldSize.y);
+
+        scaleMap.Zero();
+        densityMap.Zero();
+
+        for(uint32 layerIndex = 0; layerIndex < MAX_VEGETATION_LAYERS; ++layerIndex)
         {
-            RenderBatch* rb = GetRenderBatch(renderBatchIndex);
-            NMaterial* mat = rb->GetMaterial();
+            uint32 cellLayerData = 0x000000FF & (spatialData->cellDescription >> ((MAX_VEGETATION_LAYERS - layerIndex) * 8));
             
-            Vector4 posScale(x * vegetationUnitSize.x,
-                             y * vegetationUnitSize.y,
-                             worldSize.x,
-                             worldSize.y);
-            mat->SetPropertyValue(UNIFORM_TILEPOS, Shader::UT_FLOAT_VEC4, 1, &posScale);
-            
-            renderBatchIndex++;
+            int32 clusterType = (cellLayerData >> 6);
+            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0x00000003)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
+            float32 density = (1.0f * (cellLayerData & 0x0000000F)) + 1.0f; //step function uses "<" so we need to emulate "<="
+
+            densityMap._data[layerIndex][clusterType] = density;
+            scaleMap._data[layerIndex][clusterType] = clusterScale;
         }
+        
+        mat->SetPropertyValue(UNIFORM_TILEPOS, Shader::UT_FLOAT_VEC4, 1, posScale.data);
+        mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_MAP, Shader::UT_FLOAT_MAT4, 1, scaleMap.data);
+        mat->SetPropertyValue(UNIFORM_CLUSTER_DENSITY_MAP, Shader::UT_FLOAT_MAT4, 1, densityMap.data);
     }
 }
     
@@ -242,6 +265,16 @@ void VegetationRenderObject::SetVegetationMap(VegetationMap* map)
         
         SafeRelease(vegetationMap);
         vegetationMap = SafeRetain(map);
+        
+        if(IsValidData())
+        {
+            unitWorldSize = GetVegetationUnitWorldSize();
+            
+            if(vegetationMap)
+            {
+                BuildSpatialStructure(vegetationMap);
+            }
+        }
     }
 }
     
@@ -305,79 +338,97 @@ void VegetationRenderObject::BuildVegetationBrush(uint32 maxClusters)
     uint32 clusterTypeCount = textureSheet.cells.size();
     Vector2 unitSize = GetVegetationUnitWorldSize();
     
-    uint32 clusterPerRow = sqrt((float32) maxClusters) * MAX_VEGETATION_LAYERS;
-    uint32 totalRows = clusterPerRow; //maybe: clusterLimits / clusterPerRow
-    uint32 maxClusterCount = clusterPerRow * totalRows;
-
+    uint32 totalClustersPerUnit = (maxClusters * maxClusters);
+    
+    Vector2 clusterOffset(unitSize.x / maxClusters,
+                          unitSize.y / maxClusters);
+    
+    Vector2 clusterTypeOffset(clusterOffset.x / clusterTypeCount,
+                              clusterOffset.y / clusterTypeCount);
+    
+    Vector3 normal(0.0f, 0.0f, 1.0f); //up
+    
+    Vector<uint32> shuffleDensity;
+    shuffleDensity.reserve(totalClustersPerUnit);
+    for(uint32 i = 0; i < totalClustersPerUnit; ++i)
+    {
+        shuffleDensity.push_back((i % MAX_DENSITY_LEVELS) + 1);
+    }
+    
     for(uint32 brushIndex = 0; brushIndex < MAX_BRUSH_DIVERSITY; ++brushIndex)
     {
         PolygonGroup* clusterBrush = clusterBrushes[brushIndex];
         clusterBrush->ReleaseData();
         
         
-        clusterBrush->AllocateData(EVF_VERTEX | EVF_NORMAL | EVF_BINORMAL | EVF_TEXCOORD0 | EVF_TEXCOORD1,
-                                   MAX_VERTEX_PER_CLUSTER * maxClusterCount ,
-                                   MAX_INDEX_PER_CLUSTER * maxClusterCount);
+        clusterBrush->AllocateData(EVF_VERTEX | EVF_NORMAL | EVF_BINORMAL | EVF_TANGENT | EVF_TEXCOORD0,
+                                   MAX_VERTEX_PER_CLUSTER * totalClustersPerUnit * MAX_VEGETATION_LAYERS * clusterTypeCount,
+                                   MAX_INDEX_PER_CLUSTER * totalClustersPerUnit * MAX_VEGETATION_LAYERS * clusterTypeCount);
         
-        uint32 indicesIndex = 0;
         uint32 vertexIndex = 0;
-        Vector3 normal(0.0f, 0.0f, 1.0f); //up
+        uint32 indexIndex = 0;
         
-        float32 clusterOffsetX = unitSize.x / clusterPerRow;
-        float32 clusterOffsetY = unitSize.y / totalRows;
-        
-        for(uint32 clusterIndex = 0; clusterIndex < maxClusterCount; ++clusterIndex)
+        for(uint32 layerIndex = 0; layerIndex < MAX_VEGETATION_LAYERS; ++layerIndex)
         {
-            uint32 layerId = clusterIndex % MAX_VEGETATION_LAYERS;
-            uint32 clusterType = clusterIndex % clusterTypeCount;
-            uint32 clusterBaseLine = clusterIndex / clusterPerRow; //y
-            uint32 clusterBaselinePosition = clusterIndex - clusterPerRow * clusterBaseLine; //x
-            uint32 clusterOffsetFromBaseline = clusterBaselinePosition % 2; //y additional offset
-            
-            float32 randomRotation = MAX_ROTATION_ANGLE * (float32)Random::Instance()->RandFloat();
-            float32 randomDisplacementX = (float32)Random::Instance()->RandFloat();
-            float32 randomDisplacementY = (float32)Random::Instance()->RandFloat();
-            float32 randomDisplacementZ = (float32)Random::Instance()->RandFloat();
-            
-            Matrix4 transform = Matrix4::MakeRotation(normal, DegToRad(randomRotation)) *
-                                Matrix4::MakeTranslation(Vector3(MAX_DISPLACEMENT.x * randomDisplacementX,
-                                                                 MAX_DISPLACEMENT.y * randomDisplacementY,
-                                                                 MAX_DISPLACEMENT.z * randomDisplacementZ));
-            
-            const int16* indexData = VEGETATION_CLUSTER_INDICES[clusterOffsetFromBaseline];
-            uint32 indexDataSize = VEGETATION_CLUSTER_INDEX_SIZE[clusterOffsetFromBaseline];
-            for(uint32 i = 0; i < indexDataSize; ++i)
+            for(uint32 clusterTypeIndex = 0; clusterTypeIndex < clusterTypeCount; ++clusterTypeIndex)
             {
-                clusterBrush->SetIndex(indicesIndex, vertexIndex + indexData[i]);
-                indicesIndex++;
-            }
-            
-            const Vector3* vertexData = VEGETATION_CLUSTER[clusterOffsetFromBaseline];
-            uint32 vertexDataSize = VEGETATION_CLUSTER_SIZE[clusterOffsetFromBaseline];
-            for(uint32 i = 0; i < vertexDataSize; ++i)
-            {
-                Vector3 clusterCenter = Vector3(clusterBaselinePosition * clusterOffsetX,
-                                                clusterBaseLine * clusterOffsetY + clusterOffsetFromBaseline * clusterOffsetY * 0.5f,
-                                                0.0f);
+                uint32 geometryType = textureSheet.cells[clusterTypeIndex].geometryId;
+                std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
                 
-                Vector3 vertexCoord0 = Vector3(vertexData[i].x + clusterBaselinePosition * clusterOffsetX,
-                                               vertexData[i].y + clusterBaseLine * clusterOffsetY + clusterOffsetFromBaseline * clusterOffsetY * 0.5f,
-                                               vertexData[i].z);
-                vertexCoord0 = vertexCoord0 * transform;
-                
-                
-                clusterBrush->SetCoord(vertexIndex, vertexCoord0);
-                clusterBrush->SetBinormal(vertexIndex, clusterCenter);
-                clusterBrush->SetTexcoord(0, vertexIndex, textureSheet.cells[clusterType].coords[i % MAX_CELL_TEXTURE_COORDS]);
-                clusterBrush->SetTexcoord(1, vertexIndex, Vector2(layerId, clusterIndex % MAX_DENSITY_LEVELS));
-                clusterBrush->SetNormal(vertexIndex, clusterCenter);
-                
-                vertexIndex++;
+                for(uint32 clusterIndex = 0; clusterIndex < totalClustersPerUnit; ++clusterIndex)
+                {
+                    float32 clusterX = (clusterIndex % maxClusters) * clusterOffset.x + clusterTypeIndex * clusterTypeOffset.x;
+                    float32 clusterY = (clusterIndex / maxClusters) * clusterOffset.y + clusterTypeIndex * clusterTypeOffset.y;
+                    
+                    uint32 densityId = shuffleDensity[clusterIndex];
+                    
+                    float32 randomRotation = MAX_ROTATION_ANGLE * (float32)Random::Instance()->RandFloat();
+                    float32 randomDisplacementX = MAX_DISPLACEMENT.x * Random::Instance()->RandFloat();
+                    float32 randomDisplacementY = MAX_DISPLACEMENT.y * Random::Instance()->RandFloat();
+                    float32 randomDisplacementZ = MAX_DISPLACEMENT.z * Random::Instance()->RandFloat();
+                    
+                    Matrix4 transform = Matrix4::MakeRotation(normal, DegToRad(randomRotation)) *
+                                        Matrix4::MakeTranslation(Vector3(randomDisplacementX,
+                                                                         randomDisplacementY,
+                                                                         randomDisplacementZ));
+                    
+                    const int16* indexData = VEGETATION_CLUSTER_INDICES[geometryType];
+                    uint32 indexDataSize = VEGETATION_CLUSTER_INDEX_SIZE[geometryType];
+                    for(uint32 i = 0; i < indexDataSize; ++i)
+                    {
+                        clusterBrush->SetIndex(indexIndex, vertexIndex + indexData[i]);
+                        indexIndex++;
+                    }
+
+                    const Vector3* vertexData = VEGETATION_CLUSTER[geometryType];
+                    uint32 vertexDataSize = VEGETATION_CLUSTER_SIZE[geometryType];
+                    
+                    Vector3 clusterCenter = Vector3(clusterX,
+                                                    clusterY,
+                                                    0.0);
+                    
+                    clusterCenter = clusterCenter * transform;
+                    
+                    for(uint32 i = 0; i < vertexDataSize; ++i)
+                    {
+                        Vector3 vertexCoord = Vector3(vertexData[i].x * textureSheet.cells[clusterTypeIndex].geometryScale.x + clusterCenter.x,
+                                                       vertexData[i].y * textureSheet.cells[clusterTypeIndex].geometryScale.x + clusterCenter.y,
+                                                       vertexData[i].z * textureSheet.cells[clusterTypeIndex].geometryScale.y + clusterCenter.z);
+                        
+                        
+                        clusterBrush->SetCoord(vertexIndex, vertexCoord);
+                        clusterBrush->SetBinormal(vertexIndex, clusterCenter);
+                        clusterBrush->SetTexcoord(0, vertexIndex, textureSheet.cells[clusterTypeIndex].coords[i % MAX_CELL_TEXTURE_COORDS]);
+                        clusterBrush->SetTangent(vertexIndex, Vector3(layerIndex, clusterTypeIndex, densityId));
+                        clusterBrush->SetNormal(vertexIndex, normal);
+                        
+                        vertexIndex++;
+                    }
+                }
             }
         }
-        
-        clusterBrush->BuildBuffers();
     }
+    
 }
     
 RenderBatch* VegetationRenderObject::GetRenderBatchFromPool(NMaterial* material)
@@ -426,7 +477,7 @@ bool VegetationRenderObject::IsValidData() const
     
 Vector4 VegetationRenderObject::GetVisibleArea(Camera* cam)
 {
-    return Vector4(-64, -64, 128, 128);
+    return Vector4(0, 0, 1, 1);
 }
 
 void VegetationRenderObject::SetWorldSize(const Vector3 size)
@@ -441,6 +492,13 @@ void VegetationRenderObject::SetWorldSize(const Vector3 size)
     if(IsValidData())
     {
         BuildVegetationBrush(clusterLimit);
+        
+        unitWorldSize = GetVegetationUnitWorldSize();
+        
+        if(vegetationMap)
+        {
+            BuildSpatialStructure(vegetationMap);
+        }
     }
 }
     
@@ -455,4 +513,114 @@ Vector2 VegetationRenderObject::GetVegetationUnitWorldSize() const
     return Vector2(worldSize.x / vegetationMap->width, worldSize.y / vegetationMap->height);
 }
     
+void VegetationRenderObject::BuildSpatialStructure(VegetationMap* vegMap)
+{
+    DVASSERT(vegMap);
+    DVASSERT(IsPowerOf2(vegMap->GetWidth()));
+    DVASSERT(IsPowerOf2(vegMap->GetHeight()));
+    DVASSERT(vegMap->GetWidth() == vegMap->GetHeight());
+    
+    uint32 mapSize = vegMap->GetWidth();
+    uint32 treeDepth = FastLog2(mapSize);
+    
+    quadTree.Init(treeDepth);
+    AbstractQuadTreeNode<SpatialData>* node = quadTree.GetRoot();
+    
+    uint32 halfSize = mapSize >> 1;
+    BuildSpatialQuad(node, -1 * halfSize, -1 * halfSize, mapSize, mapSize);
+}
+    
+void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
+                          int16 x, int16 y,
+                          uint16 width, uint16 height)
+{
+    DVASSERT(node);
+    
+    node->data.bbox.AddPoint(Vector3(-1.0f * x * unitWorldSize.x, -1.0f * y * unitWorldSize.y, -1.0f * worldSize.z));
+    node->data.bbox.AddPoint(Vector3(-1.0f * (x + width) * unitWorldSize.x, -1.0f * (y + height) * unitWorldSize.y, worldSize.z));
+    node->data.refPoint = node->data.bbox.GetCenter();
+    
+    node->data.x = (1 == width) ? x : -1;
+    node->data.y = (1 == height) ? y : -1;
+    node->data.cellDescription = (1 == width) ? 0x3F7FBFFF : 0; //TODO: init with density from map
+    
+    if(width > 1 && height > 1)
+    {
+        int16 halfWidth = width >> 1;
+        int16 halfHeight = height >> 1;
+        
+        BuildSpatialQuad(node->children[0], x, y, halfWidth, halfHeight);
+        BuildSpatialQuad(node->children[1], x + halfWidth, y, halfWidth, halfHeight);
+        BuildSpatialQuad(node->children[2], x, y + halfHeight, halfWidth, halfHeight);
+        BuildSpatialQuad(node->children[3], x + halfWidth, y + halfHeight, halfWidth, halfHeight);
+    }
+}
+    
+void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
+                                                  Frustum* frustum,
+                                                  Vector<SpatialData*>& cellList)
+{
+    uint8 planeMask = 0x3F;
+    BuildVisibleCellList(cameraPoint, frustum, planeMask, quadTree.GetRoot(), cellList);
+}
+    
+void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
+                                                  Frustum* frustum,
+                                                  uint8& planeMask,
+                                                  AbstractQuadTreeNode<SpatialData>* node,
+                                                  Vector<SpatialData*>& cellList)
+{
+    if(node)
+    {
+        Frustum::eFrustumResult result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
+        if(Frustum::EFR_OUTSIDE != result)
+        {
+            if(node->IsTerminalLeaf())
+            {
+                AddVisibleCell(cameraPoint, &(node->data), MAX_VISIBLE_DISTANCE, cellList);
+            }
+            else
+            {
+                if(frustum->IsFullyInside(node->data.bbox))
+                {
+                    AddAllVisibleCells(cameraPoint, node, cellList);
+                }
+                else
+                {
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[0], cellList);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[1], cellList);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[2], cellList);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[3], cellList);
+                }
+            }
+        }
+    }
+}
+    
+void VegetationRenderObject::AddAllVisibleCells(const Vector3& cameraPoint,
+                                                AbstractQuadTreeNode<SpatialData>* node,
+                                                Vector<SpatialData*>& cellList)
+{
+    if(node)
+    {
+        if(node->IsTerminalLeaf())
+        {
+            AddVisibleCell(cameraPoint, &(node->data), MAX_VISIBLE_DISTANCE, cellList);
+        }
+        else
+        {
+            AddAllVisibleCells(cameraPoint, node->children[0], cellList);
+            AddAllVisibleCells(cameraPoint, node->children[1], cellList);
+            AddAllVisibleCells(cameraPoint, node->children[2], cellList);
+            AddAllVisibleCells(cameraPoint, node->children[3], cellList);
+        }
+    }
+}
+    
+bool VegetationRenderObject::CellByDistanceCompareFunction(const SpatialData* a,
+                                                           const SpatialData* b)
+{
+    return (a->cameraDistance < b->cameraDistance);
+}
+
 };
