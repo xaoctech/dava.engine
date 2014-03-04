@@ -136,6 +136,7 @@ private slots:
 
     // Editing mode (Edit/Preview)
     void OnPreviewTriggered();
+    void OnPreviewModeChanged(int previewSettingsID);
     
     // Edit Preview Settings..
     void OnEditPreviewSettings();
@@ -197,8 +198,11 @@ private:
 
     // Preview handling.
     void EnablePreview(const PreviewSettingsData& data);
+    void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
+
     void UpdatePreviewButton();
+    void UpdatePreviewScale();
 
     // Enable/disable editing controls for Preview mode.
     void EnableEditing(bool value);

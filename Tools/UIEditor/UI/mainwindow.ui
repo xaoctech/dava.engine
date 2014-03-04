@@ -500,6 +500,15 @@
    </attribute>
    <addaction name="actionPreview"/>
   </widget>
+  <widget class="QDockWidget" name="previewSettingsDockWidget">
+   <property name="windowTitle">
+    <string>Preview Settings</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="PreviewSettingsWidget" name="dockWidgetContents"/>
+  </widget>
   <action name="actionOpen_project">
    <property name="enabled">
     <bool>true</bool>
@@ -1038,6 +1047,12 @@
    <class>RulerWidget</class>
    <extends>QWidget</extends>
    <header>Classes/Ruler/RulerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PreviewSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>previewsettingswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

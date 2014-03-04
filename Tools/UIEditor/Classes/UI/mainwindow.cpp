@@ -193,6 +193,11 @@ MainWindow::MainWindow(QWidget *parent) :
 			this,
 			SLOT(OnImportScreenOrAggregator()));
 
+    connect(ui->previewSettingsDockWidget->widget(),
+            SIGNAL(PreviewModeChanged(int)),
+            this,
+            SLOT(OnPreviewModeChanged(int)));
+
 	connect(ScreenWrapper::Instance(),
 			SIGNAL(UpdateScaleRequest(float)),
 			this,
@@ -777,6 +782,7 @@ void MainWindow::SetupViewMenu()
     ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
+    ui->menuView->addAction(ui->previewSettingsDockWidget->toggleViewAction());
 
     ui->menuView->addSeparator();
     ui->menuView->addAction(ui->mainToolbar->toggleViewAction());
@@ -868,7 +874,12 @@ void MainWindow::UpdateMenu()
     bool enablePreview = projectNotEmpty && activeScreen && IsPointerToExactClass<HierarchyTreeScreenNode>(activeScreen);
     ui->actionPreview->setEnabled(enablePreview);
     ui->actionEditPreviewSettings->setEnabled(enablePreview);
-    
+
+    // Preview Dock is not visible by default - only in Preview Mode.
+    bool isPreview = ui->actionPreview->isChecked();
+    ui->previewSettingsDockWidget->setVisible(isPreview);
+    ui->previewSettingsDockWidget->toggleViewAction()->setEnabled(isPreview);
+
     // Guides.
     ui->actionEnable_Guides->setEnabled(projectNotEmpty);
     ui->actionStickMode->setEnabled(projectNotEmpty);
@@ -1490,6 +1501,12 @@ void MainWindow::OnPreviewTriggered()
     UpdatePreviewButton();
 }
 
+void MainWindow::OnPreviewModeChanged(int previewSettingsID)
+{
+    const PreviewSettingsData& previewData = PreviewController::Instance()->GetPreviewSettingsData(previewSettingsID);
+    SetPreviewMode(previewData);
+}
+
 void MainWindow::OnGLWidgetResized()
 {
     UpdateSliders();
@@ -1499,12 +1516,15 @@ void MainWindow::OnGLWidgetResized()
 void MainWindow::EnablePreview(const PreviewSettingsData& data)
 {
     HierarchyTreeController::Instance()->EnablePreview(data);
-
-    const PreviewTransformData& transformData = PreviewController::Instance()->GetTransformData();
-    ScreenWrapper::Instance()->SetScale(transformData.zoomLevel);
-    UpdateScaleControls();
-
+    UpdatePreviewScale();
     EnableEditing(false);
+}
+
+void MainWindow::SetPreviewMode(const PreviewSettingsData& data)
+{
+    HierarchyTreeController::Instance()->SetPreviewMode(data);
+    UpdatePreviewScale();
+    UpdateScreenPosition();
 }
 
 void MainWindow::DisablePreview()
@@ -1523,6 +1543,8 @@ void MainWindow::EnableEditing(bool value)
     ui->hierarchyDockWidget->setVisible(value);
     ui->libraryDockWidget->setVisible(value);
     ui->propertiesDockWidget->setVisible(value);
+    ui->previewSettingsDockWidget->setVisible(!value);
+
     ui->scaleCombo->setVisible(value);
     ui->scaleSlider->setVisible(value);
 
@@ -1537,6 +1559,7 @@ void MainWindow::EnableEditing(bool value)
     ui->hierarchyDockWidget->toggleViewAction()->setEnabled(value);
     ui->libraryDockWidget->toggleViewAction()->setEnabled(value);
     ui->propertiesDockWidget->toggleViewAction()->setEnabled(value);
+    ui->previewSettingsDockWidget->toggleViewAction()->setEnabled(!value);
 
     if (value)
     {
@@ -1561,6 +1584,13 @@ void MainWindow::UpdatePreviewButton()
     {
         ui->actionPreview->setText("Editing Mode");
     }
+}
+
+void MainWindow::UpdatePreviewScale()
+{
+    const PreviewTransformData& transformData = PreviewController::Instance()->GetTransformData();
+    ScreenWrapper::Instance()->SetScale(transformData.zoomLevel);
+    UpdateScaleControls();
 }
 
 void MainWindow::OnEditPreviewSettings()

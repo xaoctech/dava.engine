@@ -138,6 +138,7 @@ public:
     
     // Preview mode control.
     void EnablePreview(const PreviewSettingsData& data);
+    void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
 
     // Set the Stick Mode.
