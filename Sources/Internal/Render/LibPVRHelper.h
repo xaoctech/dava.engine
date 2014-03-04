@@ -130,18 +130,14 @@ class LibPVRHelper
 public:
 
     static bool IsPvrFile(File *file);
-    static uint32 GetMipMapLevelsCount(File *file);
-	static uint32 GetCubemapFaceCount(File* file);
     
-    static bool ReadFile(File *file, const Vector<Image *> &imageSet);
-    
-    static PixelFormat GetPixelFormat(const FilePath &filePathname);
     static uint32 GetDataSize(const FilePath &filePathname);
 	
 	static bool AddCRCIntoMetaData(const FilePath &filePathname);
 	static uint32 GetCRCFromFile(const FilePath &filePathname);
 
 
+	static PVRFile * ReadFile(const FilePath &filePathname, bool readMetaData = false, bool readData = false);
 	static PVRFile * ReadFile(File *file, bool readMetaData = false, bool readData = false);
     static bool LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet, uint32 fromMipMap);
 
@@ -193,10 +189,7 @@ protected:
     
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
     
-    //static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
-    
 	//load cubemap
-	static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel);
     
     static bool CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData);
     

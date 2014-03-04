@@ -1828,300 +1828,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 	
-bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel)
-{
-    //Texture setup
-    PVRHeaderV3 compressedHeader;
-    uint8* pTextureData=NULL;
-    
-    //Check if it's an old header format
-    if((*(uint32*)pvrData)!=PVRTEX3_IDENT)
-    {
-        ConvertOldTextureHeaderToV3((PVRHeaderV2 *)pvrData, compressedHeader);
-        
-        //Get the texture data.
-        pTextureData = (uint8*)pvrData + *(uint32*)pvrData;
-    }
-    else
-    {
-        //Get the header from the main pointer.
-        compressedHeader =* (PVRHeaderV3*)pvrData;
-        
-        //Get the texture data.
-        pTextureData = (uint8*)pvrData+PVRTEX3_HEADERSIZE + compressedHeader.u32MetaDataSize;
-    }
-    
-    //Get the OGLES format values.
-    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
-    if(!IsFormatSupported(formatDescriptor))
-    {
-        Logger::Error("[LibPVRHelper::ReadMipMapLevel] Unsupported format");
-        return false;
-    }
-	
-	uint32 cubemapLayout = LibPVRHelper::GetCubemapLayout(&compressedHeader, pvrData, pvrDataSize);
-	
-	bool result = true;
-	for(uint32 faceIndex = 0; faceIndex < compressedHeader.u32NumFaces; ++faceIndex)
-    {
-		Image* image = images[mipMapLevel * compressedHeader.u32NumFaces + faceIndex];
-		
-		image->width = PVRT_MAX(1, compressedHeader.u32Width >> mipMapLevel);
-		image->height = PVRT_MAX(1, compressedHeader.u32Height >> mipMapLevel);
-		image->format = formatDescriptor.formatID;
-		image->mipmapLevel = mipMapLevel;
-		
-		if(cubemapLayout != 0)
-		{
-			image->cubeFaceID = (cubemapLayout & (0x0000000F << (faceIndex * 4))) >> (faceIndex * 4);
-		}
-	
-		//Check for compressed formats
-		if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
-		{
-			//Check for PVRTCI support.
-			if(deviceCaps.isPVRTCSupported)
-			{
-				bool copied = CopyToImage(image, mipMapLevel, faceIndex, compressedHeader, pTextureData);
-				if(!copied)
-				{
-					result = false;
-					break;
-				}
-			}
-			else
-			{
-#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-				DVASSERT(false && "Must be hardware supported");
-				return false;
-#else //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-				//Create a near-identical texture header for the decompressed header.
-				PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
-				if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
-				{
-					result = false;
-					break;
-				}
-            
-				//Setup temporary variables.
-				uint8* pTempDecompData = image->data;
-				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
-			
-				//Get the face offset. Varies per MIP level.
-//				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-//				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-				//{
-                
-                int do2bitMode = (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0;
-				PVRTDecompressPVRTC(pTempCompData, do2bitMode, image->width, image->height, pTempDecompData);
-				//Move forward through the pointers.
-//				pTempDecompData+=decompressedFaceOffset;
-//				pTempCompData+=compressedFaceOffset;
-				//}
-				image->format = FORMAT_RGBA8888;
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-			}
-		}
-#if !defined(__DAVAENGINE_IPHONE__)
-		else if (FORMAT_ETC1 == formatDescriptor.formatID)
-		{
-			if(deviceCaps.isETCSupported)
-			{
-				bool copied = CopyToImage(image, mipMapLevel, faceIndex, compressedHeader, pTextureData);
-				if(!copied)
-				{
-					result = false;
-					break;
-				}
-			}
-			else
-			{
-				//Create a near-identical texture header for the decompressed header.
-#if defined (__DAVAENGINE_ANDROID__)
-				DVASSERT(!"Must be hardware supported");
-				return false;
-#else
-				PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
-				if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
-				{
-					result = false;
-					break;
-				}
-			
-				//Setup temporary variables.
-				uint8* pTempDecompData = (uint8*)image->data;
-				uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, faceIndex, compressedHeader);
-			
-				//Get the face offset. Varies per MIP level.
-//				uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-//				uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-				//for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-				//{
-				PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
-                
-				//Move forward through the pointers.
-//				pTempDecompData += decompressedFaceOffset;
-//				pTempCompData += compressedFaceOffset;
-				//}
-				image->format = FORMAT_RGBA8888;
-#endif //defined (__DAVAENGINE_ANDROID__)
-			}
-		}
-#endif //#if !defined(__DAVAENGINE_IPHONE__)
-		else
-		{
-			bool copied = CopyToImage(image, mipMapLevel, faceIndex, compressedHeader, pTextureData);
-			if(!copied)
-			{
-				result = false;
-				break;
-			}
-		}
-	}
-
-	return result;
-}
-    
-/*bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel)
-{
-    bool bIsLegacyPVR=false;
-    
-    //Texture setup
-    PVRHeaderV3 compressedHeader;
-    uint8* pTextureData=NULL;
-    
-    //Check if it's an old header format
-    if((*(uint32*)pvrData)!=PVRTEX3_IDENT)
-    {
-        ConvertOldTextureHeaderToV3((PVRHeaderV2 *)pvrData, compressedHeader);
-        
-        //Get the texture data.
-        pTextureData = (uint8*)pvrData + *(uint32*)pvrData;
-        
-        bIsLegacyPVR=true;
-    }
-    else
-    {
-        //Get the header from the main pointer.
-        compressedHeader =* (PVRHeaderV3*)pvrData;
-        
-        //Get the texture data.
-        pTextureData = (uint8*)pvrData+PVRTEX3_HEADERSIZE + compressedHeader.u32MetaDataSize;
-    }
-    
-    //Get the OGLES format values.
-    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
-    if(!IsFormatSupported(formatDescriptor))
-    {
-        Logger::Error("[LibPVRHelper::ReadMipMapLevel] Unsupported format");
-        return false;
-    }
-    
-    image->width = PVRT_MAX(1, compressedHeader.u32Width >> mipMapLevel);
-    image->height = PVRT_MAX(1, compressedHeader.u32Height >> mipMapLevel);
-    image->format = formatDescriptor.formatID;
-
-    //Check for compressed formats
-    if((FORMAT_PVR4 == formatDescriptor.formatID) || (FORMAT_PVR2 == formatDescriptor.formatID))
-    {
-        //Check for PVRTCI support.
-        if(deviceCaps.isPVRTCSupported)
-        {
-            bool copied = CopyToImage(image, mipMapLevel, 0, compressedHeader, pTextureData);
-            if(!copied)
-            {
-                return false;
-            }
-        }
-        else
-        {
-#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-			DVASSERT(false && "Must be hardware supported");
-			return false;
-#else //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-            //Create a near-identical texture header for the decompressed header.
-            PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
-            if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
-            {
-                return false;
-            }
-            
-            //Setup temporary variables.
-            uint8* pTempDecompData = image->data;
-            uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, compressedHeader);
-
-            //Get the face offset. Varies per MIP level.
-            uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-            uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-            for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-            {
-                PVRTDecompressPVRTC(pTempCompData, (FORMAT_PVR2 == formatDescriptor.formatID) ? 1 : 0, image->width, image->height, pTempDecompData);
-                //Move forward through the pointers.
-                pTempDecompData+=decompressedFaceOffset;
-                pTempCompData+=compressedFaceOffset;
-            }
-            image->format = FORMAT_RGBA8888;
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)			
-        }
-    }
-#if !defined(__DAVAENGINE_IPHONE__)
-    else if (FORMAT_ETC1 == formatDescriptor.formatID)
-    {
-        if(deviceCaps.isETCSupported)
-        {
-            bool copied = CopyToImage(image, mipMapLevel, 0, compressedHeader, pTextureData);
-            if(!copied)
-            {
-                return false;
-            }
-        }
-        else
-        {
-            //Create a near-identical texture header for the decompressed header.
-#if defined (__DAVAENGINE_ANDROID__)
-			DVASSERT(!"Must be hardware supported");
-			return false;
-#else
-            PVRHeaderV3 decompressedHeader = CreateDecompressedHeader(compressedHeader);
-            if(!AllocateImageData(image, mipMapLevel, decompressedHeader))
-            {
-                return false;
-            }
-
-            //Setup temporary variables.
-            uint8* pTempDecompData = (uint8*)image->data;
-            uint8* pTempCompData = (uint8*)pTextureData + GetMipMapLayerOffset(mipMapLevel, compressedHeader);
-
-            //Get the face offset. Varies per MIP level.
-            uint32 decompressedFaceOffset = GetTextureDataSize(decompressedHeader, mipMapLevel, false, false);
-            uint32 compressedFaceOffset = GetTextureDataSize(compressedHeader, mipMapLevel, false, false);
-            for (uint32 uiFace=0;uiFace<compressedHeader.u32NumFaces;++uiFace)
-            {
-                PVRTDecompressETC(pTempCompData, image->width, image->height, pTempDecompData, 0);
-                
-                //Move forward through the pointers.
-                pTempDecompData += decompressedFaceOffset;
-                pTempCompData += compressedFaceOffset;
-            }
-            image->format = FORMAT_RGBA8888;
-#endif //defined (__DAVAENGINE_ANDROID__)
-        }
-    }
-#endif //#if !defined(__DAVAENGINE_IPHONE__)
-    else
-    {
-        bool copied = CopyToImage(image, mipMapLevel, 0, compressedHeader, pTextureData);
-        if(!copied)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-*/
 
 bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData)
 {
@@ -2299,17 +2005,23 @@ bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
     
     return true;
 }
-
-PixelFormat LibPVRHelper::GetPixelFormat(const FilePath &filePathname)
-{
-    PVRHeaderV3 header = GetHeader(filePathname);
-    return GetTextureFormat(header);
-}
     
 uint32 LibPVRHelper::GetDataSize(const FilePath &filePathname)
 {
-    PVRHeaderV3 header = GetHeader(filePathname);
-    return GetTextureDataSize(header);
+    File *file = File::Create(filePathname, File::OPEN | File::READ);
+    if(!file) return 0;
+    
+    uint32 dataSize = 0;
+    
+    PVRFile *pvrFile = ReadFile(file, false, false);
+    if(pvrFile)
+    {
+        dataSize = file->GetSize() - (PVRTEX3_HEADERSIZE + pvrFile->header.u32MetaDataSize);
+        delete pvrFile;
+    }
+  
+    file->Release();
+    return dataSize;
 }
 	
 bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
@@ -2557,68 +2269,20 @@ bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
 
 bool LibPVRHelper::IsPvrFile(DAVA::File *file)
 {
+    bool isPvrFile = false;
+
 	file->Seek(0, File::SEEK_FROM_START);
-    PVRHeaderV3 header = GetHeader(file);
-    return (PVRTEX3_IDENT == header.u32Version);
+    PVRFile *pvrFile = ReadFile(file, false, false);
+    if(pvrFile)
+    {
+        isPvrFile = (PVRTEX3_IDENT == pvrFile->header.u32Version);
+        delete pvrFile;
+    }
+
+    return isPvrFile;
 }
 
-uint32 LibPVRHelper::GetMipMapLevelsCount(File *file)
-{
-	file->Seek(0, File::SEEK_FROM_START);
-    PVRHeaderV3 header = GetHeader(file);
-    return header.u32MIPMapCount;
-}
 	
-uint32 LibPVRHelper::GetCubemapFaceCount(File* file)
-{
-	file->Seek(0, File::SEEK_FROM_START);
-	PVRHeaderV3 header = GetHeader(file);
-	return header.u32NumFaces;
-}
-    
-bool LibPVRHelper::ReadFile(File *file, const Vector<Image *> &imageSet)
-{
-    uint32 fileSize = file->GetSize();
-    uint8 *fileData = new uint8[fileSize];
-    if(!fileData)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile]: cannot allocate buffer for file data");
-        return false;
-    }
-    
-    uint32 readSize = file->Read(fileData, fileSize);
-    if(readSize != fileSize)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile]: cannot read from file");
-        
-        SafeDeleteArray(fileData);
-        return false;
-    }
-    
-    
-    bool preloaded = LibPVRHelper::PreparePVRData((const char *)fileData, fileSize);
-    if(!preloaded)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile]: cannot prepare pvr data for parsing");
-        SafeDeleteArray(fileData);
-        return false;
-    }
-
-    bool read = true;
-	uint32 mipmapLevelCount = LibPVRHelper::GetMipMapLevelsCount(file);
-    for (uint32 i = 0; i < mipmapLevelCount; ++i)
-    {
-        read &= ReadMipMapLevel((const char *)fileData, fileSize, imageSet, i);
-    }
-    
-    SafeDeleteArray(fileData);
-    return read;
-}
-
-
-
-
-
 uint32 LibPVRHelper::GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
 {
 	uint32 layout = 0;
@@ -2833,6 +2497,17 @@ const char* LibPVRHelper::GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char*
 	return metadata;
 }
 
+PVRFile * LibPVRHelper::ReadFile(const FilePath &filePathname, bool readMetaData /*= false*/, bool readData /*= false*/)
+{
+    File *file = File::Create(filePathname, File::OPEN | File::READ);
+    if(!file) return NULL;
+    
+    PVRFile *pvrFile = ReadFile(file, readMetaData, readData);
+    file->Release();
+    
+    return pvrFile;
+}
+
 PVRFile * LibPVRHelper::ReadFile( File *file, bool readMetaData /*= false*/, bool readData /*= false*/)
 {
 	if(!file) return false;
@@ -2859,11 +2534,11 @@ PVRFile * LibPVRHelper::ReadFile( File *file, bool readMetaData /*= false*/, boo
         file->Seek(pvrFile->header.u32MetaDataSize, File::SEEK_FROM_CURRENT);
     }
 
-    pvrFile->compressedDataSize = GetTextureDataSize(pvrFile->header, PVRTEX_ALLMIPLEVELS, true, true);
+    pvrFile->compressedDataSize = file->GetSize() - (PVRTEX3_HEADERSIZE + pvrFile->header.u32MetaDataSize);
 	if(readData)
 	{
         pvrFile->compressedData = new uint8[pvrFile->compressedDataSize];
-        readSize = file->Read(&pvrFile->compressedData, pvrFile->compressedDataSize);
+        readSize = file->Read(pvrFile->compressedData, pvrFile->compressedDataSize);
         if(readSize != pvrFile->compressedDataSize)
         {
             Logger::Error("[LibPVRHelper::ReadFile]: cannot read data from file");
@@ -3047,7 +2722,7 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
     PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
     if(!IsFormatSupported(formatDescriptor))
     {
-        Logger::Error("[LibPVRHelper::ReadMipMapLevel] Unsupported format");
+        Logger::Error("[LibPVRHelper::LoadMipMapLevel] Unsupported format");
         return false;
     }
     
