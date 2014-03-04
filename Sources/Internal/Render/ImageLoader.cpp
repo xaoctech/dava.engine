@@ -197,6 +197,23 @@ Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 {
 //    uint64 loadTime = SystemTimer::Instance()->AbsoluteMS();
 
+//    PVRFile *pvrFile = LibPVRHelper::ReadFile(file, true, true);
+//    if(pvrFile)
+//    {
+//        Vector<Image *> images;
+//        bool loaded = LibPVRHelper::LoadImages(pvrFile, images, 0);
+//        if(!loaded)
+//        {
+//            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().GetAbsolutePathname().c_str());
+//			for_each(images.begin(), images.end(), SafeRelease<Image>);
+//            return Vector<Image *>();
+//        }
+//
+//        return images;
+//    }
+//
+//    return Vector<Image *>();
+///
     int32 mipMapLevelsCount = LibPVRHelper::GetMipMapLevelsCount(file);
 	int32 faceCount = LibPVRHelper::GetCubemapFaceCount(file);
 	int32 totalImageCount = mipMapLevelsCount * faceCount;
