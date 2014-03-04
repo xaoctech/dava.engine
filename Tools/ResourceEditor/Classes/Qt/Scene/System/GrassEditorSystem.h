@@ -55,6 +55,9 @@ public:
     bool EnableGrassEdit(bool enable);
     bool IsEnabledGrassEdit() const;
 
+    void SetLayerVisible(uint8 layer, bool visible);
+    bool IsLayerVisible(uint8 layer) const;
+
     void SetCurrentLayer(uint8 layer);
     uint8 GetCurrentLayer() const;
 
@@ -66,6 +69,8 @@ public:
 
     void SetBrushDensity(uint8 density);
     uint8 GetBrushDensity() const;
+
+    DAVA::VegetationRenderObject *GetCurrentVegetationObject() const;
 
 protected:
 	bool isEnabled;
@@ -86,6 +91,7 @@ protected:
     DAVA::Vector2 cursorPosition;
     DAVA::VegetationMap *vegetationMap;
     DAVA::VegetationMap *vegetationMapCopy;
+    DAVA::VegetationRenderObject *curVegetation; 
 
     void UpdateCursorPos();
     void DrawGrass(DAVA::Vector2 pos);

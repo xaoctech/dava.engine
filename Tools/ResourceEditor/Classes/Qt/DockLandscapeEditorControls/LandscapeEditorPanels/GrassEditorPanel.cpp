@@ -65,8 +65,6 @@ void GrassEditorPanel::InitUI()
         wrapperLayout->setSpacing(0);
 
         QWidget *layerCheckBoxWrapper = new QWidget();
-        //layerCheckBoxWrapper->setFrameStyle(QFrame::Raised);
-        //layerCheckBoxWrapper->setFrameShape(QFrame::Panel);
         layerCheckBoxWrapper->setLayout(wrapperLayout);
 
         QCheckBox * layerCheckBox = new QCheckBox(layerCheckBoxWrapper);
@@ -98,26 +96,126 @@ void GrassEditorPanel::InitUI()
     grassDensity->setTickPosition(QSlider::TicksBothSides);
     grassDensity->setMaximumHeight(21);
 
-    frameLayout->addWidget(new QLabel("Height:"), 0, 0, Qt::AlignRight);
+    frameLayout->addWidget(new QLabel("Height:"), 0, 0, Qt::AlignRight | Qt::AlignVCenter);
     frameLayout->addWidget(grassHeight, 0, 1);
 
-    frameLayout->addWidget(new QLabel("Density:"), 1, 0, Qt::AlignRight);
+    frameLayout->addWidget(new QLabel("Density:"), 1, 0, Qt::AlignRight | Qt::AlignVCenter);
     frameLayout->addWidget(grassDensity, 1, 1);
 
     layout->addWidget(sliderFrame);
+
+    // brush list
+    brushList = new QTableWidget(4, 1, this);
+    layout->addWidget(brushList);
+
+    brushList->setShowGrid(false);
+    brushList->horizontalHeader()->setVisible(false);
+    brushList->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    brushList->verticalHeader()->setVisible(false);
+    brushList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    brushList->setSelectionMode(QAbstractItemView::SingleSelection);
+    brushList->setFocusPolicy(Qt::NoFocus);
 }
 
 void GrassEditorPanel::ConnectToSignals()
-{ }
+{ 
+    QObject::connect(layersList, SIGNAL(currentCellChanged(int, int, int, int)), this, SLOT(OnLayerSelected(int, int, int, int)));
+    QObject::connect(brushList, SIGNAL(currentCellChanged(int, int, int, int)), this, SLOT(OnBrushSelected(int, int, int, int)));
+    QObject::connect(grassHeight, SIGNAL(valueChanged(int)), this, SLOT(OnHeightChanged(int)));
+    QObject::connect(grassDensity, SIGNAL(valueChanged(int)), this, SLOT(OnDensityChanged(int)));
+}
 
 void GrassEditorPanel::StoreState()
-{ }
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+}
 
 void GrassEditorPanel::RestoreState()
-{ }
+{ 
+    SceneEditor2* sceneEditor = GetActiveScene();
+    
+    if(NULL != sceneEditor)
+    {
+        int curLayer = sceneEditor->grassEditorSystem->GetCurrentLayer();
+        layersList->setCurrentItem(layersList->item(curLayer, 0));
+
+        for(int i = 0; i < LAYERS_COUNT; ++i)
+        {
+            if(sceneEditor->grassEditorSystem->IsLayerVisible(i))
+            {
+                layerCheckBoxes[i]->setCheckState(Qt::Checked);
+            }
+            else
+            {
+                layerCheckBoxes[i]->setCheckState(Qt::Unchecked);
+            }
+        }
+
+        int curHeight = sceneEditor->grassEditorSystem->GetBrushHeight();
+        int curDensity = sceneEditor->grassEditorSystem->GetBrushDensity();
+        int curBrush = sceneEditor->grassEditorSystem->GetBrushType();
+
+        grassHeight->setValue(curHeight);
+        grassDensity->setValue(curDensity);
+
+        // fill brushes list from vegetation texture sheet
+        brushList->clear();
+        DAVA::VegetationRenderObject *vegetationRObj = sceneEditor->grassEditorSystem->GetCurrentVegetationObject();
+        if(NULL != vegetationRObj)
+        {
+            const DAVA::TextureSheet &sheet = vegetationRObj->GetTextureSheet();
+
+            // TODO:
+            // ...
+
+            brushList->setItem(0, 0, new QTableWidgetItem("Brush 1"));
+            brushList->setItem(1, 0, new QTableWidgetItem("Brush 2"));
+            brushList->setItem(2, 0, new QTableWidgetItem("Brush 3"));
+            brushList->setItem(3, 0, new QTableWidgetItem("Brush 4"));
+
+            brushList->setCurrentItem(brushList->item(curBrush, 0));
+        }
+    }
+}
 
 void GrassEditorPanel::ConnectToShortcuts()
 { }
 
 void GrassEditorPanel::DisconnectFromShortcuts()
 { }
+
+void GrassEditorPanel::OnLayerSelected(int currentRow, int currentColumn, int previousRow, int previousColumn)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        sceneEditor->grassEditorSystem->SetCurrentLayer(currentRow);
+    }
+}
+
+void GrassEditorPanel::OnBrushSelected(int currentRow, int currentColumn, int previousRow, int previousColumn)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        sceneEditor->grassEditorSystem->SetBrushType(currentRow);
+    }
+}
+
+void GrassEditorPanel::OnHeightChanged(int value)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        sceneEditor->grassEditorSystem->SetBrushHeight(value);
+    }
+}
+
+void GrassEditorPanel::OnDensityChanged(int value)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        sceneEditor->grassEditorSystem->SetBrushDensity(value);
+    }
+}
