@@ -265,7 +265,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			
 			//printf("Percent: %d Aspect: %d Greater: %d Less: %d\n", (int)bbox.percent(), (int)bbox.aspect(), (int)bbox.greater(), (int)bbox.less());
 			
-			if ((defFile->frameRects[k - 1].dx >= maxTextureSize) || (defFile->frameRects[k - 1].dy >= maxTextureSize))
+			if ((defFile->frameRects[k - 1].dx > maxTextureSize) || (defFile->frameRects[k - 1].dy > maxTextureSize))
 			{
 				Logger::Warning("* WARNING * - frame of %s layer %d is bigger than maxTextureSize(%d) layer exportSize (%d x %d) FORCE REDUCE TO (%d x %d). Bewarned!!! Results not guaranteed!!!", psdName.c_str(), k - 1, maxTextureSize
 					   , defFile->frameRects[k - 1].dx, defFile->frameRects[k - 1].dy, width, height);
