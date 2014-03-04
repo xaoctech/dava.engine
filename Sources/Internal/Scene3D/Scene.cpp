@@ -68,7 +68,8 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
-#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/SpeedTreeUpdateSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/WindSystem.h"
 
 #include "Scene3D/Systems/MaterialSystem.h"
 

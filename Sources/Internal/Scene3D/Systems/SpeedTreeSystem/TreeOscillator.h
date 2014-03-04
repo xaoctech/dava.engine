@@ -27,33 +27,17 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
+#ifndef __DAVAENGINE_SCENE3D_TREE_OSCILLATOR_H__
+#define	__DAVAENGINE_SCENE3D_TREE_OSCILLATOR_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
-#include "Entity/SceneSystem.h"
 #include "Base/BaseMath.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
-#include "Scene3D/Components/WindComponent.h"
+#include "Base/BaseObject.h"
 
 namespace DAVA
 {
 class Entity;
-class SpeedTreeObject;
-    
-class WindSystem : public SceneSystem
-{
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-};
-    
-    
+
 class TreeOscillator: public BaseObject
 {
 public:
@@ -66,7 +50,7 @@ public:
         OSCILLATION_TYPE_COUNT
     };
     
-    TreeOscillator(float32 distance, const Vector3 & worldPosition);
+    TreeOscillator(float32 influenceDistance, Entity * owner);
     virtual ~TreeOscillator() {};
     
     virtual uint32 GetType() const = 0;
@@ -83,13 +67,15 @@ public:
     
 protected:
     float32 influenceSqDistance;
-    Vector3 position;
+    
+    //weak link
+    Entity * entityOwner;
 };
     
 class ImpulseTreeOscillator : public TreeOscillator
 {
 public:
-    ImpulseTreeOscillator(float32 distance, const Vector3 & worldPosition, float32 forceValue);
+    ImpulseTreeOscillator(float32 influenceDistance, Entity * ownder, float32 forceValue);
     virtual ~ImpulseTreeOscillator() {};
     
     virtual uint32 GetType() const {return OSCILLATION_TYPE_IMPULSE; };
@@ -107,7 +93,7 @@ protected:
 class WindTreeOscillator : public TreeOscillator
 {
 public:
-    WindTreeOscillator(const Vector3 & windVector, float32 windForce);
+    WindTreeOscillator(Entity * owner);
     virtual ~WindTreeOscillator() {};
     
     virtual uint32 GetType() const {return OSCILLATION_TYPE_WIND; };
@@ -119,8 +105,6 @@ public:
     
 protected:
     float32 time;
-    Vector3 windDirection;
-    float32 windForce;
 };
     
 class MovingTreeOscillator : public TreeOscillator
@@ -137,44 +121,11 @@ public:
     virtual bool IsActive() const;
     
 protected:
-    //weak link
-    Entity * movingEntity;
-    
     float32 currentSpeed;
+    Vector3 prevUpdatePosition;
 };
     
-class SpeedTreeUpdateSystem : public SceneSystem
-{
-public:
-    struct TreeInfo
-    {
-        TreeInfo(SpeedTreeObject * object) :
-        treeObject(object)
-        {}
-        
-        Vector3 position;
-        SpeedTreeObject * treeObject;
-        SpeedTreeComponent * component;
-        float32 elapsedTime;
-    };
-    
-    SpeedTreeUpdateSystem(Scene * scene);
-    virtual ~SpeedTreeUpdateSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    virtual void ImmediateEvent(Entity * entity, uint32 event);
-    virtual void Process(float32 timeElapsed);
-    
-    void AddTreeOscillator(TreeOscillator * oscillator);
-    void ForceRemoveTreeOscillator(TreeOscillator * oscillator);
-    
-private:
-    Vector<TreeInfo *> allTrees;
-    Vector<TreeOscillator *> activeOscillators;
-};
-    
-} // ns
+}
 
 #endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
 

@@ -250,7 +250,9 @@
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
-#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/SpeedTreeUpdateSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/WindSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/TreeOscillator.h"
 
 //Components
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -268,6 +270,7 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
+#include "Scene3D/Components/WindComponent.h"
 
 // Application core 
 #include "Core/Core.h"

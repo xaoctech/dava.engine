@@ -27,78 +27,52 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
 
-#include "Scene3D/Components/WindComponent.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Entity/SceneSystem.h"
 
-namespace DAVA 
+namespace DAVA
 {
-	REGISTER_CLASS(WindComponent)
-
-WindComponent::WindComponent() :
-    windForce(0.f)
+class Entity;
+class SpeedTreeObject;
+class SpeedTreeComponent;
+class TreeOscillator;
+    
+class SpeedTreeUpdateSystem : public SceneSystem
 {
+public:
+    struct TreeInfo
+    {
+        TreeInfo(SpeedTreeObject * object) :
+        treeObject(object)
+        {}
+        
+        Vector3 position;
+        SpeedTreeObject * treeObject;
+        SpeedTreeComponent * component;
+        float32 elapsedTime;
+    };
     
-}
-
-WindComponent::~WindComponent()
-{
+    SpeedTreeUpdateSystem(Scene * scene);
+    virtual ~SpeedTreeUpdateSystem();
     
-}
- 
-Component * WindComponent::Clone(Entity * toEntity)
-{
-    WindComponent * component = new WindComponent();
-	component->SetEntity(toEntity);
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
     
-    component->windDirection = windDirection;
+    void AddTreeOscillator(TreeOscillator * oscillator);
+    void ForceRemoveTreeOscillator(TreeOscillator * oscillator);
     
-    return component;
-}
-
-void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	Component::Serialize(archive, serializationContext);
-
-	if(archive != 0)
-	{
-        archive->SetVector3("wc.windDirection", windDirection);
-        archive->SetFloat("wc.windForce", windForce);
-    }
-}
-    
-void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	if(archive)
-	{
-        windDirection = archive->GetVector3("wc.windDirection");
-        windForce = archive->GetFloat("wc.windForce");
-	}
-
-	Component::Deserialize(archive, serializationContext);
-}
-    
-void WindComponent::SetWindDirection(const Vector3 & direction)
-{
-    windDirection = direction;
-    windDirection.Normalize();
-}
-    
-const Vector3 & WindComponent::GetWindDirection() const
-{
-    return windDirection;
-}
-    
-void WindComponent::SetWindForce(const float32 & force)
-{
-    windForce = force;
-}
-    
-float32 WindComponent::GetWindForce() const
-{
-    return windForce;
-}
-    
+private:
+    Vector<TreeInfo *> allTrees;
+    Vector<TreeOscillator *> activeOscillators;
 };
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
+

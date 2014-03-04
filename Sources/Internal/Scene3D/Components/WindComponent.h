@@ -53,14 +53,19 @@ public:
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
     
     void SetWindDirection(const Vector3 & direction);
-    const Vector3 & GetWindDirection();
+    const Vector3 & GetWindDirection() const;
+    
+    void SetWindForce(const float32 & force);
+    float32 GetWindForce() const;
     
 protected:
     Vector3 windDirection;
+    float32 windForce;
     
 public:
 	INTROSPECTION_EXTEND(WindComponent, Component,
-                         MEMBER(windDirection, "windDirection", I_VIEW | I_EDIT | I_SAVE)
+                         PROPERTY("windDirection", "Wind Direction", GetWindDirection, SetWindDirection, I_SAVE | I_VIEW | I_EDIT)
+                         PROPERTY("windForce", "Wind Force", GetWindForce, SetWindForce, I_SAVE | I_VIEW | I_EDIT)
                          );
 };
 

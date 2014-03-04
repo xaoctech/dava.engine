@@ -26,79 +26,58 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
+#include "WindSystem.h"
+#include "SpeedTreeUpdateSystem.h"
+#include "TreeOscillator.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/WindComponent.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
 
-namespace DAVA 
-{
-	REGISTER_CLASS(WindComponent)
+#include "Math/Math2D.h"
 
-WindComponent::WindComponent() :
-    windForce(0.f)
+namespace DAVA
 {
     
+WindSystem::WindSystem(Scene * scene)
+    : SceneSystem(scene)
+{
+}
+    
+WindSystem::~WindSystem()
+{
+    SpeedTreeUpdateSystem * stSystem = GetScene()->speedTreeUpdateSystem;
+        
+    Map<Entity *, WindTreeOscillator *>::iterator it = windMap.begin();
+    Map<Entity *, WindTreeOscillator *>::iterator itEnd = windMap.end();
+    for(; it != itEnd; ++it)
+    {
+        stSystem->ForceRemoveTreeOscillator(it->second);
+    }
+    windMap.clear();
 }
 
-WindComponent::~WindComponent()
+void WindSystem::AddEntity(Entity * entity)
 {
-    
-}
- 
-Component * WindComponent::Clone(Entity * toEntity)
-{
-    WindComponent * component = new WindComponent();
-	component->SetEntity(toEntity);
-    
-    component->windDirection = windDirection;
-    
-    return component;
-}
-
-void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	Component::Serialize(archive, serializationContext);
-
-	if(archive != 0)
-	{
-        archive->SetVector3("wc.windDirection", windDirection);
-        archive->SetFloat("wc.windForce", windForce);
+    if(GetWindComponent(entity))
+    {
+        WindTreeOscillator * wind = new WindTreeOscillator(entity);
+        windMap[entity] = wind;
+        
+        GetScene()->speedTreeUpdateSystem->AddTreeOscillator(wind);
+        wind->Release();
     }
 }
     
-void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+void WindSystem::RemoveEntity(Entity * entity)
 {
-	if(archive)
-	{
-        windDirection = archive->GetVector3("wc.windDirection");
-        windForce = archive->GetFloat("wc.windForce");
-	}
-
-	Component::Deserialize(archive, serializationContext);
-}
-    
-void WindComponent::SetWindDirection(const Vector3 & direction)
-{
-    windDirection = direction;
-    windDirection.Normalize();
-}
-    
-const Vector3 & WindComponent::GetWindDirection() const
-{
-    return windDirection;
-}
-    
-void WindComponent::SetWindForce(const float32 & force)
-{
-    windForce = force;
-}
-    
-float32 WindComponent::GetWindForce() const
-{
-    return windForce;
+    SpeedTreeUpdateSystem * stSystem = GetScene()->speedTreeUpdateSystem;
+    Map<Entity *, WindTreeOscillator *>::iterator it = windMap.find(entity);
+    if(it != windMap.end())
+    {
+        stSystem->ForceRemoveTreeOscillator(it->second);
+        windMap.erase(it);
+    }
 }
     
 };
