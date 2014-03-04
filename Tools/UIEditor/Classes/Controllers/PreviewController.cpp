@@ -76,11 +76,16 @@ static const PreviewSettingsData predefinedPreviewSettings[] =
 #define PREVIEW_SETTINGS_HEIGHT_NODE "height"
 #define PREVIEW_SETTINGS_DPI_NODE "dpi"
 
+#define EMPTY_PREVIEW_SETTINGS_ID -99
+    
 int32 PreviewController::nextId = 0;
+    
+
     
 PreviewController::PreviewController() :
     previewEnabled(false),
-    isDirty(false)
+    isDirty(false),
+    activePreviewSettingsID(EMPTY_PREVIEW_SETTINGS_ID)
 {
 }
 
@@ -89,15 +94,11 @@ PreviewController::~PreviewController()
     previewSettings.clear();
 }
     
-const PreviewTransformData& PreviewController::EnablePreview(const PreviewSettingsData& data,
-                                                            const Vector2& virtualScreenSize,
-                                                            uint32 screenDPI)
+const PreviewTransformData& PreviewController::SetPreviewMode(const PreviewSettingsData& data,
+                                                              const Vector2& virtualScreenSize,
+                                                              uint32 screenDPI)
 {
-    if (previewEnabled)
-    {
-        return currentTransformData;
-    }
-
+    activePreviewSettingsID = data.id;
     currentTransformData = CalculateTransform(data, virtualScreenSize, screenDPI);
     previewEnabled = true;
     
@@ -112,6 +113,7 @@ void PreviewController::DisablePreview()
     }
 
     previewEnabled = false;
+    activePreviewSettingsID = EMPTY_PREVIEW_SETTINGS_ID;
 }
     
 const PreviewTransformData& PreviewController::GetTransformData() const
