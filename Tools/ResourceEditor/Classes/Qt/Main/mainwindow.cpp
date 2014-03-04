@@ -1433,18 +1433,18 @@ void QtMainWindow::OnAddSkybox()
 
     
     TextureSheet ts;
-    ts.SetTexture(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex"));
+    ts.SetTexture(Texture::CreateFromFile("D:/Temp/Test/grass_x1.tex"));
     ts.cells.push_back(tc0);
     ts.cells.push_back(tc1);
     ts.cells.push_back(tc1);
     ts.cells.push_back(tc0);
     
-    DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png")[0];
+    DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("D:/Temp/Test/d_colormap.png")[0];
     
     DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
     vro->SetClusterLimit(16);
     vro->SetTextureSheet(ts);
-    vro->SetHeightmap(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/heightmap.tex"));
+    vro->SetHeightmap(Texture::CreateFromFile("D:/Temp/Test/heightmap.tex"));
     vro->SetVegetationMap(vegMap);
     vro->SetWorldSize(DAVA::Vector3(600, 600, 100));
 
@@ -2307,8 +2307,9 @@ void QtMainWindow::OnGrasEditor()
     if(toggled)
     {
         SceneSignals::Instance()->EmitGrassEditorToggled(sceneEditor);
-        OnLandscapeEditorToggled(sceneEditor);
     }
+
+    OnLandscapeEditorToggled(sceneEditor);
 }
 
 void QtMainWindow::OnAddActionComponent()

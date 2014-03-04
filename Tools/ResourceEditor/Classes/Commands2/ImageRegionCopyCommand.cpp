@@ -28,58 +28,55 @@
 
 
 
-#ifndef __DAVAENGINE_COMPONENT_HELPERS_H__
-#define __DAVAENGINE_COMPONENT_HELPERS_H__
+#include "Commands2/ImageRegionCopyCommand.h"
+#include "Render/Image.h"
 
-#include "Base/BaseTypes.h"
-
-namespace DAVA
+ImageRegionCopyCommand::ImageRegionCopyCommand(DAVA::Image* _dst, const DAVA::Vector2& dstPos, DAVA::Image* src, const DAVA::Rect &srcRect, DAVA::Image* _orig)
+	: Command2(CMDID_IMAGE_REGION_COPY, "Remove entity")
+	, dst(_dst)
+    , pos(dstPos)
+    , copy(NULL)
+    , orig(NULL)
 {
+	SafeRetain(dst);
 
-class ParticleEmitter;
-class ParticleEffectComponent;
-class Entity;
-class RenderObject;
-class Light;
-class LightComponent;
-class Landscape;
-class Camera;
-class LodComponent;
-class SkyboxRenderObject;
-class SwitchComponent;
-class QualitySettingsComponent;
-class RenderComponent;
-class TransformComponent;
-class VegetationRenderObject;
+    if(NULL != src && NULL != dst)
+    {
+        if(NULL != _orig)
+        {
+            DVASSERT(_orig->width == srcRect.dx);
+            DVASSERT(_orig->height == srcRect.dy);
 
-ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
-TransformComponent * GetTransformComponent(Entity * fromEntity);
-RenderComponent * GetRenderComponent(const Entity *fromEntity);
-RenderObject * GetRenderObject(const Entity * fromEntity);
-SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
-VegetationRenderObject * GetVegetation(const Entity * fromEntity);
+            orig = _orig;
+        }
+        else
+        {
+            orig = DAVA::Image::CopyImageRegion((const DAVA::Image *) dst, DAVA::Rect(dstPos.x, dstPos.y, srcRect.dx, srcRect.dy));
+        }
 
-Light *GetLight(Entity * fromEntity);
-LightComponent *GetLightComponent(Entity * fromEntity);
-Landscape *GetLandscape(Entity * fromEntity);
-
-Camera * GetCamera(Entity * fromEntity);
-
-LodComponent * GetLodComponent(Entity *fromEntity);
-SwitchComponent* GetSwitchComponent(Entity *fromEntity);
-    
-uint32 GetLodLayersCount(Entity *fromEntity);
-uint32 GetLodLayersCount(LodComponent *fromComponent);
-    
-    
-void RecursiveProcessMeshNode(Entity * curr, void * userData, void(*process)(Entity*, void *));
-void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*process)(Entity*, void*));
-
-Entity * FindLandscapeEntity(Entity * rootEntity);
-Landscape * FindLandscape(Entity * rootEntity);
-
-QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);
-    
+        copy = DAVA::Image::CopyImageRegion((const DAVA::Image *) src, srcRect);
+    }
 }
 
-#endif //__DAVAENGINE_COMPONENT_HELPERS_H__
+ImageRegionCopyCommand::~ImageRegionCopyCommand()
+{
+	SafeRelease(dst);
+    SafeRelease(copy);
+    SafeRelease(orig);
+}
+
+void ImageRegionCopyCommand::Undo()
+{
+    if(NULL != dst && NULL != orig)
+    {
+        dst->InsertImage(orig, pos, DAVA::Rect(0, 0, orig->width, orig->height));
+    }
+}
+
+void ImageRegionCopyCommand::Redo()
+{
+    if(NULL != dst && NULL != copy)
+    {
+        dst->InsertImage(copy, pos, DAVA::Rect(0, 0, copy->width, copy->height));
+    }
+}
