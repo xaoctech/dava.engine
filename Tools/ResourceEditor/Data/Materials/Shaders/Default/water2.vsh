@@ -146,14 +146,14 @@ void main()
 	
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
-    lightDir = normalize(lightDir);
+    //lightDir = normalize(lightDir);
     
 	// transform light and half angle vectors by tangent basis
 	vec3 v;
 	v.x = dot (lightDir, t);
 	v.y = dot (lightDir, b);
 	v.z = dot (lightDir, n);
-	varLightVec = normalize (v);
+	varLightVec = v;
 
     // eyeCoordsPosition = -eyeCoordsPosition;
 	// v.x = dot (eyeCoordsPosition, t);

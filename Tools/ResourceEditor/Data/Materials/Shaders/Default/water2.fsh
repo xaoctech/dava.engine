@@ -24,6 +24,8 @@ uniform lowp vec3 refractionTintColor;
 uniform float fresnelBias;
 uniform float fresnelPow;
 uniform float eta;
+uniform float aproxDepth;
+uniform float aproxReflectionScale;
 uniform float cubmapOffset;
 
 uniform float reflectionDistortion;
@@ -40,6 +42,8 @@ uniform mat3 worldInvTransposeMatrix;
 varying mediump vec3 cameraToPointInTangentSpace;
 varying mediump mat3 tbnToWorldMatrix;
 #endif
+
+uniform mat4 worldViewProjMatrix;
 
 #if defined(PIXEL_LIT)
 uniform sampler2D normalmap; // [1]:ONCE
@@ -109,7 +113,8 @@ void main()
     vec3 normal1 = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     vec3 normal2 = 2.0 * texture2D (normalmap, varTexCoord1).rgb - 1.0;
     vec3 normal = normalize (normal1 + normal2);
-    //normal = vec3(0,0,1);
+    //normal = normalize(vec3(0.2,0,1));
+	//normal = vec3(0,0,1);
 
     float attenuation = lightIntensity0;
 #if defined(DISTANCE_ATTENUATION)
@@ -120,7 +125,8 @@ void main()
     // compute diffuse lighting
     float lambertFactor = max (dot (-cameraToPointInTangentSpaceNorm, normal), 0.0);
     // compute specular
-    float shininess = pow (max (dot (normalize(varHalfVec), normal), 0.0), materialSpecularShininess);
+	vec3 halfVec = (normalize(varLightVec)-cameraToPointInTangentSpaceNorm);
+    float shininess = pow (max (dot (normalize(halfVec), normal), 0.0), materialSpecularShininess);
     
 #endif
 
@@ -132,35 +138,43 @@ void main()
 #elif defined(PIXEL_LIT)
     /*mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpaceNorm, normal);
 
-    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
+    mediump vec3 reflectionVectorInWorldSpace = (tbnToWorldMatrix * reflectionVectorInTangentSpace);
     reflectionVectorInWorldSpace.z += cubmapOffset;
-    lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    //lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+	lowp vec3 reflectionColor = texture2D(dynamicReflection, (worldViewProjMatrix * vec4(reflectionVectorInWorldSpace, 0.0)).xy+vec2(0.5, 0.5)).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     
     mediump vec3 refractedVectorInTangentSpace = refract(cameraToPointInTangentSpace, normal, eta);
-    mediump vec3 refractedVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * refractedVectorInTangentSpace);
-    lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
+    mediump vec3 refractedVectorInWorldSpace =(tbnToWorldMatrix * refractedVectorInTangentSpace);
+    //lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+	lowp vec3 refractionColor = texture2D(dynamicRefraction, (worldViewProjMatrix * vec4(refractedVectorInWorldSpace, 0.0)).xy+vec2(0.5, 0.5)).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
 	
+#if defined(SCREEN_SPACE_WATER)
 	lowp vec2 waveOffset = normal.xy/max(1.0, eyeDist);
 	mediump vec2 screenPos = gl_FragCoord.xy*rcpScreenSize;
-	lowp vec3 reflectionColor = texture2D(dynamicReflection, screenPos+waveOffset*reflectionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/	
+	lowp vec3 reflectionColor = texture2D(dynamicReflection, screenPos+waveOffset*reflectionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));	
 	screenPos.y=1.0-screenPos.y;
-	lowp vec3 refractionColor = texture2D(dynamicRefraction, screenPos+waveOffset*refractionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));*/
-
+	lowp vec3 refractionColor = texture2D(dynamicRefraction, screenPos+waveOffset*refractionDistortion).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+	
+#else	
+	/**/
+	//reflected vector is mixed with camera vector 
+	//we need to swap z as reflected texture is already in reflected camera space
+	mediump vec3 reflectionVectorInTangentSpace = mix(-cameraToPointInTangentSpace, reflect(normalize(cameraToPointInTangentSpace), normal)*vec3(1.0,1.0,-1.0), aproxReflectionScale); 		
+	mediump vec4 reflectionVectorInNDCSpace = (worldViewProjMatrix * vec4((tbnToWorldMatrix * reflectionVectorInTangentSpace), 0.0));	
+	lowp vec3 reflectionColor = texture2D(dynamicReflection, reflectionVectorInNDCSpace.xy/reflectionVectorInNDCSpace.w*0.5 + vec2(0.5, 0.5)).rgb;
+	
+	mediump vec3 refractionVectorInTangentSpace = refract(normalize(cameraToPointInTangentSpace), normal, eta)*aproxDepth-cameraToPointInTangentSpace;
+	mediump vec4 refractionVectorInNDCSpace = (worldViewProjMatrix * vec4((tbnToWorldMatrix * refractionVectorInTangentSpace), 0.0));	
+	lowp vec3 refractionColor = texture2D(dynamicRefraction, refractionVectorInNDCSpace.xy/refractionVectorInNDCSpace.w*vec2(0.5, -0.5)+vec2(0.5, 0.5)).rgb;
+#endif	
     
     float facing = 1.0 - lambertFactor;
     float fresnel = FresnelShlick(lambertFactor, fresnelBias, fresnelPow);
     
-    //gl_FragColor = vec4(varHalfVec*0.5+vec3(0.5, 0.5, 0.5), 1);
-    //gl_FragColor = vec4(waterColor * mix(refractionColor, reflectionColor, fresnel) + vec3(shininess), fresnel*0.6+0.4);
-    //gl_FragColor = vec4(shininess*materialLightSpecularColor, 1.0);
-    //gl_FragColor = vec4(waterColor * reflectionColor + vec3(shininess * materialLightSpecularColor), fresnel);
-    //refractionColor + (1.0 - fresnel) + reflectionColor * fresnel;//vec4((waterColor * (lambertFactor + shininess)), 1.0) * (1.0 - fresnel) + fresnel * reflectionColor;
-    //gl_FragColor = vec4(fresnel,fresnel,fresnel,1.0);
-	//gl_FragColor = vec4(texture2D(refrTex, gl_FragCoord.xz/100.0).rgb, 1.0);
-	//gl_FragColor = vec4(1.0, 0.2, 1.0, 1.0);
-	gl_FragColor = vec4(mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel) + vec3(shininess), 1.0);	
-	//gl_FragColor = vec4(reflectionColor, 1.0);
-	//gl_FragColor = vec4(refractionColor, 1.0);
+  
+	gl_FragColor = vec4(mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel) + shininess * materialLightSpecularColor, 1.0);	
+	//gl_FragColor = vec4(shininess * materialLightSpecularColor, 1.0);
+	
 #endif
 #endif
     

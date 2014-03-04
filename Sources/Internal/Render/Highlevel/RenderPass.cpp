@@ -163,18 +163,19 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         Rect viewportSave = RenderManager::Instance()->GetViewport();
         RenderManager::Instance()->SetRenderTarget(reflectionSprite);
         RenderManager::Instance()->SetViewport(Rect(0, 0, TEX_SIZE, TEX_SIZE), true);        
-        RenderManager::Instance()->Clear(Color(0.0f, 1.0f, 0.0f, 1.0f), 1.0f, 0);     
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->ClearDepthBuffer();
+        
         reflectionPass->SetWaterLevel(waterBox.min.z);
         reflectionPass->Draw(camera, renderSystem);
         RenderManager::Instance()->RestoreRenderTarget();
                 
         RenderManager::Instance()->SetRenderTarget(refractionSprite);
         RenderManager::Instance()->SetViewport(Rect(0, 0, TEX_SIZE, TEX_SIZE), true);        
-        RenderManager::Instance()->Clear(Color(1.0f, 0.0f, 0.0f, 1.0f), 1.0f, 0);
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->ClearDepthBuffer();
         refractionPass->SetWaterLevel(waterBox.max.z);
         refractionPass->Draw(camera, renderSystem);
         RenderManager::Instance()->RestoreRenderTarget();
