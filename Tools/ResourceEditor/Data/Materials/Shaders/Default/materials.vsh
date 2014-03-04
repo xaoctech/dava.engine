@@ -12,7 +12,7 @@ precision highp float;
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(MATERIAL_GRASS)
 attribute vec3 inNormal;
 #endif 
 
@@ -30,10 +30,14 @@ attribute vec2 inTexCoord1;
 attribute vec4 inColor;
 #endif
 
+#if defined(MATERIAL_GRASS)
+attribute vec3 inBinormal;
+#endif
+
 #if defined(VERTEX_LIT)
 #endif
 
-#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF)
+#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS)
 attribute vec3 inTangent;
 #endif
 
@@ -148,6 +152,9 @@ uniform vec2 tex0ShiftPerSecond;
 uniform vec4 tilePos;
 uniform vec3 worldSize;
 
+uniform mat4 clusterDensityMap;
+uniform mat4 clusterScaleMap;
+
 uniform sampler2D detail;
 #endif
 
@@ -196,13 +203,35 @@ void main()
 #else
     
     #if defined(MATERIAL_GRASS)
-        vec4 pos = inPosition;
-        pos.xy = pos.xy + tilePos.xy;
+    
+        vec4 pos = vec4(inPosition.x + tilePos.x,
+                        inPosition.y + tilePos.y,
+                        inPosition.z,
+                        inPosition.w);
     
         vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
                         clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
     
-        pos.z += texture2DLod(detail, hUV, 0.0).r * worldSize.z;
+        float height = texture2DLod(detail, hUV, 0.0).r * worldSize.z;
+    
+        pos.z += height;
+    
+        vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
+                                  inBinormal.y + tilePos.y,
+                                  inBinormal.z + height,
+                                  pos.w);
+    
+        //inTangent.x - layer id (0...2)
+        //inTangent.y - cluster type (0...3)
+        //inTangent.z - cluster's reference density (0...15)
+    
+        int layerIndex = int(inTangent.x);
+        int clusterType = int(inTangent.y);
+    
+    pos = mix(clusterCenter, pos, clusterScaleMap[layerIndex][clusterType] * step(inTangent.z, clusterDensityMap[layerIndex][clusterType]));
+              //clusterScaleMap[layerIndex][clusterType]);
+                  //clusterScaleMap[layerIndex][clusterType] * step(inTangent.z, clusterDensityMap[layerIndex][clusterType]));
+    
     
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;
@@ -212,7 +241,6 @@ void main()
     #endif
     
 #endif
-
 #if defined(VERTEX_LIT)
     vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition); // view direction in view space
     vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal); // normal in eye coordinates
