@@ -204,7 +204,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
     
-	int32 maxTextureSize = TexturePacker::TEXTURE_SIZE;
+	uint32 maxTextureSize = (CommandLineParser::Instance()->IsFlagSet("--tsize4096")) ? 4096 : TexturePacker::DEFAULT_TEXTURE_SIZE;
 	
 	// TODO: Check CRC32
 	Vector<Magick::Image> layers;
@@ -522,6 +522,10 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 				packer.UseOnlySquareTextures();
 				packer.SetMaxTextureSize(2048);
 			}
+            else if(CommandLineParser::Instance()->IsFlagSet("--tsize4096"))
+            {
+                packer.SetMaxTextureSize(4096);
+            }
 
             if(definitionFileList.size() == 1)
             {
