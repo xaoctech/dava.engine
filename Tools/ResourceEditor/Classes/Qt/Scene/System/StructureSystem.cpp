@@ -384,7 +384,12 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 				DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
 
 				DAVA::AABBox3 commonBBox = loadedEntity->GetWTMaximumBoundingBoxSlow();
-				DAVA::float32 bboxSize = (commonBBox.max - commonBBox.min).Length();
+				DAVA::float32 bboxSize = 5.0f;
+                
+                if(!commonBBox.IsEmpty())
+                {
+                    bboxSize += (commonBBox.max - commonBBox.min).Length();
+                }
 
 				camDirection.Normalize();
 				
@@ -394,7 +399,6 @@ void StructureSystem::Add(const DAVA::FilePath &newModelPath, const DAVA::Vector
 			DAVA::Matrix4 transform = loadedEntity->GetLocalTransform();
 			transform.SetTranslationVector(entityPos);
 			loadedEntity->SetLocalTransform(transform);
-
             
 			sceneEditor->Exec(new EntityAddCommand(loadedEntity, sceneEditor));
 
