@@ -34,12 +34,24 @@
 		02A0861018C077C900B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0860C18C077C900B7D169 /* WindComponent.h */; };
 		02A0861118C077C900B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0860C18C077C900B7D169 /* WindComponent.h */; };
 		02A0861218C077C900B7D169 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0860C18C077C900B7D169 /* WindComponent.h */; };
-		02C1121518B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
-		02C1121618B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
-		02C1121718B3AA350018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
-		02C1121818B3AA370018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */; };
-		02C1121918B3AA3A0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
-		02C1121A18B3AA3B0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */; };
+		02A0867C18C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867618C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp */; };
+		02A0867D18C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867618C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp */; };
+		02A0867E18C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867618C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp */; };
+		02A0867F18C5C34B00B7D169 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867718C5C34B00B7D169 /* SpeedTreeUpdateSystem.h */; };
+		02A0868018C5C34B00B7D169 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867718C5C34B00B7D169 /* SpeedTreeUpdateSystem.h */; };
+		02A0868118C5C34B00B7D169 /* SpeedTreeUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867718C5C34B00B7D169 /* SpeedTreeUpdateSystem.h */; };
+		02A0868218C5C34B00B7D169 /* TreeOscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867818C5C34B00B7D169 /* TreeOscillator.cpp */; };
+		02A0868318C5C34B00B7D169 /* TreeOscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867818C5C34B00B7D169 /* TreeOscillator.cpp */; };
+		02A0868418C5C34B00B7D169 /* TreeOscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867818C5C34B00B7D169 /* TreeOscillator.cpp */; };
+		02A0868518C5C34B00B7D169 /* TreeOscillator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867918C5C34B00B7D169 /* TreeOscillator.h */; };
+		02A0868618C5C34B00B7D169 /* TreeOscillator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867918C5C34B00B7D169 /* TreeOscillator.h */; };
+		02A0868718C5C34B00B7D169 /* TreeOscillator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867918C5C34B00B7D169 /* TreeOscillator.h */; };
+		02A0868818C5C34B00B7D169 /* WindSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867A18C5C34B00B7D169 /* WindSystem.cpp */; };
+		02A0868918C5C34B00B7D169 /* WindSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867A18C5C34B00B7D169 /* WindSystem.cpp */; };
+		02A0868A18C5C34B00B7D169 /* WindSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A0867A18C5C34B00B7D169 /* WindSystem.cpp */; };
+		02A0868B18C5C34B00B7D169 /* WindSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867B18C5C34B00B7D169 /* WindSystem.h */; };
+		02A0868C18C5C34B00B7D169 /* WindSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867B18C5C34B00B7D169 /* WindSystem.h */; };
+		02A0868D18C5C34B00B7D169 /* WindSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A0867B18C5C34B00B7D169 /* WindSystem.h */; };
 		02E9E3AB17296D4200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3AA17296D4200C501BC /* FMODUtils.h */; };
 		02E9E40A17395FDD00C501BC /* libfmodevent.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
 		02E9E40B17395FDD00C501BC /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
@@ -2259,8 +2271,12 @@
 		02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
 		02A0860B18C077C900B7D169 /* WindComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindComponent.cpp; sourceTree = "<group>"; };
 		02A0860C18C077C900B7D169 /* WindComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindComponent.h; sourceTree = "<group>"; };
-		02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeUpdateSystem.cpp; sourceTree = "<group>"; };
-		02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeUpdateSystem.h; sourceTree = "<group>"; };
+		02A0867618C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeUpdateSystem.cpp; sourceTree = "<group>"; };
+		02A0867718C5C34B00B7D169 /* SpeedTreeUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeUpdateSystem.h; sourceTree = "<group>"; };
+		02A0867818C5C34B00B7D169 /* TreeOscillator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeOscillator.cpp; sourceTree = "<group>"; };
+		02A0867918C5C34B00B7D169 /* TreeOscillator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeOscillator.h; sourceTree = "<group>"; };
+		02A0867A18C5C34B00B7D169 /* WindSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindSystem.cpp; sourceTree = "<group>"; };
+		02A0867B18C5C34B00B7D169 /* WindSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindSystem.h; sourceTree = "<group>"; };
 		02E9E3AA17296D4200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		02E9E40817395FDD00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E40917395FDD00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
@@ -3101,6 +3117,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		02A0867518C5C34B00B7D169 /* SpeedTreeSystem */ = {
+			isa = PBXGroup;
+			children = (
+				02A0867618C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp */,
+				02A0867718C5C34B00B7D169 /* SpeedTreeUpdateSystem.h */,
+				02A0867818C5C34B00B7D169 /* TreeOscillator.cpp */,
+				02A0867918C5C34B00B7D169 /* TreeOscillator.h */,
+				02A0867A18C5C34B00B7D169 /* WindSystem.cpp */,
+				02A0867B18C5C34B00B7D169 /* WindSystem.h */,
+			);
+			path = SpeedTreeSystem;
+			sourceTree = "<group>";
+		};
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -4004,8 +4033,7 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
-				02C1121318B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp */,
-				02C1121418B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h */,
+				02A0867518C5C34B00B7D169 /* SpeedTreeSystem */,
 				E8F43E22186C3D02006796CB /* MaterialSystem.cpp */,
 				E8F43E23186C3D02006796CB /* MaterialSystem.h */,
 				E8FC12F41869726A0095D8FE /* QualitySettingsSystem.cpp */,
@@ -4280,6 +4308,7 @@
 				176DE929174B5561007A983B /* ApplicationCore.h in Headers */,
 				176DE92A174B5561007A983B /* Core.h in Headers */,
 				176DE92B174B5561007A983B /* CoreMacOS_CarbonWindow.h in Headers */,
+				02A0868718C5C34B00B7D169 /* TreeOscillator.h in Headers */,
 				176DE92C174B5561007A983B /* CoreMacOS_OpenGL.h in Headers */,
 				176DE92D174B5561007A983B /* DisplayMode.h in Headers */,
 				176DE92E174B5561007A983B /* MongodbClient.h in Headers */,
@@ -4289,7 +4318,6 @@
 				176DE932174B5561007A983B /* Backtrace.h in Headers */,
 				176DE933174B5561007A983B /* DVAssert.h in Headers */,
 				176DE934174B5561007A983B /* List.h in Headers */,
-				02C1121A18B3AA3B0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */,
 				176DE935174B5561007A983B /* ListAllocator.h in Headers */,
 				176DE936174B5561007A983B /* MemoryManager.h in Headers */,
 				176DE937174B5561007A983B /* Replay.h in Headers */,
@@ -4346,6 +4374,7 @@
 				176DE968174B5561007A983B /* Sphere.h in Headers */,
 				176DE969174B5561007A983B /* Spline.h in Headers */,
 				176DE96A174B5561007A983B /* Vector.h in Headers */,
+				02A0868D18C5C34B00B7D169 /* WindSystem.h in Headers */,
 				176DE96B174B5561007A983B /* BaseNetworkConnection.h in Headers */,
 				176DE96C174B5561007A983B /* BTNetworkConnection.h in Headers */,
 				176DE96D174B5561007A983B /* NetworkConnection.h in Headers */,
@@ -4355,6 +4384,7 @@
 				176DE970174B5561007A983B /* NetworkPacket.h in Headers */,
 				176DE971174B5561007A983B /* TCPServer.h in Headers */,
 				176DE972174B5561007A983B /* WFNetworkConnection.h in Headers */,
+				02A0868118C5C34B00B7D169 /* SpeedTreeUpdateSystem.h in Headers */,
 				176DE973174B5561007A983B /* Particle.h in Headers */,
 				176DE974174B5561007A983B /* ParticleEmitter.h in Headers */,
 				176DE977174B5561007A983B /* ParticleLayer.h in Headers */,
@@ -4709,7 +4739,6 @@
 				E8989E6A16BD24E500732C04 /* MathDefines.h in Headers */,
 				E8989E6B16BD24E500732C04 /* MathHelpers.h in Headers */,
 				E8989E6C16BD24E500732C04 /* Matrix2.h in Headers */,
-				02C1121618B3A4A20018C2A9 /* SpeedTreeUpdateSystem.h in Headers */,
 				E8989E6D16BD24E500732C04 /* Matrix3.h in Headers */,
 				E8989E6F16BD24E500732C04 /* Matrix4.h in Headers */,
 				02A03DAA1871C37B00FA72CE /* SpeedTreeObject.h in Headers */,
@@ -4737,6 +4766,7 @@
 				E8989E9216BD24E500732C04 /* Particle.h in Headers */,
 				E8989E9416BD24E500732C04 /* ParticleEmitter.h in Headers */,
 				E8989E9A16BD24E500732C04 /* ParticleLayer.h in Headers */,
+				02A0868B18C5C34B00B7D169 /* WindSystem.h in Headers */,
 				E8989EA016BD24E500732C04 /* ParticlePropertyLine.h in Headers */,
 				E8989EAB16BD24E500732C04 /* Mutex.h in Headers */,
 				E8BAD5B3185213F100C98C8D /* IntrospectionDynamic.h in Headers */,
@@ -4917,6 +4947,7 @@
 				CC24800A16DD174E00183D40 /* UserComponent.h in Headers */,
 				EA106064188921FC00CB99A3 /* ParticleRenderObject.h in Headers */,
 				E9EA496E16DF93FA00C44B6F /* UISpinner.h in Headers */,
+				02A0867F18C5C34B00B7D169 /* SpeedTreeUpdateSystem.h in Headers */,
 				CC24804216E0DF2800183D40 /* VectorSpinnerAdapter.h in Headers */,
 				E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42716F1D6170061EA5D /* Camera.h in Headers */,
@@ -4944,6 +4975,7 @@
 				CCC7A47916F1D6170061EA5D /* SpriteRenderBatch.h in Headers */,
 				CCC7A47F16F1D64D0061EA5D /* RenderState.h in Headers */,
 				A6DBFA721887D804006BE11C /* NMaterialNames.h in Headers */,
+				02A0868518C5C34B00B7D169 /* TreeOscillator.h in Headers */,
 				CCC7A48516F1D6700061EA5D /* UpdateSystem.h in Headers */,
 				CCC7A48B16F1D6B80061EA5D /* Entity.h in Headers */,
 				74A909AC1701FA51003FDB31 /* CRC32.h in Headers */,
@@ -5018,7 +5050,6 @@
 				E898A06B16BD265400732C04 /* FastName.h in Headers */,
 				E898A06C16BD265400732C04 /* FastNameMap.h in Headers */,
 				E898A06D16BD265400732C04 /* FixedSizePoolAllocator.h in Headers */,
-				02C1121918B3AA3A0018C2A9 /* SpeedTreeUpdateSystem.h in Headers */,
 				0282B85218B81978006F1EE4 /* SpeedTreeComponent.h in Headers */,
 				E898A06E16BD265400732C04 /* Hash.h in Headers */,
 				7A169357180EE75A005F1FBC /* GameAPI.h in Headers */,
@@ -5031,6 +5062,7 @@
 				E898A07416BD265400732C04 /* IntrospectionProperty.h in Headers */,
 				E898A07516BD265400732C04 /* Mallocator.h in Headers */,
 				E898A07616BD265400732C04 /* Message.h in Headers */,
+				02A0868618C5C34B00B7D169 /* TreeOscillator.h in Headers */,
 				EAADA02A18A2652A001E1AA2 /* UIParticles.h in Headers */,
 				E898A07716BD265400732C04 /* Meta.h in Headers */,
 				E898A07816BD265400732C04 /* ObjectCreator.h in Headers */,
@@ -5174,6 +5206,7 @@
 				E898A11116BD265400732C04 /* MaterialGraph.h in Headers */,
 				E898A11216BD265400732C04 /* MaterialGraphNode.h in Headers */,
 				50ED334E1858B5A200A917D5 /* StaticOcclusionComponent.h in Headers */,
+				02A0868C18C5C34B00B7D169 /* WindSystem.h in Headers */,
 				E898A11316BD265400732C04 /* NMaterial.h in Headers */,
 				E898A11416BD265400732C04 /* NMaterialConsts.h in Headers */,
 				E898A11516BD265400732C04 /* Material.h in Headers */,
@@ -5255,6 +5288,7 @@
 				E898A16816BD265400732C04 /* RenderUpdateSystem.h in Headers */,
 				E898A16916BD265400732C04 /* SwitchSystem.h in Headers */,
 				E898A16A16BD265400732C04 /* TransformSystem.h in Headers */,
+				02A0868018C5C34B00B7D169 /* SpeedTreeUpdateSystem.h in Headers */,
 				E898A16C16BD265400732C04 /* UserNode.h in Headers */,
 				E898A16E16BD265400732C04 /* Sound.h in Headers */,
 				E843505A17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */,
@@ -5512,6 +5546,7 @@
 				176DEA61174B5561007A983B /* CoreMacOS_OpenGL.cpp in Sources */,
 				176DEA62174B5561007A983B /* MongodbClient.cpp in Sources */,
 				176DEA63174B5561007A983B /* MongodbObject.cpp in Sources */,
+				02A0868A18C5C34B00B7D169 /* WindSystem.cpp in Sources */,
 				176DEA64174B5561007A983B /* DAVAEngine.cpp in Sources */,
 				176DEA65174B5561007A983B /* Backtrace.cpp in Sources */,
 				176DEA66174B5561007A983B /* MemoryManager.cpp in Sources */,
@@ -5535,6 +5570,7 @@
 				176DEA77174B5561007A983B /* KeyedUnarchiver.cpp in Sources */,
 				176DEA78174B5561007A983B /* LocalizationSystem.cpp in Sources */,
 				176DEA79174B5561007A983B /* Logger.cpp in Sources */,
+				02A0867E18C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				176DEA7A174B5561007A983B /* LoggerMacOS.mm in Sources */,
 				176DEA7B174B5561007A983B /* ResourceArchive.cpp in Sources */,
 				176DEA7C174B5561007A983B /* VariantType.cpp in Sources */,
@@ -5549,7 +5585,6 @@
 				176DEA84174B5561007A983B /* AABBox2.cpp in Sources */,
 				176DEA85174B5561007A983B /* AABBox3.cpp in Sources */,
 				176DEA86174B5561007A983B /* BezierSpline.cpp in Sources */,
-				02C1121818B3AA370018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				176DEA87174B5561007A983B /* Math2D.cpp in Sources */,
 				176DEA88174B5561007A983B /* Matrix4.cpp in Sources */,
 				176DEA89174B5561007A983B /* NeonMath.cpp in Sources */,
@@ -5576,6 +5611,7 @@
 				176DEAA0174B5561007A983B /* AppDelegate.mm in Sources */,
 				176DEAA1174B5561007A983B /* CorePlatformMacOS.cpp in Sources */,
 				176DEAA2174B5561007A983B /* MainWindowController.mm in Sources */,
+				02A0868418C5C34B00B7D169 /* TreeOscillator.cpp in Sources */,
 				176DEAA3174B5561007A983B /* NSFullScreenWindow.m in Sources */,
 				176DEAA4174B5561007A983B /* OpenGLView.mm in Sources */,
 				176DEAA5174B5561007A983B /* Thread.cpp in Sources */,
@@ -5958,6 +5994,7 @@
 				E8989F5016BD24E500732C04 /* RenderOptions.cpp in Sources */,
 				E8989F5216BD24E500732C04 /* RenderResource.cpp in Sources */,
 				E8989F5716BD24E500732C04 /* Shader.cpp in Sources */,
+				02A0867C18C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				E8989F5A16BD24E500732C04 /* ShaderGL.cpp in Sources */,
 				E8989F5C16BD24E500732C04 /* SharedFBO.cpp in Sources */,
 				E8989F6216BD24E500732C04 /* Texture.cpp in Sources */,
@@ -6082,6 +6119,7 @@
 				E8FC12F61869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				C151B17916D3747E00E09BAF /* DVAssertMessageApple.mm in Sources */,
 				C151B17D16D3755000E09BAF /* WebViewControlMacOS.mm in Sources */,
+				02A0868218C5C34B00B7D169 /* TreeOscillator.cpp in Sources */,
 				C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */,
 				C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */,
 				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
@@ -6102,7 +6140,6 @@
 				02A03DA91871C37B00FA72CE /* SpeedTreeObject.cpp in Sources */,
 				CCC7A44F16F1D6170061EA5D /* RenderBatch.cpp in Sources */,
 				CCC7A45716F1D6170061EA5D /* RenderLayer.cpp in Sources */,
-				02C1121518B3A4A20018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				CCC7A45B16F1D6170061EA5D /* RenderObject.cpp in Sources */,
 				CCC7A45F16F1D6170061EA5D /* RenderPass.cpp in Sources */,
 				CCC7A46316F1D6170061EA5D /* RenderSystem.cpp in Sources */,
@@ -6140,6 +6177,7 @@
 				A6E4FE091761D97C00B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				4FFE5CAE1779DBC700728624 /* MipmapReplacer.cpp in Sources */,
 				C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */,
+				02A0868818C5C34B00B7D169 /* WindSystem.cpp in Sources */,
 				A68B3EF017AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848117AFB73C00034454 /* AllocatorFactory.cpp in Sources */,
 				A679101F17B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
@@ -6170,6 +6208,7 @@
 				E898A19B16BD265400732C04 /* AnimatedObject.cpp in Sources */,
 				E898A19C16BD265400732C04 /* Animation.cpp in Sources */,
 				17B0616F1889264B00FD8007 /* UIWebView.cpp in Sources */,
+				02A0868918C5C34B00B7D169 /* WindSystem.cpp in Sources */,
 				E898A19D16BD265400732C04 /* AnimationManager.cpp in Sources */,
 				E898A19E16BD265400732C04 /* BezierSplineAnimation.cpp in Sources */,
 				E898A19F16BD265400732C04 /* Interpolation.cpp in Sources */,
@@ -6224,7 +6263,6 @@
 				E898A1C916BD265400732C04 /* File.cpp in Sources */,
 				E898A1CA16BD265400732C04 /* FileList.cpp in Sources */,
 				E898A1CB16BD265400732C04 /* FilePath.cpp in Sources */,
-				02C1121718B3AA350018C2A9 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				E898A1CC16BD265400732C04 /* FileSystem.cpp in Sources */,
 				E898A1CD16BD265400732C04 /* FileSystemObjective.mm in Sources */,
 				E898A1CE16BD265400732C04 /* KeyedArchive.cpp in Sources */,
@@ -6244,6 +6282,7 @@
 				E898A1DB16BD265400732C04 /* Accelerometer.cpp in Sources */,
 				E898A1DC16BD265400732C04 /* InputSystem.cpp in Sources */,
 				E898A1DD16BD265400732C04 /* KeyboardDevice.cpp in Sources */,
+				02A0868318C5C34B00B7D169 /* TreeOscillator.cpp in Sources */,
 				E898A1DE16BD265400732C04 /* AABBox2.cpp in Sources */,
 				E898A1DF16BD265400732C04 /* AABBox3.cpp in Sources */,
 				E898A1E016BD265400732C04 /* BezierSpline.cpp in Sources */,
@@ -6417,6 +6456,7 @@
 				CC931B23188EC95F000375F9 /* LodToLod2Converter.cpp in Sources */,
 				E898A2A116BD265400732C04 /* UIPopup.cpp in Sources */,
 				E898A2A216BD265400732C04 /* UIScreen.cpp in Sources */,
+				02A0867D18C5C34B00B7D169 /* SpeedTreeUpdateSystem.cpp in Sources */,
 				E898A2A316BD265400732C04 /* UIScreenManagerMacOS.cpp in Sources */,
 				CC84B02918211A9000934482 /* JobWaiter.cpp in Sources */,
 				E898A2A416BD265400732C04 /* UIScreenTransition.cpp in Sources */,
