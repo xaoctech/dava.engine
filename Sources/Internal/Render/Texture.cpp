@@ -1291,6 +1291,55 @@ void Texture::InitializePixelFormatDescriptors()
 #else
 	SetPixelDescription(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA, "ATC_RGBA_INTERPOLATED_ALPHA", 8, 0, 0, 0);
 #endif
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	SetPixelDescription(FORMAT_PVR2_2, "PVR2_2", 2, 0, 0, 0);
+	SetPixelDescription(FORMAT_PVR4_2, "PVR4_2", 4, 0, 0, 0);
+
+#if defined(GL_COMPRESSED_R11_EAC)
+	SetPixelDescription(FORMAT_EAC_R11_UNSIGNED, "EAC_R11", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_R11_EAC, GL_COMPRESSED_R11_EAC);
+#else 
+	SetPixelDescription(FORMAT_EAC_R11_UNSIGNED, "EAC_R11", 8, GL_UNSIGNED_BYTE, 0, 0);
+#endif 
+
+#if defined(GL_COMPRESSED_SIGNED_R11_EAC)
+	SetPixelDescription(FORMAT_EAC_R11_SIGNED, "EAC_R11_SIGNED", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_SIGNED_R11_EAC, GL_COMPRESSED_SIGNED_R11_EAC);
+#else 
+	SetPixelDescription(FORMAT_EAC_R11_SIGNED, "EAC_R11_SIGNED", 8, GL_UNSIGNED_BYTE, 0, 0);
+#endif 
+
+#if defined(GL_COMPRESSED_RG11_EAC)
+	SetPixelDescription(FORMAT_EAC_RG11_UNSIGNED, "EAC_RG11", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RG11_EAC, GL_COMPRESSED_RG11_EAC);
+#else 
+	SetPixelDescription(FORMAT_EAC_RG11_UNSIGNED, "EAC_RG11", 8, GL_UNSIGNED_BYTE, 0, 0);
+#endif 
+
+#if defined(GL_COMPRESSED_SIGNED_RG11_EAC)
+	SetPixelDescription(FORMAT_EAC_RG11_SIGNED, "EAC_RG11_SIGNED", 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_SIGNED_RG11_EAC, GL_COMPRESSED_SIGNED_RG11_EAC);
+#else 
+	SetPixelDescription(FORMAT_EAC_RG11_SIGNED, "EAC_RG11_SIGNED", 8, GL_UNSIGNED_BYTE, 0, 0);
+#endif 
+
+
+#if defined(GL_COMPRESSED_RGB8_ETC2 )
+	SetPixelDescription(FORMAT_ETC2_RGB, "ETC2_RGB", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB8_ETC2, 0);
+#else
+	SetPixelDescription(FORMAT_ETC2_RGB, "ETC2_RGB", 4, GL_UNSIGNED_BYTE, 0, 0);
+#endif //
+
+#if defined(GL_COMPRESSED_RGBA8_ETC2_EAC)
+	SetPixelDescription(FORMAT_ETC2_RGBA, "ETC2_RGBA", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA8_ETC2_EAC, GL_COMPRESSED_RGBA8_ETC2_EAC);
+#else
+	SetPixelDescription(FORMAT_ETC2_RGBA, "ETC2_RGBA", 4, GL_UNSIGNED_BYTE, 0, 0);
+#endif //
+
+#if defined(GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2  )
+	SetPixelDescription(FORMAT_ETC2_RGB_A1, "ETC2_RGB_A1", 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2, GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2);
+#else
+	SetPixelDescription(FORMAT_ETC2_RGB_A1, "ETC2_RGB_A1", 4, GL_UNSIGNED_BYTE, 0 , 0);
+#endif //
 }
 
 void Texture::SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat)
