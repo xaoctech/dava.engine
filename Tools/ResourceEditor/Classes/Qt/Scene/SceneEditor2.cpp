@@ -66,7 +66,7 @@ SceneEditor2::SceneEditor2()
 	AddSystem(gridSystem, 0, true, renderUpdateSystem);
 
     cameraSystem = new SceneCameraSystem(this);
-    AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT));
+    AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT), true, transformSystem);
 
 	collisionSystem = new SceneCollisionSystem(this);
 	AddSystem(collisionSystem, 0, true, renderUpdateSystem);
@@ -356,8 +356,6 @@ void SceneEditor2::SetChanged(bool changed)
 
 void SceneEditor2::Update(float timeElapsed)
 {
-    cameraSystem->Process(timeElapsed);
-
     Scene::Update(timeElapsed);
 }
 
