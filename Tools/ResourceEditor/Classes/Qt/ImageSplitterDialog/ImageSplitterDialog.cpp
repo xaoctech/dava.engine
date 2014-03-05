@@ -298,6 +298,7 @@ void ImageSplitterDialog::Save(const DAVA::FilePath& filePath, bool saveSplitted
         DAVA::Image* mergedImage = ImageTools::CreateMergedImage(channels);
         DAVA::ImageLoader::Save(mergedImage, filePath);
         DAVA::SafeRelease(mergedImage);
+        ui->selectPathWidget->setText(filePath.GetAbsolutePathname());
     }
     QMessageBox::information(this, "Save succes", "Saved!", QMessageBox::Ok);
 }
