@@ -56,6 +56,7 @@ class TexturePacker
 public:
 
 	static const uint32 DEFAULT_TEXTURE_SIZE = 2048;
+	static const uint32 TSIZE_4096 = 4096;
 	
 	struct FilterItem
 	{
