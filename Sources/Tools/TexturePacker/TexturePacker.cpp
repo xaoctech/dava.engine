@@ -48,7 +48,16 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
-    SetConvertQuality(TextureConverter::ECQ_DEFAULT);
+	quality = TextureConverter::ECQ_VERY_HIGH;
+	if (CommandLineParser::Instance()->IsFlagSet("--quality"))
+	{
+		String qualityName = CommandLineParser::Instance()->GetParamForFlag("--quality");
+		int32 q = atoi(qualityName.c_str());
+		if((q >= TextureConverter::ECQ_FASTEST) && (q <= TextureConverter::ECQ_VERY_HIGH))
+		{
+			quality = (TextureConverter::eConvertQuality)q;
+		}
+	}
     
 	maxTextureSize = TEXTURE_SIZE;
 	onlySquareTextures = false;
