@@ -248,7 +248,8 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         float32 distanceFactor = 1.0f - (spatialData->cameraDistance / MAX_VISIBLE_DISTANCE);
         distanceFactor = (distanceFactor > DISTANCE_FACTOR_STEP) ? 1.0f : distanceFactor;
         
-        uint32 vegetationMapValue = *(((uint32*)vegetationMap->data) + spatialData->cellDescription);
+            uint32 vegetationMapValue = *(((uint32*)vegetationMap->data) + spatialData->cellDescription);
+            //uint32 vegetationMapValue = 0xFFFFFFFF;
         
         for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
         {
@@ -628,7 +629,7 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     {
         node->data.x = x;
         node->data.y = y;
-            //node->data.cellDescription = 0x3F7FBFFF; //TODO: init with density from map
+        //node->data.cellDescription = 0x3F7FBFFF; //TODO: init with density from map
         int32 mapX = x + halfWidth;
         int32 mapY = y + halfHeight;
         node->data.cellDescription = (mapY * (halfWidth << 1)) + mapX; //index of pixel in the tile mask
@@ -645,7 +646,7 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     {
         node->data.x = -1;
         node->data.y = -1;
-        node->data.cellDescription = 0;
+        node->data.cellDescription = -1;
         
         int16 halfWidth = width >> 1;
         int16 halfHeight = height >> 1;
@@ -684,7 +685,9 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
         {
             if(node->IsTerminalLeaf())
             {
-                AddVisibleCell(cameraPoint, &(node->data), MAX_VISIBLE_DISTANCE, cellList);
+                uint32 vegetationMapValue = *(((uint32*)vegetationMap->data) + node->data.cellDescription);
+                AddVisibleCell(cameraPoint, &(node->data), MAX_VISIBLE_DISTANCE,
+                               vegetationMapValue, cellList);
             }
             else
             {
@@ -712,7 +715,9 @@ void VegetationRenderObject::AddAllVisibleCells(const Vector3& cameraPoint,
     {
         if(node->IsTerminalLeaf())
         {
-            AddVisibleCell(cameraPoint, &(node->data), MAX_VISIBLE_CLIPPING_DISTANCE, cellList);
+            uint32 vegetationMapValue = *(((uint32*)vegetationMap->data) + node->data.cellDescription);
+            AddVisibleCell(cameraPoint, &(node->data), MAX_VISIBLE_CLIPPING_DISTANCE,
+                           vegetationMapValue, cellList);
         }
         else
         {
