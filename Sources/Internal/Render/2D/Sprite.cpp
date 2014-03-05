@@ -474,7 +474,7 @@ Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTex
 	return spr;
 }
 
-Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = false*/)
+Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     uint32 width = image->GetWidth();
     uint32 height = image->GetHeight();
@@ -499,10 +499,20 @@ Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = fal
     Sprite* sprite = NULL;
     if (texture)
     {
-        float32 sprWidth = width * Core::GetPhysicalToVirtualFactor();
-		float32 sprHeight = height * Core::GetPhysicalToVirtualFactor();
+        float32 sprWidth = width;
+		float32 sprHeight = height;
+        if(inVirtualSpace)
+        {
+            sprWidth *= Core::GetPhysicalToVirtualFactor();
+            sprHeight *= Core::GetPhysicalToVirtualFactor();
+        }
+        
         sprite = Sprite::CreateFromTexture(texture, 0, 0, sprWidth, sprHeight, contentScaleIncluded);
-        sprite->ConvertToVirtualSize();
+        
+        if(inVirtualSpace)
+        {
+            sprite->ConvertToVirtualSize();
+        }
     }
 
     SafeRelease(texture);
@@ -511,7 +521,7 @@ Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = fal
     return sprite;
 }
 
-Sprite* Sprite::CreateFromSourceData(const uint8* data, uint32 size, bool contentScaleIncluded /* = false*/)
+Sprite* Sprite::CreateFromSourceData(const uint8* data, uint32 size, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     if (data == NULL || size == 0)
     {
@@ -530,7 +540,7 @@ Sprite* Sprite::CreateFromSourceData(const uint8* data, uint32 size, bool conten
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded);
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
     
     for_each(images.begin(), images.end(), SafeRelease<Image>);
     SafeRelease(file);
@@ -538,7 +548,7 @@ Sprite* Sprite::CreateFromSourceData(const uint8* data, uint32 size, bool conten
     return sprite;
 }
 
-Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncluded /* = false*/)
+Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     Vector<Image*> images = ImageLoader::CreateFromFileByExtension(path);
     if (images.size() == 0)
@@ -546,7 +556,7 @@ Sprite* Sprite::CreateFromSourceFile(const FilePath& path, bool contentScaleIncl
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded);
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
 
     for_each(images.begin(), images.end(), SafeRelease<Image>);
 

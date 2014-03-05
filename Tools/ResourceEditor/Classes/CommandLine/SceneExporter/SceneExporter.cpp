@@ -46,6 +46,7 @@ using namespace DAVA;
 SceneExporter::SceneExporter()
 {
     exportForGPU = GPU_UNKNOWN;
+	quality = TextureConverter::ECQ_DEFAULT;
 	optimizeOnExport = true;
 }
 
@@ -376,7 +377,7 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         
 		eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
 		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
-		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true, TextureConverter::ECQ_VERY_HIGH);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true, quality);
         
         DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
         DAVA::Texture *tex = texturesMap[FILEPATH_MAP_KEY(descriptor->pathname)];
@@ -387,5 +388,10 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
 void SceneExporter::EnableOptimizations( bool enable )
 {
 	optimizeOnExport = enable;
+}
+
+void SceneExporter::SetCompressionQuality( TextureConverter::eConvertQuality _quality )
+{
+	quality = _quality;
 }
 
