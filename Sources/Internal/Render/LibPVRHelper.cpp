@@ -2283,86 +2283,6 @@ bool LibPVRHelper::IsPvrFile(DAVA::File *file)
 }
 
 	
-uint32 LibPVRHelper::GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
-{
-	uint32 layout = 0;
-	uint32 dataSize;
-	const char* metadata = GetCubemapMetadata(pvrHeader, pvrData, pvrDataSize, &dataSize);
-	if(NULL != metadata)
-	{
-		/*
-		 The 6 bytes represent a six character string; 
-		 this string shows the order the cube map faces are stored in the texture data, 
-		 for example ‘XxYyZz’. Uppercase letters refer to a positive axis position; 
-		 while lowercase refer to a negative axis position. 
-		 Not all axes must be present.
-		 */
-		uint32 index = 0;
-		while(index < dataSize &&
-			  metadata[index] != '\0')
-		{
-			switch(metadata[index])
-			{
-				case 'X':
-				{
-					layout = layout | (Texture::CUBE_FACE_POSITIVE_X << (index * 4));
-				}
-					break;
-					
-				case 'x':
-				{
-					layout = layout | (Texture::CUBE_FACE_NEGATIVE_X << (index * 4));
-				}
-					break;
-
-				case 'Y':
-				{
-					layout = layout | (Texture::CUBE_FACE_POSITIVE_Y << (index * 4));
-				}
-					break;
-					
-				case 'y':
-				{
-					layout = layout | (Texture::CUBE_FACE_NEGATIVE_Y << (index * 4));
-				}
-					break;
-
-				case 'Z':
-				{
-					layout = layout | (Texture::CUBE_FACE_POSITIVE_Z << (index * 4));
-				}
-					break;
-					
-				case 'z':
-				{
-					layout = layout | (Texture::CUBE_FACE_NEGATIVE_Z << (index * 4));
-				}
-					break;
-
-			}
-			
-			index++;
-		}
-	}
-	else if(pvrHeader->u32NumFaces > 1)
-	{
-		static uint32 faces[] = {
-			Texture::CUBE_FACE_POSITIVE_X,
-			Texture::CUBE_FACE_NEGATIVE_X,
-			Texture::CUBE_FACE_POSITIVE_Y,
-			Texture::CUBE_FACE_NEGATIVE_Y,
-			Texture::CUBE_FACE_POSITIVE_Z,
-			Texture::CUBE_FACE_NEGATIVE_Z
-		};
-		for(uint32 i = 0; i < pvrHeader->u32NumFaces; ++i)
-		{
-			layout = layout | (faces[i] << (i * 4));
-		}
-	}
-	
-	return layout;
-}
-    
 uint32 LibPVRHelper::GetCubemapLayout(const PVRFile *pvrFile)
 {
     uint32 layout = 0;
@@ -2432,14 +2352,6 @@ uint32 LibPVRHelper::GetCubemapLayout(const PVRFile *pvrFile)
 }
 
 	
-bool LibPVRHelper::IsCubemap(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
-{
-	uint32 dataSize;
-	const char* metadata = GetCubemapMetadata(pvrHeader, pvrData, pvrDataSize, &dataSize);
-	
-	return (metadata != NULL);
-}
-	
 const MetaDataBlock * LibPVRHelper::GetCubemapMetadata(const PVRFile *pvrFile)
 {
     uint32 count = (uint32)pvrFile->metaDatablocks.size();
@@ -2454,48 +2366,6 @@ const MetaDataBlock * LibPVRHelper::GetCubemapMetadata(const PVRFile *pvrFile)
     return NULL;
 }
 
-    
-const char* LibPVRHelper::GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize, uint32* outDataSize)
-{
-	const char* metadata = NULL;
-	
-	uint32 fourCC = 0;
-	uint32 dataKey = 0;
-	uint32 dataSize = 0;
-	
-	//minimal metadata is FOURCC+DataKey+DataSize
-	if(pvrHeader->u32MetaDataSize > (sizeof(fourCC) + sizeof(dataKey) + sizeof(dataSize)))
-	{
-		uint32 index = 0;
-		
-		while(index < pvrHeader->u32MetaDataSize)
-		{
-			fourCC = *(uint32*)pvrData;
-			pvrData += sizeof(fourCC);
-			
-			dataKey = *(uint32*)pvrData;
-			pvrData += sizeof(dataKey);
-			
-			dataSize = *(uint32*)pvrData;
-			pvrData += sizeof(dataSize);
-			
-			if(PVRTEX3_METADATAIDENT == fourCC &&
-			   6 == dataKey &&
-			   dataSize > 0)
-			{
-				metadata = pvrData;
-				break;
-			}
-			else
-			{
-				pvrData += dataSize * sizeof(uint8);
-				index += sizeof(fourCC) + sizeof(dataKey) + sizeof(dataSize) + dataSize * sizeof(uint8);
-			}
-		}
-	}
-	
-	return metadata;
-}
 
 PVRFile * LibPVRHelper::ReadFile(const FilePath &filePathname, bool readMetaData /*= false*/, bool readData /*= false*/)
 {
@@ -2639,7 +2509,7 @@ void LibPVRHelper::ReadMetaData(File *file, PVRFile *pvrFile, const bool swapByt
     }
 
     uint8 *metaDataPtr = pvrFile->metaData;
-    while((metaDataPtr - pvrFile->metaData) < metaDataSize)
+    while((uint32)(metaDataPtr - pvrFile->metaData) < metaDataSize)
     {
         MetaDataBlock * block = new MetaDataBlock();
         
