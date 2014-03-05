@@ -1567,16 +1567,38 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         }
         case ePVRTPF_PVRTCII_2bpp:
         {
-            return FORMAT_INVALID;
+            return FORMAT_PVR2_2;
         }
         case ePVRTPF_PVRTCII_4bpp:
         {
-            return FORMAT_INVALID;
+            return FORMAT_PVR4_2;
         }
         case ePVRTPF_ETC1:
         {
             return FORMAT_ETC1;
         }
+
+		case ePVRTPF_EAC_R11:
+		{
+			return FORMAT_EAC_R11_UNSIGNED;
+		}
+		case ePVRTPF_ETC2_RGB:
+		{
+			return FORMAT_ETC2_RGB;
+		}
+		case ePVRTPF_ETC2_RGB_A1:
+		{
+			return FORMAT_ETC2_RGB_A1;
+		}
+		case ePVRTPF_EAC_RG11:
+		{
+			return FORMAT_EAC_RG11_UNSIGNED;
+		}
+		case ePVRTPF_ETC2_RGBA:
+		{
+			return FORMAT_ETC2_RGBA;
+		}
+
             
         default:
             break;
