@@ -1,17 +1,14 @@
 #ifndef __RESOURCEEDITORQT__GRASSEDITORPANEL__
 #define __RESOURCEEDITORQT__GRASSEDITORPANEL__
 
-#include "LandscapeEditorBasePanel.h"
+#include <QtGui>
 #include "DAVAEngine.h"
-#include "Qt/Scene/System/GrassEditorSystem.h"
 
-using namespace DAVA;
+#include "LandscapeEditorBasePanel.h"
+#include "Scene/System/GrassEditorSystem.h"
 
-class QComboBox;
-class QRadioButton;
-class QLineEdit;
-class SliderWidget;
-class QDoubleSpinBox;
+#define LAYERS_COUNT 3
+#define BRUSH_COUNT
 
 class GrassEditorPanel: public LandscapeEditorBasePanel
 {
@@ -36,6 +33,20 @@ protected:
 
 	virtual void ConnectToShortcuts();
 	virtual void DisconnectFromShortcuts();
+
+protected slots:
+    void OnLayerSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void OnBrushSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void OnHeightChanged(int value);
+    void OnDensityChanged(int value);
+
+private:
+    QTableWidget *layersList;
+    QTableWidget *brushList;
+
+    QCheckBox *layerCheckBoxes[LAYERS_COUNT];
+    QSlider *grassHeight;
+    QSlider *grassDensity;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__GRASSEDITORPANEL__) */
