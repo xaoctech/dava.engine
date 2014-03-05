@@ -173,7 +173,7 @@ void main()
     
   
 	gl_FragColor = vec4(mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel) + shininess * materialLightSpecularColor, 1.0);	
-	//gl_FragColor = vec4(shininess * materialLightSpecularColor, 1.0);
+	//gl_FragColor = vec4(reflectionColor*0.7, 1.0);
 	
 #endif
 #endif
