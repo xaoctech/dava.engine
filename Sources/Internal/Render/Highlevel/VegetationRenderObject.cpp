@@ -125,7 +125,7 @@ VegetationRenderObject::VegetationRenderObject() :
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
     
-    type = RenderObject::TYPE_CUSTOM_DRAW;
+    type = RenderObject::TYPE_VEGETATION;
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
     

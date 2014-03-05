@@ -426,6 +426,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusion.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusionRenderPass.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VisibilityArray.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
@@ -822,6 +823,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusion.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusionRenderPass.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp" />
