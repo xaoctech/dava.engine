@@ -2557,7 +2557,7 @@ PVRFile * LibPVRHelper::ReadFile( File *file, bool readMetaData /*= false*/, boo
     
 bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet, uint32 fromMipMap)
 {
-    if(pvrFile == NULL) return false;
+    if(pvrFile == NULL || pvrFile->compressedData == NULL) return false;
     
     const uint32 & mipmapLevelCount = pvrFile->header.u32MIPMapCount;
     DVASSERT(fromMipMap < mipmapLevelCount);
