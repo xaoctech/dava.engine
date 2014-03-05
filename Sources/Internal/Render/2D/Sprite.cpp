@@ -474,7 +474,7 @@ Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTex
 	return spr;
 }
 
-Sprite* Sprite::CreateFromImage(const Image* image)
+Sprite* Sprite::CreateFromImage(const Image* image, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     uint32 width = image->GetWidth();
     uint32 height = image->GetHeight();
@@ -491,7 +491,20 @@ Sprite* Sprite::CreateFromImage(const Image* image)
     Sprite* sprite = NULL;
     if (texture)
     {
-        sprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height);
+        float32 sprWidth = width;
+		float32 sprHeight = height;
+        if(inVirtualSpace)
+        {
+            sprWidth *= Core::GetPhysicalToVirtualFactor();
+            sprHeight *= Core::GetPhysicalToVirtualFactor();
+        }
+        
+        sprite = Sprite::CreateFromTexture(texture, 0, 0, sprWidth, sprHeight, contentScaleIncluded);
+        
+        if(inVirtualSpace)
+        {
+            sprite->ConvertToVirtualSize();
+        }
     }
 
     SafeRelease(texture);
@@ -500,7 +513,7 @@ Sprite* Sprite::CreateFromImage(const Image* image)
     return sprite;
 }
 
-Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size)
+Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     if (data == NULL || size == 0)
     {
@@ -519,7 +532,7 @@ Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size)
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0]);
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
     
     for_each(images.begin(), images.end(), SafeRelease<Image>);
     SafeRelease(file);
@@ -527,7 +540,7 @@ Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size)
     return sprite;
 }
 
-Sprite* Sprite::CreateFromPNG(const FilePath& path)
+Sprite* Sprite::CreateFromPNG(const FilePath& path, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     if (path.GetExtension() != ".png")
     {
@@ -540,7 +553,7 @@ Sprite* Sprite::CreateFromPNG(const FilePath& path)
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0]);
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
 
     for_each(images.begin(), images.end(), SafeRelease<Image>);
 
