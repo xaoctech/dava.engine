@@ -31,6 +31,7 @@
 #define __SCENE_EXPORTER_TOOL_H__
 
 #include "../CommandLineTool.h"
+#include "TextureCompression/TextureConverter.h"
 
 class SceneExporterTool: public CommandLineTool
 {
@@ -60,6 +61,8 @@ protected:
     
     DAVA::String gpu;
 	bool optimizeOnExport;
+
+	DAVA::TextureConverter::eConvertQuality quality;
 };
 
 

@@ -195,57 +195,22 @@ Vector<Image *> ImageLoader::CreateFromDDS(DAVA::File *file)
 
 Vector<Image *> ImageLoader::CreateFromPVR(DAVA::File *file)
 {
-//    uint64 loadTime = SystemTimer::Instance()->AbsoluteMS();
-
-//    PVRFile *pvrFile = LibPVRHelper::ReadFile(file, true, true);
-//    if(pvrFile)
-//    {
-//        Vector<Image *> images;
-//        bool loaded = LibPVRHelper::LoadImages(pvrFile, images, 0);
-//        if(!loaded)
-//        {
-//            Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().GetAbsolutePathname().c_str());
-//			for_each(images.begin(), images.end(), SafeRelease<Image>);
-//            return Vector<Image *>();
-//        }
-//
-//        return images;
-//    }
-//
-//    return Vector<Image *>();
-///
-    int32 mipMapLevelsCount = LibPVRHelper::GetMipMapLevelsCount(file);
-	int32 faceCount = LibPVRHelper::GetCubemapFaceCount(file);
-	int32 totalImageCount = mipMapLevelsCount * faceCount;
-    if(totalImageCount)
+    PVRFile *pvrFile = LibPVRHelper::ReadFile(file, true, true);
+    if(pvrFile)
     {
-        Vector<Image *> imageSet;
-        imageSet.reserve(totalImageCount);
-        for(int32 i = 0; i < totalImageCount; ++i)
-        {
-            Image *image = new Image();
-            if(!image)
-            {
-                Logger::Error("[ImageLoader::CreateFromPVR] Cannot allocate memory");
-				for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
-                return Vector<Image *>();
-            }
-            
-            imageSet.push_back(image);
-        }
-
-        file->Seek(0, File::SEEK_FROM_START);
-        bool read = LibPVRHelper::ReadFile(file, imageSet);
-        if(!read)
+        Vector<Image *> images;
+        bool loaded = LibPVRHelper::LoadImages(pvrFile, images, 0);
+        if(!loaded)
         {
             Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().GetAbsolutePathname().c_str());
-			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
-            return Vector<Image *>();
+			for_each(images.begin(), images.end(), SafeRelease<Image>);
+            images.clear();
         }
-//        loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;
-//        Logger::Info("Unpack PVR(%s) for %ldms", file->GetFilename().c_str(), loadTime);
-        return imageSet;
+        
+        delete pvrFile;
+        return images;
     }
+
     return Vector<Image *>();
 }
 

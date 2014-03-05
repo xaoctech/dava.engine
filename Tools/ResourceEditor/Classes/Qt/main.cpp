@@ -41,7 +41,6 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TextureCompression/PVRConverter.h"
 #include "CommandLine/CommandLineManager.h"
-#include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "FileSystem/ResourceArchive.h"
 #include "TextureBrowser/TextureCache.h"
