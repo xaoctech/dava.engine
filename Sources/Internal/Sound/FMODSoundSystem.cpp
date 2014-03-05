@@ -277,7 +277,15 @@ uint32 SoundSystem::GetMemoryUsageBytes() const
     
     return memory;
 }
-    
+
+float32 SoundSystem::GetTotalCPUUsage() const
+{
+    float32 cpuTotal = 0.f;
+    FMOD_VERIFY(fmodSystem->getCPUUsage(0, 0, 0, 0, &cpuTotal));
+
+    return cpuTotal;
+}
+
 void SoundSystem::Resume()
 {
 #ifdef __DAVAENGINE_IPHONE__
