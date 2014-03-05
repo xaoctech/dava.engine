@@ -32,6 +32,7 @@
 #include "ResourcesManageHelper.h"
 #include "UIControlStateHelper.h"
 #include "SpritesHelper.h"
+#include <QMessageBox>
 
 ReloadSpritesCommand::ReloadSpritesCommand(const HierarchyTreeNode* node) :
     rootNode(node)
@@ -51,6 +52,7 @@ void ReloadSpritesCommand::RepackSprites()
                            ResourcesManageHelper::GetSpritesDirectory().toStdString());
     
     resPacker->PackResources(GPU_UNKNOWN);
+	ShowErrorMessage(resPacker->GetErrors());
     
 	SafeDelete(resPacker);
 }
@@ -62,4 +64,20 @@ void ReloadSpritesCommand::ReloadSprites()
     {
         (*iter)->Reload();
     }
+}
+
+void ReloadSpritesCommand::ShowErrorMessage(Set<String> errorsSet)
+{
+	if (!errorsSet.empty())
+	{
+		QMessageBox msgBox;
+		QString msg;
+		for (Set<String>::const_iterator p = errorsSet.begin( );p != errorsSet.end( ); ++p)
+		{
+			msg.append((*p).c_str());
+			msg.append("\n");
+		}
+		msgBox.setText(msg);
+		msgBox.exec();
+	}
 }

@@ -59,7 +59,7 @@ bool JobStack::push(const JobItem &item)
 	// search for the same works in list and remove it
 	while(NULL != i)
 	{
-		if(i->type == item.type && NULL != i->identity && i->identity == item.identity)
+		if(i->type == item.type && NULL != i->descriptor && i->descriptor == item.descriptor)
 		{
 			if(NULL != i->prev)
 			{

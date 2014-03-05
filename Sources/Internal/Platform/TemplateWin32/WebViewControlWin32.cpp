@@ -356,6 +356,11 @@ void WebViewControl::OpenURL(const String& urlToOpen)
 	}
 }
 
+void WebViewControl::OpenFromBuffer(const String& string, const FilePath& basePath)
+{
+    // TODO
+}
+
 void WebViewControl::SetVisible(bool isVisible, bool /*hierarchic*/)
 {
 	if (this->browserWindow != 0)
