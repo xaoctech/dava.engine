@@ -182,6 +182,8 @@
 		E8679181175F621E00C5A6A2 /* GPUFamilyDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E867917F175F621E00C5A6A2 /* GPUFamilyDescriptor.h */; };
 		E8679184175F62D600C5A6A2 /* EnumMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8679182175F62D600C5A6A2 /* EnumMap.cpp */; };
 		E8679185175F62D600C5A6A2 /* EnumMap.h in Headers */ = {isa = PBXBuildFile; fileRef = E8679183175F62D600C5A6A2 /* EnumMap.h */; };
+		E89C58F418B24832002C25FE /* Atomic.h in Headers */ = {isa = PBXBuildFile; fileRef = E89C58F218B24832002C25FE /* Atomic.h */; };
+		E89C58F518B24832002C25FE /* AtomicMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E89C58F318B24832002C25FE /* AtomicMacOS.mm */; };
 		E89CE92A16C54A36006BEFF4 /* SpriteObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */; };
 		E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92716C54A36006BEFF4 /* SpriteObject.h */; };
 		E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */; };
@@ -955,6 +957,8 @@
 		E867917F175F621E00C5A6A2 /* GPUFamilyDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUFamilyDescriptor.h; sourceTree = "<group>"; };
 		E8679182175F62D600C5A6A2 /* EnumMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnumMap.cpp; sourceTree = "<group>"; };
 		E8679183175F62D600C5A6A2 /* EnumMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnumMap.h; sourceTree = "<group>"; };
+		E89C58F218B24832002C25FE /* Atomic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Atomic.h; sourceTree = "<group>"; };
+		E89C58F318B24832002C25FE /* AtomicMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AtomicMacOS.mm; sourceTree = "<group>"; };
 		E89CE92616C54A36006BEFF4 /* SpriteObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteObject.cpp; sourceTree = "<group>"; };
 		E89CE92716C54A36006BEFF4 /* SpriteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteObject.h; sourceTree = "<group>"; };
 		E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteRenderBatch.cpp; sourceTree = "<group>"; };
@@ -1705,6 +1709,8 @@
 		E8B3C7BD16B9326D002BD35F /* Base */ = {
 			isa = PBXGroup;
 			children = (
+				E89C58F218B24832002C25FE /* Atomic.h */,
+				E89C58F318B24832002C25FE /* AtomicMacOS.mm */,
 				17816B7E17B2748900B067E1 /* AllocatorFactory.cpp */,
 				17816B7F17B2748900B067E1 /* AllocatorFactory.h */,
 				E8679182175F62D600C5A6A2 /* EnumMap.cpp */,
@@ -2877,6 +2883,7 @@
 				E8B3CC5516B9326E002BD35F /* Box2DHelper.h in Headers */,
 				E8B3CC5716B9326E002BD35F /* Box2DTileCollider.h in Headers */,
 				E8B3CC5916B9326E002BD35F /* GameObject.h in Headers */,
+				E89C58F418B24832002C25FE /* Atomic.h in Headers */,
 				E8B3CC5B16B9326E002BD35F /* GameObjectAnimations.h in Headers */,
 				E8B3CC5D16B9326E002BD35F /* GameObjectManager.h in Headers */,
 				E8B3CC5F16B9326E002BD35F /* TextGameObject.h in Headers */,
@@ -3314,6 +3321,7 @@
 				E8B3CC8F16B9326E002BD35F /* ParticleEmitterNode.cpp in Sources */,
 				CC84B04418211BCE00934482 /* JobWaiter.cpp in Sources */,
 				E8B3CC9116B9326E002BD35F /* PathManip.cpp in Sources */,
+				E89C58F518B24832002C25FE /* AtomicMacOS.mm in Sources */,
 				CC84B04018211BCE00934482 /* JobManager.cpp in Sources */,
 				E8B3CC9316B9326E002BD35F /* PolygonGroupInstance.cpp in Sources */,
 				E8B3CC9516B9326E002BD35F /* ProxyNode.cpp in Sources */,

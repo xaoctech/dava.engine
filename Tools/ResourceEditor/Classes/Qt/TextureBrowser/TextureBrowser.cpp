@@ -514,6 +514,9 @@ void TextureBrowser::setupTextureListToolbar()
 	QObject::connect(ui->actionViewTextList, SIGNAL(triggered(bool)), this, SLOT(textureListViewText(bool)));
 	QObject::connect(ui->actionViewImagesList, SIGNAL(triggered(bool)), this, SLOT(textureListViewImages(bool)));
 	QObject::connect(ui->actionFilterSelectedNode, SIGNAL(triggered(bool)), this, SLOT(textureListFilterSelectedNodeChanged(bool)));
+
+    // set sorting type appropriate to current value in combobox
+    textureListSortChanged(texturesSortCombo->itemText(texturesSortCombo->currentIndex()));
 }
 
 void TextureBrowser::setupTextureListFilter()
@@ -616,9 +619,6 @@ void TextureBrowser::texturePressed(const QModelIndex & index)
 {
 	setTexture(textureListModel->getTexture(index), textureListModel->getDescriptor(index));
 	setTextureView(curTextureView);
-
-	// zoom fit selected texture
-	textureZoomFit(true);
 }
 
 void TextureBrowser::textureListViewText(bool checked)
@@ -723,6 +723,9 @@ void TextureBrowser::textureReadyOriginal(const DAVA::TextureDescriptor *descrip
 
 			// set info about loaded image
 			updateInfoOriginal(images.images);
+
+            // zoom fit selected texture
+            textureZoomFit(true);
 		}
 	}
 }
