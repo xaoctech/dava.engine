@@ -96,13 +96,25 @@ public:
     
     virtual void PrepareToRender(Camera *camera);
     
-    void SetHeightmap(Texture* _heightmap);
+    void SetHeightmap(Heightmap* _heightmap);
+    Heightmap* GetHeightmap() const;
+    const FilePath& GetHeightmapPath() const;
+    void SetHeightmapPath(const FilePath& path);
 
     void SetVegetationMap(VegetationMap* map);
-    const VegetationMap* GetVegetationMap() const;
+    VegetationMap* GetVegetationMap() const;
+    void SetVegetationMapPath(const FilePath& path);
+    const FilePath& GetVegetationMapPath() const;
+    
+    void SetLightmap(Texture* lightmapTexture);
+    Texture* GetLightmap() const;
+    void SetLightmapPath(const FilePath& lightmapPath);
+    const FilePath& GetLightmapPath() const;
     
     void SetTextureSheet(const TextureSheet& sheet);
     const TextureSheet& GetTextureSheet() const;
+    void SetTextureSheetPath(const FilePath& path);
+    const FilePath& GetTextureSheetPath() const;
     
     void SetClusterLimit(uint32 maxClusters);
     uint32 GetClusterLimit() const;
@@ -133,20 +145,20 @@ private:
 
     bool IsValidData() const;
     
-    Vector4 GetVisibleArea(Camera* cam);
     Vector2 GetVegetationUnitWorldSize() const;
     
     void BuildSpatialStructure(VegetationMap* vegMap);
     void BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
                           int16 x, int16 y,
-                          uint16 width, uint16 height);
+                          uint16 width, uint16 height,
+                          AABBox3& parentBox);
     
     void BuildVisibleCellList(const Vector3& cameraPoint,
                               Frustum* frustum,
                               Vector<SpatialData*>& cellList);
     void BuildVisibleCellList(const Vector3& cameraPoint,
                               Frustum* frustum,
-                              uint8& planeMask,
+                              uint8 planeMask,
                               AbstractQuadTreeNode<SpatialData>* node,
                               Vector<SpatialData*>& cellList);
     void AddAllVisibleCells(const Vector3& cameraPoint,
@@ -159,13 +171,22 @@ private:
     
     static bool CellByDistanceCompareFunction(const SpatialData* a, const SpatialData*  b);
     
+    void InitHeightTextureFromHeightmap(Heightmap* heightMap);
+    
+    float32 SampleHeight(int16 x, int16 y);
+    
 private:
     
+    Heightmap* heightmap;
     VegetationMap* vegetationMap;
     TextureSheet textureSheet;
     uint32 clusterLimit;
     Vector3 worldSize;
     Vector2 unitWorldSize;
+    Vector2 heightmapScale;
+    Vector2 heightmapToVegetationMapScale;
+    uint16 halfWidth;
+    uint16 halfHeight;
     
     Vector<RenderBatch*> renderBatchPool;
     int32 renderBatchPoolLine;
@@ -176,6 +197,10 @@ private:
     
     AbstractQuadTree<SpatialData> quadTree;
     Vector<SpatialData*> visibleCells;
+    
+    FilePath heightmapPath;
+    FilePath vegetationMapPath;
+    FilePath textureSheetPath;
 };
     
     
@@ -274,6 +299,7 @@ inline void VegetationRenderObject::AddVisibleCell(const Vector3& cameraPoint,
         
         if(data->cameraDistance <= refDistance)
         {
+                //Logger::FrameworkDebug("VegetationRenderObject::AddVisibleCell x = %d, y = %d", data->x, data->y);
             cellList.push_back(data);
         }
     }
