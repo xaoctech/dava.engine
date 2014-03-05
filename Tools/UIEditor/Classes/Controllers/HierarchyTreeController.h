@@ -137,7 +137,7 @@ public:
     void RepackAndReloadSprites();
     
     // Preview mode control.
-    void EnablePreview(const PreviewSettingsData& data);
+    void EnablePreview(const PreviewSettingsData& data, bool applyScale);
     void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
 

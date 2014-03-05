@@ -732,7 +732,7 @@ void HierarchyTreeController::RepackAndReloadSprites()
     SafeRelease(cmd);
 }
 
-void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
+void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data, bool applyScale)
 {
     if (PreviewController::Instance()->IsPreviewEnabled() || !activePlatform ||
         !activeScreen || !activeScreen->GetScreen())
@@ -742,6 +742,7 @@ void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
 
     // We are entering Preview Mode - nothing should be selected.
     ResetSelectedControl();
+    PreviewController::Instance()->EnablePreview(applyScale);
     SetPreviewMode(data);
 }
 

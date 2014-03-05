@@ -201,7 +201,7 @@ private:
     void SetDistributeEnabled(bool value);
 
     // Preview handling.
-    void EnablePreview(const PreviewSettingsData& data);
+    void EnablePreview(const PreviewSettingsData& data, bool applyScale);
     void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
 
