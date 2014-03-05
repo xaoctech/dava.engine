@@ -69,6 +69,7 @@ public:
     PreviewController();
     virtual ~PreviewController();
     
+    void EnablePreview(bool applyScale);
     const PreviewTransformData& SetPreviewMode(const PreviewSettingsData& data,
                                               const Vector2& virtualScreenSize,
                                               uint32 screenDPI);
@@ -122,6 +123,9 @@ private:
     
     // Active Preview Settings ID.
     int32 activePreviewSettingsID;
+    
+    // Whether the preview scale is needed.
+    bool isApplyPreviewScale;
 };
 
 };

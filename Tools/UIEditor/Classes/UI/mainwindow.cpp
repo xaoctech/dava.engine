@@ -1504,8 +1504,7 @@ void MainWindow::OnPreviewTriggered()
             return;
         }
 
-        PreviewSettingsData previewData = dialog->GetSelectedData();
-        EnablePreview(previewData);
+        EnablePreview(dialog->GetSelectedData(), dialog->GetApplyScale());
         delete dialog;
     }
     else
@@ -1528,9 +1527,9 @@ void MainWindow::OnGLWidgetResized()
     UpdateScreenPosition();
 }
 
-void MainWindow::EnablePreview(const PreviewSettingsData& data)
+void MainWindow::EnablePreview(const PreviewSettingsData& data, bool applyScale)
 {
-    HierarchyTreeController::Instance()->EnablePreview(data);
+    HierarchyTreeController::Instance()->EnablePreview(data, applyScale);
     UpdatePreviewScale();
     EnableEditing(false);
 }

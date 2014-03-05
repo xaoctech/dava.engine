@@ -86,7 +86,8 @@ int32 PreviewController::nextId = 0;
 PreviewController::PreviewController() :
     previewEnabled(false),
     isDirty(false),
-    activePreviewSettingsID(EMPTY_PREVIEW_SETTINGS_ID)
+    activePreviewSettingsID(EMPTY_PREVIEW_SETTINGS_ID),
+    isApplyPreviewScale(false)
 {
 }
 
@@ -94,7 +95,13 @@ PreviewController::~PreviewController()
 {
     previewSettings.clear();
 }
-    
+
+void PreviewController::EnablePreview(bool applyScale)
+{
+    isApplyPreviewScale = applyScale;
+    previewEnabled = true;
+}
+
 const PreviewTransformData& PreviewController::SetPreviewMode(const PreviewSettingsData& data,
                                                               const Vector2& virtualScreenSize,
                                                               uint32 screenDPI)
@@ -299,8 +306,12 @@ PreviewTransformData PreviewController::CalculateTransform(const PreviewSettings
     transformData.screenSize.y = floorf(virtualScreenHeight);
     transformData.zoomLevel = scaleFactor;
 
-    // Now apply the DPI.
-    transformData.zoomLevel *= ((float32)screenDPI / (float32)settings.dpi);
+    // Now apply the DPI, if requested.
+    if (isApplyPreviewScale)
+    {
+        transformData.zoomLevel *= ((float32)screenDPI / (float32)settings.dpi);
+    }
+
     return transformData;
 }
     
@@ -336,14 +347,18 @@ void PreviewController::MakeScreenshot(const String& fileName, DefaultScreen* sc
     RenderManager::Instance()->ClearWithColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     // The clipping rectangle defines on scale and preview mode.
-    Rect clipRect = scaledScreenRect;
+    Rect clipRect = rawScreenRect;
     if (IsPreviewEnabled())
     {
         clipRect.SetSize(GetTransformData().screenSize);
+        if (GetTransformData().zoomLevel > 1.0f)
+        {
+            clipRect.SetSize(clipRect.GetSize() * GetTransformData().zoomLevel);
+        }
     }
-    else if (screen->GetScale().x < 1.0f || screen->GetScale().y < 1.0f)
+    else if (screen->GetScale().x > 1.0f || screen->GetScale().y > 1.0f)
     {
-        clipRect = rawScreenRect;
+        clipRect = scaledScreenRect;
     }
 
     RenderManager::Instance()->ClipPush();
