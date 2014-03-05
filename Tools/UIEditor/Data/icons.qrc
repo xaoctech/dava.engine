@@ -45,5 +45,7 @@
         <file>Icons/pixelated.png</file>
         <file>Icons/stickmode.png</file>
         <file>Icons/enableguides.png</file>
+        <file>Icons/screenshot.png</file>
+        <file>Icons/screenshot_folder.png</file>
     </qresource>
 </RCC>
