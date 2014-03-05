@@ -124,7 +124,6 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true); 
     
-    scene->Update(0.1f);
     //Export scene data
     RemoveEditorNodes(scene);
     
@@ -358,6 +357,9 @@ void SceneExporter::ExportSounds(const FilePath &scenePath)
 {
 #ifdef DAVA_FMOD
     FilePath sfxDir = FMODSoundBrowser::MakeFEVPathFromScenePath(scenePath).GetDirectory();
+    if(sfxDir.IsEmpty())
+        return;
+
     if(exportForGPU != GPU_POWERVR_IOS && exportForGPU != GPU_UNKNOWN)
     {
         String pathStr = sfxDir.GetAbsolutePathname();
@@ -365,10 +367,13 @@ void SceneExporter::ExportSounds(const FilePath &scenePath)
         sfxDir = FilePath(pathStr);
     }
 
-    if(!soundsOutFolder.Exists())
-        FileSystem::Instance()->CreateDirectory(soundsOutFolder, true);
+    if(!soundsOutFolder.IsEmpty())
+    {
+        if(!soundsOutFolder.Exists())
+            FileSystem::Instance()->CreateDirectory(soundsOutFolder, true);
 
-    FileSystem::Instance()->CopyDirectory(sfxDir, soundsOutFolder, true);
+        FileSystem::Instance()->CopyDirectory(sfxDir, soundsOutFolder, true);
+    }
 #endif
 }
 

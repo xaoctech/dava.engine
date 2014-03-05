@@ -75,7 +75,8 @@ bool SceneExporterTool::InitializeFromCommandLine()
     
     inFolder.MakeDirectoryPathname();
     outFolder.MakeDirectoryPathname();
-    outSoundsFolder.MakeDirectoryPathname();
+    if(!outSoundsFolder.IsEmpty())
+        outSoundsFolder.MakeDirectoryPathname();
     
     gpu = CommandLineParser::GetCommandParam(String("-gpu"));
     
