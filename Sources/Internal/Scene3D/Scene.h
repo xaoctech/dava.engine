@@ -109,7 +109,7 @@ public:
         SCENE_SYSTEM_STATIC_OCCLUSION_FLAG  = 1 << 11,
         SCENE_SYSTEM_MATERIAL_FLAG          = 1 << 12,
 
-        SCENE_SYSTEM_ALL_MASK               = 0xFFFF
+        SCENE_SYSTEM_ALL_MASK               = 0xFFFFFFFF
     };
 
 	Scene(uint32 systemsMask = SCENE_SYSTEM_ALL_MASK);
@@ -123,13 +123,13 @@ public:
     virtual void    AddComponent(Entity * entity, Component * component);
     virtual void    RemoveComponent(Entity * entity, Component * component);
     
-    virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needUpdate = false, SceneSystem * insertBeforeSceneForUpdate = NULL);
+    virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needProcess = false, SceneSystem * insertBeforeSceneForProcess = NULL);
     virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
 	//virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
-    Vector<SceneSystem*> systemsToUpdate;
+    Vector<SceneSystem*> systemsToProcess;
     //HashMap<uint32, Set<SceneSystem*> > componentTypeMapping;
     TransformSystem * transformSystem;
     RenderUpdateSystem * renderUpdateSystem;

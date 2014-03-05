@@ -239,7 +239,13 @@ void Scene::InitGlobalMaterial()
 void Scene::CreateSystems()
 {
 	renderSystem = new RenderSystem();
-	eventSystem = new EventSystem();
+    eventSystem = new EventSystem();
+
+    if(SCENE_SYSTEM_STATIC_OCCLUSION_FLAG & systemsMask)
+    {
+        staticOcclusionSystem = new StaticOcclusionSystem(this);
+        AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT), true);
+    }
 
     if(SCENE_SYSTEM_TRANSFORM_FLAG & systemsMask)
     {
@@ -247,22 +253,34 @@ void Scene::CreateSystems()
         AddSystem(transformSystem, (1 << Component::TRANSFORM_COMPONENT), true);
     }
 
-    if(SCENE_SYSTEM_RENDER_UPDATE_FLAG & systemsMask)
-    {
-        renderUpdateSystem = new RenderUpdateSystem(this);
-        AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT), true);
-    }
-
     if(SCENE_SYSTEM_LOD_FLAG & systemsMask)
     {
         lodSystem = new LodSystem(this);
-        AddSystem(lodSystem, (1 << Component::LOD_COMPONENT), true, renderUpdateSystem);
+        AddSystem(lodSystem, (1 << Component::LOD_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_SWITCH_FLAG & systemsMask)
+    {
+        switchSystem = new SwitchSystem(this);
+        AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT), true);
     }
 
     if(SCENE_SYSTEM_PARTICLE_EFFECT_FLAG & systemsMask)
     {
         particleEffectSystem = new ParticleEffectSystem(this);
-        AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT), true, renderUpdateSystem);
+        AddSystem(particleEffectSystem, (1 << Component::PARTICLE_EFFECT_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_SOUND_UPDATE_FLAG & systemsMask)
+    {
+        soundSystem = new SoundUpdateSystem(this);
+        AddSystem(soundSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::SOUND_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_RENDER_UPDATE_FLAG & systemsMask)
+    {
+        renderUpdateSystem = new RenderUpdateSystem(this);
+        AddSystem(renderUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT), true);
     }
 
     if(SCENE_SYSTEM_UPDATEBLE_FLAG & systemsMask)
@@ -277,18 +295,6 @@ void Scene::CreateSystems()
         AddSystem(lightUpdateSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::LIGHT_COMPONENT));
     }
 
-    if(SCENE_SYSTEM_SWITCH_FLAG & systemsMask)
-    {
-        switchSystem = new SwitchSystem(this);
-        AddSystem(switchSystem, (1 << Component::SWITCH_COMPONENT), true, particleEffectSystem);
-    }
-
-    if(SCENE_SYSTEM_SOUND_UPDATE_FLAG & systemsMask)
-    {
-        soundSystem = new SoundUpdateSystem(this);
-        AddSystem(soundSystem, (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::SOUND_COMPONENT), true, renderUpdateSystem);
-    }
-
     if(SCENE_SYSTEM_ACTION_UPDATE_FLAG & systemsMask)
     {
         actionSystem = new ActionUpdateSystem(this);
@@ -299,12 +305,6 @@ void Scene::CreateSystems()
     {
         skyboxSystem = new SkyboxSystem(this);
         AddSystem(skyboxSystem, (1 << Component::RENDER_COMPONENT), true);
-    }
-
-    if(SCENE_SYSTEM_STATIC_OCCLUSION_FLAG & systemsMask)
-    {
-        staticOcclusionSystem = new StaticOcclusionSystem(this);
-        AddSystem(staticOcclusionSystem, (1 << Component::STATIC_OCCLUSION_DATA_COMPONENT), true, transformSystem);
     }
 
     if(SCENE_SYSTEM_MATERIAL_FLAG & systemsMask)
@@ -372,7 +372,7 @@ Scene::~Scene()
         SafeDelete(systems[k]);
     systems.clear();
 
-    systemsToUpdate.clear();
+    systemsToProcess.clear();
 
 	SafeDelete(eventSystem);
 	SafeDelete(renderSystem);
@@ -490,7 +490,7 @@ void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
 }
 #endif
     
-void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needUpdate /* = false */, SceneSystem * insertBeforeSceneForUpdate /* = NULL */)
+void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needProcess /* = false */, SceneSystem * insertBeforeSceneForProcess /* = NULL */)
 {
     sceneSystem->SetRequiredComponents(componentFlags);
     //Set<SceneSystem*> & systemSetForType = componentTypeMapping.GetValue(componentFlags);
@@ -498,16 +498,16 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool nee
     systems.push_back(sceneSystem);
 
     bool wasInsertedForUpdate = false;
-    if(needUpdate)
+    if(needProcess)
     {
-        if(insertBeforeSceneForUpdate)
+        if(insertBeforeSceneForProcess)
         {
-            Vector<SceneSystem*>::iterator itEnd = systemsToUpdate.end();
-            for (Vector<SceneSystem*>::iterator it = systemsToUpdate.begin(); it != itEnd; ++it)
+            Vector<SceneSystem*>::iterator itEnd = systemsToProcess.end();
+            for (Vector<SceneSystem*>::iterator it = systemsToProcess.begin(); it != itEnd; ++it)
             {
-                if(insertBeforeSceneForUpdate == (*it))
+                if(insertBeforeSceneForProcess == (*it))
                 {
-                    systemsToUpdate.insert(it, sceneSystem);
+                    systemsToProcess.insert(it, sceneSystem);
                     wasInsertedForUpdate = true;
                     break;
                 }
@@ -515,21 +515,21 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool nee
         }
         else
         {
-            systemsToUpdate.push_back(sceneSystem);
+            systemsToProcess.push_back(sceneSystem);
             wasInsertedForUpdate = true;
         }
     }
-    DVASSERT(needUpdate == wasInsertedForUpdate);
+    DVASSERT(needProcess == wasInsertedForUpdate);
 }
     
 void Scene::RemoveSystem(SceneSystem * sceneSystem)
 {
-    Vector<SceneSystem*>::iterator endIt = systemsToUpdate.end();
-    for(Vector<SceneSystem*>::iterator it = systemsToUpdate.begin(); it != endIt; ++it)
+    Vector<SceneSystem*>::iterator endIt = systemsToProcess.end();
+    for(Vector<SceneSystem*>::iterator it = systemsToProcess.begin(); it != endIt; ++it)
     {
         if(*it == sceneSystem)
         {
-            systemsToUpdate.erase(it);
+            systemsToProcess.erase(it);
             break;;
         }
     }
@@ -757,10 +757,10 @@ void Scene::Update(float timeElapsed)
     renderSystem->SetClipCamera(clipCamera);
     debugRenderSystem->SetCamera(currentCamera);
     
-    uint32 size = (uint32)systemsToUpdate.size();
+    uint32 size = (uint32)systemsToProcess.size();
     for (uint32 k = 0; k < size; ++k)
     {
-        SceneSystem * system = systemsToUpdate[k];
+        SceneSystem * system = systemsToProcess[k];
         if((systemsMask & SCENE_SYSTEM_UPDATEBLE_FLAG) && system == transformSystem)
         {
             updatableSystem->UpdatePreTransform(timeElapsed);
