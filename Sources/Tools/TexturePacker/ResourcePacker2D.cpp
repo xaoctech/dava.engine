@@ -204,7 +204,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 {
     DVASSERT(processDirectoryPath.IsDirectoryPathname());
     
-	uint32 maxTextureSize = (CommandLineParser::Instance()->IsFlagSet("--tsize4096")) ? 4096 : TexturePacker::DEFAULT_TEXTURE_SIZE;
+	uint32 maxTextureSize = (CommandLineParser::Instance()->IsFlagSet("--tsize4096")) ? TexturePacker::TSIZE_4096 : TexturePacker::DEFAULT_TEXTURE_SIZE;
 	
 	// TODO: Check CRC32
 	Vector<Magick::Image> layers;
@@ -265,7 +265,7 @@ DefinitionFile * ResourcePacker2D::ProcessPSD(const FilePath & processDirectoryP
 			
 			//printf("Percent: %d Aspect: %d Greater: %d Less: %d\n", (int)bbox.percent(), (int)bbox.aspect(), (int)bbox.greater(), (int)bbox.less());
 			
-			if ((defFile->frameRects[k - 1].dx >= maxTextureSize) || (defFile->frameRects[k - 1].dy >= maxTextureSize))
+			if ((defFile->frameRects[k - 1].dx > (int32)maxTextureSize) || (defFile->frameRects[k - 1].dy > (int32)maxTextureSize))
 			{
 				Logger::Warning("* WARNING * - frame of %s layer %d is bigger than maxTextureSize(%d) layer exportSize (%d x %d) FORCE REDUCE TO (%d x %d). Bewarned!!! Results not guaranteed!!!", psdName.c_str(), k - 1, maxTextureSize
 					   , defFile->frameRects[k - 1].dx, defFile->frameRects[k - 1].dy, width, height);
@@ -524,7 +524,7 @@ void ResourcePacker2D::RecursiveTreeWalk(const FilePath & inputPath, const FileP
 			}
             else if(CommandLineParser::Instance()->IsFlagSet("--tsize4096"))
             {
-                packer.SetMaxTextureSize(4096);
+                packer.SetMaxTextureSize(TexturePacker::TSIZE_4096);
             }
 
             if(definitionFileList.size() == 1)
