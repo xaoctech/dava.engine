@@ -42,6 +42,7 @@ const SettingRow SETTINGS_GROUP_GENERAL_MAP[] =
 {
 	SettingRow("DesignerName", DAVA::VariantType(DAVA::String("nobody"))),
 	SettingRow("PreviewDialogEnabled", DAVA::VariantType(false)),
+    SettingRow("SequentSelection", DAVA::VariantType(false)),
 };
 
 const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
