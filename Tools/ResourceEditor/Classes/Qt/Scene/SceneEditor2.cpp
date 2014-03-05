@@ -358,8 +358,6 @@ void SceneEditor2::Update(float timeElapsed)
 {
     cameraSystem->Process(timeElapsed);
 
-    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
-
     Scene::Update(timeElapsed);
 }
 
