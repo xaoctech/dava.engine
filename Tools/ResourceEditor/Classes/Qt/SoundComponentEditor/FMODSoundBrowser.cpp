@@ -28,7 +28,6 @@
 
 #include "FMODSoundBrowser.h"
 #include "Qt/Scene/SceneSignals.h"
-#include "Qt/Project/ProjectManager.h"
 #include "ui_soundbrowser.h"
 #include "Scene/SceneEditor2.h"
 
@@ -137,23 +136,23 @@ void FMODSoundBrowser::UpdateEventTree()
 FilePath FMODSoundBrowser::MakeFEVPathFromScenePath(const FilePath & scenePath)
 {
     String sceneDir = scenePath.GetDirectory().GetAbsolutePathname();
-    String mapsPath(ProjectManager::Instance()->CurProjectPath().toStdString() + "DataSource/3d/Maps/");
-    String sfxMapsPath(ProjectManager::Instance()->CurProjectPath().toStdString() + "DataSource/Sfx/Maps/");
-    if(sceneDir.find(mapsPath) != String::npos)
-    {
-        String mapDir = sceneDir.substr(mapsPath.length());
-        Vector<String> dirs;
-        Split(mapDir, "/", dirs);
-        DVASSERT(dirs.size());
-        String mapName = dirs[0];
 
-        FilePath fevPath = FilePath(sfxMapsPath + mapName + "/iOS/" + mapName + ".fev");
-        return fevPath;
-    }
-    else
-    {
+    String mapsSubPath("DataSource/3d/Maps/");
+    size_t pos = sceneDir.find(mapsSubPath);
+    if(pos == String::npos)
         return FilePath();
-    }
+
+    String projectPath = sceneDir.substr(0, pos);
+    String sfxMapsPath(projectPath + "DataSource/Sfx/Maps/");
+
+    String mapSubDir = sceneDir.substr(projectPath.length() + mapsSubPath.length());
+    Vector<String> dirs;
+    Split(mapSubDir, "/", dirs);
+    DVASSERT(dirs.size());
+    String mapName = dirs[0];
+
+    FilePath fevPath = FilePath(sfxMapsPath + mapName + "/iOS/" + mapName + ".fev");
+    return fevPath;
 }
 #endif
 

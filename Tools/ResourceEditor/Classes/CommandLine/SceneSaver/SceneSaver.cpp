@@ -198,6 +198,9 @@ void SceneSaver::CopySounds(const FilePath & scenePath)
 {
 #ifdef DAVA_FMOD
     FilePath sfxDir = FMODSoundBrowser::MakeFEVPathFromScenePath(scenePath).GetDirectory();
+    if(sfxDir.IsEmpty())
+        return;
+
     String pathStr = sfxDir.GetAbsolutePathname();
     pathStr = pathStr.substr(0, pathStr.length() - 4); // remove "iOS/"
     sfxDir = FilePath(pathStr);
