@@ -152,10 +152,11 @@ uniform vec2 tex0ShiftPerSecond;
 uniform vec4 tilePos;
 uniform vec3 worldSize;
 
-uniform mat4 clusterDensityMap;
-uniform mat4 clusterScaleMap;
+uniform mat4 clusterScaleDensityMap;
 
 uniform sampler2D detail;
+
+uniform vec2 heightmapScale;
 #endif
 
 
@@ -211,8 +212,9 @@ void main()
     
         vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
                         clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
+        hUV = hUV * heightmapScale;
     
-        float height = texture2DLod(detail, hUV, 0.0).r * worldSize.z;
+        float height = texture2DLod(detail, hUV, 0.0).a * worldSize.z;
     
         pos.z += height;
     
@@ -221,17 +223,15 @@ void main()
                                   inBinormal.z + height,
                                   pos.w);
     
-        //inTangent.x - layer id (0...2)
         //inTangent.y - cluster type (0...3)
         //inTangent.z - cluster's reference density (0...15)
     
-        int layerIndex = int(inTangent.x);
+        //clusterScaleDensityMap[0] - density
+        //clusterScaleDensityMap[1] - scale
+    
         int clusterType = int(inTangent.y);
     
-    pos = mix(clusterCenter, pos, clusterScaleMap[layerIndex][clusterType] * step(inTangent.z, clusterDensityMap[layerIndex][clusterType]));
-              //clusterScaleMap[layerIndex][clusterType]);
-                  //clusterScaleMap[layerIndex][clusterType] * step(inTangent.z, clusterDensityMap[layerIndex][clusterType]));
-    
+        pos = mix(clusterCenter, pos, clusterScaleDensityMap[1][clusterType] * step(inTangent.z, clusterScaleDensityMap[0][clusterType]));
     
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;
