@@ -623,4 +623,9 @@ bool VegetationRenderObject::CellByDistanceCompareFunction(const SpatialData* a,
     return (a->cameraDistance < b->cameraDistance);
 }
 
+void TextureSheet::Load(const FilePath &yamlPath)
+{
+
+}
+
 };

@@ -96,7 +96,7 @@ public:
 	//! \brief get center
 	inline Vector2 GetCenter();
 
-    inline Rect GetRect() const;
+    inline Rect2i GetRect2i() const;
 
 	//! \brief copy operator of bounding box class
 	inline AABBox2 & operator =(const AABBox2 & _bbox);
@@ -207,14 +207,20 @@ inline Vector2 AABBox2::GetCenter()
 	return (min + max) / 2.0f;
 }
 
-inline Rect AABBox2::GetRect() const
+inline Rect2i AABBox2::GetRect2i() const
 {
     if(!IsEmpty())
     {
-        return Rect(min.x, min.y, max.x - min.x + 1, max.y - min.y + 1);
+        float32 dx = max.x - min.x;
+        float32 dy = max.y - min.y;
+
+        if(dx != (int) dx) dx++;
+        if(dy != (int) dy) dy++;
+
+        return Rect2i((int) min.x, (int) min.y, (int) dx, (int) dy);
     }
 
-    return Rect();
+    return Rect2i();
 }
 
 

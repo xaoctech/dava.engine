@@ -74,11 +74,12 @@ public:
     
     inline void SetTexture(Texture* tx);
     inline Texture* GetTexture() const;
-    
+
     inline TextureSheet& operator=(const TextureSheet& src);
+
+    void Load(const FilePath &yamlPath);
     
 private:
-    
     Texture* texture;
 };
 
