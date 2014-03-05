@@ -286,7 +286,7 @@ inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData:
 
 inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue) const
 {
-    return (0 == (cellValue & 0x0F0F0F00));
+    return (0 == (cellValue & 0x0F0F0F0F));
 }
     
 inline void VegetationRenderObject::AddVisibleCell(const Vector3& cameraPoint,

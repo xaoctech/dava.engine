@@ -248,15 +248,16 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         float32 distanceFactor = 1.0f - (spatialData->cameraDistance / MAX_VISIBLE_DISTANCE);
         distanceFactor = (distanceFactor > DISTANCE_FACTOR_STEP) ? 1.0f : distanceFactor;
         
-            uint32 vegetationMapValue = *(((uint32*)vegetationMap->data) + spatialData->cellDescription);
-            //uint32 vegetationMapValue = 0xFFFFFFFF;
+        uint8 *vegetationMapValuePtr = (vegetationMap->data + spatialData->cellDescription * 4);
+        //uint32 vegetationMapValue = 0xFFFFFFFF;
+        //vegetationMapValuePtr = (uint8 *) &vegetationMapValue;
         
         for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
         {
-            uint32 cellLayerData = 0x000000FF & (vegetationMapValue >> ((MAX_CLUSTER_TYPES - clusterType) * 8));
+            uint8 cellLayerData = vegetationMapValuePtr[clusterType];
             
-            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0x0000000F)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
-            float32 density = (1.0f * (cellLayerData & 0x0000000F)) + 1.0f; //step function uses "<" so we need to emulate "<="
+            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0xF)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
+            float32 density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
             
             scaleDensityMap._data[DENSITY_ROW_INDEX][clusterType] = density * distanceFactor;
             scaleDensityMap._data[SCALE_ROW_INDEX][clusterType] = clusterScale * distanceFactor;
