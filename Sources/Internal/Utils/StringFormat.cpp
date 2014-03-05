@@ -234,6 +234,11 @@ __res; })
         
         int32 tail = (int32)num;
         
+        num -= tail;
+        num *= 10;
+        if (num >= 5.f)
+            tail++;
+        
         type = SIGN | LEFT;
         char16 *firstStr = Number(str, whole, 10, -1, -1, type);
         if(tail)
