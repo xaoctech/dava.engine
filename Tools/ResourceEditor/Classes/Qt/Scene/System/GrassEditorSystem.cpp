@@ -85,16 +85,22 @@ void GrassEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
                     {
                         inDrawState = true;
                         affectedArea.Empty();
-                        affectedArea.AddPoint(curCursorPos);
-                        DrawGrass(curCursorPos);
+                        if(curCursorPos.x >= 0 && curCursorPos.y >= 0)
+                        {
+                            affectedArea.AddPoint(curCursorPos);
+                            DrawGrass(curCursorPos);
+                        }
                     }
 				    break;
 
 			    case UIEvent::PHASE_DRAG:
                     if(inDrawState)
                     {
-                        affectedArea.AddPoint(curCursorPos);
-                        DrawGrass(curCursorPos);
+                        if(curCursorPos.x >= 0 && curCursorPos.y >= 0)
+                        {
+                            affectedArea.AddPoint(curCursorPos);
+                            DrawGrass(curCursorPos);
+                        }
                     }
 				    break;
 
@@ -118,9 +124,9 @@ void GrassEditorSystem::ProcessCommand(const Command2 *command, bool redo)
         if(cmdId == CMDID_IMAGE_REGION_COPY)
         {
             ImageRegionCopyCommand* imCmd = (ImageRegionCopyCommand *) command;
+            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
 
-            //BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
-            //ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
+            ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
         }
     }
 }
@@ -247,7 +253,7 @@ uint8 GrassEditorSystem::GetCurrentLayer() const
 
 void GrassEditorSystem::SetBrushHeight(uint8 height)
 {
-    curBrush &= 0xf0;
+    curBrush &= 0xf;
     curBrush |= ((height & 0xf) << 4);
 }
 
@@ -258,6 +264,7 @@ uint8 GrassEditorSystem::GetBrushHeight() const
 
 void GrassEditorSystem::SetBrushDensity(uint8 density)
 {
+    curBrush &= 0xf0;
     curBrush |= (density & 0xf);
 }
 
