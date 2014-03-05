@@ -745,18 +745,7 @@ void Scene::Update(float timeElapsed)
     TIME_PROFILE("Scene::Update");
     
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
-    
-    bool updateLODs = RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS);
-    if((systemsMask & SCENE_SYSTEM_LOD_FLAG) && updateLODs)
-    {
-        lodSystem->SetCamera(currentCamera);
-    }
 
-    staticOcclusionSystem->SetCamera(clipCamera);
-    renderSystem->SetCamera(currentCamera);
-    renderSystem->SetClipCamera(clipCamera);
-    debugRenderSystem->SetCamera(currentCamera);
-    
     uint32 size = (uint32)systemsToProcess.size();
     for (uint32 k = 0; k < size; ++k)
     {
@@ -769,7 +758,7 @@ void Scene::Update(float timeElapsed)
         }
         else if(system == lodSystem)
         {
-            if(updateLODs)
+            if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::UPDATE_LODS))
             {
                 lodSystem->Process(timeElapsed);
             }

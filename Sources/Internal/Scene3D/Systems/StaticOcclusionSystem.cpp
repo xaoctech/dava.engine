@@ -266,6 +266,8 @@ StaticOcclusionSystem::~StaticOcclusionSystem()
 
 void StaticOcclusionSystem::Process(float32 timeElapsed)
 {
+    SetCamera(GetScene()->GetClipCamera());
+
     // Verify that system is initialized
     if (!camera)return;
 
