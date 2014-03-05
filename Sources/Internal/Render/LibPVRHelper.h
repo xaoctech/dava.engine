@@ -157,10 +157,7 @@ protected:
 
 
     
-//
-    
 	static uint32 ReadNextMetadata(DAVA::File* file, uint32* crc);
-	
 	static bool GetCRCFromMetaData(const FilePath &filePathname, uint32* outputCRC);
 
     static bool PreparePVRData(const char* pvrData, const int32 pvrDataSize);
@@ -170,7 +167,6 @@ protected:
     static uint32 GetTextureDataSize(PVRHeaderV3 textureHeader, int32 mipLevel = PVRTEX_ALLMIPLEVELS, bool allSurfaces = true, bool allFaces = true);
     static void MapLegacyTextureEnumToNewFormat(PVRTPixelType OldFormat, uint64& newType, EPVRTColourSpace& newCSpace, EPVRTVariableType& newChanType, bool& isPreMult);
     static void ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, PVRHeaderV3& NewHeader);
-//    static bool IsGLExtensionSupported(const char * const extension);
 
     static const PixelFormat GetCompressedFormat(const uint64 PixelFormat);
     static const PixelFormat GetFloatTypeFormat(const uint64 PixelFormat);
@@ -183,10 +179,6 @@ protected:
     static PVRHeaderV3 GetHeader(File *file);
     static PVRHeaderV3 GetHeader(const uint8* pvrData, const int32 pvrDataSize);
 	
-	static uint32 GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize);
-	static bool IsCubemap(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize);
-	static const char* GetCubemapMetadata(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize, uint32* outDataSize);
-    
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
     
 	//load cubemap
