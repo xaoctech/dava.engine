@@ -27,7 +27,7 @@ static const uint32 MAX_VERTEX_PER_CLUSTER = 12;
 static const uint32 MAX_INDEX_PER_CLUSTER = 18;
 static const uint32 MAX_CLUSTER_TYPES = 4;
 static const uint32 MAX_DENSITY_LEVELS = 16;
-static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 3.0f;
+static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
 static const uint32 MAX_BRUSH_DIVERSITY = 4;
     
@@ -254,7 +254,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         {
             uint32 cellLayerData = 0x000000FF & (vegetationMapValue >> ((MAX_CLUSTER_TYPES - clusterType) * 8));
             
-            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0x00000003)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
+            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0x0000000F)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
             float32 density = (1.0f * (cellLayerData & 0x0000000F)) + 1.0f; //step function uses "<" so we need to emulate "<="
             
             scaleDensityMap._data[DENSITY_ROW_INDEX][clusterType] = density * distanceFactor;
