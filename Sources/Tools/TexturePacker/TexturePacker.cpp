@@ -48,7 +48,7 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
-    SetConvertQuality(TextureConverter::ECQ_VERY_HIGH);
+    SetConvertQuality(TextureConverter::ECQ_DEFAULT);
     
 	maxTextureSize = TEXTURE_SIZE;
 	onlySquareTextures = false;
