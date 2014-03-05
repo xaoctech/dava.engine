@@ -4,12 +4,14 @@ uniform sampler2D cubemap = 2;
 uniform sampler2D decal = 1;
 uniform sampler2D detail = 1;
 uniform sampler2D lightmap = 1;
-uniform sampler2D normalmap = 1;
+uniform sampler2D normalmap = 2;
 
 uniform float inGlossiness = 0.5;
 uniform float inSpecularity = 1.0;
 uniform vec3 metalFresnelReflectance = vec3(0.5, 0.5, 0.5);
 <FRAGMENT_SHADER>
+
+#extension GL_ARB_shader_texture_lod : enable
 
 #ifdef GL_ES
 // define default precision for float, vec, mat.
@@ -285,10 +287,10 @@ void main()
 
     
 #elif defined(PIXEL_LIT)
-    
     // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
+    //normal = vec3(0.0, 0.0, 1.0);
     
     float attenuation = lightIntensity0;
     #if defined(DISTANCE_ATTENUATION)
@@ -317,11 +319,12 @@ void main()
     float NdotV = max (dot (normal, varToCameraVec), 0.0);
 #endif
     
-#if !defined(MOS_PBR)
+#if defined(NORMALIZED_BLINN_PHONG)
     vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
-    vec3 fresnelOut = FresnelShlickVec3(LdotH, metalFresnelReflectance);
+    vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
     float specularity = inSpecularity;
-    float glossiness = pow(5000.0, inGlossiness * textureColor0.a); //textureColor0.a;
+    float glossiness = inGlossiness * textureColor0.a;
+    float glossPower = pow(5000.0, glossiness); //textureColor0.a;
     
    	//float glossiness = inGlossiness * 0.999;
 	//glossiness = 200.0 * glossiness / (1.0 - glossiness);
@@ -337,8 +340,8 @@ void main()
 	spec_cutoff = 1.0 - spec_cutoff;
     
     //float specularNorm = (glossiness + 2.0) * (glossiness + 4.0) / (8.0 * _PI * (pow(2.0, -glossiness / 2.0) + glossiness));
-    float specularNorm = (glossiness + 2.0) / 8.0;
-    float Dbp = specularNorm * pow(NdotH, glossiness) * NdotL;
+    float specularNorm = (glossPower + 2.0) / 8.0;
+    float Dbp = specularNorm * pow(NdotH, glossPower) * NdotL;
     float Geo = 1.0 / LdotH * LdotH;
 
     vec3 specular = Dbp * Geo * fresnelOut * specularity;
@@ -374,12 +377,17 @@ void main()
 #endif
     
     vec3 color = vec3(0.0);
-    #if defined(VIEW_AMBIENT)
+    
+    #if defined(VIEW_AMBIENT) && !defined(MATERIAL_LIGHTMAP)
         color += materialLightAmbientColor;
     #endif
     
     #if defined(VIEW_DIFFUSE)
-        color += diffuse;
+        #if defined(MATERIAL_LIGHTMAP)
+            color = textureColor1.rgb * 2.0;
+        #else
+            color += diffuse;
+        #endif
     #endif
     
     #if defined(VIEW_ALBEDO)
@@ -387,7 +395,7 @@ void main()
     #endif
     
     #if defined(VIEW_SPECULAR)
-        color += specular;
+        color += specular * textureColor1.rgb;
     #endif
 
 #elif defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
@@ -455,8 +463,8 @@ void main()
 
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
     mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
-    lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;
+    lowp vec4 reflectionColor = textureCubeLod(cubemap, reflectionVectorInWorldSpace, (1.0 - inGlossiness) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;//* textureColor0.rgb;
 #endif
 #endif
     

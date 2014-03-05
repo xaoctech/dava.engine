@@ -313,7 +313,9 @@ void main()
     vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
     
     vec3 toLightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;
+#if defined(DISTANCE_ATTENUATION)
     varPerPixelAttenuation = length(toLightDir);
+#endif
     //lightDir = normalize(lightDir);
     
 	// transform light and half angle vectors by tangent basis
@@ -352,9 +354,9 @@ void main()
 	varHalfVec = v;
 #endif
 
-    varLightPosition.x = dot (lightPosition0.xyz, t);
-    varLightPosition.y = dot (lightPosition0.xyz, b);
-    varLightPosition.z = dot (lightPosition0.xyz, n);
+//    varLightPosition.x = dot (lightPosition0.xyz, t);
+//    varLightPosition.y = dot (lightPosition0.xyz, b);
+//    varLightPosition.z = dot (lightPosition0.xyz, n);
     
 #if defined(REFLECTION)
     v.x = dot (eyeCoordsPosition, t);
