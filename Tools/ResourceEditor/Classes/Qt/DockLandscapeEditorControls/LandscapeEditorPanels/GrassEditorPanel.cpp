@@ -154,6 +154,8 @@ void GrassEditorPanel::RestoreState()
 
             for(int i = 0; i < GRASS_EDITOR_LAYERS_COUNT; ++i)
             {
+                QTableWidgetItem *item = layersList->item(i, 1);
+
                 // fill visible/invisible state for layer
                 if(sceneEditor->grassEditorSystem->IsLayerVisible(i))
                 {
@@ -165,16 +167,22 @@ void GrassEditorPanel::RestoreState()
                 }
 
                 // fill texture preview for layer
+                bool ok = false;
                 if(!txpix.isNull())
                 {
                     DAVA::Rect2i r = MapTexCoord(sheet.cells[i], txpix.width(), txpix.height());
                     QPixmap pix = txpix.copy(QRect(r.x, r.y, r.dx, r.dy));
 
-                    QTableWidgetItem *item = layersList->item(i, 1);
                     if(NULL != item)
                     {
                         item->setIcon(QIcon(pix));
+                        ok = true;
                     }
+                }
+
+                if(!ok)
+                {
+                    item->setIcon(QIcon());
                 }
             }
 
