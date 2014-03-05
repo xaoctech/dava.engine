@@ -51,12 +51,17 @@ public:
     void SetScale(const Vector2& value);
     void SetPos(const Vector2& value);
 
+    void SetScreenshotMode(bool value);
+
 private:
     UIControl* background;
     
     // Scale and Position of the screen in UIEditor. Needed to recalculate opacity texture.
     Vector2 scale;
     Vector2 pos;
+    
+    // Screenshot mode.
+    bool screenShotMode;
 };
 
 #endif /* defined(__UIEditor__ScreenControl__) */

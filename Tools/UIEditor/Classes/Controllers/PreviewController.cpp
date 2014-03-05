@@ -28,6 +28,7 @@
 
 
 #include "PreviewController.h"
+#include "DefaultScreen.h"
 
 #define DEFAULT_GFX_EXTENSION "Gfx"
 
@@ -311,6 +312,57 @@ bool PreviewController::HasUnsavedChanges() const
 void PreviewController::SetDirty(bool value)
 {
     isDirty = value;
+}
+
+void PreviewController::MakeScreenshot(const String& fileName, DefaultScreen* screen)
+{
+    if (!screen || !screen->GetScreenControl())
+    {
+        return;
+    }
+
+    ScreenControl* screenControl = screen->GetScreenControl();
+    Rect rawScreenRect = Rect(Vector2(0.0f, 0.0f), screenControl->GetSize());
+    Rect scaledScreenRect = rawScreenRect;
+    scaledScreenRect.SetSize(rawScreenRect.GetSize() * screen->GetScale());
+    
+    ScopedPtr<Texture> texture(Texture::CreateFBO((int32)ceilf(scaledScreenRect.dx), (int32)ceilf(scaledScreenRect.dy), FORMAT_RGBA8888, Texture::DEPTH_RENDERBUFFER));
+
+    
+    ScopedPtr<Sprite> screenshot(Sprite::Create(""));
+    screenshot->InitFromTexture(texture, 0, 0, scaledScreenRect.dx, scaledScreenRect.dy, -1, -1, true);
+    
+    RenderManager::Instance()->SetRenderTarget(screenshot);
+    RenderManager::Instance()->ClearWithColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // The clipping rectangle defines on scale and preview mode.
+    Rect clipRect = scaledScreenRect;
+    if (IsPreviewEnabled())
+    {
+        clipRect.SetSize(GetTransformData().screenSize);
+    }
+    else if (screen->GetScale().x < 1.0f || screen->GetScale().y < 1.0f)
+    {
+        clipRect = rawScreenRect;
+    }
+
+    RenderManager::Instance()->ClipPush();
+    RenderManager::Instance()->SetClip(clipRect);
+
+    // Draw the screen with the scale requested, but without any offset.
+    RenderManager::Instance()->SetDrawScale(screen->GetScale());
+	RenderManager::Instance()->SetDrawTranslate(Vector2(0.0f, 0.0f));
+    
+    screen->GetScreenControl()->SetScreenshotMode(true);
+    screen->GetScreenControl()->SystemDraw(UIControlSystem::Instance()->GetBaseGeometricData());
+    screen->GetScreenControl()->SetScreenshotMode(false);
+
+    RenderManager::Instance()->ClipPop();
+    RenderManager::Instance()->RestoreRenderTarget();
+
+    ScopedPtr<Image> image(texture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND));
+    image->ResizeCanvas(scaledScreenRect.dx, scaledScreenRect.dy);
+    ImageLoader::Save(image, fileName);
 }
 
 };

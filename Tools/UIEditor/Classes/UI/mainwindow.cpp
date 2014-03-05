@@ -67,6 +67,7 @@
 #include <QUrl>
 #include <QSettings>
 #include <QColorDialog>
+#include <QDateTime>
 
 #define SPIN_SCALE 10.f
 
@@ -229,6 +230,16 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(triggered()),
             this,
             SLOT(OnPreviewTriggered()));
+    
+    connect(this->ui->actionScreenshot,
+            SIGNAL(triggered()),
+            this,
+            SLOT(OnScreenshot()));
+
+    connect(this->ui->actionSetScreenshotFolder,
+            SIGNAL(triggered()),
+            this,
+            SLOT(OnSetScreenshotFolder()));
     
     connect(this->ui->actionEditPreviewSettings,
             SIGNAL(triggered()),
@@ -883,6 +894,10 @@ void MainWindow::UpdateMenu()
     // Guides.
     ui->actionEnable_Guides->setEnabled(projectNotEmpty);
     ui->actionStickMode->setEnabled(projectNotEmpty);
+    
+    // Screenshot.
+    ui->actionSetScreenshotFolder->setEnabled(projectNotEmpty);
+    ui->actionScreenshot->setEnabled(projectNotEmpty);
 }
 
 void MainWindow::OnNewProject()
@@ -1641,4 +1656,41 @@ void MainWindow::OnEnableGuidesChanged()
     {
         activeScreen->SetGuidesEnabled(ui->actionEnable_Guides->isChecked());
     }
+}
+
+void MainWindow::OnSetScreenshotFolder()
+{
+    SetScreenshotFolder();
+}
+
+void MainWindow::SetScreenshotFolder()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Screenshots Directory"),
+                                                    screenShotFolder,
+                                                    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty())
+    {
+        screenShotFolder = dir;
+    }
+}
+
+void MainWindow::OnScreenshot()
+{
+    DefaultScreen* currentScreen = ScreenWrapper::Instance()->GetActiveScreen();
+    if (!currentScreen || !currentScreen->GetScreenControl())
+    {
+        return;
+    }
+
+    if (screenShotFolder.isEmpty())
+    {
+        SetScreenshotFolder();
+    }
+
+    QString screenShotFileName = QString("UIEditor_Screenshot_%1").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd_HH.mm.ss.z.png"));
+    QString fullPath = QDir().cleanPath(screenShotFolder + QDir::separator() + screenShotFileName);
+    
+    ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
+    PreviewController::Instance()->MakeScreenshot(fullPath.toStdString(), currentScreen);
+    ScreenWrapper::Instance()->RestoreApplicationCursor();
 }

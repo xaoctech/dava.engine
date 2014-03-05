@@ -32,6 +32,7 @@
 
 #include "DAVAEngine.h"
 
+class DefaultScreen;
 namespace DAVA {
 
 struct PreviewSettingsData
@@ -93,6 +94,9 @@ public:
     
     // Return true if some changes were made in the preview settings list after the initial load.
     bool HasUnsavedChanges() const;
+    
+    // Make the screenshot of the screen passed.
+    void MakeScreenshot(const String& fileName, DefaultScreen* screen);
 
 protected:
     // Calculate the transform data.
@@ -103,6 +107,7 @@ protected:
     // Set the dirty flag.
     void SetDirty(bool value);
 
+private:
     bool previewEnabled;
     PreviewTransformData currentTransformData;
     
