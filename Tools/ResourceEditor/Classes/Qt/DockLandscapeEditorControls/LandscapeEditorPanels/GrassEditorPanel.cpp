@@ -42,9 +42,9 @@ void GrassEditorPanel::InitUI()
     QGridLayout *frameLayout = new QGridLayout(sliderFrame);
 
     grassHeight = new QSlider(Qt::Horizontal, sliderFrame);
-    grassHeight->setRange(0, 3);
+    grassHeight->setRange(0, 15);
     grassHeight->setSingleStep(1);
-    grassHeight->setPageStep(2);
+    grassHeight->setPageStep(4);
     grassHeight->setTickPosition(QSlider::TicksBothSides);
     grassHeight->setMaximumHeight(21);
 

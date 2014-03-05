@@ -119,8 +119,8 @@ void GrassEditorSystem::ProcessCommand(const Command2 *command, bool redo)
         {
             ImageRegionCopyCommand* imCmd = (ImageRegionCopyCommand *) command;
 
-            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
-            ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
+            //BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
+            //ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
         }
     }
 }
@@ -245,24 +245,15 @@ uint8 GrassEditorSystem::GetCurrentLayer() const
     return curLayer;
 }
 
-void GrassEditorSystem::SetBrushType(uint8 type)
-{
-    curBrush |= ((type & 0x3) << 6);
-}
-
-uint8 GrassEditorSystem::GetBrushType() const
-{
-    return ((curBrush >> 6) & 0x3);
-}
-
 void GrassEditorSystem::SetBrushHeight(uint8 height)
 {
-    curBrush |= ((height & 0x3) << 4);
+    curBrush &= 0xf0;
+    curBrush |= ((height & 0xf) << 4);
 }
 
 uint8 GrassEditorSystem::GetBrushHeight() const
 {
-    return ((curBrush >> 4) & 0x3);
+    return ((curBrush >> 4) & 0xf);
 }
 
 void GrassEditorSystem::SetBrushDensity(uint8 density)
@@ -299,9 +290,6 @@ void GrassEditorSystem::DrawGrassEnd()
         DAVA::Rect affectedRect = DAVA::Rect(affectedRect2i.x, affectedRect2i.y, affectedRect2i.dx, affectedRect2i.dy);
         DAVA::Image *orig = DAVA::Image::CopyImageRegion(vegetationMapCopy, affectedRect);
         sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, orig));
-
-        //BuildGrassCopy(affectedArea);
-        //ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
     }
 }
 
