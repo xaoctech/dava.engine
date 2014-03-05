@@ -205,7 +205,7 @@ const TextureQuality* QualitySettingsSystem::GetTxQuality(const FastName &name) 
         }
     }
 
-    //DVASSERT(NULL != ret && "No such quality");
+    DVASSERT(NULL != ret && "No such quality");
 
     return ret;
 }

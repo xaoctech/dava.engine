@@ -213,7 +213,7 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
                 }
             }
             
-            if(props->GetArchieveData().size() == 0)
+			if(props->Count() == 0)
             {
                 node->RemoveComponent(DAVA::Component::CUSTOM_PROPERTIES_COMPONENT);
             }
