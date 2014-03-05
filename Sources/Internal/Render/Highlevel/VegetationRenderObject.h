@@ -137,7 +137,7 @@ private:
         
         inline SpatialData();
         inline SpatialData& operator=(const SpatialData& src);
-        inline bool IsEmpty() const;
+        inline bool IsEmpty(uint32 cellValue) const;
     };
     
     void BuildVegetationBrush(uint32 maxClusters);
@@ -168,6 +168,7 @@ private:
     inline void AddVisibleCell(const Vector3& cameraPoint,
                                SpatialData* data,
                                float32 refDistance,
+                               uint32 cellValue,
                                Vector<SpatialData*>& cellList);
     
     static bool CellByDistanceCompareFunction(const SpatialData* a, const SpatialData*  b);
@@ -283,17 +284,18 @@ inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData:
     return *this;
 }
 
-inline bool VegetationRenderObject::SpatialData::IsEmpty() const
+inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue) const
 {
-    return (0 == (cellDescription & 0x0F0F0F00));
+    return (0 == (cellValue & 0x0F0F0F00));
 }
     
 inline void VegetationRenderObject::AddVisibleCell(const Vector3& cameraPoint,
                                                    SpatialData* data,
                                                    float32 refDistance,
+                                                   uint32 cellValue,
                                                    Vector<SpatialData*>& cellList)
 {
-    if(!data->IsEmpty())
+    if(!data->IsEmpty(cellValue))
     {
         Vector3 cameraVector = cameraPoint - data->refPoint;
         data->cameraDistance = cameraVector.SquareLength();
