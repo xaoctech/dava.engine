@@ -3350,6 +3350,9 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertMode.h">
+      <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">
