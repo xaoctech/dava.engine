@@ -48,8 +48,17 @@
 #include "libpvr/PVRTexture.h"
 #endif //#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
 
-#define METADATA_CRC_SIZE		16			//size for meta data with CRC32
-#define METADATA_CRC_TAG		0x5f435243  // equivalent of 'C''R''C''_'
+#define METADATA_FOURCC_OFFSET	0
+#define METADATA_KEY_OFFSET		4
+#define METADATA_DATASIZE_OFFSET	8
+#define METADATA_DATA_OFFSET	12
+
+#define METADATA_CRC_DATA_SIZE	4			//size for CRC32
+#define METADATA_CRC_SIZE		(METADATA_DATA_OFFSET + METADATA_CRC_DATA_SIZE)			//size for meta data with CRC32
+#define METADATA_CRC_KEY		0x5f435243  // equivalent of 'C''R''C''_'
+
+#define METADATA_CUBE_KEY		2
+#define METADATA_CUBE_SIZE		6
 
 
 namespace DAVA 
@@ -1534,104 +1543,6 @@ void LibPVRHelper::MapLegacyTextureEnumToNewFormat(PVRTPixelType OldFormat, uint
     PVRTMapLegacyTextureEnumToNewFormat(OldFormat, newType, newCSpace, newChanType, isPreMult);
 #endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
 }
-
-void LibPVRHelper::ConvertOldTextureHeaderToV3(const PVRHeaderV2* LegacyHeader, PVRHeaderV3& NewHeader)
-{
-#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    //Setup variables
-    bool isPreMult;
-    uint64 ptNew;
-    EPVRTColourSpace cSpaceNew;
-    EPVRTVariableType chanTypeNew;
-    
-    //Map the old enum to the new format.
-    MapLegacyTextureEnumToNewFormat((PVRTPixelType)(LegacyHeader->dwpfFlags&0xff),ptNew,cSpaceNew,chanTypeNew,isPreMult);
-    
-    //Check if this is a cube map.
-    bool isCubeMap = (LegacyHeader->dwpfFlags&PVRTEX_CUBEMAP)!=0;
-    
-    //Setup the new header.
-    NewHeader.u64PixelFormat=ptNew;
-    NewHeader.u32ChannelType=chanTypeNew;
-    NewHeader.u32ColourSpace=cSpaceNew;
-    NewHeader.u32Depth=1;
-    NewHeader.u32Flags=isPreMult?PVRTEX3_PREMULTIPLIED:0;
-    NewHeader.u32Height=LegacyHeader->dwHeight;
-    NewHeader.u32MetaDataSize=0;
-    NewHeader.u32MIPMapCount=(LegacyHeader->dwpfFlags&PVRTEX_MIPMAP?LegacyHeader->dwMipMapCount+1:1); //Legacy headers have a MIP Map count of 0 if there is only the top level. New Headers have a count of 1.
-    NewHeader.u32NumFaces=(isCubeMap?6:1);
-    
-    //Only compute the number of surfaces if it's a V2 header, else default to 1 surface.
-    if (LegacyHeader->dwHeaderSize==sizeof(PVRHeaderV2))
-        NewHeader.u32NumSurfaces=(LegacyHeader->dwNumSurfs/(isCubeMap?6:1));
-    else
-        NewHeader.u32NumSurfaces=1;
-    
-    NewHeader.u32Version=PVRTEX3_IDENT;
-    NewHeader.u32Width=LegacyHeader->dwWidth;
-    
-//    //Clear any currently stored MetaData, or it will be inaccurate.
-//    if (pMetaData)
-//    {
-//        pMetaData->Clear();
-//    }
-//    
-//    //Check if this is a normal map.
-//    if (LegacyHeader->dwpfFlags&PVRTEX_BUMPMAP && pMetaData)
-//    {
-//        //Get a reference to the correct block.
-//        MetaDataBlock& mbBumpData=(*pMetaData)[PVRTEX_CURR_IDENT][ePVRTMetaDataBumpData];
-//        
-//        //Set up the block.
-//        mbBumpData.DevFOURCC=PVRTEX_CURR_IDENT;
-//        mbBumpData.u32Key=ePVRTMetaDataBumpData;
-//        mbBumpData.u32DataSize=8;
-//        mbBumpData.Data=new PVRTuint8[8];
-//        
-//        //Setup the data for the block.
-//        float bumpScale = 1.0f;
-//        const char* bumpOrder = "xyz";
-//        
-//        //Copy the bumpScale into the data.
-//        memcpy(mbBumpData.Data,&bumpScale,4);
-//        
-//        //Clear the string
-//        memset(mbBumpData.Data+4,0,4);
-//        
-//        //Copy the bumpOrder into the data.
-//        memcpy(mbBumpData.Data+4, bumpOrder,3);
-//        
-//        //Increment the meta data size.
-//        NewHeader.u32MetaDataSize+=(12+mbBumpData.u32DataSize);
-//    }
-//    
-//    //Check if for vertical flip orientation.
-//    if (LegacyHeader->dwpfFlags&PVRTEX_VERTICAL_FLIP && pMetaData)
-//    {
-//        //Get the correct meta data block
-//        MetaDataBlock& mbTexOrientation=(*pMetaData)[PVRTEX_CURR_IDENT][ePVRTMetaDataTextureOrientation];
-//        
-//        //Set the block up.
-//        mbTexOrientation.u32DataSize=3;
-//        mbTexOrientation.Data=new PVRTuint8[3];
-//        mbTexOrientation.DevFOURCC=PVRTEX_CURR_IDENT;
-//        mbTexOrientation.u32Key=ePVRTMetaDataTextureOrientation;
-//        
-//        //Initialise the block to default orientation.
-//        memset(mbTexOrientation.Data,0,3);
-//        
-//        //Set the block oriented upwards.
-//        mbTexOrientation.Data[ePVRTAxisY]=ePVRTOrientUp;
-//        
-//        //Increment the meta data size.
-//        NewHeader.u32MetaDataSize+=(12+mbTexOrientation.u32DataSize);
-//    }
-
-#else //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    PVRTConvertOldTextureHeaderToV3((const PVR_Texture_Header *)LegacyHeader, (PVRTextureHeaderV3&)NewHeader, NULL);
-#endif //#if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-}
-
     
 
 const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
@@ -1878,138 +1789,14 @@ PVRHeaderV3 LibPVRHelper::CreateDecompressedHeader(const PVRHeaderV3 &compressed
 }
    
     
-bool LibPVRHelper::PreparePVRData(const char* pvrData, const int32 pvrDataSize)
-{
-    PVRHeaderV3 textureHeader;
-    //Header size.
-    uint32 u32HeaderSize=0;
-    
-    //Boolean whether to byte swap the texture data or not.
-    bool bSwapDataEndianness=false;
-    
-    //The channel type for endian swapping.
-    EPVRTVariableType u32CurrentChannelType=ePVRTVarTypeUnsignedByte;
-    
-    //Check the first word of the file and see if it's equal to the current identifier (or reverse identifier)
-    if(*(uint32*)pvrData!=PVRTEX_CURR_IDENT && *(uint32*)pvrData!=PVRTEX_CURR_IDENT_REV)
-    {
-        //Swap the header bytes if necessary.
-        if(!PVRTIsLittleEndian())
-        {
-            bSwapDataEndianness=true;
-            uint32 u32HeaderSize=PVRTByteSwap32(*(uint32*)pvrData);
-            
-            for (uint32 i=0; i<u32HeaderSize; ++i)
-            {
-                PVRTByteSwap( (uint8*)( ( (uint32*)pvrData )+i),sizeof(uint32) );
-            }
-        }
-        
-        //Get a pointer to the header.
-        PVRHeaderV2* sLegacyTextureHeader=(PVRHeaderV2*)pvrData;
-        
-        //Set the header size.
-        u32HeaderSize=sLegacyTextureHeader->dwHeaderSize;
-        
-        //We only really need the channel type.
-        uint64 tempFormat;
-        EPVRTColourSpace tempColourSpace;
-        bool tempIsPreMult;
-        
-        //Map the enum to get the channel type.
-        MapLegacyTextureEnumToNewFormat( (PVRTPixelType)( sLegacyTextureHeader->dwpfFlags&0xff),tempFormat,tempColourSpace, u32CurrentChannelType, tempIsPreMult);
-    }
-    else
-    {
-        // If the header file has a reverse identifier, then we need to swap endianness
-        if(*(uint32*)pvrData==PVRTEX_CURR_IDENT_REV)
-        {
-            bSwapDataEndianness=true;
-            PVRHeaderV3* pTextureHeader=(PVRHeaderV3*)pvrData;
-            
-            pTextureHeader->u32ChannelType=PVRTByteSwap32(pTextureHeader->u32ChannelType);
-            pTextureHeader->u32ColourSpace=PVRTByteSwap32(pTextureHeader->u32ColourSpace);
-            pTextureHeader->u32Depth=PVRTByteSwap32(pTextureHeader->u32Depth);
-            pTextureHeader->u32Flags=PVRTByteSwap32(pTextureHeader->u32Flags);
-            pTextureHeader->u32Height=PVRTByteSwap32(pTextureHeader->u32Height);
-            pTextureHeader->u32MetaDataSize=PVRTByteSwap32(pTextureHeader->u32MetaDataSize);
-            pTextureHeader->u32MIPMapCount=PVRTByteSwap32(pTextureHeader->u32MIPMapCount);
-            pTextureHeader->u32NumFaces=PVRTByteSwap32(pTextureHeader->u32NumFaces);
-            pTextureHeader->u32NumSurfaces=PVRTByteSwap32(pTextureHeader->u32NumSurfaces);
-            pTextureHeader->u32Version=PVRTByteSwap32(pTextureHeader->u32Version);
-            pTextureHeader->u32Width=PVRTByteSwap32(pTextureHeader->u32Width);
-            PVRTByteSwap((uint8*)&pTextureHeader->u64PixelFormat,sizeof(uint64));
-            
-            //Channel type.
-            u32CurrentChannelType=(EPVRTVariableType)pTextureHeader->u32ChannelType;
-        }
-        
-        //Setup the texture header
-        textureHeader = *(PVRHeaderV3*)pvrData;
-        //Header size.
-        u32HeaderSize=PVRTEX3_HEADERSIZE+textureHeader.u32MetaDataSize;
-    }
-
-    // Convert the data if needed
-    if(bSwapDataEndianness)
-    {
-        //Get the size of the variables types.
-        uint32 ui32VariableSize=0;
-        switch(u32CurrentChannelType)
-        {
-            case ePVRTVarTypeFloat:
-            case ePVRTVarTypeUnsignedInteger:
-            case ePVRTVarTypeUnsignedIntegerNorm:
-            case ePVRTVarTypeSignedInteger:
-            case ePVRTVarTypeSignedIntegerNorm:
-            {
-                ui32VariableSize=4;
-                break;
-            }
-            case ePVRTVarTypeUnsignedShort:
-            case ePVRTVarTypeUnsignedShortNorm:
-            case ePVRTVarTypeSignedShort:
-            case ePVRTVarTypeSignedShortNorm:
-            {
-                ui32VariableSize=2;
-                break;
-            }
-            case ePVRTVarTypeUnsignedByte:
-            case ePVRTVarTypeUnsignedByteNorm:
-            case ePVRTVarTypeSignedByte:
-            case ePVRTVarTypeSignedByteNorm:
-            {
-                ui32VariableSize=1;
-                break;
-            }
-            default:
-                break;
-        }
-        
-        //If the size of the variable type is greater than 1, then we need to byte swap.
-        if (ui32VariableSize>1)
-        {
-            //Get the texture data.
-            uint8* pu8OrigData = ( (uint8*)pvrData + u32HeaderSize);
-
-            //Get the size of the texture data.
-            uint32 ui32TextureDataSize = GetTextureDataSize(textureHeader);
-
-            //Loop through and byte swap all the data. It's swapped in place so no need to do anything special.
-            for(uint32 i = 0; i < ui32TextureDataSize; i+=ui32VariableSize)
-            {
-                PVRTByteSwap(pu8OrigData+i,ui32VariableSize);
-            }
-        }
-    }
-    
-    return true;
-}
-    
 uint32 LibPVRHelper::GetDataSize(const FilePath &filePathname)
 {
     File *file = File::Create(filePathname, File::OPEN | File::READ);
-    if(!file) return 0;
+    if(!file) 
+	{
+		Logger::Error("[LibPVRHelper::GetDataSize]: cannot read file: %s", filePathname.GetAbsolutePathname().c_str());
+		return 0;
+	}
     
     uint32 dataSize = 0;
     
@@ -2026,213 +1813,113 @@ uint32 LibPVRHelper::GetDataSize(const FilePath &filePathname)
 	
 bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 {
-	String fileNameStr = filePathname.GetAbsolutePathname();
+	//read file
+	PVRFile *pvrFile = ReadFile(filePathname, true, true);
+	if(!pvrFile) return false;
 
-	PVRHeaderV3 header = GetHeader(filePathname);
-	if(header.u32Version != PVRTEX3_METADATAIDENT)
-	{
-		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]  %s has wrong version", fileNameStr.c_str());
-		return false;
-	}
-	
+	//read crc
 	uint32 presentCRC = 0;
-	if(GetCRCFromMetaData(filePathname, &presentCRC))
+	bool crcIsPresent = GetCRCFromMetaData(pvrFile, &presentCRC);
+	if(crcIsPresent)
 	{
-		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData] CRC is already added into file %s", fileNameStr.c_str());
-		return false;
-	}
-	
-	File *fileRead = File::Create(filePathname, File::READ | File::OPEN);
-	if(!fileRead)
-	{
-		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData] cannot open file %s", fileNameStr.c_str());
+		delete pvrFile;
 		return false;
 	}
 
-    uint32 originalFileSize = fileRead->GetSize();
-    //create single buffer for incresed data amount
-    uint32 newFileSize = originalFileSize + METADATA_CRC_SIZE;
-    char *fileBuffer = new char[newFileSize];
-	if(!fileBuffer)
+	//reallocate meta data buffer
+	uint8 * oldMetaData = pvrFile->metaData;
+	uint32 oldMetaDataSize = pvrFile->header.u32MetaDataSize;
+	
+	pvrFile->header.u32MetaDataSize = oldMetaDataSize + METADATA_CRC_SIZE;
+	pvrFile->metaData = new uint8[pvrFile->header.u32MetaDataSize];
+	if(oldMetaData)
 	{
-		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot allocate buffer for file data");
-		SafeRelease(fileRead);
-		return false;
+		Memcpy(pvrFile->metaData, oldMetaData, oldMetaDataSize);
+		delete [] oldMetaData;
 	}
-    
-    uint32 readSize = fileRead->Read(fileBuffer, originalFileSize);
-    if(readSize != originalFileSize)
-    {
-        Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot read from file %s", fileNameStr.c_str());
-        SafeRelease(fileRead);
-        SafeDeleteArray(fileBuffer);
-        return false;
-    }
-    SafeRelease(fileRead);
-    //calculate for only existed part of buffer(fileSize)
-    uint32 newCRC = CRC32::ForBuffer(fileBuffer, originalFileSize);
-    uint32 textureDataSize = originalFileSize - sizeof(header) - header.u32MetaDataSize;
-    char* currentTextureDataPointer = fileBuffer + sizeof(header) + header.u32MetaDataSize;
-    //shift texture data to get space for new crc metadata
-    memmove((currentTextureDataPointer + METADATA_CRC_SIZE), currentTextureDataPointer, textureDataSize);
-    
-    uint32 metadata[4] = {METADATA_CRC_TAG, 0, 0, newCRC};
-    metadata[2] = sizeof(metadata);
-    memcpy(fileBuffer + sizeof(header) + header.u32MetaDataSize, &metadata, metadata[2]);
-    
-    uint32* metaDataSizePointer = (uint32*)(fileBuffer + sizeof(header) - sizeof(header.u32MetaDataSize))	;
-    *metaDataSizePointer = header.u32MetaDataSize + METADATA_CRC_SIZE;
-    
-    FilePath filePathnameTmp(filePathname.GetAbsolutePathname() + "_");
-	File *fileWrite = File::Create(filePathnameTmp, File::WRITE | File::CREATE);
-    if(!fileWrite)
-    {
-        SafeDeleteArray(fileBuffer);
-        Logger::Error("[LibPVRHelper::AddCRCIntoMetaData] cannot open file %s", filePathnameTmp.GetAbsolutePathname().c_str());
-        return false;
-    }
-    
-    bool writeSucces = fileWrite->Write(fileBuffer, newFileSize) == newFileSize;
-    SafeDeleteArray(fileBuffer);
-    SafeRelease(fileWrite);
-    if(writeSucces)
+
+	//create metaDataWithCrc
+	MetaDataBlock * crcMetaData = new MetaDataBlock();
+	crcMetaData->DevFOURCC = PVRTEX3_METADATAIDENT;
+	crcMetaData->u32Key = METADATA_CRC_KEY;
+	crcMetaData->u32DataSize = METADATA_CRC_DATA_SIZE;
+	crcMetaData->Data = pvrFile->metaData + oldMetaDataSize + METADATA_DATA_OFFSET;
+	pvrFile->metaDatablocks.push_back(crcMetaData);
+
+	*((uint32 *)(pvrFile->metaData + oldMetaDataSize + METADATA_FOURCC_OFFSET)) = crcMetaData->DevFOURCC;
+	*((uint32 *)(pvrFile->metaData + oldMetaDataSize + METADATA_KEY_OFFSET)) = crcMetaData->u32Key;
+	*((uint32 *)(pvrFile->metaData + oldMetaDataSize + METADATA_DATASIZE_OFFSET)) = crcMetaData->u32DataSize;
+	*((uint32 *)(pvrFile->metaData + oldMetaDataSize + METADATA_DATA_OFFSET)) = CRC32::ForFile(filePathname);
+
+	bool written = false;
+
+	File *file = File::Create(filePathname, File::OPEN | File::WRITE);
+	if(file) 
 	{
-		FileSystem::Instance()->DeleteFile(filePathname);
-		FileSystem::Instance()->MoveFile(filePathnameTmp, filePathname, true);
-		return true;
+		file->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
+		file->Write(pvrFile->metaData, pvrFile->header.u32MetaDataSize);
+		
+		if(pvrFile->compressedData)
+			file->Write(pvrFile->compressedData, pvrFile->compressedDataSize);
+
+		file->Release();
+
+		written = true;
 	}
-    else
-    {
-        Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot write to file %s",
-                      filePathnameTmp.GetAbsolutePathname().c_str());
-        FileSystem::Instance()->DeleteFile(filePathnameTmp);
-        return false;
-    }
+	else
+	{
+		Logger::Error("[LibPVRHelper::ReadFile]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
+	}
+
+	delete pvrFile;
+	return written;
 }
 
 bool LibPVRHelper::GetCRCFromMetaData(const FilePath &filePathname, uint32* outputCRC)
 {
-	bool retValue = false;
-	String fileNameStr = filePathname.GetAbsolutePathname();
+	File *file = File::Create(filePathname, File::OPEN | File::READ);
+	if(!file) return false;
 
-	PVRHeaderV3 header = GetHeader(filePathname);
-	if(header.u32Version != PVRTEX3_METADATAIDENT)
+	bool crcRead = false;
+
+	const PVRFile *pvrFile = ReadFile(file, true, false);
+	if(pvrFile)
 	{
-		Logger::Error("[LibPVRHelper::GetCRCFromFile]  %s has wrong version", fileNameStr.c_str());
-		return retValue;
-	}
-	
-	File *fileRead = File::Create(filePathname, File::READ | File::OPEN);
-	if(!fileRead)
-	{
-		Logger::Error("[LibPVRHelper::GetCRCFromFile] cannot open file %s", fileNameStr.c_str());
-		return retValue;
+		crcRead = GetCRCFromMetaData(pvrFile, outputCRC);
+		delete pvrFile;
 	}
 
-	if(header.u32MetaDataSize != 0)
-	{
-		uint32 crc = 0, readSize = 0;
-		fileRead->Seek(sizeof(header), File::SEEK_FROM_START);
-		while (crc == 0 && readSize != header.u32MetaDataSize)
-		{
-			readSize += ReadNextMetadata(fileRead, &crc);
-		}
-		
-		if(crc != 0)
-		{
-			*outputCRC = crc;
-			retValue = true;
-		}
-	}
-
-	SafeRelease(fileRead);
-	return retValue;
+	file->Release();
+	return crcRead;
 }
 
-uint32 LibPVRHelper::ReadNextMetadata(DAVA::File* file, uint32* outputCRC)
+bool LibPVRHelper::GetCRCFromMetaData(const PVRFile *pvrFile, uint32* outputCRC)
 {
-	*outputCRC = 0;
-	uint32 readSize = 0, fourCC = 0,key = 0, dataSize = 0, data = 0;
-	
-	readSize = file->Read(&fourCC, sizeof(fourCC));
-	readSize += file->Read(&key, sizeof(key));
-	readSize += file->Read(&dataSize, sizeof(dataSize));
-	if(fourCC == METADATA_CRC_TAG)
+	if(!pvrFile) return false;
+
+	bool crcRead = false;
+
+	uint32 metaDataCount = pvrFile->metaDatablocks.size();
+	for(uint32 i = 0; i < metaDataCount; ++i)
 	{
-		readSize += file->Read(&data, sizeof(data));
-		*outputCRC = data;
+		const MetaDataBlock * block = pvrFile->metaDatablocks[i];
+		if(block->u32Key == METADATA_CRC_KEY)
+		{
+			*outputCRC = *((uint32*)block->Data);
+
+			crcRead = true;
+			break;
+		}
 	}
-	else
-	{
-		readSize += dataSize;
-		file->Seek(file->GetPos() + dataSize, File::SEEK_FROM_START);
-	}
-	
-	return readSize;
+
+	return crcRead;
 }
-	
+
 uint32 LibPVRHelper::GetCRCFromFile(const FilePath &filePathname)
 {
 	uint32 crc = 0;
 	bool success = GetCRCFromMetaData(filePathname, &crc);
 	return success ? crc : CRC32::ForFile(filePathname);
-}
-
-PVRHeaderV3 LibPVRHelper::GetHeader(const FilePath &filePathname)
-{
-    File *file = File::Create(filePathname, File::READ | File::OPEN);
-    if(!file)
-    {
-        Logger::Error("[LibPVRHelper::GetHeaderForFile] cannot open file %s", filePathname.GetAbsolutePathname().c_str());
-        return PVRHeaderV3();
-    }
-    
-    PVRHeaderV3 header = GetHeader(file);
-    SafeRelease(file);
-    return header;
-}
-    
-PVRHeaderV3 LibPVRHelper::GetHeader(File *file)
-{
-    PVRHeaderV3 header;
-    uint8 *headerData = new uint8[PVRTEX3_HEADERSIZE];
-    if(headerData)
-    {
-        int32 readSize = file->Read(headerData, PVRTEX3_HEADERSIZE);
-        if(PVRTEX3_HEADERSIZE == readSize)
-        {
-            header = GetHeader(headerData, PVRTEX3_HEADERSIZE);
-        }
-        SafeDeleteArray(headerData);
-    }
-    return header;
-}
-
-
-PVRHeaderV3 LibPVRHelper::GetHeader(const uint8* pvrData, const int32 pvrDataSize)
-{
-    bool dataPrepared = PreparePVRData((const char *)pvrData, pvrDataSize);
-    if(dataPrepared)
-    {
-        PVRHeaderV3 header;
-        //Check if it's an old header format
-        if((*(uint32*)pvrData)!=PVRTEX3_IDENT)
-        {
-            PVRHeaderV2 *pvrV2Header = (PVRHeaderV2 *)pvrData;
-            if(pvrV2Header->dwPVR == PVRTEX2_IDENT)
-            {
-                ConvertOldTextureHeaderToV3((PVRHeaderV2 *)pvrData, header);
-            }
-        }
-        else
-        {
-            //Get the header from the main pointer.
-            header = *(PVRHeaderV3*)pvrData;
-        }
-        return header;
-    }
-    
-    return PVRHeaderV3();
 }
 
 bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
@@ -2357,7 +2044,9 @@ const MetaDataBlock * LibPVRHelper::GetCubemapMetadata(const PVRFile *pvrFile)
     uint32 count = (uint32)pvrFile->metaDatablocks.size();
     for(uint32 i = 0; i < count; ++i)
     {
-        if(pvrFile->metaDatablocks[i]->DevFOURCC == PVRTEX3_METADATAIDENT && pvrFile->metaDatablocks[i]->u32DataSize == 6)
+        if(		pvrFile->metaDatablocks[i]->DevFOURCC == PVRTEX3_METADATAIDENT 
+			&&	pvrFile->metaDatablocks[i]->u32Key == METADATA_CUBE_KEY
+			&&	pvrFile->metaDatablocks[i]->u32DataSize == METADATA_CUBE_SIZE)
         {
             return pvrFile->metaDatablocks[i];
         }
@@ -2370,8 +2059,12 @@ const MetaDataBlock * LibPVRHelper::GetCubemapMetadata(const PVRFile *pvrFile)
 PVRFile * LibPVRHelper::ReadFile(const FilePath &filePathname, bool readMetaData /*= false*/, bool readData /*= false*/)
 {
     File *file = File::Create(filePathname, File::OPEN | File::READ);
-    if(!file) return NULL;
-    
+    if(!file) 
+	{
+		Logger::Error("[LibPVRHelper::ReadFile]: cannot read file: %s", filePathname.GetAbsolutePathname().c_str());
+		return NULL;
+	}
+
     PVRFile *pvrFile = ReadFile(file, readMetaData, readData);
     file->Release();
     
@@ -2387,7 +2080,7 @@ PVRFile * LibPVRHelper::ReadFile( File *file, bool readMetaData /*= false*/, boo
 	uint32 readSize = file->Read(&pvrFile->header, PVRTEX3_HEADERSIZE);
 	if(readSize != PVRTEX3_HEADERSIZE)
 	{
-		Logger::Error("[LibPVRHelper::ReadFile]: cannot read header from file");
+		Logger::Error("[LibPVRHelper::ReadFile]: cannot read header from %s", file->GetFilename().GetAbsolutePathname().c_str());
 		delete pvrFile;
 		return NULL;
 	}
