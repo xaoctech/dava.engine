@@ -129,7 +129,7 @@ public:
         \brief Function applies camera transformations (projection, model-view matrices) to RenderManager
         This function normally is called internally from Scene class. In most cases you'll not need it. 
      */
-	void SetupDynamicParameters();
+	void SetupDynamicParameters(bool forceObliqueNearPlane = false, Vector4 clipPlane = Vector4());
 	
 	/**     
         \brief Restore camera transform to original camera transform that was set using 
