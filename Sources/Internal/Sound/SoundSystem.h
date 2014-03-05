@@ -105,6 +105,7 @@ public:
     void GetAllEventsNames(Vector<String> & names);
 
     uint32 GetMemoryUsageBytes() const;
+    float32 GetTotalCPUUsage() const;
 
 protected:
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
