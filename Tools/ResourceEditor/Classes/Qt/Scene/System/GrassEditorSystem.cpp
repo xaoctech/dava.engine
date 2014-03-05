@@ -119,7 +119,7 @@ void GrassEditorSystem::ProcessCommand(const Command2 *command, bool redo)
         {
             ImageRegionCopyCommand* imCmd = (ImageRegionCopyCommand *) command;
 
-            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width - 1, imCmd->pos.y + imCmd->orig->height - 1)));
+            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
             ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
         }
     }
@@ -235,7 +235,7 @@ bool GrassEditorSystem::IsLayerVisible(uint8 layer) const
 
 void GrassEditorSystem::SetCurrentLayer(uint8 layer)
 {
-    DVASSERT(layer < 3);
+    DVASSERT(layer < 4);
 
     curLayer = layer;
 }
@@ -295,7 +295,8 @@ void GrassEditorSystem::DrawGrassEnd()
     {
         SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 
-        DAVA::Rect affectedRect = affectedArea.GetRect();
+        DAVA::Rect2i affectedRect2i = affectedArea.GetRect2i();
+        DAVA::Rect affectedRect = DAVA::Rect(affectedRect2i.x, affectedRect2i.y, affectedRect2i.dx, affectedRect2i.dy);
         DAVA::Image *orig = DAVA::Image::CopyImageRegion(vegetationMapCopy, affectedRect);
         sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, orig));
 
@@ -314,7 +315,9 @@ void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)
         }
         else
         {
-            DAVA::Rect r = area.GetRect();
+            DAVA::Rect2i r2i = area.GetRect2i();
+            DAVA::Rect r(r2i.x, r2i.y, r2i.dx, r2i.dy);
+
             vegetationMapCopy->InsertImage(vegetationMap, r.GetPosition(), r);
         }
     }

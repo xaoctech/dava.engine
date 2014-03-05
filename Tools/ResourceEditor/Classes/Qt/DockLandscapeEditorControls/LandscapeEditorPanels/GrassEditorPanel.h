@@ -7,8 +7,7 @@
 #include "LandscapeEditorBasePanel.h"
 #include "Scene/System/GrassEditorSystem.h"
 
-#define LAYERS_COUNT 3
-#define BRUSH_COUNT
+#define GRASS_EDITOR_LAYERS_COUNT 4
 
 class GrassEditorPanel: public LandscapeEditorBasePanel
 {
@@ -36,15 +35,15 @@ protected:
 
 protected slots:
     void OnLayerSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
-    void OnBrushSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
     void OnHeightChanged(int value);
     void OnDensityChanged(int value);
 
+    DAVA::Rect2i MapTexCoord(const DAVA::TextureSheetCell &cell, DAVA::uint32 w, DAVA::uint32 h) const;
+
 private:
     QTableWidget *layersList;
-    QTableWidget *brushList;
 
-    QCheckBox *layerCheckBoxes[LAYERS_COUNT];
+    QCheckBox *layerCheckBoxes[GRASS_EDITOR_LAYERS_COUNT];
     QSlider *grassHeight;
     QSlider *grassDensity;
 };
