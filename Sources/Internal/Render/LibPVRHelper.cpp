@@ -1598,7 +1598,6 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
 		{
 			return FORMAT_ETC2_RGBA;
 		}
-
             
         default:
             break;
