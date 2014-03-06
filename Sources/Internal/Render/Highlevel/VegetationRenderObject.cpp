@@ -817,8 +817,16 @@ void TextureSheet::Load(const FilePath &yamlPath)
                     const YamlNode *cellCoords = cellNode->Get("coords");
 
                     TextureSheetCell c;
-                    c.geometryId = cellType->AsUInt32();
-                    c.geometryScale = cellScale->AsVector2();
+
+                    if(NULL != cellType)
+                    {
+                        c.geometryId = cellType->AsUInt32();
+                    }
+
+                    if(NULL != cellScale)
+                    {
+                        c.geometryScale = cellScale->AsVector2();
+                    }
 
                     for(int j = 0; j < cellCoords->GetCount(); ++j)
                     {
