@@ -250,7 +250,7 @@ void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & pa
 
     FMOD::EventSystem * fmodEventSystem = SoundSystem::Instance()->fmodEventSystem;
     FMOD::Event * event = 0;
-    FMOD_VERIFY(fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event));
+    fmodEventSystem->getEvent(eventName.c_str(), FMOD_EVENT_INFOONLY, &event);
     if(!event)
         return;
 
