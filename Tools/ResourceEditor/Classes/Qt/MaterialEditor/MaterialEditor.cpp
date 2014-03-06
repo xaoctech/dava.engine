@@ -56,7 +56,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
-, curMaterial(NULL)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -165,14 +164,14 @@ void MaterialEditor::SelectEntities(DAVA::NMaterial *material)
 	ui->materialTree->SelectEntities(material);
 }
 
-void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
+void MaterialEditor::SetCurMaterial(QList< DAVA::NMaterial *> materials)
 {
-	curMaterial = material;
+	curMaterials = materials;
 
 	treeStateHelper->SaveTreeViewState(false);
 
-	FillMaterialProperties(material);
-    FillMaterialTemplates(material);
+	FillMaterialProperties(materials);
+    FillMaterialTemplates(materials);
 
 	// Restore back the tree view state from the shared storage.
 	if(!treeStateHelper->IsTreeStateStorageEmpty())
@@ -198,21 +197,22 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 { 
 	ui->materialTree->SetScene(NULL);
-	SetCurMaterial(NULL);
+    SetCurMaterial( QList< DAVA::NMaterial *>() );
 }
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
 {
-	if(1 == selected.size())
-	{
-        QModelIndex selectedIndex = selected.indexes().at(0);
-		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selectedIndex);
-		SetCurMaterial(material);
-	}
-	else
-	{
-		SetCurMaterial(NULL);
-	}
+    const QModelIndexList selection = selected.indexes();
+    QList< DAVA::NMaterial *> materials;
+
+    foreach ( const QModelIndex& index, selection )
+    {
+        DAVA::NMaterial *material = ui->materialTree->GetMaterial( index );
+        if ( material )
+            materials << material;
+    }
+
+    SetCurMaterial( materials );
 }
 
 void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
@@ -221,7 +221,7 @@ void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *comman
 		command->GetId() == CMDID_INSP_MEMBER_MODIFY || 
 		command->GetId() == CMDID_META_OBJ_MODIFY)
 	{
-		SetCurMaterial(curMaterial);
+		//SetCurMaterial(curMaterial);
 	}
 }
 
@@ -245,11 +245,11 @@ void MaterialEditor::onCurrentExpandModeChange( bool mode )
 
 void MaterialEditor::showEvent(QShowEvent * event)
 {
-    FillMaterialTemplates(NULL);
+    FillMaterialTemplates(QList<DAVA::NMaterial *>());
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
 }
 
-void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
+void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *> materials)
 {
     // Clear current properties
     // But don't remove properties immediately. Just extract them and remove later
@@ -265,8 +265,13 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
         }
     }
 
-    if(NULL != material)
+    if ( materials.count() == 0 )
+        return ;
+
+    foreach ( DAVA::NMaterial *material, materials )
     {
+        DVASSERT( material );
+
 	    const DAVA::InspInfo *info = material->GetTypeInfo();
 	    const DAVA::InspMember *materialProperties = info->Member("materialProperties");
 	    const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
@@ -278,7 +283,8 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 	    if(NULL != nameMember)
 	    {
 		    QtPropertyDataInspMember *name = new QtPropertyDataInspMember(material, nameMember);
-		    ui->materialProperty->AppendProperty("Name", name);
+            name->SetName("Name");
+		    ui->materialProperty->MergeProperty(name);
 	    }
 
         // fill material group, only for material type
@@ -288,7 +294,8 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
             if(NULL != groupMember)
             {
                 QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
-                ui->materialProperty->AppendProperty("Group", group);
+                group->SetName("Group");
+                ui->materialProperty->MergeProperty(group);
 
                 for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
                 {
@@ -374,8 +381,10 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 		    }
 	    }
 
-	    ui->materialProperty->AppendProperty("Properties", propertiesParent);
-	    ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
+        propertiesParent->SetName("Properties");
+	    ui->materialProperty->MergeProperty(propertiesParent);
+        if ( propertiesParent->Parent() != NULL )
+	        ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
 
 	    // fill illumination params
 	    if(NULL != materialIllumination)
@@ -384,8 +393,10 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 
 		    if(illumParams->ChildCount() > 0)
 		    {
-			    ui->materialProperty->AppendProperty(materialIllumination->Name(), illumParams);
-			    ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
+                illumParams->SetName(materialIllumination->Name());
+			    ui->materialProperty->MergeProperty(illumParams);
+                if ( illumParams->Parent() != NULL )
+			        ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
 		    }
 		    else
 		    {
@@ -460,14 +471,18 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                     texturesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
                 }
 
-                ui->materialProperty->AppendProperty("Textures", texturesParent);
-                ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
+                texturesParent->SetName("Textures");
+                ui->materialProperty->MergeProperty(texturesParent);
+                if ( texturesParent->Parent() != NULL )
+                    ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
             }
-        }
+        }        
     }
+
+
 }
 
-void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
+void MaterialEditor::FillMaterialTemplates(QList<DAVA::NMaterial *> materials)
 {
     if(0 == ui->templateBox->count())
     {
@@ -480,57 +495,57 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
         }
     }
 
-    if(NULL != material)
-    {
-        int indexToSet = -1;
-        QString curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
+    //if(NULL != material)
+    //{
+    //    int indexToSet = -1;
+    //    QString curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
 
-        for(int i = 0; i < ui->templateBox->count(); ++i)
-        {
-            if(curMaterialTemplate == ui->templateBox->itemData(i).toString())
-            {
-                indexToSet = i;
-                break;
-            }
-        }
+    //    for(int i = 0; i < ui->templateBox->count(); ++i)
+    //    {
+    //        if(curMaterialTemplate == ui->templateBox->itemData(i).toString())
+    //        {
+    //            indexToSet = i;
+    //            break;
+    //        }
+    //    }
 
-        if(-1 != indexToSet)
-        {
-            ui->templateBox->setCurrentIndex(indexToSet);
-            ui->templateBox->setItemText(0, "");
-        }
-        else
-        {
-            // add template path to the name
-            ui->templateBox->setCurrentIndex(0);
-            ui->templateBox->setItemText(0, "NON-ASSIGNABLE: " + curMaterialTemplate);
-        }
+    //    if(-1 != indexToSet)
+    //    {
+    //        ui->templateBox->setCurrentIndex(indexToSet);
+    //        ui->templateBox->setItemText(0, "");
+    //    }
+    //    else
+    //    {
+    //        // add template path to the name
+    //        ui->templateBox->setCurrentIndex(0);
+    //        ui->templateBox->setItemText(0, "NON-ASSIGNABLE: " + curMaterialTemplate);
+    //    }
 
-        // enable template selection only for real materials, not instances
-        // but don't allow to change template for runtime materials
-        if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL &&
-            material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
-        {
-            ui->templateBox->setEnabled(true);
-        }
-        else
-        {
-            ui->templateBox->setEnabled(false);
-        }
-    }
-    else
-    {
-        ui->templateBox->setCurrentIndex(0);
-        ui->templateBox->setItemText(0, "");
-        ui->templateBox->setEnabled(false);
-    }
+    //    // enable template selection only for real materials, not instances
+    //    // but don't allow to change template for runtime materials
+    //    if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL &&
+    //        material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+    //    {
+    //        ui->templateBox->setEnabled(true);
+    //    }
+    //    else
+    //    {
+    //        ui->templateBox->setEnabled(false);
+    //    }
+    //}
+    //else
+    //{
+    //    ui->templateBox->setCurrentIndex(0);
+    //    ui->templateBox->setItemText(0, "");
+    //    ui->templateBox->setEnabled(false);
+    //}
 }
 
 void MaterialEditor::OnAddProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 	
-	if(NULL != btn && NULL != curMaterial)
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
@@ -540,7 +555,7 @@ void MaterialEditor::OnAddProperty()
 			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
@@ -549,7 +564,7 @@ void MaterialEditor::OnRemProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn && NULL != curMaterial)
+	if(NULL != btn && NULL != curMaterials.size() > 0)
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
@@ -557,7 +572,7 @@ void MaterialEditor::OnRemProperty()
 			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
@@ -566,7 +581,7 @@ void MaterialEditor::OnAddTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn && NULL != curMaterial)
+	if(NULL != btn && NULL != curMaterials.size() > 0)
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
@@ -576,7 +591,7 @@ void MaterialEditor::OnAddTexture()
 			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
@@ -585,7 +600,7 @@ void MaterialEditor::OnRemTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn && NULL != curMaterial)
+	if(NULL != btn && NULL != curMaterials.size() > 0)
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
@@ -593,29 +608,29 @@ void MaterialEditor::OnRemTexture()
 			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
 
 void MaterialEditor::OnTemplateChanged(int index)
 {
-	if(NULL != curMaterial && index > 0)
-	{
-        QString newTemplatePath = ui->templateBox->itemData(index).toString();
-        if(!newTemplatePath.isEmpty())
-        {
-            const DAVA::InspMember *templateMember = curMaterial->GetTypeInfo()->Member("materialTemplate");
+    //if(NULL != curMaterial && index > 0)
+    //{
+    //    QString newTemplatePath = ui->templateBox->itemData(index).toString();
+    //    if(!newTemplatePath.isEmpty())
+    //    {
+    //        const DAVA::InspMember *templateMember = curMaterial->GetTypeInfo()->Member("materialTemplate");
 
-            if(NULL != templateMember)
-            {
-                QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, curMaterial, 
-                    DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
-            }
-        }
-	}
+    //        if(NULL != templateMember)
+    //        {
+    //            QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, curMaterial, 
+    //                DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
+    //        }
+    //    }
+    //}
 
-	SetCurMaterial(curMaterial);
+    SetCurMaterial(curMaterials);
 }
 
 void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
@@ -668,10 +683,6 @@ QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
 
 void MaterialEditor::OnMaterialReload(bool checked)
 {
-    if (curMaterial != 0)
-    {
-        
-    }
 }
 
 void MaterialEditor::OnMaterialSetFog(bool checked)

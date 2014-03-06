@@ -75,9 +75,9 @@ protected slots:
 protected:
 	virtual void showEvent(QShowEvent * event);
 
-	void SetCurMaterial(DAVA::NMaterial *material);
-	void FillMaterialProperties(DAVA::NMaterial *material);
-    void FillMaterialTemplates(DAVA::NMaterial *material);
+	void SetCurMaterial(QList< DAVA::NMaterial *> materials);
+	void FillMaterialProperties(QList<DAVA::NMaterial *> materials);
+    void FillMaterialTemplates(QList<DAVA::NMaterial *> materials);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
 
@@ -92,7 +92,7 @@ private:
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 
-	DAVA::NMaterial *curMaterial;
+	QList< DAVA::NMaterial *> curMaterials;
 
 	PropertyEditorStateHelper *treeStateHelper;
     ExpandMap expandMap;
