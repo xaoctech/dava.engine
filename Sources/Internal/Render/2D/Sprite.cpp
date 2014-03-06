@@ -499,8 +499,8 @@ Sprite* Sprite::CreateFromImage(Image* image, bool contentScaleIncluded /* = fal
     Sprite* sprite = NULL;
     if (texture)
     {
-        float32 sprWidth = width;
-		float32 sprHeight = height;
+        float32 sprWidth = (float32)width;
+		float32 sprHeight = (float32)height;
         if(inVirtualSpace)
         {
             sprWidth *= Core::GetPhysicalToVirtualFactor();
