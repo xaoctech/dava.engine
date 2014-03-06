@@ -130,3 +130,10 @@ void UIWebView::SetGestures(bool value)
 {
 	this->webViewControl->SetGestures(value);    
 }
+
+YamlNode* UIWebView::SaveToYamlNode(UIYamlLoader * loader)
+{
+	YamlNode* node = UIControl::SaveToYamlNode(loader);
+	SetPreferredNodeType(node, "UIWebView");
+	return node;
+}

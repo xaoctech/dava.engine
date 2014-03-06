@@ -65,6 +65,7 @@ public:
 	bool GetBounces() const;
 	void SetGestures(bool value);
 
+    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
 protected:
 
 	// Platform-specific implementation of the Web View Control.

@@ -83,6 +83,14 @@ QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 	{
 		className = "UIAggregatorControl";
 	}
+    else if (dynamic_cast<UIWebView*>(uiControl))
+	{
+		className = "UIWebView";
+	}
+    else if (dynamic_cast<UIMovieView*>(uiControl))
+	{
+		className = "UIMovieView";
+	}
 
 	return GetIconPathForClassName(className);
 }
