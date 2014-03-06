@@ -29,6 +29,8 @@
 #include "QtPropertyData.h"
 #include "QtPropertyDataValidator.h"
 
+#include <QDebug>
+
 QtPropertyData::QtPropertyData()
 	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
 	, parent(NULL)
@@ -181,6 +183,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 
     updatingValue = true;
 
+    qDebug() << "Merged count: " << mergedData.count();
     foreach ( QtPropertyData *merged, mergedData )
     {
         QtPropertyDataValidator *mergedValidator = merged->validator;
@@ -274,6 +277,10 @@ void QtPropertyData::SetName(const QString &name)
 	}
 
 	curName = name;
+    foreach ( QtPropertyData *merged, mergedData )
+    {
+        merged->SetName( curName );
+    }
 }
 
 QString QtPropertyData::GetName() const
@@ -435,21 +442,13 @@ void QtPropertyData::MergeIn(QtPropertyData* data)
     data->parent = NULL;
     mergedData << data;
 
+    qDebug() << "Source name: " << GetName();
+    qDebug() << "Merged count: " << mergedData.size();
+    qDebug() << "Merge with: " << data->GetName();
+
     foreach ( QtPropertyData* childToMerge, data->childrenData )
     {
-        const QString childMergeName = childToMerge->curName;
-        const int childIndex = childrenNames.indexOf( childMergeName );
-        const bool needMerge = childIndex >= 0;
-
-        if ( needMerge )
-        {
-            QtPropertyData *child = childrenData.at( childIndex );
-            child->MergeIn( childToMerge );
-        }
-        else
-        {
-            ChildAdd( childMergeName, childToMerge );
-        }
+        MergeInChild( childToMerge );
     }
 
     // Do not free/delete
@@ -460,15 +459,18 @@ void QtPropertyData::MergeIn(QtPropertyData* data)
     // model->DataChanged( this, VALUE_SOURCE_CHANGED );    // Remove?
 }
 
-void QtPropertyData::MergeInChild( QtPropertyData* data )
+void QtPropertyData::MergeInChild( QtPropertyData* data, const QString& key )
 {
-    const QString childMergeName = data->curName;
+    const QString childMergeName = key.isEmpty() ? data->curName : key;
     const int childIndex = childrenNames.indexOf( childMergeName );
     const bool needMerge = childIndex >= 0;
+
+    qDebug() << "Merge: " << needMerge << " index: " << childIndex;
 
     if ( needMerge )
     {
         QtPropertyData *child = childrenData.at( childIndex );
+        data->SetName( childMergeName );
         child->MergeIn( data );
     }
     else
