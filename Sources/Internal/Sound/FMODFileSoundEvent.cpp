@@ -63,6 +63,7 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
         File * file = File::Create(fileName, File::OPEN | File::READ);
         if(!file)
         {
+            soundMapMutex.Unlock();
             SafeRelease(sound);
             return 0;
         }
@@ -70,6 +71,7 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
         uint32 fileSize = file->GetSize();
         if(!fileSize)
         {
+            soundMapMutex.Unlock();
             SafeRelease(sound);
             SafeRelease(file);
             return 0;
@@ -96,6 +98,7 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
 
         if(!sound->fmodSound)
         {
+            soundMapMutex.Unlock();
             SafeRelease(sound);
             return 0;
         }
