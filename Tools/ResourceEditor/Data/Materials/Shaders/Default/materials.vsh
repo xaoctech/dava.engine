@@ -290,7 +290,7 @@ void main()
     float NdotV = max (dot (normal, toCameraNormalized), 0.0);
 
     vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
-    vec3 fresnelOut = FresnelShlickVec3(LdotH, metalFresnelReflectance);
+    vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
     float specularity = inSpecularity;
     
 	varDiffuseColor = NdotL / _PI;
