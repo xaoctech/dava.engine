@@ -1013,7 +1013,7 @@ void QtMainWindow::OnSceneSaveToFolder()
 
 	Set<String> errorsLog;
 
-	Scene *sceneForSaving = scene->CreateCopyForExport();
+	SceneEditor2 *sceneForSaving = scene->CreateCopyForExport();
 	sceneSaver.SaveScene(sceneForSaving, scene->GetScenePath(), errorsLog);
 	sceneForSaving->Release();
 

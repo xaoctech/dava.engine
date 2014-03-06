@@ -88,16 +88,12 @@ void FMODSoundBrowser::OnSceneLoaded(SceneEditor2 * scene)
     FilePath fevPath = MakeFEVPathFromScenePath(scene->GetScenePath());
     if(!fevPath.IsEmpty() && fevPath.Exists())
     {
-        if(projectsRefs.find(fevPath) == projectsRefs.end())
+        if(projectsMap.find(scene) == projectsMap.end())
         {
             SoundSystem::Instance()->LoadFEV(fevPath);
-            projectsRefs[fevPath] = 1;
+            projectsMap[scene] = fevPath;
 
             UpdateEventTree();
-        }
-        else
-        {
-            projectsRefs[fevPath]++;
         }
     }
 #endif //DAVA_FMOD
@@ -109,11 +105,11 @@ void FMODSoundBrowser::OnSceneClosed(SceneEditor2 * scene)
     FilePath fevPath = MakeFEVPathFromScenePath(scene->GetScenePath());
     if(!fevPath.IsEmpty() && fevPath.Exists())
     {
-        projectsRefs[fevPath]--;
-        if(projectsRefs[fevPath] == 0)
+        Map<Scene *, FilePath>::iterator it = projectsMap.find(scene);
+        if(it != projectsMap.end())
         {
             SoundSystem::Instance()->UnloadFEV(fevPath);
-            projectsRefs.erase(projectsRefs.find(fevPath));
+            projectsMap.erase(it);
 
             UpdateEventTree();
         }

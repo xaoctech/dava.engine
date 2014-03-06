@@ -147,7 +147,7 @@ void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camer
 	DAVA::LodComponent *lodComponent = GetLodComponent(entity);
 	lodComponent->SetForceLodLayer(fromLodLayer);
 	entity->SetVisible(true);
-	tempScene->Update(0.1f);
+	//tempScene->Update(0.1f);
     tempScene->Draw();
 
     SafeRelease(entity);
