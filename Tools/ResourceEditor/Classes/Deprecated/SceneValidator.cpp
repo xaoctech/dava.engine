@@ -332,7 +332,7 @@ void SceneValidator::ValidateLandscape(Landscape *landscape, Set<String> &errors
     bool pathIsCorrect = ValidatePathname(landscape->GetHeightmapPathname(), String("Landscape. Heightmap."));
     if(!pathIsCorrect)
     {
-        String path = landscape->GetHeightmapPathname().GetRelativePathname(FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()));
+        String path = landscape->GetHeightmapPathname().GetRelativePathname(ProjectManager::Instance()->CurProjectDataSourcePath());
         errorsLog.insert("Wrong path of Heightmap: " + path);
     }
 }
@@ -365,8 +365,6 @@ void SceneValidator::ConvertIlluminationParamsFromProperty(Entity *ownerNode, NM
     variant = GetCustomPropertyFromParentsTree(ownerNode, "lightmap.size");
     if(variant)
         params->lightmapSize = variant->AsInt32();
-    else if(IsPointerToExactClass<Landscape>(GetRenderObject(ownerNode)))
-        params->lightmapSize = 1024;
 }
 
 VariantType* SceneValidator::GetCustomPropertyFromParentsTree(Entity *ownerNode, const String & key)
