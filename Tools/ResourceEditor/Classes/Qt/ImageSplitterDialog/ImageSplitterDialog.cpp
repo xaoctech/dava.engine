@@ -52,6 +52,10 @@ ImageSplitterDialog::ImageSplitterDialog(QWidget *parent) :
     ui->saveBtn->setFocus();
     lastSelectedFile = "";
     ConnectSignals();
+    rgbaControls.push_back(ui->redImgLbl);
+    rgbaControls.push_back(ui->greenImgLbl);
+    rgbaControls.push_back(ui->blueImgLbl);
+    rgbaControls.push_back(ui->alphaImgLbl);
 }
 
 ImageSplitterDialog::~ImageSplitterDialog()
@@ -123,9 +127,28 @@ void ImageSplitterDialog::PathSelected(DAVA::String path)
 void ImageSplitterDialog::ImageAreaChanged()
 {
     ImageArea* sender = dynamic_cast<ImageArea*>(QObject::sender());
+    DAVA::Image* image = sender->GetImage();
+    DAVA::Vector2 senderImageSize;
+    if(image != NULL)
+    {
+        senderImageSize.Set(image->GetWidth(),image->GetHeight());
+    }
+    bool isSomeAreaSet = false;
+    foreach(ImageArea* control, rgbaControls)
+    {
+        if(control != sender && control->GetImage() != NULL)
+        {
+            isSomeAreaSet = true;
+        }
+    }
     
-    DAVA::Vector2 senderImageSize  = sender->GetAcceptableSize();
     SetAcceptableImageSize(senderImageSize);
+    // size restriction for current area must be removed
+    // in case of all another ones are empty
+    if(!isSomeAreaSet)
+    {
+        sender->SetAcceptableSize(DAVA::Vector2());
+    }
 }
 
 void ImageSplitterDialog::OnRestoreClicked()
@@ -235,8 +258,8 @@ void ImageSplitterDialog::OnFillBtnClicked()
         acceptableSize = sizeDlg.GetSize();
     }
     
-    DAVA::uint32 height = acceptableSize.x;
-    DAVA::uint32 width = acceptableSize.y;
+    DAVA::uint32 width = acceptableSize.x;
+    DAVA::uint32 height = acceptableSize.y;
     DAVA::Vector<DAVA::uint8> buffer(width * height,0);
     buffer.assign(buffer.size(), value);
     DAVA::Image* bufferImg = DAVA::Image::CreateFromData(width, height, DAVA::FORMAT_A8, &buffer[0]);

@@ -39,6 +39,7 @@ namespace Ui {
 class ImageSplitter;
 }
 
+class ImageArea;
 class ImageSplitterDialog : public QDialog
 {
     Q_OBJECT
@@ -77,6 +78,7 @@ protected:
     
     DAVA::Vector2 acceptableSize;
     DAVA::String  lastSelectedFile;
+    DAVA::Vector<ImageArea*> rgbaControls;
 };
 
 #endif // __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
