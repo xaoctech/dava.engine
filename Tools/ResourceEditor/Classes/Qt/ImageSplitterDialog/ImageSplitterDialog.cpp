@@ -139,6 +139,7 @@ void ImageSplitterDialog::ImageAreaChanged()
         if(control != sender && control->GetImage() != NULL)
         {
             isSomeAreaSet = true;
+            break;
         }
     }
     
