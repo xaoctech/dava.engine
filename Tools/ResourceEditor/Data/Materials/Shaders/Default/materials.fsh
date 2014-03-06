@@ -1,10 +1,10 @@
 <CONFIG>
 uniform sampler2D albedo = 0;
-uniform sampler2D cubemap = 2;
 uniform sampler2D decal = 1;
 uniform sampler2D detail = 1;
 uniform sampler2D lightmap = 1;
 uniform sampler2D normalmap = 2;
+uniform sampler2D cubemap = 3;
 
 uniform float inGlossiness = 0.5;
 uniform float inSpecularity = 1.0;
@@ -395,7 +395,11 @@ void main()
     #endif
     
     #if defined(VIEW_SPECULAR)
-        color += specular * textureColor1.rgb;
+        #if defined(MATERIAL_LIGHTMAP)
+            color += specular * textureColor1.rgb;
+        #else
+            color += specular;
+        #endif
     #endif
 
 #elif defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
@@ -462,9 +466,10 @@ void main()
     vec3 fresnelRefl = FresnelShlickVec3(NdotV, metalFresnelReflectance);
 
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
-    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
-    lowp vec4 reflectionColor = textureCubeLod(cubemap, reflectionVectorInWorldSpace, (1.0 - inGlossiness) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;//* textureColor0.rgb;
+    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * normal);
+    lowp vec4 reflectionColor = textureCubeLod(cubemap, reflectionVectorInWorldSpace, (1.0 - 0.5) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    //gl_FragColor.rgb += reflectionColor.rgb * specularity;//* textureColor0.rgb;
+    gl_FragColor.rgb += reflectionColor.rgb * textureColor0.rgb;
 #endif
 #endif
     
