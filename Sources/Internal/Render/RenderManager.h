@@ -93,19 +93,26 @@ public:
 		Caps() 
 		{
 			isHardwareCursorSupported = false;
-			isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+			isPVRTCSupported = isETCSupported = false;
+			isPVRTC2Supported = isETC2Supported = false;
+			isDXTSupported = isATCSupported = false;
 			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+			isRGFormatSupported = isRFormatSupported = false;
 		}
 
         Core::eRenderer renderer;
 		bool isHardwareCursorSupported;
         bool isPVRTCSupported;
-        bool isETCSupported;
+		bool isPVRTC2Supported;
+		bool isETCSupported;
+        bool isETC2Supported;
         bool isBGRA8888Supported;
         bool isFloat16Supported;
         bool isFloat32Supported;
 		bool isDXTSupported;
 		bool isATCSupported;
+		bool isRGFormatSupported;
+		bool isRFormatSupported;
 	};
     
     struct Stats

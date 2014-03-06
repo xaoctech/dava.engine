@@ -255,7 +255,7 @@ void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & input
         else if (type == "float")
         {
             value.type = Shader::UT_FLOAT;
-            value.float32Value = atof(tokens[4].c_str());
+            value.float32Value = (float32)atof(tokens[4].c_str());
         }
         else if (type == "vec3")
         {
@@ -281,7 +281,7 @@ void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & input
         if (valuesCount > 1)
             for (uint32 k = 0; k < valuesCount; ++k)
             {
-                value.matrix4Value[k] = atof(tokens[5 + k].c_str());
+                value.matrix4Value[k] = (float32)atof(tokens[5 + k].c_str());
             };
         
         FastName fastName = FastName(name);
