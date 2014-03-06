@@ -42,6 +42,7 @@ const SettingRow SETTINGS_GROUP_GENERAL_MAP[] =
 {
 	SettingRow("DesignerName", DAVA::VariantType(DAVA::String("nobody"))),
 	SettingRow("PreviewDialogEnabled", DAVA::VariantType(false)),
+    SettingRow("SequentSelection", DAVA::VariantType(false)),
 };
 
 const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
@@ -60,7 +61,7 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
 {
-	SettingRow("LastProjectPath", DAVA::VariantType(DAVA::String(""))),
+	SettingRow("LastProjectPath", DAVA::VariantType(DAVA::FilePath())),
 	SettingRow("TextureViewGPU", DAVA::VariantType(GPU_UNKNOWN)),
 	SettingRow("editor.version", DAVA::VariantType(DAVA::String("local build"))),
 	SettingRow("cubemap_last_face_dir", DAVA::VariantType(DAVA::FilePath())),
