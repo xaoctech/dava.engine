@@ -72,7 +72,10 @@ SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSy
 
 SceneSelectionSystem::~SceneSelectionSystem()
 {
-
+	if(GetScene())
+	{
+		GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
+	}
 }
 
 void SceneSelectionSystem::ImmediateEvent(DAVA::Entity * entity, DAVA::uint32 event)
