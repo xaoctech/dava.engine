@@ -144,7 +144,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                 DAVA::VegetationRenderObject *veg = SearchVegetation(GetScene());
                 curVegetation = SafeRetain(veg);
 
-                if(NULL != veg && NULL !=veg->GetVegetationMap())
+                if(NULL != veg && NULL != veg->GetVegetationMap())
                 {
                     isEnabled = true;
                     ret = true;
