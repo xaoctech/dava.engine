@@ -48,6 +48,7 @@
 #include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
 #include "../Tools/AddSkyboxDialog/AddSkyboxDialog.h"
+#include "../ImageSplitterDialog/ImageSplitterDialog.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
@@ -631,6 +632,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
+    QObject::connect(ui->actionImageSplitter, SIGNAL(triggered()), this, SLOT(OnImageSplitter()));
 
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionCustomColorsEditor, SIGNAL(triggered()), this, SLOT(OnCustomColorsEditor()));
@@ -826,6 +828,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
+    ui->actionImageSplitter->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
     ui->actionCloseProject->setEnabled(enable);
     
@@ -1346,6 +1349,12 @@ void QtMainWindow::OnCubemapEditor()
 	SceneEditor2* scene = GetCurrentScene();
 	
 	CubeMapTextureBrowser dlg(scene, dynamic_cast<QWidget*>(parent()));
+	dlg.exec();
+}
+
+void QtMainWindow::OnImageSplitter()
+{
+	ImageSplitterDialog dlg(this);
 	dlg.exec();
 }
 
