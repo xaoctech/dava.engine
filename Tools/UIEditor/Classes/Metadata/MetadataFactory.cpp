@@ -46,6 +46,8 @@
 #include "UISwitchMetadata.h"
 #include "UIScrollBarMetadata.h"
 #include "UIParticlesMetadata.h"
+#include "UIWebViewMetadata.h"
+#include "UIMovieViewMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
@@ -132,6 +134,16 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
     if (dynamic_cast<const UIParticles*>(uiControl))
 	{
 		return new UIParticlesMetadata();
+	}
+
+    if (dynamic_cast<const UIWebView*>(uiControl))
+	{
+		return new UIWebViewMetadata();
+	}
+
+    if (dynamic_cast<const UIMovieView*>(uiControl))
+	{
+		return new UIMovieViewMetadata();
 	}
 
     // Add metadata for other Controls here.

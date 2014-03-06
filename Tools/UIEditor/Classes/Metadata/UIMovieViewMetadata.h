@@ -26,51 +26,31 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_UIMOVIEVIEW__H__
-#define __DAVAENGINE_UIMOVIEVIEW__H__
 
-#include "DAVAEngine.h"
-#include "IMovieViewControl.h"
+#ifndef __UIEditor__UIMovieViewMetadata__
+#define __UIEditor__UIMovieViewMetadata__
+
+#include "UIControlMetadata.h"
+#include "UI/UIMovieView.h"
 
 namespace DAVA {
-
-// The purpose of UIMovieView class is to display movies.
-class UIMovieView : public UIControl
+    
+// Metadata class for DAVA UIMovieView control.
+class UIMovieViewMetadata : public UIControlMetadata
 {
-protected:
-	virtual ~UIMovieView();
+    Q_OBJECT
+
 public:
-	UIMovieView(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-
-	// Open the Movie.
-	void OpenMovie(const FilePath& moviePath, const OpenMovieParams& params);
-
-	// Overloaded virtual methods.
-	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
-	virtual void SetSize(const Vector2 &newSize);
-	virtual void SetVisible(bool isVisible, bool hierarchic = true);
-
-	virtual void SystemDraw(const UIGeometricData &geometricData);
-
-	// Start/stop the video playback.
-	void Play();
-	void Stop();
-
-	// Pause/resume the playback.
-	void Pause();
-	void Resume();
-	
-	// Whether the movie is being played?
-	bool IsPlaying();
-
-    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
-
+    UIMovieViewMetadata(QObject* parent = 0);
+        
 protected:
-	// Platform-specific implementation of the Movie Control.
-	IMovieViewControl* movieViewControl;
+    virtual bool GetInitialInputEnabled() const {return true;};
+
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
+
+    virtual QString GetUIControlClassName() { return "UIMovieView"; };
+};
 };
 
-};
-
-
-#endif /* defined(__DAVAENGINE_UIMOVIEVIEW__H__) */
+#endif /* defined(__UIEditor__UIMovieViewMetadata__) */
