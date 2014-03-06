@@ -798,7 +798,48 @@ float32 VegetationRenderObject::SampleHeight(int16 x, int16 y)
 
 void TextureSheet::Load(const FilePath &yamlPath)
 {
+    if(yamlPath.Exists())
+    {
+        YamlParser *parser = YamlParser::Create(yamlPath);
+        YamlNode *rootNode = parser->GetRootNode();
 
+        cells.clear();
+
+        if(NULL != rootNode)
+        {
+            for(int i = 0; i < rootNode->GetCount(); ++i)
+            {
+                if(rootNode->GetItemKeyName(i) == "cell")
+                {
+                    const YamlNode *cellNode = rootNode->Get(i);
+                    const YamlNode *cellType = cellNode->Get("type");
+                    const YamlNode *cellScale = cellNode->Get("scale");
+                    const YamlNode *cellCoords = cellNode->Get("coords");
+
+                    TextureSheetCell c;
+                    c.geometryId = cellType->AsUInt32();
+                    c.geometryScale = cellScale->AsVector2();
+
+                    for(int j = 0; j < cellCoords->GetCount(); ++j)
+                    {
+                        if(j < MAX_CELL_TEXTURE_COORDS)
+                        {
+                            const YamlNode *singleCellCoord = cellCoords->Get(j);
+                            c.coords[j] = singleCellCoord->AsVector2();
+                        }
+                        else
+                        {
+                            DVASSERT(0 && "Too much vertexes");
+                        }
+                    }
+
+                    cells.push_back(c);
+                }
+            }
+        }
+
+        parser->Release();
+    }
 }
 
 };
