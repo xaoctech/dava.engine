@@ -257,7 +257,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 	exporter.SetGPUForExporting(newGPU);
 	Set<String> errorLog;
 
-	SceneEditor2 *clonedScene = CreateCopyForExport();
+	Scene *clonedScene = CreateCopyForExport();
 	exporter.ExportScene(clonedScene, GetScenePath(), errorLog);
 	for (Set<String>::iterator iter = errorLog.begin(); iter != errorLog.end(); ++iter)
 	{
@@ -660,23 +660,11 @@ int32 SceneEditor2::GetEnabledTools()
 	return toolFlags;
 }
 
-Entity* SceneEditor2::Clone( Entity *dstNode /*= NULL*/ )
+Scene * SceneEditor2::CreateCopyForExport()
 {
-	if(!dstNode)
-	{
-		DVASSERT_MSG(IsPointerToExactClass<SceneEditor2>(this), "Can clone only SceneEditor2");
-		dstNode = new SceneEditor2();
-	}
-	
-	return Scene::Clone(dstNode);
-}
+	Scene *clonedScene = new Scene();
 
-SceneEditor2 * SceneEditor2::CreateCopyForExport()
-{
-	SceneEditor2 *clonedScene = new SceneEditor2();
-	clonedScene->RemoveSystems();
-
-	return (SceneEditor2 *)Clone(clonedScene);
+	return (Scene *)Scene::Clone(clonedScene);
 }
 
 void SceneEditor2::RemoveSystems()
