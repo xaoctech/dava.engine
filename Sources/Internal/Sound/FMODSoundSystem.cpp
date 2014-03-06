@@ -87,7 +87,7 @@ SoundEvent * SoundSystem::CreateSoundEventFromFile(const FilePath & fileName, co
     if((flags & SoundEvent::SOUND_EVENT_CREATE_STREAM) && !(flags & SoundEvent::SOUND_EVENT_CREATE_3D))
     {
         MusicIOSSoundEvent * musicEvent = MusicIOSSoundEvent::CreateMusicEvent(fileName);
-        if(flags & SoundEvent::SOUND_EVENT_CREATE_LOOP)
+        if(musicEvent && (flags & SoundEvent::SOUND_EVENT_CREATE_LOOP))
             musicEvent->SetLoopCount(-1);
     }
 #endif //__DAVAENGINE_IPHONE__
@@ -97,7 +97,10 @@ SoundEvent * SoundSystem::CreateSoundEventFromFile(const FilePath & fileName, co
         event = FMODFileSoundEvent::CreateWithFlags(fileName, flags, priority);
     }
     
-    AddSoundEventToGroup(groupName, event);
+    if(event)
+    {
+        AddSoundEventToGroup(groupName, event);
+    }
     
     return event;
 }
