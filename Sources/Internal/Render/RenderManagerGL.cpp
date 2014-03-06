@@ -145,7 +145,11 @@ void RenderManager::DetectRenderingCapabilities()
 
 #if defined(__DAVAENGINE_IPHONE__)
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
+	caps.isPVRTC2Supported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc2");
     caps.isETCSupported = false;
+	caps.isETC2Supported = IsGLExtensionSupported("GL_ARB_ES3_compatibility");
+	caps.isRFormatSupported = caps.isRGFormatSupported = caps.isETC2Supported;
+
 	caps.isDXTSupported = false;
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
@@ -154,7 +158,11 @@ void RenderManager::DetectRenderingCapabilities()
 #elif defined(__DAVAENGINE_ANDROID__)
     //TODO: added correct
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
+	caps.isPVRTC2Supported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc2");
     caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
+	caps.isETC2Supported = IsGLExtensionSupported("GL_ARB_ES3_compatibility");
+	caps.isRFormatSupported = caps.isRGFormatSupported = caps.isETC2Supported;
+
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
     caps.isBGRA8888Supported = false;
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
@@ -190,6 +198,8 @@ void RenderManager::DetectRenderingCapabilities()
 	caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
+
+	caps.isETC2Supported = caps.isRFormatSupported = caps.isRGFormatSupported = false;
 #endif
 }
 
