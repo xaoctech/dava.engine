@@ -116,6 +116,27 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
  	}
 
     ResetProperties();
+    //RemovePropertyAll();
+    //if ( selected != NULL )
+    //{
+    //    QtPropertyData *dataBase = NULL;
+    //    for ( int i = 0; i < selected->Size(); i++ )
+    //    {
+    //        Entity *e = selected->GetEntity( i );
+
+    //        if ( dataBase == NULL )
+    //        {
+    //            dataBase = new QtPropertyDataIntrospection( e, e->GetTypeInfo() );
+    //        }
+    //        else
+    //        {
+    //            QtPropertyData *mergeIn = new QtPropertyDataIntrospection( e, e->GetTypeInfo() );
+    //            dataBase->MergeIn( mergeIn );
+    //        }
+    //    }
+    //    AppendProperty( "test", dataBase );
+    //}
+
 	SaveScheme("~doc:/PropEditorDefault.scheme");
 }
 

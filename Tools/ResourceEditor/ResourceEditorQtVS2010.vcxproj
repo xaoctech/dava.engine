@@ -1155,7 +1155,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\IntRangeValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h" />
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\RegExpValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.h" />
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyData\QtPropertyDataInspDynamic.h" />

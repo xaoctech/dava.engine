@@ -36,6 +36,8 @@
 #include <QIcon>
 #include <QEvent>
 #include <QToolButton>
+#include <QList>
+
 #include "QtPropertyModel.h"
 
 // model class
@@ -76,6 +78,7 @@ public:
 	QString GetPath() const;
 
 	QVariant GetValue() const;
+    bool isMergedValuesEqual() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
 	bool UpdateValue(bool force = false);
 
@@ -153,8 +156,13 @@ public:
 	// edit command
 	virtual void* CreateLastCommand() const;
 
+    // Merging
+    void MergeIn( QtPropertyData *data );
+    void MergeInChild( QtPropertyData *data );
+
 protected:
 	mutable QVariant curValue;
+    mutable bool isValuesMerged;
 
 	QString curName;
 	Qt::ItemFlags curFlags;
@@ -168,6 +176,7 @@ protected:
 
 	QList<QString> childrenNames;
 	QList<QtPropertyData*> childrenData;
+    QList<QtPropertyData*> mergedData;
 	
 	QWidget *optionalButtonsViewport;
 	QVector<QtPropertyToolButton*> optionalButtons;
