@@ -71,7 +71,7 @@ private:
     
     void SetSelectedItem(QTreeWidgetItem * item);
 
-    DAVA::Map<DAVA::FilePath, DAVA::uint32> projectsRefs;
+    DAVA::Map<DAVA::Scene *, DAVA::FilePath> projectsMap;
     QTreeWidgetItem * selectedItem;
     Ui::FMODSoundBrowser *ui;
 };

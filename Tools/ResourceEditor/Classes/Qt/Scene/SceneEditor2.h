@@ -163,7 +163,8 @@ public:
 	bool IsToolsEnabled(int32 toolFlags);
 	int32 GetEnabledTools();
 
-	Scene *CreateCopyForExport();	//Need to prevent changes of original scene
+	SceneEditor2 *CreateCopyForExport();	//Need to prevent changes of original scene
+    virtual Entity * Clone(Entity *dstNode /* = NULL */);
 
 	DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
 	

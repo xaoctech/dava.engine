@@ -125,7 +125,7 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 			scene->AddNode(tempV[i]);
 		}
 
-		scene->Update(0.f);
+		//scene->Update(0.f);
         scene->Save(sc2Filename);
 	}
 	else
@@ -145,7 +145,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true);
 
-    scene->Update(0.1f);
+    //scene->Update(0.1f);
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
