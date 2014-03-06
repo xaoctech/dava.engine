@@ -207,10 +207,16 @@ void MaterialEditor::materialSelected(const QItemSelection & selected, const QIt
 
     foreach ( const QModelIndex& index, selection )
     {
-        DAVA::NMaterial *material = ui->materialTree->GetMaterial( index );
-        if ( material )
-            materials << material;
+        if ( index.column() == 0 )
+        {
+            DAVA::NMaterial *material = ui->materialTree->GetMaterial( index );
+            if ( material )
+                materials << material;
+        }
     }
+
+    qDebug() << "Materials selected: " << selected.count();
+    qDebug() << "Materials real:     " << materials.count();
 
     SetCurMaterial( materials );
 }
@@ -268,15 +274,13 @@ void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *> materials)
     if ( materials.count() == 0 )
         return ;
 
+    int LOL = 0;
+
     foreach ( DAVA::NMaterial *material, materials )
     {
         DVASSERT( material );
 
-	    const DAVA::InspInfo *info = material->GetTypeInfo();
-	    const DAVA::InspMember *materialProperties = info->Member("materialProperties");
-	    const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
-	    const DAVA::InspMember *materialIllumination = info->Member("illuminationParams");
-        const DAVA::InspMember *materialTextures = info->Member("textures");
+        const DAVA::InspInfo *info = material->GetTypeInfo();
 
 	    // fill material name
 	    const DAVA::InspMember *nameMember = info->Member("materialName");
@@ -287,199 +291,11 @@ void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *> materials)
 		    ui->materialProperty->MergeProperty(name);
 	    }
 
-        // fill material group, only for material type
-        if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL)
-        {
-            const DAVA::InspMember *groupMember = info->Member("materialGroup");
-            if(NULL != groupMember)
-            {
-                QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
-                group->SetName("Group");
-                ui->materialProperty->MergeProperty(group);
-
-                for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
-                {
-                    DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
-                    group->AddAllowedValue(DAVA::VariantType(groupName), groupName.c_str());
-                }
-            }
-        }
-
-	    QtPropertyData *propertiesParent = new QtPropertyData();
-
-	    // fill material flags
-	    if(NULL != materialFlags)
-	    {
-		    const DAVA::InspMemberDynamic* dynamicInsp = materialFlags->Dynamic();
-
-		    if(NULL != dynamicInsp)
-		    {
-			    DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
-			    DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
-			
-			    for(size_t i = 0; i < membersList.size(); ++i)
-			    {
-				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
-				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
-			    }
-		    }
-	    }
-
-	    // fill material properties
-	    if(NULL != materialProperties)
-	    {
-		    const DAVA::InspMemberDynamic* dynamicInsp = materialProperties->Dynamic();
-
-		    if(NULL != dynamicInsp)
-		    {
-			    DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
-			    DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
-
-			    for(size_t i = 0; i < membersList.size(); ++i)
-			    {
-				    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
-				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
-
-				    // self property
-				    if(memberFlags & DAVA::I_EDIT)
-				    {
-					    QtPropertyToolButton* btn = dynamicMember->AddButton();
-					    btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-					    btn->setIconSize(QSize(14, 14));
-					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
-
-					    // isn't set in parent or shader
-					    if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
-					    {
-						    dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
-					    }
-				    }
-				    // not self property (is set in parent or shader)
-				    else
-				    {
-					    // disable property and it childs
-					    dynamicMember->SetEnabled(false);
-					    for(int m = 0; m < dynamicMember->ChildCount(); ++m)
-					    {
-						    dynamicMember->ChildGet(m)->SetEnabled(false);
-					    }
-
-					    QtPropertyToolButton* btn = dynamicMember->AddButton();
-					    btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-					    btn->setIconSize(QSize(14, 14));
-					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
-
-					    dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
-
-					    // required by shader
-					    //if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
-					    //{	}
-				    }
-
-				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
-			    }
-		    }
-	    }
-
-        propertiesParent->SetName("Properties");
-	    ui->materialProperty->MergeProperty(propertiesParent);
-        if ( propertiesParent->Parent() != NULL )
-	        ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
-
-	    // fill illumination params
-	    if(NULL != materialIllumination)
-	    {
-		    QtPropertyData *illumParams = QtPropertyDataIntrospection::CreateMemberData(material, materialIllumination);
-
-		    if(illumParams->ChildCount() > 0)
-		    {
-                illumParams->SetName(materialIllumination->Name());
-			    ui->materialProperty->MergeProperty(illumParams);
-                if ( illumParams->Parent() != NULL )
-			        ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
-		    }
-		    else
-		    {
-			    delete illumParams;
-		    }
-	    }
-
-        // fill own material textures
-        if(NULL != materialTextures)
-        {
-            const DAVA::InspMemberDynamic* dynamicInsp = materialTextures->Dynamic();
-            QtPropertyData *texturesParent = new QtPropertyData();
-
-            if(NULL != dynamicInsp)
-            {
-                DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
-                DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
-
-                QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
-                QString defaultPath = dataSourcePath;
-                SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
-                if(NULL != editor)
-                {
-                    DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
-                    if(String::npos != scenePath.find(dataSourcePath.toStdString()))
-                    {
-                        defaultPath = scenePath.c_str();
-                    }
-                }
-                for(size_t i = 0; i < membersList.size(); ++i)
-                {
-                    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
-                    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
-
-                    dynamicMember->SetDefaultOpenDialogPath(defaultPath);
-                    dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
-                    QStringList path;
-                    path.append(dataSourcePath);
-                    dynamicMember->SetValidator(new TexturePathValidator(path));
-                    // self property
-                    if(memberFlags & DAVA::I_EDIT)
-                    {
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
-
-                        // isn't set in parent or shader
-                        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
-                        {
-                            dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
-                        }
-                    }
-                    // not self property (is set in parent or shader)
-                    else
-                    {
-                        // disable property and it childs
-                        dynamicMember->SetEnabled(false);
-                        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
-                        {
-                            dynamicMember->ChildGet(m)->SetEnabled(false);
-                        }
-
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
-
-                        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
-                    }
-
-                    texturesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
-                }
-
-                texturesParent->SetName("Textures");
-                ui->materialProperty->MergeProperty(texturesParent);
-                if ( texturesParent->Parent() != NULL )
-                    ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
-            }
-        }        
+        LOL++;
     }
 
-
+    qDebug() << "Lol: " << LOL << " Real count: " << materials.count();
+    qDebug();
 }
 
 void MaterialEditor::FillMaterialTemplates(QList<DAVA::NMaterial *> materials)

@@ -158,7 +158,7 @@ public:
 
     // Merging
     void MergeIn( QtPropertyData *data );
-    void MergeInChild( QtPropertyData *data );
+    void MergeInChild( QtPropertyData *data, const QString& key = QString() );
 
 protected:
 	mutable QVariant curValue;
