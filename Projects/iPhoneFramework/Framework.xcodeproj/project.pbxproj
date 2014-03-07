@@ -190,6 +190,8 @@
 		E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92716C54A36006BEFF4 /* SpriteObject.h */; };
 		E89CE92C16C54A36006BEFF4 /* SpriteRenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */; };
 		E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */ = {isa = PBXBuildFile; fileRef = E89CE92916C54A36006BEFF4 /* SpriteRenderBatch.h */; };
+		E8ADAEC818CA1325000B251C /* PixelFormatDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8ADAEC618CA1325000B251C /* PixelFormatDescriptor.cpp */; };
+		E8ADAEC918CA1325000B251C /* PixelFormatDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8ADAEC718CA1325000B251C /* PixelFormatDescriptor.h */; };
 		E8B3CA7E16B9326E002BD35F /* AnimatedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7A216B9326D002BD35F /* AnimatedObject.cpp */; };
 		E8B3CA7F16B9326E002BD35F /* AnimatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C7A316B9326D002BD35F /* AnimatedObject.h */; };
 		E8B3CA8016B9326E002BD35F /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C7A416B9326D002BD35F /* Animation.cpp */; };
@@ -967,6 +969,8 @@
 		E89CE92716C54A36006BEFF4 /* SpriteObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteObject.h; sourceTree = "<group>"; };
 		E89CE92816C54A36006BEFF4 /* SpriteRenderBatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpriteRenderBatch.cpp; sourceTree = "<group>"; };
 		E89CE92916C54A36006BEFF4 /* SpriteRenderBatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteRenderBatch.h; sourceTree = "<group>"; };
+		E8ADAEC618CA1325000B251C /* PixelFormatDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PixelFormatDescriptor.cpp; sourceTree = "<group>"; };
+		E8ADAEC718CA1325000B251C /* PixelFormatDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PixelFormatDescriptor.h; sourceTree = "<group>"; };
 		E8B3C7A216B9326D002BD35F /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
 		E8B3C7A316B9326D002BD35F /* AnimatedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatedObject.h; sourceTree = "<group>"; };
 		E8B3C7A416B9326D002BD35F /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Animation.cpp; sourceTree = "<group>"; };
@@ -2079,6 +2083,8 @@
 		E8B3C8F916B9326D002BD35F /* Render */ = {
 			isa = PBXGroup;
 			children = (
+				E8ADAEC618CA1325000B251C /* PixelFormatDescriptor.cpp */,
+				E8ADAEC718CA1325000B251C /* PixelFormatDescriptor.h */,
 				A6919533183A6E9B00D598AE /* RenderStateData.h */,
 				A6919535183A6E9B00D598AE /* UniqueStateSet.h */,
 				A695E52318113195008A0F20 /* ShaderCache.cpp */,
@@ -2841,6 +2847,7 @@
 				E8B3CBF916B9326E002BD35F /* RenderBatch.h in Headers */,
 				E8B3CBFA16B9326E002BD35F /* RenderDataSource.h in Headers */,
 				E8B3CBFC16B9326E002BD35F /* RenderLayer.h in Headers */,
+				E8ADAEC918CA1325000B251C /* PixelFormatDescriptor.h in Headers */,
 				E8B3CBFE16B9326E002BD35F /* RenderObject.h in Headers */,
 				E8B3CC0016B9326E002BD35F /* RenderPass.h in Headers */,
 				E8B3CC0216B9326E002BD35F /* RenderSystem.h in Headers */,
@@ -3132,6 +3139,7 @@
 			files = (
 				E8B3CA7E16B9326E002BD35F /* AnimatedObject.cpp in Sources */,
 				E8B3CA8016B9326E002BD35F /* Animation.cpp in Sources */,
+				E8ADAEC818CA1325000B251C /* PixelFormatDescriptor.cpp in Sources */,
 				E8B3CA8216B9326E002BD35F /* AnimationManager.cpp in Sources */,
 				E8B3CA8416B9326E002BD35F /* BezierSplineAnimation.cpp in Sources */,
 				E8B3CA8616B9326E002BD35F /* Interpolation.cpp in Sources */,
