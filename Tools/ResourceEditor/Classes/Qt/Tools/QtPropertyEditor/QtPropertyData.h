@@ -157,8 +157,9 @@ public:
 	virtual void* CreateLastCommand() const;
 
     // Merging
-    void MergeIn( QtPropertyData *data );
-    void MergeInChild( QtPropertyData *data, const QString& key = QString() );
+    QList<QtPropertyData *> GetMergedData() const;
+    void Merge(QtPropertyData *data);
+    void MergeChild(QtPropertyData *data, const QString& key = QString());
 
 protected:
 	mutable QVariant curValue;
