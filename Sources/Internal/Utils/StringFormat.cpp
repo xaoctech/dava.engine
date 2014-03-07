@@ -235,8 +235,7 @@ __res; })
         int32 tail = (int32)num;
         
         num -= tail;
-        num *= 10;
-        if (num >= 5.f)
+        if (num >= 0.5f)
             tail++;
         
         type = SIGN | LEFT;
