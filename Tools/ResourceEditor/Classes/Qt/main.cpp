@@ -99,8 +99,11 @@ int main(int argc, char *argv[])
 	new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 
+
 	new SettingsManager();
 	new EditorConfig();
+    ParticleEmitter::FORCE_DEEP_CLONE = true;
+
 
     const QString appUid = "{AA5497E4-6CE2-459A-B26F-79AAF05E0C6B}";
     const QString appUidPath = QCryptographicHash::hash( (appUid + a.applicationDirPath() ).toUtf8(), QCryptographicHash::Sha1 ).toHex();
