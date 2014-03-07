@@ -921,6 +921,16 @@
 		C172EC1118C9F1E9004309CF /* TextBlockRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0718C9F1E9004309CF /* TextBlockRender.h */; };
 		C172EC1218C9F1E9004309CF /* TextBlockSoftwareRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0818C9F1E9004309CF /* TextBlockSoftwareRender.cpp */; };
 		C172EC1318C9F1E9004309CF /* TextBlockSoftwareRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0918C9F1E9004309CF /* TextBlockSoftwareRender.h */; };
+		C172EC4918CA0AD3004309CF /* TextBlockDistanceRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0218C9F1E9004309CF /* TextBlockDistanceRender.cpp */; };
+		C172EC4A18CA0AD6004309CF /* TextBlockGraphicsRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0418C9F1E9004309CF /* TextBlockGraphicsRender.cpp */; };
+		C172EC4B18CA0AD7004309CF /* TextBlockGraphicsRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0418C9F1E9004309CF /* TextBlockGraphicsRender.cpp */; };
+		C172EC4C18CA0ADA004309CF /* TextBlockDistanceRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0218C9F1E9004309CF /* TextBlockDistanceRender.cpp */; };
+		C172EC4D18CA0ADE004309CF /* TextBlockRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0618C9F1E9004309CF /* TextBlockRender.cpp */; };
+		C172EC4E18CA0ADF004309CF /* TextBlockRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0618C9F1E9004309CF /* TextBlockRender.cpp */; };
+		C172EC4F18CA0AE3004309CF /* TextBlockSoftwareRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0818C9F1E9004309CF /* TextBlockSoftwareRender.cpp */; };
+		C172EC5018CA0AE4004309CF /* TextBlockSoftwareRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0818C9F1E9004309CF /* TextBlockSoftwareRender.cpp */; };
+		C172EC5118CA0AEA004309CF /* DFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0018C9F1E9004309CF /* DFFont.cpp */; };
+		C172EC5218CA0AEB004309CF /* DFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0018C9F1E9004309CF /* DFFont.cpp */; };
 		C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
 		C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = C18577ED17A16DA800331A95 /* MaterialOptimazer.h */; };
 		C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
@@ -5481,6 +5491,7 @@
 				176DEA47174B5561007A983B /* KeyframeAnimation.cpp in Sources */,
 				176DEA48174B5561007A983B /* LinearAnimation.cpp in Sources */,
 				176DEA4B174B5561007A983B /* AutotestingSystem.cpp in Sources */,
+				C172EC5018CA0AE4004309CF /* TextBlockSoftwareRender.cpp in Sources */,
 				176DEA4C174B5561007A983B /* MongodbUpdateObject.cpp in Sources */,
 				176DEA4E174B5561007A983B /* BaseMath.cpp in Sources */,
 				176DEA4F174B5561007A983B /* BaseObject.cpp in Sources */,
@@ -5671,6 +5682,7 @@
 				176DEAF7174B5561007A983B /* SceneNodeAnimationKey.cpp in Sources */,
 				176DEAF8174B5561007A983B /* SceneNodeAnimationList.cpp in Sources */,
 				176DEAF9174B5561007A983B /* ShadowVolumeNode.cpp in Sources */,
+				C172EC4B18CA0AD7004309CF /* TextBlockGraphicsRender.cpp in Sources */,
 				176DEAFA174B5561007A983B /* SkeletonNode.cpp in Sources */,
 				176DEAFB174B5561007A983B /* SpriteNode.cpp in Sources */,
 				176DEAFC174B5561007A983B /* SwitchNode.cpp in Sources */,
@@ -5686,6 +5698,7 @@
 				176DEB05174B5561007A983B /* SwitchSystem.cpp in Sources */,
 				176DEB06174B5561007A983B /* TransformSystem.cpp in Sources */,
 				176DEB07174B5561007A983B /* UserNode.cpp in Sources */,
+				C172EC4C18CA0ADA004309CF /* TextBlockDistanceRender.cpp in Sources */,
 				176DEB08174B5561007A983B /* Sound.cpp in Sources */,
 				02141409181984D600925E51 /* DAVAClassRegistrator.cpp in Sources */,
 				176DEB09174B5561007A983B /* SoundGroup.cpp in Sources */,
@@ -5743,6 +5756,7 @@
 				176DEB3A174B5561007A983B /* UISwitch.cpp in Sources */,
 				176DEB3B174B5561007A983B /* Camera.cpp in Sources */,
 				176DEB3C174B5561007A983B /* CullingSystem.cpp in Sources */,
+				C172EC5218CA0AEB004309CF /* DFFont.cpp in Sources */,
 				176DEB3D174B5561007A983B /* Frustum.cpp in Sources */,
 				176DEB3E174B5561007A983B /* Heightmap.cpp in Sources */,
 				176DEB3F174B5561007A983B /* Landscape.cpp in Sources */,
@@ -5790,6 +5804,7 @@
 				0211D552177C26E000EB7011 /* OpenUDIDMacOS.mm in Sources */,
 				C18577F117A2600400331A95 /* MaterialOptimazer.cpp in Sources */,
 				A68B3EF217AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
+				C172EC4E18CA0ADF004309CF /* TextBlockRender.cpp in Sources */,
 				4F64848F17AFCAFD00034454 /* AllocatorFactory.cpp in Sources */,
 				505EB4101824CEC5009BEA3C /* OcclusionQuery.cpp in Sources */,
 				A679102117B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
@@ -6224,6 +6239,7 @@
 				E898A1CF16BD265400732C04 /* KeyedArchiver.cpp in Sources */,
 				50A3043C18575C370082CA8D /* StaticOcclusion.cpp in Sources */,
 				E898A1D016BD265400732C04 /* KeyedUnarchiver.cpp in Sources */,
+				C172EC4918CA0AD3004309CF /* TextBlockDistanceRender.cpp in Sources */,
 				E898A1D116BD265400732C04 /* LocalizationSystem.cpp in Sources */,
 				7A169354180EE75A005F1FBC /* GameAPI.cpp in Sources */,
 				E898A1D216BD265400732C04 /* Logger.cpp in Sources */,
@@ -6347,6 +6363,7 @@
 				E898A25B16BD265400732C04 /* UpdatableComponent.cpp in Sources */,
 				E898A25C16BD265400732C04 /* DataNode.cpp in Sources */,
 				E898A25E16BD265400732C04 /* ImposterManager.cpp in Sources */,
+				C172EC4D18CA0ADE004309CF /* TextBlockRender.cpp in Sources */,
 				E898A25F16BD265400732C04 /* ImposterNode.cpp in Sources */,
 				E898A26016BD265400732C04 /* LodNode.cpp in Sources */,
 				E898A26116BD265400732C04 /* MeshInstance.cpp in Sources */,
@@ -6484,13 +6501,16 @@
 				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
 				A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
 				EA56554B17CDFF4B00426EB8 /* PerformanceSettings.cpp in Sources */,
+				C172EC4F18CA0AE3004309CF /* TextBlockSoftwareRender.cpp in Sources */,
 				50A5186A17B256000022E8FA /* RenderBatchArray.cpp in Sources */,
 				50A5186C17B256030022E8FA /* RenderHierarchy.cpp in Sources */,
 				50A5187117B256250022E8FA /* ShaderCache.cpp in Sources */,
 				A68290BB17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 				1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */,
+				C172EC5118CA0AEA004309CF /* DFFont.cpp in Sources */,
 				A63BCD6B17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16D17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
+				C172EC4A18CA0AD6004309CF /* TextBlockGraphicsRender.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
