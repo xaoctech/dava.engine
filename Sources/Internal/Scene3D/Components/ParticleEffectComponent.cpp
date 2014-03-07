@@ -375,7 +375,7 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 		}
         else
         {
-            ParticleEmitter *emitter = new ParticleEmitter();
+            emitter = new ParticleEmitter();
         }        
 		emitter->name = child->GetName();
 		emitters.push_back(emitter);
