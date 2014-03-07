@@ -343,6 +343,22 @@ int32 RenderObject::GetMaxLodIndex() const
     return ret;
 }
 
+int32 RenderObject::GetMaxLodIndexForSwitchIndex(int32 forSwitchIndex) const
+{
+    int32 ret = -1;
+    uint32 size = renderBatchArray.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
+        const IndexedRenderBatch & irb = renderBatchArray[i];
+        if(irb.switchIndex == forSwitchIndex)
+        {
+            ret = Max(ret, irb.lodIndex);
+        }
+    }
+
+    return ret;
+}
+
 int32 RenderObject::GetMaxSwitchIndex() const
 {
     int32 ret = -1;
@@ -355,5 +371,7 @@ int32 RenderObject::GetMaxSwitchIndex() const
 
     return ret;
 }
+
+
 
 };
