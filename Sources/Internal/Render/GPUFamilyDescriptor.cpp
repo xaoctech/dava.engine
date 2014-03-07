@@ -57,7 +57,18 @@ void GPUFamilyDescriptor::SetupGPUFormats()
     gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_A8] = ".pvr";
     gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR4] = ".pvr";
     gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR2] = ".pvr";
-    
+
+    //es30
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR2_2] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_PVR4_2] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_EAC_R11_UNSIGNED] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_EAC_R11_SIGNED] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_EAC_RG11_SIGNED] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_EAC_RG11_UNSIGNED] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_ETC2_RGB] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_ETC2_RGBA] = ".pvr";
+    gpuData[GPU_POWERVR_IOS].availableFormats[FORMAT_ETC2_RGB_A1] = ".pvr";
+
 
     //pvr android
     gpuData[GPU_POWERVR_ANDROID].availableFormats[FORMAT_RGBA8888] = ".pvr";

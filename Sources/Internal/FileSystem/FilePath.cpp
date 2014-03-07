@@ -540,6 +540,8 @@ String FilePath::GetLastDirectoryName() const
     
 bool FilePath::IsEqualToExtension( const String & extension ) const
 {
+    DVASSERT(!extension.empty() && extension.at(0) != '*');
+    
 	String selfExtension = GetExtension();
 	return (CompareCaseInsensitive(extension, selfExtension) == 0);
 }
