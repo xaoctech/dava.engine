@@ -1478,6 +1478,7 @@ void QtMainWindow::OnParticleEffectDialog()
 {
 	Entity* sceneNode = new Entity();
 	sceneNode->AddComponent(new ParticleEffectComponent());
+    sceneNode->AddComponent(new LodComponent());
 	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(sceneEditor)
