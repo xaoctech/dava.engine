@@ -147,8 +147,6 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
 	caps.isPVRTC2Supported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc2");
     caps.isETCSupported = false;
-	caps.isETC2Supported = IsGLExtensionSupported("GL_ARB_ES3_compatibility");
-	caps.isRFormatSupported = caps.isRGFormatSupported = caps.isETC2Supported;
 
 	caps.isDXTSupported = false;
     caps.isBGRA8888Supported = IsGLExtensionSupported("GL_APPLE_texture_format_BGRA8888");
@@ -160,8 +158,6 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isPVRTCSupported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc");
 	caps.isPVRTC2Supported = IsGLExtensionSupported("GL_IMG_texture_compression_pvrtc2");
     caps.isETCSupported = IsGLExtensionSupported("GL_OES_compressed_ETC1_RGB8_texture");
-	caps.isETC2Supported = IsGLExtensionSupported("GL_ARB_ES3_compatibility");
-	caps.isRFormatSupported = caps.isRGFormatSupported = caps.isETC2Supported;
 
 	caps.isDXTSupported = IsGLExtensionSupported("GL_EXT_texture_compression_s3tc");
     caps.isBGRA8888Supported = false;
@@ -201,6 +197,13 @@ void RenderManager::DetectRenderingCapabilities()
 
 	caps.isETC2Supported = caps.isRFormatSupported = caps.isRGFormatSupported = false;
 #endif
+
+    
+    if(renderer == Core::RENDERER_OPENGL_ES_3_0)
+    {
+        caps.isETC2Supported = true;
+        caps.isRFormatSupported = caps.isRGFormatSupported = caps.isETC2Supported;
+    }
 }
 
 bool RenderManager::IsDeviceLost()
@@ -712,7 +715,7 @@ void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 c
         }
     }
     
-    if (renderer != Core::RENDERER_OPENGL_ES_2_0)
+    if ((renderer != Core::RENDERER_OPENGL_ES_2_0) && (renderer != Core::RENDERER_OPENGL_ES_3_0))
     {
         RENDER_VERIFY(glMatrixMode(matrixMode[type]));
         RENDER_VERIFY(glLoadMatrixf(matrix.data));

@@ -27,30 +27,35 @@
 =====================================================================================*/
 
 
-#include "RenderManager.h"
-#include "RenderManagerGL20.h"
+#include "Base/BaseTypes.h"
+#if defined(__DAVAENGINE_IPHONE__)
+#import "Platform/TemplateiOS/ESRenderer.h"
 
-namespace DAVA 
+#import <OpenGLES/ES3/gl.h>
+#import <OpenGLES/ES3/glext.h>
+
+@interface ES3Renderer : NSObject <ESRenderer>
 {
-
-
-void RenderManager::Create(Core::eRenderer renderer)
-{
-    //new RenderManager(renderer);
-    if (renderer == Core::RENDERER_OPENGL_ES_2_0 || renderer == Core::RENDERER_OPENGL_ES_3_0)
-    {
-#if defined(__DAVAENGINE_OPENGL__)
-	new RenderManagerGL20(renderer);
-#endif        
-    }
-    else
-    {
-        new RenderManager(renderer);
-    }
+@private
+	EAGLContext *context;
+	
+	// The pixel dimensions of the CAEAGLLayer
+	GLint backingWidth;
+	GLint backingHeight;
+	
+	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
+	GLuint defaultFramebuffer, colorRenderbuffer;
+    GLuint depthRenderbuffer;
 }
 
-    
-    
-    
-    
-};
+- (void) startRendering;
+- (void) endRendering;
+- (BOOL) resizeFromLayer:(CAEAGLLayer *)layer;
+
+- (void) setCurrentContext;
+
+
+@end
+#endif // #if defined(__DAVAENGINE_IPHONE__)
+
+

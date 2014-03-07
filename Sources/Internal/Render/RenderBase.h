@@ -54,6 +54,8 @@
 	#import <OpenGLES/ES1/glext.h>
     #import <OpenGLES/ES2/gl.h>
     #import <OpenGLES/ES2/glext.h>
+    #import <OpenGLES/ES3/gl.h>
+    #import <OpenGLES/ES3/glext.h>
 #elif defined(__DAVAENGINE_MACOS__)
 	#define __DAVAENGINE_OPENGL__
 	//	#include <GL/glew.h>

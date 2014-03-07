@@ -61,6 +61,8 @@ public:
 	static Image * CreateFromData(uint32 width, uint32 height, PixelFormat format, const uint8 *data);
     
     static Image * CreatePinkPlaceholder(bool checkers = true);
+    void MakePink(bool checkers = true);
+
     
     // \todo Change function name to Image::Create for consistency
 	static Vector2 GetImageSize(const FilePath & pathName);
@@ -111,6 +113,7 @@ public:
         static void ConvertFromRGBA8888toA8(const uint8 * sourceData, int32 width, int32 height, uint8 * destData, eAlphaAction action = ALPHA_ACTION_NONE);
         
      */
+    
 
     uint32 dataSize;
 	uint32	width:16;

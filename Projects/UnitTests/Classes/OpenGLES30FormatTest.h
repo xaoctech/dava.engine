@@ -26,31 +26,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __OPENGLES30_FORMAT_TEST__
+#define __OPENGLES30_FORMAT_TEST__
 
-#include "RenderManager.h"
-#include "RenderManagerGL20.h"
+#include "DAVAEngine.h"
+#include "TestTemplate.h"
 
-namespace DAVA 
+using namespace DAVA;
+
+class OpenGLES30FormatTest: public TestTemplate<OpenGLES30FormatTest>
 {
+protected:
+    ~OpenGLES30FormatTest(){}
 
+public:
+    OpenGLES30FormatTest();
 
-void RenderManager::Create(Core::eRenderer renderer)
-{
-    //new RenderManager(renderer);
-    if (renderer == Core::RENDERER_OPENGL_ES_2_0 || renderer == Core::RENDERER_OPENGL_ES_3_0)
-    {
-#if defined(__DAVAENGINE_OPENGL__)
-	new RenderManagerGL20(renderer);
-#endif        
-    }
-    else
-    {
-        new RenderManager(renderer);
-    }
-}
+    virtual void LoadResources();
+    virtual void UnloadResources();
+    virtual bool RunTest(int32 testNum);
 
+    void TestFunction(PerfFuncData * data);
+
+	virtual void DidAppear();
+	virtual void Update(float32 timeElapsed);
+
+private:
     
+    void LoadFormat(const String & format);
+
+    UIControl *source;
+    UIControl *decodedSource;
+    UIControl *encodedSource;
     
+    UIStaticText *formatName;
     
+    bool testFinished;
+	float32 onScreenTime;
     
+    String currentFormatName;
+    uint32 currentFormatIndex;
+
+    void ButtonPressed(BaseObject *obj, void *data, void *callerData);
 };
+
+#endif //__OPENGLES30_FORMAT_TEST__

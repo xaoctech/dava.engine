@@ -274,6 +274,8 @@ public:
 
     static void SetPixelization(bool value);
 
+    static bool IsCompressedFormat(PixelFormat format);
+
 protected:
     
     void ReleaseTextureData();
@@ -297,7 +299,6 @@ protected:
 	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
     
     static bool CheckImageSize(const Vector<Image *> &imageSet);
-    static bool IsCompressedFormat(PixelFormat format);
     
 	void GenerateMipmapsInternal(BaseObject * caller, void * param, void *callerData);
     
