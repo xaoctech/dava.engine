@@ -47,7 +47,7 @@ void TextBlockSoftwareRender::Prepare()
 	
 	int bsz = textBlock->cacheDx * textBlock->cacheDy;
 	buf = new int16[bsz];
-	memset(buf, 0, bsz * sizeof(int16));
+    memset(buf, 0, bsz * sizeof(int16));
 	
 	DrawText();
 	
@@ -68,7 +68,8 @@ void TextBlockSoftwareRender::Prepare()
 	}
 	
 	Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, textBlock->cacheDx, textBlock->cacheDy, false, addInfo.c_str());
-	sprite = Sprite::CreateFromTexture(tex, 0, 0, textBlock->cacheFinalW, textBlock->cacheFinalH);
+    sprite = Sprite::CreateFromTexture(tex, 0, 0, textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy);
+    
 	SafeDeleteArray(buf);
 	SafeRelease(tex);
 }

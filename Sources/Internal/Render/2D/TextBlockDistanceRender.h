@@ -32,6 +32,8 @@
 
 #include "Render/2D/TextBlockRender.h"
 #include "Render/2D/DFFont.h"
+#include "Base/FastName.h"
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -65,6 +67,11 @@ private:
 	
 	uint32 charDrawed;
 	Rect renderRect;
+    UniqueHandle renderState;
+    
+    static FastName textureUniform;
+    static FastName smoothingUniform;
+    static FastName colorUniform;
 };
 
 }; //end of namespace

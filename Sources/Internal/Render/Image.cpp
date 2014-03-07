@@ -29,6 +29,7 @@
 
 #include "Render/Image.h"
 #include "Render/Texture.h"
+#include "Render/ImageConvert.h"
 
 namespace DAVA 
 {
@@ -108,7 +109,7 @@ Image * Image::CreateFromData(uint32 width, uint32 height, PixelFormat format, c
 	return image;
 }
 
-Image * Image::CreatePinkPlaceholder()
+Image * Image::CreatePinkPlaceholder(bool checkers)
 {
     Image * image = new Image();
 	image->width = 16;
@@ -119,7 +120,7 @@ Image * Image::CreatePinkPlaceholder()
 
     
     uint32 pink = 0xffff00ff;
-    uint32 gray = 0xff7f7f7f;
+    uint32 gray = (checkers) ? 0xff7f7f7f : 0xffff00ff;
     bool pinkOrGray = false;
     
     uint32 * writeData = (uint32*) image->data;
@@ -136,6 +137,50 @@ Image * Image::CreatePinkPlaceholder()
     return image;
 }
 
+Vector<Image *> Image::CreateMipMapsImages()
+{
+    Vector<Image *> imageSet;
+
+    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    if(!formatSize)
+        return imageSet;
+
+    Image * image0 = SafeRetain(this);
+    uint32 imageWidth = width;
+    uint32 imageHeight = height;
+    uint32 curMipMapLevel = 0;
+    image0->mipmapLevel = curMipMapLevel;
+
+    imageSet.push_back(image0);
+    while(imageHeight > 1 || imageWidth > 1)
+    {
+        uint32 newWidth = imageWidth;
+        uint32 newHeight = imageHeight;
+        if(newWidth > 1) newWidth >>= 1;
+        if(newHeight > 1) newHeight >>= 1;
+        uint8 * newData = new uint8[newWidth * newHeight * formatSize];
+        memset(newData, 0, newWidth * newHeight * formatSize);
+
+        ImageConvert::DownscaleTwiceBillinear(format, format,
+            image0->data, imageWidth, imageHeight, imageWidth * formatSize,
+            newData, newWidth, newHeight, newWidth * formatSize);
+
+        curMipMapLevel++;
+
+        Image * halfSizeImg = Image::CreateFromData(newWidth, newHeight, format, newData);
+        halfSizeImg->cubeFaceID = image0->cubeFaceID;
+        halfSizeImg->mipmapLevel = curMipMapLevel;
+        imageSet.push_back(halfSizeImg);
+
+        imageWidth = newWidth;
+        imageHeight = newHeight;
+        SafeDeleteArray(newData);
+
+        image0 = halfSizeImg;
+    }
+
+    return imageSet;
+}
 
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {

@@ -111,6 +111,11 @@ void UIStaticText::SetFittingOption(int32 fittingType)
 	PrepareSprite();
 }
 
+int32 UIStaticText::GetFittingOption() const
+{
+    return textBlock->GetFittingOption();
+}
+
 void UIStaticText::SetFont(Font * _font)
 {
 	textBlock->SetRectSize(size);
@@ -253,6 +258,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 	const YamlNode * textColorNode = node->Get("textcolor");
 	const YamlNode * shadowColorNode = node->Get("shadowcolor");
 	const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+	const YamlNode * textAlignNode = node->Get("textalign");
 
 	if (fontNode)
 	{
@@ -384,6 +390,11 @@ Animation * UIStaticText::ShadowColorAnimation(const Color & finalColor, float32
 	LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &shadowColor, finalColor, time, interpolationFunc);
 	animation->Start(track);
 	return animation;
+}
+
+const Vector<int32> & UIStaticText::GetStringSizes() const
+{
+	return textBlock->GetStringSizes();
 }
 
 };
