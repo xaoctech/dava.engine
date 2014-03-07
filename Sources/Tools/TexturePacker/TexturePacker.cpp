@@ -38,6 +38,8 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
 #include "Utils/StringFormat.h"
+#include "Render/PixelFormatDescriptor.h"
+
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -652,7 +654,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
     {
 		String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
-		PixelFormat format = Texture::GetPixelFormatByName(formatName);
+		PixelFormat format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName.c_str()));
 
 		// Additional check whether this format type is accepted for this GPU.
 		if (IsFormatSupportedForGPU(format, forGPU))
