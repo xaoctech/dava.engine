@@ -42,22 +42,6 @@
 
 namespace DAVA 
 {
-// 		if (FORMAT_PVR2 == format ||
-// 			FORMAT_PVR4 == format ||
-// 			(format >= FORMAT_DXT1 && format <= FORMAT_DXT5NM) ||
-// 			FORMAT_ETC1 == format ||
-// 
-// 			FORMAT_EAC_R11_SIGNED == format ||
-// 			FORMAT_EAC_R11_UNSIGNED == format ||
-// 			FORMAT_EAC_RG11_SIGNED == format ||
-// 			FORMAT_EAC_RG11_UNSIGNED == format ||
-// 			FORMAT_ETC2_RGB == format ||
-// 			FORMAT_ETC2_RGBA == format ||
-// 			FORMAT_ETC2_RGB_A1 == format ||
-// 
-// 			FORMAT_ATC_RGB == format ||
-// 			FORMAT_ATC_RGBA_EXPLICIT_ALPHA == format ||
-// 			FORMAT_ATC_RGBA_INTERPOLATED_ALPHA == format)
 
 #if !defined(GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG)
 	#define  GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG    0
