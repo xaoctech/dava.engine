@@ -122,23 +122,6 @@ public:
 	};
 	
 	// Main constructors
-	
-    static void InitializePixelFormatDescriptors();
-
-    
-	/**
-        \brief Return size of pixel format in bits 
-        \returns size in bits, for example for FORMAT_RGBA8888 function will return 32.
-     */
-	static int32 GetPixelFormatSizeInBytes(PixelFormat format);
-	static int32 GetPixelFormatSizeInBits(PixelFormat format);
-	/**
-        \brief Return string representation of pixel format
-        \returns string value describing pixel format
-     */
-    static const char * GetPixelFormatString(PixelFormat format);
-    static PixelFormat GetPixelFormatByName(const String &formatName);
-    
     /**
         \brief Create texture from data arrray
         This function creates texture from given format, data pointer and width + height
@@ -232,8 +215,6 @@ public:
 
 	bool IsPinkPlaceholder();
     
-    static PixelFormatDescriptor GetPixelFormatDescriptor(PixelFormat formatID);
-	
 	static void GenerateCubeFaceNames(const FilePath & baseName, Vector<FilePath>& faceNames);
 	static void GenerateCubeFaceNames(const FilePath & baseName, const Vector<String>& faceNameSuffixes, Vector<FilePath>& faceNames);
 
@@ -273,9 +254,6 @@ public:
 	PixelFormat GetFormat() const;
 
     static void SetPixelization(bool value);
-
-    static bool IsCompressedFormat(PixelFormat format);
-
 protected:
     
     void ReleaseTextureData();
@@ -306,9 +284,6 @@ protected:
 	virtual ~Texture();
     
     Image * ReadDataToImage();
-    
-    static PixelFormatDescriptor pixelDescriptors[FORMAT_COUNT];
-    static void SetPixelDescription(PixelFormat index, const String &name, int32 size, GLenum type, GLenum format, GLenum internalFormat);
     
 #if defined(__DAVAENGINE_OPENGL__)
 	void HWglCreateFBOBuffers();

@@ -34,6 +34,7 @@
 #include "Utils/StringFormat.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
+#include "Render/PixelFormatDescriptor.h"
 
 namespace DAVA
 {
@@ -230,7 +231,7 @@ String GPUFamilyDescriptor::GetFilenamePostfix(const eGPUFamily gpuFamily, const
     Map<PixelFormat, String>::const_iterator format = gpuData[gpuFamily].availableFormats.find(pixelFormat);
 	if(format == gpuData[gpuFamily].availableFormats.end())
 	{
-		Logger::Error("[GPUFamilyDescriptor::GetFilenamePostfix: can't find format %s for gpu %s]", Texture::GetPixelFormatString(pixelFormat), gpuData[gpuFamily].name.c_str());
+		Logger::Error("[GPUFamilyDescriptor::GetFilenamePostfix: can't find format %s for gpu %s]", PixelFormatDescriptor::GetPixelFormatString(pixelFormat), gpuData[gpuFamily].name.c_str());
 		return ".png";
 	}
 
