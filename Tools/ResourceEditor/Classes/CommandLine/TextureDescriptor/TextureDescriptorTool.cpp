@@ -32,6 +32,7 @@
 #include "TextureDescriptorUtils.h"
 
 #include "TexturePacker/CommandLineParser.h"
+#include "Render/PixelFormatDescriptor.h"
 
 using namespace DAVA;
 
@@ -126,7 +127,7 @@ void TextureDescriptorTool::ReadCompressionParams()
 			String formatName = CommandLineParser::GetCommandParam(gpuFlag);
 
 			TextureDescriptor::Compression compression;
-			compression.format = Texture::GetPixelFormatByName(formatName);
+			compression.format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName.c_str()));
 			compression.compressToWidth = compression.compressToHeight = 0;
 
 

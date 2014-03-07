@@ -40,6 +40,7 @@
 #include "Render/ImageLoader.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
+#include "Render/PixelFormatDescriptor.h"
 
 #ifdef __DAVAENGINE_OPENGL__
 
@@ -194,16 +195,11 @@ void RenderManager::DetectRenderingCapabilities()
 	caps.isBGRA8888Supported = IsGLExtensionSupported("GL_IMG_texture_format_BGRA8888");
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
-
-	caps.isETC2Supported = caps.isRFormatSupported = caps.isRGFormatSupported = false;
 #endif
 
-    
-    if(renderer == Core::RENDERER_OPENGL_ES_3_0)
-    {
-        caps.isETC2Supported = true;
-        caps.isRFormatSupported = caps.isRGFormatSupported = caps.isETC2Supported;
-    }
+    caps.isOpenGLES3Supported = (renderer == Core::RENDERER_OPENGL_ES_3_0);
+
+	PixelFormatDescriptor::InitializePixelFormatDescriptors();
 }
 
 bool RenderManager::IsDeviceLost()
@@ -307,7 +303,7 @@ void RenderManager::MakeGLScreenShot()
     int32 width = frameBufferWidth;
     int32 height = frameBufferHeight;
     
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+    const PixelFormatDescriptor & formatDescriptor = PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     
     Logger::FrameworkDebug("RenderManager::MakeGLScreenShot w=%d h=%d", width, height);
     
@@ -316,7 +312,7 @@ void RenderManager::MakeGLScreenShot()
     image = Image::Create(width, height, formatDescriptor.formatID);
     uint8 *imageData = image->GetData();
     
-    int32 formatSize = Texture::GetPixelFormatSizeInBytes(formatDescriptor.formatID);
+    int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(formatDescriptor.formatID);
     uint8 *tempData;
     
     uint32 imageDataSize = width * height * formatSize;

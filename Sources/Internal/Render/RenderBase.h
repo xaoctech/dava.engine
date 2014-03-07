@@ -174,24 +174,6 @@ enum PixelFormat
     FORMAT_CLOSEST = 256
 };
     
-struct PixelFormatDescriptor
-{
-    GLenum format;
-    GLenum internalformat;
-    GLenum type;
-    
-    String name;
-    int32 pixelSize;
-    PixelFormat formatID;
-    
-    PixelFormatDescriptor()
-    :   format(0), internalformat(0), type(0), pixelSize(0), formatID(FORMAT_INVALID)
-    {
-        
-    }
-};
-
-    
 enum eGPUFamily
 {
     GPU_UNKNOWN = -1,

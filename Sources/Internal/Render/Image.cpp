@@ -30,6 +30,7 @@
 #include "Render/Image.h"
 #include "Render/Texture.h"
 #include "Render/ImageConvert.h"
+#include "Render/PixelFormatDescriptor.h"
 
 namespace DAVA 
 {
@@ -61,8 +62,7 @@ Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
 	image->height = height;
 	image->format = format;
     
-//    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
-    int32 formatSize = Texture::GetPixelFormatSizeInBits(format);
+    int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBits(format);
     if (formatSize ||
 		(format >= FORMAT_DXT1 && format <= FORMAT_DXT1A) ||
 		(format >= FORMAT_ATC_RGB && format <= FORMAT_ATC_RGBA_INTERPOLATED_ALPHA))
@@ -80,7 +80,7 @@ Image * Image::Create(uint32 width, uint32 height, PixelFormat format)
 				uint32 maxvalue = width > height ? width : height;
 				minvalue = minvalue < 4 ? 4 : minvalue;
 				maxvalue = maxvalue < 4 ? 4 : maxvalue;
-				dSize = Texture::GetPixelFormatSizeInBits(format) * minvalue * maxvalue;
+				dSize = PixelFormatDescriptor::GetPixelFormatSizeInBits(format) * minvalue * maxvalue;
 				dSize /= 8;
 			}
 			image->dataSize = dSize;
@@ -116,7 +116,7 @@ Image * Image::CreatePinkPlaceholder(bool checkers)
 	image->width = 16;
 	image->height = 16;
 	image->format = FORMAT_RGBA8888;
-    image->dataSize = image->width * image->height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    image->dataSize = image->width * image->height * PixelFormatDescriptor::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
     image->data = new uint8[image->dataSize];
 
     image->MakePink(checkers);
@@ -149,7 +149,7 @@ Vector<Image *> Image::CreateMipMapsImages()
 {
     Vector<Image *> imageSet;
 
-    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
     if(!formatSize)
         return imageSet;
 
@@ -193,7 +193,7 @@ Vector<Image *> Image::CreateMipMapsImages()
 void Image::ResizeImage(uint32 newWidth, uint32 newHeight)
 {
 	uint8 * newData = NULL;
-	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+	int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
 
 	if(formatSize>0)
 	{
@@ -242,7 +242,7 @@ void Image::ResizeCanvas(uint32 newWidth, uint32 newHeight)
 {
     uint8 * newData = NULL;
     uint32 newDataSize = 0;
-    int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+    int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
         
     if(formatSize>0)
     {
@@ -309,7 +309,7 @@ Image* Image::CopyImageRegion(const Image* imageToCopy,
 	DVASSERT((newWidth + xOffset) <= oldWidth && (newHeight + yOffset) <= oldHeight);
 
 	PixelFormat format = imageToCopy->GetPixelFormat();
-	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+	int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
 
 	Image* newImage = Image::Create(newWidth, newHeight, format);
 
@@ -368,7 +368,7 @@ void Image::InsertImage(const Image* image, uint32 dstX, uint32 dstY,
 	}
 
 	PixelFormat format = GetPixelFormat();
-	int32 formatSize = Texture::GetPixelFormatSizeInBytes(format);
+	int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
 
 	uint8* srcData = image->GetData();
 	uint8* dstData = data;

@@ -94,10 +94,10 @@ public:
 		{
 			isHardwareCursorSupported = false;
 			isPVRTCSupported = isETCSupported = false;
-			isPVRTC2Supported = isETC2Supported = false;
+			isPVRTC2Supported = false;
 			isDXTSupported = isATCSupported = false;
 			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
-			isRGFormatSupported = isRFormatSupported = false;
+			isOpenGLES3Supported = false;
 		}
 
         Core::eRenderer renderer;
@@ -105,14 +105,12 @@ public:
         bool isPVRTCSupported;
 		bool isPVRTC2Supported;
 		bool isETCSupported;
-        bool isETC2Supported;
+        bool isOpenGLES3Supported;
         bool isBGRA8888Supported;
         bool isFloat16Supported;
         bool isFloat32Supported;
 		bool isDXTSupported;
 		bool isATCSupported;
-		bool isRGFormatSupported;
-		bool isRFormatSupported;
 	};
     
     struct Stats

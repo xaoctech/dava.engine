@@ -33,6 +33,7 @@
 #include "Render/Image.h"
 #include "Render/Texture.h"
 #include "Render/RenderManager.h"
+#include "Render/PixelFormatDescriptor.h"
 
 #include <libdxt/nvtt.h>
 #include <libdxt/nvtt_extra.h>
@@ -593,7 +594,7 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 		return false;
 	}
     
-	uint32 imgDataSize = width * height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+	uint32 imgDataSize = width * height * PixelFormatDescriptor::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
 	for(uint32 i = 0; i < dataCount; ++i)
 	{
 		NvttHelper::SwapBRChannels(data[i], imgDataSize);
