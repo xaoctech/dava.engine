@@ -51,7 +51,7 @@ GLuint Shader::activeProgram = 0;
 Shader::Shader()
 : RenderResource()
 {
-    DVASSERT(RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL_ES_2_0 || RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL);
+    DVASSERT(RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL_ES_2_0 || RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL || RenderManager::Instance()->GetRenderer() == Core::RENDERER_OPENGL_ES_3_0);
     
     vertexShader = 0;
     fragmentShader = 0;

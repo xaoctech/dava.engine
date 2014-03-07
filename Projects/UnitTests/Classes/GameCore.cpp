@@ -63,6 +63,7 @@
 #include "UIMovieTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
+#include "OpenGLES30FormatTest.h"
 
 using namespace DAVA;
 
@@ -88,7 +89,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    
+    new OpenGLES30FormatTest();
     new RectSpriteTest();
 
 	new ComponentsTest();

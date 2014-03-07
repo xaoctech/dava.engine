@@ -170,9 +170,11 @@ protected:
     static bool IsFormatSupported(const PixelFormatDescriptor &format);
     
 	static PVRHeaderV3 CreateDecompressedHeader(const PVRHeaderV3 &compressedHeader);
-	
+
 	static bool CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData);
     static bool AllocateImageData(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header);
+    
+    static bool IsCompressedFormatHardwareSupported(const PixelFormat formatID);
 };
     
 };

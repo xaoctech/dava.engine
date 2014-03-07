@@ -119,25 +119,32 @@ Image * Image::CreatePinkPlaceholder(bool checkers)
     image->dataSize = image->width * image->height * Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
     image->data = new uint8[image->dataSize];
 
+    image->MakePink(checkers);
+    
+    return image;
+}
+
+void Image::MakePink(bool checkers)
+{
+    if(data == NULL) return;
     
     uint32 pink = 0xffff00ff;
     uint32 gray = (checkers) ? 0xff7f7f7f : 0xffff00ff;
     bool pinkOrGray = false;
     
-    uint32 * writeData = (uint32*) image->data;
-    for(uint32 w = 0; w < image->width; ++w)
+    uint32 * writeData = (uint32*) data;
+    for(uint32 w = 0; w < width; ++w)
     {
         pinkOrGray = !pinkOrGray;
-        for(uint32 h = 0; h < image->height; ++h)
+        for(uint32 h = 0; h < height; ++h)
         {
             *writeData++ = pinkOrGray ? pink : gray;
             pinkOrGray = !pinkOrGray;
         }
     }
-
-    return image;
 }
-
+    
+    
 Vector<Image *> Image::CreateMipMapsImages()
 {
     Vector<Image *> imageSet;

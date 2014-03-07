@@ -2310,7 +2310,6 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
         return false;
     }
     
-    const RenderManager::Caps & deviceCaps = RenderManager::Instance()->GetCaps();
     const PixelFormat & formatID = formatDescriptor.formatID;
 
 	uint32 cubemapLayout = GetCubemapLayout(pvrFile);
@@ -2328,9 +2327,7 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
 			image->cubeFaceID = (cubemapLayout & (0x0000000F << (faceIndex * 4))) >> (faceIndex * 4);
 		}
         
-        if(     (((FORMAT_PVR4 == formatID) || (FORMAT_PVR2 == formatID)) && deviceCaps.isPVRTCSupported)
-           ||   (FORMAT_ETC1 == formatID && deviceCaps.isETCSupported)
-           ||   (FORMAT_ETC1 != formatID && FORMAT_PVR2 != formatID && FORMAT_PVR4 != formatID))
+        if(IsCompressedFormatHardwareSupported(formatID))
         {
             bool imageLoaded = CopyToImage(image, mipMapLevel, faceIndex, compressedHeader, pTextureData);
             if(!imageLoaded)
@@ -2380,12 +2377,61 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
 #endif //defined (__DAVAENGINE_ANDROID__)
             }
 #endif //#if !defined(__DAVAENGINE_IPHONE__)
+            else
+            {
+                image->MakePink();
+            }
         }
         
         imageSet.push_back(image);
 	}
     
     return true;
+}
+
+
+bool LibPVRHelper::IsCompressedFormatHardwareSupported(const PixelFormat formatID)
+{
+    const RenderManager::Caps & deviceCaps = RenderManager::Instance()->GetCaps();
+    switch (formatID)
+    {
+        case FORMAT_PVR4:
+        case FORMAT_PVR2:
+            return deviceCaps.isPVRTCSupported;
+        case FORMAT_PVR4_2:
+        case FORMAT_PVR2_2:
+            return deviceCaps.isPVRTC2Supported;
+
+        case FORMAT_ETC1:
+            return deviceCaps.isETCSupported;
+
+        case FORMAT_ETC2_RGB:
+        case FORMAT_ETC2_RGBA:
+        case FORMAT_ETC2_RGB_A1:
+            return deviceCaps.isETC2Supported;
+
+        case FORMAT_EAC_R11_SIGNED:
+        case FORMAT_EAC_R11_UNSIGNED:
+            return deviceCaps.isRFormatSupported;
+
+        case FORMAT_EAC_RG11_SIGNED:
+        case FORMAT_EAC_RG11_UNSIGNED:
+            return deviceCaps.isRGFormatSupported;
+
+        case FORMAT_RGBA8888:
+        case FORMAT_RGBA5551:
+        case FORMAT_RGBA4444:
+        case FORMAT_RGB888:
+        case FORMAT_RGB565:
+        case FORMAT_A8:
+        case FORMAT_A16:
+            return true;
+            
+        default:
+            break;
+    }
+    
+    return false;
 }
 
 
