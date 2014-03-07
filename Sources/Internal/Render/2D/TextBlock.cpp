@@ -108,13 +108,10 @@ TextBlock::TextBlock()
 
 	needRedraw = true;
 
-	sprite = NULL;
-
 	originalFontSize = 0.1f;
 	align = ALIGN_HCENTER|ALIGN_VCENTER;
 	RegisterTextBlock(this);
     isMultilineBySymbolEnabled = false;
-	cacheFinalW = cacheFinalH = 0;
     
 	textBlockRender = NULL;
 }
@@ -331,7 +328,7 @@ bool TextBlock::IsSpriteReady()
     Sprite* sprite = NULL;
 	if (textBlockRender)
     {
-        sprite = textBlockRender->GetSprite() != NULL;
+        sprite = textBlockRender->GetSprite();
     }
 
     mutex.Unlock();
@@ -346,7 +343,6 @@ void TextBlock::Prepare()
 
 void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
 {
-#if 1
 	if(!font || text == L"")
 	{
         Release();
@@ -706,8 +702,6 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			w = (int32)drawSize.dx;
 		}
 		
-		
-		
 		//calc texture size
 		int32 dx = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w);
 		int32 dy = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * h);
@@ -723,6 +717,10 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 
 		cacheFinalSize.x = (float32)dx / Core::GetVirtualToPhysicalFactor();
         cacheFinalSize.y = (float32)dy / Core::GetVirtualToPhysicalFactor();
+        
+        if (textBlockRender)
+			textBlockRender->Prepare();
+        needRedraw = false;
     }
 
     TextBlockData *jobData = new TextBlockData();
@@ -730,21 +728,6 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
     
     mutex.Unlock();
 
-	Retain();
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &TextBlock::PrepareInternal, jobData));
-}
-
-void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerData)
-{
-    TextBlockData *jobData = (TextBlockData *)param;
-    
-    mutex.Lock();
-
-	if (textBlockRender)
-		textBlockRender->Prepare();
-
-    SafeDelete(jobData);
-    mutex.Unlock();
 	Release();
 }
 	

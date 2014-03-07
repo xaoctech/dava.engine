@@ -114,6 +114,7 @@ protected:
 	
 
 	bool cacheUseJustify;
+    bool needRedraw;
 	Vector2 requestedSize;
 
     Vector2 cacheFinalSize;
@@ -123,8 +124,6 @@ protected:
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
-	float32 cacheFinalW;
-	float32 cacheFinalH;
 	
 	Font * font;
 	WideString text;
@@ -132,10 +131,11 @@ protected:
 	bool isMultilineEnabled;
     bool isMultilineBySymbolEnabled;
     int32 fittingType;
+    Vector2 rectSize;
+	Vector2 position;
+	Vector2 pivotPoint;
 	int32 align;
 
-	WideString text;
-    WideString pointsStr;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
     

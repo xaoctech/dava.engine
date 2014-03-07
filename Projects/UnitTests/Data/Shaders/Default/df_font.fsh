@@ -1,10 +1,17 @@
-//uniform sampler2D u_texture;
+#ifdef GL_ES
+// define default precision for float, vec, mat.
+precision highp float;
+#else
+#define lowp
+#define highp
+#define mediump
+#endif
+
 uniform sampler2D texture0;
-
-varying vec2 v_texCoord;
-
 uniform float smoothing;
-uniform vec4 color;
+uniform mediump vec4 color;
+
+varying mediump vec2 v_texCoord;
 
 void main() {
     float distance = texture2D(texture0, v_texCoord).a;

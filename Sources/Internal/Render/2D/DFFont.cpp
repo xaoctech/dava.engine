@@ -47,6 +47,7 @@ namespace DAVA {
 	
 	DFFont::~DFFont()
 	{
+        RenderManager::Instance()->ReleaseTextureState(fontTextureHandler);
         SafeRelease(fontTexture);
 	}
 	
@@ -216,6 +217,9 @@ namespace DAVA {
     bool DFFont::LoadTexture(const FilePath& path)
     {
         fontTexture = Texture::CreateFromFile(path);
+        TextureStateData textureData;
+        textureData.SetTexture(0, fontTexture);
+        fontTextureHandler = RenderManager::Instance()->CreateTextureState(textureData);
 
         return true;
 	}
@@ -332,5 +336,10 @@ namespace DAVA {
     Texture* DFFont::GetTexture()
     {
         return fontTexture;
+    }
+    
+    UniqueHandle DFFont::GetTextureHandler()
+    {
+        return fontTextureHandler;
     }
 }

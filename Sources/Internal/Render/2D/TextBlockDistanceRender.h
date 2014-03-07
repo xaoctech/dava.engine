@@ -67,7 +67,6 @@ private:
 	
 	uint32 charDrawed;
 	Rect renderRect;
-    UniqueHandle renderState;
     
     static FastName textureUniform;
     static FastName smoothingUniform;
