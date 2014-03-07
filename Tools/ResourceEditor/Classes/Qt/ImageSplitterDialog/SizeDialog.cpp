@@ -27,27 +27,62 @@
 =====================================================================================*/
 
 
+#include "SizeDialog.h"
 
-#ifndef __IMAGE_SPLITTER_H__
-#define __IMAGE_SPLITTER_H__
-
-#include "DAVAEngine.h"
-
-class ImageSplitter
+SizeDialog::SizeDialog(QWidget *parent) :
+QDialog(parent)
 {
-public:
-
-    static bool SplitImage(const DAVA::FilePath &pathname, DAVA::Set<DAVA::String> &errorLog);
-    static bool MergeImages(const DAVA::FilePath &folder, DAVA::Set<DAVA::String> &errorLog);
+    verticalLayout = new QVBoxLayout(this);
     
-private:
+    messageLbl = new QLabel(this);
+    messageLbl->setText("Set new size for image:");
+    verticalLayout->addWidget(messageLbl);
     
-    static void SaveImage(DAVA::Image *image, const DAVA::FilePath &pathname);
-    static DAVA::Image * LoadImage(const DAVA::FilePath &pathname);
+    horLayout = new QHBoxLayout(this);
     
-    static void ReleaseImages(DAVA::Image *r, DAVA::Image *g, DAVA::Image *b, DAVA::Image *a);
-};
+    widthLbl = new QLabel(this);
+    widthLbl->setText("Width:");
+    
+    widthSpinBox = new QSpinBox(this);
+    widthSpinBox->setMinimum(1);
+    widthSpinBox->setMaximum(99999);
+    widthSpinBox->setSingleStep(1);
+    
+    heightLbl = new QLabel(this);
+    heightLbl->setText("Width:");
+    
+    heightSpinBox = new QSpinBox(this);
+    heightSpinBox->setMinimum(1);
+    heightSpinBox->setMaximum(99999);
+    heightSpinBox->setSingleStep(1);
+    
+    horLayout->addWidget(widthLbl);
+    horLayout->addWidget(widthSpinBox);
+    horLayout->addWidget(heightLbl);
+    horLayout->addWidget(heightSpinBox);
+    
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    
+    verticalLayout->addLayout(horLayout);
+    verticalLayout->addWidget(buttonBox);
+}
 
+SizeDialog::~SizeDialog()
+{
+    delete horLayout;
+    delete verticalLayout;
+    delete messageLbl;
+    delete widthLbl;
+    delete widthSpinBox;
+    delete heightLbl;
+    delete heightSpinBox;
+    delete buttonBox;
+}
 
-
-#endif // __IMAGE_SPLITTER_H__
+DAVA::Vector2 SizeDialog::GetSize() const
+{
+    return DAVA::Vector2(widthSpinBox->value(), heightSpinBox->value());
+}

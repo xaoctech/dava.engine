@@ -271,6 +271,7 @@
     <addaction name="actionTextureConverter"/>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionCubemapEditor"/>
+    <addaction name="actionImageSplitter"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
@@ -1791,6 +1792,15 @@
    </property>
    <property name="text">
     <string>Show Lightmap Canvas</string>
+   </property>
+  </action>
+  <action name="actionImageSplitter">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/image_splitter.png</normaloff>:/QtIcons/image_splitter.png</iconset>
+   </property>
+   <property name="text">
+    <string>ImageSplitter</string>
    </property>
   </action>
  </widget>

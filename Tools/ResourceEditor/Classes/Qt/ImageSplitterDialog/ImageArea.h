@@ -27,47 +27,57 @@
 =====================================================================================*/
 
 
+#ifndef __QT_IMAGE_AREA_H__
+#define __QT_IMAGE_AREA_H__
 
-#ifndef __DAVAENGINE_WEBVIEWCONTROL_MACOS_H__
-#define __DAVAENGINE_WEBVIEWCONTROL_MACOS_H__
+#include <QLabel>
+#include "DAVAEngine.h"
 
-#include "../../UI/IWebViewControl.h"
+class QMimeData;
 
-namespace DAVA {
-
-// Web View Control - MacOS version.
-class WebViewControl : public IWebViewControl
+class ImageArea : public QLabel
 {
-public:
-	WebViewControl();
-	virtual ~WebViewControl();
-	
-	// Initialize the control.
-	virtual void Initialize(const Rect& rect);
-	
-	// Open the URL requested.
-	virtual void OpenURL(const String& urlToOpen);
+    Q_OBJECT
     
-    virtual void OpenFromBuffer(const String& string, const FilePath& basePath);
+public:
+    
+    ImageArea(QWidget *parent = 0);
+    
+    ~ImageArea();
+        
+    void SetImage(const DAVA::FilePath& filePath);
 
-	// Size/pos/visibility changes.
-	virtual void SetRect(const Rect& rect);
-	virtual void SetVisible(bool isVisible, bool hierarchic);
+    void SetImage(DAVA::Image* image);
 
-	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
-	virtual void SetBackgroundTransparency(bool enabled);
-
+    inline DAVA::Image* GetImage() const;
+    
+    DAVA::Vector2 GetAcceptableSize() const;
+    
+public slots:
+    void clear();
+    void UpdatePreviewPicture();
+    
+    void SetAcceptableSize(const DAVA::Vector2& size);
+    
+signals:
+    
+    void changed();
+    
 protected:
-	//A pointer to MacOS WebView.
-	void* webViewPtr;
-    bool isWebViewVisible;
-	
-	// A pointer to the WebView delegate.
-	void* webViewDelegatePtr;
 
-	void* webViewPolicyDelegatePtr;
+    void mousePressEvent(QMouseEvent * event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+        
+    void ConnectSignals();
+    
+    DAVA::Image* image;
+    DAVA::Vector2 acceptableSize;
 };
 
-};
+inline DAVA::Image* ImageArea::GetImage() const
+{
+    return image;
+}
 
-#endif /* defined(__DAVAENGINE_WEBVIEWCONTROL_MACOS_H__) */
+#endif /* defined(__QT_IMAGE_AREA_H__) */

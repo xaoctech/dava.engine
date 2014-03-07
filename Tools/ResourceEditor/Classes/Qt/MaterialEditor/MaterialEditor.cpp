@@ -404,17 +404,21 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                 DAVA::InspInfoDynamic *dynamicInfo = dynamicInsp->GetDynamicInfo();
                 DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
 
-                QString dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
-                QString defaultPath = dataSourcePath;
-                SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
-                if(NULL != editor)
-                {
-                    DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
-                    if(String::npos != scenePath.find(dataSourcePath.toStdString()))
-                    {
-                        defaultPath = scenePath.c_str();
-                    }
-                }
+				QString defaultPath = ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname().c_str();
+				FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+				if (dataSourcePath.Exists())
+				{
+					defaultPath = dataSourcePath.GetAbsolutePathname().c_str();
+				}
+				SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+				if (NULL != editor && editor->GetScenePath().Exists())
+				{
+					DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
+					if (String::npos != scenePath.find(dataSourcePath.GetAbsolutePathname()))
+					{
+						defaultPath = scenePath.c_str();
+					}
+				}
                 for(size_t i = 0; i < membersList.size(); ++i)
                 {
                     int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
@@ -424,7 +428,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
 
                     QStringList path;
-                    path.append(dataSourcePath);
+					path.append(defaultPath);
                     dynamicMember->SetValidator(new TexturePathValidator(path));
 
                     // self property
@@ -640,8 +644,6 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 			}
 		}
 	}
-
-	ui->materialTree->Update();
 }
 
 void MaterialEditor::OnSwitchQuality(bool checked)
