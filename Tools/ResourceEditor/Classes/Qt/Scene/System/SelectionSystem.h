@@ -40,6 +40,8 @@
 #include "Scene3D/Entity.h"
 #include "UI/UIEvent.h"
 
+#include "Render/UniqueStateSet.h"
+
 class SceneCollisionSystem;
 class HoodSystem;
 
@@ -79,8 +81,12 @@ public:
 
 	void ForceEmitSignals();
 
+    DAVA::Entity* GetSelectableEntity(DAVA::Entity* entity);
+
 protected:
-	void Update(DAVA::float32 timeElapsed);
+    void ImmediateEvent(DAVA::Entity * entity, DAVA::uint32 event);
+
+    void Update(DAVA::float32 timeElapsed);
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);
@@ -90,13 +96,13 @@ protected:
 	void SelectedItemsWereModified();
 
 	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-	DAVA::Entity* GetSelectableEntity(DAVA::Entity* entity);
     
 
 private:
 	int drawMode;
 	bool selectionAllowed;
 	bool applyOnPhaseEnd;
+    bool invalidSelectionBoxes;
 
 	SceneCollisionSystem *collisionSystem;
 	HoodSystem* hoodSystem;
@@ -108,6 +114,9 @@ private:
 	DAVA::Entity *lastSelection;
 
 	ST_PivotPoint curPivotPoint;
+	
+	DAVA::UniqueHandle selectionNormalDrawState;
+	DAVA::UniqueHandle selectionDepthDrawState;
 };
 
 #endif //__SCENE_SELECTION_SYSTEM_H__

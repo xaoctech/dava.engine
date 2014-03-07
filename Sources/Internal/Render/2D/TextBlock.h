@@ -37,6 +37,7 @@
 #include "Render/Texture.h"
 #include "Render/2D/Sprite.h"
 #include "Render/2D/Font.h"
+#include "Platform/Mutex.h"
 
 namespace DAVA
 {
@@ -90,11 +91,15 @@ public:
 	
 	Sprite * GetSprite();
 	bool IsSpriteReady();
+    
+    const Vector2 & GetTextSize();
 
 	void PreDraw();
 	void Draw(const Color& textColor, const Vector2* offset = NULL);
 
     TextBlock * Clone();
+
+	const Vector<int32> & GetStringSizes() const;
     
 protected:
 	TextBlock();
@@ -103,7 +108,18 @@ protected:
 	void Prepare();
 	void PrepareInternal(BaseObject * caller, void * param, void *callerData);
 	
+	void DrawToBuffer(Font *font, int16 *buf);
+
+	void ProcessAlign();
+	
+
 	bool cacheUseJustify;
+	Vector2 requestedSize;
+
+    Vector2 cacheFinalSize;
+
+	float32 originalFontSize;
+    
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
@@ -115,19 +131,16 @@ protected:
     WideString pointsStr;
 	bool isMultilineEnabled;
     bool isMultilineBySymbolEnabled;
-	int32 fittingType;
-	Vector2 rectSize;
-	Vector2 position;
-	Vector2 pivotPoint;
+    int32 fittingType;
 	int32 align;
-	
-	float32 originalFontSize;
-	bool needRedraw;
-	Vector2 requestedSize;
-	
+
+	WideString text;
+    WideString pointsStr;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
-	
+    
+    Mutex mutex;
+
 	friend class TextBlockRender;
 	friend class TextBlockSoftwareRender;
 	friend class TextBlockGraphicsRender;

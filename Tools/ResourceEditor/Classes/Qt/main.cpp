@@ -30,6 +30,7 @@
 
 #include "DAVAEngine.h"
 #include <QApplication>
+#include <QCryptographicHash>
 
 #include "version.h"
 #include "Main/mainwindow.h"
@@ -39,15 +40,20 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TextureCompression/PVRConverter.h"
-#include "SceneEditor/EditorSettings.h"
-#include "SceneEditor/EditorConfig.h"
-#include "SceneEditor/SceneValidator.h"
-#include "SceneEditor/TextureSquarenessChecker.h"
 #include "CommandLine/CommandLineManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
-#include "Classes/SceneEditor/ControlsFactory.h"
 #include "FileSystem/ResourceArchive.h"
+#include "TextureBrowser/TextureCache.h"
+
+#include "Qt/Settings/SettingsManager.h"
+#include "Qt/Tools/RunGuard/RunGuard.h"
+
+#include "Deprecated/EditorConfig.h"
+#include "Deprecated/SceneValidator.h"
+#include "Deprecated/ControlsFactory.h"
+
+#include "Scene/FogSettingsChangedReceiver.h"
 
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
@@ -67,6 +73,7 @@ void UnpackHelpDoc();
 int main(int argc, char *argv[])
 {
 	int ret = 0;
+
     QApplication a(argc, argv);
 
 #if defined (__DAVAENGINE_MACOS__)
@@ -82,12 +89,25 @@ int main(int argc, char *argv[])
 	DVASSERT(false && "Wrong platform")
 #endif
 
+	DAVA::Logger::Instance()->SetLogFilename("ResEditor.txt");
+
+// GUI instance is already started
+
 #ifdef __DAVAENGINE_BEAST__
 	new BeastProxyImpl();
 #else 
 	new BeastProxy();
 #endif //__DAVAENGINE_BEAST__
 
+
+	new SettingsManager();
+	new EditorConfig();
+    ParticleEmitter::FORCE_DEEP_CLONE = true;
+
+
+    const QString appUid = "{AA5497E4-6CE2-459A-B26F-79AAF05E0C6B}";
+    const QString appUidPath = QCryptographicHash::hash( (appUid + a.applicationDirPath() ).toUtf8(), QCryptographicHash::Sha1 ).toHex();
+    RunGuard runGuard( appUidPath );
 	CommandLineManager cmdLine;
 
 	if(cmdLine.IsEnabled())
@@ -100,6 +120,7 @@ int main(int argc, char *argv[])
 		//DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
 		//DAVA::Logger::AddCustomOutput(out);
 
+		cmdLine.InitalizeTool();
 		if(!cmdLine.IsToolInitialized())
 		{
 			cmdLine.PrintUsageForActiveTool();
@@ -117,17 +138,16 @@ int main(int argc, char *argv[])
 		SafeDelete(davaGL);
 		SceneValidator::Instance()->Release();
 	}
-	else
+	else if ( runGuard.tryToRun() )
 	{
-		new EditorSettings();
-		new EditorConfig();
 		new SceneValidator();
-		new TextureSquarenessChecker();
+        new TextureCache();
+		new FogSettingsChangedReceiver();
 
 		LocalizationSystem::Instance()->SetCurrentLocale("en");
 		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
-		DAVA::Logger::Instance()->SetLogFilename("ResEditor.txt");
+		DAVA::Texture::SetDefaultGPU((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
 
 		// check and unpack help documents
 		UnpackHelpDoc();
@@ -146,12 +166,13 @@ int main(int argc, char *argv[])
 		QtMainWindow::Instance()->Release();
 		ControlsFactory::ReleaseFonts();
 
-		TextureSquarenessChecker::Instance()->Release();
 		SceneValidator::Instance()->Release();
-		EditorConfig::Instance()->Release();
-		EditorSettings::Instance()->Release();
+        TextureCache::Instance()->Release();
+		FogSettingsChangedReceiver::Instance()->Release();
 	}
 
+	EditorConfig::Instance()->Release();
+	SettingsManager::Instance()->Release();
 	BeastProxy::Instance()->Release();
 	DAVA::QtLayer::Instance()->Release();
 	DAVA::Core::Instance()->ReleaseSingletons();
@@ -162,8 +183,7 @@ int main(int argc, char *argv[])
 
 void UnpackHelpDoc()
 {
-	DAVA::KeyedArchive* settings = EditorSettings::Instance()->GetSettings();
-	DAVA::String editorVer = settings->GetString("editor.version");
+	DAVA::String editorVer =SettingsManager::Instance()->GetValue("editor.version", SettingsManager::INTERNAL).AsString();
 	DAVA::FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
 	if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
 	{
@@ -177,5 +197,5 @@ void UnpackHelpDoc()
 		}
 		DAVA::SafeRelease(helpRA);
 	}
-	settings->SetString("editor.version", RESOURCE_EDITOR_VERSION);
+	SettingsManager::Instance()->SetValue("editor.version", VariantType(String(RESOURCE_EDITOR_VERSION)), SettingsManager::INTERNAL);
 }

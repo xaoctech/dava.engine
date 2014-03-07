@@ -42,6 +42,8 @@ _ATL_FUNC_INFO BeforeNavigate2Info = {CC_STDCALL, VT_EMPTY, 7, {VT_DISPATCH,VT_B
 
 extern _ATL_FUNC_INFO DocumentCompleteInfo;
 _ATL_FUNC_INFO DocumentCompleteInfo =  {CC_STDCALL,VT_EMPTY,2,{VT_DISPATCH,VT_BYREF | VT_VARIANT}};
+namespace DAVA 
+{
 
 struct EventSink : public IDispEventImpl<1, EventSink, &DIID_DWebBrowserEvents2>
 {
@@ -354,6 +356,11 @@ void WebViewControl::OpenURL(const String& urlToOpen)
 	}
 }
 
+void WebViewControl::OpenFromBuffer(const String& string, const FilePath& basePath)
+{
+    // TODO
+}
+
 void WebViewControl::SetVisible(bool isVisible, bool /*hierarchic*/)
 {
 	if (this->browserWindow != 0)
@@ -387,4 +394,6 @@ void WebViewControl::SetRect(const Rect& rect)
 	{
 		this->browserContainer->UpdateRect();
 	}
+}
+
 }

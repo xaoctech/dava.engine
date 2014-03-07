@@ -100,7 +100,7 @@ void DFFontTest::LoadResources()
 
 	testButton = new UIButton(Rect(0, 600, 300, 30));
 	testButton->SetStateFont(0xFF, font);
-	testButton->SetStateFontColor(0xFF, Color::White());
+	//testButton->SetStateFontColor(0xFF, Color::White());
 	testButton->SetStateText(0xFF, L"Finish Test");
 	testButton->SetDebugDraw(true);
 	testButton->AddEvent(UIControl::EVENT_TOUCH_UP_INSIDE, Message(this, &DFFontTest::ButtonPressed));
@@ -128,7 +128,7 @@ void DFFontTest::DidAppear()
 
 void DFFontTest::Update(float32 timeElapsed)
 {
-    onScreenTime += timeElapsed;
+    //onScreenTime += timeElapsed;
     if(onScreenTime > INPUT_TEST_AUTO_CLOSE_TIME)
     {
         testFinished = true;

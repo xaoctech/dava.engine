@@ -162,8 +162,7 @@ public:
 	};	
 	enum ForceExternals
 	{
-		EF_FORCE = EL_TOTAL,
-		EF_FORCE_VARIATION,
+		EF_FORCE = EL_TOTAL,		
 		EF_FORCE_OVERLIFE,
 		EF_TOTAL
 	};
@@ -213,9 +212,9 @@ protected:
 	void RemoveLayerLineModifiable(ParticleLayer *layer, LayerExternals lineId);
 	void RemoveForceLineModifiable(ParticleForce *force, ForceExternals lineId);
 
-	void EditEmitterModifiable(ParticleEmitter *emitter, EmitterExternals lineId, bool onAdd = false);
-	void EditLayerModifiable(ParticleLayer *layer, LayerExternals lineId, bool onAdd = false);
-	void EditForceModifiable(ParticleForce *force, ForceExternals lineId, bool onAdd = false);
+	bool EditEmitterModifiable(ParticleEmitter *emitter, EmitterExternals lineId, bool onAdd = false);
+	bool EditLayerModifiable(ParticleLayer *layer, LayerExternals lineId, bool onAdd = false);
+	bool EditForceModifiable(ParticleForce *force, ForceExternals lineId, bool onAdd = false);
 
 	template <class T> bool EditModificationLine(RefPtr<PropertyLine<T> > &line, bool onAdd)
 	{

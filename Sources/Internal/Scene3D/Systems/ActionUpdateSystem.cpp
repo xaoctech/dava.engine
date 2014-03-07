@@ -33,12 +33,13 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
+#include "Debug/Stats.h"
 
 namespace DAVA
 {
 	
 ActionUpdateSystem::ActionUpdateSystem(Scene * scene)
-:	BaseProcessSystem(Component::ACTION_COMPONENT, scene)
+:	SceneSystem(scene)
 {
 	UnblockAllEvents();
 }
@@ -61,7 +62,7 @@ void ActionUpdateSystem::UnblockAllEvents()
 
 void ActionUpdateSystem::AddEntity(Entity * entity)
 {
-	BaseProcessSystem::AddEntity(entity);
+	SceneSystem::AddEntity(entity);
 	ActionComponent* actionComponent = static_cast<ActionComponent*>(entity->GetComponent(Component::ACTION_COMPONENT));
 	actionComponent->StartAdd();
 }
@@ -71,12 +72,14 @@ void ActionUpdateSystem::RemoveEntity(Entity * entity)
 	ActionComponent* actionComponent = static_cast<ActionComponent*>(entity->GetComponent(Component::ACTION_COMPONENT));	
 	if (actionComponent->IsStarted())
 		UnWatch(actionComponent);	
-	BaseProcessSystem::RemoveEntity(entity);
+	SceneSystem::RemoveEntity(entity);
 }
 		
-void ActionUpdateSystem::Process()
+void ActionUpdateSystem::Process(float32 timeElapsed)
 {
-	float32 timeElapsed = SystemTimer::Instance()->FrameDelta();
+    TIME_PROFILE("ActionUpdateSystem::Process");
+
+	DelayedDeleteActions();
 	
 	uint32 size = activeActions.size();
 	for(uint32 index = 0; index < size; ++index)
@@ -84,6 +87,22 @@ void ActionUpdateSystem::Process()
 		ActionComponent* component = activeActions[index];
 		component->Update(timeElapsed);
 	}
+}
+
+void ActionUpdateSystem::DelayedDeleteActions()
+{
+	Vector<ActionComponent*>::iterator end = deleteActions.end();
+	for(Vector<ActionComponent*>::iterator it = deleteActions.begin(); it != end; ++it)
+	{
+		Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), *it);
+
+		if(i != activeActions.end())
+		{
+			activeActions.erase(i);
+		}
+	}
+
+	deleteActions.clear();
 }
 	
 void ActionUpdateSystem::Watch(ActionComponent* component)
@@ -93,12 +112,7 @@ void ActionUpdateSystem::Watch(ActionComponent* component)
 
 void ActionUpdateSystem::UnWatch(ActionComponent* component)
 {
-	Vector<ActionComponent*>::iterator i = std::find(activeActions.begin(), activeActions.end(), component);
-	
-	if(i != activeActions.end())
-	{
-		activeActions.erase(i);
-	}
+	deleteActions.push_back(component);
 }
 	
 }

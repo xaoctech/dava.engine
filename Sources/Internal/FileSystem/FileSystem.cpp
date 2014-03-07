@@ -348,19 +348,20 @@ uint32 FileSystem::DeleteDirectoryFiles(const FilePath & path, bool isRecursive)
 File *FileSystem::CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes)
 {
 #if defined(__DAVAENGINE_ANDROID__)
-    if(frameworkPath.GetType() == FilePath::PATH_IN_RESOURCES)
+    if (frameworkPath.GetType() == FilePath::PATH_IN_RESOURCES &&
+        frameworkPath.GetAbsolutePathname().size() &&
+        frameworkPath.GetAbsolutePathname().c_str()[0] != '/')
     {
 #ifdef USE_LOCAL_RESOURCES
-		return File::CreateFromSystemPath(frameworkPath, attributes);
+        return File::CreateFromSystemPath(frameworkPath, attributes);
 #else
-		return APKFile::CreateFromAssets(frameworkPath, attributes);
+        return APKFile::CreateFromAssets(frameworkPath, attributes);
 #endif
     }
-	else
-	{
-		return File::CreateFromSystemPath(frameworkPath, attributes);
-	}
-    
+    else
+    {
+        return File::CreateFromSystemPath(frameworkPath, attributes);
+    }
 #else //#if defined(__DAVAENGINE_ANDROID__)
 	return File::CreateFromSystemPath(frameworkPath, attributes);
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -418,13 +419,18 @@ bool FileSystem::SetCurrentWorkingDirectory(const FilePath & newWorkingDirectory
   
 bool FileSystem::IsFile(const FilePath & pathToCheck)
 {
+#if defined(__DAVAENGINE_ANDROID__)
+	const String& path = pathToCheck.GetAbsolutePathname();
+	if (IsAPKPath(path))
+		return (fileSet.find(path) != fileSet.end());
+#endif
 	struct stat s;
- 	if(stat(pathToCheck.GetAbsolutePathname().c_str(),&s) == 0)
+	if(stat(pathToCheck.GetAbsolutePathname().c_str(),&s) == 0)
 	{
 		return (0 != (s.st_mode & S_IFREG));
 	}
 
-    return false;
+ 	return false;
 }
 
 bool FileSystem::IsDirectory(const FilePath & pathToCheck)
@@ -433,7 +439,12 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 #if defined (__DAVAENGINE_WIN32__)
 	DWORD stats = GetFileAttributesA(pathToCheck.GetAbsolutePathname().c_str());
 	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
-#else //#if defined (__DAVAENGINE_WIN32__)
+#else //defined (__DAVAENGINE_WIN32__)
+#if defined(__DAVAENGINE_ANDROID__)
+	const String& path = pathToCheck.GetAbsolutePathname();
+	if (IsAPKPath(path))
+		return (dirSet.find(path) != dirSet.end());
+#endif //#if defined(__DAVAENGINE_ANDROID__)
 
 	struct stat s;
 	if(stat(pathToCheck.GetAbsolutePathname().c_str(), &s) == 0)
@@ -441,7 +452,7 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 		return (0 != (s.st_mode & S_IFDIR));
 	}
 #endif //#if defined (__DAVAENGINE_WIN32__)
-    
+
 	return false;
 }
 
@@ -607,7 +618,43 @@ int32 FileSystem::Spawn(const String& command)
 	return retCode;
 }
 
-    
+#if defined(__DAVAENGINE_ANDROID__)
+
+Set<String> FileSystem::dirSet;
+Set<String> FileSystem::fileSet;
+
+bool FileSystem::IsAPKPath(const String& path) const
+{
+	if (!path.empty() && path.c_str()[0] == '/')
+		return false;
+	return true;
+}
+
+void FileSystem::Init()
+{
+	YamlParser* parser = YamlParser::Create("~res:/fileSystem.yaml");
+	if (parser)
+	{
+		const YamlNode* node = parser->GetRootNode();
+		const YamlNode* dirList = node->Get("dirList");
+		if (dirList)
+		{
+			const Vector<YamlNode*> vec = dirList->AsVector();
+			for (uint32 i = 0; i < vec.size(); ++i)
+				dirSet.insert(vec[i]->AsString());
+		}
+		const YamlNode* fileList = node->Get("fileList");
+		if (fileList)
+		{
+			const Vector<YamlNode*> vec = fileList->AsVector();
+			for (uint32 i = 0; i < vec.size(); ++i)
+				fileSet.insert(vec[i]->AsString());
+		}
+	}
+	SafeRelease(parser);
+}
+#endif
+
 }
 
 

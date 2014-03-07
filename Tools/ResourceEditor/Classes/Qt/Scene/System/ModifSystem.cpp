@@ -321,15 +321,10 @@ void EntityModificationSystem::BeginModification(const EntityGroup &entities)
 
 	if(entities.Size() > 0)
 	{
+        modifEntities.reserve(entities.Size());
 		for(size_t i = 0; i < entities.Size(); ++i)
 		{
 			DAVA::Entity *en = entities.GetEntity(i);
-
-			if(NULL == en)
-			{
-				en = entities.GetEntity(i);
-			}
-
 			if(NULL != en)
 			{
 				EntityToModify etm;
@@ -360,8 +355,12 @@ void EntityModificationSystem::BeginModification(const EntityGroup &entities)
 			}
 		}
 
+		// remember current selection pivot point
+		SceneSelectionSystem *selectionSystem = ((SceneEditor2 *)GetScene())->selectionSystem;
+		modifPivotPoint = selectionSystem->GetPivotPoint();
+
 		// center of this bbox will modification center, common for all entities
-		modifEntitiesCenter = entities.GetCommonBbox().GetCenter();
+		modifEntitiesCenter = entities.GetCommonZeroPos();
 
 		// prepare translation matrix's, used before and after rotation
 		moveToZeroPosRelativeCenter.CreateTranslation(-modifEntitiesCenter);
@@ -382,6 +381,8 @@ void EntityModificationSystem::BeginModification(const EntityGroup &entities)
 		case ST_AXIS_Z:
 			rotateAround = DAVA::Vector3(0, 0, 1);
 			break;
+                
+            default: break;
 		}
 
 		// 2d axis projection we are rotating around
@@ -405,10 +406,6 @@ void EntityModificationSystem::BeginModification(const EntityGroup &entities)
 		// so calculate this normal
 		rotateNormal = DAVA::Vector2(-rotateAxis.y, rotateAxis.x);
 		rotateNormal.Normalize();
-
-		// remember current selection pivot point
-		SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
-		modifPivotPoint = selectionSystem->GetPivotPoint();
 	}
 }
 
@@ -607,6 +604,7 @@ DAVA::Vector3 EntityModificationSystem::Move(const DAVA::Vector3 &newPos3d)
 		modifPosWithLocedAxis.z = newPos3d.z;
 		modifPosWithLocedAxis.y = newPos3d.y;
 		break;
+    default: break;
 	}
 
 	moveOffset = modifPosWithLocedAxis - modifStartPos3d;
@@ -746,10 +744,12 @@ void EntityModificationSystem::CloneBegin()
 {
 	if(modifEntities.size() > 0)
 	{
+        clonedEntities.reserve(modifEntities.size());
 		for(size_t i = 0; i < modifEntities.size(); ++i)
 		{
 			DAVA::Entity *origEntity = modifEntities[i].entity;
 			DAVA::Entity *newEntity = origEntity->Clone();
+            newEntity->SetLocalTransform(modifEntities[i].originalTransform);
 
 			origEntity->GetParent()->AddNode(newEntity);
 
@@ -763,7 +763,6 @@ void EntityModificationSystem::CloneEnd()
 	if(modifEntities.size() > 0 && clonedEntities.size() == modifEntities.size())
 	{
 		SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
-		StructureSystem *structureSystem = sceneEditor->structureSystem;
 		SceneSelectionSystem *selectionSystem = sceneEditor->selectionSystem;
 
 		selectionSystem->Clear();

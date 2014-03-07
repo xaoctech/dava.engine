@@ -118,20 +118,6 @@ void AutotestingSystem::OnInit()
 
 String AutotestingSystem::GetDeviceName()
 { 
-	/*
-	if (AUTOTESTING_PLATFORM_NAME == "Windows")
-	{
-		return "pc";
-	}
-	else if (AUTOTESTING_PLATFORM_NAME == "MacOS")
-	{
-		return "macbook";
-	}
-	else
-	{
-		return Format("%s", DeviceInfo::GetName());
-	}
-	*/
 	if (AUTOTESTING_PLATFORM_NAME == "Android")
 	{
 		return DeviceInfo::GetModel();
@@ -397,10 +383,10 @@ void AutotestingSystem::Draw()
         for(Map<int32, UIEvent>::iterator it = touches.begin(); it != touches.end(); ++it)
         {
             Vector2 point = it->second.point;
-            RenderHelper::Instance()->DrawCircle(point, 25.0f);
+            RenderHelper::Instance()->DrawCircle(point, 25.0f, RenderState::RENDERSTATE_2D_BLEND);
         }
     }
-    RenderHelper::Instance()->DrawCircle(GetMousePosition(), 15.0f);
+    RenderHelper::Instance()->DrawCircle(GetMousePosition(), 15.0f, RenderState::RENDERSTATE_2D_BLEND);
 }
 
 void AutotestingSystem::OnTestsSatrted()

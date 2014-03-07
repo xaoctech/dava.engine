@@ -47,7 +47,8 @@ void TextBlockGraphicsRender::Prepare()
 	TextBlockRender::Prepare();
 	
 	isPredrawed = false;
-	sprite = Sprite::CreateAsRenderTarget(textBlock->cacheFinalW, textBlock->cacheFinalH, FORMAT_RGBA8888);
+    DVASSERT(FALSE);
+	sprite = Sprite::CreateAsRenderTarget(textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy, FORMAT_RGBA8888);
 	if (sprite && sprite->GetTexture())
 	{
 		if (!textBlock->isMultilineEnabled)
