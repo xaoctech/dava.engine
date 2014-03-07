@@ -132,10 +132,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetTextureState(dfFont->GetTextureHandler());
-
-    //RenderManager::Instance()->SetRenderEffect(shader);
 	RenderManager::Instance()->SetShader(shader);
-	
     RenderManager::Instance()->SetRenderData(renderObject);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
@@ -145,7 +142,6 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
     shader->SetUniformValueByIndex(idx, 0);
     idx = shader->FindUniformIndexByName(smoothingUniform);
     shader->SetUniformValueByIndex(idx, dfFont->GetSpread());
-    //shader->SetUniformValueByIndex(idx, 0.5f);
     idx = shader->FindUniformIndexByName(colorUniform);
     shader->SetUniformColor4ByIndex(idx, textColor);
     
