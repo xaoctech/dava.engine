@@ -70,32 +70,11 @@ TextBlockDistanceRender::TextBlockDistanceRender(TextBlock* textBlock) :
 	if (shader == NULL)
 	{
         shader = ShaderCache::Instance()->Get(FastName("~res:/Shaders/Default/df_font"), FastNameSet());
-        //shader->Recompile();
-        
-        //shader = ShaderCache::Instance()->Get(FastName("~res:/Shaders/Default/df_font.shader")), FastNameSet();
-        
-		/*shader = new Shader();
-        
-		if (!shader->LoadFromYaml("~res:/Shaders/Default/df_font.shader"))
-		{
-			SafeRelease(shader);
-		}
-		shader->Recompile();*/
 	}
 	else
 	{
 		SafeRetain(shader);
 	}
-    
-    const RenderStateData& default3dState = RenderManager::Instance()->GetRenderStateData(RenderState::DEFAULT_3D_STATE_BLEND);
-    
-	RenderStateData renderStateData;
-	memcpy(&renderStateData, &default3dState, sizeof(renderStateData));
-	
-	renderStateData.depthFunc = CMP_LEQUAL;
-    renderStateData.sourceFactor = BLEND_SRC_ALPHA;
-    renderStateData.destFactor = BLEND_SRC_ALPHA;
-    renderState = RenderManager::Instance()->CreateRenderState(renderStateData);
 }
 	
 TextBlockDistanceRender::~TextBlockDistanceRender()
@@ -105,7 +84,6 @@ TextBlockDistanceRender::~TextBlockDistanceRender()
 	else
 		shader->Release(); // just decrease ref count
 
-    RenderManager::Instance()->ReleaseRenderState(renderState);
 	SafeRelease(renderObject);
 }
 	
@@ -113,20 +91,8 @@ void TextBlockDistanceRender::Prepare()
 {
 	charDrawed = 0;
 	renderRect = Rect(0, 0, 0, 0);
-	//DrawText();
+	DrawText();
     
-    charDrawed = 1;
-    renderRect = Rect(100, 100, 100, 100);
-    vertexBuffer[0].position = Vector3(0, 0, -100);
-    vertexBuffer[0].texCoord = Vector2(0, 0);
-    vertexBuffer[1].position = Vector3(100, 0, -100);
-    vertexBuffer[1].texCoord = Vector2(1, 0);
-    vertexBuffer[2].position = Vector3(100, 100, 100);
-    vertexBuffer[2].texCoord = Vector2(1, 1);
-    vertexBuffer[3].position = Vector3(0, 100, 100);
-    vertexBuffer[3].texCoord = Vector2(0, 1);
-
-	
 	if (charDrawed == 0)
 		return;
 	
@@ -170,44 +136,29 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	{
 		yOffset += Max(0.f, (textBlock->rectSize.dy - renderRect.dy) * 0.5f);
 	}
-
-    /*
-    Matrix4 modelView = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
-	Matrix4 translate = Matrix4::MakeTranslation(Vector3(xOffset, yOffset, 0));
-	Matrix4 newModelView = translate * modelView;
-	RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, newModelView);
-     */
-
-    /*eShaderSemantic a = PARAM_VIEW;
-    Matrix4* matrixWorlView = (Matrix4* )RenderManager::Instance()->GetDynamicParam(a);
-    Matrix4 translate = Matrix4::MakeTranslation(Vector3(xOffset, yOffset, 0));
-    Matrix4 newModelView = translate * *(matrixWorlView);
-    RenderManager::Instance()->SetDynamicParam(a, &newModelView, sizeof(Matrix4));*/
-
     
-    //RenderManager::Instance()->SetRenderState(RenderState::DEFAULT_2D_STATE_BLEND);
+    RenderManager::Instance()->PushDrawMatrix();
+    RenderManager::Instance()->SetDrawTranslate(Vector2(xOffset, yOffset));
+
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
-    //RenderManager::Instance()->SetRenderState(renderState);
-    
-    //RenderManager::Instance()->SetTexture(dfFont->GetTexture(), 0);
     RenderManager::Instance()->SetTextureState(dfFont->GetTextureHandler());
+    RenderManager::Instance()->SetRenderEffect(shader);
 	RenderManager::Instance()->SetShader(shader);
 	RenderManager::Instance()->SetRenderData(renderObject);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     
-    /*int32 idx = 0;
+    int idx;
     idx = shader->FindUniformIndexByName(textureUniform);
     shader->SetUniformValueByIndex(idx, 0);
-	idx = shader->FindUniformIndexByName(smoothingUniform);
+    idx = shader->FindUniformIndexByName(smoothingUniform);
     shader->SetUniformValueByIndex(idx, dfFont->GetSpread());
-	idx = shader->FindUniformIndexByName(colorUniform);
-    shader->SetUniformColor4ByIndex(idx, textColor);*/
-	
+    idx = shader->FindUniformIndexByName(colorUniform);
+    shader->SetUniformColor4ByIndex(idx, textColor);
+    
 	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, charDrawed * 6, EIF_16, this->indexBuffer);
-
-	//RenderManager::Instance()->SetMatrix(RenderManager::MATRIX_MODELVIEW, modelView);
-    //RenderManager::Instance()->SetDynamicParam(a, matrixWorlView, sizeof(Matrix4));
+    
+    RenderManager::Instance()->PopDrawMatrix();
 }
 	
 Size2i TextBlockDistanceRender::DrawTextSL(const WideString& drawText, int32 x, int32 y, int32 w)

@@ -911,6 +911,16 @@
 		C151B1B716D4FF6A00E09BAF /* MailSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B416D4FF6A00E09BAF /* MailSender.cpp */; };
 		C151B1B816D4FF6A00E09BAF /* MailSender.h in Headers */ = {isa = PBXBuildFile; fileRef = C151B1B516D4FF6A00E09BAF /* MailSender.h */; };
 		C151B1B916D4FF6A00E09BAF /* MailSenderMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */; };
+		C172EC0A18C9F1E9004309CF /* DFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0018C9F1E9004309CF /* DFFont.cpp */; };
+		C172EC0B18C9F1E9004309CF /* DFFont.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0118C9F1E9004309CF /* DFFont.h */; };
+		C172EC0C18C9F1E9004309CF /* TextBlockDistanceRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0218C9F1E9004309CF /* TextBlockDistanceRender.cpp */; };
+		C172EC0D18C9F1E9004309CF /* TextBlockDistanceRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0318C9F1E9004309CF /* TextBlockDistanceRender.h */; };
+		C172EC0E18C9F1E9004309CF /* TextBlockGraphicsRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0418C9F1E9004309CF /* TextBlockGraphicsRender.cpp */; };
+		C172EC0F18C9F1E9004309CF /* TextBlockGraphicsRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0518C9F1E9004309CF /* TextBlockGraphicsRender.h */; };
+		C172EC1018C9F1E9004309CF /* TextBlockRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0618C9F1E9004309CF /* TextBlockRender.cpp */; };
+		C172EC1118C9F1E9004309CF /* TextBlockRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0718C9F1E9004309CF /* TextBlockRender.h */; };
+		C172EC1218C9F1E9004309CF /* TextBlockSoftwareRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C172EC0818C9F1E9004309CF /* TextBlockSoftwareRender.cpp */; };
+		C172EC1318C9F1E9004309CF /* TextBlockSoftwareRender.h in Headers */ = {isa = PBXBuildFile; fileRef = C172EC0918C9F1E9004309CF /* TextBlockSoftwareRender.h */; };
 		C18577EE17A16DA800331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
 		C18577EF17A16DA800331A95 /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = C18577ED17A16DA800331A95 /* MaterialOptimazer.h */; };
 		C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */; };
@@ -2368,6 +2378,16 @@
 		C151B1B416D4FF6A00E09BAF /* MailSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MailSender.cpp; sourceTree = "<group>"; };
 		C151B1B516D4FF6A00E09BAF /* MailSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailSender.h; sourceTree = "<group>"; };
 		C151B1B616D4FF6A00E09BAF /* MailSenderMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailSenderMacOS.mm; sourceTree = "<group>"; };
+		C172EC0018C9F1E9004309CF /* DFFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DFFont.cpp; sourceTree = "<group>"; };
+		C172EC0118C9F1E9004309CF /* DFFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DFFont.h; sourceTree = "<group>"; };
+		C172EC0218C9F1E9004309CF /* TextBlockDistanceRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockDistanceRender.cpp; sourceTree = "<group>"; };
+		C172EC0318C9F1E9004309CF /* TextBlockDistanceRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockDistanceRender.h; sourceTree = "<group>"; };
+		C172EC0418C9F1E9004309CF /* TextBlockGraphicsRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockGraphicsRender.cpp; sourceTree = "<group>"; };
+		C172EC0518C9F1E9004309CF /* TextBlockGraphicsRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockGraphicsRender.h; sourceTree = "<group>"; };
+		C172EC0618C9F1E9004309CF /* TextBlockRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockRender.cpp; sourceTree = "<group>"; };
+		C172EC0718C9F1E9004309CF /* TextBlockRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockRender.h; sourceTree = "<group>"; };
+		C172EC0818C9F1E9004309CF /* TextBlockSoftwareRender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextBlockSoftwareRender.cpp; sourceTree = "<group>"; };
+		C172EC0918C9F1E9004309CF /* TextBlockSoftwareRender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBlockSoftwareRender.h; sourceTree = "<group>"; };
 		C18577EC17A16DA800331A95 /* MaterialOptimazer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialOptimazer.cpp; sourceTree = "<group>"; };
 		C18577ED17A16DA800331A95 /* MaterialOptimazer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialOptimazer.h; sourceTree = "<group>"; };
 		C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
@@ -3702,6 +3722,16 @@
 		E8989C1616BD24E400732C04 /* 2D */ = {
 			isa = PBXGroup;
 			children = (
+				C172EC0018C9F1E9004309CF /* DFFont.cpp */,
+				C172EC0118C9F1E9004309CF /* DFFont.h */,
+				C172EC0218C9F1E9004309CF /* TextBlockDistanceRender.cpp */,
+				C172EC0318C9F1E9004309CF /* TextBlockDistanceRender.h */,
+				C172EC0418C9F1E9004309CF /* TextBlockGraphicsRender.cpp */,
+				C172EC0518C9F1E9004309CF /* TextBlockGraphicsRender.h */,
+				C172EC0618C9F1E9004309CF /* TextBlockRender.cpp */,
+				C172EC0718C9F1E9004309CF /* TextBlockRender.h */,
+				C172EC0818C9F1E9004309CF /* TextBlockSoftwareRender.cpp */,
+				C172EC0918C9F1E9004309CF /* TextBlockSoftwareRender.h */,
 				E8989C1716BD24E400732C04 /* Font.cpp */,
 				E8989C1816BD24E400732C04 /* Font.h */,
 				E8989C1916BD24E400732C04 /* FontManager.cpp */,
@@ -4590,6 +4620,7 @@
 				E8989DB916BD24E500732C04 /* BaseObjectChecker.h in Headers */,
 				E8989DBA16BD24E500732C04 /* BaseTypes.h in Headers */,
 				E8989DBC16BD24E500732C04 /* Data.h in Headers */,
+				C172EC1318C9F1E9004309CF /* TextBlockSoftwareRender.h in Headers */,
 				E8989DBE16BD24E500732C04 /* DynamicObjectCache.h in Headers */,
 				E8989DC016BD24E500732C04 /* EventDispatcher.h in Headers */,
 				E8989DC116BD24E500732C04 /* Exception.h in Headers */,
@@ -4598,6 +4629,7 @@
 				E8989DC616BD24E500732C04 /* FixedSizePoolAllocator.h in Headers */,
 				E8989DC716BD24E500732C04 /* Hash.h in Headers */,
 				CC84B02B18211A9000934482 /* JobWaiter.h in Headers */,
+				C172EC0B18C9F1E9004309CF /* DFFont.h in Headers */,
 				E8989DC816BD24E500732C04 /* HashMap.h in Headers */,
 				E8989DC916BD24E500732C04 /* Introspection.h in Headers */,
 				E8989DCA16BD24E500732C04 /* IntrospectionBase.h in Headers */,
@@ -4691,6 +4723,7 @@
 				E8989E7D16BD24E500732C04 /* Sphere.h in Headers */,
 				E8989E7F16BD24E500732C04 /* Spline.h in Headers */,
 				E8989E8016BD24E500732C04 /* Vector.h in Headers */,
+				C172EC0F18C9F1E9004309CF /* TextBlockGraphicsRender.h in Headers */,
 				E8989E8116BD24E500732C04 /* BaseNetworkConnection.h in Headers */,
 				E8989E8316BD24E500732C04 /* BTNetworkConnection.h in Headers */,
 				E8989E8616BD24E500732C04 /* NetworkConnection.h in Headers */,
@@ -4850,6 +4883,7 @@
 				E898A02A16BD24E500732C04 /* UIPopup.h in Headers */,
 				E898A02C16BD24E500732C04 /* UIScreen.h in Headers */,
 				E898A02D16BD24E500732C04 /* UIScreenManager.h in Headers */,
+				C172EC1118C9F1E9004309CF /* TextBlockRender.h in Headers */,
 				E898A03516BD24E500732C04 /* UIScreenManagerMacOS.h in Headers */,
 				E898A03716BD24E500732C04 /* UIScreenTransition.h in Headers */,
 				E898A03916BD24E500732C04 /* UIScrollBar.h in Headers */,
@@ -4858,6 +4892,7 @@
 				5022951F186DD1BC00F55478 /* RenderPassManager.h in Headers */,
 				E898A03F16BD24E500732C04 /* UITextField.h in Headers */,
 				E898A04316BD24E500732C04 /* UIYamlLoader.h in Headers */,
+				C172EC0D18C9F1E9004309CF /* TextBlockDistanceRender.h in Headers */,
 				E898A04416BD24E500732C04 /* HTTPDownloader.h in Headers */,
 				5043DDAB18706828005E3584 /* VisibilityArray.h in Headers */,
 				7A169356180EE75A005F1FBC /* GameAPI.h in Headers */,
@@ -5808,6 +5843,7 @@
 				E8989DF416BD24E500732C04 /* DAVAEngine.cpp in Sources */,
 				E8989DF616BD24E500732C04 /* Backtrace.cpp in Sources */,
 				E8989DFB16BD24E500732C04 /* MemoryManager.cpp in Sources */,
+				C172EC0C18C9F1E9004309CF /* TextBlockDistanceRender.cpp in Sources */,
 				E8989DFD16BD24E500732C04 /* Replay.cpp in Sources */,
 				EA106063188921FC00CB99A3 /* ParticleRenderObject.cpp in Sources */,
 				E8989DFF16BD24E500732C04 /* Stats.cpp in Sources */,
@@ -5911,6 +5947,7 @@
 				E8989F4916BD24E500732C04 /* RenderManager.cpp in Sources */,
 				E8989F4C16BD24E500732C04 /* RenderManagerFactory.cpp in Sources */,
 				E8989F4D16BD24E500732C04 /* RenderManagerGL.cpp in Sources */,
+				C172EC0E18C9F1E9004309CF /* TextBlockGraphicsRender.cpp in Sources */,
 				E8989F4E16BD24E500732C04 /* RenderManagerGL20.cpp in Sources */,
 				E8989F5016BD24E500732C04 /* RenderOptions.cpp in Sources */,
 				E8989F5216BD24E500732C04 /* RenderResource.cpp in Sources */,
@@ -5938,6 +5975,7 @@
 				E8989F8C16BD24E500732C04 /* LodComponent.cpp in Sources */,
 				CC84B02218211A9000934482 /* JobQueue.cpp in Sources */,
 				E8989F8E16BD24E500732C04 /* ParticleEffectComponent.cpp in Sources */,
+				C172EC1218C9F1E9004309CF /* TextBlockSoftwareRender.cpp in Sources */,
 				E8989F9216BD24E500732C04 /* RenderComponent.cpp in Sources */,
 				E8989F9416BD24E500732C04 /* SwitchComponent.cpp in Sources */,
 				E8989F9616BD24E500732C04 /* TransformComponent.cpp in Sources */,
@@ -5969,6 +6007,7 @@
 				E8989FCD16BD24E500732C04 /* SkeletonNode.cpp in Sources */,
 				E8989FCF16BD24E500732C04 /* SpriteNode.cpp in Sources */,
 				E8989FD216BD24E500732C04 /* SwitchNode.cpp in Sources */,
+				C172EC0A18C9F1E9004309CF /* DFFont.cpp in Sources */,
 				E8989FD416BD24E500732C04 /* BaseProcessSystem.cpp in Sources */,
 				E8989FD616BD24E500732C04 /* DebugRenderSystem.cpp in Sources */,
 				5022951C186DD1BC00F55478 /* RenderPassManager.cpp in Sources */,
@@ -6014,6 +6053,7 @@
 				E898A03816BD24E500732C04 /* UIScrollBar.cpp in Sources */,
 				505EB40E1824CEC5009BEA3C /* OcclusionQuery.cpp in Sources */,
 				E898A03A16BD24E500732C04 /* UISlider.cpp in Sources */,
+				C172EC1018C9F1E9004309CF /* TextBlockRender.cpp in Sources */,
 				E898A03C16BD24E500732C04 /* UIStaticText.cpp in Sources */,
 				E898A03E16BD24E500732C04 /* UITextField.cpp in Sources */,
 				E898A04216BD24E500732C04 /* UIYamlLoader.cpp in Sources */,

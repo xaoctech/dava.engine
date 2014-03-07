@@ -33,6 +33,7 @@
 #include "Render/2D/Font.h"
 #include "Render/Shader.h"
 #include "Render/RenderDataObject.h"
+#include "Render/UniqueStateSet.h"
 
 namespace DAVA
 {
@@ -85,6 +86,10 @@ namespace DAVA
          \brief Get font texture
          */
         Texture* GetTexture();
+        /**
+         \brief Get font texture handler
+         */
+        UniqueHandle GetTextureHandler();
 
 		/**
 		 \brief Tests if two fonts are the same.
@@ -143,6 +148,7 @@ namespace DAVA
 		FilePath configPath;
 
         Texture* fontTexture;
+        UniqueHandle fontTextureHandler;
 	};
 }
 
