@@ -70,7 +70,7 @@ namespace DAVA
 	#define  GL_COMPRESSED_RGB_S3TC_DXT1_EXT    0
 #endif
 
-#if !defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
+#if !defined(GL_COMPRESSED_RGBA_S3TC_DXT1_EXT)
 	#define  GL_COMPRESSED_RGBA_S3TC_DXT1_EXT    0
 #endif
 
