@@ -53,7 +53,6 @@ static uint16* InitIndexBuffer()
 }
     
 uint16* TextBlockDistanceRender::indexBuffer = InitIndexBuffer();
-Shader* TextBlockDistanceRender::shader = NULL;
 	
 FastName TextBlockDistanceRender::textureUniform("texture0");
 FastName TextBlockDistanceRender::smoothingUniform("smoothing");
@@ -67,22 +66,13 @@ TextBlockDistanceRender::TextBlockDistanceRender(TextBlock* textBlock) :
 	
 	dfFont = (DFFont*)textBlock->font;
 	
-	if (shader == NULL)
-	{
-        shader = ShaderCache::Instance()->Get(FastName("~res:/Shaders/Default/df_font"), FastNameSet());
-	}
-	else
-	{
-		SafeRetain(shader);
-	}
+    shader = ShaderCache::Instance()->Get(FastName("~res:/Shaders/Default/df_font"), FastNameSet());
+    shader->Retain();
 }
 	
 TextBlockDistanceRender::~TextBlockDistanceRender()
 {
-	if (shader->GetRetainCount() == 1)
-		SafeRelease(shader); //release object and set shader to null
-	else
-		shader->Release(); // just decrease ref count
+	SafeRelease(shader); //release object and set shader to null
 
 	SafeRelease(renderObject);
 }
@@ -142,9 +132,11 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetTextureState(dfFont->GetTextureHandler());
-    RenderManager::Instance()->SetRenderEffect(shader);
+
+    //RenderManager::Instance()->SetRenderEffect(shader);
 	RenderManager::Instance()->SetShader(shader);
-	RenderManager::Instance()->SetRenderData(renderObject);
+	
+    RenderManager::Instance()->SetRenderData(renderObject);
 	RenderManager::Instance()->FlushState();
 	RenderManager::Instance()->AttachRenderData();
     
@@ -153,6 +145,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
     shader->SetUniformValueByIndex(idx, 0);
     idx = shader->FindUniformIndexByName(smoothingUniform);
     shader->SetUniformValueByIndex(idx, dfFont->GetSpread());
+    //shader->SetUniformValueByIndex(idx, 0.5f);
     idx = shader->FindUniformIndexByName(colorUniform);
     shader->SetUniformColor4ByIndex(idx, textColor);
     

@@ -61,7 +61,7 @@ private:
 	RenderDataObject* renderObject;
 	DFFont* dfFont;
 
-	static Shader* shader;
+    Shader* shader;
 	static uint16* indexBuffer;
 	DFFont::DFFontVertex vertexBuffer[DF_FONT_CACHE_SIZE * 4];
 	
