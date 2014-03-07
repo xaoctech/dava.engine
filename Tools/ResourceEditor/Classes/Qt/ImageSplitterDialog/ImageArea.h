@@ -27,32 +27,57 @@
 =====================================================================================*/
 
 
-#ifndef __CUBEMAP_UTILS_H__
-#define __CUBEMAP_UTILS_H__
+#ifndef __QT_IMAGE_AREA_H__
+#define __QT_IMAGE_AREA_H__
 
-#include "Base/BaseTypes.h"
-#include "FileSystem/FilePath.h"
-#include "Render/Highlevel/SkyboxRenderObject.h"
+#include <QLabel>
+#include "DAVAEngine.h"
 
-#define CUBEMAPEDITOR_FACE_PX 0
-#define CUBEMAPEDITOR_FACE_NX 1
-#define CUBEMAPEDITOR_FACE_PY 2
-#define CUBEMAPEDITOR_FACE_NY 3
-#define CUBEMAPEDITOR_FACE_PZ 4
-#define CUBEMAPEDITOR_FACE_NZ 5
+class QMimeData;
 
-class CubemapUtils
+class ImageArea : public QLabel
 {
+    Q_OBJECT
+    
 public:
-	
-	static void GenerateFaceNames(const DAVA::String& baseName, DAVA::Vector<DAVA::String>& faceNames);
-	
-	static int GetMaxFaces();
-	static int MapUIToFrameworkFace(int uiFace);
-	static int MapFrameworkToUIFace(int frameworkFace);
-	static const DAVA::String& GetFaceNameSuffix(int faceId);
-	static const DAVA::String& GetDefaultFaceExtension();
-	static DAVA::FilePath GetDialogSavedPath(const DAVA::String& key, const DAVA::String& defaultValue);
+    
+    ImageArea(QWidget *parent = 0);
+    
+    ~ImageArea();
+        
+    void SetImage(const DAVA::FilePath& filePath);
+
+    void SetImage(DAVA::Image* image);
+
+    inline DAVA::Image* GetImage() const;
+    
+    DAVA::Vector2 GetAcceptableSize() const;
+    
+public slots:
+    void clear();
+    void UpdatePreviewPicture();
+    
+    void SetAcceptableSize(const DAVA::Vector2& size);
+    
+signals:
+    
+    void changed();
+    
+protected:
+
+    void mousePressEvent(QMouseEvent * event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+        
+    void ConnectSignals();
+    
+    DAVA::Image* image;
+    DAVA::Vector2 acceptableSize;
 };
 
-#endif /* defined(__CUBEMAP_UTILS_H__) */
+inline DAVA::Image* ImageArea::GetImage() const
+{
+    return image;
+}
+
+#endif /* defined(__QT_IMAGE_AREA_H__) */
