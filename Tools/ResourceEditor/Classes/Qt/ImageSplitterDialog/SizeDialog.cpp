@@ -27,64 +27,62 @@
 =====================================================================================*/
 
 
+#include "SizeDialog.h"
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
-
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
-#include <QString>
-
-class QMimeData;
-class QStandardItem;
-class SceneEditor2;
-class MaterialItem;
-class Command2;
-class EntityGroup;
-struct TextureInfo;
-
-class MaterialModel: public QStandardItemModel
+SizeDialog::SizeDialog(QWidget *parent) :
+QDialog(parent)
 {
-    Q_OBJECT
+    verticalLayout = new QVBoxLayout(this);
     
-public:
-    MaterialModel(QObject *parent = 0);
-    virtual ~MaterialModel();
+    messageLbl = new QLabel(this);
+    messageLbl->setText("Set new size for image:");
+    verticalLayout->addWidget(messageLbl);
     
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-    MaterialItem* itemFromIndex(const QModelIndex & index) const;
+    horLayout = new QHBoxLayout(this);
+    
+    widthLbl = new QLabel(this);
+    widthLbl->setText("Width:");
+    
+    widthSpinBox = new QSpinBox(this);
+    widthSpinBox->setMinimum(1);
+    widthSpinBox->setMaximum(99999);
+    widthSpinBox->setSingleStep(1);
+    
+    heightLbl = new QLabel(this);
+    heightLbl->setText("Width:");
+    
+    heightSpinBox = new QSpinBox(this);
+    heightSpinBox->setMinimum(1);
+    heightSpinBox->setMaximum(99999);
+    heightSpinBox->setSingleStep(1);
+    
+    horLayout->addWidget(widthLbl);
+    horLayout->addWidget(widthSpinBox);
+    horLayout->addWidget(heightLbl);
+    horLayout->addWidget(heightSpinBox);
+    
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    
+    verticalLayout->addLayout(horLayout);
+    verticalLayout->addWidget(buttonBox);
+}
 
-    void SetScene(SceneEditor2 * scene);
-    SceneEditor2 *GetScene();
-	void SetSelection(const EntityGroup *group);
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
+SizeDialog::~SizeDialog()
+{
+    delete horLayout;
+    delete verticalLayout;
+    delete messageLbl;
+    delete widthLbl;
+    delete widthSpinBox;
+    delete heightLbl;
+    delete heightSpinBox;
+    delete buttonBox;
+}
 
-	void Sync();
-
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-
-protected:
-	SceneEditor2 *curScene;
-
-    static const int supportedLodColorsCount = 4;
-    static const int supportedSwColorsCount = 2;
-
-    QColor lodColors[supportedLodColorsCount];
-    QColor switchColors[supportedSwColorsCount];
-
-private:
-    void ReloadLodSwColors();
-    bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
-};
-
-
-Q_DECLARE_METATYPE(DAVA::NMaterial *)
-
-#endif // __MATERIALS_MODEL_H__
+DAVA::Vector2 SizeDialog::GetSize() const
+{
+    return DAVA::Vector2(widthSpinBox->value(), heightSpinBox->value());
+}

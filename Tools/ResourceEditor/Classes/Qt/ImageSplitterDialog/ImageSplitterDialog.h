@@ -27,27 +27,58 @@
 =====================================================================================*/
 
 
+#ifndef __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
+#define __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
 
-#ifndef __IMAGE_SPLITTER_H__
-#define __IMAGE_SPLITTER_H__
-
+#include <QDialog>
 #include "DAVAEngine.h"
 
-class ImageSplitter
-{
-public:
+#include <QtGui>
 
-    static bool SplitImage(const DAVA::FilePath &pathname, DAVA::Set<DAVA::String> &errorLog);
-    static bool MergeImages(const DAVA::FilePath &folder, DAVA::Set<DAVA::String> &errorLog);
+namespace Ui {
+class ImageSplitter;
+}
+
+class ImageArea;
+class ImageSplitterDialog : public QDialog
+{
+    Q_OBJECT
     
-private:
+public:
     
-    static void SaveImage(DAVA::Image *image, const DAVA::FilePath &pathname);
-    static DAVA::Image * LoadImage(const DAVA::FilePath &pathname);
+    explicit ImageSplitterDialog(QWidget *parent = 0);
     
-    static void ReleaseImages(DAVA::Image *r, DAVA::Image *g, DAVA::Image *b, DAVA::Image *a);
+    ~ImageSplitterDialog();
+    
+protected slots:
+    
+    void PathSelected(DAVA::String path);
+    
+    void ImageAreaChanged();
+    
+    void OnRestoreClicked();
+    
+    void OnSaveAsClicked(bool saveSplittedImages = false);
+    
+    void OnSaveClicked();
+    
+    void OnSaveChannelsClicked();
+    
+    void OnFillBtnClicked();
+    
+protected:
+    
+    void ConnectSignals();
+
+    void SetAcceptableImageSize(const DAVA::Vector2& newSize);
+    
+    void Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparately);
+    
+    Ui::ImageSplitter *ui;
+    
+    DAVA::Vector2 acceptableSize;
+    DAVA::String  lastSelectedFile;
+    DAVA::Vector<ImageArea*> rgbaControls;
 };
 
-
-
-#endif // __IMAGE_SPLITTER_H__
+#endif // __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__

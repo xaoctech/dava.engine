@@ -27,64 +27,57 @@
 =====================================================================================*/
 
 
+#ifndef __QT_IMAGE_AREA_H__
+#define __QT_IMAGE_AREA_H__
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
-
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
-#include <QString>
+#include <QLabel>
+#include "DAVAEngine.h"
 
 class QMimeData;
-class QStandardItem;
-class SceneEditor2;
-class MaterialItem;
-class Command2;
-class EntityGroup;
-struct TextureInfo;
 
-class MaterialModel: public QStandardItemModel
+class ImageArea : public QLabel
 {
     Q_OBJECT
     
 public:
-    MaterialModel(QObject *parent = 0);
-    virtual ~MaterialModel();
     
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-    MaterialItem* itemFromIndex(const QModelIndex & index) const;
+    ImageArea(QWidget *parent = 0);
+    
+    ~ImageArea();
+        
+    void SetImage(const DAVA::FilePath& filePath);
 
-    void SetScene(SceneEditor2 * scene);
-    SceneEditor2 *GetScene();
-	void SetSelection(const EntityGroup *group);
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
+    void SetImage(DAVA::Image* image);
 
-	void Sync();
-
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-
+    inline DAVA::Image* GetImage() const;
+    
+    DAVA::Vector2 GetAcceptableSize() const;
+    
+public slots:
+    void clear();
+    void UpdatePreviewPicture();
+    
+    void SetAcceptableSize(const DAVA::Vector2& size);
+    
+signals:
+    
+    void changed();
+    
 protected:
-	SceneEditor2 *curScene;
 
-    static const int supportedLodColorsCount = 4;
-    static const int supportedSwColorsCount = 2;
-
-    QColor lodColors[supportedLodColorsCount];
-    QColor switchColors[supportedSwColorsCount];
-
-private:
-    void ReloadLodSwColors();
-    bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
+    void mousePressEvent(QMouseEvent * event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+        
+    void ConnectSignals();
+    
+    DAVA::Image* image;
+    DAVA::Vector2 acceptableSize;
 };
 
+inline DAVA::Image* ImageArea::GetImage() const
+{
+    return image;
+}
 
-Q_DECLARE_METATYPE(DAVA::NMaterial *)
-
-#endif // __MATERIALS_MODEL_H__
+#endif /* defined(__QT_IMAGE_AREA_H__) */
