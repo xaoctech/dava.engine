@@ -118,7 +118,8 @@ void EditorParticlesSystem::Draw()
 			
 		// Draw additional effects according to emitter type
         DAVA::Matrix3 effectMatrix(selectedEffectEntity->GetWorldTransform());
-        DAVA::Vector3 center = selectedEmitter->position;
+        ParticleEffectComponent * effect = GetEffectComponent(selectedEffectEntity);
+        DAVA::Vector3 center =effect->GetSpawnPosition(effect->GetEmitterId(selectedEmitter));
         TransformPerserveLength(center, effectMatrix);
         center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();		
         

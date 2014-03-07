@@ -48,7 +48,7 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 {
     SetInputEnabled(false, false);
 	textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
-	background->SetAlign(ALIGN_TOP|ALIGN_LEFT);
+	background->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 	background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
 
 	shadowBg = new UIControlBackground();
@@ -291,13 +291,6 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 {
     YamlNode *node = UIControl::SaveToYamlNode(loader);
 
-    // Align has different default value for static text, so should be saved separately,
-    const YamlNode *alignNode = node->Get("align");
-    if (alignNode)
-    {
-        node->RemoveNodeFromMap("align");
-    }
-
 	UIStaticText *baseControl = new UIStaticText();	
 
     //Temp variable
@@ -351,12 +344,6 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	{
         node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
 	}
-
-    // Align
-    if (baseControl->GetSpriteAlign() != this->GetSpriteAlign())
-    {
-        node->SetNodeToMap("align", loader->GetAlignNodeValue(this->GetSpriteAlign()));
-    }
 
 	// Text Align
     if (baseControl->GetTextAlign() != this->GetTextAlign())
