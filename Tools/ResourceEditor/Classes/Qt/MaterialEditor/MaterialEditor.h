@@ -31,6 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <QDialog>
 #include <QtGui>
+#include <QPointer>
+#include <QStandardItemModel>
+
 #include "DAVAEngine.h"
 
 #include "Scene/SceneSignals.h"
@@ -88,6 +91,7 @@ private slots:
 
 private:
     void initActions();
+    void initTemplates();
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
@@ -96,6 +100,7 @@ private:
 
 	PropertyEditorStateHelper *treeStateHelper;
     ExpandMap expandMap;
+    QPointer< QStandardItemModel > templatesModel;
 };
 
 class MaterialEditorFogDialog : public QDialog

@@ -262,7 +262,7 @@ void QtPropertyModel::MergeProperty(QtPropertyData* data, QModelIndex const& par
 		QtPropertyData *parentData = itemFromIndexInternal(parent);
 		if(NULL != parentData)
 		{
-            parentData->MergeInChild(data);
+            parentData->MergeChild(data);
 		}
 	}
 }

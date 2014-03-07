@@ -242,8 +242,9 @@ bool QtPropertyData::UpdateValue(bool force)
 
 		if(UpdateValueInternal() || force)
 		{
-            curValue = QVariant();  // Clear
-			curValue = GetValue();  // Set
+            // We need to clear curValue, so GetValue will build new value, based on merged items
+            curValue = QVariant();  // Clear current cached value
+			curValue = GetValue();  // Forced update of value (with merged data)
 			EmitDataChanged(VALUE_SOURCE_CHANGED);
 
 			ret = true;
@@ -435,7 +436,7 @@ QtPropertyModel* QtPropertyData::GetModel() const
 	return model;
 }
 
-void QtPropertyData::MergeIn(QtPropertyData* data)
+void QtPropertyData::Merge(QtPropertyData* data)
 {
     DVASSERT( data );
 
@@ -448,18 +449,17 @@ void QtPropertyData::MergeIn(QtPropertyData* data)
 
     foreach ( QtPropertyData* childToMerge, data->childrenData )
     {
-        MergeInChild( childToMerge );
+        MergeChild( childToMerge );
     }
 
     // Do not free/delete
     data->childrenData.clear();
     data->childrenNames.clear();
 
-    UpdateValue();
-    // model->DataChanged( this, VALUE_SOURCE_CHANGED );    // Remove?
+    UpdateValue( true );
 }
 
-void QtPropertyData::MergeInChild( QtPropertyData* data, const QString& key )
+void QtPropertyData::MergeChild( QtPropertyData* data, const QString& key )
 {
     const QString childMergeName = key.isEmpty() ? data->curName : key;
     const int childIndex = childrenNames.indexOf( childMergeName );
@@ -471,7 +471,7 @@ void QtPropertyData::MergeInChild( QtPropertyData* data, const QString& key )
     {
         QtPropertyData *child = childrenData.at( childIndex );
         data->SetName( childMergeName );
-        child->MergeIn( data );
+        child->Merge( data );
     }
     else
     {
@@ -715,6 +715,11 @@ void QtPropertyData::ChildRemoveAll()
 			model->DataRemoved();
 		}
 	}
+}
+
+QList<QtPropertyData*> QtPropertyData::GetMergedData() const
+{
+    return mergedData;
 }
 
 int QtPropertyData::GetButtonsCount() const
