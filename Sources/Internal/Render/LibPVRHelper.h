@@ -37,7 +37,7 @@
 #include "FileSystem/FilePath.h"
 
 #include "Render/RenderBase.h"
-
+#include "Render/PixelFormatDescriptor.h"
 
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
     #include "PVRDefines.h"
@@ -173,8 +173,6 @@ protected:
 
 	static bool CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData);
     static bool AllocateImageData(Image *image, uint32 mipMapLevel, const PVRHeaderV3 &header);
-    
-    static bool IsCompressedFormatHardwareSupported(const PixelFormat formatID);
 };
     
 };

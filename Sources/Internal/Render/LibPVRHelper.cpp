@@ -38,6 +38,7 @@
 
 #include "Render/Image.h"
 #include "Render/ImageLoader.h"
+#include "Render/PixelFormatDescriptor.h"
 
 
 #if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
@@ -1730,7 +1731,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     uint64 PixelFormatPartHigh = pixelFormat&PVRTEX_PFHIGHMASK;
     
     //Check for a compressed format (The first 8 bytes will be 0, so the whole thing will be equal to the last 32 bits).
-    PixelFormatDescriptor formatDescriptor;
     if (PixelFormatPartHigh==0)
     {
         //Format and type == 0 for compressed textures.
@@ -1951,14 +1951,13 @@ bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
         return false;
     }
     
-    const RenderManager::Caps & deviceCaps = RenderManager::Instance()->GetCaps();
-    if ((FORMAT_RGBA16161616 == format.formatID) && !deviceCaps.isFloat16Supported)
+    if ((FORMAT_RGBA16161616 == format.formatID) && !format.isHardwareSupported)
     {
         Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_RGBA16161616 is unsupported");
         return false;
     }
     
-    if ((FORMAT_RGBA32323232 == format.formatID) && !deviceCaps.isFloat32Supported)
+    if ((FORMAT_RGBA32323232 == format.formatID) && !format.isHardwareSupported)
     {
         Logger::Error("[LibPVRHelper::IsFormatSupported] FORMAT_RGBA32323232 is unsupported");
         return false;
@@ -2303,7 +2302,7 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
     const PVRHeaderV3 & compressedHeader = pvrFile->header;
     uint8 * pTextureData = pvrFile->compressedData;
     
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
+    const PixelFormatDescriptor & formatDescriptor = PixelFormatDescriptor::GetPixelFormatDescriptor(GetTextureFormat(compressedHeader));
     if(!IsFormatSupported(formatDescriptor))
     {
         Logger::Error("[LibPVRHelper::LoadMipMapLevel] Unsupported format");
@@ -2327,7 +2326,7 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
 			image->cubeFaceID = (cubemapLayout & (0x0000000F << (faceIndex * 4))) >> (faceIndex * 4);
 		}
         
-        if(IsCompressedFormatHardwareSupported(formatID))
+        if(formatDescriptor.isHardwareSupported)
         {
             bool imageLoaded = CopyToImage(image, mipMapLevel, faceIndex, compressedHeader, pTextureData);
             if(!imageLoaded)
@@ -2388,52 +2387,6 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
     
     return true;
 }
-
-
-bool LibPVRHelper::IsCompressedFormatHardwareSupported(const PixelFormat formatID)
-{
-    const RenderManager::Caps & deviceCaps = RenderManager::Instance()->GetCaps();
-    switch (formatID)
-    {
-        case FORMAT_PVR4:
-        case FORMAT_PVR2:
-            return deviceCaps.isPVRTCSupported;
-        case FORMAT_PVR4_2:
-        case FORMAT_PVR2_2:
-            return deviceCaps.isPVRTC2Supported;
-
-        case FORMAT_ETC1:
-            return deviceCaps.isETCSupported;
-
-        case FORMAT_ETC2_RGB:
-        case FORMAT_ETC2_RGBA:
-        case FORMAT_ETC2_RGB_A1:
-            return deviceCaps.isETC2Supported;
-
-        case FORMAT_EAC_R11_SIGNED:
-        case FORMAT_EAC_R11_UNSIGNED:
-            return deviceCaps.isRFormatSupported;
-
-        case FORMAT_EAC_RG11_SIGNED:
-        case FORMAT_EAC_RG11_UNSIGNED:
-            return deviceCaps.isRGFormatSupported;
-
-        case FORMAT_RGBA8888:
-        case FORMAT_RGBA5551:
-        case FORMAT_RGBA4444:
-        case FORMAT_RGB888:
-        case FORMAT_RGB565:
-        case FORMAT_A8:
-        case FORMAT_A16:
-            return true;
-            
-        default:
-            break;
-    }
-    
-    return false;
-}
-
 
 };
 

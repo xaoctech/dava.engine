@@ -29,6 +29,7 @@
 
 #include "Image.h"
 #include "Render/Texture.h"
+#include "Render/PixelFormatDescriptor.h"
 
 namespace DAVA
 {
@@ -182,9 +183,7 @@ public:
 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
 		}else
 		{
-            Logger::Debug("Convert function not implemented for %s or %s",
-                          Texture::GetPixelFormatDescriptor(inFormat).name.c_str(),
-                          Texture::GetPixelFormatDescriptor(outFormat).name.c_str());
+            Logger::Debug("Convert function not implemented for %s or %s", PixelFormatDescriptor::GetPixelFormatString(inFormat), PixelFormatDescriptor::GetPixelFormatString(outFormat));
 		}
 	}
 
@@ -196,8 +195,8 @@ public:
 			if (destination)
 			{
 				ConvertDownscaleTwiceBillinear<uint32, uint32, UnpackRGBA8888, PackRGBA8888> convertFunc;
-				convertFunc(source->GetData(), source->GetWidth(), source->GetHeight(), source->GetWidth() * Texture::GetPixelFormatSizeInBytes(source->GetPixelFormat()),
-					destination->GetData(), destination->GetWidth(), destination->GetHeight(), destination->GetWidth() * Texture::GetPixelFormatSizeInBytes(destination->GetPixelFormat()));
+				convertFunc(source->GetData(), source->GetWidth(), source->GetHeight(), source->GetWidth() * PixelFormatDescriptor::GetPixelFormatSizeInBytes(source->GetPixelFormat()),
+					destination->GetData(), destination->GetWidth(), destination->GetHeight(), destination->GetWidth() * PixelFormatDescriptor::GetPixelFormatSizeInBytes(destination->GetPixelFormat()));
 			}
 			return destination;
 		}
