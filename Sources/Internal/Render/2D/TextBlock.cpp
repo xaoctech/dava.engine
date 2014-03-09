@@ -560,6 +560,10 @@ void TextBlock::Prepare()
 							{
 								yMul = (drawSize.y * 0.95f) / textSize.dy;
 							}
+                            if (yMul == 1.0f)
+                            {
+                                yMul = 1.05f;
+                            }
 						}
 					}
 					
