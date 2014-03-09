@@ -102,7 +102,7 @@ varying lowp float varDiffuseColor;
     varying lowp float varSpecularColor;
     #elif defined(NORMALIZED_BLINN_PHONG)
     varying lowp vec3 varSpecularColor;
-    varying float varNdotH;
+    varying lowp float varNdotH;
     #endif
 #endif
 
@@ -292,11 +292,11 @@ void main()
     vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
     vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
     float specularity = inSpecularity;
-    
-	varDiffuseColor = NdotL / _PI;
-    
+
     float Dbp = NdotL;
     float Geo = 1.0 / LdotH * LdotH;
+    
+	varDiffuseColor = NdotL / _PI;
     
     varSpecularColor = Dbp * Geo * fresnelOut * specularity;
     varNdotH = NdotH;

@@ -22,6 +22,16 @@ precision highp float;
 #define mediump
 #endif
 
+
+#if !defined(VIEW_AMBIENT) && !defined(VIEW_DIFFUSE) && !defined(VIEW_SPECULAR) && !defined(VIEW_ALBEDO)
+#define VIEW_AMBIENT
+#define VIEW_DIFFUSE
+#define VIEW_SPECULAR
+#define VIEW_ALBEDO
+#endif
+
+
+
 //#define ALPHABLEND
 //#define FLATCOLOR
 //#define VERTEX_FOG
@@ -89,7 +99,7 @@ varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
 #elif defined(NORMALIZED_BLINN_PHONG)
 varying lowp vec3 varSpecularColor;
-varying float varNdotH;
+varying lowp float varNdotH;
 #endif
 #endif
 
@@ -311,7 +321,7 @@ void main()
 #else
     // Kwasi normalization :-)
     // compute diffuse lighting
-    vec3 normalizedHalf =normalize(varHalfVec);
+    vec3 normalizedHalf = normalize(varHalfVec);
     
     float NdotL = max (dot (normal, varToLightVec), 0.0);
     float NdotH = max (dot (normal, normalizedHalf), 0.0);
@@ -322,7 +332,7 @@ void main()
 #if defined(NORMALIZED_BLINN_PHONG)
     vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
     vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
-    float specularity = inSpecularity;
+    float specularity = inSpecularity * textureColor0.a;
     float glossiness = inGlossiness * textureColor0.a;
     float glossPower = pow(5000.0, glossiness); //textureColor0.a;
     
@@ -466,10 +476,10 @@ void main()
     vec3 fresnelRefl = FresnelShlickVec3(NdotV, metalFresnelReflectance);
 
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
-    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * normal);
-    lowp vec4 reflectionColor = textureCubeLod(cubemap, reflectionVectorInWorldSpace, (1.0 - 0.5) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    //gl_FragColor.rgb += reflectionColor.rgb * specularity;//* textureColor0.rgb;
-    gl_FragColor.rgb += reflectionColor.rgb * textureColor0.rgb;
+    mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
+    lowp vec4 reflectionColor = textureCubeLod(cubemap, reflectionVectorInWorldSpace, (1.0 - glossiness) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;//* textureColor0.rgb;
+    //gl_FragColor.rgb += reflectionColor.rgb * textureColor0.rgb;
 #endif
 #endif
     
