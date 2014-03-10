@@ -1421,7 +1421,7 @@ void QtMainWindow::OnAddSkybox()
     tc0.coords[3] = Vector2(0.0f, 0.5f);
     
     TextureSheetCell tc1;
-    tc1.geometryId = 1;
+    tc1.geometryId = 0;
     tc1.coords[0] = Vector2(0.5f, 0.0f);
     tc1.coords[1] = Vector2(1.0f, 0.0f);
     tc1.coords[2] = Vector2(1.0f, 0.5f);
@@ -1430,17 +1430,23 @@ void QtMainWindow::OnAddSkybox()
     TextureSheetCell tc2;
     tc2.geometryId = 0;
     tc2.coords[0] = Vector2(0.0f, 0.5f);
-    tc2.coords[1] = Vector2(1.0f, 0.5f);
-    tc2.coords[2] = Vector2(1.0f, 1.0f);
+    tc2.coords[1] = Vector2(0.5f, 0.5f);
+    tc2.coords[2] = Vector2(0.5f, 1.0f);
     tc2.coords[3] = Vector2(0.0f, 1.0f);
 
+    TextureSheetCell tc3;
+    tc3.geometryId = 1;
+    tc3.coords[0] = Vector2(0.5f, 0.5f);
+    tc3.coords[1] = Vector2(1.0f, 0.5f);
+    tc3.coords[2] = Vector2(1.0f, 1.0f);
+    tc3.coords[3] = Vector2(0.5f, 1.0f);
     
     TextureSheet ts;
     ts.SetTexture(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex"));
     ts.cells.push_back(tc0);
     ts.cells.push_back(tc1);
     ts.cells.push_back(tc2);
-    ts.cells.push_back(tc2);
+    ts.cells.push_back(tc3);
     
     DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png")[0];
     
@@ -1452,7 +1458,7 @@ void QtMainWindow::OnAddSkybox()
     vro->SetTextureSheet(ts);
     vro->SetHeightmap(heightmap);
     vro->SetVegetationMap(vegMap);
-    vro->SetLightmap(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/d_colormap.tex"));
+    vro->SetLightmap(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/d_colormap_l.tex"));
     vro->SetWorldSize(DAVA::Vector3(600, 600, 100));
 
     RenderComponent* rc = new RenderComponent();

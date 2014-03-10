@@ -128,15 +128,20 @@ private:
     {
         int16 x;
         int16 y;
+        int16 width;
+        int16 height;
+        
         AABBox3 bbox;
-        uint32 cellDescription;
-        Vector3 refPoint;
+        //Vector3 refPoint;
         float32 cameraDistance;
         uint8 clippingPlane;
         
         inline SpatialData();
         inline SpatialData& operator=(const SpatialData& src);
         inline bool IsEmpty(uint32 cellValue) const;
+        inline bool IsRenderable() const;
+        inline int16 GetResolutionId() const;
+        inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
     };
     
     void BuildVegetationBrush(uint32 maxClusters);
@@ -145,7 +150,7 @@ private:
 
     bool IsValidData() const;
     
-    Vector2 GetVegetationUnitWorldSize() const;
+    Vector2 GetVegetationUnitWorldSize(float32 resolution) const;
     
     void BuildSpatialStructure(VegetationMap* vegMap);
     void BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
@@ -161,11 +166,7 @@ private:
                               uint8 planeMask,
                               AbstractQuadTreeNode<SpatialData>* node,
                               Vector<SpatialData*>& cellList);
-    void AddAllVisibleCells(const Vector3& cameraPoint,
-                            AbstractQuadTreeNode<SpatialData>* node,
-                            Vector<SpatialData*>& cellList);
-    inline void AddVisibleCell(const Vector3& cameraPoint,
-                               SpatialData* data,
+    inline void AddVisibleCell(SpatialData* data,
                                float32 refDistance,
                                uint32 cellValue,
                                Vector<SpatialData*>& cellList);
@@ -183,7 +184,7 @@ private:
     TextureSheet textureSheet;
     uint32 clusterLimit;
     Vector3 worldSize;
-    Vector2 unitWorldSize;
+    Vector<Vector2> unitWorldSize;
     Vector2 heightmapScale;
     Vector2 heightmapToVegetationMapScale;
     uint16 halfWidth;
@@ -193,6 +194,7 @@ private:
     int32 renderBatchPoolLine;
     
     NMaterial* vegetationMaterial;
+    Vector<Matrix4> shaderScaleDensityParams;
     
     Vector<PolygonGroup*> clusterBrushes;
     
@@ -264,7 +266,6 @@ inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
 inline VegetationRenderObject::SpatialData::SpatialData()  :
         x(-1),
         y(-1),
-        cellDescription(0),
         cameraDistance(0.0f),
         clippingPlane(0)
 {
@@ -275,30 +276,43 @@ inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData:
     x = src.x;
     y = src.y;
     bbox = src.bbox;
-    cellDescription = src.cellDescription;
     cameraDistance = src.cameraDistance;
-    refPoint = src.refPoint;
+    //refPoint = src.refPoint;
     clippingPlane = src.clippingPlane;
+    width = src.width;
+    height = src.height;
     
     return *this;
 }
 
 inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue) const
 {
-    return (0 == (cellValue & 0x0F0F0F00));
+    return (0 == (cellValue & 0x0F0F0F0F));
+}
+
+inline bool VegetationRenderObject::SpatialData::IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const
+{
+    uint32 refResolution = ((x * y) % maxResolutions);
+    return (refResolution >= resolutionId);
+}
+
+inline bool VegetationRenderObject::SpatialData::IsRenderable() const
+{
+    return (width > 0 && height > 0);
+}
+
+inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
+{
+    return (width * height);
 }
     
-inline void VegetationRenderObject::AddVisibleCell(const Vector3& cameraPoint,
-                                                   SpatialData* data,
+inline void VegetationRenderObject::AddVisibleCell(SpatialData* data,
                                                    float32 refDistance,
                                                    uint32 cellValue,
                                                    Vector<SpatialData*>& cellList)
 {
-    if(!data->IsEmpty(cellValue))
+        //if(!data->IsEmpty(cellValue))
     {
-        Vector3 cameraVector = cameraPoint - data->refPoint;
-        data->cameraDistance = cameraVector.SquareLength();
-        
         if(data->cameraDistance <= refDistance)
         {
                 //Logger::FrameworkDebug("VegetationRenderObject::AddVisibleCell x = %d, y = %d", data->x, data->y);
