@@ -254,6 +254,7 @@
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
@@ -271,6 +272,7 @@
     <addaction name="actionTextureConverter"/>
     <addaction name="actionMaterialEditor"/>
     <addaction name="actionCubemapEditor"/>
+    <addaction name="actionImageSplitter"/>
     <addaction name="separator"/>
     <addaction name="actionShowSettings"/>
    </widget>
@@ -673,14 +675,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
-   <addaction name="actionGrasEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
    <addaction name="actionCustomColorsEditor"/>
    <addaction name="actionVisibilityCheckTool"/>
+   <addaction name="separator"/>
+   <addaction name="actionGrasEditor"/>
   </widget>
   <widget class="QDockWidget" name="dockLandscapeEditorControls">
    <property name="windowTitle">
@@ -1788,10 +1790,28 @@
    </property>
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/land_gras.png</normaloff>:/QtIcons/land_gras.png</iconset>
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
    </property>
    <property name="text">
     <string>GrasEditor</string>
+   </property>
+  </action>
+  <action name="actionImageSplitter">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/image_splitter.png</normaloff>:/QtIcons/image_splitter.png</iconset>
+   </property>
+   <property name="text">
+    <string>ImageSplitter</string>
+   </property>
+  </action>
+  <action name="actionAddVegetation">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vegetation</string>
    </property>
   </action>
  </widget>
