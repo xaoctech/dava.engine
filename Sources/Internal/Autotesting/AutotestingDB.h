@@ -73,7 +73,7 @@ public:
 	String ReadState(const String & device);
 	String ReadCommand(const String & device);
 
-
+	void SetTestStarted();
 protected:
 	MongodbClient *dbClient;
 
