@@ -83,7 +83,6 @@ SkyboxRenderObject * GetSkybox(const Entity * fromEntity)
     
     return NULL;
 }
-   
 
 ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 {

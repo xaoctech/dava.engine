@@ -79,9 +79,12 @@ inline AbstractQuadTreeNode<T>::AbstractQuadTreeNode()
 template<typename T>
 inline AbstractQuadTreeNode<T>::~AbstractQuadTreeNode()
 {
-    for(uint32 i = 0; i < 4; ++i)
+    if(!IsTerminalLeaf())
     {
-        SafeDelete(children[i]);
+        for(uint32 i = 0; i < 4; ++i)
+        {
+            SafeDelete(children[i]);
+        }
     }
     
     SafeDeleteArray(children);
