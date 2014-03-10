@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/grass.png</file>
     <file>QtIcons/layer_invisible.png</file>
     <file>QtIcons/layer_visible.png</file>
     <file>QtIcons/land_gras.png</file>
