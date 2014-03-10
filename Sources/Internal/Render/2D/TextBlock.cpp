@@ -351,7 +351,7 @@ void TextBlock::Prepare()
                     }
                 }
             }
-            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx))
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx) && (requestedSize.x >= 0))
             {
                 Size2i textSizePoints;
                 int32 length = (int32)text.length();
