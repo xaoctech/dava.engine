@@ -362,20 +362,20 @@ void NMaterial::Save(KeyedArchive * archive,
 		it != textures.end();
 		++it)
 	{
-		if ((it->second->GetTexture() != NULL)&&(!IsRuntimeTexture(it->first)))
+
+		if (IsRuntimeTexture(it->first))
+			continue;
+
+		String texturePath = it->second->GetPath().GetRelativePathname(serializationContext->GetScenePath());
+		if(texturePath.size() > 0)
+
 		{
-			String texturePath = it->second->GetPath().GetRelativePathname(serializationContext->GetScenePath());
-			
-			if(texturePath.size() > 0)
-			{
-				materialTextures->SetString(it->first.c_str(),
-											texturePath);
-			}
-			else
-			{
-				Logger::FrameworkDebug("[NMaterial::Save] Material '%s' has empty texture '%s'! Skipping...", materialName.c_str(), it->first.c_str());
-			}
+			materialTextures->SetString(it->first.c_str(), texturePath);
 		}
+// 		else
+// 		{
+// 			Logger::FrameworkDebug("[NMaterial::Save] Material '%s' has empty texture '%s'! Skipping...", materialName.c_str(), it->first.c_str());
+// 		}
 	}
 	archive->SetArchive("textures", materialTextures);
 	SafeRelease(materialTextures);
