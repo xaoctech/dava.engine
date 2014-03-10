@@ -27,64 +27,32 @@
 =====================================================================================*/
 
 
+#ifndef __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
+#define __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
 
-#ifndef __MATERIALS_MODEL_H__
-#define __MATERIALS_MODEL_H__
+#include "DAVAEngine.h"
+#include <QtGui>
 
-#include "Render/Material/NMaterial.h"
-
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
-#include <QString>
-
-class QMimeData;
-class QStandardItem;
-class SceneEditor2;
-class MaterialItem;
-class Command2;
-class EntityGroup;
-struct TextureInfo;
-
-class MaterialModel: public QStandardItemModel
+class SizeDialog : public QDialog
 {
-    Q_OBJECT
-    
 public:
-    MaterialModel(QObject *parent = 0);
-    virtual ~MaterialModel();
     
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-    MaterialItem* itemFromIndex(const QModelIndex & index) const;
-
-    void SetScene(SceneEditor2 * scene);
-    SceneEditor2 *GetScene();
-	void SetSelection(const EntityGroup *group);
-    DAVA::NMaterial * GetMaterial(const QModelIndex & index) const;
-	QModelIndex GetIndex(DAVA::NMaterial *material, const QModelIndex &parent = QModelIndex()) const;
-
-	void Sync();
-
-    // drag and drop support
-	QMimeData *	mimeData(const QModelIndexList & indexes) const;
-	QStringList	mimeTypes() const;
-	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-	bool dropCanBeAccepted(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-
-protected:
-	SceneEditor2 *curScene;
-
-    static const int supportedLodColorsCount = 4;
-    static const int supportedSwColorsCount = 2;
-
-    QColor lodColors[supportedLodColorsCount];
-    QColor switchColors[supportedSwColorsCount];
-
+    explicit SizeDialog(QWidget *parent = 0);
+    
+    ~SizeDialog();
+    
+    DAVA::Vector2 GetSize() const;
+    
 private:
-    void ReloadLodSwColors();
-    bool SetItemSelection( MaterialItem *item, const EntityGroup *group );
+    
+    QVBoxLayout *verticalLayout;
+    QLabel* messageLbl;
+    QHBoxLayout *horLayout;
+    QLabel* widthLbl;
+    QSpinBox* widthSpinBox;
+    QLabel* heightLbl;
+    QSpinBox* heightSpinBox;
+    QDialogButtonBox* buttonBox;
 };
 
-
-Q_DECLARE_METATYPE(DAVA::NMaterial *)
-
-#endif // __MATERIALS_MODEL_H__
+#endif /* defined(__QT_IMAGE_SPLITTER_SIZE_DIALOG_H__) */

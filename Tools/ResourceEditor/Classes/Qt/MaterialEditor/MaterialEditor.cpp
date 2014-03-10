@@ -642,8 +642,6 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 			}
 		}
 	}
-
-	ui->materialTree->Update();
 }
 
 void MaterialEditor::OnSwitchQuality(bool checked)
