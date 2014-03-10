@@ -245,7 +245,7 @@ VegetationRenderObject::VegetationRenderObject() :
     vegetationMaterial = NMaterial::CreateMaterial(FastName("Vegetation_Material"),
                                                            NMaterialName::GRASS,
                                                            NMaterial::DEFAULT_QUALITY_NAME);
-    
+    vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -368,17 +368,16 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                 int32 mapX = spatialData->x + halfWidth;
                 int32 mapY = spatialData->y + halfHeight;
                 uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
-                
-                uint32 vegetationMapValue = *(((uint32*)vegetationMap->data) + cellDescriptionIndex);
-                //uint32 vegetationMapValue = 0xFFFFFFFF;
+
+                uint8 *vegetationMapValuePtr = (vegetationMap->data + cellDescriptionIndex * 4);
                 
                 for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
                 {
-                    uint32 cellLayerData = 0x000000FF & (vegetationMapValue >> ((MAX_CLUSTER_TYPES - clusterType - 1) * 8));
-                    
-                    float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0x0000000F)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
-                    float32 density = (1.0f * (cellLayerData & 0x0000000F)) + 1.0f; //step function uses "<" so we need to emulate "<="
-                    
+                    uint8 cellLayerData = vegetationMapValuePtr[clusterType];
+            
+                    float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0xF)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
+                    float32 density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
+	                    
                     scaleDensityMap._data[DENSITY_ROW_INDEX][clusterType] = density;
                     scaleDensityMap._data[SCALE_ROW_INDEX][clusterType] = distanceScale * RESOLUTION_DISTANCE_SCALE_COMPENSATION[resolutionIndex] * clusterScale;
                 }
@@ -793,7 +792,6 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
         float32 heightmapHeight = SampleHeight(mapX, mapY);
         node->data.bbox.AddPoint(Vector3(x * unitWorldSize[0].x, y * unitWorldSize[0].y, (heightmapHeight - 0.5f)));
         node->data.bbox.AddPoint(Vector3((x + width) * unitWorldSize[0].x, (y + height) * unitWorldSize[0].y, (heightmapHeight + 0.5f)));
-        //node->data.refPoint = node->data.bbox.GetCenter();
         
         parentBox.AddPoint(node->data.bbox.min);
         parentBox.AddPoint(node->data.bbox.max);
@@ -807,8 +805,6 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
         BuildSpatialQuad(node->children[1], x + cellHalfWidth, y, cellHalfWidth, cellHalfHeight, node->data.bbox);
         BuildSpatialQuad(node->children[2], x, y + cellHalfHeight, cellHalfWidth, cellHalfHeight, node->data.bbox);
         BuildSpatialQuad(node->children[3], x + cellHalfWidth, y + cellHalfHeight, cellHalfWidth, cellHalfHeight, node->data.bbox);
-        
-        //node->data.refPoint = node->data.bbox.GetCenter();
         
         parentBox.AddPoint(node->data.bbox.min);
         parentBox.AddPoint(node->data.bbox.max);
@@ -925,7 +921,6 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
     
     heightmapScale = Vector2((1.0f * heightmap->Size()) / pow2Size,
                              (1.0f * heightmap->Size()) / pow2Size);
-    //heightmapScale = Vector2(1.0f, 1.0f);
     
     vegetationMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, tx);
     vegetationMaterial->SetPropertyValue(UNIFORM_HEIGHTMAP_SCALE, Shader::UT_FLOAT_VEC2, 1, heightmapScale.data);
@@ -949,6 +944,60 @@ float32 VegetationRenderObject::SampleHeight(int16 x, int16 y)
     float32 height = ((float32)heightmapValue / (float32)Heightmap::MAX_VALUE) * worldSize.z;
     
     return height;
+}
+
+void TextureSheet::Load(const FilePath &yamlPath)
+{
+    if(yamlPath.Exists())
+    {
+        YamlParser *parser = YamlParser::Create(yamlPath);
+        YamlNode *rootNode = parser->GetRootNode();
+
+        cells.clear();
+
+        if(NULL != rootNode)
+        {
+            for(int i = 0; i < rootNode->GetCount(); ++i)
+            {
+                if(rootNode->GetItemKeyName(i) == "cell")
+                {
+                    const YamlNode *cellNode = rootNode->Get(i);
+                    const YamlNode *cellType = cellNode->Get("type");
+                    const YamlNode *cellScale = cellNode->Get("scale");
+                    const YamlNode *cellCoords = cellNode->Get("coords");
+
+                    TextureSheetCell c;
+
+                    if(NULL != cellType)
+                    {
+                        c.geometryId = cellType->AsUInt32();
+                    }
+
+                    if(NULL != cellScale)
+                    {
+                        c.geometryScale = cellScale->AsVector2();
+                    }
+
+                    for(int j = 0; j < cellCoords->GetCount(); ++j)
+                    {
+                        if(j < MAX_CELL_TEXTURE_COORDS)
+                        {
+                            const YamlNode *singleCellCoord = cellCoords->Get(j);
+                            c.coords[j] = singleCellCoord->AsVector2();
+                        }
+                        else
+                        {
+                            DVASSERT(0 && "Too much vertexes");
+                        }
+                    }
+
+                    cells.push_back(c);
+                }
+            }
+        }
+
+        parser->Release();
+    }
 }
 
 };

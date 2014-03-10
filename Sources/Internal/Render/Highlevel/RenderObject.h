@@ -77,8 +77,8 @@ public:
         TYPE_CUSTOM_DRAW,       // Custom drawn object
 		TYPE_SPRITE,			// Sprite Node
 		TYPE_PARTICLE_EMTITTER,  // Particle Emitter
-        TYPE_VEGETATION,
-		TYPE_SKYBOX
+		TYPE_SKYBOX,
+        TYPE_VEGETATION
     };
     
 	enum eFlags
@@ -166,6 +166,7 @@ public:
     int32 GetLodIndex();
     int32 GetSwitchIndex();
     int32 GetMaxLodIndex() const;
+    int32 GetMaxLodIndexForSwitchIndex(int32 forSwitchIndex) const;
     int32 GetMaxSwitchIndex() const;
 
 	uint8 startClippingPlane;

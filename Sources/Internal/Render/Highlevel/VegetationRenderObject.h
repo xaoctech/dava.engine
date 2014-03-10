@@ -74,11 +74,12 @@ public:
     
     inline void SetTexture(Texture* tx);
     inline Texture* GetTexture() const;
-    
+
     inline TextureSheet& operator=(const TextureSheet& src);
+
+    void Load(const FilePath &yamlPath);
     
 private:
-    
     Texture* texture;
 };
 
@@ -311,7 +312,7 @@ inline void VegetationRenderObject::AddVisibleCell(SpatialData* data,
                                                    uint32 cellValue,
                                                    Vector<SpatialData*>& cellList)
 {
-        //if(!data->IsEmpty(cellValue))
+    if(!data->IsEmpty(cellValue))
     {
         if(data->cameraDistance <= refDistance)
         {
