@@ -531,6 +531,31 @@ namespace DAVA
 
 		Logger::Debug("AutotestingSystem::WriteString finish");
 	}
+	
+	// auxiliary methods
+	void AutotestingDB::SetTestStarted()
+	{
+		Logger::Debug("AutotestingSystem::SetTestStarted Test%3d:%s", AutotestingSystem::Instance()->testIndex, AutotestingSystem::Instance()->testName.c_str());
+
+		MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
+		KeyedArchive* currentRunArchive = FindRunArchive(dbUpdateObject, "autotesting_system");
+
+		KeyedArchive* deviceArchive;
+		String result;
+
+		deviceArchive = currentRunArchive->GetArchive(AutotestingSystem::Instance()->deviceName);
+		if (deviceArchive)
+		{
+			deviceArchive->SetString("started", "1");
+		}
+		else
+		{
+			AutotestingSystem::Instance()->ForceQuit(Format("Couldn't find archive for %s device", AutotestingSystem::Instance()->deviceName));
+		}
+		
+		AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
+		SafeRelease(dbUpdateObject);
+	}
 }
 
 #endif //__DAVAENGINE_AUTOTESTING__

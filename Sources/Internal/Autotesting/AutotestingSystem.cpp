@@ -272,6 +272,7 @@ void AutotestingSystem::OnTestStart(const String &_testName)
     SafeRelease(dbUpdateObject);
     
     AutotestingDB::Instance()->Log("DEBUG", Format("OnTestStart %s", testName.c_str()));
+	AutotestingDB::Instance()->SetTestStarted();
 }
 
 void AutotestingSystem::OnStepStart(const String &stepName)
