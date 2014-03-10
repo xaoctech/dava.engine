@@ -152,7 +152,7 @@ uniform vec2 tex0ShiftPerSecond;
 uniform vec4 tilePos;
 uniform vec3 worldSize;
 
-uniform mat4 clusterScaleDensityMap;
+uniform mat4 clusterScaleDensityMap[16];
 
 uniform sampler2D detail;
 
@@ -205,6 +205,18 @@ void main()
     
     #if defined(MATERIAL_GRASS)
     
+        //inTangent.y - cluster type (0...3)
+        //inTangent.z - cluster's reference density (0...15)
+    
+        //clusterScaleDensityMap[0] - density
+        //clusterScaleDensityMap[1] - scale
+    
+    
+        vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
+                                  inBinormal.y + tilePos.y,
+                                  inBinormal.z,
+                                  inPosition.w);
+    
         vec4 pos = vec4(inPosition.x + tilePos.x,
                         inPosition.y + tilePos.y,
                         inPosition.z,
@@ -212,26 +224,20 @@ void main()
     
         vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
                         clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
-        hUV = hUV * heightmapScale;
+    
+        hUV = vec2(clamp(hUV.x * heightmapScale.x, 0.0, 1.0),
+                   clamp(hUV.y * heightmapScale.y, 0.0, 1.0));
     
         float height = texture2DLod(detail, hUV, 0.0).a * worldSize.z;
     
         pos.z += height;
-    
-        vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
-                                  inBinormal.y + tilePos.y,
-                                  inBinormal.z + height,
-                                  pos.w);
-    
-        //inTangent.y - cluster type (0...3)
-        //inTangent.z - cluster's reference density (0...15)
-    
-        //clusterScaleDensityMap[0] - density
-        //clusterScaleDensityMap[1] - scale
+        clusterCenter.z += height;
     
         int clusterType = int(inTangent.y);
+        int vertexTileIndex = int(inTangent.x);
+        //int vertexTileIndex = 0;
     
-        pos = mix(clusterCenter, pos, clusterScaleDensityMap[1][clusterType] * step(inTangent.z, clusterScaleDensityMap[0][clusterType]));
+        pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * step(inTangent.z, clusterScaleDensityMap[vertexTileIndex][0][clusterType]));
     
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;
