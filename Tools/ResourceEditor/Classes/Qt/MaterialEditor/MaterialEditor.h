@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DAVAEngine.h"
 
+#include "MaterialTemplateModel.h"
 #include "Scene/SceneSignals.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 #include "DockProperties/PropertyEditorStateHelper.h"
@@ -93,6 +94,8 @@ private:
     void initActions();
     void initTemplates();
 
+    void setTemplatePlaceholder( const QString& text );
+
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 
@@ -100,7 +103,7 @@ private:
 
 	PropertyEditorStateHelper *treeStateHelper;
     ExpandMap expandMap;
-    QPointer< QStandardItemModel > templatesModel;
+    QPointer< MaterialTemplateModel > templatesFilterModel;
 };
 
 class MaterialEditorFogDialog : public QDialog

@@ -1896,6 +1896,12 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\MaterialEditor\MaterialTemplateModel.cpp">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialTemplateModel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3346,6 +3352,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\MaterialEditor\MaterialTemplateModel.h">
+      <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

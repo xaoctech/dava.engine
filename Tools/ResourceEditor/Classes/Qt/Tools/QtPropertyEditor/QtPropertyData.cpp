@@ -29,8 +29,6 @@
 #include "QtPropertyData.h"
 #include "QtPropertyDataValidator.h"
 
-#include <QDebug>
-
 QtPropertyData::QtPropertyData()
 	: curFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable)
 	, parent(NULL)
@@ -183,7 +181,6 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 
     updatingValue = true;
 
-    qDebug() << "Merged count: " << mergedData.count();
     foreach ( QtPropertyData *merged, mergedData )
     {
         QtPropertyDataValidator *mergedValidator = merged->validator;
@@ -439,13 +436,10 @@ QtPropertyModel* QtPropertyData::GetModel() const
 void QtPropertyData::Merge(QtPropertyData* data)
 {
     DVASSERT( data );
+    DVASSERT( this->MetaInfo() == data->MetaInfo() );
 
     data->parent = NULL;
     mergedData << data;
-
-    qDebug() << "Source name: " << GetName();
-    qDebug() << "Merged count: " << mergedData.size();
-    qDebug() << "Merge with: " << data->GetName();
 
     foreach ( QtPropertyData* childToMerge, data->childrenData )
     {
@@ -461,11 +455,12 @@ void QtPropertyData::Merge(QtPropertyData* data)
 
 void QtPropertyData::MergeChild( QtPropertyData* data, const QString& key )
 {
+    DVASSERT( data );
+
     const QString childMergeName = key.isEmpty() ? data->curName : key;
     const int childIndex = childrenNames.indexOf( childMergeName );
-    const bool needMerge = childIndex >= 0;
-
-    qDebug() << "Merge: " << needMerge << " index: " << childIndex;
+    const QtPropertyData* child = childrenData.value( childIndex );
+    const bool needMerge = ( child ? ( child->MetaInfo() == data->MetaInfo() ) : false );
 
     if ( needMerge )
     {

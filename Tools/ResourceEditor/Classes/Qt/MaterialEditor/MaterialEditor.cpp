@@ -56,7 +56,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
-, templatesModel( NULL )
+, templatesFilterModel( NULL )
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -101,7 +101,6 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
     expandMap[MaterialFilteringModel::SHOW_INSTANCES_AND_MATERIALS] = true;
 
     initActions();
-    initTemplates();
 }
 
 MaterialEditor::~MaterialEditor()
@@ -135,12 +134,10 @@ void MaterialEditor::initActions()
 
 void MaterialEditor::initTemplates()
 {
-    if ( templatesModel )
-    {
-        templatesModel->deleteLater();
-    }
+    if ( templatesFilterModel )
+        return ;
 
-    templatesModel = new QStandardItemModel( this );
+    QStandardItemModel *templatesModel = new QStandardItemModel( this );
 
     const QVector<ProjectManager::AvailableMaterialTemplate> *templates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
     QStandardItem *emptyItem = new QStandardItem( QString() );
@@ -151,9 +148,20 @@ void MaterialEditor::initTemplates()
         QStandardItem *item = new QStandardItem();
         item->setText( templates->at(i).name );
         item->setData( templates->at(i).path );
+        templatesModel->appendRow( item );
     }
 
-    ui->templateBox->setModel( templatesModel );
+    templatesFilterModel = new MaterialTemplateModel( this );
+    templatesFilterModel->setSourceModel( templatesModel );
+
+    ui->templateBox->setModel( templatesFilterModel );
+}
+
+void MaterialEditor::setTemplatePlaceholder( const QString& text )
+{
+    QAbstractItemModel *model = ui->templateBox->model();
+    const QModelIndex index = model->index( 0, 0 );
+    model->setData( index, text, Qt::DisplayRole );
 }
 
 void MaterialEditor::autoExpand()
@@ -511,69 +519,79 @@ void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *> materials)
 
 void MaterialEditor::FillMaterialTemplates(QList<DAVA::NMaterial *> materials)
 {
+    initTemplates();
+
     const int nMaterials = materials.count();
     bool enableTemplate = ( nMaterials > 0 );
+    bool isTemplatesSame = true;
+    int rowToSelect = -1;
+    const QString curMaterialTemplate = ( nMaterials > 0 ) ? materials[0]->GetMaterialTemplate()->name.c_str() : QString();
+    QString placeHolder;
 
-    if(enableTemplate)
+    if ( nMaterials > 0 )
     {
-        int indexToSet = -1;
-        const QString curMaterialTemplate = materials[0]->GetMaterialTemplate()->name.c_str();
-        bool isTemplatesSame = true;
-        
-        for ( int i = 1; i < nMaterials; i++ )
+        for ( int i = 0; i < nMaterials; i++ )
         {
-            if ( curMaterialTemplate != materials[0]->GetMaterialTemplate()->name.c_str() )
+            DAVA::NMaterial *material = materials[i];
+            // Test template name
+            if ( isTemplatesSame && (curMaterialTemplate != material->GetMaterialTemplate()->name.c_str()) )
             {
                 isTemplatesSame = false;
+            }
+            // Test material flags
+            if( material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_MATERIAL ||
+               (material->GetNodeGlags() & DAVA::DataNode::NodeRuntimeFlag) )
+            {
+                enableTemplate = false;
+            }
+            if ( !isTemplatesSame && !enableTemplate )
+                break;
+        }
+
+        if ( !isTemplatesSame )
+            enableTemplate = false;
+    }
+
+    if ( nMaterials !=  1)
+        enableTemplate = false;
+
+    if ( isTemplatesSame )
+    {
+        QAbstractItemModel *model = ui->templateBox->model();
+        const int n = model->rowCount();
+        const int pathRole = Qt::UserRole + 1; // Default role for QStandardItem::setData
+        for ( int i = 0; i < n; i++ )
+        {
+            const QModelIndex index = model->index( i, 0 );
+            if ( index.data( pathRole ).toString() == curMaterialTemplate )
+            {
+                rowToSelect = i;
                 break;
             }
         }
+    }
 
-        //for(int i = 0; i < ui->templateBox->count(); ++i)
-        //{
-        //    if(curMaterialTemplate == ui->templateBox->itemData(i).toString())
-        //    {
-        //        indexToSet = i;
-        //        break;
-        //    }
-        //}
+    const bool isTemplateFound = (rowToSelect != -1);
 
-        //if(-1 != indexToSet)
-        //{
-        //    ui->templateBox->setCurrentIndex(indexToSet);
-        //    ui->templateBox->setItemText(0, "");
-        //}
-        //else
-        //{
-        //    // add template path to the name
-        //    ui->templateBox->setCurrentIndex(0);
-        //    ui->templateBox->setItemText(0, "NON-ASSIGNABLE: " + curMaterialTemplate);
-        //}
-
-        //// enable template selection only for real materials, not instances
-        //// but don't allow to change template for runtime materials
-        //if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL &&
-        //    material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
-        //{
-        //    ui->templateBox->setEnabled(true);
-        //}
-        //else
-        //{
-        //    ui->templateBox->setEnabled(false);
-        //}
+    if ( isTemplatesSame )
+    {
+        if ( !isTemplateFound )
+        {
+            placeHolder = QString( "NON-ASSIGNABLE: %1" ).arg( curMaterialTemplate );
+            rowToSelect = 0;
+        }
     }
     else
     {
-        enableTemplate = false;
+        if ( nMaterials > 0 )
+        {
+            placeHolder = QString( "Different templates selected" );    // TODO: fix text?
+            rowToSelect = 0;
+        }
     }
-
-
-    if ( !enableTemplate )
-    {
-        ui->templateBox->setCurrentIndex(0);
-        ui->templateBox->setItemText(0, "");
-        ui->templateBox->setEnabled(false);
-    }
+    setTemplatePlaceholder( placeHolder );
+    ui->templateBox->setCurrentIndex( rowToSelect );
+    ui->templateBox->setEnabled( enableTemplate );
 }
 
 void MaterialEditor::OnAddProperty()
@@ -691,8 +709,6 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
             }
             const bool usebatch = (commands.count() > 1);
 
-            qDebug() << "Exec commands: " << commands.count();
-
             SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
             if ( curScene )
             {
@@ -712,8 +728,6 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
                     curScene->EndBatch();
                 }
             }
-
-            qDebug() << "Done";
 		}
 	}
 
