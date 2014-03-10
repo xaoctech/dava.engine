@@ -61,9 +61,6 @@ public:
     void SetCurrentLayer(uint8 layer);
     uint8 GetCurrentLayer() const;
 
-    void SetBrushType(uint8 type);
-    uint8 GetBrushType() const;
-
     void SetBrushHeight(uint8 height);
     uint8 GetBrushHeight() const;
 

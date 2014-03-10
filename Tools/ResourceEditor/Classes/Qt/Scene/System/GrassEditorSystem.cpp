@@ -85,16 +85,22 @@ void GrassEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
                     {
                         inDrawState = true;
                         affectedArea.Empty();
-                        affectedArea.AddPoint(curCursorPos);
-                        DrawGrass(curCursorPos);
+                        if(curCursorPos.x >= 0 && curCursorPos.y >= 0)
+                        {
+                            affectedArea.AddPoint(curCursorPos);
+                            DrawGrass(curCursorPos);
+                        }
                     }
 				    break;
 
 			    case UIEvent::PHASE_DRAG:
                     if(inDrawState)
                     {
-                        affectedArea.AddPoint(curCursorPos);
-                        DrawGrass(curCursorPos);
+                        if(curCursorPos.x >= 0 && curCursorPos.y >= 0)
+                        {
+                            affectedArea.AddPoint(curCursorPos);
+                            DrawGrass(curCursorPos);
+                        }
                     }
 				    break;
 
@@ -118,8 +124,8 @@ void GrassEditorSystem::ProcessCommand(const Command2 *command, bool redo)
         if(cmdId == CMDID_IMAGE_REGION_COPY)
         {
             ImageRegionCopyCommand* imCmd = (ImageRegionCopyCommand *) command;
+            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
 
-            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width - 1, imCmd->pos.y + imCmd->orig->height - 1)));
             ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
         }
     }
@@ -138,7 +144,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                 DAVA::VegetationRenderObject *veg = SearchVegetation(GetScene());
                 curVegetation = SafeRetain(veg);
 
-                if(NULL != veg && NULL !=veg->GetVegetationMap())
+                if(NULL != veg && NULL != veg->GetVegetationMap())
                 {
                     isEnabled = true;
                     ret = true;
@@ -235,7 +241,7 @@ bool GrassEditorSystem::IsLayerVisible(uint8 layer) const
 
 void GrassEditorSystem::SetCurrentLayer(uint8 layer)
 {
-    DVASSERT(layer < 3);
+    DVASSERT(layer < 4);
 
     curLayer = layer;
 }
@@ -245,28 +251,20 @@ uint8 GrassEditorSystem::GetCurrentLayer() const
     return curLayer;
 }
 
-void GrassEditorSystem::SetBrushType(uint8 type)
-{
-    curBrush |= ((type & 0x3) << 6);
-}
-
-uint8 GrassEditorSystem::GetBrushType() const
-{
-    return ((curBrush >> 6) & 0x3);
-}
-
 void GrassEditorSystem::SetBrushHeight(uint8 height)
 {
-    curBrush |= ((height & 0x3) << 4);
+    curBrush &= 0xf;
+    curBrush |= ((height & 0xf) << 4);
 }
 
 uint8 GrassEditorSystem::GetBrushHeight() const
 {
-    return ((curBrush >> 4) & 0x3);
+    return ((curBrush >> 4) & 0xf);
 }
 
 void GrassEditorSystem::SetBrushDensity(uint8 density)
 {
+    curBrush &= 0xf0;
     curBrush |= (density & 0xf);
 }
 
@@ -295,12 +293,10 @@ void GrassEditorSystem::DrawGrassEnd()
     {
         SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 
-        DAVA::Rect affectedRect = affectedArea.GetRect();
+        DAVA::Rect2i affectedRect2i = affectedArea.GetRect2i();
+        DAVA::Rect affectedRect = DAVA::Rect(affectedRect2i.x, affectedRect2i.y, affectedRect2i.dx, affectedRect2i.dy);
         DAVA::Image *orig = DAVA::Image::CopyImageRegion(vegetationMapCopy, affectedRect);
         sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, orig));
-
-        //BuildGrassCopy(affectedArea);
-        //ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
     }
 }
 
@@ -314,7 +310,9 @@ void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)
         }
         else
         {
-            DAVA::Rect r = area.GetRect();
+            DAVA::Rect2i r2i = area.GetRect2i();
+            DAVA::Rect r(r2i.x, r2i.y, r2i.dx, r2i.dy);
+
             vegetationMapCopy->InsertImage(vegetationMap, r.GetPosition(), r);
         }
     }
