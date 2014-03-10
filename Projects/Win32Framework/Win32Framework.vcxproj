@@ -538,6 +538,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.h" />
@@ -930,6 +931,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\BaseProcessSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\DebugRenderSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\EventSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\GlobalEventSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LightUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\LodSystem.cpp" />
