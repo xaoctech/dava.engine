@@ -69,18 +69,9 @@ public:
     
     Vector<TextureSheetCell> cells;
     
-    inline TextureSheet();
-    inline ~TextureSheet();
-    
-    inline void SetTexture(Texture* tx);
-    inline Texture* GetTexture() const;
-
     inline TextureSheet& operator=(const TextureSheet& src);
 
     void Load(const FilePath &yamlPath);
-    
-private:
-    Texture* texture;
 };
 
 class VegetationRenderObject : public RenderObject
@@ -103,21 +94,23 @@ public:
     void SetHeightmapPath(const FilePath& path);
 
     void SetVegetationMap(VegetationMap* map);
+    void SetVegetationMap(const FilePath& path);
     VegetationMap* GetVegetationMap() const;
     void SetVegetationMapPath(const FilePath& path);
     const FilePath& GetVegetationMapPath() const;
     
-    void SetLightmap(Texture* lightmapTexture);
+    void SetLightmap(const FilePath& filePath);
     Texture* GetLightmap() const;
-    void SetLightmapPath(const FilePath& lightmapPath);
     const FilePath& GetLightmapPath() const;
     
-    void SetTextureSheet(const TextureSheet& sheet);
     const TextureSheet& GetTextureSheet() const;
-    void SetTextureSheetPath(const FilePath& path);
+    void SetTextureSheet(const FilePath& path);
     const FilePath& GetTextureSheetPath() const;
     
-    void SetClusterLimit(uint32 maxClusters);
+    void SetVegetationTexture(const FilePath& texture);
+    const FilePath& GetVegetationTexture() const;
+    
+    void SetClusterLimit(const uint32& maxClusters);
     uint32 GetClusterLimit() const;
     
     void SetWorldSize(const Vector3 size);
@@ -129,24 +122,30 @@ private:
     {
         int16 x;
         int16 y;
+        int16 width;
+        int16 height;
+        
         AABBox3 bbox;
-        uint32 cellDescription;
-        Vector3 refPoint;
+        //Vector3 refPoint;
         float32 cameraDistance;
         uint8 clippingPlane;
         
         inline SpatialData();
         inline SpatialData& operator=(const SpatialData& src);
         inline bool IsEmpty(uint32 cellValue) const;
+        inline bool IsRenderable() const;
+        inline int16 GetResolutionId() const;
+        inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
     };
     
     void BuildVegetationBrush(uint32 maxClusters);
     RenderBatch* GetRenderBatchFromPool(NMaterial* material);
     void ReturnToPool(int32 batchCount);
 
-    bool IsValidData() const;
+    bool IsValidGeometryData() const;
+    bool IsValidSpatialData() const;
     
-    Vector2 GetVegetationUnitWorldSize() const;
+    Vector2 GetVegetationUnitWorldSize(float32 resolution) const;
     
     void BuildSpatialStructure(VegetationMap* vegMap);
     void BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
@@ -162,11 +161,7 @@ private:
                               uint8 planeMask,
                               AbstractQuadTreeNode<SpatialData>* node,
                               Vector<SpatialData*>& cellList);
-    void AddAllVisibleCells(const Vector3& cameraPoint,
-                            AbstractQuadTreeNode<SpatialData>* node,
-                            Vector<SpatialData*>& cellList);
-    inline void AddVisibleCell(const Vector3& cameraPoint,
-                               SpatialData* data,
+    inline void AddVisibleCell(SpatialData* data,
                                float32 refDistance,
                                uint32 cellValue,
                                Vector<SpatialData*>& cellList);
@@ -177,6 +172,8 @@ private:
     
     float32 SampleHeight(int16 x, int16 y);
     
+    void UpdateVegetationSetup();
+    
 private:
     
     Heightmap* heightmap;
@@ -184,7 +181,7 @@ private:
     TextureSheet textureSheet;
     uint32 clusterLimit;
     Vector3 worldSize;
-    Vector2 unitWorldSize;
+    Vector<Vector2> unitWorldSize;
     Vector2 heightmapScale;
     Vector2 heightmapToVegetationMapScale;
     uint16 halfWidth;
@@ -194,6 +191,7 @@ private:
     int32 renderBatchPoolLine;
     
     NMaterial* vegetationMaterial;
+    Vector<Matrix4> shaderScaleDensityParams;
     
     Vector<PolygonGroup*> clusterBrushes;
     
@@ -203,6 +201,17 @@ private:
     FilePath heightmapPath;
     FilePath vegetationMapPath;
     FilePath textureSheetPath;
+    
+public:
+    
+    INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
+                         PROPERTY("density", "Base density", GetClusterLimit, SetClusterLimit, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("densityMap", "Density map", GetVegetationMapPath, SetVegetationMap, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmap, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("textureSheet", "Texture sheet", GetTextureSheetPath, SetTextureSheet, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("vegetationTexture", "vegetation texture", GetVegetationTexture, SetVegetationTexture, I_SAVE | I_EDIT | I_VIEW)
+                         );
+    
 };
     
     
@@ -225,32 +234,8 @@ inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src
     return *this;
 }
     
-inline TextureSheet::TextureSheet() : texture(NULL)
-{
-}
-    
-inline TextureSheet::~TextureSheet()
-{
-    SafeRelease(texture);
-}
-    
-inline void TextureSheet::SetTexture(Texture* tx)
-{
-    if(tx != texture)
-    {
-        SafeRelease(texture);
-        texture = SafeRetain(tx);
-    }
-}
-
-inline Texture* TextureSheet::GetTexture() const
-{
-    return texture;
-}
-    
 inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
 {
-    SetTexture(src.texture);
     cells.resize(src.cells.size());
     
     size_t size = cells.size();
@@ -265,7 +250,6 @@ inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
 inline VegetationRenderObject::SpatialData::SpatialData()  :
         x(-1),
         y(-1),
-        cellDescription(0),
         cameraDistance(0.0f),
         clippingPlane(0)
 {
@@ -276,10 +260,11 @@ inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData:
     x = src.x;
     y = src.y;
     bbox = src.bbox;
-    cellDescription = src.cellDescription;
     cameraDistance = src.cameraDistance;
-    refPoint = src.refPoint;
+    //refPoint = src.refPoint;
     clippingPlane = src.clippingPlane;
+    width = src.width;
+    height = src.height;
     
     return *this;
 }
@@ -288,18 +273,30 @@ inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue) const
 {
     return (0 == (cellValue & 0x0F0F0F0F));
 }
+
+inline bool VegetationRenderObject::SpatialData::IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const
+{
+    uint32 refResolution = ((x * y) % maxResolutions);
+    return (refResolution >= resolutionId);
+}
+
+inline bool VegetationRenderObject::SpatialData::IsRenderable() const
+{
+    return (width > 0 && height > 0);
+}
+
+inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
+{
+    return (width * height);
+}
     
-inline void VegetationRenderObject::AddVisibleCell(const Vector3& cameraPoint,
-                                                   SpatialData* data,
+inline void VegetationRenderObject::AddVisibleCell(SpatialData* data,
                                                    float32 refDistance,
                                                    uint32 cellValue,
                                                    Vector<SpatialData*>& cellList)
 {
     if(!data->IsEmpty(cellValue))
     {
-        Vector3 cameraVector = cameraPoint - data->refPoint;
-        data->cameraDistance = cameraVector.SquareLength();
-        
         if(data->cameraDistance <= refDistance)
         {
                 //Logger::FrameworkDebug("VegetationRenderObject::AddVisibleCell x = %d, y = %d", data->x, data->y);
