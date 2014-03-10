@@ -299,11 +299,40 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
 
 void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
+    //VI: need to remove render batches since they are temporary
+    int32 batchesToRemove = GetRenderBatchCount();
+    for(int32 i = 0; i < batchesToRemove; ++i)
+    {
+        RemoveRenderBatch(GetRenderBatchCount() - 1);
+    }
+    ReturnToPool(batchesToRemove);
+    
+    RenderObject::Save(archive, serializationContext);
+    
+    archive->SetUInt32("vro.clusterLimit", GetClusterLimit());
+    archive->SetString("vro.vegmap", GetVegetationMapPath().GetRelativePathname(serializationContext->GetScenePath()));
+    archive->SetString("vro.texturesheet", GetTextureSheetPath().GetRelativePathname(serializationContext->GetScenePath()));
+    archive->SetString("vro.vegtexture", vegetationMaterial->GetTexturePath(NMaterial::TEXTURE_ALBEDO).GetRelativePathname(serializationContext->GetScenePath()));
+    archive->SetString("vro.lightmap", vegetationMaterial->GetTexturePath(UNIFORM_SAMPLER_VEGETATIONMAP).GetRelativePathname(serializationContext->GetScenePath()));
 }
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-        
+    //VI: need to remove render batches since they are temporary
+    int32 batchesToRemove = GetRenderBatchCount();
+    for(int32 i = 0; i < batchesToRemove; ++i)
+    {
+        RemoveRenderBatch(GetRenderBatchCount() - 1);
+    }
+    ReturnToPool(batchesToRemove);
+    
+    RenderObject::Load(archive, serializationContext);
+    
+    SetClusterLimit(archive->GetUInt32("vro.clusterLimit"));
+    SetVegetationMap(serializationContext->GetScenePath() + archive->GetString("vro.vegmap"));
+    SetTextureSheet(serializationContext->GetScenePath() + archive->GetString("vro.texturesheet"));
+    SetVegetationTexture(serializationContext->GetScenePath() + archive->GetString("vro.vegtexture"));
+    SetLightmap(serializationContext->GetScenePath() + archive->GetString("vro.lightmap"));
 }
   
 void VegetationRenderObject::PrepareToRender(Camera *camera)
@@ -677,6 +706,7 @@ RenderBatch* VegetationRenderObject::GetRenderBatchFromPool(NMaterial* material)
         rb = new RenderBatch();
         
         NMaterial* batchMaterial = NMaterial::CreateMaterialInstance();
+        batchMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
         batchMaterial->SetParent(vegetationMaterial);
         
         rb->SetMaterial(batchMaterial);
