@@ -621,7 +621,7 @@ void MaterialEditor::OnRemProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn && NULL != curMaterials.size() > 0)
+	if(NULL != btn && curMaterials.size() > 0)
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
