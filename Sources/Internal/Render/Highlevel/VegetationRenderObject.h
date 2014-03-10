@@ -69,18 +69,9 @@ public:
     
     Vector<TextureSheetCell> cells;
     
-    inline TextureSheet();
-    inline ~TextureSheet();
-    
-    inline void SetTexture(Texture* tx);
-    inline Texture* GetTexture() const;
-
     inline TextureSheet& operator=(const TextureSheet& src);
 
     void Load(const FilePath &yamlPath);
-    
-private:
-    Texture* texture;
 };
 
 class VegetationRenderObject : public RenderObject
@@ -103,21 +94,23 @@ public:
     void SetHeightmapPath(const FilePath& path);
 
     void SetVegetationMap(VegetationMap* map);
+    void SetVegetationMap(const FilePath& path);
     VegetationMap* GetVegetationMap() const;
     void SetVegetationMapPath(const FilePath& path);
     const FilePath& GetVegetationMapPath() const;
     
-    void SetLightmap(Texture* lightmapTexture);
+    void SetLightmap(const FilePath& filePath);
     Texture* GetLightmap() const;
-    void SetLightmapPath(const FilePath& lightmapPath);
     const FilePath& GetLightmapPath() const;
     
-    void SetTextureSheet(const TextureSheet& sheet);
     const TextureSheet& GetTextureSheet() const;
-    void SetTextureSheetPath(const FilePath& path);
+    void SetTextureSheet(const FilePath& path);
     const FilePath& GetTextureSheetPath() const;
     
-    void SetClusterLimit(uint32 maxClusters);
+    void SetVegetationTexture(const FilePath& texture);
+    const FilePath& GetVegetationTexture() const;
+    
+    void SetClusterLimit(const uint32& maxClusters);
     uint32 GetClusterLimit() const;
     
     void SetWorldSize(const Vector3 size);
@@ -149,7 +142,8 @@ private:
     RenderBatch* GetRenderBatchFromPool(NMaterial* material);
     void ReturnToPool(int32 batchCount);
 
-    bool IsValidData() const;
+    bool IsValidGeometryData() const;
+    bool IsValidSpatialData() const;
     
     Vector2 GetVegetationUnitWorldSize(float32 resolution) const;
     
@@ -178,6 +172,8 @@ private:
     
     float32 SampleHeight(int16 x, int16 y);
     
+    void UpdateVegetationSetup();
+    
 private:
     
     Heightmap* heightmap;
@@ -205,6 +201,17 @@ private:
     FilePath heightmapPath;
     FilePath vegetationMapPath;
     FilePath textureSheetPath;
+    
+public:
+    
+    INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
+                         PROPERTY("density", "Base density", GetClusterLimit, SetClusterLimit, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("densityMap", "Density map", GetVegetationMapPath, SetVegetationMap, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmap, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("textureSheet", "Texture sheet", GetTextureSheetPath, SetTextureSheet, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("vegetationTexture", "vegetation texture", GetVegetationTexture, SetVegetationTexture, I_SAVE | I_EDIT | I_VIEW)
+                         );
+    
 };
     
     
@@ -227,32 +234,8 @@ inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src
     return *this;
 }
     
-inline TextureSheet::TextureSheet() : texture(NULL)
-{
-}
-    
-inline TextureSheet::~TextureSheet()
-{
-    SafeRelease(texture);
-}
-    
-inline void TextureSheet::SetTexture(Texture* tx)
-{
-    if(tx != texture)
-    {
-        SafeRelease(texture);
-        texture = SafeRetain(tx);
-    }
-}
-
-inline Texture* TextureSheet::GetTexture() const
-{
-    return texture;
-}
-    
 inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
 {
-    SetTexture(src.texture);
     cells.resize(src.cells.size());
     
     size_t size = cells.size();

@@ -68,6 +68,7 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
@@ -263,6 +264,9 @@ void Scene::CreateSystems()
     
     materialSystem = new MaterialSystem(this);
     AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
+    
+    foliageSystem = new FoliageSystem(this);
+    AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT));
 }
 
 Scene::~Scene()

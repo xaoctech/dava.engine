@@ -1447,25 +1447,21 @@ void QtMainWindow::OnAddSkybox()
     tc3.coords[3] = Vector2(0.5f, 1.0f);
     
     TextureSheet ts;
-    ts.SetTexture(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex"));
+    //ts.SetTexture(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex"));
     ts.cells.push_back(tc0);
     ts.cells.push_back(tc1);
     ts.cells.push_back(tc2);
     ts.cells.push_back(tc3);
     
-    DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png")[0];
-    
-    Heightmap* heightmap = new Heightmap();
-    heightmap->Load("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/d_heit_WM.heightmap");
+    //DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png")[0];
     
     DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
-    vro->SetClusterLimit(6);
-    vro->SetTextureSheet(ts);
-    vro->SetHeightmap(heightmap);
-    vro->SetVegetationMap(vegMap);
-    vro->SetLightmap(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/d_colormap_l.tex"));
-    vro->SetWorldSize(DAVA::Vector3(600, 600, 100));
-
+    //vro->SetClusterLimit(6);
+    //vro->SetTextureSheet("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/texturesheet.txt");
+    //vro->SetVegetationMap("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png");
+    //vro->SetLightmap("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/d_colormap_l.tex");
+    //vro->SetVegetationTexture("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex");
+ 
     RenderComponent* rc = new RenderComponent();
     rc->SetRenderObject(vro);
     

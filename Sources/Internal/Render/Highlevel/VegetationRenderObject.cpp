@@ -34,6 +34,7 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Material/NMaterial.h"
 #include "Utils/Random.h"
+#include "Render/ImageLoader.h"
 
 namespace DAVA
 {
@@ -285,18 +286,19 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     
     vegetationRenderObject->SetHeightmap(GetHeightmap());
     vegetationRenderObject->SetVegetationMap(GetVegetationMap());
-    vegetationRenderObject->SetTextureSheet(GetTextureSheet());
+    vegetationRenderObject->SetTextureSheet(GetTextureSheetPath());
     vegetationRenderObject->SetClusterLimit(GetClusterLimit());
-    vegetationRenderObject->SetTextureSheetPath(GetTextureSheetPath());
     vegetationRenderObject->SetVegetationMapPath(GetVegetationMapPath());
     vegetationRenderObject->SetHeightmapPath(GetHeightmapPath());
+    vegetationRenderObject->SetLightmap(GetLightmapPath());
+    vegetationRenderObject->SetVegetationTexture(GetVegetationTexture());
+    vegetationRenderObject->SetWorldSize(GetWorldSize());
 
     return vegetationRenderObject;
 }
 
 void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-        
 }
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -306,7 +308,10 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
   
 void VegetationRenderObject::PrepareToRender(Camera *camera)
 {
-    DVASSERT(clusterBrushes.size() > 0);
+    if(clusterBrushes.size() == 0)
+    {
+        return;
+    }
     
     visibleCells.clear();
     BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
@@ -410,11 +415,27 @@ void VegetationRenderObject::SetVegetationMap(VegetationMap* map)
         SafeRelease(vegetationMap);
         vegetationMap = SafeRetain(map);
         
-        if(IsValidData())
+        UpdateVegetationSetup();
+    }
+}
+
+void VegetationRenderObject::SetVegetationMap(const FilePath& path)
+{
+    if(path.Exists())
+    {
+        Vector<Image*> images = ImageLoader::CreateFromFileByExtension(path);
+            
+        DVASSERT(images.size());
+            
+        if(images.size())
         {
-            if(vegetationMap && heightmap)
+            VegetationMap* vegMap = images[0];
+            SetVegetationMap(vegMap);
+            SetVegetationMapPath(path);
+                
+            for(size_t i = 0; i < images.size(); ++i)
             {
-                BuildSpatialStructure(vegetationMap);
+                SafeRelease(images[i]);
             }
         }
     }
@@ -435,17 +456,23 @@ const FilePath& VegetationRenderObject::GetVegetationMapPath() const
     return vegetationMapPath;
 }
 
-void VegetationRenderObject::SetTextureSheet(const TextureSheet& sheet)
+void VegetationRenderObject::SetTextureSheet(const FilePath& path)
 {
-    textureSheet = sheet;
+    textureSheetPath = path;
+    textureSheet.Load(path);
     
+    UpdateVegetationSetup();
+}
+
+void VegetationRenderObject::SetVegetationTexture(const FilePath& texturePath)
+{
     vegetationMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO,
-                                   textureSheet.GetTexture());
-    
-    if(IsValidData())
-    {
-        BuildVegetationBrush(clusterLimit);
-    }
+                                   texturePath);
+}
+
+const FilePath& VegetationRenderObject::GetVegetationTexture() const
+{
+    return vegetationMaterial->GetTexturePath(NMaterial::TEXTURE_ALBEDO);
 }
     
 const TextureSheet& VegetationRenderObject::GetTextureSheet() const
@@ -453,24 +480,16 @@ const TextureSheet& VegetationRenderObject::GetTextureSheet() const
     return textureSheet;
 }
     
-void VegetationRenderObject::SetTextureSheetPath(const FilePath& path)
-{
-    textureSheetPath = path;
-}
-    
 const FilePath& VegetationRenderObject::GetTextureSheetPath() const
 {
     return textureSheetPath;
 }
 
-void VegetationRenderObject::SetClusterLimit(uint32 maxClusters)
+void VegetationRenderObject::SetClusterLimit(const uint32& maxClusters)
 {
     clusterLimit = maxClusters;
     
-    if(IsValidData())
-    {
-        BuildVegetationBrush(clusterLimit);
-    }
+    UpdateVegetationSetup();
 }
 
 uint32 VegetationRenderObject::GetClusterLimit() const
@@ -490,13 +509,7 @@ void VegetationRenderObject::SetHeightmap(Heightmap* _heightmap)
             InitHeightTextureFromHeightmap(heightmap);
         }
         
-        if(IsValidData())
-        {
-            if(vegetationMap && heightmap)
-            {
-                BuildSpatialStructure(vegetationMap);
-            }
-        }
+        UpdateVegetationSetup();
     }
 }
 
@@ -515,21 +528,16 @@ void VegetationRenderObject::SetHeightmapPath(const FilePath& path)
     heightmapPath = path;
 }
     
-void VegetationRenderObject::SetLightmap(Texture* lightmapTexture)
+void VegetationRenderObject::SetLightmap(const FilePath& filePath)
 {
-    vegetationMaterial->SetTexture(UNIFORM_SAMPLER_VEGETATIONMAP, lightmapTexture);
+    vegetationMaterial->SetTexture(UNIFORM_SAMPLER_VEGETATIONMAP, filePath);
 }
     
 Texture* VegetationRenderObject::GetLightmap() const
 {
     return vegetationMaterial->GetTexture(UNIFORM_SAMPLER_VEGETATIONMAP);
 }
-    
-void VegetationRenderObject::SetLightmapPath(const FilePath& lightmapPath)
-{
-    vegetationMaterial->SetTexturePath(UNIFORM_SAMPLER_VEGETATIONMAP, lightmapPath);
-}
-    
+
 const FilePath& VegetationRenderObject::GetLightmapPath() const
 {
     return vegetationMaterial->GetTexturePath(UNIFORM_SAMPLER_VEGETATIONMAP);
@@ -692,13 +700,6 @@ void VegetationRenderObject::ReturnToPool(int32 batchCount)
     renderBatchPoolLine -= batchCount;
     DVASSERT(renderBatchPoolLine >= 0);
 }
-    
-bool VegetationRenderObject::IsValidData() const
-{
-    return (clusterLimit > 0) &&
-            (textureSheet.cells.size() > 0) &&
-            (worldSize.Length() > 0);
-}
 
 void VegetationRenderObject::SetWorldSize(const Vector3 size)
 {
@@ -708,21 +709,8 @@ void VegetationRenderObject::SetWorldSize(const Vector3 size)
                                          Shader::UT_FLOAT_VEC3,
                                          1,
                                          &worldSize);
-    
-    for(size_t i = 0; i < COUNT_OF(RESOLUTION_SCALE); ++i)
-    {
-        unitWorldSize[i] = GetVegetationUnitWorldSize(RESOLUTION_SCALE[i]);
-    }
-    
-    if(IsValidData())
-    {
-        BuildVegetationBrush(clusterLimit);
-        
-        if(vegetationMap && heightmap)
-        {
-            BuildSpatialStructure(vegetationMap);
-        }
-    }
+
+    UpdateVegetationSetup();
 }
     
 const Vector3& VegetationRenderObject::GetWorldSize() const
@@ -944,6 +932,43 @@ float32 VegetationRenderObject::SampleHeight(int16 x, int16 y)
     float32 height = ((float32)heightmapValue / (float32)Heightmap::MAX_VALUE) * worldSize.z;
     
     return height;
+}
+
+bool VegetationRenderObject::IsValidGeometryData() const
+{
+     return (worldSize.Length() > 0 &&
+             heightmap != NULL &&
+             vegetationMap != NULL &&
+             textureSheet.cells.size() > 0 &&
+             clusterLimit > 0);
+}
+    
+bool VegetationRenderObject::IsValidSpatialData() const
+{
+    return (worldSize.Length() > 0 &&
+            heightmap != NULL &&
+            vegetationMap != NULL);
+}
+
+void VegetationRenderObject::UpdateVegetationSetup()
+{
+    if(vegetationMap)
+    {
+        for(size_t i = 0; i < COUNT_OF(RESOLUTION_SCALE); ++i)
+        {
+            unitWorldSize[i] = GetVegetationUnitWorldSize(RESOLUTION_SCALE[i]);
+        }
+    }
+    
+    if(IsValidGeometryData())
+    {
+        BuildVegetationBrush(clusterLimit);
+    }
+    
+    if(IsValidSpatialData())
+    {
+        BuildSpatialStructure(vegetationMap);
+    }
 }
 
 void TextureSheet::Load(const FilePath &yamlPath)
