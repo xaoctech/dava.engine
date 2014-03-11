@@ -34,10 +34,13 @@
 #include "TextureProperties.h"
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
+#include "Render/RenderBase.h"
+
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
 	, curTextureDescriptor(NULL)
 	, skipPropSizeChanged(false)
+    , curGPU(DAVA::GPU_UNKNOWN)
 {
 	SetEditTracking(true);
 }
