@@ -31,9 +31,11 @@
 #include "Sound/SoundSystem.h"
 #include "FileSystem/FileList.h"
 #include "Scene3D/Entity.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Sound/FMODUtils.h"
 #include "Sound/FMODFileSoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
+#include "FileSystem/YamlParser.h"
 
 #ifdef __DAVAENGINE_IPHONE__
 #include "fmodiphone.h"
@@ -64,6 +66,16 @@ SoundSystem::SoundSystem()
     FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL, 0));
 #endif
     FMOD_VERIFY(fmodSystem->setFileSystem(DAVA_FMOD_FILE_OPENCALLBACK, DAVA_FMOD_FILE_CLOSECALLBACK, DAVA_FMOD_FILE_READCALLBACK, DAVA_FMOD_FILE_SEEKCALLBACK, 0, 0, -1));
+
+    FilePath sfxConfig = QualitySettingsSystem::Instance()->GetCurSFXQualityConfig();
+    if(!sfxConfig.IsEmpty())
+    {
+        ParseSFXConfig(sfxConfig);
+    }
+    else
+    {
+        Logger::Warning("[SoundSystem] No default quality SFX config!");
+    }
 }
 
 SoundSystem::~SoundSystem()
@@ -188,6 +200,24 @@ SoundEvent * SoundSystem::DeserializeEvent(KeyedArchive *archive)
     }
 
     return 0;
+}
+
+void SoundSystem::ParseSFXConfig(const FilePath & configPath)
+{
+    YamlParser* parser = YamlParser::Create(configPath);
+    if(parser)
+    {    
+        YamlNode* rootNode = parser->GetRootNode();
+        const YamlNode * fmodfevsNode = rootNode->Get("fmod_projects");
+        if(fmodfevsNode)
+        {
+            int32 fevCount = fmodfevsNode->GetCount();
+            for(int32 i = 0; i < fevCount; ++i)
+            {
+                LoadFEV(FilePath(fmodfevsNode->Get(i)->AsString()));
+            }
+        }
+    }
 }
 
 void SoundSystem::LoadFEV(const FilePath & filePath)

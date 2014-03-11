@@ -69,7 +69,6 @@ public:
     void SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArchive);
     SoundEvent * DeserializeEvent(KeyedArchive *archive);
 
-
     void Update(float32 timeElapsed);
     void Suspend();
     void Resume();
@@ -81,6 +80,9 @@ public:
 
     void SetGroupVolume(const FastName & groupName, float32 volume);
     float32 GetGroupVolume(const FastName & groupName);
+
+protected:
+    void ParseSFXConfig(const FilePath & configPath);
 
 #ifdef DAVA_FMOD
 protected:
