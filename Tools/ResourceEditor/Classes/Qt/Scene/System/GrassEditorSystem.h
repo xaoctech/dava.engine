@@ -69,6 +69,8 @@ public:
 
     DAVA::VegetationRenderObject *GetCurrentVegetationObject() const;
 
+    static DAVA::Rect2i GetAffectedImageRect(DAVA::AABBox2 &area);
+
 protected:
 	bool isEnabled;
     bool inDrawState;

@@ -36,7 +36,7 @@
 class ImageRegionCopyCommand : public Command2
 {
 public:
-	ImageRegionCopyCommand(DAVA::Image* dst, const DAVA::Vector2& dstPos, DAVA::Image* src, const DAVA::Rect &srcRect, DAVA::Image* orig = NULL);
+	ImageRegionCopyCommand(DAVA::Image* dst, const DAVA::Vector2& dstPos, DAVA::Image* src, const DAVA::Rect &srcRect, DAVA::FilePath savePath = DAVA::FilePath(), DAVA::Image* orig = NULL);
 	~ImageRegionCopyCommand();
 
 	virtual void Undo();
@@ -47,6 +47,7 @@ public:
     DAVA::Image* orig;
     DAVA::Image* copy;
 	DAVA::Vector2 pos;
+    DAVA::FilePath savePath;
 };
 
 #endif // __IMAGE_REGION_COPY_COMMAND_H__

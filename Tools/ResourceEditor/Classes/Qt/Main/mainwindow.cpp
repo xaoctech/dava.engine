@@ -658,6 +658,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
+    QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowGeneralSettings()));
 	QObject::connect(ui->actionCurrentSceneSettings, SIGNAL(triggered()), this, SLOT(OnShowCurrentSceneSettings()));
@@ -1414,7 +1415,7 @@ void QtMainWindow::OnAddLandscape()
 
 void QtMainWindow::OnAddSkybox()
 {
-    /*SceneEditor2* sceneEditor = GetCurrentScene();
+    SceneEditor2* sceneEditor = GetCurrentScene();
     if(!sceneEditor)
     {
         return;
@@ -1424,66 +1425,28 @@ void QtMainWindow::OnAddSkybox()
     
     skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
     sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
-    skyboxEntity->Release();*/
-    
+    skyboxEntity->Release();
+}
 
-    TextureSheetCell tc0;
-    tc0.geometryId = 0;
-    tc0.coords[0] = Vector2(0.0f, 0.0f);
-    tc0.coords[1] = Vector2(0.5f, 0.0f);
-    tc0.coords[2] = Vector2(0.5f, 0.5f);
-    tc0.coords[3] = Vector2(0.0f, 0.5f);
-    
-    TextureSheetCell tc1;
-    tc1.geometryId = 0;
-    tc1.coords[0] = Vector2(0.5f, 0.0f);
-    tc1.coords[1] = Vector2(1.0f, 0.0f);
-    tc1.coords[2] = Vector2(1.0f, 0.5f);
-    tc1.coords[3] = Vector2(0.5f, 0.5f);
-    
-    TextureSheetCell tc2;
-    tc2.geometryId = 0;
-    tc2.coords[0] = Vector2(0.0f, 0.5f);
-    tc2.coords[1] = Vector2(0.5f, 0.5f);
-    tc2.coords[2] = Vector2(0.5f, 1.0f);
-    tc2.coords[3] = Vector2(0.0f, 1.0f);
-
-    TextureSheetCell tc3;
-    tc3.geometryId = 1;
-    tc3.coords[0] = Vector2(0.5f, 0.5f);
-    tc3.coords[1] = Vector2(1.0f, 0.5f);
-    tc3.coords[2] = Vector2(1.0f, 1.0f);
-    tc3.coords[3] = Vector2(0.5f, 1.0f);
-    
-    TextureSheet ts;
-    //ts.SetTexture(Texture::CreateFromFile("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex"));
-    ts.cells.push_back(tc0);
-    ts.cells.push_back(tc1);
-    ts.cells.push_back(tc2);
-    ts.cells.push_back(tc3);
-    
-    //DAVA::VegetationMap* vegMap = ImageLoader::CreateFromFileByExtension("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png")[0];
-    
-    DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
-    //vro->SetClusterLimit(6);
-    //vro->SetTextureSheet("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/texturesheet.txt");
-    //vro->SetVegetationMap("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/d_colormap.png");
-    //vro->SetLightmap("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/karelia/landscape/d_colormap_l.tex");
-    //vro->SetVegetationTexture("/Users/valentin_ivanov/Work/wot.blitz_0_5_5/DataSource/3d/Maps/desert_train/landscape/grass_x1.tex");
- 
-    RenderComponent* rc = new RenderComponent();
-    rc->SetRenderObject(vro);
-    
-    Entity* sceneNode = new Entity();
-    sceneNode->AddComponent(rc);
-    sceneNode->SetName(FastName("Vegetation"));
-    
+void QtMainWindow::OnAddVegetation()
+{
     SceneEditor2* sceneEditor = GetCurrentScene();
-	if(sceneEditor)
-	{
-		sceneEditor->Exec(new EntityAddCommand(sceneNode, sceneEditor));
-		sceneEditor->selectionSystem->SetSelection(sceneNode);
-	}
+    if(sceneEditor)
+    {
+        DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
+        RenderComponent* rc = new RenderComponent();
+        rc->SetRenderObject(vro);
+        SafeRelease(vro);
+
+        Entity* vegetationNode = new Entity();
+        vegetationNode->AddComponent(rc);
+        vegetationNode->SetName(FastName("Vegetation"));
+
+        sceneEditor->Exec(new EntityAddCommand(vegetationNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(vegetationNode);
+
+        SafeRelease(vegetationNode);
+    }
 }
 
 void QtMainWindow::OnLightDialog()
