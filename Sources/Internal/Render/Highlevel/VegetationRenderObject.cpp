@@ -44,6 +44,28 @@ static const FastName UNIFORM_WORLD_SIZE = FastName("worldSize");
 static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP = FastName("clusterScaleDensityMap[0]");
 static const FastName UNIFORM_HEIGHTMAP_SCALE = FastName("heightmapScale");
 
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[] =
+{
+    FastName("clusterScaleDensityMap_0"),
+    FastName("clusterScaleDensityMap_1"),
+    FastName("clusterScaleDensityMap_2"),
+    FastName("clusterScaleDensityMap_3"),
+    FastName("clusterScaleDensityMap_4"),
+    FastName("clusterScaleDensityMap_5"),
+    FastName("clusterScaleDensityMap_6"),
+    FastName("clusterScaleDensityMap_7"),
+    FastName("clusterScaleDensityMap_8"),
+    FastName("clusterScaleDensityMap_9"),
+    FastName("clusterScaleDensityMap_10"),
+    FastName("clusterScaleDensityMap_11"),
+    FastName("clusterScaleDensityMap_12"),
+    FastName("clusterScaleDensityMap_13"),
+    FastName("clusterScaleDensityMap_14"),
+    FastName("clusterScaleDensityMap_15")
+};
+#endif
+
 static const FastName UNIFORM_SAMPLER_VEGETATIONMAP = FastName("vegetationmap");
     
 static const uint32 MAX_VERTEX_PER_CLUSTER = 12;
@@ -247,6 +269,12 @@ VegetationRenderObject::VegetationRenderObject() :
                                                            NMaterialName::GRASS,
                                                            NMaterial::DEFAULT_QUALITY_NAME);
     vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
+    
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+
+    vegetationMaterial->SetFlag(FastName("MATERIAL_GRASS_PLAINUNIFORMS"), NMaterial::FlagOn);
+    
+#endif
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -411,7 +439,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             
                     float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0xF)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
                     float32 density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
-	                    
+                    
                     scaleDensityMap._data[DENSITY_ROW_INDEX][clusterType] = density;
                     scaleDensityMap._data[SCALE_ROW_INDEX][clusterType] = distanceScale * RESOLUTION_DISTANCE_SCALE_COMPENSATION[resolutionIndex] * clusterScale;
                 }
@@ -422,10 +450,25 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         posScale.y = spatialData->bbox.min.y;
         
         mat->SetPropertyValue(UNIFORM_TILEPOS, Shader::UT_FLOAT_VEC4, 1, posScale.data);
+        
+#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+
+        for(uint32 mapArrayIndex = 0; mapArrayIndex < COUNT_OF(UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY); ++mapArrayIndex)
+        {
+            mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[mapArrayIndex],
+                                  Shader::UT_FLOAT_MAT4,
+                                  1,
+                                  shaderScaleDensityParams[mapArrayIndex]._data);
+        }
+
+#else
+        
         mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
                               Shader::UT_FLOAT_MAT4,
                               shaderScaleDensityParams.size(),
                               shaderScaleDensityParams[0]._data);
+        
+#endif
     }
 }
     
