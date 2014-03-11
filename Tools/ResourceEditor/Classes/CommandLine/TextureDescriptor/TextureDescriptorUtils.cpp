@@ -153,7 +153,7 @@ void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
     }
 }
 
-void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force )
+void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality)
 {
 	FileList * fileList = new FileList(folderPathname);
 	if(!fileList) return;
@@ -163,11 +163,11 @@ void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &fold
 		const FilePath &pathname = fileList->GetPathname(fi);
 		if(IsCorrectDirectory(fileList, fi))
 		{
-			SetCompressionParamsForFolder(pathname, compressionParams, convertionEnabled, force);
+			SetCompressionParamsForFolder(pathname, compressionParams, convertionEnabled, force, quality);
 		}
 		else if(IsDescriptorPathname(pathname))
 		{
-			SetCompressionParams(pathname, compressionParams, convertionEnabled, force);
+			SetCompressionParams(pathname, compressionParams, convertionEnabled, force, quality);
 		}
 	}
 
@@ -175,7 +175,7 @@ void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &fold
 }
 
 
-void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force)
+void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality)
 {
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
 	if(!descriptor) return;
@@ -191,8 +191,7 @@ void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPat
 
 			if(convertionEnabled)
 			{
-                DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality", SettingsManager::DEFAULT);
-				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu].format, (DAVA::TextureConverter::eConvertQuality)quality.AsInt32());
+				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu].format, quality);
 			}
 		}
 	}
