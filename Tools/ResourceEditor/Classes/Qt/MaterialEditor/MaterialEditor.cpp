@@ -638,7 +638,7 @@ void MaterialEditor::OnAddTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn && NULL != curMaterials.size() > 0)
+	if(NULL != btn && curMaterials.size() > 0)
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
@@ -657,7 +657,7 @@ void MaterialEditor::OnRemTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-	if(NULL != btn && NULL != curMaterials.size() > 0)
+	if(NULL != btn && curMaterials.size() > 0)
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
@@ -672,20 +672,21 @@ void MaterialEditor::OnRemTexture()
 
 void MaterialEditor::OnTemplateChanged(int index)
 {
-    //if(NULL != curMaterial && index > 0)
-    //{
-    //    QString newTemplatePath = ui->templateBox->itemData(index).toString();
-    //    if(!newTemplatePath.isEmpty())
-    //    {
-    //        const DAVA::InspMember *templateMember = curMaterial->GetTypeInfo()->Member("materialTemplate");
+    if(curMaterials.size() == 1 && index > 0)
+    {
+        DAVA::NMaterial *material = curMaterials.at(0);
+        QString newTemplatePath = ui->templateBox->itemData(index).toString();
+        if(!newTemplatePath.isEmpty())
+        {
+            const DAVA::InspMember *templateMember = material->GetTypeInfo()->Member("materialTemplate");
 
-    //        if(NULL != templateMember)
-    //        {
-    //            QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, curMaterial, 
-    //                DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
-    //        }
-    //    }
-    //}
+            if(NULL != templateMember)
+            {
+                QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, material, 
+                    DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
+            }
+        }
+    }
 
     SetCurMaterial(curMaterials);
 }
