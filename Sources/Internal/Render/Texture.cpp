@@ -598,7 +598,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
         if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
         {
-            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTxQuality());
+            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTextureQuality());
             if(NULL != curTxQuality)
             {
                 // TODO:
