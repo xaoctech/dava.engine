@@ -124,9 +124,7 @@ void GrassEditorSystem::ProcessCommand(const Command2 *command, bool redo)
         if(cmdId == CMDID_IMAGE_REGION_COPY)
         {
             ImageRegionCopyCommand* imCmd = (ImageRegionCopyCommand *) command;
-            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width, imCmd->pos.y + imCmd->orig->height)));
-
-            ImageLoader::Save(vegetationMap, DAVA::FilePath("D:/grass.png"));
+            BuildGrassCopy(DAVA::AABBox2(imCmd->pos, DAVA::Vector2(imCmd->pos.x + imCmd->orig->width - 1, imCmd->pos.y + imCmd->orig->height - 1)));
         }
     }
 }
@@ -293,10 +291,10 @@ void GrassEditorSystem::DrawGrassEnd()
     {
         SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 
-        DAVA::Rect2i affectedRect2i = affectedArea.GetRect2i();
+        DAVA::Rect2i affectedRect2i = GetAffectedImageRect(affectedArea);
         DAVA::Rect affectedRect = DAVA::Rect(affectedRect2i.x, affectedRect2i.y, affectedRect2i.dx, affectedRect2i.dy);
         DAVA::Image *orig = DAVA::Image::CopyImageRegion(vegetationMapCopy, affectedRect);
-        sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, orig));
+        sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, curVegetation->GetVegetationMapPath(), orig));
     }
 }
 
@@ -310,7 +308,7 @@ void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)
         }
         else
         {
-            DAVA::Rect2i r2i = area.GetRect2i();
+            DAVA::Rect2i r2i = GetAffectedImageRect(area);
             DAVA::Rect r(r2i.x, r2i.y, r2i.dx, r2i.dy);
 
             vegetationMapCopy->InsertImage(vegetationMap, r.GetPosition(), r);
@@ -321,4 +319,21 @@ void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)
 DAVA::VegetationRenderObject* GrassEditorSystem::GetCurrentVegetationObject() const
 {
     return curVegetation;
+}
+
+DAVA::Rect2i GrassEditorSystem::GetAffectedImageRect(DAVA::AABBox2 &area)
+{
+    DAVA::Rect2i ret;
+
+    if(!area.IsEmpty() && area.max.x >= area.min.x && area.max.y >= area.min.y)
+    {
+        int x = (int) floor(area.min.x);
+        int y = (int) floor(area.min.y);
+        int dx = ((int) ceil(area.max.x)) - x + 1;
+        int dy = ((int) ceil(area.max.y)) - y + 1;
+
+        ret = Rect2i(x, y, dx, dy);
+    }
+
+    return ret;
 }

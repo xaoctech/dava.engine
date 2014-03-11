@@ -245,5 +245,5 @@ DAVA::Rect2i GrassEditorPanel::MapTexCoord(const DAVA::TextureSheetCell &cell, D
         area.AddPoint(point);
     }
 
-    return area.GetRect2i();
+    return GrassEditorSystem::GetAffectedImageRect(area);
 }

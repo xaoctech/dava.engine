@@ -129,6 +129,7 @@ public slots:
 	
 	void OnAddLandscape();
     void OnAddSkybox();
+    void OnAddVegetation();
 	void OnLightDialog();
 	void OnCameraDialog();
 	void OnEmptyEntity();
