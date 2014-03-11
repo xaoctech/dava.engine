@@ -152,7 +152,26 @@ uniform vec2 tex0ShiftPerSecond;
 uniform vec4 tilePos;
 uniform vec3 worldSize;
 
+#if defined(MATERIAL_GRASS_PLAINUNIFORMS)
+uniform mat4 clusterScaleDensityMap_0;
+uniform mat4 clusterScaleDensityMap_1;
+uniform mat4 clusterScaleDensityMap_2;
+uniform mat4 clusterScaleDensityMap_3;
+uniform mat4 clusterScaleDensityMap_4;
+uniform mat4 clusterScaleDensityMap_5;
+uniform mat4 clusterScaleDensityMap_6;
+uniform mat4 clusterScaleDensityMap_7;
+uniform mat4 clusterScaleDensityMap_8;
+uniform mat4 clusterScaleDensityMap_9;
+uniform mat4 clusterScaleDensityMap_10;
+uniform mat4 clusterScaleDensityMap_11;
+uniform mat4 clusterScaleDensityMap_12;
+uniform mat4 clusterScaleDensityMap_13;
+uniform mat4 clusterScaleDensityMap_14;
+uniform mat4 clusterScaleDensityMap_15;
+#else
 uniform mat4 clusterScaleDensityMap[16];
+#endif
 
 uniform sampler2D detail;
 
@@ -210,6 +229,27 @@ void main()
     
         //clusterScaleDensityMap[0] - density
         //clusterScaleDensityMap[1] - scale
+    
+        #if defined(MATERIAL_GRASS_PLAINUNIFORMS)
+        mat4 clusterScaleDensityMap[16];
+    
+        clusterScaleDensityMap[0] = clusterScaleDensityMap_0;
+        clusterScaleDensityMap[1] = clusterScaleDensityMap_1;
+        clusterScaleDensityMap[2] = clusterScaleDensityMap_2;
+        clusterScaleDensityMap[3] = clusterScaleDensityMap_3;
+        clusterScaleDensityMap[4] = clusterScaleDensityMap_4;
+        clusterScaleDensityMap[5] = clusterScaleDensityMap_5;
+        clusterScaleDensityMap[6] = clusterScaleDensityMap_6;
+        clusterScaleDensityMap[7] = clusterScaleDensityMap_7;
+        clusterScaleDensityMap[8] = clusterScaleDensityMap_8;
+        clusterScaleDensityMap[9] = clusterScaleDensityMap_9;
+        clusterScaleDensityMap[10] = clusterScaleDensityMap_10;
+        clusterScaleDensityMap[11] = clusterScaleDensityMap_11;
+        clusterScaleDensityMap[12] = clusterScaleDensityMap_12;
+        clusterScaleDensityMap[13] = clusterScaleDensityMap_13;
+        clusterScaleDensityMap[14] = clusterScaleDensityMap_14;
+        clusterScaleDensityMap[15] = clusterScaleDensityMap_15;
+        #endif
     
     
         vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
