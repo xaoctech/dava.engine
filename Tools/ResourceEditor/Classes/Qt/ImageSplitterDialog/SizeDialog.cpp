@@ -27,33 +27,62 @@
 =====================================================================================*/
 
 
+#include "SizeDialog.h"
 
-#include "ParticleForce.h"
-using namespace DAVA;
-
-// Particle Force class is needed to store Particle Force data.
-ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3> > force_, RefPtr<PropertyLine<float32> > forceOverLife_) : force(force_), forceOverLife(forceOverLife_)
-{	
+SizeDialog::SizeDialog(QWidget *parent) :
+QDialog(parent)
+{
+    verticalLayout = new QVBoxLayout(this);
+    
+    messageLbl = new QLabel(this);
+    messageLbl->setText("Set new size for image:");
+    verticalLayout->addWidget(messageLbl);
+    
+    horLayout = new QHBoxLayout(this);
+    
+    widthLbl = new QLabel(this);
+    widthLbl->setText("Width:");
+    
+    widthSpinBox = new QSpinBox(this);
+    widthSpinBox->setMinimum(1);
+    widthSpinBox->setMaximum(99999);
+    widthSpinBox->setSingleStep(1);
+    
+    heightLbl = new QLabel(this);
+    heightLbl->setText("Width:");
+    
+    heightSpinBox = new QSpinBox(this);
+    heightSpinBox->setMinimum(1);
+    heightSpinBox->setMaximum(99999);
+    heightSpinBox->setSingleStep(1);
+    
+    horLayout->addWidget(widthLbl);
+    horLayout->addWidget(widthSpinBox);
+    horLayout->addWidget(heightLbl);
+    horLayout->addWidget(heightSpinBox);
+    
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    
+    verticalLayout->addLayout(horLayout);
+    verticalLayout->addWidget(buttonBox);
 }
 
-ParticleForce* ParticleForce::Clone()
+SizeDialog::~SizeDialog()
 {
-	ParticleForce *dst = new ParticleForce();
-	if (force)
-    {
-		dst->force = force->Clone();
-        dst->force->Release();
-    }
-	if (forceOverLife)
-    {
-		dst->forceOverLife = forceOverLife->Clone();
-        dst->forceOverLife->Release();
-    }
-	return dst;
+    delete horLayout;
+    delete verticalLayout;
+    delete messageLbl;
+    delete widthLbl;
+    delete widthSpinBox;
+    delete heightLbl;
+    delete heightSpinBox;
+    delete buttonBox;
 }
 
-void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
+DAVA::Vector2 SizeDialog::GetSize() const
 {
-	PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
-	PropertyLineHelper::AddIfModifiable(forceOverLife.Get(), modifiables);
+    return DAVA::Vector2(widthSpinBox->value(), heightSpinBox->value());
 }

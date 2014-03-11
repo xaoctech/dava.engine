@@ -49,6 +49,7 @@
 #include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
 #include "../Tools/AddSkyboxDialog/AddSkyboxDialog.h"
+#include "../ImageSplitterDialog/ImageSplitterDialog.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
@@ -634,6 +635,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTextureConverter, SIGNAL(triggered()), this, SLOT(OnTextureBrowser()));
 	QObject::connect(ui->actionEnableCameraLight, SIGNAL(triggered()), this, SLOT(OnSceneLightMode()));
 	QObject::connect(ui->actionCubemapEditor, SIGNAL(triggered()), this, SLOT(OnCubemapEditor()));
+    QObject::connect(ui->actionImageSplitter, SIGNAL(triggered()), this, SLOT(OnImageSplitter()));
 
 	QObject::connect(ui->actionShowNotPassableLandscape, SIGNAL(triggered()), this, SLOT(OnNotPassableTerrain()));
 	QObject::connect(ui->actionCustomColorsEditor, SIGNAL(triggered()), this, SLOT(OnCustomColorsEditor()));
@@ -832,6 +834,7 @@ void QtMainWindow::EnableProjectActions(bool enable)
 	ui->actionSaveScene->setEnabled(enable);
 	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
+    ui->actionImageSplitter->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
     ui->actionCloseProject->setEnabled(enable);
     
@@ -1355,6 +1358,12 @@ void QtMainWindow::OnCubemapEditor()
 	dlg.exec();
 }
 
+void QtMainWindow::OnImageSplitter()
+{
+	ImageSplitterDialog dlg(this);
+	dlg.exec();
+}
+
 void QtMainWindow::OnSwitchEntityDialog()
 {
 	if(NULL != addSwitchEntityDialog)
@@ -1475,6 +1484,7 @@ void QtMainWindow::OnParticleEffectDialog()
 {
 	Entity* sceneNode = new Entity();
 	sceneNode->AddComponent(new ParticleEffectComponent());
+    sceneNode->AddComponent(new LodComponent());
 	sceneNode->SetName(ResourceEditor::PARTICLE_EFFECT_NODE_NAME);
 	SceneEditor2* sceneEditor = GetCurrentScene();
 	if(sceneEditor)

@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIconsTextureDialog/convertModified.png</file>
     <file>QtIcons/light_settings.png</file>
     <file>QtIcons/sphere_add.png</file>
     <file>QtIcons/sphere-clone.png</file>
@@ -127,6 +128,7 @@
     <file>QtIcons/sound_group.png</file>
     <file>QtIcons/hangingobjects.png</file>
     <file>QtIcons/map.png</file>
+    <file>QtIcons/image_splitter.png</file>
     <file>QtImages/sky_example0.png</file>
     <file>QtImages/sky_example1.png</file>
     <file>QtImages/sky_example2.png</file>

@@ -27,33 +27,32 @@
 =====================================================================================*/
 
 
+#ifndef __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
+#define __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
 
-#include "ParticleForce.h"
-using namespace DAVA;
+#include "DAVAEngine.h"
+#include <QtGui>
 
-// Particle Force class is needed to store Particle Force data.
-ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3> > force_, RefPtr<PropertyLine<float32> > forceOverLife_) : force(force_), forceOverLife(forceOverLife_)
-{	
-}
-
-ParticleForce* ParticleForce::Clone()
+class SizeDialog : public QDialog
 {
-	ParticleForce *dst = new ParticleForce();
-	if (force)
-    {
-		dst->force = force->Clone();
-        dst->force->Release();
-    }
-	if (forceOverLife)
-    {
-		dst->forceOverLife = forceOverLife->Clone();
-        dst->forceOverLife->Release();
-    }
-	return dst;
-}
+public:
+    
+    explicit SizeDialog(QWidget *parent = 0);
+    
+    ~SizeDialog();
+    
+    DAVA::Vector2 GetSize() const;
+    
+private:
+    
+    QVBoxLayout *verticalLayout;
+    QLabel* messageLbl;
+    QHBoxLayout *horLayout;
+    QLabel* widthLbl;
+    QSpinBox* widthSpinBox;
+    QLabel* heightLbl;
+    QSpinBox* heightSpinBox;
+    QDialogButtonBox* buttonBox;
+};
 
-void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
-{
-	PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
-	PropertyLineHelper::AddIfModifiable(forceOverLife.Get(), modifiables);
-}
+#endif /* defined(__QT_IMAGE_SPLITTER_SIZE_DIALOG_H__) */
