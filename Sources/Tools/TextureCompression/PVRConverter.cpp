@@ -101,7 +101,17 @@ PVRConverter::PVRConverter()
 	pixelFormatToPVRFormat[FORMAT_PVR4] = "PVRTC1_4";
 	pixelFormatToPVRFormat[FORMAT_A8] = "l8";//"OGL8";
 	pixelFormatToPVRFormat[FORMAT_ETC1] = "ETC1";
-	
+
+    pixelFormatToPVRFormat[FORMAT_PVR2_2] = "PVRTC2_2";
+	pixelFormatToPVRFormat[FORMAT_PVR4_2] = "PVRTC2_4";
+	pixelFormatToPVRFormat[FORMAT_EAC_R11_UNSIGNED] = "EAC_R11";
+	pixelFormatToPVRFormat[FORMAT_EAC_R11_SIGNED] = "EAC_R11";
+	pixelFormatToPVRFormat[FORMAT_EAC_RG11_UNSIGNED] = "EAC_RG11";
+	pixelFormatToPVRFormat[FORMAT_EAC_RG11_SIGNED] = "EAC_RG11";
+	pixelFormatToPVRFormat[FORMAT_ETC2_RGB] = "ETC2_RGB";
+	pixelFormatToPVRFormat[FORMAT_ETC2_RGBA] = "ETC2_RGBA";
+	pixelFormatToPVRFormat[FORMAT_ETC2_RGB_A1] = "ETC2_RGB_A1";
+
 	InitFileSuffixes();
 }
 
@@ -199,6 +209,10 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 		args.push_back("-r");
 		args.push_back(Format("%d,%d", descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight));
 	}
+    
+    
+    args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
+
 }
 
 FilePath PVRConverter::GetPVRToolOutput(const TextureDescriptor &descriptor, eGPUFamily gpuFamily)
