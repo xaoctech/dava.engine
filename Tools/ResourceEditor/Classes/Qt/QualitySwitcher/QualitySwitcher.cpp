@@ -161,6 +161,13 @@ void QualitySwitcher::ApplyMa()
 
 void QualitySwitcher::Show()
 {
+    QualitySwitcher *sw = new QualitySwitcher(QtMainWindow::Instance());
+    sw->setAttribute(Qt::WA_DeleteOnClose, true);
+    sw->show();
+}
+
+void QualitySwitcher::ShowModal()
+{
     QualitySwitcher sw(QtMainWindow::Instance());
     sw.exec();
 }
