@@ -230,28 +230,6 @@ void main()
         //clusterScaleDensityMap[0] - density
         //clusterScaleDensityMap[1] - scale
     
-        #if defined(MATERIAL_GRASS_PLAINUNIFORMS)
-        mat4 clusterScaleDensityMap[16];
-    
-        clusterScaleDensityMap[0] = clusterScaleDensityMap_0;
-        clusterScaleDensityMap[1] = clusterScaleDensityMap_1;
-        clusterScaleDensityMap[2] = clusterScaleDensityMap_2;
-        clusterScaleDensityMap[3] = clusterScaleDensityMap_3;
-        clusterScaleDensityMap[4] = clusterScaleDensityMap_4;
-        clusterScaleDensityMap[5] = clusterScaleDensityMap_5;
-        clusterScaleDensityMap[6] = clusterScaleDensityMap_6;
-        clusterScaleDensityMap[7] = clusterScaleDensityMap_7;
-        clusterScaleDensityMap[8] = clusterScaleDensityMap_8;
-        clusterScaleDensityMap[9] = clusterScaleDensityMap_9;
-        clusterScaleDensityMap[10] = clusterScaleDensityMap_10;
-        clusterScaleDensityMap[11] = clusterScaleDensityMap_11;
-        clusterScaleDensityMap[12] = clusterScaleDensityMap_12;
-        clusterScaleDensityMap[13] = clusterScaleDensityMap_13;
-        clusterScaleDensityMap[14] = clusterScaleDensityMap_14;
-        clusterScaleDensityMap[15] = clusterScaleDensityMap_15;
-        #endif
-    
-    
         vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
                                   inBinormal.y + tilePos.y,
                                   inBinormal.z,
@@ -275,9 +253,391 @@ void main()
     
         int clusterType = int(inTangent.y);
         int vertexTileIndex = int(inTangent.x);
-        //int vertexTileIndex = 0;
+
     
-        pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * step(inTangent.z, clusterScaleDensityMap[vertexTileIndex][0][clusterType]));
+        #if defined(MATERIAL_GRASS_PLAINUNIFORMS)
+    
+            float clusterScale = 1.0;
+            float clusterDensity = 0.0;
+    
+            if(0 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_0[1][0];
+                    clusterDensity = clusterScaleDensityMap_0[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_0[1][1];
+                    clusterDensity = clusterScaleDensityMap_0[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_0[1][2];
+                    clusterDensity = clusterScaleDensityMap_0[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_0[1][3];
+                    clusterDensity = clusterScaleDensityMap_0[0][3];
+                }
+            }
+            else if(1 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_1[1][0];
+                    clusterDensity = clusterScaleDensityMap_1[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_1[1][1];
+                    clusterDensity = clusterScaleDensityMap_1[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_1[1][2];
+                    clusterDensity = clusterScaleDensityMap_1[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_1[1][3];
+                    clusterDensity = clusterScaleDensityMap_1[0][3];
+                }
+
+            }
+            else if(2 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_2[1][0];
+                    clusterDensity = clusterScaleDensityMap_2[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_2[1][1];
+                    clusterDensity = clusterScaleDensityMap_2[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_2[1][2];
+                    clusterDensity = clusterScaleDensityMap_2[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_2[1][3];
+                    clusterDensity = clusterScaleDensityMap_2[0][3];
+                }
+
+            }
+            else if(3 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_3[1][0];
+                    clusterDensity = clusterScaleDensityMap_3[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_3[1][1];
+                    clusterDensity = clusterScaleDensityMap_3[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_3[1][2];
+                    clusterDensity = clusterScaleDensityMap_3[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_3[1][3];
+                    clusterDensity = clusterScaleDensityMap_3[0][3];
+                }
+            }
+            else if(4 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_4[1][0];
+                    clusterDensity = clusterScaleDensityMap_4[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_4[1][1];
+                    clusterDensity = clusterScaleDensityMap_4[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_4[1][2];
+                    clusterDensity = clusterScaleDensityMap_4[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_4[1][3];
+                    clusterDensity = clusterScaleDensityMap_4[0][3];
+                }
+            }
+            else if(5 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_5[1][0];
+                    clusterDensity = clusterScaleDensityMap_5[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_5[1][1];
+                    clusterDensity = clusterScaleDensityMap_5[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_5[1][2];
+                    clusterDensity = clusterScaleDensityMap_5[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_5[1][3];
+                    clusterDensity = clusterScaleDensityMap_5[0][3];
+                }
+            }
+            else if(6 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_6[1][0];
+                    clusterDensity = clusterScaleDensityMap_6[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_6[1][1];
+                    clusterDensity = clusterScaleDensityMap_6[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_6[1][2];
+                    clusterDensity = clusterScaleDensityMap_6[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_6[1][3];
+                    clusterDensity = clusterScaleDensityMap_6[0][3];
+                }
+            }
+            else if(7 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_7[1][0];
+                    clusterDensity = clusterScaleDensityMap_7[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_7[1][1];
+                    clusterDensity = clusterScaleDensityMap_7[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_7[1][2];
+                    clusterDensity = clusterScaleDensityMap_7[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_7[1][3];
+                    clusterDensity = clusterScaleDensityMap_7[0][3];
+                }
+            }
+            else if(8 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_8[1][0];
+                    clusterDensity = clusterScaleDensityMap_8[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_8[1][1];
+                    clusterDensity = clusterScaleDensityMap_8[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_8[1][2];
+                    clusterDensity = clusterScaleDensityMap_8[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_8[1][3];
+                    clusterDensity = clusterScaleDensityMap_8[0][3];
+                }
+            }
+            else if(9 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_9[1][0];
+                    clusterDensity = clusterScaleDensityMap_9[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_9[1][1];
+                    clusterDensity = clusterScaleDensityMap_9[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_9[1][2];
+                    clusterDensity = clusterScaleDensityMap_9[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_9[1][3];
+                    clusterDensity = clusterScaleDensityMap_9[0][3];
+                }
+            }
+            else if(10 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_10[1][0];
+                    clusterDensity = clusterScaleDensityMap_10[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_10[1][1];
+                    clusterDensity = clusterScaleDensityMap_10[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_10[1][2];
+                    clusterDensity = clusterScaleDensityMap_10[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_10[1][3];
+                    clusterDensity = clusterScaleDensityMap_10[0][3];
+                }
+            }
+            else if(11 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_11[1][0];
+                    clusterDensity = clusterScaleDensityMap_11[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_11[1][1];
+                    clusterDensity = clusterScaleDensityMap_11[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_11[1][2];
+                    clusterDensity = clusterScaleDensityMap_11[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_11[1][3];
+                    clusterDensity = clusterScaleDensityMap_11[0][3];
+                }
+            }
+            else if(12 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_12[1][0];
+                    clusterDensity = clusterScaleDensityMap_12[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_12[1][1];
+                    clusterDensity = clusterScaleDensityMap_12[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_12[1][2];
+                    clusterDensity = clusterScaleDensityMap_12[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_12[1][3];
+                    clusterDensity = clusterScaleDensityMap_12[0][3];
+                }
+            }
+            else if(13 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_13[1][0];
+                    clusterDensity = clusterScaleDensityMap_13[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_13[1][1];
+                    clusterDensity = clusterScaleDensityMap_13[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_13[1][2];
+                    clusterDensity = clusterScaleDensityMap_13[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_13[1][3];
+                    clusterDensity = clusterScaleDensityMap_13[0][3];
+                }
+            }
+            else if(14 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_14[1][0];
+                    clusterDensity = clusterScaleDensityMap_14[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_14[1][1];
+                    clusterDensity = clusterScaleDensityMap_14[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_14[1][2];
+                    clusterDensity = clusterScaleDensityMap_14[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_14[1][3];
+                    clusterDensity = clusterScaleDensityMap_14[0][3];
+                }
+            }
+            else if(15 == vertexTileIndex)
+            {
+                if(0 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_15[1][0];
+                    clusterDensity = clusterScaleDensityMap_15[0][0];
+                }
+                else if(1 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_15[1][1];
+                    clusterDensity = clusterScaleDensityMap_15[0][1];
+                }
+                else if(2 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_15[1][2];
+                    clusterDensity = clusterScaleDensityMap_15[0][2];
+                }
+                else if(3 == clusterType)
+                {
+                    clusterScale = clusterScaleDensityMap_15[1][3];
+                    clusterDensity = clusterScaleDensityMap_15[0][3];
+                }
+            }
+    
+            pos = mix(clusterCenter, pos, clusterScale * step(inTangent.z, clusterDensity));
+    
+        #else
+    
+            pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * step(inTangent.z, clusterScaleDensityMap[vertexTileIndex][0][clusterType]));
+    
+        #endif
     
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;
