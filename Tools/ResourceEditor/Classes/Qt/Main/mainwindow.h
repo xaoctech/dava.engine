@@ -125,6 +125,7 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
+    void OnImageSplitter();
 	
 	void OnAddLandscape();
     void OnAddSkybox();

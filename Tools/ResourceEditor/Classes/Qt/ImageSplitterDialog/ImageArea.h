@@ -27,33 +27,57 @@
 =====================================================================================*/
 
 
+#ifndef __QT_IMAGE_AREA_H__
+#define __QT_IMAGE_AREA_H__
 
-#include "ParticleForce.h"
-using namespace DAVA;
+#include <QLabel>
+#include "DAVAEngine.h"
 
-// Particle Force class is needed to store Particle Force data.
-ParticleForce::ParticleForce(RefPtr<PropertyLine<Vector3> > force_, RefPtr<PropertyLine<float32> > forceOverLife_) : force(force_), forceOverLife(forceOverLife_)
-{	
-}
+class QMimeData;
 
-ParticleForce* ParticleForce::Clone()
+class ImageArea : public QLabel
 {
-	ParticleForce *dst = new ParticleForce();
-	if (force)
-    {
-		dst->force = force->Clone();
-        dst->force->Release();
-    }
-	if (forceOverLife)
-    {
-		dst->forceOverLife = forceOverLife->Clone();
-        dst->forceOverLife->Release();
-    }
-	return dst;
+    Q_OBJECT
+    
+public:
+    
+    ImageArea(QWidget *parent = 0);
+    
+    ~ImageArea();
+        
+    void SetImage(const DAVA::FilePath& filePath);
+
+    void SetImage(DAVA::Image* image);
+
+    inline DAVA::Image* GetImage() const;
+    
+    DAVA::Vector2 GetAcceptableSize() const;
+    
+public slots:
+    void clear();
+    void UpdatePreviewPicture();
+    
+    void SetAcceptableSize(const DAVA::Vector2& size);
+    
+signals:
+    
+    void changed();
+    
+protected:
+
+    void mousePressEvent(QMouseEvent * event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+        
+    void ConnectSignals();
+    
+    DAVA::Image* image;
+    DAVA::Vector2 acceptableSize;
+};
+
+inline DAVA::Image* ImageArea::GetImage() const
+{
+    return image;
 }
 
-void ParticleForce::GetModifableLines(List<ModifiablePropertyLineBase *> &modifiables)
-{
-	PropertyLineHelper::AddIfModifiable(force.Get(), modifiables);
-	PropertyLineHelper::AddIfModifiable(forceOverLife.Get(), modifiables);
-}
+#endif /* defined(__QT_IMAGE_AREA_H__) */
