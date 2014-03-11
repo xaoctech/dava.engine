@@ -606,6 +606,8 @@ void RenderManager::SetHWClip(const Rect &rect)
 
 void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 {
+    currentRenderTarget = renderTarget;
+    
 	if (renderTarget == NULL)
 	{
 //#if defined(__DAVAENGINE_IPHONE__)
@@ -617,6 +619,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //#endif //PLATFORMS
         HWglBindFBO(fboViewFramebuffer);
 
+        
         SetViewport(Rect(0, 0, -1, -1), true);
 
 		SetRenderOrientation(Core::Instance()->GetScreenOrientation());
@@ -662,8 +665,6 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //		Logger::FrameworkDebug("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
 		RemoveClip();
 	}
-	
-	currentRenderTarget = renderTarget;
 }
 
 void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
