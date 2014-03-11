@@ -623,7 +623,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
                     // release all images, except last one
                     for(int i = 0; i < leaveOffset; ++i)
                     {
-                        SafeRelease(images->operator[](i));
+                        SafeRelease(images->at(i));
                     }
                     
                     // move last items to the beginning of the vector vector
