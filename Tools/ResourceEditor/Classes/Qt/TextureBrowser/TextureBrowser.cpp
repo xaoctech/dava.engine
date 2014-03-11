@@ -468,8 +468,6 @@ void TextureBrowser::setupTextureToolbar()
 	ui->textureToolbar->addWidget(toolbarZoomSlider);
 	ui->textureToolbar->addWidget(toolbarZoomSliderValue);
 
-    ui->convertModifiedToolButton->setDefaultAction(ui->actionConvertModified);
-
 	QObject::connect(ui->actionColorA, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
 	QObject::connect(ui->actionColorB, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
 	QObject::connect(ui->actionColorG, SIGNAL(triggered(bool)), this, SLOT(textureColorChannelPressed(bool)));
