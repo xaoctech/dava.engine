@@ -31,6 +31,9 @@
 #include "Render/RenderManager.h"
 #include "Utils/Utils.h"
 
+#if defined (__DAVAENGINE_OPENGL__)
+
+
 #ifdef __DAVAENGINE_ANDROID__
 #ifndef GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
 #define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
@@ -244,3 +247,5 @@ PixelFormat PixelFormatDescriptor::GetPixelFormatByName(const FastName &formatNa
 }
  
 };
+
+#endif //#if defined (__DAVAENGINE_OPENGL__)
