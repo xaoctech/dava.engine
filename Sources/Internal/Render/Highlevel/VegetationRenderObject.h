@@ -116,6 +116,17 @@ public:
     void SetWorldSize(const Vector3 size);
     const Vector3& GetWorldSize() const;
     
+    void SetVisibilityDistance(const Vector2& distances);
+    const Vector2& GetVisibilityDistance() const;
+    void ResetVisibilityDistance();
+    
+    void SetLodRange(const Vector3& distances);
+    const Vector3& GetLodRange() const;
+    void ResetLodRanges();
+    
+    void SetMaxVisibleQuads(const uint32& _maxVisibleQuads);
+    const uint32& GetMaxVisibleQuads() const;
+    
 private:
     
     struct SpatialData
@@ -173,6 +184,7 @@ private:
     float32 SampleHeight(int16 x, int16 y);
     
     void UpdateVegetationSetup();
+    void InitLodRanges();
     
 private:
     
@@ -202,6 +214,10 @@ private:
     FilePath vegetationMapPath;
     FilePath textureSheetPath;
     
+    Vector2 visibleClippingDistances;
+    Vector3 lodRanges;
+    uint32 maxVisibleQuads;
+    
 public:
     
     INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
@@ -209,7 +225,10 @@ public:
                          PROPERTY("densityMap", "Density map", GetVegetationMapPath, SetVegetationMap, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmap, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("textureSheet", "Texture sheet", GetTextureSheetPath, SetTextureSheet, I_SAVE | I_EDIT | I_VIEW)
-                         PROPERTY("vegetationTexture", "vegetation texture", GetVegetationTexture, SetVegetationTexture, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("vegetationTexture", "Vegetation texture", GetVegetationTexture, SetVegetationTexture, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("lodRanges", "Lod ranges", GetLodRange, SetLodRange, I_EDIT | I_VIEW)
+                         PROPERTY("visibilityDistance", "Visibility distances", GetVisibilityDistance, SetVisibilityDistance, I_EDIT | I_VIEW)
+                         PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
                          );
     
 };

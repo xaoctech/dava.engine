@@ -76,7 +76,7 @@ static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
 static const uint32 MAX_BRUSH_DIVERSITY = 4;
     
-static const size_t MAX_RENDER_CELLS = 128;
+static const size_t MAX_RENDER_CELLS = 256;
 static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 80.0f * 80.0f; //meters * meters (square length)
 static const float32 MAX_VISIBLE_SCALING_DISTANCE = 60.0f * 60.0f;
     
@@ -159,13 +159,7 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
     COUNT_OF(CLUSTER_INDICES)
 };
 
-static Vector2 RESOLUTION_RANGES_SCALE[] = //squared
-{
-    Vector2(0.0f, 1.0f),
-    Vector2(1.0, 11.0f),
-    Vector2(11.0f, 1600.0f)
-};
-
+static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 1.0f, 11.0f);
 
 static Vector2 RESOLUTION_RANGES[] = //squared
 {
@@ -217,7 +211,7 @@ inline uint32 MapToResolution(float32 squareDistance)
     uint32 rangesCount = COUNT_OF(RESOLUTION_RANGES);
     for(uint32 i = 0; i < rangesCount; ++i)
     {
-        if(squareDistance >= RESOLUTION_RANGES[i].x &&
+        if(squareDistance > RESOLUTION_RANGES[i].x &&
            squareDistance <= RESOLUTION_RANGES[i].y)
         {
             resolutionId = i;
@@ -275,6 +269,10 @@ VegetationRenderObject::VegetationRenderObject() :
     vegetationMaterial->SetFlag(FastName("MATERIAL_GRASS_PLAINUNIFORMS"), NMaterial::FlagOn);
     
 #endif
+
+    maxVisibleQuads = MAX_RENDER_CELLS;
+    lodRanges = LOD_RANGES_SCALE;
+    ResetVisibilityDistance();
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -373,7 +371,9 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     visibleCells.clear();
     BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
     
-    uint32 requestedBatchCount = Min(visibleCells.size(), MAX_RENDER_CELLS);
+    std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
+    
+    uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
     uint32 currentBatchCount = GetRenderBatchCount();
     
     if(requestedBatchCount > currentBatchCount)
@@ -620,15 +620,7 @@ void VegetationRenderObject::BuildVegetationBrush(uint32 maxClusters)
     DVASSERT(maxClusters > 0);
     DVASSERT(textureSheet.cells.size() > 0);
     
-    Vector2 smallestUnitSize = GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]);
-    for(uint32 i = 0; i < COUNT_OF(RESOLUTION_RANGES); ++i)
-    {
-        RESOLUTION_RANGES[i] = Vector2(smallestUnitSize.x * RESOLUTION_RANGES_SCALE[i].x,
-                                       smallestUnitSize.y * RESOLUTION_RANGES_SCALE[i].y);
-        
-        RESOLUTION_RANGES[i].x *= RESOLUTION_RANGES[i].x;
-        RESOLUTION_RANGES[i].y *= RESOLUTION_RANGES[i].y;
-    }
+    InitLodRanges();
     
     uint32 totalBrushes = MAX_BRUSH_DIVERSITY * COUNT_OF(RESOLUTION_SCALE);
     
@@ -728,6 +720,10 @@ void VegetationRenderObject::BuildVegetationBrush(uint32 maxClusters)
                         clusterBrush->SetCoord(vertexIndex, vertexCoord);
                         clusterBrush->SetBinormal(vertexIndex, clusterCenter);
                         clusterBrush->SetTexcoord(0, vertexIndex, textureSheet.cells[clusterTypeIndex].coords[i % MAX_CELL_TEXTURE_COORDS]);
+                        float32 matrixIndex = Clamp((float32)floor(cX + cY * RESOLUTION_SCALE[resolutionIndex]), 0.0f, MAX_DISTANCE_CELL_INDEX);
+                        DVASSERT(matrixIndex >= 0.0f && matrixIndex <= 15.0f);
+                        DVASSERT(clusterTypeIndex >= 0.0f && clusterTypeIndex <= 3.0f);
+                        
                         clusterBrush->SetTangent(vertexIndex, Vector3(Clamp((float32)floor(cX + cY * RESOLUTION_SCALE[resolutionIndex]), 0.0f, MAX_DISTANCE_CELL_INDEX), clusterTypeIndex, densityId));
                         clusterBrush->SetNormal(vertexIndex, normal);
                         
@@ -1096,6 +1092,72 @@ void TextureSheet::Load(const FilePath &yamlPath)
 
         parser->Release();
     }
+}
+
+void VegetationRenderObject::SetVisibilityDistance(const Vector2& distances)
+{
+    visibleClippingDistances = distances;
+}
+    
+const Vector2& VegetationRenderObject::GetVisibilityDistance() const
+{
+    return visibleClippingDistances;
+}
+    
+void VegetationRenderObject::ResetVisibilityDistance()
+{
+    visibleClippingDistances.x = MAX_VISIBLE_CLIPPING_DISTANCE;
+    visibleClippingDistances.y = MAX_VISIBLE_SCALING_DISTANCE;
+}
+    
+void VegetationRenderObject::SetLodRange(const Vector3& distances)
+{
+    lodRanges = distances;
+    
+    InitLodRanges();
+}
+    
+const Vector3& VegetationRenderObject::GetLodRange() const
+{
+   return lodRanges;
+}
+    
+void VegetationRenderObject::ResetLodRanges()
+{
+   lodRanges = LOD_RANGES_SCALE;
+   
+   InitLodRanges();
+}
+
+void VegetationRenderObject::InitLodRanges()
+{
+    Vector2 smallestUnitSize = GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]);
+    
+    RESOLUTION_RANGES[0].x = lodRanges.x * smallestUnitSize.x;
+    RESOLUTION_RANGES[0].y = lodRanges.y * smallestUnitSize.x;
+
+    RESOLUTION_RANGES[1].x = lodRanges.y * smallestUnitSize.x;
+    RESOLUTION_RANGES[1].y = lodRanges.z * smallestUnitSize.x;
+
+    RESOLUTION_RANGES[2].x = lodRanges.z * smallestUnitSize.x;
+    RESOLUTION_RANGES[2].y = RESOLUTION_RANGES[2].x * 1000.0f;
+
+    
+    for(uint32 i = 0; i < COUNT_OF(RESOLUTION_RANGES); ++i)
+    {
+        RESOLUTION_RANGES[i].x *= RESOLUTION_RANGES[i].x;
+        RESOLUTION_RANGES[i].y *= RESOLUTION_RANGES[i].y;
+    }
+}
+
+void VegetationRenderObject::SetMaxVisibleQuads(const uint32& _maxVisibleQuads)
+{
+    maxVisibleQuads = _maxVisibleQuads;
+}
+
+const uint32& VegetationRenderObject::GetMaxVisibleQuads() const
+{
+    return maxVisibleQuads;
 }
 
 };
