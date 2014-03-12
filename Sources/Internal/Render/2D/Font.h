@@ -81,7 +81,7 @@ public:
 		\brief Set size.
 		\param[in] size in points
 	*/
-	virtual void SetSize(float32 size);
+	virtual void SetSize(float32 size, bool setOriginalSize = true);
 
 	/**
 		\brief Set the original size (previous one might be recalculated).
