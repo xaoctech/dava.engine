@@ -27,26 +27,62 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#include "SizeDialog.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-
-#include <sys/atomics.h>
-
-namespace DAVA 
+SizeDialog::SizeDialog(QWidget *parent) :
+QDialog(parent)
 {
-
-int32 AtomicIncrement( int32 &value )
-{
-    return (int32)__sync_fetch_and_add((int *)&value, 1);
+    verticalLayout = new QVBoxLayout(this);
+    
+    messageLbl = new QLabel(this);
+    messageLbl->setText("Set new size for image:");
+    verticalLayout->addWidget(messageLbl);
+    
+    horLayout = new QHBoxLayout(this);
+    
+    widthLbl = new QLabel(this);
+    widthLbl->setText("Width:");
+    
+    widthSpinBox = new QSpinBox(this);
+    widthSpinBox->setMinimum(1);
+    widthSpinBox->setMaximum(99999);
+    widthSpinBox->setSingleStep(1);
+    
+    heightLbl = new QLabel(this);
+    heightLbl->setText("Width:");
+    
+    heightSpinBox = new QSpinBox(this);
+    heightSpinBox->setMinimum(1);
+    heightSpinBox->setMaximum(99999);
+    heightSpinBox->setSingleStep(1);
+    
+    horLayout->addWidget(widthLbl);
+    horLayout->addWidget(widthSpinBox);
+    horLayout->addWidget(heightLbl);
+    horLayout->addWidget(heightSpinBox);
+    
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    
+    verticalLayout->addLayout(horLayout);
+    verticalLayout->addWidget(buttonBox);
 }
 
-int32 AtomicDecrement( int32 &value )
+SizeDialog::~SizeDialog()
 {
-	return (int32)__sync_fetch_and_sub((int *)&value, 1) - 1;
+    delete horLayout;
+    delete verticalLayout;
+    delete messageLbl;
+    delete widthLbl;
+    delete widthSpinBox;
+    delete heightLbl;
+    delete heightSpinBox;
+    delete buttonBox;
 }
 
-};
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+DAVA::Vector2 SizeDialog::GetSize() const
+{
+    return DAVA::Vector2(widthSpinBox->value(), heightSpinBox->value());
+}

@@ -199,7 +199,7 @@ float UIButtonMetadata::GetFontSizeForState(UIControl::eControlState state) cons
         Font* referenceFont = referenceButtonText->GetFont();
         if (referenceFont)
         {
-            return referenceFont->GetSize();
+            return referenceFont->GetOriginalSize();
         }
     }
     
@@ -828,6 +828,9 @@ void UIButtonMetadata::SetFittingType(int value)
     UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(uiControlStates[GetActiveStateIndex()]);
     if (buttonText)
     {
+        // Changing Fitting Option affects the font which might be reused
+        // by other controls, so clone the existing one.
+        CloneFont(buttonText);
         buttonText->SetFittingOption(value);
     }
     

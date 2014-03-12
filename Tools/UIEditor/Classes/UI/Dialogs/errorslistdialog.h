@@ -27,26 +27,32 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#ifndef ERRORSLISTDIALOG_H
+#define ERRORSLISTDIALOG_H
 
-#if defined(__DAVAENGINE_ANDROID__)
+#include "Base/BaseTypes.h"
+#include <QDialog>
+#include <QStringListModel>
 
-#include <sys/atomics.h>
+using namespace DAVA;
 
-namespace DAVA 
-{
-
-int32 AtomicIncrement( int32 &value )
-{
-    return (int32)__sync_fetch_and_add((int *)&value, 1);
+namespace Ui {
+class ErrorsListDialog;
 }
-
-int32 AtomicDecrement( int32 &value )
+    
+class ErrorsListDialog : public QDialog
 {
-	return (int32)__sync_fetch_and_sub((int *)&value, 1) - 1;
-}
+    Q_OBJECT
+    
+public:
+    explicit ErrorsListDialog(QWidget *parent = 0);
+    ~ErrorsListDialog();
+	
+	void InitializeErrorsList(const Set<String>& errorsSet);
 
+private:
+ 	QStringListModel * listModel;
+    Ui::ErrorsListDialog *ui;
 };
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+#endif // ERRORSLISTDIALOG_H
