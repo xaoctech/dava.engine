@@ -124,6 +124,12 @@ public:
     static const char* UIPARTICLES_STOP_METHOD_NAME;
     static const char* UIPARTICLES_RELOAD_METHOD_NAME;
     
+    // UI Joypad properties.
+    static const char* JOYPAD_STICK_SPRITE_PROPERTY_NAME;
+    static const char* JOYPAD_STICK_SPRITE_FRAME_PROPERTY_NAME;
+    static const char* JOYPAD_DEAD_AREA_PROPERTY_NAME;
+    static const char* JOYPAD_DIGITAL_SENSE_PROPERTY_NAME;
+    
 	// Custom Control properties.
 	static const char* CUSTOM_CONTROL_NAME;
 };

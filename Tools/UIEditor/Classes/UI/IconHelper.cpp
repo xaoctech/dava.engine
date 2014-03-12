@@ -91,6 +91,10 @@ QString IconHelper::GetIconPathForUIControl(DAVA::UIControl *uiControl)
 	{
 		className = "UIMovieView";
 	}
+    else if (dynamic_cast<UIJoypad*>(uiControl))
+	{
+		className = "UIJoypad";
+	}
 
 	return GetIconPathForClassName(className);
 }

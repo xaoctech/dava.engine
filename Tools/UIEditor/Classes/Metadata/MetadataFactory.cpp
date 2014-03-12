@@ -48,6 +48,7 @@
 #include "UIParticlesMetadata.h"
 #include "UIWebViewMetadata.h"
 #include "UIMovieViewMetadata.h"
+#include "UIJoypadMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
@@ -144,6 +145,11 @@ BaseMetadata* MetadataFactory::GetMetadataForUIControl(const UIControl* uiContro
     if (dynamic_cast<const UIMovieView*>(uiControl))
 	{
 		return new UIMovieViewMetadata();
+	}
+
+    if (dynamic_cast<const UIJoypad*>(uiControl))
+	{
+		return new UIJoypadMetadata();
 	}
 
     // Add metadata for other Controls here.
