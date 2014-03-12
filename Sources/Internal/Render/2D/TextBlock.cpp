@@ -133,7 +133,7 @@ void TextBlock::SetFont(Font * _font)
 	SafeRelease(font);
 	font = SafeRetain(_font);
 
-	originalFontSize = font->GetSize();
+	originalFontSize = font->GetOriginalSize();
 
     mutex.Unlock();
 	Prepare();
@@ -351,7 +351,7 @@ void TextBlock::Prepare()
                     }
                 }
             }
-            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx))
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx) && (requestedSize.x >= 0))
             {
                 Size2i textSizePoints;
                 int32 length = (int32)text.length();
@@ -415,7 +415,7 @@ void TextBlock::Prepare()
 						{
 							if (prevFontSize < font->GetSize())
 							{
-								font->SetSize(prevFontSize);
+								font->SetSize(prevFontSize, false);
 								textSize = font->GetStringSize(text);
 								h = textSize.dy;
 								if (requestedSize.dx >= 0)
@@ -445,7 +445,7 @@ void TextBlock::Prepare()
 						{
 							if (prevFontSize < font->GetSize())
 							{
-								font->SetSize(prevFontSize);
+								font->SetSize(prevFontSize, false);
 								textSize = font->GetStringSize(text);
 								w = textSize.dx;
 								if (requestedSize.dy >= 0)
@@ -485,7 +485,7 @@ void TextBlock::Prepare()
 					{
 						finalSize *= yMul;
 					}
-					font->SetSize(finalSize);
+					font->SetSize(finalSize, false);
 					textSize = font->GetStringSize(text);
 				};
 			}
@@ -532,7 +532,7 @@ void TextBlock::Prepare()
 							yMul = drawSize.y / textSize.dy;
 							if(lastSize < font->GetSize())
 							{
-								font->SetSize(lastSize);
+								font->SetSize(lastSize, false);
 								h = (int32)lastHeight;
 								break;
 							}
@@ -560,6 +560,10 @@ void TextBlock::Prepare()
 							{
 								yMul = (drawSize.y * 0.95f) / textSize.dy;
 							}
+                            if (yMul == 1.0f)
+                            {
+                                yMul = 1.05f;
+                            }
 						}
 					}
 					
@@ -574,7 +578,7 @@ void TextBlock::Prepare()
 					isChanged = true;
 					finalSize *= yMul;
 					
-					font->SetSize(finalSize);
+					font->SetSize(finalSize, false);
                     //					textSize = font->GetStringSize(text);
                     
                     if(isMultilineBySymbolEnabled)
