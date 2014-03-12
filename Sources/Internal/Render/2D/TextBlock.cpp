@@ -133,7 +133,7 @@ void TextBlock::SetFont(Font * _font)
 	SafeRelease(font);
 	font = SafeRetain(_font);
 
-	originalFontSize = font->GetOriginalSize();
+	originalFontSize = font->GetSize();
 
     mutex.Unlock();
 	Prepare();
