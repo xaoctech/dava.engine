@@ -427,8 +427,8 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                 Matrix4& scaleDensityMap = shaderScaleDensityParams[paramIndex];
                 scaleDensityMap.Zero();
                 
-                int32 mapX = spatialData->x + halfWidth;
-                int32 mapY = spatialData->y + halfHeight;
+                int32 mapX = spatialData->x + halfWidth + x;
+                int32 mapY = spatialData->y + halfHeight + y;
                 uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
 
                 uint8 *vegetationMapValuePtr = (vegetationMap->data + cellDescriptionIndex * 4);
@@ -502,6 +502,7 @@ void VegetationRenderObject::SetVegetationMap(const FilePath& path)
         if(images.size())
         {
             VegetationMap* vegMap = images[0];
+            
             SetVegetationMap(vegMap);
             SetVegetationMapPath(path);
                 
