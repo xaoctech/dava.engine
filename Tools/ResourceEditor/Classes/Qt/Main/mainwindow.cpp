@@ -655,6 +655,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
+	QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowGeneralSettings()));
 	QObject::connect(ui->actionCurrentSceneSettings, SIGNAL(triggered()), this, SLOT(OnShowCurrentSceneSettings()));
@@ -2568,6 +2569,25 @@ void QtMainWindow::OnEmptyEntity()
 	scene->selectionSystem->SetSelection(newEntity);
 
 	newEntity->Release();
+}
+
+void QtMainWindow::OnAddWindEntity()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	Entity * windEntity = new Entity();
+	windEntity->SetName(ResourceEditor::WIND_NODE_NAME);
+
+	WindComponent * wind = new WindComponent();
+	wind->SetWindDirection(Vector3(1.f, 0.f, 0.f));
+	wind->SetWindForce(0.25f);
+	windEntity->AddComponent(wind);
+
+	scene->Exec(new EntityAddCommand(windEntity, scene));
+	scene->selectionSystem->SetSelection(windEntity);
+
+	windEntity->Release();
 }
 
 bool QtMainWindow::LoadAppropriateTextureFormat()
