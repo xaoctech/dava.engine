@@ -211,6 +211,27 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 			Vector3 normalAverage = normal0 + normal1 + normal2 + normal3;
 			normalAverage.Normalize();
 			landscapeVertices[index].normal = normalAverage;
+            LandscapeVertices[index].tangent = Normalize(right - position);
+            
+            /*
+                VS: Algorithm
+                 // # P.xy store the position for which we want to calculate the normals
+                 // # height() here is a function that return the height at a point in the terrain
+                 
+                 // read neightbor heights using an arbitrary small offset
+                 vec3 off = vec3(1.0, 1.0, 0.0);
+                 float hL = height(P.xy - off.xz);
+                 float hR = height(P.xy + off.xz);
+                 float hD = height(P.xy - off.zy);
+                 float hU = height(P.xy + off.zy);
+                 
+                 // deduce terrain normal
+                 N.x = hL - hR;
+                 N.y = hD - hU;
+                 N.z = 2.0;
+                 N = normalize(N);
+             */
+            
 #endif
 			
             index++;
@@ -223,6 +244,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
 	landscapeRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].normal);
+    LandscapeRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].tangent);
 #endif
 	
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
