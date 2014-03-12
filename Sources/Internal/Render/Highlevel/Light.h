@@ -70,13 +70,11 @@ public:
     void SetType(eType _type);
     void SetAmbientColor(const Color & _color);
     void SetDiffuseColor(const Color & _color);
-    void SetSpecularColor(const Color & _color);
     void SetIntensity(float32 intensity);
     
     eType GetType() const;
     const Color & GetAmbientColor() const;
     const Color & GetDiffuseColor() const;    
-    const Color & GetSpecularColor() const;    
     float32 GetIntensity() const;
     
     const Vector3 & GetPosition() const;
@@ -114,7 +112,6 @@ protected:
     
     Color ambientColor;
     Color diffuseColor;
-    Color specularColor;
     float32 intensity;
 public:
     
@@ -127,8 +124,7 @@ public:
 		PROPERTY("isDynamic", "isDynamic", IsDynamic, SetDynamic, I_VIEW | I_EDIT)
                          
         MEMBER(ambientColor, "Ambient Color", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(diffuseColor, "Diffuse Color", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(specularColor, "Specular Color", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(diffuseColor, "Color", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(intensity, "Intensity", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
     );
