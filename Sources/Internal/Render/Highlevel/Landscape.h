@@ -168,6 +168,7 @@ public:
 		Vector2 texCoord;
 #ifdef LANDSCAPE_SPECULAR_LIT
 		Vector3 normal;
+        Vector3 tangent;
 #endif
 	};
     
