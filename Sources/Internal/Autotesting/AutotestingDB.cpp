@@ -538,7 +538,7 @@ namespace DAVA
 		Logger::Debug("AutotestingSystem::SetTestStarted Test%3d:%s", AutotestingSystem::Instance()->testIndex, AutotestingSystem::Instance()->testName.c_str());
 
 		MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-		KeyedArchive* currentRunArchive = FindRunArchive(dbUpdateObject, "autotesting_system");
+		KeyedArchive* currentRunArchive = FindOrInsertBuildArchive(dbUpdateObject, "autotesting_system");
 
 		KeyedArchive* deviceArchive;
 		String result;
