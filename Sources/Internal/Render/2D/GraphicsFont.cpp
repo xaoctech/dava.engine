@@ -116,6 +116,8 @@ Font * GraphicsFont::Clone() const
 	cloneFont->SetVerticalSpacing(this->GetVerticalSpacing());
     cloneFont->SetHorizontalSpacing(this->GetHorizontalSpacing());
 	cloneFont->SetSize(this->GetSize());
+    cloneFont->SetOriginalSize(this->GetOriginalSize());
+
     cloneFont->fontDefinitionName = this->GetFontDefinitionName();
 	
 	return cloneFont;
