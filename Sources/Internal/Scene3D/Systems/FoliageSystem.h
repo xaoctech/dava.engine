@@ -49,7 +49,7 @@ class FoliageSystem : public SceneSystem
 public:
     
     FoliageSystem(Scene* scene);
-    ~FoliageSystem();
+    virtual ~FoliageSystem();
     
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);

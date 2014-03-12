@@ -574,7 +574,7 @@ void VegetationRenderObject::SetHeightmap(Heightmap* _heightmap)
     if(heightmap != _heightmap)
     {
         SafeRelease(heightmap);
-        heightmap = SafeRetain(_heightmap);
+        heightmap = (_heightmap->Data()) ? SafeRetain(_heightmap) : NULL;
         
         if(heightmap)
         {

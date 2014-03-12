@@ -107,6 +107,7 @@ public:
     Keep in mind that landscape orientation cannot be changed using localTransform and worldTransform matrices. 
  */ 
 
+class FoliageSystem;
 class NMaterial;
 class Landscape : public RenderObject
 {
@@ -295,6 +296,8 @@ public:
 	int32 GetDrawIndices() const;
 	
 	virtual void SetRenderSystem(RenderSystem * _renderSystem);
+    
+    void SetFoliageSystem(FoliageSystem* _foliageSystem);
 
 protected:
 	
@@ -429,6 +432,8 @@ protected:
 	void SetFogInternal(BaseObject * caller, void * param, void *callerData);
 
 	void SetDefaultValues();
+    
+    FoliageSystem* foliageSystem;
 
 public:
    
