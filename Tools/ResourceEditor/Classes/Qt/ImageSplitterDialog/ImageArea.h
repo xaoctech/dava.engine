@@ -27,26 +27,57 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#ifndef __QT_IMAGE_AREA_H__
+#define __QT_IMAGE_AREA_H__
 
-#if defined(__DAVAENGINE_ANDROID__)
+#include <QLabel>
+#include "DAVAEngine.h"
 
-#include <sys/atomics.h>
+class QMimeData;
 
-namespace DAVA 
+class ImageArea : public QLabel
 {
+    Q_OBJECT
+    
+public:
+    
+    ImageArea(QWidget *parent = 0);
+    
+    ~ImageArea();
+        
+    void SetImage(const DAVA::FilePath& filePath);
 
-int32 AtomicIncrement( int32 &value )
-{
-    return (int32)__sync_fetch_and_add((int *)&value, 1);
-}
+    void SetImage(DAVA::Image* image);
 
-int32 AtomicDecrement( int32 &value )
-{
-	return (int32)__sync_fetch_and_sub((int *)&value, 1) - 1;
-}
+    inline DAVA::Image* GetImage() const;
+    
+    DAVA::Vector2 GetAcceptableSize() const;
+    
+public slots:
+    void clear();
+    void UpdatePreviewPicture();
+    
+    void SetAcceptableSize(const DAVA::Vector2& size);
+    
+signals:
+    
+    void changed();
+    
+protected:
 
+    void mousePressEvent(QMouseEvent * event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
+        
+    void ConnectSignals();
+    
+    DAVA::Image* image;
+    DAVA::Vector2 acceptableSize;
 };
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+inline DAVA::Image* ImageArea::GetImage() const
+{
+    return image;
+}
 
+#endif /* defined(__QT_IMAGE_AREA_H__) */

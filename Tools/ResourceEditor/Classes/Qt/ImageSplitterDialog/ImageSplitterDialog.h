@@ -27,26 +27,58 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#ifndef __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
+#define __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__
 
-#if defined(__DAVAENGINE_ANDROID__)
+#include <QDialog>
+#include "DAVAEngine.h"
 
-#include <sys/atomics.h>
+#include <QtGui>
 
-namespace DAVA 
-{
-
-int32 AtomicIncrement( int32 &value )
-{
-    return (int32)__sync_fetch_and_add((int *)&value, 1);
+namespace Ui {
+class ImageSplitter;
 }
 
-int32 AtomicDecrement( int32 &value )
+class ImageArea;
+class ImageSplitterDialog : public QDialog
 {
-	return (int32)__sync_fetch_and_sub((int *)&value, 1) - 1;
-}
+    Q_OBJECT
+    
+public:
+    
+    explicit ImageSplitterDialog(QWidget *parent = 0);
+    
+    ~ImageSplitterDialog();
+    
+protected slots:
+    
+    void PathSelected(DAVA::String path);
+    
+    void ImageAreaChanged();
+    
+    void OnRestoreClicked();
+    
+    void OnSaveAsClicked(bool saveSplittedImages = false);
+    
+    void OnSaveClicked();
+    
+    void OnSaveChannelsClicked();
+    
+    void OnFillBtnClicked();
+    
+protected:
+    
+    void ConnectSignals();
 
+    void SetAcceptableImageSize(const DAVA::Vector2& newSize);
+    
+    void Save(const DAVA::FilePath& filePath, bool saveSplittedImagesSeparately);
+    
+    Ui::ImageSplitter *ui;
+    
+    DAVA::Vector2 acceptableSize;
+    DAVA::String  lastSelectedFile;
+    DAVA::Vector<ImageArea*> rgbaControls;
 };
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+#endif // __RESOURCEEDITORQT__IMAGESPLITTER_DIALOG_H__

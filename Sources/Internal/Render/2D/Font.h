@@ -81,14 +81,27 @@ public:
 		\brief Set size.
 		\param[in] size in points
 	*/
-	virtual void SetSize(float32 size);
+	virtual void SetSize(float32 size, bool setOriginalSize = true);
 
 	/**
-		\brief Get size.
+		\brief Set the original size (previous one might be recalculated).
+		\param[in] size in points
+        \param[in] Also update the original size
+	*/
+	virtual void SetOriginalSize(float32 originalSize);
+
+	/**
+		\brief Get size (might be recalculated).
 		\returns size in pixels
 	*/
 	virtual float32	GetSize() const;
 	
+	/**
+		\brief Get the original size.
+		\returns size in pixels
+	*/
+	virtual float32	GetOriginalSize() const;
+
 	/**
 	 \brief Set vertical spacing.
 	 Spacing value is added to vertical range between lines in multiline text.
@@ -199,6 +212,8 @@ protected:
 	static int32 globalFontDPI;
 	
 	float32	size;
+    float32 originalSize;
+
 	int32 verticalSpacing;
 	
 	eFontType fontType;

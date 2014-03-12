@@ -27,26 +27,32 @@
 =====================================================================================*/
 
 
-#include "Base/Atomic.h"
+#ifndef __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
+#define __QT_IMAGE_SPLITTER_SIZE_DIALOG_H__
 
-#if defined(__DAVAENGINE_ANDROID__)
+#include "DAVAEngine.h"
+#include <QtGui>
 
-#include <sys/atomics.h>
-
-namespace DAVA 
+class SizeDialog : public QDialog
 {
-
-int32 AtomicIncrement( int32 &value )
-{
-    return (int32)__sync_fetch_and_add((int *)&value, 1);
-}
-
-int32 AtomicDecrement( int32 &value )
-{
-	return (int32)__sync_fetch_and_sub((int *)&value, 1) - 1;
-}
-
+public:
+    
+    explicit SizeDialog(QWidget *parent = 0);
+    
+    ~SizeDialog();
+    
+    DAVA::Vector2 GetSize() const;
+    
+private:
+    
+    QVBoxLayout *verticalLayout;
+    QLabel* messageLbl;
+    QHBoxLayout *horLayout;
+    QLabel* widthLbl;
+    QSpinBox* widthSpinBox;
+    QLabel* heightLbl;
+    QSpinBox* heightSpinBox;
+    QDialogButtonBox* buttonBox;
 };
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
+#endif /* defined(__QT_IMAGE_SPLITTER_SIZE_DIALOG_H__) */
