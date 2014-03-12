@@ -182,6 +182,9 @@ public:
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
     static const FastName PARAM_LIGHTMAP_SIZE;
     
+    static const FastName PARAM_RCP_SCREEN_SIZE;
+    static const FastName PARAM_SCREEN_OFFSET;
+    
 	static const FastName FLAG_VERTEXFOG;
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
@@ -191,6 +194,8 @@ public:
     static const FastName FLAG_DISTANCEATTENUATION;
 
     static const FastName FLAG_SCREEN_SPACE_WATER;
+    
+    static const FastName FLAG_DEBUG_UNITY_Z_NORMAL;
     
 	static const FastName FLAG_LIGHTMAPONLY;
 	static const FastName FLAG_TEXTUREONLY; //VI: this flag is for backward compatibility with old materials. See FLAG_ALBEDOONLY

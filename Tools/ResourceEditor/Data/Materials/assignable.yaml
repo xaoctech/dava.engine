@@ -86,7 +86,8 @@
  name: "PixelLit SpecularMap Reflection Opaque"
  path: PixelLit.SpecularMap.Reflection.Opaque.material
 -
- name: "Water"
+ name: "Water All Qualities"
  path: WaterAllQualities.material
-
- 
+-
+ name: "Water All Qualities"
+ path: WaterAllQualities.material 

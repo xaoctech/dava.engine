@@ -2,8 +2,8 @@ RenderTechnique:
     Layers: ["WaterLayer"]
     RenderPass:
         Name: "ForwardPass"
-        Shader: "~res:/Materials/Shaders/Default/water2"
-        UniqueDefines: ["PIXEL_LIT", "REFLECTION", "REFRACTION"]
+        Shader: "~res:/Materials/Shaders/Default/water"
+        UniqueDefines: ["PIXEL_LIT", "SCREEN_SPACE_WATER", "REAL_REFLECTION"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

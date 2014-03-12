@@ -83,6 +83,10 @@ const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
+const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
+const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
+
+
 const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
 const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
@@ -92,6 +96,8 @@ const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 
 const FastName NMaterial::FLAG_SCREEN_SPACE_WATER = FastName("SCREEN_SPACE_WATER");
+
+const FastName NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL = FastName("DEBUG_UNITY_Z_NORMAL");
 
 const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
@@ -115,6 +121,8 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 	NMaterial::FLAG_LIGHTMAPONLY,
 	NMaterial::FLAG_TEXTUREONLY,
 	NMaterial::FLAG_SETUPLIGHTMAP,
+
+    NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL,
 	
 	NMaterial::FLAG_VIEWALBEDO,
 	NMaterial::FLAG_VIEWAMBIENT,
@@ -124,7 +132,9 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 
 static FastName RUNTIME_ONLY_PROPERTIES[] =
 {
-	NMaterial::PARAM_LIGHTMAP_SIZE
+	NMaterial::PARAM_LIGHTMAP_SIZE,
+    NMaterial::PARAM_RCP_SCREEN_SIZE,
+    NMaterial::PARAM_SCREEN_OFFSET
 };
 
 static FastName RUNTIME_ONLY_TEXTURES[] =
@@ -2693,6 +2703,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 		ret.push_back(FLAG_TEXTURESHIFT);
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
         ret.push_back(FLAG_SCREEN_SPACE_WATER);
+        ret.push_back(FLAG_DEBUG_UNITY_Z_NORMAL);
 	}
 	return ret;
 }
