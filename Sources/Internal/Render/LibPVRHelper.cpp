@@ -2296,7 +2296,7 @@ void LibPVRHelper::SwapDataBytes(const PVRHeaderV3 &header, uint8 *data, const u
     }
 }
 
-bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLevel, const uint32 startMipMapLevel, Vector<Image *> &imageSet)
+bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLevel, const uint32 baseMipMap, Vector<Image *> &imageSet)
 {
     //Texture setup
     const PVRHeaderV3 & compressedHeader = pvrFile->header;
@@ -2309,8 +2309,6 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
         return false;
     }
     
-    const PixelFormat & formatID = formatDescriptor.formatID;
-
 	uint32 cubemapLayout = GetCubemapLayout(pvrFile);
 	for(uint32 faceIndex = 0; faceIndex < compressedHeader.u32NumFaces; ++faceIndex)
     {
@@ -2319,7 +2317,7 @@ bool LibPVRHelper::LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLe
 		image->width = PVRT_MAX(1, compressedHeader.u32Width >> mipMapLevel);
 		image->height = PVRT_MAX(1, compressedHeader.u32Height >> mipMapLevel);
 		image->format = formatDescriptor.formatID;
-		image->mipmapLevel = mipMapLevel - startMipMapLevel;
+		image->mipmapLevel = mipMapLevel - baseMipMap;
 		
 		if(cubemapLayout != 0)
 		{
