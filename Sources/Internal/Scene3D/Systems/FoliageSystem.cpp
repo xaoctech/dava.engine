@@ -55,6 +55,7 @@ namespace DAVA
         {
             SafeRelease(landscapeEntity);
             landscapeEntity = SafeRetain(entity);
+            landscapeRO->SetFoliageSystem(this);
             
             SyncFoliageWithLandscape();
         }
