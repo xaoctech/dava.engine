@@ -95,9 +95,13 @@ String Font::GetRawHashString()
 	return Format("%i_%.0f_%i", fontType, size, verticalSpacing);
 }
 
-void Font::SetSize(float32 _size)
+void Font::SetSize(float32 _size, bool setOriginalSize)
 {
 	size = _size;
+    if (setOriginalSize)
+    {
+        SetOriginalSize(_size);
+    }
 }
 
 void Font::SetOriginalSize(float32 _originalSize)
