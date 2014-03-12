@@ -234,6 +234,10 @@ __res; })
         
         int32 tail = (int32)num;
         
+        num -= tail;
+        if (precision > 0 && num >= 0.5f)
+            tail++;
+        
         type = SIGN | LEFT;
         char16 *firstStr = Number(str, whole, 10, -1, -1, type);
         if(tail)
