@@ -133,7 +133,7 @@ void TextBlock::SetFont(Font * _font)
 	SafeRelease(font);
 	font = SafeRetain(_font);
 
-	originalFontSize = font->GetSize();
+	originalFontSize = font->GetOriginalSize();
 
     mutex.Unlock();
 	Prepare();
@@ -351,7 +351,7 @@ void TextBlock::Prepare()
                     }
                 }
             }
-            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx))
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx) && (requestedSize.x >= 0))
             {
                 Size2i textSizePoints;
                 int32 length = (int32)text.length();
@@ -560,6 +560,10 @@ void TextBlock::Prepare()
 							{
 								yMul = (drawSize.y * 0.95f) / textSize.dy;
 							}
+                            if (yMul == 1.0f)
+                            {
+                                yMul = 1.05f;
+                            }
 						}
 					}
 					
