@@ -157,6 +157,7 @@ FTFont *	FTFont::Clone() const
 {
 	FTFont *retFont = new FTFont(internalFont);
 	retFont->size =	size;
+    retFont->originalSize = originalSize;
 
 	retFont->verticalSpacing =	verticalSpacing;
 

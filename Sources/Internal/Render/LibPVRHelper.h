@@ -148,7 +148,7 @@ protected:
 
     static void ReadMetaData(File *file, PVRFile *pvrFile, const bool swapBytes);
 
-  	static bool LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLevel, const uint32 startMipMapLevel, Vector<Image *> &imageSet);
+  	static bool LoadMipMapLevel(const PVRFile *pvrFile, const uint32 mipMapLevel, const uint32 baseMipMap, Vector<Image *> &imageSet);
   	static uint32 GetCubemapLayout(const PVRFile *pvrFile);
     static const MetaDataBlock * GetCubemapMetadata(const PVRFile *pvrFile);
 
