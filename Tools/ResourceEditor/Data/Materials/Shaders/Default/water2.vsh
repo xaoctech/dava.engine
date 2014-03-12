@@ -176,18 +176,15 @@ void main()
 	//normalize (v);
 	varHalfVec = v;
     
-#if defined(REFLECTION)
+
     v.x = dot (eyeCoordsPosition, t);
 	v.y = dot (eyeCoordsPosition, b);
 	v.z = dot (eyeCoordsPosition, n);
 	cameraToPointInTangentSpace = v;
     
     vec3 binormTS = cross(inNormal, inTangent);
-//    tbnToWorldMatrix = mat3(vec3(inTangent.x, binormTS.x, inNormal.x),
-//                            vec3(inTangent.y, binormTS.y, inNormal.y),
-//                            vec3(inTangent.z, binormTS.z, inNormal.z));
     tbnToWorldMatrix = mat3(inTangent, binormTS, inNormal);
-#endif
+
 #endif
 
 #if defined(VERTEX_FOG)
