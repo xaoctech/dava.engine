@@ -395,7 +395,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
         
         if(IsAutobindUniform(shaderSemantic))
         {
-            //Logger::FrameworkDebug(Format("%s %d", attrName.c_str(), shaderSemantic).c_str());
+            Logger::FrameworkDebug(Format("Autobind: %s %d", attrName.c_str(), shaderSemantic).c_str());
             autobindUniformCount++;
         }
         
@@ -976,7 +976,10 @@ void Shader::Bind()
         RENDER_VERIFY(glUseProgram(program));
         activeProgram = program;
     }
-    
+}
+
+void Shader::BindDynamicParameters()
+{
     //for (int32 k = 0; k < activeUniforms; ++k)
     //{
     //	Uniform* currentUniform = GET_UNIFORM(k);
@@ -1140,16 +1143,27 @@ void Shader::Bind()
             case PARAM_CAMERA_POS:
             case PARAM_CAMERA_DIR:
             case PARAM_CAMERA_UP:
+            case PARAM_LIGHT0_COLOR:
+            case PARAM_LIGHT0_AMBIENT_COLOR:
             {
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
                 if (_updateSemantic != currentUniform->updateSemantic)
                 {
                     RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
-                    
-                    Vector3 * camParam = (Vector3*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
-                    //RENDER_VERIFY(glUniform3fv(currentUniform->location, 1, (float*)camParam));
-                    SetUniformValueByUniform(currentUniform, *camParam);
-
+                    Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_LIGHT0_POSITION:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                    Vector4 * param = (Vector4*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
                     currentUniform->updateSemantic = _updateSemantic;
                 }
                 break;
@@ -1161,6 +1175,7 @@ void Shader::Bind()
                 SetUniformColor4ByUniform(currentUniform, c);
                 break;
             }
+            
             case PARAM_GLOBAL_TIME:
             {
                 if (currentUniform->updateSemantic != Core::Instance()->GetGlobalFrameIndex())

@@ -239,9 +239,9 @@ public:
 		
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
-    uint32 GetLightCount() { return lightCount; };
-    void SetLight(uint32 index, Light * light, bool forceUpdate);
-    Light * GetLight(uint32 index) { return lights[index]; };
+//    uint32 GetLightCount() { return lightCount; };
+//    void SetLight(uint32 index, Light * light, bool forceUpdate);
+//    Light * GetLight(uint32 index) { return lights[index]; };
 	inline bool IsDynamicLit() {return materialDynamicLit;}
 	//}END TODO
 	
@@ -539,14 +539,13 @@ protected:
 	void UpdateShaderWithFlags(bool updateChildren = false);
 	//static Texture* GetStubTexture(const FastName& uniformName);
 	
-	void SetupPerFrameProperties(Camera* camera);
 	void BindMaterialTextures(RenderPassInstance* passInstance);
 	void BindMaterialProperties(RenderPassInstance* passInstance);
 	
 	//VI: this method is for updating light. It's temporary solution hopefully
-	void UpdateLightingProperties(Light* light);
+	//void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
-	void SetLightInternal(int index, Light* light, bool forceUpdate);
+	//void SetLightInternal(int index, Light* light, bool forceUpdate);
 
     FastName GetEffectiveQuality() const;
 	

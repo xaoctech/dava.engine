@@ -128,8 +128,11 @@ public:
     inline uint32 GetSortingOffset();
 
 	void SetVisibilityCriteria(uint32 criteria);
-    bool GetVisible() const;
-
+    //bool GetVisible() const;
+    
+    inline void SetLight(uint32 index, Light * light);
+    inline Light * GetLight(uint32 index);
+    
 	virtual void UpdateAABBoxFromSource();
 	
     pointer_size layerSortingKey;
@@ -137,6 +140,9 @@ public:
 	virtual ShadowVolume * CreateShadow();
 
 protected:
+    void BindDynamicParameters(Camera * camera);
+    
+    
     uint32 renderLayerIDsBitmaskFromMaterial;
     PolygonGroup * dataSource;
     RenderDataObject * renderDataObject;   // Probably should be replaced to VBO / IBO, but not sure
@@ -152,6 +158,10 @@ protected:
     uint32 sortingKey; //oooookkkk -where o is offset, k is key
     uint32 visiblityCriteria;
 
+    static const uint32 MAX_LIGHT_COUNT = 2;
+    Light * lights[2];
+    
+    
 	AABBox3 aabbox;
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
     OcclusionQuery * occlusionQuery;
@@ -231,8 +241,19 @@ inline uint32 RenderBatch::GetSortingOffset()
     return ((sortingKey>>4)&0x1f);
 }
 
+inline void RenderBatch::SetLight(uint32 index, Light * light)
+{
+    DVASSERT(index < MAX_LIGHT_COUNT)
+    lights[index] = light;
+}
+
+inline Light * RenderBatch::GetLight(uint32 index)
+{
+    return lights[index];
+}
+
     
-} // ns
+} //
 
 #endif	/* __DAVAENGINE_SCENE3D_RENDER_BATCH_H__ */
 

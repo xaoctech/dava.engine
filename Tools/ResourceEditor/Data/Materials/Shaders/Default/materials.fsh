@@ -86,9 +86,8 @@ uniform vec3 metalFresnelReflectance;
 #endif
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
-uniform vec3 materialLightAmbientColor;     // engine pass premultiplied material * light ambient color
-uniform vec3 materialLightDiffuseColor;     // engine pass premultiplied material * light diffuse color
-uniform vec3 materialLightSpecularColor;    // engine pass premultiplied material * light specular color
+uniform vec3 lightAmbientColor0;
+uniform vec3 lightColor0;
 uniform float inGlossiness;
 #endif
 
@@ -247,11 +246,11 @@ void main()
 #if defined(BLINN_PHONG)
     vec3 color = vec3(0.0);
     #if defined(VIEW_AMBIENT)
-        color += materialLightAmbientColor;
+        color += lightAmbientColor0;
     #endif
 
     #if defined(VIEW_DIFFUSE)
-        color += varDiffuseColor * materialLightDiffuseColor;
+        color += varDiffuseColor;
     #endif
 
     #if defined(VIEW_ALBEDO)
@@ -259,21 +258,21 @@ void main()
     #endif
 
     #if defined(VIEW_SPECULAR)
-        color += (varSpecularColor * textureColor0.a) * materialLightSpecularColor;
+        color += (varSpecularColor * textureColor0.a) * lightColor0;
     #endif
     
 #elif defined(NORMALIZED_BLINN_PHONG)
    
     vec3 color = vec3(0.0);
     #if defined(VIEW_AMBIENT) && !defined(MATERIAL_LIGHTMAP)
-        color += materialLightAmbientColor;
+        color += lightAmbientColor0;
     #endif
         
     #if defined(VIEW_DIFFUSE)
         #if defined(MATERIAL_LIGHTMAP)
             color = textureColor1.rgb * 2.0;
         #else
-            color += varDiffuseColor;
+            color += varDiffuseColor * lightColor0;
         #endif
     #endif
         
@@ -282,14 +281,14 @@ void main()
     #endif
     
     #if defined(VIEW_SPECULAR)
-        float glossiness = pow(5000.0, inGlossiness * textureColor0.a); //textureColor0.a;
-        //float glossiness = pow(5000.0, 0.5 * textureColor0.a); //textureColor0.a;
+        float glossiness = pow(5000.0, inGlossiness * textureColor0.a);
         float specularNorm = (glossiness + 2.0) / 8.0;
+        vec3 spec = varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
     
         #if defined(MATERIAL_LIGHTMAP)
-            color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm * textureColor1.rgb / 2.0;
+            color += spec * textureColor1.rgb / 2.0 * lightColor0;
         #else
-            color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
+            color += spec * lightColor0;
         #endif
     #endif
     
@@ -300,7 +299,7 @@ void main()
     // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
-    //normal = vec3(0.0, 0.0, 1.0);
+    normal = vec3(0.0, 0.0, 1.0);
     
     float attenuation = lightIntensity0;
     #if defined(DISTANCE_ATTENUATION)
@@ -332,7 +331,7 @@ void main()
 #if defined(NORMALIZED_BLINN_PHONG)
     vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
     vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
-    float specularity = inSpecularity * textureColor0.a;
+    float specularity = inSpecularity;
     float glossiness = inGlossiness * textureColor0.a;
     float glossPower = pow(5000.0, glossiness); //textureColor0.a;
     
@@ -389,14 +388,14 @@ void main()
     vec3 color = vec3(0.0);
     
     #if defined(VIEW_AMBIENT) && !defined(MATERIAL_LIGHTMAP)
-        color += materialLightAmbientColor;
+        color += lightAmbientColor0;
     #endif
     
     #if defined(VIEW_DIFFUSE)
         #if defined(MATERIAL_LIGHTMAP)
             color = textureColor1.rgb * 2.0;
         #else
-            color += diffuse;
+            color += diffuse * lightColor0;
         #endif
     #endif
     
@@ -406,9 +405,9 @@ void main()
     
     #if defined(VIEW_SPECULAR)
         #if defined(MATERIAL_LIGHTMAP)
-            color += specular * textureColor1.rgb;
+            color += specular * textureColor1.rgb * lightColor0;
         #else
-            color += specular;
+            color += specular * lightColor0;
         #endif
     #endif
 

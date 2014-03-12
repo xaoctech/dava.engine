@@ -888,10 +888,10 @@ void NMaterial::SetPropertyValue(const FastName & keyName,
 	memcpy(materialProperty->data, data, dataSize);
 	
 	//VI: this is temporary solution. It has to be removed once lighting system + autobind system is ready
-	if(IsDynamicLit() && IsLightingProperty(keyName))
-	{
-		UpdateLightingProperties(lights[0]);
-	}
+//	if(IsDynamicLit() && IsLightingProperty(keyName))
+//	{
+//		UpdateLightingProperties(lights[0]);
+//	}
 }
 
 NMaterialProperty* NMaterial::GetPropertyValue(const FastName & keyName) const
@@ -1421,7 +1421,7 @@ void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
 	}
 	
 	//VI: this call is temporary solution. It will be removed once autobind system and lighting system ready
-	SetupPerFrameProperties(camera);
+	//SetupPerFrameProperties(camera);
 	
 	BindMaterialTextures(activePassInstance);
 	
@@ -1430,17 +1430,17 @@ void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
 	BindMaterialProperties(activePassInstance);
 }
 
-void NMaterial::SetupPerFrameProperties(Camera* camera)
-{
-	if(camera && IsDynamicLit() && lights[0])
-	{
-		//const Matrix4 & matrix = camera->GetMatrix();
-		//Vector3 lightPosition0InCameraSpace = lights[0]->GetPosition() * matrix;
-		const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
-        
-		SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC4, 1, lightPositionDirection0InCameraSpace.data);
-	}
-}
+//void NMaterial::SetupPerFrameProperties(Camera* camera)
+//{
+//	if(camera && IsDynamicLit() && lights[0])
+//	{
+//		//const Matrix4 & matrix = camera->GetMatrix();
+//		//Vector3 lightPosition0InCameraSpace = lights[0]->GetPosition() * matrix;
+//		const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
+//        
+//		SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC4, 1, lightPositionDirection0InCameraSpace.data);
+//	}
+//}
 
 void NMaterial::BindMaterialTextures(RenderPassInstance* passInstance)
 {
@@ -1569,80 +1569,80 @@ void NMaterial::Draw(RenderDataObject* renderData, uint16* indices, uint16 index
 	}
 }
 
-void NMaterial::SetLight(uint32 index, Light * light, bool forceUpdate)
-{
-	if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
-	{
-		if(parent)
-		{
-			parent->SetLight(index, light, forceUpdate);
-		}
-		else
-		{
-			SetLightInternal(index, light, forceUpdate);
-		}
-	}
-	else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
-	{
-		SetLightInternal(index, light, forceUpdate);
-		
-		for(size_t i = 0; i < children.size(); ++i)
-		{
-			children[i]->SetLightInternal(index, light, forceUpdate);
-		}
-	}
-}
+//void NMaterial::SetLight(uint32 index, Light * light, bool forceUpdate)
+//{
+//	if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+//	{
+//		if(parent)
+//		{
+//			parent->SetLight(index, light, forceUpdate);
+//		}
+//		else
+//		{
+//			SetLightInternal(index, light, forceUpdate);
+//		}
+//	}
+//	else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
+//	{
+//		SetLightInternal(index, light, forceUpdate);
+//		
+//		for(size_t i = 0; i < children.size(); ++i)
+//		{
+//			children[i]->SetLightInternal(index, light, forceUpdate);
+//		}
+//	}
+//}
+//
+//void NMaterial::SetLightInternal(int index, Light* light, bool forceUpdate)
+//{
+//	bool changed = forceUpdate || (light != lights[index]);
+//	lights[index] = light;
+//	
+//	if(changed && materialDynamicLit)
+//	{
+//		UpdateLightingProperties(lights[0]);
+//	}
+//}
+//
+//void NMaterial::UpdateLightingProperties(Light* light)
+//{
+//	NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
+//	if(propAmbientColor)
+//	{
+//		Color lightAmbientColor = (light) ? light->GetAmbientColor() : Color(0, 0, 0, 0);
+//		Color materialAmbientColor = *(Color*) propAmbientColor->data;
+//		materialAmbientColor = materialAmbientColor * lightAmbientColor;
+//		SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
+//	}
+//	
+//	NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
+//	if(propDiffuseColor)
+//	{
+//		Color lightDiffuseColor = (light) ? light->GetDiffuseColor() : Color(0, 0, 0, 0);
+//		Color materialDiffuseColor = *(Color*) propDiffuseColor->data;
+//		materialDiffuseColor = materialDiffuseColor * lightDiffuseColor;
+//		SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
+//	}
+//	
+//	NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
+//	if(propSpecularColor)
+//	{
+//		Color lightSpecularColor = (light) ? light->GetSpecularColor() : Color(0, 0, 0, 0);
+//		Color materialSpecularColor = *(Color*) propSpecularColor->data;
+//		materialSpecularColor = materialSpecularColor * lightSpecularColor;
+//		SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
+//	}
+//	
+//	float32 intensity = (light) ? light->GetIntensity() : 0;
+//	SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
+//}
 
-void NMaterial::SetLightInternal(int index, Light* light, bool forceUpdate)
-{
-	bool changed = forceUpdate || (light != lights[index]);
-	lights[index] = light;
-	
-	if(changed && materialDynamicLit)
-	{
-		UpdateLightingProperties(lights[0]);
-	}
-}
-
-void NMaterial::UpdateLightingProperties(Light* light)
-{
-	NMaterialProperty* propAmbientColor = GetMaterialProperty(NMaterial::PARAM_PROP_AMBIENT_COLOR);
-	if(propAmbientColor)
-	{
-		Color lightAmbientColor = (light) ? light->GetAmbientColor() : Color(0, 0, 0, 0);
-		Color materialAmbientColor = *(Color*) propAmbientColor->data;
-		materialAmbientColor = materialAmbientColor * lightAmbientColor;
-		SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialAmbientColor);
-	}
-	
-	NMaterialProperty* propDiffuseColor = GetMaterialProperty(NMaterial::PARAM_PROP_DIFFUSE_COLOR);
-	if(propDiffuseColor)
-	{
-		Color lightDiffuseColor = (light) ? light->GetDiffuseColor() : Color(0, 0, 0, 0);
-		Color materialDiffuseColor = *(Color*) propDiffuseColor->data;
-		materialDiffuseColor = materialDiffuseColor * lightDiffuseColor;
-		SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialDiffuseColor);
-	}
-	
-	NMaterialProperty* propSpecularColor = GetMaterialProperty(NMaterial::PARAM_PROP_SPECULAR_COLOR);
-	if(propSpecularColor)
-	{
-		Color lightSpecularColor = (light) ? light->GetSpecularColor() : Color(0, 0, 0, 0);
-		Color materialSpecularColor = *(Color*) propSpecularColor->data;
-		materialSpecularColor = materialSpecularColor * lightSpecularColor;
-		SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &materialSpecularColor);
-	}
-	
-	float32 intensity = (light) ? light->GetIntensity() : 0;
-	SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &intensity);
-}
-
-bool NMaterial::IsLightingProperty(const FastName& propName) const
-{
-	return (NMaterial::PARAM_PROP_AMBIENT_COLOR == propName ||
-			NMaterial::PARAM_PROP_DIFFUSE_COLOR == propName ||
-			NMaterial::PARAM_PROP_SPECULAR_COLOR == propName);
-}
+//bool NMaterial::IsLightingProperty(const FastName& propName) const
+//{
+//	return (NMaterial::PARAM_PROP_AMBIENT_COLOR == propName ||
+//			NMaterial::PARAM_PROP_DIFFUSE_COLOR == propName ||
+//			NMaterial::PARAM_PROP_SPECULAR_COLOR == propName);
+//}
 
 const RenderStateData& NMaterial::GetRenderState(const FastName& passName) const
 {

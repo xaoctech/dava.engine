@@ -254,7 +254,11 @@ void RenderState::Flush(RenderState * hardwareState) const
         RENDER_VERIFY(glActiveTexture(GL_TEXTURE0));
 #endif
 
-    if (shader)shader->Bind();
+    if (shader)
+    {
+        shader->Bind();
+        shader->BindDynamicParameters();
+    }
     else Shader::Unbind();
     hardwareState->shader = shader;
     
