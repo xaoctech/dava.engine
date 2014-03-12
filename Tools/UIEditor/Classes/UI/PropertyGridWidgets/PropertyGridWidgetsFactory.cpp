@@ -46,6 +46,7 @@
 #include "UISwitchMetadata.h"
 #include "UITextFieldMetadata.h"
 #include "UIParticlesMetadata.h"
+#include "UIJoypadMetadata.h"
 
 using namespace DAVA;
 
@@ -101,6 +102,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     particleWidget = new ParticleEffectPropertyGridWidget();
     registeredWidgets.push_back(particleWidget);
+    
+    joypadWidget = new JoypadPropertyGridWidget();
+    registeredWidgets.push_back(joypadWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -279,6 +283,20 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
         
+        return resultList;
+	}
+
+    // UIJoypad
+	const UIJoypadMetadata* uiJoypadMetadata = dynamic_cast<const UIJoypadMetadata*>(metaData);
+	if (uiJoypadMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+		resultList.push_back(joypadWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+
         return resultList;
 	}
 

@@ -92,3 +92,4 @@ REGISTER_CLASS_WITH_ALIAS(PartilceEmitterLoadProxy, "ParticleEmitter3D");
 REGISTER_CLASS(UIWebView);
 REGISTER_CLASS(UIMovieView);
 REGISTER_CLASS(UIParticles);
+REGISTER_CLASS(UIJoypad);

@@ -69,6 +69,7 @@ void LibraryController::Init(LibraryWidget* widget)
     AddControl("UIParticles", new UIParticles());
 	AddControl("UIWebView", new UIWebView());
     AddControl("UIMovieView", new UIMovieView());
+    AddControl("UIJoypad", new UIJoypad());
 }
 
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
