@@ -107,7 +107,7 @@ float32 ImpulseTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosit
     }
     else
     {
-        return 4.f/(time + 0.5) - .8f;
+        return 4.f/(time + 0.5f) - .8f;
     }
 }
     
@@ -120,7 +120,8 @@ bool ImpulseTreeOscillator::IsActive() const
 ///////////////////////////////////WindOscillator///////////////////////////////////////////
     
 WindTreeOscillator::WindTreeOscillator(Entity * owner) :
-    TreeOscillator(0.f, owner)
+    TreeOscillator(0.f, owner),
+	time(0.f)
 {}
     
 void WindTreeOscillator::Update(float32 timeElapsed)
@@ -148,7 +149,8 @@ bool WindTreeOscillator::IsActive() const
 ///////////////////////////////////MovingOscillator/////////////////////////////////////////
     
 MovingTreeOscillator::MovingTreeOscillator(float32 distance, Entity * owner) :
-    TreeOscillator(distance, owner)
+    TreeOscillator(distance, owner),
+	currentSpeed(0.f)
 {}
     
 MovingTreeOscillator::~MovingTreeOscillator()

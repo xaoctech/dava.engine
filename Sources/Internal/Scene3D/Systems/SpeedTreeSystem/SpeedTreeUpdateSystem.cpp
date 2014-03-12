@@ -111,7 +111,7 @@ void SpeedTreeUpdateSystem::AddTreeOscillator(TreeOscillator * oscillator)
 void SpeedTreeUpdateSystem::ForceRemoveTreeOscillator(TreeOscillator * oscillator)
 {
     Vector<TreeOscillator *>::iterator it = activeOscillators.begin();
-    Vector<TreeOscillator *>::iterator itEnd = activeOscillators.begin();
+    Vector<TreeOscillator *>::iterator itEnd = activeOscillators.end();
     while(it != itEnd)
     {
         TreeOscillator * osc = (*it);
@@ -121,6 +121,7 @@ void SpeedTreeUpdateSystem::ForceRemoveTreeOscillator(TreeOscillator * oscillato
             SafeRelease(osc);
             break;
         }
+		++it;
     }
 }
 

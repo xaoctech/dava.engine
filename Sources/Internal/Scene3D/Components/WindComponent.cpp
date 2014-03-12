@@ -54,6 +54,7 @@ Component * WindComponent::Clone(Entity * toEntity)
 	component->SetEntity(toEntity);
     
     component->windDirection = windDirection;
+	component->windForce = windForce;
     
     return component;
 }
@@ -82,6 +83,8 @@ void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
     
 void WindComponent::SetWindDirection(const Vector3 & direction)
 {
+	DVASSERT(direction.Length() > EPSILON);
+
     windDirection = direction;
     windDirection.Normalize();
 }

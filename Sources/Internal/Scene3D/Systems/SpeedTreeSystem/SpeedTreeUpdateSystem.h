@@ -47,7 +47,8 @@ public:
     struct TreeInfo
     {
         TreeInfo(SpeedTreeObject * object) :
-        treeObject(object)
+        treeObject(object),
+		elapsedTime(0.f)
         {}
         
         Vector3 position;
