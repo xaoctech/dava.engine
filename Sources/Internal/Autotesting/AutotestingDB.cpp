@@ -550,7 +550,7 @@ namespace DAVA
 		}
 		else
 		{
-			AutotestingSystem::Instance()->ForceQuit(Format("Couldn't find archive for %s device", AutotestingSystem::Instance()->deviceName));
+			AutotestingSystem::Instance()->ForceQuit(Format("Couldn't find archive for %s device", AutotestingSystem::Instance()->deviceName.c_str()));
 		}
 		
 		AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
