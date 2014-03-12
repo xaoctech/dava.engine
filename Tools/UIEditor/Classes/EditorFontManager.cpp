@@ -76,7 +76,6 @@ Font* EditorFontManager::LoadFont(const String& fontPath, const String& fontName
 	if (font)
 	{
 		font->SetSize(defaultFontSize);
-		font->SetOriginalSize(defaultFontSize);
 		
 		fonts[fontName] = font;
         //If font was successfully loaded - emit the signal 
