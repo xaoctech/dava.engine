@@ -227,6 +227,8 @@ const Vector4 & Light::CalculatePositionDirectionBindVector(Camera * inCamera)
     uint32 globalFrameIndex = Core::Instance()->GetGlobalFrameIndex();
     if (inCamera != camera || lastUpdatedFrame != globalFrameIndex)
     {
+        DVASSERT(inCamera);
+        
         camera = inCamera;
         lastUpdatedFrame = globalFrameIndex;
         if (type == TYPE_DIRECTIONAL)
