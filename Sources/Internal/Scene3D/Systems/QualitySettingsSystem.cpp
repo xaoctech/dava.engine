@@ -189,7 +189,7 @@ void QualitySettingsSystem::SetCurTextureQuality(const FastName &name)
         }
     }
 
-    DVASSERT(0 && "Not such quality");
+    DVASSERT(0 && "No such quality");
 }
 
 const TextureQuality* QualitySettingsSystem::GetTxQuality(const FastName &name) const
@@ -205,7 +205,7 @@ const TextureQuality* QualitySettingsSystem::GetTxQuality(const FastName &name) 
         }
     }
 
-    DVASSERT(NULL != ret && "No such quality");
+    //DVASSERT(NULL != ret && "No such quality");
 
     return ret;
 }
@@ -296,7 +296,7 @@ const MaterialQuality* QualitySettingsSystem::GetMaterialQuality(const FastName 
         }
     }
 
-    DVASSERT(NULL != ret && "No such quality");
+    //DVASSERT(NULL != ret && "No such quality");
 
     return ret;
 }
