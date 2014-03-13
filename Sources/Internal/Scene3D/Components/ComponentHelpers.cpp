@@ -278,11 +278,38 @@ Entity * FindLandscapeEntity(Entity * rootEntity)
 	return NULL;
 }
 
+Entity * FindVegetationEntity(Entity * rootEntity)
+{
+    if(GetVegetation(rootEntity))
+    {
+        return rootEntity;
+    }
+        
+    DAVA::int32 count = rootEntity->GetChildrenCount();
+    for(DAVA::int32 i = 0; i < count; ++i)
+    {
+        Entity *vegetationEntity = FindVegetationEntity(rootEntity->GetChild(i));
+        if(vegetationEntity)
+        {
+            return vegetationEntity;
+        }
+    }
+        
+    return NULL;
+}
+
 Landscape * FindLandscape(Entity * rootEntity)
 {
 	Entity *entity = FindLandscapeEntity(rootEntity);
 	return GetLandscape(entity);
 }
+
+VegetationRenderObject* FindVegetation(Entity * rootEntity)
+{
+    Entity *entity = FindVegetationEntity(rootEntity);
+    return GetVegetation(entity);
+}
+
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity * fromEntity)
 {

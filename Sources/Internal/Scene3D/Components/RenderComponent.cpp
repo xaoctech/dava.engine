@@ -106,6 +106,8 @@ void RenderComponent::GetDataNodes(Set<DAVA::DataNode *> &dataNodes)
                 renderBatch->GetDataNodes(dataNodes);
             }
         }
+        
+        renderObject->GetDataNodes(dataNodes);
     }
 }
 

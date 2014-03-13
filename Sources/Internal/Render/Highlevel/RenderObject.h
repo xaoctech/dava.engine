@@ -171,6 +171,8 @@ public:
 
 	uint8 startClippingPlane;
     
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+    
 protected:
 //    eType type; //TODO: waiting for enums at introspection
 	RenderSystem * renderSystem;
