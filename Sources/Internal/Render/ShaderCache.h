@@ -66,6 +66,8 @@ public:
     const DefaultValue & GetDefaultValue(const FastName & name) { return defaultValues[name]; };
 	
 private:
+    void SetShaderData(Data * _vertexShaderData, Data * _fragmentShaderData);
+    void ReloadShaders();
 	
 	void BindShaderDefaultsInternal(BaseObject * caller, void * param, void *callerData);
 
@@ -100,8 +102,13 @@ public:
 
     void ClearAllLastBindedCaches();
 
+    void Reload();
+    
 private:
-    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
+    void ReloadAsset(ShaderAsset *asset);
+    
+    void ParseShader(ShaderAsset * asset);
+//    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
 
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };
