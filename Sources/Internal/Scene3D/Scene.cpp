@@ -267,7 +267,7 @@ void Scene::CreateSystems()
     AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
     
     speedTreeUpdateSystem = new SpeedTreeUpdateSystem(this);
-    AddSystem(speedTreeUpdateSystem, (1 << Component::RENDER_COMPONENT));
+    AddSystem(speedTreeUpdateSystem, (1 << Component::RENDER_COMPONENT) | (1 << Component::SPEEDTREE_COMPONENT));
     
     windSystem = new WindSystem(this);
     AddSystem(windSystem, (1 << Component::WIND_COMPONENT));

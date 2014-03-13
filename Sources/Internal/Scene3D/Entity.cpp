@@ -50,13 +50,11 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Utils/Random.h"
 
-#define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
 
 const int COMPONENT_COUNT_V6 = 18;
 const int COMPONENTS_IN_MAP_COUNT = 4;
 const int COMPONENTS_IN_VECTOR_COUNT = 3;
-const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 10;
 
 namespace DAVA
 {
