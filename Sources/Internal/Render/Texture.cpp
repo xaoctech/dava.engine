@@ -598,7 +598,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
         if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
         {
-            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTxQuality());
+            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTextureQuality());
             if(NULL != curTxQuality)
             {
                 // TODO:
@@ -623,7 +623,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
                     // release all images, except last one
                     for(int i = 0; i < leaveOffset; ++i)
                     {
-                        SafeRelease(images->operator[](i));
+                        SafeRelease(images->at(i));
                     }
                     
                     // move last items to the beginning of the vector vector
