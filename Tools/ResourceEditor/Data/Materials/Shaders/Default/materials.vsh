@@ -240,13 +240,16 @@ void main()
                         inPosition.z,
                         inPosition.w);
     
-        vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
+        highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
                         clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
     
         hUV = vec2(clamp(hUV.x * heightmapScale.x, 0.0, 1.0),
                    clamp(hUV.y * heightmapScale.y, 0.0, 1.0));
     
-        float height = texture2DLod(detail, hUV, 0.0).a * worldSize.z;
+        highp vec4 heightVec = texture2DLod(detail, hUV, 0.0);
+        //highp vec4 wVec = vec4(16.0*16.0*16.0*15.0/65535.0, 16.0*16.0*15.0/65535.0, 16.0*15.0/65535.0, 15.0/65535.0);
+        //highp vec4 wVec = vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845);
+        float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
     
         pos.z += height;
         clusterCenter.z += height;
@@ -631,7 +634,7 @@ void main()
                 }
             }
     
-            pos = mix(clusterCenter, pos, clusterScale * step(inTangent.z, clusterDensity));
+            //pos = mix(clusterCenter, pos, clusterScale * step(inTangent.z, clusterDensity));
     
         #else
     

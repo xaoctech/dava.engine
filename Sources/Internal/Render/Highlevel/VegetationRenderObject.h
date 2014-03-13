@@ -127,6 +127,8 @@ public:
     void SetMaxVisibleQuads(const uint32& _maxVisibleQuads);
     const uint32& GetMaxVisibleQuads() const;
     
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
+    
 private:
     
     struct SpatialData

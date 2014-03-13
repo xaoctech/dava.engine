@@ -327,7 +327,7 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
 {
     //VI: need to remove render batches since they are temporary
     int32 batchesToRemove = GetRenderBatchCount();
-    for(int32 i = 0; i < batchesToRemove; ++i)
+    while(GetRenderBatchCount())
     {
         RemoveRenderBatch(GetRenderBatchCount() - 1);
     }
@@ -344,14 +344,6 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-    //VI: need to remove render batches since they are temporary
-    int32 batchesToRemove = GetRenderBatchCount();
-    for(int32 i = 0; i < batchesToRemove; ++i)
-    {
-        RemoveRenderBatch(GetRenderBatchCount() - 1);
-    }
-    ReturnToPool(batchesToRemove);
-    
     RenderObject::Load(archive, serializationContext);
     
     SetClusterLimit(archive->GetUInt32("vro.clusterLimit"));
@@ -418,9 +410,9 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         
         float32 distanceScale = (spatialData->cameraDistance > MAX_VISIBLE_SCALING_DISTANCE && resolutionIndex == RESOLUTION_INDEX[COUNT_OF(RESOLUTION_INDEX) - 1]) ? (1.0f - (spatialData->cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / MAX_VISIBLE_SCALING_DISTANCE) : 1.0f;
         
-        for(uint32 y = 0; y < spatialData->height; ++y)
+        for(int32 y = 0; y < spatialData->height; ++y)
         {
-            for(uint32 x = 0; x < spatialData->width; ++x)
+            for(int32 x = 0; x < spatialData->width; ++x)
             {
                 uint32 paramIndex = y * spatialData->width + x;
                 
@@ -476,14 +468,6 @@ void VegetationRenderObject::SetVegetationMap(VegetationMap* map)
 {
     if(map != vegetationMap)
     {
-        Texture* tx = Texture::CreateFromData(map->GetPixelFormat(),
-                                              map->GetData(),
-                                              map->GetWidth(),
-                                              map->GetHeight(),
-                                              false);
-        vegetationMaterial->SetTexture(UNIFORM_SAMPLER_VEGETATIONMAP, tx);
-        SafeRelease(tx);
-        
         SafeRelease(vegetationMap);
         vegetationMap = SafeRetain(map);
         
@@ -966,13 +950,13 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
     if(pow2Size != heightmap->Size())
     {
         Image* croppedImage = Image::CopyImageRegion(originalImage, pow2Size, pow2Size);
-        tx = Texture::CreateFromData(FORMAT_A16, croppedImage->GetData(), pow2Size, pow2Size, false);
+        tx = Texture::CreateFromData(FORMAT_RGBA4444, croppedImage->GetData(), pow2Size, pow2Size, false);
      
         SafeRelease(croppedImage);
     }
     else
     {
-        tx = Texture::CreateFromData(FORMAT_A16, originalImage->GetData(), pow2Size, pow2Size, false);
+        tx = Texture::CreateFromData(FORMAT_RGBA4444, originalImage->GetData(), pow2Size, pow2Size, false);
     }
     
     SafeRelease(originalImage);
@@ -980,6 +964,8 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
     heightmapScale = Vector2((1.0f * heightmap->Size()) / pow2Size,
                              (1.0f * heightmap->Size()) / pow2Size);
     
+    tx->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+    tx->SetMinMagFilter(Texture::FILTER_NEAREST, Texture::FILTER_NEAREST);
     vegetationMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, tx);
     vegetationMaterial->SetPropertyValue(UNIFORM_HEIGHTMAP_SCALE, Shader::UT_FLOAT_VEC2, 1, heightmapScale.data);
     
@@ -1159,6 +1145,11 @@ void VegetationRenderObject::SetMaxVisibleQuads(const uint32& _maxVisibleQuads)
 const uint32& VegetationRenderObject::GetMaxVisibleQuads() const
 {
     return maxVisibleQuads;
+}
+
+void VegetationRenderObject::GetDataNodes(Set<DataNode*> & dataNodes)
+{
+     dataNodes.insert(vegetationMaterial);
 }
 
 };
