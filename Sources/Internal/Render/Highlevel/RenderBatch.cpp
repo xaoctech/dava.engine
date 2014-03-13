@@ -67,6 +67,9 @@ RenderBatch::RenderBatch()
     queryRequestFrame = 0;
     lastFraemDrawn = -10;
 #endif
+    
+    lights[0] = NULL;
+    lights[1] = NULL;
 }
     
 RenderBatch::~RenderBatch()
