@@ -101,7 +101,7 @@ float UITextFieldMetadata::GetFontSize() const
         return 0.0f;
     }
     
-    return font->GetSize();
+    return font->GetOriginalSize();
 }
 
 void UITextFieldMetadata::SetFontSize(float fontSize)

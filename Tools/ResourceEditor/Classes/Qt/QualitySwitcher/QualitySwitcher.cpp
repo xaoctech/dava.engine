@@ -156,6 +156,8 @@ void QualitySwitcher::ApplyMa()
                 material->ReloadQuality();
             }
         }
+
+        sceneEditor->renderSystem->SetForceUpdateLights();
     }
 }
 

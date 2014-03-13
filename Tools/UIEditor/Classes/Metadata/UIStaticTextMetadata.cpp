@@ -85,7 +85,7 @@ float UIStaticTextMetadata::GetFontSize() const
         Font *font = GetActiveStaticText()->GetFont();
         if (font)
         {
-            return font->GetSize();
+            return font->GetOriginalSize();
         }
     }
     return -1.0f;
@@ -316,7 +316,11 @@ void UIStaticTextMetadata::SetFittingType(int value)
         return;
     }
 
-    GetActiveStaticText()->SetFittingOption(value);
+    // Changing Fitting Option affects the font which might be reused
+    // by other controls, so clone the existing one.
+    UIStaticText* staticText = GetActiveStaticText();
+    CloneFont(staticText);
+    staticText->SetFittingOption(value);
 }
 
 int UIStaticTextMetadata::GetFittingType() const
