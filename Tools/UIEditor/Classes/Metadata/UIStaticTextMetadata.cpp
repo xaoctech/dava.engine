@@ -85,7 +85,7 @@ float UIStaticTextMetadata::GetFontSize() const
         Font *font = GetActiveStaticText()->GetFont();
         if (font)
         {
-            return font->GetOriginalSize();
+            return font->GetSize();
         }
     }
     return -1.0f;
