@@ -63,7 +63,6 @@ void SpeedTreeComponent::Serialize(KeyedArchive *archive, SerializationContext *
 	if(archive != 0)
 	{
 		archive->SetFloat("stc.trunkOscillationAmplitude", params.trunkOscillationAmplitude);
-		archive->SetFloat("stc.trunkOscillationSpeed", params.trunkOscillationSpeed);
 		archive->SetFloat("stc.leafsOscillationAmplitude", params.leafsOscillationAmplitude);
 		archive->SetFloat("stc.leafsOscillationSpeed", params.leafsOscillationSpeed);
 		archive->SetFloat("stc.movingOscillationLeafsSpeed", params.movingOscillationLeafsSpeed);
@@ -75,7 +74,6 @@ void SpeedTreeComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	if(archive)
 	{
 		params.trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", params.trunkOscillationAmplitude);
-		params.trunkOscillationSpeed = archive->GetFloat("stc.trunkOscillationSpeed", params.trunkOscillationSpeed);
 		params.leafsOscillationAmplitude = archive->GetFloat("stc.leafsOscillationAmplitude", params.leafsOscillationAmplitude);
 		params.leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", params.leafsOscillationSpeed);
 		params.movingOscillationLeafsSpeed = archive->GetFloat("stc.movingOscillationLeafsSpeed", params.movingOscillationLeafsSpeed);

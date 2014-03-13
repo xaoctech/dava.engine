@@ -112,10 +112,7 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
             int32 indCount = pg->GetIndexCount();
             PolygonGroup * newPG = new PolygonGroup();
 
-			if(isLeaf)
-				newPG->AllocateData(EVF_VERTEX | EVF_COLOR | EVF_TEXCOORD0 | EVF_TANGENT | EVF_BINORMAL, vxCount, indCount);
-			else
-				newPG->AllocateData(EVF_VERTEX | EVF_COLOR | EVF_TEXCOORD0 | EVF_BINORMAL, vxCount, indCount);
+			newPG->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
             
             //copy indicies
             for(int32 i = 0; i < indCount; ++i)
@@ -133,12 +130,16 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
                 Vector2 vxTx;
                 
                 pg->GetCoord(i, vxPosition);
-                pg->GetColor(i, color);
-                pg->GetTexcoord(0, i, vxTx);
+				if((vertexFormat & EVF_COLOR) > 0)
+					pg->GetColor(i, color);
+				if((vertexFormat & EVF_TEXCOORD0) > 0)
+					pg->GetTexcoord(0, i, vxTx);
                 
                 newPG->SetCoord(i, vxPosition);
-                newPG->SetColor(i, color);
-                newPG->SetTexcoord(0, i, vxTx);
+				if((vertexFormat & EVF_COLOR) > 0)
+					newPG->SetColor(i, color);
+				if((vertexFormat & EVF_TEXCOORD0) > 0)
+					newPG->SetTexcoord(0, i, vxTx);
                 
                 float32 t0 = 0.f;
                 if(isLeaf)

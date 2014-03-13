@@ -2580,8 +2580,6 @@ void QtMainWindow::OnAddWindEntity()
 	windEntity->SetName(ResourceEditor::WIND_NODE_NAME);
 
 	WindComponent * wind = new WindComponent();
-	wind->SetWindDirection(Vector3(1.f, 0.f, 0.f));
-	wind->SetWindForce(0.25f);
 	windEntity->AddComponent(wind);
 
 	scene->Exec(new EntityAddCommand(windEntity, scene));
