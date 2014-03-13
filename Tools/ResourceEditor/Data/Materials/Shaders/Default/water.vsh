@@ -20,6 +20,11 @@ attribute vec3 inTangent;
 
 attribute vec2 inTexCoord0;
 
+#if defined(MATERIAL_DECAL)
+attribute vec2 inTexCoord1;
+varying vec2 varTexCoord1;
+#endif
+
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
@@ -97,6 +102,9 @@ void main()
     vec3 viewDirectionInWorldSpace = vec3(worldMatrix * inPosition) - cameraPosition;
     vec3 normalDirectionInWorldSpace = normalize(vec3(worldInvTransposeMatrix * inNormal));
     reflectionDirectionInWorldSpace = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
+	#if defined(MATERIAL_DECAL)
+		varTexCoord1 = inTexCoord1;
+	#endif	
 #endif    
 
 #if defined(PIXEL_LIT)

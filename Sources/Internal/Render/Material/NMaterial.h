@@ -193,7 +193,7 @@ public:
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
 
-    static const FastName FLAG_SCREEN_SPACE_WATER;
+    static const FastName FLAG_TANGENT_SPACE_WATER_REFLECTIONS;
     
     static const FastName FLAG_DEBUG_UNITY_Z_NORMAL;
     
