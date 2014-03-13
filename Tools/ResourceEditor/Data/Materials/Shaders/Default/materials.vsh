@@ -634,7 +634,7 @@ void main()
                 }
             }
     
-            //pos = mix(clusterCenter, pos, clusterScale * step(inTangent.z, clusterDensity));
+            pos = mix(clusterCenter, pos, clusterScale * step(inTangent.z, clusterDensity));
     
         #else
     

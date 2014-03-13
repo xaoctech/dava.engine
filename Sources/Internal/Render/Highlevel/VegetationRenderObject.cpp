@@ -964,8 +964,10 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
     heightmapScale = Vector2((1.0f * heightmap->Size()) / pow2Size,
                              (1.0f * heightmap->Size()) / pow2Size);
     
-    tx->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
-    tx->SetMinMagFilter(Texture::FILTER_NEAREST, Texture::FILTER_NEAREST);
+    ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &VegetationRenderObject::SetupHeightmapParameters, tx));
+	JobInstanceWaiter waiter(job);
+	waiter.Wait();
+    
     vegetationMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, tx);
     vegetationMaterial->SetPropertyValue(UNIFORM_HEIGHTMAP_SCALE, Shader::UT_FLOAT_VEC2, 1, heightmapScale.data);
     
@@ -1150,6 +1152,15 @@ const uint32& VegetationRenderObject::GetMaxVisibleQuads() const
 void VegetationRenderObject::GetDataNodes(Set<DataNode*> & dataNodes)
 {
      dataNodes.insert(vegetationMaterial);
+}
+
+void VegetationRenderObject::SetupHeightmapParameters(BaseObject * caller,
+                                                    void * param,
+                                                    void *callerData)
+{
+    Texture* tx = (Texture*)param;
+    tx->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
+    tx->SetMinMagFilter(Texture::FILTER_NEAREST, Texture::FILTER_NEAREST);
 }
 
 };
