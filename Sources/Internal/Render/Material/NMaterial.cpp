@@ -95,7 +95,7 @@ const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANI
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 
-const FastName NMaterial::FLAG_SCREEN_SPACE_WATER = FastName("SCREEN_SPACE_WATER");
+const FastName NMaterial::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
 
 const FastName NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL = FastName("DEBUG_UNITY_Z_NORMAL");
 
@@ -2701,7 +2701,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 		ret.push_back(FLAG_FLATCOLOR);
 		ret.push_back(FLAG_TEXTURESHIFT);
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
-        ret.push_back(FLAG_SCREEN_SPACE_WATER);
+        ret.push_back(FLAG_TANGENT_SPACE_WATER_REFLECTIONS);
         ret.push_back(FLAG_DEBUG_UNITY_Z_NORMAL);
 	}
 	return ret;

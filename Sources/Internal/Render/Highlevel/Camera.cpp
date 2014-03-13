@@ -416,7 +416,7 @@ void Camera::LookAt(Vector3	position, Vector3 view, Vector3 up)
 }
  */
 
-void Camera::SetupDynamicParameters(bool forceObliqueNearPlane, Vector4 clipPlane)
+void Camera::SetupDynamicParameters(Vector4 *externalClipPlane)
 {
 	flags = REQUIRE_REBUILD | REQUIRE_REBUILD_MODEL | REQUIRE_REBUILD_PROJECTION;
     if (flags & REQUIRE_REBUILD)
@@ -440,8 +440,9 @@ void Camera::SetupDynamicParameters(bool forceObliqueNearPlane, Vector4 clipPlan
 
     viewMatrix.GetInverse(invViewMatrix);
 
-    if (forceObliqueNearPlane)
+    if (externalClipPlane)
     {
+        Vector4 clipPlane(*externalClipPlane);
         if (RenderManager::Instance()->GetRenderOrientation() == Core::SCREEN_ORIENTATION_TEXTURE)
         {
             clipPlane = -clipPlane;

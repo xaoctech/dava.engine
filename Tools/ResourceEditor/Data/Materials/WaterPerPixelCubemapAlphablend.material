@@ -1,9 +1,9 @@
 RenderTechnique:
-    Layers: ["OpaqueRenderLayer"]
+    Layers: ["TransclucentRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Default/water"
-        UniqueDefines: ["PIXEL_LIT", "REFLECTION"]
+        UniqueDefines: ["PIXEL_LIT", "FRESNEL_TO_ALPHA", "REFLECTION"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000

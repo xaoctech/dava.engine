@@ -146,7 +146,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 	if (needWaterPrepass)
 	{
         const static int32 REFLECTION_TEX_SIZE = 1024;
-        const static int32 REFRACTION_TEX_SIZE = 512;
+        const static int32 REFRACTION_TEX_SIZE = 1024;
         if (!reflectionPass)
         {             
             reflectionPass = new WaterReflectionRenderPass(PASS_FORWARD, RENDER_PASS_WATER_REFLECTION);
@@ -259,8 +259,9 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
     //v = passCamera->GetUp();
     //v*=-1;
     //passCamera->SetUp(v);
-    //passCamera->SetupDynamicParameters();    
-    passCamera->SetupDynamicParameters(true, Vector4(0,0,1, -(waterLevel-0.1f)));
+    //passCamera->SetupDynamicParameters();  
+    Vector4 clipPlane(0,0,1, -(waterLevel-0.1f));
+    passCamera->SetupDynamicParameters(&clipPlane);
     //add clipping plane
     PrepareVisibilityArrays(passCamera, renderSystem);    
     DrawLayers(passCamera);
@@ -277,7 +278,8 @@ void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
         passCamera = new Camera();        
     passCamera->CopyMathOnly(*camera);    
     //passCamera->SetupDynamicParameters();
-    passCamera->SetupDynamicParameters(true, Vector4(0,0,-1, waterLevel+0.1f));
+    Vector4 clipPlane(0,0,-1, waterLevel+0.1f);
+    passCamera->SetupDynamicParameters(&clipPlane);
     //add clipping plane
     PrepareVisibilityArrays(passCamera, renderSystem);
     DrawLayers(passCamera);
