@@ -49,21 +49,18 @@ public:
     {
         OscillationParams() :
         trunkOscillationAmplitude(0.15f),
-        trunkOscillationSpeed(1.f),
         leafsOscillationAmplitude(0.03f),
         leafsOscillationSpeed(3.f),
         movingOscillationLeafsSpeed(1.f)
         {}
         
         float32 trunkOscillationAmplitude;
-        float32 trunkOscillationSpeed;
         float32 leafsOscillationAmplitude;
         float32 leafsOscillationSpeed;
         float32 movingOscillationLeafsSpeed;
         
         INTROSPECTION(OscillationParams,
                       MEMBER(trunkOscillationAmplitude, "trunkOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(trunkOscillationSpeed, "trunkOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(leafsOscillationAmplitude, "leafsOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(leafsOscillationSpeed, "leafsOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(movingOscillationLeafsSpeed, "movingOscillationLeafsSpeed", I_VIEW | I_EDIT | I_SAVE)

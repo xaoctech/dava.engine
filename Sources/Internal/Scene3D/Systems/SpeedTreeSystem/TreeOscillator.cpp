@@ -132,12 +132,13 @@ void WindTreeOscillator::Update(float32 timeElapsed)
 Vector3 WindTreeOscillator::GetOsscilationTrunkOffset(const Vector3 & forPosition) const
 {
     WindComponent * wind = GetWindComponent(entityOwner);
-    return wind->GetWindDirection() * wind->GetWindForce() * (sinf(time) + .5f);
+    return wind->GetWindDirection() * wind->GetWindForce() * (sinf(time * wind->GetWindForce()) + .5f);
 }
     
 float32 WindTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition) const
 {
-    return 1.f;
+	WindComponent * wind = GetWindComponent(entityOwner);
+    return wind->GetWindForce();
 }
     
 bool WindTreeOscillator::IsActive() const

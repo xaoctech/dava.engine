@@ -69,7 +69,8 @@ void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
     SpeedTreeObject * treeObject = cast_if_equal<SpeedTreeObject*>(renderObject);
     if(!treeObject) return;
     
-    entity->AddComponent(new SpeedTreeComponent());
+	if(!GetSpeedTreeComponent(entity))
+		entity->AddComponent(new SpeedTreeComponent());
     
     treeObject->SetAnimationEnabled(true);
     

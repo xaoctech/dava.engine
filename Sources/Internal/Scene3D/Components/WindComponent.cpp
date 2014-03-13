@@ -38,7 +38,8 @@ namespace DAVA
 	REGISTER_CLASS(WindComponent)
 
 WindComponent::WindComponent() :
-    windForce(0.f)
+    windForce(1.f),
+	windDirection(Vector3(1.f, 0.f, 0.f))
 {
     
 }
