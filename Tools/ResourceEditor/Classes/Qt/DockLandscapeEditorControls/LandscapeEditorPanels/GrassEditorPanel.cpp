@@ -5,6 +5,10 @@
 #include "Tools/SliderWidget/SliderWidget.h"
 #include "Constants.h"
 
+#define LAYERS_ROW_HEIGHT 32
+#define LAYERS_PREVIEW_WIDTH 48
+#define LAYERS_CHECKBOX_WIDTH 24
+
 GrassEditorPanel::GrassEditorPanel(QWidget* parent)
 :	LandscapeEditorBasePanel(parent)
 {
@@ -38,41 +42,63 @@ void GrassEditorPanel::InitUI()
     QVBoxLayout *layout = new QVBoxLayout(this);
 
     // sliders
-    QFrame *sliderFrame = new QFrame(this);
-    QGridLayout *frameLayout = new QGridLayout(sliderFrame);
+    QGroupBox *brushBox = new QGroupBox("Brush", this);
+    QGridLayout *brushLayout = new QGridLayout(brushBox);
 
-    grassHeight = new QSlider(Qt::Horizontal, sliderFrame);
+    grassHeight = new QSlider(Qt::Horizontal, brushBox);
     grassHeight->setRange(0, 15);
     grassHeight->setSingleStep(1);
     grassHeight->setPageStep(4);
     grassHeight->setTickPosition(QSlider::TicksBothSides);
     grassHeight->setMaximumHeight(21);
 
-    grassDensity = new QSlider(Qt::Horizontal, sliderFrame);
+    grassHeightAffect = new QToolButton(brushBox);
+    grassHeightAffect->setCheckable(true);
+    grassHeightAffect->setIcon(QIcon(":/QtIcons/attach.png"));
+
+    grassHeightAdd = new QToolButton(brushBox);
+    grassHeightAdd->setCheckable(true);
+    grassHeightAdd->setIcon(QIcon(":/QtIcons/pencil_add.png"));
+
+    grassDensityAffect = new QToolButton(brushBox);
+    grassDensityAffect->setCheckable(true);
+    grassDensityAffect->setIcon(QIcon(":/QtIcons/attach.png"));
+
+    grassDensityAdd = new QToolButton(brushBox);
+    grassDensityAdd->setCheckable(true);
+    grassDensityAdd->setIcon(QIcon(":/QtIcons/pencil_add.png"));
+
+    grassDensity = new QSlider(Qt::Horizontal, brushBox);
     grassDensity->setRange(0, 15);
     grassDensity->setSingleStep(1);
     grassDensity->setPageStep(4);
     grassDensity->setTickPosition(QSlider::TicksBothSides);
     grassDensity->setMaximumHeight(21);
 
-    frameLayout->addWidget(new QLabel("Height:"), 0, 0, Qt::AlignRight | Qt::AlignVCenter);
-    frameLayout->addWidget(grassHeight, 0, 1);
+    brushLayout->addWidget(new QLabel("Height:"), 0, 0, Qt::AlignRight | Qt::AlignVCenter);
+    brushLayout->addWidget(grassHeight, 0, 1);
+    brushLayout->addWidget(grassHeightAffect, 0, 2);
+    brushLayout->addWidget(grassHeightAdd, 0, 3);
 
-    frameLayout->addWidget(new QLabel("Density:"), 1, 0, Qt::AlignRight | Qt::AlignVCenter);
-    frameLayout->addWidget(grassDensity, 1, 1);
-    layout->addWidget(sliderFrame);
+    brushLayout->addWidget(new QLabel("Density:"), 1, 0, Qt::AlignRight | Qt::AlignVCenter);
+    brushLayout->addWidget(grassDensity, 1, 1);
+    brushLayout->addWidget(grassDensityAffect, 1, 2);
+    brushLayout->addWidget(grassDensityAdd, 1, 3);
+
+    layout->addWidget(brushBox);
 
     // layers
     layersList = new QTableWidget(GRASS_EDITOR_LAYERS_COUNT, 3, this);
     //layersList->setShowGrid(false);
     layersList->horizontalHeader()->setVisible(false);
-    layersList->horizontalHeader()->resizeSection(0, 24);
-    layersList->horizontalHeader()->resizeSection(1, 48);
+    layersList->horizontalHeader()->resizeSection(0, LAYERS_CHECKBOX_WIDTH);
+    layersList->horizontalHeader()->resizeSection(1, LAYERS_PREVIEW_WIDTH);
     layersList->horizontalHeader()->setResizeMode(2, QHeaderView::Stretch);
     layersList->verticalHeader()->setVisible(false);
     layersList->setSelectionBehavior(QAbstractItemView::SelectRows);
     layersList->setSelectionMode(QAbstractItemView::SingleSelection);
     layersList->setFocusPolicy(Qt::NoFocus);
+    layersList->setIconSize(QSize(LAYERS_ROW_HEIGHT - 2, LAYERS_ROW_HEIGHT - 2));
     layout->addWidget(layersList);
 
     QString layerCBStyle = "QCheckBox::indicator { width: 16px; height: 16px; } QCheckBox::indicator:checked {image: url(:/QtIcons/layer_visible.png); } QCheckBox::indicator:unchecked {image: url(:/QtIcons/layer_invisible.png); }";
@@ -95,7 +121,7 @@ void GrassEditorPanel::InitUI()
         layerNameItem->setBackground(qApp->palette().button());
 
         QHBoxLayout *wrapperLayout = new QHBoxLayout();
-        wrapperLayout->setMargin(2);
+        wrapperLayout->setMargin((LAYERS_CHECKBOX_WIDTH - 16) / 2);
         wrapperLayout->setSpacing(0);
 
         QFrame *layerCheckBoxWrapper = new QFrame();
@@ -113,7 +139,7 @@ void GrassEditorPanel::InitUI()
         layersList->setItem(row, 1, layerIconItem);
         layersList->setItem(row, 2, layerNameItem);
         layersList->setCellWidget(row, 0, layerCheckBoxWrapper);
-        layersList->setRowHeight(row, 32);
+        layersList->setRowHeight(row, LAYERS_ROW_HEIGHT);
         layersList->setStyleSheet("QTableWidget::item:selected{ background-color: palette(highlight) }");
 
         layerCheckBoxes[row] = layerCheckBox;
@@ -125,6 +151,10 @@ void GrassEditorPanel::ConnectToSignals()
     QObject::connect(layersList, SIGNAL(currentCellChanged(int, int, int, int)), this, SLOT(OnLayerSelected(int, int, int, int)));
     QObject::connect(grassHeight, SIGNAL(valueChanged(int)), this, SLOT(OnHeightChanged(int)));
     QObject::connect(grassDensity, SIGNAL(valueChanged(int)), this, SLOT(OnDensityChanged(int)));
+    QObject::connect(grassHeightAffect, SIGNAL(toggled(bool)), this, SLOT(OnHightAffectToggled(bool)));
+    QObject::connect(grassDensityAffect, SIGNAL(toggled(bool)), this, SLOT(OnDensityAffectToggled(bool)));
+    QObject::connect(grassHeightAdd, SIGNAL(toggled(bool)), this, SLOT(OnHightAddToggled(bool)));
+    QObject::connect(grassDensityAdd, SIGNAL(toggled(bool)), this, SLOT(OnDensityAddToggled(bool)));
 }
 
 void GrassEditorPanel::StoreState()
@@ -170,11 +200,18 @@ void GrassEditorPanel::RestoreState()
                 bool ok = false;
                 if(!txpix.isNull())
                 {
-                    DAVA::Rect2i r = MapTexCoord(sheet.cells[i], txpix.width(), txpix.height());
-                    QPixmap pix = txpix.copy(QRect(r.x, r.y, r.dx, r.dy));
-
                     if(NULL != item)
                     {
+                        DAVA::Rect2i r = MapTexCoord(sheet.cells[i], txpix.width(), txpix.height());
+
+                        QPixmap pix(24, 24);
+                        QPainter painter(&pix);
+                        painter.setPen(QColor(0, 0, 0));
+                        painter.setBrush(QBrush(QColor(255, 255, 255)));
+                        painter.fillRect(0, 0, pix.width() - 1, pix.height() - 1, Qt::SolidPattern);
+                        painter.drawRect(0, 0, pix.width() - 1, pix.height() - 1);
+                        painter.drawPixmap(1, 1, pix.width() - 2, pix.height() - 2, txpix, r.x, r.y, r.dx, r.dy);
+
                         item->setIcon(QIcon(pix));
                         ok = true;
                     }
@@ -189,10 +226,17 @@ void GrassEditorPanel::RestoreState()
             int curHeight = sceneEditor->grassEditorSystem->GetBrushHeight();
             int curDensity = sceneEditor->grassEditorSystem->GetBrushDensity();
             int curLayer = sceneEditor->grassEditorSystem->GetCurrentLayer();
+            int curMode = sceneEditor->grassEditorSystem->GetBrushMode();
+            int curAffect = sceneEditor->grassEditorSystem->GetBrushAffect();
 
             layersList->setCurrentItem(layersList->item(curLayer, 0));
             grassHeight->setValue(curHeight);
             grassDensity->setValue(curDensity);
+
+            grassHeightAffect->setChecked((bool) (curAffect & GrassEditorSystem::AFFECT_HEIGHT));
+            grassHeightAdd->setChecked((bool) (curMode & GrassEditorSystem::BRUSH_ADD_HEIGHT));
+            grassDensityAffect->setChecked((bool) (curAffect & GrassEditorSystem::AFFECT_DENSITY));
+            grassDensityAdd->setChecked((bool) (curMode & GrassEditorSystem::BRUSH_ADD_DENSITY));
         }
     }
 }
@@ -227,6 +271,82 @@ void GrassEditorPanel::OnDensityChanged(int value)
     if(NULL != sceneEditor)
     {
         sceneEditor->grassEditorSystem->SetBrushDensity(value);
+    }
+}
+
+void GrassEditorPanel::OnDensityAffectToggled(bool checked)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        int cur = sceneEditor->grassEditorSystem->GetBrushAffect();
+        if(checked)
+        {
+            cur |= GrassEditorSystem::AFFECT_DENSITY;
+        }
+        else
+        {
+            cur &= (~GrassEditorSystem::AFFECT_DENSITY);
+        }
+
+        sceneEditor->grassEditorSystem->SetBrushAffect(cur);
+    }
+}
+
+void GrassEditorPanel::OnDensityAddToggled(bool checked)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        int cur = sceneEditor->grassEditorSystem->GetBrushMode();
+        if(checked)
+        {
+            cur |= GrassEditorSystem::BRUSH_ADD_DENSITY;
+        }
+        else
+        {
+            cur &= (~GrassEditorSystem::BRUSH_ADD_DENSITY);
+        }
+
+        sceneEditor->grassEditorSystem->SetBrushMode(cur);
+    }
+}
+
+void GrassEditorPanel::OnHightAffectToggled(bool checked)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        int cur = sceneEditor->grassEditorSystem->GetBrushAffect();
+        if(checked)
+        {
+            cur |= GrassEditorSystem::AFFECT_HEIGHT;
+        }
+        else
+        {
+            cur &= (~GrassEditorSystem::AFFECT_HEIGHT);
+        }
+
+        sceneEditor->grassEditorSystem->SetBrushAffect(cur);
+    }
+}
+
+void GrassEditorPanel::OnHightAddToggled(bool checked)
+{
+    SceneEditor2* sceneEditor = GetActiveScene();
+    if(NULL != sceneEditor)
+    {
+        int cur = sceneEditor->grassEditorSystem->GetBrushMode();
+        if(checked)
+        {
+            cur |= GrassEditorSystem::BRUSH_ADD_HEIGHT;
+        }
+        else
+        {
+            cur &= (~GrassEditorSystem::BRUSH_ADD_HEIGHT);
+        }
+
+        sceneEditor->grassEditorSystem->SetBrushMode(cur);
     }
 }
 

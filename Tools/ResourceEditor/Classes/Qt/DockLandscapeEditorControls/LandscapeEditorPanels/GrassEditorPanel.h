@@ -37,6 +37,10 @@ protected slots:
     void OnLayerSelected(int currentRow, int currentColumn, int previousRow, int previousColumn);
     void OnHeightChanged(int value);
     void OnDensityChanged(int value);
+    void OnDensityAffectToggled(bool checked);
+    void OnDensityAddToggled(bool checked);
+    void OnHightAffectToggled(bool checked);
+    void OnHightAddToggled(bool checked);
 
     DAVA::Rect2i MapTexCoord(const DAVA::TextureSheetCell &cell, DAVA::uint32 w, DAVA::uint32 h) const;
 
@@ -46,6 +50,10 @@ private:
     QCheckBox *layerCheckBoxes[GRASS_EDITOR_LAYERS_COUNT];
     QSlider *grassHeight;
     QSlider *grassDensity;
+    QToolButton *grassHeightAffect;
+    QToolButton *grassDensityAffect;
+    QToolButton *grassHeightAdd;
+    QToolButton *grassDensityAdd;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__GRASSEDITORPANEL__) */
