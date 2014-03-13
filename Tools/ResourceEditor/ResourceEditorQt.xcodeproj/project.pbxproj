@@ -641,6 +641,7 @@
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		419FFB6CDDEB353FF0A4F469 /* QtCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtCore.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework"; sourceTree = "<absolute>"; };
+		4911729918C629B200D5F948 /* TextureConvertMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextureConvertMode.h; sourceTree = "<group>"; };
 		491BC46A18A393A4001CE353 /* TexturePathValidator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TexturePathValidator.cpp; path = QtPropertyDataValidator/TexturePathValidator.cpp; sourceTree = "<group>"; };
 		491BC46B18A393A4001CE353 /* TexturePathValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TexturePathValidator.h; path = QtPropertyDataValidator/TexturePathValidator.h; sourceTree = "<group>"; };
 		49DB9A47187D69F000D6E87A /* FogSettingsChangedReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FogSettingsChangedReceiver.cpp; sourceTree = "<group>"; };
@@ -3585,6 +3586,7 @@
 				E8C9917C184CD0EB00AFBF3F /* TextureProperties.h */,
 				E8C9917D184CD0EB00AFBF3F /* TextureScrollArea.cpp */,
 				E8C9917E184CD0EB00AFBF3F /* TextureScrollArea.h */,
+				4911729918C629B200D5F948 /* TextureConvertMode.h */,
 			);
 			path = TextureBrowser;
 			sourceTree = "<group>";
