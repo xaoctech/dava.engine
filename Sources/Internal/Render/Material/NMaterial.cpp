@@ -1187,7 +1187,7 @@ void NMaterial::BuildTextureParamsCache(RenderPassInstance* passInstance)
 void NMaterial::BuildActiveUniformsCacheParamsCache()
 {
     HashMap<FastName, DAVA::NMaterial::RenderPassInstance*>::iterator it = instancePasses.begin();
-    HashMap<FastName, DAVA::NMaterial::RenderPassInstance*>::iterator endIt = instancePasses.begin();
+    HashMap<FastName, DAVA::NMaterial::RenderPassInstance*>::iterator endIt = instancePasses.end();
     while(it != endIt)
     {
         BuildActiveUniformsCacheParamsCache(it->second);
