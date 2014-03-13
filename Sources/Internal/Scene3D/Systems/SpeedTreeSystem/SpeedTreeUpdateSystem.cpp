@@ -63,15 +63,9 @@ void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
     
 void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
 {
-    RenderObject * renderObject = GetRenderComponent(entity)->GetRenderObject();
-    if (!renderObject) return;
-    
-    SpeedTreeObject * treeObject = cast_if_equal<SpeedTreeObject*>(renderObject);
-    if(!treeObject) return;
-    
-	if(!GetSpeedTreeComponent(entity))
-		entity->AddComponent(new SpeedTreeComponent());
-    
+    SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
+    DVASSERT(treeObject);
+
     treeObject->SetAnimationEnabled(true);
     
     TreeInfo * treeInfo = new TreeInfo(treeObject);
@@ -82,11 +76,8 @@ void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
 
 void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
 {
-    RenderObject * renderObject = GetRenderComponent(entity)->GetRenderObject();
-    if (!renderObject) return;
-    
-    SpeedTreeObject * treeObject = cast_if_equal<SpeedTreeObject*>(renderObject);
-    if(!treeObject) return;
+    SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
+    DVASSERT(treeObject);
     
     Vector<TreeInfo *>::iterator it = allTrees.begin();
     Vector<TreeInfo *>::iterator itEnd = allTrees.end();
