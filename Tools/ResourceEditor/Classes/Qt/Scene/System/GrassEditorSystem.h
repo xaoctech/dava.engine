@@ -45,6 +45,22 @@ using namespace DAVA;
 class GrassEditorSystem: public DAVA::SceneSystem
 {
 public:
+    enum BrushMode
+    {
+        BRUSH_REPLACE       = 0x0,
+        BRUSH_ADD_HEIGHT    = 0x1,
+        BRUSH_ADD_DENSITY   = 0x2,
+        BRUSH_ADD           = BRUSH_ADD_HEIGHT | BRUSH_ADD_DENSITY
+    };
+
+    enum BrushAffectType
+    {
+        AFFECT_NONE = 0x0,
+        AFFECT_HEIGHT = 0x1,
+        AFFECT_DENSITY = 0x2,
+        AFFECT_ALL = 0xFF
+    };
+
 	GrassEditorSystem(Scene* scene);
 	virtual ~GrassEditorSystem();
 
@@ -67,6 +83,12 @@ public:
     void SetBrushDensity(uint8 density);
     uint8 GetBrushDensity() const;
 
+    void SetBrushMode(int mode);
+    int GetBrushMode() const;
+
+    void SetBrushAffect(int affect);
+    int GetBrushAffect() const;
+
     DAVA::VegetationRenderObject *GetCurrentVegetationObject() const;
 
     static DAVA::Rect2i GetAffectedImageRect(DAVA::AABBox2 &area);
@@ -76,9 +98,14 @@ protected:
     bool inDrawState;
 
     DAVA::Vector2 curCursorPos;
+    DAVA::Vector2 lastDrawPos;
     DAVA::AABBox2 affectedArea;
     
-    uint8 curBrush;
+    int curBrushMode;
+    int curBrushAffect;
+
+    uint8 curHeight;
+    uint8 curDensity;
     uint8 curLayer;
 
 	SceneCollisionSystem* collisionSystem;

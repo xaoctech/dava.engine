@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/attach.png</file>
+    <file>QtIcons/pencil_add.png</file>
+    <file>QtIcons/pencil.png</file>
+    <file>QtIcons/brush.png</file>
     <file>QtIcons/grass.png</file>
     <file>QtIcons/layer_invisible.png</file>
     <file>QtIcons/layer_visible.png</file>

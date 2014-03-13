@@ -39,13 +39,18 @@
 #include "Scene/SceneSignals.h"
 #include "Commands2/ImageRegionCopyCommand.h"
 
+#include <QApplication>
+
 GrassEditorSystem::GrassEditorSystem(Scene* scene)
 : SceneSystem(scene)
 , isEnabled(false)
 , inDrawState(false)
 , vegetationMap(NULL)
 , vegetationMapCopy(NULL)
-, curBrush(0x11)
+, curHeight(8)
+, curDensity(8)
+, curBrushMode(BRUSH_REPLACE)
+, curBrushAffect(AFFECT_ALL)
 , curLayer(0)
 , curVegetation(NULL)
 {
@@ -87,6 +92,11 @@ void GrassEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
                         affectedArea.Empty();
                         if(curCursorPos.x >= 0 && curCursorPos.y >= 0)
                         {
+                            // make lastDrawPos not equal to the curCursorPos
+                            lastDrawPos = curCursorPos;
+                            lastDrawPos.x += 1;
+
+                            // draw
                             affectedArea.AddPoint(curCursorPos);
                             DrawGrass(curCursorPos);
                         }
@@ -237,6 +247,26 @@ bool GrassEditorSystem::IsLayerVisible(uint8 layer) const
     return true;
 }
 
+void GrassEditorSystem::SetBrushMode(int mode)
+{
+    curBrushMode = mode;
+}
+
+int GrassEditorSystem::GetBrushMode() const
+{
+    return curBrushMode;
+}
+
+void GrassEditorSystem::SetBrushAffect(int affect)
+{
+    curBrushAffect = affect;
+}
+
+int GrassEditorSystem::GetBrushAffect() const
+{
+    return curBrushAffect;
+}
+
 void GrassEditorSystem::SetCurrentLayer(uint8 layer)
 {
     DVASSERT(layer < 4);
@@ -251,37 +281,107 @@ uint8 GrassEditorSystem::GetCurrentLayer() const
 
 void GrassEditorSystem::SetBrushHeight(uint8 height)
 {
-    curBrush &= 0xf;
-    curBrush |= ((height & 0xf) << 4);
+    curHeight = height;
 }
 
 uint8 GrassEditorSystem::GetBrushHeight() const
 {
-    return ((curBrush >> 4) & 0xf);
+    return curHeight;
 }
 
 void GrassEditorSystem::SetBrushDensity(uint8 density)
 {
-    curBrush &= 0xf0;
-    curBrush |= (density & 0xf);
+    curDensity = density;
 }
 
 uint8 GrassEditorSystem::GetBrushDensity() const
 {
-    return (curBrush & 0xf);
+    return curDensity;
 }
 
 void GrassEditorSystem::DrawGrass(DAVA::Vector2 pos)
 {
-    if(NULL != vegetationMap)
+    if(NULL != vegetationMap && pos != lastDrawPos && curBrushAffect != AFFECT_NONE)
     {
         DVASSERT(pos.x < vegetationMap->width);
         DVASSERT(pos.y < vegetationMap->height);
 
-        DAVA::uint32 offset = (pos.y * vegetationMap->width + pos.x);
-        DAVA::uint32 ps = offset * Texture::GetPixelFormatSizeInBytes(vegetationMap->format);
+        int curKeyModifiers = QApplication::keyboardModifiers();
 
-        vegetationMap->data[ps + curLayer] = curBrush;
+        DAVA::uint32 offset = (pos.y * vegetationMap->width + pos.x);
+        DAVA::uint8 applyFromLayer = curLayer;
+        DAVA::uint8 applyToLayer = curLayer;
+
+        if(curKeyModifiers & Qt::ControlModifier)
+        {
+            applyFromLayer = 0;
+            applyToLayer = 3;
+        }
+
+        for(DAVA::uint8 layer = applyFromLayer; layer <= applyToLayer; ++layer)
+        {
+            DAVA::uint32 index = offset * Texture::GetPixelFormatSizeInBytes(vegetationMap->format);
+            index += layer;
+
+            uint8 mapData = vegetationMap->data[index];
+            uint8 h = mapData >> 4;
+            uint8 d = mapData & 0xf;
+
+            bool opPlus = true;
+
+            // when shift is pressed we should subtract brush from map
+            if(curKeyModifiers & Qt::ShiftModifier)
+            {
+                opPlus = false;
+            }
+
+            if(curBrushAffect & AFFECT_DENSITY)
+            {
+                if(curBrushMode & BRUSH_ADD_DENSITY)
+                {
+                    if(opPlus)
+                    {
+                        d += curDensity;
+                        if(d > 0xf) d = 0xf;
+                    }
+                    else
+                    {
+                        d -= curDensity;
+                        if(d > 0xf) d = 0;
+                    }
+                }
+                else
+                {
+                    d = curDensity;
+                }
+            }
+
+            if(curBrushAffect & AFFECT_HEIGHT)
+            {
+                if(curBrushMode & BRUSH_ADD_HEIGHT)
+                {
+                    if(opPlus)
+                    {
+                        h += curHeight;
+                        if(h > 0xf) h = 0xf;
+                    }
+                    else
+                    {
+                        h -= curHeight;
+                        if(h > 0xf) h = 0;
+                    }
+                }
+                else
+                {
+                    h = curHeight;
+                }
+            }
+
+            mapData = ((h << 4) | d);
+            vegetationMap->data[index] = mapData;
+        }
+
+        lastDrawPos = pos;
     }
 }
 
