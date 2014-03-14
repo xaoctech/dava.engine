@@ -83,6 +83,7 @@
          <addaction name="separator"/>
          <addaction name="actionFilterSelectedNode"/>
          <addaction name="actionConvertAll"/>
+         <addaction name="actionConvertModified"/>
         </widget>
        </item>
        <item>
@@ -527,28 +528,6 @@
               </item>
               <item>
                <widget class="QToolButton" name="convertToolButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>24</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>...</string>
-                </property>
-                <property name="toolButtonStyle">
-                 <enum>Qt::ToolButtonTextBesideIcon</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QToolButton" name="convertModifiedToolButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
