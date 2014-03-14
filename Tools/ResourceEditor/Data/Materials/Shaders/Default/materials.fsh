@@ -299,7 +299,7 @@ void main()
     // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     normal = normalize (normal);
-    normal = vec3(0.0, 0.0, 1.0);
+    //normal = vec3(0.0, 0.0, 1.0);
     
     float attenuation = lightIntensity0;
     #if defined(DISTANCE_ATTENUATION)
