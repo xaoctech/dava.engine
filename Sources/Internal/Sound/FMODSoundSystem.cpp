@@ -66,8 +66,17 @@ SoundSystem::SoundSystem()
     FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL, 0));
 #endif
     FMOD_VERIFY(fmodSystem->setFileSystem(DAVA_FMOD_FILE_OPENCALLBACK, DAVA_FMOD_FILE_CLOSECALLBACK, DAVA_FMOD_FILE_READCALLBACK, DAVA_FMOD_FILE_SEEKCALLBACK, 0, 0, -1));
+}
 
-    FilePath sfxConfig = QualitySettingsSystem::Instance()->GetCurSFXQualityConfig();
+SoundSystem::~SoundSystem()
+{
+	FMOD_VERIFY(fmodEventSystem->release());
+}
+
+void SoundSystem::InitFromQualitySettings()
+{
+    QualitySettingsSystem * qSystem = QualitySettingsSystem::Instance();
+    FilePath sfxConfig = qSystem->GetSFXQualityConfigPath(qSystem->GetCurSFXQuality());
     if(!sfxConfig.IsEmpty())
     {
         ParseSFXConfig(sfxConfig);
@@ -76,11 +85,6 @@ SoundSystem::SoundSystem()
     {
         Logger::Warning("[SoundSystem] No default quality SFX config!");
     }
-}
-
-SoundSystem::~SoundSystem()
-{
-	FMOD_VERIFY(fmodEventSystem->release());
 }
 
 SoundEvent * SoundSystem::CreateSoundEventByID(const FastName & eventName, const FastName & groupName)
