@@ -110,6 +110,20 @@ static const Vector3 CLUSTER_TYPE_0[] =
     Vector3(-0.35f, 0.35f, 0.0f),
 };
 
+static const Vector3 CLUSTER_TYPE_01[] =
+{
+    Vector3(-0.35f, -0.35f, 1.0f),
+    Vector3(0.35f, 0.35f, 1.0f),
+    Vector3(0.35f, 0.35f, 0.0f),
+    Vector3(-0.35f, -0.35f, 0.0f),
+        
+    Vector3(-0.35f, 0.35f, 1.0f),
+    Vector3(0.35f, -0.35f, 1.0f),
+    Vector3(0.35f, -0.35f, 0.0f),
+    Vector3(-0.35f, 0.35f, 0.0f),
+};
+
+
 static const Vector3 CLUSTER_TYPE_1[] =
 {
     Vector3(-0.5f, 0.1f, 1.0f),
@@ -128,6 +142,12 @@ static const Vector3 CLUSTER_TYPE_1[] =
     Vector3(-0.35f, 0.33f, 0.0f),
 };
     
+static const int16 CLUSTER_INDICES_01[] =
+{
+    0, 3,  1, 1, 3,  2,
+    4, 7,  5, 5, 7,  6
+};
+
 static const int16 CLUSTER_INDICES[] =
 {
     0, 3,  1, 1, 3,  2,

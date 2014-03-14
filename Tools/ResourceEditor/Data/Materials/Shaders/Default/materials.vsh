@@ -638,7 +638,18 @@ void main()
     
         #else
     
-            pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * step(inTangent.z, clusterScaleDensityMap[vertexTileIndex][0][clusterType]));
+            float densityFactor;
+            if(inTangent.z < clusterScaleDensityMap[vertexTileIndex][0][clusterType])
+            {
+                densityFactor = 1.0;
+            }
+            else
+            {
+                densityFactor = 0.0;
+            }
+    
+            //pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * step(inTangent.z, clusterScaleDensityMap[vertexTileIndex][0][clusterType]));
+            pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * densityFactor);
     
         #endif
     
