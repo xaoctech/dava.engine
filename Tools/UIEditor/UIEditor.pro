@@ -166,7 +166,9 @@ FORMS    += \
     UI/scrollviewpropertygridwidget.ui \
     UI/scrollcontrolpropertygridwidget.ui \
     UI/previewsettingsdialog.ui \
-    UI/editeditorsettingsdialog.ui
+    UI/editeditorsettingsdialog.ui \
+    UI/localizationeditordialog.ui \
+    UI/localizationfontseditordialog.ui
     UI/particleeffectpropertygridwidget.ui
 
 

@@ -49,6 +49,7 @@
 #include "Dialogs/importdialog.h"
 #include "Dialogs/importdialog.h"
 #include "Dialogs/localizationeditordialog.h"
+#include "Dialogs/localizationfontseditordialog.h"
 #include "Dialogs/previewsettingsdialog.h"
 
 #include "ImportCommands.h"
@@ -152,6 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionFontManager, SIGNAL(triggered()), this, SLOT(OnOpenFontManager()));
     connect(ui->actionLocalizationManager, SIGNAL(triggered()), this, SLOT(OnOpenLocalizationManager()));
+    connect(ui->actionLocalizationFontsManager, SIGNAL(triggered()), this, SLOT(OnOpenLocalizationFontsManager()));
 
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectCreated()),
@@ -679,6 +681,15 @@ void MainWindow::OnOpenLocalizationManager()
     if (localizationManagerDialog->exec())
     {
         delete localizationManagerDialog;
+    }
+}
+
+void MainWindow::OnOpenLocalizationFontsManager()
+{
+    LocalizationFontsEditorDialog *localizationFontsManagerDialog = new LocalizationFontsEditorDialog();
+    if (localizationFontsManagerDialog->exec())
+    {
+        delete localizationFontsManagerDialog;
     }
 }
 
