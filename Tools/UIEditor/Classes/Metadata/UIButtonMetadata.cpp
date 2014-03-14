@@ -107,7 +107,6 @@ void UIButtonMetadata::SetFont(Font * font)
     if (font)
     {
         font->SetSize(GetFontSize());
-        font->SetOriginalSize(GetFontSize());
 		for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 		{
 			GetActiveUIButton()->SetStateFont(this->uiControlStates[i], font);
@@ -172,7 +171,6 @@ void UIButtonMetadata::SetFontSize(float fontSize)
 
 		Font* newFont = font->Clone();
 		newFont->SetSize(fontSize);
-		newFont->SetOriginalSize(fontSize);
 		buttonText->SetFont(newFont);
 		newFont->Release();
 	}
@@ -201,7 +199,7 @@ float UIButtonMetadata::GetFontSizeForState(UIControl::eControlState state) cons
         Font* referenceFont = referenceButtonText->GetFont();
         if (referenceFont)
         {
-            return referenceFont->GetOriginalSize();
+            return referenceFont->GetSize();
         }
     }
     
@@ -827,15 +825,18 @@ void UIButtonMetadata::SetFittingType(int value)
         return;
     }
 
-    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(uiControlStates[GetActiveStateIndex()]);
-    if (buttonText)
-    {
-        // Changing Fitting Option affects the font which might be reused
-        // by other controls, so clone the existing one.
-        CloneFont(buttonText);
-        buttonText->SetFittingOption(value);
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
+        if (buttonText)
+        {
+            // Changing Fitting Option affects the font which might be reused
+            // by other controls, so clone the existing one.
+            CloneFont(buttonText);
+            buttonText->SetFittingOption(value);
+        }
     }
-    
+
     UpdatePropertyDirtyFlagForFittingType();
 }
 

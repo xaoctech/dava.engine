@@ -53,7 +53,7 @@ int32 Font::GetDPI()
 	
 Font::Font()
 :	size(14.0f)
-,   originalSize(14.0f)
+,   renderSize(14.0f)
 ,	verticalSpacing(0)
 {
 	FontManager::Instance()->RegisterFont(this);
@@ -98,11 +98,7 @@ String Font::GetRawHashString()
 void Font::SetSize(float32 _size)
 {
 	size = _size;
-}
-
-void Font::SetOriginalSize(float32 _originalSize)
-{
-    originalSize = _originalSize;
+    renderSize = _size;
 }
 
 float32	Font::GetSize() const
@@ -110,9 +106,14 @@ float32	Font::GetSize() const
 	return size;
 }
 
-float32	Font::GetOriginalSize() const
+void Font::SetRenderSize(float32 _originalSize)
 {
-    return originalSize;
+    renderSize = _originalSize;
+}
+
+float32	Font::GetRenderSize() const
+{
+    return renderSize;
 }
 
 void Font::SetVerticalSpacing(int32 _verticalSpacing)
@@ -335,7 +336,7 @@ YamlNode * Font::SaveToYamlNode() const
     //Type
     node->Set("type", "Font");
     //Font size
-    node->Set("size", this->GetOriginalSize());
+    node->Set("size", this->GetSize());
     //Vertical Spacing
     node->Set("verticalSpacing", this->GetVerticalSpacing());
 

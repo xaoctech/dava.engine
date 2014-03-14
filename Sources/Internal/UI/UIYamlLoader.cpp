@@ -395,7 +395,6 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
             }
 
 			font->SetSize(fontSize);
-			font->SetOriginalSize(fontSize);
 			
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
@@ -425,7 +424,6 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 			if (fontSizeNode)
 			{
 				font->SetSize(fontSizeNode->AsFloat());
-				font->SetOriginalSize(fontSizeNode->AsFloat());
 			}
             
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");

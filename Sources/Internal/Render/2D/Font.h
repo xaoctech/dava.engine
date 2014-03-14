@@ -84,23 +84,22 @@ public:
 	virtual void SetSize(float32 size);
 
 	/**
-		\brief Set the original size (previous one might be recalculated).
-		\param[in] size in points
-        \param[in] Also update the original size
-	*/
-	virtual void SetOriginalSize(float32 originalSize);
-
-	/**
-		\brief Get size (might be recalculated).
+		\brief Get size.
 		\returns size in pixels
 	*/
 	virtual float32	GetSize() const;
-	
+
 	/**
-		\brief Get the original size.
+		\brief Get the render size.
 		\returns size in pixels
 	*/
-	virtual float32	GetOriginalSize() const;
+	virtual float32	GetRenderSize() const;
+
+    /**
+     \brief Set the render size.
+     \param[in] size in points
+     */
+	virtual void SetRenderSize(float32 renderSize);
 
 	/**
 	 \brief Set vertical spacing.
@@ -212,7 +211,7 @@ protected:
 	static int32 globalFontDPI;
 	
 	float32	size;
-    float32 originalSize;
+    float32 renderSize;
 
 	int32 verticalSpacing;
 	
