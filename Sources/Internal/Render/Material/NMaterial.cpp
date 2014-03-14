@@ -547,7 +547,7 @@ bool NMaterial::ReloadQuality(bool force)
 	DVASSERT(materialTemplate);
 	
 	FastName effectiveQuality = GetEffectiveQuality();
-	FastName curGroupQuality = QualitySettingsSystem::Instance()->GetCurMaQuality(GetMaterialGroup());
+	FastName curGroupQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(GetMaterialGroup());
 	if(curGroupQuality != currentQuality)
 	{
 		effectiveQuality = curGroupQuality;
@@ -943,7 +943,7 @@ void NMaterial::SetMaterialGroup(const FastName &group)
 	if(group.IsValid())
 	{
 		materialGroup = group;
-		const MaterialQuality* curQuality = QualitySettingsSystem::Instance()->GetMaQuality(group, QualitySettingsSystem::Instance()->GetCurMaQuality(group));
+		const MaterialQuality* curQuality = QualitySettingsSystem::Instance()->GetMaterialQuality(group, QualitySettingsSystem::Instance()->GetCurMaterialQuality(group));
 		
 		if(NULL != curQuality)
 		{
