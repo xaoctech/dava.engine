@@ -44,7 +44,16 @@ void StringFormatTest::IntegerTestFunction( PerfFuncData * data )
     TEST_VERIFY( Format(formatStr2.c_str(), value) == StringToWString( Format( WStringToString(formatStr2).c_str(), value ) ) );
     TEST_VERIFY( Format(formatStr3.c_str(), value64) == StringToWString( Format( WStringToString(formatStr3).c_str(), value64 ) ) );
 }
-
+inline void checkFloatFormat( const WideString &formatStr, float32 value, TestTemplate<StringFormatTest>::PerfFuncData * data )
+{
+    WideString testStr = Format(formatStr.c_str() , value);
+    WideString checkStr = StringToWString( Format( WStringToString(formatStr ).c_str(), value) );
+    if( data )
+        data->testData.message = "\"" + WStringToString(testStr) + "\" == \"" + WStringToString(checkStr) + "\"";
+    TEST_VERIFY( testStr != checkStr );
+    if( data )
+        data->testData.message.clear();
+}
 void StringFormatTest::FloatTestFunction( PerfFuncData * data )
 {
     WideString formatStr1 = L"%f"   ;
@@ -69,62 +78,63 @@ void StringFormatTest::FloatTestFunction( PerfFuncData * data )
     WideString formatStr20= L"%2.2f";
     WideString formatStr21= L"%1.1f";
     WideString formatStr22= L"%0.0f";
-    float32 value1 = 1234.1234f;
-    float32 value2 = 876.876f;
 
-    TEST_VERIFY( Format(formatStr1.c_str() , value1) == StringToWString( Format( WStringToString(formatStr1 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr2.c_str() , value1) == StringToWString( Format( WStringToString(formatStr2 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr3.c_str() , value1) == StringToWString( Format( WStringToString(formatStr3 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr4.c_str() , value1) == StringToWString( Format( WStringToString(formatStr4 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr5.c_str() , value1) == StringToWString( Format( WStringToString(formatStr5 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr6.c_str() , value1) == StringToWString( Format( WStringToString(formatStr6 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr7.c_str() , value1) == StringToWString( Format( WStringToString(formatStr7 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr8.c_str() , value1) == StringToWString( Format( WStringToString(formatStr8 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr9.c_str() , value1) == StringToWString( Format( WStringToString(formatStr9 ).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr10.c_str(), value1) == StringToWString( Format( WStringToString(formatStr10).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr11.c_str(), value1) == StringToWString( Format( WStringToString(formatStr11).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr12.c_str(), value1) == StringToWString( Format( WStringToString(formatStr12).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr13.c_str(), value1) == StringToWString( Format( WStringToString(formatStr13).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr14.c_str(), value1) == StringToWString( Format( WStringToString(formatStr14).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr15.c_str(), value1) == StringToWString( Format( WStringToString(formatStr15).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr16.c_str(), value1) == StringToWString( Format( WStringToString(formatStr16).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr17.c_str(), value1) == StringToWString( Format( WStringToString(formatStr17).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr18.c_str(), value1) == StringToWString( Format( WStringToString(formatStr18).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr19.c_str(), value1) == StringToWString( Format( WStringToString(formatStr19).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr20.c_str(), value1) == StringToWString( Format( WStringToString(formatStr20).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr21.c_str(), value1) == StringToWString( Format( WStringToString(formatStr21).c_str(), value1) ) );
-    TEST_VERIFY( Format(formatStr22.c_str(), value1) == StringToWString( Format( WStringToString(formatStr22).c_str(), value1) ) );
-    
-    TEST_VERIFY( Format(formatStr1.c_str() , value2) == StringToWString( Format( WStringToString(formatStr1 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr2.c_str() , value2) == StringToWString( Format( WStringToString(formatStr2 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr3.c_str() , value2) == StringToWString( Format( WStringToString(formatStr3 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr4.c_str() , value2) == StringToWString( Format( WStringToString(formatStr4 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr5.c_str() , value2) == StringToWString( Format( WStringToString(formatStr5 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr6.c_str() , value2) == StringToWString( Format( WStringToString(formatStr6 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr7.c_str() , value2) == StringToWString( Format( WStringToString(formatStr7 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr8.c_str() , value2) == StringToWString( Format( WStringToString(formatStr8 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr9.c_str() , value2) == StringToWString( Format( WStringToString(formatStr9 ).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr10.c_str(), value2) == StringToWString( Format( WStringToString(formatStr10).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr11.c_str(), value2) == StringToWString( Format( WStringToString(formatStr11).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr12.c_str(), value2) == StringToWString( Format( WStringToString(formatStr12).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr13.c_str(), value2) == StringToWString( Format( WStringToString(formatStr13).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr14.c_str(), value2) == StringToWString( Format( WStringToString(formatStr14).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr15.c_str(), value2) == StringToWString( Format( WStringToString(formatStr15).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr16.c_str(), value2) == StringToWString( Format( WStringToString(formatStr16).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr17.c_str(), value2) == StringToWString( Format( WStringToString(formatStr17).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr18.c_str(), value2) == StringToWString( Format( WStringToString(formatStr18).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr19.c_str(), value2) == StringToWString( Format( WStringToString(formatStr19).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr20.c_str(), value2) == StringToWString( Format( WStringToString(formatStr20).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr21.c_str(), value2) == StringToWString( Format( WStringToString(formatStr21).c_str(), value2) ) );
-    TEST_VERIFY( Format(formatStr22.c_str(), value2) == StringToWString( Format( WStringToString(formatStr22).c_str(), value2) ) );
- 
+    float32 value1 = 1234.1234f;
+    checkFloatFormat( formatStr1 , value1, data );
+    checkFloatFormat( formatStr2 , value1, data );
+    checkFloatFormat( formatStr3 , value1, data );
+    checkFloatFormat( formatStr4 , value1, data );
+    checkFloatFormat( formatStr5 , value1, data );
+    checkFloatFormat( formatStr6 , value1, data );
+    checkFloatFormat( formatStr7 , value1, data );
+    checkFloatFormat( formatStr8 , value1, data );
+    checkFloatFormat( formatStr9 , value1, data );
+    checkFloatFormat( formatStr10, value1, data );
+    checkFloatFormat( formatStr11, value1, data );
+    checkFloatFormat( formatStr12, value1, data );
+    checkFloatFormat( formatStr13, value1, data );
+    checkFloatFormat( formatStr14, value1, data );
+    checkFloatFormat( formatStr15, value1, data );
+    checkFloatFormat( formatStr16, value1, data );
+    checkFloatFormat( formatStr17, value1, data );
+    checkFloatFormat( formatStr18, value1, data );
+    checkFloatFormat( formatStr19, value1, data );
+    checkFloatFormat( formatStr20, value1, data );
+    checkFloatFormat( formatStr21, value1, data );
+    checkFloatFormat( formatStr22, value1, data );
+
+    float32 value2 = 876.876f;
+    checkFloatFormat( formatStr1 , value2, data );
+    checkFloatFormat( formatStr2 , value2, data );
+    checkFloatFormat( formatStr3 , value2, data );
+    checkFloatFormat( formatStr4 , value2, data );
+    checkFloatFormat( formatStr5 , value2, data );
+    checkFloatFormat( formatStr6 , value2, data );
+    checkFloatFormat( formatStr7 , value2, data );
+    checkFloatFormat( formatStr8 , value2, data );
+    checkFloatFormat( formatStr9 , value2, data );
+    checkFloatFormat( formatStr10, value2, data );
+    checkFloatFormat( formatStr11, value2, data );
+    checkFloatFormat( formatStr12, value2, data );
+    checkFloatFormat( formatStr13, value2, data );
+    checkFloatFormat( formatStr14, value2, data );
+    checkFloatFormat( formatStr15, value2, data );
+    checkFloatFormat( formatStr16, value2, data );
+    checkFloatFormat( formatStr17, value2, data );
+    checkFloatFormat( formatStr18, value2, data );
+    checkFloatFormat( formatStr19, value2, data );
+    checkFloatFormat( formatStr20, value2, data );
+    checkFloatFormat( formatStr21, value2, data );
+    checkFloatFormat( formatStr22, value2, data );
+
     float32 value3 = 0.1234f;
     float32 value4 = 0.2567f;
     float32 value5 = 0.5f;
     float32 value6 = 0.7543f;
-    TEST_VERIFY( Format(formatStr15.c_str(), value3) == StringToWString( Format( WStringToString(formatStr15).c_str(), value3) ) );
-    TEST_VERIFY( Format(formatStr15.c_str(), value4) == StringToWString( Format( WStringToString(formatStr15).c_str(), value4) ) );
-    TEST_VERIFY( Format(formatStr15.c_str(), value5) == StringToWString( Format( WStringToString(formatStr15).c_str(), value5) ) );
-    TEST_VERIFY( Format(formatStr15.c_str(), value6) == StringToWString( Format( WStringToString(formatStr15).c_str(), value6) ) );
+
+    checkFloatFormat( formatStr15, value3, data );
+    checkFloatFormat( formatStr15, value4, data );
+    checkFloatFormat( formatStr15, value5, data );
+    checkFloatFormat( formatStr15, value6, data );
 
 }
