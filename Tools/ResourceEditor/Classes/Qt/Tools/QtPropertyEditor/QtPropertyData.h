@@ -156,7 +156,7 @@ public:
 	virtual void* CreateLastCommand() const;
 
     // Merging
-    bool IsMergedValuesEqual() const;
+    bool IsMergedDataEqual() const;
     QtPropertyData * GetMergedData(int idx) const;
     int GetMergedCount() const;
     void Merge(QtPropertyData *data);
@@ -186,7 +186,7 @@ protected:
     QtPropertyDataValidator* validator;
 
 	void SetModel(QtPropertyModel *model);
-    void FillMergedValue();
+    void BuildCurrentValue();
 
 	virtual void UpdateUp();
 	virtual void UpdateDown();
