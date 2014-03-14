@@ -945,7 +945,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
 bool VegetationRenderObject::CellByDistanceCompareFunction(const SpatialData* a,
                                                            const SpatialData* b)
 {
-    return (a->cameraDistance < b->cameraDistance);
+    return (a->cameraDistance > b->cameraDistance);
 }
     
 void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap)
