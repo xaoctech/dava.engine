@@ -23,6 +23,8 @@
 		02A2FC4E18D2FD8A0039E66A /* TreeOscillator.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A2FC4818D2FD8A0039E66A /* TreeOscillator.h */; };
 		02A2FC4F18D2FD8A0039E66A /* WindSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A2FC4918D2FD8A0039E66A /* WindSystem.cpp */; };
 		02A2FC5018D2FD8A0039E66A /* WindSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A2FC4A18D2FD8A0039E66A /* WindSystem.h */; };
+		02A2FC5518D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */; };
+		02A2FC5618D3064D0039E66A /* TreeToAnimatedTreeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */; };
 		02E9E3A11729669200C501BC /* FMODUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3A01729669200C501BC /* FMODUtils.h */; };
 		02E9E3DA1734176200C501BC /* SoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02E9E3D41734176100C501BC /* SoundEvent.cpp */; };
 		02E9E3DB1734176200C501BC /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02E9E3D51734176200C501BC /* SoundEvent.h */; };
@@ -806,6 +808,8 @@
 		02A2FC4818D2FD8A0039E66A /* TreeOscillator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeOscillator.h; sourceTree = "<group>"; };
 		02A2FC4918D2FD8A0039E66A /* WindSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindSystem.cpp; sourceTree = "<group>"; };
 		02A2FC4A18D2FD8A0039E66A /* WindSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindSystem.h; sourceTree = "<group>"; };
+		02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeToAnimatedTreeConverter.cpp; sourceTree = "<group>"; };
+		02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeToAnimatedTreeConverter.h; sourceTree = "<group>"; };
 		02E9E3A01729669200C501BC /* FMODUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODUtils.h; sourceTree = "<group>"; };
 		02E9E3A2172967F300C501BC /* libfmodex_iphoneos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphoneos.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphoneos.a; sourceTree = "<group>"; };
 		02E9E3A3172967F300C501BC /* libfmodex_iphonesimulator.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfmodex_iphonesimulator.a; path = ../../Libs/fmod/lib/iphone/libfmodex_iphonesimulator.a; sourceTree = "<group>"; };
@@ -1686,6 +1690,8 @@
 		CCEB54371886FF0C0018491F /* Converters */ = {
 			isa = PBXGroup;
 			children = (
+				02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */,
+				02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */,
 				CCEB54381886FF0C0018491F /* LodToLod2Converter.cpp */,
 				CCEB54391886FF0C0018491F /* LodToLod2Converter.h */,
 				CCEB543A1886FF0C0018491F /* SwitchToRenerObjectConverter.cpp */,
@@ -2727,6 +2733,7 @@
 				E8B3CAAD16B9326E002BD35F /* Introspection.h in Headers */,
 				E8B3CAAE16B9326E002BD35F /* IntrospectionBase.h in Headers */,
 				E8B3CAAF16B9326E002BD35F /* IntrospectionCollection.h in Headers */,
+				02A2FC5618D3064D0039E66A /* TreeToAnimatedTreeConverter.h in Headers */,
 				E8B3CAB016B9326E002BD35F /* IntrospectionFlags.h in Headers */,
 				E8B3CAB116B9326E002BD35F /* IntrospectionProperty.h in Headers */,
 				E8B3CAB216B9326E002BD35F /* Mallocator.h in Headers */,
@@ -3316,6 +3323,7 @@
 				E8B3CC2516B9326E002BD35F /* RenderDataObject.cpp in Sources */,
 				E8B3CC2716B9326E002BD35F /* RenderEffect.cpp in Sources */,
 				E8B3CC2916B9326E002BD35F /* RenderGrayscaleEffect.cpp in Sources */,
+				02A2FC5518D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp in Sources */,
 				E8B3CC2B16B9326E002BD35F /* RenderHelper.cpp in Sources */,
 				E8B3CC2D16B9326E002BD35F /* RenderManager.cpp in Sources */,
 				E8B3CC3016B9326E002BD35F /* RenderManagerFactory.cpp in Sources */,
