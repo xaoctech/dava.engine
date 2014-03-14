@@ -51,19 +51,22 @@ public:
         trunkOscillationAmplitude(0.15f),
         leafsOscillationAmplitude(0.03f),
         leafsOscillationSpeed(3.f),
-        movingOscillationLeafsSpeed(1.f)
+        movingOscillationLeafsSpeed(1.f),
+        maxAnimatedLOD(0)
         {}
         
         float32 trunkOscillationAmplitude;
         float32 leafsOscillationAmplitude;
         float32 leafsOscillationSpeed;
         float32 movingOscillationLeafsSpeed;
+        int32 maxAnimatedLOD;
         
         INTROSPECTION(OscillationParams,
                       MEMBER(trunkOscillationAmplitude, "trunkOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(leafsOscillationAmplitude, "leafsOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(leafsOscillationSpeed, "leafsOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
                       MEMBER(movingOscillationLeafsSpeed, "movingOscillationLeafsSpeed", I_VIEW | I_EDIT | I_SAVE)
+                      MEMBER(maxAnimatedLOD, "maxAnimatedLOD", I_VIEW | I_EDIT | I_SAVE)
                       );
     };
     

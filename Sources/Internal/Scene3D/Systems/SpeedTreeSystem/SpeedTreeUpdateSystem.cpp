@@ -153,6 +153,13 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         
         const SpeedTreeComponent::OscillationParams & params = info->component->GetOcciliationParameters();
         
+        if(info->treeObject->GetLodIndex() > params.maxAnimatedLOD)
+        {
+            info->treeObject->SetAnimationEnabled(false);
+            continue;
+        }
+        info->treeObject->SetAnimationEnabled(true);
+        
         Vector3 oscillationOffsetAll;
         float32 leafSpeedAll = 0.f;
         
