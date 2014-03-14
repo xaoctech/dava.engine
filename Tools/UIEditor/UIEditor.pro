@@ -66,7 +66,8 @@ SOURCES += \
     Classes/UI/PropertyGridWidgets/listpropertygridwidget.cpp \
     Classes/UI/PropertyGridWidgets/scrollviewpropertygridwidget.cpp \
     Classes/UI/PropertyGridWidgets/previewsettingsdialog.cpp \
-    Classes/UI/PropertyGridWidgets/editeditorsettingsdialog.cpp
+    Classes/UI/PropertyGridWidgets/editeditorsettingsdialog.cpp \
+    Classes/UI/Dialogs/errorslistdialog.cpp
     Classes/UI/particleeffectpropertygridwidget.cpp
 
 HEADERS  += \
@@ -120,7 +121,8 @@ HEADERS  += \
     Classes/UI/PropertyGridWidgets/listpropertygridwidget.h \
     Classes/UI/PropertyGridWidgets/scrollviewpropertygridwidget.h \
     Classes/UI/PropertyGridWidgets/previewsettingsdialog.h \
-    Classes/UI/PropertyGridWidgets/editeditorsettingsdialog.h
+    Classes/UI/PropertyGridWidgets/editeditorsettingsdialog.h \
+    Classes/UI/Dialogs/errorslistdialog.h
     Classes/UI/particleeffectpropertygridwidget.h
 
 FORMS    += \
@@ -169,6 +171,7 @@ FORMS    += \
     UI/editeditorsettingsdialog.ui \
     UI/localizationeditordialog.ui \
     UI/localizationfontseditordialog.ui
+    UI/errorslistdialog.ui
     UI/particleeffectpropertygridwidget.ui
 
 
