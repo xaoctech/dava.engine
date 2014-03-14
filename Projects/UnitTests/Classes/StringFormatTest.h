@@ -25,30 +25,27 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
+#ifndef __STRING_FORMAT_TEST_H__
+#define __STRING_FORMAT_TEST_H__
 
-#ifndef __QUALITY_SWITCHER_H__
-#define __QUALITY_SWITCHER_H__
+#include "DAVAEngine.h"
 
-#include <QDialog>
+#include "TestTemplate.h"
 
-class QualitySwitcher : public QDialog
+class StringFormatTest : public TestTemplate<StringFormatTest>
 {
-    Q_OBJECT
-
-public:
-    static void Show();
-    static void ShowModal();
-
 protected:
-    QualitySwitcher(QWidget *parent = NULL);
-    ~QualitySwitcher();
+    ~StringFormatTest();
+public:
+    StringFormatTest();
 
-    void ApplyTx();
-    void ApplyMa();
+    virtual void LoadResources();
+    virtual void UnloadResources();
 
-protected slots:
-    void OnTxQualitySelect(int index);
-    void OnMaQualitySelect(int index);
+    void StringTestFunction(PerfFuncData * data);
+    void IntegerTestFunction(PerfFuncData * data);
+    void FloatTestFunction(PerfFuncData * data);
 };
 
-#endif // __QUALITY_SWITCHER_H__
+
+#endif // __STRING_FORMAT_TEST_H__
