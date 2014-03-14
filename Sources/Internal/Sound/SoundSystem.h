@@ -81,6 +81,8 @@ public:
     void SetGroupVolume(const FastName & groupName, float32 volume);
     float32 GetGroupVolume(const FastName & groupName);
 
+    void InitFromQualitySettings();
+
 protected:
     void ParseSFXConfig(const FilePath & configPath);
 

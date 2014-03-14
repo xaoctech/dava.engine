@@ -288,7 +288,7 @@ void QualitySettingsSystem::SetCurSFXQuality(const FastName &name)
     }
 }
 
-FilePath QualitySettingsSystem::GetSFXQualityConfig(const FastName &name) const
+FilePath QualitySettingsSystem::GetSFXQualityConfigPath(const FastName &name) const
 {
     FilePath ret;
 
@@ -304,9 +304,16 @@ FilePath QualitySettingsSystem::GetSFXQualityConfig(const FastName &name) const
     return ret;
 }
 
-FilePath QualitySettingsSystem::GetCurSFXQualityConfig() const
+FilePath QualitySettingsSystem::GetSFXQualityConfigPath(size_t index) const
 {
-    return GetSFXQualityConfig(GetCurSFXQuality());
+    FilePath ret;
+
+    if(index < soundQualities.size())
+    {
+        ret = soundQualities[index].configPath;
+    }
+
+    return ret;
 }
 
 size_t QualitySettingsSystem::GetMaQualityGroupCount() const

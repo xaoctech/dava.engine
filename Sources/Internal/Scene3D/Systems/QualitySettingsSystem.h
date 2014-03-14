@@ -88,8 +88,8 @@ public:
     FastName GetCurSFXQuality() const;
     void SetCurSFXQuality(const FastName &name);
 
-    FilePath GetSFXQualityConfig(const FastName &name) const;
-    FilePath GetCurSFXQualityConfig() const;
+    FilePath GetSFXQualityConfigPath(const FastName &name) const;
+    FilePath GetSFXQualityConfigPath(size_t index) const;
 
     // ------------------------------------------
 
