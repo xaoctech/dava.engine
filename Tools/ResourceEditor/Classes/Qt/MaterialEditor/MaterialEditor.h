@@ -79,9 +79,9 @@ protected slots:
 protected:
 	virtual void showEvent(QShowEvent * event);
 
-	void SetCurMaterial(QList< DAVA::NMaterial *> materials);
-	void FillMaterialProperties(QList<DAVA::NMaterial *> materials);
-    void FillMaterialTemplates(QList<DAVA::NMaterial *> materials);
+	void SetCurMaterial(QList< DAVA::NMaterial *>& materials);
+	void FillMaterialProperties(QList<DAVA::NMaterial *>& materials);
+    void FillMaterialTemplates(QList<DAVA::NMaterial *>& materials);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
 

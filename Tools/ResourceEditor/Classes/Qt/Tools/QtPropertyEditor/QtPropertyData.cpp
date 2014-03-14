@@ -93,7 +93,15 @@ QVariant QtPropertyData::data(int role) const
 	case Qt::CheckStateRole:
 		if(GetFlags() & Qt::ItemIsUserCheckable)
 		{
-			ret = GetValue().toBool() ? Qt::Checked : Qt::Unchecked;
+            ret = GetValue();
+            if ( !ret.isValid() )
+            {
+                ret = Qt::PartiallyChecked;
+            }
+            else
+            {
+			    ret = GetValue().toBool() ? Qt::Checked : Qt::Unchecked;
+            }
 		}
 		break;
 	case Qt::FontRole:
@@ -137,6 +145,26 @@ bool QtPropertyData::setData(const QVariant & value, int role)
 	return ret;
 }
 
+void QtPropertyData::FillMergedValue()
+{
+    const QVariant master = GetValueInternal();
+    bool isAllEqual = true;
+
+    isValuesMerged = false;
+    foreach ( QtPropertyData *item, mergedData )
+    {
+        const QVariant slave = item->GetValue();
+        if ( master != slave )
+        {
+            isAllEqual = false;
+            break;
+        }
+    }
+
+	curValue = isAllEqual ? master : QVariant();
+    isValuesMerged = isAllEqual;
+}
+
 QVariant QtPropertyData::GetValue() const
 {
     QtPropertyData *self = const_cast<QtPropertyData*>(this);
@@ -144,23 +172,7 @@ QVariant QtPropertyData::GetValue() const
     
     if(curValue.isNull() || !curValue.isValid())
 	{
-        // Build merged value;
-        const QVariant master = GetValueInternal();
-        bool isAllEqual = true;
-
-        isValuesMerged = false;
-        foreach ( QtPropertyData *item, mergedData )
-        {
-            const QVariant slave = item->GetValue();
-            if ( master != slave )
-            {
-                isAllEqual = false;
-                break;
-            }
-        }
-
-		curValue = isAllEqual ? master : QVariant();
-        isValuesMerged = isAllEqual;
+        self->FillMergedValue();
 	}
 	else
 	{
@@ -170,7 +182,7 @@ QVariant QtPropertyData::GetValue() const
 	return curValue;
 }
 
-bool QtPropertyData::isMergedValuesEqual() const
+bool QtPropertyData::IsMergedValuesEqual() const
 {
     return isValuesMerged;
 }
@@ -237,13 +249,19 @@ bool QtPropertyData::UpdateValue(bool force)
 	{
 		updatingValue = true;
 
-		if(UpdateValueInternal() || force)
-		{
-            // We need to clear curValue, so GetValue will build new value, based on merged items
-            curValue = QVariant();  // Clear current cached value
-			curValue = GetValue();  // Forced update of value (with merged data)
-			EmitDataChanged(VALUE_SOURCE_CHANGED);
+        bool isUpdateRequested = force || UpdateValueInternal();
+        for ( int i = 0; !isUpdateRequested && ( i < mergedData.size() ); i++ )
+        {
+            if ( mergedData.at(i)->UpdateValueInternal() )
+            {
+                isUpdateRequested = true;
+            }
+        }
 
+		if( isUpdateRequested )
+		{
+            FillMergedValue();
+			EmitDataChanged(VALUE_SOURCE_CHANGED);
 			ret = true;
 		}
 
@@ -435,42 +453,43 @@ QtPropertyModel* QtPropertyData::GetModel() const
 
 void QtPropertyData::Merge(QtPropertyData* data)
 {
-    DVASSERT( data );
-    DVASSERT( this->MetaInfo() == data->MetaInfo() );
+    DVASSERT(data);
+    DVASSERT(this->MetaInfo() == data->MetaInfo());
 
     data->parent = NULL;
     mergedData << data;
 
-    foreach ( QtPropertyData* childToMerge, data->childrenData )
+    for ( int i = 0; i < data->childrenData.size(); i++ )
     {
-        MergeChild( childToMerge );
+        QtPropertyData* childToMerge = data->childrenData.at(i);
+        MergeChild(childToMerge);
     }
 
     // Do not free/delete
     data->childrenData.clear();
     data->childrenNames.clear();
 
-    UpdateValue( true );
+    UpdateValue(true);
 }
 
-void QtPropertyData::MergeChild( QtPropertyData* data, const QString& key )
+void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
 {
-    DVASSERT( data );
+    DVASSERT(data);
 
     const QString childMergeName = key.isEmpty() ? data->curName : key;
-    const int childIndex = childrenNames.indexOf( childMergeName );
-    const QtPropertyData* child = childrenData.value( childIndex );
+    const int childIndex = childrenNames.indexOf(childMergeName);
+    const QtPropertyData* child = childrenData.value(childIndex);
     const bool needMerge = ( child ? ( child->MetaInfo() == data->MetaInfo() ) : false );
 
-    if ( needMerge )
+    if (needMerge)
     {
-        QtPropertyData *child = childrenData.at( childIndex );
+        QtPropertyData *child = childrenData.at(childIndex);
         data->SetName( childMergeName );
         child->Merge( data );
     }
     else
     {
-        ChildAdd( childMergeName, data );
+        ChildAdd(childMergeName, data);
     }
 }
 
@@ -486,14 +505,6 @@ void QtPropertyData::SetModel(QtPropertyModel *_model)
 			child->SetModel(model);
 		}
 	}
-    for ( int i = 0; i < mergedData.size(); ++i )
-    {
-		QtPropertyData *merged = mergedData.at(i);
-		if(NULL != merged)
-		{
-			merged->SetModel(model);
-		}
-    }
 }
 
 void QtPropertyData::SetValidator(QtPropertyDataValidator* value)
@@ -712,9 +723,14 @@ void QtPropertyData::ChildRemoveAll()
 	}
 }
 
-QList<QtPropertyData*> QtPropertyData::GetMergedData() const
+QtPropertyData * QtPropertyData::GetMergedData( int idx ) const
 {
-    return mergedData;
+    return mergedData.value(idx);
+}
+
+int QtPropertyData::GetMergedCount() const
+{
+    return mergedData.size();
 }
 
 int QtPropertyData::GetButtonsCount() const

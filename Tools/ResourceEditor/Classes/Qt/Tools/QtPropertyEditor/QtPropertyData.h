@@ -78,7 +78,6 @@ public:
 	QString GetPath() const;
 
 	QVariant GetValue() const;
-    bool isMergedValuesEqual() const;
 	void SetValue(const QVariant &value, ValueChangeReason reason = QtPropertyData::VALUE_SET);
 	bool UpdateValue(bool force = false);
 
@@ -157,7 +156,9 @@ public:
 	virtual void* CreateLastCommand() const;
 
     // Merging
-    QList<QtPropertyData *> GetMergedData() const;
+    bool IsMergedValuesEqual() const;
+    QtPropertyData * GetMergedData(int idx) const;
+    int GetMergedCount() const;
     void Merge(QtPropertyData *data);
     void MergeChild(QtPropertyData *data, const QString& key = QString());
 
@@ -185,6 +186,7 @@ protected:
     QtPropertyDataValidator* validator;
 
 	void SetModel(QtPropertyModel *model);
+    void FillMergedValue();
 
 	virtual void UpdateUp();
 	virtual void UpdateDown();
