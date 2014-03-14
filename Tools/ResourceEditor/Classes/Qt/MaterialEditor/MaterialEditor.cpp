@@ -197,7 +197,7 @@ void MaterialEditor::SelectEntities(DAVA::NMaterial *material)
 	ui->materialTree->SelectEntities(material);
 }
 
-void MaterialEditor::SetCurMaterial(QList< DAVA::NMaterial *> materials)
+void MaterialEditor::SetCurMaterial(QList< DAVA::NMaterial *>& materials)
 {
 	curMaterials = materials;
 
@@ -286,7 +286,7 @@ void MaterialEditor::showEvent(QShowEvent * event)
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
 }
 
-void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *> materials)
+void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *>& materials)
 {
     // Clear current properties
     // But don't remove properties immediately. Just extract them and remove later
@@ -521,7 +521,7 @@ void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *> materials)
     }
 }
 
-void MaterialEditor::FillMaterialTemplates(QList<DAVA::NMaterial *> materials)
+void MaterialEditor::FillMaterialTemplates(QList<DAVA::NMaterial *>& materials)
 {
     initTemplates();
 
@@ -700,7 +700,10 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 
 		if(NULL != propData)
 		{
-            QList<QtPropertyData *> propDatList = propData->GetMergedData();
+            QList<QtPropertyData *> propDatList; //propData->GetMergedData();
+            propDatList.reserve( propData->GetMergedCount() + 1 );
+            for ( int i = 0; i < propData->GetMergedCount(); i++ )
+                propDatList << propData->GetMergedData( i );
             propDatList << propData;
 
             QList<Command2 *> commands;
@@ -715,20 +718,20 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
             const bool usebatch = (commands.count() > 1);
 
             SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-            if ( curScene )
+            if (curScene)
             {
-                if ( usebatch )
+                if (usebatch)
                 {
                     curScene->BeginBatch( "Property multiedit" );
                 }
 
-                foreach( Command2 *cmd, commands )
+                for (int i = 0; i < commands.size(); i++)
                 {
+                    Command2 *cmd = commands.at( i );
                     curScene->Exec( cmd );
-                    qDebug() << cmd->GetText().c_str();
                 }
 
-                if ( usebatch )
+                if (usebatch)
                 {
                     curScene->EndBatch();
                 }
