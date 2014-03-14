@@ -773,7 +773,7 @@ public:
     RenderState currentState;
     RenderState hardwareState;
 
-    int32 enabledAttribCount;
+    int32 cachedEnabledStreams;
 
     
     

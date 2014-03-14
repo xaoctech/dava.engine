@@ -740,7 +740,7 @@ void RenderManager::AttachRenderData()
 	GetStats().attachRenderDataCount++;
     
     {
-        int32 currentEnabledAttribCount = 0;
+        int32 currentEnabledStreams = 0;
         
         HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
         HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
@@ -762,6 +762,8 @@ void RenderManager::AttachRenderData()
             int32 attribIndex = shader->GetAttributeIndex(stream->formatMark);
             if (attribIndex != -1)
             {
+                int32 attribIndexBitPos = (1 << attribIndex);
+
 				if(TYPE_UNSIGNED_BYTE == stream->type)
 				{
 					normalized = GL_TRUE;
@@ -769,26 +771,35 @@ void RenderManager::AttachRenderData()
                 RENDER_VERIFY(glVertexAttribPointer(attribIndex, stream->size, VERTEX_DATA_TYPE_TO_GL[stream->type], normalized, stream->stride, stream->pointer));
                 if (DEBUG)Logger::FrameworkDebug("shader glVertexAttribPointer: %d", attribIndex);
 
-                if (attribIndex >= enabledAttribCount)  // enable only if it was not enabled on previous step
+                if (!(cachedEnabledStreams & attribIndexBitPos))  // enable only if it was not enabled on previous step
                 {
                     RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
                     if (DEBUG)Logger::FrameworkDebug("shader glEnableVertexAttribArray: %d", attribIndex);
                 }
-                if (attribIndex + 1 > currentEnabledAttribCount)
-                    currentEnabledAttribCount = attribIndex + 1;    // count of enabled attributes
-                
-                //pointerArraysCurrentState |= stream->formatMark;
+
+                currentEnabledStreams |= attribIndexBitPos;
             }
         };
         
-        for (int32 p = currentEnabledAttribCount; p < enabledAttribCount; ++p)
+        if(cachedEnabledStreams != currentEnabledStreams)
         {
-            if (DEBUG)Logger::FrameworkDebug("shader glDisableVertexAttribArray: %d", p);
+            // now we should disable all attribs, that are was enable previously and should not be enabled now
+            int attribIndex = 0;
+            int32 streamsToDisable = (cachedEnabledStreams ^ currentEnabledStreams) & cachedEnabledStreams;
+            while(0 != streamsToDisable)
+            {
+                if(streamsToDisable & 0x1)
+                {
+                    if(DEBUG)Logger::FrameworkDebug("shader glDisableVertexAttribArray: %d", attribIndex);
+                    RENDER_VERIFY(glDisableVertexAttribArray(attribIndex));
+                }
 
-            RENDER_VERIFY(glDisableVertexAttribArray(p));
+                streamsToDisable = streamsToDisable >> 1;
+                attribIndex++;
+            }
+
+            cachedEnabledStreams = currentEnabledStreams;
         }
-        enabledAttribCount = currentEnabledAttribCount;
-        //pointerArraysRendererState = pointerArraysCurrentState;
     }
 }
 
