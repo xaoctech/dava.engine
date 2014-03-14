@@ -68,6 +68,9 @@ public:
     virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
 protected:
 
+    // Update the rect of the web view control.
+    void UpdateControlRect();
+
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
 };
