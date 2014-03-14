@@ -366,6 +366,7 @@
     </property>
     <addaction name="actionFontManager"/>
     <addaction name="actionLocalizationManager"/>
+    <addaction name="actionLocalizationFontsManager"/>
     <addaction name="actionEditPreviewSettings"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -1000,6 +1001,14 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionLocalizationFontsManager">
+   <property name="text">
+    <string>Localization Fonts Manager</string>
+   </property>
+   <property name="toolTip">
+    <string>Localization Fonts Manager</string>
    </property>
   </action>
  </widget>

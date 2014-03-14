@@ -66,6 +66,7 @@ private slots:
 
     void OnOpenFontManager();
     void OnOpenLocalizationManager();
+    void OnOpenLocalizationFontsManager();
     void OnShowHelp();
 	
 	void OnNewProject();
