@@ -145,16 +145,17 @@ bool QtPropertyData::setData(const QVariant & value, int role)
 	return ret;
 }
 
-void QtPropertyData::FillMergedValue()
+void QtPropertyData::BuildCurrentValue()
 {
     const QVariant master = GetValueInternal();
     bool isAllEqual = true;
 
     isValuesMerged = false;
-    foreach ( QtPropertyData *item, mergedData )
+    for ( int i = 0; i < mergedData.size(); i++ )
     {
+        QtPropertyData *item = mergedData.at(i);
         const QVariant slave = item->GetValue();
-        if ( master != slave )
+        if (master != slave)
         {
             isAllEqual = false;
             break;
@@ -168,21 +169,17 @@ void QtPropertyData::FillMergedValue()
 QVariant QtPropertyData::GetValue() const
 {
     QtPropertyData *self = const_cast<QtPropertyData*>(this);
-    QList< QtPropertyData * > toMerge( mergedData );
     
-    if(curValue.isNull() || !curValue.isValid())
-	{
-        self->FillMergedValue();
-	}
-	else
+    if(curValue.isValid() || !curValue.isNull())
 	{
 		self->UpdateValue();
 	}
 
+    self->BuildCurrentValue();
 	return curValue;
 }
 
-bool QtPropertyData::IsMergedValuesEqual() const
+bool QtPropertyData::IsMergedDataEqual() const
 {
     return isValuesMerged;
 }
@@ -249,18 +246,9 @@ bool QtPropertyData::UpdateValue(bool force)
 	{
 		updatingValue = true;
 
-        bool isUpdateRequested = force || UpdateValueInternal();
-        for ( int i = 0; !isUpdateRequested && ( i < mergedData.size() ); i++ )
-        {
-            if ( mergedData.at(i)->UpdateValueInternal() )
-            {
-                isUpdateRequested = true;
-            }
-        }
-
-		if( isUpdateRequested )
+		if( UpdateValueInternal() || force )
 		{
-            FillMergedValue();
+            BuildCurrentValue();
 			EmitDataChanged(VALUE_SOURCE_CHANGED);
 			ret = true;
 		}

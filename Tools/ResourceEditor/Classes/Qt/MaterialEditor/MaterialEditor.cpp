@@ -197,7 +197,7 @@ void MaterialEditor::SelectEntities(DAVA::NMaterial *material)
 	ui->materialTree->SelectEntities(material);
 }
 
-void MaterialEditor::SetCurMaterial(QList< DAVA::NMaterial *>& materials)
+void MaterialEditor::SetCurMaterial(const QList< DAVA::NMaterial *>& materials)
 {
 	curMaterials = materials;
 
@@ -286,7 +286,7 @@ void MaterialEditor::showEvent(QShowEvent * event)
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
 }
 
-void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *>& materials)
+void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& materials)
 {
     // Clear current properties
     // But don't remove properties immediately. Just extract them and remove later
@@ -521,7 +521,7 @@ void MaterialEditor::FillMaterialProperties(QList<DAVA::NMaterial *>& materials)
     }
 }
 
-void MaterialEditor::FillMaterialTemplates(QList<DAVA::NMaterial *>& materials)
+void MaterialEditor::FillMaterialTemplates(const QList<DAVA::NMaterial *>& materials)
 {
     initTemplates();
 
