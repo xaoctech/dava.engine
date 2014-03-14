@@ -248,7 +248,6 @@ bool QtPropertyData::UpdateValue(bool force)
 
 		if( UpdateValueInternal() || force )
 		{
-            BuildCurrentValue();
 			EmitDataChanged(VALUE_SOURCE_CHANGED);
 			ret = true;
 		}
