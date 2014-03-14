@@ -74,6 +74,10 @@ public:
 	
     void SetScreenControl(ScreenControl* control);
 
+    // Screen scale/position is changed.
+    void SetScreenScaleChangedFlag();
+    void SetScreenPositionChangedFlag();
+
 private:
 	enum InputState
 	{
@@ -172,7 +176,10 @@ private:
 
     // Screen currently displayed in UIEditor (might be NULL).
     ScreenControl* screenControl;
-	
+
+    bool isNeedHandleScreenScaleChanged;
+    bool isNeedHandleScreenPositionChanged;
+
     // Verify whether the point is inside control, taking its angle into account.
     bool IsPointInsideControlWithDelta(UIControl* uiControl, const Vector2& point, int32 pointDelta) const;
 
@@ -214,6 +221,9 @@ private:
     
     // Align the vector to the nearest scale value.
     Vector2 AlignToNearestScale(const Vector2& value) const;
+
+    // Handle the "screen scale/screen position" change.
+    void HandleScreenScalePositionChanged();
 
 private slots:
 	void ControlContextMenuTriggered(QAction* action);

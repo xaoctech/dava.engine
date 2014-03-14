@@ -29,6 +29,7 @@
 
 
 #include "UIWebView.h"
+#include "RenderManager.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 #include "../Platform/TemplateMacOS/WebViewControlMacOS.h"
@@ -50,6 +51,8 @@ UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
 {
     Rect newRect = GetRect(true);
     this->webViewControl->Initialize(newRect);
+    UpdateControlRect();
+
     this->webViewControl->SetVisible(false, true); // will be displayed in WillAppear.
 }
 
@@ -88,19 +91,13 @@ void UIWebView::WillDisappear()
 void UIWebView::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)
 {
 	UIControl::SetPosition(position, positionInAbsoluteCoordinates);
-
-	// Update the inner control.
-	Rect newRect = GetRect(true);
-	this->webViewControl->SetRect(newRect);
+    UpdateControlRect();
 }
 
 void UIWebView::SetSize(const Vector2 &newSize)
 {
 	UIControl::SetSize(newSize);
-
-	// Update the inner control.
-	Rect newRect = GetRect(true);
-	this->webViewControl->SetRect(newRect);
+    UpdateControlRect();
 }
 
 void UIWebView::SetVisible(bool isVisible, bool hierarchic)
@@ -136,4 +133,14 @@ YamlNode* UIWebView::SaveToYamlNode(UIYamlLoader * loader)
 	YamlNode* node = UIControl::SaveToYamlNode(loader);
 	SetPreferredNodeType(node, "UIWebView");
 	return node;
+}
+
+void UIWebView::UpdateControlRect()
+{
+    Rect rect = GetRect(true);
+
+    rect.SetPosition(rect.GetPosition() * RenderManager::Instance()->GetDrawScale() + RenderManager::Instance()->GetDrawTranslate());
+    rect.SetSize(rect.GetSize() * RenderManager::Instance()->GetDrawScale());
+
+    webViewControl->SetRect(rect);
 }
