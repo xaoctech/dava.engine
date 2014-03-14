@@ -358,7 +358,7 @@ void main()
 #endif
     
 #if defined(MATERIAL_GRASS)
-    //gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
 #endif
     
     
