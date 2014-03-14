@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/Observer.h"
 #include "Entity/SceneSystem.h"
 
 namespace DAVA
@@ -41,7 +42,7 @@ class SpeedTreeObject;
 class SpeedTreeComponent;
 class TreeOscillator;
     
-class SpeedTreeUpdateSystem : public SceneSystem
+class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
 public:
     struct TreeInfo
@@ -68,9 +69,13 @@ public:
     void AddTreeOscillator(TreeOscillator * oscillator);
     void ForceRemoveTreeOscillator(TreeOscillator * oscillator);
     
+	virtual void HandleEvent(Observable * observable);
+    
 private:
     Vector<TreeInfo *> allTrees;
     Vector<TreeOscillator *> activeOscillators;
+    
+    bool isAnimationEnabled;
 };
     
 } // ns

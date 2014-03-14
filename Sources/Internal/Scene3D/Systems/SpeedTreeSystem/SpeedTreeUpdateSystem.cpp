@@ -44,6 +44,9 @@ namespace DAVA
 SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 :	SceneSystem(scene)
 {
+    RenderOptions * options = RenderManager::Instance()->GetOptions();
+    options->AddObserver(this);
+    isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 }
 
 SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
@@ -66,7 +69,7 @@ void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
     SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
     DVASSERT(treeObject);
 
-    treeObject->SetAnimationEnabled(true);
+    treeObject->SetAnimationEnabled(isAnimationEnabled);
     
     TreeInfo * treeInfo = new TreeInfo(treeObject);
     treeInfo->position = GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector();
@@ -119,6 +122,9 @@ void SpeedTreeUpdateSystem::ForceRemoveTreeOscillator(TreeOscillator * oscillato
 
 void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
 {
+    if(!isAnimationEnabled)
+        return;
+    
     //Update oscillators
     Vector<TreeOscillator *>::iterator it = activeOscillators.begin();
     while(it != activeOscillators.end())
@@ -175,5 +181,22 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         info->treeObject->SetTreeAnimationParams(oscillationOffsetAll, leafOscillationParams);
     }
 }
-
+    
+void SpeedTreeUpdateSystem::HandleEvent(Observable * observable)
+{
+    RenderOptions * options = static_cast<RenderOptions *>(observable);
+    
+    if(isAnimationEnabled != options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS))
+    {
+        isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+        
+        uint32 treeCount = allTrees.size();
+        for(uint32 i = 0; i < treeCount; ++i)
+        {
+            TreeInfo * info = allTrees[i];
+            info->treeObject->SetAnimationEnabled(isAnimationEnabled);
+        }
+    }
+}
+    
 };
