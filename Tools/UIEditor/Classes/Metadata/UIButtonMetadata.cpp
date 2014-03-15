@@ -107,7 +107,6 @@ void UIButtonMetadata::SetFont(Font * font)
     if (font)
     {
         font->SetSize(GetFontSize());
-        font->SetOriginalSize(GetFontSize());
 		for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 		{
 			GetActiveUIButton()->SetStateFont(this->uiControlStates[i], font);
@@ -172,7 +171,6 @@ void UIButtonMetadata::SetFontSize(float fontSize)
 
 		Font* newFont = font->Clone();
 		newFont->SetSize(fontSize);
-		newFont->SetOriginalSize(fontSize);
 		buttonText->SetFont(newFont);
 		newFont->Release();
 	}

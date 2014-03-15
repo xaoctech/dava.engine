@@ -191,6 +191,8 @@ public slots:
     // Perform grid copy
     void OnDebugFunctionsGridCopy();
 
+    void OnReloadShaders();
+    
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);

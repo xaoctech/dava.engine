@@ -65,6 +65,22 @@ ShaderAsset::~ShaderAsset()
     SafeRelease(fragmentShaderData);
 }
 
+void ShaderAsset::SetShaderData(Data * _vertexShaderData, Data * _fragmentShaderData)
+{
+    SafeRelease(vertexShaderData);
+    SafeRelease(fragmentShaderData);
+   
+    vertexShaderData = SafeRetain(_vertexShaderData);
+    fragmentShaderData = SafeRetain(_fragmentShaderData);
+    
+    vertexShaderDataStart = 0;
+    vertexShaderDataSize = 0;
+    
+    fragmentShaderDataStart = 0;
+    fragmentShaderDataSize = 0;
+}
+
+
 Shader * ShaderAsset::Compile(const FastNameSet & defines)
 {
     Shader * checkShader = compiledShaders.at(defines);
@@ -88,6 +104,33 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
     return shader;
 }
 	
+void ShaderAsset::ReloadShaders()
+{
+    HashMap < FastNameSet, Shader *>::iterator it = compiledShaders.begin();
+    HashMap < FastNameSet, Shader *>::iterator endIt = compiledShaders.end();
+    while (it != endIt)
+    {
+        it->second->Reload(vertexShaderData,
+                           fragmentShaderData,
+                           vertexShaderDataStart,
+                           vertexShaderDataSize,
+                           fragmentShaderDataStart,
+                           fragmentShaderDataSize);
+        
+        ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+                                                               Message(this, &ShaderAsset::BindShaderDefaultsInternal, it->second));
+        
+        ++it;
+        if(it == endIt)
+        {
+            JobInstanceWaiter waiter(job);
+            waiter.Wait();
+            
+            break;
+        }
+    }
+}
+    
 void ShaderAsset::BindShaderDefaultsInternal(BaseObject * caller, void * param, void *callerData)
 {
 	BindShaderDefaults((Shader*)param);
@@ -208,6 +251,7 @@ void ShaderCache::ClearAllLastBindedCaches()
         it->second->ClearAllLastBindedCaches();
 }
     
+<<<<<<< HEAD
 void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & inputLine)
 {
     if (inputLine.find("uniform") == String::npos) return;
@@ -304,9 +348,10 @@ void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & input
     }*/
 }
     
-ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData)
+void ShaderCache::ParseShader(ShaderAsset * asset)
 {
-    ShaderAsset * asset = new ShaderAsset(name, vertexShaderData, fragmentShaderData);
+    Data * vertexShaderData = asset->vertexShaderData;
+    Data * fragmentShaderData = asset->fragmentShaderData;
     
     static const char * TOKEN_CONFIG = "<CONFIG>";
     static const char * TOKEN_VERTEX_SHADER = "<VERTEX_SHADER>";
@@ -385,9 +430,9 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
     
     asset->vertexShaderDataStart = vertexShaderStartPosition;
     asset->vertexShaderDataSize = vertexShaderData->GetSize() - (vertexShaderStartPosition - vertexShaderData->GetPtr());
-
-//    includesList.clear();
-//    includesList.push_back(fragmentShaderPath.GetFilename());
+    
+    //    includesList.clear();
+    //    includesList.push_back(fragmentShaderPath.GetFilename());
     uint8 * fragmentShaderStartPosition = fragmentShaderData->GetPtr();
     sourceFile = String((char8*)fragmentShaderData->GetPtr(), fragmentShaderData->GetSize());
     configStarted = false;
@@ -405,20 +450,20 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
             break;
         }
         /*
-        lineEnding = 0;
-        // get next line
-        lineEnd = sourceFile.find("\r\n", lineBegin);
-        if(String::npos != lineEnd)
-        {
-            lineEnding = 2;
-        }else
-        {
-            lineEnd = sourceFile.find("\n", lineBegin);
-            if(String::npos != lineEnd)
-            {
-                lineEnding = 1;
-            }
-        }
+         lineEnding = 0;
+         // get next line
+         lineEnd = sourceFile.find("\r\n", lineBegin);
+         if(String::npos != lineEnd)
+         {
+         lineEnding = 2;
+         }else
+         {
+         lineEnd = sourceFile.find("\n", lineBegin);
+         if(String::npos != lineEnd)
+         {
+         lineEnding = 1;
+         }
+         }
          */
         // get next line
         lineEnding = 0;
@@ -461,7 +506,6 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
         {
             ParseDefaultVariable(asset, line);
         }
-
         lineBegin = lineEnd + lineEnding;
     }
     asset->fragmentShaderDataStart = fragmentShaderStartPosition;
@@ -477,8 +521,214 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
     //            }
     //            curData = strtok(NULL, "\n");
     //        }
-    return asset;
 }
+
+//ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData)
+//{
+//    ShaderAsset * asset = new ShaderAsset(name, vertexShaderData, fragmentShaderData);
+//    
+//    static const char * TOKEN_CONFIG = "<CONFIG>";
+//    static const char * TOKEN_VERTEX_SHADER = "<VERTEX_SHADER>";
+//    static const char * TOKEN_FRAGMENT_SHADER = "<FRAGMENT_SHADER>";
+//    
+//    uint8 * vertexShaderStartPosition = vertexShaderData->GetPtr();
+//    
+//    String sourceFile((char8*)vertexShaderData->GetPtr(), vertexShaderData->GetSize());
+//    //size_t size = sourceFile.size();
+//    
+//    size_t lineBegin	= 0;
+//    size_t lineComment	= 0;
+//    size_t lineEnd		= 0;
+//    size_t lineEnding   = 0;
+//    
+//    bool lastLine = false;
+//    
+//    //Vector<String> includesList;		// used to prevent double or recursive includes
+//    //includesList.push_back(vertexShaderPath.GetFilename());
+//    
+//    bool configStarted = false;
+//    
+//    while(1)
+//    {
+//        if(lastLine)
+//        {
+//            break;
+//        }
+//        
+//        // get next line
+//        lineEnding = 0;
+//        lineEnd = sourceFile.find("\r\n", lineBegin);
+//        if (String::npos != lineEnd)
+//        {
+//            lineEnding = 2;
+//        }else
+//        {
+//            lineEnd = sourceFile.find("\n", lineBegin);
+//            lineEnding = 1;
+//        }
+//        if(String::npos == lineEnd)
+//        {
+//            lastLine = true;
+//            lineEnd = sourceFile.size();
+//        }
+//        
+//        // skip comment
+//        lineComment = sourceFile.find("//", lineBegin);
+//        size_t lineLen = 0;
+//        if(String::npos == lineComment || lineComment > lineEnd)
+//        {
+//            lineLen = lineEnd - lineBegin;
+//        }else
+//        {
+//            lineLen = lineComment - lineBegin;
+//        }
+//        
+//        String line = sourceFile.substr(lineBegin, lineLen);
+//        if (line == TOKEN_VERTEX_SHADER)
+//        {
+//            vertexShaderStartPosition = (uint8*)vertexShaderData->GetPtr() + lineBegin + lineLen + lineEnding;
+//            configStarted = false;
+//        }
+//        else if (line == TOKEN_CONFIG)
+//        {
+//            configStarted = true;
+//        }
+//        else if (configStarted)
+//        {
+//            // GetToken();
+//            Vector<String> tokens;
+//            Split(line, " \t", tokens);
+//            
+//            if ((tokens.size() == 3) && (tokens[1] == "=") && (tokens[2].size() > 0))
+//            {
+//                ShaderAsset::DefaultValue value;
+//                if ((tokens[2].find(".") != String::npos) || (tokens[2].find("-") != String::npos))
+//                    value.float32Value = (float32)atof(tokens[2].c_str());
+//                else
+//                    value.int32Value = atoi(tokens[2].c_str());
+//                FastName fastName = FastName(tokens[0]);
+//                asset->defaultValues.insert(fastName, value);
+//                
+//                Logger::Debug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
+//            }
+//        }
+//        //Logger::Debug("%s", line.c_str());
+//        lineBegin = lineEnd + lineEnding;
+//    }
+//    
+//    asset->vertexShaderDataStart = vertexShaderStartPosition;
+//    asset->vertexShaderDataSize = vertexShaderData->GetSize() - (vertexShaderStartPosition - vertexShaderData->GetPtr());
+//
+////    includesList.clear();
+////    includesList.push_back(fragmentShaderPath.GetFilename());
+//    uint8 * fragmentShaderStartPosition = fragmentShaderData->GetPtr();
+//    sourceFile = String((char8*)fragmentShaderData->GetPtr(), fragmentShaderData->GetSize());
+//    configStarted = false;
+//    
+//    lineBegin	= 0;
+//    lineComment	= 0;
+//    lineEnd		= 0;
+//    
+//    lastLine = false;
+//    
+//    while(1)
+//    {
+//        if(lastLine)
+//        {
+//            break;
+//        }
+//        /*
+//        lineEnding = 0;
+//        // get next line
+//        lineEnd = sourceFile.find("\r\n", lineBegin);
+//        if(String::npos != lineEnd)
+//        {
+//            lineEnding = 2;
+//        }else
+//        {
+//            lineEnd = sourceFile.find("\n", lineBegin);
+//            if(String::npos != lineEnd)
+//            {
+//                lineEnding = 1;
+//            }
+//        }
+//         */
+//        // get next line
+//        lineEnding = 0;
+//        lineEnd = sourceFile.find("\r\n", lineBegin);
+//        if (String::npos != lineEnd)
+//        {
+//            lineEnding = 2;
+//        }else
+//        {
+//            lineEnd = sourceFile.find("\n", lineBegin);
+//            lineEnding = 1;
+//        }
+//        if(String::npos == lineEnd)
+//        {
+//            lastLine = true;
+//            lineEnd = sourceFile.size();
+//        }
+//        
+//        // skip comment
+//        lineComment = sourceFile.find("//", lineBegin);
+//        size_t lineLen = 0;
+//        if(String::npos == lineComment || lineComment > lineEnd)
+//        {
+//            lineLen = lineEnd - lineBegin;
+//        }else
+//        {
+//            lineLen = lineComment - lineBegin;
+//        }
+//        
+//        String line = sourceFile.substr(lineBegin, lineLen);
+//        if (line == TOKEN_FRAGMENT_SHADER)
+//        {
+//            fragmentShaderStartPosition = (uint8*)fragmentShaderData->GetPtr() + lineBegin + lineLen + lineEnding;
+//            configStarted = false;
+//        }else if (line == TOKEN_CONFIG)
+//        {
+//            configStarted = true;
+//        }
+//        else if (configStarted)
+//        {
+//            // GetToken();
+//            Vector<String> tokens;
+//            Split(line, " \t", tokens);
+//            
+//            if ((tokens.size() == 3) && (tokens[1] == "=") && (tokens[2].size() > 0))
+//            {
+//                ShaderAsset::DefaultValue value;
+//                if ((tokens[2].find(".") != String::npos) || (tokens[2].find("-") != String::npos))
+//                    value.float32Value = (float32)atof(tokens[2].c_str());
+//                else
+//                    value.int32Value = atoi(tokens[2].c_str());
+//                FastName fastName = FastName(tokens[0]);
+//                asset->defaultValues.insert(fastName, value);
+//                
+//                Logger::Debug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
+//            }
+//        }
+//        
+//        //Logger::Debug("%s", line.c_str());
+//
+//        lineBegin = lineEnd + lineEnding;
+//    }
+//    asset->fragmentShaderDataStart = fragmentShaderStartPosition;
+//    asset->fragmentShaderDataSize = fragmentShaderData->GetSize() - (fragmentShaderStartPosition - fragmentShaderData->GetPtr());
+//    
+//    
+//    //        curData = strtok((char*)fragmentShaderData, "\n");
+//    //        while(curData != NULL)
+//    //        {
+//    //            if (strcmp(curData, TOKEN_FRAGMENT_SHADER) == 0)
+//    //            {
+//    //                fragmentShaderStartPosition = (uint8*)curData + sizeof(TOKEN_FRAGMENT_SHADER);
+//    //            }
+//    //            curData = strtok(NULL, "\n");
+//    //        }
+//    return asset;
+//}
 
     
 ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
@@ -498,8 +748,8 @@ ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
     uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
     Data * fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
     
-    ShaderAsset * asset = ParseShader(shaderFastName, vertexShaderData, fragmentShaderData);
-    //new ShaderAsset(vertexShaderData, fragmentShaderData);
+    ShaderAsset * asset = new ShaderAsset(shaderFastName, vertexShaderData, fragmentShaderData);
+    ParseShader(asset);
 
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
@@ -525,9 +775,41 @@ Shader * ShaderCache::Get(const FastName & shaderName, const FastNameSet & defin
     //Logger::FrameworkDebug(Format("shader: %s %d", shaderName.c_str(), shader->GetRetainCount()).c_str());
     return shader;
 }
+    
+void ShaderCache::Reload()
+{
+    FastNameMap<ShaderAsset*>::iterator it = shaderAssetMap.begin();
+    FastNameMap<ShaderAsset*>::iterator endIt = shaderAssetMap.end();
+    for( ; it != endIt; ++it)
+    {
+        ReloadAsset(it->second);
+    }
+}
 
     
-
+void ShaderCache::ReloadAsset(DAVA::ShaderAsset *asset)
+{
+    const FastName & shaderFastName = asset->name;
+    
+    String shader = shaderFastName.c_str();
+    String vertexShaderPath = shader + ".vsh";
+    String fragmentShaderPath = shader + ".fsh";
+    
+    uint32 vertexShaderSize = 0, fragmentShaderSize = 0;
+    
+    uint8 * vertexShaderBytes = FileSystem::Instance()->ReadFileContents(vertexShaderPath, vertexShaderSize);
+    Data * vertexShaderData = new Data(vertexShaderBytes, vertexShaderSize);
+    
+    uint8 * fragmentShaderBytes = FileSystem::Instance()->ReadFileContents(fragmentShaderPath, fragmentShaderSize);
+    Data * fragmentShaderData = new Data(fragmentShaderBytes, fragmentShaderSize);
+    
+    asset->SetShaderData(vertexShaderData, fragmentShaderData);
+    ParseShader(asset);
+    SafeRelease(vertexShaderData);
+    SafeRelease(fragmentShaderData);
+    
+    asset->ReloadShaders();
+}
     
     
 };
