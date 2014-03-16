@@ -36,6 +36,7 @@
 #include "TextureCompression/PVRConverter.h"
 
 #include "Render/GPUFamilyDescriptor.h"
+#include "Render/PixelFormatDescriptor.h"
 
 using namespace DAVA;
  
@@ -136,7 +137,7 @@ void ProcessRecourcePacker()
     Logger::FrameworkDebug("[OUTPUT DIR] - [%s]", resourcePacker->outputGfxDirectory.GetAbsolutePathname().c_str());
     Logger::FrameworkDebug("[EXCLUDE DIR] - [%s]", resourcePacker->excludeDirectory.GetAbsolutePathname().c_str());
     
-    Texture::InitializePixelFormatDescriptors();
+    PixelFormatDescriptor::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
     
     
