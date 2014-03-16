@@ -105,10 +105,8 @@ public:
     void Reload();
     
 private:
-    void ReloadAsset(ShaderAsset *asset);
-    
+    void LoadAsset(ShaderAsset *asset);
     void ParseShader(ShaderAsset * asset);
-//    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
 
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };
