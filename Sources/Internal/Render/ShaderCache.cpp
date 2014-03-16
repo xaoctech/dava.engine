@@ -251,7 +251,6 @@ void ShaderCache::ClearAllLastBindedCaches()
         it->second->ClearAllLastBindedCaches();
 }
     
-<<<<<<< HEAD
 void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & inputLine)
 {
     if (inputLine.find("uniform") == String::npos) return;
