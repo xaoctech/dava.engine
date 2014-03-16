@@ -1794,6 +1794,8 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
 	
 bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel, uint32 baseMipMap)
 {
+    DVASSERT(mipMapLevel >= baseMipMap);
+    
     //Texture setup
     PVRHeaderV3 compressedHeader;
     uint8* pTextureData=NULL;

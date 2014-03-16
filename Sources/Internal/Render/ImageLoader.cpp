@@ -197,13 +197,6 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
         for(int32 i = 0; i < totalImageCount; ++i)
         {
             Image *image = new Image();
-            if(!image)
-            {
-                Logger::Error("[ImageLoader::CreateFromPVR] Cannot allocate memory");
-				for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
-                return false;
-            }
-            
             imageSet.push_back(image);
         }
 

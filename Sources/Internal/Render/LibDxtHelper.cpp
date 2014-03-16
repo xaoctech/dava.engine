@@ -508,14 +508,9 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 
         for(uint32 i = 0; i < baseMipMap; ++i)
         {
-            TQonvertImage srcImg = {0};
-			
-			srcImg.nWidth = faceWidth;
-			srcImg.nHeight = faceHeight;
-			srcImg.nFormat = qualcommFormat;
-			dec.getMipmapSize(i, srcImg.nDataSize);
-			srcImg.pData = buffer;
-			buffer += srcImg.nDataSize;
+            unsigned int mipMapSize = 0;
+			dec.getMipmapSize(i, mipMapSize);
+			buffer += mipMapSize;
 
 			faceWidth = Max((uint32)1, faceWidth / 2);
 			faceHeight = Max((uint32)1, faceHeight / 2);
