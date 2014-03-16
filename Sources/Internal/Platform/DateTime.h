@@ -36,44 +36,69 @@
 namespace DAVA
 {
 
+typedef time_t Timestamp;
+    
 class DateTime
 {
 public:
     
-    DateTime(time_t UTCtime, int16 timeZone = 0);// 0 means UTC
-
-	DateTime(uint32 year, uint32 month, uint32 day, int16 timeZone = 0);
+    /* Proper ranges: */
+    /* Seconds (0-59) */
+    /* Minutes (0-59) */
+    /* Hours (0-23)   */
+    /* Day of the month (1-31), attention: 0 as param will lead to last day of prev. month */
+    /* Month (0-11) */
+    /* Time zone offset in seconds.For example, for U.S. Eastern Standard Time, the value is -5*60*60 */
+    DateTime(int32 year, int32 month, int32 day, int32 timeZoneOffset );
+    DateTime(int32 year, int32 month, int32 day, int32 hour, int32 minute, int32 second, int32 timeZoneOffset);
     
-    DateTime(uint32 year, uint32 month, uint32 day, uint32 hour, uint32 minute, uint32 second, int16 timeZone = 0);
+    // return DateTime with shifted time zone offset to local one,
+    // input timeStamp will be recognized as in utc
+    static DateTime LocalTime(Timestamp);
+    
+    // return DateTime with shifted time zone offset to utc (if needed)
+    static DateTime GmTime(Timestamp);
     
     static DateTime Now();
     
-    DateTime ConvertToTimeZone(int16 timeZone = 0);
-    
+    DateTime ConvertToTimeZone(int32 timeZoneOffset);
     DateTime ConvertToLocalTimeZone();
     
-    DAVA::String AsString();
+    // Getters will return value in present time zone
+    int32 GetYear() const;
+    int32 GetMonth() const;
+    int32 GetDay() const;
+    int32 GetHour() const;
+    int32 GetMinute() const;
+    int32 GetSecond() const;
     
-    uint32 GetYear() const;
     
-    uint32 GetMonth() const;
+    int32 GetTimeZone() const;
+    void SetTimeZone(int32);
+    Timestamp GetTimestamp() const
+    {
+        return innerTime;
+    }
     
-    uint32 GetDay() const;
+    bool Parse(const DAVA::String & src);// will parse string in format RFC822 or ISO8601
     
-    uint32 GetHour() const;
+    // represetn data according to device locale and time zone
+    DAVA::WideString AsWString(const wchar_t* format);
     
-    uint32 GetMinute() const;
+private:
     
-    uint32 GetSecond() const;
+    DateTime(Timestamp timeStamp, int32 timeZone);
     
-    int16 GetTimeZone() const;
+    Timestamp GetRawTimeStampForCurrentTZ() const;
     
-protected:
+    static int32 GetLocalTimeZoneOffset();
     
-    static int16 GetLocalTimeZone();
+    bool ParseISO8601Date(const DAVA::String&);
     
-    time_t time;
-    int16 time_zone;
+    bool ParseRFC822Date(const DAVA::String&);
+    
+    Timestamp   innerTime;
+    int32       timeZoneOffset;
 };
 };
 
