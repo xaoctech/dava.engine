@@ -27,32 +27,46 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+
+#ifndef __DAVAENGINE_SCENE3D_IMPULSE_OSCILLATOR_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_IMPULSE_OSCILLATOR_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "Entity/Component.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class Entity;
-class Scene;
-class TreeOscillator;
-    
-class WindSystem : public SceneSystem
+
+class ImpuleOscillatorComponent : public Component
 {
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
 protected:
-    Map<Entity *, TreeOscillator *> oscMap;
+	virtual ~ImpuleOscillatorComponent();
+public:
+	ImpuleOscillatorComponent(float32 inflDistance = 0.f, float32 force = 0.f);
+
+	IMPLEMENT_COMPONENT_TYPE(IMPULSE_OSCILLATOR_COMPONENT);
+
+	virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+
+    void TriggerImpulse();
+
+protected:
+    float32 forceValue;
+    float32 influenceDistance;
+    
+public:
+	INTROSPECTION_EXTEND(ImpuleOscillatorComponent, Component,
+        MEMBER(forceValue, "forceValue", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)
+        );
+
+friend class ImpulseOscillatorSystem;
 };
 
-}
+};
 
-#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
-
+#endif

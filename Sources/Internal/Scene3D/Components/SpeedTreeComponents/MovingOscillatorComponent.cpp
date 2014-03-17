@@ -27,32 +27,44 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
 
-#include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "MovingOscillatorComponent.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class Entity;
-class Scene;
-class TreeOscillator;
-    
-class WindSystem : public SceneSystem
-{
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-protected:
-    Map<Entity *, TreeOscillator *> oscMap;
-};
+	REGISTER_CLASS(MovingOscillatorComponent)
 
+MovingOscillatorComponent::MovingOscillatorComponent(float32 inflDistance /* = 0.f */, float32 speedClampVal /* = 0.f */) :
+    influenceDistance(inflDistance),
+    speedClampValue(speedClampVal)
+{
+    
 }
 
-#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
+MovingOscillatorComponent::~MovingOscillatorComponent()
+{
+    
+}
+ 
+Component * MovingOscillatorComponent::Clone(Entity * toEntity)
+{
+    MovingOscillatorComponent * component = new MovingOscillatorComponent();
+	component->SetEntity(toEntity);
+    
+    return component;
+}
 
+void MovingOscillatorComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+}
+    
+void MovingOscillatorComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Deserialize(archive, serializationContext);
+}
+    
+};

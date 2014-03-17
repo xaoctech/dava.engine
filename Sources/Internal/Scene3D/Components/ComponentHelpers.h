@@ -52,6 +52,8 @@ class RenderComponent;
 class TransformComponent;
 class SpeedTreeComponent;
 class WindComponent;
+class ImpuleOscillatorComponent;
+class MovingOscillatorComponent;
 
 
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
@@ -78,6 +80,8 @@ void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*pr
 
 SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity);
 WindComponent * GetWindComponent(Entity * fromEntity);
+ImpuleOscillatorComponent * GetImpuleOscillatorComponent(Entity * fromEntity);
+MovingOscillatorComponent * GetMovingOscillatorComponent(Entity * fromEntity);
     
 Entity * FindLandscapeEntity(Entity * rootEntity);
 Landscape * FindLandscape(Entity * rootEntity);

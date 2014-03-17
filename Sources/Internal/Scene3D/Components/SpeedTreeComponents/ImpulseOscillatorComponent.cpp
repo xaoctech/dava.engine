@@ -27,32 +27,58 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
 
-#include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "ImpulseOscillatorComponent.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class Entity;
-class Scene;
-class TreeOscillator;
-    
-class WindSystem : public SceneSystem
-{
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-protected:
-    Map<Entity *, TreeOscillator *> oscMap;
-};
+	REGISTER_CLASS(ImpuleOscillatorComponent);
 
+ImpuleOscillatorComponent::ImpuleOscillatorComponent(float32 inflDistance /* = 0.f */, float32 force /* = 0.f */) :
+    influenceDistance(influenceDistance),
+    forceValue(force)
+{
+    
 }
 
-#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
+ImpuleOscillatorComponent::~ImpuleOscillatorComponent()
+{
+    
+}
+ 
+Component * ImpuleOscillatorComponent::Clone(Entity * toEntity)
+{
+    ImpuleOscillatorComponent * component = new ImpuleOscillatorComponent();
+	component->SetEntity(toEntity);
+    
+    component->forceValue = forceValue;
+    
+    return component;
+}
 
+void ImpuleOscillatorComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+
+	if(archive != 0)
+	{
+        archive->SetFloat("ioc.forceValue", forceValue);
+        archive->SetFloat("ioc.influenceDistance", influenceDistance);
+    }
+}
+    
+void ImpuleOscillatorComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	if(archive)
+	{
+        forceValue = archive->GetFloat("ioc.forceValue");
+        influenceDistance = archive->GetFloat("ioc.influenceDistance");
+	}
+
+	Component::Deserialize(archive, serializationContext);
+}
+
+};

@@ -27,32 +27,43 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+
+#ifndef __DAVAENGINE_SCENE3D_MOVIENG_OSCILLATOR_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_MOVIENG_OSCILLATOR_COMPONENT_H__
 
 #include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "Entity/Component.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class Entity;
-class Scene;
-class TreeOscillator;
-    
-class WindSystem : public SceneSystem
+
+class MovingOscillatorComponent : public Component
 {
+protected:
+	virtual ~MovingOscillatorComponent();
 public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
+	MovingOscillatorComponent(float32 inflDistance = 0.f, float32 speedClampVal = 0.f);
+
+	IMPLEMENT_COMPONENT_TYPE(MOVING_OSCILLATOR_COMPONENT);
+
+	virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
     
 protected:
-    Map<Entity *, TreeOscillator *> oscMap;
+    float32 influenceDistance;
+    float32 speedClampValue;
+
+public:
+    INTROSPECTION_EXTEND(MovingOscillatorComponent, Component,
+        MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)                 
+        );
+    
+friend class MovingOscillatorSystem;
 };
 
-}
+};
 
-#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
-
+#endif

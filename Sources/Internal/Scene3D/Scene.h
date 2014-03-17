@@ -80,6 +80,8 @@ class MaterialSystem;
 class StaticOcclusionSystem;
 class SpeedTreeUpdateSystem;
 class WindSystem;
+class ImpulseOscillatorSystem;
+class MovingOscillatorSystem;
     
 /**
     \ingroup scene3d
@@ -130,6 +132,8 @@ public:
     MaterialSystem *materialSystem;
     SpeedTreeUpdateSystem* speedTreeUpdateSystem;
     WindSystem * windSystem;
+    MovingOscillatorSystem * mOscillatorSystem;
+    ImpulseOscillatorSystem * iOscillatorSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
