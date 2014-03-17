@@ -337,7 +337,8 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 		Logger::Error("[NvttHelper::ReadDxtFile] Wrong mipmapsCount/width/height value in dds header.");
 		return false;
 	}
-	
+
+    baseMipMap = Min(baseMipMap, (int32)(info.mipmapsCount - 1));
 
 	nvtt::Format format;
 	if(!dec.getCompressionFormat(format))
