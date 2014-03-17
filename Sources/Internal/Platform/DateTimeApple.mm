@@ -27,24 +27,31 @@
  =====================================================================================*/
 #include "Platform/DateTime.h"
 
-#ifdef __DAVAENGINE_MACOS__
-/*
-#import <UIKit/UIDevice.h>
-#import <Foundation/NSLocale.h>
-#import <sys/utsname.h>
-#import <AdSupport/ASIdentifierManager.h>
-*/
+#import <time.h>
+#import <xlocale.h>
+
 namespace DAVA
 {
-    DAVA::String DateTime::AsString()
+    DAVA::WideString DateTime::AsWString(const wchar_t* format)
     {
-        return "";
-    }
-    
-    int16 DateTime::GetLocalTimeZone()
-    {
-        return 0;
+        //
+        DAVA::String locID = [[[NSLocale currentLocale] objectForKey: NSLocaleIdentifier] UTF8String];
+        //
+        
+        struct tm timeinfo;
+        wchar_t buffer [80];
+        
+        Timestamp timeWithTZ = innerTime + timeZoneOffset;
+        timeinfo = *std::gmtime(&timeWithTZ);
+        
+        locale_t loc = newlocale ( LC_ALL_MASK , locID.c_str() , NULL );
+        wcsftime_l(buffer,80, format, &timeinfo, loc);
+        
+        DAVA::WideString str(buffer);
+        //
+        NSString * wstr = [[NSString alloc] initWithBytes:buffer length:wcslen(buffer)*sizeof(*buffer) encoding:NSUTF32LittleEndianStringEncoding];
+        NSLog(@"***AsWString : %@", wstr);
+        //
+        return str;
     }
 }
-
-#endif

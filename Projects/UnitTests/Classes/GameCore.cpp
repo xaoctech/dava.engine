@@ -88,7 +88,6 @@ void GameCore::OnAppStarted()
 
     DAVA::DateTime t1 = DAVA::DateTime::Now();
     t1.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M ");
-    
     DAVA::int32 y = t1.GetYear();
     DAVA::int32 month = t1.GetMonth();
     DAVA::int32 day = t1.GetDay();
@@ -152,7 +151,7 @@ void GameCore::OnAppStarted()
     sec = t7.GetSecond();
     
     DAVA::DateTime t8(0,0,0,0);
-    t8.Parse("1969-07-20T21:56:15-05:00");
+    t8.Parse("1969-07-20T21:55:15-05:00");
     t8.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
     y = t8.GetYear();
     month = t8.GetMonth();
