@@ -34,79 +34,94 @@
 
 #define SECONDS_IN_HOUR 3600
 
+static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
+static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
+
+inline int32_t is_leap(int32_t year)
+{
+    if(year % 400 == 0)
+        return 1;
+    if(year % 100 == 0)
+        return 0;
+    if(year % 4 == 0)
+        return 1;
+    return 0;
+}
+inline int32_t days_from_0(int32_t year)
+{
+    year--;
+    return 365 * year + (year / 400) - (year/100) + (year / 4);
+}
+inline int32_t days_from_1970(int32_t year)
+{
+    static const int days_from_0_to_1970 = days_from_0(1970);
+    return days_from_0(year) - days_from_0_to_1970;
+}
+inline int32_t days_from_1jan(int32_t year,int32_t month,int32_t day)
+{
+    static const int32_t days[2][12] =
+    {
+        { 0,31,59,90,120,151,181,212,243,273,304,334},
+        { 0,31,60,91,121,152,182,213,244,274,305,335}
+    };
+    return days[is_leap(year)][month-1] + day - 1;
+}
+
+// calc time_t by hand to get time stamp in utc(system function
+// returns it with local timezone shift only )
+// code from http://stackoverflow.com/questions/16647819/timegm-cross-platform
+time_t internal_timegm(std::tm const *t)
+{
+    int year = t->tm_year + 1900;
+    int month = t->tm_mon;
+    if(month > 11)
+    {
+        year += month/12;
+        month %= 12;
+    }
+    else if(month < 0)
+    {
+        int years_diff = (-month + 11)/12;
+        year -= years_diff;
+        month+=12 * years_diff;
+    }
+    month++;
+    int day = t->tm_mday;
+    int day_of_year = days_from_1jan(year,month,day);
+    int days_since_epoch = days_from_1970(year) + day_of_year;
+    
+    time_t seconds_in_day = 3600 * 24;
+    time_t result = seconds_in_day * days_since_epoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
+    
+    return result;
+}
+
+bool IsNumber(const char * s)
+{
+    for(int i = 0; i < strlen(s); ++i)
+    {
+        if (s[i] >= '0' && s[i] <= '9')
+        {
+            continue;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
 namespace DAVA
 {
-    static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
-    static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
-    
-    
-    inline int32_t is_leap(int32_t year)
-    {
-        if(year % 400 == 0)
-            return 1;
-        if(year % 100 == 0)
-            return 0;
-        if(year % 4 == 0)
-            return 1;
-        return 0;
-    }
-    inline int32_t days_from_0(int32_t year)
-    {
-        year--;
-        return 365 * year + (year / 400) - (year/100) + (year / 4);
-    }
-    inline int32_t days_from_1970(int32_t year)
-    {
-        static const int days_from_0_to_1970 = days_from_0(1970);
-        return days_from_0(year) - days_from_0_to_1970;
-    }
-    inline int32_t days_from_1jan(int32_t year,int32_t month,int32_t day)
-    {
-        static const int32_t days[2][12] =
-        {
-            { 0,31,59,90,120,151,181,212,243,273,304,334},
-            { 0,31,60,91,121,152,182,213,244,274,305,335}
-        };
-        return days[is_leap(year)][month-1] + day - 1;
-    }
-    
-    // calc time_t by hand to get time stamp in utc(system function
-    // returns it with local timezone shift only )
-    // code from http://stackoverflow.com/questions/16647819/timegm-cross-platform
-    time_t internal_timegm(std::tm const *t)
-    {
-        int year = t->tm_year + 1900;
-        int month = t->tm_mon;
-        if(month > 11)
-        {
-            year += month/12;
-            month %= 12;
-        }
-        else if(month < 0)
-        {
-            int years_diff = (-month + 11)/12;
-            year -= years_diff;
-            month+=12 * years_diff;
-        }
-        month++;
-        int day = t->tm_mday;
-        int day_of_year = days_from_1jan(year,month,day);
-        int days_since_epoch = days_from_1970(year) + day_of_year;
-        
-        time_t seconds_in_day = 3600 * 24;
-        time_t result = seconds_in_day * days_since_epoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
-        
-        return result;
-    }
-    
-    
     DateTime::DateTime(Timestamp timeStamp, int32 _timeZoneOffset):
     innerTime(timeStamp),
     timeZoneOffset(_timeZoneOffset)
     {
     }
     
-    DateTime::DateTime(int32 year, int32 month, int32 day, int32 _timeZoneOffset):
+    DateTime::DateTime(uint32 year, uint32 month, uint32 day, int32 _timeZoneOffset):
     timeZoneOffset(_timeZoneOffset)
     {
         struct tm t = { 0 };
@@ -120,7 +135,7 @@ namespace DAVA
         innerTime -= timeZoneOffset;// time member should be always in UTC format
     }
 
-    DateTime::DateTime(int32 year, int32 month, int32 day, int32 hour, int32 minute, int32 second, int32 _timeZoneOffset):
+    DateTime::DateTime(uint32 year, uint32 month, uint32 day, uint32 hour, uint32 minute, uint32 second, int32 _timeZoneOffset):
 	timeZoneOffset(_timeZoneOffset)
     {
         struct tm t = { 0 };
@@ -199,13 +214,8 @@ namespace DAVA
         Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
         return gmtime(&timeWithTimeZone)->tm_sec;
     }
-
-    int32 DateTime::GetTimeZone() const
-    {
-        return timeZoneOffset;
-    }
     
-    void DateTime::SetTimeZone(int32 value)
+    void DateTime::SetTimeZoneOffset(int32 value)
     {
         timeZoneOffset = value;
     }
@@ -231,23 +241,6 @@ namespace DAVA
             retValue = ParseRFC822Date(src);
         }
         return retValue;
-    }
-    
-    bool IsNumber(const char * s)
-    {
-        for(int i = 0; i < strlen(s); ++i)
-        {
-            if (s[i] >= '0' && s[i] <= '9')
-            {
-                continue;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        
-        return true;
     }
     
     // like 1969-07-21T02:56:15Z
