@@ -263,7 +263,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
                 FastName fastName = FastName(tokens[0]);
                 asset->defaultValues.insert(fastName, value);
                 
-                Logger::Debug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
+                Logger::FrameworkDebug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
             }
         }
         //Logger::Debug("%s", line.c_str());
@@ -360,7 +360,7 @@ ShaderAsset * ShaderCache::ParseShader(const FastName & name, Data * vertexShade
                 FastName fastName = FastName(tokens[0]);
                 asset->defaultValues.insert(fastName, value);
                 
-                Logger::Debug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
+                Logger::FrameworkDebug("Shader Default: %s = %d", fastName.c_str(), value.int32Value);
             }
         }
         
