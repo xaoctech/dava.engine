@@ -121,18 +121,6 @@ public:
 		STATE_VALID
 	};
 	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	static const int MAX_WIDTH = 1024;
-	static const int MIN_WIDTH = 8;
-	static const int MAX_HEIGHT = 1024;
-	static const int MIN_HEIGHT = 8;
-#else //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	static const int MAX_WIDTH = 4096;
-	static const int MIN_WIDTH = 8;
-	static const int MAX_HEIGHT = 4096;
-	static const int MIN_HEIGHT = 8;
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-
 	// Main constructors
 	
     static void InitializePixelFormatDescriptors();
@@ -326,6 +314,9 @@ protected:
 		uint32 id;
 		uint32 fboID;
 		uint32 rboID;
+#if defined(__DAVAENGINE_ANDROID__)
+        uint32		stencil_rboID;
+#endif
 	};
 
 
@@ -335,6 +326,9 @@ public:							// properties for fast access
 	uint32		id;				// OpenGL id for texture
 	uint32		fboID;			// id of frame buffer object
 	uint32		rboID;
+#if defined(__DAVAENGINE_ANDROID__)
+    uint32		stencil_rboID;
+#endif
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	
     uint32		width:16;			// texture width
