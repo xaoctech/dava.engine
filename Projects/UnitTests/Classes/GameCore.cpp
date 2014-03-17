@@ -89,6 +89,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+    new StringFormatTest();
     new RectSpriteTest();
 
 	new ComponentsTest();
@@ -125,7 +126,6 @@ void GameCore::OnAppStarted()
  	new UIScrollViewTest();
  
      new ThreadSyncTest();
-     new StringFormatTest();
     
     errors.reserve(TestCount());
 
