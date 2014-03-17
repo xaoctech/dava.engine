@@ -37,7 +37,7 @@
 static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
 static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
 
-inline int32_t is_leap(int32_t year)
+inline DAVA::int32 is_leap(DAVA::int32 year)
 {
     if(year % 400 == 0)
         return 1;
@@ -47,19 +47,19 @@ inline int32_t is_leap(int32_t year)
         return 1;
     return 0;
 }
-inline int32_t days_from_0(int32_t year)
+inline DAVA::int32 days_from_0(DAVA::int32 year)
 {
     year--;
     return 365 * year + (year / 400) - (year/100) + (year / 4);
 }
-inline int32_t days_from_1970(int32_t year)
+inline DAVA::int32 days_from_1970(DAVA::int32 year)
 {
     static const int days_from_0_to_1970 = days_from_0(1970);
     return days_from_0(year) - days_from_0_to_1970;
 }
-inline int32_t days_from_1jan(int32_t year,int32_t month,int32_t day)
+inline DAVA::int32 days_from_1jan(DAVA::int32 year,DAVA::int32 month,DAVA::int32 day)
 {
-    static const int32_t days[2][12] =
+    static const DAVA::int32 days[2][12] =
     {
         { 0,31,59,90,120,151,181,212,243,273,304,334},
         { 0,31,60,91,121,152,182,213,244,274,305,335}
@@ -225,13 +225,7 @@ namespace DAVA
         struct tm local_tm = *gmtime(&innerTime);
         local_tm.tm_hour += timeZoneOffset / SECONDS_IN_HOUR;
         return internal_timegm(&local_tm);
-    }
-    
-    int32 DateTime::GetLocalTimeZoneOffset()
-    {
-        Timestamp  t = time(NULL);
-        return localtime(&t)->tm_gmtoff;
-    }
+    } 
 
     bool DateTime::Parse(const DAVA::String & src)
     {
@@ -253,7 +247,7 @@ namespace DAVA
             return false;
         }
         
-        struct tm parseTime;
+		struct tm parseTime = {0};
         /// parsing date part
         {
             const std::string yr = src.substr(0, 4);
@@ -337,7 +331,7 @@ namespace DAVA
             int32 timeZone = 0;
             if (src[19] == 'Z')
             {
-                int32 timeZone = 0;
+                timeZone = 0;
             }
             else
             {
