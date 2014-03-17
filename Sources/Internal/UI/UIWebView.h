@@ -57,6 +57,8 @@ public:
 	virtual void SetSize(const Vector2 &newSize);
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
+    void SetNativeControlVisible(bool isVisible);
+
 	void SetDelegate(IUIWebViewDelegate* delegate);
 	void SetBackgroundTransparency(bool enabled);
 
@@ -66,13 +68,19 @@ public:
 	void SetGestures(bool value);
 
     virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
+    
 protected:
+    // Set the visibility of native control.
+    void UpdateNativeControlVisible(bool value, bool hierarchic);
 
     // Update the rect of the web view control.
     void UpdateControlRect();
 
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
+    
+private:
+    bool isNativeControlVisible;
 };
 };
 

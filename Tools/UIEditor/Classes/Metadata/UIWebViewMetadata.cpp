@@ -39,6 +39,13 @@ UIWebViewMetadata::UIWebViewMetadata(QObject* parent) :
 void UIWebViewMetadata::InitializeControl(const String& controlName, const Vector2& position)
 {
     BaseMetadata::InitializeControl(controlName, position);
+    
+    int paramsCount = this->GetParamsCount();
+    for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
+    {
+        UIWebView* webView = dynamic_cast<UIWebView*>(this->treeNodeParams[i].GetUIControl());
+        webView->SetNativeControlVisible(false);
+    }
 }
 
 };
