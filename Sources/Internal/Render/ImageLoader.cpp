@@ -189,6 +189,8 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
 //    uint64 loadTime = SystemTimer::Instance()->AbsoluteMS();
 
     int32 mipMapLevelsCount = LibPVRHelper::GetMipMapLevelsCount(file);
+    baseMipmap = Min(baseMipmap, mipMapLevelsCount - 1);
+
 	int32 faceCount = LibPVRHelper::GetCubemapFaceCount(file);
 	int32 totalImageCount = (mipMapLevelsCount - baseMipmap) * faceCount;
     if(totalImageCount)
