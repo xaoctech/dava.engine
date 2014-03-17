@@ -29,6 +29,7 @@
 
 #include "DeviceInfoTest.h"
 #include "Platform/DeviceInfo.h"
+#include "Platform/DateTime.h"
 
 DeviceInfoTest::DeviceInfoTest()
 :	TestTemplate<DeviceInfoTest>("DeviceInfoTest")
@@ -59,6 +60,7 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
     String timezone = DeviceInfo::GetTimeZone();
     String udid = DeviceInfo::GetUDID();
     WideString name = DeviceInfo::GetName();
+	WideString currentTime = DateTime::Now().AsWString(L"%#x , %X.");
 
 	Logger::Debug("********** Device info **********");
 	Logger::Debug("Platform: %s", platform.c_str());
@@ -71,6 +73,7 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
     Logger::Debug("UDID: %s", udid.c_str());
     Logger::Debug("Name: %s", WStringToString(name).c_str());
     Logger::Debug("ZBufferSize: %d", DeviceInfo::GetZBufferSize());
+	Logger::Debug("Device time: %s", WStringToString(currentTime).c_str());
 	Logger::Debug("********** Device info **********");
 
 	data->testData.message = "DeviceInfo test - passed";

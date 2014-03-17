@@ -54,4 +54,10 @@ namespace DAVA
         //
         return str;
     }
+
+    int32 DateTime::GetLocalTimeZoneOffset()
+    {
+        Timestamp  t = time(NULL);
+        return localtime(&t)->tm_gmtoff;
+    }
 }

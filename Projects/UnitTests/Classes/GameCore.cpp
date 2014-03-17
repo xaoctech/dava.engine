@@ -86,8 +86,8 @@ void GameCore::OnAppStarted()
 {
 	RenderManager::Instance()->SetFPS(60);
 
-    DAVA::DateTime t1 = DAVA::DateTime::Now();
-    t1.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M ");
+   /* DAVA::DateTime t1 = DAVA::DateTime::Now();
+	t1.AsWString(L"Now it's %#x - %X.");
     DAVA::int32 y = t1.GetYear();
     DAVA::int32 month = t1.GetMonth();
     DAVA::int32 day = t1.GetDay();
@@ -97,7 +97,7 @@ void GameCore::OnAppStarted()
     
     
     DAVA::DateTime t2(2001,1,1,14,0,0,5*3600);
-    t2.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t2.AsWString(L"Now it's %#x - %X.");
     y = t2.GetYear();
     month = t2.GetMonth();
     day = t2.GetDay();
@@ -106,7 +106,7 @@ void GameCore::OnAppStarted()
     sec = t2.GetSecond();
     
     DAVA::DateTime t3 = t2.ConvertToTimeZone(4 * 3600);
-    t3.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t3.AsWString(L"Now it's %#x - %X.");
     y = t3.GetYear();
     month = t3.GetMonth();
     day = t3.GetDay();
@@ -115,7 +115,7 @@ void GameCore::OnAppStarted()
     sec = t3.GetSecond();
     
     DAVA::DateTime t5 = t2.ConvertToTimeZone(3* 3600);
-    t5.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t5.AsWString(L"Now it's %#x - %X.");
     y = t5.GetYear();
     month = t5.GetMonth();
     day = t5.GetDay();
@@ -124,7 +124,7 @@ void GameCore::OnAppStarted()
     sec = t5.GetSecond();
     
     DAVA::DateTime t4 = t2.ConvertToLocalTimeZone();
-    t4.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t4.AsWString(L"Now it's %#x - %X.");
     y = t4.GetYear();
     month = t4.GetMonth();
     day = t4.GetDay();
@@ -133,7 +133,7 @@ void GameCore::OnAppStarted()
     sec = t4.GetSecond();
     
     DAVA::DateTime t6 = DateTime::GmTime(t2.GetTimestamp());
-    t6.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t6.AsWString(L"Now it's %#x - %X.");
     y = t6.GetYear();
     month = t6.GetMonth();
     day = t6.GetDay();
@@ -142,7 +142,7 @@ void GameCore::OnAppStarted()
     sec = t6.GetSecond();
     
     DAVA::DateTime t7 = DateTime::LocalTime(t2.GetTimestamp());
-    t7.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t7.AsWString(L"Now it's %#x - %X.");
     y = t7.GetYear();
     month = t7.GetMonth();
     day = t7.GetDay();
@@ -152,7 +152,7 @@ void GameCore::OnAppStarted()
     
     DAVA::DateTime t8(0,0,0,0);
     t8.Parse("1969-07-20T21:55:15-05:00");
-    t8.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t8.AsWString(L"Now it's %#x - %X.");
     y = t8.GetYear();
     month = t8.GetMonth();
     day = t8.GetDay();
@@ -162,16 +162,17 @@ void GameCore::OnAppStarted()
     
     DAVA::DateTime t9(0,0,0,0);
     t9.Parse("Wed, 27 Sep 2006 21:36:45 +0200");
-    t9.AsWString(L"Today is %G %A, %b %d.\n Time: %I:%M %p");
+    t9.AsWString(L"Now it's %#x - %X.");
     y = t9.GetYear();
     month = t9.GetMonth();
     day = t9.GetDay();
     hour = t9.GetHour();
     minute = t9.GetMinute();
-    sec = t9.GetSecond();
+    sec = t9.GetSecond();*/
     
     CreateDocumentsFolder();
 
+	new DeviceInfoTest();
     new RectSpriteTest();
 
 	new ComponentsTest();
@@ -182,7 +183,7 @@ void GameCore::OnAppStarted()
  	new UIMovieTest();
  	new InputTest();
      new FormatsTest();
- 	new DeviceInfoTest();
+
  	new TransparentWebViewTest();
      new LocalizationTest();
  
