@@ -47,13 +47,14 @@ using namespace DAVA;
 
 UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
     webViewControl(new WebViewControl()),
-    UIControl(rect, rectInAbsoluteCoordinates)
+    UIControl(rect, rectInAbsoluteCoordinates),
+    isNativeControlVisible(true)
 {
     Rect newRect = GetRect(true);
     this->webViewControl->Initialize(newRect);
     UpdateControlRect();
 
-    this->webViewControl->SetVisible(false, true); // will be displayed in WillAppear.
+    UpdateNativeControlVisible(false, true); // will be displayed in WillAppear.
 }
 
 UIWebView::~UIWebView()
@@ -79,13 +80,13 @@ void UIWebView::OpenFromBuffer(const String& string, const FilePath& basePath)
 void UIWebView::WillAppear()
 {
     UIControl::WillAppear();
-    webViewControl->SetVisible(GetVisible(), true);
+    UpdateNativeControlVisible(GetVisible(), true);
 }
 
 void UIWebView::WillDisappear()
 {
     UIControl::WillDisappear();
-    webViewControl->SetVisible(false, true);
+    UpdateNativeControlVisible(false, true);
 }
 
 void UIWebView::SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates)
@@ -104,7 +105,7 @@ void UIWebView::SetVisible(bool isVisible, bool hierarchic)
 {
 	UIControl::SetVisible(isVisible, hierarchic);
     if (IsOnScreen())
-        this->webViewControl->SetVisible(isVisible, hierarchic);
+        UpdateNativeControlVisible(isVisible, hierarchic);
 }
 
 void UIWebView::SetBackgroundTransparency(bool enabled)
@@ -143,4 +144,17 @@ void UIWebView::UpdateControlRect()
     rect.SetSize(rect.GetSize() * RenderManager::Instance()->GetDrawScale());
 
     webViewControl->SetRect(rect);
+}
+
+void UIWebView::SetNativeControlVisible(bool isVisible)
+{
+    isNativeControlVisible = isVisible;
+    UpdateNativeControlVisible(GetVisible(), true);
+}
+
+void UIWebView::UpdateNativeControlVisible(bool value, bool hierarchic)
+{
+    // In case isDisplayNativeControl is set to false - always hide the native control.
+    bool visibleValue = isNativeControlVisible ? value : false;
+    webViewControl->SetVisible(visibleValue, hierarchic);
 }
