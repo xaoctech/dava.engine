@@ -114,7 +114,7 @@ void main()
 
     vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
 	
-	#if defined (SCREEN_SPACE_WATER)
+	#if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
 		eyeDist = length(eyeCoordsPosition);
 	#endif
     
