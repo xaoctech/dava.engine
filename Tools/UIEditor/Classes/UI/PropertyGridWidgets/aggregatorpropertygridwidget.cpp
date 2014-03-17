@@ -39,6 +39,7 @@ AggregatorPropertyGridWidget::AggregatorPropertyGridWidget(QWidget *parent) :
     ui->setupUi(this);
     SetPropertyBlockName(RECT_PROPERTY_BLOCK_NAME);
     ui->platformNameLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+ 	ui->platformNameLineEdit->installEventFilter(this);
 }
 
 AggregatorPropertyGridWidget::~AggregatorPropertyGridWidget()
@@ -66,4 +67,16 @@ void AggregatorPropertyGridWidget::Cleanup()
     UnregisterLineEditWidget(ui->platformNameLineEdit);
     UnregisterSpinBoxWidget(ui->screenHeightSpinBox);
     UnregisterSpinBoxWidget(ui->screenWidthSpinBox);
+}
+
+bool AggregatorPropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
+{
+	QWidget *eventWidget = qobject_cast<QLineEdit*>(obj);
+	if (event->type() == QEvent::FocusOut && eventWidget)
+	{
+		event->ignore();
+		return true;
+	}
+    
+    return QWidget::eventFilter(obj, event);
 }

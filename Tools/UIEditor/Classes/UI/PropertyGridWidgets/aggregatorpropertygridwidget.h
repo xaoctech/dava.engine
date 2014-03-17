@@ -48,6 +48,8 @@ public:
     virtual void Initialize(BaseMetadata* activeMetadata);
     virtual void Cleanup();
 
+	virtual bool eventFilter(QObject *obj, QEvent *event);
+
 private:
     Ui::AggregatorPropertyGridWidget *ui;
 };

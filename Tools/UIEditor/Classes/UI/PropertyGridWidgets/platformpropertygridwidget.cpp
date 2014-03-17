@@ -40,6 +40,7 @@ PlatformPropertyGridWidget::PlatformPropertyGridWidget(QWidget *parent) :
     SetPropertyBlockName(RECT_PROPERTY_BLOCK_NAME);
 
     ui->platformNameLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+ 	ui->platformNameLineEdit->installEventFilter(this);
 }
 
 PlatformPropertyGridWidget::~PlatformPropertyGridWidget()
@@ -67,4 +68,16 @@ void PlatformPropertyGridWidget::Cleanup()
     UnregisterLineEditWidget(ui->platformNameLineEdit);
     UnregisterSpinBoxWidget(ui->screenHeightSpinBox);
     UnregisterSpinBoxWidget(ui->screenWidthSpinBox);
+}
+
+bool PlatformPropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
+{
+	QWidget *eventWidget = qobject_cast<QLineEdit*>(obj);
+	if (event->type() == QEvent::FocusOut && eventWidget)
+	{
+		event->ignore();
+		return true;
+	}
+    
+    return QWidget::eventFilter(obj, event);
 }
