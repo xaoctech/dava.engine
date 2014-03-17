@@ -252,6 +252,8 @@
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Systems/SpeedTreeSystem/SpeedTreeUpdateSystem.h"
 #include "Scene3D/Systems/SpeedTreeSystem/WindSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/ImpulseOscillatorSystem.h"
+#include "Scene3D/Systems/SpeedTreeSystem/MovingOscillatorSystem.h"
 #include "Scene3D/Systems/SpeedTreeSystem/TreeOscillator.h"
 
 //Components
@@ -270,7 +272,10 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
-#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/ImpulseOscillatorComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/MovingOscillatorComponent.h"
 
 // Application core 
 #include "Core/Core.h"

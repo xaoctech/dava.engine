@@ -28,81 +28,45 @@
 
 
 
-#include "Scene3D/Components/WindComponent.h"
-#include "FileSystem/KeyedArchive.h"
-#include "Scene3D/Systems/EventSystem.h"
-#include "Scene3D/Systems/GlobalEventSystem.h"
+#ifndef __DAVAENGINE_SCENE3D_IMPULSE_OSCILLATOR_COMPONENT_H__
+#define __DAVAENGINE_SCENE3D_IMPULSE_OSCILLATOR_COMPONENT_H__
+
+#include "Base/BaseTypes.h"
+#include "Entity/Component.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
-	REGISTER_CLASS(WindComponent)
 
-WindComponent::WindComponent() :
-    windForce(1.f),
-	windDirection(Vector3(1.f, 0.f, 0.f))
+class ImpuleOscillatorComponent : public Component
 {
-    
-}
+protected:
+	virtual ~ImpuleOscillatorComponent();
+public:
+	ImpuleOscillatorComponent(float32 inflDistance = 0.f, float32 force = 0.f);
 
-WindComponent::~WindComponent()
-{
-    
-}
- 
-Component * WindComponent::Clone(Entity * toEntity)
-{
-    WindComponent * component = new WindComponent();
-	component->SetEntity(toEntity);
-    
-    component->windDirection = windDirection;
-	component->windForce = windForce;
-    
-    return component;
-}
+	IMPLEMENT_COMPONENT_TYPE(IMPULSE_OSCILLATOR_COMPONENT);
 
-void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	Component::Serialize(archive, serializationContext);
+	virtual Component * Clone(Entity * toEntity);
+	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-	if(archive != 0)
-	{
-        archive->SetVector3("wc.windDirection", windDirection);
-        archive->SetFloat("wc.windForce", windForce);
-    }
-}
-    
-void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	if(archive)
-	{
-        windDirection = archive->GetVector3("wc.windDirection");
-        windForce = archive->GetFloat("wc.windForce");
-	}
+    void TriggerImpulse();
 
-	Component::Deserialize(archive, serializationContext);
-}
+protected:
+    float32 forceValue;
+    float32 influenceDistance;
     
-void WindComponent::SetWindDirection(const Vector3 & direction)
-{
-	DVASSERT(direction.Length() > EPSILON);
+public:
+	INTROSPECTION_EXTEND(ImpuleOscillatorComponent, Component,
+        MEMBER(forceValue, "forceValue", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)
+        );
 
-    windDirection = direction;
-    windDirection.Normalize();
-}
-    
-const Vector3 & WindComponent::GetWindDirection() const
-{
-    return windDirection;
-}
-    
-void WindComponent::SetWindForce(const float32 & force)
-{
-    windForce = force;
-}
-    
-float32 WindComponent::GetWindForce() const
-{
-    return windForce;
-}
-    
+friend class ImpulseOscillatorSystem;
 };
+
+};
+
+#endif

@@ -28,7 +28,7 @@
 
 
 
-#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
@@ -65,7 +65,8 @@ void SpeedTreeComponent::Serialize(KeyedArchive *archive, SerializationContext *
 		archive->SetFloat("stc.trunkOscillationAmplitude", params.trunkOscillationAmplitude);
 		archive->SetFloat("stc.leafsOscillationAmplitude", params.leafsOscillationAmplitude);
 		archive->SetFloat("stc.leafsOscillationSpeed", params.leafsOscillationSpeed);
-		archive->SetFloat("stc.movingOscillationLeafsSpeed", params.movingOscillationLeafsSpeed);
+        archive->SetFloat("stc.movingOscillationLeafsSpeed", params.movingOscillationLeafsSpeed);
+        archive->SetInt32("stc.maxAnimatedLOD", params.maxAnimatedLOD);
     }
 }
     
@@ -76,7 +77,8 @@ void SpeedTreeComponent::Deserialize(KeyedArchive *archive, SerializationContext
 		params.trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", params.trunkOscillationAmplitude);
 		params.leafsOscillationAmplitude = archive->GetFloat("stc.leafsOscillationAmplitude", params.leafsOscillationAmplitude);
 		params.leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", params.leafsOscillationSpeed);
-		params.movingOscillationLeafsSpeed = archive->GetFloat("stc.movingOscillationLeafsSpeed", params.movingOscillationLeafsSpeed);
+        params.movingOscillationLeafsSpeed = archive->GetFloat("stc.movingOscillationLeafsSpeed", params.movingOscillationLeafsSpeed);
+        params.maxAnimatedLOD = archive->GetInt32("stc.maxAnimatedLOD", params.maxAnimatedLOD);
 	}
 
 	Component::Deserialize(archive, serializationContext);

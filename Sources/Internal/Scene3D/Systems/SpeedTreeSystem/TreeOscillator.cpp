@@ -29,7 +29,9 @@
 
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/ImpulseOscillatorComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/MovingOscillatorComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "TreeOscillator.h"
 
@@ -149,9 +151,10 @@ bool WindTreeOscillator::IsActive() const
 ////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////MovingOscillator/////////////////////////////////////////
     
-MovingTreeOscillator::MovingTreeOscillator(float32 distance, Entity * owner) :
+MovingTreeOscillator::MovingTreeOscillator(float32 distance, Entity * owner, float32 speedClampVal) :
     TreeOscillator(distance, owner),
-	currentSpeed(0.f)
+	currentSpeed(0.f),
+    speedClampValue(speedClampVal)
 {}
     
 MovingTreeOscillator::~MovingTreeOscillator()
@@ -174,7 +177,7 @@ float32 MovingTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPositi
     if(!HasInfluence(forPosition))
         return 0.f;
     
-    return Min(currentSpeed, 1.f);
+    return Min(currentSpeed, speedClampValue);
 }
     
 bool MovingTreeOscillator::IsActive() const

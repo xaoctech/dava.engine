@@ -43,7 +43,10 @@
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/ImpulseOscillatorComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/MovingOscillatorComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
@@ -87,6 +90,15 @@ Component * Component::CreateByType(uint32 componentType)
 		break;
     case SPEEDTREE_COMPONENT:
         return new SpeedTreeComponent();
+        break;
+    case MOVING_OSCILLATOR_COMPONENT:
+        return new MovingOscillatorComponent();
+        break;
+    case IMPULSE_OSCILLATOR_COMPONENT:
+        return new ImpuleOscillatorComponent();
+        break;
+    case WIND_COMPONENT:
+        return new WindComponent();
         break;
 	case CUSTOM_PROPERTIES_COMPONENT:
 		return new CustomPropertiesComponent();

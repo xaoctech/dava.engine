@@ -68,6 +68,8 @@ public:
         QUALITY_SETTINGS_COMPONENT,   // type as fastname for detecting type of model
         SPEEDTREE_COMPONENT,
         WIND_COMPONENT,
+        IMPULSE_OSCILLATOR_COMPONENT,
+        MOVING_OSCILLATOR_COMPONENT,
 
         COMPONENT_COUNT
     };

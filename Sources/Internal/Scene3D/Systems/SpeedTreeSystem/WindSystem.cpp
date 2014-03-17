@@ -32,7 +32,7 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
 
 #include "Math/Math2D.h"
 
@@ -48,35 +48,35 @@ WindSystem::~WindSystem()
 {
     SpeedTreeUpdateSystem * stSystem = GetScene()->speedTreeUpdateSystem;
         
-    Map<Entity *, WindTreeOscillator *>::iterator it = windMap.begin();
-    Map<Entity *, WindTreeOscillator *>::iterator itEnd = windMap.end();
+    Map<Entity *, TreeOscillator *>::iterator it = oscMap.begin();
+    Map<Entity *, TreeOscillator *>::iterator itEnd = oscMap.end();
     for(; it != itEnd; ++it)
     {
         stSystem->ForceRemoveTreeOscillator(it->second);
     }
-    windMap.clear();
+    oscMap.clear();
 }
 
 void WindSystem::AddEntity(Entity * entity)
 {
     if(GetWindComponent(entity))
     {
-        WindTreeOscillator * wind = new WindTreeOscillator(entity);
-        windMap[entity] = wind;
+        TreeOscillator * osc = new WindTreeOscillator(entity);
+        oscMap[entity] = osc;
         
-        GetScene()->speedTreeUpdateSystem->AddTreeOscillator(wind);
-        wind->Release();
+        GetScene()->speedTreeUpdateSystem->AddTreeOscillator(osc);
+        osc->Release();
     }
 }
     
 void WindSystem::RemoveEntity(Entity * entity)
 {
     SpeedTreeUpdateSystem * stSystem = GetScene()->speedTreeUpdateSystem;
-    Map<Entity *, WindTreeOscillator *>::iterator it = windMap.find(entity);
-    if(it != windMap.end())
+    Map<Entity *, TreeOscillator *>::iterator it = oscMap.find(entity);
+    if(it != oscMap.end())
     {
         stSystem->ForceRemoveTreeOscillator(it->second);
-        windMap.erase(it);
+        oscMap.erase(it);
     }
 }
     

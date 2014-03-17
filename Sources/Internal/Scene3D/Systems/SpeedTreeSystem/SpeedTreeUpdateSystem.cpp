@@ -32,7 +32,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
 #include "Scene3D/Systems/SpeedTreeSystem/TreeOscillator.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 

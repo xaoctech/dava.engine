@@ -26,33 +26,59 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "MovingOscillatorSystem.h"
+#include "SpeedTreeUpdateSystem.h"
+#include "TreeOscillator.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/SpeedTreeComponents/MovingOscillatorComponent.h"
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-
-#include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {
-class Entity;
-class Scene;
-class TreeOscillator;
     
-class WindSystem : public SceneSystem
+MovingOscillatorSystem::MovingOscillatorSystem(Scene * scene)
+    : SceneSystem(scene)
 {
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
+}
     
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-protected:
-    Map<Entity *, TreeOscillator *> oscMap;
-};
-
+MovingOscillatorSystem::~MovingOscillatorSystem()
+{
+    SpeedTreeUpdateSystem * stSystem = GetScene()->speedTreeUpdateSystem;
+        
+    Map<Entity *, TreeOscillator *>::iterator it = oscMap.begin();
+    Map<Entity *, TreeOscillator *>::iterator itEnd = oscMap.end();
+    for(; it != itEnd; ++it)
+    {
+        stSystem->ForceRemoveTreeOscillator(it->second);
+    }
+    oscMap.clear();
 }
 
-#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
-
+void MovingOscillatorSystem::AddEntity(Entity * entity)
+{
+    MovingOscillatorComponent * component = GetMovingOscillatorComponent(entity);
+    if(component)
+    {
+        TreeOscillator * osc = new MovingTreeOscillator(component->influenceDistance, entity, component->speedClampValue);
+        oscMap[entity] = osc;
+        
+        GetScene()->speedTreeUpdateSystem->AddTreeOscillator(osc);
+        osc->Release();
+    }
+}
+    
+void MovingOscillatorSystem::RemoveEntity(Entity * entity)
+{
+    SpeedTreeUpdateSystem * stSystem = GetScene()->speedTreeUpdateSystem;
+    Map<Entity *, TreeOscillator *>::iterator it = oscMap.find(entity);
+    if(it != oscMap.end())
+    {
+        stSystem->ForceRemoveTreeOscillator(it->second);
+        oscMap.erase(it);
+    }
+}
+    
+};

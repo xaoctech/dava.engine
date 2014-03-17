@@ -110,7 +110,7 @@ protected:
 class MovingTreeOscillator : public TreeOscillator
 {
 public:
-    MovingTreeOscillator(float32 distance, Entity * entity);
+    MovingTreeOscillator(float32 influenceDistance, Entity * entity, float32 speedClampVal);
     virtual ~MovingTreeOscillator();
     
     virtual uint32 GetType() const {return OSCILLATION_TYPE_MOVING; };
@@ -123,6 +123,7 @@ public:
 protected:
     float32 currentSpeed;
     Vector3 prevUpdatePosition;
+    float32 speedClampValue;
 };
     
 }

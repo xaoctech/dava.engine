@@ -27,32 +27,82 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
 
-#include "Base/BaseTypes.h"
-#include "Entity/SceneSystem.h"
+#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
-namespace DAVA
+namespace DAVA 
 {
-class Entity;
-class Scene;
-class TreeOscillator;
-    
-class WindSystem : public SceneSystem
-{
-public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-protected:
-    Map<Entity *, TreeOscillator *> oscMap;
-};
+	REGISTER_CLASS(WindComponent)
 
+WindComponent::WindComponent() :
+    windForce(1.f),
+	windDirection(Vector3(1.f, 0.f, 0.f))
+{
+    
 }
 
-#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
+WindComponent::~WindComponent()
+{
+    
+}
+ 
+Component * WindComponent::Clone(Entity * toEntity)
+{
+    WindComponent * component = new WindComponent();
+	component->SetEntity(toEntity);
+    
+    component->windDirection = windDirection;
+	component->windForce = windForce;
+    
+    return component;
+}
 
+void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	Component::Serialize(archive, serializationContext);
+
+	if(archive != 0)
+	{
+        archive->SetVector3("wc.windDirection", windDirection);
+        archive->SetFloat("wc.windForce", windForce);
+    }
+}
+    
+void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	if(archive)
+	{
+        windDirection = archive->GetVector3("wc.windDirection");
+        windForce = archive->GetFloat("wc.windForce");
+	}
+
+	Component::Deserialize(archive, serializationContext);
+}
+    
+void WindComponent::SetWindDirection(const Vector3 & direction)
+{
+	DVASSERT(direction.Length() > EPSILON);
+
+    windDirection = direction;
+    windDirection.Normalize();
+}
+    
+const Vector3 & WindComponent::GetWindDirection() const
+{
+    return windDirection;
+}
+    
+void WindComponent::SetWindForce(const float32 & force)
+{
+    windForce = force;
+}
+    
+float32 WindComponent::GetWindForce() const
+{
+    return windForce;
+}
+    
+};

@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 #include "TreeToAnimatedTreeConverter.h"
-#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 
 #include "Render/Material/NMaterialNames.h"

@@ -27,8 +27,8 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+#ifndef __DAVAENGINE_SCENE3D_IMPULSE_OSCILLATOR_SYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_IMPULSE_OSCILLATOR_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
 #include "Entity/SceneSystem.h"
@@ -39,17 +39,17 @@ class Entity;
 class Scene;
 class TreeOscillator;
     
-class WindSystem : public SceneSystem
+class ImpulseOscillatorSystem : public SceneSystem
 {
 public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
+    ImpulseOscillatorSystem(Scene * scene);
+    virtual ~ImpulseOscillatorSystem();
     
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
     
 protected:
-    Map<Entity *, TreeOscillator *> oscMap;
+    //Map<Entity *, TreeOscillator *> oscMap;
 };
 
 }
