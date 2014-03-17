@@ -9,7 +9,15 @@ uniform sampler2D cubemap = 3;
 uniform float inGlossiness = 0.5;
 uniform float inSpecularity = 1.0;
 uniform vec3 metalFresnelReflectance = vec3(0.5, 0.5, 0.5);
+uniform float dielectricFresnelReflectance = 0.5;
 <FRAGMENT_SHADER>
+
+//#define MATERIAL_TEXTURE
+//#define PIXEL_LIT
+//#define NORMALIZED_BLINN_PHONG
+//#define FAST_METAL
+//#define FAST_NORMALIZATION
+//#define REFLECTION
 
 #extension GL_ARB_shader_texture_lod : enable
 
@@ -22,19 +30,12 @@ precision highp float;
 #define mediump
 #endif
 
-
 #if !defined(VIEW_AMBIENT) && !defined(VIEW_DIFFUSE) && !defined(VIEW_SPECULAR) && !defined(VIEW_ALBEDO)
 #define VIEW_AMBIENT
 #define VIEW_DIFFUSE
 #define VIEW_SPECULAR
 #define VIEW_ALBEDO
 #endif
-
-
-
-//#define ALPHABLEND
-//#define FLATCOLOR
-//#define VERTEX_FOG
 
 const float _PI = 3.141592654;
 
@@ -144,14 +145,14 @@ uniform lowp vec4 flatColor;
 
 float FresnelShlick(float NdotL, float Cspec)
 {
-	float fresnel_exponent = 5.0;
-	return Cspec + (1.0 - Cspec) * pow(1.0 - NdotL, fresnel_exponent);
+    float expf = 5.0;
+	return Cspec + (1.0 - Cspec) * pow(1.0 - NdotL, expf);
 }
 
 vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 {
-	float fresnel_exponent = 5.0;
-	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent));
+    float expf = 5.0;
+	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, expf));
 }
 
 void main()
@@ -298,7 +299,8 @@ void main()
 #elif defined(PIXEL_LIT)
     // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
-    normal = normalize (normal);
+    //normal = normalize (normal);
+   	normal.z = sqrt(1.0 - (normal.x * normal.x + normal.y * normal.y));
     //normal = vec3(0.0, 0.0, 1.0);
     
     float attenuation = lightIntensity0;
@@ -329,60 +331,56 @@ void main()
 #endif
     
 #if defined(NORMALIZED_BLINN_PHONG)
-    vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
-    vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
+    
+#if defined(DIELECTRIC)
+    #define ColorType float
+    float fresnelOut = FresnelShlick(NdotV, dielectricFresnelReflectance);
+#else
+    #if defined(FAST_METAL)
+        #define ColorType float
+        float fresnelOut = FresnelShlick(NdotV, (metalFresnelReflectance.r + metalFresnelReflectance.g + metalFresnelReflectance.b) / 3.0);
+    #else
+        #define ColorType vec3
+        vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
+    #endif
+#endif
+    
     float specularity = inSpecularity;
     float glossiness = inGlossiness * textureColor0.a;
     float glossPower = pow(5000.0, glossiness); //textureColor0.a;
     
    	//float glossiness = inGlossiness * 0.999;
 	//glossiness = 200.0 * glossiness / (1.0 - glossiness);
-
-	float diffuse = NdotL / _PI;// * (1.0 - fresnelIn * specularity);
-    
-    //float Dbp = (glossiness + 2.0) / (8.0) * pow(NdotH, glossiness) * NdotL;
-    // specular cutoff
-	float spec_cutoff = 1.0 - NdotL;
-	spec_cutoff *= spec_cutoff;
-	spec_cutoff *= spec_cutoff;
-	spec_cutoff *= spec_cutoff;
-	spec_cutoff = 1.0 - spec_cutoff;
-    
-    //float specularNorm = (glossiness + 2.0) * (glossiness + 4.0) / (8.0 * _PI * (pow(2.0, -glossiness / 2.0) + glossiness));
-    float specularNorm = (glossPower + 2.0) / 8.0;
-    float Dbp = specularNorm * pow(NdotH, glossPower) * NdotL;
-    float Geo = 1.0 / LdotH * LdotH;
-
-    vec3 specular = Dbp * Geo * fresnelOut * specularity;
-
-//    float GeoNormalization = NdotL * NdotV;
-//    float GeoFactor = GeoNormalization;
-//    float Geo = 1.0 / LdotH * LdotH;
-    
-#else
+//#define GOTANDA
+#if defined(GOTANDA)
     vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
-    vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
-    float specularity = inSpecularity;
-    float glossiness = inGlossiness;
-    
-	// calculate diffuse light
 	vec3 diffuse = NdotL / _PI * (1.0 - fresnelIn * specularity);
+#else
+	float diffuse = NdotL / _PI;// * (1.0 - fresnelIn * specularity);
+#endif
     
-	// specular cutoff
-	float spec_cutoff = 1.0 - NdotL;
-	spec_cutoff *= spec_cutoff;
-	spec_cutoff *= spec_cutoff;
-	spec_cutoff *= spec_cutoff;
-	spec_cutoff = 1.0 - spec_cutoff;
+#if defined(GOTANDA)
+	float specCutoff = 1.0 - NdotL;
+	specCutoff *= specCutoff;
+	specCutoff *= specCutoff;
+	specCutoff *= specCutoff;
+	specCutoff = 1.0 - specCutoff;
+#else
+    float specCutoff = NdotL;
+#endif
     
-	// calculate specular power, specular normalization coefficient
-	glossiness *= 0.999;
-	float specular_power = 200.0 * glossiness / (1.0 - glossiness);
-	float specular_normalization = 	(specular_power + 2.0) * (specular_power + 4.0) /
-    (8.0 * _PI * (pow(2.0, -specular_power / 2.0) + specular_power));
-    
-	// calculate specular light
-	vec3 specular = pow(NdotH, specular_power) * fresnelOut * specular_normalization * specularity * spec_cutoff;
+#if defined(GOTANDA)
+    float specularNorm = (glossPower + 2.0) * (glossPower + 4.0) / (8.0 * _PI * (pow(2.0, -glossPower / 2.0) + glossPower));
+#else
+    float specularNorm = (glossPower + 2.0) / 8.0;
+#endif
+    float specularNormalized = specularNorm * pow(NdotH, glossPower) * specCutoff * specularity;
+#if defined(FAST_METAL)
+	float geometricFactor = 1.0;
+#else
+    float geometricFactor = 1.0 / LdotH * LdotH;
+#endif
+    ColorType specular = specularNormalized * geometricFactor * fresnelOut;
 #endif
     
     vec3 color = vec3(0.0);
@@ -410,36 +408,14 @@ void main()
             color += specular * lightColor0;
         #endif
     #endif
-
-#elif defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
-    vec3 color = textureColor1.rgb;
-#elif defined(MATERIAL_VIEW_TEXTURE_ONLY)
-    vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
-    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
-#elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
-
-    //ATTENTION:
-    //BE CAREFUL TO MODIFY BOTH PARTS OF THIS CONDITION
-    //THEY SHOULD BE IDENTICAL IN MATH!
-    #if defined(VIEW_DIFFUSE) || defined(VIEW_ALBEDO)
-    
-        #if defined(VIEW_ALBEDO)
-    
-            #if defined(VIEW_DIFFUSE)
-                vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
-            #else
-                vec3 color = textureColor0.rgb;
-            #endif
-    
-        #else
-            vec3 color = textureColor1.rgb;
-        #endif
-    
-    #else
-        vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+    vec3 color = vec3(0.0);
+    #if defined(VIEW_ALBEDO)
+        color = textureColor0.rgb;
     #endif
-
+    #if defined(VIEW_DIFFUSE)
+        color *= textureColor1.rgb * 2.0;
+    #endif
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_SKYBOX)
@@ -472,15 +448,16 @@ void main()
     lowp vec4 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
     gl_FragColor = reflectionColor * 0.9;
 #elif defined(PIXEL_LIT)
-    vec3 fresnelRefl = FresnelShlickVec3(NdotV, metalFresnelReflectance);
+    //vec3 fresnelRefl = FresnelShlickVec3(NdotV, metalFresnelReflectance);
 
     mediump vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpace, normal);
     mediump vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);
-    lowp vec4 reflectionColor = textureCubeLod(cubemap, reflectionVectorInWorldSpace, (1.0 - glossiness) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
-    gl_FragColor.rgb += fresnelRefl * reflectionColor.rgb * specularity;//* textureColor0.rgb;
+    lowp vec4 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace, (1.0 - glossiness) * 7.0); //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
+    gl_FragColor.rgb += fresnelOut * reflectionColor.rgb * specularity;//* textureColor0.rgb;
     //gl_FragColor.rgb += reflectionColor.rgb * textureColor0.rgb;
 #endif
 #endif
+    //    gl_FragColor.r += 0.5;
     
     
 #if defined(VERTEX_FOG)
