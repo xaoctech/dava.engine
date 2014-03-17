@@ -40,6 +40,7 @@ ScreenPropertyGridWidget::ScreenPropertyGridWidget(QWidget *parent) :
     SetPropertyBlockName(RECT_PROPERTY_BLOCK_NAME);
 
     ui->screenNameLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+ 	ui->screenNameLineEdit->installEventFilter(this);
 }
 
 ScreenPropertyGridWidget::~ScreenPropertyGridWidget()
@@ -61,4 +62,16 @@ void ScreenPropertyGridWidget::Cleanup()
 {
     BasePropertyGridWidget::Cleanup();
     UnregisterLineEditWidget(ui->screenNameLineEdit);
+}
+
+bool ScreenPropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
+{
+	QWidget *eventWidget = qobject_cast<QLineEdit*>(obj);
+	if (event->type() == QEvent::FocusOut && eventWidget)
+	{
+		event->ignore();
+		return true;
+	}
+    
+    return QWidget::eventFilter(obj, event);
 }

@@ -29,6 +29,7 @@
 
 #include <QLayout>
 #include <QColorDialog>
+#include <QMessageBox>
 
 #include "basepropertygridwidget.h"
 #include "ui_basepropertygridwidget.h"
@@ -71,7 +72,7 @@ void BasePropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
             this, SLOT(OnChangePropertySucceeded(const QString&)));
     connect(CommandsController::Instance(), SIGNAL(ChangePropertyFailed(const QString&)),
             this, SLOT(OnChangePropertyFailed(const QString&)));
-            
+    
     this->activeMetadata = activeMetadata;
 }
 
@@ -364,9 +365,24 @@ void BasePropertyGridWidget::HandleLineEditEditingFinished(QLineEdit* senderWidg
 	{
 		return;
 	}
-
-	// The property was indeed changed, call the command.
-    BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
+	
+	// Do not change aggregator or screen name - if such name already present at platform
+	if (dynamic_cast<AggregatorMetadata*>(this->activeMetadata) ||
+			dynamic_cast<ScreenMetadata*>(this->activeMetadata) ||
+			dynamic_cast<PlatformMetadata*>(this->activeMetadata))
+	{
+		if (HierarchyTreeController::Instance()->GetActivePlatform()->IsAggregatorOrScreenNamePresent(senderWidget->text()) ||
+			HierarchyTreeController::Instance()->GetTree().IsPlatformNamePresent(senderWidget->text()))
+		{
+			QMessageBox msgBox;
+			msgBox.setText("Agreggator, Screen or Platform with the same name already exist. Please fill the name field with unique value.");
+			msgBox.exec();
+			
+			return;
+		}
+	}
+	
+	BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
@@ -970,6 +986,12 @@ void BasePropertyGridWidget::InstallEventFiltersForWidgets(QWidget *widget)
 	{
         sliderWidget->installEventFilter( this );
         sliderWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+
+	Q_FOREACH( QLineEdit *lineWidget, widget->findChildren<QLineEdit*>() )
+	{
+        lineWidget->installEventFilter( this );
+        lineWidget->setFocusPolicy( Qt::StrongFocus );
     }
 }
 
