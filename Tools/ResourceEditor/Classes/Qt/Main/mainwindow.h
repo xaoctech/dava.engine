@@ -275,8 +275,6 @@ private:
 	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
 	// <--
-
-    void FindSwitchesWithDifferentLODs(DAVA::Entity *entity, Set<FastName> & names);
 };
 
 
