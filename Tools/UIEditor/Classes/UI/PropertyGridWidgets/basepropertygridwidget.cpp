@@ -366,22 +366,6 @@ void BasePropertyGridWidget::HandleLineEditEditingFinished(QLineEdit* senderWidg
 		return;
 	}
 	
-	// Do not change aggregator or screen name - if such name already present at platform
-	if (dynamic_cast<AggregatorMetadata*>(this->activeMetadata) ||
-			dynamic_cast<ScreenMetadata*>(this->activeMetadata) ||
-			dynamic_cast<PlatformMetadata*>(this->activeMetadata))
-	{
-		if (HierarchyTreeController::Instance()->GetActivePlatform()->IsAggregatorOrScreenNamePresent(senderWidget->text()) ||
-			HierarchyTreeController::Instance()->GetTree().IsPlatformNamePresent(senderWidget->text()))
-		{
-			QMessageBox msgBox;
-			msgBox.setText("Agreggator, Screen or Platform with the same name already exist. Please fill the name field with unique value.");
-			msgBox.exec();
-			
-			return;
-		}
-	}
-	
 	BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);

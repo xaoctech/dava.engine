@@ -31,13 +31,13 @@
 #define AGGREGATORPROPERTYGRIDWIDGET_H
 
 #include <QWidget>
-#include "basepropertygridwidget.h"
+#include "rootpropertygridwidget.h"
 
 namespace Ui {
 class AggregatorPropertyGridWidget;
 }
 
-class AggregatorPropertyGridWidget : public BasePropertyGridWidget
+class AggregatorPropertyGridWidget : public RootPropertyGridWidget
 {
     Q_OBJECT
     
@@ -47,8 +47,6 @@ public:
     
     virtual void Initialize(BaseMetadata* activeMetadata);
     virtual void Cleanup();
-
-	virtual bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     Ui::AggregatorPropertyGridWidget *ui;
