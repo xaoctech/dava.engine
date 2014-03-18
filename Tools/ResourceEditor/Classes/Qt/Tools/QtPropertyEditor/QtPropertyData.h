@@ -161,6 +161,7 @@ public:
     int GetMergedCount() const;
     void Merge(QtPropertyData *data);
     void MergeChild(QtPropertyData *data, const QString& key = QString());
+    virtual bool IsMergable() const;
 
 protected:
 	mutable QVariant curValue;
