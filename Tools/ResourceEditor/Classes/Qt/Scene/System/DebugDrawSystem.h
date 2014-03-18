@@ -59,10 +59,10 @@ public:
 	inline void EnableHangingObjectsMode(bool enabled);
 	inline bool HangingObjectsModeEnabled() const;
 
-    inline void EnableSwithcesWithDifferentLODsMode(bool enabled);
-    inline bool SwithcesWithDifferentLODsModeEnabled() const;
-
-    static bool IsEntityHasDifferentLODsCount(DAVA::Entity *entity);
+    //need be moved to testing tool
+    DAVA_DEPRECATED(inline void EnableSwithcesWithDifferentLODsMode(bool enabled));
+    DAVA_DEPRECATED(inline bool SwithcesWithDifferentLODsModeEnabled() const);
+    DAVA_DEPRECATED(static bool IsEntityHasDifferentLODsCount(DAVA::Entity *entity));
 
 protected:
 

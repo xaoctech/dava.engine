@@ -730,7 +730,7 @@
   </widget>
   <widget class="QToolBar" name="testingToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Testing Toolbar</string>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
