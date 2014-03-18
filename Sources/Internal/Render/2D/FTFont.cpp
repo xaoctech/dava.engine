@@ -45,8 +45,12 @@
 
 namespace DAVA
 {
-
-Map<String,FTInternalFont*> fontMap;
+#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<FilePath, FTInternalFont *> FontMap;
+#else //#ifdef USE_FILEPATH_IN_MAP
+	typedef Map<String, FTInternalFont *> FontMap;
+#endif //#ifdef USE_FILEPATH_IN_MAP
+	FontMap fontMap;
 
 class FTInternalFont : public BaseObject
 {
@@ -71,11 +75,11 @@ public:
 
 	bool IsCharAvaliable(char16 ch) const;
 
-	void SetFTCharSize(float32 size) const;
-
 	virtual int32 Release();
 
 private:
+	void SetFTCharSize(float32 size) const;
+
 	static Mutex drawStringMutex;
 
 	struct Glyph
@@ -114,7 +118,8 @@ FTFont::~FTFont()
 FTFont * FTFont::Create(const FilePath& path)
 {
 	FTInternalFont * iFont = 0;
-	Map<String,FTInternalFont*>::iterator it = fontMap.find(path.GetAbsolutePathname());
+
+	FontMap::iterator it = fontMap.find(path);
 	if (it != fontMap.end())
 	{
 		iFont = it->second;
@@ -129,7 +134,7 @@ FTFont * FTFont::Create(const FilePath& path)
             return NULL;
         }
 
-		fontMap[path.GetAbsolutePathname()] = iFont;
+		fontMap[FILEPATH_MAP_KEY(path)] = iFont;
 	}
 	
 	FTFont * font = new FTFont(iFont);
@@ -292,6 +297,8 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 {
 	drawStringMutex.Lock();
 
+    SetFTCharSize(size);
+    
 	FT_Error error;
 
 	float32 virtualToPhysicalFactor = Core::GetVirtualToPhysicalFactor();
@@ -318,7 +325,6 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 		offsetX = (int32)(virtualToPhysicalFactor * offsetX);
 	}
 
-	SetFTCharSize(size);
 
 	FT_Vector pen;
 	pen.x = offsetX<<6;

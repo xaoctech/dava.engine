@@ -34,6 +34,8 @@
 #include "StringUtils.h"
 #include "StringConstants.h"
 
+#include "Helpers/ColorHelper.h"
+
 #include <QtGlobal>
 
 namespace DAVA {
@@ -341,14 +343,8 @@ bool UIControlMetadata::GetVisible() const
 
 void UIControlMetadata::SetVisible(const bool value)
 {
-    
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-    
-	// Yuri Coder, 2013/09/30. Don't update the hierarchy (see please DF-2147 for details).
-    GetActiveUIControl()->SetVisible(value, false);
+    // Don't set Visible flag hierarchically for common UI Controls.
+    SetUIControlVisible(value, false);
 }
 
 bool UIControlMetadata::GetInput() const
@@ -431,7 +427,7 @@ QColor UIControlMetadata::GetColor()
         return QColor();
     }
 
-    return DAVAColorToQTColor(GetActiveUIControl()->GetBackground()->color);
+    return ColorHelper::DAVAColorToQTColor(GetActiveUIControl()->GetBackground()->color);
 }
     
 void UIControlMetadata::SetColor(const QColor& value)
@@ -441,7 +437,7 @@ void UIControlMetadata::SetColor(const QColor& value)
         return;
     }
 
-    GetActiveUIControl()->GetBackground()->SetColor(QTColorToDAVAColor(value));
+    GetActiveUIControl()->GetBackground()->SetColor(ColorHelper::QTColorToDAVAColor(value));
 }
     
 int UIControlMetadata::GetDrawType()
@@ -845,7 +841,7 @@ void UIControlMetadata::SetRightAlignEnabled(const bool value)
         return;
     }
 	
-	GetActiveUIControl()->SetRightAlignEnabled(value);	
+	GetActiveUIControl()->SetRightAlignEnabled(value);
 }
 	
 bool UIControlMetadata::GetTopAlignEnabled() const
@@ -998,5 +994,14 @@ void UIControlMetadata::ResizeScrollViewContent(UIControl * control)
 	}
 }
 
+void UIControlMetadata::SetUIControlVisible(const bool value, bool hierarchic)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIControl()->SetVisible(value, hierarchic);
+}
 
 };

@@ -45,7 +45,8 @@ UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	scrollHorizontal(new ScrollHelper()),
 	scrollVertical(new ScrollHelper())
 {
-	inputEnabled = true;
+    SetInputEnabled(false, false);
+    SetFocusEnabled(false);
 	multiInput = true;
 	SetClipContents(true);
 	
@@ -191,14 +192,17 @@ UIControl* UIScrollView::Clone()
 	
 void UIScrollView::CopyDataFrom(UIControl *srcControl)
 {
-	UIControl::CopyDataFrom(srcControl);
-	
+	// Release and remove scrollContainer here - it has to be copied from srcControl
+	// We have to finish this before call UIControl::CopyDataFrom() to avoid release
+	// of unavailable object
 	RemoveControl(scrollContainer);
   	SafeRelease(scrollContainer);
 	
-	UIScrollView* t = (UIScrollView*) srcControl;
+	UIControl::CopyDataFrom(srcControl);
+	
+	UIScrollView* t = static_cast<UIScrollView*>(srcControl);
 		
-	this->scrollContainer = static_cast<UIScrollViewContainer*>(t->scrollContainer->Clone());
+	scrollContainer = static_cast<UIScrollViewContainer*>(t->scrollContainer->Clone());
 		
 	AddControl(scrollContainer);
 }
@@ -218,7 +222,7 @@ void UIScrollView::SetPadding(const Vector2 & padding)
 		return;
 	}
 	
-	Rect parentRect = this->GetRect();
+	Rect parentRect = GetRect();
 	Rect contentRect = scrollContainer->GetRect();
 	
 	// Apply scroll offset only if it value don't exceed content size
@@ -284,7 +288,7 @@ void UIScrollView::RecalculateContentSize()
 	}
 	
 	Rect contentRect = scrollContainer->GetRect();
-	Rect parentRect = this->GetRect();
+	Rect parentRect = GetRect();
 	
 	// Move all scrollContainer content with negative positions iside its rect
 	PushContentToBounds(scrollContainer);
