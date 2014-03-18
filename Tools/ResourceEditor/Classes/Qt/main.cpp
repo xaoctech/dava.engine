@@ -115,6 +115,7 @@ int main(int argc, char *argv[])
         
 		new SceneValidator();
 		DavaGLWidget* davaGL = new DavaGLWidget();
+        RenderManager::Instance()->DetectRenderingCapabilities();
 
 		//DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
 		//DAVA::Logger::AddCustomOutput(out);
