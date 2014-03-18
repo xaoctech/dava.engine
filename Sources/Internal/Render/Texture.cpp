@@ -572,7 +572,8 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
-			Vector<Image *> imageFace = ImageLoader::CreateFromFileByExtension(faceNames[i]);
+            Vector<Image *> imageFace;
+			ImageLoader::CreateFromFileByExtension(faceNames[i], imageFace);
 			if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
@@ -602,7 +603,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
-		*images = ImageLoader::CreateFromFileByExtension(imagePathname);
+		ImageLoader::CreateFromFileByExtension(imagePathname, *images);
         if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
         {
             Image * img = *images->begin();
@@ -620,36 +621,34 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
                 // to use texture group qualities
                 // -->
                 
-                int baselevel = curTxQuality->albedoBaseMipMapLevel;
-                
+                int32 baselevel = curTxQuality->albedoBaseMipMapLevel;
                 if(baselevel > 0)
                 {
-                    int leaveCount = images->size() - baselevel;
+                    int32 faceCount = (TEXTURE_CUBE == textureType) ? CUBE_FACE_MAX_COUNT : 1;
                     
-                    // we should leave at last one last image
-                    if(leaveCount < 1)
+                    uint32 count = images->size();
+                    baselevel = Min(baselevel, (int32)(count / faceCount) - 1);
+                    if(baselevel > 0)
                     {
-                        leaveCount = 1;
+                        for(int32 i = 0; i < count; ++i)
+                        {
+                            if(images->operator[](i)->mipmapLevel < baselevel)
+                            {
+                                SafeRelease(images->at(i));
+
+                                images->operator[](i) = images->operator[](count - 1);
+                                --i;
+                                --count;
+                            }
+                        }
+
+                        images->resize(count);
+                        for(uint32 i = 0; i < count; ++i)
+                        {
+                            images->operator[](i)->mipmapLevel -= baselevel;
+                        }
                     }
-                    
-                    int leaveOffset = images->size() - leaveCount;
-                    
-                    // release all images, except last one
-                    for(int i = 0; i < leaveOffset; ++i)
-                    {
-                        SafeRelease(images->at(i));
-                    }
-                    
-                    // move last items to the beginning of the vector vector
-                    for(int i = 0; i < leaveCount; ++i)
-                    {
-                        images->operator[](i) = images->operator[](leaveOffset + i);
-                        images->operator[](i)->mipmapLevel = i;
-                    }
-                    
-                    images->resize(leaveCount);
                 }
-                
                 // <-
             }
         }
