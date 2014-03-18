@@ -306,6 +306,8 @@ protected:
 	};
 
 
+    int32 GetBaseMipMap() const;
+
 public:							// properties for fast access
 
 #if defined(__DAVAENGINE_OPENGL__)
