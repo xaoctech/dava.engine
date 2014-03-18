@@ -565,6 +565,8 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	if(!IsLoadAvailable(gpu))
 		return false;
 	
+    int32 baseMipMap = GetBaseMipMap();
+
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
 	{
 		Vector<FilePath> faceNames;
@@ -573,7 +575,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
             Vector<Image *> imageFace;
-			ImageLoader::CreateFromFileByExtension(faceNames[i], imageFace);
+			ImageLoader::CreateFromFileByExtension(faceNames[i], imageFace, baseMipMap);
 			if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
@@ -603,54 +605,12 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
-		ImageLoader::CreateFromFileByExtension(imagePathname, *images);
+		ImageLoader::CreateFromFileByExtension(imagePathname, *images, baseMipMap);
         if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
         {
             Image * img = *images->begin();
             *images = img->CreateMipMapsImages();
             SafeRelease(img);
-        }
-
-        if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
-        {
-            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTextureQuality());
-            if(NULL != curTxQuality)
-            {
-                // TODO:
-                // this is draft code and should be reimplemented
-                // to use texture group qualities
-                // -->
-                
-                int32 baselevel = curTxQuality->albedoBaseMipMapLevel;
-                if(baselevel > 0)
-                {
-                    int32 faceCount = (TEXTURE_CUBE == textureType) ? CUBE_FACE_MAX_COUNT : 1;
-                    
-                    uint32 count = images->size();
-                    baselevel = Min(baselevel, (int32)(count / faceCount) - 1);
-                    if(baselevel > 0)
-                    {
-                        for(int32 i = 0; i < count; ++i)
-                        {
-                            if(images->operator[](i)->mipmapLevel < baselevel)
-                            {
-                                SafeRelease(images->at(i));
-
-                                images->operator[](i) = images->operator[](count - 1);
-                                --i;
-                                --count;
-                            }
-                        }
-
-                        images->resize(count);
-                        for(uint32 i = 0; i < count; ++i)
-                        {
-                            images->operator[](i)->mipmapLevel -= baselevel;
-                        }
-                    }
-                }
-                // <-
-            }
         }
     }
 
@@ -1479,6 +1439,21 @@ void Texture::SetPixelization(bool value)
         texture->SetMinMagFilter(minFilter, magFilter);
     }
     textureMapMutex.Unlock();
+}
+
+
+int32 Texture::GetBaseMipMap() const
+{
+    if(texDescriptor->GetQualityGroup().IsValid())
+    {
+        const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTextureQuality());
+        if(NULL != curTxQuality)
+        {
+            return curTxQuality->albedoBaseMipMapLevel;
+        }
+    }
+
+    return 0;
 }
 
 };
