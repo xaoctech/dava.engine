@@ -189,6 +189,8 @@ public slots:
     void OnCustomQuality();
 
     void OnReloadShaders();
+
+    void OnSwitchWithDifferentLODs(bool checked);
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -270,6 +272,8 @@ private:
 	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
 	// <--
+
+    void FindSwitchesWithDifferentLODs(DAVA::Entity *entity, Set<FastName> & names);
 };
 
 
