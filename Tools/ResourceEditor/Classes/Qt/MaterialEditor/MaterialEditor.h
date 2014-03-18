@@ -62,7 +62,9 @@ public slots:
 	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:
-	void OnAddProperty();
+    void OnAddFlag();
+    void OnRemFlag();
+    void OnAddProperty();
 	void OnRemProperty();
 	void OnAddTexture();
 	void OnRemTexture();
@@ -70,7 +72,6 @@ protected slots:
 	void OnPropertyEdited(const QModelIndex &);
     void OnSwitchQuality(bool checked);
     void OnMaterialReload(bool checked);
-    void OnMaterialSetFog(bool checked);
 
 protected:
 	virtual void showEvent(QShowEvent * event);

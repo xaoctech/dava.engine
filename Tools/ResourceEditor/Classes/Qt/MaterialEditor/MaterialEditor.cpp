@@ -84,7 +84,6 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
     QObject::connect(ui->actionMaterialReload, SIGNAL(triggered(bool)), this, SLOT(OnMaterialReload(bool)));
     QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
-    QObject::connect(ui->actionSetFog, SIGNAL(triggered(bool)), this, SLOT(OnMaterialSetFog(bool)));
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
@@ -312,7 +311,33 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 			
 			    for(size_t i = 0; i < membersList.size(); ++i)
 			    {
+                    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+
+                    // self property
+                    if(memberFlags & DAVA::I_EDIT)
+                    {
+                        QtPropertyToolButton* btn = dynamicMember->AddButton();
+                        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                        btn->setIconSize(QSize(14, 14));
+                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemFlag()));
+                    }
+                    else
+                    {
+                        dynamicMember->SetEnabled(false);
+                        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                        {
+                            dynamicMember->ChildGet(m)->SetEnabled(false);
+                        }
+
+                        QtPropertyToolButton* btn = dynamicMember->AddButton();
+                        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                        btn->setIconSize(QSize(14, 14));
+                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddFlag()));
+
+                        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+                    }
+
 				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
 			    }
 		    }
@@ -484,7 +509,7 @@ void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
         }
     }
 
-    if(NULL != material)
+    if(NULL != material && NULL != material->GetMaterialTemplate())
     {
         int indexToSet = -1;
         QString curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
@@ -602,6 +627,43 @@ void MaterialEditor::OnRemTexture()
 	}
 }
 
+void MaterialEditor::OnAddFlag()
+{
+    QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+    if(NULL != btn && NULL != curMaterial)
+    {
+        QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+        if(NULL != data)
+        {
+            //data->SetVariantValue(data->GetAliasVariant());
+            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+            //data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
+
+            // reload material properties
+            SetCurMaterial(curMaterial);
+        }
+    }
+}
+
+void MaterialEditor::OnRemFlag()
+{
+    QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+    if(NULL != btn && NULL != curMaterial)
+    {
+        QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+        if(NULL != data)
+        {
+            data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+
+            // reload material properties
+            SetCurMaterial(curMaterial);
+        }
+    }
+}
+
+
 void MaterialEditor::OnTemplateChanged(int index)
 {
 	if(NULL != curMaterial && index > 0)
@@ -674,73 +736,6 @@ void MaterialEditor::OnMaterialReload(bool checked)
     {
         
     }
-}
-
-void MaterialEditor::OnMaterialSetFog(bool checked)
-{
-   MaterialEditorFogDialog dlg;
-   SceneEditor2 *sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-   DAVA::Landscape *landscape = sceneEditor->collisionSystem->GetLandscape();
-
-   if(NULL != landscape)
-   {
-       MaterialEditorFogDialog::FogParams params;
-
-       params.type = MaterialEditorFogDialog::FOG_DISABLED;
-       if(landscape->IsFogEnabled())
-       {
-            params.type = MaterialEditorFogDialog::FOG_EXPONENTIAL;
-       }
-
-       params.color = landscape->GetFogColor();
-       params.density = landscape->GetFogDensity();
-       dlg.SetFogParams(params);
-
-       if(QDialog::Accepted == dlg.exec())
-       {
-           params = dlg.GetFogParams();
-
-           // set to landscape (will be saved)
-           landscape->SetFogColor(params.color);
-           landscape->SetFogDensity(params.density);
-           landscape->SetFog(params.type != MaterialEditorFogDialog::FOG_DISABLED);
-
-           // set to global material (runtime)
-           DAVA::NMaterial *globalMaterial = sceneEditor->GetGlobalMaterial();
-           globalMaterial->SetPropertyValue(DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::Shader::UT_FLOAT, 1, &params.density);
-           globalMaterial->SetPropertyValue(DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::Shader::UT_FLOAT_VEC4, 1, &params.color);
-
-           DAVA::Set<DAVA::NMaterial *> materials;
-           sceneEditor->materialSystem->BuildMaterialsList(materials);
-
-           DAVA::Set<DAVA::NMaterial *>::const_iterator i = materials.begin();
-           DAVA::Set<DAVA::NMaterial *>::const_iterator end = materials.end();
-
-           sceneEditor->BeginBatch("Set scene fog");
-           // set flags for materials
-           for(; i != end; ++i)
-           {
-               DAVA::NMaterial *material = *i;
-               const DAVA::InspInfo *insp = material->GetTypeInfo();
-               const DAVA::InspMemberDynamic *dynamicFlags = insp->Member("materialSetFlags")->Dynamic();
-               const DAVA::InspMemberDynamic *dynamicProps = insp->Member("materialProperties")->Dynamic();
-
-               if(params.type != MaterialEditorFogDialog::FOG_DISABLED)
-               {
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicFlags->GetDynamicInfo(), material, DAVA::NMaterial::FLAG_VERTEXFOG, DAVA::VariantType(true)));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::VariantType(params.density)));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::VariantType(params.color)));
-               }
-               else
-               {
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicFlags->GetDynamicInfo(), material, DAVA::NMaterial::FLAG_VERTEXFOG, DAVA::VariantType(false)));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::VariantType()));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::VariantType()));
-               }
-           }
-           sceneEditor->EndBatch();
-       }
-   }
 }
 
 // ==============================================================================

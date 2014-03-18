@@ -228,6 +228,11 @@ void MaterialModel::Sync()
 		DAVA::Map<DAVA::NMaterial*, DAVA::Set<DAVA::NMaterial *> > materialsTree;
 		curScene->materialSystem->BuildMaterialsTree(materialsTree);
 
+        if(NULL != curScene->GetGlobalMaterial())
+        {
+            materialsTree[curScene->GetGlobalMaterial()];
+        }
+
 		// remove items, that are not in set
 		QStandardItem *root = invisibleRootItem();
 		for(int i = 0; i < root->rowCount(); ++i)

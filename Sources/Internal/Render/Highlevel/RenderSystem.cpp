@@ -165,9 +165,9 @@ void RenderSystem::RegisterBatch(RenderBatch * batch)
     }
 
     // set globalMaterial to be top parent
-    if(NULL != topParent)
+    if(NULL != topParent && topParent != globalMaterial)
     {
-        DVASSERT(topParent->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL && "Material already has globalMaterial");
+        DVASSERT(topParent->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL && "Material already has another globalMaterial");
         topParent->SetParent(globalMaterial, false);
     }
 }
