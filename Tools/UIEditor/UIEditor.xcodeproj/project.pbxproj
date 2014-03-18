@@ -191,6 +191,7 @@
 		5CCC10E915B460C900DA83EB /* libbz2.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 5CCC10E815B460C900DA83EB /* libbz2.dylib */; };
 		740F353416832022003B35E7 /* EditorSettings.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 740F353316832022003B35E7 /* EditorSettings.cpp */; };
 		7410E82A171462C70028AAAA /* EditorListDelegate.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7410E828171462C70028AAAA /* EditorListDelegate.cpp */; };
+		7426F56518D85918003D3D25 /* rootpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7426F56418D85918003D3D25 /* rootpropertygridwidget_moc.cpp */; };
 		747FA17C1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */; };
 		747FA19C1636DBED000CEEDA /* UITextControlMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */; };
 		7482C8C71688AA9100435155 /* UISliderMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7482C8C51688AA9100435155 /* UISliderMetadata.cpp */; };
@@ -642,6 +643,7 @@
 		740F353316832022003B35E7 /* EditorSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorSettings.cpp; sourceTree = "<group>"; };
 		7410E828171462C70028AAAA /* EditorListDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EditorListDelegate.cpp; sourceTree = "<group>"; };
 		7410E829171462C70028AAAA /* EditorListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditorListDelegate.h; sourceTree = "<group>"; };
+		7426F56418D85918003D3D25 /* rootpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rootpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
 		747FA17A1636A7CF000CEEDA /* backgroundpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = backgroundpropertygridwidget.cpp; path = PropertyGridWidgets/backgroundpropertygridwidget.cpp; sourceTree = "<group>"; };
 		747FA17B1636A7CF000CEEDA /* backgroundpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = backgroundpropertygridwidget.h; path = PropertyGridWidgets/backgroundpropertygridwidget.h; sourceTree = "<group>"; };
 		747FA19A1636DBED000CEEDA /* UITextControlMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UITextControlMetadata.cpp; path = Metadata/UITextControlMetadata.cpp; sourceTree = "<group>"; };
@@ -936,6 +938,7 @@
 		02D69C7616F08CED00F3803F /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				7426F56418D85918003D3D25 /* rootpropertygridwidget_moc.cpp */,
 				1746932718A3E99D0089EFF5 /* particleeffectpropertygridwidget_moc.cpp */,
 				749B306117E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp */,
 				74AD4BD31727DDB90082EFB3 /* scrollviewpropertygridwidget_moc.cpp */,
@@ -1773,6 +1776,7 @@
 				17FC1339189F90ED009D83A8 /* previewsettingsdialog_moc.cpp in Build Sources */,
 				C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */,
 				C14FF9C2162EE4DF00F77F70 /* controllist.cpp in Build Sources */,
+				7426F56518D85918003D3D25 /* rootpropertygridwidget_moc.cpp in Build Sources */,
 				17E897F3162FEB3600A2A946 /* MetadataFactory.cpp in Build Sources */,
 				173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */,
 				173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */,
