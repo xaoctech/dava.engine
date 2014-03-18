@@ -153,7 +153,7 @@ void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
     }
 }
 
-void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality)
+void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality, bool generateMipMaps)
 {
 	FileList * fileList = new FileList(folderPathname);
 	if(!fileList) return;
@@ -163,11 +163,11 @@ void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &fold
 		const FilePath &pathname = fileList->GetPathname(fi);
 		if(IsCorrectDirectory(fileList, fi))
 		{
-			SetCompressionParamsForFolder(pathname, compressionParams, convertionEnabled, force, quality);
+			SetCompressionParamsForFolder(pathname, compressionParams, convertionEnabled, force, quality, generateMipMaps);
 		}
 		else if(IsDescriptorPathname(pathname))
 		{
-			SetCompressionParams(pathname, compressionParams, convertionEnabled, force, quality);
+			SetCompressionParams(pathname, compressionParams, convertionEnabled, force, quality, generateMipMaps);
 		}
 	}
 
@@ -175,11 +175,13 @@ void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &fold
 }
 
 
-void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality)
+void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality, bool generateMipMaps)
 {
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
 	if(!descriptor) return;
 
+    descriptor->settings.generateMipMaps = (generateMipMaps) ? TextureDescriptor::OPTION_ENABLED : TextureDescriptor::OPTION_DISABLED;
+    
 	auto endIt = compressionParams.end();
 	for(auto it = compressionParams.begin(); it != endIt; ++it)
 	{
