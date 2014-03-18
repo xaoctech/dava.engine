@@ -1873,7 +1873,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 
 	bool written = false;
 
-	File *file = File::Create(filePathname, File::OPEN | File::WRITE);
+	File *file = File::Create(filePathname, File::CREATE | File::WRITE);
 	if(file) 
 	{
 		file->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
@@ -1888,7 +1888,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 	}
 	else
 	{
-		Logger::Error("[LibPVRHelper::ReadFile]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
+		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
 	}
 
 	delete pvrFile;
