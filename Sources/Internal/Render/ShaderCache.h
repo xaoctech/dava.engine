@@ -113,12 +113,10 @@ public:
     void Reload();
     
 private:
-    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
-    void ParseDefaultVariable(ShaderAsset * asset, const String & inputLine);
-    
-    void ReloadAsset(ShaderAsset *asset);
+
+    void LoadAsset(ShaderAsset *asset);
     void ParseShader(ShaderAsset * asset);
-//    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
+    void ParseDefaultVariable(ShaderAsset * asset, const String & inputLine);
 
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };
