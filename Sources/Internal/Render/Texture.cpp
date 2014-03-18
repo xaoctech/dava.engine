@@ -1161,7 +1161,7 @@ Texture * Texture::CreatePink(TextureType requestedType, bool checkers)
 
 void Texture::MakePink(TextureType requestedType, bool checkers)
 {
-	FilePath savePath = (texDescriptor) ? texDescriptor->pathname: FilePath();
+	FilePath savePath = texDescriptor->pathname;
 
     Vector<Image *> *images = new Vector<Image *> ();
 	if(Texture::TEXTURE_CUBE == requestedType)
