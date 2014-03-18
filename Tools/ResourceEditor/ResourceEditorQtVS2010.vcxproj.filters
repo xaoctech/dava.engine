@@ -3421,5 +3421,8 @@
     <None Include="DataQt\ImageSplitter.ui">
       <Filter>QtData</Filter>
     </None>
+    <None Include="DataQt\ActionComponentEditor.ui">
+      <Filter>QtData</Filter>
+    </None>
   </ItemGroup>
 </Project>
