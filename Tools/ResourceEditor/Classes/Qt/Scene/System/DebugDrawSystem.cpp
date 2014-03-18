@@ -34,6 +34,8 @@
 #include "Deprecated/EditorConfig.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
+#include "Deprecated/SceneValidator.h"
+
 using namespace DAVA;
 
 float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.2f;
@@ -339,7 +341,7 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods( DAVA::Entity *entity )
 {
     if(!switchesWithDifferentLodsEnabled) return;
 
-    if(IsEntityHasDifferentLODsCount(entity))
+    if(SceneValidator::IsEntityHasDifferentLODsCount(entity))
     {
         RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
 
@@ -348,28 +350,4 @@ void DebugDrawSystem::DrawSwitchesWithDifferentLods( DAVA::Entity *entity )
         DAVA::RenderManager::Instance()->SetColor(Color(1.0f, 0.f, 0.f, 1.f));
         DAVA::RenderHelper::Instance()->DrawBox(worldBox, 1.0f, debugDrawState);
     }
-}
-
-bool DebugDrawSystem::IsEntityHasDifferentLODsCount( DAVA::Entity *entity )
-{
-    if((GetSwitchComponent(entity) == NULL) || (GetLodComponent(entity) == NULL)) return false;
-
-    RenderObject *ro = GetRenderObject(entity);
-    int32 maxLod[2];
-    maxLod[0] = maxLod[1] = -1;
-
-    uint32 count = ro->GetRenderBatchCount(); 
-    for(uint32 i = 0; i < count; ++i) 
-    {
-        int32 lod, sw;
-        ro->GetRenderBatch(i, lod, sw);
-
-        DVASSERT(sw < 2);
-        if((lod > maxLod[sw]) && (sw < 2))
-        {
-            maxLod[sw] = lod;
-        }
-    }
-
-    return maxLod[0] != maxLod[1];
 }
