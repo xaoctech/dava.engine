@@ -266,6 +266,7 @@ public:
     
     void Save(KeyedArchive * archive, SerializationContext * serializationContext);
     void Load(KeyedArchive * archive, SerializationContext * serializationContext);
+    DAVA_DEPRECATED(void LoadFog(KeyedArchive * archive, SerializationContext * serializationContext));
     
     // TODO: Need comment here
 	bool PlacePoint(const Vector3 & point, Vector3 & result, Vector3 * normal = 0) const;
@@ -280,21 +281,11 @@ public:
 //    virtual void UpdateFullTiledTexture();
 //    FilePath SaveFullTiledTexture();
     Texture *CreateLandscapeTexture();
-    
-    void SetFog(const bool& fogState);
-    bool IsFogEnabled() const;
-    void SetFogDensity(float32 _fogDensity);
-    float32 GetFogDensity() const;
-    void SetFogColor(const Color & _fogColor);
-    Color GetFogColor() const;
-
     LandscapeCursor *GetCursor();
     
 	virtual RenderObject * Clone(RenderObject *newObject);
 
 	int32 GetDrawIndices() const;
-	
-	virtual void SetRenderSystem(RenderSystem * _renderSystem);
 
 protected:
 	
@@ -416,18 +407,12 @@ protected:
     int32 nearLodIndex;
     int32 farLodIndex;
     
-    bool    isFogEnabled;
-    //float32 fogDensity;
-    //Color   fogColor;
-	
 	NMaterial* tileMaskMaterial;
 	//NMaterial* fullTiledMaterial;
 	//NMaterial* currentMaterial;
 	
 	uint32 drawIndices;
 	
-	void SetFogInternal(BaseObject * caller, void * param, void *callerData);
-
 	void SetDefaultValues();
 
 public:
@@ -437,11 +422,6 @@ public:
          
         MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
 
-        PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
-		
-
 		PROPERTY("specularColor", "Specular Color", GetSpecularColor, SetSpecularColor, I_SAVE | I_VIEW | I_EDIT)
 		PROPERTY("specularShininess", "Specular Shininess", GetSpecularShininess, SetSpecularShininess, I_SAVE | I_VIEW | I_EDIT)
 		PROPERTY("specularMap", "Specular Map", GetSpecularMapPath, SetSpecularMapPath, I_SAVE | I_VIEW | I_EDIT)
@@ -450,14 +430,9 @@ public:
 #else
 
 	    INTROSPECTION_EXTEND(Landscape, RenderObject,
-         
-        PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
-        PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
-        PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
-        //MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
-        //MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
-		
+            PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
+            PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
+            PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
 		);
 
 #endif

@@ -32,8 +32,6 @@
        <height>16</height>
       </size>
      </property>
-     <addaction name="actionNewMaterial"/>
-     <addaction name="actionCloneMaterial"/>
      <addaction name="separator"/>
      <addaction name="actionShowAll"/>
      <addaction name="actionMaterialsInstances"/>
@@ -42,7 +40,6 @@
      <addaction name="actionAutoExpand"/>
      <addaction name="actionSwitchQuality"/>
      <addaction name="actionMaterialReload"/>
-     <addaction name="actionSetFog"/>
     </widget>
    </item>
    <item>
@@ -154,30 +151,6 @@
     </widget>
    </item>
   </layout>
-  <action name="actionNewMaterial">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/sphere_add.png</normaloff>:/QtIcons/sphere_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>New Material</string>
-   </property>
-  </action>
-  <action name="actionCloneMaterial">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/sphere-clone.png</normaloff>:/QtIcons/sphere-clone.png</iconset>
-   </property>
-   <property name="text">
-    <string>Clone Material</string>
-   </property>
-  </action>
   <action name="actionAutoExpand">
    <property name="checkable">
     <bool>true</bool>
@@ -201,11 +174,6 @@
   <action name="actionMaterialReload">
    <property name="text">
     <string>MaterialReload</string>
-   </property>
-  </action>
-  <action name="actionSetFog">
-   <property name="text">
-    <string>Set Fog</string>
    </property>
   </action>
   <actiongroup name="filterType">

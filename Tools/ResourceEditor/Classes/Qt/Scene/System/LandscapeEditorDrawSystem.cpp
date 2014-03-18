@@ -455,16 +455,11 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableTilemaskE
 	}
 
 	landscapeProxy->SetMode(LandscapeProxy::MODE_ORIGINAL_LANDSCAPE);
-
-	fogWasEnabled = landscapeProxy->IsFogEnabled();
-	landscapeProxy->SetFogEnabled(false);
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
 void LandscapeEditorDrawSystem::DisableTilemaskEditing()
-{
-	landscapeProxy->SetFogEnabled(fogWasEnabled);
-}
+{}
 
 LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::Init()
 {

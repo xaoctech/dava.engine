@@ -71,6 +71,8 @@ const FastName NMaterial::PARAM_LIGHT_INTENSITY0("lightIntensity0");
 const FastName NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS("materialSpecularShininess");
 const FastName NMaterial::PARAM_FOG_COLOR("fogColor");
 const FastName NMaterial::PARAM_FOG_DENSITY("fogDensity");
+const FastName NMaterial::PARAM_FOG_START("fogStart");
+const FastName NMaterial::PARAM_FOG_END("fogEnd");
 const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
@@ -126,7 +128,6 @@ const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
 
 //Texture* NMaterial::stubCubemapTexture = NULL;
 //Texture* NMaterial::stub2dTexture = NULL;
-NMaterial* NMaterial::GLOBAL_MATERIAL = NULL;
 
 int32 IlluminationParams::GetLightmapSize() const
 {
@@ -263,8 +264,11 @@ void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
 void NMaterial::SetFlag(const FastName& flag, eFlagValue flagValue)
 {
 	materialSetFlags.insert(flag, flagValue);
-	
-	UpdateShaderWithFlags(true);
+
+    // TODO: #################
+    // ....
+
+    UpdateShaderWithFlags();
 }
 
 void NMaterial::ResetFlag(const FastName& flag)
@@ -273,7 +277,7 @@ void NMaterial::ResetFlag(const FastName& flag)
 	{
 		materialSetFlags.erase(flag);
 		
-		UpdateShaderWithFlags(true);
+		UpdateShaderWithFlags();
 	}
 }
 
@@ -534,7 +538,7 @@ FastName NMaterial::GetEffectiveQuality() const
 	while(!ret.IsValid() && NULL != parent)
 	{
 		ret = parent->orderedQuality;
-		parent = (NULL == parent->parent && parent->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : parent->parent;
+		parent = parent->parent;
 	}
 	
 	return ret;
@@ -895,7 +899,7 @@ NMaterialProperty* NMaterial::GetPropertyValue(const FastName & keyName) const
 			break;
 		}
 		
-		currentMaterial = (NULL == currentMaterial->parent && currentMaterial->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : currentMaterial->parent;
+		currentMaterial = currentMaterial->parent;
 	}
 	
 	return property;
@@ -999,16 +1003,11 @@ void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
         }
         else
         {
-            UpdateShaderWithFlags(true);
+            UpdateShaderWithFlags();
         }
 	}
 	
 	SetTexturesDirty();
-}
-
-void NMaterial::OnParentFlagsChanged()
-{
-	UpdateShaderWithFlags();
 }
 
 void NMaterial::OnInstanceQualityChanged()
@@ -1228,7 +1227,7 @@ NMaterial::TextureBucket* NMaterial::GetEffectiveTextureBucket(const FastName& t
 	{
 		bucket = currentMaterial->textures.at(textureFastName);
 		
-		currentMaterial = (NULL == currentMaterial->parent && currentMaterial->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : currentMaterial->parent;
+		currentMaterial = currentMaterial->parent;
 	}
 	
 	return bucket;
@@ -1291,7 +1290,7 @@ Texture* NMaterial::GetOrLoadTextureRecursive(const FastName& textureName)
 			break;
 		}
 		
-		currentMaterial = (NULL == currentMaterial->parent && currentMaterial->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL) ? NMaterial::GLOBAL_MATERIAL : currentMaterial->parent;
+		currentMaterial = currentMaterial->parent;
 	}
 	
 	return tex;
@@ -1690,10 +1689,8 @@ void NMaterial::SubclassRenderState(RenderStateData& newState)
 	}
 }
 
-void NMaterial::UpdateShaderWithFlags(bool updateChildren)
+void NMaterial::UpdateShaderWithFlags()
 {
-	DVASSERT(baseTechnique);
-	
 	if(baseTechnique)
 	{
 		FastNameSet effectiveFlags(16);
@@ -1712,20 +1709,20 @@ void NMaterial::UpdateShaderWithFlags(bool updateChildren)
 			
 			BuildActiveUniformsCacheParamsCache(pass);
 		}
-		
-		if(updateChildren)
-		{
-			this->Retain();
-			
-			size_t childrenCount = children.size();
-			for(size_t i = 0; i < childrenCount; ++i)
-			{
-				children[i]->OnParentFlagsChanged();
-			}
-			
-			this->Release();
-		}
 	}
+
+    // updateChildren
+    {
+        this->Retain();
+
+        size_t childrenCount = children.size();
+        for(size_t i = 0; i < childrenCount; ++i)
+        {
+            children[i]->UpdateShaderWithFlags();
+        }
+
+        this->Release();
+    }
 }
 
 //VI: creates material of type MATERIALTYPE_INSTANCE
@@ -2215,6 +2212,12 @@ const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMa
 		
 		parent = parent->GetParent();
 		source = PropData::SOURCE_PARENT;
+
+        if(NULL != parent && parent->GetMaterialType() == MATERIALTYPE_GLOBAL)
+        {
+            // don't extract properties from globalMaterial
+            parent = NULL;
+        }
 	}
 	
 	
@@ -2672,6 +2675,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 	{
 		ret.reserve(3);
 		ret.push_back(FLAG_VERTEXFOG);
+        ret.push_back(FLAG_FOG_LINEAR);
 		ret.push_back(FLAG_FLATCOLOR);
 		ret.push_back(FLAG_TEXTURESHIFT);
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
@@ -2700,17 +2704,34 @@ void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, con
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	NMaterial::eFlagValue newValue = NMaterial::FlagOff;
-	if(value.AsBool())
-	{
-		newValue = NMaterial::FlagOn;
-	}
+    if(value.GetType() == VariantType::TYPE_NONE)
+    {
+        state->ResetFlag(member);
+    }
+    else
+    {
+	    NMaterial::eFlagValue newValue = NMaterial::FlagOff;
+	    if(value.AsBool())
+	    {
+		    newValue = NMaterial::FlagOn;
+	    }
 	
-	state->SetFlag(member, newValue);
+	    state->SetFlag(member, newValue);
+    }
 }
 
 int NMaterial::NMaterialStateDynamicFlagsInsp::MemberFlags(void *object, const FastName &member) const
 {
-	return I_VIEW | I_EDIT;
+    int ret = I_VIEW;
+
+    NMaterial *state = (NMaterial*) object;
+    DVASSERT(state);
+
+    if(!(NMaterial::FlagInherited & state->GetFlagValue(member)))
+    {
+        ret |= I_EDIT;
+    }
+
+	return ret;
 }
 };

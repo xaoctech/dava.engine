@@ -455,7 +455,6 @@
     <ClCompile Include="Classes\Qt\Project\ProjectManager.cpp" />
     <ClCompile Include="Classes\Qt\QualitySwitcher\QualitySwitcher.cpp" />
     <ClCompile Include="Classes\Qt\Scene\EntityGroup.cpp" />
-    <ClCompile Include="Classes\Qt\Scene\FogSettingsChangedReceiver.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneEditor2.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneHelper.cpp" />
     <ClCompile Include="Classes\Qt\Scene\SceneSignals.cpp" />
@@ -626,7 +625,6 @@
     <ClCompile Include="_GeneratedQt\QtIcons_qrc.cpp" />
     <ClCompile Include="_GeneratedQt\QualitySwitcher\QualitySwitcher_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\EntityGroup_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Scene\FogSettingsChangedReceiver_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneEditor2_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneHelper_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\SceneSignals_moc.cpp" />
@@ -1079,7 +1077,6 @@
     <ClInclude Include="Classes\Qt\Project\ProjectManager.h" />
     <ClInclude Include="Classes\Qt\QualitySwitcher\QualitySwitcher.h" />
     <ClInclude Include="Classes\Qt\Scene\EntityGroup.h" />
-    <ClInclude Include="Classes\Qt\Scene\FogSettingsChangedReceiver.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneEditor2.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneHelper.h" />
     <ClInclude Include="Classes\Qt\Scene\SceneSignals.h" />

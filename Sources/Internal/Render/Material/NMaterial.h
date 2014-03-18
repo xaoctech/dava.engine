@@ -170,6 +170,8 @@ public:
 	static const FastName PARAM_MATERIAL_SPECULAR_SHININESS;
 	static const FastName PARAM_FOG_COLOR;
 	static const FastName PARAM_FOG_DENSITY;
+    static const FastName PARAM_FOG_START;
+    static const FastName PARAM_FOG_END;
 	static const FastName PARAM_FLAT_COLOR;
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
@@ -340,12 +342,6 @@ public:
 
     FastName GetMaterialGroup() const;
     void SetMaterialGroup(const FastName &group);
-    
-    //Stores WEAK reference (actually it's valid during render pass only)
-    //These methods are not thread-safe and used in the Scene::Draw to
-    //provide default values for materials.
-    inline static void SetGlobalMaterial(NMaterial* globalMaterial);
-    inline static NMaterial* GetGlobalMaterial();
 
 protected:
 	
@@ -503,8 +499,6 @@ protected:
 	
 	//static Texture* stubCubemapTexture;
 	//static Texture* stub2dTexture;
-    
-    static NMaterial* GLOBAL_MATERIAL;
 	
 protected:
 	
@@ -533,7 +527,7 @@ protected:
 	bool IsTextureActive(const FastName& textureName) const;
 	void SetTexturesDirty();
 	void PrepareTextureState(RenderPassInstance* passInstance);
-	void UpdateShaderWithFlags(bool updateChildren = false);
+	void UpdateShaderWithFlags();
 	//static Texture* GetStubTexture(const FastName& uniformName);
 	
 	void SetupPerFrameProperties(Camera* camera);
@@ -555,7 +549,6 @@ protected:
 	
 	void OnParentChanged(NMaterial* newParent, bool inheritTemplate);
 	void OnMaterialTemplateChanged();
-	void OnParentFlagsChanged();
 	void OnInstanceQualityChanged();
 	
 	void OnMaterialPropertyAdded(const FastName& propName);
@@ -671,16 +664,6 @@ public:
         static bool IsOpaque(const FastName& passName, NMaterial* mat);
         static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
 	};
-    
-    inline void NMaterial::SetGlobalMaterial(NMaterial* globalMaterial)
-    {
-        NMaterial::GLOBAL_MATERIAL = globalMaterial;
-    }
-    
-    inline NMaterial* NMaterial::GetGlobalMaterial()
-    {
-        return NMaterial::GLOBAL_MATERIAL;
-    }
     
     inline uint32 NMaterial::GetRenderLayers() const
     {

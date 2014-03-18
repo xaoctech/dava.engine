@@ -141,6 +141,8 @@ void Scene::InitGlobalMaterial()
     float32 defaultFloatValue = 0.5f;
     Vector2 defaultVec2;
     float32 defaultLightmapSize = 16.0f;
+    float32 defaultFogStart = 0.0f;
+    float32 defaultFogEnd = 500.0f;
     
     sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC3, 1, defaultVec3.data);
     sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
@@ -153,6 +155,8 @@ void Scene::InitGlobalMaterial()
 	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &defaultFloatValue);
     sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
 	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &defaultFloatValue);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_START, Shader::UT_FLOAT, 1, &defaultFogStart);
+    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_END, Shader::UT_FLOAT, 1, &defaultFogEnd);
     sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
 	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
     sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
@@ -677,8 +681,6 @@ void Scene::Draw()
     
     //Matrix4 prevMatrix = RenderManager::Instance()->GetMatrix(RenderManager::MATRIX_MODELVIEW);
     
-    NMaterial::SetGlobalMaterial(sceneGlobalMaterial);
-    
     renderSystem->SetCamera(currentCamera);
     renderSystem->SetClipCamera(clipCamera);
     renderUpdateSystem->Process(timeElapsed);
@@ -701,8 +703,6 @@ void Scene::Draw()
     // 	}
 
 	//RenderManager::Instance()->SetState(RenderState::DEFAULT_2D_STATE_BLEND);
-    
-    NMaterial::SetGlobalMaterial(NULL);
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 
