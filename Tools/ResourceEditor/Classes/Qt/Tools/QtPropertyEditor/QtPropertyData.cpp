@@ -263,8 +263,9 @@ QVariant QtPropertyData::GetAlias() const
 	// this will force update internalValue if 
 	// it source was changed 
 	GetValue();
+    const QVariant alias = IsMergedDataEqual() ? GetValueAlias() : QVariant();
 
-	return GetValueAlias();
+	return alias;
 }
 
 void QtPropertyData::SetName(const QString &name)
@@ -443,6 +444,13 @@ void QtPropertyData::Merge(QtPropertyData* data)
     DVASSERT(data);
     DVASSERT(this->MetaInfo() == data->MetaInfo());
 
+    if ( !data->IsMergable() )
+    {
+        // Non-mergable data should be deleted
+        data->deleteLater();
+        return ;
+    }
+
     data->parent = NULL;
     mergedData << data;
 
@@ -480,6 +488,14 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     }
 }
 
+bool QtPropertyData::IsMergable() const
+{
+    // Must be overrided, if data should not be merged
+    // For example, if child data modification will affect parent value
+
+    return true;
+}
+
 void QtPropertyData::SetModel(QtPropertyModel *_model)
 {
 	model = _model;
@@ -512,7 +528,14 @@ QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewIte
 
 bool QtPropertyData::EditorDone(QWidget *editor)
 {
-    return EditorDoneInternal(editor);
+    const bool result = EditorDoneInternal(editor);
+    if (result)
+    {
+        const QVariant val = GetValueInternal();
+        SetValue( val );
+    }
+    
+    return result;
 }
 
 bool QtPropertyData::SetEditorData(QWidget *editor)
