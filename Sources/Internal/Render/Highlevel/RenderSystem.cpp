@@ -57,6 +57,7 @@ RenderSystem::RenderSystem()
     ,   camera(0)
     ,   clipCamera(0)
     ,   forceUpdateLights(false)
+    ,   globalMaterial(NULL)
 {
     renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_FORWARD));
     renderPassOrder.push_back(GetRenderPassManager()->GetRenderPass(PASS_SHADOW_VOLUME));
@@ -71,6 +72,7 @@ RenderSystem::~RenderSystem()
 {
     SafeRelease(camera);
     SafeRelease(clipCamera);
+    SafeRelease(globalMaterial);
     
     SafeDelete(globalBatchArray);
     SafeDelete(renderHierarchy);	
@@ -152,11 +154,21 @@ void RenderSystem::RemoveRenderObject(RenderObject * renderObject)
 void RenderSystem::RegisterBatch(RenderBatch * batch)
 {
     NMaterial * material = batch->GetMaterial();
+    NMaterial * topParent = NULL;
+
     while(material)
     {
         RegisterMaterial(material);
         
+        topParent = material;
         material = material->GetParent();
+    }
+
+    // set globalMaterial to be top parent
+    if(NULL != topParent)
+    {
+        DVASSERT(topParent->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL && "Material already has globalMaterial");
+        topParent->SetParent(globalMaterial, false);
     }
 }
     
@@ -181,6 +193,17 @@ void RenderSystem::UnregisterMaterial(NMaterial * material)
 //	return renderPassesMap[passName];
 //}
     
+void RenderSystem::SetGlobalMaterial(NMaterial *material)
+{
+    SafeRelease(globalMaterial);
+    globalMaterial = SafeRetain(material);
+}
+
+NMaterial* RenderSystem::GetGlobalMaterial() const
+{
+    return globalMaterial;
+}
+
 void RenderSystem::MarkForUpdate(RenderObject * renderObject)
 {
 	uint32 flags = renderObject->GetFlags();
