@@ -69,6 +69,7 @@ const FastName NMaterial::PARAM_LIGHT_DIFFUSE_COLOR("materialLightDiffuseColor")
 const FastName NMaterial::PARAM_LIGHT_SPECULAR_COLOR("materialLightSpecularColor");
 const FastName NMaterial::PARAM_LIGHT_INTENSITY0("lightIntensity0");
 const FastName NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS("materialSpecularShininess");
+const FastName NMaterial::PARAM_FOG_LIMIT("fogLimit");
 const FastName NMaterial::PARAM_FOG_COLOR("fogColor");
 const FastName NMaterial::PARAM_FOG_DENSITY("fogDensity");
 const FastName NMaterial::PARAM_FOG_START("fogStart");
