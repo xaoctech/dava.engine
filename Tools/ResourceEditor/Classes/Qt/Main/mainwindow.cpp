@@ -107,6 +107,7 @@
 
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
+#include "Deprecated/SceneValidator.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -486,8 +487,6 @@ void QtMainWindow::SetupToolBars()
 		hangingBtn->SetWidget(hangingObjectsWidget);
 		hangingBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
 		hangingBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-// 		ui->sceneToolBar->addSeparator();
-// 		ui->sceneToolBar->addWidget(hangingBtn);
         ui->testingToolBar->addWidget(hangingBtn);
 		hangingBtn->setAutoRaise(false);
 	}
@@ -2753,7 +2752,7 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
     if(checked)
     {
         Set<FastName> entitiNames;
-        FindSwitchesWithDifferentLODs(scene, entitiNames);
+        SceneValidator::FindSwitchesWithDifferentLODs(scene, entitiNames);
 
         DAVA::Set<FastName>::iterator it = entitiNames.begin();
         DAVA::Set<FastName>::iterator endIt = entitiNames.end();
@@ -2761,22 +2760,6 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
         {
             Logger::Info("Entity %s has different lods count.", it->c_str());
             ++it;
-        }
-    }
-}
-
-void QtMainWindow::FindSwitchesWithDifferentLODs( DAVA::Entity *entity, Set<FastName> & names )
-{
-    if(DebugDrawSystem::IsEntityHasDifferentLODsCount(entity))
-    {
-        names.insert(entity->GetName());
-    }
-    else
-    {
-        uint32 count = entity->GetChildrenCount();
-        for(uint32 i = 0; i < count; ++i)
-        {
-            FindSwitchesWithDifferentLODs(entity->GetChild(i), names);
         }
     }
 }
