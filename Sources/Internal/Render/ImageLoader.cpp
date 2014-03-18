@@ -200,7 +200,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
         delete pvrFile;
     }
 
-    return false;
+    return loaded;
 }
 
 void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)

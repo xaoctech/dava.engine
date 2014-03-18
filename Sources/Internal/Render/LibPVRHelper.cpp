@@ -1760,7 +1760,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 	
-
 bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData)
 {
     if(AllocateImageData(image, mipMapLevel, header))
