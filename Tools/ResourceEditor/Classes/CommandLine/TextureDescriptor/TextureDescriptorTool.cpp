@@ -181,11 +181,11 @@ void TextureDescriptorTool::Process()
 			break;
 
 		case ACTION_SET_COMPRESSION_FOR_FOLDER:
-			TextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled, quality);
+			TextureDescriptorUtils::SetCompressionParamsForFolder(folderPathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
 			break;
 
 		case ACTION_SET_COMPRESSION_FOR_DESCRIPTOR:
-			TextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled, quality);
+			TextureDescriptorUtils::SetCompressionParams(filePathname, compressionParams, convertEnabled, forceModeEnabled, quality, generateMipMaps);
 			break;
 
         default:
