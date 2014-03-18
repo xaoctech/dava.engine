@@ -1760,7 +1760,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 	
-
 bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData)
 {
     if(AllocateImageData(image, mipMapLevel, header))
@@ -2143,6 +2142,7 @@ bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet,
     if(pvrFile == NULL || pvrFile->compressedData == NULL) return false;
     
     const uint32 & mipmapLevelCount = pvrFile->header.u32MIPMapCount;
+
     DVASSERT(fromMipMap < mipmapLevelCount);
     
     bool loadAllPvrData = true;
