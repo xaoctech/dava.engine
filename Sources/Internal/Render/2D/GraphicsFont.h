@@ -47,7 +47,7 @@ class GraphicsFont : public Font
 public:
 	static GraphicsFont * Create(const FilePath & fontDefName, const FilePath & spriteName);
 	
-	virtual void	SetSize(float32 size, bool setOriginalSize = true);
+	virtual void	SetSize(float32 size);
 	virtual Size2i	GetStringSize(const WideString & str, Vector<int32> *charSizes = NULL) const;
 	virtual bool	IsCharAvaliable(char16 ch) const;
 	virtual uint32	GetFontHeight() const;
