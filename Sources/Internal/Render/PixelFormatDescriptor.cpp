@@ -148,7 +148,11 @@ bool PixelFormatDescriptor::IsFormatCompressed(const PixelFormat formatID)
 
 void PixelFormatDescriptor::InitializePixelFormatDescriptors()
 {
-	const RenderManager::Caps & caps = RenderManager::Instance()->GetCaps();
+	RenderManager::Caps caps;
+    if(RenderManager::Instance())
+    {
+        caps = RenderManager::Instance()->GetCaps();
+    }
 
 	SetPixelDescription(FORMAT_INVALID, FastName("WRONG FORMAT"), 0);
 	SetPixelDescription(FORMAT_RGBA8888, FastName("RGBA8888"), 32, GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA, true, false);
