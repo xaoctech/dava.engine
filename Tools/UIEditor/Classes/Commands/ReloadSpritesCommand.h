@@ -46,12 +46,11 @@ protected:
     // Repack/reload sprites.
     void RepackSprites();
     void ReloadSprites();
-    
-    // Build the sprites list to be reloaded in a recursive way.
-    void BuildSpritesListRecursive(const HierarchyTreeControlNode* controlNode, Set<Sprite*>& spritesToReload);
 
 private:
     const HierarchyTreeNode* rootNode;
+	
+	void ShowErrorMessage(Set<String> errorsSet);
 };
 
 #endif /* defined(__RELOADSPRITESCOMMAND__H__) */

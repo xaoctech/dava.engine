@@ -549,9 +549,23 @@ public:
 	 \param[in] isEnabled is control should process inputs?
 	 \param[in] hierarchic use true if you want to all control children change input ability.
 	 */
-
 	virtual void SetInputEnabled(bool isEnabled, bool hierarchic = true);
-	
+
+    /**
+	 \brief Returns control focusing ability.
+     Be ware! Base control can be focused by default.
+	 \returns true if control can be focused.
+	 */
+	virtual bool GetFocusEnabled() const;
+    
+	/**
+	 \brief Sets contol focusing ability.
+     If focus possibility is disabled control can't be focused. Disable focusing for scroll 
+     controls (like UIScrollView, UIScrollList, etc.)
+	 \param[in] isEnabled is control can be focused?
+	 */
+	virtual void SetFocusEnabled(bool isEnabled);
+
 	/**
 	 \brief Returns control enabling state.
 		Disabled control don't process any inputs. But allows input processing for their children.
@@ -713,12 +727,6 @@ public:
 	 \ and belongs to the same control.
 	 */
 	virtual List<UIControl* > GetSubcontrols();
-
-	/**
-	 \brief Returns list of control children including internal controls,
-	 \which are editable and belongs to the same control.
-	 */
-	virtual List<UIControl* > GetRealChildrenAndSubcontrols();
 
 	/**
 	 \brief Returns whether this control is subcontrol of its parent.
@@ -1193,6 +1201,8 @@ public:
 	bool GetVisibleForUIEditor() const { return visibleForUIEditor; };
 	virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
 
+    void DumpInputs(int32 depthLevel);
+
 public:
 
 	Vector2 relativePosition;//!<position in the parent control.
@@ -1217,7 +1227,6 @@ protected:
 	int32 controlState;
 
 	// boolean flags are grouped here to pack them together (see please DF-2149).
-	bool inputEnabled : 1;
 	bool exclusiveInput : 1;
 	bool visible : 1;
 	bool clipContents : 1;
@@ -1236,6 +1245,8 @@ protected:
 	
 	bool isUpdated : 1;
 	bool isIteratorCorrupted : 1;
+
+    int32 inputProcessorsCount;
 
 
 	int32 currentInputID;
@@ -1278,18 +1289,26 @@ protected:
 	Vector2	__touchStart;
 	Vector2		__oldPosition;
 #endif
-	
+
+    void RegisterInputProcessor();
+    void RegisterInputProcessors(int32 processorsCount);
+    void UnregisterInputProcessor();
+    void UnregisterInputProcessors(int32 processorsCount);
+
+    void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
+	void DrawPivotPoint(const Rect &drawRect);
+
 private:
 	String	name;
 	int32	tag;
+	bool inputEnabled : 1;
+	bool focusEnabled : 1;
+
 
 	void RecalculateAlignProperties();
 	void RecalculateChildsSize();
 	void RecalculatePivotPoint(const Rect &newRect);
 
-	void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
-	void DrawPivotPoint(const Rect &drawRect);
-	
 	float32 GetSizeX(UIControl *parent, int32 leftAlign, int32 rightAlign, bool useHalfParentSize = false);
 	float32 GetSizeY(UIControl *parent, int32 topAlign, int32 bottomAlign, bool useHalfParentSize = false);
 	
@@ -1300,7 +1319,6 @@ private:
 	float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
 	float32 GetRelativeY(UIControl *parent, int32 align);
 	float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
-	float32 Round(float32 value);
 };
 };
 

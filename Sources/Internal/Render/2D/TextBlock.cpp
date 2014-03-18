@@ -351,7 +351,7 @@ void TextBlock::Prepare()
                     }
                 }
             }
-            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx))
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx) && (requestedSize.x >= 0))
             {
                 Size2i textSizePoints;
                 int32 length = (int32)text.length();
@@ -560,6 +560,10 @@ void TextBlock::Prepare()
 							{
 								yMul = (drawSize.y * 0.95f) / textSize.dy;
 							}
+                            if (yMul == 1.0f)
+                            {
+                                yMul = 1.05f;
+                            }
 						}
 					}
 					
@@ -616,6 +620,8 @@ void TextBlock::Prepare()
 			int32 fontHeight = font->GetFontHeight() + yOffset;
             //			Logger::FrameworkDebug("fontHeight = %.4d", fontHeight);
 			textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
+
+            stringSizes.reserve(multilineStrings.size());
 			for (int32 line = 0; line < (int32)multilineStrings.size(); ++line)
 			{
 				Size2i stringSize = font->GetStringSize(multilineStrings[line]);
@@ -661,32 +667,19 @@ void TextBlock::Prepare()
 		
 		
 		//calc texture size
-		int32 i;
 		int32 dx = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w);
-		float32 finalW = (float32)dx / Core::GetVirtualToPhysicalFactor();
-		if((dx != 1) && (dx & (dx - 1)))
-		{
-			i = 1;
-			while(i < dx)
-				i *= 2;
-			dx = i;
-		}
 		int32 dy = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * h);
-		float32 finalH = (float32)dy / Core::GetVirtualToPhysicalFactor();
-		if((dy != 1) && (dy & (dy - 1))) 
-		{
-			i = 1;
-			while(i < dy)
-				i *= 2;
-			dy = i;
-		}
 		
 		cacheUseJustify = useJustify;
 		cacheDx = dx;
+        EnsurePowerOf2(cacheDx);
+        
 		cacheDy = dy;
+        EnsurePowerOf2(cacheDy);
+        
 		cacheW = w;
-		cacheFinalSize.x = finalW;
-        cacheFinalSize.y = finalH;
+		cacheFinalSize.x = (float32)dx / Core::GetVirtualToPhysicalFactor();
+        cacheFinalSize.y = (float32)dy / Core::GetVirtualToPhysicalFactor();
     }
 
     TextBlockData *jobData = new TextBlockData();
@@ -907,5 +900,11 @@ const Vector2 & TextBlock::GetTextSize()
     
     return cacheFinalSize;
 }
-	
+
+const Vector<int32> & TextBlock::GetStringSizes() const
+{
+	return stringSizes;
+}
+
+
 };
