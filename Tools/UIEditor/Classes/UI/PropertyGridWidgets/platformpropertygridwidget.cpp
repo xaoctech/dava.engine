@@ -33,7 +33,7 @@
 static const QString RECT_PROPERTY_BLOCK_NAME = "Platform";
 
 PlatformPropertyGridWidget::PlatformPropertyGridWidget(QWidget *parent) :
-    BasePropertyGridWidget(parent),
+    RootPropertyGridWidget(parent),
     ui(new Ui::PlatformPropertyGridWidget)
 {
     ui->setupUi(this);
@@ -68,16 +68,4 @@ void PlatformPropertyGridWidget::Cleanup()
     UnregisterLineEditWidget(ui->platformNameLineEdit);
     UnregisterSpinBoxWidget(ui->screenHeightSpinBox);
     UnregisterSpinBoxWidget(ui->screenWidthSpinBox);
-}
-
-bool PlatformPropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
-{
-	QWidget *eventWidget = qobject_cast<QLineEdit*>(obj);
-	if (event->type() == QEvent::FocusOut && eventWidget)
-	{
-		event->ignore();
-		return true;
-	}
-    
-    return QWidget::eventFilter(obj, event);
 }

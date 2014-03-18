@@ -33,7 +33,7 @@
 static const QString RECT_PROPERTY_BLOCK_NAME = "Aggregator";
 
 AggregatorPropertyGridWidget::AggregatorPropertyGridWidget(QWidget *parent) :
-    BasePropertyGridWidget(parent),
+    RootPropertyGridWidget(parent),
     ui(new Ui::AggregatorPropertyGridWidget)
 {
     ui->setupUi(this);
@@ -67,16 +67,4 @@ void AggregatorPropertyGridWidget::Cleanup()
     UnregisterLineEditWidget(ui->platformNameLineEdit);
     UnregisterSpinBoxWidget(ui->screenHeightSpinBox);
     UnregisterSpinBoxWidget(ui->screenWidthSpinBox);
-}
-
-bool AggregatorPropertyGridWidget::eventFilter(QObject *obj, QEvent *event)
-{
-	QWidget *eventWidget = qobject_cast<QLineEdit*>(obj);
-	if (event->type() == QEvent::FocusOut && eventWidget)
-	{
-		event->ignore();
-		return true;
-	}
-    
-    return QWidget::eventFilter(obj, event);
 }

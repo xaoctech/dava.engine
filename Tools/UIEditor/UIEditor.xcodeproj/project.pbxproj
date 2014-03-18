@@ -224,6 +224,7 @@
 		74BCC56E18D05F3600C98406 /* errorslistdialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74BCC56C18D05F3600C98406 /* errorslistdialog.cpp */; };
 		74BCC57518D0671E00C98406 /* errorslistdialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74BCC57418D0671E00C98406 /* errorslistdialog.ui */; };
 		74BCC57718D0673100C98406 /* errorslistdialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74BCC57618D0673100C98406 /* errorslistdialog_moc.cpp */; };
+		74CD181C18D84AE3004615A5 /* rootpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74CD181A18D84AE3004615A5 /* rootpropertygridwidget.cpp */; };
 		74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */; };
 		74EED63216B18C7600262D63 /* alignspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
@@ -699,6 +700,8 @@
 		74BCC57418D0671E00C98406 /* errorslistdialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = errorslistdialog.ui; sourceTree = "<group>"; };
 		74BCC57618D0673100C98406 /* errorslistdialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = errorslistdialog_moc.cpp; sourceTree = "<group>"; };
 		74BCC57818D0675A00C98406 /* ui_errorslistdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_errorslistdialog.h; sourceTree = "<group>"; };
+		74CD181A18D84AE3004615A5 /* rootpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rootpropertygridwidget.cpp; path = PropertyGridWidgets/rootpropertygridwidget.cpp; sourceTree = "<group>"; };
+		74CD181B18D84AE3004615A5 /* rootpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rootpropertygridwidget.h; path = PropertyGridWidgets/rootpropertygridwidget.h; sourceTree = "<group>"; };
 		74EED62E16B187CF00262D63 /* alignspropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = alignspropertygridwidget.ui; sourceTree = "<group>"; };
 		74EED63016B18C7600262D63 /* alignspropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = alignspropertygridwidget.cpp; path = PropertyGridWidgets/alignspropertygridwidget.cpp; sourceTree = "<group>"; };
 		74EED63116B18C7600262D63 /* alignspropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = alignspropertygridwidget.h; path = PropertyGridWidgets/alignspropertygridwidget.h; sourceTree = "<group>"; };
@@ -995,6 +998,8 @@
 				747FA17B1636A7CF000CEEDA /* backgroundpropertygridwidget.h */,
 				1700E416162EB2C20069650D /* basepropertygridwidget.cpp */,
 				1700E417162EB2C20069650D /* basepropertygridwidget.h */,
+				74CD181A18D84AE3004615A5 /* rootpropertygridwidget.cpp */,
+				74CD181B18D84AE3004615A5 /* rootpropertygridwidget.h */,
 				173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */,
 				173AC33C1630137C00A773F5 /* controlpropertygridwidget.h */,
 				173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */,
@@ -1876,6 +1881,7 @@
 				02D69CD016F08CEE00F3803F /* ScreenManager_moc.cpp in Build Sources */,
 				02D69CD116F08CEE00F3803F /* ScreenWrapper_moc.cpp in Build Sources */,
 				02D69CD216F08CEE00F3803F /* StringUtils_moc.cpp in Build Sources */,
+				74CD181C18D84AE3004615A5 /* rootpropertygridwidget.cpp in Build Sources */,
 				02D69CD316F08CEE00F3803F /* controllist_moc.cpp in Build Sources */,
 				02D69CD416F08CEE00F3803F /* createplatformdlg_moc.cpp in Build Sources */,
 				1746932B18A3ED9D0089EFF5 /* UIParticlesMetadata.cpp in Build Sources */,
