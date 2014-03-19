@@ -71,6 +71,7 @@ protected:
 
 	bool forceModeEnabled;
 	bool convertEnabled;
+    bool generateMipMaps;
     
     DAVA::TextureConverter::eConvertQuality quality;
     

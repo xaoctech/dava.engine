@@ -191,6 +191,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
     PVRFile *pvrFile = LibPVRHelper::ReadFile(file, true, true);
     if(pvrFile)
     {
+        baseMipmap = Min(baseMipmap, (int32)(pvrFile->header.u32MIPMapCount - 1));
         loaded = LibPVRHelper::LoadImages(pvrFile, imageSet, baseMipmap);
         if(!loaded)
         {
@@ -200,7 +201,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
         delete pvrFile;
     }
 
-    return false;
+    return loaded;
 }
 
 void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
