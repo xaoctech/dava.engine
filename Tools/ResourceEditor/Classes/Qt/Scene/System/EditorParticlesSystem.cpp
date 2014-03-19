@@ -120,8 +120,8 @@ void EditorParticlesSystem::Draw()
         DAVA::Matrix3 effectMatrix(selectedEffectEntity->GetWorldTransform());
         ParticleEffectComponent * effect = GetEffectComponent(selectedEffectEntity);
         DAVA::Vector3 center =effect->GetSpawnPosition(effect->GetEmitterId(selectedEmitter));
-        TransformPerserveLength(center, effectMatrix);
-        center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();		
+//        TransformPerserveLength(center, effectMatrix);
+        center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();
         
         DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
 		DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.1f, renderState);
