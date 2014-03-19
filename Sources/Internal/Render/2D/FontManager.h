@@ -91,6 +91,12 @@ public:
 	 */
 	const TRACKED_FONTS& GetTrackedFont() const;
 	
+    /**
+	 \brief Get registered fonts.
+	 */
+	const Map<Font*, String>& GetRegisteredFonts() const;
+	
+    
 private:
 	void Clear();
 	String GetFontHashName(Font* font);

@@ -196,7 +196,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Font Preset Name for current locale:</string>
+          <string>Font Preset params for current locale:</string>
          </property>
         </widget>
        </item>

@@ -215,6 +215,11 @@ const FontManager::TRACKED_FONTS& FontManager::GetTrackedFont() const
 	return trackedFonts;
 }
 
+const Map<Font*, String>& FontManager::GetRegisteredFonts() const
+{
+    return registeredFonts;
+}
+    
 String FontManager::GetFontHashName(Font* font)
 {
 	return Format("Font_%X", font->GetHashCode());

@@ -73,6 +73,69 @@ void UITextControlMetadata::SetLocalizedTextKey(const QString& value)
     // Note - the actual update of the control's text should be performed in the derived classes!
 }
 
+QString UITextControlMetadata::GetFontPreset()
+{
+    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
+    
+    // Get current value of Font property
+    Font *font = GetFont();
+    
+    Map<Font*, String> ::const_iterator findIt = fonts.find(font);
+    Map<Font*, String> ::const_iterator endIt = fonts.end();
+    
+    if(findIt != endIt)
+    {
+        Logger::Debug("UITextControlMetadata::GetFontPreset %s", findIt->second.c_str());
+        return QString::fromStdString(findIt->second);
+    }
+    Logger::Debug("UITextControlMetadata::GetFontPreset");
+    return QString();
+}
+
+void UITextControlMetadata::SetFontPreset(const QString& value)
+{
+    Logger::Debug("UITextControlMetadata::SetFontPreset %s", value.toStdString().c_str());
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
+    
+    Map<Font*, String> ::const_iterator it = fonts.begin();
+    Map<Font*, String> ::const_iterator endIt = fonts.end();
+    String presetName = value.toStdString();
+    Font* newFont = NULL;
+    for(; it != endIt; ++it)
+    {
+        if(it->second == presetName)
+        {
+            newFont = it->first;
+            break;
+        }
+    }
+    
+    Font * oldFont = GetFont();
+    if(newFont)
+    {
+        float32 oldFontSize = GetFontSize();
+        float32 newFontSize = newFont->GetSize();
+        
+        if(newFont != oldFont)
+        {
+            Logger::Debug("UITextControlMetadata::SetFontPreset oldFont=%x newFont=%x", oldFont, newFont);
+            SetFont(newFont);
+        }
+    
+        //TODO: update font size?
+        if(newFontSize != oldFontSize)
+        {
+            Logger::Debug("UITextControlMetadata::SetFontPreset oldFontSize=%f newFontSize=%f", oldFontSize, newFontSize);
+            SetFontSize(newFontSize);
+        }
+    }
+}
+
 void UITextControlMetadata::UpdateStaticTextExtraData(UIStaticText* staticText, UIControl::eControlState state,
                                                       HierarchyTreeNodeExtraData& extraData,
                                                       eExtraDataUpdateStyle updateStyle)
