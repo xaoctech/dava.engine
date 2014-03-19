@@ -49,7 +49,9 @@ public:
 
 protected:
     
-	virtual void InsertLocalizationFields();
+//	virtual void InsertLocalizationFields();
+    
+    virtual void UpdateAfterFontPresetChanged();
 
     // Update the widget with Localization Value when the key is changed.
     virtual void UpdateLocalizationValue();
@@ -69,12 +71,13 @@ protected:
 	virtual void OnPropertiesChangedFromExternalSource() {};
 
 private:
-	QLineEdit *localizationKeyNameLineEdit;
-    QLineEdit *localizationKeyTextLineEdit;
-	QLabel	*localizationKeyNameLabel;
-	QLabel	*localizationKeyTextLabel;
-	QCheckBox *multilineCheckBox;
-	QCheckBox *multilineBySymbolCheckBox;
+
+//	QLineEdit *localizationKeyNameLineEdit;
+//	QLineEdit *localizationKeyTextLineEdit;
+//	QLabel	*localizationKeyNameLabel;
+//	QLabel	*localizationKeyTextLabel;
+//	QCheckBox *multilineCheckBox;
+//	QCheckBox *multilineBySymbolCheckBox;
 };
 
 #endif // TEXTPROPERTYGRIDWIDGET_H

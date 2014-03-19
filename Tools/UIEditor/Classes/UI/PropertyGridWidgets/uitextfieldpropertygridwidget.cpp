@@ -114,56 +114,65 @@ void UITextFieldPropertyGridWidget::Cleanup()
 
 void UITextFieldPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
 {
-	    if ((activeMetadata == NULL) || (senderWidget != this->ui->fontSelectButton))
+    if (activeMetadata == NULL)
     {
         // No control already assinged or not fontSelectButton
         return;
     }
     
-	// Get current value of Font property
-	Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
-																		 PropertyNames::FONT_PROPERTY_NAME,
-																		 false);
-	// Get sprite path from graphics font
-	QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
-
-    //Call font selection dialog - with ok button and preset of graphics font path
-    FontManagerDialog *fontDialog = new FontManagerDialog(true, currentGFontPath);
-    Font *resultFont = NULL;
-    
-    if ( fontDialog->exec() == QDialog::Accepted )
+    if(senderWidget == this->ui->fontSelectButton)
     {
-        resultFont = fontDialog->ResultFont();
+        // Get current value of Font property
+        Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
+                                                                             PropertyNames::FONT_PROPERTY_NAME,
+                                                                             false);
+        // Get sprite path from graphics font
+        QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
+        
+        //Call font selection dialog - with ok button and preset of graphics font path
+        FontManagerDialog *fontDialog = new FontManagerDialog(true, currentGFontPath);
+        Font *resultFont = NULL;
+        
+        if ( fontDialog->exec() == QDialog::Accepted )
+        {
+            resultFont = fontDialog->ResultFont();
+        }
+        
+        //Delete font select dialog reference
+        SafeDelete(fontDialog);
+        
+        if (!resultFont)
+        {
+            return;
+        }
+        
+        PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
+        if (iter == propertyGridWidgetsMap.end())
+        {
+            Logger::Error("OnPushButtonClicked - unable to find attached property in the propertyGridWidgetsMap!");
+            return;
+        }
+        
+        // Don't update the property if the text wasn't actually changed.
+        Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
+        if (curValue && curValue->IsEqual(resultFont))
+        {
+            SafeRelease(resultFont);
+            return;
+        }
+        
+        BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
+        CommandsController::Instance()->ExecuteCommand(command);
+        SafeRelease(command);
+        // TODO - probable memory leak. Need to investigate how to fix it
+        // SafeRelease(resultFont);
     }
-    
-    //Delete font select dialog reference
-    SafeDelete(fontDialog);
-    
-    if (!resultFont)
+    else if(senderWidget == this->ui->fontPresetEditButton)
     {
-        return;
+        //TODO: open font preset dialog, edit preset, apply changes
+        
+        
     }
-    
-    PROPERTYGRIDWIDGETSITER iter = propertyGridWidgetsMap.find(senderWidget);
-    if (iter == propertyGridWidgetsMap.end())
-    {
-        Logger::Error("OnPushButtonClicked - unable to find attached property in the propertyGridWidgetsMap!");
-        return;
-    }
-    
-	// Don't update the property if the text wasn't actually changed.
-    Font* curValue = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
-	if (curValue && curValue->IsEqual(resultFont))
-	{
-		SafeRelease(resultFont);
-		return;
-	}
-
-    BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
-    CommandsController::Instance()->ExecuteCommand(command);
-    SafeRelease(command);
-	// TODO - probable memory leak. Need to investigate how to fix it
-	// SafeRelease(resultFont);
 }
 
 void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)

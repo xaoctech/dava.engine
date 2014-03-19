@@ -48,6 +48,7 @@ class UITextControlMetadata : public UIControlMetadata
     Q_PROPERTY(QColor FontColor READ GetFontColor WRITE SetFontColor);
 
     Q_PROPERTY(QString LocalizedTextKey READ GetLocalizedTextKey WRITE SetLocalizedTextKey);
+    Q_PROPERTY(QString FontPreset READ GetFontPreset WRITE SetFontPreset);
 	
 	Q_PROPERTY(float ShadowOffsetX READ GetShadowOffsetX WRITE SetShadowOffsetX);
 	Q_PROPERTY(float ShadowOffsetY READ GetShadowOffsetY WRITE SetShadowOffsetY);
@@ -62,6 +63,9 @@ public:
 protected:
     virtual QString GetLocalizedTextKey() const;
     virtual void SetLocalizedTextKey(const QString& value);
+    
+    virtual QString GetFontPreset();
+    virtual void SetFontPreset(const QString& value);
     
     // Getters/setters.
     virtual Font * GetFont() = 0;
