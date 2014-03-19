@@ -334,9 +334,9 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
                 group->SetName("Group");
                 ui->materialProperty->MergeProperty(group);
 
-                for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
+                for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupCount(); ++i)
                 {
-                    DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
+                    DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupName(i);
                     group->AddAllowedValue(DAVA::VariantType(groupName), groupName.c_str());
                 }
             }
