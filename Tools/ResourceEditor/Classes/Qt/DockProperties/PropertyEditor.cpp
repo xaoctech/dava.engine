@@ -174,7 +174,7 @@ void PropertyEditor::ResetProperties()
 		    // add info about components
             for (int ic = 0; ic < Component::COMPONENT_COUNT; ic++)
             {
-                Component *component = node->GetComponent(i);
+                Component *component = node->GetComponent(ic);
 			    if (component)
 			    {
 				    QtPropertyData *componentData = CreateInsp(component, component->GetTypeInfo());
