@@ -139,11 +139,7 @@ Landscape::Landscape()
 	tileMaskMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	tileMaskMaterial->SetParent(landscapeParent);
 	
-	
-#ifdef LANDSCAPE_SPECULAR_LIT
-	tileMaskMaterial->AddMaterialDefine(FastName("SPECULAR_LAND"));
-#endif
-	
+		
 	LandscapeChunk * chunk = new LandscapeChunk(this);
 	chunk->SetMaterial(tileMaskMaterial);
 	chunk->SetSortingKey(10);
@@ -186,7 +182,6 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 			
 			
 #ifdef LANDSCAPE_SPECULAR_LIT
-
 			//VI: calculate normal for the point.
 			uint32 xx = 0;
 			uint32 yy = 0;
@@ -211,7 +206,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 			Vector3 normalAverage = normal0 + normal1 + normal2 + normal3;
 			normalAverage.Normalize();
 			landscapeVertices[index].normal = normalAverage;
-            LandscapeVertices[index].tangent = Normalize(right - position);
+            landscapeVertices[index].tangent = Normalize(right - position);
             
             /*
                 VS: Algorithm
@@ -244,7 +239,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
 	landscapeRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].normal);
-    LandscapeRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].tangent);
+    landscapeRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].tangent);
 #endif
 	
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
@@ -1218,7 +1213,7 @@ void Landscape::Draw(Camera * camera)
     
     flashQueueCounter = 0;
     
-#if defined (DRAW_OLD_STYLE)    
+#if defined (DRAW_OLD_STYLE)
     BindMaterial(0);
 	Draw(&quadTreeHead);
 #else //#if defined (DRAW_OLD_STYLE)   
@@ -1504,11 +1499,6 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 	RenderObject::Load(archive, serializationContext);
 	
     DVASSERT(serializationContext->GetVersion() >= 4);
-		
-#ifdef LANDSCAPE_SPECULAR_LIT
-		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
-#endif
-
 
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
@@ -1904,75 +1894,5 @@ void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
 		SetFog(!isFogEnabled);
 	}
 }
-
-#ifdef LANDSCAPE_SPECULAR_LIT
-	
-void Landscape::SetSpecularColor(const Color& color)
-{
-	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &color);
-}
-	
-Color Landscape::GetSpecularColor()
-{
-	Color specularColor = Color(1, 1, 1, 1);
-	NMaterialProperty* specularColorProp = tileMaskMaterial->GetMaterialProperty(Landscape::PARAM_PROP_SPECULAR_COLOR);
-	
-	if(specularColorProp)
-	{
-		memcpy(&specularColor, specularColorProp->data, sizeof(Color));
-	}
-	
-	return specularColor;
-}
-	
-void Landscape::SetSpecularShininess(const float32& shininess)
-{
-	tileMaskMaterial->SetPropertyValue(Landscape::PARAM_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &shininess);
-}
-	
-float32 Landscape::GetSpecularShininess()
-{
-	float32 shininess = 1.0f;
-	NMaterialProperty* shininessProp = tileMaskMaterial->GetMaterialProperty(Landscape::PARAM_SPECULAR_SHININESS);
-	
-	if(shininessProp)
-	{
-		memcpy(&shininess, shininessProp->data, sizeof(float32));
-	}
-	
-	return shininess;
-}
-	
-void Landscape::SetSpecularMapPath(const FilePath& path)
-{
-	bool needReload = true;
-	Texture* specularMapTexture = tileMaskMaterial->GetTexture(TEXTURE_SPECULAR_MAP);
-	if(specularMapTexture)
-	{
-		needReload = (specularMapTexture->GetPathname() != path);
-	}
-	
-	if(needReload && path.Exists())
-	{
-		Texture* specularMapTexture = Texture::CreateFromFile(path);
-		if(specularMapTexture)
-		{
-			tileMaskMaterial->SetTexture(TEXTURE_SPECULAR_MAP, specularMapTexture);
-		}
-	}
-}
-	
-FilePath Landscape::GetSpecularMapPath()
-{
-	FilePath texturePath;
-	Texture* specularMapTexture = tileMaskMaterial->GetTexture("specularMap");
-	if(specularMapTexture)
-	{
-		texturePath = specularMapTexture->GetPathname();
-	}
-	
-	return texturePath;
-}
-#endif
 	
 };

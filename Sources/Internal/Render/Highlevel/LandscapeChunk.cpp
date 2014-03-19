@@ -50,6 +50,7 @@ void LandscapeChunk::Draw(const FastName & ownerPassName, Camera * camera)
 {
 	if(NULL != landscape)
 	{
+        BindDynamicParameters(camera);
 		landscape->Draw(camera);
 	}
 }

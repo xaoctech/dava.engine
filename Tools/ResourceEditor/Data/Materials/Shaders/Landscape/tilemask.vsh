@@ -37,14 +37,36 @@ varying vec2 varTexCoordCursor;
 #endif
 
 #ifdef SPECULAR_LAND
+uniform mat3 worldViewInvTransposeMatrix;
 attribute vec3 inNormal;
+attribute vec3 inTangent;
 
-uniform vec3 lightPosition0;
-uniform float lightIntensity0;
+uniform vec4 lightPosition0;
+uniform vec3 lightAmbientColor0;
+uniform vec3 lightColor0;
 uniform mat3 normalMatrix;
-uniform float materialSpecularShininess;
 
-varying float varSpecularColor;
+uniform float inSpecularity;
+uniform float physicalFresnelReflectance;
+uniform vec3 metalFresnelReflectance;
+
+varying vec3 varSpecularColor;
+varying float varNdotH;
+
+const float _PI = 3.141592654;
+
+float FresnelShlick(float NdotL, float Cspec)
+{
+	float fresnel_exponent = 5.0;
+	return Cspec + (1.0 - Cspec) * pow(1.0 - NdotL, fresnel_exponent);
+}
+
+vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
+{
+	float fresnel_exponent = 5.0;
+	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, fresnel_exponent));
+}
+
 #endif
 
 void main()
@@ -60,15 +82,29 @@ void main()
 #endif
 	
 #if defined(SPECULAR_LAND)
-    vec3 normal = normalize(normalMatrix * inNormal); // normal in eye coordinates
-    vec3 lightDir = normalize(lightPosition0 - eyeCoordsPosition);
+    vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal); // normal in eye coordinates
+    vec3 toLightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;
+    toLightDir = normalize(toLightDir);
     
-    // Blinn-phong reflection
-    vec3 E = normalize(-eyeCoordsPosition);
-    vec3 H = normalize(lightDir + E);
-    float nDotHV = max(0.0, dot(normal, H));
+    vec3 toCameraNormalized = normalize(-eyeCoordsPosition);
+    vec3 H = normalize(toLightDir + toCameraNormalized);
     
-    varSpecularColor = pow(nDotHV, materialSpecularShininess);
+    float NdotL = max (dot (normal, toLightDir), 0.0);
+    float NdotH = max (dot (normal, H), 0.0);
+    float LdotH = max (dot (toLightDir, H), 0.0);
+    float NdotV = max (dot (normal, toCameraNormalized), 0.0);
+    
+    vec3 fresnelIn = FresnelShlickVec3(NdotL, metalFresnelReflectance);
+    vec3 fresnelOut = FresnelShlickVec3(NdotV, metalFresnelReflectance);
+    float specularity = inSpecularity;
+    
+	//varDiffuseColor = NdotL / _PI;
+    
+    float Dbp = NdotL;
+    float Geo = 1.0 / LdotH * LdotH;
+    
+    varSpecularColor = Dbp * Geo * fresnelOut * specularity * lightColor0;
+    varNdotH = NdotH;
 #endif
     
 #if defined(VERTEX_FOG)

@@ -43,7 +43,7 @@
 
 #include "Scene3D/SceneFile/SerializationContext.h"
 
-//#define LANDSCAPE_SPECULAR_LIT 1
+#define LANDSCAPE_SPECULAR_LIT 1
 
 namespace DAVA
 {
@@ -432,37 +432,12 @@ protected:
 	void SetDefaultValues();
 
 public:
-   
-#if defined(LANDSCAPE_SPECULAR_LIT)
     INTROSPECTION_EXTEND(Landscape, RenderObject,
-         
-        MEMBER(tiledShaderMode, "Tiled Shader Mode", I_SAVE | I_VIEW | I_EDIT)
-
-        PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
-		
-
-		PROPERTY("specularColor", "Specular Color", GetSpecularColor, SetSpecularColor, I_SAVE | I_VIEW | I_EDIT)
-		PROPERTY("specularShininess", "Specular Shininess", GetSpecularShininess, SetSpecularShininess, I_SAVE | I_VIEW | I_EDIT)
-		PROPERTY("specularMap", "Specular Map", GetSpecularMapPath, SetSpecularMapPath, I_SAVE | I_VIEW | I_EDIT)
-
-		);
-#else
-
-	    INTROSPECTION_EXTEND(Landscape, RenderObject,
-         
         PROPERTY("isFogEnabled", "Is Fog Enabled", IsFogEnabled, SetFog, I_SAVE | I_VIEW | I_EDIT)
         PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
         PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
         PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
-        //MEMBER(fogDensity, "Fog Density", I_SAVE | I_VIEW | I_EDIT)
-        //MEMBER(fogColor, "Fog Color", I_SAVE | I_VIEW | I_EDIT)
-		
 		);
-
-#endif
-    
 };
 
 };

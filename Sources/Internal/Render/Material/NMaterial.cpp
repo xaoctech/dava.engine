@@ -52,6 +52,7 @@ namespace DAVA
 
 static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
+static const FastName DEFINE_LAND_SPECULAR("SPECULAR_LAND");
 
 const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 const FastName NMaterial::TEXTURE_NORMAL("normalmap");
@@ -1120,6 +1121,11 @@ void NMaterial::UpdateMaterialTemplate()
     //{VI: temporray code should be removed once lighting system is up
     materialDynamicLit = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0);
 
+    if (!materialDynamicLit)
+    {
+        materialDynamicLit = (techniqueName == NMaterialName::TILE_MASK);
+    }
+    
     if(!materialDynamicLit)
     {
         uint32 passCount = baseTechnique->GetPassCount();
@@ -1129,7 +1135,8 @@ void NMaterial::UpdateMaterialTemplate()
             const FastNameSet& defines = pass->GetUniqueDefineSet();
             materialDynamicLit = materialDynamicLit ||
                 defines.count(DEFINE_VERTEX_LIT) ||
-                defines.count(DEFINE_PIXEL_LIT);
+                defines.count(DEFINE_PIXEL_LIT) ||
+                defines.count(DEFINE_LAND_SPECULAR);
         }
     }
 }
@@ -2694,6 +2701,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
 		ret.push_back(FLAG_WAVE_ANIMATION);
 		ret.push_back(FLAG_FAST_NORMALIZATION);
+        ret.push_back(FastName("SPECULAR_LAND"));
 	}
 	return ret;
 }
