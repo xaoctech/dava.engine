@@ -109,10 +109,12 @@ void main()
 	
     //compute shininess and fresnel
     lowp vec3 cameraToPointInTangentSpaceNorm = normalize(cameraToPointInTangentSpace);    
-    lowp float lambertFactor = max (dot (-cameraToPointInTangentSpaceNorm, normal), 0.0);    
+    lowp float lambertFactor = max (dot (-cameraToPointInTangentSpaceNorm, normal), 0.0);
+    lowp float fresnel = FresnelShlick(lambertFactor, fresnelBias, fresnelPow);
+#if defined (SPECULAR)
     lowp vec3 halfVec = normalize(normalize(varLightVec)-cameraToPointInTangentSpaceNorm);
-    lowp  float shininess = pow (max (dot (halfVec, normal), 0.0), materialSpecularShininess);
-    lowp float fresnel = FresnelShlick(lambertFactor, fresnelBias, fresnelPow);	
+    lowp vec3 resSpecularColor = pow (max (dot (halfVec, normal), 0.0), materialSpecularShininess) * materialLightSpecularColor;
+#endif
 
     //compute reflection
 #if defined (REAL_REFLECTION)
@@ -133,21 +135,33 @@ void main()
         screenPos.y=1.0-screenPos.y;
         lowp vec3 refractionColor = texture2D(dynamicRefraction, screenPos+waveOffset*refractionDistortion).rgb;        
     #endif	    
-    
-    gl_FragColor = vec4(mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel) + shininess * materialLightSpecularColor, 1.0);		
+    lowp vec3 resColor = mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel);
+    #if defined (SPECULAR)
+        resColor+=resSpecularColor;
+    #endif
+    gl_FragColor = vec4(resColor, 1.0);
 #else
     lowp vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpaceNorm, normal);
     lowp vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);    
     lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb;
     
     #if defined (FRESNEL_TO_ALPHA)	
-        gl_FragColor = vec4(reflectionTintColor * reflectionColor + vec3(shininess * materialLightSpecularColor), fresnel);
+    lowp vec3 resColor = reflectionTintColor * reflectionColor;
+    #if defined (SPECULAR)
+        resColor+=resSpecularColor;
+    #endif
+    gl_FragColor = vec4(resColor, fresnel);
+    
     #else	
         lowp vec3 refractedVectorInTangentSpace = refract(cameraToPointInTangentSpaceNorm, normal, eta);
         lowp vec3 refractedVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * refractedVectorInTangentSpace);
         lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; 
            		
-        gl_FragColor = vec4(mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel) + shininess * materialLightSpecularColor, 1.0);	    
+        lowp vec3 resColor = mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel);
+        #if defined (SPECULAR)
+            resColor+=resSpecularColor;
+        #endif
+        gl_FragColor = vec4(resColor, 1.0);
 
     #endif
 #endif

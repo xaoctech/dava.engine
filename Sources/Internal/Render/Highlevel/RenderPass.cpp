@@ -145,8 +145,8 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
     
 	if (needWaterPrepass)
 	{
-        const static int32 REFLECTION_TEX_SIZE = 1024;
-        const static int32 REFRACTION_TEX_SIZE = 1024;
+        const static int32 REFLECTION_TEX_SIZE = 512;
+        const static int32 REFRACTION_TEX_SIZE = 512;
         if (!reflectionPass)
         {             
             reflectionPass = new WaterReflectionRenderPass(PASS_FORWARD, RENDER_PASS_WATER_REFLECTION);

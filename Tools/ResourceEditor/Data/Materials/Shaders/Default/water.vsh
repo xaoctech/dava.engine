@@ -39,7 +39,7 @@ uniform float lightIntensity0;
 uniform float materialSpecularShininess;
 #endif
 
-#if defined (SCREEN_SPACE_WATER)
+#if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
 varying float eyeDist;
 #endif
 
