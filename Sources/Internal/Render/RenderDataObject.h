@@ -96,6 +96,9 @@ public:
     void BuildIndexBuffer();
 	void BuildIndexBufferInternal(BaseObject * caller, void * param, void *callerData);
     uint32 GetIndexBufferID() const { return indexBuffer; };
+    
+    void AttachVertices(RenderDataObject* vertexSource);
+    void DetachVertices();
 
     
 private:
@@ -113,6 +116,8 @@ private:
 //#endif //#if defined(__DAVAENGINE_ANDROID__)
     uint32 indexBuffer;
     int32 indexCount;
+    
+    bool vertexAttachmentActive;
     
     friend class RenderManager;
     friend class RenderManagerGL20;

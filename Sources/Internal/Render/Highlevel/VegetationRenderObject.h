@@ -130,6 +130,16 @@ public:
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
     
 private:
+
+    struct VegetationVertex
+    {
+        Vector3 coord;
+        Vector3 normal;
+        Vector3 binormal;
+        Vector3 tangent;
+        Vector2 texCoord0;
+        Vector2 texCoord1;
+    };
     
     struct SpatialData
     {
@@ -137,6 +147,7 @@ private:
         int16 y;
         int16 width;
         int16 height;
+        int8 rdoIndex;
         
         AABBox3 bbox;
         //Vector3 refPoint;
@@ -151,7 +162,7 @@ private:
         inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
     };
     
-    void BuildVegetationBrush(uint32 maxClusters);
+    //void BuildVegetationBrush(uint32 maxClusters);
     RenderBatch* GetRenderBatchFromPool(NMaterial* material);
     void ReturnToPool(int32 batchCount);
 
@@ -162,24 +173,25 @@ private:
     
     void BuildSpatialStructure(VegetationMap* vegMap);
     void BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
+                          AbstractQuadTreeNode<SpatialData>* firstRenderableParent,
                           int16 x, int16 y,
                           uint16 width, uint16 height,
                           AABBox3& parentBox);
     
     void BuildVisibleCellList(const Vector3& cameraPoint,
                               Frustum* frustum,
-                              Vector<SpatialData*>& cellList);
+                              Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
     void BuildVisibleCellList(const Vector3& cameraPoint,
                               Frustum* frustum,
                               uint8 planeMask,
                               AbstractQuadTreeNode<SpatialData>* node,
-                              Vector<SpatialData*>& cellList);
-    inline void AddVisibleCell(SpatialData* data,
+                              Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
+    inline void AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                float32 refDistance,
                                uint32 cellValue,
-                               Vector<SpatialData*>& cellList);
+                               Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
     
-    static bool CellByDistanceCompareFunction(const SpatialData* a, const SpatialData*  b);
+    static bool CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a, const AbstractQuadTreeNode<SpatialData>*  b);
     
     void InitHeightTextureFromHeightmap(Heightmap* heightMap);
     
@@ -189,6 +201,13 @@ private:
     void InitLodRanges();
     
     void SetupHeightmapParameters(BaseObject * caller, void * param, void *callerData);
+    
+    void CreateRenderData(uint32 maxClusters);
+    void ReleaseRenderData();
+    bool ReadyToRender();
+    
+    void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
+                           Vector<Vector4>& uniforms);
     
 private:
     
@@ -207,12 +226,15 @@ private:
     int32 renderBatchPoolLine;
     
     NMaterial* vegetationMaterial;
-    Vector<Matrix4> shaderScaleDensityParams;
+    Vector<Vector4> shaderScaleDensityUniforms;
     
-    Vector<PolygonGroup*> clusterBrushes;
+    Vector<VegetationVertex> vertexData;
+    Vector<int16> indexData;
+    RenderDataObject* vertexRenderDataObject;
+    Vector<Vector<RenderDataObject*> > indexRenderDataObject;
     
     AbstractQuadTree<SpatialData> quadTree;
-    Vector<SpatialData*> visibleCells;
+    Vector<AbstractQuadTreeNode<SpatialData>*> visibleCells;
     
     FilePath heightmapPath;
     FilePath vegetationMapPath;
@@ -274,7 +296,8 @@ inline VegetationRenderObject::SpatialData::SpatialData()  :
         x(-1),
         y(-1),
         cameraDistance(0.0f),
-        clippingPlane(0)
+        clippingPlane(0),
+        rdoIndex(-1)
 {
 }
     
@@ -284,10 +307,10 @@ inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData:
     y = src.y;
     bbox = src.bbox;
     cameraDistance = src.cameraDistance;
-    //refPoint = src.refPoint;
     clippingPlane = src.clippingPlane;
     width = src.width;
     height = src.height;
+    rdoIndex = src.rdoIndex;
     
     return *this;
 }
@@ -313,17 +336,17 @@ inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
     return (width * height);
 }
     
-inline void VegetationRenderObject::AddVisibleCell(SpatialData* data,
+inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                                    float32 refDistance,
                                                    uint32 cellValue,
-                                                   Vector<SpatialData*>& cellList)
+                                                   Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
-    if(!data->IsEmpty(cellValue))
+    //if(!node->data.IsEmpty(cellValue))
     {
-        if(data->cameraDistance <= refDistance)
+        if(node->data.cameraDistance <= refDistance)
         {
                 //Logger::FrameworkDebug("VegetationRenderObject::AddVisibleCell x = %d, y = %d", data->x, data->y);
-            cellList.push_back(data);
+            cellList.push_back(node);
         }
     }
 }

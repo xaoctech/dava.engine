@@ -43,6 +43,7 @@ static const FastName UNIFORM_TILEPOS = FastName("tilePos");
 static const FastName UNIFORM_WORLD_SIZE = FastName("worldSize");
 static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP = FastName("clusterScaleDensityMap[0]");
 static const FastName UNIFORM_HEIGHTMAP_SCALE = FastName("heightmapScale");
+static const FastName UNIFORM_SWITCH_LOD_SCALE = FastName("lodSwitchScale");
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[] =
@@ -68,29 +69,21 @@ static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[] =
 
 static const FastName UNIFORM_SAMPLER_VEGETATIONMAP = FastName("vegetationmap");
     
-static const uint32 MAX_VERTEX_PER_CLUSTER = 12;
-static const uint32 MAX_INDEX_PER_CLUSTER = 18;
 static const uint32 MAX_CLUSTER_TYPES = 4;
 static const uint32 MAX_DENSITY_LEVELS = 16;
 static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
-static const uint32 MAX_BRUSH_DIVERSITY = 4;
     
 static const size_t MAX_RENDER_CELLS = 256;
-static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 80.0f * 80.0f; //meters * meters (square length)
+static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 180.0f * 180.0f; //meters * meters (square length)
 static const float32 MAX_VISIBLE_SCALING_DISTANCE = 60.0f * 60.0f;
     
-static const float32 MAX_ROTATION_ANGLE = 0.0f;
 //static const Vector3 MAX_DISPLACEMENT = Vector3(0.0f, 0.0f, 0.0f);
 
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
 
-//static const float32 MAX_ROTATION_ANGLE = 0.0f;
-static const Vector3 MAX_DISPLACEMENT = Vector3(1.6f, 1.6f, 0.0f);
+static const Vector3 MAX_DISPLACEMENT = Vector3(2.6f, 2.6f, 0.0f);
     
-static const uint32 DENSITY_ROW_INDEX = 0;
-static const uint32 SCALE_ROW_INDEX = 1;
-static const uint32 CAMERA_DIRECTION_INDEX = 2;
     
 static const Vector3 CLUSTER_TYPE_0[] =
 {
@@ -104,19 +97,6 @@ static const Vector3 CLUSTER_TYPE_0[] =
     Vector3(0.35f, 0.35f, 0.0f),
     Vector3(-0.35f, -0.35f, 0.0f),
 
-    Vector3(-0.35f, 0.35f, 1.0f),
-    Vector3(0.35f, -0.35f, 1.0f),
-    Vector3(0.35f, -0.35f, 0.0f),
-    Vector3(-0.35f, 0.35f, 0.0f),
-};
-
-static const Vector3 CLUSTER_TYPE_01[] =
-{
-    Vector3(-0.35f, -0.35f, 1.0f),
-    Vector3(0.35f, 0.35f, 1.0f),
-    Vector3(0.35f, 0.35f, 0.0f),
-    Vector3(-0.35f, -0.35f, 0.0f),
-        
     Vector3(-0.35f, 0.35f, 1.0f),
     Vector3(0.35f, -0.35f, 1.0f),
     Vector3(0.35f, -0.35f, 0.0f),
@@ -140,12 +120,6 @@ static const Vector3 CLUSTER_TYPE_1[] =
     Vector3(0.15f, -0.53f, 1.0f),
     Vector3(0.15f, -0.53f, 0.0f),
     Vector3(-0.35f, 0.33f, 0.0f),
-};
-    
-static const int16 CLUSTER_INDICES_01[] =
-{
-    0, 3,  1, 1, 3,  2,
-    4, 7,  5, 5, 7,  6
 };
 
 static const int16 CLUSTER_INDICES[] =
@@ -179,7 +153,7 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
     COUNT_OF(CLUSTER_INDICES)
 };
 
-static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 1.0f, 11.0f);
+static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 12.0f);
 
 static Vector2 RESOLUTION_RANGES[] = //squared
 {
@@ -210,14 +184,19 @@ static uint32 RESOLUTION_CELL_SQUARE[] =
     16
 };
 
+static uint32 RESOLUTION_TILES_PER_ROW[] =
+{
+    4,
+    2,
+    1
+};
+
 static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
 {
     1.0f,
     1.4f,
     1.4f
 };
-
-static const float32 MAX_DISTANCE_CELL_INDEX = 15.0f;
     
 int32 RandomShuffleFunc(int32 limit)
 {
@@ -257,6 +236,61 @@ inline uint32 MapCellSquareToResolutionIndex(uint32 cellSquare)
     
     return index;
 }
+
+void TextureSheet::Load(const FilePath &yamlPath)
+{
+    if(yamlPath.Exists())
+    {
+        YamlParser *parser = YamlParser::Create(yamlPath);
+        YamlNode *rootNode = parser->GetRootNode();
+            
+        cells.clear();
+            
+        if(NULL != rootNode)
+        {
+            for(int i = 0; i < rootNode->GetCount(); ++i)
+            {
+                if(rootNode->GetItemKeyName(i) == "cell")
+                {
+                    const YamlNode *cellNode = rootNode->Get(i);
+                    const YamlNode *cellType = cellNode->Get("type");
+                    const YamlNode *cellScale = cellNode->Get("scale");
+                    const YamlNode *cellCoords = cellNode->Get("coords");
+                        
+                    TextureSheetCell c;
+                        
+                    if(NULL != cellType)
+                    {
+                        c.geometryId = cellType->AsUInt32();
+                    }
+                        
+                    if(NULL != cellScale)
+                    {
+                        c.geometryScale = cellScale->AsVector2();
+                    }
+                        
+                    for(int j = 0; j < cellCoords->GetCount(); ++j)
+                    {
+                        if(j < MAX_CELL_TEXTURE_COORDS)
+                        {
+                            const YamlNode *singleCellCoord = cellCoords->Get(j);
+                            c.coords[j] = singleCellCoord->AsVector2();
+                        }
+                        else
+                        {
+                            DVASSERT(0 && "Too much vertexes");
+                        }
+                    }
+                        
+                    cells.push_back(c);
+                }
+            }
+        }
+            
+        parser->Release();
+    }
+}
+
     
 VegetationRenderObject::VegetationRenderObject() :
     vegetationMap(NULL),
@@ -274,8 +308,9 @@ VegetationRenderObject::VegetationRenderObject() :
     
     unitWorldSize.resize(COUNT_OF(RESOLUTION_SCALE));
     
-    uint32 maxParams = (uint32)(RESOLUTION_SCALE[COUNT_OF(RESOLUTION_SCALE) - 1] * RESOLUTION_SCALE[COUNT_OF(RESOLUTION_SCALE) - 1]);
-    shaderScaleDensityParams.resize(maxParams);
+    uint32 maxParams = 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
+    //shaderScaleDensityParams.resize(maxParams);
+    shaderScaleDensityUniforms.resize(maxParams);
     
     renderBatchPoolLine = 0;
     
@@ -284,12 +319,6 @@ VegetationRenderObject::VegetationRenderObject() :
                                                            NMaterial::DEFAULT_QUALITY_NAME);
     vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
     
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-
-    vegetationMaterial->SetFlag(FastName("MATERIAL_GRASS_PLAINUNIFORMS"), NMaterial::FlagOn);
-    
-#endif
-
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
@@ -300,11 +329,14 @@ VegetationRenderObject::~VegetationRenderObject()
     SafeRelease(vegetationMap);
     SafeRelease(heightmap);
     
-    size_t brushCount = clusterBrushes.size();
+/*    size_t brushCount = clusterBrushes.size();
     for(size_t i = 0; i < brushCount; ++i)
     {
         SafeRelease(clusterBrushes[i]);
     }
+*/
+    
+    ReleaseRenderData();
     
     size_t poolCount = renderBatchPool.size();
     for(size_t i = 0; i < poolCount; ++i)
@@ -372,10 +404,10 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     SetVegetationTexture(serializationContext->GetScenePath() + archive->GetString("vro.vegtexture"));
     SetLightmap(serializationContext->GetScenePath() + archive->GetString("vro.lightmap"));
 }
-  
+
 void VegetationRenderObject::PrepareToRender(Camera *camera)
 {
-    if(clusterBrushes.size() == 0)
+    if(!ReadyToRender())
     {
         return;
     }
@@ -410,80 +442,56 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         
         ReturnToPool(batchesToRemove);
     }
-    
+
     Vector4 posScale(0.0f,
                      0.0f,
                      worldSize.x,
                      worldSize.y);
+    Vector2 switchLodScale;
     
     for(size_t i = 0; i < requestedBatchCount; ++i)
     {
-        SpatialData* spatialData = visibleCells[i];
+        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[i];
         
         RenderBatch* rb = GetRenderBatch(i);
         
         NMaterial* mat = rb->GetMaterial();
         
-        uint32 resolutionIndex = MapCellSquareToResolutionIndex(spatialData->width * spatialData->height);
-        uint32 renderBrushIndex = ((spatialData->x + spatialData->y) % MAX_BRUSH_DIVERSITY) + resolutionIndex * MAX_BRUSH_DIVERSITY;
-        rb->SetPolygonGroup(clusterBrushes[renderBrushIndex]);
+        uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
         
-        float32 distanceScale = (spatialData->cameraDistance > MAX_VISIBLE_SCALING_DISTANCE && resolutionIndex == RESOLUTION_INDEX[COUNT_OF(RESOLUTION_INDEX) - 1]) ? (1.0f - (spatialData->cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / MAX_VISIBLE_SCALING_DISTANCE) : 1.0f;
+        Vector<RenderDataObject*> rdoVector = indexRenderDataObject[resolutionIndex];
         
-        for(int32 y = 0; y < spatialData->height; ++y)
-        {
-            for(int32 x = 0; x < spatialData->width; ++x)
-            {
-                uint32 paramIndex = y * spatialData->width + x;
-                
-                Matrix4& scaleDensityMap = shaderScaleDensityParams[paramIndex];
-                scaleDensityMap.Zero();
-                
-                int32 mapX = spatialData->x + halfWidth + x;
-                int32 mapY = spatialData->y + halfHeight + y;
-                uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
-
-                uint8 *vegetationMapValuePtr = (vegetationMap->data + cellDescriptionIndex * 4);
-                
-                for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
-                {
-                    uint8 cellLayerData = vegetationMapValuePtr[clusterType];
-            
-                    float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0xF)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
-                    float32 density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
-                    
-                    scaleDensityMap._data[DENSITY_ROW_INDEX][clusterType] = density;
-                    scaleDensityMap._data[SCALE_ROW_INDEX][clusterType] = distanceScale * RESOLUTION_DISTANCE_SCALE_COMPENSATION[resolutionIndex] * clusterScale;
-                }
-            }
-        }
+        uint32 indexBufferIndex = treeNode->data.rdoIndex;
         
-        posScale.x = spatialData->bbox.min.x;
-        posScale.y = spatialData->bbox.min.y;
+        DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
+        rb->SetRenderDataObject(rdoVector[indexBufferIndex]);
         
-        mat->SetPropertyValue(UNIFORM_TILEPOS, Shader::UT_FLOAT_VEC4, 1, posScale.data);
+        SetupNodeUniforms(treeNode, shaderScaleDensityUniforms);
         
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-
-        for(uint32 mapArrayIndex = 0; mapArrayIndex < COUNT_OF(UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY); ++mapArrayIndex)
-        {
-            mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[mapArrayIndex],
-                                  Shader::UT_FLOAT_MAT4,
-                                  1,
-                                  shaderScaleDensityParams[mapArrayIndex]._data);
-        }
-
-#else
+        posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+        posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+        
+        switchLodScale.x = resolutionIndex;
+        switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / RESOLUTION_RANGES[resolutionIndex].y), 0.0f, 1.0f);
+        
+        mat->SetPropertyValue(UNIFORM_SWITCH_LOD_SCALE,
+                              Shader::UT_FLOAT_VEC2,
+                              1,
+                              switchLodScale.data);
+        
+        mat->SetPropertyValue(UNIFORM_TILEPOS,
+                              Shader::UT_FLOAT_VEC4,
+                              1,
+                              posScale.data);
         
         mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
-                              Shader::UT_FLOAT_MAT4,
-                              shaderScaleDensityParams.size(),
-                              shaderScaleDensityParams[0]._data);
-        
-#endif
+                              Shader::UT_FLOAT_VEC4,
+                              shaderScaleDensityUniforms.size(),
+                              &shaderScaleDensityUniforms[0]);
     }
+
 }
-    
+
 void VegetationRenderObject::SetVegetationMap(VegetationMap* map)
 {
     if(map != vegetationMap)
@@ -619,127 +627,7 @@ const FilePath& VegetationRenderObject::GetLightmapPath() const
 {
     return vegetationMaterial->GetTexturePath(UNIFORM_SAMPLER_VEGETATIONMAP);
 }
-    
-void VegetationRenderObject::BuildVegetationBrush(uint32 maxClusters)
-{
-    DVASSERT(maxClusters > 0);
-    DVASSERT(textureSheet.cells.size() > 0);
-    
-    InitLodRanges();
-    
-    uint32 totalBrushes = MAX_BRUSH_DIVERSITY * COUNT_OF(RESOLUTION_SCALE);
-    
-    if(clusterBrushes.size() < totalBrushes)
-    {
-        uint32 difference = totalBrushes - clusterBrushes.size();
-        for(uint32 i = 0; i < difference; ++i)
-        {
-            clusterBrushes.push_back(new PolygonGroup());
-        }
-    }
-    
-    uint32 clusterTypeCount = textureSheet.cells.size();
-    uint32 totalClustersPerUnit = (maxClusters * maxClusters);
-    Vector3 normal(0.0f, 0.0f, 1.0f); //up
-    
-    for(uint32 resolutionIndex = 0;
-        resolutionIndex < COUNT_OF(RESOLUTION_SCALE);
-        ++resolutionIndex)
-    {
-        Vector2 unitSize = GetVegetationUnitWorldSize(RESOLUTION_SCALE[resolutionIndex]);
-        
-        Vector2 clusterOffset(unitSize.x / maxClusters,
-                              unitSize.y / maxClusters);
-        
-        Vector2 clusterTypeOffset(clusterOffset.x / clusterTypeCount,
-                                  clusterOffset.y / clusterTypeCount);
-        
-        Vector<uint32> shuffleDensity;
-        shuffleDensity.reserve(totalClustersPerUnit);
-        for(uint32 i = 0; i < totalClustersPerUnit; ++i)
-        {
-            shuffleDensity.push_back((i % MAX_DENSITY_LEVELS) + 1);
-        }
-        
-        for(uint32 brushIndex = 0; brushIndex < MAX_BRUSH_DIVERSITY; ++brushIndex)
-        {
-            PolygonGroup* clusterBrush = clusterBrushes[brushIndex + (MAX_BRUSH_DIVERSITY * resolutionIndex)];
-            clusterBrush->ReleaseData();
-            
-            
-            clusterBrush->AllocateData(EVF_VERTEX | EVF_NORMAL | EVF_BINORMAL | EVF_TANGENT | EVF_TEXCOORD0,
-                                       MAX_VERTEX_PER_CLUSTER * totalClustersPerUnit * clusterTypeCount,
-                                       MAX_INDEX_PER_CLUSTER * totalClustersPerUnit * clusterTypeCount);
-            
-            uint32 vertexIndex = 0;
-            uint32 indexIndex = 0;
-            
-            for(uint32 clusterTypeIndex = 0; clusterTypeIndex < clusterTypeCount; ++clusterTypeIndex)
-            {
-                uint32 geometryType = textureSheet.cells[clusterTypeIndex].geometryId;
-                std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
-                
-                for(uint32 clusterIndex = 0; clusterIndex < totalClustersPerUnit; ++clusterIndex)
-                {
-                    float32 clusterX = (clusterIndex % maxClusters) * clusterOffset.x + clusterTypeIndex * clusterTypeOffset.x;
-                    float32 clusterY = (clusterIndex / maxClusters) * clusterOffset.y + clusterTypeIndex * clusterTypeOffset.y;
-                    
-                    uint32 densityId = shuffleDensity[clusterIndex];
-                    
-                    float32 randomRotation = MAX_ROTATION_ANGLE * (0.5f - (float32)Random::Instance()->RandFloat());
-                    float32 randomDisplacementX = MAX_DISPLACEMENT.x * (0.5f - Random::Instance()->RandFloat());
-                    float32 randomDisplacementY = MAX_DISPLACEMENT.y * (0.5f - Random::Instance()->RandFloat());
-                    float32 randomDisplacementZ = MAX_DISPLACEMENT.z * (0.5f - Random::Instance()->RandFloat());
-                    
-                    Matrix4 transform = Matrix4::MakeRotation(normal, DegToRad(randomRotation)) *
-                    Matrix4::MakeTranslation(Vector3(randomDisplacementX,
-                                                     randomDisplacementY,
-                                                     randomDisplacementZ));
-                    
-                    const int16* indexData = VEGETATION_CLUSTER_INDICES[geometryType];
-                    uint32 indexDataSize = VEGETATION_CLUSTER_INDEX_SIZE[geometryType];
-                    for(uint32 i = 0; i < indexDataSize; ++i)
-                    {
-                        clusterBrush->SetIndex(indexIndex, vertexIndex + indexData[i]);
-                        indexIndex++;
-                    }
-                    
-                    const Vector3* vertexData = VEGETATION_CLUSTER[geometryType];
-                    uint32 vertexDataSize = VEGETATION_CLUSTER_SIZE[geometryType];
-                    
-                    Vector3 clusterCenter = Vector3(clusterX,
-                                                    clusterY,
-                                                    0.0);
-                    
-                    clusterCenter = clusterCenter * transform;
-                    
-                    float32 cX = floor(clusterCenter.x / unitWorldSize[0].x);
-                    float32 cY = floor(clusterCenter.y / unitWorldSize[0].y);
-                    
-                    for(uint32 i = 0; i < vertexDataSize; ++i)
-                    {
-                        Vector3 vertexCoord = Vector3(vertexData[i].x * textureSheet.cells[clusterTypeIndex].geometryScale.x + clusterCenter.x,
-                                                      vertexData[i].y * textureSheet.cells[clusterTypeIndex].geometryScale.x + clusterCenter.y,
-                                                      vertexData[i].z * textureSheet.cells[clusterTypeIndex].geometryScale.y + clusterCenter.z);
-                        
-                        clusterBrush->SetCoord(vertexIndex, vertexCoord);
-                        clusterBrush->SetBinormal(vertexIndex, clusterCenter);
-                        clusterBrush->SetTexcoord(0, vertexIndex, textureSheet.cells[clusterTypeIndex].coords[i % MAX_CELL_TEXTURE_COORDS]);
-                        float32 matrixIndex = Clamp((float32)floor(cX + cY * RESOLUTION_SCALE[resolutionIndex]), 0.0f, MAX_DISTANCE_CELL_INDEX);
-                        DVASSERT(matrixIndex >= 0.0f && matrixIndex <= 15.0f);
-                        DVASSERT(clusterTypeIndex >= 0.0f && clusterTypeIndex <= 3.0f);
-                        
-                        clusterBrush->SetTangent(vertexIndex, Vector3(Clamp((float32)floor(cX + cY * RESOLUTION_SCALE[resolutionIndex]), 0.0f, MAX_DISTANCE_CELL_INDEX), clusterTypeIndex, densityId));
-                        clusterBrush->SetNormal(vertexIndex, normal);
-                        
-                        vertexIndex++;
-                    }
-                }
-            }
-        }
-    }
-}
-    
+
 RenderBatch* VegetationRenderObject::GetRenderBatchFromPool(NMaterial* material)
 {
     RenderBatch* rb = NULL;
@@ -822,10 +710,11 @@ void VegetationRenderObject::BuildSpatialStructure(VegetationMap* vegMap)
     AbstractQuadTreeNode<SpatialData>* node = quadTree.GetRoot();
     
     uint32 halfSize = mapSize >> 1;
-    BuildSpatialQuad(node, -1 * halfSize, -1 * halfSize, mapSize, mapSize, node->data.bbox);
+    BuildSpatialQuad(node, NULL, -1 * halfSize, -1 * halfSize, mapSize, mapSize, node->data.bbox);
 }
     
 void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
+                          AbstractQuadTreeNode<SpatialData>* firstRenderableParent,
                           int16 x, int16 y,
                           uint16 width, uint16 height,
                           AABBox3& parentBox)
@@ -839,11 +728,25 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     {
         node->data.width = width;
         node->data.height = height;
+        
+        if(width == RESOLUTION_SCALE[COUNT_OF(RESOLUTION_SCALE) - 1])
+        {
+            firstRenderableParent = node;
+            node->data.rdoIndex = 0;
+        }
+        else
+        {
+            int16 offsetX = abs(node->data.x - firstRenderableParent->data.x) / width;
+            int16 offsetY = abs(node->data.y - firstRenderableParent->data.y) / height;
+            
+            node->data.rdoIndex = offsetX + (offsetY * (firstRenderableParent->data.width / width));
+        }
     }
     else
     {
         node->data.width = -1;
         node->data.height = -1;
+        node->data.rdoIndex = -1;
     }
     
     if(node->IsTerminalLeaf())
@@ -863,10 +766,10 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
         int16 cellHalfWidth = width >> 1;
         int16 cellHalfHeight = height >> 1;
         
-        BuildSpatialQuad(node->children[0], x, y, cellHalfWidth, cellHalfHeight, node->data.bbox);
-        BuildSpatialQuad(node->children[1], x + cellHalfWidth, y, cellHalfWidth, cellHalfHeight, node->data.bbox);
-        BuildSpatialQuad(node->children[2], x, y + cellHalfHeight, cellHalfWidth, cellHalfHeight, node->data.bbox);
-        BuildSpatialQuad(node->children[3], x + cellHalfWidth, y + cellHalfHeight, cellHalfWidth, cellHalfHeight, node->data.bbox);
+        BuildSpatialQuad(node->children[0], firstRenderableParent, x, y, cellHalfWidth, cellHalfHeight, node->data.bbox);
+        BuildSpatialQuad(node->children[1], firstRenderableParent, x + cellHalfWidth, y, cellHalfWidth, cellHalfHeight, node->data.bbox);
+        BuildSpatialQuad(node->children[2], firstRenderableParent, x, y + cellHalfHeight, cellHalfWidth, cellHalfHeight, node->data.bbox);
+        BuildSpatialQuad(node->children[3], firstRenderableParent, x + cellHalfWidth, y + cellHalfHeight, cellHalfWidth, cellHalfHeight, node->data.bbox);
         
         parentBox.AddPoint(node->data.bbox.min);
         parentBox.AddPoint(node->data.bbox.max);
@@ -875,11 +778,11 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     
 void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                                                   Frustum* frustum,
-                                                  Vector<SpatialData*>& cellList)
+                                                  Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
     uint8 planeMask = 0x3F;
     Vector3 cameraPosXY = cameraPoint;
-    cameraPosXY.z = 0.0f;
+    //cameraPosXY.z = 0.0f;
     BuildVisibleCellList(cameraPosXY, frustum, planeMask, quadTree.GetRoot(), cellList);
 }
     
@@ -887,9 +790,9 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                                                   Frustum* frustum,
                                                   uint8 planeMask,
                                                   AbstractQuadTreeNode<SpatialData>* node,
-                                                  Vector<SpatialData*>& cellList)
+                                                  Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
-    static Vector3 corners[8];
+    //static Vector3 corners[8];
     if(node)
     {
         Frustum::eFrustumResult result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
@@ -897,19 +800,19 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
         {
             if(node->data.IsRenderable())
             {
-                float32 cameraDistance = FLT_MAX;
+                /*float32 cameraDistance = FLT_MAX;
                 node->data.bbox.GetCorners(corners);
                 for(uint32 i = 0; i < 8; ++i)
                 {
-                    corners[i].z = 0;
+                    //corners[i].z = 0;
                     
                     Vector3 cameraVector = cameraPoint - corners[i];
                     float32 curDistance = cameraVector.SquareLength();
                     
                     cameraDistance = Min(cameraDistance, curDistance);
-                }
+                }*/
                 
-                node->data.cameraDistance = cameraDistance;
+                node->data.cameraDistance = (cameraPoint - node->data.bbox.GetCenter()).SquareLength();
                 
                 uint32 resolutionId = MapToResolution(node->data.cameraDistance);
                 if(node->IsTerminalLeaf() ||
@@ -920,7 +823,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                     uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
 
                     uint32 vegetationMapValue = (node->IsTerminalLeaf()) ? (*(((uint32*)vegetationMap->data) + cellDescriptionIndex)) : FULL_BRUSH_VALUE;
-                    AddVisibleCell(&(node->data), MAX_VISIBLE_CLIPPING_DISTANCE,
+                    AddVisibleCell(node, MAX_VISIBLE_CLIPPING_DISTANCE,
                                    vegetationMapValue, cellList);
                 }
                 else if(!node->IsTerminalLeaf())
@@ -942,10 +845,10 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
     }
 }
         
-bool VegetationRenderObject::CellByDistanceCompareFunction(const SpatialData* a,
-                                                           const SpatialData* b)
+bool VegetationRenderObject::CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a,
+                                                           const AbstractQuadTreeNode<SpatialData>*  b)
 {
-    return (a->cameraDistance > b->cameraDistance);
+    return (a->data.cameraDistance > b->data.cameraDistance);
 }
     
 void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap)
@@ -1040,66 +943,13 @@ void VegetationRenderObject::UpdateVegetationSetup()
     
     if(IsValidGeometryData())
     {
-        BuildVegetationBrush(clusterLimit);
+        //BuildVegetationBrush(clusterLimit);
+        CreateRenderData(clusterLimit);
     }
     
     if(IsValidSpatialData())
     {
         BuildSpatialStructure(vegetationMap);
-    }
-}
-
-void TextureSheet::Load(const FilePath &yamlPath)
-{
-    if(yamlPath.Exists())
-    {
-        YamlParser *parser = YamlParser::Create(yamlPath);
-        YamlNode *rootNode = parser->GetRootNode();
-
-        cells.clear();
-
-        if(NULL != rootNode)
-        {
-            for(int i = 0; i < rootNode->GetCount(); ++i)
-            {
-                if(rootNode->GetItemKeyName(i) == "cell")
-                {
-                    const YamlNode *cellNode = rootNode->Get(i);
-                    const YamlNode *cellType = cellNode->Get("type");
-                    const YamlNode *cellScale = cellNode->Get("scale");
-                    const YamlNode *cellCoords = cellNode->Get("coords");
-
-                    TextureSheetCell c;
-
-                    if(NULL != cellType)
-                    {
-                        c.geometryId = cellType->AsUInt32();
-                    }
-
-                    if(NULL != cellScale)
-                    {
-                        c.geometryScale = cellScale->AsVector2();
-                    }
-
-                    for(int j = 0; j < cellCoords->GetCount(); ++j)
-                    {
-                        if(j < MAX_CELL_TEXTURE_COORDS)
-                        {
-                            const YamlNode *singleCellCoord = cellCoords->Get(j);
-                            c.coords[j] = singleCellCoord->AsVector2();
-                        }
-                        else
-                        {
-                            DVASSERT(0 && "Too much vertexes");
-                        }
-                    }
-
-                    cells.push_back(c);
-                }
-            }
-        }
-
-        parser->Release();
     }
 }
 
@@ -1149,7 +999,7 @@ void VegetationRenderObject::InitLodRanges()
     RESOLUTION_RANGES[1].y = lodRanges.z * smallestUnitSize.x;
 
     RESOLUTION_RANGES[2].x = lodRanges.z * smallestUnitSize.x;
-    RESOLUTION_RANGES[2].y = RESOLUTION_RANGES[2].x * 1000.0f;
+    RESOLUTION_RANGES[2].y = MAX_VISIBLE_CLIPPING_DISTANCE;//RESOLUTION_RANGES[2].x * 1000.0f;
 
     
     for(uint32 i = 0; i < COUNT_OF(RESOLUTION_RANGES); ++i)
@@ -1181,6 +1031,267 @@ void VegetationRenderObject::SetupHeightmapParameters(BaseObject * caller,
     Texture* tx = (Texture*)param;
     tx->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
     tx->SetMinMagFilter(Texture::FILTER_NEAREST, Texture::FILTER_NEAREST);
+}
+
+void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
+{
+    DVASSERT(maxClusters > 0);
+    DVASSERT(textureSheet.cells.size() > 0);
+    
+    InitLodRanges();
+    
+    ReleaseRenderData();
+    
+    uint32 tilesPerRow = (uint32)RESOLUTION_SCALE[COUNT_OF(RESOLUTION_SCALE) - 1];
+    uint32 maxClusterRowSize = (tilesPerRow * maxClusters);
+    size_t maxTotalClusters = maxClusterRowSize * maxClusterRowSize;
+    
+    uint32 layerDataCount = 0;
+    uint32 indexDataCount = 0;
+    for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
+    {
+        TextureSheetCell& cellData = textureSheet.cells[layerIndex];
+        layerDataCount += VEGETATION_CLUSTER_SIZE[cellData.geometryId];
+        indexDataCount += VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
+    }
+    
+    uint32 totalIndexCount = 0;
+    for(uint32 i = 0; i < COUNT_OF(RESOLUTION_SCALE); ++i)
+    {
+        totalIndexCount += indexDataCount * (maxTotalClusters / (uint32)RESOLUTION_SCALE[i]);
+    }
+    
+    indexData.resize(totalIndexCount);
+    vertexData.resize(maxTotalClusters * layerDataCount);
+    
+    Vector<uint32> shuffleDensity;
+    shuffleDensity.reserve(maxTotalClusters);
+    for(uint32 i = 0; i < maxTotalClusters; ++i)
+    {
+        shuffleDensity.push_back((i % MAX_DENSITY_LEVELS) + 1);
+    }
+    
+    Vector2 unitSize = GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]);
+    
+    Vector2 clusterOffset(unitSize.x / maxClusters,
+                          unitSize.y / maxClusters);
+    
+    Vector2 clusterTypeOffset(clusterOffset.x / MAX_CLUSTER_TYPES,
+                              clusterOffset.y / MAX_CLUSTER_TYPES);
+
+    Vector<uint32> layerOffsets(MAX_CLUSTER_TYPES);
+    
+    size_t vertexIndex = 0;
+    Vector3 normal(0.0f, 0.0f, 1.0f); //up
+    for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
+    {
+        layerOffsets[layerIndex] = vertexIndex;
+        
+        TextureSheetCell& cellData = textureSheet.cells[layerIndex];
+        
+        const Vector3* clusterVertices = VEGETATION_CLUSTER[cellData.geometryId];
+        uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
+        
+        std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
+        
+        for(size_t clusterIndex = 0; clusterIndex < maxTotalClusters; ++clusterIndex)
+        {
+            uint32 clusterIndexX = clusterIndex % maxClusterRowSize;
+            uint32 clusterIndexY = clusterIndex / maxClusterRowSize;
+
+            uint32 densityId = shuffleDensity[clusterIndex];
+            
+            float32 randomDisplacementX = MAX_DISPLACEMENT.x * (0.5f - Random::Instance()->RandFloat());
+            float32 randomDisplacementY = MAX_DISPLACEMENT.y * (0.5f - Random::Instance()->RandFloat());
+            float32 randomDisplacementZ = MAX_DISPLACEMENT.z * (0.5f - Random::Instance()->RandFloat());
+            
+            Matrix4 transform = Matrix4::MakeTranslation(Vector3(
+                                            randomDisplacementX,
+                                            randomDisplacementY,
+                                            randomDisplacementZ));
+            
+            Vector3 clusterCenter = Vector3(clusterIndexX * clusterOffset.x + layerIndex * clusterTypeOffset.x,
+                                            clusterIndexY * clusterOffset.y + layerIndex * clusterTypeOffset.y, 0.0f) * transform;
+            
+            
+            uint32 matrixIndex = (clusterIndexX / maxClusters) + tilesPerRow * (clusterIndexY / maxClusters); //0...15
+            DVASSERT(matrixIndex >= 0 && matrixIndex < (tilesPerRow * tilesPerRow));
+            
+            for(uint32 clusterVertexIndex = 0; clusterVertexIndex < clusterVertexCount; ++clusterVertexIndex)
+            {
+                DVASSERT(vertexIndex < vertexData.size());
+                VegetationVertex& vertex = vertexData[vertexIndex];
+                
+                vertex.coord.x = clusterCenter.x * cellData.geometryScale.x + clusterVertices[clusterVertexIndex].x;
+                vertex.coord.y = clusterCenter.y * cellData.geometryScale.y + clusterVertices[clusterVertexIndex].y;
+                vertex.coord.z = clusterCenter.z + clusterVertices[clusterVertexIndex].z;
+                
+                vertex.normal = normal;
+                
+                vertex.binormal = clusterCenter;
+                
+                vertex.tangent.x = matrixIndex * 2.0f; //each cluster is described by 2 vectors
+                vertex.tangent.y = layerIndex;
+                vertex.tangent.z = densityId;
+                
+                vertex.texCoord0.x = cellData.coords[clusterVertexIndex % MAX_CELL_TEXTURE_COORDS].x;
+                vertex.texCoord0.y = cellData.coords[clusterVertexIndex % MAX_CELL_TEXTURE_COORDS].y;
+                
+                vertexIndex++;
+            }
+        }
+    }
+    
+    //generate indices
+    size_t totalResolutionCount = COUNT_OF(RESOLUTION_RANGES);
+    size_t currentIndexIndex = 0;
+    for(size_t resolutionIndex = 0; resolutionIndex < totalResolutionCount; ++resolutionIndex)
+    {
+        uint32 resolutionStride = RESOLUTION_CELL_SQUARE[resolutionIndex];
+        uint32 resolutionOffset = (uint32)RESOLUTION_SCALE[resolutionIndex];
+        uint32 indexBufferCount = RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1] / resolutionStride;
+        
+        indexRenderDataObject.push_back(Vector<RenderDataObject*>());
+        Vector<RenderDataObject*>& currentIndexArray = indexRenderDataObject[resolutionIndex];
+        for(uint32 i = 0; i < indexBufferCount; ++i)
+        {
+            RenderDataObject* indexBuffer = new RenderDataObject();
+            int16* currentBufferPointer = &indexData[currentIndexIndex];
+            uint32 prevIndexIndex = currentIndexIndex;
+            
+            uint32 startX = (i % RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
+            uint32 startY = (i / RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
+            uint32 endX = startX + maxClusters * resolutionOffset;
+            uint32 endY = startY + maxClusters * resolutionOffset;
+            
+            for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
+            {
+                TextureSheetCell& cellData = textureSheet.cells[layerIndex];
+                
+                const int16* clusterIndices = VEGETATION_CLUSTER_INDICES[cellData.geometryId];
+                uint32 clusterIndexCount = VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
+                uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
+
+                for(uint32 y = startY; y < endY; y += resolutionOffset)
+                {
+                    for(uint32 x = startX; x < endX; x += resolutionOffset)
+                    {
+                        uint32 baseIndex = layerOffsets[layerIndex] + (y * maxClusterRowSize + x) * clusterVertexCount;
+                        
+                        for(uint32 clusterIndexIndex = 0; clusterIndexIndex < clusterIndexCount; ++clusterIndexIndex)
+                        {
+                            DVASSERT(currentIndexIndex < indexData.size());
+                            
+                            vertexIndex = baseIndex + clusterIndices[clusterIndexIndex];
+                            
+                            DVASSERT(vertexIndex >= 0 && vertexIndex < vertexData.size());
+                            
+                            indexData[currentIndexIndex] = (int16)vertexIndex;
+                            
+                            VegetationVertex& vertex = vertexData[vertexIndex];
+                            vertex.texCoord1.x = resolutionIndex;
+                        
+                            currentIndexIndex++;
+                        }
+                    }
+                }
+                
+            }
+            
+            indexBuffer->SetIndices(EIF_16, (uint8*)currentBufferPointer, (currentIndexIndex - prevIndexIndex));
+            currentIndexArray.push_back(indexBuffer);
+        }
+    }
+    
+    //VI: need to build vertex & index objects AFTER initialization
+    
+    vertexRenderDataObject = new RenderDataObject();
+    vertexRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].coord));
+    vertexRenderDataObject->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].normal));
+    vertexRenderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
+    vertexRenderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
+    vertexRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
+    vertexRenderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
+    vertexRenderDataObject->BuildVertexBuffer(vertexData.size());
+    
+    size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
+    for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
+    {
+        Vector<RenderDataObject*>& indexObjectArray = indexRenderDataObject[indexArrayIndex];
+        size_t totalIndexObjectCount = indexObjectArray.size();
+        
+        for(size_t i = 0; i < totalIndexObjectCount; ++i)
+        {
+            indexObjectArray[i]->BuildIndexBuffer();
+            indexObjectArray[i]->AttachVertices(vertexRenderDataObject);
+        }
+    }
+}
+    
+void VegetationRenderObject::ReleaseRenderData()
+{
+    size_t indexBufferResolutionCount = indexRenderDataObject.size();
+    for(size_t indexBufferIndex = 0; indexBufferIndex < indexBufferResolutionCount; ++indexBufferIndex)
+    {
+        Vector<RenderDataObject*> indexBufferArray = indexRenderDataObject[indexBufferIndex];
+        size_t indexObjectCount = indexBufferArray.size();
+        for(size_t i = 0; i < indexObjectCount; ++i)
+        {
+            indexBufferArray[i]->DetachVertices();
+        
+            SafeRelease(indexBufferArray[i]);
+        }
+        
+        indexBufferArray.clear();
+    }
+    indexRenderDataObject.clear();
+    
+    SafeRelease(vertexRenderDataObject);
+    
+    vertexData.clear();
+    indexData.clear();
+}
+
+bool VegetationRenderObject::ReadyToRender()
+{
+    return (vertexRenderDataObject != NULL);
+}
+
+void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
+                                               Vector<Vector4>& uniforms)
+{
+    if(node->IsTerminalLeaf())
+    {
+        DVASSERT(node->data.rdoIndex >= 0 && node->data.rdoIndex < uniforms.size());
+        
+        int32 mapX = node->data.x + halfWidth;
+        int32 mapY = node->data.y + halfHeight;
+        uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
+        
+        uint8 *vegetationMapValuePtr = (vegetationMap->data + cellDescriptionIndex * 4);
+        
+        for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
+        {
+            uint8 cellLayerData = vegetationMapValuePtr[clusterType];
+            
+            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0xF)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
+            float32 density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
+            
+            //clusterScale = 1.0f;
+            //density = 16.0f;
+            
+            uniforms[node->data.rdoIndex * 2].data[clusterType] = density;
+            uniforms[node->data.rdoIndex * 2 + 1].data[clusterType] = clusterScale;
+        }
+
+    }
+    else
+    {
+        SetupNodeUniforms(node->children[0], uniforms);
+        SetupNodeUniforms(node->children[1], uniforms);
+        SetupNodeUniforms(node->children[2], uniforms);
+        SetupNodeUniforms(node->children[3], uniforms);
+    }
 }
 
 };
