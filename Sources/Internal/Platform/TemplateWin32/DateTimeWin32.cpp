@@ -30,7 +30,7 @@
 
 namespace DAVA
 {
-    DAVA::WideString DateTime::AsWString(const wchar_t* format)
+    DAVA::WideString DateTime::AsWString(const wchar_t* format) const
     {
 		LCID Locale = GetSystemDefaultLCID();
 		int nchars = GetLocaleInfoW(Locale, LOCALE_SENGLANGUAGE, NULL, 0);
@@ -53,7 +53,7 @@ namespace DAVA
 
         DAVA::WideString str(buffer);
 //	
-		Logger::Debug("%s", WStringToString(str).c_str());
+//		Logger::Debug("%s", WStringToString(str).c_str());
 //
 		return str;
     }
