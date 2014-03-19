@@ -32,25 +32,23 @@
 
 namespace DAVA
 {
-    DAVA::WideString DateTime::AsWString(const wchar_t* format)
+    DAVA::WideString DateTime::AsWString(const wchar_t* format) const
     {
-        //
         DAVA::String locID = [[[NSLocale currentLocale] objectForKey: NSLocaleIdentifier] UTF8String];
-        //
         
-        struct tm timeinfo;
+        struct tm *timeinfo;
         wchar_t buffer [80];
         
         Timestamp timeWithTZ = innerTime + timeZoneOffset;
-        timeinfo = *std::gmtime(&timeWithTZ);
+        timeinfo = std::gmtime(&timeWithTZ);
         
         locale_t loc = newlocale ( LC_ALL_MASK , locID.c_str() , NULL );
-        wcsftime_l(buffer,80, format, &timeinfo, loc);
+        wcsftime_l(buffer,80, format, timeinfo, loc);
         
         DAVA::WideString str(buffer);
         //
-        NSString * wstr = [[NSString alloc] initWithBytes:buffer length:wcslen(buffer)*sizeof(*buffer) encoding:NSUTF32LittleEndianStringEncoding];
-        NSLog(@"***AsWString : %@", wstr);
+        //NSString * wstr = [[NSString alloc] initWithBytes:buffer length:wcslen(buffer)*sizeof(*buffer) encoding:NSUTF32LittleEndianStringEncoding];
+        //NSLog(@"***AsWString : %@", wstr);
         //
         return str;
     }
