@@ -131,8 +131,10 @@ namespace DAVA
         t.tm_mday = day;
         
         innerTime = internal_timegm(&t);
-        
         innerTime -= timeZoneOffset;// time member should be always in UTC format
+        
+        // dates before 1970 is not supported
+        DVASSERT(innerTime>=0);
     }
 
     DateTime::DateTime(uint32 year, uint32 month, uint32 day, uint32 hour, uint32 minute, uint32 second, int32 _timeZoneOffset):
@@ -149,6 +151,9 @@ namespace DAVA
         
         innerTime = internal_timegm(&t);
         innerTime -= timeZoneOffset;
+        
+        // dates before 1970 is not supported
+        DVASSERT(innerTime>=0);
     }
     
     DateTime DateTime::Now()

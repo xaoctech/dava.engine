@@ -81,7 +81,7 @@ public:
     bool Parse(const DAVA::String & src);
     
     // represetn data according to device locale and time zone
-    DAVA::WideString AsWString(const wchar_t* format);
+    DAVA::WideString AsWString(const wchar_t* format) const;
     
 private:
     
