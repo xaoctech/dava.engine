@@ -99,6 +99,8 @@ public slots:
 	void ConvertToShadow();
 	void DeleteRenderBatch();
 
+    void CloneRenderBatchesToFixSwitchLODs();
+
 
 protected:
 	eViewMode viewMode;

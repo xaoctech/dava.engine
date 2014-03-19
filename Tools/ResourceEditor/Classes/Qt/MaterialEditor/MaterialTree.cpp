@@ -303,7 +303,8 @@ void MaterialTree::OnCommandExecuted(SceneEditor2 *scene, const Command2 *comman
 	{
 		int commandID = command->GetId();
 		if(		(commandID == CMDID_DELETE_RENDER_BATCH) 
-			||	(commandID == CMDID_CONVERT_TO_SHADOW) 
+			||	(commandID == CMDID_CLONE_LAST_BATCH) 
+            ||	(commandID == CMDID_CONVERT_TO_SHADOW) 
 			||	(commandID == CMDID_MATERIAL_SWITCH_PARENT))
 		{
 			Update();
