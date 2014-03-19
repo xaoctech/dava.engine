@@ -192,6 +192,7 @@ public:
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
+    static const FastName FLAG_SPECULAR;
 
     static const FastName FLAG_TANGENT_SPACE_WATER_REFLECTIONS;
     
