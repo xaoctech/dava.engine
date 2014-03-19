@@ -332,7 +332,6 @@ void NMaterial::Save(KeyedArchive * archive,
 		archive->SetString("materialGroup", GetMaterialGroup().c_str());
 	}
 	
-	DVASSERT(materialTemplate);
 	archive->SetString("materialTemplate", (materialTemplate) ? materialTemplate->name.c_str() : "");
 	
 	if(instancePassRenderStates.size() > 0)

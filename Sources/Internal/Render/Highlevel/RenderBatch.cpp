@@ -212,7 +212,7 @@ void RenderBatch::SetSortingOffset(uint32 offset)
 void RenderBatch::GetDataNodes(Set<DataNode*> & dataNodes)
 {
 	NMaterial* curNode = material;
-	while(curNode != NULL)
+	while(curNode != NULL && curNode->GetMaterialType() != NMaterial::MATERIALTYPE_GLOBAL)
 	{
 		dataNodes.insert(curNode);
 		curNode = curNode->GetParent();

@@ -216,9 +216,11 @@ public:
 
     virtual void OptimizeBeforeExport();
 
-	inline NMaterial * GetGlobalMaterial() const;
-protected:	
-    
+    DAVA::NMaterial* GetGlobalMaterial() const;
+    void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
+    void CreateGlobalMaterial();
+
+protected:
     void UpdateLights();
 
 	uint64 updateTime;
@@ -271,13 +273,6 @@ int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
 }  
-
-inline NMaterial * Scene::GetGlobalMaterial() const
-{
-	return sceneGlobalMaterial; 
-}
-
-
 
 };
 
