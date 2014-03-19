@@ -607,9 +607,24 @@ void MaterialEditor::OnAddProperty()
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetVariantValue(data->GetAliasVariant());
-			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+			    dynamicData->SetVariantValue(data->GetAliasVariant());
+			    dynamicData->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			    dynamicData->EmitDataChanged(QtPropertyData::VALUE_EDITED);
+            }
 
 			// reload material properties
 			SetCurMaterial(curMaterials);
@@ -620,13 +635,28 @@ void MaterialEditor::OnAddProperty()
 void MaterialEditor::OnRemProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
-
-	if(NULL != btn && curMaterials.size() > 0)
+	
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            }
 
 			// reload material properties
 			SetCurMaterial(curMaterials);
@@ -637,15 +667,30 @@ void MaterialEditor::OnRemProperty()
 void MaterialEditor::OnAddTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
-
-	if(NULL != btn && curMaterials.size() > 0)
+	
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetVariantValue(data->GetAliasVariant());
-			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+			    dynamicData->SetVariantValue(data->GetAliasVariant());
+			    dynamicData->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			    dynamicData->EmitDataChanged(QtPropertyData::VALUE_EDITED);
+            }
 
 			// reload material properties
 			SetCurMaterial(curMaterials);
@@ -656,13 +701,28 @@ void MaterialEditor::OnAddTexture()
 void MaterialEditor::OnRemTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
-
-	if(NULL != btn && curMaterials.size() > 0)
+	
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            }
 
 			// reload material properties
 			SetCurMaterial(curMaterials);
