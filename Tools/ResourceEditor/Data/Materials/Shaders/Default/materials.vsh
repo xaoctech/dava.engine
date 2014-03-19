@@ -22,7 +22,7 @@ attribute vec3 inTexCoord0;
 attribute vec2 inTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
 attribute vec2 inTexCoord1;
 #endif
 
@@ -97,6 +97,10 @@ varying vec2 varTexCoord0;
 varying vec2 varTexCoord1;
 #endif
 
+#if defined(MATERIAL_GRASS)
+varying vec2 varTexCoord2;
+#endif
+
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
 varying lowp float varSpecularColor;
@@ -151,6 +155,7 @@ uniform vec2 tex0ShiftPerSecond;
 #if defined(MATERIAL_GRASS)
 uniform vec4 tilePos;
 uniform vec3 worldSize;
+uniform vec2 lodSwitchScale;
 
 #if defined(MATERIAL_GRASS_PLAINUNIFORMS)
 uniform mat4 clusterScaleDensityMap_0;
@@ -170,7 +175,7 @@ uniform mat4 clusterScaleDensityMap_13;
 uniform mat4 clusterScaleDensityMap_14;
 uniform mat4 clusterScaleDensityMap_15;
 #else
-uniform mat4 clusterScaleDensityMap[16];
+uniform vec4 clusterScaleDensityMap[32];
 #endif
 
 uniform sampler2D detail;
@@ -247,8 +252,6 @@ void main()
                    clamp(hUV.y * heightmapScale.y, 0.0, 1.0));
     
         highp vec4 heightVec = texture2DLod(detail, hUV, 0.0);
-        //highp vec4 wVec = vec4(16.0*16.0*16.0*15.0/65535.0, 16.0*16.0*15.0/65535.0, 16.0*15.0/65535.0, 15.0/65535.0);
-        //highp vec4 wVec = vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845);
         float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
     
         pos.z += height;
@@ -639,7 +642,50 @@ void main()
         #else
     
             float densityFactor;
-            if(inTangent.z < clusterScaleDensityMap[vertexTileIndex][0][clusterType])
+    
+            float clusterDensity;
+            float clusterScale;
+            float clusterLodScale;
+    
+            if(0 == clusterType)
+            {
+                clusterDensity = clusterScaleDensityMap[vertexTileIndex].x;
+                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].x;
+            }
+            else if(1 == clusterType)
+            {
+                clusterDensity = clusterScaleDensityMap[vertexTileIndex].y;
+                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].y;
+            }
+            else if(2 == clusterType)
+            {
+                clusterDensity = clusterScaleDensityMap[vertexTileIndex].z;
+                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].z;
+            }
+            else
+            {
+                clusterDensity = clusterScaleDensityMap[vertexTileIndex].w;
+                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].w;
+            }
+    
+            if(int(inTexCoord1.x) == int(lodSwitchScale.x))
+            {
+                clusterLodScale = lodSwitchScale.y;
+            }
+            else
+            {
+                clusterLodScale = 1.0;
+            }
+    
+            vec4 lodScaledPos = pos;
+            lodScaledPos.z = 0.0;
+            lodScaledPos = mix(clusterCenter, lodScaledPos, clusterLodScale);
+    
+            pos.xy = lodScaledPos.xy;
+    
+            varTexCoord2.x = clusterLodScale;
+    
+            if(inTangent.z < clusterDensity)
             {
                 densityFactor = 1.0;
             }
@@ -648,8 +694,7 @@ void main()
                 densityFactor = 0.0;
             }
     
-            //pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * step(inTangent.z, clusterScaleDensityMap[vertexTileIndex][0][clusterType]));
-            pos = mix(clusterCenter, pos, clusterScaleDensityMap[vertexTileIndex][1][clusterType] * densityFactor);
+            pos = mix(clusterCenter, pos, clusterScale * densityFactor);
     
         #endif
     

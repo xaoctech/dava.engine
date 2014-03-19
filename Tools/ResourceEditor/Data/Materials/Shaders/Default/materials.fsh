@@ -114,6 +114,7 @@ uniform lowp vec4 flatColor;
 
 #if defined(MATERIAL_GRASS)
 uniform sampler2D vegetationmap;
+varying vec2 varTexCoord2;
 #endif
 
 void main()
@@ -359,6 +360,7 @@ void main()
     
 #if defined(MATERIAL_GRASS)
     gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+    gl_FragColor.a = gl_FragColor.a * varTexCoord2.x;
 #endif
     
     
