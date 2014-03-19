@@ -300,6 +300,11 @@ void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & input
             value.type = Shader::UT_FLOAT;
             value.float32Value = (float32)atof(tokens[4].c_str());
         }
+        else if (type == "vec2")
+        {
+            value.type = Shader::UT_FLOAT_VEC2;
+            valuesCount = 2;
+        }
         else if (type == "vec3")
         {
             value.type = Shader::UT_FLOAT_VEC3;
@@ -309,6 +314,11 @@ void ShaderCache::ParseDefaultVariable(ShaderAsset * asset, const String & input
         {
             value.type = Shader::UT_FLOAT_VEC4;
             valuesCount = 4;
+        }
+        else if (type == "mat2")
+        {
+            value.type = Shader::UT_FLOAT_MAT2;
+            valuesCount = 2 * 2;
         }
         else if (type == "mat3")
         {
