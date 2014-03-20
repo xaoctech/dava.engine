@@ -1920,6 +1920,9 @@
     <ClCompile Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.cpp">
       <Filter>Classes\Qt\Tools\DeveloperTools</Filter>
     </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\DeveloperTools\DeveloperTools_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
