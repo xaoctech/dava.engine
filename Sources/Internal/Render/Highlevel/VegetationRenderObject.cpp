@@ -297,7 +297,8 @@ VegetationRenderObject::VegetationRenderObject() :
     heightmap(NULL),
     clusterLimit(0),
     halfWidth(0),
-    halfHeight(0)
+    halfHeight(0),
+    vertexRenderDataObject(NULL)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -309,7 +310,6 @@ VegetationRenderObject::VegetationRenderObject() :
     unitWorldSize.resize(COUNT_OF(RESOLUTION_SCALE));
     
     uint32 maxParams = 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
-    //shaderScaleDensityParams.resize(maxParams);
     shaderScaleDensityUniforms.resize(maxParams);
     
     renderBatchPoolLine = 0;
@@ -782,7 +782,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
 {
     uint8 planeMask = 0x3F;
     Vector3 cameraPosXY = cameraPoint;
-    //cameraPosXY.z = 0.0f;
+    cameraPosXY.z = 0.0f;
     BuildVisibleCellList(cameraPosXY, frustum, planeMask, quadTree.GetRoot(), cellList);
 }
     
@@ -800,19 +800,9 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
         {
             if(node->data.IsRenderable())
             {
-                /*float32 cameraDistance = FLT_MAX;
-                node->data.bbox.GetCorners(corners);
-                for(uint32 i = 0; i < 8; ++i)
-                {
-                    //corners[i].z = 0;
-                    
-                    Vector3 cameraVector = cameraPoint - corners[i];
-                    float32 curDistance = cameraVector.SquareLength();
-                    
-                    cameraDistance = Min(cameraDistance, curDistance);
-                }*/
-                
-                node->data.cameraDistance = (cameraPoint - node->data.bbox.GetCenter()).SquareLength();
+                Vector3 refCenter = node->data.bbox.GetCenter();
+                refCenter.z = 0.0f;
+                node->data.cameraDistance = (cameraPoint - refCenter).SquareLength();
                 
                 uint32 resolutionId = MapToResolution(node->data.cameraDistance);
                 if(node->IsTerminalLeaf() ||
@@ -943,7 +933,6 @@ void VegetationRenderObject::UpdateVegetationSetup()
     
     if(IsValidGeometryData())
     {
-        //BuildVegetationBrush(clusterLimit);
         CreateRenderData(clusterLimit);
     }
     
@@ -1122,9 +1111,9 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
                 DVASSERT(vertexIndex < vertexData.size());
                 VegetationVertex& vertex = vertexData[vertexIndex];
                 
-                vertex.coord.x = clusterCenter.x * cellData.geometryScale.x + clusterVertices[clusterVertexIndex].x;
-                vertex.coord.y = clusterCenter.y * cellData.geometryScale.y + clusterVertices[clusterVertexIndex].y;
-                vertex.coord.z = clusterCenter.z + clusterVertices[clusterVertexIndex].z;
+                vertex.coord.x = clusterCenter.x + clusterVertices[clusterVertexIndex].x * cellData.geometryScale.x;
+                vertex.coord.y = clusterCenter.y + clusterVertices[clusterVertexIndex].y * cellData.geometryScale.x;
+                vertex.coord.z = clusterCenter.z + clusterVertices[clusterVertexIndex].z * cellData.geometryScale.y;
                 
                 vertex.normal = normal;
                 
