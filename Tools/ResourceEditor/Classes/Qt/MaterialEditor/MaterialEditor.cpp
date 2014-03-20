@@ -611,8 +611,7 @@ void MaterialEditor::OnAddProperty()
 		{
             QList< QtPropertyDataInspDynamic * > dataList;
             const int nMerged = data->GetMergedCount();
-            dataList.reserve( nMerged + 1 );
-            dataList << data;
+            dataList.reserve( nMerged );
             for ( int i = 0; i < nMerged; i++ )
             {
                 QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
@@ -620,13 +619,14 @@ void MaterialEditor::OnAddProperty()
                     dataList << dynamicData;
             }
 
+            data->SetVariantValue(data->GetAliasVariant());
             for ( int i = 0; i < dataList.size(); i++ )
             {
                 QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
 			    dynamicData->SetVariantValue(data->GetAliasVariant());
-			    dynamicData->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-			    dynamicData->EmitDataChanged(QtPropertyData::VALUE_EDITED);
             }
+            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
 			SetCurMaterial(curMaterials);
@@ -677,8 +677,7 @@ void MaterialEditor::OnAddTexture()
 		{
             QList< QtPropertyDataInspDynamic * > dataList;
             const int nMerged = data->GetMergedCount();
-            dataList.reserve( nMerged + 1 );
-            dataList << data;
+            dataList.reserve( nMerged );
             for ( int i = 0; i < nMerged; i++ )
             {
                 QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
@@ -686,13 +685,14 @@ void MaterialEditor::OnAddTexture()
                     dataList << dynamicData;
             }
 
+            data->SetVariantValue(data->GetAliasVariant());
             for ( int i = 0; i < dataList.size(); i++ )
             {
                 QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
 			    dynamicData->SetVariantValue(data->GetAliasVariant());
-			    dynamicData->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-			    dynamicData->EmitDataChanged(QtPropertyData::VALUE_EDITED);
             }
+            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
 			SetCurMaterial(curMaterials);
