@@ -789,7 +789,7 @@ List<UIControl* >& UIList::GetRealChildren()
 
 void UIList::ScrollToPosition( float32 position, float32 timeSec /*= 0.3f*/ )
 {
-    scroll->SetPosition(-position);
+    scroll->ScrollToPosition(-position);
 }
 
 };
