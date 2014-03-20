@@ -35,26 +35,24 @@ namespace DAVA
 		LCID Locale = GetSystemDefaultLCID();
 		int nchars = GetLocaleInfoW(Locale, LOCALE_SENGLANGUAGE, NULL, 0);
 		wchar_t* languageCode = new wchar_t[nchars];
+        memset(languageCode, 0, nchars);
 		GetLocaleInfoW(Locale, LOCALE_SENGLANGUAGE, languageCode, nchars);
 
         DAVA::WideString locID(languageCode);
 		delete languageCode;
 
         struct tm timeinfo;
-        wchar_t buffer [80];
-			
+        wchar_t buffer [256] = {0};
+		
         Timestamp timeWithTZ = innerTime + timeZoneOffset;
 		struct tm* convertedTime = std::gmtime(&timeWithTZ);
 		DVASSERT(convertedTime);
         timeinfo = *convertedTime;
         
         _locale_t loc = _create_locale(LC_ALL, UTF8Utils::EncodeToUTF8(locID).c_str());
-        _wcsftime_l(buffer,80, format, &timeinfo, loc);
+        _wcsftime_l(buffer, 256, format, &timeinfo, loc);
 
         DAVA::WideString str(buffer);
-//	
-//		Logger::Debug("%s", WStringToString(str).c_str());
-//
 		return str;
     }
 

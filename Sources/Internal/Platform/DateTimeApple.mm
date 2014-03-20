@@ -37,19 +37,16 @@ namespace DAVA
         DAVA::String locID = [[[NSLocale currentLocale] objectForKey: NSLocaleIdentifier] UTF8String];
         
         struct tm *timeinfo;
-        wchar_t buffer [80];
+        wchar_t buffer [256] = {0};
         
         Timestamp timeWithTZ = innerTime + timeZoneOffset;
         timeinfo = std::gmtime(&timeWithTZ);
         
         locale_t loc = newlocale ( LC_ALL_MASK , locID.c_str() , NULL );
-        wcsftime_l(buffer,80, format, timeinfo, loc);
-        
+        size_t size = wcsftime_l(buffer, 256, format, timeinfo, loc);
+        DVASSERT(size);
         DAVA::WideString str(buffer);
-        //
-        //NSString * wstr = [[NSString alloc] initWithBytes:buffer length:wcslen(buffer)*sizeof(*buffer) encoding:NSUTF32LittleEndianStringEncoding];
-        //NSLog(@"***AsWString : %@", wstr);
-        //
+        
         return str;
     }
 

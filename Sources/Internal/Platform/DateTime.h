@@ -96,7 +96,7 @@ private:
     bool ParseRFC822Date(const DAVA::String&);
     
     Timestamp   innerTime;
-    int32       timeZoneOffset;
+    int32       timeZoneOffset;// offset in seconds
 };
     
 int32 DateTime::GetTimeZoneOffset() const

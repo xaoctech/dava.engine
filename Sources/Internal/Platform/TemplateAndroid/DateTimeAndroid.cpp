@@ -27,53 +27,72 @@
 =====================================================================================*/
 
 
-#include "DeviceInfoTest.h"
-#include "Platform/DeviceInfo.h"
-#include "Platform/DateTime.h"
 
-DeviceInfoTest::DeviceInfoTest()
-:	TestTemplate<DeviceInfoTest>("DeviceInfoTest")
+#include "../../Platform/DateTime.h"
+#include "../../Utils/Utils.h"
+
+
+#if defined(__DAVAENGINE_ANDROID__)
+#include "DateTimeAndroid.h"
+#include "ExternC/AndroidLayer.h"
+
+namespace DAVA
 {
-	RegisterFunction(this, &DeviceInfoTest::TestFunction, Format("DeviceInfo test"), NULL);
+
+jclass JniDateTime::gJavaClass = NULL;
+const char* JniDateTime::gJavaClassName = NULL;
+
+jclass JniDateTime::GetJavaClass() const
+{
+	return gJavaClass;
 }
 
-void DeviceInfoTest::LoadResources()
+const char* JniDateTime::GetJavaClassName() const
 {
+	return gJavaClassName;
 }
 
-void DeviceInfoTest::UnloadResources()
+WideString JniDateTime::AsWString(const WideString& format, long timeStamp, int tzOffset)
 {
+	jmethodID mid = GetMethodID("GetTimeAsString", "(Ljava/lang/String;JI)Ljava/lang/String;");
+	if (mid)
+	{
+		jstring jFormat = GetEnvironment()->NewStringUTF(WStringToString(format).c_str());
+        jobject obj = GetEnvironment()->CallStaticObjectMethod(GetJavaClass(), mid, jFormat, (long long)timeStamp, tzOffset);
+        GetEnvironment()->DeleteLocalRef(jFormat);
+		char str[256] = {0};
+		CreateStringFromJni(env, jstring(obj), str);
+		String retValue = str;
+		return StringToWString(retValue);
+	}
+	return L"";
 }
 
-void DeviceInfoTest::Draw(const DAVA::UIGeometricData &geometricData)
+int JniDateTime::GetLocalTimeZoneOffset()
 {
+	jmethodID mid = GetMethodID("GetLocalTimeZoneOffset", "()I");
+	if (mid)
+	{
+		return GetEnvironment()->CallStaticIntMethod(GetJavaClass(), mid);
+	}
+	return 0;
 }
 
-void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *data)
+WideString DateTime::AsWString(const wchar_t* format) const
 {
-    String platform = DeviceInfo::GetPlatformString();
-    String version = DeviceInfo::GetVersion();
-    String manufacturer = DeviceInfo::GetManufacturer();
-    String model = DeviceInfo::GetModel();
-    String locale = DeviceInfo::GetLocale();
-    String region = DeviceInfo::GetRegion();
-    String timezone = DeviceInfo::GetTimeZone();
-    String udid = DeviceInfo::GetUDID();
-    WideString name = DeviceInfo::GetName();
+	JniDateTime jniDateTime;
 
-	Logger::Debug("********** Device info **********");
-	Logger::Debug("Platform: %s", platform.c_str());
-	Logger::Debug("OS version: %s", version.c_str());
-	Logger::Debug("Manufacturer: %s", manufacturer.c_str());
-	Logger::Debug("Model: %s", model.c_str());
-	Logger::Debug("Locale: %s", locale.c_str());
-	Logger::Debug("Region: %s", region.c_str());
-	Logger::Debug("Time zone: %s", timezone.c_str());
-    Logger::Debug("UDID: %s", udid.c_str());
-    Logger::Debug("Name: %s", WStringToString(name).c_str());
-    Logger::Debug("ZBufferSize: %d", DeviceInfo::GetZBufferSize());
-	Logger::Debug("********** Device info **********");
+	WideString retString = jniDateTime.AsWString( WideString (format), innerTime, timeZoneOffset);
 
-	data->testData.message = "DeviceInfo test - passed";
-	TEST_VERIFY(true);
+	return retString;
 }
+
+int32 DateTime::GetLocalTimeZoneOffset()
+{
+	JniDateTime jniDateTime;
+	return jniDateTime.GetLocalTimeZoneOffset();
+}
+
+}
+
+#endif
