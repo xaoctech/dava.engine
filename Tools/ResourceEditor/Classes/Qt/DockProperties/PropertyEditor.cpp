@@ -618,23 +618,43 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	}
 }
 
-void PropertyEditor::OnItemEdited(const QModelIndex &index)
+void PropertyEditor::OnItemEdited(const QModelIndex &index) // TODO: fix undo/redo
 {
 	QtPropertyEditor::OnItemEdited(index);
 
+	SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+    if (curScene == NULL)
+        return ;
 	QtPropertyData *propData = GetProperty(index);
 
 	if(NULL != propData)
 	{
-		Command2 *command = (Command2 *) propData->CreateLastCommand();
-		if(NULL != command)
-		{
-			SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-			if(NULL != curScene)
-			{
-				curScene->Exec(command);
-			}
-		}
+        const int nMerged = propData->GetMergedCount();
+        QList<QtPropertyData *> dataList;
+        dataList.reserve(nMerged + 1);
+        dataList << propData;
+        for ( int i = 0; i < nMerged; i++ )
+        {
+            dataList << propData->GetMergedData(i);
+        }
+
+        const bool useBatch = dataList.size() > 1;
+
+        if (useBatch)
+        {
+            curScene->BeginBatch("");
+        }
+
+        for (int i = 0; i < dataList.size(); i++)
+        {
+            Command2 *command = (Command2 *)dataList.at(i)->CreateLastCommand();
+            curScene->Exec(command);
+        }
+
+        if (useBatch)
+        {
+            curScene->EndBatch();
+        }
 	}
 }
 
