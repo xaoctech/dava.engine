@@ -46,7 +46,7 @@ class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
-class DebugTools;
+class DeveloperTools;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -275,7 +275,7 @@ private:
 	// <--
 
     //Need for any debug functionality
-    DebugTools *debugTools;
+    DeveloperTools *developerTools;
 };
 
 
