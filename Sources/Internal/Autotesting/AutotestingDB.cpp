@@ -128,7 +128,7 @@ namespace DAVA
 		}
 		else
 		{
-			testsName = Format("%s_%s_%s", AutotestingSystem::Instance()->testsDate.c_str(), AutotestingSystem::Instance()->buildId.c_str(), AutotestingSystem::Instance()->deviceName.c_str());
+			testsName = Format("%s_%s_%s", AutotestingSystem::Instance()->buildDate.c_str(), AutotestingSystem::Instance()->buildId.c_str(), AutotestingSystem::Instance()->deviceName.c_str());
 		}
 
 		KeyedArchive* dbUpdateData;
@@ -157,7 +157,7 @@ namespace DAVA
 		}
 		else
 		{
-			testsName = Format("%s_%s_%s", AutotestingSystem::Instance()->testsDate.c_str(), AutotestingSystem::Instance()->buildId.c_str(), AutotestingSystem::Instance()->deviceName.c_str());
+			testsName = Format("%s_%s_%s", AutotestingSystem::Instance()->buildDate.c_str(), AutotestingSystem::Instance()->buildId.c_str(), AutotestingSystem::Instance()->deviceName.c_str());
 		}
 
 		KeyedArchive* dbUpdateData;
@@ -535,25 +535,22 @@ namespace DAVA
 	// auxiliary methods
 	void AutotestingDB::SetTestStarted()
 	{
-		Logger::Debug("AutotestingSystem::SetTestStarted Test%3d:%s", AutotestingSystem::Instance()->testIndex, AutotestingSystem::Instance()->testName.c_str());
+		Logger::Debug("AutotestingSystem::SetTestStarted Test%03d: %s", AutotestingSystem::Instance()->testIndex, AutotestingSystem::Instance()->testName.c_str());
 
 		MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 		KeyedArchive* currentRunArchive = FindOrInsertBuildArchive(dbUpdateObject, "autotesting_system");
-
-		KeyedArchive* deviceArchive;
-		String result;
-
-		deviceArchive = currentRunArchive->GetArchive(AutotestingSystem::Instance()->deviceName);
+		
+		KeyedArchive* deviceArchive = currentRunArchive->GetArchive(AutotestingSystem::Instance()->deviceName.c_str(), NULL);
+		
 		if (deviceArchive)
 		{
-			deviceArchive->SetString("started", "1");
+			deviceArchive->SetString("Started", "1");
 		}
 		else
 		{
 			AutotestingSystem::Instance()->ForceQuit(Format("Couldn't find archive for %s device", AutotestingSystem::Instance()->deviceName.c_str()));
 		}
-		
-		AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
+		SaveToDB(dbUpdateObject);
 		SafeRelease(dbUpdateObject);
 	}
 }
