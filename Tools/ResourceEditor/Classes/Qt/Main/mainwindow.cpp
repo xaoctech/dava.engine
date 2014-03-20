@@ -109,7 +109,7 @@
 #include "RecentFilesManager.h"
 #include "Deprecated/SceneValidator.h"
 
-#include "Tools/DebugTools/DebugTools.h"
+#include "Tools/DeveloperTools/DeveloperTools.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -121,7 +121,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
     , modificationWidget(NULL)
-    , debugTools(new DebugTools(this))
+    , developerTools(new DeveloperTools(this))
 {
 	new Console();
 	new ProjectManager();
@@ -178,7 +178,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	SafeDelete(addSwitchEntityDialog);
-    SafeDelete(debugTools);
+    SafeDelete(developerTools);
     
     TextureBrowser::Instance()->Release();
 	MaterialEditor::Instance()->Release();
@@ -705,7 +705,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
     // Debug functions
-	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), debugTools, SLOT(OnDebugFunctionsGridCopy()));
+	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
     
     
     
