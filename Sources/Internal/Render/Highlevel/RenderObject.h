@@ -162,8 +162,8 @@ public:
 
 	void SetLodIndex(const int32 lodIndex);
 	void SetSwitchIndex(const int32 switchIndex);
-    int32 GetLodIndex();
-    int32 GetSwitchIndex();
+    int32 GetLodIndex() const;
+    int32 GetSwitchIndex() const;
     int32 GetMaxLodIndex() const;
     int32 GetMaxLodIndexForSwitchIndex(int32 forSwitchIndex) const;
     int32 GetMaxSwitchIndex() const;

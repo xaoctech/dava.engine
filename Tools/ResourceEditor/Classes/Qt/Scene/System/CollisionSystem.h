@@ -59,7 +59,7 @@ public:
 	~SceneCollisionSystem();
 
 	void SetDrawMode(int mode);
-	int GetDrawMode();
+	int GetDrawMode() const;
 
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
 

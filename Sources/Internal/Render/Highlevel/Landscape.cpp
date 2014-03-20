@@ -1412,7 +1412,7 @@ void Landscape::SetHeightmapPathname(const FilePath & newHeightMapPath)
 	BuildLandscapeFromHeightmapImage(newHeightMapPath, bbox);
 }
 	
-float32 Landscape::GetLandscapeSize()
+float32 Landscape::GetLandscapeSize() const
 {
 	return bbox.GetSize().x;
 }
@@ -1423,7 +1423,7 @@ void Landscape::SetLandscapeSize(float32 newSize)
 	SetLandscapeSize(newLandscapeSize);
 }
 	
-float32 Landscape::GetLandscapeHeight()
+float32 Landscape::GetLandscapeHeight() const
 {
 	return bbox.GetSize().z;
 }

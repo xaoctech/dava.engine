@@ -121,7 +121,7 @@ public:
      */
    
     void SetSortingKey(uint32 key);
-    inline uint32 GetSortingKey();
+    inline uint32 GetSortingKey() const;
 
     /*sorting offset allowed in 0..31 range, 15 default, more - closer to camera*/
     void SetSortingOffset(uint32 offset);
@@ -231,7 +231,7 @@ inline void RenderBatch::SetIndexCount(uint32 _indexCount)
     indexCount = _indexCount;
 }
     
-inline uint32 RenderBatch::GetSortingKey()
+inline uint32 RenderBatch::GetSortingKey() const
 {
     return sortingKey&0x0f;
 }

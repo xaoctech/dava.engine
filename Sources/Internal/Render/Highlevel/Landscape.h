@@ -257,11 +257,11 @@ public:
 	
 	void SetHeightmapPathname(const FilePath & newPath);
 	
-	float32 GetLandscapeSize();
+	float32 GetLandscapeSize() const;
 	
 	void SetLandscapeSize(float32 newSize);
 
-	float32 GetLandscapeHeight();
+	float32 GetLandscapeHeight() const;
 	
 	void SetLandscapeHeight(float32 newHeight);
     

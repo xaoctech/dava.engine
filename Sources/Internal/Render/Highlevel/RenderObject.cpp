@@ -306,12 +306,12 @@ void RenderObject::SetSwitchIndex(int32 _switchIndex)
 	}
 }
 
-int32 RenderObject::GetLodIndex()
+int32 RenderObject::GetLodIndex() const
 {
     return lodIndex;
 }
 
-int32 RenderObject::GetSwitchIndex()
+int32 RenderObject::GetSwitchIndex() const
 {
     return switchIndex;
 }
