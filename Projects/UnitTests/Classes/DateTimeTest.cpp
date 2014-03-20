@@ -95,8 +95,6 @@ void DateTimeTest::TestFunction(TestTemplate<DateTimeTest>::PerfFuncData *data)
 
 void DateTimeTest::PrintDateTimeContent(const DateTime& inputTime)
 {
-  	//Logger::Debug("DateTime::AsWString(""d B, A, Y, H:M:S"") call:");
-    //Logger::Debug(WStringToString(inputTime.AsWString(L"%d %B, %A, %Y, %H:%M:%S")).c_str());
     int32 y = inputTime.GetYear();
     int32 month = inputTime.GetMonth();
     int32 day = inputTime.GetDay();
