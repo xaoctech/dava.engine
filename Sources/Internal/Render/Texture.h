@@ -301,7 +301,7 @@ protected:
 		uint32 fboID;
 		uint32 rboID;
 #if defined(__DAVAENGINE_ANDROID__)
-        uint32		stencil_rboID;
+        uint32 stencilRboID;
 #endif
 	};
 
@@ -315,7 +315,7 @@ public:							// properties for fast access
 	uint32		fboID;			// id of frame buffer object
 	uint32		rboID;
 #if defined(__DAVAENGINE_ANDROID__)
-    uint32		stencil_rboID;
+    uint32		stencilRboID;
 #endif
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	
