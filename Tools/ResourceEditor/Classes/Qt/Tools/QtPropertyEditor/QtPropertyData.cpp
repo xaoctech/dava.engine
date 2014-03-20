@@ -147,6 +147,7 @@ bool QtPropertyData::setData(const QVariant & value, int role)
 
 void QtPropertyData::BuildCurrentValue()
 {
+    // Build value
     const QVariant master = GetValueInternal();
     bool isAllEqual = true;
 
@@ -162,8 +163,25 @@ void QtPropertyData::BuildCurrentValue()
         }
     }
 
-	curValue = isAllEqual ? master : QVariant();
+    curValue = isAllEqual ? master : QVariant();
     isValuesMerged = isAllEqual;
+
+    // Update Qt MVC properties
+    if ( !isAllEqual )
+    {
+        QList<int> roles;
+        roles << Qt::DecorationRole;
+        for ( int iRole = 0; iRole < roles.size(); iRole++ )
+        {
+            const int role = roles.at(iRole);
+            auto it = style.find( role );
+            if ( it != style.end() )
+            {
+                *it = QVariant();
+            }
+        }
+    }
+
 }
 
 QVariant QtPropertyData::GetValue() const
@@ -442,7 +460,6 @@ QtPropertyModel* QtPropertyData::GetModel() const
 void QtPropertyData::Merge(QtPropertyData* data)
 {
     DVASSERT(data);
-    DVASSERT(this->MetaInfo() == data->MetaInfo());
 
     if ( !data->IsMergable() )
     {
@@ -474,7 +491,20 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     const QString childMergeName = key.isEmpty() ? data->curName : key;
     const int childIndex = childrenNames.indexOf(childMergeName);
     const QtPropertyData* child = childrenData.value(childIndex);
-    const bool needMerge = ( child ? ( child->MetaInfo() == data->MetaInfo() ) : false );
+    bool needMerge = true;
+
+    // On change of enabled/disabled states, it is necessary
+    // to re-merge child items
+
+    if (child != NULL)
+    {
+        needMerge &= ( child->MetaInfo() == data->MetaInfo() );
+        needMerge &= ( child->IsEnabled() == data->IsEnabled() );
+    }
+    else
+    {
+        needMerge = false;
+    }
 
     if (needMerge)
     {
@@ -484,7 +514,7 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     }
     else
     {
-        ChildAdd(childMergeName, data);
+        ChildInsert(childMergeName, data, childIndex); // insert items with same key in same place
     }
 }
 
@@ -528,14 +558,7 @@ QWidget* QtPropertyData::CreateEditor(QWidget *parent, const QStyleOptionViewIte
 
 bool QtPropertyData::EditorDone(QWidget *editor)
 {
-    const bool result = EditorDoneInternal(editor);
-    if (result)
-    {
-        const QVariant val = GetValueInternal();
-        SetValue( val );
-    }
-    
-    return result;
+    return EditorDoneInternal(editor);
 }
 
 bool QtPropertyData::SetEditorData(QWidget *editor)

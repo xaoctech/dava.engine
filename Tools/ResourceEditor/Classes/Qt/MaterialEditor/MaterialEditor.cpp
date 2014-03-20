@@ -194,7 +194,9 @@ void MaterialEditor::SelectMaterial(DAVA::NMaterial *material)
 
 void MaterialEditor::SelectEntities(DAVA::NMaterial *material)
 {
-	ui->materialTree->SelectEntities(material);
+    QList<DAVA::NMaterial *> materials;
+    materials << material;
+	ui->materialTree->SelectEntities(materials);
 }
 
 void MaterialEditor::SetCurMaterial(const QList< DAVA::NMaterial *>& materials)
