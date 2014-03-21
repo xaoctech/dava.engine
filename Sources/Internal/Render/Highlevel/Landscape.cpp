@@ -1797,6 +1797,8 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	}
     
     Landscape *newLandscape = static_cast<Landscape *>(newObject);
+
+    newLandscape->flags = flags;
 	   
     Color fogColorValue = GetFogColor();
     newLandscape->SetFogColor(fogColorValue);

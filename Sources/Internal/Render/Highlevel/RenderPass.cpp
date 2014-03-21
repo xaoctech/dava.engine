@@ -89,7 +89,7 @@ void RenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 void RenderPass::PrepareVisibilityArrays(Camera *camera, RenderSystem * renderSystem)
 {
     visibilityArray.Clear();
-    renderSystem->GetRenderHierarchy()->Clip(camera, &visibilityArray);
+    renderSystem->GetRenderHierarchy()->Clip(camera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA);
     renderPassBatchArray->Clear();
     renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera); 
 }
@@ -259,14 +259,23 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
     }*/
 }
 
+MainForwardRenderPass::~MainForwardRenderPass()
+{
+	SafeRelease(reflectionSprite);
+	SafeRelease(refractionSprite);
+	SafeRelease(reflectionTexture);
+	SafeRelease(refractionTexture);
+	SafeDelete(reflectionPass);
+	SafeDelete(refractionPass);
+}
+
 WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(name, id), passCamera(NULL)
 {
     const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_OPAQUE), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
+    
     //AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
 }
 WaterPrePass::~WaterPrePass()
@@ -276,7 +285,9 @@ WaterPrePass::~WaterPrePass()
 
 WaterReflectionRenderPass::WaterReflectionRenderPass(const FastName & name, RenderPassID id):WaterPrePass(name, id)
 {
-    
+	const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
+	AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);    
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
 }
 
 
@@ -300,7 +311,11 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
     Vector4 clipPlane(0,0,1, -(waterLevel-0.1f));
     passCamera->SetupDynamicParameters(&clipPlane);
     //add clipping plane
-    PrepareVisibilityArrays(passCamera, renderSystem);    
+    
+	visibilityArray.Clear();
+	renderSystem->GetRenderHierarchy()->Clip(passCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFLECTION);	
+	renderPassBatchArray->Clear();
+	renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, passCamera); 
     DrawLayers(passCamera);
 }
 
@@ -318,7 +333,10 @@ void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
     Vector4 clipPlane(0,0,-1, waterLevel+0.1f);
     passCamera->SetupDynamicParameters(&clipPlane);
     //add clipping plane
-    PrepareVisibilityArrays(passCamera, renderSystem);
+    visibilityArray.Clear();
+    renderSystem->GetRenderHierarchy()->Clip(passCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFRACTION);	
+    renderPassBatchArray->Clear();
+    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, passCamera); 
     DrawLayers(passCamera);
     
 }
