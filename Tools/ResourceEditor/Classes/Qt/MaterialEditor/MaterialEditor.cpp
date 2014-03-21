@@ -784,6 +784,7 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
             {
                 if (usebatch)
                 {
+                    QObject::disconnect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
                     curScene->BeginBatch( "Property multiedit" );
                 }
 
@@ -796,6 +797,8 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
                 if (usebatch)
                 {
                     curScene->EndBatch();
+                    QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
+                    SetCurMaterial( curMaterials );
                 }
             }
 		}
