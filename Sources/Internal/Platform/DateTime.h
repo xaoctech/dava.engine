@@ -49,8 +49,8 @@ public:
     /* Day of the month (1-31), attention: 0 as param will lead to last day of prev. month */
     /* Month (0-11) */
     /* Time zone offset in seconds.For example, for U.S. Eastern Standard Time, the value is -5*60*60 */
-    DateTime(uint32 year, uint32 month, uint32 day, int32 timeZoneOffset );
-    DateTime(uint32 year, uint32 month, uint32 day, uint32 hour, uint32 minute, uint32 second, int32 timeZoneOffset);
+    DateTime(int32 year, int32 month, int32 day, int32 timeZoneOffset );
+    DateTime(int32 year, int32 month, int32 day, int32 hour, int32 minute, int32 second, int32 timeZoneOffset);
     
     // return DateTime with shifted time zone offset to local one,
     // input timeStamp will be recognized as in utc
