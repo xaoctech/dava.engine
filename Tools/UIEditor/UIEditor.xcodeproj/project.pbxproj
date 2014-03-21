@@ -129,7 +129,6 @@
 		17660BC8186C22B400CF7A14 /* RulerController_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17660BC6186C22B400CF7A14 /* RulerController_moc.cpp */; };
 		17660BC9186C22B400CF7A14 /* RulerSettings_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17660BC7186C22B400CF7A14 /* RulerSettings_moc.cpp */; };
 		1767C4301636C8F5008D25BD /* UIStaticTextMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */; };
-		176834A816510788004800D7 /* uitextfieldpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */; };
 		176834AB16510910004800D7 /* uitextfieldpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */; };
 		176B4EFF186845A70020798C /* SpritesHelper.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176B4EFD186845A70020798C /* SpritesHelper.cpp */; };
 		176D3944162C2F7C0099AACF /* HierarchyTreeNode.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 176D3942162C2F7C0099AACF /* HierarchyTreeNode.cpp */; };
@@ -282,6 +281,9 @@
 		C709A15318D08EE4002B55AB /* localizationfontseditordialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C709A15218D08EE4002B55AB /* localizationfontseditordialog.ui */; };
 		C709A15B18D0B850002B55AB /* localizationfontseditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C709A15918D0B850002B55AB /* localizationfontseditordialog.cpp */; };
 		C709A15F18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C709A15E18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp */; };
+		C737D1ED18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C737D1EB18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp */; };
+		C737D1F418D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C737D1F318D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp */; };
+		C737D1F818D9C3AD005B4C8F /* textpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C737D1F718D9C3AD005B4C8F /* textpropertygridwidget.ui */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -448,7 +450,6 @@
 		02D69C9816F08CEE00F3803F /* ui_screenpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_screenpropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_sliderpropertygridwidget.h; sourceTree = "<group>"; };
 		02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_statepropertygridwidget.h; sourceTree = "<group>"; };
-		02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_uitextfieldpropertygridwidget.h; sourceTree = "<group>"; };
 		02E9E447173A3AED00C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E448173A3AED00C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		1700E416162EB2C20069650D /* basepropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basepropertygridwidget.cpp; path = PropertyGridWidgets/basepropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -526,7 +527,6 @@
 		17660BC7186C22B400CF7A14 /* RulerSettings_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RulerSettings_moc.cpp; path = Ruler/RulerSettings_moc.cpp; sourceTree = "<group>"; };
 		1767C42E1636C8F5008D25BD /* UIStaticTextMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIStaticTextMetadata.cpp; path = Metadata/UIStaticTextMetadata.cpp; sourceTree = "<group>"; };
 		1767C42F1636C8F5008D25BD /* UIStaticTextMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIStaticTextMetadata.h; path = Metadata/UIStaticTextMetadata.h; sourceTree = "<group>"; };
-		176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = uitextfieldpropertygridwidget.ui; sourceTree = "<group>"; };
 		176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uitextfieldpropertygridwidget.cpp; path = PropertyGridWidgets/uitextfieldpropertygridwidget.cpp; sourceTree = "<group>"; };
 		176834AA16510910004800D7 /* uitextfieldpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uitextfieldpropertygridwidget.h; path = PropertyGridWidgets/uitextfieldpropertygridwidget.h; sourceTree = "<group>"; };
 		176B4EFD186845A70020798C /* SpritesHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpritesHelper.cpp; path = Helpers/SpritesHelper.cpp; sourceTree = "<group>"; };
@@ -795,6 +795,12 @@
 		C709A15918D0B850002B55AB /* localizationfontseditordialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = localizationfontseditordialog.cpp; path = Dialogs/localizationfontseditordialog.cpp; sourceTree = "<group>"; };
 		C709A15A18D0B850002B55AB /* localizationfontseditordialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = localizationfontseditordialog.h; path = Dialogs/localizationfontseditordialog.h; sourceTree = "<group>"; };
 		C709A15E18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = localizationfontseditordialog_moc.cpp; sourceTree = "<group>"; };
+		C737D1EB18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uistatictextpropertygridwidget.cpp; path = PropertyGridWidgets/uistatictextpropertygridwidget.cpp; sourceTree = "<group>"; };
+		C737D1EC18D9B855005B4C8F /* uistatictextpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uistatictextpropertygridwidget.h; path = PropertyGridWidgets/uistatictextpropertygridwidget.h; sourceTree = "<group>"; };
+		C737D1F318D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uistatictextpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
+		C737D1F518D9C283005B4C8F /* ui_textpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_textpropertygridwidget.h; path = GeneratedFiles/ui_textpropertygridwidget.h; sourceTree = SOURCE_ROOT; };
+		C737D1F618D9C310005B4C8F /* ui_localizationfontseditordialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_localizationfontseditordialog.h; path = GeneratedFiles/ui_localizationfontseditordialog.h; sourceTree = SOURCE_ROOT; };
+		C737D1F718D9C3AD005B4C8F /* textpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = textpropertygridwidget.ui; sourceTree = "<group>"; };
 		CBE0854C74E7E8A8F67923BE /* yaml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = yaml_macos; path = ../dava.framework/Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E8FFFF9D16FB17A500E315AE /* ui_spinnerpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_spinnerpropertygridwidget.h; sourceTree = "<group>"; };
@@ -946,6 +952,7 @@
 		02D69C7616F08CED00F3803F /* PropertyGridWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				C737D1F318D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp */,
 				7426F56418D85918003D3D25 /* rootpropertygridwidget_moc.cpp */,
 				1746932718A3E99D0089EFF5 /* particleeffectpropertygridwidget_moc.cpp */,
 				749B306117E0B9FD00900A2E /* scrollcontrolpropertygridwidget_moc.cpp */,
@@ -1039,6 +1046,8 @@
 				17CED79B163E829600F9B02D /* statepropertygridwidget.h */,
 				749D71251636920600C99861 /* textpropertygridwidget.cpp */,
 				749D71261636920600C99861 /* textpropertygridwidget.h */,
+				C737D1EB18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp */,
+				C737D1EC18D9B855005B4C8F /* uistatictextpropertygridwidget.h */,
 				176834A916510910004800D7 /* uitextfieldpropertygridwidget.cpp */,
 				176834AA16510910004800D7 /* uitextfieldpropertygridwidget.h */,
 			);
@@ -1306,7 +1315,7 @@
 				7482C8CB1688AAA800435155 /* sliderpropertygridwidget.ui */,
 				17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */,
 				02D69A5316F0783000F3803F /* statepropertygridwidget.ui */,
-				176834A716510788004800D7 /* uitextfieldpropertygridwidget.ui */,
+				C737D1F718D9C3AD005B4C8F /* textpropertygridwidget.ui */,
 			);
 			name = PropertyGridWidgets;
 			sourceTree = "<group>";
@@ -1388,7 +1397,6 @@
 		C15C2FC9162AD5DD00818631 /* GeneratedFiles */ = {
 			isa = PBXGroup;
 			children = (
-				17A4F58718A3E23F00182E44 /* ui_particleeffectpropertygridwidget.h */,
 				17716B5518A90DB0005BA215 /* Guides */,
 				17660BBD186B21EF00CF7A14 /* Ruler */,
 				02D69C2D16F08CED00F3803F /* Commands */,
@@ -1423,6 +1431,7 @@
 				C18593FF16F31C1C005D30E2 /* ui_aggregatorpropertygridwidget.h */,
 				C18593F716F314DF005D30E2 /* ui_createaggregatordlg.h */,
 				748A9428170C5C3E0087E18A /* ui_listpropertygridwidget.h */,
+				C737D1F618D9C310005B4C8F /* ui_localizationfontseditordialog.h */,
 				02D69C8916F08CED00F3803F /* ui_backgroundpropertygridwidget.h */,
 				02D69C8A16F08CED00F3803F /* ui_basepropertygridwidget.h */,
 				02D69C8B16F08CED00F3803F /* ui_controlpropertygridwidget.h */,
@@ -1435,15 +1444,16 @@
 				02D69C9216F08CED00F3803F /* ui_librarywidget.h */,
 				02D69C9316F08CEE00F3803F /* ui_localizationeditordialog.h */,
 				02D69C9416F08CEE00F3803F /* ui_mainwindow.h */,
+				17A4F58718A3E23F00182E44 /* ui_particleeffectpropertygridwidget.h */,
 				02D69C9516F08CEE00F3803F /* ui_platformpropertygridwidget.h */,
 				02D69C9616F08CEE00F3803F /* ui_propertygridcontainerwidget.h */,
+				17FC1337189F905A009D83A8 /* ui_previewsettingsdialog.h */,
 				02D69C9716F08CEE00F3803F /* ui_rectpropertygridwidget.h */,
 				02D69C9816F08CEE00F3803F /* ui_screenpropertygridwidget.h */,
 				749B306517E0BE2E00900A2E /* ui_scrollcontrolpropertygridwidget.h */,
 				02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */,
 				02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */,
-				02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */,
-				17FC1337189F905A009D83A8 /* ui_previewsettingsdialog.h */,
+				C737D1F518D9C283005B4C8F /* ui_textpropertygridwidget.h */,
 			);
 			path = GeneratedFiles;
 			sourceTree = "<group>";
@@ -1687,7 +1697,6 @@
 				17FF15E116400160001B130F /* createscreendlg.ui in Bundle Resources */,
 				17FF15E216400160001B130F /* fontmanagerdialog.ui in Bundle Resources */,
 				17FF15F91640069E001B130F /* localizationeditordialog.ui in Bundle Resources */,
-				176834A816510788004800D7 /* uitextfieldpropertygridwidget.ui in Bundle Resources */,
 				7482C8CC1688AAA800435155 /* sliderpropertygridwidget.ui in Bundle Resources */,
 				74EED62F16B187CF00262D63 /* alignspropertygridwidget.ui in Bundle Resources */,
 				02D69A5516F0783000F3803F /* platformpropertygridwidget.ui in Bundle Resources */,
@@ -1701,6 +1710,7 @@
 				C709A15318D08EE4002B55AB /* localizationfontseditordialog.ui in Bundle Resources */,
 				C18593F116F30D67005D30E2 /* controlpropertygridwidget.ui in Bundle Resources */,
 				17A4F58618A3E1ED00182E44 /* particleeffectpropertygridwidget.ui in Bundle Resources */,
+				C737D1F818D9C3AD005B4C8F /* textpropertygridwidget.ui in Bundle Resources */,
 				C18593F216F30D67005D30E2 /* flagspropertygridwidget.ui in Bundle Resources */,
 				C18593FB16F31B2F005D30E2 /* aggregatorpropertygridwidget.ui in Bundle Resources */,
 				17C5CCD516F31E5300FB90B4 /* spinnerpropertygridwidget.ui in Bundle Resources */,
@@ -1923,6 +1933,7 @@
 				02D69CE316F08CEE00F3803F /* propertygridcontainerwidget_moc.cpp in Build Sources */,
 				02D69CE416F08CEE00F3803F /* PropertyGridWidgetData_moc.cpp in Build Sources */,
 				02D69CE516F08CEE00F3803F /* PropertyGridWidgetsFactory_moc.cpp in Build Sources */,
+				C737D1F418D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CE616F08CEE00F3803F /* rectpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CE716F08CEE00F3803F /* screenpropertygridwidget_moc.cpp in Build Sources */,
 				02D69CE816F08CEE00F3803F /* sliderpropertygridwidget_moc.cpp in Build Sources */,
@@ -1931,6 +1942,7 @@
 				02D69CEB16F08CEE00F3803F /* uitextfieldpropertygridwidget_moc.cpp in Build Sources */,
 				17FC1336189F8F50009D83A8 /* previewsettingsdialog.cpp in Build Sources */,
 				02D69CED16F08CEE00F3803F /* StateComboBoxItemDelegate_moc.cpp in Build Sources */,
+				C737D1ED18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp in Build Sources */,
 				C18593D616F30B56005D30E2 /* LibraryController.cpp in Build Sources */,
 				C18593E216F30C06005D30E2 /* HierarchyTreeAggregatorControlNode.cpp in Build Sources */,
 				C18593E316F30C06005D30E2 /* HierarchyTreeAggregatorNode.cpp in Build Sources */,
