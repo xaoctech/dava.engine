@@ -44,16 +44,18 @@ struct PropEditorUserData : public QtPropertyData::UserData
 		COPY
 	};
 
-	PropEditorUserData(PropertyType _type, QtPropertyData *_associatedData = NULL, bool _isFavorite = false) : 
-		type(_type),
-		associatedData(_associatedData) ,
-		isFavorite(_isFavorite)
+	PropEditorUserData(PropertyType _type, QtPropertyData *_associatedData = NULL, bool _isFavorite = false, DAVA::Entity *_entity = NULL)
+		: type(_type)
+		, associatedData(_associatedData)
+		, isFavorite(_isFavorite)
+        , entity(_entity)
 	{}
 
 	PropertyType type;
 	QtPropertyData *associatedData;
 	QString realPath;
 	bool isFavorite;
+    DAVA::Entity *entity;
 };
 
 class PropertyEditor : public QtPropertyEditor
