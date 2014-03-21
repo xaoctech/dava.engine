@@ -8,6 +8,10 @@ normalmap = 1,
 vegetationmap = 2
 <FRAGMENT_SHADER>
 
+#if defined(FRAMEBUFFER_FETCH)
+#extension GL_EXT_shader_framebuffer_fetch : require
+#endif
+
 #ifdef GL_ES
 // define default precision for float, vec, mat.
 precision highp float;
@@ -359,8 +363,15 @@ void main()
 #endif
     
 #if defined(MATERIAL_GRASS)
-    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+
     gl_FragColor.a = gl_FragColor.a * varTexCoord2.x;
+    
+#if defined(FRAMEBUFFER_FETCH)
+    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
+#else
+    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+#endif
+
 #endif
     
     

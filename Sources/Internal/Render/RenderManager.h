@@ -93,8 +93,8 @@ public:
 		Caps() 
 		{
 			isHardwareCursorSupported = false;
-			isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
-			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+			isFramebufferFetchSupported = isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+			isVertexTextureUnitsSupported = isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
 		}
 
         Core::eRenderer renderer;
@@ -106,6 +106,8 @@ public:
         bool isFloat32Supported;
 		bool isDXTSupported;
 		bool isATCSupported;
+        bool isVertexTextureUnitsSupported;
+        bool isFramebufferFetchSupported;
 	};
     
     struct Stats
