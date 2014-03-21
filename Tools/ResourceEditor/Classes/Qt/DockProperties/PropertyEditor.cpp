@@ -52,12 +52,15 @@
 #include "Commands2/InspMemberModifyCommand.h"
 #include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
+#include "Commands2/CloneLastBatchCommand.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Project/ProjectManager.h"
 
 #include "PropertyEditorStateHelper.h"
 
 #include "ActionComponentEditor.h"
+
+#include "Deprecated/SceneValidator.h"
 
 PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSignals /*= true*/)
 	: QtPropertyEditor(parent)
@@ -314,6 +317,17 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 				// Add optional button to bake transform render object
 				QtPropertyToolButton * bakeButton = CreateButton(data, QIcon(":/QtIcons/transform_bake.png"), "Bake Transform");
 				QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(ActionBakeTransform()));
+
+                QtPropertyDataIntrospection *introData = dynamic_cast<QtPropertyDataIntrospection *>(data);
+                if(NULL != introData)
+                {
+                    DAVA::RenderObject *renderObject = (DAVA::RenderObject *) introData->object;
+                    if(SceneValidator::IsObjectHasDifferentLODsCount(renderObject))
+                    {
+                        QtPropertyToolButton * cloneBatches = CreateButton(data, QIcon(":/QtIcons/clone_batches.png"), "Clone batches for LODs correction");
+                        QObject::connect(cloneBatches, SIGNAL(pressed()), this, SLOT(CloneRenderBatchesToFixSwitchLODs()));
+                    }
+                }
 			}
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderBatch>() == meta)
 			{
@@ -597,6 +611,7 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	case CMDID_CONVERT_TO_SHADOW:
 	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
 	case CMDID_DELETE_RENDER_BATCH:
+	case CMDID_CLONE_LAST_BATCH:
         {
             bool doReset = (command->GetEntity() == NULL);
             for ( int i = 0; !doReset && i < curNodes.size(); i++ )
@@ -610,8 +625,8 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
             {
                 ResetProperties();
             }
+            break;
         }
-		break;
 	default:
 		OnUpdateTimeout();
 		break;
@@ -1086,4 +1101,24 @@ QtPropertyToolButton * PropertyEditor::CreateButton( QtPropertyData *data, const
 	button->setAutoRaise(true);
 
 	return button;
+}
+
+void PropertyEditor::CloneRenderBatchesToFixSwitchLODs()
+{
+    QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+    if(NULL != btn)
+    {
+        QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+        if(NULL != data)
+        {
+            DAVA::RenderObject *renderObject = (DAVA::RenderObject *)data->object;
+
+            SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+            if(curScene && renderObject)
+            {
+                curScene->Exec(new CloneLastBatchCommand(renderObject));
+            }
+        }
+    }
 }
