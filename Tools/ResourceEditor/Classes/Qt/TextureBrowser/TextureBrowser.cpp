@@ -688,6 +688,7 @@ void TextureBrowser::texturePropertyChanged(int type)
 	// settings that need texture to reconvert
 	if( type == TextureProperties::PROP_FORMAT ||
 		type == TextureProperties::PROP_MIPMAP ||
+        type == TextureProperties::PROP_NORMALMAP||
 		type == TextureProperties::PROP_SIZE)
 	{
 		// set current Texture view and force texture convertion

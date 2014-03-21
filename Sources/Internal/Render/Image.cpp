@@ -145,7 +145,7 @@ void Image::MakePink(bool checkers)
 }
     
     
-Vector<Image *> Image::CreateMipMapsImages()
+Vector<Image *> Image::CreateMipMapsImages(bool isNormalMap /* = false */)
 {
     Vector<Image *> imageSet;
 
@@ -171,7 +171,7 @@ Vector<Image *> Image::CreateMipMapsImages()
 
         ImageConvert::DownscaleTwiceBillinear(format, format,
             image0->data, imageWidth, imageHeight, imageWidth * formatSize,
-            newData, newWidth, newHeight, newWidth * formatSize);
+            newData, newWidth, newHeight, newWidth * formatSize, isNormalMap);
 
         curMipMapLevel++;
 

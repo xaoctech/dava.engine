@@ -77,7 +77,7 @@ public:
     void SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback = 0);
 #endif
 
-    Vector<Image *> CreateMipMapsImages();
+    Vector<Image *> CreateMipMapsImages(bool isNormalMap = false);
 
     // changes size of image canvas to required size, if new size is bigger, sets 0 to all new pixels
     void ResizeCanvas(uint32 newWidth, uint32 newHeight);
