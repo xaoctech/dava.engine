@@ -110,6 +110,8 @@ public:
 
     uint32 GetMemoryUsageBytes() const;
     float32 GetTotalCPUUsage() const;
+    int32 GetChannelsUsed() const;
+    int32 GetChannelsMax() const;
 
 protected:
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);

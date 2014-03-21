@@ -323,6 +323,22 @@ float32 SoundSystem::GetTotalCPUUsage() const
     return cpuTotal;
 }
 
+int32 SoundSystem::GetChannelsUsed() const
+{
+    int32 channels = -1;
+    FMOD_VERIFY(fmodSystem->getChannelsPlaying(&channels));
+
+    return channels;
+}
+
+int32 SoundSystem::GetChannelsMax() const
+{
+    int32 softChannels = -1;
+    FMOD_VERIFY(fmodSystem->getSoftwareChannels(&softChannels));
+
+    return softChannels;
+}
+
 void SoundSystem::Resume()
 {
 #ifdef __DAVAENGINE_IPHONE__
