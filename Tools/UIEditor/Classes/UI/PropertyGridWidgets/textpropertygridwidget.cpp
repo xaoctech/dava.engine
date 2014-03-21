@@ -40,6 +40,8 @@
 #include "WidgetSignalsBlocker.h"
 #include "BackgroundGridWidgetHelper.h"
 
+#include "EditorFontManager.h"
+
 static const QString TEXTFIELD_PROPERTY_BLOCK_NAME = "Text";
 
 TextPropertyGridWidget::TextPropertyGridWidget(QWidget *parent) :
@@ -352,41 +354,6 @@ void TextPropertyGridWidget::CustomProcessComboboxValueChanged(const PROPERTYGRI
     SafeRelease(command);
 }
 
-QString TextPropertyGridWidget::GetFontPresetNameFromFont(Font* font)
-{
-    QString fontPresetName;
-    
-    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
-    
-    Map<Font*, String> ::const_iterator findIt = fonts.find(font);
-    Map<Font*, String> ::const_iterator endIt = fonts.end();
-    if(findIt != endIt)
-    {
-        fontPresetName = QString::fromStdString(findIt->second);
-    }
-    return fontPresetName;
-}
-
-Font* TextPropertyGridWidget::GetFontFromFontPresetName(const QString& fontPresetName)
-{
-    Font* font = NULL;
-    String fontName(fontPresetName.toStdString());
-    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
-    
-    Map<Font*, String> ::const_iterator it = fonts.begin();
-    Map<Font*, String> ::const_iterator endIt = fonts.end();
-    
-    for(; it != endIt; ++it)
-    {
-        if(it->second == fontName)
-        {
-            font = it->first;
-            break;
-        }
-    }
-    return font;
-}
-
 void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
                                                                 const QString& value)
 {
@@ -406,9 +373,9 @@ void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget
 	else if(senderWidget == ui->fontPresetComboBox)
     {
         Font* curFont = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
-        QString curFontPresetName = GetFontPresetNameFromFont(curFont);
+        QString curFontPresetName = EditorFontManager::Instance()->GetFontName(curFont);
         QString newFontPresetName = senderWidget->currentText();
-        Font* newFont = GetFontFromFontPresetName(newFontPresetName);
+        Font* newFont = EditorFontManager::Instance()->GetFont(newFontPresetName.toStdString());
         
         Logger::Debug("TextPropertyGridWidget::ProcessComboboxValueChanged curFont=%x (%s) newFont=%x (%s)", curFont, curFontPresetName.toStdString().c_str(), newFont, newFontPresetName.toStdString().c_str());
         
@@ -456,9 +423,9 @@ void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* co
     {
         Font* propertyValue = PropertiesHelper::GetPropertyValue<Font*>(this->activeMetadata, propertyName, isPropertyValueDiffers);
         
-        QString fontPresetName = GetFontPresetNameFromFont(propertyValue);
+        QString fontPresetName = EditorFontManager::Instance()->GetFontName(propertyValue);
         
-        UpdateWidgetPalette(comboBoxWidget, propertyName); //TODO: what is it for?
+        UpdateWidgetPalette(comboBoxWidget, propertyName); //TODO: what is it for? - needed for controls like UIButton
         
         int index = comboBoxWidget->findText(fontPresetName); //TODO: remove debug log
         Logger::Debug("TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue %s index=%d", fontPresetName.toStdString().c_str(), index);

@@ -79,6 +79,11 @@ void FontManager::UnregisterFont(Font *font)
 {
 	registeredFonts.erase(font);
 }
+    
+void FontManager::Reset()
+{
+    registeredFonts.clear();
+}
 	
 void FontManager::SetFontName(Font* font, const String& name)
 {

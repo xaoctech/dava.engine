@@ -65,6 +65,11 @@ public:
 	 \brief Unregister font.
 	 */
 	void UnregisterFont(Font *font);
+    /**
+	 \brief Unregister all fonts.
+	 */
+    void Reset();
+    
 	/**
 	 \brief Set font name.
 	 */
