@@ -64,7 +64,9 @@ void UIStaticTextMetadata::SetFont(Font * font)
     }
     if (font)
     {
-        font->SetSize(GetFontSize());
+        //DF-3435 correct font size is set in font preset, not in control
+        // font size is defined in font preset and can be changed only by modifying font preset
+        //font->SetSize(GetFontSize());
         GetActiveStaticText()->SetFont(font);
     }
 }
@@ -91,22 +93,23 @@ float UIStaticTextMetadata::GetFontSize() const
     return -1.0f;
 }
 
-void UIStaticTextMetadata::SetFontSize(float fontSize)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
-
-    Font *font = GetActiveStaticText()->GetFont();
-    if (font)
-    {
-        Font* newFont = font->Clone();
-        newFont->SetSize(fontSize);
-        GetActiveStaticText()->SetFont(newFont);
-        newFont->Release();
-    }
-}
+//DF-3435 font size is defined in font preset and can be changed only by modifying font preset
+//void UIStaticTextMetadata::SetFontSize(float fontSize)
+//{
+//    if (!VerifyActiveParamID())
+//    {
+//        return;
+//    }
+//
+//    Font *font = GetActiveStaticText()->GetFont();
+//    if (font)
+//    {
+//        Font* newFont = font->Clone();
+//        newFont->SetSize(fontSize);
+//        GetActiveStaticText()->SetFont(newFont);
+//        newFont->Release();
+//    }
+//}
 
 // Initialize the control(s) attached.
 void UIStaticTextMetadata::InitializeControl(const String& controlName, const Vector2& position)
@@ -118,6 +121,7 @@ void UIStaticTextMetadata::InitializeControl(const String& controlName, const Ve
     {
         UIStaticText* staticText = dynamic_cast<UIStaticText*>(this->treeNodeParams[i].GetUIControl());
 
+        //TODO: remove default font, or make it a default font preset
         staticText->SetFont(EditorFontManager::Instance()->GetDefaultFont());
         staticText->GetBackground()->SetDrawType(UIControlBackground::DRAW_ALIGNED);
         staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
