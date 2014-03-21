@@ -95,6 +95,9 @@
  name: "Normalized BlinnPhong Per Vertex Opaque"
  path: NormalizedBlinnPhongPerVertex.Opaque.material
 -
+ name: "Normalized BlinnPhong Per Vertex Alphatest"
+ path: NormalizedBlinnPhongPerVertex.Alphatest.material
+-
  name: "Normalized BlinnPhong Per Vertex Alphatest + Alphablend"
  path: NormalizedBlinnPhongPerVertex.Alphatest.Alphablend.material
 -
@@ -106,6 +109,9 @@
 -
  name: "Normalized BlinnPhong With All Qualities Opaque"
  path: NormalizedBlinnPhongAllQualities.Opaque.material
+-
+ name: "Normalized BlinnPhong With All Qualities Alphatest"
+ path: NormalizedBlinnPhongAllQualities.Alphatest.material
 -
  name: "Normalized BlinnPhong With All Qualities Alphatest + Alphablend"
  path: NormalizedBlinnPhongAllQualities.Alphatest.Alphablend.material
