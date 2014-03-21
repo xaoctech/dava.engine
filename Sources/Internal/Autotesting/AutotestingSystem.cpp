@@ -150,6 +150,8 @@ void AutotestingSystem::FetchParametersFromIdTxt()
 	framework = option->GetString("framework");
 	branchRev = option->GetString("branchRev");
 	frameworkRev = option->GetString("frameworkRev");
+
+	SafeRelease(option);
 }
 
 // Get test parameters from autotesting db
@@ -203,6 +205,8 @@ void AutotestingSystem::SetUpConnectionToDB()
 	{
 		ForceQuit("Couldn't connect to Test DB");
 	}
+
+	SafeRelease(option);
 }
 
 void AutotestingSystem::SetUpTestArchive()

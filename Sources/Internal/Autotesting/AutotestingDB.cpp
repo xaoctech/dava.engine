@@ -222,7 +222,12 @@ namespace DAVA
 
 		KeyedArchive* dbUpdateData = FindOrInsertBuildArchive(dbUpdateObject, "");
 
-		KeyedArchive* currentGroupArchive = SafeRetain(dbUpdateData->GetArchive(AutotestingSystem::Instance()->groupName, NULL));
+		KeyedArchive* currentGroupArchive = dbUpdateData->GetArchive(AutotestingSystem::Instance()->groupName, NULL);
+		
+		if (! currentGroupArchive)
+		{
+			AutotestingSystem::Instance()->ForceQuit(Format("Couldn't find archive for %s device", AutotestingSystem::Instance()->groupName.c_str()));
+		}
 
 		KeyedArchive* currentTestArchive = SafeRetain(currentGroupArchive->GetArchive(testId, NULL));
 
