@@ -491,6 +491,7 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     const QString childMergeName = key.isEmpty() ? data->curName : key;
     bool needMerge = true;
 
+    // Looking for child item to merge: name and enabled state should be same
     int childIndex = -1;
     for (int i = 0; i < childrenNames.size(); i++)
     {
@@ -525,7 +526,8 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     }
     else
     {
-        ChildInsert(childMergeName, data, childIndex); // insert items with same key in same place
+        const int insertIndex = childrenNames.indexOf(childMergeName);
+        ChildInsert(childMergeName, data, insertIndex); // insert items with same key in same place
     }
 }
 
