@@ -64,6 +64,8 @@ namespace DAVA
 		
 		//INTROSPECTION used intentionally instead of INTROSPECTION_EXTEND in order to hide underlying details of SkyboxRenderObject implementation
 		INTROSPECTION(SkyboxRenderObject,
+                      PROPERTY("visibleReflection", "Visible Reflection", GetReflectionVisible, SetReflectionVisible, I_SAVE | I_VIEW | I_EDIT)
+                      PROPERTY("visibleRefraction", "Visible Refraction", GetRefractionVisible, SetRefractionVisible, I_SAVE | I_VIEW | I_EDIT)
 					  PROPERTY("texture", "Texture Path", GetTexture, SetTexture, I_SAVE | I_VIEW | I_EDIT)
 					  PROPERTY("verticalOffset", "Vertical Offset", GetOffsetZ, SetOffsetZ, I_SAVE | I_VIEW)
 					  PROPERTY("rotationAngle", "Rotation", GetRotationZ, SetRotationZ, I_SAVE)

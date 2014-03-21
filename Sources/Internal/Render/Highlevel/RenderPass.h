@@ -135,6 +135,7 @@ class MainForwardRenderPass : public RenderPass
     Sprite *reflectionSprite, *refractionSprite;
 public:
     MainForwardRenderPass(const FastName & name, RenderPassID id);
+	~MainForwardRenderPass();
 	virtual void Draw(Camera * camera, RenderSystem * renderSystem);
 };
 
