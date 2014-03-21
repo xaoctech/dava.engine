@@ -262,7 +262,7 @@ void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *comman
 		command->GetId() == CMDID_INSP_MEMBER_MODIFY || 
 		command->GetId() == CMDID_META_OBJ_MODIFY)
 	{
-		SetCurMaterial(curMaterials);
+		//SetCurMaterial(curMaterials);
 	}
 }
 
@@ -363,28 +363,31 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
                     int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
 
-                    // self property
-                    if(memberFlags & DAVA::I_EDIT)
+                    if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
                     {
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemFlag()));
-                    }
-                    else
-                    {
-                        dynamicMember->SetEnabled(false);
-                        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                        // self property
+                        if(memberFlags & DAVA::I_EDIT)
                         {
-                            dynamicMember->ChildGet(m)->SetEnabled(false);
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemFlag()));
                         }
+                        else if(memberFlags)
+                        {
+                            dynamicMember->SetEnabled(false);
+                            for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                            {
+                                dynamicMember->ChildGet(m)->SetEnabled(false);
+                            }
 
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddFlag()));
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddFlag()));
 
-                        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+                            dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+                        }
                     }
 
 				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
@@ -404,44 +407,47 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
 
 			    for(size_t i = 0; i < membersList.size(); ++i)
 			    {
-				    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+                    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 
-				    // self property
-				    if(memberFlags & DAVA::I_EDIT)
-				    {
-					    QtPropertyToolButton* btn = dynamicMember->AddButton();
-					    btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-					    btn->setIconSize(QSize(14, 14));
-					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
+                    if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
+                    {
+				        // self property
+				        if(memberFlags & DAVA::I_EDIT)
+				        {
+					        QtPropertyToolButton* btn = dynamicMember->AddButton();
+					        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+					        btn->setIconSize(QSize(14, 14));
+					        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
 
-					    // isn't set in parent or shader
-					    if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
-					    {
-						    dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
-					    }
-				    }
-				    // not self property (is set in parent or shader)
-				    else
-				    {
-					    // disable property and it childs
-					    dynamicMember->SetEnabled(false);
-					    for(int m = 0; m < dynamicMember->ChildCount(); ++m)
-					    {
-						    dynamicMember->ChildGet(m)->SetEnabled(false);
-					    }
+					        // isn't set in parent or shader
+					        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+					        {
+						        dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+					        }
+				        }
+				        // not self property (is set in parent or shader)
+				        else
+				        {
+					        // disable property and it childs
+					        dynamicMember->SetEnabled(false);
+					        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+					        {
+						        dynamicMember->ChildGet(m)->SetEnabled(false);
+					        }
 
-					    QtPropertyToolButton* btn = dynamicMember->AddButton();
-					    btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-					    btn->setIconSize(QSize(14, 14));
-					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
+					        QtPropertyToolButton* btn = dynamicMember->AddButton();
+					        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+					        btn->setIconSize(QSize(14, 14));
+					        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
 
-					    dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+					        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
 
-					    // required by shader
-					    //if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
-					    //{	}
-				    }
+					        // required by shader
+					        //if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
+					        //{	}
+				        }
+                    }
 
 				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
 			    }
@@ -507,36 +513,40 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
                     QStringList path;
 					path.append(dataSourcePath.GetAbsolutePathname().c_str());
                     dynamicMember->SetValidator(new TexturePathValidator(path));
-                    // self property
-                    if(memberFlags & DAVA::I_EDIT)
+                    
+                    if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
                     {
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
-
-                        // isn't set in parent or shader
-                        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+                        // self property
+                        if(memberFlags & DAVA::I_EDIT)
                         {
-                            dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
+
+                            // isn't set in parent or shader
+                            if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+                            {
+                                dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+                            }
                         }
-                    }
-                    // not self property (is set in parent or shader)
-                    else
-                    {
-                        // disable property and it childs
-                        dynamicMember->SetEnabled(false);
-                        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                        // not self property (is set in parent or shader)
+                        else
                         {
-                            dynamicMember->ChildGet(m)->SetEnabled(false);
+                            // disable property and it childs
+                            dynamicMember->SetEnabled(false);
+                            for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                            {
+                                dynamicMember->ChildGet(m)->SetEnabled(false);
+                            }
+
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
+
+                            dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
                         }
-
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
-
-                        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
                     }
 
                     texturesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
@@ -559,16 +569,16 @@ void MaterialEditor::FillMaterialTemplates(const QList<DAVA::NMaterial *>& mater
     bool enableTemplate = ( nMaterials > 0 );
     bool isTemplatesSame = true;
     int rowToSelect = -1;
-    const QString curMaterialTemplate = ( nMaterials > 0 ) ? materials[0]->GetMaterialTemplate()->name.c_str() : QString();
+    const QString curMaterialTemplate = ( nMaterials > 0 && NULL != materials[0]->GetMaterialTemplate()) ? materials[0]->GetMaterialTemplate()->name.c_str() : QString();
     QString placeHolder;
 
-    if ( nMaterials > 0 )
+    if ( nMaterials > 0)
     {
         for ( int i = 0; i < nMaterials; i++ )
         {
             DAVA::NMaterial *material = materials[i];
             // Test template name
-            if ( isTemplatesSame && (curMaterialTemplate != material->GetMaterialTemplate()->name.c_str()) )
+            if ( isTemplatesSame && (NULL != materials[0]->GetMaterialTemplate()) && (curMaterialTemplate != material->GetMaterialTemplate()->name.c_str()) )
             {
                 isTemplatesSame = false;
             }
@@ -798,7 +808,6 @@ void MaterialEditor::OnRemFlag()
         }
     }
 }
-
 
 void MaterialEditor::OnTemplateChanged(int index)
 {
