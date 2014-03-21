@@ -310,28 +310,6 @@ void EditorMaterialSystem::ProcessCommand(const Command2 *command, bool redo)
             AddMaterial(swCommand->oldBatch->GetMaterial(), swCommand->GetEntity(), swCommand->oldBatch);
         }
     }
-//     else if(commandID == CMDID_CLONE_LAST_BATCH)
-//     {
-//         CloneLastBatchCommand *cloneCommand = (CloneLastBatchCommand *) command;
-//         const DAVA::Vector<DAVA::RenderBatch *> & commandBatches = cloneCommand->GetNewBatches();
-//         if(redo)
-//         {
-//             const DAVA::uint32 count = (DAVA::uint32)commandBatches.size();
-//             for(DAVA::uint32 i = 0; i < count; ++i)
-//             {
-//                 AddMaterial(commandBatches[i]->GetMaterial(), command->GetEntity(), commandBatches[i]);
-//             }
-//         }
-//         else
-//         {
-//             const DAVA::uint32 count = (DAVA::uint32)commandBatches.size();
-//             for(DAVA::uint32 i = 0; i < count; ++i)
-//             {
-//                 RemoveMaterial(commandBatches[i]->GetMaterial());
-//             }
-//         }
-//     }
-
 }
 
 void EditorMaterialSystem::ProcessUIEvent(DAVA::UIEvent *event)
