@@ -426,12 +426,6 @@ void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget
         BaseCommand* setFontCommand = new ChangePropertyCommand<Font*>(activeMetadata, iter->second, newFont);
         CommandsController::Instance()->ExecuteCommand(setFontCommand);
         SafeRelease(setFontCommand);
-        
-        //TODO: do we need to update font size manually here?
-        //UpdateFontPresetValues();
-        
-        ui->fontSizeSpinBox->setValue(newFont->GetSize());
-        
         return;
     }
     
