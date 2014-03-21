@@ -80,7 +80,7 @@ public:
         Interleaved data is the fastest way to submit data to any modern hw, so renderdataobject support buffers only 
         for interleaved data. This means we can have only 1 buffer for 1 RenderDataObject
     */
-    void BuildVertexBuffer(int32 vertexCount); // pack data to VBOs and allow to use VBOs instead of SetStreams
+    void BuildVertexBuffer(int32 vertexCount, bool synchronously = false); // pack data to VBOs and allow to use VBOs instead of SetStreams
 	void BuildVertexBufferInternal(BaseObject * caller, void * param, void *callerData);
 	void DeleteBuffersInternal(BaseObject * caller, void * param, void *callerData);
     
@@ -93,7 +93,7 @@ public:
 //#endif //#if defined(__DAVAENGINE_ANDROID__)
     
     void SetIndices(eIndexFormat format, uint8 * indices, int32 count);
-    void BuildIndexBuffer();
+    void BuildIndexBuffer(bool synchronously = false);
 	void BuildIndexBufferInternal(BaseObject * caller, void * param, void *callerData);
     uint32 GetIndexBufferID() const { return indexBuffer; };
     

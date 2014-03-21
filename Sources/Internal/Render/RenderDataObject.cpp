@@ -185,11 +185,17 @@ uint32 RenderDataObject::GetResultFormat() const
     return resultVertexFormat;
 }
     
-void RenderDataObject::BuildVertexBuffer(int32 vertexCount)
+void RenderDataObject::BuildVertexBuffer(int32 vertexCount, bool synchronously)
 {
     DVASSERT(!vertexAttachmentActive);
     
-	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildVertexBufferInternal, (void*)vertexCount));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildVertexBufferInternal, (void*)vertexCount));
+    
+    if(synchronously)
+    {
+        JobInstanceWaiter waiter(job);
+        waiter.Wait();
+    }
 }
 
 void RenderDataObject::BuildVertexBufferInternal(BaseObject * caller, void * param, void *callerData)
@@ -247,9 +253,15 @@ void RenderDataObject::SetIndices(eIndexFormat _format, uint8 * _indices, int32 
 //#endif //#if defined (__DAVAENGINE_ANDROID__)
 }
 
-void RenderDataObject::BuildIndexBuffer()
+void RenderDataObject::BuildIndexBuffer(bool synchronously)
 {
-	JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildIndexBufferInternal));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildIndexBufferInternal));
+    
+    if(synchronously)
+    {
+        JobInstanceWaiter waiter(job);
+        waiter.Wait();
+    }
 }
 
 void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * param, void *callerData)

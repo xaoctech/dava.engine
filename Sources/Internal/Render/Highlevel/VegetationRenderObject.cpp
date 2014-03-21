@@ -45,6 +45,8 @@ static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP = FastName("clusterScale
 static const FastName UNIFORM_HEIGHTMAP_SCALE = FastName("heightmapScale");
 static const FastName UNIFORM_SWITCH_LOD_SCALE = FastName("lodSwitchScale");
 
+static const FastName FLAG_FRAMEBUFFER_FETCH = FastName("FRAMEBUFFER_FETCH");
+
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[] =
 {
@@ -122,12 +124,32 @@ static const Vector3 CLUSTER_TYPE_1[] =
     Vector3(-0.35f, 0.33f, 0.0f),
 };
 
+static const Vector3 CLUSTER_TYPE_0_CROSS[] =
+{
+    Vector3(-0.35f, -0.35f, 1.0f),
+    Vector3(0.35f, 0.35f, 1.0f),
+    Vector3(0.35f, 0.35f, 0.0f),
+    Vector3(-0.35f, -0.35f, 0.0f),
+        
+    Vector3(-0.35f, 0.35f, 1.0f),
+    Vector3(0.35f, -0.35f, 1.0f),
+    Vector3(0.35f, -0.35f, 0.0f),
+    Vector3(-0.35f, 0.35f, 0.0f),
+};
+
 static const int16 CLUSTER_INDICES[] =
 {
     0, 3,  1, 1, 3,  2,
     4, 7,  5, 5, 7,  6,
     8, 11, 9, 9, 11, 10
 };
+
+static const int16 CLUSTER_INDICES_CROSS[] =
+{
+    0, 3,  1, 1, 3,  2,
+    4, 7,  5, 5, 7,  6
+};
+
     
 static const Vector3* VEGETATION_CLUSTER[] =
 {
@@ -318,23 +340,22 @@ VegetationRenderObject::VegetationRenderObject() :
                                                            NMaterialName::GRASS,
                                                            NMaterial::DEFAULT_QUALITY_NAME);
     vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
+    if(RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
+    {
+        vegetationMaterial->SetFlag(FLAG_FRAMEBUFFER_FETCH, NMaterial::FlagOn);
+    }
     
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
+    
+    SetVegetationActive(RenderManager::Instance()->GetCaps().isVertexTextureUnitsSupported);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
 {
     SafeRelease(vegetationMap);
     SafeRelease(heightmap);
-    
-/*    size_t brushCount = clusterBrushes.size();
-    for(size_t i = 0; i < brushCount; ++i)
-    {
-        SafeRelease(clusterBrushes[i]);
-    }
-*/
     
     ReleaseRenderData();
     
@@ -398,11 +419,22 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 {
     RenderObject::Load(archive, serializationContext);
     
-    SetClusterLimit(archive->GetUInt32("vro.clusterLimit"));
-    SetVegetationMap(serializationContext->GetScenePath() + archive->GetString("vro.vegmap"));
-    SetTextureSheet(serializationContext->GetScenePath() + archive->GetString("vro.texturesheet"));
-    SetVegetationTexture(serializationContext->GetScenePath() + archive->GetString("vro.vegtexture"));
-    SetLightmap(serializationContext->GetScenePath() + archive->GetString("vro.lightmap"));
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    
+    bool shouldLoadData = deviceCaps.isVertexTextureUnitsSupported;
+    
+#if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
+    shouldLoadData = true;
+#endif
+    
+    if(shouldLoadData)
+    {
+        SetClusterLimit(archive->GetUInt32("vro.clusterLimit"));
+        SetVegetationMap(serializationContext->GetScenePath() + archive->GetString("vro.vegmap"));
+        SetTextureSheet(serializationContext->GetScenePath() + archive->GetString("vro.texturesheet"));
+        SetVegetationTexture(serializationContext->GetScenePath() + archive->GetString("vro.vegtexture"));
+        SetLightmap(serializationContext->GetScenePath() + archive->GetString("vro.lightmap"));
+    }
 }
 
 void VegetationRenderObject::PrepareToRender(Camera *camera)
@@ -415,7 +447,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     visibleCells.clear();
     BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
     
-    std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
+    //std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
     uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
     uint32 currentBatchCount = GetRenderBatchCount();
@@ -640,6 +672,14 @@ RenderBatch* VegetationRenderObject::GetRenderBatchFromPool(NMaterial* material)
         NMaterial* batchMaterial = NMaterial::CreateMaterialInstance();
         batchMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
         batchMaterial->SetParent(vegetationMaterial);
+        
+        if(false == RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
+        {
+            NMaterialHelper::EnableStateFlags(DAVA::PASS_FORWARD,
+                                              batchMaterial,
+                                              RenderStateData::STATE_BLEND);
+        }
+
         
         rb->SetMaterial(batchMaterial);
         
@@ -1201,7 +1241,7 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     vertexRenderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
     vertexRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
     vertexRenderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
-    vertexRenderDataObject->BuildVertexBuffer(vertexData.size());
+    vertexRenderDataObject->BuildVertexBuffer(vertexData.size(), true);
     
     size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
     for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
@@ -1211,7 +1251,7 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
         
         for(size_t i = 0; i < totalIndexObjectCount; ++i)
         {
-            indexObjectArray[i]->BuildIndexBuffer();
+            indexObjectArray[i]->BuildIndexBuffer(true);
             indexObjectArray[i]->AttachVertices(vertexRenderDataObject);
         }
     }
@@ -1243,7 +1283,7 @@ void VegetationRenderObject::ReleaseRenderData()
 
 bool VegetationRenderObject::ReadyToRender()
 {
-    return (vertexRenderDataObject != NULL);
+    return isVegetationActive && (vertexRenderDataObject != NULL);
 }
 
 void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
@@ -1282,5 +1322,16 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
         SetupNodeUniforms(node->children[3], uniforms);
     }
 }
+
+void VegetationRenderObject::SetVegetationActive(bool active)
+{
+     isVegetationActive = active;
+}
+    
+bool VegetationRenderObject::GetVegetationActive() const
+{
+     return isVegetationActive;
+}
+
 
 };

@@ -129,6 +129,9 @@ public:
     
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
     
+    void SetVegetationActive(bool active);
+    bool GetVegetationActive() const;
+    
 private:
 
     struct VegetationVertex
@@ -244,6 +247,8 @@ private:
     Vector3 lodRanges;
     uint32 maxVisibleQuads;
     
+    bool isVegetationActive;
+    
 public:
     
     INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
@@ -341,7 +346,7 @@ inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialD
                                                    uint32 cellValue,
                                                    Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
-    //if(!node->data.IsEmpty(cellValue))
+    if(!node->data.IsEmpty(cellValue))
     {
         if(node->data.cameraDistance <= refDistance)
         {
