@@ -759,6 +759,18 @@
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\rootpropertygridwidget_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\uistatictextpropertygridwidget.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\uistatictextpropertygridwidget_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\UI\Dialogs\localizationfontseditordialog.cpp">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationfontseditordialog_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1214,6 +1226,12 @@
     <ClInclude Include="Classes\UI\PropertyGridWidgets\rootpropertygridwidget.h">
       <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\uistatictextpropertygridwidget.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\UI\Dialogs\localizationfontseditordialog.h">
+      <Filter>Sources\UI\Dialogs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\createplatformdlg.ui">
@@ -1261,9 +1279,6 @@
     <None Include="UI\statepropertygridwidget.ui">
       <Filter>Form Files\PropertyGridWidgets</Filter>
     </None>
-    <None Include="UI\uitextfieldpropertygridwidget.ui">
-      <Filter>Form Files\PropertyGridWidgets</Filter>
-    </None>
     <None Include="UI\PropertyGridWidgets\alignspropertygridwidget.ui">
       <Filter>Form Files</Filter>
     </None>
@@ -1304,6 +1319,12 @@
       <Filter>Form Files\PropertyGridWidgets</Filter>
     </None>
     <None Include="UI\errorslistdialog.ui">
+      <Filter>Form Files\Dialogs</Filter>
+    </None>
+    <None Include="UI\textpropertygridwidget.ui">
+      <Filter>Form Files\PropertyGridWidgets</Filter>
+    </None>
+    <None Include="UI\localizationfontseditordialog.ui">
       <Filter>Form Files\Dialogs</Filter>
     </None>
   </ItemGroup>

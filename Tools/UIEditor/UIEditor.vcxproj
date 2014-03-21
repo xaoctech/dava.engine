@@ -100,6 +100,7 @@
     <ClCompile Include="Classes\UI\Dialogs\errorslistdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\importdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\localizationeditordialog.cpp" />
+    <ClCompile Include="Classes\UI\Dialogs\localizationfontseditordialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\previewsettingsdialog.cpp" />
     <ClCompile Include="Classes\UI\Dialogs\regexpinputdialog.cpp" />
     <ClCompile Include="Classes\UI\fontmanagerdialog.cpp" />
@@ -130,6 +131,7 @@
     <ClCompile Include="Classes\UI\PropertyGridWidgets\spinnerpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\statepropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\textpropertygridwidget.cpp" />
+    <ClCompile Include="Classes\UI\PropertyGridWidgets\uistatictextpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\PropertyGridWidgets\uitextfieldpropertygridwidget.cpp" />
     <ClCompile Include="Classes\UI\QColorWidget.cpp" />
     <ClCompile Include="Classes\UI\QtColorLineEdit.cpp" />
@@ -207,6 +209,7 @@
     <ClCompile Include="GeneratedFiles\UI\Dialogs\errorslistdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\importdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationeditordialog_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\Dialogs\localizationfontseditordialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\previewsettingsdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\Dialogs\regexpinputdialog_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\fontmanagerdialog_moc.cpp" />
@@ -236,6 +239,7 @@
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\spinnerpropertygridwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\statepropertygridwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\textpropertygridwidget_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\uistatictextpropertygridwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\uitextfieldpropertygridwidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\QColorWidget_moc.cpp" />
     <ClCompile Include="GeneratedFiles\UI\QtColorLineEdit_moc.cpp" />
@@ -506,6 +510,7 @@
     <ClInclude Include="Classes\UI\Dialogs\editpreviewsettingsdialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\errorslistdialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\importdialog.h" />
+    <ClInclude Include="Classes\UI\Dialogs\localizationfontseditordialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\previewsettingsdialog.h" />
     <ClInclude Include="Classes\UI\Dialogs\regexpinputdialog.h" />
     <ClInclude Include="Classes\UI\IconHelper.h" />
@@ -680,6 +685,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
+    <ClInclude Include="Classes\UI\PropertyGridWidgets\uistatictextpropertygridwidget.h" />
     <ClInclude Include="Classes\UI\PropertyGridWidgets\uitextfieldpropertygridwidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">Moc%27ing uitextfieldpropertygridwidget.h...</Message>
@@ -746,6 +752,8 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
       <FileType>Document</FileType>
     </None>
+    <None Include="UI\localizationfontseditordialog.ui" />
+    <None Include="UI\textpropertygridwidget.ui" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\editpreviewsettingsdialog.ui" />
@@ -856,7 +864,6 @@
     <None Include="UI\scrollcontrolpropertygridwidget.ui" />
     <None Include="UI\sliderpropertygridwidget.ui" />
     <None Include="UI\statepropertygridwidget.ui" />
-    <None Include="UI\uitextfieldpropertygridwidget.ui" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{39D57C77-6E88-35CC-A5C4-41750E5A8CE4}</ProjectGuid>
