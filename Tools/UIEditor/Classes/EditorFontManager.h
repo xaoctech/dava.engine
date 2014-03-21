@@ -40,7 +40,7 @@ class EditorFontManager: public QObject, public Singleton<EditorFontManager>
 {
     Q_OBJECT
 public:
-	typedef std::map<String, Font*> FONTSMAP;	
+	//typedef std::map<String, Font*> FONTSMAP;
 	EditorFontManager();
 	~EditorFontManager();
 	
@@ -55,7 +55,7 @@ public:
 	Font* GetFont(const String& name) const;
     QString GetFontName(Font* font) const;
 
-	const FONTSMAP& GetAllFonts() const;
+	//const FONTSMAP& GetAllFonts() const;
 	
 	struct DefaultFontPath
 	{
@@ -87,7 +87,7 @@ private:
 private:
 	Font* defaultFont;
 	Font* baseFont;
-	FONTSMAP fonts;
+//	FONTSMAP fonts;
     
     //TODO: load localized fonts from localizationFontsPath/locale/fonts.yaml
     FilePath defaultFontsPath;

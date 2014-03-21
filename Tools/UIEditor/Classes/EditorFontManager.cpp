@@ -55,12 +55,14 @@ void EditorFontManager::Reset()
 {
 	defaultFont = NULL;
 	baseFont = NULL;
-	
-	for (FONTSMAP::iterator iter = fonts.begin(); iter != fonts.end(); ++iter)
-	{
-		Font* font = iter->second;
-		SafeRelease(font);
-	}
+
+    FontManager::Instance()->Reset();
+    
+//	for (FONTSMAP::iterator iter = fonts.begin(); iter != fonts.end(); ++iter)
+//	{
+//        Font* font = iter->second;
+//		SafeRelease(font);
+//	}
     
     ResetLocalizedFontsPath();
 }
@@ -77,8 +79,10 @@ Font* EditorFontManager::LoadFont(const String& fontPath, const String& fontName
 	{
 		font->SetSize(defaultFontSize);
 		
-		fonts[fontName] = font;
-        //If font was successfully loaded - emit the signal 
+//		fonts[fontName] = font;
+        FontManager::Instance()->RegisterFont(font);
+        
+        //If font was successfully loaded - emit the signal
         emit FontLoaded();
 	}
 	
@@ -123,14 +127,48 @@ void EditorFontManager::ResetLocalizedFontsPath()
     defaultFontsPath = FilePath();
 }
 
-Font* EditorFontManager::GetFont(const String& name) const
+//Font* EditorFontManager::GetFont(const String& name) const
+//{
+//	FONTSMAP::const_iterator iter = fonts.find(name);
+//	if (iter != fonts.end())
+//	{
+//		return iter->second;
+//	}
+//	return NULL;
+//}
+
+QString EditorFontManager::GetFontName(Font* font) const
 {
-	FONTSMAP::const_iterator iter = fonts.find(name);
-	if (iter != fonts.end())
-	{
-		return iter->second;
-	}
-	return NULL;
+    QString fontName;
+    
+    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
+    
+    Map<Font*, String> ::const_iterator findIt = fonts.find(font);
+    Map<Font*, String> ::const_iterator endIt = fonts.end();
+    if(findIt != endIt)
+    {
+        fontName = QString::fromStdString(findIt->second);
+    }
+    return fontName;
+}
+
+Font* EditorFontManager::GetFont(const String& fontName) const
+{
+    Font* font = NULL;
+    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
+    
+    Map<Font*, String> ::const_iterator it = fonts.begin();
+    Map<Font*, String> ::const_iterator endIt = fonts.end();
+    
+    for(; it != endIt; ++it)
+    {
+        if(it->second == fontName)
+        {
+            font = it->first;
+            break;
+        }
+    }
+    return font;
 }
 
 EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
@@ -228,26 +266,26 @@ QString EditorFontManager::GetDefaultFontName() const
 	return QString::fromStdString(DEFAULT_FONT_PATH);
 }
 
-const EditorFontManager::FONTSMAP& EditorFontManager::GetAllFonts() const
-{
-	return fonts;
-}
+//const EditorFontManager::FONTSMAP& EditorFontManager::GetAllFonts() const
+//{
+//	return fonts;
+//}
 
-QString EditorFontManager::GetFontName(Font* font) const
-{
-    if (font == NULL)
-    {
-        return QString();
-    }
-
-    EditorFontManager::FONTSMAP fonts = GetAllFonts();
-    for (EditorFontManager::FONTSMAP::const_iterator iter = fonts.begin(); iter != fonts.end(); ++iter)
-    {
-        if (font->IsEqual(iter->second))
-        {
-            return iter->first.c_str();
-        }
-    }
-
-    return QString();
-}
+//QString EditorFontManager::GetFontName(Font* font) const
+//{
+//    if (font == NULL)
+//    {
+//        return QString();
+//    }
+//
+//    EditorFontManager::FONTSMAP fonts = GetAllFonts();
+//    for (EditorFontManager::FONTSMAP::const_iterator iter = fonts.begin(); iter != fonts.end(); ++iter)
+//    {
+//        if (font->IsEqual(iter->second))
+//        {
+//            return iter->first.c_str();
+//        }
+//    }
+//
+//    return QString();
+//}

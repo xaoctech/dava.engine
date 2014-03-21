@@ -74,9 +74,6 @@ protected:
     virtual void OnPropertiesChangedFromExternalSource() {};
     
     Ui::TextPropertyGridWidget *ui;
-private:
-    QString GetFontPresetNameFromFont(Font* font);
-    Font* GetFontFromFontPresetName(const QString& fontPresetName);
 };
 
 #endif // TEXTPROPERTYGRIDWIDGET_H
