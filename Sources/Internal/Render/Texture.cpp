@@ -483,7 +483,7 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
     Image * image0 = CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    Vector<Image *> images = image0->CreateMipMapsImages();
+    Vector<Image *> images = image0->CreateMipMapsImages(texDescriptor->settings.GetAsNormalMap());
     SafeRelease(image0);
 
     for(uint32 i = 1; i < (uint32)images.size(); ++i)
@@ -588,7 +588,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 			imageFace[0]->cubeFaceID = CUBE_FACE_MAPPING[i];
 			imageFace[0]->mipmapLevel = 0;
 
-            if(texDescriptor->GetGenerateMipMaps())
+            if(texDescriptor->settings.GetGenerateMipMaps())
             {
                 Vector<Image *> mipmapsImages = imageFace[0]->CreateMipMapsImages();
                 images->insert(images->end(), mipmapsImages.begin(), mipmapsImages.end());
@@ -605,10 +605,10 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
 		ImageLoader::CreateFromFileByExtension(imagePathname, *images);
-        if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
+        if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->settings.GetGenerateMipMaps())
         {
             Image * img = *images->begin();
-            *images = img->CreateMipMapsImages();
+            *images = img->CreateMipMapsImages(texDescriptor->settings.GetAsNormalMap());
             SafeRelease(img);
         }
 

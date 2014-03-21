@@ -1874,7 +1874,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 
 	bool written = false;
 
-	File *file = File::Create(filePathname, File::OPEN | File::WRITE);
+	File *file = File::Create(filePathname, File::OPEN | File::WRITE | File::CREATE);
 	if(file) 
 	{
 		file->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
@@ -2153,8 +2153,91 @@ bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet,
 
     return loadAllPvrData;
 }
+
+bool LibPVRHelper::WriteFile(const PVRFile * pvrFile, File *outFile)
+{
+    if(!pvrFile || !outFile) return false;
+
+    uint32 writeSize = outFile->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
+    if(writeSize != PVRTEX3_HEADERSIZE)
+        return false;
+
+    writeSize = outFile->Write(pvrFile->metaData, pvrFile->header.u32MetaDataSize);
+    if(writeSize != pvrFile->header.u32MetaDataSize)
+        return false;
+
+    writeSize = outFile->Write(pvrFile->compressedData, pvrFile->compressedDataSize);
+    if(writeSize != pvrFile->compressedDataSize)
+        return false;
+
+    return true;
+}
+
+bool LibPVRHelper::WriteFileFromMipMapFiles(const FilePath & outputFilePath, Vector<FilePath> imgPaths)
+{
+    DVASSERT(imgPaths.size());
+
+    int32 levelsCount = imgPaths.size();
+
+    Vector<PVRFile *> pvrFiles;
+    pvrFiles.reserve(levelsCount);
+
+    uint32 allCompressedDataSize = 0;
+    for(int32 i = 0; i < levelsCount; ++i)
+    {
+        PVRFile * leveli = ReadFile(imgPaths[i], true, true);
+        if(leveli)
+        {
+            pvrFiles.push_back(leveli);
+            allCompressedDataSize += leveli->compressedDataSize;
+        }
+    }
     
-bool LibPVRHelper::DetectIfNeedSwapBytes(PVRHeaderV3 *header)
+    DVASSERT(allCompressedDataSize);
+
+    uint8 * allCompressedData = new uint8[allCompressedDataSize];
+    Memset(allCompressedData, 0, allCompressedDataSize);
+
+    uint8 * dataPtr = allCompressedData;
+
+    int32 pvrFilesCount = pvrFiles.size();
+    for(int32 i = 0; i < pvrFilesCount; ++i)
+    {
+        PVRFile * leveli = pvrFiles[i];
+        Memcpy(dataPtr, leveli->compressedData, leveli->compressedDataSize);
+        dataPtr += leveli->compressedDataSize;
+    }
+
+    PVRFile * outPvr = pvrFiles[0];
+    outPvr->header.u32MIPMapCount = pvrFilesCount;
+    outPvr->compressedDataSize = allCompressedDataSize;
+    SafeDeleteArray(outPvr->compressedData);
+    outPvr->compressedData = allCompressedData;
+
+    File * outFile = File::Create(outputFilePath, File::CREATE | File::WRITE);
+    if(outFile)
+    {
+        if(!WriteFile(outPvr, outFile))
+        {
+            Logger::FrameworkDebug("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
+        }
+    }
+    else
+    {
+        Logger::FrameworkDebug("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
+    }
+
+    SafeRelease(outFile);
+
+    for(int32 i = 0; i < pvrFilesCount; ++i)
+    {
+        SafeDelete(pvrFiles[i]);
+    }
+
+    return true;
+}
+
+bool LibPVRHelper::DetectIfNeedSwapBytes(const PVRHeaderV3 *header)
 {
 	if((PVRTEX_CURR_IDENT != header->u32Version) && (PVRTEX_CURR_IDENT_REV != header->u32Version))
     {
@@ -2253,7 +2336,6 @@ void LibPVRHelper::ReadMetaData(File *file, PVRFile *pvrFile, const bool swapByt
     }
 }
 
-    
 void LibPVRHelper::SwapDataBytes(const PVRHeaderV3 &header, uint8 *data, const uint32 dataSize)
 {
     uint32 ui32VariableSize=0;

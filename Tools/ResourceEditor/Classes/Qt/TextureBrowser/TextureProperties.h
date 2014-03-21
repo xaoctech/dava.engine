@@ -37,6 +37,7 @@
 #include "Tools/QtPropertyEditor/QtPropertyEditor.h"
 #include "Tools/QtPropertyEditor/QtPropertyData.h"
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataMetaObject.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspMember.h"
 
 class TextureProperties : public QtPropertyEditor
 {
@@ -46,6 +47,7 @@ public:
 	typedef enum PropType
 	{
 		PROP_MIPMAP,
+        PROP_NORMALMAP,
 		PROP_WRAP,
 		PROP_FILTER,
 		PROP_FORMAT,
@@ -69,7 +71,8 @@ protected:
 	DAVA::TextureDescriptor *curTextureDescriptor;
 	DAVA::eGPUFamily curGPU;
 
-	QtPropertyDataMetaObject *propMipMap;
+    QtPropertyDataInspMember *propMipMap;
+    QtPropertyDataInspMember *propNormalMap;
 	QtPropertyDataMetaObject *propWrapModeS;
 	QtPropertyDataMetaObject *propWrapModeT;
 	QtPropertyDataMetaObject *propMinFilter;
@@ -100,7 +103,8 @@ protected:
 	void ReloadEnumFilters();
 	void ReloadProperties();
 
-	QtPropertyDataMetaObject* AddPropertyItem(const char *name, DAVA::InspBase *object, const QModelIndex &parent);
+	QtPropertyDataMetaObject* AddPropertyItemMeta(const char *name, DAVA::InspBase *object, const QModelIndex &parent);
+    QtPropertyDataInspMember* AddPropertyItemMember(const char *name, DAVA::InspBase *object, const QModelIndex &parent);
 	void SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues);
 
 	void LoadCurSizeToProp();

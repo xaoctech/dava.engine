@@ -35,6 +35,8 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/ImageLoader.h"
+#include "Render/Image.h"
 
 #include "Base/GlobalEnum.h"
 
@@ -120,7 +122,7 @@ PVRConverter::~PVRConverter()
 
 }
 
-FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality)
+FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC /* = true */)
 {
 	FilePath outputName = (descriptor.IsCubeMap()) ? PrepareCubeMapForPvrConvert(descriptor) : FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 
@@ -150,10 +152,65 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 		CleanupCubemapAfterConversion(descriptor);
 	}
 		
-	LibPVRHelper::AddCRCIntoMetaData(outputName);
+    if(addCRC)
+    {
+	    LibPVRHelper::AddCRCIntoMetaData(outputName);
+    }
 	return outputName;
 }
 
+FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality)
+{
+    FilePath filePath = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
+
+    Vector<Image *> images;
+    ImageLoader::CreateFromFileByExtension(filePath, images);
+
+    if(!images.size())
+        return FilePath();
+
+    DVASSERT(images.size() == 1);
+
+    Image * originalImage = images[0];
+    images = originalImage->CreateMipMapsImages(true);
+    SafeRelease(originalImage);
+
+    FilePath dirPath = filePath + "_mips";
+    dirPath.MakeDirectoryPathname();
+    FileSystem::Instance()->CreateDirectory(dirPath);
+
+    Vector<FilePath> convertedPVRs;
+
+    int32 imgCount = images.size();
+    for(int32 i = 0; i < imgCount; ++i)
+    {
+        FilePath imgPath = dirPath + Format("mip%d.png", i);
+        ImageLoader::Save(images[i], imgPath);
+
+        TextureDescriptor desc;
+        desc.Initialize(&descriptor);
+        desc.settings.SetGenerateMipmaps(false);
+        desc.pathname = imgPath;
+        FilePath convertedImgPath = ConvertPngToPvr(desc, gpuFamily, quality, false);
+
+        convertedPVRs.push_back(convertedImgPath);
+    }
+
+    FilePath outputName = GetPVRToolOutput(descriptor, gpuFamily);
+    bool ret = LibPVRHelper::WriteFileFromMipMapFiles(outputName, convertedPVRs);
+
+    FileSystem::Instance()->DeleteDirectory(dirPath, true);
+
+    if(ret)
+    {
+        LibPVRHelper::AddCRCIntoMetaData(outputName);
+        return outputName;
+    }
+    else
+    {
+        return FilePath();
+    }
+}
 
 void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args)
 {
@@ -189,7 +246,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	}
 
 	// mipmaps
-	if(descriptor.settings.generateMipMaps)
+	if(descriptor.settings.GetGenerateMipMaps())
 	{
 		args.push_back("-m");
 	}

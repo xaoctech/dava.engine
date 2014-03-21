@@ -639,9 +639,10 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     TextureDescriptor *descriptor = new TextureDescriptor();
 
     descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
-    descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+    bool generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+    descriptor->settings.SetGenerateMipmaps(generateMipMaps);
 	
-	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED);
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.GetGenerateMipMaps());
 	descriptor->settings.minFilter = ftItem.minFilter;
 	descriptor->settings.magFilter = ftItem.magFilter;
 	
