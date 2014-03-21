@@ -64,6 +64,7 @@ class FileDownloader: public BaseObject
 {
     struct ThreadFileData
     {
+        ThreadFileData() {}; 
         FilePath downloadedFilePath;
     };
 
