@@ -489,9 +489,20 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     DVASSERT(data);
 
     const QString childMergeName = key.isEmpty() ? data->curName : key;
-    const int childIndex = childrenNames.indexOf(childMergeName);
-    const QtPropertyData* child = childrenData.value(childIndex);
     bool needMerge = true;
+
+    int childIndex = -1;
+    for (int i = 0; i < childrenNames.size(); i++)
+    {
+        if (childrenData.at(i)->IsEnabled() == data->IsEnabled() &&
+            childrenNames.at(i) == childMergeName)
+        {
+            childIndex = i;
+            break;
+        }
+    }
+
+    const QtPropertyData* child = childrenData.value(childIndex);
 
     // On change of enabled/disabled states, it is necessary
     // to re-merge child items
