@@ -33,6 +33,7 @@
 #define CHECK_PREMATURE_END    if (*s == '\0') return false;
 
 #define SECONDS_IN_HOUR 3600
+#define MAX_OFFSET_IN_HOURS 12
 
 static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
 static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
@@ -118,9 +119,11 @@ timeZoneOffset(_timeZoneOffset)
 {
 }
 
-DateTime::DateTime(uint32 year, uint32 month, uint32 day, int32 _timeZoneOffset):
+DateTime::DateTime(int32 year, int32 month, int32 day, int32 _timeZoneOffset):
 timeZoneOffset(_timeZoneOffset)
 {
+    DVASSERT(year >= 0 && month >= 0 && day >= 0 &&
+             timeZoneOffset < (MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR) && timeZoneOffset > (-1*MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR));
     struct tm t = { 0 };
     t.tm_mon = month;
     t.tm_year = year - 1900;
@@ -134,9 +137,11 @@ timeZoneOffset(_timeZoneOffset)
     DVASSERT(innerTime>=0);
 }
 
-DateTime::DateTime(uint32 year, uint32 month, uint32 day, uint32 hour, uint32 minute, uint32 second, int32 _timeZoneOffset):
+DateTime::DateTime(int32 year, int32 month, int32 day, int32 hour, int32 minute, int32 second, int32 _timeZoneOffset):
 timeZoneOffset(_timeZoneOffset)
 {
+    DVASSERT(year >= 0 && month >= 0 && day >= 0 && hour >= 0 && minute >= 0 && second >= 0 &&
+             timeZoneOffset < (12*SECONDS_IN_HOUR) && timeZoneOffset > (-12*SECONDS_IN_HOUR));
     struct tm t = { 0 };
     t.tm_sec = second;
     t.tm_min = minute;
