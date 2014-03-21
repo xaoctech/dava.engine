@@ -159,10 +159,6 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
             //refractionTexture->SetMinMagFilter(Texture::FILTER_LINEAR, Texture::FILTER_LINEAR);
             refractionSprite = Sprite::CreateFromTexture(refractionTexture, 0, 0, REFRACTION_TEX_SIZE, REFRACTION_TEX_SIZE);
         }
-        
-        /*refractionPass->SetWaterLevel(waterBox.min.z);
-        refractionPass->Draw(camera, renderSystem);
-        return;*/
 
         Rect viewportSave = RenderManager::Instance()->GetViewport();
         RenderManager::Instance()->SetRenderTarget(reflectionSprite);
@@ -184,7 +180,48 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         refractionPass->SetWaterLevel(waterBox.min.z);
         refractionPass->Draw(camera, renderSystem);
         RenderManager::Instance()->RestoreRenderTarget();
-        RenderManager::Instance()->SetViewport(viewportSave, true);                
+        RenderManager::Instance()->SetViewport(viewportSave, true);
+        
+        /*const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+        RenderManager::Instance()->ClipPush();
+        Rect viewportSave = RenderManager::Instance()->GetViewport();
+        uint32 currFboId = RenderManager::Instance()->HWglGetLastFBO();
+        int32 currRenderOrientation = RenderManager::Instance()->GetRenderOrientation();
+        //RenderManager::Instance()->SetRenderOrientation(Core::SCREEN_ORIENTATION_TEXTURE);
+        
+        RenderManager::Instance()->SetHWRenderTargetTexture(reflectionTexture);
+        //discard everything here
+        glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards);
+        RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
+        
+        reflectionPass->SetWaterLevel(waterBox.max.z);
+        reflectionPass->Draw(camera, renderSystem);
+        
+        //discrad depth(everything?) here
+        glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
+        
+        
+        RenderManager::Instance()->SetHWRenderTargetTexture(refractionTexture);
+        //discard everything here
+        glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards);
+        RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
+        
+        refractionPass->SetWaterLevel(waterBox.min.z);
+        refractionPass->Draw(camera, renderSystem);
+
+        //discrad depth(everything?) here
+        glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
+        
+        RenderManager::Instance()->HWglBindFBO(currFboId);
+        RenderManager::Instance()->SetRenderOrientation(currRenderOrientation);
+        RenderManager::Instance()->SetViewport(viewportSave, true);
+        RenderManager::Instance()->ClipPop();*/
 
         camera->SetupDynamicParameters();
         //camera->SetupDynamicParameters(true, Vector4(0,0,-1, waterBox.min.z));
