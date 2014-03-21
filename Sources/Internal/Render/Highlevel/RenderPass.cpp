@@ -165,7 +165,8 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);        
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
-        RenderManager::Instance()->ClearDepthBuffer();
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
+        //RenderManager::Instance()->ClearDepthBuffer();
         
         reflectionPass->SetWaterLevel(waterBox.max.z);
         reflectionPass->Draw(camera, renderSystem);
@@ -175,8 +176,8 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFRACTION_TEX_SIZE, REFRACTION_TEX_SIZE), true);        
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
-        //RenderManager::Instance()->Clear(Color(1,0,0,0), 1.0f, 0);
-        RenderManager::Instance()->ClearDepthBuffer();
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
+        //RenderManager::Instance()->ClearDepthBuffer();
         refractionPass->SetWaterLevel(waterBox.min.z);
         refractionPass->Draw(camera, renderSystem);
         RenderManager::Instance()->RestoreRenderTarget();
@@ -275,8 +276,9 @@ WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(na
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_OPAQUE), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);    
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
     
-    //AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
 }
 WaterPrePass::~WaterPrePass()
 {
@@ -284,10 +286,7 @@ WaterPrePass::~WaterPrePass()
 }
 
 WaterReflectionRenderPass::WaterReflectionRenderPass(const FastName & name, RenderPassID id):WaterPrePass(name, id)
-{
-	const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
-	AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);    
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
+{	
 }
 
 
@@ -322,6 +321,8 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
 
 WaterRefractionRenderPass::WaterRefractionRenderPass(const FastName & name, RenderPassID id) : WaterPrePass(name, id)
 {
+    const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
 }
 
 void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
