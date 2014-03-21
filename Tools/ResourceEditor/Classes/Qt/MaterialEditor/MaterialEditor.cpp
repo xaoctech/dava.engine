@@ -225,7 +225,7 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(isVisible())
 	{
-        SetCurMaterial(NULL);
+        SetCurMaterial(QList< DAVA::NMaterial *>());
 		ui->materialTree->SetScene(scene);
         autoExpand();
 	}
@@ -234,7 +234,7 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 { 
 	ui->materialTree->SetScene(NULL);
-    SetCurMaterial( QList< DAVA::NMaterial *>() );
+    SetCurMaterial(QList< DAVA::NMaterial *>());
 }
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
@@ -764,17 +764,20 @@ void MaterialEditor::OnAddFlag()
 {
     QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-    if(NULL != btn && NULL != curMaterial)
+    if(NULL != btn && curMaterials.size() > 0)
     {
         QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
         if(NULL != data)
         {
-            //data->SetVariantValue(data->GetAliasVariant());
             data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-            //data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
+            for(int i = 0; i < data->GetMergedCount(); i++)
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            }
 
             // reload material properties
-            SetCurMaterial(curMaterial);
+            SetCurMaterial(curMaterials);
         }
     }
 }
@@ -783,7 +786,7 @@ void MaterialEditor::OnRemFlag()
 {
     QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 
-    if(NULL != btn && NULL != curMaterial)
+    if(NULL != btn && curMaterials.size() > 0)
     {
         QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
         if(NULL != data)
@@ -791,7 +794,7 @@ void MaterialEditor::OnRemFlag()
             data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
 
             // reload material properties
-            SetCurMaterial(curMaterial);
+            SetCurMaterial(curMaterials);
         }
     }
 }
