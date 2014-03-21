@@ -101,12 +101,12 @@ uint32 FileDownloader::SynchDownload(const FilePath & downloadedFilePath)
     return DownloadFile(downloadedFilePath);
 }
 
-void FileDownloader::AsynchDownload(const FilePath & downloadedFilePath = FilePath())
+void FileDownloader::AsynchDownload(const FilePath & downloadedFilePath)
 {
-    ThreadFileData *threadData = new ThreadFileData();
+    FileDownloader::ThreadFileData *threadData = new FileDownloader::ThreadFileData();
     threadData->downloadedFilePath = downloadedFilePath;
 
-    Thread * downloadThread = Thread::Create( Message( this, &FileDownloader::DownloadFile , threadData) );
+    Thread * downloadThread = Thread::Create( Message( this, &FileDownloader::DownloadFile, threadData) );
     downloadThread->Start();
     downloadThread->Release();
 }
@@ -143,8 +143,8 @@ size_t FileDownloader::write_data(void *ptr, size_t size, size_t nmemb, void *fi
     
 void FileDownloader::DownloadFile(BaseObject* bo, void* v1, void* v2)
 {
-    ThreadFileData * threadData = (ThreadFileData)v1;
-    DownloadFile((threadData) ? threadData->downloadedFilePath);
+    FileDownloader::ThreadFileData * threadData = (FileDownloader::ThreadFileData *)v1;
+    DownloadFile((threadData) ? threadData->downloadedFilePath : FilePath());
     SafeDelete(threadData);
 }
     
