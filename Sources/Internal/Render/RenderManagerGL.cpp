@@ -671,11 +671,12 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 
 void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 {
-	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
+    //currentRenderTarget = renderTarget;
+	renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
 	//IdentityModelMatrix();
 	//IdentityMappingMatrix();
 	HWglBindFBO(renderTarget->fboID);
-	RemoveClip();
+	//RemoveClip();
 }
 #if 0
 void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
