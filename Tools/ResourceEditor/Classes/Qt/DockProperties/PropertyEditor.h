@@ -110,7 +110,7 @@ protected:
 	QtPropertyData *favoriteGroup;
 	QList<QtPropertyData *> favoriteList;
 
-	DAVA::Entity *curNode;
+	QList<DAVA::Entity *> curNodes;
 	PropertyEditorStateHelper treeStateHelper;
 
 	QtPropertyData* CreateInsp(void *object, const DAVA::InspInfo *info);
@@ -118,6 +118,7 @@ protected:
 	QtPropertyData* CreateInspCollection(void *object, const DAVA::InspColl *collection);
 	QtPropertyData* CreateClone(QtPropertyData *original);
 
+    void ClearCurrentNodes();
 	void ResetProperties();
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
@@ -132,7 +133,7 @@ protected:
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 
-	void FindAndCheckFavorite(QtPropertyData *data);
+	//void FindAndCheckFavorite(QtPropertyData *data);
 	bool IsParentFavorite(QtPropertyData *data) const;
 	PropEditorUserData* GetUserData(QtPropertyData *data) const;
 
