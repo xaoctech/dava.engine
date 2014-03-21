@@ -84,7 +84,7 @@ static const float32 MAX_VISIBLE_SCALING_DISTANCE = 60.0f * 60.0f;
 
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
 
-static const Vector3 MAX_DISPLACEMENT = Vector3(2.6f, 2.6f, 0.0f);
+static const Vector3 MAX_DISPLACEMENT = Vector3(5.6f, 5.6f, 0.0f);
     
     
 static const Vector3 CLUSTER_TYPE_0[] =
@@ -350,6 +350,8 @@ VegetationRenderObject::VegetationRenderObject() :
     ResetVisibilityDistance();
     
     SetVegetationActive(RenderManager::Instance()->GetCaps().isVertexTextureUnitsSupported);
+    
+    //SetVegetationActive(false);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
