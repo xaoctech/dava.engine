@@ -2590,6 +2590,9 @@ void QtMainWindow::OnAddWindEntity()
 	Entity * windEntity = new Entity();
 	windEntity->SetName(ResourceEditor::WIND_NODE_NAME);
 
+	Matrix4 ltMx = Matrix4::MakeTranslation(Vector3(0.f, 0.f, 20.f));
+	GetTransformComponent(windEntity)->SetLocalTransform(&ltMx);
+
 	WindComponent * wind = new WindComponent();
 	windEntity->AddComponent(wind);
 

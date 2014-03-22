@@ -50,20 +50,21 @@ Vector3 Vec2ToVec3(const Vector2 & v)
     return Vector3(v.x, v.y, 0.f);
 }
  
-TreeOscillator::TreeOscillator(float32 _distance, Entity * owner) :
-    entityOwner(owner)
+TreeOscillator::TreeOscillator(Entity * owner) :
+    entityOwner(owner),
+	influenceSqDistance(0.f)
+{}
+
+void TreeOscillator::SetInfluenceDistance(float32 distance)
 {
-    influenceSqDistance = _distance * _distance;
+	influenceSqDistance = distance * distance;
 }
 
-bool TreeOscillator::HasInfluence(const Vector3 & forPosition, float32 * outSqDistance /* = 0 */) const
+bool TreeOscillator::HasInfluence(const Vector3 & forPosition)
 {
     Vector3 position = GetTransformComponent(entityOwner)->GetWorldTransform().GetTranslationVector();
     Vector2 direction2D = Vec3ToVec2(position - forPosition);
     float32 sqDistance = direction2D.SquareLength();
-    
-    if(outSqDistance)
-        (*outSqDistance) = sqDistance;
     
     return sqDistance < influenceSqDistance;
 }
@@ -71,38 +72,60 @@ bool TreeOscillator::HasInfluence(const Vector3 & forPosition, float32 * outSqDi
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////ImpulseOscillator//////////////////////////////////////////
     
-ImpulseTreeOscillator::ImpulseTreeOscillator(float32 _distance, Entity * owner, float32 _forceValue) :
-    TreeOscillator(_distance, owner),
-    forceValue(_forceValue),
-    time(0.f)
-{}
+ImpulseTreeOscillator::ImpulseTreeOscillator(Entity * owner) :
+    TreeOscillator(owner),
+    time(0.f),
+	triggered(false)
+{
+	ImpuleOscillatorComponent * component = GetImpuleOscillatorComponent(owner);
+	DVASSERT(component);
+
+	SetInfluenceDistance(component->influenceDistance);
+}
     
 void ImpulseTreeOscillator::Update(float32 timeElapsed)
 {
-    time += timeElapsed;
+	if(triggered)
+	{
+		time += timeElapsed;
+
+		if(time >= 5.f)
+		{
+			triggered = false;
+		}
+	}
 }
-    
+
+bool ImpulseTreeOscillator::HasInfluence(const Vector3 & forPosition)
+{
+	return triggered && TreeOscillator::HasInfluence(forPosition);
+}
+
+
+void ImpulseTreeOscillator::Trigger()
+{
+	time = 0.f;
+	triggered = true;
+}
+
 Vector3 ImpulseTreeOscillator::GetOsscilationTrunkOffset(const Vector3 & forPosition) const
 {
-    float32 squareDistance = 0.f;
-    if(!HasInfluence(forPosition, &squareDistance))
-        return Vector3();
-    
     Vector3 position = GetTransformComponent(entityOwner)->GetWorldTransform().GetTranslationVector();
-    Vector2 direction2D = Vec3ToVec2(position - forPosition);
-    squareDistance = Max(1.f, squareDistance);
+	Vector2 direction2D = Vec3ToVec2(position - forPosition);
+
+	float32 sqDistance = direction2D.SquareLength();
+    sqDistance = Max(1.f, sqDistance);
+
     direction2D.Normalize();
     
-    Vector2 ret = direction2D / squareDistance * (pow((5.f - time), 3.f) / 150.f * sinf(time * 5.f)) * forceValue;
+	float32 forceValue = GetImpuleOscillatorComponent(entityOwner)->forceValue;
+    Vector2 ret = direction2D / sqDistance * (pow((5.f - time), 3.f) / 150.f * sinf(time * 5.f)) * forceValue;
     
     return Vec2ToVec3(ret);
 }
     
 float32 ImpulseTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition) const
 {
-    if(!HasInfluence(forPosition))
-        return 0.f;
-    
     if(time < 1.f)
     {
         return 2.8f * (1.25f - .5f/(time + .5f) - (time - .5f) * (time - .5f));
@@ -112,19 +135,16 @@ float32 ImpulseTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosit
         return 4.f/(time + 0.5f) - .8f;
     }
 }
-    
-bool ImpulseTreeOscillator::IsActive() const
-{
-    return time < 5.f;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////WindOscillator///////////////////////////////////////////
     
 WindTreeOscillator::WindTreeOscillator(Entity * owner) :
-    TreeOscillator(0.f, owner),
+    TreeOscillator(owner),
 	time(0.f)
-{}
+{
+	SetInfluenceDistance(1e6);
+}
     
 void WindTreeOscillator::Update(float32 timeElapsed)
 {
@@ -142,20 +162,19 @@ float32 WindTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition
 	WindComponent * wind = GetWindComponent(entityOwner);
     return wind->GetWindForce();
 }
-    
-bool WindTreeOscillator::IsActive() const
-{
-    return true;
-}
-    
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////MovingOscillator/////////////////////////////////////////
     
-MovingTreeOscillator::MovingTreeOscillator(float32 distance, Entity * owner, float32 speedClampVal) :
-    TreeOscillator(distance, owner),
-	currentSpeed(0.f),
-    speedClampValue(speedClampVal)
-{}
+MovingTreeOscillator::MovingTreeOscillator(Entity * owner) :
+    TreeOscillator(owner),
+	currentSpeed(0.f)
+{
+	MovingOscillatorComponent * component = GetMovingOscillatorComponent(owner);
+	DVASSERT(component);
+
+	speedClampValue = component->speedClampValue;
+}
     
 MovingTreeOscillator::~MovingTreeOscillator()
 {}
@@ -174,15 +193,7 @@ Vector3 MovingTreeOscillator::GetOsscilationTrunkOffset(const Vector3 & forPosit
     
 float32 MovingTreeOscillator::GetOsscilationLeafsSpeed(const Vector3 & forPosition) const
 {
-    if(!HasInfluence(forPosition))
-        return 0.f;
-    
     return Min(currentSpeed, speedClampValue);
-}
-    
-bool MovingTreeOscillator::IsActive() const
-{
-    return true;
 }
     
 };

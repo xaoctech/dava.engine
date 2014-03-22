@@ -251,9 +251,6 @@
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Scene3D/Systems/SpeedTreeSystem/SpeedTreeUpdateSystem.h"
-#include "Scene3D/Systems/SpeedTreeSystem/WindSystem.h"
-#include "Scene3D/Systems/SpeedTreeSystem/ImpulseOscillatorSystem.h"
-#include "Scene3D/Systems/SpeedTreeSystem/MovingOscillatorSystem.h"
 #include "Scene3D/Systems/SpeedTreeSystem/TreeOscillator.h"
 
 //Components

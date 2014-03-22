@@ -39,6 +39,7 @@
 namespace DAVA 
 {
 
+class ImpulseTreeOscillator;
 class ImpuleOscillatorComponent : public Component
 {
 protected:
@@ -52,8 +53,6 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void TriggerImpulse();
-
 protected:
     float32 forceValue;
     float32 influenceDistance;
@@ -64,7 +63,7 @@ public:
         MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)
         );
 
-friend class ImpulseOscillatorSystem;
+friend class ImpulseTreeOscillator;
 };
 
 };

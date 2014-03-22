@@ -38,7 +38,7 @@ namespace DAVA
 {
 class Entity;
 
-class TreeOscillator: public BaseObject
+class TreeOscillator
 {
 public:
     enum eType
@@ -50,7 +50,7 @@ public:
         OSCILLATION_TYPE_COUNT
     };
     
-    TreeOscillator(float32 influenceDistance, Entity * owner);
+    TreeOscillator(Entity * owner);
     virtual ~TreeOscillator() {};
     
     virtual uint32 GetType() const = 0;
@@ -58,16 +58,16 @@ public:
     virtual void Update(float32 timeElapsed) {};
     virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const = 0;
     virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const = 0;
-    virtual bool IsActive() const = 0;
     
-    inline const float32 & GetInfluenceSqDistance() const;
-    inline const Vector3 & GetCurrentPosition() const;
-    
-    bool HasInfluence(const Vector3 & forPosition, float32 * outSqDistance = 0) const;
-    
+    virtual bool HasInfluence(const Vector3 & forPosition);
+
+	Entity * GetOwner() const { return entityOwner; }
+
 protected:
-    float32 influenceSqDistance;
-    
+	void SetInfluenceDistance(float32 distance);
+
+	float32 influenceSqDistance;
+
     //weak link
     Entity * entityOwner;
 };
@@ -75,7 +75,7 @@ protected:
 class ImpulseTreeOscillator : public TreeOscillator
 {
 public:
-    ImpulseTreeOscillator(float32 influenceDistance, Entity * ownder, float32 forceValue);
+    ImpulseTreeOscillator(Entity * ownder);
     virtual ~ImpulseTreeOscillator() {};
     
     virtual uint32 GetType() const {return OSCILLATION_TYPE_IMPULSE; };
@@ -83,11 +83,14 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
     virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
-    virtual bool IsActive() const;
     
+	virtual bool HasInfluence(const Vector3 & forPosition);
+
+	void Trigger();
+
 protected:
     float32 time;
-    float32 forceValue;
+	bool triggered;
 };
     
 class WindTreeOscillator : public TreeOscillator
@@ -101,7 +104,6 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
     virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
-    virtual bool IsActive() const;
     
 protected:
     float32 time;
@@ -110,7 +112,7 @@ protected:
 class MovingTreeOscillator : public TreeOscillator
 {
 public:
-    MovingTreeOscillator(float32 influenceDistance, Entity * entity, float32 speedClampVal);
+    MovingTreeOscillator(Entity * entity);
     virtual ~MovingTreeOscillator();
     
     virtual uint32 GetType() const {return OSCILLATION_TYPE_MOVING; };
@@ -118,12 +120,11 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
     virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
-    virtual bool IsActive() const;
     
 protected:
     float32 currentSpeed;
-    Vector3 prevUpdatePosition;
-    float32 speedClampValue;
+	Vector3 prevUpdatePosition;
+	float32 speedClampValue;
 };
     
 }

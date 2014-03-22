@@ -75,7 +75,8 @@ protected:
 	void DrawHangingObjects(DAVA::Entity *entity);
 	void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
 	void DrawStaticOcclusionComponent(DAVA::Entity *entity);
-    void DrawSwitchesWithDifferentLods(DAVA::Entity *entity);
+	void DrawSwitchesWithDifferentLods(DAVA::Entity *entity);
+	void DrawWindNode(DAVA::Entity *entity);
 
 	//hanging objects 
 	bool IsObjectHanging(DAVA::Entity * entity);

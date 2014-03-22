@@ -60,22 +60,31 @@ public:
     
     SpeedTreeUpdateSystem(Scene * scene);
     virtual ~SpeedTreeUpdateSystem();
-    
+
+	virtual bool IsNeedProcessEntity(Entity * entity);
+	
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
     virtual void ImmediateEvent(Entity * entity, uint32 event);
     virtual void Process(float32 timeElapsed);
     
-    void AddTreeOscillator(TreeOscillator * oscillator);
-    void ForceRemoveTreeOscillator(TreeOscillator * oscillator);
-    
 	virtual void HandleEvent(Observable * observable);
     
+	void TriggerImpulseOscillator(Entity * entity);
+
 private:
+	void AddTreeEntity(Entity * entity);
+	void RemoveTreeEntity(Entity * entity);
+
+	void AddOscillatorEntity(Entity * entity);
+	void RemoveOscillatorEntity(Entity * entity);
+
     Vector<TreeInfo *> allTrees;
     Vector<TreeOscillator *> activeOscillators;
-    
+
     bool isAnimationEnabled;
+
+friend class ImpuleOscillatorComponent;
 };
     
 } // ns
