@@ -69,9 +69,6 @@
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
 #include "Scene3D/Systems/SpeedTreeSystem/SpeedTreeUpdateSystem.h"
-#include "Scene3D/Systems/SpeedTreeSystem/WindSystem.h"
-#include "Scene3D/Systems/SpeedTreeSystem/ImpulseOscillatorSystem.h"
-#include "Scene3D/Systems/SpeedTreeSystem/MovingOscillatorSystem.h"
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
@@ -269,16 +266,10 @@ void Scene::CreateSystems()
     AddSystem(materialSystem, (1 << Component::RENDER_COMPONENT));
     
     speedTreeUpdateSystem = new SpeedTreeUpdateSystem(this);
-    AddSystem(speedTreeUpdateSystem, (1 << Component::RENDER_COMPONENT) | (1 << Component::SPEEDTREE_COMPONENT));
-    
-    windSystem = new WindSystem(this);
-    AddSystem(windSystem, (1 << Component::WIND_COMPONENT));
+	uint32 speedTreeComponentsFlags = (1 << Component::SPEEDTREE_COMPONENT) | (1 << Component::WIND_COMPONENT) 
+		| (1 << Component::IMPULSE_OSCILLATOR_COMPONENT) | (1 << Component::MOVING_OSCILLATOR_COMPONENT);
 
-    mOscillatorSystem = new MovingOscillatorSystem(this);
-    AddSystem(mOscillatorSystem, (1 << Component::MOVING_OSCILLATOR_COMPONENT));
-
-    iOscillatorSystem = new ImpulseOscillatorSystem(this);
-    AddSystem(iOscillatorSystem, (1 << Component::IMPULSE_OSCILLATOR_COMPONENT));
+    AddSystem(speedTreeUpdateSystem, speedTreeComponentsFlags);
 }
 
 Scene::~Scene()

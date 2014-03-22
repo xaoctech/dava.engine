@@ -39,6 +39,7 @@
 namespace DAVA 
 {
 
+class MovingTreeOscillator;
 class MovingOscillatorComponent : public Component
 {
 protected:
@@ -61,7 +62,7 @@ public:
         MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)                 
         );
     
-friend class MovingOscillatorSystem;
+friend class MovingTreeOscillator;
 };
 
 };

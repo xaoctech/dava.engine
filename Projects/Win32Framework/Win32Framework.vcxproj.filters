@@ -1428,9 +1428,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.h">
       <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\WindSystem.h">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.h">
       <Filter>Internal\Scene3D\Converters</Filter>
     </ClInclude>
@@ -1445,12 +1442,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\WindComponent.h">
       <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\ImpulseOscillatorSystem.h">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\MovingOscillatorSystem.h">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2576,9 +2567,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.cpp">
       <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\WindSystem.cpp">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.cpp">
       <Filter>Internal\Scene3D\Converters</Filter>
     </ClCompile>
@@ -2593,12 +2581,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\WindComponent.cpp">
       <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\ImpulseOscillatorSystem.cpp">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\MovingOscillatorSystem.cpp">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
