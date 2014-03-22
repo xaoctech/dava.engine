@@ -45,9 +45,11 @@ public:
     SceneSystem(Scene * scene);
     virtual ~SceneSystem();
     
-    void SetRequiredComponents(uint32 requiredComponents);
-    uint32 GetRequiredComponents();
+    void SetComponentsFlags(uint32 componentsFlags);
+    uint32 GetComponentsFlags();
     
+	virtual bool IsNeedProcessEntity(Entity * entity);
+
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
 	virtual void AddComponent(Entity * entity, Component * component);
@@ -66,7 +68,7 @@ protected:
 	inline Scene * GetScene() const;
 
 private:
-    uint32 requiredComponents;
+    uint32 componentsFlags;
 	Scene * scene;
 
 	bool locked;

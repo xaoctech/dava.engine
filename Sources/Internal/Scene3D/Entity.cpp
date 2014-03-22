@@ -119,6 +119,11 @@ Entity::~Entity()
     
 void Entity::AddComponent(Component * component)
 {
+	if(scene)
+	{
+		scene->UnregisterNode(this);
+	}
+
 	component->SetEntity(this);
 		
 	uint32 componentType = component->GetType();
@@ -160,8 +165,11 @@ void Entity::AddComponent(Component * component)
 		
 	componentFlags |= 1 << component->GetType();
 
-	if (scene)
-		scene->AddComponent(this, component);
+
+	if(scene)
+	{
+		scene->RegisterNode(this);
+	}
 }
     
 void Entity::RemoveAllComponents()
@@ -201,8 +209,10 @@ void Entity::RemoveAllComponents()
 	
 void Entity::RemoveComponent(Component * component)
 {
-	if (scene)
-		scene->RemoveComponent(this, component);
+	if(scene)
+	{
+		scene->UnregisterNode(this);
+	}
 
 	int componentCount = 0;
 	uint32 componentType = component->GetType();
@@ -255,15 +265,18 @@ void Entity::RemoveComponent(Component * component)
 	}
 		
 	CleanupComponent(component, componentCount);
+
+	if(scene)
+	{
+		scene->RegisterNode(this);
+	}
 }
     
 void Entity::RemoveComponent(uint32 componentType, uint32 index)
 {
-	if (scene)
+	if(scene)
 	{
-		Component *c = GetComponent(componentType, index);
-		if(c)
-			scene->RemoveComponent(this, c);
+		scene->UnregisterNode(this);
 	}
 
 	Component* component = NULL;
@@ -305,6 +318,11 @@ void Entity::RemoveComponent(uint32 componentType, uint32 index)
 	if(NULL != component)
 	{
 		CleanupComponent(component, componentCount);
+	}
+
+	if(scene)
+	{
+		scene->RegisterNode(this);
 	}
 }
     
