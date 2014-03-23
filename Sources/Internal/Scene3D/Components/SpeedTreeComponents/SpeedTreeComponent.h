@@ -48,8 +48,8 @@ public:
     struct OscillationParams
     {
         OscillationParams() :
-        trunkOscillationAmplitude(0.15f),
-        leafsOscillationAmplitude(0.03f),
+        trunkOscillationAmplitude(1.5f),
+        leafsOscillationAmplitude(3.f),
         leafsOscillationSpeed(3.f),
         movingOscillationLeafsSpeed(1.f),
         maxAnimatedLOD(0)

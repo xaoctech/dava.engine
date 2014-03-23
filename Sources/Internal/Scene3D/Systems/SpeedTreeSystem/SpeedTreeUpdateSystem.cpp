@@ -217,7 +217,7 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
 			if(!osc->HasInfluence(info->position))
 				continue;
             
-            oscillationOffsetAll += osc->GetOsscilationTrunkOffset(info->position) * params.trunkOscillationAmplitude;
+            oscillationOffsetAll += osc->GetOsscilationTrunkOffset(info->position);
             
             float32 leafSpeed = osc->GetOsscilationLeafsSpeed(info->position);
             if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_MOVING)
@@ -234,7 +234,7 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         SinCosFast(info->elapsedTime, sine, cosine);
         Vector2 leafOscillationParams(params.leafsOscillationAmplitude * sine, params.leafsOscillationAmplitude * cosine);
         
-        info->treeObject->SetTreeAnimationParams(oscillationOffsetAll, leafOscillationParams);
+        info->treeObject->SetTreeAnimationParams(oscillationOffsetAll * params.trunkOscillationAmplitude, leafOscillationParams);
     }
 }
     

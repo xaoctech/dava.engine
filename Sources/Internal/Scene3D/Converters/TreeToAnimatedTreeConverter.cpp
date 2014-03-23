@@ -121,21 +121,19 @@ void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
                 if((vertexFormat & EVF_TEXCOORD0) > 0)
                     newPG->SetTexcoord(0, i, vxTx);
 
-                float32 t0 = 0.f;
                 if(isLeaf)
                 {
                     Vector3 vxTangent;
                     pg->GetTangent(i, vxTangent);
                     newPG->SetTangent(i, vxTangent);
-
-                    t0 = vxPosition.Length() * 100;
                 }
 
+				float32 t0  = vxPosition.Length() * 100;
                 float32 x = vxPosition.z / treeHeight;
                 float32 flexebility = logf((expf(1.0) - 1) * x + 1);
 
                 //Binormal: x: cos(T0);  y: sin(T0); z - flexebility
-                Vector3 binormal(cosf(t0) * (.5f + x/2), sinf(t0) * (.5f + x/2), flexebility);
+                Vector3 binormal(cosf(t0) * (.5f + x/2) / 100.f, sinf(t0) * (.5f + x/2) / 100.f, flexebility / 10.f);
 
                 newPG->SetBinormal(i, binormal);
             }
