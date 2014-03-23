@@ -162,27 +162,17 @@ void main()
 	vec4 vecPos = (worldViewProjMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
-    
-//<<<<<<< Updated upstream
-//#if defined (CUT_LEAF)
-//    vec3 position;
-//    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inTangent, 1);
-//    if (tangentInCameraSpace.z < -cutDistance)
-//    {
-//        position = /*worldScale * vec3(0,0,0) +*/ worldViewTranslate;
-//    }
-//    else
-//    {
-//        position = worldScale * (inPosition.xyz - inTangent) + worldViewTranslate;
-//    }
-//    gl_Position = projMatrix * vec4(position, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
-//#else
-    //mat4 mvp = worldMatrix * viewMatrix * projMatrix;
-    //mat4 mvp = projMatrix * worldViewMatrix;
-    //gl_Position = mvp * inPosition;
-//=======
-//>>>>>>> Stashed changes
-    
+
+#if defined (CUT_LEAF)
+    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inTangent, 1.0);
+    if (tangentInCameraSpace.z < -cutDistance)
+    {
+        gl_Position = projMatrix * vec4(worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
+    }
+    else
+    {
+#endif        
+
 #if defined(WIND_ANIMATION)
     //inBinormal:             x: cos(T0);  y: sin(T0);  z - flexebility
     //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
@@ -202,21 +192,25 @@ void main()
     offset.x = rotatedOffsetXY.z - rotatedOffsetXY.w; //x*cos - y*sin
     offset.y = rotatedOffsetXY.x + rotatedOffsetXY.y; //x*sin + y*cos
 
-	gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate + windVectorFlex, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
+    gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate + windVectorFlex, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
     
 #else // not WIND_ANIMATION and SPEED_TREE_LEAF
     
-	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
+    gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 
 #endif
-    
+
+#if defined (CUT_LEAF)   
+    }
+#endif // not CUT_LEAF
+
 #else // not SPEED_TREE_LEAF
     
 #if defined(WIND_ANIMATION)
     //inBinormal: x: cos(T0);  y: sin(T0);  z - flexebility
     vec3 windVectorFlex = trunkOscillationParams * inBinormal.z; //inBinormal.z - flexebility
     
-	gl_Position = worldViewProjMatrix * vec4(inPosition.xyz + windVectorFlex, inPosition.w);
+    gl_Position = worldViewProjMatrix * vec4(inPosition.xyz + windVectorFlex, inPosition.w);
 #else //!defined(WIND_ANIMATION)
     gl_Position = worldViewProjMatrix * inPosition;
 #endif //defined(WIND_ANIMATION)
