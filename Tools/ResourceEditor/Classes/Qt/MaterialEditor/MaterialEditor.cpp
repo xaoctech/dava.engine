@@ -578,7 +578,7 @@ void MaterialEditor::FillMaterialTemplates(const QList<DAVA::NMaterial *>& mater
         {
             DAVA::NMaterial *material = materials[i];
             // Test template name
-            if ( isTemplatesSame && (NULL != materials[0]->GetMaterialTemplate()) && (curMaterialTemplate != material->GetMaterialTemplate()->name.c_str()) )
+            if ( isTemplatesSame && (NULL != material->GetMaterialTemplate()) && (curMaterialTemplate != material->GetMaterialTemplate()->name.c_str()) )
             {
                 isTemplatesSame = false;
             }
