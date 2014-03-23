@@ -315,12 +315,14 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 			{
 				// Add optional button to edit action component
 				QtPropertyToolButton * editActions = CreateButton(data, QIcon(":/QtIcons/settings.png"), "");
+                editActions->setEnabled(isSingleSelection);
 				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
 			}
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
 				// Add optional button to bake transform render object
 				QtPropertyToolButton * bakeButton = CreateButton(data, QIcon(":/QtIcons/transform_bake.png"), "Bake Transform");
+                bakeButton->setEnabled(true);   // enabled for multiselect
 				QObject::connect(bakeButton, SIGNAL(pressed()), this, SLOT(ActionBakeTransform()));
 
                 QtPropertyDataIntrospection *introData = dynamic_cast<QtPropertyDataIntrospection *>(data);
@@ -330,6 +332,7 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                     if(SceneValidator::IsObjectHasDifferentLODsCount(renderObject))
                     {
                         QtPropertyToolButton * cloneBatches = CreateButton(data, QIcon(":/QtIcons/clone_batches.png"), "Clone batches for LODs correction");
+                        cloneBatches->setEnabled(isSingleSelection);
                         QObject::connect(cloneBatches, SIGNAL(pressed()), this, SLOT(CloneRenderBatchesToFixSwitchLODs()));
                     }
                 }
@@ -756,16 +759,17 @@ void PropertyEditor::ActionEditComponent()
 
 void PropertyEditor::ActionBakeTransform()
 {
-	if(curNodes.size() == 1)
-	{
-        Entity *node = curNodes.at(0);
+    const int n = curNodes.size();
+    for (int i = 0; i < n; i++)
+    {
+        Entity *node = curNodes.at(i);
 		DAVA::RenderObject * ro = GetRenderObject(node);
 		if(NULL != ro)
 		{
 			ro->BakeTransform(node->GetLocalTransform());
 			node->SetLocalTransform(DAVA::Matrix4::IDENTITY);
 		}
-	}
+    }
 }
 
 void PropertyEditor::ConvertToShadow()
