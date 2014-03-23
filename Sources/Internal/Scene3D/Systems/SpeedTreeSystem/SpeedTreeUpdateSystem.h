@@ -47,14 +47,13 @@ class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 public:
     struct TreeInfo
     {
-        TreeInfo(SpeedTreeObject * object) :
-        treeObject(object),
-		elapsedTime(0.f)
+        TreeInfo(float32 startTime) :
+		elapsedTime(startTime)
         {}
-        
-        Vector3 position;
-        SpeedTreeObject * treeObject;
-        SpeedTreeComponent * component;
+
+		Matrix4 wtInvMx;
+		Vector3 wtPosition;
+		Entity * treeEntity;
         float32 elapsedTime;
     };
     
@@ -69,7 +68,7 @@ public:
     virtual void Process(float32 timeElapsed);
     
 	virtual void HandleEvent(Observable * observable);
-    
+
 	void TriggerImpulseOscillator(Entity * entity);
 
 private:
