@@ -34,6 +34,8 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
 #include "Scene3D/Systems/SpeedTreeSystem/TreeOscillator.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Scene.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 
 #include "Math/Math2D.h"
@@ -47,6 +49,8 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+
+	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
 
 SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
@@ -62,6 +66,20 @@ SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
 
 void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
+	if(event == EventSystem::WORLD_TRANSFORM_CHANGED)
+	{
+		uint32 treeCount = allTrees.size();
+		for(uint32 i = 0; i < treeCount; ++i)
+		{
+			TreeInfo * info = allTrees[i];
+			if(info->treeEntity == entity)
+			{
+				Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
+				info->wtPosition = wtMx.GetTranslationVector();
+				wtMx.GetInverse(info->wtInvMx);
+			}
+		}
+	}
 }
 
 bool SpeedTreeUpdateSystem::IsNeedProcessEntity(Entity * entity)
@@ -115,27 +133,30 @@ void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
 
 void SpeedTreeUpdateSystem::AddTreeEntity(Entity * entity)
 {
+	DVASSERT(GetSpeedTreeComponent(entity));
+
 	SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
 	DVASSERT(treeObject);
 
 	treeObject->SetAnimationEnabled(isAnimationEnabled);
 
-	TreeInfo * treeInfo = new TreeInfo(treeObject);
-	treeInfo->position = GetTransformComponent(entity)->GetWorldTransform().GetTranslationVector();
-	treeInfo->component = GetSpeedTreeComponent(entity);
+	TreeInfo * treeInfo = new TreeInfo();
+	treeInfo->treeEntity = entity;
+
+	Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
+	treeInfo->wtPosition = wtMx.GetTranslationVector();
+	wtMx.GetInverse(treeInfo->wtInvMx);
+
 	allTrees.push_back(treeInfo);
 }
 
 void SpeedTreeUpdateSystem::RemoveTreeEntity(Entity * entity)
 {
-	SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
-	DVASSERT(treeObject);
-
 	Vector<TreeInfo *>::iterator it = allTrees.begin();
 	Vector<TreeInfo *>::iterator itEnd = allTrees.end();
 	for(; it != itEnd; ++it)
 	{
-		if((*it)->treeObject == treeObject)
+		if((*it)->treeEntity == entity)
 		{
 			allTrees.erase(it);
 			break;
@@ -195,18 +216,20 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
     {
         TreeInfo * info = allTrees[i];
         
-        if(!info->component)
-            continue;
+		SpeedTreeComponent * component = GetSpeedTreeComponent(info->treeEntity);
+		SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(info->treeEntity));
+
+        const SpeedTreeComponent::OscillationParams & params = component->GetOcciliationParameters();
         
-        const SpeedTreeComponent::OscillationParams & params = info->component->GetOcciliationParameters();
-        
-        if(info->treeObject->GetLodIndex() > params.maxAnimatedLOD)
+        if(treeObject->GetLodIndex() > params.maxAnimatedLOD)
         {
-            info->treeObject->SetAnimationEnabled(false);
+            treeObject->SetAnimationEnabled(false);
             continue;
         }
-        info->treeObject->SetAnimationEnabled(true);
+        treeObject->SetAnimationEnabled(true);
         
+		Vector3 treePosition = info->wtPosition;
+
         Vector3 oscillationOffsetAll;
         float32 leafSpeedAll = 0.f;
         
@@ -214,12 +237,12 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         for(uint32 oi = 0; oi < oscCount; ++oi)
         {
             TreeOscillator * osc = activeOscillators[oi];
-			if(!osc->HasInfluence(info->position))
+			if(!osc->HasInfluence(treePosition))
 				continue;
             
-            oscillationOffsetAll += osc->GetOsscilationTrunkOffset(info->position);
+            oscillationOffsetAll += osc->GetOsscilationTrunkOffset(treePosition);
             
-            float32 leafSpeed = osc->GetOsscilationLeafsSpeed(info->position);
+            float32 leafSpeed = osc->GetOsscilationLeafsSpeed(treePosition);
             if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_MOVING)
             {
                 leafSpeed *= params.movingOscillationLeafsSpeed;
@@ -234,7 +257,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         SinCosFast(info->elapsedTime, sine, cosine);
         Vector2 leafOscillationParams(params.leafsOscillationAmplitude * sine, params.leafsOscillationAmplitude * cosine);
         
-        info->treeObject->SetTreeAnimationParams(oscillationOffsetAll * params.trunkOscillationAmplitude, leafOscillationParams);
+		Vector3 localOffset = MultiplyVectorMat3x3(oscillationOffsetAll * params.trunkOscillationAmplitude, info->wtInvMx);
+        treeObject->SetTreeAnimationParams(localOffset, leafOscillationParams);
     }
 }
     
@@ -249,8 +273,8 @@ void SpeedTreeUpdateSystem::HandleEvent(Observable * observable)
         uint32 treeCount = allTrees.size();
         for(uint32 i = 0; i < treeCount; ++i)
         {
-            TreeInfo * info = allTrees[i];
-            info->treeObject->SetAnimationEnabled(isAnimationEnabled);
+			SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(allTrees[i]->treeEntity));
+            treeObject->SetAnimationEnabled(isAnimationEnabled);
         }
     }
 }
