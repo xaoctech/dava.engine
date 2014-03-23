@@ -334,7 +334,7 @@ void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize, UniqueHandle re
 void RenderHelper::DrawCircle(const Vector2 & center, float32 radius, UniqueHandle renderState)
 {
 	Polygon2 pts;
-    float32 angle = SEGMENT_LENGTH / radius;
+    float32 angle = Min(PI/6.0f, SEGMENT_LENGTH / radius);// minimum angle 30 degrees
 	int ptsCount = (int)(2 * PI / angle) + 1;
 	
     pts.points.reserve(ptsCount);
