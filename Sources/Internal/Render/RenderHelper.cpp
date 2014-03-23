@@ -402,7 +402,7 @@ void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionV
 			float32 cosAngleRot = curEmissionVector.z / length;
 			float32 angleRot = acos(cosAngleRot);
 			Vector3 axisRot(curEmissionVector.y, -curEmissionVector.x, 0);
-
+            axisRot.Normalize();
 			Matrix3 planeRotMatrix;
 			planeRotMatrix.CreateRotation(axisRot, angleRot);
 			Vector3 rotatedVector = directionVector * planeRotMatrix;
