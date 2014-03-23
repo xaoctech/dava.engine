@@ -277,23 +277,18 @@ bool DefaultScreen::SmartSelection::IsEqual(const SmartSelection* item) const
 
 HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetFirst() const
 {
-	if (childs.size())
-		return (*childs.begin())->GetFirst();
+	if (!childs.empty())
+		return childs.front()->GetFirst();
 
-	return this->id;
+	return id;
 }
 
 HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetLast() const
 {
-	SelectionVector selection;
-	FormatSelectionVector(selection);
-	// The last element in selection array is on the top - so we should get it
-	if (selection.size() > 0)
-	{
-		return selection[selection.size() - 1];
-	}
+    if (!childs.empty())
+        return childs.back()->GetLast();
 
-	return this->id;
+    return id;
 }
 
 DefaultScreen::SmartSelection::SelectionVector DefaultScreen::SmartSelection::GetAll() const
