@@ -159,6 +159,12 @@ Vector<Image *> Image::CreateMipMapsImages(bool isNormalMap /* = false */)
     uint32 curMipMapLevel = 0;
     image0->mipmapLevel = curMipMapLevel;
 
+    uint8 * newImage0Data = new uint8[imageWidth * imageHeight * formatSize];
+    memset(newImage0Data, 0, imageWidth * imageHeight * formatSize);
+    ImageConvert::Normalize(format, image0->data, imageWidth, imageHeight, imageWidth * formatSize, newImage0Data);
+    SafeDeleteArray(image0->data);
+    image0->data = newImage0Data;
+
     imageSet.push_back(image0);
     while(imageHeight > 1 || imageWidth > 1)
     {

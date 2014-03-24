@@ -103,29 +103,41 @@ struct PackNormalizedRGBA8888
     }
 };
 
+struct NormalizeRGBA8888
+{
+    inline void operator()(const uint32 * input, uint32 *output)
+    {
+        UnpackRGBA8888 unpack;
+        PackNormalizedRGBA8888 pack;
+        uint32 r, g, b, a;
+
+        unpack(input, r, g, b, a);
+        pack(r, g, b, a, output);
+    }
+};
+
 template<class TYPE_IN, class TYPE_OUT, typename CONVERT_FUNC>
 class ConvertDirect
 {
 public:
-    void operator()(const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch,
-                    void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
+    void operator()(const void * inData, uint32 width, uint32 height, uint32 pitch, void * outData)
     {
 		CONVERT_FUNC func;
         const uint8 * readPtr = reinterpret_cast<const uint8*>(inData);
         uint8 * writePtr = reinterpret_cast<uint8*>(outData);
         
-        for (uint32 y = 0; y < inHeight; ++y)
+        for (uint32 y = 0; y < height; ++y)
         {
             const TYPE_IN * readPtrLine = reinterpret_cast<const TYPE_IN*>(readPtr);
             TYPE_OUT * writePtrLine = reinterpret_cast<TYPE_OUT*>(writePtr);
-            for (uint32 x = 0; x < inWidth; ++x)
+            for (uint32 x = 0; x < width; ++x)
             {
                 func(readPtrLine, writePtrLine);
                 readPtrLine++;
                 writePtrLine++;
             }
-            readPtr += inPitch; 
-            writePtr += outPitch;
+            readPtr += pitch; 
+            writePtr += pitch;
         }
     };
 };
@@ -179,6 +191,19 @@ public:
 class ImageConvert
 {
 public:
+
+    static void Normalize(PixelFormat format, const void * inData, uint32 width, uint32 height, uint32 pitch, void * outData)
+    {
+        if(format == FORMAT_RGBA8888)
+        {
+            ConvertDirect<uint32, uint32, NormalizeRGBA8888> convert;
+            convert(inData, width, height, pitch, outData);
+        }
+        else
+        {
+            Logger::Debug("Normalize function not implemented for %s", PixelFormatDescriptor::GetPixelFormatString(format));
+        }
+    }
 
 	static void DownscaleTwiceBillinear(	PixelFormat inFormat,
 												PixelFormat outFormat,
