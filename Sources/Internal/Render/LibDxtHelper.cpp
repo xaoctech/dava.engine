@@ -768,6 +768,8 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(textureType, width, height);
     inputOptions.setMipmapGeneration(generateMipmaps, mipSize[0].size() - 1);
+    inputOptions.setNormalMap(asNormalMap);
+    inputOptions.setNormalizeMipmaps(asNormalMap);
 	
 	CompressionOptions compressionOptions;
 	compressionOptions.setFormat(innerComprFormat);
