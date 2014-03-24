@@ -28,48 +28,42 @@
 
 
 
-#ifndef __DAVAENGINE_UIWEBVIEW_H__
-#define __DAVAENGINE_UIWEBVIEW_H__
+#ifndef __CLONE_LAST_BATCH_COMMAND_H__
+#define __CLONE_LAST_BATCH_COMMAND_H__
 
-#include "UIControl.h"
-#include "IWebViewControl.h"
+#include "Command2.h"
 
-namespace DAVA {
-	
-// The purpose of UIWebView class is displaying embedded Web Page Controls.
-class UIWebView : public UIControl
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderObject.h"
+
+class CloneLastBatchCommand: public Command2
 {
-protected:
-	virtual ~UIWebView();
 public:
-	UIWebView(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
-		
-	// Open the URL.
-	void OpenURL(const String& urlToOpen);
+	CloneLastBatchCommand(DAVA::RenderObject *renderObject);
+    virtual ~CloneLastBatchCommand();
+
+	virtual void Undo();
+	virtual void Redo();
     
-    void OpenFromBuffer(const String& string, const FilePath& basePath);
+	virtual DAVA::Entity* GetEntity() const;
     
-	// Overloaded virtual methods.
-	virtual void WillAppear();
-	virtual void WillDisappear();
-
-	virtual void SetPosition(const Vector2 &position, bool positionInAbsoluteCoordinates = false);
-	virtual void SetSize(const Vector2 &newSize);
-	virtual void SetVisible(bool isVisible, bool hierarchic = true);
-
-	void SetDelegate(IUIWebViewDelegate* delegate);
-	void SetBackgroundTransparency(bool enabled);
-
-	// Enable/disable bounces.
-	void SetBounces(bool value);
-	bool GetBounces() const;
-	void SetGestures(bool value);
+    inline const DAVA::Vector<DAVA::RenderBatch *> & GetNewBatches() const;
 
 protected:
-    virtual void SetInternalVisible(bool isVisible);
-	// Platform-specific implementation of the Web View Control.
-	IWebViewControl* webViewControl;
-};
+
+    DAVA::RenderObject *renderObject;
+    DAVA::int32 maxLodIndexes[2];
+
+    DAVA::int32 requestedSwitchIndex;
+    DAVA::Vector<DAVA::RenderBatch *> newBatches;
 };
 
-#endif /* defined(__DAVAENGINE_UIWEBVIEW_H__) */
+
+inline const DAVA::Vector<DAVA::RenderBatch *> & CloneLastBatchCommand::GetNewBatches() const
+{
+    return newBatches;
+}
+
+
+
+#endif // __CLONE_LAST_BATCH_COMMAND_H__
