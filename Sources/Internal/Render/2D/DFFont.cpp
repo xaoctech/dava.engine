@@ -94,6 +94,8 @@ namespace DAVA {
 		dfFont->spread = spread;
 		dfFont->configPath = configPath;
         dfFont->fontTexture = SafeRetain(fontTexture);
+        dfFont->fontTextureHandler = fontTextureHandler;
+        RenderManager::Instance()->RetainTextureState(fontTextureHandler);
 
 		return dfFont;
 	}

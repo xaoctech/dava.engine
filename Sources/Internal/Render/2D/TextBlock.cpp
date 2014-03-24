@@ -197,7 +197,8 @@ void TextBlock::SetText(const WideString & _string, const Vector2 &requestedText
 	}
 	requestedSize = requestedTextRectSize;
 	text = _string;
-    
+    needRedraw = true;
+
     mutex.Unlock();
 	Prepare();
 }
@@ -209,6 +210,7 @@ void TextBlock::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
 	{
         isMultilineBySymbolEnabled = bySymbol;
 		isMultilineEnabled = _isMultilineEnabled;
+        needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
@@ -223,6 +225,7 @@ void TextBlock::SetFittingOption(int32 _fittingType)
 	if (fittingType != _fittingType)
 	{
 		fittingType = _fittingType;
+        needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
