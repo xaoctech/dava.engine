@@ -132,6 +132,12 @@ public:
     void SetVegetationActive(bool active);
     bool GetVegetationActive() const;
     
+    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
+    float32 GetPerturbationDistance() const;
+    const Vector3& GetPerturbationForce() const;
+    void SetPerturbationPoint(const Vector3& point);
+    const Vector3& GetPerturbationPoint() const;
+    
 private:
 
     struct VegetationVertex
@@ -248,6 +254,10 @@ private:
     uint32 maxVisibleQuads;
     
     bool isVegetationActive;
+    
+    Vector3 perturbationForce;
+    Vector3 perturbationPoint;
+    float32 maxPerturbationDistance;
     
 public:
     

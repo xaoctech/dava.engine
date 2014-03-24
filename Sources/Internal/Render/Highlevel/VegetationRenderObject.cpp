@@ -35,6 +35,7 @@
 #include "Render/Material/NMaterial.h"
 #include "Utils/Random.h"
 #include "Render/ImageLoader.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 
 namespace DAVA
 {
@@ -44,8 +45,15 @@ static const FastName UNIFORM_WORLD_SIZE = FastName("worldSize");
 static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP = FastName("clusterScaleDensityMap[0]");
 static const FastName UNIFORM_HEIGHTMAP_SCALE = FastName("heightmapScale");
 static const FastName UNIFORM_SWITCH_LOD_SCALE = FastName("lodSwitchScale");
+static const FastName UNIFORM_PERTURBATION_FORCE = FastName("perturbationForce");
+static const FastName UNIFORM_PERTURBATION_POINT = FastName("perturbationPoint");
+static const FastName UNIFORM_PERTURBATION_FORCE_DISTANCE = FastName("perturbationForceDistance");
 
 static const FastName FLAG_FRAMEBUFFER_FETCH = FastName("FRAMEBUFFER_FETCH");
+
+static const FastName VEGETATION_QUALITY_NAME_HIGH = FastName("HIGH");
+static const FastName VEGETATION_QUALITY_NAME_LOW = FastName("LOW");
+static const FastName VEGETATION_QUALITY_GROUP_NAME = FastName("Vegetation");
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[] =
@@ -320,7 +328,8 @@ VegetationRenderObject::VegetationRenderObject() :
     clusterLimit(0),
     halfWidth(0),
     halfHeight(0),
-    vertexRenderDataObject(NULL)
+    vertexRenderDataObject(NULL),
+    maxPerturbationDistance(1000000.0f)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -425,6 +434,13 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     bool shouldLoadData = deviceCaps.isVertexTextureUnitsSupported;
     
+    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VEGETATION_QUALITY_GROUP_NAME);
+    bool qualityAllowsVegetation = (VEGETATION_QUALITY_NAME_HIGH == currentQuality);
+    
+    shouldLoadData = shouldLoadData && qualityAllowsVegetation;
+    
+    SetVegetationActive(qualityAllowsVegetation);
+    
 #if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
     shouldLoadData = true;
 #endif
@@ -441,19 +457,40 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 
 void VegetationRenderObject::PrepareToRender(Camera *camera)
 {
+#if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
+//VI: case when vegetation was turned off and then qualit changed from low t high is not a real-world scenario
+//VI: real-world scenario is in resource editor when quality has been changed.
+    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VEGETATION_QUALITY_GROUP_NAME);
+    bool qualityAllowsVegetation = (VEGETATION_QUALITY_NAME_HIGH == currentQuality);
+    
+    SetVegetationActive(qualityAllowsVegetation);
+#endif
+
+    visibleCells.clear();
+    uint32 currentBatchCount = GetRenderBatchCount();
+    
     if(!ReadyToRender())
     {
+        if(currentBatchCount > 0)
+        {
+            while(currentBatchCount > 0)
+            {
+                RemoveRenderBatch(GetRenderBatchCount() - 1);
+                currentBatchCount = GetRenderBatchCount();
+            }
+            
+            ReturnToPool(currentBatchCount);
+        }
+        
         return;
     }
     
-    visibleCells.clear();
     BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
     
     //std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
     uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
-    uint32 currentBatchCount = GetRenderBatchCount();
-    
+
     if(requestedBatchCount > currentBatchCount)
     {
         int32 batchesToAdd = requestedBatchCount - currentBatchCount;
@@ -1335,5 +1372,38 @@ bool VegetationRenderObject::GetVegetationActive() const
      return isVegetationActive;
 }
 
+void VegetationRenderObject::SetPerturbation(const Vector3& point,
+                                            const Vector3& force,
+                                            float32 distance)
+{
+    perturbationForce = force;
+    maxPerturbationDistance = distance;
+    perturbationPoint = point;
+    
+    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_FORCE, Shader::UT_FLOAT_VEC3, 1, perturbationForce.data);
+    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_FORCE_DISTANCE, Shader::UT_FLOAT, 1, &maxPerturbationDistance);
+    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_POINT, Shader::UT_FLOAT_VEC3, 1, perturbationPoint.data);
+}
+
+float32 VegetationRenderObject::GetPerturbationDistance() const
+{
+   return maxPerturbationDistance;
+}
+
+const Vector3& VegetationRenderObject::GetPerturbationForce() const
+{
+    return perturbationForce;
+}
+
+const Vector3& VegetationRenderObject::GetPerturbationPoint() const
+{
+    return perturbationPoint;
+}
+
+void VegetationRenderObject::SetPerturbationPoint(const Vector3& point)
+{
+    perturbationPoint = point;
+    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_POINT, Shader::UT_FLOAT_VEC3, 1, perturbationPoint.data);
+}
 
 };
