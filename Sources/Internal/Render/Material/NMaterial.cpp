@@ -284,7 +284,7 @@ void NMaterial::ResetFlag(const FastName& flag)
 
 int32 NMaterial::GetFlagValue(const FastName& flag) const
 {
-	int32 flagValue = NMaterial::FlagOff;
+	int32 flagValue = NMaterial::FlagOff | NMaterial::FlagInherited;
 	
 	if(materialSetFlags.count(flag) > 0)
 	{
@@ -294,7 +294,7 @@ int32 NMaterial::GetFlagValue(const FastName& flag) const
 	{
 		if(parent)
 		{
-			flagValue = parent->GetFlagValue(flag) | NMaterial::FlagInherited;
+			flagValue |= parent->GetFlagValue(flag);
 		}
 	}
 	
@@ -1181,6 +1181,17 @@ void NMaterial::BuildTextureParamsCache(RenderPassInstance* passInstance)
 			}
 		}
 	}
+}
+    
+void NMaterial::BuildActiveUniformsCacheParamsCache()
+{
+    HashMap<FastName, DAVA::NMaterial::RenderPassInstance*>::iterator it = instancePasses.begin();
+    HashMap<FastName, DAVA::NMaterial::RenderPassInstance*>::iterator endIt = instancePasses.end();
+    while(it != endIt)
+    {
+        BuildActiveUniformsCacheParamsCache(it->second);
+        ++it;
+    }
 }
 
 void NMaterial::BuildActiveUniformsCacheParamsCache(RenderPassInstance* passInstance)
@@ -2121,7 +2132,7 @@ void NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, 
 	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
 	if(textures->count(texture))
 	{
-		if(value.type == VariantType::TYPE_NONE)
+		if(value.type == VariantType::TYPE_NONE && state->GetMaterialType() != MATERIALTYPE_GLOBAL)
 		{
 			if(state->textures.count(texture) > 0)
 			{
@@ -2536,7 +2547,7 @@ void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object
 		int propSize = prop.size;
 		Shader::eUniformType propType = prop.type;
 		
-		if(value.GetType() == VariantType::TYPE_NONE)
+		if(value.GetType() == VariantType::TYPE_NONE && state->GetMaterialType() != MATERIALTYPE_GLOBAL)
 		{
 			// empty variant value should remove this property
 			state->RemoveMaterialProperty(member);
@@ -2704,7 +2715,7 @@ void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, con
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-    if(value.GetType() == VariantType::TYPE_NONE)
+    if(value.GetType() == VariantType::TYPE_NONE && state->GetMaterialType() != MATERIALTYPE_GLOBAL)
     {
         state->ResetFlag(member);
     }
