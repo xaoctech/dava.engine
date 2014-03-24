@@ -147,7 +147,7 @@ void MaterialEditor::initTemplates()
     {
         QStandardItem *item = new QStandardItem();
         item->setText( templates->at(i).name );
-        item->setData( templates->at(i).path );
+        item->setData( templates->at(i).path, Qt::UserRole );
         templatesModel->appendRow( item );
     }
 
@@ -565,7 +565,7 @@ void MaterialEditor::FillMaterialTemplates(const QList<DAVA::NMaterial *>& mater
     {
         QAbstractItemModel *model = ui->templateBox->model();
         const int n = model->rowCount();
-        const int pathRole = Qt::UserRole + 1; // Default role for QStandardItem::setData
+        const int pathRole = Qt::UserRole;
         for ( int i = 0; i < n; i++ )
         {
             const QModelIndex index = model->index( i, 0 );
@@ -737,7 +737,7 @@ void MaterialEditor::OnTemplateChanged(int index)
     if(curMaterials.size() == 1 && index > 0)
     {
         DAVA::NMaterial *material = curMaterials.at(0);
-        QString newTemplatePath = ui->templateBox->itemData(index).toString();
+        QString newTemplatePath = ui->templateBox->itemData(index, Qt::UserRole).toString();
         if(!newTemplatePath.isEmpty())
         {
             const DAVA::InspMember *templateMember = material->GetTypeInfo()->Member("materialTemplate");
@@ -784,6 +784,7 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
             {
                 if (usebatch)
                 {
+                    QObject::disconnect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
                     curScene->BeginBatch( "Property multiedit" );
                 }
 
@@ -796,6 +797,8 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
                 if (usebatch)
                 {
                     curScene->EndBatch();
+                    QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
+                    SetCurMaterial( curMaterials );
                 }
             }
 		}
