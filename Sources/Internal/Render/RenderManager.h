@@ -95,6 +95,10 @@ public:
 			isHardwareCursorSupported = false;
 			isFramebufferFetchSupported = isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
 			isVertexTextureUnitsSupported = isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+            
+#if defined(__DAVAENGINE_ANDROID__)
+            isGlDepth24Stencil8Supported = isGlDepthNvNonLinearSupported = false;
+#endif
 		}
 
         Core::eRenderer renderer;
@@ -106,8 +110,13 @@ public:
         bool isFloat32Supported;
 		bool isDXTSupported;
 		bool isATCSupported;
-        bool isVertexTextureUnitsSupported;
+		bool isVertexTextureUnitsSupported;
         bool isFramebufferFetchSupported;
+        
+#if defined(__DAVAENGINE_ANDROID__)
+        bool isGlDepth24Stencil8Supported;
+        bool isGlDepthNvNonLinearSupported;
+#endif
 	};
     
     struct Stats
