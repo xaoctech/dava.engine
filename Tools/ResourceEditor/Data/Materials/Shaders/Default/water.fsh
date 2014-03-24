@@ -37,8 +37,8 @@ varying mediump vec3 cameraToPointInTangentSpace;
 varying mediump mat3 tbnToWorldMatrix;
 varying vec3 varLightVec;
 
-varying mediump vec2 varTexCoord0;
-varying mediump vec2 varTexCoord1;
+varying highp vec2 varTexCoord0;
+varying highp vec2 varTexCoord1;
 
 uniform lowp vec3 refractionTintColor;
 
@@ -142,7 +142,7 @@ void main()
     gl_FragColor = vec4(resColor, 1.0);
 #else
     lowp vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpaceNorm, normal);
-    lowp vec3 reflectionVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * reflectionVectorInTangentSpace);    
+    lowp vec3 reflectionVectorInWorldSpace = (tbnToWorldMatrix * reflectionVectorInTangentSpace);    
     lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb;
     
     #if defined (FRESNEL_TO_ALPHA)	
@@ -154,7 +154,7 @@ void main()
     
     #else	
         lowp vec3 refractedVectorInTangentSpace = refract(cameraToPointInTangentSpaceNorm, normal, eta);
-        lowp vec3 refractedVectorInWorldSpace = worldInvTransposeMatrix * (tbnToWorldMatrix * refractedVectorInTangentSpace);
+        lowp vec3 refractedVectorInWorldSpace = (tbnToWorldMatrix * refractedVectorInTangentSpace);
         lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; 
            		
         lowp vec3 resColor = mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel);

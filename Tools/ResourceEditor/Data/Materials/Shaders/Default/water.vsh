@@ -54,8 +54,8 @@ varying float eyeDist;
 #endif
 
 #if defined(PIXEL_LIT)
-varying vec2 varTexCoord0;
-varying vec2 varTexCoord1;
+varying highp vec2 varTexCoord0;
+varying highp vec2 varTexCoord1;
 varying vec3 varLightVec;
 #endif
 
