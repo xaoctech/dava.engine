@@ -344,6 +344,8 @@ public:
     FastName GetMaterialGroup() const;
     void SetMaterialGroup(const FastName &group);
 
+    void BuildActiveUniformsCacheParamsCache();
+    
 protected:
 	
 	class TextureBucket
