@@ -703,12 +703,12 @@ void main()
     
         #endif
     
-        vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
+        //vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
     
-        if(pos.z > clusterCenter.z)
-        {
-            pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
-        }
+        //if(pos.z > clusterCenter.z)
+        //{
+        //    pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
+        //}
 
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;

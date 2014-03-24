@@ -55,6 +55,8 @@ public:
     virtual void RemoveEntity(Entity * entity);
     void SyncFoliageWithLandscape();
     
+    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
+    
 private:
 
     Entity* landscapeEntity;
