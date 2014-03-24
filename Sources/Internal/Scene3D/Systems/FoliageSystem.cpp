@@ -98,4 +98,15 @@ namespace DAVA
                                                landscapeRO->GetLandscapeHeight()));
         }
     }
+    
+    void FoliageSystem::SetPerturbation(const Vector3& point,
+                                        const Vector3& force,
+                                        float32 distance)
+    {
+        VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
+        if(vegetationRO != NULL)
+        {
+            vegetationRO->SetPerturbation(point, force, distance);
+        }
+    }
 };

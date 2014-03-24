@@ -357,10 +357,6 @@ VegetationRenderObject::VegetationRenderObject() :
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
-    
-    SetVegetationActive(RenderManager::Instance()->GetCaps().isVertexTextureUnitsSupported);
-    
-    //SetVegetationActive(false);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -439,7 +435,7 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     shouldLoadData = shouldLoadData && qualityAllowsVegetation;
     
-    SetVegetationActive(qualityAllowsVegetation);
+    RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::VEGETATION_DRAW, shouldLoadData);
     
 #if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
     shouldLoadData = true;
@@ -457,19 +453,21 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 
 void VegetationRenderObject::PrepareToRender(Camera *camera)
 {
+    bool renderFlag = RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW);
+    
 #if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
 //VI: case when vegetation was turned off and then qualit changed from low t high is not a real-world scenario
 //VI: real-world scenario is in resource editor when quality has been changed.
     FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VEGETATION_QUALITY_GROUP_NAME);
     bool qualityAllowsVegetation = (VEGETATION_QUALITY_NAME_HIGH == currentQuality);
     
-    SetVegetationActive(qualityAllowsVegetation);
+    renderFlag = (renderFlag && qualityAllowsVegetation);
 #endif
 
     visibleCells.clear();
     uint32 currentBatchCount = GetRenderBatchCount();
     
-    if(!ReadyToRender())
+    if(!ReadyToRender(renderFlag))
     {
         if(currentBatchCount > 0)
         {
@@ -1321,9 +1319,9 @@ void VegetationRenderObject::ReleaseRenderData()
     indexData.clear();
 }
 
-bool VegetationRenderObject::ReadyToRender()
+bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
 {
-    return isVegetationActive && (vertexRenderDataObject != NULL);
+    return (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (vertexRenderDataObject != NULL);
 }
 
 void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
@@ -1361,16 +1359,6 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
         SetupNodeUniforms(node->children[2], uniforms);
         SetupNodeUniforms(node->children[3], uniforms);
     }
-}
-
-void VegetationRenderObject::SetVegetationActive(bool active)
-{
-     isVegetationActive = active;
-}
-    
-bool VegetationRenderObject::GetVegetationActive() const
-{
-     return isVegetationActive;
 }
 
 void VegetationRenderObject::SetPerturbation(const Vector3& point,

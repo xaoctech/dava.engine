@@ -252,6 +252,9 @@
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
 
+#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
+
 //Components
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/BulletComponent.h"

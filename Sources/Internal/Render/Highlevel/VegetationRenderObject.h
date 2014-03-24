@@ -129,9 +129,6 @@ public:
     
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
     
-    void SetVegetationActive(bool active);
-    bool GetVegetationActive() const;
-    
     void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
     float32 GetPerturbationDistance() const;
     const Vector3& GetPerturbationForce() const;
@@ -213,7 +210,7 @@ private:
     
     void CreateRenderData(uint32 maxClusters);
     void ReleaseRenderData();
-    bool ReadyToRender();
+    bool ReadyToRender(bool externalRenderFlag);
     
     void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
                            Vector<Vector4>& uniforms);
@@ -252,8 +249,6 @@ private:
     Vector2 visibleClippingDistances;
     Vector3 lodRanges;
     uint32 maxVisibleQuads;
-    
-    bool isVegetationActive;
     
     Vector3 perturbationForce;
     Vector3 perturbationPoint;
