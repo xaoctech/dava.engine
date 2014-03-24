@@ -578,7 +578,8 @@ void VegetationRenderObject::SetVegetationMap(const FilePath& path)
 {
     if(path.Exists())
     {
-        Vector<Image*> images = ImageLoader::CreateFromFileByExtension(path);
+        Vector<Image*> images;
+        ImageLoader::CreateFromFileByExtension(path, images);
             
         DVASSERT(images.size());
             
