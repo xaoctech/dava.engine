@@ -91,8 +91,12 @@ struct PackNormalizedRGBA8888
 {
     void operator()(uint32 r, uint32 g, uint32 b, uint32 a, uint32 * output)
     {
-        Vector3 v((float32)r, (float32)g, (float32)b);
+        Vector3 v(r / 255.f, g / 255.f, b / 255.f);
+        v *= 2.f;
+        v -= Vector3(1.f, 1.f, 1.f);
         v.Normalize();
+        v /= 2.f;
+        v += Vector3(.5f, .5f, .5f);
 
         PackRGBA8888 packFunc;
         packFunc((uint32)(0xFF * v.x), (uint32)(0xFF * v.y), (uint32)(0xFF * v.z), a, output);

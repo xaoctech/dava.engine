@@ -581,7 +581,7 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 	return res;
 }
 
-bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps, bool asNormalMap)
 {
 	//creating tmp dds file, nvtt accept only filename.dds as input, because of this the last letter befor "." should be changed to "_".
 	if(!fileNameOriginal.IsEqualToExtension(".dds"))
@@ -594,12 +594,12 @@ bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, 
 		compressionFormat == FORMAT_ATC_RGBA_EXPLICIT_ALPHA ||
 		compressionFormat == FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
 	{
-		return WriteAtcFile(fileNameOriginal, width, height, data, dataCount, compressionFormat, generateMipmaps);
+		return WriteAtcFile(fileNameOriginal, width, height, data, dataCount, compressionFormat, generateMipmaps, asNormalMap);
 	}
-	return WriteDxtFile(fileNameOriginal, width, height, data, dataCount, compressionFormat, generateMipmaps);
+	return WriteDxtFile(fileNameOriginal, width, height, data, dataCount, compressionFormat, generateMipmaps, asNormalMap);
 }
 
-bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps, bool asNormalMap)
 {
 	if(!( (compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM)|| (compressionFormat == FORMAT_RGBA8888)) )
 	{
@@ -636,11 +636,11 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 	{
 		compressionOptions.setColorWeights(1, 1, 0);
 	}
-	else if (FORMAT_DXT5NM == compressionFormat)
+	else if (FORMAT_DXT5NM == compressionFormat || asNormalMap)
 	{
-		inputOptions.setNormalMap(true);
+        inputOptions.setNormalMap(true);
+        inputOptions.setNormalizeMipmaps(true);
 	}
-	
     
 	OutputOptions outputOptions;
 	FilePath fileName = FilePath::CreateWithNewExtension(fileNameOriginal, "_dds");
@@ -665,7 +665,7 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 	return ret;
 }
 
-bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
+bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps, bool asNormalMap)
 {
 	const int32 minSize = 0;
 	
