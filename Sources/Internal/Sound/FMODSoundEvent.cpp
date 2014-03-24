@@ -109,7 +109,7 @@ bool FMODSoundEvent::Trigger()
         FMOD_VERIFY(fmodEvent->setVolume(volume));
         FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
         FMOD_VERIFY(fmodEvent->start());
-        
+
         Retain();
     }
     else if(result != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
@@ -235,13 +235,16 @@ void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
     
 void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent, eSoundEventCallbackType callbackType)
 {
-    SoundSystem * soundSystem = SoundSystem::Instance();
-    soundSystem->ReleaseOnUpdate(this);
-    soundSystem->PerformCallbackOnUpdate(this, callbackType);
-    
     List<FMOD::Event *>::iterator it = std::find(fmodEventInstances.begin(), fmodEventInstances.end(), fmodEvent);
     if(it != fmodEventInstances.end())
+    {
+        SoundSystem * soundSystem = SoundSystem::Instance();
+        soundSystem->ReleaseOnUpdate(this);
+        soundSystem->PerformCallbackOnUpdate(this, callbackType);
+
+        (*it)->setCallback(0, 0);
         fmodEventInstances.erase(it);
+    }
 }
 
 void FMODSoundEvent::GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const
@@ -282,7 +285,7 @@ String FMODSoundEvent::GetEventName() const
 
 FMOD_RESULT F_CALLBACK FMODSoundEvent::FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata)
 {
-    if(/*type == FMOD_EVENT_CALLBACKTYPE_STOLEN || */type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
+    if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN || type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
     {
         FMOD::Event * fEvent = (FMOD::Event *)event;
         FMODSoundEvent * sEvent = (FMODSoundEvent *)userdata;
