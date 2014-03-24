@@ -262,7 +262,7 @@ void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *comman
 		command->GetId() == CMDID_INSP_MEMBER_MODIFY || 
 		command->GetId() == CMDID_META_OBJ_MODIFY)
 	{
-		//SetCurMaterial(curMaterials);
+		SetCurMaterial(curMaterials);
 	}
 }
 
