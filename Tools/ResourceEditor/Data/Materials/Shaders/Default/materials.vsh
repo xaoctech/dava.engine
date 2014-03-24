@@ -181,6 +181,10 @@ uniform vec4 clusterScaleDensityMap[32];
 uniform sampler2D detail;
 
 uniform vec2 heightmapScale;
+
+uniform vec3 perturbationForce;
+uniform vec3 perturbationPoint;
+uniform float perturbationForceDistance;
 #endif
 
 
@@ -253,6 +257,7 @@ void main()
     
         highp vec4 heightVec = texture2DLod(detail, hUV, 0.0);
         float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
+    
     
         pos.z += height;
         clusterCenter.z += height;
@@ -698,6 +703,13 @@ void main()
     
         #endif
     
+        vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
+    
+        if(pos.z > clusterCenter.z)
+        {
+            pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
+        }
+
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;
     
