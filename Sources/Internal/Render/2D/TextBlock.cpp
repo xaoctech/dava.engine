@@ -372,12 +372,11 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 		
 		Size2i textSize;
 		stringSizes.clear();
-		
+        
 		if(!isMultilineEnabled)
 		{
 			textSize = font->GetStringSize(text);
             pointsStr.clear();
-			
             if(fittingType & FITTING_POINTS)
             {
                 if(drawSize.x < textSize.dx)
@@ -399,7 +398,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
                     }
                 }
             }
-            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx))
+            else if(!((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (drawSize.x < textSize.dx) && (requestedSize.x >= 0))
             {
                 Size2i textSizePoints;
                 int32 length = (int32)text.length();
@@ -424,6 +423,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
                     
                     int32 count = endPos;
                     WideString savedStr = L"";
+                    
                     for(int32 i = 1; i < count; ++i)
                     {
                         pointsStr.clear();
@@ -443,7 +443,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			else if(((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (requestedSize.dy >= 0 || requestedSize.dx >= 0))
 			{
 				bool isChanged = false;
-				float prevFontSize = font->GetSize();
+				float prevFontSize = font->GetRenderSize();
 				while (true)
 				{
 					float yMul = 1.0f;
@@ -458,9 +458,9 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 						h = textSize.dy;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dy > drawSize.y)
 						{
-							if (prevFontSize < font->GetSize())
+							if (prevFontSize < font->GetRenderSize())
 							{
-								font->SetSize(prevFontSize);
+								font->SetRenderSize(prevFontSize);
 								textSize = font->GetStringSize(text);
 								h = textSize.dy;
 								if (requestedSize.dx >= 0)
@@ -488,9 +488,9 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 						w = textSize.dx;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dx > drawSize.x)
 						{
-							if (prevFontSize < font->GetSize())
+							if (prevFontSize < font->GetRenderSize())
 							{
-								font->SetSize(prevFontSize);
+								font->SetRenderSize(prevFontSize);
 								textSize = font->GetStringSize(text);
 								w = textSize.dx;
 								if (requestedSize.dy >= 0)
@@ -519,7 +519,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 						break;
 					}
 					
-					float finalSize = font->GetSize();
+					float finalSize = font->GetRenderSize();
 					prevFontSize = finalSize;
 					isChanged = true;
 					if(xMul < yMul)
@@ -530,7 +530,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 					{
 						finalSize *= yMul;
 					}
-					font->SetSize(finalSize);
+					font->SetRenderSize(finalSize);
 					textSize = font->GetStringSize(text);
 				};
 			}
@@ -558,7 +558,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
                 //				textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 				int32 fontHeight = font->GetFontHeight() + yOffset;
 				textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
-				float lastSize = font->GetSize();
+				float lastSize = font->GetRenderSize();
 				float lastHeight = (float32)textSize.dy;
 				
 				bool isChanged = false;
@@ -575,9 +575,9 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 						{
 							yBigger = true;
 							yMul = drawSize.y / textSize.dy;
-							if(lastSize < font->GetSize())
+							if(lastSize < font->GetRenderSize())
 							{
-								font->SetSize(lastSize);
+								font->SetRenderSize(lastSize);
 								h = (int32)lastHeight;
 								break;
 							}
@@ -605,6 +605,10 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 							{
 								yMul = (drawSize.y * 0.95f) / textSize.dy;
 							}
+                            if (yMul == 1.0f)
+                            {
+                                yMul = 1.05f;
+                            }
 						}
 					}
 					
@@ -615,11 +619,11 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 					
 					lastHeight = (float32)textSize.dy;
 					
-					float finalSize = lastSize = font->GetSize();
+					float finalSize = lastSize = font->GetRenderSize();
 					isChanged = true;
 					finalSize *= yMul;
 					
-					font->SetSize(finalSize);
+					font->SetRenderSize(finalSize);
                     //					textSize = font->GetStringSize(text);
                     
                     if(isMultilineBySymbolEnabled)
@@ -705,6 +709,8 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			w = (int32)drawSize.dx;
 		}
 		
+		
+		
 		//calc texture size
 		int32 dx = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w);
 		int32 dy = (int32)ceilf(Core::GetVirtualToPhysicalFactor() * h);
@@ -717,7 +723,6 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
         EnsurePowerOf2(cacheDy);
         
 		cacheW = w;
-
 		cacheFinalSize.x = (float32)dx / Core::GetVirtualToPhysicalFactor();
         cacheFinalSize.y = (float32)dy / Core::GetVirtualToPhysicalFactor();
         
@@ -725,9 +730,6 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 			textBlockRender->Prepare();
         needRedraw = false;
     }
-
-    TextBlockData *jobData = new TextBlockData();
-    jobData->font = SafeRetain(font);
     
     mutex.Unlock();
 
@@ -777,5 +779,6 @@ const Vector<int32> & TextBlock::GetStringSizes() const
 {
 	return stringSizes;
 }
+
 
 };

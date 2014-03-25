@@ -113,7 +113,6 @@ protected:
 	void ProcessAlign();
 	
 
-	bool cacheUseJustify;
     bool needRedraw;
 	Vector2 requestedSize;
 
@@ -128,8 +127,6 @@ protected:
 	Font * font;
 	WideString text;
     WideString pointsStr;
-	bool isMultilineEnabled;
-    bool isMultilineBySymbolEnabled;
     int32 fittingType;
     Vector2 rectSize;
 	Vector2 position;
@@ -140,6 +137,11 @@ protected:
 	Vector<int32> stringSizes;
     
     Mutex mutex;
+    
+	bool isMultilineEnabled:1;
+    bool isMultilineBySymbolEnabled:1;
+	bool isPredrawed:1;
+	bool cacheUseJustify:1;
 
 	friend class TextBlockRender;
 	friend class TextBlockSoftwareRender;
@@ -147,7 +149,7 @@ protected:
 	friend class TextBlockDistanceRender;
 	TextBlockRender* textBlockRender;
 };
-    
+
 }; //end of namespace
 
 #endif // __DAVAENGINE_TEXTBLOCK_H__

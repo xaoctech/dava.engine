@@ -33,18 +33,19 @@
 
 #include "DAVAEngine.h"
 #include "Render/TextureDescriptor.h"
+#include "TextureConvertMode.h"
 
 struct JobItem
 {
 	int id;
 	int type;
-	bool force;
+    eTextureConvertMode convertMode;
 	const DAVA::TextureDescriptor* descriptor;
 
 	JobItem()
 		: id(0)
 		, type(0)
-		, force(false)
+        , convertMode(CONVERT_NOT_EXISTENT)
 		, descriptor(NULL)
 	{ }
 };
