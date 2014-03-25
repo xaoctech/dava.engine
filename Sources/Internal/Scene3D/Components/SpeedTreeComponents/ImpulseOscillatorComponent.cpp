@@ -32,6 +32,9 @@
 #include "FileSystem/KeyedArchive.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Scene.h"
+#include "Scene3D/Systems/SpeedTreeSystem/SpeedTreeUpdateSystem.h"
 
 namespace DAVA 
 {
@@ -79,6 +82,11 @@ void ImpuleOscillatorComponent::Deserialize(KeyedArchive *archive, Serialization
 	}
 
 	Component::Deserialize(archive, serializationContext);
+}
+
+void ImpuleOscillatorComponent::TriggerImpulse()
+{
+	entity->GetScene()->speedTreeUpdateSystem->TriggerImpulseOscillator(entity);
 }
 
 };
