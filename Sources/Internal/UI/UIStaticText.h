@@ -108,8 +108,6 @@ public:
 
 	const Vector<int32> & GetStringSizes() const;
 
-	const Vector<int32> & GetStringSizes() const;
-
 protected:
 	Color textColor;
 	TextBlock *textBlock;
