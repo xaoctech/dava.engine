@@ -71,22 +71,35 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector3 & trunkOscillationPar
         material->SetPropertyValue(FastName("leafOscillationParams"), Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
     }
 }
-    
+
+void SpeedTreeObject::SetAnimationFlag(bool flagOn)
+{
+    NMaterial::eFlagValue flagValue = flagOn ? NMaterial::FlagOn : NMaterial::FlagOff;
+
+    uint32 matCount = materials.size();
+    for(uint32 i = 0; i < matCount; ++i)
+        materials[i]->SetFlag(FastName("WIND_ANIMATION"), flagValue);
+}
+
 void SpeedTreeObject::SetAnimationEnabled(bool isEnabled)
 {
     if(isAnimationEnabled != isEnabled)
     {
         isAnimationEnabled = isEnabled;
-        
-        NMaterial::eFlagValue flagValue = NMaterial::FlagOff;
-        if(isAnimationEnabled) flagValue = NMaterial::FlagOn;
-        
-        uint32 matCount = materials.size();
-        for(uint32 i = 0; i < matCount; ++i)
-            materials[i]->SetFlag(FastName("WIND_ANIMATION"), flagValue);
+        if(!isAnimationForceDisabled)
+            SetAnimationFlag(isAnimationEnabled);
     }
 }
-    
+
+void SpeedTreeObject::SetForceDisabledAnimation(bool disabled)
+{
+    isAnimationForceDisabled = disabled;
+    if(isAnimationForceDisabled)
+        SetAnimationFlag(false);
+    else
+        SetAnimationFlag(isAnimationEnabled);
+}
+
 void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
     Mesh::Save(archive, serializationContext);

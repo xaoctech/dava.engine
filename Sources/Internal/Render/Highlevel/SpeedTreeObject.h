@@ -37,6 +37,7 @@
 namespace DAVA 
 {
 
+class SpeedTreeUpdateSystem;
 class SpeedTreeObject: public Mesh
 {
 public:
@@ -49,15 +50,19 @@ public:
 
     virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
-    
+
+    void SetForceDisabledAnimation(bool disabled);
+
+protected:
     void SetTreeAnimationParams(const Vector3 & trunkOscillationParams, const Vector2 & leafOscillationParams);
     void SetAnimationEnabled(bool isEnabled);
+    void SetAnimationFlag(bool flagOn);
     
-private:
     AABBox3 CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * rb);
     void CollectMaterials();
 
     bool isAnimationEnabled;
+    bool isAnimationForceDisabled;
     
     Vector<NMaterial *> materials;
     
@@ -66,6 +71,8 @@ public:
 	INTROSPECTION_EXTEND(SpeedTreeObject, Mesh, 
 		NULL
 	);
+
+friend class SpeedTreeUpdateSystem;
 };
 
 
