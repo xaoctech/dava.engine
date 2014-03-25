@@ -238,10 +238,16 @@ bool DFFont::LoadConfig(const DAVA::FilePath &path)
     YamlNode* rootNode = parser->GetRootNode();
     const YamlNode* configNode = rootNode->Get("font");
     if (!configNode)
+    {
+        SafeRelease(parser);
         return false;
+    }
     const YamlNode* charsNode = configNode->Get("chars");
     if (!charsNode)
+    {
+        SafeRelease(parser);
         return false;
+    }
     
     baseSize = configNode->Get("size")->AsFloat();
     const YamlNode* paddingTop = configNode->Get("padding_top");
@@ -301,7 +307,8 @@ bool DFFont::LoadConfig(const DAVA::FilePath &path)
             }
         }
     }
-    
+
+    SafeRelease(parser);
     return true;
 }
 
