@@ -321,8 +321,8 @@ void WaterReflectionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
 
 WaterRefractionRenderPass::WaterRefractionRenderPass(const FastName & name, RenderPassID id) : WaterPrePass(name, id)
 {
-    const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
+    /*const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);*/
 }
 
 void WaterRefractionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
