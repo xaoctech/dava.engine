@@ -52,7 +52,7 @@ public:
         {
             int32 int32Value;
             float32 float32Value;
-            float32 vector2Value[3];
+            float32 vector2Value[2];
             float32 vector3Value[3];
             float32 vector4Value[4];
             float32 matrix2Value[2 * 2];
@@ -113,12 +113,10 @@ public:
     void Reload();
     
 private:
-    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
-    void ParseDefaultVariable(ShaderAsset * asset, const String & inputLine);
-    
-    void ReloadAsset(ShaderAsset *asset);
+
+    void LoadAsset(ShaderAsset *asset);
     void ParseShader(ShaderAsset * asset);
-//    ShaderAsset * ParseShader(const FastName & name, Data * vertexShaderData, Data * fragmentShaderData);
+    void ParseDefaultVariable(ShaderAsset * asset, const String & inputLine);
 
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };

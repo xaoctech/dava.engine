@@ -1760,7 +1760,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 	
-
 bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData)
 {
     if(AllocateImageData(image, mipMapLevel, header))
@@ -1874,7 +1873,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 
 	bool written = false;
 
-	File *file = File::Create(filePathname, File::OPEN | File::WRITE | File::CREATE);
+	File *file = File::Create(filePathname, File::CREATE | File::WRITE);
 	if(file) 
 	{
 		file->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
@@ -1889,7 +1888,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 	}
 	else
 	{
-		Logger::Error("[LibPVRHelper::ReadFile]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
+		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
 	}
 
 	delete pvrFile;
@@ -2143,6 +2142,7 @@ bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet,
     if(pvrFile == NULL || pvrFile->compressedData == NULL) return false;
     
     const uint32 & mipmapLevelCount = pvrFile->header.u32MIPMapCount;
+
     DVASSERT(fromMipMap < mipmapLevelCount);
     
     bool loadAllPvrData = true;

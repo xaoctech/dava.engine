@@ -46,6 +46,7 @@ class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
+class DeveloperTools;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -187,11 +188,10 @@ public slots:
 
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
-    
-    // Perform grid copy
-    void OnDebugFunctionsGridCopy();
 
     void OnReloadShaders();
+
+    void OnSwitchWithDifferentLODs(bool checked);
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -273,6 +273,9 @@ private:
 	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
 	// <--
+
+    //Need for any debug functionality
+    DeveloperTools *developerTools;
 };
 
 

@@ -159,7 +159,7 @@ protected:
     uint32 visiblityCriteria;
 
     static const uint32 MAX_LIGHT_COUNT = 2;
-    Light * lights[2];
+    Light * lights[MAX_LIGHT_COUNT];
     
     
 	AABBox3 aabbox;
@@ -249,6 +249,7 @@ inline void RenderBatch::SetLight(uint32 index, Light * light)
 
 inline Light * RenderBatch::GetLight(uint32 index)
 {
+    DVASSERT(index < MAX_LIGHT_COUNT)
     return lights[index];
 }
 

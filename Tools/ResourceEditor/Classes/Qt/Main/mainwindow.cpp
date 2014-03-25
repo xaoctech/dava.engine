@@ -107,6 +107,9 @@
 
 #include "TextureCompression/TextureConverter.h"
 #include "RecentFilesManager.h"
+#include "Deprecated/SceneValidator.h"
+
+#include "Tools/DeveloperTools/DeveloperTools.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -118,6 +121,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
     , modificationWidget(NULL)
+    , developerTools(new DeveloperTools(this))
 {
 	new Console();
 	new ProjectManager();
@@ -174,6 +178,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	SafeDelete(addSwitchEntityDialog);
+    SafeDelete(developerTools);
     
     TextureBrowser::Instance()->Release();
 	MaterialEditor::Instance()->Release();
@@ -439,6 +444,7 @@ void QtMainWindow::SetupToolBars()
 	ui->menuToolbars->addAction(actionViewModeToolBar);
 	ui->menuToolbars->addAction(actionLandscapeToolbar);
 	ui->menuToolbars->addAction(ui->sceneToolBar->toggleViewAction());
+    ui->menuToolbars->addAction(ui->testingToolBar->toggleViewAction());
 
 	// undo/redo
 	QToolButton *undoBtn = (QToolButton *) ui->mainToolBar->widgetForAction(ui->actionUndo);
@@ -485,8 +491,7 @@ void QtMainWindow::SetupToolBars()
 		hangingBtn->SetWidget(hangingObjectsWidget);
 		hangingBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
 		hangingBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-		ui->sceneToolBar->addSeparator();
-		ui->sceneToolBar->addWidget(hangingBtn);
+        ui->testingToolBar->addWidget(hangingBtn);
 		hangingBtn->setAutoRaise(false);
 	}
 
@@ -700,7 +705,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
     // Debug functions
-	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), this, SLOT(OnDebugFunctionsGridCopy()));
+	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
     
     
     
@@ -727,6 +732,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
 
 	QObject::connect(ui->actionReloadShader, SIGNAL(triggered()), this, SLOT(OnReloadShaders()));
+
+    QObject::connect(ui->actionSwitchesWithDifferentLODs, SIGNAL(triggered(bool)), this, SLOT(OnSwitchWithDifferentLODs(bool)));
 }
 
 void QtMainWindow::SetupShortCuts()
@@ -821,6 +828,8 @@ void QtMainWindow::SceneActivated(SceneEditor2 *scene)
 
 	int32 tools = scene->GetEnabledTools();
 	UpdateConflictingActionsState(tools == 0);
+
+    ui->actionSwitchesWithDifferentLODs->setChecked(scene->debugDrawSystem->SwithcesWithDifferentLODsModeEnabled());
 }
 
 void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
@@ -913,7 +922,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionConvertModifiedTextures->setEnabled(enable);
     
     ui->actionReloadShader->setEnabled(enable);
-
+    ui->actionSwitchesWithDifferentLODs->setEnabled(enable);
 }
 
 void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
@@ -2717,45 +2726,6 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	return true;
 }
 
-void QtMainWindow::OnDebugFunctionsGridCopy()
-{
-    SceneEditor2 * currentScene = GetCurrentScene();
-    float32 x = 0;
-    float32 y = 0;
-    float32 z = 0;
-    const float32 xshift = 10.0;
-    const float32 yshift = 10.0;
-    const float32 zshift = 0.0;
-    
-    if (currentScene->selectionSystem->GetSelectionCount() == 1)
-    {
-        Entity * entity = currentScene->selectionSystem->GetSelectionEntity(0);
-        
-        const Matrix4 & matrix = entity->GetLocalTransform();
-
-        for (uint32 x = 0; x < 10; ++x)
-        {
-            for (uint32 y = 0; y < 10; ++y)
-            {
-                Matrix4 translation;
-                translation.CreateTranslation(Vector3(x * xshift, y * yshift, z * zshift));
-                
-                Matrix4 newMatrix = matrix * translation;
-                Entity * clonedEntity = entity->Clone();
-                clonedEntity->SetLocalTransform(newMatrix);
-                
-                RenderObject * renderObject = GetRenderObject(clonedEntity);
-                NMaterial * material = renderObject->GetRenderBatch(0)->GetMaterial();
-                float32 inGlossiness = (float32)x / 9.0;
-                float32 inSpecularity = (float32)y / 9.0;
-                material->SetPropertyValue(FastName("inGlossiness"), Shader::UT_FLOAT, 1, &inGlossiness);
-                material->SetPropertyValue(FastName("inSpecularity"), Shader::UT_FLOAT, 1, &inSpecularity);
-                
-                currentScene->AddNode(clonedEntity);
-            }
-        }
-    }
-}
 
 void QtMainWindow::OnReloadShaders()
 {
@@ -2784,3 +2754,26 @@ void QtMainWindow::OnReloadShaders()
         }
     }
 }
+
+void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
+{
+    SceneEditor2 *scene = GetCurrentScene();
+    if(!scene) return;
+
+    scene->debugDrawSystem->EnableSwithcesWithDifferentLODsMode(checked);
+
+    if(checked)
+    {
+        Set<FastName> entitiNames;
+        SceneValidator::FindSwitchesWithDifferentLODs(scene, entitiNames);
+
+        DAVA::Set<FastName>::iterator it = entitiNames.begin();
+        DAVA::Set<FastName>::iterator endIt = entitiNames.end();
+        while (it != endIt)
+        {
+            Logger::Info("Entity %s has different lods count.", it->c_str());
+            ++it;
+        }
+    }
+}
+

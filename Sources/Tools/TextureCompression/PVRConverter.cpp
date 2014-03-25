@@ -272,7 +272,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	}
     
     
-    args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
+    //args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
 
 }
 

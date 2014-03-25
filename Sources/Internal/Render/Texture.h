@@ -300,8 +300,13 @@ protected:
 		uint32 id;
 		uint32 fboID;
 		uint32 rboID;
+#if defined(__DAVAENGINE_ANDROID__)
+        uint32 stencilRboID;
+#endif
 	};
 
+
+    int32 GetBaseMipMap() const;
 
 public:							// properties for fast access
 
@@ -309,6 +314,9 @@ public:							// properties for fast access
 	uint32		id;				// OpenGL id for texture
 	uint32		fboID;			// id of frame buffer object
 	uint32		rboID;
+#if defined(__DAVAENGINE_ANDROID__)
+    uint32		stencilRboID;
+#endif
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	
     uint32		width:16;			// texture width
