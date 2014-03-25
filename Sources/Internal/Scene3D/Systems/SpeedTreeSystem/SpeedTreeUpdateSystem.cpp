@@ -37,7 +37,7 @@
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
-
+#include "Utils/Random.h"
 #include "Math/Math2D.h"
 
 namespace DAVA
@@ -140,7 +140,7 @@ void SpeedTreeUpdateSystem::AddTreeEntity(Entity * entity)
 
 	treeObject->SetAnimationEnabled(isAnimationEnabled);
 
-	TreeInfo * treeInfo = new TreeInfo();
+	TreeInfo * treeInfo = new TreeInfo((float32)Random::Instance()->RandFloat(1000.f));
 	treeInfo->treeEntity = entity;
 
 	Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
