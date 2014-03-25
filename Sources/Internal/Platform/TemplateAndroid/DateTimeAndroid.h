@@ -40,7 +40,7 @@ namespace DAVA
 class JniDateTime: public JniExtension
 {
 public:
-	WideString AsWString(const WideString& format, long timeStamp, int tzOffset);
+	WideString AsWString(const WideString& format, const String& countryCode, long timeStamp, int tzOffset);
 	int GetLocalTimeZoneOffset();
 
 protected:

@@ -26,15 +26,16 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 #include "Platform/DateTime.h"
+#include "FileSystem/LocalizationSystem.h"
 
-#import <time.h>
-#import <xlocale.h>
+#include <time.h>
+#include <xlocale.h>
 
 namespace DAVA
 {
     DAVA::WideString DateTime::AsWString(const wchar_t* format) const
     {
-        DAVA::String locID = [[[NSLocale currentLocale] objectForKey: NSLocaleIdentifier] UTF8String];
+        DAVA::String locID = LocalizationSystem::Instance()->GetCountryCode();
         
         struct tm *timeinfo;
         wchar_t buffer [256] = {0};

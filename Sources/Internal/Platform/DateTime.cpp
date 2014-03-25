@@ -170,7 +170,7 @@ DateTime DateTime::LocalTime(Timestamp timeStamp)
 
 DateTime DateTime::GmTime(Timestamp timeStamp)
 {
-    return DateTime(timeStamp -  GetLocalTimeZoneOffset(), 0);
+    return DateTime(timeStamp, 0);
 }
 
 DateTime DateTime::ConvertToTimeZone(int32 _timeZoneOff)

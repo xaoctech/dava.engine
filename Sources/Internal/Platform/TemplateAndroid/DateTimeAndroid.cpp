@@ -30,6 +30,7 @@
 
 #include "../../Platform/DateTime.h"
 #include "../../Utils/Utils.h"
+#include "../../FileSystem/LocalizationSystem.h"
 
 
 #if defined(__DAVAENGINE_ANDROID__)
@@ -52,14 +53,16 @@ const char* JniDateTime::GetJavaClassName() const
 	return gJavaClassName;
 }
 
-WideString JniDateTime::AsWString(const WideString& format, long timeStamp, int tzOffset)
+WideString JniDateTime::AsWString(const WideString& format, const String& countryCode, long timeStamp, int tzOffset)
 {
-	jmethodID mid = GetMethodID("GetTimeAsString", "(Ljava/lang/String;JI)Ljava/lang/String;");
+	jmethodID mid = GetMethodID("GetTimeAsString", "(Ljava/lang/String;Ljava/lang/String;JI)Ljava/lang/String;");
 	if (mid)
 	{
 		jstring jFormat = GetEnvironment()->NewStringUTF(WStringToString(format).c_str());
-        jobject obj = GetEnvironment()->CallStaticObjectMethod(GetJavaClass(), mid, jFormat, (long long)timeStamp, tzOffset);
+		jstring jCountryCode = GetEnvironment()->NewStringUTF(countryCode.c_str());
+        jobject obj = GetEnvironment()->CallStaticObjectMethod(GetJavaClass(), mid, jFormat, jCountryCode, (long long)timeStamp, tzOffset);
         GetEnvironment()->DeleteLocalRef(jFormat);
+        GetEnvironment()->DeleteLocalRef(jCountryCode);
 		char str[256] = {0};
 		CreateStringFromJni(env, jstring(obj), str);
 		String retValue = str;
@@ -81,8 +84,8 @@ int JniDateTime::GetLocalTimeZoneOffset()
 WideString DateTime::AsWString(const wchar_t* format) const
 {
 	JniDateTime jniDateTime;
-
-	WideString retString = jniDateTime.AsWString( WideString (format), innerTime, timeZoneOffset);
+	String countryCode = LocalizationSystem::Instance()->GetCountryCode();
+	WideString retString = jniDateTime.AsWString( WideString (format), countryCode, innerTime, timeZoneOffset);
 
 	return retString;
 }
