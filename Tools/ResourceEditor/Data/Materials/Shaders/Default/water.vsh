@@ -40,7 +40,7 @@ uniform float materialSpecularShininess;
 #endif
 
 #if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
-varying float eyeDist;
+varying vec3 eyeDist;
 #endif
 
 
@@ -112,10 +112,11 @@ void main()
 	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
 	vec3 b = cross (n, t);
 
+	
     vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
 	
 	#if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
-		eyeDist = length(eyeCoordsPosition);
+		eyeDist = eyeCoordsPosition;
 	#endif
     
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;    

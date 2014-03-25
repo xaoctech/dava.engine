@@ -42,12 +42,12 @@ varying highp vec2 varTexCoord1;
 
 uniform lowp vec3 refractionTintColor;
 
-uniform float fresnelBias;
-uniform float fresnelPow;
-uniform float eta;
+uniform lowp float fresnelBias;
+uniform mediump float fresnelPow;
+uniform lowp float eta;
 
-uniform float materialSpecularShininess;
-uniform vec3 materialLightSpecularColor;    // engine pass premultiplied material * light specular color
+uniform mediump float materialSpecularShininess;
+uniform lowp vec3 materialLightSpecularColor;    // engine pass premultiplied material * light specular color
 
 #if defined (REAL_REFLECTION)
 uniform sampler2D dynamicReflection;
@@ -59,13 +59,15 @@ uniform float aproxReflectionScale;
 
 uniform mat4 worldViewProjMatrix;
 #else
-varying mediump float eyeDist;
+varying mediump vec3 eyeDist;
 
 uniform mediump vec2 rcpScreenSize;
 uniform mediump vec2 screenOffset;
 
 uniform float reflectionDistortion;
 uniform float refractionDistortion;
+
+uniform highp float distortionFallSquareDist;
 
 #endif
 
@@ -129,7 +131,8 @@ void main()
         mediump vec4 refractionVectorInNDCSpace = (worldViewProjMatrix * vec4((tbnToWorldMatrix * refractionVectorInTangentSpace), 0.0));	
         lowp vec3 refractionColor = texture2D(dynamicRefraction, refractionVectorInNDCSpace.xy/refractionVectorInNDCSpace.w*vec2(0.5, -0.5)+vec2(0.5, 0.5)).rgb;
     #else	
-		mediump vec2 waveOffset = normal.xy/max(1.0, eyeDist);
+		//mediump vec2 waveOffset = normal.xy/max(10.0, length(eyeDist));
+		mediump vec2 waveOffset = normal.xy*max(0.1, 1.0-dot(eyeDist, eyeDist)*distortionFallSquareDist);
         mediump vec2 screenPos = (gl_FragCoord.xy-screenOffset)*rcpScreenSize;
         lowp vec3 reflectionColor = texture2D(dynamicReflection, screenPos+waveOffset*reflectionDistortion).rgb;
         screenPos.y=1.0-screenPos.y;
@@ -140,6 +143,7 @@ void main()
         resColor+=resSpecularColor;
     #endif
     gl_FragColor = vec4(resColor, 1.0);
+	//gl_FragColor = vec4(vec3(normalize(eyeDist)/100.0), 1.0);
 #else
     lowp vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpaceNorm, normal);
     lowp vec3 reflectionVectorInWorldSpace = (tbnToWorldMatrix * reflectionVectorInTangentSpace);    
