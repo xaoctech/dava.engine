@@ -172,8 +172,12 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
     DVASSERT(images.size() == 1);
 
     Image * originalImage = images[0];
-    images = originalImage->CreateMipMapsImages(true);
-    SafeRelease(originalImage);
+    originalImage->Normalize();
+    if(descriptor.settings.GetGenerateMipMaps())
+    {
+        images = originalImage->CreateMipMapsImages(true);
+        SafeRelease(originalImage);
+    }
 
     FilePath dirPath = filePath + "_mips";
     dirPath.MakeDirectoryPathname();

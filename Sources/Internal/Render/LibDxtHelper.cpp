@@ -390,7 +390,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 					break;
 				}
 
-                if(i >= baseMipMap)
+                if((int32)i >= baseMipMap)
                 {   // load only actual image data
                     Image* innerImage = Image::Create(faceWidth, faceHeight, pixFormat);
                     innerImage->mipmapLevel = i - baseMipMap;
@@ -443,7 +443,7 @@ bool NvttHelper::DecompressDxt(const nvtt::Decompressor & dec, DDSInfo info, Vec
 		uint32 faceWidth = info.width;
 		uint32 faceHeight = info.height;
         
-        for(uint32 i = 0; i < baseMipMap; ++i)
+        for(int32 i = 0; i < baseMipMap; ++i)
         {
             faceWidth = Max((uint32)1, faceWidth / 2);
 			faceHeight = Max((uint32)1, faceHeight / 2);
@@ -507,7 +507,7 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 		uint32 faceWidth = info.width;
 		uint32 faceHeight = info.height;
 
-        for(uint32 i = 0; i < baseMipMap; ++i)
+        for(int32 i = 0; i < baseMipMap; ++i)
         {
             TQonvertImage srcImg = {0};
 			
@@ -667,8 +667,8 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 
 bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps, bool asNormalMap)
 {
-	const int32 minSize = 0;
-	
+    bool ret = true;
+
 	if (compressionFormat != FORMAT_ATC_RGB &&
 		compressionFormat != FORMAT_ATC_RGBA_EXPLICIT_ALPHA &&
 		compressionFormat != FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
@@ -680,88 +680,99 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 	//VI: calculate image buffer size
 	
 	int32 bufSize = 0;
-	std::map<int32, int32>* mipSize = new std::map<int32, int32>[dataCount];
-	int32 baseWidth = 0;
-	int32 baseHeight = 0;
-	
+	Map<int32, int32> * mipSize = new Map<int32, int32>[dataCount];
+    Vector<Image *> * mipImages = new Vector<Image *>[dataCount];
+
+#define CLEANUP_IMAGES() \
+{ \
+    for(uint32 ii = 0; ii < dataCount; ++ii)\
+    for(uint32 kk = 0; kk < (uint32)mipImages[ii].size(); ++kk)\
+        SafeRelease(mipImages[ii][kk]);\
+} \
+
 	for(uint32 i = 0; i < dataCount; ++i)
 	{
-		TQonvertImage srcImg = {0};
-		
-		srcImg.nWidth = width;
-		srcImg.nHeight = height;
-		srcImg.nFormat = Q_FORMAT_RGBA_8888;
-		srcImg.nDataSize = width * height * 4;
-		srcImg.pData = data[i];
-		
-		baseWidth = width;
-		baseHeight = height;
-		
-		do
-		{
-			TQonvertImage dstImg = {0};
-			dstImg.nWidth = baseWidth;
-			dstImg.nHeight = baseHeight;
-			dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
-			dstImg.nDataSize = 0;
-			dstImg.pData = NULL;
-			
-			if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
-			{
-				Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
-				SafeDeleteArray(mipSize);
-				return false;
-			}
-			bufSize += dstImg.nDataSize;
-			mipSize[i][baseWidth] = dstImg.nDataSize;
-			
-			baseWidth = baseWidth >> 1;
-			baseHeight = baseHeight >> 1;
-		}
-		while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
+        Image * image0 = Image::CreateFromData(width, height, FORMAT_RGBA8888, data[i]);
+        if(asNormalMap)
+            image0->Normalize();
+
+        if(generateMipmaps)
+        {
+            mipImages[i] = image0->CreateMipMapsImages(asNormalMap);
+            SafeRelease(image0);
+        }
+        else
+        {
+            mipImages[i].push_back(image0);
+        }
+
+        uint32 mipImagesCount = mipImages[i].size();
+        for(uint32 k = 0; k < mipImagesCount; ++k)
+        {
+            Image * mipImage = mipImages[i][k];
+
+            TQonvertImage srcImg = {0};
+
+            srcImg.nWidth = mipImage->width;
+            srcImg.nHeight = mipImage->height;
+            srcImg.nFormat = Q_FORMAT_RGBA_8888;
+            srcImg.nDataSize = mipImage->dataSize;
+            srcImg.pData = mipImage->data;
+
+            TQonvertImage dstImg = {0};
+            dstImg.nWidth = mipImage->width;
+            dstImg.nHeight = mipImage->height;
+            dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
+            dstImg.nDataSize = 0;
+            dstImg.pData = NULL;
+
+            if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
+            {
+                Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
+                CLEANUP_IMAGES();
+                return false;
+            }
+            bufSize += dstImg.nDataSize;
+            mipSize[i][mipImage->width] = dstImg.nDataSize;
+        }
 	}
-	
+
 	//VI: convert faces
 	unsigned char* buffer = new unsigned char[bufSize];
 	unsigned char* tmpBuffer = buffer;
 
-	for(uint32 i = 0; i < dataCount; ++i)
-	{
-		baseWidth = width;
-		baseHeight = height;
-		
-		TQonvertImage srcImg = {0};
-		
-		srcImg.nWidth = width;
-		srcImg.nHeight = height;
-		srcImg.nFormat = Q_FORMAT_RGBA_8888;
-		srcImg.nDataSize = width * height * 4;
-		srcImg.pData = data[i];
+    for(uint32 i = 0; i < dataCount; ++i)
+    {
+        uint32 mipImagesCount = mipImages[i].size();
+        for(uint32 k = 0; k < mipImagesCount; ++k)
+        {
+            Image * mipImage = mipImages[i][k];
 
-		do
-		{
-			TQonvertImage dstImg = {0};
-			dstImg.nWidth = baseWidth;
-			dstImg.nHeight = baseHeight;
-			dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
-			dstImg.nDataSize = mipSize[i][baseWidth];
-			dstImg.pData = tmpBuffer;
-			tmpBuffer += dstImg.nDataSize;
-			
-			if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
-			{
-				Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
-				SafeDeleteArray(buffer);
-				SafeDeleteArray(mipSize);
-				return false;
-			}
-			
-			baseWidth = baseWidth >> 1;
-			baseHeight = baseHeight >> 1;
-		}
-		while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
-	}
-	
+            TQonvertImage srcImg = {0};
+
+            srcImg.nWidth = mipImage->width;
+            srcImg.nHeight = mipImage->height;
+            srcImg.nFormat = Q_FORMAT_RGBA_8888;
+            srcImg.nDataSize = mipImage->dataSize;
+            srcImg.pData = mipImage->data;
+
+            TQonvertImage dstImg = {0};
+            dstImg.nWidth = mipImage->width;
+            dstImg.nHeight = mipImage->height;
+            dstImg.nFormat = QualcommHeler::GetQualcommFormat(compressionFormat);
+            dstImg.nDataSize = mipSize[i][mipImage->width];
+            dstImg.pData = tmpBuffer;
+            tmpBuffer += dstImg.nDataSize;
+
+            if (Qonvert(&srcImg, &dstImg) != Q_SUCCESS || dstImg.nDataSize == 0)
+            {
+                Logger::Error("[LibDxtHelper::WriteAtcFile] Error converting (%s).", fileNameOriginal.GetAbsolutePathname().c_str());
+                CLEANUP_IMAGES();
+                return false;
+            }
+        }
+    }
+
 	nvtt::Format innerComprFormat = NvttHelper::GetNVTTFormatByPixelFormat(compressionFormat);
 	
 	nvtt::TextureType textureType = (dataCount > 1) ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
@@ -799,7 +810,12 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 
 	SafeDeleteArray(mipSize);
 	SafeDeleteArray(buffer);
+
+    CLEANUP_IMAGES();
+
 	return res;
+
+#undef CLEANUP_IMAGES
 }
 	
 bool LibDxtHelper::IsDxtFile(const FilePath & filePathname)
