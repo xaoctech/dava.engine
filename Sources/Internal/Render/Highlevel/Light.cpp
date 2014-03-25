@@ -41,6 +41,8 @@ namespace DAVA
 
 Light::Light()
 :	BaseObject(),
+    camera(NULL),
+    lastUpdatedFrame(0),
 	type(TYPE_DIRECTIONAL),
     ambientColor(0.0f, 0.0f, 0.0f, 1.0f),
 	diffuseColor(1.0f, 1.0f, 1.0f, 1.0f),

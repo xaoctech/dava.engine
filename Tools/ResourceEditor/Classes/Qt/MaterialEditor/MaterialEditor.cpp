@@ -290,9 +290,9 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                 QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
                 ui->materialProperty->AppendProperty("Group", group);
 
-                for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupCount(); ++i)
+                for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupCount(); ++i)
                 {
-                    DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaQualityGroupName(i);
+                    DAVA::FastName groupName = DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupName(i);
                     group->AddAllowedValue(DAVA::VariantType(groupName), groupName.c_str());
                 }
             }
@@ -428,7 +428,7 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
 
                     QStringList path;
-					path.append(defaultPath);
+					path.append(dataSourcePath.GetAbsolutePathname().c_str());
                     dynamicMember->SetValidator(new TexturePathValidator(path));
 
                     // self property
@@ -754,7 +754,6 @@ MaterialEditorFogDialog::MaterialEditorFogDialog()
 {
     int row = 0;
     QGridLayout *layout = new QGridLayout(this);
-
 	QGroupBox *groupBox = new QGroupBox(this);
 
     disabled = new QRadioButton("Disabled");
@@ -766,8 +765,7 @@ MaterialEditorFogDialog::MaterialEditorFogDialog()
     vbox->addWidget(exponential);
     //vbox->addWidget(linear);
     vbox->addStretch(1);
-
-	groupBox->setLayout(vbox);
+    groupBox->setLayout(vbox);
     disabled->setChecked(true);
 
     layout->addWidget(groupBox, row, 0, 1, 2);
