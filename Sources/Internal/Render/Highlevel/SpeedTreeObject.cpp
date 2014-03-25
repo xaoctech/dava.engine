@@ -34,7 +34,8 @@ namespace DAVA
 {
 
 SpeedTreeObject::SpeedTreeObject() :
-    isAnimationEnabled(false)
+    isAnimationEnabled(false),
+    isAnimationForceDisabled(false)
 {
 }
     
