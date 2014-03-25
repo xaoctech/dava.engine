@@ -325,12 +325,12 @@ uint32 StaticOcclusion::RenderFrame()
                     }
 
                     
-//                    if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
-//                    {
-//                        Image * image = renderTargetTexture->CreateImageFromMemory();
-//                        ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
-//                        SafeRelease(image);
-//                    }
+                   if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
+                   {
+                       Image * image = renderTargetTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
+                       ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
+                       SafeRelease(image);
+                   }
                 }
         
     }
@@ -373,7 +373,9 @@ uint32 StaticOcclusion::RenderFrame()
     for (Set<RenderObject*>::iterator it = frameGlobalVisibleInfo.begin(), end = frameGlobalVisibleInfo.end(); it != end; ++it)
     {
         RenderObject * obj = *it;
-        DVASSERT(obj->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
+        ///DVASSERT(obj->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
+        if (obj->GetStaticOcclusionIndex() == INVALID_STATIC_OCCLUSION_INDEX)continue;
+
         currentData->SetVisibilityForObject(blockIndex, obj->GetStaticOcclusionIndex(), 1);
         
         Map<RenderObject*, Vector<RenderObject*> >::iterator findIt = equalVisibilityArray.find(obj);
