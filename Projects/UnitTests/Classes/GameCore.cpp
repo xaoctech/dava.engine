@@ -64,6 +64,7 @@
 #include "DFFontTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
+#include "StringFormatTest.h"
 
 using namespace DAVA;
 
@@ -89,21 +90,12 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-	new DFFontTest();
-	
-	new UIMovieTest();
-	
-	new InputTest();
-	
-    new FormatsTest();
-	new DeviceInfoTest();
-	new TransparentWebViewTest();
+    new DFFontTest();
+    new StringFormatTest();
+    new RectSpriteTest();
 
-
-	new RectSpriteTest();
 	new ComponentsTest();
-
-	new FilePathTest();
+    new FilePathTest();
     new FileListTest();
     new FileSystemTest();
     
