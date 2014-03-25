@@ -68,6 +68,9 @@ void DFFontTest::LoadResources()
 		staticText->SetRect(Rect(100, 15, 1000, 100));
 		staticText->SetText(testText);
 		AddControl(staticText);
+
+        SafeRelease(dfFont);
+        SafeRelease(staticText);
 	}
 	
 	{
@@ -78,6 +81,9 @@ void DFFontTest::LoadResources()
 		staticText->SetRect(Rect(100, 250, 1000, 100));
 		staticText->SetText(testText);
 		AddControl(staticText);
+
+        SafeRelease(dfFont);
+        SafeRelease(staticText);
 	}
 	
 	{
@@ -88,6 +94,9 @@ void DFFontTest::LoadResources()
 		staticText->SetRect(Rect(100, 450, 1000, 100));
 		staticText->SetText(testText);
 		AddControl(staticText);
+
+        SafeRelease(dfFont);
+        SafeRelease(staticText);
 	}
 	
 	{
@@ -96,6 +105,8 @@ void DFFontTest::LoadResources()
 		staticText1->SetRect(Rect(10, 15, 300, 30));
 		staticText1->SetText(L"FTFont test");
 		AddControl(staticText1);
+
+        SafeRelease(staticText1);
 	}
 
 	testButton = new UIButton(Rect(0, 600, 300, 30));
