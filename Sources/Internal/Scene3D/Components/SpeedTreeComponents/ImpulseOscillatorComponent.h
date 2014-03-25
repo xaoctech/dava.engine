@@ -53,6 +53,8 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
+	void TriggerImpulse();
+
 protected:
     float32 forceValue;
     float32 influenceDistance;
