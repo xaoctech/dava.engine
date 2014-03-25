@@ -149,7 +149,7 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 
     texturesForSave.clear();
-    SceneHelper::EnumerateSceneTextures(scene, texturesForSave);
+    SceneHelper::EnumerateSceneTextures(scene, texturesForSave, SceneHelper::INCLUDE_NULL);
 
     CopyTextures(scene);
 	ReleaseTextures();
