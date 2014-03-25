@@ -188,14 +188,14 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
         {
             case Font::TYPE_FT:
             {
-                FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
+                FTFont *ftFont = static_cast<FTFont*>(fontPropertyValue);
                 //Set pushbutton widget text
 				buttonText = QString::fromStdString(ftFont->GetFontPath().GetFrameworkPath());
                 break;
             }
             case Font::TYPE_GRAPHICAL:
             {
-                GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(fontPropertyValue);
+                GraphicsFont *gFont = static_cast<GraphicsFont*>(fontPropertyValue);
                 //Put into result string font definition and font sprite path
                 Sprite *fontSprite = gFont->GetFontSprite();
                 if (!fontSprite) //If no sprite available - quit
@@ -212,7 +212,7 @@ void UITextFieldPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPus
             }
 			case Font::TYPE_DISTANCE:
 			{
-				DFFont *font = dynamic_cast<DFFont*>(fontPropertyValue);
+				DFFont *font = static_cast<DFFont*>(fontPropertyValue);
 				buttonText = QString::fromStdString(font->GetFontPath().GetFrameworkPath());
                 break;
 			}break;
