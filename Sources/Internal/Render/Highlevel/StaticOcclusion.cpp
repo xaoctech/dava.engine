@@ -72,27 +72,27 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
                                                                              RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
                                                                              this,
                                                                              RENDER_LAYER_OPAQUE_ID), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE,
-//                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
-//                                                                             this,
-//                                                                             RENDER_LAYER_AFTER_OPAQUE_ID), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER,
-//                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
-//                                                                             this,
-//                                                                             RENDER_LAYER_ALPHA_TEST_LAYER_ID), LAST_LAYER);
-//    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT,
-//                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
-//                                                                             this,
-//                                                                             RENDER_LAYER_TRANSLUCENT_ID), LAST_LAYER);
-//	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT,
-//                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
-//                                                                             this,
-//                                                                             RENDER_LAYER_AFTER_TRANSLUCENT_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_OPAQUE,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_AFTER_OPAQUE_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_ALPHA_TEST_LAYER,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_ALPHA_TEST_LAYER_ID), LAST_LAYER);
+    staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_TRANSLUCENT,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_TRANSLUCENT_ID), LAST_LAYER);
+	staticOcclusionRenderPass->AddRenderLayer(new StaticOcclusionRenderLayer(LAYER_AFTER_TRANSLUCENT,
+                                                                             RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK,
+                                                                             this,
+                                                                             RENDER_LAYER_AFTER_TRANSLUCENT_ID), LAST_LAYER);
 
     renderPassBatchArray = new RenderPassBatchArray(renderSystem);
     RenderLayerBatchArray * singleLayer = new RenderLayerBatchArray(RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK);
-    renderPassBatchArray->InitPassLayersWithSingleLayer(staticOcclusionRenderPass, singleLayer);
-    
+    //renderPassBatchArray->InitPassLayersWithSingleLayer(staticOcclusionRenderPass, singleLayer);
+    renderPassBatchArray->InitPassLayers(staticOcclusionRenderPass);
     
     currentData = _currentData;
     renderHierarchy = _renderHierarchy;
