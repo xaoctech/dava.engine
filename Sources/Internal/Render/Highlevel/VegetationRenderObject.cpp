@@ -55,28 +55,6 @@ static const FastName VEGETATION_QUALITY_NAME_HIGH = FastName("HIGH");
 static const FastName VEGETATION_QUALITY_NAME_LOW = FastName("LOW");
 static const FastName VEGETATION_QUALITY_GROUP_NAME = FastName("Vegetation");
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP_ARRAY[] =
-{
-    FastName("clusterScaleDensityMap_0"),
-    FastName("clusterScaleDensityMap_1"),
-    FastName("clusterScaleDensityMap_2"),
-    FastName("clusterScaleDensityMap_3"),
-    FastName("clusterScaleDensityMap_4"),
-    FastName("clusterScaleDensityMap_5"),
-    FastName("clusterScaleDensityMap_6"),
-    FastName("clusterScaleDensityMap_7"),
-    FastName("clusterScaleDensityMap_8"),
-    FastName("clusterScaleDensityMap_9"),
-    FastName("clusterScaleDensityMap_10"),
-    FastName("clusterScaleDensityMap_11"),
-    FastName("clusterScaleDensityMap_12"),
-    FastName("clusterScaleDensityMap_13"),
-    FastName("clusterScaleDensityMap_14"),
-    FastName("clusterScaleDensityMap_15")
-};
-#endif
-
 static const FastName UNIFORM_SAMPLER_VEGETATIONMAP = FastName("vegetationmap");
     
 static const uint32 MAX_CLUSTER_TYPES = 4;
@@ -88,8 +66,6 @@ static const size_t MAX_RENDER_CELLS = 256;
 static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 180.0f * 180.0f; //meters * meters (square length)
 static const float32 MAX_VISIBLE_SCALING_DISTANCE = 60.0f * 60.0f;
     
-//static const Vector3 MAX_DISPLACEMENT = Vector3(0.0f, 0.0f, 0.0f);
-
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
 
 static const Vector3 MAX_DISPLACEMENT = Vector3(5.6f, 5.6f, 0.0f);
@@ -329,7 +305,8 @@ VegetationRenderObject::VegetationRenderObject() :
     halfWidth(0),
     halfHeight(0),
     vertexRenderDataObject(NULL),
-    maxPerturbationDistance(1000000.0f)
+    maxPerturbationDistance(1000000.0f),
+    layerVisibilityMask(0xFF)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -1346,6 +1323,7 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             
             //clusterScale = 1.0f;
             //density = 16.0f;
+            density = (((layerVisibilityMask >> clusterType) & 0x01) != 0) ? density : 0.0f;
             
             uniforms[node->data.rdoIndex * 2].data[clusterType] = density;
             uniforms[node->data.rdoIndex * 2 + 1].data[clusterType] = clusterScale;
@@ -1394,5 +1372,16 @@ void VegetationRenderObject::SetPerturbationPoint(const Vector3& point)
     perturbationPoint = point;
     vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_POINT, Shader::UT_FLOAT_VEC3, 1, perturbationPoint.data);
 }
+
+void VegetationRenderObject::SetLayerVisibilityMask(const uint8& mask)
+{
+    layerVisibilityMask = mask;
+}
+    
+const uint8& VegetationRenderObject::GetLayerVisibilityMask() const
+{
+     return layerVisibilityMask;
+}
+
 
 };

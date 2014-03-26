@@ -135,6 +135,9 @@ public:
     void SetPerturbationPoint(const Vector3& point);
     const Vector3& GetPerturbationPoint() const;
     
+    void SetLayerVisibilityMask(const uint8& mask);
+    const uint8& GetLayerVisibilityMask() const;
+    
 private:
 
     struct VegetationVertex
@@ -253,6 +256,8 @@ private:
     Vector3 perturbationForce;
     Vector3 perturbationPoint;
     float32 maxPerturbationDistance;
+    
+    uint8 layerVisibilityMask;
     
 public:
     
