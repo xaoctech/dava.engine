@@ -58,15 +58,16 @@ WideString JniDateTime::AsWString(const WideString& format, const String& countr
 	jmethodID mid = GetMethodID("GetTimeAsString", "(Ljava/lang/String;Ljava/lang/String;JI)Ljava/lang/String;");
 	if (mid)
 	{
-		jstring jFormat = GetEnvironment()->NewStringUTF(WStringToString(format).c_str());
+		jstring jFormat = GetEnvironment()->NewStringUTF(UTF8Utils::EncodeToUTF8(format).c_str());
 		jstring jCountryCode = GetEnvironment()->NewStringUTF(countryCode.c_str());
         jobject obj = GetEnvironment()->CallStaticObjectMethod(GetJavaClass(), mid, jFormat, jCountryCode, (long long)timeStamp, tzOffset);
         GetEnvironment()->DeleteLocalRef(jFormat);
         GetEnvironment()->DeleteLocalRef(jCountryCode);
 		char str[256] = {0};
 		CreateStringFromJni(env, jstring(obj), str);
-		String retValue = str;
-		return StringToWString(retValue);
+		WideString retWString;
+		UTF8Utils::EncodeToWideString((uint8*)str, 256, retWString);
+		return retWString;
 	}
 	return L"";
 }

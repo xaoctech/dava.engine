@@ -42,21 +42,23 @@ class DateTime
 {
 public:
     
-    /* Proper ranges: */
-    /* Seconds (0-59) */
-    /* Minutes (0-59) */
-    /* Hours (0-23)   */
-    /* Day of the month (1-31), attention: 0 as param will lead to last day of prev. month */
-    /* Month (0-11) */
-    /* Time zone offset in seconds.For example, for U.S. Eastern Standard Time, the value is -5*60*60 */
+    /// Proper ranges for constructos:
+    /// Seconds: 0-59
+    /// Minutes: 0-59
+    /// Hours: 0-23
+    /// Day of the month: 1-31, attention: 0 as param will lead to last day of prev. month
+    /// Month: 0-11
+    /// Year: 1969 and lower is not allowed
+    /// Time zone offset in seconds.For example, for U.S. Eastern Standard Time, the value is -5*60*60
     DateTime(int32 year, int32 month, int32 day, int32 timeZoneOffset );
     DateTime(int32 year, int32 month, int32 day, int32 hour, int32 minute, int32 second, int32 timeZoneOffset);
     
-    // return DateTime with shifted time zone offset to local one,
-    // input timeStamp will be recognized as in utc
+    /// Return DateTime with shifted time zone offset to local one,
+    /// input timeStamp will be recognized as in utc
     static DateTime LocalTime(Timestamp);
     
-    // return DateTime with shifted time zone offset to utc (if needed)
+    /// Uses the value pointed by Timestamp to fill DateTime with the values that represent the corresponding time,
+    /// expressed as a UTC time (i.e., the time at the GMT timezone).
     static DateTime GmTime(Timestamp);
     
     static DateTime Now();
@@ -64,7 +66,7 @@ public:
     DateTime ConvertToTimeZone(int32 timeZoneOffset);
     DateTime ConvertToLocalTimeZone();
     
-    // Getters will return value in present time zone
+    /// Getters will return value in present time zone
     int32 GetYear() const;
     int32 GetMonth() const;
     int32 GetDay() const;
@@ -77,26 +79,41 @@ public:
     
     inline Timestamp GetTimestamp() const;
     
-    // will parse string in format RFC822 or ISO8601
-    bool Parse(const DAVA::String & src);
+    // like "1969-07-21T02:56:15Z"
+    bool ParseISO8601Date(const DAVA::String&);
     
-    // represetn data according to device locale and time zone
+    // like "Wed, 27 Sep 2006 21:36:45 +0200"
+    bool ParseRFC822Date(const DAVA::String&);
+    
+    /// Represent data according to country code from localization system
     DAVA::WideString AsWString(const wchar_t* format) const;
+    
+   DAVA::Timestamp InternalTimeGm(std::tm *t)
+    {
+        /*tm test ={0};
+        time_t testTime = mktime(t);
+        GmTimeThreadSafe(&test, &testTime);
+        */
+        return mktime(t) + DateTime::GetLocalTimeZoneOffset();
+    }
     
 private:
     
     DateTime(Timestamp timeStamp, int32 timeZone);
     
+    static void GmTimeThreadSafe( tm* resultGmTime, const time_t *unixTimestamp);
+    static void LocalTimeThreadSafe( tm* resultLocalTime, const time_t *unixTimestamp);
+
+    static int32 GetLocalTimeZoneOffset();
+
     Timestamp GetRawTimeStampForCurrentTZ() const;
     
-    static int32 GetLocalTimeZoneOffset();
-    
-    bool ParseISO8601Date(const DAVA::String&);
-    
-    bool ParseRFC822Date(const DAVA::String&);
+    void UpdateLocalTimeStructure();
     
     Timestamp   innerTime;
     int32       timeZoneOffset;// offset in seconds
+    
+    tm   localTime;
 };
     
 int32 DateTime::GetTimeZoneOffset() const

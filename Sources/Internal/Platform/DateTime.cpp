@@ -38,40 +38,45 @@
 static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
 static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
 
-inline DAVA::int32 is_leap(DAVA::int32 year)
+inline bool IsLeap(DAVA::int32 year)
 {
+    DVASSERT(year >= 1970);
     if(year % 400 == 0)
-        return 1;
+        return true;
     if(year % 100 == 0)
-        return 0;
+        return false;
     if(year % 4 == 0)
-        return 1;
-    return 0;
+        return true;
+    return false;
 }
-inline DAVA::int32 days_from_0(DAVA::int32 year)
+inline DAVA::int32 DaysFrom0(DAVA::int32 year)
 {
+    DVASSERT(year >= 1970);
     year--;
     return 365 * year + (year / 400) - (year/100) + (year / 4);
 }
-inline DAVA::int32 days_from_1970(DAVA::int32 year)
+inline DAVA::int32 DaysFrom1970(DAVA::int32 year)
 {
-    static const int days_from_0_to_1970 = days_from_0(1970);
-    return days_from_0(year) - days_from_0_to_1970;
+    DVASSERT(year >= 1970);
+    static const int daysFrom0To1970 = DaysFrom0(1970);
+    return DaysFrom0(year) - daysFrom0To1970;
 }
-inline DAVA::int32 days_from_1jan(DAVA::int32 year,DAVA::int32 month,DAVA::int32 day)
+inline DAVA::int32 DaysFrom1jan(DAVA::int32 year,DAVA::int32 month,DAVA::int32 day)
 {
+    DVASSERT(year >= 1970 && month >= 0 && month <= 12 && day >=0 && day <= 31 );
     static const DAVA::int32 days[2][12] =
     {
         { 0,31,59,90,120,151,181,212,243,273,304,334},
         { 0,31,60,91,121,152,182,213,244,274,305,335}
     };
-    return days[is_leap(year)][month-1] + day - 1;
+    DAVA::int32 rowNumberToSelect = IsLeap(year) ? 1 : 0;
+    return days[rowNumberToSelect][month-1] + day - 1;
 }
 
 // calc time_t by hand to get time stamp in utc(system function
 // returns it with local timezone shift only )
 // code from http://stackoverflow.com/questions/16647819/timegm-cross-platform
-time_t internal_timegm(std::tm const *t)
+/*DAVA::Timestamp InternalTimeGm(std::tm const *t)
 {
     int year = t->tm_year + 1900;
     int month = t->tm_mon;
@@ -82,20 +87,20 @@ time_t internal_timegm(std::tm const *t)
     }
     else if(month < 0)
     {
-        int years_diff = (-month + 11)/12;
-        year -= years_diff;
-        month+=12 * years_diff;
+        int yearsDiff = (-month + 11)/12;
+        year -= yearsDiff;
+        month+=12 * yearsDiff;
     }
     month++;
     int day = t->tm_mday;
-    int day_of_year = days_from_1jan(year,month,day);
-    int days_since_epoch = days_from_1970(year) + day_of_year;
+    int dayOfYear = DaysFrom1jan(year,month,day);
+    int daysSinceEpoch = DaysFrom1970(year) + dayOfYear;
     
-    time_t seconds_in_day = 3600 * 24;
-    time_t result = seconds_in_day * days_since_epoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
+    DAVA::Timestamp secondsInDay = 3600 * 24;
+    DAVA::Timestamp result = secondsInDay * daysSinceEpoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
     
     return result;
-}
+}*/
 
 bool IsNumber(const char * s)
 {
@@ -117,6 +122,7 @@ DateTime::DateTime(Timestamp timeStamp, int32 _timeZoneOffset):
 innerTime(timeStamp),
 timeZoneOffset(_timeZoneOffset)
 {
+    UpdateLocalTimeStructure();
 }
 
 DateTime::DateTime(int32 year, int32 month, int32 day, int32 _timeZoneOffset):
@@ -124,15 +130,14 @@ timeZoneOffset(_timeZoneOffset)
 {
     DVASSERT(year >= 0 && month >= 0 && day >= 0 &&
              timeZoneOffset < (MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR) && timeZoneOffset > (-1*MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR));
-    struct tm t = { 0 };
+    tm t = { 0 };
     t.tm_mon = month;
     t.tm_year = year - 1900;
     t.tm_isdst = -1; // unknown
     t.tm_mday = day;
-    
-    innerTime = internal_timegm(&t);
+    innerTime = InternalTimeGm(&t);
     innerTime -= timeZoneOffset;// time member should be always in UTC format
-    
+    UpdateLocalTimeStructure();
     // dates before 1970 is not supported
     DVASSERT(innerTime>=0);
 }
@@ -142,7 +147,7 @@ timeZoneOffset(_timeZoneOffset)
 {
     DVASSERT(year >= 0 && month >= 0 && day >= 0 && hour >= 0 && minute >= 0 && second >= 0 &&
              timeZoneOffset < (12*SECONDS_IN_HOUR) && timeZoneOffset > (-12*SECONDS_IN_HOUR));
-    struct tm t = { 0 };
+    tm t = { 0 };
     t.tm_sec = second;
     t.tm_min = minute;
     t.tm_hour = hour;
@@ -150,10 +155,9 @@ timeZoneOffset(_timeZoneOffset)
     t.tm_year = year - 1900;
     t.tm_isdst = -1; // unknown
     t.tm_mday = day;
-    
-    innerTime = internal_timegm(&t);
+    innerTime = InternalTimeGm(&t);
     innerTime -= timeZoneOffset;
-    
+    UpdateLocalTimeStructure();
     // dates before 1970 is not supported
     DVASSERT(innerTime>=0);
 }
@@ -185,64 +189,69 @@ DateTime DateTime::ConvertToLocalTimeZone()
 
 int32 DateTime::GetYear() const
 {
-    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
-    return gmtime(&timeWithTimeZone)->tm_year + 1900;
+    return localTime.tm_year + 1900;
 }
 
 int32 DateTime::GetMonth() const
 {
-    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
-    return gmtime(&timeWithTimeZone)->tm_mon;
+    return localTime.tm_mon;
 }
 
 int32 DateTime::GetDay() const
 {
-    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
-    return gmtime(&timeWithTimeZone)->tm_mday;
+    return localTime.tm_mday;
 }
 
 int32 DateTime::GetHour() const
 {
-    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
-    return gmtime(&timeWithTimeZone)->tm_hour;
+    return localTime.tm_hour;
 }
 
 int32 DateTime::GetMinute() const
 {
-    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
-    return gmtime(&timeWithTimeZone)->tm_min;
+    return localTime.tm_min;
 }
 
 int32 DateTime::GetSecond() const
 {
-    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
-    return gmtime(&timeWithTimeZone)->tm_sec;
+    return localTime.tm_sec;
 }
 
 void DateTime::SetTimeZoneOffset(int32 value)
 {
     timeZoneOffset = value;
+    UpdateLocalTimeStructure();
 }
 
 Timestamp DateTime::GetRawTimeStampForCurrentTZ() const
 {
-    struct tm local_tm = *gmtime(&innerTime);
-    local_tm.tm_hour += timeZoneOffset / SECONDS_IN_HOUR;
-    local_tm.tm_min += (timeZoneOffset % SECONDS_IN_HOUR) / 60;
-    local_tm.tm_sec += (timeZoneOffset % SECONDS_IN_HOUR) % 60;
-    return internal_timegm(&local_tm);
+    return innerTime + timeZoneOffset;
 } 
 
-bool DateTime::Parse(const DAVA::String & src)
+void DateTime::UpdateLocalTimeStructure()
 {
-    bool retValue = ParseISO8601Date(src);
-    if(!retValue)
-    {
-        retValue = ParseRFC822Date(src);
-    }
-    return retValue;
+    Timestamp timeWithTimeZone = GetRawTimeStampForCurrentTZ();
+    GmTimeThreadSafe(&localTime, &timeWithTimeZone);
 }
-
+    
+void DateTime::GmTimeThreadSafe(tm* resultGmTime, const time_t *unixTimestamp)
+{
+#ifdef __DAVAENGINE_WIN32__
+    gmtime_s(resultGmTime, unixTimestamp);
+#else
+    gmtime_r(unixTimestamp, resultGmTime);
+#endif
+}
+    
+void DateTime::LocalTimeThreadSafe(tm* resultLocalTime, const time_t *unixTimestamp)
+{
+#ifdef __DAVAENGINE_WIN32__
+    localtime_s(resultLocalTime, unixTimestamp);
+#else
+    localtime_r(unixTimestamp, resultLocalTime);
+#endif
+}
+    
 // like 1969-07-21T02:56:15Z
 bool DateTime::ParseISO8601Date(const DAVA::String& src)
 {
@@ -253,10 +262,10 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
         return false;
     }
     
-	struct tm parseTime = {0};
+	tm parseTime = {0};
     /// parsing date part
     {
-        const std::string yr = src.substr(0, 4);
+        const DAVA::String yr = src.substr(0, 4);
         if (!IsNumber(yr.c_str()))
         {
             return false;
@@ -268,7 +277,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
             return false;
         }
         
-        const std::string mon = src.substr(5, 2);
+        const DAVA::String mon = src.substr(5, 2);
         if (!IsNumber(mon.c_str()))
         {
             return false;
@@ -280,7 +289,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
             return false;
         }
         
-        const std::string dy = src.substr(8, 2);
+        const DAVA::String dy = src.substr(8, 2);
         if (!IsNumber(dy.c_str()))
         {
             return false;
@@ -295,7 +304,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
     
     /// time
     {
-        const std::string hr = src.substr(11, 2);
+        const DAVA::String hr = src.substr(11, 2);
         if (!IsNumber(hr.c_str()))
         {
             return false;
@@ -307,7 +316,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
             return false;
         }
         
-        const std::string mn = src.substr(14, 2);
+        const DAVA::String mn = src.substr(14, 2);
         if (!IsNumber(mn.c_str()))
         {
             return false;
@@ -319,7 +328,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
             return false;
         }
         
-        const std::string sc = src.substr(17, 2);
+        const DAVA::String sc = src.substr(17, 2);
         if (!IsNumber(sc.c_str()))
         {
             return false;
@@ -354,7 +363,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
                 return false;
             }
             
-            const std::string hr = src.substr(20, 2);
+            const DAVA::String hr = src.substr(20, 2);
             if (!IsNumber(hr.c_str()))
             {
                 return false;
@@ -366,7 +375,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
                 return false;
             }
             
-            const std::string mn = src.substr(23, 2);
+            const DAVA::String mn = src.substr(23, 2);
             if (!IsNumber(mn.c_str()))
             {
                 return false;
@@ -381,7 +390,8 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
             timeZoneOffset = (timeZone * (tzHour * 60 + tzMinute)) * 60;
         }
     }
-    innerTime = internal_timegm(&parseTime);
+    innerTime = InternalTimeGm(&parseTime) - timeZoneOffset;
+    UpdateLocalTimeStructure();
     return true;
 }
 
@@ -619,7 +629,7 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
         return false;
     }
     int adjustment = sign * ((hh*60) + mm);
-    struct tm t;
+    tm t = {0};
     t.tm_year = year - 1900;
     t.tm_mon = month;
     t.tm_wday = dayOfWeek;
@@ -629,7 +639,8 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
     t.tm_sec = seconds;
     innerTime = internal_timegm(&t);
     timeZoneOffset = adjustment * 60;
-    //innerTime += timeZoneOffset;
+    innerTime = InternalTimeGm(&t);
+    UpdateLocalTimeStructure();
     return true;
 }
 };
