@@ -342,14 +342,4 @@ String DFFont::GetRawHashString()
     return configPath.GetFrameworkPath() + "_" + Font::GetRawHashString();
 }
 
-Texture* DFFont::GetTexture()
-{
-    return fontTexture;
-}
-
-UniqueHandle DFFont::GetTextureHandler()
-{
-    return fontTextureHandler;
-}
-
 }

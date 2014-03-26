@@ -85,11 +85,17 @@ namespace DAVA
 		/**
          \brief Get font texture
          */
-        Texture* GetTexture();
+        inline Texture* GetTexture() const
+        {
+            return fontTexture;
+        }
         /**
          \brief Get font texture handler
          */
-        UniqueHandle GetTextureHandler();
+        inline UniqueHandle GetTextureHandler() const
+        {
+            return fontTextureHandler;
+        }
 
 		/**
 		 \brief Tests if two fonts are the same.
