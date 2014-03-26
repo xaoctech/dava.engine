@@ -270,7 +270,8 @@ bool DFFont::LoadConfig(const DAVA::FilePath &path)
         this->spread = spread->AsFloat();
     
     const MultiMap<String, YamlNode*> charsMap = charsNode->AsMap();
-    for (MultiMap<String, YamlNode*>::const_iterator iter = charsMap.begin(); iter != charsMap.end(); ++iter)
+    MultiMap<String, YamlNode*>::const_iterator charsMapEnd = charsMap.end();
+    for (MultiMap<String, YamlNode*>::const_iterator iter = charsMap.begin(); iter != charsMapEnd; ++iter)
     {
         char16 charId = atoi(iter->first.c_str());
         CharDescription charDescription;
@@ -291,7 +292,8 @@ bool DFFont::LoadConfig(const DAVA::FilePath &path)
     if (kerningNode)
     {
         const MultiMap<String, YamlNode*> kerningMap = kerningNode->AsMap();
-        for (MultiMap<String, YamlNode*>::const_iterator iter = kerningMap.begin(); iter != kerningMap.end(); ++iter)
+        MultiMap<String, YamlNode*>::const_iterator kerningMapEnd = kerningMap.end();
+        for (MultiMap<String, YamlNode*>::const_iterator iter = kerningMap.begin(); iter != kerningMapEnd; ++iter)
         {
             int32 charId = atoi(iter->first.c_str());
             CharsMap::iterator charIter = chars.find(charId);
@@ -299,7 +301,8 @@ bool DFFont::LoadConfig(const DAVA::FilePath &path)
                 continue;
             
             const MultiMap<String, YamlNode*> charKerningMap = iter->second->AsMap();
-            for (MultiMap<String, YamlNode*>::const_iterator iter = charKerningMap.begin(); iter != charKerningMap.end(); ++iter)
+            MultiMap<String, YamlNode*>::const_iterator charKerningMapEnd = charKerningMap.end();
+            for (MultiMap<String, YamlNode*>::const_iterator iter = charKerningMap.begin(); iter != charKerningMapEnd; ++iter)
             {
                 int32 secondCharId = atoi(iter->first.c_str());
                 float32 kerning = iter->second->AsFloat();
