@@ -317,11 +317,7 @@ bool DFFont::LoadConfig(const DAVA::FilePath &path)
 
 FilePath DFFont::GetTexturePath() const
 {
-    String fileName = configPath.GetFilename();
-    String fileExtension = configPath.GetExtension();
-    fileName.replace(fileName.length() - fileExtension.length(), fileExtension.length(), ".tex");
-    FilePath path = configPath.GetDirectory() + fileName;
-    return path;
+    return FilePath::CreateWithNewExtension(configPath, ".tex");
 }
     
 YamlNode * DFFont::SaveToYamlNode() const
