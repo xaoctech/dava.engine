@@ -34,79 +34,96 @@
 
 namespace DAVA
 {
-    FoliageSystem::FoliageSystem(Scene* scene) : SceneSystem(scene),
-            landscapeEntity(NULL),
-            foliageEntity(NULL)
-    {
+FoliageSystem::FoliageSystem(Scene* scene) : SceneSystem(scene),
+        landscapeEntity(NULL),
+        foliageEntity(NULL)
+{
         
-    }
+}
     
-    FoliageSystem::~FoliageSystem()
+FoliageSystem::~FoliageSystem()
+{
+    SafeRelease(landscapeEntity);
+    SafeRelease(foliageEntity);
+}
+    
+void FoliageSystem::AddEntity(Entity * entity)
+{
+    Landscape* landscapeRO = GetLandscape(entity);
+    if(landscapeRO &&
+        entity != landscapeEntity)
     {
         SafeRelease(landscapeEntity);
+        landscapeEntity = SafeRetain(entity);
+            landscapeRO->SetFoliageSystem(this);
+        
+        SyncFoliageWithLandscape();
+    }
+    
+    VegetationRenderObject* vegetationRO = GetVegetation(entity);
+    if(vegetationRO &&
+       entity != foliageEntity)
+    {
+        SafeRelease(foliageEntity);
+        foliageEntity = SafeRetain(entity);
+        
+        SyncFoliageWithLandscape();
+    }
+}
+
+void FoliageSystem::RemoveEntity(Entity * entity)
+{
+    if(entity == foliageEntity)
+    {
         SafeRelease(foliageEntity);
     }
     
-    void FoliageSystem::AddEntity(Entity * entity)
+    if(entity == landscapeEntity)
     {
-        Landscape* landscapeRO = GetLandscape(entity);
-        if(landscapeRO &&
-           entity != landscapeEntity)
-        {
-            SafeRelease(landscapeEntity);
-            landscapeEntity = SafeRetain(entity);
-            landscapeRO->SetFoliageSystem(this);
-            
-            SyncFoliageWithLandscape();
-        }
-        
-        VegetationRenderObject* vegetationRO = GetVegetation(entity);
-        if(vegetationRO &&
-           entity != foliageEntity)
-        {
-            SafeRelease(foliageEntity);
-            foliageEntity = SafeRetain(entity);
-            
-            SyncFoliageWithLandscape();
-        }
+        SafeRelease(landscapeEntity);
     }
-    
-    void FoliageSystem::RemoveEntity(Entity * entity)
+}
+
+void FoliageSystem::SyncFoliageWithLandscape()
+{
+    if(landscapeEntity && foliageEntity)
     {
-        if(entity == foliageEntity)
-        {
-            SafeRelease(foliageEntity);
-        }
-        
-        if(entity == landscapeEntity)
-        {
-            SafeRelease(landscapeEntity);
-        }
-    }
-    
-    void FoliageSystem::SyncFoliageWithLandscape()
-    {
-        if(landscapeEntity && foliageEntity)
-        {
-            Landscape* landscapeRO = GetLandscape(landscapeEntity);
-            VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
-            
-            vegetationRO->SetHeightmap(landscapeRO->GetHeightmap());
-            vegetationRO->SetHeightmapPath(landscapeRO->GetHeightmapPathname());
-            vegetationRO->SetWorldSize(Vector3(landscapeRO->GetLandscapeSize(),
-                                               landscapeRO->GetLandscapeSize(),
-                                               landscapeRO->GetLandscapeHeight()));
-        }
-    }
-    
-    void FoliageSystem::SetPerturbation(const Vector3& point,
-                                        const Vector3& force,
-                                        float32 distance)
-    {
+        Landscape* landscapeRO = GetLandscape(landscapeEntity);
         VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
-        if(vegetationRO != NULL)
-        {
-            vegetationRO->SetPerturbation(point, force, distance);
-        }
+        
+        vegetationRO->SetHeightmap(landscapeRO->GetHeightmap());
+        vegetationRO->SetHeightmapPath(landscapeRO->GetHeightmapPathname());
+        vegetationRO->SetWorldSize(Vector3(landscapeRO->GetLandscapeSize(),
+                                           landscapeRO->GetLandscapeSize(),
+                                           landscapeRO->GetLandscapeHeight()));
     }
+}
+
+void FoliageSystem::SetPerturbation(const Vector3& point,
+                                    const Vector3& force,
+                                    float32 distance)
+{
+    VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
+    if(vegetationRO != NULL)
+    {
+        vegetationRO->SetPerturbation(point, force, distance);
+    }
+}
+
+void FoliageSystem::SetFoliageVisible(bool show)
+{
+    VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
+    if(NULL != vegetationRO)
+    {
+        vegetationRO->SetVegetationVisible(show);
+    }
+}
+
+bool FoliageSystem::IsFoliageVisible() const
+{
+    VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
+    
+    return (NULL != vegetationRO) ? vegetationRO->GetVegetationVisible() : false;;
+}
+
 };

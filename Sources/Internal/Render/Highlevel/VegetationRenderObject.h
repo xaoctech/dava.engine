@@ -138,6 +138,9 @@ public:
     void SetLayerVisibilityMask(const uint8& mask);
     const uint8& GetLayerVisibilityMask() const;
     
+    void SetVegetationVisible(bool show);
+    bool GetVegetationVisible() const;
+    
 private:
 
     struct VegetationVertex
@@ -216,6 +219,7 @@ private:
     bool ReadyToRender(bool externalRenderFlag);
     
     void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
+                           float32 cameraDistance,
                            Vector<Vector4>& uniforms);
     
 private:
@@ -258,6 +262,8 @@ private:
     float32 maxPerturbationDistance;
     
     uint8 layerVisibilityMask;
+    
+    bool vegetationVisible;
     
 public:
     

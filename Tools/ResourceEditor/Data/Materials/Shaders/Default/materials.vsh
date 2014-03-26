@@ -246,67 +246,68 @@ void main()
         int clusterType = int(inTangent.y);
         int vertexTileIndex = int(inTangent.x);
     
-            float densityFactor;
+        float densityFactor;
     
-            float clusterDensity;
-            float clusterScale;
-            float clusterLodScale;
+        float clusterDensity;
+        float clusterScale;
+        float clusterLodScale;
     
-            if(0 == clusterType)
-            {
-                clusterDensity = clusterScaleDensityMap[vertexTileIndex].x;
-                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].x;
-            }
-            else if(1 == clusterType)
-            {
-                clusterDensity = clusterScaleDensityMap[vertexTileIndex].y;
-                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].y;
-            }
-            else if(2 == clusterType)
-            {
-                clusterDensity = clusterScaleDensityMap[vertexTileIndex].z;
-                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].z;
-            }
-            else
-            {
-                clusterDensity = clusterScaleDensityMap[vertexTileIndex].w;
-                clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].w;
-            }
-    
-            if(int(inTexCoord1.x) == int(lodSwitchScale.x))
-            {
-                clusterLodScale = lodSwitchScale.y;
-            }
-            else
-            {
-                clusterLodScale = 1.0;
-            }
-    
-            vec4 lodScaledPos = pos;
-            lodScaledPos.z = 0.0;
-            lodScaledPos = mix(clusterCenter, lodScaledPos, clusterLodScale);
-    
-            pos.xy = lodScaledPos.xy;
-    
-            varTexCoord2.x = clusterLodScale;
-    
-            if(inTangent.z < clusterDensity)
-            {
-                densityFactor = 1.0;
-            }
-            else
-            {
-                densityFactor = 0.0;
-            }
-    
-            pos = mix(clusterCenter, pos, clusterScale * densityFactor);
-    
-        vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
-    
-        if(pos.z > (clusterCenter.z + 0.1))
+        if(0 == clusterType)
         {
-            pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
+            clusterDensity = clusterScaleDensityMap[vertexTileIndex].x;
+            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].x;
         }
+        else if(1 == clusterType)
+        {
+            clusterDensity = clusterScaleDensityMap[vertexTileIndex].y;
+            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].y;
+        }
+        else if(2 == clusterType)
+        {
+            clusterDensity = clusterScaleDensityMap[vertexTileIndex].z;
+            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].z;
+        }
+        else
+        {
+            clusterDensity = clusterScaleDensityMap[vertexTileIndex].w;
+            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].w;
+        }
+    
+        if(int(inTexCoord1.x) == int(lodSwitchScale.x))
+        {
+            clusterLodScale = lodSwitchScale.y;
+        }
+        else
+        {
+            clusterLodScale = 1.0;
+        }
+    
+        vec4 lodScaledPos = pos;
+        lodScaledPos.z = 0.0;
+        lodScaledPos = mix(clusterCenter, lodScaledPos, clusterLodScale);
+    
+        pos.xy = lodScaledPos.xy;
+    
+        varTexCoord2.x = clusterLodScale;
+    
+        if(inTangent.z < clusterDensity)
+        {
+            densityFactor = 1.0;
+        }
+        else
+        {
+            densityFactor = 0.0;
+        }
+    
+        pos = mix(clusterCenter, pos, clusterScale * densityFactor);
+    
+        //VI: don't calculate perturbation. Revise the code after oscillators etc have been integrated
+        //vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
+    
+        //if(pos.z > (clusterCenter.z + 0.1))
+        //{
+        //    pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
+        //}
 
         gl_Position = worldViewProjMatrix * pos;
         varTexCoord1 = hUV;

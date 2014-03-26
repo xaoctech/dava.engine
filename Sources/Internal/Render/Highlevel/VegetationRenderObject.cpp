@@ -63,8 +63,8 @@ static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
     
 static const size_t MAX_RENDER_CELLS = 256;
-static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 180.0f * 180.0f; //meters * meters (square length)
-static const float32 MAX_VISIBLE_SCALING_DISTANCE = 60.0f * 60.0f;
+static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 130.0f * 130.0f; //meters * meters (square length)
+static const float32 MAX_VISIBLE_SCALING_DISTANCE = 100.0f * 100.0f;
     
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
 
@@ -306,7 +306,8 @@ VegetationRenderObject::VegetationRenderObject() :
     halfHeight(0),
     vertexRenderDataObject(NULL),
     maxPerturbationDistance(1000000.0f),
-    layerVisibilityMask(0xFF)
+    layerVisibilityMask(0xFF),
+    vegetationVisible(true)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -512,7 +513,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
         rb->SetRenderDataObject(rdoVector[indexBufferIndex]);
         
-        SetupNodeUniforms(treeNode, shaderScaleDensityUniforms);
+        SetupNodeUniforms(treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
         
         posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
         posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
@@ -1298,10 +1299,11 @@ void VegetationRenderObject::ReleaseRenderData()
 
 bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
 {
-    return (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (vertexRenderDataObject != NULL);
+    return vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (vertexRenderDataObject != NULL);
 }
 
 void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
+                                               float32 cameraDistance,
                                                Vector<Vector4>& uniforms)
 {
     if(node->IsTerminalLeaf())
@@ -1311,6 +1313,13 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
         int32 mapX = node->data.x + halfWidth;
         int32 mapY = node->data.y + halfHeight;
         uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
+        
+        float32 distanceScale = 1.0f;
+        
+        if(cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
+        {
+            distanceScale = Clamp(1.0f - ((cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
+        }
         
         uint8 *vegetationMapValuePtr = (vegetationMap->data + cellDescriptionIndex * 4);
         
@@ -1323,6 +1332,7 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             
             //clusterScale = 1.0f;
             //density = 16.0f;
+            clusterScale *= distanceScale;
             density = (((layerVisibilityMask >> clusterType) & 0x01) != 0) ? density : 0.0f;
             
             uniforms[node->data.rdoIndex * 2].data[clusterType] = density;
@@ -1332,10 +1342,10 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
     }
     else
     {
-        SetupNodeUniforms(node->children[0], uniforms);
-        SetupNodeUniforms(node->children[1], uniforms);
-        SetupNodeUniforms(node->children[2], uniforms);
-        SetupNodeUniforms(node->children[3], uniforms);
+        SetupNodeUniforms(node->children[0], cameraDistance, uniforms);
+        SetupNodeUniforms(node->children[1], cameraDistance, uniforms);
+        SetupNodeUniforms(node->children[2], cameraDistance, uniforms);
+        SetupNodeUniforms(node->children[3], cameraDistance, uniforms);
     }
 }
 
@@ -1381,6 +1391,16 @@ void VegetationRenderObject::SetLayerVisibilityMask(const uint8& mask)
 const uint8& VegetationRenderObject::GetLayerVisibilityMask() const
 {
      return layerVisibilityMask;
+}
+
+void VegetationRenderObject::SetVegetationVisible(bool show)
+{
+    vegetationVisible = show;
+}
+    
+bool VegetationRenderObject::GetVegetationVisible() const
+{
+    return vegetationVisible;
 }
 
 
