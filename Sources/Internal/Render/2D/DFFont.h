@@ -39,6 +39,7 @@ namespace DAVA
 {
 	
 #define DF_FONT_CACHE_SIZE 100	//text cache size
+#define DF_FONT_INDEX_BUFFER_SIZE ((DF_FONT_CACHE_SIZE) * 6)
 	
 	class DFFont: public Font
 	{

@@ -37,10 +37,10 @@ namespace DAVA
     
 static uint16* InitIndexBuffer()
 {
-    static uint16 buffer[DF_FONT_CACHE_SIZE * 6];
+    static uint16 buffer[DF_FONT_INDEX_BUFFER_SIZE];
     
     uint16 a = 0;
-    for (int32 i = 0; i < DF_FONT_CACHE_SIZE * 6;)
+    for (int32 i = 0; i < DF_FONT_INDEX_BUFFER_SIZE;)
     {
         buffer[i] = buffer[i+3] = a;
         buffer[i+1] = a+1;
