@@ -174,10 +174,6 @@ public slots:
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
 	
-	void OnAddActionComponent();
-    void OnAddStaticOcclusionComponent();
-    void OnAddModelTypeComponent();
-
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
