@@ -219,9 +219,18 @@ void MaterialEditor::SetCurMaterial(const QList< DAVA::NMaterial *>& materials)
 	}
 
     // check if there is global material and enable appropriate actions
-    bool isGlobalMaterialPresent = (NULL != QtMainWindow::Instance()->GetCurrentScene()->GetGlobalMaterial());
-    ui->actionAddGlobalMaterial->setEnabled(!isGlobalMaterialPresent);
-    ui->actionRemoveGlobalMaterial->setEnabled(isGlobalMaterialPresent);
+    SceneEditor2 *sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+    if(NULL != sceneEditor)
+    {
+        bool isGlobalMaterialPresent = (NULL != sceneEditor->GetGlobalMaterial());
+        ui->actionAddGlobalMaterial->setEnabled(!isGlobalMaterialPresent);
+        ui->actionRemoveGlobalMaterial->setEnabled(isGlobalMaterialPresent);
+    }
+    else
+    {
+        ui->actionAddGlobalMaterial->setEnabled(false);
+        ui->actionRemoveGlobalMaterial->setEnabled(false);
+    }
 }
 
 void MaterialEditor::sceneActivated(SceneEditor2 *scene)
@@ -236,8 +245,11 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 { 
-	ui->materialTree->SetScene(NULL);
-    SetCurMaterial(QList< DAVA::NMaterial *>());
+    if(isVisible())
+    {
+        ui->materialTree->SetScene(NULL);
+        SetCurMaterial(QList< DAVA::NMaterial *>());
+    }
 }
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
@@ -261,12 +273,12 @@ void MaterialEditor::materialSelected(const QItemSelection & selected, const QIt
 
 void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
 {
-	if( command->GetId() == CMDID_INSP_DYNAMIC_MODIFY ||
-		command->GetId() == CMDID_INSP_MEMBER_MODIFY || 
-		command->GetId() == CMDID_META_OBJ_MODIFY)
-	{
-		SetCurMaterial(curMaterials);
-	}
+    if(command->GetId() == CMDID_INSP_DYNAMIC_MODIFY ||
+        command->GetId() == CMDID_INSP_MEMBER_MODIFY ||
+        command->GetId() == CMDID_META_OBJ_MODIFY)
+    {
+        SetCurMaterial(curMaterials);
+    }
 }
 
 void MaterialEditor::onCurrentExpandModeChange( bool mode )
