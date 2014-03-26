@@ -41,7 +41,8 @@ namespace DAVA
         wchar_t buffer [256] = {0};
         
         Timestamp timeWithTZ = innerTime + timeZoneOffset;
-        timeinfo = std::gmtime(&timeWithTZ);
+        
+        GmTimeThreadSafe(timeinfo, &timeWithTZ);
         
         locale_t loc = newlocale ( LC_ALL_MASK , locID.c_str() , NULL );
         size_t size = wcsftime_l(buffer, 256, format, timeinfo, loc);
@@ -54,6 +55,8 @@ namespace DAVA
     int32 DateTime::GetLocalTimeZoneOffset()
     {
         Timestamp  t = time(NULL);
-        return localtime(&t)->tm_gmtoff;
+        struct tm resultStruct = {0};
+        DateTime::LocalTimeThreadSafe(&resultStruct, &t);
+        return resultStruct.tm_gmtoff;
     }
 }
