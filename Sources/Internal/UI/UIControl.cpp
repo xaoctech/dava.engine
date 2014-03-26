@@ -1458,8 +1458,10 @@ namespace DAVA
         {
             UIControlSystem::Instance()->SetFocusedControl(NULL, true);
         }
-
-        UIControlSystem::Instance()->CancelInputs(this, false);
+        if (GetInputEnabled())
+        {
+            UIControlSystem::Instance()->CancelInputs(this, false);
+        }
 
 		List<UIControl*>::iterator it = childs.begin();
 		while(it != childs.end())
