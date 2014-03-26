@@ -333,7 +333,6 @@ public:
     void SetCursorPos(uint32 pos);
 
 protected:
-    virtual void SetInternalVisible(bool isVisible);
 	WideString text;
 	UITextFieldDelegate * delegate;
 	float32	cursorBlinkingTime;
