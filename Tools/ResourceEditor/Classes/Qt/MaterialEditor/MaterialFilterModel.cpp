@@ -92,7 +92,8 @@ void MaterialFilteringModel::setFilterType(int type)
         return ;
 
     filterType = static_cast< eFilterType >( type );
-    invalidateFilter();
+    invalidate();
+    //invalidateFilter();
 }
 
 int MaterialFilteringModel::getFilterType() const
@@ -145,6 +146,18 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
 
 
 	return false;
+}
+
+bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
+{
+    // global material should always be first
+    DAVA::NMaterial *material = materialModel->GetMaterial(left);
+    if(NULL != material && material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_GLOBAL)
+    {
+        return true;
+    }
+
+    return QSortFilterProxyModel::lessThan(left, right);
 }
 
 bool MaterialFilteringModel::dropMimeData(QMimeData const* data, Qt::DropAction action, int row, int column, QModelIndex const& parent)

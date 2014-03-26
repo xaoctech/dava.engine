@@ -82,8 +82,6 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
-    QObject::connect(ui->actionMaterialReload, SIGNAL(triggered(bool)), this, SLOT(OnMaterialReload(bool)));
-    QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
     QObject::connect(ui->actionAddGlobalMaterial, SIGNAL(triggered(bool)), this, SLOT(OnMaterialAddGlobal(bool)));
     QObject::connect(ui->actionRemoveGlobalMaterial, SIGNAL(triggered(bool)), this, SLOT(OnMaterialRemoveGlobal(bool)));
 
@@ -219,6 +217,11 @@ void MaterialEditor::SetCurMaterial(const QList< DAVA::NMaterial *>& materials)
 		// Expand the root elements as default value.
 		ui->materialProperty->expandToDepth(0);
 	}
+
+    // check if there is global material and enable appropriate actions
+    bool isGlobalMaterialPresent = (NULL != QtMainWindow::Instance()->GetCurrentScene()->GetGlobalMaterial());
+    ui->actionAddGlobalMaterial->setEnabled(!isGlobalMaterialPresent);
+    ui->actionRemoveGlobalMaterial->setEnabled(isGlobalMaterialPresent);
 }
 
 void MaterialEditor::sceneActivated(SceneEditor2 *scene)
@@ -882,11 +885,6 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 	}
 }
 
-void MaterialEditor::OnSwitchQuality(bool checked)
-{
-    QualitySwitcher::Show();
-}
-
 QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
 {
     if (value.type() == QVariant::String)
@@ -906,10 +904,6 @@ QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
     return QVariant();
 }
 
-void MaterialEditor::OnMaterialReload(bool checked)
-{
-}
-
 void MaterialEditor::OnMaterialAddGlobal(bool checked)
 {
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
@@ -917,6 +911,8 @@ void MaterialEditor::OnMaterialAddGlobal(bool checked)
     {
         curScene->CreateGlobalMaterial();
         sceneActivated(curScene);
+
+        SelectMaterial(curScene->GetGlobalMaterial());
     }
 }
 
@@ -925,6 +921,8 @@ void MaterialEditor::OnMaterialRemoveGlobal(bool checked)
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
     if(NULL != curScene)
     {
+        SelectMaterial(NULL);
+
         curScene->SetGlobalMaterial(NULL);
         sceneActivated(curScene);
     }
