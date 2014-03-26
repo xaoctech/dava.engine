@@ -345,6 +345,7 @@ public:
     void SetMaterialGroup(const FastName &group);
 
     void BuildActiveUniformsCacheParamsCache();
+    void InvalidateProperties();
     
 protected:
 	
@@ -587,7 +588,7 @@ public:
 			FilePath path;
 		};
 
-		const FastNameMap<PropData>* FindMaterialTextures(NMaterial *state) const;
+		const FastNameMap<PropData>* FindMaterialTextures(NMaterial *state, bool global) const;
 	};
 
 	class NMaterialStateDynamicFlagsInsp : public InspInfoDynamic
@@ -632,7 +633,7 @@ public:
 		
 		bool isColor(const FastName &propName) const;
 		VariantType getVariant(const FastName &propName, const PropData &propData) const;
-		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state) const;
+		const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state, bool global) const;
 	};
 	
 public:

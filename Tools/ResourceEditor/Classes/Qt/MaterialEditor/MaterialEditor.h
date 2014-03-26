@@ -74,8 +74,6 @@ protected slots:
 	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
-    void OnSwitchQuality(bool checked);
-    void OnMaterialReload(bool checked);
     void OnMaterialAddGlobal(bool checked);
     void OnMaterialRemoveGlobal(bool checked);
 

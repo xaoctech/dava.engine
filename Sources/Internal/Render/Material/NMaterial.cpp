@@ -1008,6 +1008,7 @@ void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 	}
 	
 	SetTexturesDirty();
+    InvalidateProperties();
 }
 
 void NMaterial::OnInstanceQualityChanged()
@@ -1480,44 +1481,43 @@ void NMaterial::BindMaterialProperties(RenderPassInstance* passInstance)
 
 void NMaterial::OnMaterialPropertyAdded(const FastName& propName)
 {
-	for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
-		it != instancePasses.end();
-		++it)
-	{
-		RenderPassInstance* pass = it->second;
-		pass->propsDirty = true;
-	}
-	
-	this->Retain();
-	
-	size_t childrenCount = children.size();
-	for(size_t i = 0; i< childrenCount; ++i)
-	{
-		children[i]->OnMaterialPropertyAdded(propName);
-	}
-	
-	this->Release();
+    // TODO: 
+    // now all properties are processed, but 
+    // should be processed only one - propName
+    // ...
+
+    InvalidateProperties();
 }
 
 void NMaterial::OnMaterialPropertyRemoved(const FastName& propName)
 {
-	for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
-		it != instancePasses.end();
-		++it)
-	{
-		RenderPassInstance* pass = it->second;
-		pass->propsDirty = true;
-	}
-	
-	this->Retain();
-	
-	size_t childrenCount = children.size();
-	for(size_t i = 0; i< childrenCount; ++i)
-	{
-		children[i]->OnMaterialPropertyRemoved(propName);
-	}
-	
-	this->Release();
+    // TODO: 
+    // now all properties are processed, but 
+    // should be processed only one - propName
+    // ...
+
+    InvalidateProperties();
+}
+
+void NMaterial::InvalidateProperties()
+{
+    for(HashMap<FastName, RenderPassInstance*>::iterator it = instancePasses.begin();
+        it != instancePasses.end();
+        ++it)
+    {
+        RenderPassInstance* pass = it->second;
+        pass->propsDirty = true;
+    }
+
+    this->Retain();
+
+    size_t childrenCount = children.size();
+    for(size_t i = 0; i < childrenCount; ++i)
+    {
+        children[i]->InvalidateProperties();
+    }
+
+    this->Release();
 }
 
 void NMaterial::Draw(PolygonGroup * polygonGroup)
@@ -1984,7 +1984,7 @@ eFillMode NMaterialHelper::GetFillMode(const FastName& passName, NMaterial* mat)
 ///////////////////////////////////////////////////////////////////////////
 ///// NMaterialState::NMaterialStateDynamicTexturesInsp implementation
 
-const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* NMaterial::NMaterialStateDynamicTexturesInsp::FindMaterialTextures(NMaterial *state) const
+const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* NMaterial::NMaterialStateDynamicTexturesInsp::FindMaterialTextures(NMaterial *state, bool global) const
 {
 	static FastNameMap<PropData> staticData;
 	
@@ -2015,6 +2015,15 @@ const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* NMate
 		
 		parent = parent->GetParent();
 		source = PropData::SOURCE_PARENT;
+
+        if(!global && NULL != parent)
+        {
+            if(parent->GetMaterialType() == MATERIALTYPE_GLOBAL)
+            {
+                // don't extract properties from globalMaterial
+                parent = NULL;
+            }
+        }
 	}
 	
 	
@@ -2068,7 +2077,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicTexturesInsp::MembersList(void 
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state, false);
 	
 	FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>::iterator it = textures->begin();
 	FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>::iterator end = textures->end();
@@ -2095,7 +2104,7 @@ VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberAliasGet(void *o
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state, true);
 	if(textures->count(texture))
 	{
 		ret.SetFilePath(textures->at(texture).path);
@@ -2111,7 +2120,7 @@ VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *o
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state, false);
 	if(textures->count(texture))
 	{
 		if(textures->at(texture).source & PropData::SOURCE_SELF)
@@ -2129,7 +2138,7 @@ void NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueSet(void *object, 
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state, true);
 	if(textures->count(texture))
 	{
 		if(value.type == VariantType::TYPE_NONE && state->GetMaterialType() != MATERIALTYPE_GLOBAL)
@@ -2153,7 +2162,7 @@ int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, cons
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state, true);
 	if(textures->count(texture))
 	{
 		const PropData &propData = textures->at(texture);
@@ -2179,7 +2188,7 @@ int NMaterial::NMaterialStateDynamicTexturesInsp::MemberFlags(void *object, cons
 
 ///////////////////////////////////////////////////////////////////////////
 ///// NMaterialState::NMaterialStateDynamicPropertiesInsp implementation
-const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMaterial::NMaterialStateDynamicPropertiesInsp::FindMaterialProperties(NMaterial *state) const
+const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMaterial::NMaterialStateDynamicPropertiesInsp::FindMaterialProperties(NMaterial *state, bool global) const
 {
 	static FastNameMap<PropData> staticData;
 	
@@ -2224,10 +2233,13 @@ const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMa
 		parent = parent->GetParent();
 		source = PropData::SOURCE_PARENT;
 
-        if(NULL != parent && parent->GetMaterialType() == MATERIALTYPE_GLOBAL)
+        if(!global && NULL != parent)
         {
-            // don't extract properties from globalMaterial
-            parent = NULL;
+            if(parent->GetMaterialType() == MATERIALTYPE_GLOBAL)
+            {
+                // don't extract properties from globalMaterial
+                parent = NULL;
+            }
         }
 	}
 	
@@ -2302,7 +2314,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicPropertiesInsp::MembersList(voi
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, false);
 	
 	FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>::iterator it = members->begin();
 	FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>::iterator end = members->end();
@@ -2329,7 +2341,7 @@ int NMaterial::NMaterialStateDynamicPropertiesInsp::MemberFlags(void *object, co
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, true);
 	if(members->count(member))
 	{
 		const PropData &propData = members->at(member);
@@ -2355,19 +2367,19 @@ int NMaterial::NMaterialStateDynamicPropertiesInsp::MemberFlags(void *object, co
 
 VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberAliasGet(void *object, const FastName &member) const
 {
-	VariantType ret;
-	
-	NMaterial *state = (NMaterial*) object;
-	DVASSERT(state);
-	
-	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
-	if(members->count(member))
-	{
-		const PropData &prop = members->at(member);
-		ret = getVariant(member, prop);
-	}
-	
-	return ret;
+    VariantType ret;
+
+    NMaterial *state = (NMaterial*) object;
+    DVASSERT(state);
+
+    const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, true);
+    if(members->count(member))
+    {
+        const PropData &prop = members->at(member);
+        ret = getVariant(member, prop);
+    }
+
+    return ret;
 }
 
 VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void *object, const FastName &member) const
@@ -2377,14 +2389,14 @@ VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void 
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, false);
 	if(members->count(member))
 	{
 		const PropData &prop = members->at(member);
-		if(prop.source & PropData::SOURCE_SELF)
-		{
-			ret = getVariant(member, prop);
-		}
+        if(prop.source & PropData::SOURCE_SELF)
+        {
+            ret = getVariant(member, prop);
+        }
 	}
 	
 	return ret;
@@ -2540,7 +2552,7 @@ void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state);
+	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, true);
 	if(members->count(member))
 	{
 		PropData prop = members->at(member);

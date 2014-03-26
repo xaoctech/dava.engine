@@ -21,16 +21,7 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>3</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>3</number>
    </property>
    <item>
@@ -49,8 +40,6 @@
      <addaction name="actionInstances"/>
      <addaction name="separator"/>
      <addaction name="actionAutoExpand"/>
-     <addaction name="actionSwitchQuality"/>
-     <addaction name="actionMaterialReload"/>
     </widget>
    </item>
    <item>
@@ -69,16 +58,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -116,16 +96,7 @@
        <property name="spacing">
         <number>3</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -173,7 +144,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QtPropertyEditor" name="materialProperty"/>
+        <widget class="QtPropertyEditor" name="materialProperty">
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOn</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -195,32 +170,28 @@
     <string>Turn on/off automatin node expanding</string>
    </property>
   </action>
-  <action name="actionSwitchQuality">
-   <property name="text">
-    <string>switchQuality</string>
-   </property>
-  </action>
-  <action name="actionMaterialReload">
-   <property name="text">
-    <string>MaterialReload</string>
-   </property>
-  </action>
   <action name="actionAddGlobalMaterial">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/add_blue.png</normaloff>:/QtIcons/add_blue.png</iconset>
+     <normaloff>:/QtIcons/global_add.png</normaloff>:/QtIcons/global_add.png</iconset>
    </property>
    <property name="text">
     <string>AddGlobalMaterial</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Global Material</string>
    </property>
   </action>
   <action name="actionRemoveGlobalMaterial">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/remove.png</normaloff>:/QtIcons/remove.png</iconset>
+     <normaloff>:/QtIcons/global_delete.png</normaloff>:/QtIcons/global_delete.png</iconset>
    </property>
    <property name="text">
     <string>RemoveGlobalMaterial</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Global Material</string>
    </property>
   </action>
   <actiongroup name="filterType">
