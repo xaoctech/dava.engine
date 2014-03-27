@@ -296,7 +296,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 		for(int tab = 0; tab < GetSceneWidget()->GetTabCount(); ++tab)
 		{
 			SceneEditor2 *scene = GetSceneWidget()->GetTabScene(tab);
-			SceneHelper::EnumerateSceneTextures(scene, allScenesTextures);
+			SceneHelper::EnumerateSceneTextures(scene, allScenesTextures, SceneHelper::EXCLUDE_NULL);
 		}
 
 		if(allScenesTextures.size() > 0)
@@ -653,8 +653,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
-    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(OnEditor2DCameraDialog()));
-    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(OnEditorSpriteDialog()));
+    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(On2DCameraDialog()));
+    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(On2DSpriteDialog()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
@@ -1509,7 +1509,7 @@ void QtMainWindow::OnParticleEffectDialog()
 	SafeRelease(sceneNode);
 }
 
-void QtMainWindow::OnEditor2DCameraDialog()
+void QtMainWindow::On2DCameraDialog()
 {
     Entity* sceneNode = new Entity();
     Camera * camera = new Camera();
@@ -1518,13 +1518,14 @@ void QtMainWindow::OnEditor2DCameraDialog()
     float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
     float32 aspect = w / h;
     camera->SetupOrtho(w, aspect, 1, 1000);        
-    camera->SetPosition(Vector3(0,0, -500));
+    camera->SetPosition(Vector3(0,0, -10000));
+    camera->SetZFar(10000);
     camera->SetTarget(Vector3(0, 0, 0));  
     camera->SetUp(Vector3(0, -1, 0));
     camera->RebuildCameraFromValues();        
 
     sceneNode->AddComponent(new CameraComponent(camera));
-    sceneNode->SetName(ResourceEditor::EDITOR_2D_CAMERA);
+    sceneNode->SetName("Camera 2D");
     SceneEditor2* sceneEditor = GetCurrentScene();
     if(sceneEditor)
     {
@@ -1534,7 +1535,7 @@ void QtMainWindow::OnEditor2DCameraDialog()
     SafeRelease(sceneNode);
     SafeRelease(camera);
 }
-void QtMainWindow::OnEditorSpriteDialog()
+void QtMainWindow::On2DSpriteDialog()
 {
     FilePath projectPath = ProjectManager::Instance()->CurProjectPath();
     projectPath += "Data/Gfx/";
