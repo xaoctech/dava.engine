@@ -332,7 +332,7 @@ bool LocalizationSystem::GetStringsForCurrentLocale(Map<WideString, WideString>&
     
 String LocalizationSystem::GetCountryCode() const
 {
-    int32 knownLocalesNumber = sizeof(languageLocaleMap) / sizeof(*languageLocaleMap);
+    int32 knownLocalesNumber = COUNT_OF(languageLocaleMap);
 	for (int32 i = 0; i < knownLocalesNumber; i ++)
 	{
 		if (languageLocaleMap[i].languageCode == langId)

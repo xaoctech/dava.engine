@@ -44,7 +44,7 @@ namespace DAVA
         
         GmTimeThreadSafe(timeinfo, &timeWithTZ);
         
-        locale_t loc = newlocale ( LC_ALL_MASK , locID.c_str() , NULL );
+        locale_t loc = newlocale(LC_ALL_MASK, locID.c_str(), NULL);
         size_t size = wcsftime_l(buffer, 256, format, timeinfo, loc);
         DVASSERT(size);
         DAVA::WideString str(buffer);

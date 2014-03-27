@@ -38,7 +38,6 @@
 static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
 static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
 
-
 namespace DAVA
 {
     
@@ -53,11 +52,11 @@ DateTime::DateTime(int32 year, int32 month, int32 day, int32 _timeZoneOffset):
 timeZoneOffset(_timeZoneOffset)
 {
     DVASSERT(year >= 0 && month >= 0 && day >= 0 &&
-             timeZoneOffset < (MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR) && timeZoneOffset > (-1*MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR));
+             timeZoneOffset <= (MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR) && timeZoneOffset >= (-1*MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR));
     tm t = { 0 };
     t.tm_mon = month;
     t.tm_year = year - 1900;
-    t.tm_isdst = -1; // unknown
+    t.tm_isdst = -1;
     t.tm_mday = day;
     innerTime = InternalTimeGm(&t);
     innerTime -= timeZoneOffset;// time member should be always in UTC format
@@ -70,14 +69,14 @@ DateTime::DateTime(int32 year, int32 month, int32 day, int32 hour, int32 minute,
 timeZoneOffset(_timeZoneOffset)
 {
     DVASSERT(year >= 0 && month >= 0 && day >= 0 && hour >= 0 && minute >= 0 && second >= 0 &&
-             timeZoneOffset < (12*SECONDS_IN_HOUR) && timeZoneOffset > (-12*SECONDS_IN_HOUR));
+             timeZoneOffset <= (MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR) && timeZoneOffset >= (-1*MAX_OFFSET_IN_HOURS*SECONDS_IN_HOUR));
     tm t = { 0 };
     t.tm_sec = second;
     t.tm_min = minute;
     t.tm_hour = hour;
     t.tm_mon = month;
     t.tm_year = year - 1900;
-    t.tm_isdst = -1; // unknown
+    t.tm_isdst = -1;
     t.tm_mday = day;
     innerTime = InternalTimeGm(&t);
     innerTime -= timeZoneOffset;
@@ -293,7 +292,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
                 return false;
             }
             
-            int tzHour = atoi(hr.c_str());
+            int32 tzHour = atoi(hr.c_str());
             if (tzHour < 0 || tzHour > 23)
             {
                 return false;
@@ -305,7 +304,7 @@ bool DateTime::ParseISO8601Date(const DAVA::String& src)
                 return false;
             }
             
-            int tzMinute = atoi(mn.c_str());
+            int32 tzMinute = atoi(mn.c_str());
             if (tzMinute < 0 || tzMinute > 59)
             {
                 return false;
@@ -376,7 +375,7 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
         return false;
     }
     const char* str1 = src.c_str();
-    int dayOfWeek = 0;
+    int32 dayOfWeek = 0;
     
     char str[200],*s;
     s = &str[0];
@@ -384,8 +383,8 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
     str[199] = '\0';
     
     // Convert to lowercase.
-    int j;
-    int i = 0;
+    int32 j;
+    int32 i = 0;
     while (str[i] != '\0')
     {
         str[i] = tolower(str[i]);
@@ -415,10 +414,10 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
     }
     
     // Get the day, month, and year.
-    int day;
+    int32 day;
     char monthStr[20];
-    int month;
-    int year;
+    int32 month;
+    int32 year;
     
     if (sscanf(s,"%d%s%d",&day,monthStr,&year) != 3) return false;
     SKIP_NON_WHITESPACE
@@ -453,84 +452,84 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
         }
     }
     
-    int hour,minute,seconds;
+    int32 hour,minute,seconds;
     
-    if (sscanf(s,"%d:%d:%d",&hour,&minute,&seconds) != 3)
+    if(sscanf(s,"%d:%d:%d",&hour,&minute,&seconds) != 3)
     {
         return false;
     }
     SKIP_NON_WHITESPACE
     SKIP_WHITESPACE
     
-    if (*s == '+') s++;
+    if(*s == '+') s++;
     char zoneStr[20];
-    if (sscanf(s,"%s",zoneStr) != 1)
+    if(sscanf(s,"%s",zoneStr) != 1)
     {
         strcpy(zoneStr,"GMT");
     }
     
-    if (zoneStr[0] == '-' ||
+    if(zoneStr[0] == '-' ||
         (zoneStr[0] >= '0' && zoneStr[0] <= '9'))
     {
         // Do nothing.
     }
-    else if (strcmp(zoneStr,"ut") == 0)
+    else if(strcmp(zoneStr,"ut") == 0)
     {
         strcpy(zoneStr,"0000");
     }
-    else if (strcmp(zoneStr,"gmt") == 0)
+    else if(strcmp(zoneStr,"gmt") == 0)
     {
         strcpy(zoneStr,"0000");
     }
-    else if (strcmp(zoneStr,"est") == 0)
+    else if(strcmp(zoneStr,"est") == 0)
     {
         strcpy(zoneStr,"-0500");
     }
-    else if (strcmp(zoneStr,"edt") == 0)
+    else if(strcmp(zoneStr,"edt") == 0)
     {
         strcpy(zoneStr,"-0400");
     }
-    else if (strcmp(zoneStr,"cst") == 0)
+    else if(strcmp(zoneStr,"cst") == 0)
     {
         strcpy(zoneStr,"-0600");
     }
-    else if (strcmp(zoneStr,"cdt") == 0)
+    else if(strcmp(zoneStr,"cdt") == 0)
     {
         strcpy(zoneStr,"-0500");
     }
-    else if (strcmp(zoneStr,"mst") == 0)
+    else if(strcmp(zoneStr,"mst") == 0)
     {
         strcpy(zoneStr,"-0700");
     }
-    else if (strcmp(zoneStr,"mdt") == 0)
+    else if(strcmp(zoneStr,"mdt") == 0)
     {
         strcpy(zoneStr,"-0600");
     }
-    else if (strcmp(zoneStr,"pst") == 0)
+    else if(strcmp(zoneStr,"pst") == 0)
     {
         strcpy(zoneStr,"-0800");
     }
-    else if (strcmp(zoneStr,"pdt") == 0)
+    else if(strcmp(zoneStr,"pdt") == 0)
     {
         strcpy(zoneStr,"-0700");
     }
-    else if (strcmp(zoneStr,"a") == 0)
+    else if(strcmp(zoneStr,"a") == 0)
     {
         strcpy(zoneStr,"-0100");
     }
-    else if (strcmp(zoneStr,"z") == 0)
+    else if(strcmp(zoneStr,"z") == 0)
     {
         strcpy(zoneStr,"0000");
     }
-    else if (strcmp(zoneStr,"m") == 0)
+    else if(strcmp(zoneStr,"m") == 0)
     {
         strcpy(zoneStr,"-1200");
     }
-    else if (strcmp(zoneStr,"n") == 0)
+    else if(strcmp(zoneStr,"n") == 0)
     {
         strcpy(zoneStr,"0100");
     }
-    else if (strcmp(zoneStr,"y") == 0)
+    else if(strcmp(zoneStr,"y") == 0)
     {
         strcpy(zoneStr,"1200");
     }
@@ -540,19 +539,19 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
     }
     
     // Convert zoneStr from (-)hhmm to minutes.
-    int hh,mm;
-    int sign = 1;
+    int32 hh,mm;
+    int32 sign = 1;
     s = zoneStr;
-    if (*s == '-')
+    if(*s == '-')
     {
         sign = -1;
         s++;
     }
-    if (sscanf(s,"%02d%02d",&hh,&mm) != 2)
+    if(sscanf(s,"%02d%02d",&hh,&mm) != 2)
     {
         return false;
     }
-    int adjustment = sign * ((hh*60) + mm);
+    int32 adjustment = sign * ((hh*60) + mm);
     tm t = {0};
     t.tm_year = year - 1900;
     t.tm_mon = month;
@@ -567,51 +566,13 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
     return true;
 }
     
-inline bool DateTime::IsLeap(DAVA::int32 year)
-{
-    DVASSERT(year >= 1970);
-    if(year % 400 == 0)
-        return true;
-    if(year % 100 == 0)
-        return false;
-    if(year % 4 == 0)
-        return true;
-    return false;
-}
-
-inline DAVA::int32 DateTime::DaysFrom0(DAVA::int32 year)
-{
-    DVASSERT(year >= 1970);
-    year--;
-    return 365 * year + (year / 400) - (year/100) + (year / 4);
-}
-
-inline DAVA::int32 DateTime::DaysFrom1970(DAVA::int32 year)
-{
-    DVASSERT(year >= 1970);
-    static const int daysFrom0To1970 = DaysFrom0(1970);
-    return DaysFrom0(year) - daysFrom0To1970;
-}
-
-inline DAVA::int32 DateTime::DaysFrom1jan(DAVA::int32 year,DAVA::int32 month,DAVA::int32 day)
-{
-    DVASSERT(year >= 1970 && month >= 0 && month <= 12 && day >=0 && day <= 31 );
-    static const DAVA::int32 days[2][12] =
-    {
-        { 0,31,59,90,120,151,181,212,243,273,304,334},
-        { 0,31,60,91,121,152,182,213,244,274,305,335}
-    };
-    DAVA::int32 rowNumberToSelect = IsLeap(year) ? 1 : 0;
-    return days[rowNumberToSelect][month-1] + day - 1;
-}
-
 // calc time_t by hand to get time stamp in utc(system function
 // returns it with local timezone shift only )
 // code from http://stackoverflow.com/questions/16647819/timegm-cross-platform
-DAVA::Timestamp DateTime::InternalTimeGm(std::tm const *t)
+Timestamp DateTime::InternalTimeGm(std::tm *t) const
 {
-    int year = t->tm_year + 1900;
-    int month = t->tm_mon;
+    int32 year = t->tm_year + 1900;
+    int32 month = t->tm_mon;
     if(month > 11)
     {
         year += month/12;
@@ -619,22 +580,22 @@ DAVA::Timestamp DateTime::InternalTimeGm(std::tm const *t)
     }
     else if(month < 0)
     {
-        int yearsDiff = (-month + 11)/12;
+        int32 yearsDiff = (-month + 11)/12;
         year -= yearsDiff;
         month+=12 * yearsDiff;
     }
     month++;
-    int day = t->tm_mday;
-    int dayOfYear = DaysFrom1jan(year,month,day);
-    int daysSinceEpoch = DaysFrom1970(year) + dayOfYear;
+    int32 day = t->tm_mday;
+    int32 dayOfYear = DaysFrom1jan(year,month,day);
+    int32 daysSinceEpoch = DaysFrom1970(year) + dayOfYear;
     
-    DAVA::Timestamp secondsInDay = 3600 * 24;
-    DAVA::Timestamp result = secondsInDay * daysSinceEpoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
+    Timestamp secondsInDay = 3600 * 24;
+    Timestamp result = secondsInDay * daysSinceEpoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
     
     return result;
 }
 
-bool DateTime::IsNumber(const char * s)
+bool DateTime::IsNumber(const char * s) const
 {
     for(size_t i = 0; i < strlen(s); ++i)
     {

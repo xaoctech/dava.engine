@@ -7,7 +7,7 @@ import java.util.Locale;
 public class JNIDateTime {
 	final static String TAG = "JNIDateTime";
 
-	public static String GetTimeAsString( final String format,final String countryCode, long timeStamp, int timeZoneOffset)
+	public static String GetTimeAsString(final String format,final String countryCode, long timeStamp, int timeZoneOffset)
 	{
         TimeZone tz = TimeZone.getTimeZone("");
         tz.setRawOffset(timeZoneOffset*1000);
