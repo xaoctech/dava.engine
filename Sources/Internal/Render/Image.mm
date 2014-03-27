@@ -89,7 +89,7 @@ bool Image::Save(const FilePath &path) const
     {
         _data = UIImagePNGRepresentation(image);
     }
-    else if (ext.compare(".jpeg") == 0)
+    else if (ext.compare(".jpeg") == 0 || ext.compare(".jpg") == 0)
     {
         _data = UIImageJPEGRepresentation(image, 1.0f);
     }
