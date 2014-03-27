@@ -50,7 +50,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	, rayIntersectCached(false)
 	, landIntersectCached(false)
 	, landIntersectCachedResult(false)
-	, drawMode(ST_COLL_DRAW_NOTHING)
+	, drawMode(ST_COLL_DRAW_OBJECTS_RAYTEST)
 	, curLandscapeEntity(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -78,10 +78,17 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
     
     objectsDebugDrawer->SetRenderState(renderState);
     landDebugDrawer->SetRenderState(renderState);
+
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
 }
 
 SceneCollisionSystem::~SceneCollisionSystem()
 {
+	if(GetScene())
+	{
+		GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::SWITCH_CHANGED);
+	}
+
 	QMapIterator<DAVA::Entity*, CollisionBaseObject*> i(entityToCollision);
 	while(i.hasNext())
 	{
@@ -109,7 +116,7 @@ void SceneCollisionSystem::SetDrawMode(int mode)
 	drawMode = mode;
 }
 
-int SceneCollisionSystem::GetDebugDrawFlags()
+int SceneCollisionSystem::GetDrawMode()
 {
 	return drawMode;
 }
@@ -174,13 +181,11 @@ const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &fro
 
 const EntityGroup* SceneCollisionSystem::ObjectsRayTestFromCamera()
 {
-	SceneCameraSystem *cameraSystem	= ((SceneEditor2 *) GetScene())->cameraSystem;
+    DAVA::Vector3 traceFrom;
+    DAVA::Vector3 traceTo;
 
-	DAVA::Vector3 camPos = cameraSystem->GetCameraPosition();
-	DAVA::Vector3 camDir = cameraSystem->GetPointDirection(lastMousePos);
-
-	DAVA::Vector3 traceFrom = camPos;
-	DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
+    SceneCameraSystem *cameraSystem = ((SceneEditor2 *) GetScene())->cameraSystem;
+    cameraSystem->GetRayTo2dPoint(lastMousePos, 1000.0f, traceFrom, traceTo);
 
 	return ObjectsRayTest(traceFrom, traceTo);
 }
@@ -252,15 +257,6 @@ DAVA::Landscape* SceneCollisionSystem::GetLandscape() const
 
 void SceneCollisionSystem::UpdateCollisionObject(DAVA::Entity *entity)
 {
-	if(NULL != entity)
-	{
-		// make sure that WorldTransform is up to date
-		if(NULL != entity->GetScene())
-		{
-			entity->GetScene()->transformSystem->Process(.001f);
-		}
-	}
-
 	RemoveEntity(entity);
 	AddEntity(entity);
 }
@@ -438,6 +434,14 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 	}
 }
 
+void SceneCollisionSystem::ImmediateEvent(DAVA::Entity * entity, DAVA::uint32 event)
+{
+    if(EventSystem::SWITCH_CHANGED == event)
+    {
+        UpdateCollisionObject(entity);
+    }
+}
+
 void SceneCollisionSystem::AddEntity(DAVA::Entity * entity)
 {
 	if(NULL != entity)
@@ -495,7 +499,9 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj &&
 		NULL != renderObject && entity->IsLodMain(0))
 	{
-		cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+        RenderObject::eType objType = renderObject->GetType();
+        if (objType!=RenderObject::TYPE_SPRITE) 
+		    cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
 	}
 
 	DAVA::Camera *camera = DAVA::GetCamera(entity);

@@ -698,11 +698,10 @@ void UIButtonMetadata::SetTextAlign(int align)
         return;
     }
 	
-    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(GetActiveStateIndex());
-    if (buttonText)
-    {
-        buttonText->SetTextAlign(align);
-    }
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+		GetActiveUIButton()->SetStateTextAlign(this->uiControlStates[i], align);
+	}
 
 	UpdatePropertyDirtyFlagForTextAlign();
 }
@@ -768,12 +767,7 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
             UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
             button->SetStateFont(state, EditorFontManager::Instance()->GetDefaultFont());
             button->SetStateText(state, controlText);
-
-            UIStaticText* staticText = button->GetStateTextControl(state);
-            if (staticText)
-            {
-                staticText->SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
-            }
+            button->SetStateTextAlign(state, ALIGN_HCENTER | ALIGN_VCENTER);
 
             // Button is state-aware.
             activeNode->GetExtraData().SetLocalizationKey(controlText, state);
@@ -831,12 +825,18 @@ void UIButtonMetadata::SetFittingType(int value)
         return;
     }
 
-    UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(uiControlStates[GetActiveStateIndex()]);
-    if (buttonText)
-    {
-        buttonText->SetFittingOption(value);
+    for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+	{
+        UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
+        if (buttonText)
+        {
+            // Changing Fitting Option affects the font which might be reused
+            // by other controls, so clone the existing one.
+            CloneFont(buttonText);
+            buttonText->SetFittingOption(value);
+        }
     }
-    
+
     UpdatePropertyDirtyFlagForFittingType();
 }
 

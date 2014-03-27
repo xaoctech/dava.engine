@@ -128,6 +128,12 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 		
 		ResetSelectedControl();
 		this->activeScreen = (HierarchyTreeScreenNode*)activeScreen;
+
+        if (this->activeScreen)
+        {
+            this->activeScreen->SetStickMode(stickMode);
+        }
+
 		emit SelectedScreenChanged(this->activeScreen);
 	}
 	if (updateLibrary)
@@ -156,21 +162,6 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	
 	//add selection
 	InsertSelectedControlToList(control);
-	UIControl* uiControl = control->GetUIObject();
-	if (uiControl)
-	{
-		uiControl->SetDebugDraw(true);
-		uiControl->SetDrawPivotPointMode(UIControl::DRAW_ONLY_IF_NONZERO);
-		uiControl->SetDebugDrawColor(Color(1.f, 0, 0, 1.f));
-	
-		//YZ draw parent rect
-		UIControl* parentUiControl = uiControl->GetParent();
-		if (parentUiControl)
-		{
-			parentUiControl->SetDebugDrawColor(Color(0.55f, 0.55f, 0.55f, 1.f));
-			parentUiControl->SetDebugDraw(true);
-		}
-	}
 	
 	emit AddSelectedControl(control);
 	emit SelectedControlNodesChanged(activeControlNodes);
@@ -261,7 +252,8 @@ void HierarchyTreeController::Clear()
 {
 	activePlatform = NULL;
     activeScreen = NULL;
-	
+    stickMode = (int32)NotSticked;
+
 	ResetSelectedControl();
 	CleanupNodesDeletedFromScene();
 }
@@ -757,4 +749,13 @@ void HierarchyTreeController::DisablePreview()
     activeScreen->GetScreen()->SetSize(activePlatform->GetSize());
     
     emit SelectedScreenChanged(activeScreen);
+}
+
+void HierarchyTreeController::SetStickMode(int32 mode)
+{
+    stickMode = mode;
+    if (activeScreen)
+    {
+        activeScreen->SetStickMode(mode);
+    }
 }

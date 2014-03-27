@@ -125,6 +125,7 @@ public slots:
 	void OnSceneLightMode();
 
 	void OnCubemapEditor();
+    void OnImageSplitter();
 	
 	void OnAddLandscape();
     void OnAddSkybox();
@@ -135,8 +136,8 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
-    void OnEditor2DCameraDialog();
-    void OnEditorSpriteDialog();
+    void On2DCameraDialog();
+    void On2DSpriteDialog();
 	void OnAddEntityFromSceneTree();
 	
 	void OnShowGeneralSettings();
@@ -187,6 +188,10 @@ public slots:
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
 
+    void OnReloadShaders();
+
+    void OnSwitchWithDifferentLODs(bool checked);
+    
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);

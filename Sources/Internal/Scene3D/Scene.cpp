@@ -657,8 +657,6 @@ void Scene::Update(float timeElapsed)
     
     staticOcclusionSystem->SetCamera(clipCamera);
     staticOcclusionSystem->Process(timeElapsed);
-    
-	updatableSystem->UpdatePreTransform(timeElapsed);
 
 	updatableSystem->UpdatePreTransform(timeElapsed);
     transformSystem->Process(timeElapsed);
@@ -768,6 +766,16 @@ void Scene::Draw()
 	//image->Save("img.png");
 	//RenderManager::Instance()->RestoreRenderTarget();
 }
+    
+void Scene::SceneDidLoaded()
+{
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        systems[k]->SceneDidLoaded();
+    }
+}
+
 
 	
 // void Scene::StopAllAnimations(bool recursive )

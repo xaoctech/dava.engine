@@ -47,6 +47,7 @@ namespace DAVA
 	{
 		parent = NULL;
 		controlState = STATE_NORMAL;
+        recursiveVisible = true;
 		visible = true;
 		visibleForUIEditor = true;
 		/* 
@@ -56,6 +57,7 @@ namespace DAVA
 		 */
 		inputEnabled = true; 
         inputProcessorsCount = 1;
+        focusEnabled = true;
 		
 		background = new UIControlBackground();
 		needToRecalcFromAbsoluteCoordinates = false;
@@ -125,10 +127,6 @@ namespace DAVA
         {
             parent->UnregisterInputProcessors(inputProcessorsCount);
         }
-		if (!newParent && parent)
-		{
-            UIControlSystem::Instance()->CancelInputs(this);
-		}
 		parent = newParent;
 		if(parent && needToRecalcFromAbsoluteCoordinates)
 		{
@@ -946,6 +944,38 @@ namespace DAVA
 		}
 	}
 
+    bool UIControl::GetRecursiveVisible() const
+    {
+        return recursiveVisible;
+    }
+
+    void UIControl::SetRecursiveVisible(bool isVisible)
+    {
+        if (recursiveVisible == isVisible)
+            return;
+
+        bool onScreen = IsOnScreen();
+        if (!onScreen)
+        {
+            if (isVisible) SystemWillAppear();
+        }
+        else
+        {
+            if (!isVisible) SystemWillDisappear();
+        }
+
+        recursiveVisible = isVisible;
+
+        if (!onScreen)
+        {
+            if (isVisible) SystemDidAppear();
+        }
+        else
+        {
+            if(!isVisible) SystemDidDisappear();
+        }
+    }
+
 	void UIControl::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
 	{
 		visibleForUIEditor = value;
@@ -987,6 +1017,17 @@ namespace DAVA
 			}
 		}
 	}
+    
+    bool UIControl::GetFocusEnabled() const
+    {
+        return focusEnabled;
+    }
+    
+	void UIControl::SetFocusEnabled(bool isEnabled)
+    {
+        focusEnabled = isEnabled;
+    }
+
 	
 	bool UIControl::GetDisabled() const
 	{
@@ -1081,7 +1122,6 @@ namespace DAVA
 			control->SystemWillAppear();
 		}
 		control->isUpdated = false;
-//		control->WillAppear();
 		control->SetParent(this);
 		childs.push_back(control);
 		if(onScreen)
@@ -1329,6 +1369,7 @@ namespace DAVA
 		needToRecalcFromAbsoluteCoordinates = srcControl->needToRecalcFromAbsoluteCoordinates;
 
 		controlState = srcControl->controlState;
+        recursiveVisible = srcControl->recursiveVisible;
 		visible = srcControl->visible;
 		visibleForUIEditor = srcControl->visibleForUIEditor;
 		inputEnabled = srcControl->inputEnabled;
@@ -1373,16 +1414,16 @@ namespace DAVA
 	
     bool UIControl::IsOnScreen() const
     {
-		if(parent)
-		{
-			return parent->IsOnScreen();
-		}
-		
-		if(UIControlSystem::Instance()->GetScreen() == this || UIControlSystem::Instance()->GetPopupContainer() == this)
-		{
-			return true;
-		}
-		return false;
+        if(UIControlSystem::Instance()->GetScreen() == this ||
+           UIControlSystem::Instance()->GetPopupContainer() == this)
+        {
+            return GetRecursiveVisible();
+        }
+
+        if( !GetRecursiveVisible() || !parent )
+            return false;
+
+		return parent->IsOnScreen();
 	}
 
 
@@ -1416,6 +1457,10 @@ namespace DAVA
         if (UIControlSystem::Instance()->GetFocusedControl() == this) 
         {
             UIControlSystem::Instance()->SetFocusedControl(NULL, true);
+        }
+        if (GetInputEnabled())
+        {
+            UIControlSystem::Instance()->CancelInputs(this, false);
         }
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -1559,6 +1604,9 @@ namespace DAVA
 
 	void UIControl::SystemDraw(const UIGeometricData &geometricData)
 	{
+        if( !recursiveVisible )
+            return;
+
         UIControlSystem::Instance()->drawCounter++;
 		UIGeometricData drawData;
 		drawData.position = relativePosition;
@@ -1896,7 +1944,7 @@ namespace DAVA
 #endif
 								if (IsPointInside(currentInput->point, true))
 								{
-                                    if (UIControlSystem::Instance()->GetFocusedControl() != this) 
+                                    if (UIControlSystem::Instance()->GetFocusedControl() != this && focusEnabled)
                                     {
                                         UIControlSystem::Instance()->SetFocusedControl(this, false);
                                     }
@@ -1943,6 +1991,10 @@ namespace DAVA
 	{
         UIControlSystem::Instance()->inputCounter++;
 		isUpdated = true;
+
+        if( !recursiveVisible )
+            return false;
+
 		//if(currentInput->touchLocker != this)
 		{
 			if(clipContents 
@@ -2083,6 +2135,11 @@ namespace DAVA
 
 		// Control name
 		//node->Set("name", this->GetName());
+        // Recursive Visible
+        if (baseControl->GetRecursiveVisible() != GetRecursiveVisible())
+        {
+            node->Set("recursiveVisible", GetRecursiveVisible());
+        }
 		// Visible
 		if (baseControl->GetVisible() != this->GetVisible())
 		{
@@ -2333,6 +2390,13 @@ namespace DAVA
 			bool clipContents = loader->GetBoolFromYamlNode(clipNode, false); 
 			SetClipContents(clipContents);
 		}
+
+        const YamlNode * recursiveVisibleNode = node->Get("recursiveVisible");
+        if(recursiveVisibleNode)
+        {
+            bool isVisible = loader->GetBoolFromYamlNode(recursiveVisibleNode, true);
+            SetRecursiveVisible(isVisible);
+        }
 		
 		const YamlNode * visibleNode = node->Get("visible");
 		if(visibleNode)
@@ -2811,11 +2875,6 @@ namespace DAVA
 		return position;
 	}
 
-	float32 UIControl::Round(float32 value)
-	{
-		return (float32)((value > 0.0) ? floor(value+ 0.5) : ceil(value - 0.5));
-	}
-	
 	void UIControl::RecalculatePivotPoint(const Rect &newRect)
 	{
 		Rect oldRect = this->GetRect();
@@ -2940,5 +2999,4 @@ namespace DAVA
             (*it)->DumpInputs(depthLevel + 1);
         }
     }
-
 }

@@ -45,7 +45,8 @@ UIScrollView::UIScrollView(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 	scrollHorizontal(new ScrollHelper()),
 	scrollVertical(new ScrollHelper())
 {
-    SetInputEnabled(true, false);
+    SetInputEnabled(false, false);
+    SetFocusEnabled(false);
 	multiInput = true;
 	SetClipContents(true);
 	
@@ -477,6 +478,22 @@ void UIScrollView::SetScrollPosition(const Vector2& pos)
 {
     SetHorizontalScrollPosition(pos.x);
     SetVerticalScrollPosition(pos.y);
+}
+
+void UIScrollView::ScrollToHorizontalPosition( float32 horzPos, float32 timeSec )
+{
+    scrollHorizontal->ScrollToPosition(horzPos, timeSec);
+}
+
+void UIScrollView::ScrollToVerticalPosition( float32 vertPos, float32 timeSec )
+{
+    scrollVertical->ScrollToPosition(vertPos, timeSec);
+}
+
+void UIScrollView::ScrollToPosition( const Vector2& pos, float32 timeSec )
+{
+    scrollHorizontal->ScrollToPosition(pos.x, timeSec);
+    scrollVertical->ScrollToPosition(pos.y, timeSec);
 }
 
 };

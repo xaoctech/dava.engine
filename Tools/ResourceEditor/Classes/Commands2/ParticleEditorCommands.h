@@ -169,8 +169,8 @@ class CommandUpdateEmitter: public CommandAction
 {
 public:
 	CommandUpdateEmitter(ParticleEmitter* emitter);
-	void Init(const String& name,
-			  const Vector3& position,
+
+	void Init(const FastName& name,
 			  ParticleEmitter::eType emitterType,
 			  RefPtr<PropertyLine<float32> > emissionRange,
 			  RefPtr<PropertyLine<Vector3> > emissionVector,
@@ -185,8 +185,8 @@ public:
 	virtual void Redo();
 
 protected:
-	String name;
-	Vector3 position;
+
+	FastName name;
 	ParticleEmitter* emitter;
 
 	ParticleEmitter::eType emitterType;
@@ -197,6 +197,18 @@ protected:
 	RefPtr<PropertyLine<Vector3> > size;
 	float32 life;	
 	bool isShortEffect;
+};
+
+class CommandUpdateEmitterPosition: public CommandAction
+{
+public:
+    CommandUpdateEmitterPosition(ParticleEffectComponent *effect, ParticleEmitter* emitter);
+    void Init(const Vector3& position);            
+    virtual void Redo();
+protected:    
+    ParticleEmitter* emitter;
+    ParticleEffectComponent *effect;
+    Vector3 position;
 };
 
 class CommandUpdateParticleLayerBase : public CommandAction
