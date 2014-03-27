@@ -64,7 +64,7 @@ protected:
     void RemoveEditorNodes(Entity *rootNode);
     void RemoveEditorCustomProperties(Entity *rootNode);
     
-    void ExportDescriptors(Scene *scene, Set<String> &errorLog);
+    void ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
     bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
     bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
     void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);

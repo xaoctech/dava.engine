@@ -249,13 +249,13 @@
      <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
+     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
      <addaction name="separator"/>
-     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
@@ -738,6 +738,12 @@
   <widget class="QToolBar" name="testingToolBar">
    <property name="windowTitle">
     <string>Testing Toolbar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -1739,7 +1745,7 @@
      <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
    </property>
    <property name="text">
-    <string>Editor 2D Camera</string>
+    <string>Camera 2D</string>
    </property>
   </action>
   <action name="actionAddLandscape">
