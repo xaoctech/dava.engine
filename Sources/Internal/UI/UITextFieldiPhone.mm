@@ -97,6 +97,8 @@ float GetUITextViewSizeDivider()
 		textField.delegate = self;
 		
 		[self setupTraits];
+        
+        textField.userInteractionEnabled = NO;
 		
 		// Attach to "keyboard shown/keyboard hidden" notifications.
 		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -158,15 +160,20 @@ float GetUITextViewSizeDivider()
 	{
 		if (cppTextField->GetDelegate() != 0)
 		{
-			int length = [string length];
-			
 			DAVA::WideString repString;
+            const char * cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
+            DAVA::UTF8Utils::EncodeToWideString((DAVA::uint8*)cstr, strlen(cstr), repString);
+            // TODO convert range?
+            
+            /*
+            int length = [string length];
 			repString.resize(length); 
 			for (int i = 0; i < length; i++) 
 			{
 				unichar uchar = [string characterAtIndex:i];
 				repString[i] = (wchar_t)uchar;
 			}
+             */
 			return cppTextField->GetDelegate()->TextFieldKeyPressed(cppTextField, range.location, range.length, repString);
 		}
 	}
@@ -586,12 +593,14 @@ namespace DAVA
     void UITextFieldiPhone::OpenKeyboard()
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        textFieldHolder->textField.userInteractionEnabled = YES;
         [textFieldHolder->textField becomeFirstResponder];
     }
     
     void UITextFieldiPhone::CloseKeyboard()
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        textFieldHolder->textField.userInteractionEnabled = NO;
         [textFieldHolder->textField resignFirstResponder];
     }
     
@@ -632,14 +641,21 @@ namespace DAVA
     void UITextFieldiPhone::GetText(std::wstring & string) const
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+        
+        const char * cstr = [textFieldHolder->textField.text cStringUsingEncoding:NSUTF8StringEncoding];
+        DAVA::UTF8Utils::EncodeToWideString((DAVA::uint8*)cstr, strlen(cstr), string);
+        
+        /*
         int length = [textFieldHolder->textField.text length];
 		
+
         string.resize(length); 
         for (int i = 0; i < length; i++) 
         {
             unichar uchar = [textFieldHolder->textField.text characterAtIndex:i];
             string[i] = (wchar_t)uchar;
         }
+         */
     }
 
 	void UITextFieldiPhone::SetIsPassword(bool isPassword)

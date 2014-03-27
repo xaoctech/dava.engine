@@ -32,6 +32,7 @@
 #include "ResourcesManageHelper.h"
 #include "UIControlStateHelper.h"
 #include "SpritesHelper.h"
+#include "errorsListDialog.h"
 
 ReloadSpritesCommand::ReloadSpritesCommand(const HierarchyTreeNode* node) :
     rootNode(node)
@@ -51,6 +52,7 @@ void ReloadSpritesCommand::RepackSprites()
                            ResourcesManageHelper::GetSpritesDirectory().toStdString());
     
     resPacker->PackResources(GPU_UNKNOWN);
+	ShowErrorMessage(resPacker->GetErrors());
     
 	SafeDelete(resPacker);
 }
@@ -62,4 +64,14 @@ void ReloadSpritesCommand::ReloadSprites()
     {
         (*iter)->Reload();
     }
+}
+
+void ReloadSpritesCommand::ShowErrorMessage(const Set<String>& errorsSet)
+{
+	if (!errorsSet.empty())
+	{
+		ErrorsListDialog errorsDialog;
+		errorsDialog.InitializeErrorsList(errorsSet);
+		errorsDialog.exec();
+	}
 }

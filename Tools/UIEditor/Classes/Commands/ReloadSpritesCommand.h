@@ -49,6 +49,8 @@ protected:
 
 private:
     const HierarchyTreeNode* rootNode;
+	
+	void ShowErrorMessage(const Set<String>& errorsSet);
 };
 
 #endif /* defined(__RELOADSPRITESCOMMAND__H__) */

@@ -46,8 +46,9 @@ public:
 		
 	// Open the URL.
 	void OpenURL(const String& urlToOpen);
-	void CancelLoading(const String& urlToOpen);
-
+    
+    void OpenFromBuffer(const String& string, const FilePath& basePath);
+    
 	// Overloaded virtual methods.
 	virtual void WillAppear();
 	virtual void WillDisappear();
@@ -65,7 +66,6 @@ public:
 	void SetGestures(bool value);
 
 protected:
-
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
 };

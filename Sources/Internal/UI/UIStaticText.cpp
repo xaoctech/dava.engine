@@ -48,13 +48,13 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
 {
     SetInputEnabled(false, false);
 	textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
-	background->SetAlign(ALIGN_TOP|ALIGN_LEFT);
+	background->SetAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 	background->SetPerPixelAccuracyType(UIControlBackground::PER_PIXEL_ACCURACY_ENABLED);
 
 	shadowBg = new UIControlBackground();
 	textBg = new UIControlBackground();
 	textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
-	textBlock->SetAlign(ALIGN_TOP|ALIGN_LEFT);
+    SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 }
 
 UIStaticText::~UIStaticText()
@@ -243,6 +243,7 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 	const YamlNode * textColorNode = node->Get("textcolor");
 	const YamlNode * shadowColorNode = node->Get("shadowcolor");
 	const YamlNode * shadowOffsetNode = node->Get("shadowoffset");
+	const YamlNode * textAlignNode = node->Get("textalign");
 
 	if (fontNode)
 	{
@@ -280,8 +281,10 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
 		SetShadowOffset(shadowOffsetNode->AsVector2());
 	}
 
-	const YamlNode * alignNode = node->Get("textalign");
-	SetTextAlign(loader->GetAlignFromYamlNode(alignNode)); // NULL is also OK here.
+    if (textAlignNode)
+    {
+        SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
+    }
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
@@ -341,12 +344,18 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 	{
         node->SetNodeToMap("fitting", loader->GetFittingOptionNodeValue(textBlock->GetFittingOption()));
 	}
-    
-	// Align
-	node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+
+	// Text Align
+    if (baseControl->GetTextAlign() != this->GetTextAlign())
+    {
+        node->SetNodeToMap("textalign", loader->GetAlignNodeValue(this->GetTextAlign()));
+    }
 
 	// Draw type. Must be overriden for UITextControls.
-	node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
+    if (baseControl->GetBackground()->GetDrawType() != this->GetBackground()->GetDrawType())
+    {
+        node->Set("drawType", loader->GetDrawTypeNodeValue(this->GetBackground()->GetDrawType()));
+    }
 
     SafeDelete(nodeValue);
 	SafeRelease(baseControl);
@@ -354,7 +363,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     return node;
 }
 
-Animation * UIStaticText::ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
+Animation * UIStaticText::TextColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
 {
 	LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &textColor, finalColor, time, interpolationFunc);
 	animation->Start(track);
