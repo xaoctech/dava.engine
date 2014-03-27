@@ -678,6 +678,25 @@ void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 	HWglBindFBO(renderTarget->fboID);
 	//RemoveClip();
 }
+
+
+void RenderManager::DiscardFramebufferHW(uint32 attachments)
+{
+#ifdef __DAVAENGINE_IPHONE__
+    if (!attachments) 
+      return;
+    GLenum discards[3];
+    int32 discardsCount=0;
+    if (attachments&&COLOR_ATTACHMENT)
+        discards[discardsCount++]=GL_COLOR_ATTACHMENT0;
+    if (attachments&&DEPTH_ATTACHMENT)
+        discards[discardsCount++]=GL_DEPTH_ATTACHMENT;
+    if (attachments&&STENCIL_ATTACHMENT)
+        discards[discardsCount++]=GL_STENCIL_ATTACHMENT;
+    glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards);
+#endif
+}
+
 #if 0
 void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
 {
