@@ -38,86 +38,10 @@
 static char *days[] = { "sun","mon","tue","wed","thu","fri","sat" };
 static char *months[] = { "jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec" };
 
-inline bool IsLeap(DAVA::int32 year)
-{
-    DVASSERT(year >= 1970);
-    if(year % 400 == 0)
-        return true;
-    if(year % 100 == 0)
-        return false;
-    if(year % 4 == 0)
-        return true;
-    return false;
-}
-inline DAVA::int32 DaysFrom0(DAVA::int32 year)
-{
-    DVASSERT(year >= 1970);
-    year--;
-    return 365 * year + (year / 400) - (year/100) + (year / 4);
-}
-inline DAVA::int32 DaysFrom1970(DAVA::int32 year)
-{
-    DVASSERT(year >= 1970);
-    static const int daysFrom0To1970 = DaysFrom0(1970);
-    return DaysFrom0(year) - daysFrom0To1970;
-}
-inline DAVA::int32 DaysFrom1jan(DAVA::int32 year,DAVA::int32 month,DAVA::int32 day)
-{
-    DVASSERT(year >= 1970 && month >= 0 && month <= 12 && day >=0 && day <= 31 );
-    static const DAVA::int32 days[2][12] =
-    {
-        { 0,31,59,90,120,151,181,212,243,273,304,334},
-        { 0,31,60,91,121,152,182,213,244,274,305,335}
-    };
-    DAVA::int32 rowNumberToSelect = IsLeap(year) ? 1 : 0;
-    return days[rowNumberToSelect][month-1] + day - 1;
-}
-
-// calc time_t by hand to get time stamp in utc(system function
-// returns it with local timezone shift only )
-// code from http://stackoverflow.com/questions/16647819/timegm-cross-platform
-/*DAVA::Timestamp InternalTimeGm(std::tm const *t)
-{
-    int year = t->tm_year + 1900;
-    int month = t->tm_mon;
-    if(month > 11)
-    {
-        year += month/12;
-        month %= 12;
-    }
-    else if(month < 0)
-    {
-        int yearsDiff = (-month + 11)/12;
-        year -= yearsDiff;
-        month+=12 * yearsDiff;
-    }
-    month++;
-    int day = t->tm_mday;
-    int dayOfYear = DaysFrom1jan(year,month,day);
-    int daysSinceEpoch = DaysFrom1970(year) + dayOfYear;
-    
-    DAVA::Timestamp secondsInDay = 3600 * 24;
-    DAVA::Timestamp result = secondsInDay * daysSinceEpoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
-    
-    return result;
-}*/
-
-bool IsNumber(const char * s)
-{
-    for(size_t i = 0; i < strlen(s); ++i)
-    {
-        if (s[i] >= '0' && s[i] <= '9')
-        {
-            continue;
-        }
-        return false;
-    }
-    
-    return true;
-}
 
 namespace DAVA
 {
+    
 DateTime::DateTime(Timestamp timeStamp, int32 _timeZoneOffset):
 innerTime(timeStamp),
 timeZoneOffset(_timeZoneOffset)
@@ -637,10 +561,90 @@ bool DateTime::ParseRFC822Date(const DAVA::String& src)
     t.tm_hour = hour;
     t.tm_min = minute;
     t.tm_sec = seconds;
-    innerTime = internal_timegm(&t);
     timeZoneOffset = adjustment * 60;
-    innerTime = InternalTimeGm(&t);
+    innerTime = InternalTimeGm(&t) - timeZoneOffset;
     UpdateLocalTimeStructure();
+    return true;
+}
+    
+inline bool DateTime::IsLeap(DAVA::int32 year)
+{
+    DVASSERT(year >= 1970);
+    if(year % 400 == 0)
+        return true;
+    if(year % 100 == 0)
+        return false;
+    if(year % 4 == 0)
+        return true;
+    return false;
+}
+
+inline DAVA::int32 DateTime::DaysFrom0(DAVA::int32 year)
+{
+    DVASSERT(year >= 1970);
+    year--;
+    return 365 * year + (year / 400) - (year/100) + (year / 4);
+}
+
+inline DAVA::int32 DateTime::DaysFrom1970(DAVA::int32 year)
+{
+    DVASSERT(year >= 1970);
+    static const int daysFrom0To1970 = DaysFrom0(1970);
+    return DaysFrom0(year) - daysFrom0To1970;
+}
+
+inline DAVA::int32 DateTime::DaysFrom1jan(DAVA::int32 year,DAVA::int32 month,DAVA::int32 day)
+{
+    DVASSERT(year >= 1970 && month >= 0 && month <= 12 && day >=0 && day <= 31 );
+    static const DAVA::int32 days[2][12] =
+    {
+        { 0,31,59,90,120,151,181,212,243,273,304,334},
+        { 0,31,60,91,121,152,182,213,244,274,305,335}
+    };
+    DAVA::int32 rowNumberToSelect = IsLeap(year) ? 1 : 0;
+    return days[rowNumberToSelect][month-1] + day - 1;
+}
+
+// calc time_t by hand to get time stamp in utc(system function
+// returns it with local timezone shift only )
+// code from http://stackoverflow.com/questions/16647819/timegm-cross-platform
+DAVA::Timestamp DateTime::InternalTimeGm(std::tm const *t)
+{
+    int year = t->tm_year + 1900;
+    int month = t->tm_mon;
+    if(month > 11)
+    {
+        year += month/12;
+        month %= 12;
+    }
+    else if(month < 0)
+    {
+        int yearsDiff = (-month + 11)/12;
+        year -= yearsDiff;
+        month+=12 * yearsDiff;
+    }
+    month++;
+    int day = t->tm_mday;
+    int dayOfYear = DaysFrom1jan(year,month,day);
+    int daysSinceEpoch = DaysFrom1970(year) + dayOfYear;
+    
+    DAVA::Timestamp secondsInDay = 3600 * 24;
+    DAVA::Timestamp result = secondsInDay * daysSinceEpoch + 3600 * t->tm_hour + 60 * t->tm_min + t->tm_sec;
+    
+    return result;
+}
+
+bool DateTime::IsNumber(const char * s)
+{
+    for(size_t i = 0; i < strlen(s); ++i)
+    {
+        if (s[i] >= '0' && s[i] <= '9')
+        {
+            continue;
+        }
+        return false;
+    }
+    
     return true;
 }
 };
