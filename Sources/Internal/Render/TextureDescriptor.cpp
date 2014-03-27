@@ -61,7 +61,7 @@ bool TextureDescriptor::TextureSettings::GetGenerateMipMaps() const
     return (OPTION_GENERATE_MIP_MAPS & optionsFlags) != 0;
 }
 
-uint32 TextureDescriptor::TextureSettings::GetAsNormalMap() const
+bool TextureDescriptor::TextureSettings::GetIsNormalMap() const
 {
     return (OPTION_AS_NORMAL_MAP & optionsFlags) != 0;
 }
@@ -74,7 +74,7 @@ void TextureDescriptor::TextureSettings::SetGenerateMipmaps(bool generateMipmaps
         optionsFlags &= ~OPTION_GENERATE_MIP_MAPS;
 }
 
-void TextureDescriptor::TextureSettings::SetAsNormalMap(uint32 asNormalMap)
+void TextureDescriptor::TextureSettings::SetIsNormalMap(bool asNormalMap)
 {
     if(asNormalMap)
         optionsFlags |= OPTION_AS_NORMAL_MAP;

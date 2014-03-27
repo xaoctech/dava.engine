@@ -56,7 +56,7 @@ namespace DAVA
 			Logger::FrameworkDebug("Starting PVR (%s) conversion (%s)...",
 							   GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor.compression[gpuFamily].format), descriptor.pathname.GetAbsolutePathname().c_str());
 			
-            if(descriptor.settings.GetAsNormalMap())
+            if(descriptor.settings.GetIsNormalMap())
             {
                 outputPath = PVRConverter::Instance()->ConvertNormalMapPngToPvr(descriptor, gpuFamily, quality);
             }

@@ -497,7 +497,7 @@ void Texture::GenerateMipmapsInternal(BaseObject * caller, void * param, void *c
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 		
     Image * image0 = CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    Vector<Image *> images = image0->CreateMipMapsImages(texDescriptor->settings.GetAsNormalMap());
+    Vector<Image *> images = image0->CreateMipMapsImages(texDescriptor->settings.GetIsNormalMap());
     SafeRelease(image0);
 
     for(uint32 i = 1; i < (uint32)images.size(); ++i)
@@ -624,7 +624,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
         if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->settings.GetGenerateMipMaps())
         {
             Image * img = *images->begin();
-            *images = img->CreateMipMapsImages(texDescriptor->settings.GetAsNormalMap());
+            *images = img->CreateMipMapsImages(texDescriptor->settings.GetIsNormalMap());
             SafeRelease(img);
         }
     }
