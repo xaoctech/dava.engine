@@ -75,27 +75,10 @@ void ScreenControl::Draw( const UIGeometricData &geometricData )
 
     UIGeometricData backGd;
     backGd.scale = Vector2(1.0f, 1.0f);
-
-    if (pos.x > 0)
-    {
-        backGd.position.x = pos.x * scale.x;
-        backGd.size.x = size.x * scale.x;
-    }
-    else
-    {
-        backGd.size.x = DAVA::Core::Instance()->GetVirtualScreenWidth();
-    }
-
-    if (pos.y > 0)
-    {
-        backGd.position.y = pos.y * scale.y;
-        backGd.size.y = size.y *scale.y;
-    }
-    else
-    {
-        backGd.size.y = DAVA::Core::Instance()->GetVirtualScreenHeight();
-    }
-
+	backGd.position.x = pos.x * scale.x;
+    backGd.size.x = size.x * scale.x;
+    backGd.position.y = pos.y * scale.y;
+    backGd.size.y = size.y * scale.y;
     backGd.AddToGeometricData(geometricData);
     chequeredBackground->Draw(backGd);
 

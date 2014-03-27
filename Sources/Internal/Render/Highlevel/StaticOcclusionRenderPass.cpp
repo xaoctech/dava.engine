@@ -34,40 +34,6 @@
 
 namespace DAVA
 {
-    
-StaticOcclusionRenderLayer::StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * _occlusion, RenderLayerID id)
-    : RenderLayer(name, sortingFlags, id)
-    , occlusion(_occlusion)
-{
-    
-}
-StaticOcclusionRenderLayer::~StaticOcclusionRenderLayer()
-{
-    
-}
-
-void StaticOcclusionRenderLayer::Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray)
-{
-    renderLayerBatchArray->Sort(camera);
-    uint32 size = (uint32)renderLayerBatchArray->GetRenderBatchCount();
-    
-    OcclusionQueryManager & manager = occlusion->GetOcclusionQueryManager();
-    
-    for (uint32 k = 0; k < size; ++k)
-    {
-        OcclusionQueryManagerHandle handle = manager.CreateQueryObject();
-        OcclusionQuery & query = manager.Get(handle);
-        
-        RenderBatch * batch = renderLayerBatchArray->Get(k);
-        
-        query.BeginQuery();
-        batch->Draw(ownerRenderPass, camera);
-        query.EndQuery();
-        
-        occlusion->RecordFrameQuery(batch, handle);
-    }
-    //Logger::FrameworkDebug(Format("Pass: %s Layer: %s - objects: %d", ownerRenderPass.c_str(), name.c_str(), size));
-}
 
 StaticOcclusionRenderPass::StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * _occlusion, RenderPassID id)
     : RenderPass(rs, name, id)
@@ -161,7 +127,5 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * ren
         occlusion->RecordFrameQuery(batch, handle);
     }
 }
-
-
 
 };
