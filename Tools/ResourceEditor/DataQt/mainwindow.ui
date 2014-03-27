@@ -366,16 +366,6 @@
     <addaction name="separator"/>
     <addaction name="actionOnSceneSelection"/>
    </widget>
-   <widget class="QMenu" name="menuComponent">
-    <property name="title">
-     <string>Component</string>
-    </property>
-    <addaction name="actionAddNewComponent"/>
-    <addaction name="separator"/>
-    <addaction name="actionAddActionComponent"/>
-    <addaction name="actionAddQualitySettingsComponent"/>
-    <addaction name="actionAddStaticOcclusionComponent"/>
-   </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
@@ -455,7 +445,6 @@
    <addaction name="menuView"/>
    <addaction name="menuQuality"/>
    <addaction name="menuCreateNode"/>
-   <addaction name="menuComponent"/>
    <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
