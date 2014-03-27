@@ -205,6 +205,10 @@ void AutotestingSystem::SetUpConnectionToDB()
 	{
 		ForceQuit("Couldn't connect to Test DB");
 	}
+	else
+	{
+		isDB = true;
+	}
 
 	SafeRelease(option);
 }

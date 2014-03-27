@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="QtData">
@@ -213,6 +213,9 @@
     </Filter>
     <Filter Include="Classes\Qt\ImageSplitterDialog">
       <UniqueIdentifier>{4be62135-b0d0-44b6-bc2f-9a5d42461a85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\LicenceDialog">
+      <UniqueIdentifier>{c8c29a9c-afc6-4b9c-b487-3d322a66bf50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1938,6 +1941,12 @@
     <ClCompile Include="Classes\Qt\MaterialEditor\MaterialTemplateModel.cpp">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\LicenceDialog\LicenceDialog.cpp">
+      <Filter>Classes\Qt\LicenceDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\LicenceDialog\LicenceDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3374,9 +3383,6 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\QtPropertyDataValidator.h">
-      <Filter>QtGenerated</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\CacheRequest.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
@@ -3418,6 +3424,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialTemplateModel.h">
       <Filter>Classes\Qt\MaterialEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\LicenceDialog\LicenceDialog.h">
+      <Filter>Classes\Qt\LicenceDialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3461,6 +3470,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\ImageSplitter.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\LicenceDialog.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
