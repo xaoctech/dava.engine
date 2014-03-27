@@ -87,21 +87,13 @@ public:
     
     /// Represent data according to country code from localization system
     DAVA::WideString AsWString(const wchar_t* format) const;
-    
-   DAVA::Timestamp InternalTimeGm(std::tm *t)
-    {
-        /*tm test ={0};
-        time_t testTime = mktime(t);
-        GmTimeThreadSafe(&test, &testTime);
-        */
-        return mktime(t) + DateTime::GetLocalTimeZoneOffset();
-    }
-    
+   
 private:
     
     DateTime(Timestamp timeStamp, int32 timeZone);
     
     static void GmTimeThreadSafe( tm* resultGmTime, const time_t *unixTimestamp);
+    
     static void LocalTimeThreadSafe( tm* resultLocalTime, const time_t *unixTimestamp);
 
     static int32 GetLocalTimeZoneOffset();
@@ -110,10 +102,21 @@ private:
     
     void UpdateLocalTimeStructure();
     
+    inline bool IsLeap(int32 year);
+    
+    inline int32 DaysFrom1970(int32 year);
+    
+    inline int32 DaysFrom0(int32 year);
+    
+    inline int32 DaysFrom1jan(int32 year, int32 month, int32 day);
+    
+    Timestamp InternalTimeGm(std::tm const *t);
+    
+    bool IsNumber(const char * s);
+    
     Timestamp   innerTime;
     int32       timeZoneOffset;// offset in seconds
-    
-    tm   localTime;
+    tm          localTime;
 };
     
 int32 DateTime::GetTimeZoneOffset() const

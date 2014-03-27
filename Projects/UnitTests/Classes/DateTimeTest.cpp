@@ -77,17 +77,9 @@ void DateTimeTest::TestFunction(TestTemplate<DateTimeTest>::PerfFuncData *data)
     DAVA::DateTime localDate = DateTime::LocalTime(date.GetTimestamp());
     Logger::Debug("#LocalTime() for the timestamp of <1st of Feb 2001, 9:00:00> call:");
     PrintDateTimeContent(localDate);
-  
-   /* date.ParseISO8601Date("1979-07-20T21:55:15+02:00");
-    Logger::Debug("#Parcing of <1979-07-20T21:55:15+02:00>:");
-    PrintDateTimeContent(date);
     
-    date.ParseRFC822Date("Wed, 20 Jul 1979 21:36:45 +0200");
-    Logger::Debug("#Parcing of <Wed, 20 Jul 1979 21:36:45 +0200>:");
-    PrintDateTimeContent(date);*/
-    
-    date.ParseISO8601Date("1979-07-20T21:55:15-02:00");
-    Logger::Debug("#Parcing of <1979-07-20T21:55:15-02:00>:");
+    date.ParseISO8601Date("1970-01-01T05:00:00-03:00");
+    Logger::Debug("#Parcing of <1970-01-01T05:00:00-03:00>:");
     PrintDateTimeContent(date);
     
     date.ParseRFC822Date("Wed, 27 Sep 2006 21:36:45 +0100");
