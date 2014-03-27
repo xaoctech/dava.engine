@@ -181,7 +181,8 @@ public:
 	
 	virtual void	Update(float timeElapsed);
 	virtual void	Draw();
-	
+    virtual void    SceneDidLoaded();
+
 	
 	virtual void	SetupTestLighting();
 	

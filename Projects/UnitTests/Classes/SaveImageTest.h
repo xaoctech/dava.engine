@@ -25,54 +25,21 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
+#ifndef __SAVE_IMAGE_TEST_H__
+#define __SAVE_IMAGE_TEST_H__
 
-#ifndef __UIEditor__UIParticlesMetadata__
-#define __UIEditor__UIParticlesMetadata__
+#include "DAVAEngine.h"
+#include "TestTemplate.h"
 
-#include "UIControlMetadata.h"
-
-namespace DAVA {
-	
-// Metadata class for DAVA UIParticles.
-class UIParticlesMetadata : public UIControlMetadata
+class SaveImageTest: public TestTemplate<SaveImageTest>
 {
-    Q_OBJECT
-
-    Q_PROPERTY(QString EffectPath READ GetEffectPath WRITE SetEffectPath);
-    Q_PROPERTY(bool Autostart READ GetAutostart WRITE SetAutostart);
-    Q_PROPERTY(float StartDelay READ GetStartDelay WRITE SetStartDelay);
-
-    // Invokable methods to control UIParticlesControl
-    Q_INVOKABLE void Start();
-    Q_INVOKABLE void Stop();
-    Q_INVOKABLE void Pause();
-    Q_INVOKABLE void Restart();
-    Q_INVOKABLE void Reload();
-
 public:
-    UIParticlesMetadata(QObject* parent = 0);
-        
-protected:
-    UIParticles* GetActiveUIParticles() const;
-
-    // Getter/setters.
-    QString GetEffectPath() const;
-    void SetEffectPath(const QString& value);
+    SaveImageTest();
     
-    bool GetAutostart() const;
-    void SetAutostart(bool value);
-
-    float GetStartDelay() const;
-    void SetStartDelay(float value);
-
-    // Default Flags.
-    virtual bool GetInitialInputEnabled() const {return false;};
-
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-    virtual QString GetUIControlClassName() { return "UIParticles"; };
+    void PngTest(PerfFuncData * data);
+    void JpegTest(PerfFuncData * data);
+private:
+    Image* GetImage() const;
 };
-}
 
-
-#endif /* defined(__UIEditor__UIParticlesMetadata__) */
+#endif //__SAVE_IMAGE_TEST_H__
