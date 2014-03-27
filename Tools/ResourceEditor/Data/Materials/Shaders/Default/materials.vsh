@@ -157,7 +157,7 @@ uniform vec4 tilePos;
 uniform vec3 worldSize;
 uniform vec2 lodSwitchScale;
 
-uniform vec4 clusterScaleDensityMap[32];
+uniform float clusterScaleDensityMap[128];
 
 uniform sampler2D detail;
 
@@ -248,38 +248,13 @@ void main()
     
         float densityFactor;
     
-        float clusterDensity;
-        float clusterScale;
-        float clusterLodScale;
-    
-        if(0 == clusterType)
-        {
-            clusterDensity = clusterScaleDensityMap[vertexTileIndex].x;
-            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].x;
-        }
-        else if(1 == clusterType)
-        {
-            clusterDensity = clusterScaleDensityMap[vertexTileIndex].y;
-            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].y;
-        }
-        else if(2 == clusterType)
-        {
-            clusterDensity = clusterScaleDensityMap[vertexTileIndex].z;
-            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].z;
-        }
-        else
-        {
-            clusterDensity = clusterScaleDensityMap[vertexTileIndex].w;
-            clusterScale = clusterScaleDensityMap[vertexTileIndex + 1].w;
-        }
+        float clusterDensity = clusterScaleDensityMap[vertexTileIndex + clusterType];;
+        float clusterScale = clusterScaleDensityMap[vertexTileIndex + 4 + clusterType];
+        float clusterLodScale = 1.0;
     
         if(int(inTexCoord1.x) == int(lodSwitchScale.x))
         {
             clusterLodScale = lodSwitchScale.y;
-        }
-        else
-        {
-            clusterLodScale = 1.0;
         }
     
         vec4 lodScaledPos = pos;
