@@ -41,122 +41,123 @@ namespace DAVA
 #define DF_FONT_CACHE_SIZE 100	//text cache size
 #define DF_FONT_INDEX_BUFFER_SIZE ((DF_FONT_CACHE_SIZE) * 6)
 	
-	class DFFont: public Font
-	{
-	public:
-		class DFFontVertex
-		{
-		public:
-			Vector3 position;
-			Vector2 texCoord;
-		};
-		
-		DFFont();
-	protected:
-		virtual ~DFFont();
-	public:
-		static DFFont* Create(const FilePath & path);
-		
-		/**
-		 \brief Get string size(rect).
-		 \param[in] str - processed string
-		 \param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str
-		 \returns bounding rect for string in pixels
-		 */
-		virtual Size2i GetStringSize(const WideString & str, Vector<int32> *charSizes = 0) const;
-		
-		/**
-		 \brief Checks if symbol is present in font.
-		 \param[in] ch - tested symbol
-		 \returns true if symbol is available, false otherwise
-		 */
-		virtual bool IsCharAvaliable(char16 ch) const;
-		
-		/**
-		 \brief Get height of highest symbol in font.
-		 \returns height in pixels
-		 */
-		virtual uint32 GetFontHeight() const;
-		
-		/**
-		 \brief Clone font.
-		 */
-		virtual Font * Clone() const;
-		
-		/**
-         \brief Get font texture
-         */
-        inline Texture* GetTexture() const
-        {
-            return fontTexture;
-        }
-        /**
-         \brief Get font texture handler
-         */
-        inline UniqueHandle GetTextureHandler() const
-        {
-            return fontTextureHandler;
-        }
+class DFFont: public Font
+{
+public:
+    class DFFontVertex
+    {
+    public:
+        Vector3 position;
+        Vector2 texCoord;
+    };
+    
+    DFFont();
+protected:
+    virtual ~DFFont();
+public:
+    static DFFont* Create(const FilePath & path);
+    
+    /**
+     \brief Get string size(rect).
+     \param[in] str - processed string
+     \param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str
+     \returns bounding rect for string in pixels
+     */
+    virtual Size2i GetStringSize(const WideString & str, Vector<int32> *charSizes = 0) const;
+    
+    /**
+     \brief Checks if symbol is present in font.
+     \param[in] ch - tested symbol
+     \returns true if symbol is available, false otherwise
+     */
+    virtual bool IsCharAvaliable(char16 ch) const;
+    
+    /**
+     \brief Get height of highest symbol in font.
+     \returns height in pixels
+     */
+    virtual uint32 GetFontHeight() const;
+    
+    /**
+     \brief Clone font.
+     */
+    virtual Font * Clone() const;
+    
+    /**
+     \brief Get font texture
+     */
+    inline Texture* GetTexture() const
+    {
+        return fontTexture;
+    }
+    /**
+     \brief Get font texture handler
+     */
+    inline UniqueHandle GetTextureHandler() const
+    {
+        return fontTextureHandler;
+    }
 
-		/**
-		 \brief Tests if two fonts are the same.
-		 */
-		virtual bool IsEqual(const Font *font) const;
-		
-		// Put font properties into YamlNode
-		virtual YamlNode * SaveToYamlNode() const;
-		
-		//We need to return font path
-		const FilePath & GetFontPath() const;
-		
-		FilePath GetTexturePath() const;
-		
-		Size2i DrawStringToBuffer(const WideString & str,
-								  int32 xOffset,
-								  int32 yOffset,
-								  DFFontVertex* vertexBuffer,
-								  int32& charDrawed,
-								  Vector<int32> *charSizes = NULL) const;
-		float32 GetSpread() const;
-		
-    protected:
-        // Get the raw hash string (identical for identical fonts).
-        virtual String GetRawHashString();
-        
-	private:		
-        bool LoadTexture(const FilePath& path);
-		bool LoadConfig(const FilePath& path);
-		float32 GetSizeScale() const;
-		
-	private:
-		struct CharDescription
-		{
-			float32 height;
-			float32 width;
-			Map<int32, float32> kerning;
-			float32 xOffset;
-			float32 yOffset;
-			float32 xAdvance;
-			float32 u;
-			float32 u2;
-			float32 v;
-			float32 v2;
-		};
-		typedef Map<char16, CharDescription> CharsMap;
-		CharsMap chars;
-		float32 baseSize;
-		float32 paddingLeft;
-		float32 paddingRight;
-		float32 paddingTop;
-		float32 paddingBottom;
-		float32 lineHeight;
-		float32 spread;
-		
-		FilePath configPath;
+    /**
+     \brief Tests if two fonts are the same.
+     */
+    virtual bool IsEqual(const Font *font) const;
+    
+    // Put font properties into YamlNode
+    virtual YamlNode * SaveToYamlNode() const;
+    
+    //We need to return font path
+    const FilePath & GetFontPath() const;
+    
+    FilePath GetTexturePath() const;
+    
+    Size2i DrawStringToBuffer(const WideString & str,
+                              int32 xOffset,
+                              int32 yOffset,
+                              DFFontVertex* vertexBuffer,
+                              int32& charDrawed,
+                              Vector<int32> *charSizes = NULL) const;
+    float32 GetSpread() const;
+    
+protected:
+    // Get the raw hash string (identical for identical fonts).
+    virtual String GetRawHashString();
+    
+private:		
+    bool LoadTexture(const FilePath& path);
+    bool LoadConfig(const FilePath& path);
+    float32 GetSizeScale() const;
+    
+private:
+    struct CharDescription
+    {
+        float32 height;
+        float32 width;
+        Map<int32, float32> kerning;
+        float32 xOffset;
+        float32 yOffset;
+        float32 xAdvance;
+        float32 u;
+        float32 u2;
+        float32 v;
+        float32 v2;
+    };
+    typedef Map<char16, CharDescription> CharsMap;
+    CharsMap chars;
+    float32 baseSize;
+    float32 paddingLeft;
+    float32 paddingRight;
+    float32 paddingTop;
+    float32 paddingBottom;
+    float32 lineHeight;
+    float32 spread;
+    
+    FilePath configPath;
 
-        Texture* fontTexture;
-        UniqueHandle fontTextureHandler;
-	};
+    Texture* fontTexture;
+    UniqueHandle fontTextureHandler;
+};
+
 }
 
 #endif //__DAVAENGINE_DFFONT_H__
