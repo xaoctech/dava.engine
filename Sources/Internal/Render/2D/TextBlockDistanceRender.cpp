@@ -97,12 +97,9 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	if (charDrawed == 0)
 		return;
 	
-	int32 xOffset = textBlock->position.x;
-	int32 yOffset = textBlock->position.y;
-	
-	xOffset -= textBlock->pivotPoint.x;
-	yOffset -= textBlock->pivotPoint.y;
-	
+	int32 xOffset = textBlock->position.x - textBlock->pivotPoint.x;
+	int32 yOffset = textBlock->position.y - textBlock->pivotPoint.y;
+
 	if (offset)
 	{
 		xOffset += offset->x;
@@ -123,7 +120,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	{
 		yOffset += Max(0.f, textBlock->rectSize.dy - renderRect.dy);
 	}
-	else if (align & ALIGN_VCENTER || align & ALIGN_HJUSTIFY)
+	else if ((align & ALIGN_VCENTER) || (align & ALIGN_HJUSTIFY))
 	{
 		yOffset += Max(0.f, (textBlock->rectSize.dy - renderRect.dy) * 0.5f);
 	}
