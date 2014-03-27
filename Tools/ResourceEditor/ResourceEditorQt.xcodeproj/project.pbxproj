@@ -34,6 +34,8 @@
 		765A0AE418CE0D0A0044516F /* MaterialTemplateModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765A0AE318CE0D0A0044516F /* MaterialTemplateModel_moc.cpp */; };
 		76741C8818A3BDE20044A0BF /* CacheRequest.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C8618A3BDE20044A0BF /* CacheRequest.cpp */; };
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
+		76A098A418E1968E00D442EB /* LicenceDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */; };
+		76A098A818E1970E00D442EB /* LicenceDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A618E1970E00D442EB /* LicenceDialog.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8406D38718BA583100AFF8E3 /* ImageArea.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8406D38518BA583100AFF8E3 /* ImageArea.cpp */; };
@@ -679,6 +681,10 @@
 		76741C8618A3BDE20044A0BF /* CacheRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest.cpp; sourceTree = "<group>"; };
 		76741C8718A3BDE20044A0BF /* CacheRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CacheRequest.h; sourceTree = "<group>"; };
 		76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest_moc.cpp; sourceTree = "<group>"; };
+		76A0989A18E1965E00D442EB /* ui_LicenceDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_LicenceDialog.h; path = _GeneratedQt/ui_LicenceDialog.h; sourceTree = "<group>"; };
+		76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LicenceDialog_moc.cpp; path = _GeneratedQt/LicenceDialog/LicenceDialog_moc.cpp; sourceTree = "<group>"; };
+		76A098A618E1970E00D442EB /* LicenceDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LicenceDialog.cpp; path = LicenceDialog/LicenceDialog.cpp; sourceTree = "<group>"; };
+		76A098A718E1970E00D442EB /* LicenceDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LicenceDialog.h; path = LicenceDialog/LicenceDialog.h; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -1765,6 +1771,23 @@
 			name = QtPropertyDataValidator;
 			sourceTree = "<group>";
 		};
+		76A098A218E1967B00D442EB /* LicenceDialog */ = {
+			isa = PBXGroup;
+			children = (
+				76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */,
+			);
+			name = LicenceDialog;
+			sourceTree = "<group>";
+		};
+		76A098A518E196F800D442EB /* LicenceDialog */ = {
+			isa = PBXGroup;
+			children = (
+				76A098A618E1970E00D442EB /* LicenceDialog.cpp */,
+				76A098A718E1970E00D442EB /* LicenceDialog.h */,
+			);
+			name = LicenceDialog;
+			sourceTree = "<group>";
+		};
 		84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */ = {
 			isa = PBXGroup;
 			children = (
@@ -1845,6 +1868,8 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				76A098A218E1967B00D442EB /* LicenceDialog */,
+				76A0989A18E1965E00D442EB /* ui_LicenceDialog.h */,
 				8464251A18B16A2500A2BE35 /* ui_ImageSplitter.h */,
 				84EB52C818B1625B0094DAD9 /* ImageSplitterDialog */,
 				A6CCB65218990C5500F5DA38 /* QualitySwitcher */,
@@ -3144,6 +3169,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				76A098A518E196F800D442EB /* LicenceDialog */,
 				84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */,
 				A6CCB64718990C3000F5DA38 /* QualitySwitcher */,
 				A6D8279B1877175E0006A5DD /* PlaneLODDialog */,
@@ -4117,6 +4143,7 @@
 				8406D39018BA5A4500AFF8E3 /* ImageArea_moc.cpp in Build Sources */,
 				E8C992E8184CD0EC00AFBF3F /* davaglwidget.cpp in Build Sources */,
 				E8C992D7184CD0EC00AFBF3F /* ParticleEmitterPropertiesWidget.cpp in Build Sources */,
+				76A098A418E1968E00D442EB /* LicenceDialog_moc.cpp in Build Sources */,
 				E8BAD5D51859F48600C98C8D /* MaterialItem.cpp in Build Sources */,
 				E8C99233184CD0EC00AFBF3F /* btGImpactBvh.cpp in Build Sources */,
 				E8C991F7184CD0EC00AFBF3F /* btBox2dBox2dCollisionAlgorithm.cpp in Build Sources */,
@@ -4535,6 +4562,7 @@
 				E8BAD6DB1859F50300C98C8D /* ModificationWidget_moc.cpp in Build Sources */,
 				E8C99257184CD0EC00AFBF3F /* btSimpleDynamicsWorld.cpp in Build Sources */,
 				E8C9931C184CD0EC00AFBF3F /* SpeedTreeImportDialog.cpp in Build Sources */,
+				76A098A818E1970E00D442EB /* LicenceDialog.cpp in Build Sources */,
 				E8C99215184CD0EC00AFBF3F /* btConvex2dShape.cpp in Build Sources */,
 				E8C99224184CD0EC00AFBF3F /* btScaledBvhTriangleMeshShape.cpp in Build Sources */,
 				E8C9921A184CD0EC00AFBF3F /* btConvexShape.cpp in Build Sources */,
