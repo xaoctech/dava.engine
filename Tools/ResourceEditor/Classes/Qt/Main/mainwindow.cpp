@@ -900,7 +900,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuExport->setEnabled(enable);
 	ui->menuEdit->setEnabled(enable);
 	ui->menuCreateNode->setEnabled(enable);
-	ui->menuComponent->setEnabled(enable);
 	ui->menuScene->setEnabled(enable);
     ui->menuLightView->setEnabled(enable);
     ui->menuTexturesForGPU->setEnabled(enable);
