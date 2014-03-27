@@ -48,7 +48,6 @@ namespace DAVA
 		parent = NULL;
 		controlState = STATE_NORMAL;
         recursiveVisible = true;
-        internalVisible = true;
 		visible = true;
 		visibleForUIEditor = true;
 		/* 
@@ -128,10 +127,6 @@ namespace DAVA
         {
             parent->UnregisterInputProcessors(inputProcessorsCount);
         }
-		if (!newParent && parent)
-		{
-            UIControlSystem::Instance()->CancelInputs(this);
-		}
 		parent = newParent;
 		if(parent && needToRecalcFromAbsoluteCoordinates)
 		{
@@ -141,7 +136,6 @@ namespace DAVA
         if (parent)
         {
             parent->RegisterInputProcessors(inputProcessorsCount);
-            SetInternalVisible(parent->internalVisible);
         }
 	}
 	UIControl *UIControl::GetParent()
@@ -957,13 +951,29 @@ namespace DAVA
 
     void UIControl::SetRecursiveVisible(bool isVisible)
     {
-        if (!isVisible && recursiveVisible)
+        if (recursiveVisible == isVisible)
+            return;
+
+        bool onScreen = IsOnScreen();
+        if (!onScreen)
         {
-            UIControlSystem::Instance()->CancelInputs(this);
+            if (isVisible) SystemWillAppear();
+        }
+        else
+        {
+            if (!isVisible) SystemWillDisappear();
         }
 
         recursiveVisible = isVisible;
-        SetInternalVisible( isVisible );
+
+        if (!onScreen)
+        {
+            if (isVisible) SystemDidAppear();
+        }
+        else
+        {
+            if(!isVisible) SystemDidDisappear();
+        }
     }
 
 	void UIControl::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
@@ -1112,7 +1122,6 @@ namespace DAVA
 			control->SystemWillAppear();
 		}
 		control->isUpdated = false;
-//		control->WillAppear();
 		control->SetParent(this);
 		childs.push_back(control);
 		if(onScreen)
@@ -1361,7 +1370,6 @@ namespace DAVA
 
 		controlState = srcControl->controlState;
         recursiveVisible = srcControl->recursiveVisible;
-        internalVisible = srcControl->internalVisible;
 		visible = srcControl->visible;
 		visibleForUIEditor = srcControl->visibleForUIEditor;
 		inputEnabled = srcControl->inputEnabled;
@@ -1406,16 +1414,16 @@ namespace DAVA
 	
     bool UIControl::IsOnScreen() const
     {
-		if(parent)
-		{
-			return parent->IsOnScreen();
-		}
-		
-		if(UIControlSystem::Instance()->GetScreen() == this || UIControlSystem::Instance()->GetPopupContainer() == this)
-		{
-			return true;
-		}
-		return false;
+        if(UIControlSystem::Instance()->GetScreen() == this ||
+           UIControlSystem::Instance()->GetPopupContainer() == this)
+        {
+            return GetRecursiveVisible();
+        }
+
+        if( !GetRecursiveVisible() || !parent )
+            return false;
+
+		return parent->IsOnScreen();
 	}
 
 
@@ -1449,6 +1457,10 @@ namespace DAVA
         if (UIControlSystem::Instance()->GetFocusedControl() == this) 
         {
             UIControlSystem::Instance()->SetFocusedControl(NULL, true);
+        }
+        if (GetInputEnabled())
+        {
+            UIControlSystem::Instance()->CancelInputs(this, false);
         }
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -2987,25 +2999,4 @@ namespace DAVA
             (*it)->DumpInputs(depthLevel + 1);
         }
     }
-
-    void UIControl::SetInternalVisible( bool isVisible )
-    {
-        if( internalVisible == isVisible )
-            return;
-
-        if( isVisible && !recursiveVisible )
-            return;
-
-        if( isVisible && parent && !parent->internalVisible )
-            return;
-
-        internalVisible = isVisible;
-
-        List<UIControl*>::iterator it = childs.begin();
-        for(; it != childs.end(); ++it)
-        {
-            (*it)->SetInternalVisible(isVisible);
-        }
-    }
-
 }

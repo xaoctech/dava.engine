@@ -830,6 +830,16 @@ void Scene::Draw()
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
+    
+void Scene::SceneDidLoaded()
+{
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        systems[k]->SceneDidLoaded();
+    }
+}
+
 
 	
 // void Scene::StopAllAnimations(bool recursive )
