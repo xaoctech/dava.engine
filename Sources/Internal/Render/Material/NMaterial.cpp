@@ -195,8 +195,7 @@ materialSortKey(0)
 
 NMaterial::~NMaterial()
 {
-	SetParent(NULL);
-	
+	SetParentInternal(NULL);
 	ReleaseInstancePasses();
 	
 	for(HashMap<FastName, UniqueHandle>::iterator it = instancePassRenderStates.begin();
@@ -234,32 +233,36 @@ void NMaterial::SetParent(NMaterial* newParent, bool inheritTemplate)
 	if(newParent != parent &&
 	   newParent != this)
 	{
-		if(parent)
-		{
-			Vector<NMaterial*>::iterator curMaterial = std::find(parent->children.begin(),
-																 parent->children.end(),
-																 this);
-			
-			DVASSERT(curMaterial != parent->children.end());
-			if(curMaterial != parent->children.end())
-			{
-				parent->children.erase(curMaterial);
-			}
-			
-			SafeRelease(parent);
-		}
-		
-		if(newParent)
-		{
-			DVASSERT(std::find(newParent->children.begin(), newParent->children.end(), this) == newParent->children.end());
-			
-			newParent->children.push_back(this);
-		}
-		
-		parent = SafeRetain(newParent);
-        
+        SetParentInternal(newParent);
 		OnParentChanged(newParent, inheritTemplate);
 	}
+}
+    
+void NMaterial::SetParentInternal(DAVA::NMaterial *newParent)
+{
+    if(parent)
+    {
+        Vector<NMaterial*>::iterator curMaterial = std::find(parent->children.begin(),
+                                                             parent->children.end(),
+                                                             this);
+        
+        DVASSERT(curMaterial != parent->children.end());
+        if(curMaterial != parent->children.end())
+        {
+            parent->children.erase(curMaterial);
+        }
+        
+        SafeRelease(parent);
+    }
+    
+    if(newParent)
+    {
+        DVASSERT(std::find(newParent->children.begin(), newParent->children.end(), this) == newParent->children.end());
+        
+        newParent->children.push_back(this);
+    }
+    
+    parent = SafeRetain(newParent);
 }
 
 void NMaterial::SetFlag(const FastName& flag, eFlagValue flagValue)

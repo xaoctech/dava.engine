@@ -542,6 +542,7 @@ protected:
 	void UpdateLightingProperties(Light* light);
 	bool IsLightingProperty(const FastName& propName) const;
 	void SetLightInternal(int index, Light* light, bool forceUpdate);
+    void SetParentInternal(NMaterial *material);
 
     FastName GetEffectiveQuality() const;
 	
