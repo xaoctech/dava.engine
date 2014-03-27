@@ -318,7 +318,7 @@ VegetationRenderObject::VegetationRenderObject() :
     
     unitWorldSize.resize(COUNT_OF(RESOLUTION_SCALE));
     
-    uint32 maxParams = 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
+    uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
     shaderScaleDensityUniforms.resize(maxParams);
     
     renderBatchPoolLine = 0;
@@ -532,7 +532,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                               posScale.data);
         
         mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
-                              Shader::UT_FLOAT_VEC4,
+                              Shader::UT_FLOAT,
                               shaderScaleDensityUniforms.size(),
                               &shaderScaleDensityUniforms[0]);
     }
@@ -1175,7 +1175,7 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
                 
                 vertex.binormal = clusterCenter;
                 
-                vertex.tangent.x = matrixIndex * 2.0f; //each cluster is described by 2 vectors
+                vertex.tangent.x = matrixIndex * 2.0f * 4.0f; //each cluster is described by 2 vectors
                 vertex.tangent.y = layerIndex;
                 vertex.tangent.z = densityId;
                 
@@ -1304,7 +1304,7 @@ bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
 
 void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
                                                float32 cameraDistance,
-                                               Vector<Vector4>& uniforms)
+                                               Vector<float32>& uniforms)
 {
     if(node->IsTerminalLeaf())
     {
@@ -1335,8 +1335,8 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             clusterScale *= distanceScale;
             density = (((layerVisibilityMask >> clusterType) & 0x01) != 0) ? density : 0.0f;
             
-            uniforms[node->data.rdoIndex * 2].data[clusterType] = density;
-            uniforms[node->data.rdoIndex * 2 + 1].data[clusterType] = clusterScale;
+            uniforms[node->data.rdoIndex * 2 * 4 + clusterType] = density;
+            uniforms[node->data.rdoIndex * 2 * 4 + 4 + clusterType] = clusterScale;
         }
 
     }

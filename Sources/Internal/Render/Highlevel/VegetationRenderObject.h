@@ -220,7 +220,7 @@ private:
     
     void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
                            float32 cameraDistance,
-                           Vector<Vector4>& uniforms);
+                           Vector<float32>& uniforms);
     
 private:
     
@@ -239,7 +239,7 @@ private:
     int32 renderBatchPoolLine;
     
     NMaterial* vegetationMaterial;
-    Vector<Vector4> shaderScaleDensityUniforms;
+    Vector<float32> shaderScaleDensityUniforms;
     
     Vector<VegetationVertex> vertexData;
     Vector<int16> indexData;
