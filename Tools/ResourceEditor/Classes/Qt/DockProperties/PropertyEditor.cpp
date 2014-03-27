@@ -213,7 +213,14 @@ void PropertyEditor::ResetProperties()
 				            QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(OnRemoveComponent()));
                         }
 
-                        root->ChildAdd(component->GetTypeInfo()->Name(),componentData);
+                        if ( i == 0 )
+                        {
+                            root->ChildAdd(component->GetTypeInfo()->Name(),componentData);
+                        }
+                        else
+                        {
+                            root->MergeChild(componentData, component->GetTypeInfo()->Name());
+                        }
 			        }
                 }
             }
@@ -1226,7 +1233,11 @@ void PropertyEditor::OnAddActionComponent()
 
 		for(int i = 0; i < curNodes.size(); ++i)
 		{
-			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::ACTION_COMPONENT)));
+            Entity* node = curNodes.at(i);
+            if (node->GetComponentCount(Component::ACTION_COMPONENT) == 0)
+            {
+    			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::ACTION_COMPONENT)));
+            }
 		}
 
 		curScene->EndBatch();
@@ -1242,7 +1253,11 @@ void PropertyEditor::OnAddStaticOcclusionComponent()
         
 		for(size_t i = 0; i < curNodes.size(); ++i)
 		{
-			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
+            Entity* node = curNodes.at(i);
+            if (node->GetComponentCount(Component::STATIC_OCCLUSION_COMPONENT) == 0)
+            {
+    			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
+            }
 		}
         
 		curScene->EndBatch();
@@ -1258,7 +1273,11 @@ void PropertyEditor::OnAddModelTypeComponent()
         
 		for(size_t i = 0; i < curNodes.size(); ++i)
 		{
-			curScene->Exec(new AddComponentCommand(curNodes.at(i), new QualitySettingsComponent()));
+            Entity* node = curNodes.at(i);
+            if (node->GetComponentCount(Component::QUALITY_SETTINGS_COMPONENT) == 0)
+            {
+			    curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::QUALITY_SETTINGS_COMPONENT)));
+            }
 		}
         
 		curScene->EndBatch();
