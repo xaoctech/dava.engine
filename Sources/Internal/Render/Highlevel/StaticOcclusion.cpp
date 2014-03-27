@@ -326,12 +326,12 @@ uint32 StaticOcclusion::RenderFrame()
                     }
 
                     
-                   if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
-                   {
-                       Image * image = renderTargetTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
-                       ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
-                       SafeRelease(image);
-                   }
+//                    if ((stepX == 0) && (stepY == 0) && (effectiveSides[side][realSide] == side))
+//                    {
+//                        Image * image = renderTargetTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
+//                        ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
+//                        SafeRelease(image);
+//                    }
                 }
         
     }
