@@ -162,6 +162,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 
         Rect viewportSave = RenderManager::Instance()->GetViewport();
         RenderManager::Instance()->SetRenderTarget(reflectionSprite);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);        
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
@@ -170,9 +171,11 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         
         reflectionPass->SetWaterLevel(waterBox.max.z);
         reflectionPass->Draw(camera, renderSystem);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->RestoreRenderTarget();
                 
         RenderManager::Instance()->SetRenderTarget(refractionSprite);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFRACTION_TEX_SIZE, REFRACTION_TEX_SIZE), true);        
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
@@ -181,10 +184,10 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         refractionPass->SetWaterLevel(waterBox.min.z);
         refractionPass->Draw(camera, renderSystem);
         RenderManager::Instance()->RestoreRenderTarget();
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(viewportSave, true);
-        
-        /*const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
-        RenderManager::Instance()->ClipPush();
+                
+        /*RenderManager::Instance()->ClipPush();
         Rect viewportSave = RenderManager::Instance()->GetViewport();
         uint32 currFboId = RenderManager::Instance()->HWglGetLastFBO();
         int32 currRenderOrientation = RenderManager::Instance()->GetRenderOrientation();
@@ -192,7 +195,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         
         RenderManager::Instance()->SetHWRenderTargetTexture(reflectionTexture);
         //discard everything here
-        glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
@@ -202,12 +205,12 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         reflectionPass->Draw(camera, renderSystem);
         
         //discrad depth(everything?) here
-        glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         
         
         RenderManager::Instance()->SetHWRenderTargetTexture(refractionTexture);
         //discard everything here
-        glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
@@ -217,7 +220,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         refractionPass->Draw(camera, renderSystem);
 
         //discrad depth(everything?) here
-        glDiscardFramebufferEXT(GL_FRAMEBUFFER,1,discards);
+        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         
         RenderManager::Instance()->HWglBindFBO(currFboId);
         RenderManager::Instance()->SetRenderOrientation(currRenderOrientation);
