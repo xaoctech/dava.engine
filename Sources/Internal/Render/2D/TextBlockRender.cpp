@@ -51,7 +51,6 @@ void TextBlockRender::Prepare()
 	
 void TextBlockRender::DrawText()
 {
-	Size2i realSize;
 	if (!textBlock->isMultilineEnabled)
 	{
 		WideString drawText = textBlock->text;
@@ -62,15 +61,16 @@ void TextBlockRender::DrawText()
 			drawText = textBlock->pointsStr;
 		}
 		
-		realSize = DrawTextSL(drawText, textBlock->cacheDx, textBlock->cacheDy, textBlock->cacheW);
+		DrawTextSL(drawText, textBlock->cacheDx, textBlock->cacheDy, textBlock->cacheW);
 	}
 	else
 	{
 		uint32 yOffset = 0;
 		int32 fontHeight = textBlock->font->GetFontHeight() + textBlock->font->GetVerticalSpacing();
-		for (int32 line = 0; line < (int32)textBlock->multilineStrings.size(); ++line)
+        int32 stringsCnt = (int32)textBlock->multilineStrings.size();
+		for (int32 line = 0; line < stringsCnt; ++line)
 		{
-			if (line >= (int32)textBlock->multilineStrings.size() - 1)
+			if (line == (int32)textBlock->multilineStrings.size() - 1)
 			{
 				textBlock->cacheUseJustify = false;
 			}
@@ -93,17 +93,15 @@ void TextBlockRender::DrawText()
 					xOffset = 0;
 				}
 			}
-			Size2i ds = DrawTextML(textBlock->multilineStrings[line],
-								   textBlock->cacheDx,
-								   textBlock->cacheDy,
-								   textBlock->cacheW,
-								   xOffset,
-								   yOffset,
-								   textBlock->stringSizes[line]);
+			DrawTextML(textBlock->multilineStrings[line],
+                       textBlock->cacheDx,
+                       textBlock->cacheDy,
+                       textBlock->cacheW,
+                       xOffset,
+                       yOffset,
+                       textBlock->stringSizes[line]);
 
-			realSize.dx = Max(realSize.dx, (int32)(Core::GetPhysicalToVirtualFactor() * ds.dx));
 			yOffset += fontHeight;
-			realSize.dy = yOffset;
 		}	
 	}
 }
