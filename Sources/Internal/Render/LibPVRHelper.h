@@ -141,7 +141,7 @@ public:
     static bool LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet, uint32 fromMipMap);
     
     static bool WriteFile(const PVRFile * pvrFile, File * outFile);
-    static bool WriteFileFromMipMapFiles(const FilePath & outputFile, Vector<FilePath> imgPaths);
+    static bool WriteFileFromMipMapFiles(const FilePath & outputFile, const Vector<FilePath> & imgPaths);
 
 protected:
 

@@ -95,14 +95,14 @@ public:
         void SetDefaultValues();
 
         void SetGenerateMipmaps(bool generateMipmaps);
-        void SetAsNormalMap(uint32 asNormalMap);
+        void SetIsNormalMap(bool asNormalMap);
 
         bool GetGenerateMipMaps() const;
-        uint32 GetAsNormalMap() const;
+        bool GetIsNormalMap() const;
 
 		INTROSPECTION(TextureSettings,
 			PROPERTY("generateMipMaps", "generateMipMaps", GetGenerateMipMaps, SetGenerateMipmaps, I_VIEW | I_EDIT | I_SAVE)
-			PROPERTY("asNormalMap", "asNormalMap", GetAsNormalMap, SetAsNormalMap, I_VIEW | I_EDIT | I_SAVE)
+			PROPERTY("asNormalMap", "asNormalMap", GetIsNormalMap, SetIsNormalMap, I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(wrapModeS, InspDesc("wrapModeS", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(wrapModeT, InspDesc("wrapModeT", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT)
 			MEMBER(minFilter, InspDesc("minFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)

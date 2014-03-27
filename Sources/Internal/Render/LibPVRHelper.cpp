@@ -2173,7 +2173,7 @@ bool LibPVRHelper::WriteFile(const PVRFile * pvrFile, File *outFile)
     return true;
 }
 
-bool LibPVRHelper::WriteFileFromMipMapFiles(const FilePath & outputFilePath, Vector<FilePath> imgPaths)
+bool LibPVRHelper::WriteFileFromMipMapFiles(const FilePath & outputFilePath, const Vector<FilePath> & imgPaths)
 {
     DVASSERT(imgPaths.size());
 
@@ -2219,12 +2219,12 @@ bool LibPVRHelper::WriteFileFromMipMapFiles(const FilePath & outputFilePath, Vec
     {
         if(!WriteFile(outPvr, outFile))
         {
-            Logger::FrameworkDebug("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
+            Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
         }
     }
     else
     {
-        Logger::FrameworkDebug("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
+        Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
     }
 
     SafeRelease(outFile);
