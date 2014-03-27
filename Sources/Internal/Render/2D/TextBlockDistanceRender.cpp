@@ -72,7 +72,8 @@ TextBlockDistanceRender::TextBlockDistanceRender(TextBlock* textBlock) :
 	
 TextBlockDistanceRender::~TextBlockDistanceRender()
 {
-	SafeRelease(shader); //release object and set shader to null
+    shader->Release();
+    shader = NULL;
 
 	SafeRelease(renderObject);
 }
