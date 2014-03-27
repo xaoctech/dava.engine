@@ -50,7 +50,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	, rayIntersectCached(false)
 	, landIntersectCached(false)
 	, landIntersectCachedResult(false)
-	, drawMode(ST_COLL_DRAW_NOTHING)
+	, drawMode(ST_COLL_DRAW_OBJECTS_RAYTEST)
 	, curLandscapeEntity(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -181,13 +181,11 @@ const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &fro
 
 const EntityGroup* SceneCollisionSystem::ObjectsRayTestFromCamera()
 {
-	SceneCameraSystem *cameraSystem	= ((SceneEditor2 *) GetScene())->cameraSystem;
+    DAVA::Vector3 traceFrom;
+    DAVA::Vector3 traceTo;
 
-	DAVA::Vector3 camPos = cameraSystem->GetCameraPosition();
-	DAVA::Vector3 camDir = cameraSystem->GetPointDirection(lastMousePos);
-
-	DAVA::Vector3 traceFrom = camPos;
-	DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
+    SceneCameraSystem *cameraSystem = ((SceneEditor2 *) GetScene())->cameraSystem;
+    cameraSystem->GetRayTo2dPoint(lastMousePos, 1000.0f, traceFrom, traceTo);
 
 	return ObjectsRayTest(traceFrom, traceTo);
 }
