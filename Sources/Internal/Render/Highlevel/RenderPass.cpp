@@ -143,7 +143,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 		}
 	}    
     
-	if (needWaterPrepass)
+	if (needWaterPrepass&&RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::WATER_REFLECTION_REFRACTION_DRAW))
 	{
         const static int32 REFLECTION_TEX_SIZE = 512;
         const static int32 REFRACTION_TEX_SIZE = 512;
