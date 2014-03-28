@@ -160,7 +160,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
             refractionSprite = Sprite::CreateFromTexture(refractionTexture, 0, 0, REFRACTION_TEX_SIZE, REFRACTION_TEX_SIZE);
         }
 
-        Rect viewportSave = RenderManager::Instance()->GetViewport();
+        /*Rect viewportSave = RenderManager::Instance()->GetViewport();
         RenderManager::Instance()->SetRenderTarget(reflectionSprite);
         RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);        
@@ -185,9 +185,9 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         refractionPass->Draw(camera, renderSystem);
         RenderManager::Instance()->RestoreRenderTarget();
         RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
-        RenderManager::Instance()->SetViewport(viewportSave, true);
+        RenderManager::Instance()->SetViewport(viewportSave, true);*/
                 
-        /*RenderManager::Instance()->ClipPush();
+        RenderManager::Instance()->ClipPush();
         Rect viewportSave = RenderManager::Instance()->GetViewport();
         uint32 currFboId = RenderManager::Instance()->HWglGetLastFBO();
         int32 currRenderOrientation = RenderManager::Instance()->GetRenderOrientation();
@@ -195,7 +195,6 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         
         RenderManager::Instance()->SetHWRenderTargetTexture(reflectionTexture);
         //discard everything here
-        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
@@ -209,8 +208,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         
         
         RenderManager::Instance()->SetHWRenderTargetTexture(refractionTexture);
-        //discard everything here
-        RenderManager::Instance()->DiscardFramebufferHW(RenderManager::COLOR_ATTACHMENT|RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
+        
         RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
@@ -222,10 +220,10 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         //discrad depth(everything?) here
         RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         
-        RenderManager::Instance()->HWglBindFBO(currFboId);
+        RenderManager::Instance()->HWglBindFBO(currFboId?currFboId:RenderManager::Instance()->GetFBOViewFramebuffer());
         RenderManager::Instance()->SetRenderOrientation(currRenderOrientation);
         RenderManager::Instance()->SetViewport(viewportSave, true);
-        RenderManager::Instance()->ClipPop();*/
+        RenderManager::Instance()->ClipPop();
 
         camera->SetupDynamicParameters();
         //camera->SetupDynamicParameters(true, Vector4(0,0,-1, waterBox.min.z));
