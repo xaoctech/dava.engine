@@ -45,6 +45,7 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	setContextMenuPolicy(Qt::CustomContextMenu);
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setIconSize(QSize(24, 24));
+    setSortingEnabled(true);
 
 	QObject::connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 

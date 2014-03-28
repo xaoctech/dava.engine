@@ -120,6 +120,7 @@ void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
     }
 
     renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
+    particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
 }
 
 void Scene::CreateGlobalMaterial()
