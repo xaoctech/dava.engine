@@ -50,7 +50,7 @@ SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
 	, rayIntersectCached(false)
 	, landIntersectCached(false)
 	, landIntersectCachedResult(false)
-	, drawMode(ST_COLL_DRAW_OBJECTS_RAYTEST)
+	, drawMode(ST_COLL_DRAW_NOTHING)
 	, curLandscapeEntity(NULL)
 {
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -282,7 +282,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(DAVA::Entity *entity)
 	return aabox;
 }
 
-void SceneCollisionSystem::Update(DAVA::float32 timeElapsed)
+void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
 	// check in there are entities that should be added or removed
 	if(entitiesToAdd.size() > 0 || entitiesToRemove.size() > 0)

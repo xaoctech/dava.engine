@@ -28,49 +28,43 @@
 
 
 
-#include "Sound/SoundEventCategory.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/FMODUtils.h"
+#ifndef __SOUND_COMPONENT_COMMANDS_H__
+#define __SOUND_COMPONENT_COMMANDS_H__
 
-namespace DAVA
+#include "DAVAEngine.h"
+#include "Commands2/Command2.h"
+
+class AddSoundEventCommand : public Command2
 {
+public:
+	AddSoundEventCommand(DAVA::Entity *entity, DAVA::SoundEvent * sEvent);
+	~AddSoundEventCommand();
 
-SoundEventCategory::SoundEventCategory(FMOD::EventCategory * category) :
-	fmodEventCategory(category) 
-{
-}
+	virtual void Undo();
+	virtual void Redo();
 
-SoundEventCategory::~SoundEventCategory()
-{
-}
+	virtual DAVA::Entity* GetEntity() const;
 
-void SoundEventCategory::SetVolume(float32 volume)
-{
-	FMOD_VERIFY(fmodEventCategory->setVolume(volume));
-}
+private:
 
-float32 SoundEventCategory::GetVolume()
-{
-	float32 volume;
-	FMOD_VERIFY(fmodEventCategory->getVolume(&volume));
-	return volume;
-}
-
-void SoundEventCategory::Stop()
-{
-	FMOD_VERIFY(fmodEventCategory->stopAllEvents());
-}
-
-void SoundEventCategory::Pause(bool isPaused)
-{
-	FMOD_VERIFY(fmodEventCategory->setPaused(isPaused));
-}
-
-bool SoundEventCategory::GetPaused()
-{
-	bool isPaused = false;
-	FMOD_VERIFY(fmodEventCategory->getPaused(&isPaused));
-	return isPaused;
-}
-
+    DAVA::Entity *entity;
+	DAVA::SoundEvent *savedEvent;
 };
+
+class RemoveSoundEventCommand : public Command2
+{
+public:
+    RemoveSoundEventCommand(DAVA::Entity *entity, DAVA::SoundEvent * sEvent);
+    ~RemoveSoundEventCommand();
+
+    virtual void Undo();
+    virtual void Redo();
+
+    virtual DAVA::Entity* GetEntity() const;
+
+private:
+
+    DAVA::Entity *entity;
+    DAVA::SoundEvent *savedEvent;
+};
+#endif // __SOUND_COMPONENT_COMMANDS_H__

@@ -231,7 +231,7 @@ void SceneCameraSystem::MoveTo(const DAVA::Vector3 &pos, const DAVA::Vector3 &ta
     }
 }
 
-void SceneCameraSystem::Update(float timeElapsed)
+void SceneCameraSystem::Process(float timeElapsed)
 {
 	if(!debugCamerasCreated)
 	{

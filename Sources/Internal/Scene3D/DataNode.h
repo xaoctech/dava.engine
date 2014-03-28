@@ -93,10 +93,9 @@ public:
      */
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
-    inline void SetDataIndex(int32 idx)
-    {
-        index = idx;
-    }
+    virtual void UpdateUniqueKey(uint64 newKeyValue) {};
+    
+    inline void SetDataIndex(int32 idx);
     
 protected:
     uint64 pointer;
@@ -112,10 +111,16 @@ public:
         MEMBER(pointer, "Pointer", I_SAVE)
     );
 };
+
+inline void DataNode::SetDataIndex(int32 idx)
+{
+    index = idx;
+}
+
     
 };
 
-#endif // __DAVAENGINE_SCENENODE_H__
+#endif // __DAVAENGINE_DATANODE_H__
 
 
 

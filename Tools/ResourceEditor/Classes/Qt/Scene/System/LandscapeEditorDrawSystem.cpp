@@ -254,7 +254,7 @@ void LandscapeEditorDrawSystem::UpdateCursorPosition()
 	landscapeProxy->SetCursorPosition(p);
 }
 
-void LandscapeEditorDrawSystem::Update(DAVA::float32 timeElapsed)
+void LandscapeEditorDrawSystem::Process(DAVA::float32 timeElapsed)
 {
 	if (heightmapProxy && heightmapProxy->IsHeightmapChanged())
 	{

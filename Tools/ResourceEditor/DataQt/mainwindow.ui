@@ -341,6 +341,9 @@
     <addaction name="actionAddActionComponent"/>
     <addaction name="actionAddQualitySettingsComponent"/>
     <addaction name="actionAddStaticOcclusionComponent"/>
+    <addaction name="separator"/>
+    <addaction name="actionAddSoundComponent"/>
+    <addaction name="actionRemoveSoundComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1550,6 +1553,16 @@
    </property>
    <property name="text">
     <string>Invisible Wall</string>
+   </property>
+  </action>
+  <action name="actionAddSoundComponent">
+   <property name="text">
+    <string>Add Sound Component</string>
+   </property>
+  </action>
+  <action name="actionRemoveSoundComponent">
+   <property name="text">
+    <string>Remove Sound Component</string>
    </property>
   </action>
   <action name="actionHangingObjects">

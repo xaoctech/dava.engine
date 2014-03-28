@@ -173,10 +173,12 @@ public slots:
 	void OnTilemaskEditor();
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
-	
+
 	void OnAddActionComponent();
     void OnAddStaticOcclusionComponent();
     void OnAddModelTypeComponent();
+    void OnAddSoundComponent();
+    void OnRemoveSoundComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
