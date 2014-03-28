@@ -307,7 +307,8 @@ VegetationRenderObject::VegetationRenderObject() :
     vertexRenderDataObject(NULL),
     maxPerturbationDistance(1000000.0f),
     layerVisibilityMask(0xFF),
-    vegetationVisible(true)
+    vegetationVisible(true),
+    maxLayerHeight(1.0f)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -496,6 +497,8 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                      worldSize.y);
     Vector2 switchLodScale;
     
+    bool cameraLowPosition = false;
+    
     for(size_t i = 0; i < requestedBatchCount; ++i)
     {
         AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[i];
@@ -513,7 +516,16 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
         rb->SetRenderDataObject(rdoVector[indexBufferIndex]);
         
-        SetupNodeUniforms(treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
+        Vector3 nodeCenter = treeNode->data.bbox.GetCenter();
+        float32 cameraLowScale = 1.0f;
+        float32 cameraHeight = Abs(camera->GetPosition().z - nodeCenter.z);
+        cameraLowPosition = (cameraHeight < maxLayerHeight);
+        if(cameraLowPosition)
+        {
+            cameraLowScale = cameraHeight / maxLayerHeight;
+        }
+        
+        SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, cameraLowPosition, cameraLowScale, shaderScaleDensityUniforms);
         
         posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
         posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
@@ -1093,11 +1105,17 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     
     uint32 layerDataCount = 0;
     uint32 indexDataCount = 0;
+    maxLayerHeight = 0.0f;
     for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
     {
         TextureSheetCell& cellData = textureSheet.cells[layerIndex];
         layerDataCount += VEGETATION_CLUSTER_SIZE[cellData.geometryId];
         indexDataCount += VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
+        
+        if(cellData.geometryScale.y > maxLayerHeight)
+        {
+            maxLayerHeight = cellData.geometryScale.y;
+        }
     }
     
     uint32 totalIndexCount = 0;
@@ -1302,8 +1320,11 @@ bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
     return vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (vertexRenderDataObject != NULL);
 }
 
-void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
+void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
+                                               AbstractQuadTreeNode<SpatialData>* node,
                                                float32 cameraDistance,
+                                               bool cameraLowPosition,
+                                               float32 cameraLowScale,
                                                Vector<float32>& uniforms)
 {
     if(node->IsTerminalLeaf())
@@ -1335,6 +1356,12 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             clusterScale *= distanceScale;
             density = (((layerVisibilityMask >> clusterType) & 0x01) != 0) ? density : 0.0f;
             
+            if(cameraLowPosition &&
+               sourceNode == node)
+            {
+                clusterScale *= cameraLowScale;
+            }
+            
             uniforms[node->data.rdoIndex * 2 * 4 + clusterType] = density;
             uniforms[node->data.rdoIndex * 2 * 4 + 4 + clusterType] = clusterScale;
         }
@@ -1342,10 +1369,10 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
     }
     else
     {
-        SetupNodeUniforms(node->children[0], cameraDistance, uniforms);
-        SetupNodeUniforms(node->children[1], cameraDistance, uniforms);
-        SetupNodeUniforms(node->children[2], cameraDistance, uniforms);
-        SetupNodeUniforms(node->children[3], cameraDistance, uniforms);
+        SetupNodeUniforms(sourceNode, node->children[0], cameraDistance, cameraLowPosition, cameraLowScale, uniforms);
+        SetupNodeUniforms(sourceNode, node->children[1], cameraDistance, cameraLowPosition, cameraLowScale, uniforms);
+        SetupNodeUniforms(sourceNode, node->children[2], cameraDistance, cameraLowPosition, cameraLowScale, uniforms);
+        SetupNodeUniforms(sourceNode, node->children[3], cameraDistance, cameraLowPosition, cameraLowScale, uniforms);
     }
 }
 

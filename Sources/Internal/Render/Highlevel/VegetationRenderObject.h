@@ -218,8 +218,11 @@ private:
     void ReleaseRenderData();
     bool ReadyToRender(bool externalRenderFlag);
     
-    void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* node,
+    void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
+                           AbstractQuadTreeNode<SpatialData>* node,
                            float32 cameraDistance,
+                           bool cameraLowPosition,
+                           float32 cameraLowScale,
                            Vector<float32>& uniforms);
     
 private:
@@ -260,6 +263,8 @@ private:
     Vector3 perturbationForce;
     Vector3 perturbationPoint;
     float32 maxPerturbationDistance;
+    
+    float32 maxLayerHeight;
     
     uint8 layerVisibilityMask;
     
