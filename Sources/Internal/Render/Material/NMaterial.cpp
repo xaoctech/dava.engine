@@ -119,7 +119,12 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 
 static FastName RUNTIME_ONLY_PROPERTIES[] =
 {
-	NMaterial::PARAM_LIGHTMAP_SIZE
+    NMaterial::PARAM_LIGHTMAP_SIZE,
+    NMaterial::PARAM_LIGHT_POSITION0,
+    NMaterial::PARAM_LIGHT_INTENSITY0,
+    NMaterial::PARAM_LIGHT_AMBIENT_COLOR,
+    NMaterial::PARAM_LIGHT_DIFFUSE_COLOR,
+    NMaterial::PARAM_LIGHT_SPECULAR_COLOR
 };
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -420,7 +425,7 @@ void NMaterial::Load(KeyedArchive * archive,
 	materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
 	pointer = materialKey;
 	
-	DataNode::SetName(materialName.c_str());
+	//DataNode::SetName(materialName.c_str());
 	
 	if(archive->IsKeyExists("materialCustomStates"))
 	{
@@ -609,8 +614,8 @@ NMaterial* NMaterial::Clone()
 		return clonedMaterial;
 	}
 	
-	clonedMaterial->SetName(GetName());
-	
+	//clonedMaterial->SetName(GetName());
+			
 	for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
 		it != materialProperties.end();
 		++it)
@@ -679,7 +684,7 @@ NMaterial* NMaterial::Clone()
 NMaterial* NMaterial::Clone(const String& newName)
 {
 	NMaterial* clonedMaterial = Clone();
-	clonedMaterial->SetName(newName);
+	//clonedMaterial->SetName(newName);
 	clonedMaterial->SetMaterialName(FastName(newName));
 	clonedMaterial->SetMaterialKey((NMaterial::NMaterialKey)clonedMaterial);
 	
@@ -1746,7 +1751,7 @@ NMaterial* NMaterial::CreateMaterialInstance()
 	mat->SetMaterialType(NMaterial::MATERIALTYPE_INSTANCE);
 	mat->SetMaterialKey((NMaterial::NMaterialKey)mat);
 	mat->SetMaterialName(FastName(Format("Instance-%d", instanceCounter)));
-	mat->SetName(mat->GetMaterialName().c_str());
+	//mat->SetName(mat->GetMaterialName().c_str());
 	
 	return mat;
 }
@@ -1761,7 +1766,7 @@ NMaterial* NMaterial::CreateMaterial(const FastName& materialName,
 	mat->SetMaterialType(NMaterial::MATERIALTYPE_MATERIAL);
 	mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
 	mat->SetMaterialName(materialName);
-	mat->SetName(mat->GetMaterialName().c_str());
+	//mat->SetName(mat->GetMaterialName().c_str());
 	
 	const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
 	DVASSERT(matTemplate);
@@ -1776,8 +1781,8 @@ NMaterial* NMaterial::CreateGlobalMaterial(const FastName& materialName)
 	mat->SetMaterialType(NMaterial::MATERIALTYPE_GLOBAL);
 	mat->SetMaterialKey((NMaterial::NMaterialKey)mat); //this value may be temporary
 	mat->SetMaterialName(materialName);
-	mat->SetName(mat->GetMaterialName().c_str());
-	
+	//mat->SetName(mat->GetMaterialName().c_str());
+
 	return mat;
 }
 
