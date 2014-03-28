@@ -38,6 +38,7 @@
 #include "SpritesPacker/SpritePackerHelper.h"
 
 #include "TextureBrowser/TextureBrowser.h"
+#include "SoundComponentEditor/FMODSoundBrowser.h"
 #include "TextureBrowser/TextureCache.h"
 #include "MaterialEditor/MaterialEditor.h"
 #include "QualitySwitcher/QualitySwitcher.h"
@@ -145,7 +146,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	// create tool windows
 	new TextureBrowser(this);
 	new MaterialEditor(this);
+    new FMODSoundBrowser(this);
+
 	waitDialog = new QtWaitDialog(this);
+
 	beastWaitDialog = new QtWaitDialog(this);
 
 	posSaver.Attach(this);
@@ -161,12 +165,11 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
     QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(ClearCache()));
-
     
 	LoadGPUFormat();
     LoadMaterialLightViewMode();
 
-    EnableGlobalTimeout(globalInvalidate);
+	EnableGlobalTimeout(globalInvalidate);
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
@@ -652,8 +655,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionUserNode, SIGNAL(triggered()), this, SLOT(OnUserNodeDialog()));
 	QObject::connect(ui->actionSwitchNode, SIGNAL(triggered()), this, SLOT(OnSwitchEntityDialog()));
 	QObject::connect(ui->actionParticleEffectNode, SIGNAL(triggered()), this, SLOT(OnParticleEffectDialog()));
-    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(OnEditor2DCameraDialog()));
-    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(OnEditorSpriteDialog()));
+    QObject::connect(ui->actionEditor_2D_Camera, SIGNAL(triggered()), this, SLOT(On2DCameraDialog()));
+    QObject::connect(ui->actionEditor_Sprite, SIGNAL(triggered()), this, SLOT(On2DSpriteDialog()));
 	QObject::connect(ui->actionAddNewEntity, SIGNAL(triggered()), this, SLOT(OnAddEntityFromSceneTree()));
 	QObject::connect(ui->actionRemoveEntity, SIGNAL(triggered()), ui->sceneTree, SLOT(RemoveSelection()));
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
@@ -703,6 +706,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
 	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
+
+    QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
+    QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -1526,7 +1532,7 @@ void QtMainWindow::OnParticleEffectDialog()
 	SafeRelease(sceneNode);
 }
 
-void QtMainWindow::OnEditor2DCameraDialog()
+void QtMainWindow::On2DCameraDialog()
 {
     Entity* sceneNode = new Entity();
     Camera * camera = new Camera();
@@ -1535,13 +1541,14 @@ void QtMainWindow::OnEditor2DCameraDialog()
     float32 h = Core::Instance()->GetVirtualScreenYMax() - Core::Instance()->GetVirtualScreenYMin();
     float32 aspect = w / h;
     camera->SetupOrtho(w, aspect, 1, 1000);        
-    camera->SetPosition(Vector3(0,0, -500));
+    camera->SetPosition(Vector3(0,0, -10000));
+    camera->SetZFar(10000);
     camera->SetTarget(Vector3(0, 0, 0));  
     camera->SetUp(Vector3(0, -1, 0));
     camera->RebuildCameraFromValues();        
 
     sceneNode->AddComponent(new CameraComponent(camera));
-    sceneNode->SetName(ResourceEditor::EDITOR_2D_CAMERA);
+    sceneNode->SetName("Camera 2D");
     SceneEditor2* sceneEditor = GetCurrentScene();
     if(sceneEditor)
     {
@@ -1551,7 +1558,7 @@ void QtMainWindow::OnEditor2DCameraDialog()
     SafeRelease(sceneNode);
     SafeRelease(camera);
 }
-void QtMainWindow::OnEditorSpriteDialog()
+void QtMainWindow::On2DSpriteDialog()
 {
     FilePath projectPath = ProjectManager::Instance()->CurProjectPath();
     projectPath += "Data/Gfx/";
@@ -2328,6 +2335,48 @@ void QtMainWindow::OnAddActionComponent()
 	}
 }
 
+void QtMainWindow::OnAddSoundComponent()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
+    {
+        scene->BeginBatch("Add Action Component");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::SOUND_COMPONENT)));
+        }
+
+        scene->EndBatch();
+    }
+}
+
+void QtMainWindow::OnRemoveSoundComponent()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
+    {
+        scene->BeginBatch("Add Action Component");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            SoundComponent * sc = GetSoundComponent(ss->GetSelectionEntity(i));
+            if(sc)
+            {
+                scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), sc));
+            }
+        }
+
+        scene->EndBatch();
+    }
+}
+
 void QtMainWindow::OnAddStaticOcclusionComponent()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -2373,7 +2422,6 @@ void QtMainWindow::OnBuildStaticOcclusion()
     
     scene->staticOcclusionBuildSystem->BuildOcclusionInformation();
 }
-
 
 bool QtMainWindow::IsSavingAllowed()
 {

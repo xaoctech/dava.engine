@@ -51,7 +51,6 @@ class SceneNodeAnimation;
 class SceneNodeAnimationKey;
 class SceneFileV2;
 class DataNode;
-class Entity;
 class RenderComponent;
 class TransformComponent;
 
@@ -478,7 +477,7 @@ inline const FastName & Entity::GetName() const
 inline int32 Entity::GetTag() 
 { 
     return tag; 
-};;
+}
     
 inline const Matrix4 & Entity::GetDefaultLocalTransform()
 {

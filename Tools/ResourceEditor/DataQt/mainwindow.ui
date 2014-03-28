@@ -249,6 +249,7 @@
      <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
+     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
@@ -256,7 +257,6 @@
      <addaction name="actionAddSkybox"/>
      <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
-     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
@@ -342,6 +342,9 @@
     <addaction name="actionAddActionComponent"/>
     <addaction name="actionAddQualitySettingsComponent"/>
     <addaction name="actionAddStaticOcclusionComponent"/>
+    <addaction name="separator"/>
+    <addaction name="actionAddSoundComponent"/>
+    <addaction name="actionRemoveSoundComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1554,6 +1557,16 @@
     <string>Invisible Wall</string>
    </property>
   </action>
+  <action name="actionAddSoundComponent">
+   <property name="text">
+    <string>Add Sound Component</string>
+   </property>
+  </action>
+  <action name="actionRemoveSoundComponent">
+   <property name="text">
+    <string>Remove Sound Component</string>
+   </property>
+  </action>
   <action name="actionHangingObjects">
    <property name="checkable">
     <bool>true</bool>
@@ -1740,7 +1753,7 @@
      <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
    </property>
    <property name="text">
-    <string>Editor 2D Camera</string>
+    <string>Camera 2D</string>
    </property>
   </action>
   <action name="actionAddLandscape">

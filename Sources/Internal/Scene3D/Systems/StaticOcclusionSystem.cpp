@@ -81,6 +81,8 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
     
     if (activeIndex == -1)return; // System inactive
     
+    SetCamera(GetScene()->GetClipCamera());
+
     Entity * entity = entities[activeIndex];
     StaticOcclusionComponent * occlusionComponent = (StaticOcclusionComponent*)entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT);
     TransformComponent * transformComponent = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
@@ -272,6 +274,8 @@ StaticOcclusionSystem::~StaticOcclusionSystem()
 
 void StaticOcclusionSystem::Process(float32 timeElapsed)
 {
+    SetCamera(GetScene()->GetClipCamera());
+
     // Verify that system is initialized
     if (!camera)return;
 

@@ -96,13 +96,13 @@ public slots:
 	void ActionEditComponent();
 	void ActionBakeTransform();
 	void ActionEditMaterial();
-
+    void ActionEditSoundComponent();
 	
 	void ConvertToShadow();
+
 	void DeleteRenderBatch();
 
     void CloneRenderBatchesToFixSwitchLODs();
-
 
 protected:
 	eViewMode viewMode;

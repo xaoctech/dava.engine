@@ -26,41 +26,54 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __SOUND_BROWSER_H__
+#define __SOUND_BROWSER_H__
 
+#include <QDialog>
+#include <QTreeWidgetItem>
+#include "DAVAEngine.h"
 
-#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
-#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+namespace Ui {
+class FMODSoundBrowser;
+}
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Sound/VolumeAnimatedObject.h"
+class SceneEditor2;
 
-namespace FMOD
+class FMODSoundBrowser : public QDialog, public DAVA::Singleton<FMODSoundBrowser>
 {
-class EventCategory;
-};
-
-namespace DAVA
-{
-
-class SoundEventCategory : public VolumeAnimatedObject
-{
-protected:
-	~SoundEventCategory();
+    Q_OBJECT
+    
 public:
-	SoundEventCategory(FMOD::EventCategory * category);
+    explicit FMODSoundBrowser(QWidget *parent = 0);
+    virtual ~FMODSoundBrowser();
 
-	void SetVolume(float32 volume);
-	float32	GetVolume();
+    DAVA::String GetSelectSoundEvent();
 
-	void Stop();
-	void Pause(bool isPaused);
-	bool GetPaused();
+#ifdef DAVA_FMOD
+    static DAVA::FilePath MakeFEVPathFromScenePath(const DAVA::FilePath & scenePath);
+#endif
+
+private slots:
+    void OnEventSelected(QTreeWidgetItem * item, int column);
+    void OnEventDoubleClicked(QTreeWidgetItem * item, int column);
+
+    void OnSceneLoaded(SceneEditor2 * scene);
+    void OnSceneClosed(SceneEditor2 * scene);
+
+    void OnAccepted();
+    void OnRejected();
 
 private:
-	FMOD::EventCategory * fmodEventCategory;
+    void UpdateEventTree();
+
+    void FillEventsTree(const DAVA::Vector<DAVA::String> & names);
+    void SelectItemAndExpandTreeByEventName(const DAVA::String & eventName);
+    
+    void SetSelectedItem(QTreeWidgetItem * item);
+
+    DAVA::Map<DAVA::Scene *, DAVA::FilePath> projectsMap;
+    QTreeWidgetItem * selectedItem;
+    Ui::FMODSoundBrowser *ui;
 };
 
-};
-
-#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#endif // SOUNDBROWSER_H

@@ -26,37 +26,76 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Commands2/SoundComponentEditCommands.h"
 
-
-#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
-#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
-
-#include "Base/BaseTypes.h"
-#include "Animation/AnimatedObject.h"
-
-namespace DAVA
+AddSoundEventCommand::AddSoundEventCommand(DAVA::Entity *_entity, DAVA::SoundEvent * _event)
+	: Command2(CMDID_SOUND_ADD_EVENT, "Add Sound Event")
 {
+	DVASSERT(_entity);
+    DVASSERT(_event);
 
-class Animation;
-class VolumeAnimatedObject : public AnimatedObject
+	savedEvent = SafeRetain(_event);
+    entity = SafeRetain(_entity);
+}
+
+AddSoundEventCommand::~AddSoundEventCommand()
 {
-protected:
-    ~VolumeAnimatedObject(){}
-public:
-	VolumeAnimatedObject();
+ 	SafeRelease(savedEvent);
+    SafeRelease(entity);
+}
 
-	virtual void SetVolume(float32 volume) = 0;
-	virtual float32 GetVolume() = 0;
+void AddSoundEventCommand::Redo()
+{
+    DAVA::SoundComponent * component = GetSoundComponent(entity);
+    DVASSERT(component);
+    component->AddSoundEvent(savedEvent);
+}
 
-	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
-	void Update();
+void AddSoundEventCommand::Undo()
+{
+    savedEvent->Stop();
+    DAVA::SoundComponent * component = GetSoundComponent(entity);
+    DVASSERT(component);
+ 	component->RemoveSoundEvent(savedEvent);
+}
 
-private:
-	float32 animatedVolume;
+DAVA::Entity* AddSoundEventCommand::GetEntity() const
+{
+	return entity;
+}
 
-	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
-};
+RemoveSoundEventCommand::RemoveSoundEventCommand(DAVA::Entity *_entity, DAVA::SoundEvent * _event)
+    : Command2(CMDID_SOUND_REMOVE_EVENT, "Remove Sound Event")
+{
+    DVASSERT(_entity);
+    DVASSERT(_event);
 
-};
+    savedEvent = SafeRetain(_event);
+    entity = SafeRetain(_entity);
+}
 
-#endif
+RemoveSoundEventCommand::~RemoveSoundEventCommand()
+{
+    SafeRelease(savedEvent);
+    SafeRelease(entity);
+}
+
+void RemoveSoundEventCommand::Redo()
+{
+    savedEvent->Stop();
+    DAVA::SoundComponent * component = GetSoundComponent(entity);
+    DVASSERT(component);
+    component->RemoveSoundEvent(savedEvent);
+}
+
+void RemoveSoundEventCommand::Undo()
+{
+    DAVA::SoundComponent * component = GetSoundComponent(entity);
+    DVASSERT(component);
+    component->AddSoundEvent(savedEvent);
+}
+
+DAVA::Entity* RemoveSoundEventCommand::GetEntity() const
+{
+    return entity;
+}

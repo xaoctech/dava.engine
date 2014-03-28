@@ -47,6 +47,7 @@
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
+#include "Scene3D/Systems/RenderUpdateSystem.h"
 
 const FastName MATERIAL_FOR_REBIND = FastName("Global");
 
@@ -61,56 +62,56 @@ SceneEditor2::SceneEditor2()
 	commandStack.SetNotify(notify);
 	SafeRelease(notify);
 
-	cameraSystem = new SceneCameraSystem(this);
-	AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT));
-
 	gridSystem = new SceneGridSystem(this);
-	AddSystem(gridSystem, 0);
-	
+	AddSystem(gridSystem, 0, true, renderUpdateSystem);
+
+    cameraSystem = new SceneCameraSystem(this);
+    AddSystem(cameraSystem, (1 << DAVA::Component::CAMERA_COMPONENT), true, transformSystem);
+
 	collisionSystem = new SceneCollisionSystem(this);
-	AddSystem(collisionSystem, 0);
+	AddSystem(collisionSystem, 0, true, renderUpdateSystem);
 
 	hoodSystem = new HoodSystem(this, cameraSystem);
-	AddSystem(hoodSystem, 0);
+	AddSystem(hoodSystem, 0, true, renderUpdateSystem);
 
 	selectionSystem = new SceneSelectionSystem(this, collisionSystem, hoodSystem);
-	AddSystem(selectionSystem, 0);
-	
-	particlesSystem = new EditorParticlesSystem(this);
-	AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT));
+	AddSystem(selectionSystem, 0, true, renderUpdateSystem);
 
 	modifSystem = new EntityModificationSystem(this, collisionSystem, cameraSystem, hoodSystem);
-	AddSystem(modifSystem, 0);
+	AddSystem(modifSystem, 0, true, renderUpdateSystem);
 
 	landscapeEditorDrawSystem = new LandscapeEditorDrawSystem(this);
-	AddSystem(landscapeEditorDrawSystem, 0);
+	AddSystem(landscapeEditorDrawSystem, 0, true, renderUpdateSystem);
 
 	heightmapEditorSystem = new HeightmapEditorSystem(this);
-	AddSystem(heightmapEditorSystem, 0);
+	AddSystem(heightmapEditorSystem, 0, true, renderUpdateSystem);
 
 	tilemaskEditorSystem = new TilemaskEditorSystem(this);
-	AddSystem(tilemaskEditorSystem, 0);
+	AddSystem(tilemaskEditorSystem, 0, true, renderUpdateSystem);
 
 	customColorsSystem = new CustomColorsSystem(this);
-	AddSystem(customColorsSystem, 0);
+	AddSystem(customColorsSystem, 0, true, renderUpdateSystem);
 
 	visibilityToolSystem = new VisibilityToolSystem(this);
-	AddSystem(visibilityToolSystem, 0);
+	AddSystem(visibilityToolSystem, 0, true, renderUpdateSystem);
 
     grassEditorSystem = new GrassEditorSystem(this);
     AddSystem(grassEditorSystem, 0);
 
 	rulerToolSystem = new RulerToolSystem(this);
-	AddSystem(rulerToolSystem, 0);
+	AddSystem(rulerToolSystem, 0, true, renderUpdateSystem);
 
 	structureSystem = new StructureSystem(this);
-	AddSystem(structureSystem, 0);
+	AddSystem(structureSystem, 0, true, renderUpdateSystem);
 
-	editorLightSystem = new EditorLightSystem(this);
-	AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT);
+    particlesSystem = new EditorParticlesSystem(this);
+    AddSystem(particlesSystem, (1 << DAVA::Component::PARTICLE_EFFECT_COMPONENT), true, renderUpdateSystem);
 
 	textDrawSystem = new TextDrawSystem(this, cameraSystem);
-	AddSystem(textDrawSystem, 0);
+    AddSystem(textDrawSystem, 0, true, renderUpdateSystem);
+
+    editorLightSystem = new EditorLightSystem(this);
+    AddSystem(editorLightSystem, 1 << Component::LIGHT_COMPONENT, true, renderUpdateSystem);
 
 	debugDrawSystem = new DebugDrawSystem(this);
 	AddSystem(debugDrawSystem, 0);
@@ -122,10 +123,10 @@ SceneEditor2::SceneEditor2()
 	AddSystem(ownersSignatureSystem, 0);
     
     staticOcclusionBuildSystem = new StaticOcclusionBuildSystem(this);
-    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT));
+    AddSystem(staticOcclusionBuildSystem, (1 << Component::STATIC_OCCLUSION_COMPONENT) | (1 << Component::TRANSFORM_COMPONENT), true, renderUpdateSystem);
 
 	materialSystem = new EditorMaterialSystem(this);
-	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT);
+	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT, true, renderUpdateSystem);
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
 
@@ -255,6 +256,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
+    exporter.SetOutSoundsFolder(projectPath + String("Data/Sfx/"));
 	exporter.SetGPUForExporting(newGPU);
 	Set<String> errorLog;
 
@@ -357,40 +359,7 @@ void SceneEditor2::SetChanged(bool changed)
 
 void SceneEditor2::Update(float timeElapsed)
 {
-	Scene::Update(timeElapsed);
-	gridSystem->Update(timeElapsed);
-	cameraSystem->Update(timeElapsed);
-	
-	if(collisionSystem)
-		collisionSystem->Update(timeElapsed);
-
-	hoodSystem->Update(timeElapsed);
-	selectionSystem->Update(timeElapsed);
-	modifSystem->Update(timeElapsed);
-
-	if(landscapeEditorDrawSystem)
-		landscapeEditorDrawSystem->Update(timeElapsed);
-
-	heightmapEditorSystem->Update(timeElapsed);
-	tilemaskEditorSystem->Update(timeElapsed);
-	customColorsSystem->Update(timeElapsed);
-	visibilityToolSystem->Update(timeElapsed);
-	rulerToolSystem->Update(timeElapsed);
-    grassEditorSystem->Update(timeElapsed);
-	
-	if(structureSystem)
-		structureSystem->Update(timeElapsed);
-	
-	particlesSystem->Update(timeElapsed);
-	textDrawSystem->Update(timeElapsed);
-	
-	if(editorLightSystem)
-		editorLightSystem->Process();
-
-    staticOcclusionBuildSystem->SetCamera(GetClipCamera());
-    staticOcclusionBuildSystem->Process(timeElapsed);
-
-	materialSystem->Update(timeElapsed);
+    Scene::Update(timeElapsed);
 }
 
 void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
@@ -713,21 +682,21 @@ int32 SceneEditor2::GetEnabledTools()
 
 Entity* SceneEditor2::Clone( Entity *dstNode /*= NULL*/ )
 {
-	if(!dstNode)
-	{
-		DVASSERT_MSG(IsPointerToExactClass<SceneEditor2>(this), "Can clone only SceneEditor2");
-		dstNode = new SceneEditor2();
-	}
-	
-	return Scene::Clone(dstNode);
+    if(!dstNode)
+    {
+        DVASSERT_MSG(IsPointerToExactClass<SceneEditor2>(this), "Can clone only SceneEditor2");
+        dstNode = new SceneEditor2();
+    }
+
+    return Scene::Clone(dstNode);
 }
 
 SceneEditor2 * SceneEditor2::CreateCopyForExport()
 {
 	SceneEditor2 *clonedScene = new SceneEditor2();
-	clonedScene->RemoveSystems();
+    clonedScene->RemoveSystems();
 
-	return (SceneEditor2 *)Clone(clonedScene);
+	return (SceneEditor2 *)Scene::Clone(clonedScene);
 }
 
 void SceneEditor2::RemoveSystems()

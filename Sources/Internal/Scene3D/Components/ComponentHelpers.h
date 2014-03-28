@@ -45,13 +45,18 @@ class LightComponent;
 class Landscape;
 class Camera;
 class LodComponent;
+class SoundComponent;
+class SoundEvent;
 class SkyboxRenderObject;
 class SwitchComponent;
 class QualitySettingsComponent;
+class TransformComponent;
 class RenderComponent;
+
 class TransformComponent;
 class VegetationRenderObject;
 
+TransformComponent * GetTransformComponent(Entity * fromEntity);
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 TransformComponent * GetTransformComponent(Entity * fromEntity);
 RenderComponent * GetRenderComponent(const Entity *fromEntity);
@@ -64,6 +69,8 @@ LightComponent *GetLightComponent(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);
 
 Camera * GetCamera(Entity * fromEntity);
+
+SoundComponent * GetSoundComponent(Entity * fromEntity);
 
 LodComponent * GetLodComponent(Entity *fromEntity);
 SwitchComponent* GetSwitchComponent(Entity *fromEntity);

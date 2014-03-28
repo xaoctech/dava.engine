@@ -37,6 +37,8 @@
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
@@ -46,6 +48,7 @@
 
 namespace DAVA
 {
+
 
 RenderComponent * GetRenderComponent(const Entity *fromEntity)
 {
@@ -177,6 +180,16 @@ SwitchComponent * GetSwitchComponent(Entity *fromEntity)
 	}
 
 	return NULL;
+}
+
+SoundComponent * GetSoundComponent(Entity * fromEntity)
+{
+    if(fromEntity)
+    {
+        return static_cast<SoundComponent *>(fromEntity->GetComponent(Component::SOUND_COMPONENT));
+    }
+
+    return NULL;
 }
 
 uint32 GetLodLayersCount(Entity *fromEntity)
