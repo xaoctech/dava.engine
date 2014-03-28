@@ -70,8 +70,8 @@ bool Image::Save(const FilePath &path) const
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
     
     size_t bitsPerComponent = 8;
-    size_t bitsPerPixel = Texture::GetPixelFormatSizeInBits(format);
-    size_t bytesPerPixel = Texture::GetPixelFormatSizeInBytes(format);
+    size_t bitsPerPixel = PixelFormatDescriptor::GetPixelFormatSizeInBits(format);
+    size_t bytesPerPixel = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
     size_t bytesPerRow = width * bytesPerPixel;
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
