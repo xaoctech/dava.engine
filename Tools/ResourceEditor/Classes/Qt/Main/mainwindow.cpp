@@ -38,6 +38,7 @@
 #include "SpritesPacker/SpritePackerHelper.h"
 
 #include "TextureBrowser/TextureBrowser.h"
+#include "SoundComponentEditor/FMODSoundBrowser.h"
 #include "TextureBrowser/TextureCache.h"
 #include "MaterialEditor/MaterialEditor.h"
 #include "QualitySwitcher/QualitySwitcher.h"
@@ -143,7 +144,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	// create tool windows
 	new TextureBrowser(this);
 	new MaterialEditor(this);
+    new FMODSoundBrowser(this);
+
 	waitDialog = new QtWaitDialog(this);
+
 	beastWaitDialog = new QtWaitDialog(this);
 
 	posSaver.Attach(this);
@@ -159,12 +163,11 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	QObject::connect(SceneSignals::Instance(), SIGNAL(EditorLightEnabled(bool)), this, SLOT(EditorLightEnabled(bool)));
 
     QObject::connect(this, SIGNAL(TexturesReloaded()), TextureCache::Instance(), SLOT(ClearCache()));
-
     
 	LoadGPUFormat();
     LoadMaterialLightViewMode();
 
-    EnableGlobalTimeout(globalInvalidate);
+	EnableGlobalTimeout(globalInvalidate);
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
@@ -699,6 +702,9 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
 	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
+
+    QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
+    QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
 
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -2272,6 +2278,48 @@ void QtMainWindow::OnAddActionComponent()
 	}
 }
 
+void QtMainWindow::OnAddSoundComponent()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
+    {
+        scene->BeginBatch("Add Action Component");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::SOUND_COMPONENT)));
+        }
+
+        scene->EndBatch();
+    }
+}
+
+void QtMainWindow::OnRemoveSoundComponent()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    SceneSelectionSystem *ss = scene->selectionSystem;
+    if(ss->GetSelectionCount() > 0)
+    {
+        scene->BeginBatch("Add Action Component");
+
+        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
+        {
+            SoundComponent * sc = GetSoundComponent(ss->GetSelectionEntity(i));
+            if(sc)
+            {
+                scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), sc));
+            }
+        }
+
+        scene->EndBatch();
+    }
+}
+
 void QtMainWindow::OnAddStaticOcclusionComponent()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -2317,7 +2365,6 @@ void QtMainWindow::OnBuildStaticOcclusion()
     
     scene->staticOcclusionBuildSystem->BuildOcclusionInformation();
 }
-
 
 bool QtMainWindow::IsSavingAllowed()
 {

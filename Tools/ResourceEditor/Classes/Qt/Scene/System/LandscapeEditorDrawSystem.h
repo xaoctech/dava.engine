@@ -88,7 +88,7 @@ public:
 	void SetCursorPosition(const Vector2& cursorPos);
 	void UpdateCursorPosition();
 	
-	void Update(DAVA::float32 timeElapsed);
+	virtual void Process(DAVA::float32 timeElapsed);
 
 	float32 GetTextureSize(Landscape::eTextureLevel level);
 	Vector3 GetLandscapeSize();

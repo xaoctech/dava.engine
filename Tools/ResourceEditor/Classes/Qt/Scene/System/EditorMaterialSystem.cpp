@@ -240,7 +240,7 @@ void EditorMaterialSystem::ApplyViewMode(DAVA::NMaterial *material)
     material->SetFlag(DAVA::NMaterial::FLAG_VIEWAMBIENT, flag);
 }
 
-void EditorMaterialSystem::Update(DAVA::float32 timeElapsed)
+void EditorMaterialSystem::Process(DAVA::float32 timeElapsed)
 {
 	
 }

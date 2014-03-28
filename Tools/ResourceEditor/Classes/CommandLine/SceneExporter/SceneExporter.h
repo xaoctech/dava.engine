@@ -48,6 +48,7 @@ public:
     
     void SetInFolder(const FilePath &folderPathname);
     void SetOutFolder(const FilePath &folderPathname);
+    void SetOutSoundsFolder(const FilePath &folderPathname);
     
 	void EnableOptimizations( bool enable );
 
@@ -68,11 +69,13 @@ protected:
 
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
     
-    
+    void ExportSounds(const FilePath &scenePath);
     
 protected:
     
     SceneUtils sceneUtils;
+
+    FilePath soundsOutFolder;
 
     eGPUFamily exportForGPU;
 	bool optimizeOnExport;
