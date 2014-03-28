@@ -42,6 +42,7 @@ class NotPassableTerrainProxy;
 class CustomColorsProxy;
 class VisibilityToolProxy;
 class RulerToolProxy;
+class GrassEditorProxy;
 
 using namespace DAVA;
 
@@ -70,6 +71,7 @@ public:
 	CustomColorsProxy* GetCustomColorsProxy();
 	VisibilityToolProxy* GetVisibilityToolProxy();
 	RulerToolProxy* GetRulerToolProxy();
+    GrassEditorProxy* GetGrassEditorProxy();
 
 	eErrorType EnableCustomDraw();
 	void DisableCustomDraw();
@@ -131,6 +133,7 @@ private:
 	CustomColorsProxy* customColorsProxy;
 	VisibilityToolProxy* visibilityToolProxy;
 	RulerToolProxy* rulerToolProxy;
+    GrassEditorProxy *grassEditorProxy;
 
 	uint32 customDrawRequestCount;
 	
