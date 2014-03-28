@@ -697,6 +697,8 @@ SceneEditor2 * SceneEditor2::CreateCopyForExport()
 	SceneEditor2 *clonedScene = new SceneEditor2();
 	clonedScene->RemoveSystems();
 
+    clonedScene->SetGlobalMaterial(GetGlobalMaterial());
+
 	return (SceneEditor2 *)Clone(clonedScene);
 }
 
