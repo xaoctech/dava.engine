@@ -2720,4 +2720,11 @@ int NMaterial::NMaterialStateDynamicFlagsInsp::MemberFlags(void *object, const F
 {
 	return I_VIEW | I_EDIT;
 }
+    
+void NMaterial::UpdateUniqueKey(uint64 newKeyValue)
+{
+    materialKey = newKeyValue;
+    pointer = newKeyValue;
+}
+
 };

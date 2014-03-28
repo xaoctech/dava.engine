@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0282B86618BC71BC006F1EE4 /* FMODSoundBrowser.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0282B86218BC71BC006F1EE4 /* FMODSoundBrowser.cpp */; };
+		0282B86718BC71BC006F1EE4 /* SoundComponentEditor.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0282B86418BC71BC006F1EE4 /* SoundComponentEditor.cpp */; };
+		0282B87118BC71E9006F1EE4 /* SoundComponentEditCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0282B86F18BC71E9006F1EE4 /* SoundComponentEditCommands.cpp */; };
+		0282B87F18BC745C006F1EE4 /* FMODSoundBrowser_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0282B87D18BC745C006F1EE4 /* FMODSoundBrowser_moc.cpp */; };
+		0282B88018BC745C006F1EE4 /* SoundComponentEditor_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 0282B87E18BC745C006F1EE4 /* SoundComponentEditor_moc.cpp */; };
 		02E9E4101739612300C501BC /* libfmodevent.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
 		02E9E4111739612300C501BC /* libfmodex.dylib in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
 		02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
@@ -640,6 +645,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0282B86218BC71BC006F1EE4 /* FMODSoundBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundBrowser.cpp; sourceTree = "<group>"; };
+		0282B86318BC71BC006F1EE4 /* FMODSoundBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODSoundBrowser.h; sourceTree = "<group>"; };
+		0282B86418BC71BC006F1EE4 /* SoundComponentEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponentEditor.cpp; sourceTree = "<group>"; };
+		0282B86518BC71BC006F1EE4 /* SoundComponentEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponentEditor.h; sourceTree = "<group>"; };
+		0282B86F18BC71E9006F1EE4 /* SoundComponentEditCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponentEditCommands.cpp; sourceTree = "<group>"; };
+		0282B87018BC71E9006F1EE4 /* SoundComponentEditCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundComponentEditCommands.h; sourceTree = "<group>"; };
+		0282B87D18BC745C006F1EE4 /* FMODSoundBrowser_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODSoundBrowser_moc.cpp; sourceTree = "<group>"; };
+		0282B87E18BC745C006F1EE4 /* SoundComponentEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponentEditor_moc.cpp; sourceTree = "<group>"; };
 		02E9E40E1739612300C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E40F1739612300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
 		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
@@ -1723,6 +1736,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0282B86118BC71BC006F1EE4 /* SoundComponentEditor */ = {
+			isa = PBXGroup;
+			children = (
+				0282B86218BC71BC006F1EE4 /* FMODSoundBrowser.cpp */,
+				0282B86318BC71BC006F1EE4 /* FMODSoundBrowser.h */,
+				0282B86418BC71BC006F1EE4 /* SoundComponentEditor.cpp */,
+				0282B86518BC71BC006F1EE4 /* SoundComponentEditor.h */,
+			);
+			path = SoundComponentEditor;
+			sourceTree = "<group>";
+		};
+		0282B87C18BC745C006F1EE4 /* SoundComponentEditor */ = {
+			isa = PBXGroup;
+			children = (
+				0282B87D18BC745C006F1EE4 /* FMODSoundBrowser_moc.cpp */,
+				0282B87E18BC745C006F1EE4 /* SoundComponentEditor_moc.cpp */,
+			);
+			name = SoundComponentEditor;
+			path = _GeneratedQt/SoundComponentEditor;
+			sourceTree = "<group>";
+		};
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
@@ -1887,6 +1921,7 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				0282B87C18BC745C006F1EE4 /* SoundComponentEditor */,
 				76A098A218E1967B00D442EB /* LicenceDialog */,
 				76A0989A18E1965E00D442EB /* ui_LicenceDialog.h */,
 				8464251A18B16A2500A2BE35 /* ui_ImageSplitter.h */,
@@ -3063,6 +3098,8 @@
 			children = (
 				643BE8FD18C74B1C00D824FE /* ImageRegionCopyCommand.cpp */,
 				643BE8FE18C74B1C00D824FE /* ImageRegionCopyCommand.h */,
+				0282B86F18BC71E9006F1EE4 /* SoundComponentEditCommands.cpp */,
+				0282B87018BC71E9006F1EE4 /* SoundComponentEditCommands.h */,
 				E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */,
 				E86F97CE18DB38F1007330E1 /* CloneLastBatchCommand.h */,
 				EAADA00C189FB59E001E1AA2 /* ParticleEmitterMoveCommands.cpp */,
@@ -3192,6 +3229,7 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				0282B86118BC71BC006F1EE4 /* SoundComponentEditor */,
 				76A098A518E196F800D442EB /* LicenceDialog */,
 				84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */,
 				A6CCB64718990C3000F5DA38 /* QualitySwitcher */,
@@ -4298,15 +4336,18 @@
 				E8BAD70D1859F50300C98C8D /* StructureSystem_moc.cpp in Build Sources */,
 				E8C9922F184CD0EC00AFBF3F /* btTriangleMeshShape.cpp in Build Sources */,
 				84B3D11F18985EF20039A9C0 /* PathValidator.cpp in Build Sources */,
+				0282B86618BC71BC006F1EE4 /* FMODSoundBrowser.cpp in Build Sources */,
 				E8C99280184CD0EC00AFBF3F /* BeastAction.cpp in Build Sources */,
 				E8BAD7021859F50300C98C8D /* CustomLandscape_moc.cpp in Build Sources */,
 				E8C992AE184CD0EC00AFBF3F /* FrameworkMain.cpp in Build Sources */,
+				0282B87F18BC745C006F1EE4 /* FMODSoundBrowser_moc.cpp in Build Sources */,
 				E8C99230184CD0EC00AFBF3F /* btUniformScalingShape.cpp in Build Sources */,
 				E8C99302184CD0EC00AFBF3F /* HeightmapEditorSystem.cpp in Build Sources */,
 				E8BAD6CB1859F50300C98C8D /* ScrollZoomWidget_moc.cpp in Build Sources */,
 				E8C99242184CD0EC00AFBF3F /* btMinkowskiPenetrationDepthSolver.cpp in Build Sources */,
 				62B0D9901868359D00A60F7E /* GeneralSettingsDialog_moc.cpp in Build Sources */,
 				E8BAD6C71859F50300C98C8D /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,
+				0282B88018BC745C006F1EE4 /* SoundComponentEditor_moc.cpp in Build Sources */,
 				E8BAD6FD1859F50300C98C8D /* NormalHood_moc.cpp in Build Sources */,
 				62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */,
 				E8C9927D184CD0EC00AFBF3F /* TextureDescriptorUtils.cpp in Build Sources */,
@@ -4509,6 +4550,7 @@
 				E8BAD6D61859F50300C98C8D /* SceneTreeItemForce_moc.cpp in Build Sources */,
 				E8C9921F184CD0EC00AFBF3F /* btMinkowskiSumShape.cpp in Build Sources */,
 				E8BAD7331859F50300C98C8D /* QtPropertyDataKeyedArchiveMember_moc.cpp in Build Sources */,
+				0282B86718BC71BC006F1EE4 /* SoundComponentEditor.cpp in Build Sources */,
 				E8C992E1184CD0EC00AFBF3F /* SceneTree.cpp in Build Sources */,
 				E8C992D6184CD0EC00AFBF3F /* ParticleEffectPropertiesWidget.cpp in Build Sources */,
 				E8C99212184CD0EC00AFBF3F /* btCompoundShape.cpp in Build Sources */,
@@ -4651,6 +4693,7 @@
 				E8C99245184CD0EC00AFBF3F /* btRaycastCallback.cpp in Build Sources */,
 				E8BAD71B1859F50300C98C8D /* TextureListModel_moc.cpp in Build Sources */,
 				E8C99210184CD0EC00AFBF3F /* btCapsuleShape.cpp in Build Sources */,
+				0282B87118BC71E9006F1EE4 /* SoundComponentEditCommands.cpp in Build Sources */,
 				E8C991F1184CD0EC00AFBF3F /* btDispatcher.cpp in Build Sources */,
 				E8C991F3184CD0EC00AFBF3F /* btOverlappingPairCache.cpp in Build Sources */,
 				E8BAD7231859F50300C98C8D /* HangingObjectsHeight_moc.cpp in Build Sources */,
@@ -4698,6 +4741,7 @@
 					DAVA_DEBUG,
 					DAVA_QT,
 					__DAVAENGINE_SPEEDTREE__,
+					DAVA_FMOD,
 				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
@@ -4792,6 +4836,7 @@
 					DAVA_DEBUG,
 					DAVA_QT,
 					__DAVAENGINE_SPEEDTREE__,
+					DAVA_FMOD,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4812,6 +4857,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DAVA_QT,
 					__DAVAENGINE_SPEEDTREE__,
+					DAVA_FMOD,
 				);
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;

@@ -218,7 +218,15 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     _scene->GetDataNodes(nodes);
     uint32 dataNodesCount = GetSerializableDataNodesCount(nodes);
     file->Write(&dataNodesCount, sizeof(uint32));
-    for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+
+    List<DataNode*>::iterator itEnd = nodes.end();
+    uint64 materialUniqueKey = 1;
+    for (List<DataNode*>::iterator it = nodes.begin(); it != itEnd; ++it)
+    {
+        (*it)->UpdateUniqueKey(materialUniqueKey++);
+    }
+    
+    for (List<DataNode*>::iterator it = nodes.begin(); it != itEnd; ++it)
 	{
 		if(IsDataNodeSerializable(*it))
 		{

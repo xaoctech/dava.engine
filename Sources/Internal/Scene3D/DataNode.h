@@ -110,6 +110,8 @@ public:
      */
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
+    virtual void UpdateUniqueKey(uint64 newKeyValue) {}; 
+    
 protected:
     uint64 pointer;
     Scene * scene;
@@ -147,7 +149,7 @@ protected:
 
 };
 
-#endif // __DAVAENGINE_SCENENODE_H__
+#endif // __DAVAENGINE_DATANODE_H__
 
 
 

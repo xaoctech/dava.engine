@@ -349,6 +349,9 @@ public:
 
     void BuildActiveUniformsCacheParamsCache();
     
+    // set new materialKey and pointer to properly save all materials
+    virtual void UpdateUniqueKey(uint64 newKeyValue);
+    
 protected:
 	
 	class TextureBucket
