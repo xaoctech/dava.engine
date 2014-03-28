@@ -110,6 +110,8 @@ public:
      */
 	virtual void Load(KeyedArchive * archive, SerializationContext * serializationContext);
     
+    virtual void UpdateUniqueKey(uint64 newKeyValue) {}; 
+    
 protected:
     uint64 pointer;
     Scene * scene;
