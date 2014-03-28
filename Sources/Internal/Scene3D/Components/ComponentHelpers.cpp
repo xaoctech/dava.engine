@@ -43,6 +43,7 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
+#include "Render/Highlevel/VegetationRenderObject.h"
 #include "Scene3D/Components/TransformComponent.h"
 
 namespace DAVA
@@ -85,7 +86,6 @@ SkyboxRenderObject * GetSkybox(const Entity * fromEntity)
     
     return NULL;
 }
-   
 
 ParticleEffectComponent * GetEffectComponent(Entity *fromEntity)
 {
@@ -131,6 +131,21 @@ Landscape * GetLandscape( Entity * fromEntity )
 	}
 
 	return NULL;
+}
+
+VegetationRenderObject * GetVegetation(const Entity * fromEntity)
+{
+    if(NULL != fromEntity)
+    {
+        RenderObject * object = GetRenderObject(fromEntity);
+        if(object && object->GetType() == RenderObject::TYPE_VEGETATION)
+        {
+            VegetationRenderObject *vegetation = static_cast<VegetationRenderObject *>(object);
+            return vegetation;
+        }
+    }
+
+    return NULL;
 }
 
 Camera * GetCamera(Entity * fromEntity)
@@ -276,11 +291,38 @@ Entity * FindLandscapeEntity(Entity * rootEntity)
 	return NULL;
 }
 
+Entity * FindVegetationEntity(Entity * rootEntity)
+{
+    if(GetVegetation(rootEntity))
+    {
+        return rootEntity;
+    }
+        
+    DAVA::int32 count = rootEntity->GetChildrenCount();
+    for(DAVA::int32 i = 0; i < count; ++i)
+    {
+        Entity *vegetationEntity = FindVegetationEntity(rootEntity->GetChild(i));
+        if(vegetationEntity)
+        {
+            return vegetationEntity;
+        }
+    }
+        
+    return NULL;
+}
+
 Landscape * FindLandscape(Entity * rootEntity)
 {
 	Entity *entity = FindLandscapeEntity(rootEntity);
 	return GetLandscape(entity);
 }
+
+VegetationRenderObject* FindVegetation(Entity * rootEntity)
+{
+    Entity *entity = FindVegetationEntity(rootEntity);
+    return GetVegetation(entity);
+}
+
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity * fromEntity)
 {

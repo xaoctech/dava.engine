@@ -255,6 +255,7 @@
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
@@ -680,13 +681,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
    <addaction name="actionCustomColorsEditor"/>
    <addaction name="actionVisibilityCheckTool"/>
+   <addaction name="separator"/>
+   <addaction name="actionGrasEditor"/>
   </widget>
   <widget class="QDockWidget" name="dockLandscapeEditorControls">
    <property name="windowTitle">
@@ -1817,6 +1819,18 @@
     <string>Show Lightmap Canvas</string>
    </property>
   </action>
+  <action name="actionGrasEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>GrasEditor</string>
+   </property>
+  </action>
   <action name="actionImageSplitter">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1824,6 +1838,15 @@
    </property>
    <property name="text">
     <string>ImageSplitter</string>
+   </property>
+  </action>
+  <action name="actionAddVegetation">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vegetation</string>
    </property>
   </action>
   <action name="actionReloadShader">

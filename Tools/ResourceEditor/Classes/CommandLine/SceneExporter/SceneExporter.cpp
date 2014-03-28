@@ -139,6 +139,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     ExportLandscape(scene, errorLog);
+    ExportVegetation(scene, errorLog);
 
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
@@ -384,6 +385,18 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
+    }
+}
+
+void SceneExporter::ExportVegetation(Scene *scene, Set<String> &errorLog)
+{
+    DVASSERT(scene);
+    
+    VegetationRenderObject *vegetation = FindVegetation(scene);
+    if (vegetation)
+    {
+        sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
+        sceneUtils.CopyFile(vegetation->GetVegetationMapPath(), errorLog);
     }
 }
 

@@ -71,6 +71,7 @@
 #include "Sound/SoundSystem.h"
 
 #include "Scene3D/Systems/StaticOcclusionSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
@@ -111,6 +112,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     ,   skyboxSystem(0)
     ,   staticOcclusionSystem(0)
     ,   materialSystem(0)
+    ,   foliageSystem(0)
 {   
 
 //	entityManager = new EntityManager();
@@ -317,6 +319,12 @@ void Scene::CreateSystems()
     {
         debugRenderSystem = new DebugRenderSystem(this);
         AddSystem(debugRenderSystem, (1 << Component::DEBUG_RENDER_COMPONENT), true);
+    }
+    
+    if(SCENE_SYSTEM_FOLIAGE_FLAG & systemsMask)
+    {
+        foliageSystem = new FoliageSystem(this);
+        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT));
     }
 }
 
