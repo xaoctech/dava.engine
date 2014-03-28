@@ -245,11 +245,8 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 { 
-    if(isVisible())
-    {
-        ui->materialTree->SetScene(NULL);
-        SetCurMaterial(QList< DAVA::NMaterial *>());
-    }
+    ui->materialTree->SetScene(NULL);
+    SetCurMaterial(QList< DAVA::NMaterial *>());
 }
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
