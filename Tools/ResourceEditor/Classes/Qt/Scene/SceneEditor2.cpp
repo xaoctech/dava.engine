@@ -95,6 +95,9 @@ SceneEditor2::SceneEditor2()
 	visibilityToolSystem = new VisibilityToolSystem(this);
 	AddSystem(visibilityToolSystem, 0, true, renderUpdateSystem);
 
+    grassEditorSystem = new GrassEditorSystem(this);
+    AddSystem(grassEditorSystem, 0);
+
 	rulerToolSystem = new RulerToolSystem(this);
 	AddSystem(rulerToolSystem, 0, true, renderUpdateSystem);
 
@@ -373,6 +376,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
 	rulerToolSystem->ProcessUIEvent(event);
+    grassEditorSystem->ProcessUIEvent(event);
 
 	if(structureSystem)
 		structureSystem->ProcessUIEvent(event);
@@ -448,6 +452,7 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 	selectionSystem->ProcessCommand(command, redo);
 	hoodSystem->ProcessCommand(command, redo);
 	modifSystem->ProcessCommand(command, redo);
+    grassEditorSystem->ProcessCommand(command, redo);
 	
 	if(structureSystem)
 		structureSystem->ProcessCommand(command, redo);
@@ -584,6 +589,11 @@ void SceneEditor2::DisableTools(int32 toolFlags, bool saveChanges /*= true*/)
 	{
 		Exec(new ActionDisableNotPassable(this));
 	}
+
+    if(toolFlags & LANDSCAPE_TOOL_GRASS_EDITOR)
+    {
+        grassEditorSystem->EnableGrassEdit(false);
+    }
 }
 
 bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
@@ -619,6 +629,11 @@ bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
 	{
 		res |= landscapeEditorDrawSystem->IsNotPassableTerrainEnabled();
 	}
+
+    if(toolFlags & LANDSCAPE_TOOL_GRASS_EDITOR)
+    {
+        res |= grassEditorSystem->IsEnabledGrassEdit();
+    }
 
 	return res;
 }
@@ -656,7 +671,12 @@ int32 SceneEditor2::GetEnabledTools()
 	{
 		toolFlags |= LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN;
 	}
-	
+
+    if(grassEditorSystem->IsEnabledGrassEdit())
+    {
+        toolFlags |= LANDSCAPE_TOOL_GRASS_EDITOR;
+    }
+
 	return toolFlags;
 }
 

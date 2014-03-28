@@ -110,6 +110,8 @@
 #include "RecentFilesManager.h"
 #include "Deprecated/SceneValidator.h"
 
+#include "Render/Highlevel/VegetationRenderObject.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -645,6 +647,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTileMapEditor, SIGNAL(triggered()), this, SLOT(OnTilemaskEditor()));
 	QObject::connect(ui->actionVisibilityCheckTool, SIGNAL(triggered()), this, SLOT(OnVisibilityTool()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
+    QObject::connect(ui->actionGrasEditor, SIGNAL(triggered()), this, SLOT(OnGrasEditor()));
 
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
 	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
@@ -660,6 +663,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
+    QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowGeneralSettings()));
 	QObject::connect(ui->actionCurrentSceneSettings, SIGNAL(triggered()), this, SLOT(OnShowCurrentSceneSettings()));
@@ -890,6 +894,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionRulerTool->setEnabled(enable);
 	ui->actionVisibilityCheckTool->setEnabled(enable);
 	ui->actionCustomColorsEditor->setEnabled(enable);
+    ui->actionGrasEditor->setEnabled(enable);
 
 	ui->actionEnableCameraLight->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
@@ -1438,6 +1443,27 @@ void QtMainWindow::OnAddSkybox()
     skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
     sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
     skyboxEntity->Release();
+}
+
+void QtMainWindow::OnAddVegetation()
+{
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
+        RenderComponent* rc = new RenderComponent();
+        rc->SetRenderObject(vro);
+        SafeRelease(vro);
+
+        Entity* vegetationNode = new Entity();
+        vegetationNode->AddComponent(rc);
+        vegetationNode->SetName(FastName("Vegetation"));
+
+        sceneEditor->Exec(new EntityAddCommand(vegetationNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(vegetationNode);
+
+        SafeRelease(vegetationNode);
+    }
 }
 
 void QtMainWindow::OnLightDialog()
@@ -2036,6 +2062,7 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	ui->actionTileMapEditor->setChecked(false);
 	ui->actionVisibilityCheckTool->setChecked(false);
 	ui->actionShowNotPassableLandscape->setChecked(false);
+    ui->actionGrasEditor->setChecked(false);
 	
 	int32 tools = scene->GetEnabledTools();
 
@@ -2065,6 +2092,10 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	{
 		ui->actionShowNotPassableLandscape->setChecked(true);
 	}
+    if(tools & SceneEditor2::LANDSCAPE_TOOL_GRASS_EDITOR)
+    {
+        ui->actionGrasEditor->setChecked(true);
+    }
 }
 
 void QtMainWindow::OnCustomColorsEditor()
@@ -2257,6 +2288,32 @@ void QtMainWindow::OnNotPassableTerrain()
 			OnLandscapeEditorToggled(sceneEditor);
 		}
 	}
+}
+
+void QtMainWindow::OnGrasEditor()
+{
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(!sceneEditor)
+    {
+        return;
+    }
+
+    bool toggled = false;
+    if(sceneEditor->grassEditorSystem->IsEnabledGrassEdit())
+    {
+        toggled = sceneEditor->grassEditorSystem->EnableGrassEdit(false);
+    }
+    else
+    {
+        sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+        toggled = sceneEditor->grassEditorSystem->EnableGrassEdit(true);
+    }
+
+    if(toggled)
+    {
+        SceneSignals::Instance()->EmitGrassEditorToggled(sceneEditor);
+        OnLandscapeEditorToggled(sceneEditor);
+    }
 }
 
 void QtMainWindow::OnAddActionComponent()
