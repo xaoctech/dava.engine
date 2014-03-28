@@ -632,7 +632,7 @@ void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
     
 	rootNodes[FILEPATH_MAP_KEY(rootNodePath)] = proxyNode;
 
-	proxyNode->SetName(rootNodePath.GetAbsolutePathname());
+	//proxyNode->SetName(rootNodePath.GetAbsolutePathname());
 }
 
 Entity *Scene::GetRootNode(const FilePath &rootNodePath)
