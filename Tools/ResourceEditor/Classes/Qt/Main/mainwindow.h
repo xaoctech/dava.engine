@@ -129,6 +129,7 @@ public slots:
 	
 	void OnAddLandscape();
     void OnAddSkybox();
+    void OnAddVegetation();
 	void OnLightDialog();
 	void OnCameraDialog();
 	void OnEmptyEntity();
@@ -173,10 +174,13 @@ public slots:
 	void OnTilemaskEditor();
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
+    void OnGrasEditor();
 	
 	void OnAddActionComponent();
     void OnAddStaticOcclusionComponent();
     void OnAddModelTypeComponent();
+    void OnAddSoundComponent();
+    void OnRemoveSoundComponent();
 
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);

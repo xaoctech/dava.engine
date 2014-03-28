@@ -227,7 +227,15 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 
     uint32 dataNodesCount = GetSerializableDataNodesCount(nodes);
     file->Write(&dataNodesCount, sizeof(uint32));
-    for (List<DataNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+
+    List<DataNode*>::iterator itEnd = nodes.end();
+    uint64 materialUniqueKey = 1;
+    for (List<DataNode*>::iterator it = nodes.begin(); it != itEnd; ++it)
+    {
+        (*it)->UpdateUniqueKey(materialUniqueKey++);
+    }
+    
+    for (List<DataNode*>::iterator it = nodes.begin(); it != itEnd; ++it)
 	{
 		if(IsDataNodeSerializable(*it))
 		{
@@ -448,19 +456,19 @@ void SceneFileV2::ReadDescriptor(File* file, /*out*/ Descriptor& descriptor)
 bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
 {
     KeyedArchive * archive = new KeyedArchive();
-    if (isDebugLogEnabled)
-        Logger::FrameworkDebug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
+    //if (isDebugLogEnabled)
+    //    Logger::FrameworkDebug("- %s(%s)", node->GetName().c_str(), node->GetClassName().c_str());
     
     
     node->Save(archive, &serializationContext);
-    archive->SetInt32("#childrenCount", node->GetChildrenNodeCount());
+    //archive->SetInt32("#childrenCount", node->GetChildrenNodeCount());
     archive->Save(file);
     
-    for (int ci = 0; ci < node->GetChildrenNodeCount(); ++ci)
+    /*for (int ci = 0; ci < node->GetChildrenNodeCount(); ++ci)
     {
         DataNode * child = node->GetChildNode(ci);
         SaveDataNode(child, file);
-    }
+    }*/
     
     SafeRelease(archive);
     return true;
@@ -492,14 +500,14 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
         node->Load(archive, &serializationContext);
         AddToNodeMap(node);
         
-        if (parent)
-            parent->AddNode(node);
+        //if (parent)
+        //    parent->AddNode(node);
         
-        int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+        /*int32 childrenCount = archive->GetInt32("#childrenCount", 0);
         for (int ci = 0; ci < childrenCount; ++ci)
         {
             LoadDataNode(node, file);
-        }
+        }*/
         
         SafeRelease(node);
     }
@@ -509,20 +517,20 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
 bool SceneFileV2::SaveDataHierarchy(DataNode * node, File * file, int32 level)
 {
     KeyedArchive * archive = new KeyedArchive();
-    if (isDebugLogEnabled)
-        Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), node->GetName().c_str(), node->GetClassName().c_str());
+    //if (isDebugLogEnabled)
+    //    Logger::FrameworkDebug("%s %s(%s)", GetIndentString('-', level).c_str(), node->GetName().c_str(), node->GetClassName().c_str());
 
     node->Save(archive, &serializationContext);
     
     
-    archive->SetInt32("#childrenCount", node->GetChildrenNodeCount());
+    /*archive->SetInt32("#childrenCount", node->GetChildrenNodeCount());
     archive->Save(file);
     
 	for (int ci = 0; ci < node->GetChildrenNodeCount(); ++ci)
 	{
 		DataNode * child = node->GetChildNode(ci);
 		SaveDataHierarchy(child, file, level + 1);
-	}
+	}*/
     
     SafeRelease(archive);
     return true;
@@ -558,14 +566,15 @@ void SceneFileV2::LoadDataHierarchy(Scene * scene, DataNode * root, File * file,
         
         AddToNodeMap(node);
         
-        if (node != root)
-            root->AddNode(node);
+        //if (node != root)
+        //    root->AddNode(node);
         
-        int32 childrenCount = archive->GetInt32("#childrenCount", 0);
+        /*int32 childrenCount = archive->GetInt32("#childrenCount", 0);
         for (int ci = 0; ci < childrenCount; ++ci)
         {
             LoadDataHierarchy(scene, node, file, level + 1);
-        }
+        }*/
+        
         SafeRelease(node);
     }
     
@@ -576,8 +585,8 @@ void SceneFileV2::AddToNodeMap(DataNode * node)
 {
     uint64 ptr = node->GetPreviousPointer();
     
-    if(isDebugLogEnabled)
-        Logger::FrameworkDebug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
+    //if(isDebugLogEnabled)
+    //    Logger::FrameworkDebug("* add ptr: %llx class: %s(%s)", ptr, node->GetName().c_str(), node->GetClassName().c_str());
     
 	serializationContext.SetDataBlock(ptr, SafeRetain(node));
 }

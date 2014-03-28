@@ -41,6 +41,8 @@
 
 #include "../Qt/Main/QtUtils.h"
 
+#include "Qt/SoundComponentEditor/FMODSoundBrowser.h"
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -62,6 +64,12 @@ void SceneExporter::SetInFolder(const FilePath &folderPathname)
 void SceneExporter::SetOutFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetOutFolder(folderPathname);
+}
+
+void SceneExporter::SetOutSoundsFolder(const FilePath &folderPathname)
+{
+    DVASSERT(folderPathname.IsDirectoryPathname());
+    soundsOutFolder = folderPathname;
 }
 
 void SceneExporter::SetGPUForExporting(const String &newGPU)
@@ -116,7 +124,6 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true); 
     
-    scene->Update(0.1f);
     //Export scene data
     RemoveEditorNodes(scene);
     
@@ -132,6 +139,7 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
     ExportLandscape(scene, errorLog);
+    ExportVegetation(scene, errorLog);
 
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
@@ -143,6 +151,8 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 		errorLog.insert(Format("Can't move file %s", fileName.GetAbsolutePathname().c_str()));
 	}
     
+    ExportSounds(fileName);
+
     SceneValidator::Instance()->SetPathForChecking(oldPath);
 }
 
@@ -343,7 +353,29 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
     SafeRelease(fileList);
 }
 
+void SceneExporter::ExportSounds(const FilePath &scenePath)
+{
+#ifdef DAVA_FMOD
+    FilePath sfxDir = FMODSoundBrowser::MakeFEVPathFromScenePath(scenePath).GetDirectory();
+    if(sfxDir.IsEmpty())
+        return;
 
+    if(exportForGPU != GPU_POWERVR_IOS && exportForGPU != GPU_UNKNOWN)
+    {
+        String pathStr = sfxDir.GetAbsolutePathname();
+        pathStr = pathStr.substr(0, pathStr.length() - 4) + "Android/";
+        sfxDir = FilePath(pathStr);
+    }
+
+    if(!soundsOutFolder.IsEmpty())
+    {
+        if(!soundsOutFolder.Exists())
+            FileSystem::Instance()->CreateDirectory(soundsOutFolder, true);
+
+        FileSystem::Instance()->CopyDirectory(sfxDir, soundsOutFolder, true);
+    }
+#endif
+}
 
 void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
@@ -353,6 +385,18 @@ void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
     if (landscape)
     {
         sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
+    }
+}
+
+void SceneExporter::ExportVegetation(Scene *scene, Set<String> &errorLog)
+{
+    DVASSERT(scene);
+    
+    VegetationRenderObject *vegetation = FindVegetation(scene);
+    if (vegetation)
+    {
+        sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
+        sceneUtils.CopyFile(vegetation->GetVegetationMapPath(), errorLog);
     }
 }
 

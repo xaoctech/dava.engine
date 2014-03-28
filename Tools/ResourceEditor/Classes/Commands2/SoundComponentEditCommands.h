@@ -28,39 +28,43 @@
 
 
 
-#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
-#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#ifndef __SOUND_COMPONENT_COMMANDS_H__
+#define __SOUND_COMPONENT_COMMANDS_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Sound/VolumeAnimatedObject.h"
+#include "DAVAEngine.h"
+#include "Commands2/Command2.h"
 
-namespace FMOD
+class AddSoundEventCommand : public Command2
 {
-class EventCategory;
-};
-
-namespace DAVA
-{
-
-class SoundEventCategory : public VolumeAnimatedObject
-{
-protected:
-	~SoundEventCategory();
 public:
-	SoundEventCategory(FMOD::EventCategory * category);
+	AddSoundEventCommand(DAVA::Entity *entity, DAVA::SoundEvent * sEvent);
+	~AddSoundEventCommand();
 
-	void SetVolume(float32 volume);
-	float32	GetVolume();
+	virtual void Undo();
+	virtual void Redo();
 
-	void Stop();
-	void Pause(bool isPaused);
-	bool GetPaused();
+	virtual DAVA::Entity* GetEntity() const;
 
 private:
-	FMOD::EventCategory * fmodEventCategory;
+
+    DAVA::Entity *entity;
+	DAVA::SoundEvent *savedEvent;
 };
 
-};
+class RemoveSoundEventCommand : public Command2
+{
+public:
+    RemoveSoundEventCommand(DAVA::Entity *entity, DAVA::SoundEvent * sEvent);
+    ~RemoveSoundEventCommand();
 
-#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+    virtual void Undo();
+    virtual void Redo();
+
+    virtual DAVA::Entity* GetEntity() const;
+
+private:
+
+    DAVA::Entity *entity;
+    DAVA::SoundEvent *savedEvent;
+};
+#endif // __SOUND_COMPONENT_COMMANDS_H__
