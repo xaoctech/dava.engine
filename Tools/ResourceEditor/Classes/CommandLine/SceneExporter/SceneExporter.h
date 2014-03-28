@@ -68,6 +68,7 @@ protected:
     void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
 
     void ExportLandscape(Scene *scene, Set<String> &errorLog);
+    void ExportVegetation(Scene *scene, Set<String> &errorLog);
     
     void ExportSounds(const FilePath &scenePath);
     

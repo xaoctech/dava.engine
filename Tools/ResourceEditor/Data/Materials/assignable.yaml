@@ -92,5 +92,5 @@
  name: "WaterPerPixel Cubemap"
  path: WaterPerPixelCubemap.material
 -
- name: "Decal QUALI"
- path: Decal.Quali.material
+ name: "Grass"
+ path: Grass.material
