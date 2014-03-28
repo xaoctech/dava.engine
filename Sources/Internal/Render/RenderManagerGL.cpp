@@ -687,11 +687,11 @@ void RenderManager::DiscardFramebufferHW(uint32 attachments)
       return;
     GLenum discards[3];
     int32 discardsCount=0;
-    if (attachments&&COLOR_ATTACHMENT)
+    if (attachments&COLOR_ATTACHMENT)
         discards[discardsCount++]=GL_COLOR_ATTACHMENT0;
-    if (attachments&&DEPTH_ATTACHMENT)
+    if (attachments&DEPTH_ATTACHMENT)
         discards[discardsCount++]=GL_DEPTH_ATTACHMENT;
-    if (attachments&&STENCIL_ATTACHMENT)
+    if (attachments&STENCIL_ATTACHMENT)
         discards[discardsCount++]=GL_STENCIL_ATTACHMENT;
     glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards);
 #endif
