@@ -363,7 +363,7 @@ void HoodSystem::Draw()
 			DAVA::RenderHelper::Instance()->DrawPoint(GetPosition(), 1.0f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			
 			// debug draw axis collision word
-			collWorld->debugDrawWorld();
+			//collWorld->debugDrawWorld();
 		}
 		else
 		{
