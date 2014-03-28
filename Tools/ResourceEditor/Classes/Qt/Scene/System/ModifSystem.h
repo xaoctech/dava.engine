@@ -68,13 +68,13 @@ public:
 	bool InCloneState() const;
 
 	virtual void RemoveEntity(DAVA::Entity * entity);
+	virtual void Process(DAVA::float32 timeElapsed);
 
 protected:
 	SceneCollisionSystem *collisionSystem;
 	SceneCameraSystem *cameraSystem;
 	HoodSystem* hoodSystem;
 
-	void Update(DAVA::float32 timeElapsed);
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);

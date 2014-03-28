@@ -46,6 +46,7 @@
 #include "Debug/Stats.h"
 #include "Render/Material/NMaterial.h"
 #include "Scene3D/Systems/MaterialSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
 
 #include "Render/Material/NMaterialNames.h"
 
@@ -108,7 +109,7 @@ const float32 DEFAULT_FOG_DENSITY = 0.006f;
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 Landscape::Landscape()
-    : indices(0)//,
+    : indices(0), foliageSystem(NULL)//,
 	  //currentMaterial(NULL)
 {
 	drawIndices = 0;
@@ -266,6 +267,11 @@ void Landscape::BuildLandscapeFromHeightmapImage(const FilePath & heightmapPathn
 	bbox = _box;
 
     BuildLandscape();
+    
+    if(foliageSystem)
+    {
+        foliageSystem->SyncFoliageWithLandscape();
+    }
 }
 
 bool Landscape::BuildHeightmap()
@@ -923,7 +929,7 @@ void Landscape::Draw(LandQuadTreeNode<LandscapeQuad> * currentNode, uint8 clippi
     
     if (currentNode->data.size >= 2)
 		if (clippingFlags)
-			frustumRes = frustum->Classify(currentNode->data.bbox, clippingFlags, currentNode->data.startClipPlane);		
+			frustumRes = frustum->Classify(currentNode->data.bbox, clippingFlags, currentNode->data.startClipPlane);
     
     if (frustumRes == Frustum::EFR_OUTSIDE)return;
     
@@ -1410,6 +1416,11 @@ void Landscape::SetLandscapeSize(const Vector3 & newLandscapeSize)
 	bbox.AddPoint(Vector3(-newLandscapeSize.x/2.f, -newLandscapeSize.y/2.f, 0.f));
 	bbox.AddPoint(Vector3(newLandscapeSize.x/2.f, newLandscapeSize.y/2.f, newLandscapeSize.z));
     BuildLandscape();
+    
+    if(foliageSystem)
+    {
+        foliageSystem->SyncFoliageWithLandscape();
+    }
 }
     
 void Landscape::Save(KeyedArchive * archive, SerializationContext * serializationContext)
@@ -1778,6 +1789,11 @@ void Landscape::SetupMaterialProperties()
 	{
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
 	}
+}
+
+void Landscape::SetFoliageSystem(FoliageSystem* _foliageSystem)
+{
+    foliageSystem = _foliageSystem;
 }
 
 #ifdef LANDSCAPE_SPECULAR_LIT

@@ -282,7 +282,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(DAVA::Entity *entity)
 	return aabox;
 }
 
-void SceneCollisionSystem::Update(DAVA::float32 timeElapsed)
+void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
 	// check in there are entities that should be added or removed
 	if(entitiesToAdd.size() > 0 || entitiesToRemove.size() > 0)
