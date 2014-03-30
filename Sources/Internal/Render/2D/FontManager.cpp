@@ -84,6 +84,11 @@ void FontManager::Reset()
 {
     registeredFonts.clear();
 }
+    
+void FontManager::RegisterFonts(const Map<Font*, String>& fonts)
+{
+    registeredFonts = fonts;
+}
 	
 void FontManager::SetFontName(Font* font, const String& name)
 {
@@ -101,9 +106,13 @@ void FontManager::SetFontName(Font* font, const String& name)
 	if (registeredFonts.find(font) == registeredFonts.end())
 		return;
     
+    //TODO: check if font hash is still needed for anything
+    registeredFonts[font] = name;
+    //Logger::Debug("FontManager::SetFontName %x %s", font, name.c_str());
+    
 	// The names of all fonts should coincide with their hashed names (see DF-2316).
-	String fontHashName = GetFontHashName(font);
-	registeredFonts[font] = fontHashName;
+	//String fontHashName = GetFontHashName(font);
+	//registeredFonts[font] = fontHashName;
 }
 	
 Font* FontManager::GetFont(const String &name)
@@ -121,7 +130,10 @@ String FontManager::GetFontName(Font *font)
 {
 	REGISTERED_FONTS::iterator fontIter = registeredFonts.find(font);
 	if (fontIter == registeredFonts.end())
+    {
+        Logger::Debug("FontManager::GetFontName %x not found in registeredFonts", font);
 		return "";
+    }
 	
 	for (FONTS_NAME::iterator iter = fontsName.begin();
 		 iter != fontsName.end();

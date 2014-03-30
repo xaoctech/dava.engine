@@ -69,6 +69,10 @@ public:
 	 \brief Unregister all fonts.
 	 */
     void Reset();
+    /**
+	 \brief Register all fonts.
+	 */
+    void RegisterFonts(const Map<Font*, String>& fonts);
     
 	/**
 	 \brief Set font name.
@@ -84,13 +88,13 @@ public:
 	 \brief Get font by name.
 	 */
 	Font* GetFont(const String &name);
-
-	typedef Set<Font*> TRACKED_FONTS;
 	
 	/**
 	 \brief Reset tracked fonts added by GetFontName().
 	 */
 	void PrepareToSaveFonts(bool saveAllFonts = false);
+    
+    typedef Set<Font*> TRACKED_FONTS;
 	/**
 	 \brief Get tracked fonts added by GetFontName().
 	 */

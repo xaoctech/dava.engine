@@ -27,55 +27,63 @@
 =====================================================================================*/
 
 
-#ifndef TEXTPROPERTYGRIDWIDGET_H
-#define TEXTPROPERTYGRIDWIDGET_H
 
-#include "basepropertygridwidget.h"
+#ifndef CHANGEFONTPROPERTYCOMMAND_H
+#define CHANGEFONTPROPERTYCOMMAND_H
 
-namespace Ui {
-    class TextPropertyGridWidget;
-}
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-class TextPropertyGridWidget : public BasePropertyGridWidget
+//TODO: move EditFontDialogResult somewhere not to include editfontdialog.h
+#include "editfontdialog.h"
+
+using namespace DAVA;
+
+class ChangeFontPropertyCommand: public ChangePropertyCommand<Font *>
 {
-    Q_OBJECT
-    
 public:
-    explicit TextPropertyGridWidget(QWidget *parent = 0);
-    ~TextPropertyGridWidget();
+	ChangeFontPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                const EditFontDialogResult& editFontDialogResult);
+    virtual ~ChangeFontPropertyCommand();
     
-    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Execute();
     
-    virtual void Cleanup();
-    
+	virtual void Rollback();
+	
 protected:
+//	void RestoreControlRect(const COMMANDDATAVECTITER& iter);
+    bool isApplyToAll;
+    Font *font;
+    String fontPresetOriginalName;
+    String fontPresetName;
     
-    virtual void ProcessPushButtonClicked(QPushButton* senderWidget);
-    
-    //Update of internal propeperties
-    virtual void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty& curProperty);
-    
-    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
-                                             const QString& value);
-    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
-    
-    virtual void FillComboboxes();
-    
-    virtual void CustomProcessComboboxValueChanged(const PROPERTYGRIDWIDGETSITER& iter, int value);
-    
-    virtual void HandleChangePropertySucceeded(const QString& propertyName);
-    
-    virtual void HandleChangePropertyFailed(const QString& propertyName);
-
-    void UpdateFontPresetValues(); //TODO: is it really needed?
-    
-    // Handle dependent checkboxes.
-    virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
-    virtual void OnPropertiesChangedFromExternalSource() {};
-    
-    void FillFontPresetCombobox();
-    
-    Ui::TextPropertyGridWidget *ui;
+    Map<String, Font*> localizedFonts;
 };
 
-#endif // TEXTPROPERTYGRIDWIDGET_H
+class FontRenameCommand : public BaseCommand
+{
+public:
+    FontRenameCommand(Font* _font, const String &_originalName, const String &newName);
+    
+public:
+	virtual void Execute();
+	virtual void Rollback();
+	
+	virtual bool IsUndoRedoSupported() {return true;};
+    
+protected:
+	// Apply the rename of control
+	void ApplyRename(const QString& prevName, const QString& updatedName);
+    
+private:
+	Font* font;
+	QString originalName;
+	QString newName;
+};
+
+
+#endif /* defined(CHANGEFONTPROPERTYCOMMAND_H) */
