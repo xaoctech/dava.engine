@@ -186,7 +186,7 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
         RenderManager::Instance()->RestoreRenderTarget();
         RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
         RenderManager::Instance()->SetViewport(viewportSave, true);*/
-                
+        
         RenderManager::Instance()->ClipPush();
         Rect viewportSave = RenderManager::Instance()->GetViewport();
         uint32 currFboId = RenderManager::Instance()->HWglGetLastFBO();
@@ -242,7 +242,11 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 
         /*hack for now*/
         renderPassBatchArray->Clear();
-        renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera); 
+        renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera);
+        
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
 	}	
 
 	DrawLayers(camera);
