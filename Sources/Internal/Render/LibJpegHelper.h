@@ -45,18 +45,12 @@ class LibJpegWrapper
 {
 public:
     
-    static bool IsJpegFile(File *file)
-    {
-        return false;
-    }
+    static bool IsJpegFile(const FilePath & fileName);
     
-    //static int ReadJpegFile(const FilePath & file, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-    static int ReadPngFile(File *infile, Image * image)
-    {
-        return 0;
-    }
-    //only RGB888
-    static void WriteJpegFile(const FilePath & fileName, int32 width, int32 height, uint8 * data);
+    static bool ReadJpegFile(const FilePath & fileName, Image * image);
+    
+    //only RGB888 or A8
+    static bool WriteJpegFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
     
 };
 

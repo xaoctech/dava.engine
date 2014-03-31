@@ -28,6 +28,7 @@
 		5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC24FC156CC72400742348 /* TestTemplate.cpp */; };
 		5CDC2501156CC93300742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2500156CC93300742348 /* libz.dylib */; };
 		5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CF2253E157E555D00DF5395 /* BaseScreen.cpp */; };
+		62C1212D18E961700008D201 /* SaveImageTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C1212B18E961700008D201 /* SaveImageTest.cpp */; };
 		7410E83117146D5B0028AAAA /* UIListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7410E82F17146D5B0028AAAA /* UIListTest.cpp */; };
 		7497446817B3C38D00282DAA /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497446617B3C38D00282DAA /* AlignTest.cpp */; };
 		749A1B4F174A73130082B080 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */; };
@@ -152,6 +153,8 @@
 		5CE56F9D157F2804006C953B /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Config.h; path = Classes/Config.h; sourceTree = "<group>"; };
 		5CF2253E157E555D00DF5395 /* BaseScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseScreen.cpp; path = Classes/BaseScreen.cpp; sourceTree = "<group>"; };
 		5CF2253F157E555D00DF5395 /* BaseScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseScreen.h; path = Classes/BaseScreen.h; sourceTree = "<group>"; };
+		62C1212B18E961700008D201 /* SaveImageTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SaveImageTest.cpp; path = Classes/SaveImageTest.cpp; sourceTree = "<group>"; };
+		62C1212C18E961700008D201 /* SaveImageTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SaveImageTest.h; path = Classes/SaveImageTest.h; sourceTree = "<group>"; };
 		7410E82F17146D5B0028AAAA /* UIListTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIListTest.cpp; path = Classes/UIListTest.cpp; sourceTree = "<group>"; };
 		7410E83017146D5B0028AAAA /* UIListTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListTest.h; path = Classes/UIListTest.h; sourceTree = "<group>"; };
 		7497446617B3C38D00282DAA /* AlignTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AlignTest.cpp; path = Classes/AlignTest.cpp; sourceTree = "<group>"; };
@@ -398,6 +401,7 @@
 		5C1066D8156D351400912A45 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				62C1212818E9614C0008D201 /* SaveImageTest */,
 				15CBB0B318D30B6E0038ABA3 /* StringFormatTest */,
 				49637DF518B20D4A008A3398 /* RectSpriteTest */,
 				E8583EDB183E41B2009DEEB6 /* ComponentsTest */,
@@ -459,6 +463,15 @@
 				5CDC24FD156CC72400742348 /* TestTemplate.h */,
 			);
 			name = TestSuite;
+			sourceTree = "<group>";
+		};
+		62C1212818E9614C0008D201 /* SaveImageTest */ = {
+			isa = PBXGroup;
+			children = (
+				62C1212B18E961700008D201 /* SaveImageTest.cpp */,
+				62C1212C18E961700008D201 /* SaveImageTest.h */,
+			);
+			name = SaveImageTest;
 			sourceTree = "<group>";
 		};
 		7410E82E17146CB70028AAAA /* UIListTest */ = {
@@ -779,6 +792,7 @@
 				FEC3CA821283557F00541220 /* GameCore.cpp in Sources */,
 				5CDC24FE156CC72400742348 /* SampleTest.cpp in Sources */,
 				5CDC24FF156CC72400742348 /* TestTemplate.cpp in Sources */,
+				62C1212D18E961700008D201 /* SaveImageTest.cpp in Sources */,
 				5CF22540157E555D00DF5395 /* BaseScreen.cpp in Sources */,
 				5CA2461D158F46D600465879 /* EntityTest.cpp in Sources */,
 				FEA8F6EB159DB0EF00EED3DC /* MemoryAllocatorsTest.cpp in Sources */,

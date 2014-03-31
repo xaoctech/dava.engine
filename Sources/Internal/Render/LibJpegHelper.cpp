@@ -44,42 +44,172 @@
 #include <stdio.h>
 
 #include "libjpeg/jpeglib.h"
+#include <setjmp.h>
 
 namespace DAVA
 {
-    
-void LibJpegWrapper::WriteJpegFile(const FilePath & file_name, int32 width, int32 height, uint8 * raw_image)
+
+struct jpegErrorManager
 {
-    struct jpeg_compress_struct cinfo;
-    struct jpeg_error_mgr jerr;
+    /* "public" fields */
+    struct jpeg_error_mgr pub;
+    /* for return to caller */
+    jmp_buf setjmp_buffer;
+};
     
-    /* this is a pointer to one row of image data */
+char jpegLastErrorMsg[JMSG_LENGTH_MAX];
+    
+void jpegErrorExit (j_common_ptr cinfo)
+{
+    /* cinfo->err actually points to a jpegErrorManager struct */
+    jpegErrorManager* myerr = (jpegErrorManager*) cinfo->err;
+    /* note : *(cinfo->err) is now equivalent to myerr->pub */
+    
+    /* output_message is a method to print an error message */
+    /*(* (cinfo->err->output_message) ) (cinfo);*/
+    
+    /* Create the message */
+    ( *(cinfo->err->format_message) ) (cinfo, jpegLastErrorMsg);
+    
+    /* Jump to the setjmp point */
+    longjmp(myerr->setjmp_buffer, 1);
+}
+    
+bool LibJpegWrapper::IsJpegFile(const FilePath & fileName)
+{
+    struct jpeg_decompress_struct cinfo;
+    struct jpegErrorManager jerr;
+    
+    FILE *infile = fopen( fileName.GetAbsolutePathname().c_str(), "rb" );
+    
+    if ( !infile )
+    {
+        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+        return false;
+    }
+    cinfo.err = jpeg_std_error( &jerr.pub );
+    
+    jerr.pub.error_exit = jpegErrorExit;
+    if (setjmp(jerr.setjmp_buffer))
+    {
+        jpeg_destroy_decompress(&cinfo);
+        fclose(infile);
+        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", fileName.GetAbsolutePathname().c_str());
+        return false;
+    }
+    jpeg_create_decompress( &cinfo );
+    jpeg_stdio_src( &cinfo, infile );
+    jpeg_read_header( &cinfo, TRUE );
+    jpeg_destroy_decompress( &cinfo );
+    fclose( infile );
+    return true;
+}
+
+bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
+{
+    struct jpeg_decompress_struct cinfo;
+    struct jpegErrorManager jerr;
+
+    FILE *infile = fopen( fileName.GetAbsolutePathname().c_str(), "rb" );
+    if ( !infile )
+    {
+        Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+    cinfo.err = jpeg_std_error( &jerr.pub );
+    jerr.pub.error_exit = jpegErrorExit;
+    SafeDelete(image->data);
+    if (setjmp(jerr.setjmp_buffer))
+    {
+        jpeg_destroy_decompress(&cinfo);
+        fclose(infile);
+        SafeDelete(image->data);
+        Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s has wrong jpeg header", fileName.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+    jpeg_create_decompress( &cinfo );
+    jpeg_stdio_src( &cinfo, infile );
+    jpeg_read_header( &cinfo, TRUE );
+    jpeg_start_decompress( &cinfo );
+    
+    image->width = cinfo.image_width;
+    image->height = cinfo.image_height;
+    image->data = new uint8 [cinfo.output_width*cinfo.output_height*cinfo.num_components];
+    
+    JSAMPROW output_data;
+    unsigned int scanline_len = cinfo.output_width * cinfo.output_components;
+    
+    unsigned int scanline_count = 0;
+    while (cinfo.output_scanline < cinfo.output_height)
+    {
+        output_data = (image->data + (scanline_count * scanline_len));
+        jpeg_read_scanlines(&cinfo, &output_data, 1);
+        scanline_count++;
+    }
+    
+    image->format = FORMAT_RGB888;
+    if(cinfo.jpeg_color_space == JCS_GRAYSCALE)
+    {
+        image->format = FORMAT_A8;
+    }
+    jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
+    fclose(infile);
+    return true;
+}
+    
+bool LibJpegWrapper::WriteJpegFile(const FilePath & file_name, int32 width, int32 height, uint8 * raw_image, PixelFormat format)
+{
+    DVASSERT(format == FORMAT_A8 || format == FORMAT_RGB888);
+    struct jpeg_compress_struct cinfo;
+    struct jpegErrorManager jerr;
+    
     JSAMPROW row_pointer[1];
     FILE *outfile = fopen( file_name.GetAbsolutePathname().c_str(), "wb" );
     
     if ( !outfile )
     {
-        Logger::Error("[LibJpegWrapper::WritePngFile] File %s could not be opened for writing", file_name.GetAbsolutePathname().c_str());
-        return;
+        Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", file_name.GetAbsolutePathname().c_str());
+        return false;
     }
-    cinfo.err = jpeg_std_error( &jerr );
+    cinfo.err = jpeg_std_error( &jerr.pub );
+    
+    jerr.pub.error_exit = jpegErrorExit;
+    /* Establish the setjmp return context for my_error_exit to use. */
+    if (setjmp(jerr.setjmp_buffer))
+    {
+        jpeg_destroy_compress( &cinfo );
+        fclose(outfile);
+        Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", file_name.GetAbsolutePathname().c_str());
+        return false;
+    }
     jpeg_create_compress(&cinfo);
     jpeg_stdio_dest(&cinfo, outfile);
     
     /* Setting the parameters of the output file here */
     cinfo.image_width = width;
     cinfo.image_height = height;
-    cinfo.input_components = 3;//!
-    cinfo.in_color_space = JCS_RGB;//!
+    
+    cinfo.in_color_space = JCS_RGB;
+    int colorComponents = 3;
+    if(format != FORMAT_RGB888)
+    {
+        cinfo.in_color_space = JCS_GRAYSCALE;
+        colorComponents = 1;
+    }
+    
+    cinfo.input_components = colorComponents;
     
     jpeg_set_defaults( &cinfo );
-    cinfo.num_components = 3;
+    cinfo.num_components = colorComponents;
     //cinfo.data_precision = 4;
     cinfo.dct_method = JDCT_FLOAT;
     
     /*The quality value ranges from 0..100. If "force_baseline" is TRUE, the computed quantization table entries are limited to 1..255 for JPEG baseline compatibility.*/
-    jpeg_set_quality(&cinfo, 70, TRUE);
-    /* Now do the compression .. */
+    jpeg_set_quality(&cinfo, 100, TRUE);
+
     jpeg_start_compress( &cinfo, TRUE );
     while( cinfo.next_scanline < cinfo.image_height )
     {
@@ -89,6 +219,7 @@ void LibJpegWrapper::WriteJpegFile(const FilePath & file_name, int32 width, int3
     jpeg_finish_compress( &cinfo );
     jpeg_destroy_compress( &cinfo );
     fclose( outfile );
+    return true;
 }
    
     
