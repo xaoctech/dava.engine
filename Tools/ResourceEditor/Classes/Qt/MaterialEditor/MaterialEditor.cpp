@@ -331,12 +331,12 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
 	    const DAVA::InspMember *materialIllumination = info->Member("illuminationParams");
         const DAVA::InspMember *materialTextures = info->Member("textures");
 
-        {
-            const DAVA::InspInfo *baseInfo = info->BaseInfo()->BaseInfo();
-            QtPropertyData *refCount = new QtPropertyDataInspMember(material, baseInfo->Member("referenceCount"));
-            refCount->SetName("referenceCount");
-            ui->materialProperty->MergeProperty(refCount);
-        }
+//         {
+//             const DAVA::InspInfo *baseInfo = info->BaseInfo()->BaseInfo();
+//             QtPropertyData *refCount = new QtPropertyDataInspMember(material, baseInfo->Member("referenceCount"));
+//             refCount->SetName("referenceCount");
+//             ui->materialProperty->MergeProperty(refCount);
+//         }
 
 
 	    // fill material name
