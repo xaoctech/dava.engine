@@ -28,39 +28,16 @@
 
 
 
-#ifndef __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
-#define __DAVAENGINE_SOUND_EVENT_CATEGORY_H__
+#include "GrassEditorProxy.h"
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Sound/VolumeAnimatedObject.h"
-
-namespace FMOD
+GrassEditorProxy::GrassEditorProxy(GrassMap *map)
+:	grassMap(map)
 {
-class EventCategory;
-};
+    SafeRetain(grassMap);
+}
 
-namespace DAVA
+GrassEditorProxy::~GrassEditorProxy()
 {
+	SafeRelease(grassMap);
+}
 
-class SoundEventCategory : public VolumeAnimatedObject
-{
-protected:
-	~SoundEventCategory();
-public:
-	SoundEventCategory(FMOD::EventCategory * category);
-
-	void SetVolume(float32 volume);
-	float32	GetVolume();
-
-	void Stop();
-	void Pause(bool isPaused);
-	bool GetPaused();
-
-private:
-	FMOD::EventCategory * fmodEventCategory;
-};
-
-};
-
-#endif //__DAVAENGINE_SOUND_EVENT_CATEGORY_H__
