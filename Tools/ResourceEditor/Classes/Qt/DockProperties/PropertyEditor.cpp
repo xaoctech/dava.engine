@@ -57,8 +57,10 @@
 #include "Project/ProjectManager.h"
 
 #include "PropertyEditorStateHelper.h"
+#include "Qt/Project/ProjectManager.h"
 
 #include "ActionComponentEditor.h"
+#include "SoundComponentEditor/SoundComponentEditor.h"
 
 #include "Deprecated/SceneValidator.h"
 
@@ -318,6 +320,14 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 editActions->setEnabled(isSingleSelection);
 				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
 			}
+            else if(DAVA::MetaInfo::Instance<DAVA::SoundComponent>() == meta)
+            {
+                QtPropertyToolButton *editSound = data->AddButton();
+                editSound->setIcon(QIcon(":/QtIcons/settings.png"));
+                editSound->setAutoRaise(true);
+
+                QObject::connect(editSound, SIGNAL(pressed()), this, SLOT(ActionEditSoundComponent()));
+            }
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
 				// Add optional button to bake transform render object
@@ -622,6 +632,8 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
 	case CMDID_COMPONENT_REMOVE:
 	case CMDID_CONVERT_TO_SHADOW:
 	case CMDID_PARTICLE_EMITTER_LOAD_FROM_YAML:
+    case CMDID_SOUND_ADD_EVENT:
+    case CMDID_SOUND_REMOVE_EVENT:
 	case CMDID_DELETE_RENDER_BATCH:
 	case CMDID_CLONE_LAST_BATCH:
         {
@@ -890,6 +902,27 @@ void PropertyEditor::ActionEditMaterial()
 			MaterialEditor::Instance()->SelectMaterial((DAVA::NMaterial *) data->object);
 		}
 	}
+}
+
+void PropertyEditor::ActionEditSoundComponent()
+{
+    if(curNodes.size() == 1)
+    {
+        SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
+        if(!scene) return;
+
+        Entity *node = curNodes.at(0);
+
+        scene->BeginBatch("Edit Sound Component");
+
+        SoundComponentEditor editor(scene, QtMainWindow::Instance());
+        editor.SetEditableEntity(node);
+        editor.exec();
+
+        scene->EndBatch();
+
+        ResetProperties();
+    }	
 }
 
 bool PropertyEditor::IsParentFavorite(QtPropertyData *data) const

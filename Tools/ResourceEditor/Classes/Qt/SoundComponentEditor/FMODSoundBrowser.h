@@ -26,37 +26,54 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __SOUND_BROWSER_H__
+#define __SOUND_BROWSER_H__
 
+#include <QDialog>
+#include <QTreeWidgetItem>
+#include "DAVAEngine.h"
 
-#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
-#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
+namespace Ui {
+class FMODSoundBrowser;
+}
 
-#include "Base/BaseTypes.h"
-#include "Animation/AnimatedObject.h"
+class SceneEditor2;
 
-namespace DAVA
+class FMODSoundBrowser : public QDialog, public DAVA::Singleton<FMODSoundBrowser>
 {
-
-class Animation;
-class VolumeAnimatedObject : public AnimatedObject
-{
-protected:
-    ~VolumeAnimatedObject(){}
+    Q_OBJECT
+    
 public:
-	VolumeAnimatedObject();
+    explicit FMODSoundBrowser(QWidget *parent = 0);
+    virtual ~FMODSoundBrowser();
 
-	virtual void SetVolume(float32 volume) = 0;
-	virtual float32 GetVolume() = 0;
+    DAVA::String GetSelectSoundEvent();
 
-	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
-	void Update();
+#ifdef DAVA_FMOD
+    static DAVA::FilePath MakeFEVPathFromScenePath(const DAVA::FilePath & scenePath);
+#endif
+
+private slots:
+    void OnEventSelected(QTreeWidgetItem * item, int column);
+    void OnEventDoubleClicked(QTreeWidgetItem * item, int column);
+
+    void OnSceneLoaded(SceneEditor2 * scene);
+    void OnSceneClosed(SceneEditor2 * scene);
+
+    void OnAccepted();
+    void OnRejected();
 
 private:
-	float32 animatedVolume;
+    void UpdateEventTree();
 
-	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
+    void FillEventsTree(const DAVA::Vector<DAVA::String> & names);
+    void SelectItemAndExpandTreeByEventName(const DAVA::String & eventName);
+    
+    void SetSelectedItem(QTreeWidgetItem * item);
+
+    DAVA::Map<DAVA::Scene *, DAVA::FilePath> projectsMap;
+    QTreeWidgetItem * selectedItem;
+    Ui::FMODSoundBrowser *ui;
 };
 
-};
-
-#endif
+#endif // SOUNDBROWSER_H

@@ -116,7 +116,6 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
-	uint8 *image_data = NULL;
 	char sig[8];
 	
 	int bit_depth;
@@ -175,6 +174,13 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 		png_set_expand_gray_1_2_4_to_8(png_ptr);
     
 	image->format = FORMAT_RGBA8888;
+    if(bit_depth > 8)
+    {
+        Logger::Error("Wrong image: must be 8bits on channel: %s", infile->GetFilename().GetAbsolutePathname().c_str());
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        return 0;
+    }
+    
 	if (color_type == PNG_COLOR_TYPE_GRAY ||
 		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
     {
@@ -211,10 +217,9 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	
 	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 	
-	image_data = new uint8 [rowbytes * height];
+    uint8 *image_data = new uint8 [rowbytes * height];
 	if (image_data == 0)
 	{
-		memset(image_data, 0, rowbytes * height);
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return 4;
     }

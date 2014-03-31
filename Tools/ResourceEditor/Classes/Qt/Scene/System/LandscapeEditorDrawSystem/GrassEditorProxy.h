@@ -28,48 +28,25 @@
 
 
 
-#include "Sound/VolumeAnimatedObject.h"
-#include "Animation/Animation.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/SoundSystem.h"
+#ifndef __RESOURCEEDITORQT__GRASSEDITORPROXY__
+#define __RESOURCEEDITORQT__GRASSEDITORPROXY__
 
-namespace DAVA
+#include "DAVAEngine.h"
+
+using namespace DAVA;
+
+class GrassEditorProxy: public BaseObject
 {
+protected:
+	~GrassEditorProxy();
 
-VolumeAnimatedObject::VolumeAnimatedObject() :
-	animatedVolume(-1)
-{
+public:
+    typedef Image GrassMap;
 
-}
+	GrassEditorProxy(GrassMap *map);
 
-Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
-{
-	animatedVolume = GetVolume();
-
-	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
-	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	Retain();
-	a->Start(track);
-
-	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
-
-	return a;
-}
-
-void VolumeAnimatedObject::Update()
-{
-	if(animatedVolume != -1.f)
-		SetVolume(animatedVolume);
-}
-
-void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
-{
-	SetVolume(animatedVolume);
-	animatedVolume = -1.f;
-	Release();
-
-	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
-}
-
+protected:
+    GrassMap *grassMap;
 };
+
+#endif /* defined(__RESOURCEEDITORQT__GRASSEDITORPROXY__) */
