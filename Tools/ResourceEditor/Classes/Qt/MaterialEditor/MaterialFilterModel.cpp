@@ -107,7 +107,17 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
     if ( !item )
         return false;
 
-    const bool isMaterial = item->GetMaterial()->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL;
+    bool isMaterial = false;
+    switch (item->GetMaterial()->GetMaterialType())
+    {
+    case NMaterial::MATERIALTYPE_MATERIAL:
+    case NMaterial::MATERIALTYPE_GLOBAL:
+        isMaterial = true;
+        break;
+    default:
+        isMaterial = false;
+        break;
+    }
     const bool isSelected = item->GetFlag( MaterialItem::IS_PART_OF_SELECTION );
 
     switch ( filterType )
@@ -139,11 +149,9 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
             return false;
         }
 
-
     default:
         break;
     }
-
 
 	return false;
 }
@@ -151,13 +159,23 @@ bool MaterialFilteringModel::filterAcceptsRow(int sourceRow, const QModelIndex &
 bool MaterialFilteringModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     // global material should always be first
-    DAVA::NMaterial *material = materialModel->GetMaterial(left);
-    if(NULL != material && material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_GLOBAL)
+    NMaterial *mLeft = materialModel->GetMaterial(left);
+    NMaterial *mRight = materialModel->GetMaterial(right);
+    bool swap = QSortFilterProxyModel::lessThan(left, right);
+
+    if ( (mLeft != NULL) && (mRight != NULL) )
     {
-        return true;
+        if (mLeft->GetMaterialType() == NMaterial::MATERIALTYPE_GLOBAL)
+        {
+            swap = (sortOrder() == Qt::AscendingOrder);
+        }
+        else if (mRight->GetMaterialType() == NMaterial::MATERIALTYPE_GLOBAL)
+        {
+            swap = (sortOrder() == Qt::DescendingOrder);
+        }
     }
 
-    return QSortFilterProxyModel::lessThan(left, right);
+    return swap;
 }
 
 bool MaterialFilteringModel::dropMimeData(QMimeData const* data, Qt::DropAction action, int row, int column, QModelIndex const& parent)
