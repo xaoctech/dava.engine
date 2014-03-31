@@ -143,8 +143,7 @@ bool HierarchyTree::Load(const QString& projectPath)
         
         if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
         {
-            //TODO: load localized fonts
-            UIYamlLoader::LoadFonts(EditorFontManager::Instance()->GetDefaultFontsPath());
+            EditorFontManager::Instance()->LoadLocalizedFonts();
         }
     }
     
@@ -479,8 +478,7 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
     //TODO: save all fonts
     if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
     {
-        FontManager::Instance()->PrepareToSaveFonts(true);
-        UIYamlLoader::SaveFonts(EditorFontManager::Instance()->GetDefaultFontsPath());
+        EditorFontManager::Instance()->SaveLocalizedFonts();
     }
 
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode.GetChildNodes().begin();

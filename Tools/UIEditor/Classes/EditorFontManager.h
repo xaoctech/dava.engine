@@ -40,22 +40,34 @@ class EditorFontManager: public QObject, public Singleton<EditorFontManager>
 {
     Q_OBJECT
 public:
-	typedef std::map<String, Font*> FONTSMAP;	
+	//typedef std::map<String, Font*> FONTSMAP;
 	EditorFontManager();
 	~EditorFontManager();
 	
 	void Reset();
 
-	Font* LoadFont(const String& fontPath, const String& fontName);
-	
+    void LoadLocalizedFonts();
+    void SaveLocalizedFonts();
+    
+    void ClearLocalizedFonts();
+    
+    void OnProjectLoaded();
+
 	Font* GetDefaultFont() const;
 	void SetDefaultFont(Font* font);
 	void ResetDefaultFont();
     
-	Font* GetFont(const String& name) const;
-    QString GetFontName(Font* font) const;
+	//Font* GetFont(const String& name) const;
+    //QString GetFontName(Font* font) const;
+    
+    const Vector<String> &GetLocales() { return locales; }
+    
+    Font* GetLocalizedFont(const String& fontName, const String& locale = "default") const;
+    String GetLocalizedFontName(Font* font, const String& locale = "default") const;
+    
+    String SetLocalizedFont(const String& fontOriginalName, Font* font, const String& fontName, bool replaceExisting, const String& locale = "default");
 
-	const FONTSMAP& GetAllFonts() const;
+	//const FONTSMAP& GetAllFonts() const;
 	
 	struct DefaultFontPath
 	{
@@ -74,7 +86,7 @@ public:
 	QString GetDefaultFontName() const;
     
     void SetDefaultFontsPath(const FilePath& path);
-    const FilePath& GetLocalizedFontsPath();
+    FilePath GetLocalizedFontsPath(const String &locale);
     const FilePath& GetDefaultFontsPath();
     void ResetLocalizedFontsPath();
     
@@ -83,14 +95,27 @@ signals:
 	
 private:
 	void Init();
+    
+    const Map<String, Font*> &GetLocalizedFonts(const String& locale = "default") const;
+    
+	Font* CreateDefaultFont(const String& fontPath, const String& fontName);
+    
+    void ClearFonts(Map<String, Font*>& fonts);
 	
 private:
 	Font* defaultFont;
 	Font* baseFont;
-	FONTSMAP fonts;
+//	FONTSMAP fonts;
     
     //TODO: load localized fonts from localizationFontsPath/locale/fonts.yaml
     FilePath defaultFontsPath;
+    
+    Vector<String> locales;
+    Map<String, Font*> defaultFonts;
+    Map<String, Map<String, Font*> > localizedFonts;
+    
+    Map<Font*, String> defaultRegisteredFonts;
+    Map<String, Map<Font*, String> > localizedRegisteredFonts;
 };
 
 #endif /* defined(__UIEditor__FontManager__) */
