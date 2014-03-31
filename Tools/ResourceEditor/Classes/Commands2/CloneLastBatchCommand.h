@@ -28,35 +28,42 @@
 
 
 
-#ifndef __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
-#define __DAVAENGINE_VOLUME_ANIMATED_OBJECT_H__
+#ifndef __CLONE_LAST_BATCH_COMMAND_H__
+#define __CLONE_LAST_BATCH_COMMAND_H__
 
-#include "Base/BaseTypes.h"
-#include "Animation/AnimatedObject.h"
+#include "Command2.h"
 
-namespace DAVA
+#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/RenderObject.h"
+
+class CloneLastBatchCommand: public Command2
 {
-
-class Animation;
-class VolumeAnimatedObject : public AnimatedObject
-{
-protected:
-    ~VolumeAnimatedObject(){}
 public:
-	VolumeAnimatedObject();
+	CloneLastBatchCommand(DAVA::RenderObject *renderObject);
+    virtual ~CloneLastBatchCommand();
 
-	virtual void SetVolume(float32 volume) = 0;
-	virtual float32 GetVolume() = 0;
+	virtual void Undo();
+	virtual void Redo();
+    
+	virtual DAVA::Entity* GetEntity() const;
+    
+    inline const DAVA::Vector<DAVA::RenderBatch *> & GetNewBatches() const;
 
-	Animation * VolumeAnimation(float32 newVolume, float32 time, int32 track = 0);
-	void Update();
+protected:
 
-private:
-	float32 animatedVolume;
+    DAVA::RenderObject *renderObject;
+    DAVA::int32 maxLodIndexes[2];
 
-	void OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData);
+    DAVA::int32 requestedSwitchIndex;
+    DAVA::Vector<DAVA::RenderBatch *> newBatches;
 };
 
-};
 
-#endif
+inline const DAVA::Vector<DAVA::RenderBatch *> & CloneLastBatchCommand::GetNewBatches() const
+{
+    return newBatches;
+}
+
+
+
+#endif // __CLONE_LAST_BATCH_COMMAND_H__

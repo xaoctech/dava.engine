@@ -211,27 +211,31 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
     foreach ( QtPropertyData *merged, mergedData )
     {
         QtPropertyDataValidator *mergedValidator = merged->validator;
-        QVariant valueToValidate = value;
+        QVariant validatedValue = value;
+
         if(reason == VALUE_EDITED && NULL != mergedValidator)
         {
-            QVariant valueToValidate = value;
-            if ( !mergedValidator->Validate( valueToValidate ) )
+            if(!mergedValidator->Validate(validatedValue))
+            {
                 continue;
+            }
         }
 
-        merged->SetValueInternal( value );
+        merged->SetValueInternal(validatedValue);
     }
 
     // set value
-    bool valueValid = true;
+    bool valueIsValid = true;
+    QVariant validatedValue = value;
+
     if(reason == VALUE_EDITED && NULL != validator)
     {
-        QVariant valueToValidate = value;
-        valueValid = validator->Validate(valueToValidate);
+        valueIsValid = validator->Validate(validatedValue);
     }
-    if ( valueValid )
+   
+    if(valueIsValid)
     {
-        SetValueInternal(value);
+        SetValueInternal(validatedValue);
     }
 
     updatingValue = false;
@@ -489,9 +493,21 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     DVASSERT(data);
 
     const QString childMergeName = key.isEmpty() ? data->curName : key;
-    const int childIndex = childrenNames.indexOf(childMergeName);
-    const QtPropertyData* child = childrenData.value(childIndex);
     bool needMerge = true;
+
+    // Looking for child item to merge: name and enabled state should be same
+    int childIndex = -1;
+    for (int i = 0; i < childrenNames.size(); i++)
+    {
+        if (childrenData.at(i)->IsEnabled() == data->IsEnabled() &&
+            childrenNames.at(i) == childMergeName)
+        {
+            childIndex = i;
+            break;
+        }
+    }
+
+    const QtPropertyData* child = childrenData.value(childIndex);
 
     // On change of enabled/disabled states, it is necessary
     // to re-merge child items
@@ -514,7 +530,8 @@ void QtPropertyData::MergeChild(QtPropertyData* data, const QString& key)
     }
     else
     {
-        ChildInsert(childMergeName, data, childIndex); // insert items with same key in same place
+        const int insertIndex = childrenNames.indexOf(childMergeName);
+        ChildInsert(childMergeName, data, insertIndex); // insert items with same key in same place
     }
 }
 
