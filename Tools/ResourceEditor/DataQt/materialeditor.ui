@@ -96,9 +96,6 @@
          <property name="animated">
           <bool>true</bool>
          </property>
-         <property name="allColumnsShowFocus">
-          <bool>true</bool>
-         </property>
         </widget>
        </item>
       </layout>
