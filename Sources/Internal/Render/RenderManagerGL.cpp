@@ -693,7 +693,7 @@ void RenderManager::DiscardFramebufferHW(uint32 attachments)
         discards[discardsCount++]=GL_DEPTH_ATTACHMENT;
     if (attachments&STENCIL_ATTACHMENT)
         discards[discardsCount++]=GL_STENCIL_ATTACHMENT;
-    glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards);
+    RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards));
 #endif
 }
 
