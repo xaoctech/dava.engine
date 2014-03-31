@@ -111,6 +111,8 @@ public:
     inline void SetClipCamera(Camera * camera);
 	inline Camera * GetClipCamera() const;
     
+    void SetGlobalMaterial(NMaterial *material);
+    NMaterial *GetGlobalMaterial() const;
     
     void Update(float32 timeElapsed);
     void Render();
@@ -171,6 +173,8 @@ private:
     
     Camera * camera;
     Camera * clipCamera;
+
+    NMaterial *globalMaterial;
 
     friend class RenderPass;
 };

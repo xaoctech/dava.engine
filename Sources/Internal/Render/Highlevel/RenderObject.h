@@ -77,7 +77,8 @@ public:
         TYPE_CUSTOM_DRAW,       // Custom drawn object
 		TYPE_SPRITE,			// Sprite Node
 		TYPE_PARTICLE_EMTITTER,  // Particle Emitter
-		TYPE_SKYBOX
+		TYPE_SKYBOX,
+        TYPE_VEGETATION
     };
     
 	enum eFlags
@@ -177,6 +178,8 @@ public:
 	inline void SetReflectionVisible(bool visible);
     inline bool GetRefractionVisible();
     inline void SetRefractionVisible(bool visible);
+    
+    virtual void GetDataNodes(Set<DataNode*> & dataNodes);
     
 protected:
 //    eType type; //TODO: waiting for enums at introspection
