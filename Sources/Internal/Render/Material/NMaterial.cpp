@@ -998,17 +998,17 @@ void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 	
 	bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
 	
-	if(newParent)
-	{
-        if(useParentTemplate)
+    if(useParentTemplate)
+    {
+        if(newParent)
         {
             SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
         }
-        else
-        {
-            UpdateShaderWithFlags();
-        }
-	}
+    }
+    else
+    {
+        UpdateShaderWithFlags();
+    }
 	
 	SetTexturesDirty();
     InvalidateProperties();
