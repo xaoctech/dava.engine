@@ -69,7 +69,7 @@ public:
 		float32 size, bool realDraw, 
 		int32 offsetX, int32 offsetY,
 		int32 justifyWidth, int32 spaceAddon,
-		Vector<int32> *charSizes = NULL,
+		Vector<float32> *charSizes = NULL,
 		bool contentScaleIncluded = false);
 	uint32 GetFontHeight(float32 size) const;
 
@@ -192,7 +192,7 @@ Size2i FTFont::DrawStringToBuffer(void * buffer, int32 bufWidth, int32 bufHeight
 	return internalFont->DrawString(str, buffer, bufWidth, bufHeight, 255, 255, 255, 255, renderSize, true, offsetX, offsetY, justifyWidth, spaceAddon, NULL, contentScaleIncluded );
 }
 
-Size2i FTFont::GetStringSize(const WideString& str, Vector<int32> *charSizes) const
+Size2i FTFont::GetStringSize(const WideString& str, Vector<float32> *charSizes) const
 {
 	return internalFont->DrawString(str, 0, 0, 0, 0, 0, 0, 0, renderSize, false, 0, 0, 0, 0, charSizes);
 }
@@ -293,7 +293,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					float32 size, bool realDraw, 
 					int32 offsetX, int32 offsetY,
 					int32 justifyWidth, int32 spaceAddon,
-					Vector<int32> *charSizes,
+					Vector<float32> *charSizes,
 					bool contentScaleIncluded )
 {
 	drawStringMutex.Lock();

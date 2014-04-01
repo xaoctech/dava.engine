@@ -138,7 +138,7 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     
 	resultVector.clear();
     
-    Vector<int32> sizes;
+    Vector<float32> sizes;
 	GetStringSize(text, &sizes);
     
     for(int pos = 0; pos < totalSize; pos++)
@@ -213,7 +213,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	int currentLineEnd = 0;
 	int totalSize = (int)text.length();
 	
-	Vector<int32> sizes;
+	Vector<float32> sizes;
 	GetStringSize(text, &sizes);
 	
 	for(int pos = 0; state != EXIT; pos++)

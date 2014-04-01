@@ -63,7 +63,7 @@ public:
      \param[in, out] charSizes - if present(not NULL), will contain widths of every symbol in str
      \returns bounding rect for string in pixels
      */
-    virtual Size2i GetStringSize(const WideString & str, Vector<int32> *charSizes = 0) const;
+    virtual Size2i GetStringSize(const WideString & str, Vector<float32> *charSizes = 0) const;
     
     /**
      \brief Checks if symbol is present in font.
@@ -116,7 +116,7 @@ public:
                               int32 yOffset,
                               DFFontVertex* vertexBuffer,
                               int32& charDrawed,
-                              Vector<int32> *charSizes = NULL) const;
+                              Vector<float32> *charSizes = NULL) const;
     float32 GetSpread() const;
     
 protected:

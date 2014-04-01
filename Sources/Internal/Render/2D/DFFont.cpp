@@ -64,7 +64,7 @@ DFFont* DFFont::Create(const FilePath & path)
     return font;
 }
 
-Size2i DFFont::GetStringSize(const WideString & str, Vector<int32> *charSizes/* = 0*/) const
+Size2i DFFont::GetStringSize(const WideString & str, Vector<float32> *charSizes/* = 0*/) const
 { 
     int32 charDrawed = 0;
     return DrawStringToBuffer(str, 0, 0, NULL, charDrawed, charSizes);
@@ -117,7 +117,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
                                   int32 yOffset,
                                   DFFontVertex* vertexBuffer,
                                   int32& charDrawed,
-                                  Vector<int32> *charSizes /*= NULL*/) const
+                                  Vector<float32> *charSizes /*= NULL*/) const
 {
     uint32 vertexAdded = 0;
     charDrawed = 0;
@@ -126,6 +126,8 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
     float32 lastY = 0;
     float32 sizeScale = GetSizeScale();
 
+    float32 halfSize = size / 2.f;
+
     uint32 strLength = str.length();
     for (uint32 charPos = 0; charPos < strLength; ++charPos)
     {
@@ -133,9 +135,9 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
         CharsMap::const_iterator iter = chars.find(charId);
         if (iter == chars.end())
         {
-            int32 charSize = 0;
+            float32 charSize = 0;
             if (charId == L' ')
-                charSize = (size / 2) * sizeScale;
+                charSize = halfSize * sizeScale;
             
             if (charSizes)
                 charSizes->push_back(charSize);
@@ -146,17 +148,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
         }
         
         const CharDescription& charDescription = iter->second;
-        
-        float32 nextKerning = 0;
-        if (charPos + 1 < strLength)
-        {
-            Map<int32, float32>::const_iterator iter = charDescription.kerning.find(str.at(charPos + 1));
-            if (iter != charDescription.kerning.end())
-            {
-                nextKerning = iter->second;
-            }
-        }
-        
+
         float32 width = charDescription.width * sizeScale;
         float32 startX = lastX + charDescription.xOffset * sizeScale;
 
@@ -193,17 +185,27 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
             vertexBuffer[vertexAdded + 3].texCoord.y = charDescription.v2;
             vertexAdded += 4;
         }
+
+        float32 nextKerning = 0;
+        if (charPos + 1 < strLength)
+        {
+            Map<int32, float32>::const_iterator iter = charDescription.kerning.find(str.at(charPos + 1));
+            if (iter != charDescription.kerning.end())
+            {
+                nextKerning = iter->second;
+            }
+        }
             
         float32 charWidth = (charDescription.xAdvance + nextKerning) * sizeScale;
         if (charSizes)
-            charSizes->push_back(int32(charWidth));
+            charSizes->push_back(charWidth);
         lastX += charWidth;
         
         charDrawed++;
     }
     lastY += yOffset + GetFontHeight();
 
-    return Size2i(lastX, lastY);
+    return Size2i((int32)ceilf(lastX), (int32)ceilf(lastY));
 }
 
 float32 DFFont::GetSpread() const
