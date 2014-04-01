@@ -44,8 +44,6 @@ public:
     bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
     bool WinEvent(MSG *message, long *result);
 
-    HWND hWindow;
-
 #if defined(__DAVAENGINE_DIRECTX9__)
         LPDIRECT3D9 d3d9;
 #endif //#if defined(__DAVAENGINE_DIRECTX9__)
