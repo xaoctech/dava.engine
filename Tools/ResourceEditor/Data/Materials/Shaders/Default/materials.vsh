@@ -286,6 +286,7 @@ void main()
         //}
 
         gl_Position = worldViewProjMatrix * pos;
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos);
         varTexCoord1 = hUV;
     
     #else
@@ -386,8 +387,13 @@ void main()
     #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
         float fogFragCoord = length(eyeCoordsPosition);
     #else
-        vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
+    
+        #if !defined(MATERIAL_GRASS)
+            vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
+        #endif
+    
         float fogFragCoord = length(eyeCoordsPosition);
+    
     #endif
     #if !defined(FOG_LINEAR)
         const float LOG2 = 1.442695;
