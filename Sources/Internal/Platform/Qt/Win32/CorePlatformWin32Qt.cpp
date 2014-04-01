@@ -72,23 +72,25 @@ int Core::RunCmdTool(int argc, char * argv[], AppHandle handle)
 
 }
 
-bool CoreWin32PlatformQt::SetupWindow(HINSTANCE hInstance, HWND hWindow)
+bool CoreWin32PlatformQt::SetupWindow(HINSTANCE _hInstance, HWND _hWindow)
 {
+    hInstance = _hInstance;
+    hWindow = _hWindow;
     needToSkipMouseUp = false;
 
-	//single instance check
-	TCHAR fileName[MAX_PATH];
-	GetModuleFileName(NULL, fileName, MAX_PATH);
-	fileName[MAX_PATH-1] = 0; //string can be not null-terminated on winXP
-	for(int32 i = 0; i < MAX_PATH; ++i)
-	{
-		if(fileName[i] == L'\\') //symbol \ is not allowed in CreateMutex mutex name
-		{
-			fileName[i] = ' ';
-		}
-	}
+    //single instance check
+    TCHAR fileName[MAX_PATH];
+    GetModuleFileName(NULL, fileName, MAX_PATH);
+    fileName[MAX_PATH-1] = 0; //string can be not null-terminated on winXP
+    for(int32 i = 0; i < MAX_PATH; ++i)
+    {
+        if(fileName[i] == L'\\') //symbol \ is not allowed in CreateMutex mutex name
+        {
+            fileName[i] = ' ';
+        }
+    }
 
-	return true;
+    return true;
 }
 
 static Vector<DAVA::UIEvent> activeTouches;
