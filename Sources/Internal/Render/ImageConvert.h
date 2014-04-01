@@ -33,6 +33,50 @@
 namespace DAVA
 {
 
+struct RGB888
+    {
+        uint8 r;
+        uint8 g;
+        uint8 b;
+    };
+
+struct ConvertRGBA8888toRGB888
+{
+    inline void operator()(const uint32 * input, RGB888 *output)
+    {
+		uint32 pixel = *input;
+        output->b = ((pixel >> 16) & 0xFF);
+        output->g = ((pixel >> 8) & 0xFF);
+        output->r = (pixel & 0xFF);
+    }
+};
+    
+struct ConvertRGB888toRGBA8888
+{
+    inline void operator()(const RGB888 *input, uint32 * output)
+    {
+        *output = ((0xFF) << 24) | (input->r << 16) | (input->g << 8) | input->b;
+    }
+};
+    
+struct ConvertA16toA8
+{
+    inline void operator()(const uint16 * input, uint8 *output)
+    {
+        uint16 pixel = *input;
+        *output = pixel >> 8;
+    }
+};
+
+struct ConvertA8toA16
+{
+    inline void operator()(const uint8 * input, uint16 *output)
+    {
+        uint8 pixel = *input;
+        *output = pixel << 8;
+    }
+};
+    
 struct ConvertRGBA8888toRGBA4444
 {
 	inline void operator()(const uint32 * input, uint16 *output)
