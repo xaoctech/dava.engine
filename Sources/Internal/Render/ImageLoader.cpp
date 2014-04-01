@@ -32,10 +32,12 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/RenderBase.h"
 #include "Render/LibPngHelpers.h"
+#include "Render/LibJpegHelper.h"
 #include "Render/LibPVRHelper.h"
 #include "Render/LibDxtHelper.h"
 #include "Platform/SystemTimer.h"
 #include "Utils/Utils.h"
+#include "Render/ImageConvert.h"
 
 namespace DAVA 
 {
@@ -219,10 +221,56 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
 
 void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
 {
-    DVASSERT(pathname.IsEqualToExtension(".png"));
+    DVASSERT(pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"));
     
-    DVASSERT((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
-    LibPngWrapper::WritePngFile(pathname, image->width, image->height, image->data, image->format);
+    DVASSERT((FORMAT_RGB888 == image->format)||(FORMAT_RGBA8888 == image->format) ||
+             (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
+    
+    if(pathname.IsEqualToExtension(".png"))
+    {
+        if(FORMAT_RGB888 == image->format)
+        {
+            Image* imgToSave = Image::Create(image->width, image->height, FORMAT_RGBA8888);
+            
+            ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
+            convert(image->data, image->width, image->height, 3, imgToSave->data, imgToSave->width, imgToSave->height, 4);
+            
+            LibPngWrapper::WritePngFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
+            SafeRelease(imgToSave);
+        }
+        else
+        {
+            LibPngWrapper::WritePngFile(pathname, image->width, image->height, image->data, image->format);
+        }
+    }
+    else
+    {
+        if((FORMAT_RGB888 == image->format) || (FORMAT_A8 == image->format))
+        {
+            LibJpegWrapper::WriteJpegFile(pathname, image->width, image->height, image->data, image->format);
+        }
+        else
+        {
+            Image* imgToSave= NULL;
+            if(FORMAT_RGBA8888 == image->format)
+            {
+                imgToSave = Image::Create(image->width, image->height, FORMAT_RGB888);
+                ConvertDirect<uint32, RGB888, ConvertRGBA8888toRGB888> convert;
+                convert(image->data, image->width, image->height, 4, imgToSave->data, imgToSave->width, imgToSave->height, 3);
+            }
+            else if(FORMAT_A16 == image->format)
+            {
+                imgToSave = Image::Create(image->width, image->height, FORMAT_A8);
+                ConvertDirect<uint16, uint8, ConvertA16toA8> convert;
+                convert(image->data, image->width, image->height, 2, imgToSave->data, imgToSave->width, imgToSave->height, 1);
+            }
+            if(imgToSave != NULL)
+            {
+                LibJpegWrapper::WriteJpegFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
+                SafeRelease(imgToSave);
+            }
+        }
+    }
 }
     
     
