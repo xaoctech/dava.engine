@@ -53,7 +53,7 @@
 #include "Platform/Qt/MacOS/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
 #include "Platform/Qt/Win32/QtLayerWin32.h"
-#include "Platform/Qt/Win32/CorePlatformWin32.h"
+#include "Platform/Qt/Win32/CorePlatformWin32Qt.h"
 #endif //#if defined (__DAVAENGINE_MACOS__)
 
 DavaGLWidget::DavaGLWidget(QWidget *parent)
