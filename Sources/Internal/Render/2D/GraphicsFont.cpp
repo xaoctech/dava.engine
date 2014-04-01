@@ -123,7 +123,7 @@ Font * GraphicsFont::Clone() const
 	return cloneFont;
 }
 
-Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<int32> *charSizes) const
+Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<float32> *charSizes) const
 {
 	uint32 length = (uint32)string.length();
 	if (length == 0)
