@@ -27,36 +27,31 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
-#define __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
+#ifndef __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
+#define __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
 
 
 #include "DAVAEngine.h"
+#include "Platform/TemplateMacOS/CoreMacOSPlatformBase.h"
 
 #if defined(__DAVAENGINE_MACOS__)
 
-namespace DAVA 
-{
-class CoreMacOSPlatform : public Core
+namespace DAVA {
+
+class CoreMacOSPlatformQt : public CoreMacOSPlatformBase
 {
 public:
-
-    CoreMacOSPlatform();
-    virtual ~CoreMacOSPlatform();
-
 	virtual eScreenMode GetScreenMode();
 	virtual void SwitchScreenToMode(eScreenMode screenMode); 
 	virtual void ToggleFullscreen();
 	virtual void Quit();
-	
-	virtual void GetAvailableDisplayModes(List<DisplayMode> & availableModes);
-	virtual DisplayMode GetCurrentDisplayMode();
+
 	virtual Vector2 GetMousePosition();
 	virtual void* GetOpenGLView();
-};	
+};
 };
 
 #endif //#if defined(__DAVAENGINE_MACOS__)
 
 
-#endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
+#endif // __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
