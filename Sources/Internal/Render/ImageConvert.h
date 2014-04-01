@@ -55,7 +55,7 @@ struct ConvertRGB888toRGBA8888
 {
     inline void operator()(const RGB888 *input, uint32 * output)
     {
-        *output = ((0xFF) << 24) | (input->r << 16) | (input->g << 8) | input->b;
+        *output = ((0xFF) << 24) | (input->b << 16) | (input->g << 8) | input->r;
     }
 };
     
@@ -64,7 +64,7 @@ struct ConvertA16toA8
     inline void operator()(const uint16 * input, uint8 *output)
     {
         uint16 pixel = *input;
-        *output = pixel >> 8;
+        *output = pixel;
     }
 };
 
@@ -73,7 +73,7 @@ struct ConvertA8toA16
     inline void operator()(const uint8 * input, uint16 *output)
     {
         uint8 pixel = *input;
-        *output = pixel << 8;
+        *output = pixel;
     }
 };
     

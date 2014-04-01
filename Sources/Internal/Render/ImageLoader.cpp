@@ -91,6 +91,11 @@ bool ImageLoader::CreateFromFileByContent(File *file, Vector<Image *> & imageSet
         return CreateFromDDS(file, imageSet, baseMipmap);
     }
     
+    if(IsJPEGFile(file))
+    {
+        return CreateFromJPEG(file, imageSet);
+    }
+    
     return false;
 }
 
@@ -108,6 +113,35 @@ bool ImageLoader::CreateFromPNGFile(const FilePath & pathname, Vector<Image *> &
     bool created = CreateFromPNG(file, imageSet);
     SafeRelease(file);
 	return created;
+}
+    
+bool ImageLoader::CreateFromJPEGFile(const FilePath & pathname, Vector<Image *> & imageSet)
+{
+    Image *jpegImage = new Image();
+    if(jpegImage)
+    {
+        bool created = LibJpegWrapper::ReadJpegFile(pathname, jpegImage);
+        if(created)
+        {
+            
+            if (jpegImage->GetPixelFormat() == FORMAT_RGB888)
+            {
+                //as common standart is rgba8888 need to modify image
+                Image * imgToSave = Image::Create(jpegImage->width, jpegImage->height, FORMAT_RGBA8888);
+                ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
+                convert(jpegImage->data, jpegImage->width, jpegImage->height, sizeof(RGB888)*jpegImage->width,
+                        imgToSave->data, imgToSave->width, imgToSave->height, sizeof(uint32)*imgToSave->width);
+                SafeRelease(jpegImage);
+                jpegImage = imgToSave;
+            }
+            imageSet.push_back(jpegImage);
+            return true;
+        }
+        
+        SafeRelease(jpegImage);
+    }
+    
+    return false;
 }
     
 bool ImageLoader::CreateFromPVRFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
@@ -148,6 +182,13 @@ bool ImageLoader::IsPNGFile(DAVA::File *file)
     return isPng;
 }
     
+bool ImageLoader::IsJPEGFile(File *file)
+{
+    bool isJpeg = LibJpegWrapper::IsJpegFile(file->GetFilename());
+    file->Seek(0, File::SEEK_FROM_START);
+    return isJpeg;
+}
+    
 bool ImageLoader::IsPVRFile(DAVA::File *file)
 {
     bool isPvr = LibPVRHelper::IsPvrFile(file);
@@ -179,6 +220,11 @@ bool ImageLoader::CreateFromPNG(DAVA::File *file, Vector<Image *> & imageSet)
     }
     
     return false;
+}
+    
+bool ImageLoader::CreateFromJPEG(File *file, Vector<Image *> & imageSet)
+{
+    return CreateFromJPEGFile(file->GetFilename(), imageSet);
 }
 
 bool ImageLoader::CreateFromDDS(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
@@ -233,7 +279,7 @@ void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
             Image* imgToSave = Image::Create(image->width, image->height, FORMAT_RGBA8888);
             
             ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
-            convert(image->data, image->width, image->height, 3, imgToSave->data, imgToSave->width, imgToSave->height, 4);
+            convert(image->data, image->width, image->height, sizeof(RGB888)*image->width, imgToSave->data, imgToSave->width, imgToSave->height, sizeof(uint32)*image->width);
             
             LibPngWrapper::WritePngFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
             SafeRelease(imgToSave);
@@ -256,13 +302,13 @@ void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
             {
                 imgToSave = Image::Create(image->width, image->height, FORMAT_RGB888);
                 ConvertDirect<uint32, RGB888, ConvertRGBA8888toRGB888> convert;
-                convert(image->data, image->width, image->height, 4, imgToSave->data, imgToSave->width, imgToSave->height, 3);
+                convert(image->data, image->width, image->height, sizeof(uint32)*image->width, imgToSave->data, imgToSave->width, imgToSave->height, sizeof(RGB888)*image->width);
             }
             else if(FORMAT_A16 == image->format)
             {
                 imgToSave = Image::Create(image->width, image->height, FORMAT_A8);
                 ConvertDirect<uint16, uint8, ConvertA16toA8> convert;
-                convert(image->data, image->width, image->height, 2, imgToSave->data, imgToSave->width, imgToSave->height, 1);
+                convert(image->data, image->width, image->height, sizeof(uint16)*image->width, imgToSave->data, imgToSave->width, imgToSave->height, sizeof(uint8)*image->width);
             }
             if(imgToSave != NULL)
             {
