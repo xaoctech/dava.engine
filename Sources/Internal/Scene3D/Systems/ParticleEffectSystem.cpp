@@ -626,7 +626,7 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 	}
 	particle->position += group.spawnPosition;
 	TransformPerserveLength(particle->speed, newTransform);
-//	TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)	
+	TransformPerserveLength(particle->position, newTransform); //note - from now emitter position is not effected by scale anymore (artist request)	
 }
 
 
