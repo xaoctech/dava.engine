@@ -64,8 +64,6 @@ void UIStaticTextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 {
 	TextPropertyGridWidget::Initialize(activeMetadata);
     
-    //TODO: rewrite UIStaticTextPropertyGridWidget::Initialize
-    
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
     
     // All these properties are state-aware.

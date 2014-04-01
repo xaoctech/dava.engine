@@ -156,7 +156,6 @@ void EditorFontManager::OnProjectLoaded()
 
 void EditorFontManager::LoadLocalizedFonts()
 {
-    //TODO: load localized fonts
     FontManager::Instance()->Reset();
     
     int32 localesCount = locales.size();
@@ -165,7 +164,7 @@ void EditorFontManager::LoadLocalizedFonts()
         String locale = locales[i];
         UIYamlLoader::LoadFonts(GetLocalizedFontsPath(locale));
     
-        //TODO: save loaded fonts to localizedFonts
+        // save loaded fonts to localizedFonts
         const Map<Font*, String> registeredFonts = FontManager::Instance()->GetRegisteredFonts();
         Map<Font*, String>::const_iterator it = registeredFonts.begin();
         Map<Font*, String>::const_iterator endIt = registeredFonts.end();
@@ -173,17 +172,6 @@ void EditorFontManager::LoadLocalizedFonts()
         {
             localizedRegisteredFonts[locale][it->first] = it->second;
             localizedFonts[locale][it->second] = SafeRetain(it->first);
-        }
-        
-        //TODO: remove logs
-        {
-            Map<String, Font*>::const_iterator it = localizedFonts[locale].begin();
-            Map<String, Font*>::const_iterator endIt = localizedFonts[locale].end();
-            for(; it != endIt; ++it)
-            {
-                Logger::Debug("EditorFontManager::LoadLocalizedFonts localizedFonts[%s][%s]=%x", locale.c_str(), it->first.c_str(), it->second);
-            }
-            Logger::Debug("EditorFontManager::LoadLocalizedFonts localizedFonts[%s].size()=%d", locale.c_str(), localizedFonts[locale].size());
         }
         
         FontManager::Instance()->Reset();
@@ -203,17 +191,6 @@ void EditorFontManager::LoadLocalizedFonts()
         }
         
         Logger::Debug("EditorFontManager::LoadLocalizedFonts defaultRegisteredFonts.size()=%d", defaultRegisteredFonts.size());
-        
-        //TODO: remove logs
-        {
-            Map<String, Font*>::const_iterator it = defaultFonts.begin();
-            Map<String, Font*>::const_iterator endIt = defaultFonts.end();
-            for(; it != endIt; ++it)
-            {
-                Logger::Debug("EditorFontManager::LoadLocalizedFonts defaultFonts[%s] = %x", it->first.c_str(), it->second);
-            }
-            Logger::Debug("EditorFontManager::LoadLocalizedFonts defaultFonts.size()=%d", defaultFonts.size());
-        }
     }
 }
 
@@ -227,18 +204,7 @@ void EditorFontManager::SaveLocalizedFonts()
         
         FontManager::Instance()->Reset();
         
-        //TODO: load localized fonts into FontManager
-        
-        //TODO: remove logs
-        {
-            Map<String, Font*>::const_iterator it = localizedFonts[locale].begin();
-            Map<String, Font*>::const_iterator endIt = localizedFonts[locale].end();
-            for(; it != endIt; ++it)
-            {
-                Logger::Debug("EditorFontManager::SaveLocalizedFonts localizedFonts[%s][%s]=%x", locale.c_str(), it->first.c_str(), it->second);
-            }
-            Logger::Debug("EditorFontManager::SaveLocalizedFonts localizedFonts[%s].size()=%d", locale.c_str(), localizedFonts[locale].size());
-        }
+        //load localized fonts into FontManager
         
         FontManager::Instance()->RegisterFonts(localizedRegisteredFonts[locale]);
         
@@ -249,31 +215,9 @@ void EditorFontManager::SaveLocalizedFonts()
     
     FontManager::Instance()->Reset();
     
-    //TODO: load localized font into FontManager
-    {
-        Map<Font*, String>::const_iterator drIt = defaultRegisteredFonts.begin();
-        Map<Font*, String>::const_iterator drEndIt = defaultRegisteredFonts.end();
-        for(; drIt != drEndIt; ++drIt)
-        {
-            Logger::Debug("EditorFontManager::SaveLocalizedFonts defaultRegisteredFonts %x %s", drIt->first, drIt->second.c_str());
-        }
-        Logger::Debug("EditorFontManager::SaveLocalizedFonts defaultRegisteredFonts %d", defaultRegisteredFonts.size());
-    }
-    
     FontManager::Instance()->RegisterFonts(defaultRegisteredFonts);
     
     FontManager::Instance()->PrepareToSaveFonts(true);
-    
-    //TODO: remove logs
-    {
-        Map<String, Font*>::const_iterator it = defaultFonts.begin();
-        Map<String, Font*>::const_iterator endIt = defaultFonts.end();
-        for(; it != endIt; ++it)
-        {
-            Logger::Debug("EditorFontManager::SaveLocalizedFonts defaultFonts[%s] = %x", it->first.c_str(), it->second);
-        }
-        Logger::Debug("EditorFontManager::SaveLocalizedFonts defaultFonts.size()=%d", defaultFonts.size());
-    }
     
     UIYamlLoader::SaveFonts(EditorFontManager::Instance()->GetDefaultFontsPath());
 }
@@ -689,27 +633,3 @@ QString EditorFontManager::GetDefaultFontName() const
 	}
 	return QString::fromStdString(DEFAULT_FONT_PATH);
 }
-
-//const EditorFontManager::FONTSMAP& EditorFontManager::GetAllFonts() const
-//{
-//	return fonts;
-//}
-
-//QString EditorFontManager::GetFontName(Font* font) const
-//{
-//    if (font == NULL)
-//    {
-//        return QString();
-//    }
-//
-//    EditorFontManager::FONTSMAP fonts = GetAllFonts();
-//    for (EditorFontManager::FONTSMAP::const_iterator iter = fonts.begin(); iter != fonts.end(); ++iter)
-//    {
-//        if (font->IsEqual(iter->second))
-//        {
-//            return iter->first.c_str();
-//        }
-//    }
-//
-//    return QString();
-//}

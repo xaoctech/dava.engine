@@ -37,7 +37,6 @@ ChangeFontPropertyCommand::ChangeFontPropertyCommand(BaseMetadata* baseMetadata,
                                 const EditFontDialogResult& editFontDialogResult):
 ChangePropertyCommand<Font *>(baseMetadata, propertyGridWidgetData, editFontDialogResult.font)
 {
-    //TODO: apply to all controls where tis font is used
     font = SafeRetain(editFontDialogResult.font);
     isApplyToAll = editFontDialogResult.isApplyToAll;
     fontPresetOriginalName = editFontDialogResult.fontPresetOriginalName;
@@ -65,8 +64,6 @@ ChangeFontPropertyCommand::~ChangeFontPropertyCommand()
 
 void ChangeFontPropertyCommand::Execute()
 {
-    Logger::Debug("ChangeFontPropertyCommand::Execute TODO: apply all changes in all fonts to all controls that use those fonts");
-    
     //TODO: save data to be able to revert changes
     Logger::Debug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %x %s default", fontPresetOriginalName.c_str(), font, fontPresetName.c_str());
     String newFontPresetName = EditorFontManager::Instance()->SetLocalizedFont(fontPresetOriginalName, font, fontPresetName, isApplyToAll);
@@ -86,12 +83,7 @@ void ChangeFontPropertyCommand::Execute()
     if(isApplyToAll)
     {
         Logger::Debug("ChangeFontPropertyCommand::Execute TODO: apply to all fonts");
-        //TODO: apply to all fonts
-    }
-    else
-    {
-        Logger::Debug("ChangeFontPropertyCommand::Execute TODO: create a copy of font preset");
-        //TODO: create a copy of font preset
+        //TODO: set new font in all controls that use this font
     }
     
     // apply current font change

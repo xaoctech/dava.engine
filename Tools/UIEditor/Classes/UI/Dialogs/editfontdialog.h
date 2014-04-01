@@ -70,7 +70,6 @@ public:
     explicit EditFontDialog(const String & editFontPresetName, QDialog *parent = 0);
     ~EditFontDialog();
     
-    //TODO: Return created or edited font preset (name, params, apply option)
     const EditFontDialogResult &GetResult() {return dialogResult; }
     
 private:
