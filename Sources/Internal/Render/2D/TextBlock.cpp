@@ -169,6 +169,7 @@ void TextBlock::SetRectSize(const Vector2 & size)
 	if (rectSize != size)
 	{
 		rectSize = size;
+        needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
@@ -289,6 +290,7 @@ void TextBlock::SetAlign(int32 _align)
 	if (align != _align) 
 	{
 		align = _align;
+        needRedraw = true;
 
         mutex.Unlock();
 		Prepare();
