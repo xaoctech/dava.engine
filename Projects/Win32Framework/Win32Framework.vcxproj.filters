@@ -903,9 +903,6 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
       <Filter>Internal\Platform\Qt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
@@ -1418,6 +1415,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CoreWin32PlatformBase.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.h">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2060,9 +2060,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
@@ -2536,6 +2533,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CoreWin32PlatformBase.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.cpp">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
