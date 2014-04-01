@@ -307,16 +307,10 @@ String FilePath::ResolveResourcesPath() const
                 path = (*it).absolutePathname + relativePathname;
                 if(path.Exists())
                 {
-                    break;
+                    return path.absolutePathname;
                 }
-				else
-				{
-					path = "";
-				}
             }
         }
-        
-        return path.absolutePathname;
     }
     
     return absolutePathname;
