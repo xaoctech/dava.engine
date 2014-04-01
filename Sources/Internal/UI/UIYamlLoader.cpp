@@ -360,7 +360,6 @@ bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
     }
     bool res = false;
     
-    //TODO: save fonts to yaml
     //save used fonts
     const FontManager::TRACKED_FONTS& usedFonts = FontManager::Instance()->GetTrackedFont();
     ScopedPtr<YamlNode> fontsNode( new YamlNode(YamlNode::TYPE_MAP) );

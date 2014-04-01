@@ -871,6 +871,7 @@ void MainWindow::UpdateMenu()
 	ui->actionAdjustControlSize->setEnabled(projectNotEmpty);
 
     ui->actionFontManager->setEnabled(projectNotEmpty);
+    ui->actionLocalizationFontsManager->setEnabled(false);
     ui->actionLocalizationManager->setEnabled(projectNotEmpty);
 
     // Reload.

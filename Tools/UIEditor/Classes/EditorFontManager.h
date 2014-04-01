@@ -105,9 +105,7 @@ private:
 private:
 	Font* defaultFont;
 	Font* baseFont;
-//	FONTSMAP fonts;
     
-    //TODO: load localized fonts from localizationFontsPath/locale/fonts.yaml
     FilePath defaultFontsPath;
     
     Vector<String> locales;

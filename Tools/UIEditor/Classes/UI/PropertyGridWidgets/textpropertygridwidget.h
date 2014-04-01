@@ -67,7 +67,7 @@ protected:
     
     virtual void HandleChangePropertyFailed(const QString& propertyName);
 
-    void UpdateFontPresetValues(); //TODO: is it really needed?
+    void UpdateFontPresetValues();
     
     // Handle dependent checkboxes.
     virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);

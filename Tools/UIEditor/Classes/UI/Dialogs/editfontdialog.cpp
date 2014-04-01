@@ -163,7 +163,6 @@ void EditFontDialog::ConnectToSignals()
     connect(ui->localizedFontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnSpinBoxValueChanged(int)));
     
     connect(ui->buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(OnOkButtonClicked()));
-    //TODO: connect radiobuttons, font name line edit, font push button, font size spin box
 }
 
 void EditFontDialog::DisconnectFromSignals()
@@ -186,7 +185,6 @@ void EditFontDialog::OnRadioButtonClicked()
 {
     ui->buttonBox->button( QDialogButtonBox::Ok )->setEnabled(true);
     QRadioButton* senderWidget = dynamic_cast<QRadioButton*>(QObject::sender());
-    //TODO: determine wether to create new or apply to all usages of the font
     if(senderWidget == ui->applyToAllRadioButton)
     {
         dialogResult.isApplyToAll = true;
@@ -318,11 +316,6 @@ void EditFontDialog::ProcessPushButtonClicked(QPushButton *senderWidget)
             
             UpdateSpinBoxWidgetWithPropertyValue(ui->fontSizeSpinBox);
             UpdatePushButtonWidgetWithPropertyValue(ui->fontSelectButton);
-            //        BaseCommand* command = new ChangePropertyCommand<Font *>(activeMetadata, iter->second, resultFont);
-            //        CommandsController::Instance()->ExecuteCommand(command);
-            //        SafeRelease(command);
-            
-            // TODO - probable memory leak. Need to investigate how to fix it
             SafeRelease(resultFont);
         }
         else
@@ -451,7 +444,6 @@ void EditFontDialog::UpdateComboBoxWidgetWithPropertyValue(QComboBox *comboBoxWi
 
 void EditFontDialog::OnOkButtonClicked()
 {
-    //TODO: apply changes to all usages of modified font?
     dialogResult.fontPresetName = ui->fontPresetNameLlineEdit->text().toStdString();
     
     Logger::Debug("EditFontDialog::OnOkButtonClicked");
