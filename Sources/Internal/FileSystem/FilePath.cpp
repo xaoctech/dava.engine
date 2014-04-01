@@ -298,6 +298,7 @@ String FilePath::ResolveResourcesPath() const
         if(resourceFolders.size() == 1) // optimization to avoid call path.Exists()
         {
             path = (*resourceFolders.begin()).absolutePathname + relativePathname;
+            return path.absolutePathname;
         }
         else
         {
