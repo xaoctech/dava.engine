@@ -112,7 +112,7 @@ void EditorMaterialSystem::BuildInstancesList(DAVA::NMaterial* parent, DAVA::Set
 		for(DAVA::uint32 j = 0; j < parent->GetChildrenCount(); ++j)
 		{
 			DAVA::NMaterial *child = parent->GetChild(j);
-                //if(materialFeedback.count(child) > 0)
+            if(materialFeedback.count(child) > 0)
 			{
 				in.insert(child);
 			}

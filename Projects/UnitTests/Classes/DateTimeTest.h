@@ -26,74 +26,34 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#ifdef DAVA_FMOD
 
-#ifndef __DAVAENGINE_FMOD_SOUND_EVENT_H__
-#define __DAVAENGINE_FMOD_SOUND_EVENT_H__
+#ifndef __TEMPLATEPROJECTMACOS__DATETIMETEST__
+#define __TEMPLATEPROJECTMACOS__DATETIMETEST__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/EventDispatcher.h"
-#include "Base/FastNameMap.h"
-#include "Sound/SoundEvent.h"
-#include "Sound/FMODUtils.h"
+#include "DAVAEngine.h"
 
-namespace FMOD
+using namespace DAVA;
+
+#include "TestTemplate.h"
+#include "Platform/DateTime.h"
+
+class DateTimeTest : public TestTemplate<DateTimeTest>
 {
-    class Event;
-};
-
-namespace DAVA
-{
-
-class FMODSoundEvent : public SoundEvent
-{
-public:
-    static FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
-
-	virtual ~FMODSoundEvent();
-
-    virtual bool IsActive() const;
-    virtual bool Trigger();
-	virtual void Stop();
-    virtual void Pause();
-    
-    virtual void SetVolume(float32 volume);
-    
-    virtual void SetPosition(const Vector3 & position);
-    virtual void SetDirection(const Vector3 & direction);
-    virtual void UpdateInstancesPosition();
-    
-    virtual void SetParameterValue(const FastName & paramName, float32 value);
-    virtual float32 GetParameterValue(const FastName & paramName);
-    virtual bool IsParameterExists(const FastName & paramName);
-
-    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const;
-
-    virtual String GetEventName() const;
-    
 protected:
-    FMODSoundEvent(const FastName & eventName);
-    void ApplyParamsToEvent(FMOD::Event * event);
-    void InitParamsMap();
+    ~DateTimeTest(){}
+public:
+	DateTimeTest();
+	
+	virtual void LoadResources();
+	virtual void UnloadResources();
+	
+    virtual void Draw(const UIGeometricData &geometricData);
 
-    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
+    void TestFunction(PerfFuncData * data);
 
-    List<FMOD::Event *> fmodEventInstances;
-    FastName eventName;
+private:
     
-    Vector3 position;
-    Vector3 direction;
-    
-    bool is3D;
-
-    FastNameMap<float32> paramsValues;
-    
-friend class SoundSystem;
+    void PrintDateTimeContent(const DateTime&);
 };
 
-};
-
-#endif
-
-#endif //DAVA_FMOD
+#endif /* defined(__TEMPLATEPROJECTMACOS__DATETIMETEST__) */
