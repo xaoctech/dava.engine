@@ -25,55 +25,47 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-
-#include "DeviceInfoTest.h"
-#include "Platform/DeviceInfo.h"
 #include "Platform/DateTime.h"
+#include "Utils/UTF8Utils.h"
+#include "FileSystem/LocalizationSystem.h"
 
-DeviceInfoTest::DeviceInfoTest()
-:	TestTemplate<DeviceInfoTest>("DeviceInfoTest")
+namespace DAVA
 {
-	RegisterFunction(this, &DeviceInfoTest::TestFunction, Format("DeviceInfo test"), NULL);
-}
+	DAVA::WideString DateTime::AsWString(const wchar_t* format) const
+	{
+		DAVA::String configLocale = LocalizationSystem::Instance()->GetCountryCode();
+		configLocale.replace(configLocale.find("_"), 1, "-");
+		LCID locale = LocaleNameToLCID(StringToWString(configLocale).c_str(), 0);
+		int nchars = GetLocaleInfoW(locale, LOCALE_SENGLANGUAGE, NULL, 0);
+		wchar_t* languageCode = new wchar_t[nchars];
+		memset(languageCode, 0, nchars);
+		GetLocaleInfoW(locale, LOCALE_SENGLANGUAGE, languageCode, nchars);
 
-void DeviceInfoTest::LoadResources()
-{
-}
+		DAVA::WideString locID(languageCode);
+		delete languageCode;
 
-void DeviceInfoTest::UnloadResources()
-{
-}
+		struct tm timeinfo = {0};
+        wchar_t buffer [256] = {0};
+		
+        Timestamp timeWithTZ = innerTime + timeZoneOffset;
 
-void DeviceInfoTest::Draw(const DAVA::UIGeometricData &geometricData)
-{
-}
+		GmTimeThreadSafe(&timeinfo, &timeWithTZ);
 
-void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *data)
-{
-    String platform = DeviceInfo::GetPlatformString();
-    String version = DeviceInfo::GetVersion();
-    String manufacturer = DeviceInfo::GetManufacturer();
-    String model = DeviceInfo::GetModel();
-    String locale = DeviceInfo::GetLocale();
-    String region = DeviceInfo::GetRegion();
-    String timezone = DeviceInfo::GetTimeZone();
-    String udid = DeviceInfo::GetUDID();
-    WideString name = DeviceInfo::GetName();
+        _locale_t loc = _create_locale(LC_ALL, UTF8Utils::EncodeToUTF8(locID).c_str());
+		DVASSERT(loc);
+        _wcsftime_l(buffer, 256, format, &timeinfo, loc);
 
-	Logger::Debug("********** Device info **********");
-	Logger::Debug("Platform: %s", platform.c_str());
-	Logger::Debug("OS version: %s", version.c_str());
-	Logger::Debug("Manufacturer: %s", manufacturer.c_str());
-	Logger::Debug("Model: %s", model.c_str());
-	Logger::Debug("Locale: %s", locale.c_str());
-	Logger::Debug("Region: %s", region.c_str());
-	Logger::Debug("Time zone: %s", timezone.c_str());
-    Logger::Debug("UDID: %s", udid.c_str());
-    Logger::Debug("Name: %s", WStringToString(name).c_str());
-    Logger::Debug("ZBufferSize: %d", DeviceInfo::GetZBufferSize());
-	Logger::Debug("********** Device info **********");
+        DAVA::WideString str(buffer);
+		return str;
+    }
 
-	data->testData.message = "DeviceInfo test - passed";
-	TEST_VERIFY(true);
+    int32 DateTime::GetLocalTimeZoneOffset()
+    {
+		TIME_ZONE_INFORMATION TimeZoneInfo;
+		GetTimeZoneInformation( &TimeZoneInfo );
+	
+		// TimeZoneInfo.Bias is the difference between local time
+		// and GMT in minutes.
+        return TimeZoneInfo.Bias*(-60);
+    }
 }
