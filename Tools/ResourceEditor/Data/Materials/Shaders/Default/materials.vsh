@@ -22,10 +22,6 @@ attribute vec3 inTexCoord0;
 attribute vec2 inTexCoord0;
 #endif
 
-#if defined(SKYOBJECT)
-uniform float skyobjectOffset;
-#endif
-
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
 attribute vec2 inTexCoord1;
 #endif
@@ -180,7 +176,7 @@ void main()
 	vec4 vecPos = (worldViewProjMatrix * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SKYOBJECT)
-	mat4 mwpWOtranslate = mat4(worldViewProjMatrix[0], worldViewProjMatrix[1], worldViewProjMatrix[2], vec4(0.0, skyobjectOffset, 0.0, 1.0));
+	mat4 mwpWOtranslate = mat4(worldViewProjMatrix[0], worldViewProjMatrix[1], worldViewProjMatrix[2], vec4(0.0, 0.0, 0.0, 1.0));
 	vec4 vecPos = (mwpWOtranslate * inPosition);
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
