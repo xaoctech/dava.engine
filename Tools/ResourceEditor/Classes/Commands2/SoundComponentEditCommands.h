@@ -28,48 +28,43 @@
 
 
 
-#include "Sound/VolumeAnimatedObject.h"
-#include "Animation/Animation.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/SoundSystem.h"
+#ifndef __SOUND_COMPONENT_COMMANDS_H__
+#define __SOUND_COMPONENT_COMMANDS_H__
 
-namespace DAVA
+#include "DAVAEngine.h"
+#include "Commands2/Command2.h"
+
+class AddSoundEventCommand : public Command2
 {
+public:
+	AddSoundEventCommand(DAVA::Entity *entity, DAVA::SoundEvent * sEvent);
+	~AddSoundEventCommand();
 
-VolumeAnimatedObject::VolumeAnimatedObject() :
-	animatedVolume(-1)
-{
+	virtual void Undo();
+	virtual void Redo();
 
-}
+	virtual DAVA::Entity* GetEntity() const;
 
-Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
-{
-	animatedVolume = GetVolume();
+private:
 
-	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
-	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	Retain();
-	a->Start(track);
-
-	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
-
-	return a;
-}
-
-void VolumeAnimatedObject::Update()
-{
-	if(animatedVolume != -1.f)
-		SetVolume(animatedVolume);
-}
-
-void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
-{
-	SetVolume(animatedVolume);
-	animatedVolume = -1.f;
-	Release();
-
-	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
-}
-
+    DAVA::Entity *entity;
+	DAVA::SoundEvent *savedEvent;
 };
+
+class RemoveSoundEventCommand : public Command2
+{
+public:
+    RemoveSoundEventCommand(DAVA::Entity *entity, DAVA::SoundEvent * sEvent);
+    ~RemoveSoundEventCommand();
+
+    virtual void Undo();
+    virtual void Redo();
+
+    virtual DAVA::Entity* GetEntity() const;
+
+private:
+
+    DAVA::Entity *entity;
+    DAVA::SoundEvent *savedEvent;
+};
+#endif // __SOUND_COMPONENT_COMMANDS_H__
