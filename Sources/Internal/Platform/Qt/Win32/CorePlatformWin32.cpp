@@ -26,9 +26,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#include "Platform/Qt/Win32/CorePlatformWin32.h"
-#include "Platform/Qt/Win32/WindowsSpecifics.h"
+#include "CorePlatformWin32.h"
 #include "Platform/Thread.h"
 #include "Utils/Utils.h"
 
@@ -43,7 +41,7 @@ namespace DAVA
 {
 int Core::Run(int argc, char * argv[], AppHandle handle)
 {
-	CoreWin32Platform * core = new CoreWin32Platform();
+	CoreWin32PlatformQt * core = new CoreWin32PlatformQt();
 	core->CreateSingletons();
 	core->InitArgs();
 
@@ -52,7 +50,7 @@ int Core::Run(int argc, char * argv[], AppHandle handle)
 
 int Core::RunCmdTool(int argc, char * argv[], AppHandle handle)
 {
-	CoreWin32Platform * core = new CoreWin32Platform();
+	CoreWin32PlatformQt * core = new CoreWin32PlatformQt();
 
 	core->EnableConsoleMode();
 	core->CreateSingletons();
@@ -74,34 +72,7 @@ int Core::RunCmdTool(int argc, char * argv[], AppHandle handle)
 
 }
 
-void CoreWin32Platform::InitArgs()
-{
-	LPWSTR *szArglist;
-	int nArgs;
-	int i;
-	szArglist = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
-	if( NULL == szArglist )
-	{
-		Logger::Error("CommandLineToArgvW failed\n");
-		return;
-	}
-	else 
-	{
-		Vector<String> & cl = GetCommandLine();
-		for( i=0; i<nArgs; i++)
-		{
-			WideString w = szArglist[i];
-			String nonWide = WStringToString(w);
-			cl.push_back(nonWide);
-			Logger::FrameworkDebug("%d: %s\n", i, nonWide.c_str());
-		}
-	}
-	// Free memory allocated for CommandLineToArgvW arguments.
-	LocalFree(szArglist);
-}
-
-
-bool CoreWin32Platform::SetupWindow(HINSTANCE hInstance, HWND hWindow)
+bool CoreWin32PlatformQt::SetupWindow(HINSTANCE hInstance, HWND hWindow)
 {
     needToSkipMouseUp = false;
 
@@ -119,14 +90,6 @@ bool CoreWin32Platform::SetupWindow(HINSTANCE hInstance, HWND hWindow)
 
 	return true;
 }
-
-
-
-void CoreWin32Platform::Quit()
-{
-	PostQuitMessage(0);
-}
-
 
 static Vector<DAVA::UIEvent> activeTouches;
 int32 MoveTouchsToVector(UINT message, WPARAM wParam, LPARAM lParam, Vector<UIEvent> *outTouches)
@@ -227,7 +190,7 @@ int32 MoveTouchsToVector(UINT message, WPARAM wParam, LPARAM lParam, Vector<UIEv
 }
 
 
-bool CoreWin32Platform::WinEvent(MSG *message, long *result)
+bool CoreWin32PlatformQt::WinEvent(MSG *message, long *result)
 {
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL 0x020A
@@ -336,7 +299,7 @@ bool CoreWin32Platform::WinEvent(MSG *message, long *result)
 	return false;
 }
     
-void CoreWin32Platform::SetFocused(bool focused)
+void CoreWin32PlatformQt::SetFocused(bool focused)
 {
 	if(isFocused != focused)
 	{
