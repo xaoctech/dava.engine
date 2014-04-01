@@ -27,38 +27,64 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_CORE_PLATFORM_WIN32_QT_H__
-#define __DAVAENGINE_CORE_PLATFORM_WIN32_QT_H__
+#include "Platform/TemplateWin32/CorePlatformWin32.h"
+#include "Platform/TemplateWin32/WindowsSpecifics.h"
+#include "Platform/Thread.h"
+#include "Utils/Utils.h"
 
-#include "DAVAEngine.h"
 #if defined(__DAVAENGINE_WIN32__)
 
-#include "Platform/TemplateWin32/CoreWin32PlatformBase.h"
-#include "Platform/TemplateWin32/WindowsSpecifics.h"
+#include <shellapi.h>
 
 namespace DAVA {
 
-class CoreWin32PlatformQt : public CoreWin32PlatformBase
+CoreWin32PlatformBase::CoreWin32PlatformBase() :
+    hWindow(0),
+    hInstance(0)
 {
-public:
-    bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
-    bool WinEvent(MSG *message, long *result);
+}
 
-    HWND hWindow;
+HINSTANCE CoreWin32PlatformBase::GetInstance() const
+{
+    return hInstance;
+}
 
-#if defined(__DAVAENGINE_DIRECTX9__)
-        LPDIRECT3D9 d3d9;
-#endif //#if defined(__DAVAENGINE_DIRECTX9__)
+HWND CoreWin32PlatformBase::GetWindow() const
+{
+    return hWindow;
+}
 
-    void SetFocused(bool focused);
+void CoreWin32PlatformBase::InitArgs()
+{
+    LPWSTR *szArglist;
+    int nArgs;
+    int i;
+    szArglist = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
+    if( NULL == szArglist )
+    {
+        Logger::Error("CommandLineToArgvW failed\n");
+        return;
+    }
+    else
+    {
+        Vector<String> & cl = GetCommandLine();
+        for( i=0; i<nArgs; i++)
+        {
+            WideString w = szArglist[i];
+            String nonWide = WStringToString(w);
+            cl.push_back(nonWide);
+            Logger::FrameworkDebug("%d: %s\n", i, nonWide.c_str());
+        }
+    }
+    // Free memory allocated for CommandLineToArgvW arguments.
+    LocalFree(szArglist);
+}
 
-private:
-    bool willQuit;
-    bool needToSkipMouseUp;
-    bool isFocused;
-};
+void CoreWin32PlatformBase::Quit()
+{
+    PostQuitMessage(0);
+}
 
-};
+}
 
 #endif // #if defined(__DAVAENGINE_WIN32__)
-#endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
