@@ -16,15 +16,13 @@ if (len(arguments) > 0):
 
 currentDir = os.getcwd();
 
+toolDir = os.path.realpath(currentDir + "/../../Tools/Bin/")
 data = os.path.realpath(currentDir + "/DataSource/")
 input = os.path.realpath(currentDir + "/DataSource/TestData/")
 output =  os.path.realpath(currentDir + "/Data/TestData")
 data_folder =  os.path.realpath(currentDir + "/Data")
 process = os.path.realpath(currentDir + "/DataSource/$process/")
-if (platform.system() == "Darwin"):
-    results = os.path.realpath(currentDir + "/Results_mac/" + gpu)
-else:
-    results = os.path.realpath(currentDir + "/Results/" + gpu)
+results = os.path.realpath(currentDir + "/Results/" + gpu)
 
 tests_results = {"Tests" : {}}
 
@@ -45,7 +43,15 @@ if os.path.exists(process):
 if not os.path.exists(data_folder):
     print "Create folder " + data_folder
     os.mkdir(data_folder)
-    
+
+'''
+if platform.system() == "Windows":
+    reseditorDir = os.path.realpath(currentDir + "/ResourceEditor/")
+else:
+    reseditorDir = os.path.realpath(currentDir + "/ResourceEditor_mac/")
+'''
+reseditorDir = os.path.realpath(currentDir + "/ResourceEditor/")
+
 print "*** DAVA AUTOTEST Run convert_graphics.py script for %s ***" % gpu
 os.chdir(data)
 
@@ -58,6 +64,10 @@ subprocess.call(params)
 
 print "*** DAVA AUTOTEST Check result for %s ***" % gpu
 i = 0
+
+print "Convert DDS files:"
+subprocess.call(reseditorDir + "/ResourceEditorQtVS2010.exe -mipmap 1 -forceclose -extract -path " + output, shell=True)
+
 for test in os.listdir(results):
     if(os.path.isdir(os.path.realpath(results + "/" + test))):
         i = i + 1
@@ -101,6 +111,19 @@ for test in os.listdir(results):
                 result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
                 print res
         
+        # Convert PVR files to PNG
+        print "Convert PVR files:"
+        files = filter(lambda x: x[-3:] == "pvr", os.listdir(actual))
+        if len(files) != 0:
+            print files
+        
+        for file in files:
+            pvr = os.path.realpath(actual + "/" + file)
+            #print "CALL: " + toolDir + "/PVRTexToolCL.exe -d -f r8g8b8a8 -i " + pvr
+            subprocess.call(toolDir + "/PVRTexToolCL.exe -d -f r8g8b8a8 -i " + pvr, shell=True)
+            #print "RENAME: " + os.path.realpath(pvr[:-3] + "Out.png") + " to " + os.path.realpath(pvr[:-3] + "png")
+            os.rename(os.path.realpath(pvr[:-3] + "Out.png"), os.path.realpath(pvr[:-3] + "png"))
+            
         # Check IMAGE files
         print "Check IMAGE files"
         files = filter(lambda x: x[-3:] == "png", os.listdir(expected))
@@ -108,34 +131,11 @@ for test in os.listdir(results):
             print files
         
         for file in files:
-            res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
+            res = utils.compare_img(expected + "/" + file, actual + "/" + file)
             if res != None:
                 result['img_Success'] = False
                 result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
                 print res
-        
-        files = filter(lambda x: x[-3:] == "pvr", os.listdir(expected))
-        if len(files) != 0:
-            print files
-        
-        for file in files:
-            res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
-            if res != None:
-                result['img_Success'] = False
-                result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
-                print res
-
-        files = filter(lambda x: x[-3:] == "dds", os.listdir(expected))
-        if len(files) != 0:
-            print files
-        
-        for file in files:
-            res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
-            if res != None:
-                result['img_Success'] = False
-                result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
-                print res
-        
         
         
         result['Success'] = result['tex_Success'] and result['txt_Success'] and result['img_Success']

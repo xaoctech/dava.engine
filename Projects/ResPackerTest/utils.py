@@ -1,6 +1,7 @@
 import binascii
 import os.path
 import filecmp
+from PIL import Image, ImageChops
 
 #from PIL import Image
 
@@ -25,7 +26,7 @@ def compare_tex(expected, actual):
     if text1_hex != text2_hex:
         return "Tex files are not equals: %s\n%s\n%s" %(actual, text1_hex, text2_hex)
 
-'''   
+   
 def compare_img(expected, actual):
     if not os.path.exists(actual):
         return "File is not created: " + actual
@@ -33,6 +34,6 @@ def compare_img(expected, actual):
     im1 = Image.open(expected)
     im2 = Image.open(actual)
     
-    if im1.tostring() != im2.tostring():
+    if not (ImageChops.difference(im1, im2).getbbox() is None):
+    #if im1.tostring() != im2.tostring():
         return "File %s is not equal to expected" % actual
-'''
