@@ -26,50 +26,74 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifdef DAVA_FMOD
 
+#ifndef __DAVAENGINE_FMOD_SOUND_EVENT_H__
+#define __DAVAENGINE_FMOD_SOUND_EVENT_H__
 
-#include "Sound/VolumeAnimatedObject.h"
-#include "Animation/Animation.h"
-#include "Animation/LinearAnimation.h"
-#include "Sound/SoundSystem.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/EventDispatcher.h"
+#include "Base/FastNameMap.h"
+#include "Sound/SoundEvent.h"
+#include "Sound/FMODUtils.h"
+
+namespace FMOD
+{
+    class Event;
+};
 
 namespace DAVA
 {
 
-VolumeAnimatedObject::VolumeAnimatedObject() :
-	animatedVolume(-1)
+class FMODSoundEvent : public SoundEvent
 {
+public:
+    static FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
 
-}
+	virtual ~FMODSoundEvent();
 
-Animation * VolumeAnimatedObject::VolumeAnimation(float32 newVolume, float32 time, int32 track)
-{
-	animatedVolume = GetVolume();
+    virtual bool IsActive() const;
+    virtual bool Trigger();
+	virtual void Stop();
+    virtual void Pause();
+    
+    virtual void SetVolume(float32 volume);
+    
+    virtual void SetPosition(const Vector3 & position);
+    virtual void SetDirection(const Vector3 & direction);
+    virtual void UpdateInstancesPosition();
+    
+    virtual void SetParameterValue(const FastName & paramName, float32 value);
+    virtual float32 GetParameterValue(const FastName & paramName);
+    virtual bool IsParameterExists(const FastName & paramName);
 
-	Animation * a = new LinearAnimation<float32>(this, &animatedVolume, newVolume, time, Interpolation::LINEAR);
-	a->AddEvent(Animation::EVENT_ANIMATION_END, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	a->AddEvent(Animation::EVENT_ANIMATION_CANCELLED, Message(this, &VolumeAnimatedObject::OnVolumeAnimationEnded));
-	Retain();
-	a->Start(track);
+    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const;
 
-	SoundSystem::Instance()->AddVolumeAnimatedObject(this);
+    virtual String GetEventName() const;
+    
+protected:
+    FMODSoundEvent(const FastName & eventName);
+    void ApplyParamsToEvent(FMOD::Event * event);
+    void InitParamsMap();
 
-	return a;
-}
+    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
 
-void VolumeAnimatedObject::Update()
-{
-	if(animatedVolume != -1.f)
-		SetVolume(animatedVolume);
-}
+    List<FMOD::Event *> fmodEventInstances;
+    FastName eventName;
+    
+    Vector3 position;
+    Vector3 direction;
+    
+    bool is3D;
 
-void VolumeAnimatedObject::OnVolumeAnimationEnded(BaseObject * caller, void * userData, void * callerData)
-{
-	SetVolume(animatedVolume);
-	animatedVolume = -1.f;
-	Release();
-
-	SoundSystem::Instance()->RemoveVolumeAnimatedObject(this);
-}
+    FastNameMap<float32> paramsValues;
+    
+friend class SoundSystem;
+};
 
 };
+
+#endif
+
+#endif //DAVA_FMOD
