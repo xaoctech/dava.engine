@@ -286,10 +286,10 @@ void NMaterial::SetParentInternal(DAVA::NMaterial *newParent)
     if(newParent)
     {
         DVASSERT(std::find(newParent->children.begin(), newParent->children.end(), this) == newParent->children.end());
-        
         newParent->children.push_back(this);
     }
     
+    SafeRelease(parent);
     parent = SafeRetain(newParent);
 }
 
@@ -1017,25 +1017,21 @@ void NMaterial::OnMaterialTemplateChanged()
 
 void NMaterial::OnParentChanged(NMaterial* newParent, bool inheritTemplate)
 {
-	NMaterial* oldParent = parent;
-	parent = SafeRetain(newParent);
-	SafeRelease(oldParent);
-	
-	materialSortKey = (uint16)((pointer_size)parent);
+	materialSortKey = (uint16)((pointer_size) newParent);
 	
 	bool useParentTemplate = (inheritTemplate || NULL == materialTemplate);
-	
-	if(newParent)
-	{
-        if(useParentTemplate)
+
+    if(useParentTemplate)
+    {
+        if(newParent)
         {
             SetMaterialTemplate(newParent->materialTemplate, newParent->currentQuality);
         }
-        else
-        {
-            UpdateShaderWithFlags();
-        }
-	}
+    }
+    else
+    {
+        UpdateShaderWithFlags();
+    }
 	
 	SetTexturesDirty();
     InvalidateProperties();

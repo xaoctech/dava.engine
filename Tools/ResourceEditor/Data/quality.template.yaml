@@ -54,3 +54,7 @@ materials:
   quality: ["HIGH", "LOW"]
   default: "HIGH"
 
+ -
+  group: "Vegetation"
+  quality: ["HIGH", "LOW"]
+  default: "HIGH"

@@ -25,75 +25,47 @@
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
-
-#ifdef DAVA_FMOD
-
-#ifndef __DAVAENGINE_FMOD_SOUND_EVENT_H__
-#define __DAVAENGINE_FMOD_SOUND_EVENT_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/EventDispatcher.h"
-#include "Base/FastNameMap.h"
-#include "Sound/SoundEvent.h"
-#include "Sound/FMODUtils.h"
-
-namespace FMOD
-{
-    class Event;
-};
+#include "Platform/DateTime.h"
+#include "Utils/UTF8Utils.h"
+#include "FileSystem/LocalizationSystem.h"
 
 namespace DAVA
 {
+	DAVA::WideString DateTime::AsWString(const wchar_t* format) const
+	{
+		DAVA::String configLocale = LocalizationSystem::Instance()->GetCountryCode();
+		configLocale.replace(configLocale.find("_"), 1, "-");
+		LCID locale = LocaleNameToLCID(StringToWString(configLocale).c_str(), 0);
+		int nchars = GetLocaleInfoW(locale, LOCALE_SENGLANGUAGE, NULL, 0);
+		wchar_t* languageCode = new wchar_t[nchars];
+		memset(languageCode, 0, nchars);
+		GetLocaleInfoW(locale, LOCALE_SENGLANGUAGE, languageCode, nchars);
 
-class FMODSoundEvent : public SoundEvent
-{
-public:
-    static FMOD_RESULT F_CALLBACK FMODEventCallback(FMOD_EVENT *event, FMOD_EVENT_CALLBACKTYPE type, void *param1, void *param2, void *userdata);
+		DAVA::WideString locID(languageCode);
+		delete languageCode;
 
-	virtual ~FMODSoundEvent();
+		struct tm timeinfo = {0};
+        wchar_t buffer [256] = {0};
+		
+        Timestamp timeWithTZ = innerTime + timeZoneOffset;
 
-    virtual bool IsActive() const;
-    virtual bool Trigger();
-	virtual void Stop();
-    virtual void Pause();
-    
-    virtual void SetVolume(float32 volume);
-    
-    virtual void SetPosition(const Vector3 & position);
-    virtual void SetDirection(const Vector3 & direction);
-    virtual void UpdateInstancesPosition();
-    
-    virtual void SetParameterValue(const FastName & paramName, float32 value);
-    virtual float32 GetParameterValue(const FastName & paramName);
-    virtual bool IsParameterExists(const FastName & paramName);
+		GmTimeThreadSafe(&timeinfo, &timeWithTZ);
 
-    virtual void GetEventParametersInfo(Vector<SoundEventParameterInfo> & paramsInfo) const;
+        _locale_t loc = _create_locale(LC_ALL, UTF8Utils::EncodeToUTF8(locID).c_str());
+		DVASSERT(loc);
+        _wcsftime_l(buffer, 256, format, &timeinfo, loc);
 
-    virtual String GetEventName() const;
-    
-protected:
-    FMODSoundEvent(const FastName & eventName);
-    void ApplyParamsToEvent(FMOD::Event * event);
-    void InitParamsMap();
+        DAVA::WideString str(buffer);
+		return str;
+    }
 
-    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
-
-    List<FMOD::Event *> fmodEventInstances;
-    FastName eventName;
-    
-    Vector3 position;
-    Vector3 direction;
-    
-    bool is3D;
-
-    FastNameMap<float32> paramsValues;
-    
-friend class SoundSystem;
-};
-
-};
-
-#endif
-
-#endif //DAVA_FMOD
+    int32 DateTime::GetLocalTimeZoneOffset()
+    {
+		TIME_ZONE_INFORMATION TimeZoneInfo;
+		GetTimeZoneInformation( &TimeZoneInfo );
+	
+		// TimeZoneInfo.Bias is the difference between local time
+		// and GMT in minutes.
+        return TimeZoneInfo.Bias*(-60);
+    }
+}
