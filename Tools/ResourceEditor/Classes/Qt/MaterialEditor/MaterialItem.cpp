@@ -41,6 +41,7 @@
 namespace
 {
     const int MAX_PREVIEW_HEIGHT = 24;
+    const int MAX_MATERIAL_HEIGHT = 30;
 }
 
 MaterialItem::MaterialItem(DAVA::NMaterial * _material)
@@ -50,6 +51,7 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
     , isPreviewRequested(false)
     , lodIndex(-1)
     , switchIndex(-1)
+    , curFlag(0)
 {
 	DVASSERT(material);
 
@@ -66,6 +68,7 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
 			setIcon(materialIcon);
 			setDragEnabled(true);
 			setDropEnabled(true);
+            setSizeHint(QSize(MAX_MATERIAL_HEIGHT, MAX_MATERIAL_HEIGHT));
 			break;
 
 		case DAVA::NMaterial::MATERIALTYPE_INSTANCE:
@@ -79,6 +82,7 @@ MaterialItem::MaterialItem(DAVA::NMaterial * _material)
             setIcon(globalIcon);
             setDragEnabled(false);
             setDropEnabled(false);
+            setSizeHint(QSize(MAX_MATERIAL_HEIGHT, MAX_MATERIAL_HEIGHT));
             break;
 
 		default:
@@ -128,7 +132,10 @@ void MaterialItem::SetFlag(MaterialFlag flag, bool set)
 		switch(flag)
 		{
 			case IS_MARK_FOR_DELETE:
-				set ? setBackground(QBrush(QColor(255, 0, 0, 15))) : setBackground(QBrush());
+                if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_GLOBAL)
+                {
+                    ok = false;
+                }
 				break;
 
             case IS_PART_OF_SELECTION:
