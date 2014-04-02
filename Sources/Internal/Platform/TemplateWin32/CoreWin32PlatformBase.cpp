@@ -36,7 +36,8 @@
 
 #include <shellapi.h>
 
-namespace DAVA {
+namespace DAVA
+{
 
 CoreWin32PlatformBase::CoreWin32PlatformBase() :
     hWindow(0),

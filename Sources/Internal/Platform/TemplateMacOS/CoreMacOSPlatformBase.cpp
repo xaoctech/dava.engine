@@ -34,8 +34,9 @@
 #include "CoreMacOSPlatformBase.h"
 #include <ApplicationServices/ApplicationServices.h>
 
-namespace DAVA {
-	
+namespace DAVA
+{
+
 // some macros to make code more readable.
 #define GetModeWidth(mode) GetDictionaryLong((mode), kCGDisplayWidth)
 #define GetModeHeight(mode) GetDictionaryLong((mode), kCGDisplayHeight)
