@@ -220,6 +220,8 @@ float32 DFFont::GetSizeScale() const
 
 bool DFFont::LoadTexture(const FilePath& path)
 {
+    DVASSERT(fontTexture == NULL);
+
     fontTexture = Texture::CreateFromFile(path);
     DVASSERT(fontTexture != NULL);
     TextureStateData textureData;
