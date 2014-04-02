@@ -76,6 +76,7 @@ public:
     virtual void SetPosition(const Vector3 & position) = 0;
     virtual void SetDirection(const Vector3 & direction) = 0;
     virtual void UpdateInstancesPosition() = 0;
+    virtual void SetVelocity(const Vector3 & velocity) = 0;
     
     inline bool IsDirectional() const;
 

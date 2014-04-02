@@ -132,6 +132,16 @@ void FMODSoundEvent::SetDirection(const Vector3 & _direction)
     direction = _direction;
 }
 
+void FMODSoundEvent::SetVelocity(const Vector3 & velocity)
+{
+    if(is3D && fmodEventInstances.size())
+    {
+        List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
+        for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
+            FMOD_VERIFY((*it)->set3DAttributes(0, (FMOD_VECTOR*)&velocity, 0));
+    }
+}
+
 void FMODSoundEvent::SetVolume(float32 _volume)
 {
     if(volume != _volume)
@@ -148,8 +158,6 @@ void FMODSoundEvent::UpdateInstancesPosition()
 {
     if(is3D)
     {
-        SoundSystem * soundSystem = SoundSystem::Instance();
-
         List<FMOD::Event *>::const_iterator itEnd = fmodEventInstances.end();
         for(List<FMOD::Event *>::const_iterator it = fmodEventInstances.begin(); it != itEnd; ++it)
             FMOD_VERIFY((*it)->set3DAttributes((FMOD_VECTOR*)&position, 0, isDirectional ? (FMOD_VECTOR*)&direction : NULL));
