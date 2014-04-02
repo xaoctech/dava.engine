@@ -66,7 +66,8 @@ public:
     
 	virtual void SetPosition(const Vector3 & position);
     virtual void SetDirection(const Vector3 & direction) {};
-	virtual void UpdateInstancesPosition();
+    virtual void UpdateInstancesPosition();
+    virtual void SetVelocity(const Vector3 & velocity) {};
 
 	virtual void SetLoopCount(int32 looping); // -1 = infinity
 	virtual int32 GetLoopCount();
