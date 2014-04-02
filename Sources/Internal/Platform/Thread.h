@@ -84,7 +84,7 @@ public:
 		}
 
 	private:
-		ThreadId(DWORD _internalTid = 0) 
+		ThreadId(HANDLE _internalTid = 0) 
 		{ 
 			internalTid = _internalTid; 
 		}
@@ -92,7 +92,7 @@ public:
 		{ 
 			return internalTid == otherThread.internalTid; 
 		}
-		DWORD internalTid;
+		HANDLE internalTid;
 #else
     public:
 		bool operator<(const ThreadId & otherThread) const
@@ -139,6 +139,10 @@ public:
 		This function return state of the thread. It can be STATE_CREATED, STATE_RUNNING, STATE_ENDED.
 	*/
 	eThreadState	GetState();
+
+    /** Wait until thread's finished.
+    */
+    void Join();
 
     /**
         Wrapp pthread wait, signal and broadcast

@@ -97,6 +97,20 @@ Thread::eThreadState Thread::GetState()
 	return state;
 }
 
+
+void Thread::Join()
+{
+#ifdef __DAVAENGINE_WIN32__
+    if (WaitForSingleObject(GetThreadId().internalTid, INFINITE) != WAIT_OBJECT_0)
+        DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");
+
+#else
+    if (pthread_join(GetThreadId().internalTid, NULL) != 0)
+        DAVA::Logger::Error("Thread::Join() failed in pthread_join");
+#endif
+}
+
+
 void Thread::Wait(ConditionalVariable * cv)
 {
     int32 ret = 0;
