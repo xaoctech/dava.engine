@@ -223,7 +223,6 @@ bool DFFont::LoadTexture(const FilePath& path)
     DVASSERT(fontTexture == NULL);
 
     fontTexture = Texture::CreateFromFile(path);
-    DVASSERT(fontTexture != NULL);
     TextureStateData textureData;
     textureData.SetTexture(0, fontTexture);
     fontTextureHandler = RenderManager::Instance()->CreateTextureState(textureData);
