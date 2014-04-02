@@ -320,11 +320,8 @@ void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWeb
 
 void WebViewControl::Initialize(const Rect& rect)
 {
-	CoreWin32PlatformBase *core = dynamic_cast<CoreWin32PlatformBase *>(Core::Instance());
-	if (core == NULL)
-	{
-		return;
-	}
+	CoreWin32PlatformBase *core = static_cast<CoreWin32PlatformBase *>(Core::Instance());
+	DVASSERT(core);
 
 	// Create the browser holder window.
 	browserWindow = ::CreateWindowEx(0, L"Static", L"", WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
