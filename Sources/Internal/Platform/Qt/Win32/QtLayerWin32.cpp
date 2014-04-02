@@ -95,7 +95,7 @@ void QtLayerWin32::AppFinished()
 
 void QtLayerWin32::SetWindow(HINSTANCE hInstance, HWND hWindow, int32 width, int32 height)
 {
-	CoreWin32PlatformQt *core = dynamic_cast<CoreWin32PlatformQt *>(CoreWin32PlatformQt::Instance());
+	CoreWin32PlatformQt *core = CoreWin32PlatformQt::Instance();
 	if (NULL != core)
 	{
 		core->SetupWindow(hInstance, hWindow);
@@ -180,7 +180,7 @@ void QtLayerWin32::ProcessFrame()
 
 void QtLayerWin32::LockKeyboardInput(bool locked)
 {
-	CoreWin32PlatformQt *core = dynamic_cast<CoreWin32PlatformQt *>(CoreWin32PlatformQt::Instance());
+	CoreWin32PlatformQt *core = CoreWin32PlatformQt::Instance();
 	if (NULL != core)
 	{
 		core->SetFocused(locked);

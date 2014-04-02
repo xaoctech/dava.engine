@@ -32,7 +32,8 @@
 
 #include "DAVAEngine.h"
 
-namespace DAVA {
+namespace DAVA
+{
 
 class CoreMacOSPlatformBase : public Core
 {

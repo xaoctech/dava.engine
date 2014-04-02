@@ -35,7 +35,8 @@
 
 #include "WindowsSpecifics.h"
 
-namespace DAVA {
+namespace DAVA
+{
 
 class CoreWin32PlatformBase : public Core
 {
