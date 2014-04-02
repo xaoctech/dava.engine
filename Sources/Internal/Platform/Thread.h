@@ -84,7 +84,7 @@ public:
 		}
 
 	private:
-		ThreadId(HANDLE _internalTid = 0) 
+		ThreadId(DWORD _internalTid = 0) 
 		{ 
 			internalTid = _internalTid; 
 		}
@@ -92,7 +92,7 @@ public:
 		{ 
 			return internalTid == otherThread.internalTid; 
 		}
-		HANDLE internalTid;
+		DWORD internalTid;
 #else
     public:
 		bool operator<(const ThreadId & otherThread) const
@@ -194,6 +194,7 @@ public:
 	static HGLRC	secondaryContext;
 
 private:
+    HANDLE threadHandle;
 	void		StartWin32();
 	friend DWORD WINAPI ThreadFunc(void* param);
 public:
