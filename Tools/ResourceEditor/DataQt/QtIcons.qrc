@@ -1,5 +1,12 @@
 <RCC>
   <qresource prefix="/">
+    <file>QtIcons/global_add.png</file>
+    <file>QtIcons/global.png</file>
+    <file>QtIcons/global_delete.png</file>
+    <file>QtIcons/tree_view_sel_childs.png</file>
+    <file>QtIcons/tree_view_all.png</file>
+    <file>QtIcons/tree_view_sel.png</file>
+    <file>QtIcons/tree_view_top.png</file>
     <file>QtIcons/attach.png</file>
     <file>QtIcons/pencil_add.png</file>
     <file>QtIcons/pencil.png</file>

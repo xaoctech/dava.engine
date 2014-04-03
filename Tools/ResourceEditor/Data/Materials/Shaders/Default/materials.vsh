@@ -63,6 +63,7 @@ uniform float materialSpecularShininess;
 #endif
 
 #if defined(VERTEX_FOG)
+    uniform float fogLimit;
     #if !defined(FOG_LINEAR)
     uniform float fogDensity;
     #else
@@ -290,10 +291,17 @@ void main()
     #else
         gl_Position = worldViewProjMatrix * inPosition;
     #endif
-    
 #endif
+
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
+#if defined(MATERIAL_GRASS)
+    vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos);
+#else
+    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
+#endif
+#endif
+
 #if defined(VERTEX_LIT)
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition); // view direction in view space
     vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal); // normal in eye coordinates
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     
@@ -333,8 +341,6 @@ void main()
 	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
 	vec3 b = cross (n, t);
 
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
-    
     vec3 lightDir = lightPosition0 - eyeCoordsPosition;
     varPerPixelAttenuation = length(lightDir);
     lightDir = normalize(lightDir);
@@ -382,20 +388,14 @@ void main()
 #endif
 
 #if defined(VERTEX_FOG)
-    #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
-        float fogFragCoord = length(eyeCoordsPosition);
-    #else
-        vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
-        float fogFragCoord = length(eyeCoordsPosition);
-    #endif
+    float fogFragCoord = length(eyeCoordsPosition);
     #if !defined(FOG_LINEAR)
         const float LOG2 = 1.442695;
         varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
-        varFogFactor = clamp(varFogFactor, 0.0, 1.0);
+        varFogFactor = clamp(varFogFactor, 1.0 - fogLimit, 1.0);
     #else
-        varFogFactor = 1.0 - clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, 1.0);
+        varFogFactor = 1.0 - clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, fogLimit);
     #endif
-	//varFogFactor = 1.0;
 #endif
 
 #if defined(VERTEX_COLOR)

@@ -68,7 +68,6 @@ void SceneExporter::SetOutFolder(const FilePath &folderPathname)
 
 void SceneExporter::SetOutSoundsFolder(const FilePath &folderPathname)
 {
-    DVASSERT(folderPathname.IsDirectoryPathname());
     soundsOutFolder = folderPathname;
 }
 

@@ -94,10 +94,10 @@ Texture* Scene::stubTexture2dLightmap = NULL; //this texture should be all-pink 
     
     
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
-	:   Entity()
-    ,   currentCamera(0)
-    ,   clipCamera(0)
-	,	imposterManager(0)
+	: Entity()
+    , currentCamera(0)
+    , clipCamera(0)
+	, imposterManager(0)
     ,   systemsMask(_systemsMask)
     ,   transformSystem(0)
     ,   renderUpdateSystem(0)
@@ -111,131 +111,99 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     ,   actionSystem(0)
     ,   skyboxSystem(0)
     ,   staticOcclusionSystem(0)
-    ,   materialSystem(0)
+	,   materialSystem(0)
     ,   foliageSystem(0)
+	,   sceneGlobalMaterial(0)
 {   
-
-//	entityManager = new EntityManager();
-
 	CreateComponents();
 	CreateSystems();
-    
-    InitGlobalMaterial();
 }
 
 void Scene::CreateComponents()
+{ }
+
+NMaterial* Scene::GetGlobalMaterial() const
 {
-    
+    return sceneGlobalMaterial;
+}
+
+void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
+{
+    SafeRelease(sceneGlobalMaterial);
+
+    if(NULL != globalMaterial)
+    {
+        DVASSERT(globalMaterial->GetMaterialType() == NMaterial::MATERIALTYPE_GLOBAL);
+        sceneGlobalMaterial = SafeRetain(globalMaterial);
+        InitGlobalMaterial();
+    }
+
+    renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
+    particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
+}
+
+void Scene::CreateGlobalMaterial()
+{
+    NMaterial *globalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+    SetGlobalMaterial(globalMaterial);
+    SafeRelease(globalMaterial);
 }
 
 void Scene::InitGlobalMaterial()
 {
-    sceneGlobalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
-    
     if(NULL == stubTexture2d)
     {
         stubTexture2d = Texture::CreatePink(Texture::TEXTURE_2D);
     }
-    
+
     if(NULL == stubTextureCube)
     {
         stubTextureCube = Texture::CreatePink(Texture::TEXTURE_CUBE);
     }
-    
+
     if(NULL == stubTexture2dLightmap)
     {
         stubTexture2dLightmap = Texture::CreatePink(Texture::TEXTURE_2D, false);
     }
-    
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, stubTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, stubTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, stubTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, stubTexture2dLightmap);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, stubTexture2d);
-    sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, stubTextureCube);
-    
+
     Vector3 defaultVec3;
     Color defaultColor(1.0f, 0.0f, 0.0f, 1.0f);
-    float32 defaultFloatValue = 0.5f;
+    float32 defaultFloat05 = 0.5f;
+    float32 defaultFloat10 = 1.0f;
     Vector2 defaultVec2;
     float32 defaultLightmapSize = 16.0f;
-    
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0,
-                                          Shader::UT_FLOAT_VEC3,
-                                          1,
-                                          defaultVec3.data);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR,
-                                          Shader::UT_FLOAT_VEC4,
-                                          1,
-                                          &defaultColor);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR,
-                                          Shader::UT_FLOAT_VEC4,
-                                          1,
-                                          &defaultColor);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR,
-                                          Shader::UT_FLOAT_VEC4,
-                                          1,
-                                          &defaultColor);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR,
-                                          Shader::UT_FLOAT_VEC3,
-                                          1,
-                                          &defaultColor);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR,
-                                          Shader::UT_FLOAT_VEC3,
-                                          1,
-                                          &defaultColor);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR,
-                                          Shader::UT_FLOAT_VEC3,
-                                          1,
-                                          &defaultColor);
- 	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0,
-                                          Shader::UT_FLOAT,
-                                          1,
-                                          &defaultFloatValue);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS,
-                                          Shader::UT_FLOAT,
-                                          1,
-                                          &defaultFloatValue);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR,
-                                          Shader::UT_FLOAT_VEC4,
-                                          1,
-                                          &defaultColor);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY,
-                                          Shader::UT_FLOAT,
-                                          1,
-                                          &defaultFloatValue);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR,
-                                          Shader::UT_FLOAT_VEC4,
-                                          1,
-                                          &defaultColor);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT,
-                                          Shader::UT_FLOAT_VEC2,
-                                          1,
-                                          defaultVec2.data);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET,
-                                          Shader::UT_FLOAT_VEC2,
-                                          1,
-                                          defaultVec2.data);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE,
-                                          Shader::UT_FLOAT_VEC2,
-                                          1,
-                                          defaultVec2.data);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL,
-                                          Shader::UT_FLOAT_VEC4,
-                                          1,
-                                          &defaultColor);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL,
-                                          Shader::UT_FLOAT,
-                                          1,
-                                          &defaultFloatValue);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET,
-                                          Shader::UT_FLOAT,
-                                          1,
-                                          &defaultFloatValue);
-    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE,
-                                          Shader::UT_FLOAT,
-                                          1,
-                                          &defaultLightmapSize);
+    float32 defaultFogStart = 0.0f;
+    float32 defaultFogEnd = 500.0f;
+
+    if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_ALBEDO)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO, stubTexture2d);
+    if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_NORMAL)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_NORMAL, stubTexture2d);
+    if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_DETAIL)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, stubTexture2d);
+    if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_LIGHTMAP)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_LIGHTMAP, stubTexture2dLightmap);
+    if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_DECAL)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, stubTexture2d);
+    if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_CUBEMAP)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, stubTextureCube);
+
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC3, 1, defaultVec3.data);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_SPECULAR_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_AMBIENT_COLOR, Shader::UT_FLOAT_VEC3, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_DIFFUSE_COLOR, Shader::UT_FLOAT_VEC3, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_SPECULAR_COLOR, Shader::UT_FLOAT_VEC3, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_INTENSITY0, Shader::UT_FLOAT, 1, &defaultFloat05);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_MATERIAL_SPECULAR_SHININESS, Shader::UT_FLOAT, 1, &defaultFloat05);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_LIMIT)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_LIMIT, Shader::UT_FLOAT, 1, &defaultFloat10);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &defaultFloat05);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_START)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_START, Shader::UT_FLOAT, 1, &defaultFogStart);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_END)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_END, Shader::UT_FLOAT, 1, &defaultFogEnd);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FLAT_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_UV_OFFSET)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_UV_SCALE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL, Shader::UT_FLOAT, 1, &defaultFloat05);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET, Shader::UT_FLOAT, 1, &defaultFloat05);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE, Shader::UT_FLOAT, 1, &defaultLightmapSize);
 }
 
 void Scene::CreateSystems()
@@ -632,7 +600,7 @@ void Scene::AddRootNode(Entity *node, const FilePath &rootNodePath)
     
 	rootNodes[FILEPATH_MAP_KEY(rootNodePath)] = proxyNode;
 
-	proxyNode->SetName(rootNodePath.GetAbsolutePathname());
+	//proxyNode->SetName(rootNodePath.GetAbsolutePathname());
 }
 
 Entity *Scene::GetRootNode(const FilePath &rootNodePath)
@@ -830,11 +798,9 @@ void Scene::Draw()
         currentCamera->SetupDynamicParameters();
     }
     
-    NMaterial::SetGlobalMaterial(sceneGlobalMaterial);
- 
+    
     renderSystem->Render();
 
-    NMaterial::SetGlobalMaterial(NULL);
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
