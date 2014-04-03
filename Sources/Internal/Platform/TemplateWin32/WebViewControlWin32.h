@@ -34,10 +34,12 @@
 #include <MsHTML.h>
 
 #include "UI/IWebViewControl.h"
+#include "FileSystem/FilePath.h"
 
 // Helper class to contain Web Browser.
 interface IWebBrowser2;
 namespace DAVA {
+
 class WebBrowserContainer : IOleClientSite, IOleInPlaceSite
 {
 public:
@@ -53,6 +55,9 @@ public:
 
 	// Open the URL.
 	bool OpenUrl(const WCHAR* urlToOpen);
+
+    bool OpenFromBuffer(const DAVA::String& buffer, const FilePath& basePath);
+    bool DoOpenBuffer();
 
 	// COM stuff;
 	HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject);
@@ -87,7 +92,6 @@ public:
 	HRESULT __stdcall RequestNewObjectLayout() { return E_NOTIMPL; }
 
 	void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
-
 protected:
 	// Parent window.
 	HWND hwnd;
@@ -96,6 +100,10 @@ protected:
 	IWebBrowser2* webBrowser;
 
 	void* sink;
+
+    bool openFromBufferQueued;
+    DAVA::String bufferToOpen; // temporary buffer
+    DAVA::FilePath bufferToOpenPath;
 };
 
 // Web View Control for Win32.
