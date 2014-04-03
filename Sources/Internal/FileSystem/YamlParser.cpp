@@ -1331,9 +1331,28 @@ bool YamlParser::SaveToYamlFile(const FilePath & fileName, const YamlNode * root
             break;
         }
 
-        // Save everything including the root.
-        String nodeName;
-        saveSucceeded = SaveNodeRecursive(yamlFileToSave, nodeName, rootNode, index);
+        // Save everything including the root. If the root node is map - take its children
+        // and save each one separately.
+        if (rootNode->GetType() == YamlNode::TYPE_MAP)
+        {
+            saveSucceeded = true;
+            const MultiMap<String, YamlNode*> nodeMap = rootNode->AsMap();
+            for (MultiMap<String, YamlNode*>::const_iterator iter = nodeMap.begin();
+                 iter != nodeMap.end(); iter ++)
+            {
+                if (!SaveNodeRecursive(yamlFileToSave, iter->first, iter->second, index))
+                {
+                    saveSucceeded = false;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            String nodeName;
+            saveSucceeded = SaveNodeRecursive(yamlFileToSave, nodeName, rootNode, index);
+        }
+
         break;
     }
 
