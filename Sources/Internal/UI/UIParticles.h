@@ -64,7 +64,6 @@ public:
 
     virtual void SetVisible(bool isVisible, bool hierarchic = true);
     virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
-    virtual void SetRecursiveVisible(bool isVisible);
 
     // Cloning.
     virtual UIControl* Clone();

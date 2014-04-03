@@ -421,12 +421,6 @@ void UIParticles::SetVisibleForUIEditor(bool value, bool hierarchic/* = true> */
     UIControl::SetVisibleForUIEditor(value, hierarchic);
 }
 
-void UIParticles::SetRecursiveVisible(bool isVisible)
-{
-    StartStop(isVisible);
-    UIControl::SetRecursiveVisible(isVisible);
-}
-
 void UIParticles::StartStop(bool value)
 {
     if (value && IsAutostart())
