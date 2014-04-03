@@ -411,6 +411,7 @@ public:
 	 \param[out] true if render manager sets to a render targe. false if render manager draws to the screen now
 	 */
 	bool IsRenderTarget();
+       
 	
 	/** 
         \brief Sets the effect for the rendering. 
@@ -820,6 +821,18 @@ public:
 	void SetHWClip(const Rect &rect);
 	void SetHWRenderTargetSprite(Sprite *renderTarget);
 	void SetHWRenderTargetTexture(Texture * renderTarget);
+    
+    enum eDiscardAttachments
+    {
+        COLOR_ATTACHMENT = 1,
+        DEPTH_ATTACHMENT = 2,
+        STENCIL_ATTACHMENT = 4
+    };
+    /**
+     \Hints renderer that attachment is not needed anymore 
+     \param[in] attachments - bitmask of eDiscardAttachments
+    */
+    void DiscardFramebufferHW(uint32 attachments);
 	
 	bool debugEnabled;
 

@@ -149,9 +149,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         
         staticOcclusion->SetScene(GetScene());
         staticOcclusion->SetRenderSystem(GetScene()->GetRenderSystem());
-        staticOcclusion->BuildOcclusionInParallel(renderObjectsArray,
-                                                  &data,
-                                                  GetScene()->GetRenderSystem()->GetRenderHierarchy());
+        staticOcclusion->BuildOcclusionInParallel(renderObjectsArray, &data);
         
         
         
