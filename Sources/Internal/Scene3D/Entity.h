@@ -364,9 +364,6 @@ public:
      */
     virtual void SceneDidLoaded();
 
-    
-    void SetFog_Kostil(float32 density, const Color &color);
-    
 	// Property names.
 	static const char* SCENE_NODE_IS_SOLID_PROPERTY_NAME;
 	static const char* SCENE_NODE_IS_LOCKED_PROPERTY_NAME;

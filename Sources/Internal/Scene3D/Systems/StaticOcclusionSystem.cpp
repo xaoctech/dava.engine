@@ -124,9 +124,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         
         staticOcclusion->SetScene(GetScene());
         staticOcclusion->SetRenderSystem(GetScene()->GetRenderSystem());
-        staticOcclusion->BuildOcclusionInParallel(renderObjectsArray,
-                                                  &data,
-                                                  GetScene()->GetRenderSystem()->GetRenderHierarchy());
+        staticOcclusion->BuildOcclusionInParallel(renderObjectsArray, &data);
         
         
         
@@ -363,6 +361,7 @@ void StaticOcclusionSystem::RemoveEntity(Entity * entity)
         if (component == entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT))
         {
             staticOcclusionComponents[k] = staticOcclusionComponents[(uint32)staticOcclusionComponents.size() - 1];
+            staticOcclusionComponents.pop_back();
             break;
         }
     }

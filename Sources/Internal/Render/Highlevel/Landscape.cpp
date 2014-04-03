@@ -89,7 +89,8 @@ static FastName TILEMASK_TILING_PROPS_NAMES[] =
 	FastName("texture1Tiling"),
 	FastName("texture2Tiling"),
 	FastName("texture3Tiling"),
-	INVALID_PROPERTY_NAME
+	INVALID_PROPERTY_NAME,
+    INVALID_PROPERTY_NAME
 };
 
 static FastName TILEMASK_COLOR_PROPS_NAMES[] =
@@ -100,7 +101,8 @@ static FastName TILEMASK_COLOR_PROPS_NAMES[] =
 	FastName("tileColor1"),
 	FastName("tileColor2"),
 	FastName("tileColor3"),
-	INVALID_PROPERTY_NAME
+	INVALID_PROPERTY_NAME,
+    INVALID_PROPERTY_NAME
 };
 	
 const float32 DEFAULT_FOG_DENSITY = 0.006f;
@@ -128,13 +130,10 @@ Landscape::Landscape()
         
     prevLodLayer = -1;
     
-    isFogEnabled = false;
-	
 	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
                                                             NMaterialName::TILE_MASK,
                                                             NMaterial::DEFAULT_QUALITY_NAME);
 
-	
 	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
 	landscapeParent->AddNodeFlags(DataNode::NodeRuntimeFlag);
 	tileMaskMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
@@ -1143,19 +1142,6 @@ void Landscape::Draw(Camera * camera)
 		return;
 	}
 	
-	//currentMaterial = NULL;
-
-	//Dizz: uniformFogDensity != -1 is a check if fog is inabled in shader
-	//if(isFogEnabled && (uniformFogDensity != -1) && !RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-	//{
-	//	InitShaders();
-	//}
-
-	//if(isFogEnabled && (uniformFogDensity == -1) && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::FOG_ENABLE))
-	//{
-	//	InitShaders();
-	//}
-    
 #if defined(__DAVAENGINE_OPENGL__) && (defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__))
 //    if (debugFlags & DEBUG_DRAW_GRID)
 //    {
@@ -1473,10 +1459,6 @@ void Landscape::Save(KeyedArchive * archive, SerializationContext * serializatio
 		archive->SetByteArrayAsType(Format("tilecolor_%d", k), tileColorValue);
     }
     
-    archive->SetByteArrayAsType("fogcolor", GetFogColor());
-    archive->SetFloat("fogdencity", GetFogDensity());
-    archive->SetBool("isFogEnabled", isFogEnabled);
-
     DVASSERT(GetRenderBatch(0));
     IlluminationParams * illuminationParams = GetRenderBatch(0)->GetMaterial()->GetIlluminationParams(false);
     if(illuminationParams)
@@ -1498,19 +1480,10 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 		tileMaskMaterial->AddMaterialDefine("SPECULAR_LAND");
 #endif
 
-
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
-    
-    Color fogColorValue = Color::White;
-    fogColorValue = archive->GetByteArrayAsType("fogcolor", fogColorValue);
-    SetFogColor(fogColorValue);
-    
-	isFogEnabled = archive->GetBool("isFogEnabled", isFogEnabled);
-    
-    float32 fogDensityValue = DEFAULT_FOG_DENSITY;
-    fogDensityValue = archive->GetFloat("fogdencity", fogDensityValue);
-    SetFogDensity(fogDensityValue);
+
+    LoadFog(archive, serializationContext);
 	
 	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
     BuildLandscapeFromHeightmapImage(heightmapPath, boxDef);
@@ -1556,6 +1529,32 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     }
 }
 
+void Landscape::LoadFog(KeyedArchive * archive, SerializationContext * serializationContext)
+{
+    DAVA::NMaterial *globalMaterial = serializationContext->GetScene()->GetGlobalMaterial();
+
+    if(NULL != globalMaterial)
+    {
+        if(archive->IsKeyExists("fogcolor"))
+        {
+            Color fogColorValue = archive->GetByteArrayAsType("fogcolor", Color(1.0f, 0, 0, 1.0f));
+            globalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColorValue);
+        }
+
+        if(archive->IsKeyExists("isFogEnabled"))
+        {
+            NMaterial::eFlagValue flag = (archive->GetBool("isFogEnabled") ? NMaterial::FlagOn : NMaterial::FlagOff);
+            globalMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, flag);
+        }
+
+        if(archive->IsKeyExists("fogdencity"))
+        {
+            float32 fogDensityValue = archive->GetFloat("fogdencity", 0.05f);
+            globalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensityValue);
+        }
+    }
+}
+
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
 {
     DVASSERT(0 <= level && level < TEXTURE_COUNT);
@@ -1596,9 +1595,6 @@ void Landscape::SetHeightmap(DAVA::Heightmap *height)
     
 Texture * Landscape::CreateLandscapeTexture()
 {
-    bool savedIsFogEnabled = isFogEnabled;
-    SetFog(false);
-
     //Set indexes
     Vector<float32> ftVertexes;
     Vector<float32> ftTextureCoords;
@@ -1679,7 +1675,6 @@ Texture * Landscape::CreateLandscapeTexture()
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
 
-    SetFog(savedIsFogEnabled);
     return fullTiled;
 }
     
@@ -1721,78 +1716,6 @@ Texture * Landscape::CreateLandscapeTexture()
 //        SafeRelease(t);
 //    }
 //}
-    
-void Landscape::SetFogInternal(BaseObject * caller, void * param, void *callerData)
-{
-	if(tileMaskMaterial)
-	{
-		if(IsFogEnabled())
-		{
-			tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
-		}
-		else
-		{
-			tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOff);
-		}
-	}
-}
-	
-    
-void Landscape::SetFog(const bool& fogState)
-{
-    if(isFogEnabled != fogState)
-    {
-        isFogEnabled = fogState;
-		
-		if(renderSystem)
-		{
-			ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
-																   Message(this, &Landscape::SetFogInternal));
-			JobInstanceWaiter waiter(job);
-			waiter.Wait();
-		}
-    }
-}
-
-bool Landscape::IsFogEnabled() const
-{
-    return isFogEnabled;
-}
-
-void Landscape::SetFogDensity(float32 _fogDensity)
-{
-	tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &_fogDensity);
-}
-
-float32 Landscape::GetFogDensity() const
-{
-    float32 fogDensity = DEFAULT_FOG_DENSITY;
-
-    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY);
-    if(NULL != propValue)
-    {
-        memcpy(&fogDensity, propValue->data, sizeof(float32));
-    }
-    
-    return fogDensity;
-}
-
-void Landscape::SetFogColor(const Color & _fogColor)
-{
-	tileMaskMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &_fogColor);
-}
-
-Color Landscape::GetFogColor() const
-{
-    Color fogColor = Color::White;
-    NMaterialProperty* propValue = tileMaskMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR);
-    
-    if(NULL != propValue)
-    {
-        memcpy(&fogColor, propValue->data, Shader::GetUniformTypeSize(propValue->type) * propValue->size);
-    }
-    return fogColor;
-}
 
 LandscapeCursor * Landscape::GetCursor()
 {
@@ -1809,15 +1732,9 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	}
     
     Landscape *newLandscape = static_cast<Landscape *>(newObject);
-	   
-    Color fogColorValue = GetFogColor();
-    newLandscape->SetFogColor(fogColorValue);
-    
-	newLandscape->isFogEnabled = isFogEnabled;
-    
-    float32 fogDensityValue = GetFogDensity();
-    newLandscape->SetFogDensity(fogDensityValue);
-    
+
+    newLandscape->flags = flags;
+	
     newLandscape->BuildLandscapeFromHeightmapImage(heightmapPath, bbox);
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
@@ -1869,9 +1786,6 @@ void Landscape::SetDefaultValues()
     SetTileColor(TEXTURE_TILE1, color);
     SetTileColor(TEXTURE_TILE2, color);
     SetTileColor(TEXTURE_TILE3, color);
-    
-    SetFogDensity(DEFAULT_FOG_DENSITY);
-    SetFogColor(Color::White);
 }
 
 void Landscape::SetupMaterialProperties()
@@ -1879,18 +1793,6 @@ void Landscape::SetupMaterialProperties()
 	if(tileMaskMaterial)
 	{
 		tileMaskMaterial->SetPropertyValue(Landscape::PARAM_CAMERA_POSITION, Shader::UT_FLOAT_VEC3, 1, &cameraPos);
-	}
-}
-	
-void Landscape::SetRenderSystem(RenderSystem * _renderSystem)
-{
-	RenderObject::SetRenderSystem(_renderSystem);
-	
-	if(_renderSystem)
-	{
-		//VI: TODO: managing fog via landscape is a temporary solution that became part of an architecture
-		isFogEnabled = !isFogEnabled;
-		SetFog(!isFogEnabled);
 	}
 }
 

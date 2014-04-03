@@ -42,8 +42,6 @@
 #include "Project/ProjectManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
-#include "Scene/FogSettingsChangedReceiver.h"
-
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
@@ -129,13 +127,6 @@ SceneEditor2::SceneEditor2()
 	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT, true, renderUpdateSystem);
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
-
-	//setup fog for scene
-	DAVA::Color fogColor = SettingsManager::Instance()->GetValue("DefaultFogColor", SettingsManager::DEFAULT).AsColor();
-	DAVA::float32 fogDensity = SettingsManager::Instance()->GetValue("DefaultFogDensity", SettingsManager::DEFAULT).AsFloat();
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
-
 
 	SceneSignals::Instance()->EmitOpened(this);
 
@@ -466,6 +457,9 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 		ownersSignatureSystem->ProcessCommand(command, redo);
 
 	materialSystem->ProcessCommand(command, redo);
+
+    if (landscapeEditorDrawSystem)
+        landscapeEditorDrawSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )
@@ -694,9 +688,11 @@ Entity* SceneEditor2::Clone( Entity *dstNode /*= NULL*/ )
 SceneEditor2 * SceneEditor2::CreateCopyForExport()
 {
 	SceneEditor2 *clonedScene = new SceneEditor2();
-    clonedScene->RemoveSystems();
+	clonedScene->RemoveSystems();
 
-	return (SceneEditor2 *)Scene::Clone(clonedScene);
+    clonedScene->SetGlobalMaterial(GetGlobalMaterial());
+
+	return (SceneEditor2 *)Clone(clonedScene);
 }
 
 void SceneEditor2::RemoveSystems()
