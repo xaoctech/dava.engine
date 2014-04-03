@@ -1289,7 +1289,6 @@ void PropertyEditor::CloneRenderBatchesToFixSwitchLODs()
     }
 }
 
-<<<<<<< HEAD
 void PropertyEditor::OnAddActionComponent()
 {
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
@@ -1317,7 +1316,7 @@ void PropertyEditor::OnAddStaticOcclusionComponent()
 	{
 		curScene->BeginBatch("Add Static Occlusion Component");
         
-		for(size_t i = 0; i < curNodes.size(); ++i)
+		for(int i = 0; i < curNodes.size(); ++i)
 		{
             Entity* node = curNodes.at(i);
             if (node->GetComponentCount(Component::STATIC_OCCLUSION_COMPONENT) == 0)
@@ -1337,7 +1336,7 @@ void PropertyEditor::OnAddModelTypeComponent()
 	{
 		curScene->BeginBatch("Add Model Type Component");
         
-		for(size_t i = 0; i < curNodes.size(); ++i)
+		for(int i = 0; i < curNodes.size(); ++i)
 		{
             Entity* node = curNodes.at(i);
             if (node->GetComponentCount(Component::QUALITY_SETTINGS_COMPONENT) == 0)
@@ -1396,7 +1395,7 @@ void PropertyEditor::OnRemoveComponent()
 		}
 	}
 }
-=======
+
 QString PropertyEditor::GetDefaultFilePath()
 {
 	QString defaultPath = ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname().c_str();
@@ -1417,5 +1416,3 @@ QString PropertyEditor::GetDefaultFilePath()
 
 	return defaultPath;
 }
- 
->>>>>>> development
