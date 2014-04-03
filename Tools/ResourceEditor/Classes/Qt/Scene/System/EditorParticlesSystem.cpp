@@ -70,7 +70,7 @@ EditorParticlesSystem::~EditorParticlesSystem()
 
 }
 
-void EditorParticlesSystem::Update(DAVA::float32 timeElapsed)
+void EditorParticlesSystem::Process(DAVA::float32 timeElapsed)
 {
 
 }
