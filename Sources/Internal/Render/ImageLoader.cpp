@@ -265,8 +265,9 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
     return false;
 }
 
-void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
+bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
 {
+    bool retValue = false;
     DVASSERT(pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"));
     
     DVASSERT((FORMAT_RGB888 == image->format)||(FORMAT_RGBA8888 == image->format) ||
@@ -281,12 +282,12 @@ void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
             ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
             convert(image->data, image->width, image->height, sizeof(RGB888)*image->width, imgToSave->data, imgToSave->width, imgToSave->height, sizeof(uint32)*image->width);
             
-            LibPngWrapper::WritePngFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
+            retValue = LibPngWrapper::WritePngFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
             SafeRelease(imgToSave);
         }
         else
         {
-            LibPngWrapper::WritePngFile(pathname, image->width, image->height, image->data, image->format);
+            retValue = LibPngWrapper::WritePngFile(pathname, image->width, image->height, image->data, image->format);
         }
     }
     else
@@ -312,12 +313,12 @@ void ImageLoader::Save(DAVA::Image *image, const FilePath &pathname)
             }
             if(imgToSave != NULL)
             {
-                LibJpegWrapper::WriteJpegFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
+                retValue = LibJpegWrapper::WriteJpegFile(pathname, imgToSave->width, imgToSave->height, imgToSave->data, imgToSave->format);
                 SafeRelease(imgToSave);
             }
         }
     }
+    return retValue;
 }
-    
     
 };

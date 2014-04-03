@@ -27,46 +27,47 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_IMAGELOADER_H__
-#define __DAVAENGINE_IMAGELOADER_H__
+#ifndef __JPEG_TEST_H__
+#define __JPEG_TEST_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
+#include "DAVAEngine.h"
+using namespace DAVA;
 
-namespace DAVA 
+#include "TestTemplate.h"
+
+class JPEGTest : public TestTemplate<JPEGTest>
 {
-
-class File;
-class Image;
-class ImageLoader
-{
-public:
-
-    static bool CreateFromFileByExtension(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-    
-	static bool CreateFromFileByContent(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromFileByContent(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-
-    static bool Save(const Image *image, const FilePath & pathname);
-    
+    enum eConst
+    {
+        FIRST_TEST = 0,
+        TESTS_COUNT = 2,
+        ACCETABLE_DELTA_IN_PERSENTS = 10
+    };
 protected:
+    ~JPEGTest(){}
+public:
+	JPEGTest();
 
-    static bool CreateFromPNGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-    static bool CreateFromJPEGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-	static bool CreateFromPVRFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDSFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromPNG(File *file, Vector<Image *> & imageSet);
-    static bool CreateFromJPEG(File *file, Vector<Image *> & imageSet);
-	static bool CreateFromPVR(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDS(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+    virtual void Draw(const UIGeometricData &geometricData);
+
     
-    static bool IsPVRFile(File *file);
-    static bool IsPNGFile(File *file);
-	static bool IsDDSFile(File *file);
-    static bool IsJPEGFile(File *file);
-};
-	
+    void TestFunction(PerfFuncData * data);
+    
+private:
+    
+    int32 currentTest;
+    
+    void ReloadSprites();
+    
+    UIStaticText *compareResultText;
+    
+    Sprite *pngSprite;
+    Sprite *jpegSprite;
+   // Sprite *decompressedPNGSprite;
 };
 
-#endif // __DAVAENGINE_IMAGELOADER_H__
+
+#endif // __JPEG_TEST_H__
