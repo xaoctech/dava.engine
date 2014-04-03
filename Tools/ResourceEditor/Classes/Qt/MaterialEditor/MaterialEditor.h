@@ -76,6 +76,8 @@ protected slots:
 	void OnPropertyEdited(const QModelIndex &);
     void OnMaterialAddGlobal(bool checked);
     void OnMaterialRemoveGlobal(bool checked);
+    void OnMaterialSave(bool checked);
+    void OnMaterialLoad(bool checked);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -99,6 +101,7 @@ private:
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
+    DAVA::FilePath lastSavePath;
 
 	QList< DAVA::NMaterial *> curMaterials;
 
