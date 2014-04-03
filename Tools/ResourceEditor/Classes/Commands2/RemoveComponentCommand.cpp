@@ -50,7 +50,7 @@ RemoveComponentCommand::~RemoveComponentCommand()
 
 void RemoveComponentCommand::Redo()
 {
-    const int nComponents = entity->GetComponentCount(componentType);
+    const DAVA::uint32 nComponents = entity->GetComponentCount(componentType);
     DAVA::Component * component = entity->GetComponent(componentType, nComponents - 1);
     DVASSERT(component);
     backup = component->Clone(entity);

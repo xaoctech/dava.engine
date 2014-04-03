@@ -47,6 +47,7 @@ public:
 private:
 	DAVA::Entity* entityToAdd;
     DAVA::Component* backup;
+    DAVA::Component* original;
     int componentType;
 };
 
