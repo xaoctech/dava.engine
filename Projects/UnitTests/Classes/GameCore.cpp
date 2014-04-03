@@ -66,6 +66,8 @@
 #include "StringFormatTest.h"
 #include "SaveImageTest.h"
 
+#include "JPEGTest.h"
+
 using namespace DAVA;
 
 GameCore::GameCore()
@@ -90,6 +92,8 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+    new JPEGTest();
+   /*
     new SaveImageTest();
     
     new StringFormatTest();
@@ -128,7 +132,7 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();
+     new ThreadSyncTest();*/
     
     errors.reserve(TestCount());
 
