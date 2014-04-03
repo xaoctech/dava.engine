@@ -56,30 +56,67 @@ bool CheckPosition(int32 commandPosition)
     return true;
 }
 
+void UnpackFile(const FilePath & sourceImagePath)
+{
+    Vector<Image *> images;
+    ImageLoader::CreateFromFileByExtension(sourceImagePath, images, 0);
+    
+    if(images.size() != 0)
+    {
+        ImageLoader::Save(images[0], FilePath::CreateWithNewExtension(sourceImagePath,".png"));
+        for_each(images.begin(), images.end(), SafeRelease<Image>);
+    }
+    else
+    {
+        Logger::Error("Cannot load file: ", sourceImagePath.GetAbsolutePathname().c_str());
+    }
+}
+
+void UnpackFolder(const FilePath & folderPath)
+{
+    FileList * fileList = new FileList(folderPath);
+	for (int fi = 0; fi < fileList->GetCount(); ++fi)
+	{
+        const FilePath & pathname = fileList->GetPathname(fi);
+		if (fileList->IsDirectory(fi) && !fileList->IsNavigationDirectory(fi))
+		{
+            UnpackFolder(pathname);
+        }
+        else
+        {
+            if(pathname.IsEqualToExtension(".pvr") || pathname.IsEqualToExtension(".dds"))
+            {
+                UnpackFile(pathname);
+            }
+        }
+	}
+    
+    fileList->Release();
+}
+
+
 void ProcessImageUnpacker()
 {
-	if(CommandLineParser::CommandIsFound(String("-file")))
-	{
-		FilePath sourceImagePath = CommandLineParser::GetCommandParam(String("-file"));
+    RenderManager::Create(Core::RENDERER_OPENGL);
 
-		Vector<Image *> images;
-		ImageLoader::CreateFromFileByExtension(sourceImagePath, images, 0);
-
-		if(images.size() != 0)
-		{
-			ImageLoader::Save(images[0], FilePath::CreateWithNewExtension(sourceImagePath,".png"));
-			for_each(images.begin(), images.end(), SafeRelease<Image>);
-		}
-		else
-		{
-			Logger::Error("Cannot load file: ", sourceImagePath.GetAbsolutePathname().c_str());
-		}
-	}
-	else
-	{
-		PrintUsage();
-	}
-
+    FilePath sourceFolderPath = CommandLineParser::GetCommandParam(String("-folder"));
+    FilePath sourceFilePath = CommandLineParser::GetCommandParam(String("-file"));
+    
+    if(sourceFolderPath.IsEmpty() == false)
+    {
+        sourceFolderPath.MakeDirectoryPathname();
+        UnpackFolder(sourceFolderPath);
+    }
+    else if (sourceFilePath.IsEmpty() == false)
+    {
+        UnpackFile(sourceFilePath);
+    }
+    else
+    {
+        PrintUsage();
+    }
+    
+    RenderManager::Instance()->Release();
 }
 
 void FrameworkDidLaunched()
