@@ -84,6 +84,9 @@ private:
     virtual void ProcessComboBoxValueChanged(QComboBox *senderWidget, const QString& value);
     virtual void ProcessPushButtonClicked(QPushButton *senderWidget);
     
+    void UpdateDefaultFontParams();
+    void UpdateLocalizedFontParams();
+    
     void UpdateLineEditWidgetWithPropertyValue(QLineEdit *lineEditWidget);
     void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);//, const QMetaProperty &curProperty);
     void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox *spinBoxWidget);

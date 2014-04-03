@@ -314,23 +314,38 @@ void EditFontDialog::ProcessPushButtonClicked(QPushButton *senderWidget)
             SafeRelease(dialogResult.font);
             dialogResult.font = SafeRetain(resultFont);
             
-            UpdateSpinBoxWidgetWithPropertyValue(ui->fontSizeSpinBox);
-            UpdatePushButtonWidgetWithPropertyValue(ui->fontSelectButton);
-            SafeRelease(resultFont);
+            UpdateDefaultFontParams();
         }
         else
         {
             dialogResult.SetLocalizedFont(resultFont, currentLocale);
             
-            UpdateSpinBoxWidgetWithPropertyValue(ui->localizedFontSizeSpinBox);
-            UpdatePushButtonWidgetWithPropertyValue(ui->localizedFontSelectButton);
+            UpdateLocalizedFontParams();
         }
+        SafeRelease(resultFont);
     }
     else if(senderWidget == ui->resetFontForLocalePushButton)
     {
         //TODO: reset localized font to defaults
         Logger::Debug("EditFontDialog::ProcessPushButtonClicked TODO: reset localized font to defaults");
+        Font *defaultFontClone = dialogResult.font->Clone();
+        dialogResult.SetLocalizedFont(defaultFontClone, currentLocale);
+        SafeRelease(defaultFontClone);
+        
+        UpdateLocalizedFontParams();
     }
+}
+
+void EditFontDialog::UpdateDefaultFontParams()
+{
+    UpdateSpinBoxWidgetWithPropertyValue(ui->fontSizeSpinBox);
+    UpdatePushButtonWidgetWithPropertyValue(ui->fontSelectButton);
+}
+
+void EditFontDialog::UpdateLocalizedFontParams()
+{
+    UpdateSpinBoxWidgetWithPropertyValue(ui->localizedFontSizeSpinBox);
+    UpdatePushButtonWidgetWithPropertyValue(ui->localizedFontSelectButton);
 }
 
 void EditFontDialog::UpdateLineEditWidgetWithPropertyValue(QLineEdit *lineEditWidget)
