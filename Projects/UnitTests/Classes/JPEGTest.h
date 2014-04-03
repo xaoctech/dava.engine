@@ -40,8 +40,8 @@ class JPEGTest : public TestTemplate<JPEGTest>
     enum eConst
     {
         FIRST_TEST = 0,
-        TESTS_COUNT = 2,
-        ACCETABLE_DELTA_IN_PERSENTS = 10
+        TESTS_COUNT = 6,
+        ACCETABLE_DELTA_IN_PERSENTS = 20
     };
 protected:
     ~JPEGTest(){}
@@ -66,7 +66,6 @@ private:
     
     Sprite *pngSprite;
     Sprite *jpegSprite;
-   // Sprite *decompressedPNGSprite;
 };
 
 

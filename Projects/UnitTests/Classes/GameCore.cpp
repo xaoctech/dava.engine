@@ -92,8 +92,6 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-    new JPEGTest();
-   /*
     new SaveImageTest();
     
     new StringFormatTest();
@@ -124,6 +122,7 @@ void GameCore::OnAppStarted()
  	new CloneTest();
  	new PVRTest();
  	new DXTTest();
+    new JPEGTest();
  	new EntityTest();	
  	new MemoryAllocatorsTest();
  	new HashMapTest();
@@ -132,7 +131,7 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();*/
+     new ThreadSyncTest();
     
     errors.reserve(TestCount());
 

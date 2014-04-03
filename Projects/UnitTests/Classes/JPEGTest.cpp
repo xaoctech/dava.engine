@@ -30,12 +30,6 @@
 #include "JPEGTest.h"
 #include "TextureUtils.h"
 
-static const PixelFormat formats[] =
-{
-	FORMAT_RGBA8888,
-	FORMAT_A16
-};
-
 JPEGTest::JPEGTest()
 : TestTemplate<JPEGTest>("JPEGTest")
 {
@@ -49,7 +43,7 @@ JPEGTest::JPEGTest()
     currentTest = FIRST_TEST;
     for(int32 i = 0; i < TESTS_COUNT; ++i)
     {
-        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[i]);
+        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
         RegisterFunction(this, &JPEGTest::TestFunction, Format("JPEGTest of %s", formatDescriptor.name.c_str()), NULL);
     }
 }
@@ -82,7 +76,6 @@ void JPEGTest::UnloadResources()
 
     SafeRelease(pngSprite);
     SafeRelease(jpegSprite);
-    //SafeRelease(decompressedPNGSprite);
 }
 
 void JPEGTest::TestFunction(PerfFuncData * data)
@@ -94,11 +87,11 @@ void JPEGTest::TestFunction(PerfFuncData * data)
 	float32 differencePersentage = 100.f;
 	if (pngSprite->GetSize() == jpegSprite->GetSize())
 	{
-		TextureUtils::CompareResult result = TextureUtils::CompareSprites(pngSprite, jpegSprite, formats[currentTest]);
+		TextureUtils::CompareResult result = TextureUtils::CompareSprites(pngSprite, jpegSprite, FORMAT_RGBA8888);
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
     
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
+    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
                                     differencePersentage, 100.f - differencePersentage);
 
@@ -114,7 +107,6 @@ void JPEGTest::TestFunction(PerfFuncData * data)
     FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
     ImageLoader::Save(firstComparer, documentsPath + (Format("JPEGTest/src_number_%d.png", currentTest)));
     ImageLoader::Save(secondComparer, documentsPath + (Format("JPEGTest/dst_number_%d.png", currentTest)));
-    
 
     ++currentTest;
 }
@@ -127,9 +119,9 @@ void JPEGTest::ReloadSprites()
     FilePath path =FilePath::FilepathInDocuments(Format("/JPEGTest/JPEG/number_%d.jpeg", currentTest));
     
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/JPEGTest/PNG/number_%d.png", currentTest)));
-    
     Image* img = pngSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
     ImageLoader::Save(img, path);
+    SafeRelease(img);
     
     Vector<Image *> imageSet;
 	ImageLoader::CreateFromFileByContent( path, imageSet);
@@ -137,7 +129,9 @@ void JPEGTest::ReloadSprites()
     DVASSERT(imageSet.size());
     Image* imgJpeg = imageSet[0];
     Texture* tex = Texture::CreateFromData(imgJpeg->GetPixelFormat(), imgJpeg->data, imgJpeg->width, imgJpeg->height, false);
+    SafeRelease(imgJpeg);
     jpegSprite = Sprite::CreateFromTexture(tex, 0, 0, tex->width, tex->width);
+    SafeRelease(tex);
 }
 
 void JPEGTest::Draw(const DAVA::UIGeometricData &geometricData)
