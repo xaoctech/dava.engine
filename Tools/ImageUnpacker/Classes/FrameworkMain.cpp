@@ -40,6 +40,7 @@ void PrintUsage()
 
     printf("\t-usage or --help to display this help\n");
 	printf("\t-file - pvr or dds file to unpack as png");
+	printf("\t-folder - folder with pvr or dds files to unpack as png");
 }
 
 
