@@ -177,10 +177,10 @@ void UIScreenTransition::Update(float32 timeElapsed)
 	if (currentTime >= duration)
 	{
 		currentTime = duration;
+		UIControlSystem::Instance()->ReplaceScreen(nextScreen);
 		nextScreen->SystemDidAppear();
 		ReleaseRenderTargets();
 		// go to next screen
-		UIControlSystem::Instance()->ReplaceScreen(nextScreen);
 		UIControlSystem::Instance()->UnlockInput();
 		
 		/*
