@@ -86,7 +86,9 @@ public:
     void SavePreviewSettings(YamlNode* rootNode);
     
     // Editing functionality.
-    PreviewSettingsData GetPreviewSettingsData(int32 id);
+    PreviewSettingsData GetPreviewSettingsData(int32 id) const;
+    PreviewSettingsData GetActivePreviewSettingsData() const;
+
     void AddPreviewSettingsData(const PreviewSettingsData& data);
     void RemovePreviewSettingsData(int32 id);
 
