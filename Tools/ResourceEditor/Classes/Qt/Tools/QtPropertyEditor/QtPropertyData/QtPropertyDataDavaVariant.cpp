@@ -31,6 +31,7 @@
 #include "Main/QtUtils.h"
 #include "QtPropertyDataDavaVariant.h"
 #include "Tools/QtFileDialog/QtFileDialog.h"
+#include "Tools/QtPropertyEditor/QtPropertyWidgets/FlagSelectorCombo.h"
 
 #include <QColorDialog>
 #include <QListWidget>
@@ -54,6 +55,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	, allowedValuesLocked(false)
 	, allowedButton(NULL)
     , isSettingMeFromChilds(false)
+    , treatAllowedValuesAsFlags(false)
 {
 	InitFlags();
 	ChildsCreate();
@@ -177,6 +179,17 @@ void QtPropertyDataDavaVariant::ClearAllowedValues()
 		allowedButton = NULL;
 	}
 }
+
+void QtPropertyDataDavaVariant::SetAllowedValuesAsFlags(bool set)
+{
+    treatAllowedValuesAsFlags = set;
+}
+
+bool QtPropertyDataDavaVariant::IsAllovedValuesFlags() const
+{
+    return treatAllowedValuesAsFlags;
+}
+
 
 QVariant QtPropertyDataDavaVariant::GetValueInternal() const
 {
@@ -852,7 +865,14 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
 	// user will only be able to select values from combobox
 	if(allowedValues.size() > 0)
 	{
-		ret = CreateAllowedValuesEditor(parent);
+        if (treatAllowedValuesAsFlags)
+        {
+		    ret = CreateAllowedFlagsEditor(parent);
+        }
+        else
+        {
+		    ret = CreateAllowedValuesEditor(parent);
+        }
 	}
 	// check types and create our own widgets for edit
 	// if we don't create - Qt will create standard editing widget for QVariant
@@ -868,6 +888,9 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
                     sb->setMaximum(9999999);
                     ret = sb;
                 }
+                break;
+
+            case DAVA::VariantType::TYPE_INT32:
                 break;
 
             default:
@@ -1009,6 +1032,31 @@ QWidget* QtPropertyDataDavaVariant::CreateAllowedValuesEditor(QWidget *parent) c
 			}
 
 			allowedWidget->addItem(text);
+		}
+
+		QObject::connect(allowedWidget, SIGNAL(activated(int)), this, SLOT(AllowedSelected(int)));
+	}
+
+	return allowedWidget;
+}
+
+QWidget* QtPropertyDataDavaVariant::CreateAllowedFlagsEditor(QWidget *parent) const
+{
+	FlagSelectorCombo *allowedWidget = NULL;
+
+	if(allowedValues.size() > 0)
+	{
+		allowedWidget = new FlagSelectorCombo(parent);
+
+		for(int i = 0; i < allowedValues.size(); ++i)
+		{
+            const auto value = allowedValues.at(i);
+            const QString text = value.visibleValue.isValid()
+                ? value.visibleValue.toString()
+                : FromDavaVariant(curVariantValue).toString();
+            const int intVal = value.realValue.AsInt32();
+
+            allowedWidget->AddFlagItem(intVal, text);
 		}
 
 		QObject::connect(allowedWidget, SIGNAL(activated(int)), this, SLOT(AllowedSelected(int)));

@@ -514,6 +514,7 @@ QtPropertyData* PropertyEditor::CreateInspMember(void *object, const DAVA::InspM
 	{
 		void *momberObject = member->Data(object);
 		const DAVA::InspInfo *memberIntrospection = member->Type()->GetIntrospection(momberObject);
+
 		bool isKeyedArchive = (member->Type() == DAVA::MetaInfo::Instance<DAVA::KeyedArchive*>());
 
 		if(NULL != memberIntrospection && !isKeyedArchive)
