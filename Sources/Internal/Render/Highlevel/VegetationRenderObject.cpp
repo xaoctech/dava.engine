@@ -382,6 +382,10 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetVegetationTexture(GetVegetationTexture());
     vegetationRenderObject->SetWorldSize(GetWorldSize());
     vegetationRenderObject->SetUseLowCameraScale(GetUseLowCameraScale());
+    
+    vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
+    vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
+
 
     return vegetationRenderObject;
 }
@@ -474,6 +478,9 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         bool useScale = archive->GetBool("vro.useLowCameraScale", false);
         SetUseLowCameraScale(useScale);
     }
+    
+    AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
+    AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
 
 void VegetationRenderObject::PrepareToRender(Camera *camera)
