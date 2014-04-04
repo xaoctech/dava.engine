@@ -99,9 +99,6 @@ protected:
         actionRestart
     };
 
-    // Start/stop particles when visibility is changed.
-    void StartStop(bool value);
-
 private:
     ParticleEffectComponent *effect;
     ParticleEffectSystem *system;
