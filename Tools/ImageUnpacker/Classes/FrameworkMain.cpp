@@ -73,7 +73,13 @@ void UnpackFile(const FilePath & sourceImagePath)
         }
         else
         {
-            Logger::Error("Not supported format (%d):  %s", image->format, sourceImagePath.GetAbsolutePathname().c_str());
+			Image *savedImage = Image::Create(image->width, image->height, FORMAT_RGBA8888);
+
+			ImageConvert::ConvertImageDirect(image->format, savedImage->format, image->data, image->width, image->height, image->width * Texture::GetPixelFormatSizeInBytes(image->format), 
+					savedImage->data, savedImage->width, savedImage->height, savedImage->width * Texture::GetPixelFormatSizeInBytes(savedImage->format));
+
+			ImageLoader::Save(savedImage, FilePath::CreateWithNewExtension(sourceImagePath,".png"));
+			savedImage->Release();
         }
         
         for_each(images.begin(), images.end(), SafeRelease<Image>);
