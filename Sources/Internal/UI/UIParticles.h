@@ -59,6 +59,12 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual void Draw(const UIGeometricData &geometricData);
 
+    virtual void WillDisappear();
+    virtual void WillAppear();
+
+    virtual void SetVisible(bool isVisible, bool hierarchic = true);
+    virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
+
     // Cloning.
     virtual UIControl* Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
@@ -96,6 +102,9 @@ protected:
         actionStart,
         actionRestart
     };
+
+    // Start/stop particles when visibility is changed.
+    void StartStop(bool value);
 
 private:
     ParticleEffectComponent *effect;

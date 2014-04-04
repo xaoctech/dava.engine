@@ -58,6 +58,7 @@ RenderBatch::RenderBatch()
     ,	visiblityCriteria(RenderObject::VISIBILITY_CRITERIA)
     ,   aabbox(Vector3(), Vector3())
     ,   sortingTransformPtr(NULL)
+	,	renderLayerIDsBitmaskFromMaterial(0)
 {
 	
 #if defined(__DAVA_USE_OCCLUSION_QUERY__)
@@ -249,8 +250,11 @@ RenderBatch * RenderBatch::Clone(RenderBatch * destination)
     SafeRelease(rb->material);
 	if(material)
 	{
-		rb->material = material->Clone();
-		//rb->material->SetMaterialSystem(NULL);
+		NMaterial *mat = material->Clone();
+		rb->SetMaterial(mat);
+		mat->Release();
+
+ 		//rb->material->SetMaterialSystem(NULL);
 	}
 
 	rb->startIndex = startIndex;
@@ -338,6 +342,9 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 
 		SetPolygonGroup(pg);
         
+		if(GetMaterial() == NULL)
+			DVASSERT(newMaterial);
+
 		if(newMaterial)
 		{
 			SetMaterial(newMaterial);
