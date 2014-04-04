@@ -73,32 +73,9 @@ UIParticles::~UIParticles()
     SafeDelete(effect);
 }
 
-void UIParticles::WillDisappear()
-{
-    // Stop the effect when it is removed from the screen.
-    Stop();
-}
-
 void UIParticles::WillAppear()
 {
-    DVASSERT(effect);
-    if (effect->state == ParticleEffectComponent::STATE_STARTING ||
-        effect->state == ParticleEffectComponent::STATE_PLAYING)
-    {
-        // Effect is already started or about to start.
-        return;
-    }
-
-    if (delayedActionType != actionNone)
-    {
-        // Delayed Start/Restart is in progress.
-        return;
-    }
-
-    if (GetVisible() && GetVisibleForUIEditor() && IsAutostart())
-    {
-        Start();
-    }
+    updateTime = 0.0f;
 }
 
 void UIParticles::Start()
@@ -204,7 +181,7 @@ void UIParticles::AddControl(UIControl *control)
     
 void UIParticles::Update(float32 timeElapsed)
 {
-    updateTime += timeElapsed;        
+    updateTime = timeElapsed;        
     if (delayedActionType != UIParticles::actionNone)
     {
         HandleDelayedAction(timeElapsed);
@@ -406,30 +383,6 @@ void UIParticles::HandleDelayedAction(float32 timeElapsed)
 
         delayedActionType = UIParticles::actionNone;
         delayedActionTime = 0.0f;
-    }
-}
-
-void UIParticles::SetVisible(bool isVisible, bool hierarchic/* = true */)
-{
-    StartStop(isVisible);
-    UIControl::SetVisible(isVisible, hierarchic);
-}
-
-void UIParticles::SetVisibleForUIEditor(bool value, bool hierarchic/* = true> */)
-{
-    StartStop(value);
-    UIControl::SetVisibleForUIEditor(value, hierarchic);
-}
-
-void UIParticles::StartStop(bool value)
-{
-    if (value && IsAutostart())
-    {
-        DoStart(); // start immediately after visibility flag changed.
-    }
-    else
-    {
-        Stop();
     }
 }
 
