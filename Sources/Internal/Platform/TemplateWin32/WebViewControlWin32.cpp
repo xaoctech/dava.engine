@@ -109,7 +109,7 @@ public:
             htmlStream->Release();
     }
 
-    HRESULT HtmlMoniker::SetHtml(const DAVA::String& _htmlData)
+    HRESULT HtmlMoniker::SetHtml(const String& _htmlData)
     {
         htmlData = _htmlData;
         if (htmlStream)
@@ -118,7 +118,7 @@ public:
         return S_OK;
     }
 
-    HRESULT HtmlMoniker::SetBaseUrl(const DAVA::WideString& _baseUrl)
+    HRESULT HtmlMoniker::SetBaseUrl(const WideString& _baseUrl)
     {
         baseUrl = _baseUrl;
         return S_OK;
@@ -230,25 +230,26 @@ private:
     }
 
     LONG                refCount;
-    DAVA::String        htmlData;
+    String        htmlData;
     IStream *           htmlStream;
-    DAVA::WideString    baseUrl;
+    WideString    baseUrl;
 };
 
 struct EventSink : public IDispEventImpl<1, EventSink, &DIID_DWebBrowserEvents2>
 {
 private:
-	DAVA::IUIWebViewDelegate* delegate;
-	DAVA::UIWebView* webView;
-    DAVA::WebBrowserContainer* container;
+	IUIWebViewDelegate* delegate;
+	UIWebView* webView;
+    WebBrowserContainer* container;
 public:
 	EventSink()
 	{
 		delegate = NULL;
 		webView = NULL;
+		container = NULL;
 	};
 
-	void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView, DAVA::WebBrowserContainer* container)
+	void SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView, WebBrowserContainer* container)
 	{
 		if (delegate && webView && container)
 		{
@@ -335,7 +336,7 @@ WebBrowserContainer::~WebBrowserContainer()
 	}
 }
 
-void WebBrowserContainer::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+void WebBrowserContainer::SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView)
 {
 	EventSink* s = (EventSink*)sink;
 	s->SetDelegate(delegate, webView, this);
@@ -500,7 +501,7 @@ bool WebBrowserContainer::DoOpenBuffer()
     return true;
 }
 
-bool WebBrowserContainer::OpenFromBuffer(const DAVA::String& buffer, const DAVA::FilePath& basePath)
+bool WebBrowserContainer::OpenFromBuffer(const String& buffer, const FilePath& basePath)
 {
     if (!this->webBrowser)
     {
@@ -556,7 +557,7 @@ WebViewControl::~WebViewControl()
 	SafeDelete(browserContainer);
 }
 
-void WebViewControl::SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView)
+void WebViewControl::SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView)
 {
 	browserContainer->SetDelegate(delegate, webView);
 }
@@ -625,8 +626,8 @@ void WebViewControl::SetRect(const Rect& rect)
 	RECT browserRect = {0};
 	::GetWindowRect(this->browserWindow, &browserRect);
 
-	browserRect.left = (LONG)(rect.x * DAVA::Core::GetVirtualToPhysicalFactor());
-	browserRect.top  = (LONG)(rect.y * DAVA::Core::GetVirtualToPhysicalFactor());
+	browserRect.left = (LONG)(rect.x * Core::GetVirtualToPhysicalFactor());
+	browserRect.top  = (LONG)(rect.y * Core::GetVirtualToPhysicalFactor());
 	browserRect.left  += (LONG)Core::Instance()->GetPhysicalDrawOffset().x;
 	browserRect.top += (LONG)Core::Instance()->GetPhysicalDrawOffset().y;
 
