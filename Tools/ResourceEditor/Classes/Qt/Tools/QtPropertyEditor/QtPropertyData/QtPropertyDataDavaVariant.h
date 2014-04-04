@@ -52,6 +52,8 @@ public:
 
 	void AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue = QVariant());
 	void ClearAllowedValues();
+    void SetAllowedValuesAsFlags(bool set);
+    bool IsAllovedValuesFlags() const;
 
 	QVariant FromDavaVariant(const DAVA::VariantType &variant) const;
     
@@ -88,6 +90,7 @@ protected:
 	QVector<AllowedValue> allowedValues;
 	mutable bool allowedValuesLocked;
 	QtPropertyToolButton *allowedButton;
+    bool treatAllowedValuesAsFlags;
     
     QString openDialogFilter;
     QString defaultOpenDialogPath;
@@ -128,6 +131,7 @@ protected:
 	QVariant SubValueGet(const QString &key);
 
 	QWidget* CreateAllowedValuesEditor(QWidget *parent) const;
+    QWidget* CreateAllowedFlagsEditor(QWidget *parent) const;
 	void SetAllowedValueEditorData(QWidget *editorWidget);
 	void ApplyAllowedValueFromEditor(QWidget *editorWidget);
 };
