@@ -141,6 +141,9 @@ public:
     void SetVegetationVisible(bool show);
     bool GetVegetationVisible() const;
     
+    void SetUseLowCameraScale(const bool& useScale);
+    bool GetUseLowCameraScale() const;
+    
 private:
 
     struct VegetationVertex
@@ -174,6 +177,25 @@ private:
         inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
     };
     
+    struct PolygonSortData
+    {
+        int16 indices[3];
+        float32 cameraDistance;
+        
+        inline PolygonSortData();
+    };
+    
+    struct SortedBufferItem
+    {
+        RenderDataObject* rdo;
+        Vector3 sortDirection;
+        
+        inline SortedBufferItem();
+        inline SortedBufferItem(const SortedBufferItem& src);
+        inline ~SortedBufferItem();
+        inline void SetRenderDataObject(RenderDataObject* dataObject);
+    };
+    
     //void BuildVegetationBrush(uint32 maxClusters);
     RenderBatch* GetRenderBatchFromPool(NMaterial* material);
     void ReturnToPool(int32 batchCount);
@@ -204,6 +226,7 @@ private:
                                Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
     
     static bool CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a, const AbstractQuadTreeNode<SpatialData>*  b);
+    static bool PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b);
     
     void InitHeightTextureFromHeightmap(Heightmap* heightMap);
     
@@ -224,6 +247,8 @@ private:
                            bool cameraLowPosition,
                            float32 cameraLowScale,
                            Vector<float32>& uniforms);
+    size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
+    void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
     
 private:
     
@@ -247,7 +272,7 @@ private:
     Vector<VegetationVertex> vertexData;
     Vector<int16> indexData;
     RenderDataObject* vertexRenderDataObject;
-    Vector<Vector<RenderDataObject*> > indexRenderDataObject;
+    Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
     
     AbstractQuadTree<SpatialData> quadTree;
     Vector<AbstractQuadTreeNode<SpatialData>*> visibleCells;
@@ -269,6 +294,7 @@ private:
     uint8 layerVisibilityMask;
     
     bool vegetationVisible;
+    bool useLowCameraScale;
     
 public:
     
@@ -281,6 +307,7 @@ public:
                          PROPERTY("lodRanges", "Lod ranges", GetLodRange, SetLodRange, I_EDIT | I_VIEW)
                          PROPERTY("visibilityDistance", "Visibility distances", GetVisibilityDistance, SetVisibilityDistance, I_EDIT | I_VIEW)
                          PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
+                         PROPERTY("useLowCameraScale", "Scale close clusters", GetUseLowCameraScale, SetUseLowCameraScale, I_EDIT | I_VIEW)
                          );
     
 };
@@ -361,7 +388,38 @@ inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
 {
     return (width * height);
 }
+
+inline VegetationRenderObject::PolygonSortData::PolygonSortData()
+{
+    indices[0] = indices[1] = indices[2] = -1;
+    cameraDistance = -1.0f;
+}
     
+inline VegetationRenderObject::SortedBufferItem::SortedBufferItem()
+{
+    rdo = NULL;
+}
+
+inline VegetationRenderObject::SortedBufferItem::SortedBufferItem(const SortedBufferItem& src)
+{
+    rdo = SafeRetain(src.rdo);
+    sortDirection = src.sortDirection;
+}
+
+inline VegetationRenderObject::SortedBufferItem::~SortedBufferItem()
+{
+     SafeRelease(rdo)
+;}
+    
+inline void VegetationRenderObject::SortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
+{
+    if(dataObject != rdo)
+    {
+        SafeRelease(rdo);
+        rdo = SafeRetain(dataObject);
+    }
+}
+
 inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                                    float32 refDistance,
                                                    uint32 cellValue,

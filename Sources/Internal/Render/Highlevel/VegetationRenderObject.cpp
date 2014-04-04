@@ -62,13 +62,15 @@ static const uint32 MAX_DENSITY_LEVELS = 16;
 static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
     
-static const size_t MAX_RENDER_CELLS = 256;
+static const size_t MAX_RENDER_CELLS = 512;
 static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 130.0f * 130.0f; //meters * meters (square length)
 static const float32 MAX_VISIBLE_SCALING_DISTANCE = 100.0f * 100.0f;
     
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
 
 static const Vector3 MAX_DISPLACEMENT = Vector3(5.6f, 5.6f, 0.0f);
+
+static const uint32 SORT_DIRECTION_COUNT = 8;
     
     
 static const Vector3 CLUSTER_TYPE_0[] =
@@ -308,7 +310,8 @@ VegetationRenderObject::VegetationRenderObject() :
     maxPerturbationDistance(1000000.0f),
     layerVisibilityMask(0xFF),
     vegetationVisible(true),
-    maxLayerHeight(1.0f)
+    maxLayerHeight(1.0f),
+    useLowCameraScale(false)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -378,6 +381,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetLightmap(GetLightmapPath());
     vegetationRenderObject->SetVegetationTexture(GetVegetationTexture());
     vegetationRenderObject->SetWorldSize(GetWorldSize());
+    vegetationRenderObject->SetUseLowCameraScale(GetUseLowCameraScale());
 
     return vegetationRenderObject;
 }
@@ -395,6 +399,7 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
     RenderObject::Save(archive, serializationContext);
     
     archive->SetUInt32("vro.clusterLimit", GetClusterLimit());
+    archive->SetBool("vro.useLowCameraScale", GetUseLowCameraScale());
 
 	if(vegetationMapPath.IsEmpty() == false)
 	{
@@ -465,6 +470,9 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 		{
 			SetLightmap(serializationContext->GetScenePath() + lightmap);
 		}
+        
+        bool useScale = archive->GetBool("vro.useLowCameraScale", false);
+        SetUseLowCameraScale(useScale);
     }
 }
 
@@ -502,7 +510,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     
     BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
     
-    //std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
+    std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
     uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
 
@@ -535,8 +543,6 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                      worldSize.y);
     Vector2 switchLodScale;
     
-    bool cameraLowPosition = false;
-    
     for(size_t i = 0; i < requestedBatchCount; ++i)
     {
         AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[i];
@@ -547,20 +553,27 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         
         uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
         
-        Vector<RenderDataObject*> rdoVector = indexRenderDataObject[resolutionIndex];
+        Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
         
         uint32 indexBufferIndex = treeNode->data.rdoIndex;
         
         DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
-        rb->SetRenderDataObject(rdoVector[indexBufferIndex]);
         
-        Vector3 nodeCenter = treeNode->data.bbox.GetCenter();
+        size_t directionIndex = SelectDirectionIndex(camera, rdoVector[indexBufferIndex]);
+        rb->SetRenderDataObject(rdoVector[indexBufferIndex][directionIndex].rdo);
+        
         float32 cameraLowScale = 1.0f;
-        float32 cameraHeight = Abs(camera->GetPosition().z - nodeCenter.z);
-        cameraLowPosition = (cameraHeight < maxLayerHeight);
-        if(cameraLowPosition)
+        bool cameraLowPosition = false;
+        
+        if(useLowCameraScale)
         {
-            cameraLowScale = cameraHeight / maxLayerHeight;
+            Vector3 nodeCenter = treeNode->data.bbox.GetCenter();
+            float32 cameraHeight = Abs(camera->GetPosition().z - nodeCenter.z);
+            cameraLowPosition = (cameraHeight < maxLayerHeight);
+            if(cameraLowPosition)
+            {
+                cameraLowScale = cameraHeight / maxLayerHeight;
+            }
         }
         
         SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, cameraLowPosition, cameraLowScale, shaderScaleDensityUniforms);
@@ -1068,7 +1081,10 @@ void VegetationRenderObject::SetLodRange(const Vector3& distances)
 {
     lodRanges = distances;
     
-    InitLodRanges();
+    if(IsValidSpatialData())
+    {
+        InitLodRanges();
+    }
 }
     
 const Vector3& VegetationRenderObject::GetLodRange() const
@@ -1079,8 +1095,11 @@ const Vector3& VegetationRenderObject::GetLodRange() const
 void VegetationRenderObject::ResetLodRanges()
 {
    lodRanges = LOD_RANGES_SCALE;
-   
-   InitLodRanges();
+ 
+    if(IsValidSpatialData())
+    {
+        InitLodRanges();
+    }
 }
 
 void VegetationRenderObject::InitLodRanges()
@@ -1162,6 +1181,8 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
         totalIndexCount += indexDataCount * (maxTotalClusters / (uint32)RESOLUTION_SCALE[i]);
     }
     
+    totalIndexCount *= SORT_DIRECTION_COUNT;
+    
     indexData.resize(totalIndexCount);
     vertexData.resize(maxTotalClusters * layerDataCount);
     
@@ -1181,6 +1202,9 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
                               clusterOffset.y / MAX_CLUSTER_TYPES);
 
     Vector<uint32> layerOffsets(MAX_CLUSTER_TYPES);
+    
+    Vector2 xRanges(FLT_MAX, FLT_MIN);
+    Vector2 yRanges(FLT_MAX, FLT_MIN);
     
     size_t vertexIndex = 0;
     Vector3 normal(0.0f, 0.0f, 1.0f); //up
@@ -1243,27 +1267,37 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
         }
     }
     
+    Vector<PolygonSortData> sortingArray(1);
+    Vector<int16> preparedIndices;
+    size_t polygonElementCount = COUNT_OF(sortingArray[0].indices);
+    
     //generate indices
     size_t totalResolutionCount = COUNT_OF(RESOLUTION_RANGES);
     size_t currentIndexIndex = 0;
+    
+    Vector<Vector3> directionPoints;
+    directionPoints.resize(SORT_DIRECTION_COUNT);
+    
     for(size_t resolutionIndex = 0; resolutionIndex < totalResolutionCount; ++resolutionIndex)
     {
         uint32 resolutionStride = RESOLUTION_CELL_SQUARE[resolutionIndex];
         uint32 resolutionOffset = (uint32)RESOLUTION_SCALE[resolutionIndex];
         uint32 indexBufferCount = RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1] / resolutionStride;
         
-        indexRenderDataObject.push_back(Vector<RenderDataObject*>());
-        Vector<RenderDataObject*>& currentIndexArray = indexRenderDataObject[resolutionIndex];
+        indexRenderDataObject.push_back(Vector<Vector<SortedBufferItem> >());
+        
+        Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray = indexRenderDataObject[resolutionIndex];
+        
         for(uint32 i = 0; i < indexBufferCount; ++i)
         {
-            RenderDataObject* indexBuffer = new RenderDataObject();
-            int16* currentBufferPointer = &indexData[currentIndexIndex];
-            uint32 prevIndexIndex = currentIndexIndex;
+            preparedIndices.clear();
             
             uint32 startX = (i % RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
             uint32 startY = (i / RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
             uint32 endX = startX + maxClusters * resolutionOffset;
             uint32 endY = startY + maxClusters * resolutionOffset;
+            
+            AABBox3 indexBufferBBox;
             
             for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
             {
@@ -1272,7 +1306,7 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
                 const int16* clusterIndices = VEGETATION_CLUSTER_INDICES[cellData.geometryId];
                 uint32 clusterIndexCount = VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
                 uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
-
+                
                 for(uint32 y = startY; y < endY; y += resolutionOffset)
                 {
                     for(uint32 x = startX; x < endX; x += resolutionOffset)
@@ -1281,26 +1315,83 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
                         
                         for(uint32 clusterIndexIndex = 0; clusterIndexIndex < clusterIndexCount; ++clusterIndexIndex)
                         {
-                            DVASSERT(currentIndexIndex < indexData.size());
-                            
                             vertexIndex = baseIndex + clusterIndices[clusterIndexIndex];
                             
                             DVASSERT(vertexIndex >= 0 && vertexIndex < vertexData.size());
                             
-                            indexData[currentIndexIndex] = (int16)vertexIndex;
-                            
                             VegetationVertex& vertex = vertexData[vertexIndex];
                             vertex.texCoord1.x = resolutionIndex;
-                        
-                            currentIndexIndex++;
+                            
+                            indexBufferBBox.AddPoint(vertex.coord);
+                            
+                            preparedIndices.push_back(vertexIndex);
+                        }
+                    }
+                }
+            }
+            
+            SetupCameraPositions(indexBufferBBox, directionPoints);
+            
+            size_t sortItemCount = preparedIndices.size() / polygonElementCount;
+            sortingArray.resize(sortItemCount);
+            for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+            {
+                PolygonSortData& sortData = sortingArray[sortItemIndex];
+                
+                sortData.indices[0] = preparedIndices[sortItemIndex * polygonElementCount + 0];
+                sortData.indices[1] = preparedIndices[sortItemIndex * polygonElementCount + 1];
+                sortData.indices[2] = preparedIndices[sortItemIndex * polygonElementCount + 2];
+            }
+            
+            currentResolutionIndexArray.push_back(Vector<SortedBufferItem>());
+            Vector<SortedBufferItem>& currentDirectionBuffers = currentResolutionIndexArray[i];
+            
+            for(uint32 sortDirectionIndex = 0; sortDirectionIndex < SORT_DIRECTION_COUNT; ++sortDirectionIndex)
+            {
+                Vector3 cameraPosition = directionPoints[sortDirectionIndex];
+                
+                for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+                {
+                    PolygonSortData& sortData = sortingArray[sortItemIndex];
+                    sortData.cameraDistance = FLT_MAX;
+                    
+                    for(uint32 polygonIndex = 0; polygonIndex < polygonElementCount; ++polygonIndex)
+                    {
+                        float32 distance = (vertexData[sortData.indices[polygonIndex]].coord - cameraPosition).SquareLength();
+                        if(distance < sortData.cameraDistance)
+                        {
+                            sortData.cameraDistance = distance;
                         }
                     }
                 }
                 
-            }
+                std::stable_sort(sortingArray.begin(), sortingArray.end(), PolygonByDistanceCompareFunction);
+                
+                size_t prevIndexIndex = currentIndexIndex;
+                for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+                {
+                    PolygonSortData& sortData = sortingArray[sortItemIndex];
+                    
+                    indexData[currentIndexIndex] = sortData.indices[0];
+                    currentIndexIndex++;
+                    
+                    indexData[currentIndexIndex] = sortData.indices[1];
+                    currentIndexIndex++;
+
+                    indexData[currentIndexIndex] = sortData.indices[2];
+                    currentIndexIndex++;
+                }
             
-            indexBuffer->SetIndices(EIF_16, (uint8*)currentBufferPointer, (currentIndexIndex - prevIndexIndex));
-            currentIndexArray.push_back(indexBuffer);
+                RenderDataObject* indexBuffer = new RenderDataObject();
+                indexBuffer->SetIndices(EIF_16, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
+                
+                SortedBufferItem sortedBufferItem;
+                sortedBufferItem.SetRenderDataObject(indexBuffer);
+                sortedBufferItem.sortDirection = indexBufferBBox.GetCenter() - cameraPosition;
+                sortedBufferItem.sortDirection.Normalize();
+                
+                currentDirectionBuffers.push_back(sortedBufferItem);
+            }
         }
     }
     
@@ -1318,13 +1409,18 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
     for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
     {
-        Vector<RenderDataObject*>& indexObjectArray = indexRenderDataObject[indexArrayIndex];
+        Vector<Vector<SortedBufferItem> >& indexObjectArray = indexRenderDataObject[indexArrayIndex];
         size_t totalIndexObjectCount = indexObjectArray.size();
         
         for(size_t i = 0; i < totalIndexObjectCount; ++i)
         {
-            indexObjectArray[i]->BuildIndexBuffer(true);
-            indexObjectArray[i]->AttachVertices(vertexRenderDataObject);
+            Vector<SortedBufferItem>& directionArray = indexObjectArray[i];
+            size_t directionCount = directionArray.size();
+            for(size_t directionIndex = 0; directionIndex < directionCount; ++directionIndex)
+            {
+                directionArray[directionIndex].rdo->BuildIndexBuffer(true);
+                directionArray[directionIndex].rdo->AttachVertices(vertexRenderDataObject);
+            }
         }
     }
 }
@@ -1334,13 +1430,19 @@ void VegetationRenderObject::ReleaseRenderData()
     size_t indexBufferResolutionCount = indexRenderDataObject.size();
     for(size_t indexBufferIndex = 0; indexBufferIndex < indexBufferResolutionCount; ++indexBufferIndex)
     {
-        Vector<RenderDataObject*> indexBufferArray = indexRenderDataObject[indexBufferIndex];
+        Vector<Vector<SortedBufferItem> >& indexBufferArray = indexRenderDataObject[indexBufferIndex];
         size_t indexObjectCount = indexBufferArray.size();
         for(size_t i = 0; i < indexObjectCount; ++i)
         {
-            indexBufferArray[i]->DetachVertices();
-        
-            SafeRelease(indexBufferArray[i]);
+            Vector<SortedBufferItem>& directionArray = indexBufferArray[i];
+            
+            size_t directionBufferCount = directionArray.size();
+            for(size_t directionIndex = 0; directionIndex < directionBufferCount; ++directionIndex)
+            {
+                directionArray[directionIndex].rdo->DetachVertices();
+            }
+            
+            directionArray.clear();
         }
         
         indexBufferArray.clear();
@@ -1468,5 +1570,66 @@ bool VegetationRenderObject::GetVegetationVisible() const
     return vegetationVisible;
 }
 
+bool VegetationRenderObject::PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b)
+{
+    return a.cameraDistance > b.cameraDistance; //back to front order
+}
+
+size_t VegetationRenderObject::SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers)
+{
+    Vector3 cameraDirection = cam->GetDirection();
+    cameraDirection.Normalize();
+    
+    size_t index = 0;
+    float32 currentCosA = 0.0f;
+    size_t directionCount = buffers.size();
+    for(size_t i = 0; i < directionCount; ++i)
+    {
+        SortedBufferItem& item = buffers[i];
+        //cos (angle) = dotAB / (length A * lengthB)
+        //no need to calculate (length A * lengthB) since vectors are normalized
+        
+        if(item.sortDirection == cameraDirection)
+        {
+            index = i;
+            break;
+        }
+        else
+        {
+            float32 cosA = cameraDirection.DotProduct(item.sortDirection);
+            if(cosA > currentCosA)
+            {
+                index = i;
+                currentCosA = cosA;
+            }
+        }
+    }
+    
+    return index;
+}
+
+void VegetationRenderObject::SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions)
+{
+    float32 z = bbox.min.z + (bbox.max.z - bbox.min.z) * 0.5f;
+
+    positions[0] = Vector3(bbox.min.x, bbox.min.y, z);
+    positions[1] = Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.min.y, z);
+    positions[2] = Vector3(bbox.max.x, bbox.min.y, z);
+    positions[3] = Vector3(bbox.max.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z);
+    positions[4] = Vector3(bbox.max.x, bbox.max.y, z);
+    positions[5] = Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.max.y, z);
+    positions[6] = Vector3(bbox.min.x, bbox.max.y, z);
+    positions[7] = Vector3(bbox.min.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z);
+}
+
+void VegetationRenderObject::SetUseLowCameraScale(const bool& useScale)
+{
+    useLowCameraScale = useScale;
+}
+    
+bool VegetationRenderObject::GetUseLowCameraScale() const
+{
+    return useLowCameraScale;
+}
 
 };
