@@ -1693,9 +1693,16 @@ void MainWindow::OnScreenshot()
         SetScreenshotFolder();
     }
 
-    QString screenShotFileName = QString("UIEditor_Screenshot_%1").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd_HH.mm.ss.z.png"));
+    QString deviceModel = "NormalView";
+    if (PreviewController::Instance()->IsPreviewEnabled())
+    {
+        deviceModel = QString::fromStdString(PreviewController::Instance()->GetActivePreviewSettingsData().deviceName);
+        deviceModel.replace(QRegExp("[^a-zA-Z0-9]"),QString("_"));
+    }
+
+    QString screenShotFileName = QString("UIEditor_Screenshot_%1_%2").arg(deviceModel).arg(QDateTime::currentDateTime().toString("yyyy.MM.dd_HH.mm.ss.z.png"));
     QString fullPath = QDir().cleanPath(screenShotFolder + QDir::separator() + screenShotFileName);
-    
+
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
     PreviewController::Instance()->MakeScreenshot(fullPath.toStdString(), currentScreen);
     ScreenWrapper::Instance()->RestoreApplicationCursor();

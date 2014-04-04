@@ -242,9 +242,9 @@ const List<PreviewSettingsData>& PreviewController::GetPreviewSettings() const
     return previewSettings;
 }
 
-PreviewSettingsData PreviewController::GetPreviewSettingsData(int32 id)
+PreviewSettingsData PreviewController::GetPreviewSettingsData(int32 id) const
 {
-    for (List<PreviewSettingsData>::iterator iter = previewSettings.begin(); iter != previewSettings.end(); iter ++)
+    for (List<PreviewSettingsData>::const_iterator iter = previewSettings.begin(); iter != previewSettings.end(); iter ++)
     {
         if (iter->id == id)
         {
@@ -254,6 +254,11 @@ PreviewSettingsData PreviewController::GetPreviewSettingsData(int32 id)
     
     DVASSERT(false);
     return PreviewSettingsData();
+}
+
+PreviewSettingsData PreviewController::GetActivePreviewSettingsData() const
+{
+    return GetPreviewSettingsData(GetActivePreviewSettingsID());
 }
 
 void PreviewController::AddPreviewSettingsData(const PreviewSettingsData& data)
