@@ -208,7 +208,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         buildStepRemains = staticOcclusion->RenderFrame();
         if(buildStepRemains > buildStepsCount)
         {
-            buildStepsCount = buildStepRemains;
+            buildStepsCount = buildStepRemains + 1;
         }
 
         //Logger::FrameworkDebug("end");

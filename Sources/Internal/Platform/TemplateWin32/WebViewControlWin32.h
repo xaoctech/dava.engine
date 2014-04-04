@@ -56,7 +56,7 @@ public:
 	// Open the URL.
 	bool OpenUrl(const WCHAR* urlToOpen);
 
-    bool OpenFromBuffer(const DAVA::String& buffer, const FilePath& basePath);
+    bool OpenFromBuffer(const String& buffer, const FilePath& basePath);
     bool DoOpenBuffer();
 
 	// COM stuff;
@@ -91,7 +91,7 @@ public:
 	HRESULT __stdcall OnShowWindow(BOOL) { return S_OK; }
 	HRESULT __stdcall RequestNewObjectLayout() { return E_NOTIMPL; }
 
-	void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
+	void SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView);
 protected:
 	// Parent window.
 	HWND hwnd;
@@ -101,9 +101,9 @@ protected:
 
 	void* sink;
 
-    bool openFromBufferQueued;
-    DAVA::String bufferToOpen; // temporary buffer
-    DAVA::FilePath bufferToOpenPath;
+	bool openFromBufferQueued;
+	String bufferToOpen; // temporary buffer
+	FilePath bufferToOpenPath;
 };
 
 // Web View Control for Win32.
@@ -125,7 +125,7 @@ public:
 	virtual void SetRect(const Rect& rect);
 	virtual void SetVisible(bool isVisible, bool hierarchic);
 
-	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
+	virtual void SetDelegate(IUIWebViewDelegate *delegate, UIWebView* webView);
 
 protected:
 	// Initialize the COM and create the browser container.
