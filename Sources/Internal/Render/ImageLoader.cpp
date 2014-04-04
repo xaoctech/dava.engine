@@ -123,17 +123,6 @@ bool ImageLoader::CreateFromJPEGFile(const FilePath & pathname, Vector<Image *> 
         bool created = LibJpegWrapper::ReadJpegFile(pathname, jpegImage);
         if(created)
         {
-            
-            if (jpegImage->GetPixelFormat() == FORMAT_RGB888)
-            {
-                //as common standart is rgba8888 need to modify image
-                Image * imgToSave = Image::Create(jpegImage->width, jpegImage->height, FORMAT_RGBA8888);
-                ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
-                convert(jpegImage->data, jpegImage->width, jpegImage->height, sizeof(RGB888)*jpegImage->width,
-                        imgToSave->data, imgToSave->width, imgToSave->height, sizeof(uint32)*imgToSave->width);
-                SafeRelease(jpegImage);
-                jpegImage = imgToSave;
-            }
             imageSet.push_back(jpegImage);
             return true;
         }
@@ -268,7 +257,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
 bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
 {
     bool retValue = false;
-    DVASSERT(pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"));
+    DVASSERT(image ||pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"));
     
     DVASSERT((FORMAT_RGB888 == image->format)||(FORMAT_RGBA8888 == image->format) ||
              (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
@@ -290,7 +279,7 @@ bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
             retValue = LibPngWrapper::WritePngFile(pathname, image->width, image->height, image->data, image->format);
         }
     }
-    else
+    else if(pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"))
     {
         if((FORMAT_RGB888 == image->format) || (FORMAT_A8 == image->format))
         {
