@@ -1,5 +1,5 @@
 RenderTechnique:
-    Layers: ["TransclucentRenderLayer"]
+    Layers: ["VegetationRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
         Shader: "~res:/Materials/Shaders/Default/materials"
