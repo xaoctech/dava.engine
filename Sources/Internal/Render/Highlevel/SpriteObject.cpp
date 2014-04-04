@@ -37,9 +37,19 @@
 namespace DAVA 
 {
 
+SpriteObject::SpriteObject()
+    : RenderObject()
+    , sprite(NULL)
+{
+    Texture* t = Texture::CreatePink();
+    Sprite *spr = Sprite::CreateFromTexture(t, 0, 0, t->GetWidth(), t->GetHeight());
+    Init(spr, 0, Vector2(1.f, 1.f), Vector2(0.f, 0.f));
+}
+
 SpriteObject::SpriteObject(const FilePath &pathToSprite, int32 _frame
 							, const Vector2 &reqScale, const Vector2 &pivotPoint)
 	:   RenderObject()
+    ,   sprite(NULL)
 {
 	Sprite *spr = Sprite::Create(pathToSprite);
 	Init(spr, _frame, reqScale, pivotPoint);
@@ -49,6 +59,7 @@ SpriteObject::SpriteObject(const FilePath &pathToSprite, int32 _frame
 SpriteObject::SpriteObject(Sprite *spr, int32 _frame
 							, const Vector2 &reqScale, const Vector2 &pivotPoint)
 	:   RenderObject()
+    ,   sprite(NULL)
 {
 	Init(spr, _frame, reqScale, pivotPoint);
 }
@@ -59,8 +70,17 @@ SpriteObject::~SpriteObject()
 	SafeRelease(sprite);
 }
 
+void SpriteObject::Clear()
+{
+    SafeRelease(sprite);
+    verts.clear();
+    textures.clear();
+}
+
 void SpriteObject::Init( Sprite *spr, int32 _frame, const Vector2 &reqScale, const Vector2 &pivotPoint )
 {
+    Clear();
+
 	type = TYPE_SPRITE;
 
 	spriteType = SPRITE_OBJECT;
@@ -228,6 +248,35 @@ void SpriteObject::CreateMeshFromSprite(int32 frameToGen)
 	{
 		textures.push_back(*pT);
 		pT++;
+	}
+}
+
+void SpriteObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    RenderObject::Save(archive, serializationContext);
+
+    FilePath filePath = this->sprite->GetRelativePathname();
+    if (!filePath.IsEmpty())
+    {
+        archive->SetString("sprite.path", filePath.GetAbsolutePathname());
+    }
+}
+
+void SpriteObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    RenderObject::Load(archive, serializationContext);
+
+    String path = archive->GetString("sprite.path");
+    if (!path.empty())
+    {
+        Sprite* sprite = Sprite::Create(path);
+        if (sprite != NULL)
+        {
+            Init(sprite, 0, Vector2(1, 1), Vector2(sprite->GetWidth(), sprite->GetHeight()) * 0.5f);
+            AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
+
+            sprite->Release();
+        }
 	}
 }
 	
