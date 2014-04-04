@@ -66,13 +66,13 @@ public:
 	 */
 	void UnregisterFont(Font *font);
     /**
-	 \brief Unregister all fonts.
-	 */
-    void Reset();
-    /**
 	 \brief Register all fonts.
 	 */
-    void RegisterFonts(const Map<Font*, String>& fonts);
+    void RegisterFonts(const Map<Font*, String>& _registeredFonts, const Map<String, Font*> &fonts);
+    /**
+	 \brief Unregister all fonts.
+	 */
+    void UnregisterFonts();
     
 	/**
 	 \brief Set font name.

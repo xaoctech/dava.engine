@@ -269,6 +269,8 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
                                                                              PropertyNames::FONT_PROPERTY_NAME,
                                                                              false);
         String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(fontPropertyValue);
+        
+        Logger::Debug("TextPropertyGridWidget::ProcessPushButtonClicked fontPropertyValue=%x fontPresetName=%s", fontPropertyValue, fontPresetName.c_str());
         // Get sprite path from graphics font
         //QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
         

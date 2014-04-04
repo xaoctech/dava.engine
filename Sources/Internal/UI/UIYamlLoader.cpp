@@ -373,6 +373,13 @@ bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
         
         // The font should be stored once only.
         String fontName = FontManager::Instance()->GetFontName(font);
+        Logger::Debug("UIYamlLoader::SaveFonts fontName=%s for font=%x", fontName.c_str(), font);
+        
+        font = FontManager::Instance()->GetFont(fontName);
+        if (!font)
+            continue;
+        Logger::Debug("UIYamlLoader::SaveFonts font=%x for fontName=%s", font, fontName.c_str());
+        
         if (fontsNode->AsMap().find(fontName) == fontsNode->AsMap().end())
         {
             fontsNode->AddNodeToMap( fontName, font->SaveToYamlNode() );

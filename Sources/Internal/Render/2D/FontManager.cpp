@@ -61,7 +61,7 @@ FontManager::~FontManager()
 		Logger::Error("FontManager FT_Done_FreeType failed");
 	}
 
-	Clear();
+	UnregisterFonts();
 }
 	
 void FontManager::RegisterFont(Font* font)
@@ -80,14 +80,33 @@ void FontManager::UnregisterFont(Font *font)
 	registeredFonts.erase(font);
 }
     
-void FontManager::Reset()
+void FontManager::RegisterFonts(const Map<Font*, String>& _registeredFonts, const Map<String, Font*> &fonts)
 {
-    registeredFonts.clear();
+    UnregisterFonts();
+    
+    registeredFonts = _registeredFonts;
+    
+    Map<String, Font*>::const_iterator it = fonts.begin();
+    Map<String, Font*>::const_iterator endIt = fonts.end();
+    for(; it != endIt; ++it)
+    {
+        fontMap[it->first] = SafeRetain(it->second);
+    }
 }
     
-void FontManager::RegisterFonts(const Map<Font*, String>& fonts)
+void FontManager::UnregisterFonts()
 {
-    registeredFonts = fonts;
+    registeredFonts.clear();
+    
+    //TODO: remove fontMap legacy from UIYamlLoader?
+    for (Map<String, Font *>::iterator t = fontMap.begin(); t != fontMap.end(); ++t)
+	{
+		SafeRelease(t->second);
+	}
+	fontMap.clear();
+    //
+    
+    Clear();
 }
 	
 void FontManager::SetFontName(Font* font, const String& name)
@@ -131,7 +150,7 @@ String FontManager::GetFontName(Font *font)
 	REGISTERED_FONTS::iterator fontIter = registeredFonts.find(font);
 	if (fontIter == registeredFonts.end())
     {
-        Logger::Debug("FontManager::GetFontName %x not found in registeredFonts", font);
+        Logger::Warning("FontManager::GetFontName %x not found in registeredFonts", font);
 		return "";
     }
 	
@@ -165,7 +184,7 @@ String FontManager::GetFontName(Font *font)
 
 void FontManager::PrepareToSaveFonts(bool saveAllFonts)
 {
-	Clear();
+    Clear();
 	fontsName.clear();
 	trackedFonts.clear();
 
@@ -209,14 +228,6 @@ void FontManager::PrepareToSaveFonts(bool saveAllFonts)
 	
 void FontManager::Clear()
 {
-    //TODO: remove fontMap legacy from UIYamlLoader
-    for (Map<String, Font *>::iterator t = fontMap.begin(); t != fontMap.end(); ++t)
-	{
-		SafeRelease(t->second);
-	}
-	fontMap.clear();
-    //
-    
 	for (FONTS_NAME::iterator iter = fontsName.begin();
 		 iter != fontsName.end();
 		 ++iter)
