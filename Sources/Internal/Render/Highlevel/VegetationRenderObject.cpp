@@ -591,6 +591,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         switchLodScale.x = resolutionIndex;
         switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / RESOLUTION_RANGES[resolutionIndex].y), 0.0f, 1.0f);
         
+        
         mat->SetPropertyValue(UNIFORM_SWITCH_LOD_SCALE,
                               Shader::UT_FLOAT_VEC2,
                               1,
@@ -918,7 +919,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                                                   AbstractQuadTreeNode<SpatialData>* node,
                                                   Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
-    //static Vector3 corners[8];
+    static Vector3 corners[8];
     if(node)
     {
         Frustum::eFrustumResult result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
@@ -926,9 +927,23 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
         {
             if(node->data.IsRenderable())
             {
-                Vector3 refCenter = node->data.bbox.GetCenter();
-                refCenter.z = 0.0f;
-                node->data.cameraDistance = (cameraPoint - refCenter).SquareLength();
+                //Vector3 refCenter = node->data.bbox.GetCenter();
+                //refCenter.z = 0.0f;
+                //node->data.cameraDistance = (cameraPoint - refCenter).SquareLength();
+                
+                node->data.bbox.GetCorners(corners);
+                float32 refDistance = FLT_MAX;
+                for(uint32 cornerIndex = 0; cornerIndex < COUNT_OF(corners); ++cornerIndex)
+                {
+                    corners[cornerIndex].z = 0.0f;
+                    float32 cornerDistance = (cameraPoint - corners[cornerIndex]).SquareLength();
+                    if(cornerDistance < refDistance)
+                    {
+                        refDistance = cornerDistance;
+                    }
+                }
+                
+                node->data.cameraDistance = refDistance;
                 
                 uint32 resolutionId = MapToResolution(node->data.cameraDistance);
                 if(node->IsTerminalLeaf() ||
@@ -1230,24 +1245,35 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
         {
             uint32 clusterIndexX = clusterIndex % maxClusterRowSize;
             uint32 clusterIndexY = clusterIndex / maxClusterRowSize;
-
-            uint32 densityId = shuffleDensity[clusterIndex];
-            
-            float32 randomDisplacementX = MAX_DISPLACEMENT.x * (0.5f - Random::Instance()->RandFloat());
-            float32 randomDisplacementY = MAX_DISPLACEMENT.y * (0.5f - Random::Instance()->RandFloat());
-            float32 randomDisplacementZ = MAX_DISPLACEMENT.z * (0.5f - Random::Instance()->RandFloat());
-            
-            Matrix4 transform = Matrix4::MakeTranslation(Vector3(
-                                            randomDisplacementX,
-                                            randomDisplacementY,
-                                            randomDisplacementZ));
-            
-            Vector3 clusterCenter = Vector3(clusterIndexX * clusterOffset.x + layerIndex * clusterTypeOffset.x,
-                                            clusterIndexY * clusterOffset.y + layerIndex * clusterTypeOffset.y, 0.0f) * transform;
-            
             
             uint32 matrixIndex = (clusterIndexX / maxClusters) + tilesPerRow * (clusterIndexY / maxClusters); //0...15
             DVASSERT(matrixIndex >= 0 && matrixIndex < (tilesPerRow * tilesPerRow));
+            
+            uint32 matrixIndexX = matrixIndex % tilesPerRow;
+            uint32 matrixIndexY = matrixIndex / tilesPerRow;
+            
+            Vector2 matrixCellStart(unitSize.x * matrixIndexX, unitSize.y * matrixIndexY);
+            
+            float32 randomOffsetX = unitSize.x * Random::Instance()->RandFloat();
+            float32 randomOffsetY = unitSize.y * Random::Instance()->RandFloat();
+            
+            Vector3 clusterCenter(matrixCellStart.x + randomOffsetX, matrixCellStart.y + randomOffsetY, 0.0f);
+            
+            uint32 densityId = shuffleDensity[clusterIndex];
+            
+            //float32 randomDisplacementX = MAX_DISPLACEMENT.x * (0.5f - Random::Instance()->RandFloat());
+            //float32 randomDisplacementY = MAX_DISPLACEMENT.y * (0.5f - Random::Instance()->RandFloat());
+            //float32 randomDisplacementZ = MAX_DISPLACEMENT.z * (0.5f - Random::Instance()->RandFloat());
+            //
+            //Matrix4 transform = Matrix4::MakeTranslation(Vector3(
+            //                                randomDisplacementX,
+            //                                randomDisplacementY,
+            //                                randomDisplacementZ));
+            //
+            //Vector3 clusterCenter = Vector3(clusterIndexX * clusterOffset.x + layerIndex * clusterTypeOffset.x,
+            //                                clusterIndexY * clusterOffset.y + layerIndex * clusterTypeOffset.y, 0.0f) * transform;
+            
+            
             
             for(uint32 clusterVertexIndex = 0; clusterVertexIndex < clusterVertexCount; ++clusterVertexIndex)
             {
