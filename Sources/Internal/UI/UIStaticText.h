@@ -74,19 +74,7 @@ public:
 
 	const Vector2 & GetTextSize();
 	
-	inline void PrepareSprite()
-	{
-		if (textBlock->IsSpriteReady())
-		{
-			shadowBg->SetSprite(textBlock->GetSprite(), 0);
-			textBg->SetSprite(textBlock->GetSprite(), 0);
-		}
-		else 
-		{
-			shadowBg->SetSprite(NULL, 0);
-			textBg->SetSprite(NULL, 0);
-		}
-	}
+    void PrepareSprite();
 
 	
 	const WideString & GetText();
@@ -103,11 +91,15 @@ public:
 	const Vector2 &GetShadowOffset() const;
 
 	// Animation methods for Text Color and Shadow Color.
-	virtual Animation *	ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
-	virtual Animation* ShadowColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 1);
+	virtual Animation * TextColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 0);
+	virtual Animation * ShadowColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc = Interpolation::LINEAR, int32 track = 1);
 
 	const Vector<int32> & GetStringSizes() const;
 
+protected:
+    void PrepareSpriteInternal(BaseObject * caller, void * param, void *callerData);
+
+    
 protected:
 	Color textColor;
 	TextBlock *textBlock;

@@ -168,7 +168,7 @@ bool CustomColorsSystem::DisableLandscapeEdititing( bool saveNeeded)
 	return !enabled;
 }
 
-void CustomColorsSystem::Update(DAVA::float32 timeElapsed)
+void CustomColorsSystem::Process(DAVA::float32 timeElapsed)
 {
 	if (!IsLandscapeEditingEnabled())
 	{
@@ -388,7 +388,8 @@ void CustomColorsSystem::LoadTexture(const DAVA::FilePath &filePath, bool create
 	if(filePath.IsEmpty())
 		return;
 
-	Vector<Image*> images = ImageLoader::CreateFromFileByContent(filePath);
+    Vector<Image*> images;
+	ImageLoader::CreateFromFileByContent(filePath, images);
 	if(images.empty())
 		return;
 

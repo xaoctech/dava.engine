@@ -80,6 +80,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	newComponent->stopWhenEmpty = stopWhenEmpty;	
 	newComponent->playbackComplete = playbackComplete;
 	newComponent->effectDuration = effectDuration;
+    newComponent->clearOnRestart = clearOnRestart;
 	uint32 emittersCount = emitters.size();
 	newComponent->emitters.resize(emittersCount);
 	for (uint32 i=0; i<emittersCount; ++i)
@@ -375,7 +376,7 @@ void ParticleEffectComponent::CollapseOldEffect(SerializationContext *serializat
 		}
         else
         {
-            ParticleEmitter *emitter = new ParticleEmitter();
+            emitter = new ParticleEmitter();
         }        
 		emitter->name = child->GetName();
 		emitters.push_back(emitter);

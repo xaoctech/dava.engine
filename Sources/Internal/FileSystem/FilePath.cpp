@@ -298,6 +298,7 @@ String FilePath::ResolveResourcesPath() const
         if(resourceFolders.size() == 1) // optimization to avoid call path.Exists()
         {
             path = (*resourceFolders.begin()).absolutePathname + relativePathname;
+            return path.absolutePathname;
         }
         else
         {
@@ -307,16 +308,10 @@ String FilePath::ResolveResourcesPath() const
                 path = (*it).absolutePathname + relativePathname;
                 if(path.Exists())
                 {
-                    break;
+                    return path.absolutePathname;
                 }
-				else
-				{
-					path = "";
-				}
             }
         }
-        
-        return path.absolutePathname;
     }
     
     return absolutePathname;
@@ -600,7 +595,7 @@ String FilePath::GetFrameworkPathForPrefix( const String &typePrefix, const ePat
 {
     DVASSERT(!typePrefix.empty());
     
-	String prefixPathname = GetSystemPathname(typePrefix, pType);
+    String prefixPathname = GetSystemPathname(typePrefix, pType);
 
 	String::size_type pos = absolutePathname.find(prefixPathname);
 	if(pos == 0)

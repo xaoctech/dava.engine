@@ -70,7 +70,7 @@ EditorParticlesSystem::~EditorParticlesSystem()
 
 }
 
-void EditorParticlesSystem::Update(DAVA::float32 timeElapsed)
+void EditorParticlesSystem::Process(DAVA::float32 timeElapsed)
 {
 
 }
@@ -145,8 +145,10 @@ void EditorParticlesSystem::Draw()
 			{
 				DrawSizeBox(selectedEffectEntity, selectedEmitter, center);
 			}
-			break;			
-		}					
+			break;
+                
+        default: break;
+		}
 		
 		DAVA::RenderManager::Instance()->ResetColor();
 	}
@@ -160,7 +162,9 @@ void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::Entity *effectEntity, 
 	//float32 time = emitter->GetTime();
 	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(time) : 0.0f;
-	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true, renderState);
+
+    RenderManager::Instance()->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitter->emissionVector->GetValue(time), emitterRadius, true, renderState);
 }
 
 void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
@@ -182,7 +186,8 @@ void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::Par
 		emitterVector = emitter->emissionVector->GetValue(time);
 		emitterVector = emitterVector * wMat;
 	}
-							
+
+    RenderManager::Instance()->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
 	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true, renderState);
 }
 
@@ -221,6 +226,8 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *effectEntity, DAVA::Partic
 	{
 		p[i] = p[i] * wMat;
 	}
+
+    RenderManager::Instance()->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
 
 	DAVA::Polygon3 poly;
 	poly.AddPoint(p[0]);

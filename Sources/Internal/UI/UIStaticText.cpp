@@ -363,7 +363,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     return node;
 }
 
-Animation * UIStaticText::ColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
+Animation * UIStaticText::TextColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
 {
 	LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &textColor, finalColor, time, interpolationFunc);
 	animation->Start(track);
@@ -380,6 +380,26 @@ Animation * UIStaticText::ShadowColorAnimation(const Color & finalColor, float32
 const Vector<int32> & UIStaticText::GetStringSizes() const
 {
 	return textBlock->GetStringSizes();
+}
+    
+void UIStaticText::PrepareSprite()
+{
+    ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &UIStaticText::PrepareSpriteInternal));
+}
+    
+void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, void *callerData)
+{
+    if (textBlock->IsSpriteReady())
+    {
+        Sprite *sprite = textBlock->GetSprite();
+        shadowBg->SetSprite(sprite, 0);
+        textBg->SetSprite(sprite, 0);
+    }
+    else
+    {
+        shadowBg->SetSprite(NULL, 0);
+        textBg->SetSprite(NULL, 0);
+    }
 }
 
 };

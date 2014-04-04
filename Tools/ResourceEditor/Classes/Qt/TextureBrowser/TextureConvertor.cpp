@@ -118,7 +118,8 @@ int TextureConvertor::GetOriginal(const DAVA::TextureDescriptor *descriptor)
 	return ret;
 }
 
-int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConver /*= false*/ )
+int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu,
+                                   eTextureConvertMode convertMode /* = CONVERT_NOT_EXISTENT */)
 {
 	int ret = 0;
 
@@ -126,7 +127,7 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 	{
 		JobItem newJob;
 		newJob.id = jobIdCounter++;
-		newJob.force = forceConver;
+		newJob.convertMode = convertMode;
 		newJob.type = gpu;
 		newJob.descriptor = descriptor;
 
@@ -143,7 +144,7 @@ int TextureConvertor::GetConverted(const DAVA::TextureDescriptor *descriptor, DA
 	return ret;
 }
 
-int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
+int TextureConvertor::Reconvert(DAVA::Scene *scene, eTextureConvertMode convertMode)
 {
 	int ret = 0;
 
@@ -151,7 +152,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 	{
 		// get list of all scenes textures
 		DAVA::TexturesMap allTextures;
-		SceneHelper::EnumerateSceneTextures(scene, allTextures);
+		SceneHelper::EnumerateSceneTextures(scene, allTextures, SceneHelper::EXCLUDE_NULL);
 
 		// add jobs to convert every texture
 		if(allTextures.size() > 0)
@@ -175,7 +176,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, bool forceConvert)
 						JobItem newJob;
 						newJob.id = jobIdCounter++;
 						newJob.descriptor = descriptor;
-						newJob.force = forceConvert;
+						newJob.convertMode = convertMode;
 						newJob.type = gpu;
 
 						if(jobStackConverted.push(newJob))
@@ -500,14 +501,14 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 			{
 				DAVA::Logger::FrameworkDebug("Starting PVR conversion (%s), id %d..., (%s)",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id, descriptor->pathname.GetAbsolutePathname().c_str());
-				convertedImages = ConvertFormat(descriptor, gpu, item->force);
+				convertedImages = ConvertFormat(descriptor, gpu, item->convertMode);
 				DAVA::Logger::FrameworkDebug("Done, id %d", item->id);
 			}
 			else if(outExtension == ".dds")
 			{
 				DAVA::Logger::FrameworkDebug("Starting DXT conversion (%s), id %d..., (%s)",
 					GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor->compression[gpu].format), item->id, descriptor->pathname.GetAbsolutePathname().c_str());
-				convertedImages = ConvertFormat(descriptor, gpu, item->force);
+				convertedImages = ConvertFormat(descriptor, gpu, item->convertMode);
 				DAVA::Logger::FrameworkDebug("Done, id %d", item->id);
 			}
 			else
@@ -572,19 +573,42 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 	return result;
 }
 
-DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu, bool forceConvert)
+DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescriptor *descriptor, DAVA::eGPUFamily gpu,
+                                                           eTextureConvertMode convertMode)
 {
 	DAVA::Vector<DAVA::Image*> resultImages;
 	DAVA::FilePath outputPath = TextureConverter::GetOutputPath(*descriptor, gpu);
 	if(!outputPath.IsEmpty())
 	{
-		if(forceConvert || !DAVA::FileSystem::Instance()->IsFile(outputPath))
+        bool convert = false;
+
+        switch (convertMode)
+        {
+            case CONVERT_FORCE:
+                convert = true;
+                break;
+
+            case CONVERT_MODIFIED:
+                convert = !descriptor->IsCompressedTextureActual(gpu);
+                break;
+
+            case CONVERT_NOT_EXISTENT:
+                convert = !DAVA::FileSystem::Instance()->IsFile(outputPath);
+                break;
+
+            default:
+                DVASSERT(false && "Invalid case");
+                break;
+        }
+
+		if(convert)
 		{
 			TextureConverter::CleanupOldTextures(descriptor, gpu, (DAVA::PixelFormat)descriptor->compression[gpu].format);
 			outputPath = TextureConverter::ConvertTexture(*descriptor, gpu, true);
         }
 		
-		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFileByContent(outputPath);
+        Vector<DAVA::Image *> davaImages;
+		DAVA::ImageLoader::CreateFromFileByContent(outputPath, davaImages);
 		
 		if(davaImages.size() > 0)
 		{

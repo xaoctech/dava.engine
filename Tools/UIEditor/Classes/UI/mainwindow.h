@@ -154,6 +154,9 @@ private slots:
     // Enable/disable guides.
     void OnEnableGuidesChanged();
 
+    // Lock/unlock guides.
+    void OnLockGuidesChanged();
+
     // Notification from GL widget its resize is done.
     void OnGLWidgetResized();
 
