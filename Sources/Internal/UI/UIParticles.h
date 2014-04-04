@@ -59,11 +59,7 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual void Draw(const UIGeometricData &geometricData);
 
-    virtual void WillDisappear();
     virtual void WillAppear();
-
-    virtual void SetVisible(bool isVisible, bool hierarchic = true);
-    virtual void SetVisibleForUIEditor(bool value, bool hierarchic = true);
 
     // Cloning.
     virtual UIControl* Clone();
