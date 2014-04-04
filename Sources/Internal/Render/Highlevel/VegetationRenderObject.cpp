@@ -1210,8 +1210,8 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
 
     Vector<uint32> layerOffsets(MAX_CLUSTER_TYPES);
     
-    Vector2 xRanges(FLT_MAX, FLT_MIN);
-    Vector2 yRanges(FLT_MAX, FLT_MIN);
+    //Vector2 xRanges(FLT_MAX, FLT_MIN);
+    //Vector2 yRanges(FLT_MAX, FLT_MIN);
     
     size_t vertexIndex = 0;
     Vector3 normal(0.0f, 0.0f, 1.0f); //up
