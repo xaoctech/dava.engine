@@ -160,6 +160,8 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
 	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
+    caps.isGlDepth24Stencil8Supported = IsGLExtensionSupported("GL_DEPTH24_STENCIL8");
+    caps.isGlDepthNvNonLinearSupported = IsGLExtensionSupported("GL_DEPTH_COMPONENT16_NONLINEAR_NV");
     
 #   if (__ANDROID_API__ < 18)
     InitFakeOcclusion();
@@ -191,6 +193,11 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat16Supported = IsGLExtensionSupported("GL_ARB_half_float_pixel");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_ARB_texture_float");
 #endif
+
+    int maxVertexTextureUnits = 0;
+    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxVertexTextureUnits);
+    caps.isVertexTextureUnitsSupported = (maxVertexTextureUnits > 0);
+    caps.isFramebufferFetchSupported = IsGLExtensionSupported("GL_EXT_shader_framebuffer_fetch");
 }
 
 bool RenderManager::IsDeviceLost()
@@ -606,6 +613,8 @@ void RenderManager::SetHWClip(const Rect &rect)
 
 void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 {
+    currentRenderTarget = renderTarget;
+    
 	if (renderTarget == NULL)
 	{
 //#if defined(__DAVAENGINE_IPHONE__)
@@ -617,6 +626,7 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //#endif //PLATFORMS
         HWglBindFBO(fboViewFramebuffer);
 
+        
         SetViewport(Rect(0, 0, -1, -1), true);
 
 		SetRenderOrientation(Core::Instance()->GetScreenOrientation());
@@ -662,18 +672,36 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 //		Logger::FrameworkDebug("Sets with render target: Scale %.4f,    Offset: %.4f, %.4f", viewMappingDrawScale.x, viewMappingDrawOffset.x, viewMappingDrawOffset.y);
 		RemoveClip();
 	}
-	
-	currentRenderTarget = renderTarget;
 }
 
 void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 {
-	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
+    //currentRenderTarget = renderTarget;
+	renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
 	//IdentityModelMatrix();
 	//IdentityMappingMatrix();
 	HWglBindFBO(renderTarget->fboID);
-	RemoveClip();
+	//RemoveClip();
 }
+
+
+void RenderManager::DiscardFramebufferHW(uint32 attachments)
+{
+#ifdef __DAVAENGINE_IPHONE__
+    if (!attachments) 
+      return;
+    GLenum discards[3];
+    int32 discardsCount=0;
+    if (attachments&COLOR_ATTACHMENT)
+        discards[discardsCount++]=GL_COLOR_ATTACHMENT0;
+    if (attachments&DEPTH_ATTACHMENT)
+        discards[discardsCount++]=GL_DEPTH_ATTACHMENT;
+    if (attachments&STENCIL_ATTACHMENT)
+        discards[discardsCount++]=GL_STENCIL_ATTACHMENT;
+    RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards));
+#endif
+}
+
 #if 0
 void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
 {
@@ -888,6 +916,14 @@ void RenderManager::HWglBindFBO(const int32 fbo)
         
         lastBindedFBO = fbo;
     }
+}
+    
+void RenderManager::DiscardDepth()
+{
+#ifdef __DAVAENGINE_IPHONE__
+    static const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT};
+    RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
+#endif
 }
 
 #if defined(__DAVAENGINE_ANDROID__)

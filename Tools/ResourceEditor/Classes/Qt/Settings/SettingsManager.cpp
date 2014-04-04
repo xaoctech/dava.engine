@@ -42,6 +42,13 @@ const SettingRow SETTINGS_GROUP_GENERAL_MAP[] =
 {
 	SettingRow("DesignerName", DAVA::VariantType(DAVA::String("nobody"))),
 	SettingRow("PreviewDialogEnabled", DAVA::VariantType(false)),
+    SettingRow("SequentSelection", DAVA::VariantType(false)),
+    SettingRow("SwitchColor0", DAVA::VariantType(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f))),
+    SettingRow("SwitchColor1", DAVA::VariantType(DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f))),
+    SettingRow("LodColor0", DAVA::VariantType(DAVA::Color(0.9f, 0.9f, 0.9f, 1.0f))),
+    SettingRow("LodColor1", DAVA::VariantType(DAVA::Color(0.7f, 0.7f, 0.7f, 1.0f))),
+    SettingRow("LodColor2", DAVA::VariantType(DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f))),
+    SettingRow("LodColor3", DAVA::VariantType(DAVA::Color(0.3f, 0.3f, 0.3f, 1.0f))),
 };
 
 const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
@@ -69,6 +76,7 @@ const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
     SettingRow("recentFilesListCount", DAVA::VariantType(5)),
     SettingRow("materialsLightViewMode", DAVA::VariantType(EditorMaterialSystem::LIGHTVIEW_ALL)),
     SettingRow("materialsShowLightmapCanvas", DAVA::VariantType(false)),
+    SettingRow( ResourceEditor::SETTINGS_LICENCE_ACCEPTED, DAVA::VariantType(false)),
 };
 
 SettingsManager::SettingsManager()

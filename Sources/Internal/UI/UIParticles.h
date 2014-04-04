@@ -59,6 +59,12 @@ public:
     virtual void Update(float32 timeElapsed);
     virtual void Draw(const UIGeometricData &geometricData);
 
+    virtual void WillAppear();
+
+    // Cloning.
+    virtual UIControl* Clone();
+    virtual void CopyDataFrom(UIControl *srcControl);
+
     // Load/save functionality.
     virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
@@ -70,10 +76,31 @@ public:
 
     void SetAutostart(bool value);
     bool IsAutostart() const;
+    
+    // Start delay, in seconds.
+    float32 GetStartDelay() const;
+    void SetStartDelay(float32 value);
 
 protected:
     // Start the playback in case Autostart flag is set.
     void HandleAutostart();
+
+    // Handle the delayed action if requested.
+    void HandleDelayedAction(float32 timeElapsed);
+
+    // Start/Restart methods which can be called either immediately of after start delay.
+    void DoStart();
+    void DoRestart();
+
+    enum eDelayedActionType
+    {
+        actionNone = 0,
+        actionStart,
+        actionRestart
+    };
+
+    // Start/stop particles when visibility is changed.
+    void StartStop(bool value);
 
 private:
     ParticleEffectComponent *effect;
@@ -85,6 +112,10 @@ private:
     FilePath effectPath;
     bool isAutostart;
 
+    float32 startDelay;
+    eDelayedActionType delayedActionType;
+    float32 delayedActionTime;
+    bool delayedDeleteAllParticles;
 
     struct ParticleCameraWrap
     {
