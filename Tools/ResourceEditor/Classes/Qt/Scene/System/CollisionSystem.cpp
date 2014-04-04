@@ -39,6 +39,7 @@
 
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/EntityParentChangeCommand.h"
+#include "Commands2/InspMemberModifyCommand.h"
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -428,6 +429,17 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
                 UpdateCollisionObject(command->GetEntity());
                 break;
             }
+
+        case CMDID_INSP_MEMBER_MODIFY:
+            {
+                const InspMemberModifyCommand* cmd = static_cast<const InspMemberModifyCommand*>(command);
+                if (String("heightmapPath") == cmd->member->Name())
+                {
+                    UpdateCollisionObject(curLandscapeEntity);
+                }
+            }
+            break;
+
 		default:
 			break;
 		}
