@@ -56,7 +56,7 @@ public:
     virtual bool IsActive() const;
     virtual bool Trigger();
 	virtual void Stop();
-    virtual void Pause();
+    virtual void SetPaused(bool paused);
     
     virtual void SetVolume(float32 volume);
     
@@ -78,17 +78,15 @@ protected:
     void ApplyParamsToEvent(FMOD::Event * event);
     void InitParamsMap();
 
-    void PerformCallback(FMOD::Event  * event, eSoundEventCallbackType callbackType);
+    void PerformCallback(FMOD::Event * event);
 
-    List<FMOD::Event *> fmodEventInstances;
+	bool is3D;
     FastName eventName;
-    
     Vector3 position;
     Vector3 direction;
-    
-    bool is3D;
 
-    FastNameMap<float32> paramsValues;
+	FastNameMap<float32> paramsValues;
+	Vector<FMOD::Event *> fmodEventInstances;
     
 friend class SoundSystem;
 };
