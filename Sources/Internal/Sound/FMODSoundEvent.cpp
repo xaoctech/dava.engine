@@ -297,7 +297,7 @@ FMOD_RESULT F_CALLBACK FMODSoundEvent::FMODEventCallback(FMOD_EVENT *event, FMOD
 {
     if(type == FMOD_EVENT_CALLBACKTYPE_STOLEN || type == FMOD_EVENT_CALLBACKTYPE_EVENTFINISHED)
 	{
-		DVASSERT_MSG(Thread::IsMainThread(), DAVA::Format("FMOD Callback type %d", type));
+		DVASSERT_MSG(Thread::IsMainThread(), DAVA::Format("FMOD Callback type %d", type).c_str());
 
         FMOD::Event * fEvent = (FMOD::Event *)event;
         FMODSoundEvent * sEvent = (FMODSoundEvent *)userdata;
