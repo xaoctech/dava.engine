@@ -119,6 +119,10 @@ protected:
     void AddSoundEventToGroup(const FastName & groupName, SoundEvent * event);
     void RemoveSoundEventFromGroups(SoundEvent * event);
 
+	void ReleaseOnUpdate(SoundEvent * sound);
+
+	Vector<SoundEvent *> soundsToReleaseOnUpdate;
+
     FMOD::System * fmodSystem;
     FMOD::EventSystem * fmodEventSystem;
 
