@@ -288,9 +288,20 @@ void SoundSystem::Update(float32 timeElapsed)
 
 void SoundSystem::Suspend()
 {
-
+	uint32 size = soundsToReleaseOnUpdate.size();
+	if(size)
+	{
+		for(uint32 i = 0; i < size; i++)
+			soundsToReleaseOnUpdate[i]->Release();
+		soundsToReleaseOnUpdate.clear();
+	}
 }
-    
+
+void SoundSystem::ReleaseOnUpdate(SoundEvent * sound)
+{
+	soundsToReleaseOnUpdate.push_back(sound);
+}
+
 uint32 SoundSystem::GetMemoryUsageBytes() const
 {
     uint32 memory = 0;

@@ -167,6 +167,11 @@ bool FMODFileSoundEvent::Trigger()
     if(flags & SOUND_EVENT_CREATE_3D)
         FMOD_VERIFY(fmodInstance->set3DAttributes((FMOD_VECTOR*)&position, 0));
 
+	FMOD_VERIFY(fmodInstanceGroup->setPaused(false));
+	FMOD_VERIFY(fmodInstance->setPaused(false));
+
+	Retain();
+
     return true;
 }
 
@@ -241,7 +246,10 @@ FMOD_RESULT F_CALLBACK FMODFileSoundEvent::SoundInstanceEndPlaying(FMOD_CHANNEL 
             FMODFileSoundEvent * sound = 0;
             FMOD_VERIFY(cppchannel->getUserData((void**)&sound));
             if(sound)
+			{
                 sound->PerformEvent(EVENT_END);
+				SoundSystem::Instance()->ReleaseOnUpdate(sound);
+			}
         }
 	}
 

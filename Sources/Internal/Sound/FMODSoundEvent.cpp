@@ -67,14 +67,7 @@ FMODSoundEvent::FMODSoundEvent(const FastName & _eventName) :
 
 FMODSoundEvent::~FMODSoundEvent()
 {
-	int32 instancesCount = fmodEventInstances.size();
-	for(int32 i = 0; i < instancesCount; ++i)
-	{
-		FMOD::Event * fEvent = fmodEventInstances[i];
-		FMOD_VERIFY(fEvent->setCallback(0, 0));
-		FMOD_VERIFY(fEvent->stop(true));
-	}
-	fmodEventInstances.clear();
+	DVASSERT(fmodEventInstances.size() == 0);
 
     SoundSystem::Instance()->RemoveSoundEventFromGroups(this);
 }
@@ -108,6 +101,7 @@ bool FMODSoundEvent::Trigger()
 		{
 			FMOD_VERIFY(fmodEvent->setCallback(FMODEventCallback, this));
 			fmodEventInstances.push_back(fmodEvent);
+			Retain();
 		}
 		else if(startResult != FMOD_ERR_EVENT_FAILED) //'just fail' max playbacks behavior
 		{
@@ -186,6 +180,7 @@ void FMODSoundEvent::Stop()
         FMOD_VERIFY(fEvent->stop());
 
 		PerformEvent(SoundEvent::EVENT_END);
+		soundSystem->ReleaseOnUpdate(this);
 	}
 	fmodEventInstances.clear();
 }
@@ -258,6 +253,7 @@ void FMODSoundEvent::PerformCallback(FMOD::Event * fmodEvent)
     {
 		PerformEvent(SoundEvent::EVENT_END);
 		fmodEventInstances.erase(it);
+		SoundSystem::Instance()->ReleaseOnUpdate(this);
     }
 }
 
