@@ -44,6 +44,9 @@ SpriteObject::SpriteObject()
     Texture* t = Texture::CreatePink();
     Sprite *spr = Sprite::CreateFromTexture(t, 0, 0, t->GetWidth(), t->GetHeight());
     Init(spr, 0, Vector2(1.f, 1.f), Vector2(0.f, 0.f));
+
+    SafeRelease(spr);
+    SafeRelease(t);
 }
 
 SpriteObject::SpriteObject(const FilePath &pathToSprite, int32 _frame
@@ -72,6 +75,11 @@ SpriteObject::~SpriteObject()
 
 void SpriteObject::Clear()
 {
+    while (GetRenderBatchCount())
+    {
+        RemoveRenderBatch(GetRenderBatchCount() - 1);
+    }
+
     SafeRelease(sprite);
     verts.clear();
     textures.clear();
@@ -255,10 +263,15 @@ void SpriteObject::Save(KeyedArchive *archive, SerializationContext *serializati
 {
     RenderObject::Save(archive, serializationContext);
 
+    if (!archive || !sprite)
+    {
+        return;
+    }
+
     FilePath filePath = this->sprite->GetRelativePathname();
     if (!filePath.IsEmpty())
     {
-        archive->SetString("sprite.path", filePath.GetAbsolutePathname());
+        archive->SetString("sprite.path", filePath.GetRelativePathname(serializationContext->GetScenePath()));
     }
 }
 
@@ -266,16 +279,21 @@ void SpriteObject::Load(KeyedArchive *archive, SerializationContext *serializati
 {
     RenderObject::Load(archive, serializationContext);
 
+    if (!archive)
+    {
+        return;
+    }
+
     String path = archive->GetString("sprite.path");
     if (!path.empty())
     {
-        Sprite* sprite = Sprite::Create(path);
-        if (sprite != NULL)
+        Sprite* spr = Sprite::Create(serializationContext->GetScenePath() + path);
+        if (spr != NULL)
         {
-            Init(sprite, 0, Vector2(1, 1), Vector2(sprite->GetWidth(), sprite->GetHeight()) * 0.5f);
+            Init(spr, 0, Vector2(1, 1), Vector2(spr->GetWidth(), spr->GetHeight()) * 0.5f);
             AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
 
-            sprite->Release();
+            spr->Release();
         }
 	}
 }
