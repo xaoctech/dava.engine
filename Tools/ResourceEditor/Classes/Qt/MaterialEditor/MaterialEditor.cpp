@@ -57,11 +57,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MATERIAL_GROUP_LABEL "Group"
 #define MATERIAL_PROPERTIES_LABEL "Properties"
 #define MATERIAL_TEXTURES_LABEL "Textures"
+#define MATERIAL_TEMPLATE_LABEL "Template"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
 , templatesFilterModel( NULL )
+, lastCheckState(CHECKED_ALL)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -102,7 +104,9 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	if(v2.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(1, v2.AsInt32());
 
     DAVA::VariantType savePath = posSaver.LoadValue("lastSavePath");
+    DAVA::VariantType loadState = posSaver.LoadValue("lastLoadState");
     if(savePath.GetType() == DAVA::VariantType::TYPE_FILEPATH) lastSavePath = savePath.AsFilePath();
+    if(savePath.GetType() == DAVA::VariantType::TYPE_UINT32) lastCheckState = loadState.AsUInt32();
 
     expandMap[MaterialFilteringModel::SHOW_ALL] = false;
     expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
@@ -120,7 +124,7 @@ MaterialEditor::~MaterialEditor()
 	posSaver.SaveValue("splitPosProperties", v1);
 	posSaver.SaveValue("splitPosPreview", v2);
     posSaver.SaveValue("lastSavePath", DAVA::VariantType(lastSavePath));
-    
+    posSaver.SaveValue("lastLoadState", DAVA::VariantType(lastCheckState));
 	posSaver.SaveState(ui->splitter);
 }
 
@@ -1033,7 +1037,7 @@ void MaterialEditor::OnMaterialSave(bool checked)
             }
 
             lastSavePath = outputFile.toStdString();
-            parser->SaveToYamlFile(outputFile.toStdString(), rootYamlNode, true);
+            parser->SaveToYamlFile(outputFile.toStdString(), rootYamlNode, false);
             parser->Release();
         }
     }
@@ -1050,50 +1054,78 @@ void MaterialEditor::OnMaterialLoad(bool checked)
 //         QtPropertyData *texturesRoot = root->ChildGet(MATERIAL_TEXTURES_LABEL);
 //         QtPropertyDataInspMember *groupData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_GROUP_LABEL));
 
-
         YamlParser* parser = YamlParser::Create(inputFile.toStdString());
         YamlNode* rootYamlNode = parser->GetRootNode();
 
         const YamlNode *nameNode = rootYamlNode->Get(MATERIAL_NAME_LABEL);
-        if(NULL != nameNode)
-        {
-            //QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            printf("%s\n", nameNode->AsString().c_str());
-        }
-
         const YamlNode *groupNode = rootYamlNode->Get(MATERIAL_GROUP_LABEL);
-        if(NULL != groupNode)
-        {
-            //QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            printf("%s\n", groupNode->AsString().c_str());
-        }
-
-        const YamlNode *templateNode = rootYamlNode->Get("Template");
-        if(NULL != templateNode)
-        {
-            //QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            printf("%s\n", templateNode->AsString().c_str());
-        }
-
+        const YamlNode *templateNode = rootYamlNode->Get(MATERIAL_TEMPLATE_LABEL);
         const YamlNode *propertiesNode = rootYamlNode->Get(MATERIAL_PROPERTIES_LABEL);
-        if(NULL != propertiesNode)
+        const YamlNode *texturesNode = rootYamlNode->Get(MATERIAL_TEXTURES_LABEL);
+
+        QDialog *dlg = new QDialog(this);
+
+        QVBoxLayout *dlgLayout = new QVBoxLayout();
+        dlgLayout->setMargin(10);
+
+        dlg->setWindowTitle("Reload Model options");
+        dlg->setLayout(dlgLayout);
+
+        QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
+        QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
+        QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
+        QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, dlg);
+        QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
+
+        // restore last user choice
+        templateChBox->setChecked((bool) lastCheckState & CHECKED_TEMPLATE);
+        nameChBox->setChecked((bool) lastCheckState & CHECKED_NAME);
+        groupChBox->setChecked((bool) lastCheckState & CHECKED_GROUP);
+        propertiesChBox->setChecked((bool) lastCheckState & CHECKED_PROPERTIES);
+        texturesChBox->setChecked((bool) lastCheckState & CHECKED_TEXTURES);
+
+        dlgLayout->addWidget(templateChBox);
+        dlgLayout->addWidget(nameChBox);
+        dlgLayout->addWidget(groupChBox);
+        dlgLayout->addWidget(propertiesChBox);
+        dlgLayout->addWidget(texturesChBox);
+
+        QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
+        dlgLayout->addWidget(buttons);
+
+        QObject::connect(buttons, SIGNAL(accepted()), dlg, SLOT(accept()));
+        QObject::connect(buttons, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+        if(QDialog::Accepted == dlg->exec())
         {
-            for(int i = 0; i < propertiesNode->GetCount(); ++i)
-            {
-                const YamlNode *propertyNode = propertiesNode->Get(i);
-                printf(" %s\n", propertiesNode->GetItemKeyName(i).c_str());
-            }
+
+
+            // remember user choice
+            if(templateChBox->checkState() == Qt::Checked) lastCheckState |= CHECKED_TEMPLATE;
+            if(nameChBox->checkState() == Qt::Checked) lastCheckState |= CHECKED_NAME;
+            if(groupChBox->checkState() == Qt::Checked) lastCheckState |= CHECKED_GROUP;
+            if(propertiesChBox->checkState() == Qt::Checked) lastCheckState |= CHECKED_PROPERTIES;
+            if(texturesChBox->checkState() == Qt::Checked) lastCheckState |= CHECKED_TEXTURES;
         }
 
-        const YamlNode *texturesNode = rootYamlNode->Get(MATERIAL_TEXTURES_LABEL);
-        if(NULL != texturesNode)
-        {
-            for(int i = 0; i < texturesNode->GetCount(); ++i)
-            {
-                const YamlNode *textureNode = texturesNode->Get(i);
-                printf(" %s\n", texturesNode->GetItemKeyName(i).c_str());
-            }
-        }
+        delete dlg;
+//         if(NULL != propertiesNode)
+//         {
+//             for(int i = 0; i < propertiesNode->GetCount(); ++i)
+//             {
+//                 const YamlNode *propertyNode = propertiesNode->Get(i);
+//                 printf(" %s\n", propertiesNode->GetItemKeyName(i).c_str());
+//             }
+//         }
+
+//         if(NULL != texturesNode)
+//         {
+//             for(int i = 0; i < texturesNode->GetCount(); ++i)
+//             {
+//                 const YamlNode *textureNode = texturesNode->Get(i);
+//                 printf(" %s\n", texturesNode->GetItemKeyName(i).c_str());
+//             }
+//         }
 
 //         if(usebatch)
 //         {
