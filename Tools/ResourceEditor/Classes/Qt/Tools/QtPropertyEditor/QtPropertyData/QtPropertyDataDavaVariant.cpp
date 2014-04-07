@@ -248,7 +248,7 @@ QVariant QtPropertyDataDavaVariant::GetValueAlias() const
 	{
         if (IsAllovedValuesFlags())
         {
-            const quint64 val = FromDavaVariant(curVariantValue).toInt();
+            const quint64 val = FromDavaVariant(curVariantValue).toULongLong();
             const QString alias = QString("Flags: %1").arg(val);
             ret = alias;
         }
