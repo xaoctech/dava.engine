@@ -163,14 +163,6 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
 
 static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 12.0f);
 
-static Vector2 RESOLUTION_RANGES[] = //squared
-{
-    Vector2(0.0f, 0.0f),
-    Vector2(0.0, 0.0f),
-    Vector2(0.0f, 0.0f)
-};
-
-
 static float32 RESOLUTION_SCALE[] =
 {
     1.0f,
@@ -209,24 +201,6 @@ static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
 int32 RandomShuffleFunc(int32 limit)
 {
     return (Random::Instance()->Rand() % limit);
-}
-
-inline uint32 MapToResolution(float32 squareDistance)
-{
-    uint32 resolutionId = 0;
-    
-    uint32 rangesCount = COUNT_OF(RESOLUTION_RANGES);
-    for(uint32 i = 0; i < rangesCount; ++i)
-    {
-        if(squareDistance > RESOLUTION_RANGES[i].x &&
-           squareDistance <= RESOLUTION_RANGES[i].y)
-        {
-            resolutionId = i;
-            break;
-        }
-    }
-    
-    return resolutionId;
 }
 
 inline uint32 MapCellSquareToResolutionIndex(uint32 cellSquare)
@@ -321,6 +295,7 @@ VegetationRenderObject::VegetationRenderObject() :
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
     
     unitWorldSize.resize(COUNT_OF(RESOLUTION_SCALE));
+    resolutionRanges.resize(COUNT_OF(RESOLUTION_INDEX));
     
     uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
     shaderScaleDensityUniforms.resize(maxParams);
@@ -589,7 +564,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
         
         switchLodScale.x = resolutionIndex;
-        switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / RESOLUTION_RANGES[resolutionIndex].y), 0.0f, 1.0f);
+        switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
         
         
         mat->SetPropertyValue(UNIFORM_SWITCH_LOD_SCALE,
@@ -927,10 +902,6 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
         {
             if(node->data.IsRenderable())
             {
-                //Vector3 refCenter = node->data.bbox.GetCenter();
-                //refCenter.z = 0.0f;
-                //node->data.cameraDistance = (cameraPoint - refCenter).SquareLength();
-                
                 node->data.bbox.GetCorners(corners);
                 float32 refDistance = FLT_MAX;
                 for(uint32 cornerIndex = 0; cornerIndex < COUNT_OF(corners); ++cornerIndex)
@@ -1128,20 +1099,20 @@ void VegetationRenderObject::InitLodRanges()
 {
     Vector2 smallestUnitSize = GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]);
     
-    RESOLUTION_RANGES[0].x = lodRanges.x * smallestUnitSize.x;
-    RESOLUTION_RANGES[0].y = lodRanges.y * smallestUnitSize.x;
+    resolutionRanges[0].x = lodRanges.x * smallestUnitSize.x;
+    resolutionRanges[0].y = lodRanges.y * smallestUnitSize.x;
 
-    RESOLUTION_RANGES[1].x = lodRanges.y * smallestUnitSize.x;
-    RESOLUTION_RANGES[1].y = lodRanges.z * smallestUnitSize.x;
+    resolutionRanges[1].x = lodRanges.y * smallestUnitSize.x;
+    resolutionRanges[1].y = lodRanges.z * smallestUnitSize.x;
 
-    RESOLUTION_RANGES[2].x = lodRanges.z * smallestUnitSize.x;
-    RESOLUTION_RANGES[2].y = MAX_VISIBLE_CLIPPING_DISTANCE;//RESOLUTION_RANGES[2].x * 1000.0f;
+    resolutionRanges[2].x = lodRanges.z * smallestUnitSize.x;
+    resolutionRanges[2].y = MAX_VISIBLE_CLIPPING_DISTANCE;//RESOLUTION_RANGES[2].x * 1000.0f;
 
-    
-    for(uint32 i = 0; i < COUNT_OF(RESOLUTION_RANGES); ++i)
+    size_t resolutionCount = resolutionRanges.size();
+    for(size_t i = 0; i < resolutionCount; ++i)
     {
-        RESOLUTION_RANGES[i].x *= RESOLUTION_RANGES[i].x;
-        RESOLUTION_RANGES[i].y *= RESOLUTION_RANGES[i].y;
+        resolutionRanges[i].x *= resolutionRanges[i].x;
+        resolutionRanges[i].y *= resolutionRanges[i].y;
     }
 }
 
@@ -1208,254 +1179,14 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     indexData.resize(totalIndexCount);
     vertexData.resize(maxTotalClusters * layerDataCount);
     
-    Vector<uint32> shuffleDensity;
-    shuffleDensity.reserve(maxTotalClusters);
-    for(uint32 i = 0; i < maxTotalClusters; ++i)
-    {
-        shuffleDensity.push_back((i % MAX_DENSITY_LEVELS) + 1);
-    }
-    
-    Vector2 unitSize = GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]);
-    
-    Vector2 clusterOffset(unitSize.x / maxClusters,
-                          unitSize.y / maxClusters);
-    
-    Vector2 clusterTypeOffset(clusterOffset.x / MAX_CLUSTER_TYPES,
-                              clusterOffset.y / MAX_CLUSTER_TYPES);
-
     Vector<uint32> layerOffsets(MAX_CLUSTER_TYPES);
     
-    //Vector2 xRanges(FLT_MAX, FLT_MIN);
-    //Vector2 yRanges(FLT_MAX, FLT_MIN);
+    GenerateVertices(maxClusters, maxTotalClusters, maxClusterRowSize, tilesPerRow, GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]), layerOffsets);
     
-    size_t vertexIndex = 0;
-    Vector3 normal(0.0f, 0.0f, 1.0f); //up
-    for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
-    {
-        layerOffsets[layerIndex] = vertexIndex;
-        
-        TextureSheetCell& cellData = textureSheet.cells[layerIndex];
-        
-        const Vector3* clusterVertices = VEGETATION_CLUSTER[cellData.geometryId];
-        uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
-        
-        std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
-        
-        for(size_t clusterIndex = 0; clusterIndex < maxTotalClusters; ++clusterIndex)
-        {
-            uint32 clusterIndexX = clusterIndex % maxClusterRowSize;
-            uint32 clusterIndexY = clusterIndex / maxClusterRowSize;
-            
-            uint32 matrixIndex = (clusterIndexX / maxClusters) + tilesPerRow * (clusterIndexY / maxClusters); //0...15
-            DVASSERT(matrixIndex >= 0 && matrixIndex < (tilesPerRow * tilesPerRow));
-            
-            uint32 matrixIndexX = matrixIndex % tilesPerRow;
-            uint32 matrixIndexY = matrixIndex / tilesPerRow;
-            
-            Vector2 matrixCellStart(unitSize.x * matrixIndexX, unitSize.y * matrixIndexY);
-            
-            float32 randomOffsetX = unitSize.x * Random::Instance()->RandFloat();
-            float32 randomOffsetY = unitSize.y * Random::Instance()->RandFloat();
-            
-            Vector3 clusterCenter(matrixCellStart.x + randomOffsetX, matrixCellStart.y + randomOffsetY, 0.0f);
-            
-            uint32 densityId = shuffleDensity[clusterIndex];
-            
-            //float32 randomDisplacementX = MAX_DISPLACEMENT.x * (0.5f - Random::Instance()->RandFloat());
-            //float32 randomDisplacementY = MAX_DISPLACEMENT.y * (0.5f - Random::Instance()->RandFloat());
-            //float32 randomDisplacementZ = MAX_DISPLACEMENT.z * (0.5f - Random::Instance()->RandFloat());
-            //
-            //Matrix4 transform = Matrix4::MakeTranslation(Vector3(
-            //                                randomDisplacementX,
-            //                                randomDisplacementY,
-            //                                randomDisplacementZ));
-            //
-            //Vector3 clusterCenter = Vector3(clusterIndexX * clusterOffset.x + layerIndex * clusterTypeOffset.x,
-            //                                clusterIndexY * clusterOffset.y + layerIndex * clusterTypeOffset.y, 0.0f) * transform;
-            
-            
-            
-            for(uint32 clusterVertexIndex = 0; clusterVertexIndex < clusterVertexCount; ++clusterVertexIndex)
-            {
-                DVASSERT(vertexIndex < vertexData.size());
-                VegetationVertex& vertex = vertexData[vertexIndex];
-                
-                vertex.coord.x = clusterCenter.x + clusterVertices[clusterVertexIndex].x * cellData.geometryScale.x;
-                vertex.coord.y = clusterCenter.y + clusterVertices[clusterVertexIndex].y * cellData.geometryScale.x;
-                vertex.coord.z = clusterCenter.z + clusterVertices[clusterVertexIndex].z * cellData.geometryScale.y;
-                
-                vertex.normal = normal;
-                
-                vertex.binormal = clusterCenter;
-                
-                vertex.tangent.x = matrixIndex * 2.0f * 4.0f; //each cluster is described by 2 vectors
-                vertex.tangent.y = layerIndex;
-                vertex.tangent.z = densityId;
-                
-                vertex.texCoord0.x = cellData.coords[clusterVertexIndex % MAX_CELL_TEXTURE_COORDS].x;
-                vertex.texCoord0.y = cellData.coords[clusterVertexIndex % MAX_CELL_TEXTURE_COORDS].y;
-                
-                vertexIndex++;
-            }
-        }
-    }
-    
-    Vector<PolygonSortData> sortingArray(1);
-    Vector<int16> preparedIndices;
-    size_t polygonElementCount = COUNT_OF(sortingArray[0].indices);
-    
-    //generate indices
-    size_t totalResolutionCount = COUNT_OF(RESOLUTION_RANGES);
-    size_t currentIndexIndex = 0;
-    
-    Vector<Vector3> directionPoints;
-    directionPoints.resize(SORT_DIRECTION_COUNT);
-    
-    for(size_t resolutionIndex = 0; resolutionIndex < totalResolutionCount; ++resolutionIndex)
-    {
-        uint32 resolutionStride = RESOLUTION_CELL_SQUARE[resolutionIndex];
-        uint32 resolutionOffset = (uint32)RESOLUTION_SCALE[resolutionIndex];
-        uint32 indexBufferCount = RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1] / resolutionStride;
-        
-        indexRenderDataObject.push_back(Vector<Vector<SortedBufferItem> >());
-        
-        Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray = indexRenderDataObject[resolutionIndex];
-        
-        for(uint32 i = 0; i < indexBufferCount; ++i)
-        {
-            preparedIndices.clear();
-            
-            uint32 startX = (i % RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
-            uint32 startY = (i / RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
-            uint32 endX = startX + maxClusters * resolutionOffset;
-            uint32 endY = startY + maxClusters * resolutionOffset;
-            
-            AABBox3 indexBufferBBox;
-            
-            for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
-            {
-                TextureSheetCell& cellData = textureSheet.cells[layerIndex];
-                
-                const int16* clusterIndices = VEGETATION_CLUSTER_INDICES[cellData.geometryId];
-                uint32 clusterIndexCount = VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
-                uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
-                
-                for(uint32 y = startY; y < endY; y += resolutionOffset)
-                {
-                    for(uint32 x = startX; x < endX; x += resolutionOffset)
-                    {
-                        uint32 baseIndex = layerOffsets[layerIndex] + (y * maxClusterRowSize + x) * clusterVertexCount;
-                        
-                        for(uint32 clusterIndexIndex = 0; clusterIndexIndex < clusterIndexCount; ++clusterIndexIndex)
-                        {
-                            vertexIndex = baseIndex + clusterIndices[clusterIndexIndex];
-                            
-                            DVASSERT(vertexIndex >= 0 && vertexIndex < vertexData.size());
-                            
-                            VegetationVertex& vertex = vertexData[vertexIndex];
-                            vertex.texCoord1.x = resolutionIndex;
-                            
-                            indexBufferBBox.AddPoint(vertex.coord);
-                            
-                            preparedIndices.push_back(vertexIndex);
-                        }
-                    }
-                }
-            }
-            
-            SetupCameraPositions(indexBufferBBox, directionPoints);
-            
-            size_t sortItemCount = preparedIndices.size() / polygonElementCount;
-            sortingArray.resize(sortItemCount);
-            for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
-            {
-                PolygonSortData& sortData = sortingArray[sortItemIndex];
-                
-                sortData.indices[0] = preparedIndices[sortItemIndex * polygonElementCount + 0];
-                sortData.indices[1] = preparedIndices[sortItemIndex * polygonElementCount + 1];
-                sortData.indices[2] = preparedIndices[sortItemIndex * polygonElementCount + 2];
-            }
-            
-            currentResolutionIndexArray.push_back(Vector<SortedBufferItem>());
-            Vector<SortedBufferItem>& currentDirectionBuffers = currentResolutionIndexArray[i];
-            
-            for(uint32 sortDirectionIndex = 0; sortDirectionIndex < SORT_DIRECTION_COUNT; ++sortDirectionIndex)
-            {
-                Vector3 cameraPosition = directionPoints[sortDirectionIndex];
-                
-                for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
-                {
-                    PolygonSortData& sortData = sortingArray[sortItemIndex];
-                    sortData.cameraDistance = FLT_MAX;
-                    
-                    for(uint32 polygonIndex = 0; polygonIndex < polygonElementCount; ++polygonIndex)
-                    {
-                        float32 distance = (vertexData[sortData.indices[polygonIndex]].coord - cameraPosition).SquareLength();
-                        if(distance < sortData.cameraDistance)
-                        {
-                            sortData.cameraDistance = distance;
-                        }
-                    }
-                }
-                
-                std::stable_sort(sortingArray.begin(), sortingArray.end(), PolygonByDistanceCompareFunction);
-                
-                size_t prevIndexIndex = currentIndexIndex;
-                for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
-                {
-                    PolygonSortData& sortData = sortingArray[sortItemIndex];
-                    
-                    indexData[currentIndexIndex] = sortData.indices[0];
-                    currentIndexIndex++;
-                    
-                    indexData[currentIndexIndex] = sortData.indices[1];
-                    currentIndexIndex++;
-
-                    indexData[currentIndexIndex] = sortData.indices[2];
-                    currentIndexIndex++;
-                }
-            
-                RenderDataObject* indexBuffer = new RenderDataObject();
-                indexBuffer->SetIndices(EIF_16, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
-                
-                SortedBufferItem sortedBufferItem;
-                sortedBufferItem.SetRenderDataObject(indexBuffer);
-                sortedBufferItem.sortDirection = indexBufferBBox.GetCenter() - cameraPosition;
-                sortedBufferItem.sortDirection.Normalize();
-                
-                currentDirectionBuffers.push_back(sortedBufferItem);
-            }
-        }
-    }
+    GenerateIndices(maxClusters, maxClusterRowSize, layerOffsets);
     
     //VI: need to build vertex & index objects AFTER initialization
-    
-    vertexRenderDataObject = new RenderDataObject();
-    vertexRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].coord));
-    vertexRenderDataObject->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].normal));
-    vertexRenderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
-    vertexRenderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
-    vertexRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
-    vertexRenderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
-    vertexRenderDataObject->BuildVertexBuffer(vertexData.size(), true);
-    
-    size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
-    for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
-    {
-        Vector<Vector<SortedBufferItem> >& indexObjectArray = indexRenderDataObject[indexArrayIndex];
-        size_t totalIndexObjectCount = indexObjectArray.size();
-        
-        for(size_t i = 0; i < totalIndexObjectCount; ++i)
-        {
-            Vector<SortedBufferItem>& directionArray = indexObjectArray[i];
-            size_t directionCount = directionArray.size();
-            for(size_t directionIndex = 0; directionIndex < directionCount; ++directionIndex)
-            {
-                directionArray[directionIndex].rdo->BuildIndexBuffer(true);
-                directionArray[directionIndex].rdo->AttachVertices(vertexRenderDataObject);
-            }
-        }
-    }
+    GenerateRenderDataObjects();
 }
     
 void VegetationRenderObject::ReleaseRenderData()
@@ -1664,5 +1395,279 @@ bool VegetationRenderObject::GetUseLowCameraScale() const
 {
     return useLowCameraScale;
 }
+
+void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
+                                              size_t maxTotalClusters,
+                                              uint32 maxClusterRowSize,
+                                              uint32 tilesPerRow,
+                                              Vector2 unitSize,
+                                              Vector<uint32>& layerOffsets)
+{
+    Vector<uint32> shuffleDensity;
+    shuffleDensity.reserve(maxTotalClusters);
+    for(uint32 i = 0; i < maxTotalClusters; ++i)
+    {
+        shuffleDensity.push_back((i % MAX_DENSITY_LEVELS) + 1);
+    }
+
+    size_t vertexIndex = 0;
+    Vector3 normal(0.0f, 0.0f, 1.0f); //up
+    for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
+    {
+        layerOffsets[layerIndex] = vertexIndex;
+        
+        TextureSheetCell& cellData = textureSheet.cells[layerIndex];
+        
+        const Vector3* clusterVertices = VEGETATION_CLUSTER[cellData.geometryId];
+        uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
+        
+        std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
+        
+        for(size_t clusterIndex = 0; clusterIndex < maxTotalClusters; ++clusterIndex)
+        {
+            uint32 clusterIndexX = clusterIndex % maxClusterRowSize;
+            uint32 clusterIndexY = clusterIndex / maxClusterRowSize;
+            
+            uint32 matrixIndex = (clusterIndexX / maxClusters) + tilesPerRow * (clusterIndexY / maxClusters); //0...15
+            DVASSERT(matrixIndex >= 0 && matrixIndex < (tilesPerRow * tilesPerRow));
+            
+            uint32 matrixIndexX = matrixIndex % tilesPerRow;
+            uint32 matrixIndexY = matrixIndex / tilesPerRow;
+            
+            Vector2 matrixCellStart(unitSize.x * matrixIndexX, unitSize.y * matrixIndexY);
+            
+            float32 randomOffsetX = unitSize.x * Random::Instance()->RandFloat();
+            float32 randomOffsetY = unitSize.y * Random::Instance()->RandFloat();
+            
+            Vector3 clusterCenter(matrixCellStart.x + randomOffsetX, matrixCellStart.y + randomOffsetY, 0.0f);
+            
+            uint32 densityId = shuffleDensity[clusterIndex];
+            
+            for(uint32 clusterVertexIndex = 0; clusterVertexIndex < clusterVertexCount; ++clusterVertexIndex)
+            {
+                DVASSERT(vertexIndex < vertexData.size());
+                VegetationVertex& vertex = vertexData[vertexIndex];
+                
+                vertex.coord.x = clusterCenter.x + clusterVertices[clusterVertexIndex].x * cellData.geometryScale.x;
+                vertex.coord.y = clusterCenter.y + clusterVertices[clusterVertexIndex].y * cellData.geometryScale.x;
+                vertex.coord.z = clusterCenter.z + clusterVertices[clusterVertexIndex].z * cellData.geometryScale.y;
+                
+                vertex.normal = normal;
+                
+                vertex.binormal = clusterCenter;
+                
+                vertex.tangent.x = matrixIndex * 2.0f * 4.0f; //each cluster is described by 2 vectors
+                vertex.tangent.y = layerIndex;
+                vertex.tangent.z = densityId;
+                
+                vertex.texCoord0.x = cellData.coords[clusterVertexIndex % MAX_CELL_TEXTURE_COORDS].x;
+                vertex.texCoord0.y = cellData.coords[clusterVertexIndex % MAX_CELL_TEXTURE_COORDS].y;
+                
+                vertexIndex++;
+            }
+        }
+    }
+}
+
+void VegetationRenderObject::GenerateIndices(uint32 maxClusters,
+                                             uint32 maxClusterRowSize,
+                                             Vector<uint32>& layerOffsets)
+{
+    Vector<PolygonSortData> sortingArray(1);
+    Vector<int16> preparedIndices;
+    size_t polygonElementCount = COUNT_OF(sortingArray[0].indices);
+    
+    //generate indices
+    size_t totalResolutionCount = resolutionRanges.size();
+    size_t currentIndexIndex = 0;
+    
+    Vector<Vector3> directionPoints;
+    directionPoints.resize(SORT_DIRECTION_COUNT);
+    
+    for(size_t resolutionIndex = 0; resolutionIndex < totalResolutionCount; ++resolutionIndex)
+    {
+        uint32 resolutionOffset = (uint32)RESOLUTION_SCALE[resolutionIndex];
+        uint32 indexBufferCount = RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1] / RESOLUTION_CELL_SQUARE[resolutionIndex];
+        
+        indexRenderDataObject.push_back(Vector<Vector<SortedBufferItem> >());
+        
+        Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray = indexRenderDataObject[resolutionIndex];
+        
+        for(uint32 i = 0; i < indexBufferCount; ++i)
+        {
+            AABBox3 indexBufferBBox;
+
+            PrepareIndexBufferData(i,
+                                   maxClusters,
+                                   maxClusterRowSize,
+                                   resolutionIndex,
+                                   resolutionOffset,
+                                   layerOffsets,
+                                   preparedIndices,
+                                   indexBufferBBox);
+            
+            SetupCameraPositions(indexBufferBBox, directionPoints);
+            
+            PrepareSortedIndexBufferVariations(currentIndexIndex,
+                                               i,
+                                               polygonElementCount,
+                                               indexBufferBBox,
+                                               directionPoints,
+                                               currentResolutionIndexArray,
+                                               sortingArray,
+                                               preparedIndices);
+        }
+    }
+}
+
+void VegetationRenderObject::PrepareIndexBufferData(uint32 indexBufferIndex,
+                                                    uint32 maxClusters,
+                                                    uint32 maxClusterRowSize,
+                                                    size_t resolutionIndex,
+                                                    uint32 resolutionOffset,
+                                                    Vector<uint32>& layerOffsets,
+                                                    Vector<int16>& preparedIndices,
+                                                    AABBox3& indexBufferBBox)
+{
+    preparedIndices.clear();
+    
+    uint32 startX = (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
+    uint32 startY = (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]) * maxClusters * resolutionOffset;
+    uint32 endX = startX + maxClusters * resolutionOffset;
+    uint32 endY = startY + maxClusters * resolutionOffset;
+    
+    for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
+    {
+        TextureSheetCell& cellData = textureSheet.cells[layerIndex];
+        
+        const int16* clusterIndices = VEGETATION_CLUSTER_INDICES[cellData.geometryId];
+        uint32 clusterIndexCount = VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
+        uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
+        
+        for(uint32 y = startY; y < endY; y += resolutionOffset)
+        {
+            for(uint32 x = startX; x < endX; x += resolutionOffset)
+            {
+                uint32 baseIndex = layerOffsets[layerIndex] + (y * maxClusterRowSize + x) * clusterVertexCount;
+                
+                for(uint32 clusterIndexIndex = 0; clusterIndexIndex < clusterIndexCount; ++clusterIndexIndex)
+                {
+                    size_t vertexIndex = baseIndex + clusterIndices[clusterIndexIndex];
+                    
+                    DVASSERT(vertexIndex >= 0 && vertexIndex < vertexData.size());
+                    
+                    VegetationVertex& vertex = vertexData[vertexIndex];
+                    vertex.texCoord1.x = resolutionIndex;
+                    
+                    indexBufferBBox.AddPoint(vertex.coord);
+                    
+                    preparedIndices.push_back(vertexIndex);
+                }
+            }
+        }
+    }
+}
+
+void VegetationRenderObject::PrepareSortedIndexBufferVariations(size_t& currentIndexIndex,
+                                                                uint32 indexBufferIndex,
+                                                                size_t polygonElementCount,
+                                                                AABBox3& indexBufferBBox,
+                                                                Vector<Vector3>& directionPoints,
+                                                                Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
+                                                                Vector<PolygonSortData>& sortingArray,
+                                                                Vector<int16>& preparedIndices)
+{
+    size_t sortItemCount = preparedIndices.size() / polygonElementCount;
+    sortingArray.resize(sortItemCount);
+    for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+    {
+        PolygonSortData& sortData = sortingArray[sortItemIndex];
+        
+        sortData.indices[0] = preparedIndices[sortItemIndex * polygonElementCount + 0];
+        sortData.indices[1] = preparedIndices[sortItemIndex * polygonElementCount + 1];
+        sortData.indices[2] = preparedIndices[sortItemIndex * polygonElementCount + 2];
+    }
+    
+    currentResolutionIndexArray.push_back(Vector<SortedBufferItem>());
+    Vector<SortedBufferItem>& currentDirectionBuffers = currentResolutionIndexArray[indexBufferIndex];
+    
+    for(uint32 sortDirectionIndex = 0; sortDirectionIndex < SORT_DIRECTION_COUNT; ++sortDirectionIndex)
+    {
+        Vector3 cameraPosition = directionPoints[sortDirectionIndex];
+        
+        for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+        {
+            PolygonSortData& sortData = sortingArray[sortItemIndex];
+            sortData.cameraDistance = FLT_MAX;
+            
+            for(uint32 polygonIndex = 0; polygonIndex < polygonElementCount; ++polygonIndex)
+            {
+                float32 distance = (vertexData[sortData.indices[polygonIndex]].coord - cameraPosition).SquareLength();
+                if(distance < sortData.cameraDistance)
+                {
+                    sortData.cameraDistance = distance;
+                }
+            }
+        }
+        
+        std::stable_sort(sortingArray.begin(), sortingArray.end(), PolygonByDistanceCompareFunction);
+        
+        size_t prevIndexIndex = currentIndexIndex;
+        for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+        {
+            PolygonSortData& sortData = sortingArray[sortItemIndex];
+            
+            indexData[currentIndexIndex] = sortData.indices[0];
+            currentIndexIndex++;
+            
+            indexData[currentIndexIndex] = sortData.indices[1];
+            currentIndexIndex++;
+            
+            indexData[currentIndexIndex] = sortData.indices[2];
+            currentIndexIndex++;
+        }
+        
+        RenderDataObject* indexBuffer = new RenderDataObject();
+        indexBuffer->SetIndices(EIF_16, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
+        
+        SortedBufferItem sortedBufferItem;
+        sortedBufferItem.SetRenderDataObject(indexBuffer);
+        sortedBufferItem.sortDirection = indexBufferBBox.GetCenter() - cameraPosition;
+        sortedBufferItem.sortDirection.Normalize();
+        
+        currentDirectionBuffers.push_back(sortedBufferItem);
+    }
+}
+
+void VegetationRenderObject::GenerateRenderDataObjects()
+{
+    vertexRenderDataObject = new RenderDataObject();
+    vertexRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].coord));
+    vertexRenderDataObject->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].normal));
+    vertexRenderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
+    vertexRenderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
+    vertexRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
+    vertexRenderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
+    vertexRenderDataObject->BuildVertexBuffer(vertexData.size(), true);
+    
+    size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
+    for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
+    {
+        Vector<Vector<SortedBufferItem> >& indexObjectArray = indexRenderDataObject[indexArrayIndex];
+        size_t totalIndexObjectCount = indexObjectArray.size();
+        
+        for(size_t i = 0; i < totalIndexObjectCount; ++i)
+        {
+            Vector<SortedBufferItem>& directionArray = indexObjectArray[i];
+            size_t directionCount = directionArray.size();
+            for(size_t directionIndex = 0; directionIndex < directionCount; ++directionIndex)
+            {
+                directionArray[directionIndex].rdo->BuildIndexBuffer(true);
+                directionArray[directionIndex].rdo->AttachVertices(vertexRenderDataObject);
+            }
+        }
+    }
+}
+
 
 };

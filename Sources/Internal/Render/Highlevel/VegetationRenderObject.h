@@ -249,6 +249,38 @@ private:
                            Vector<float32>& uniforms);
     size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
     void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
+    inline uint32 MapToResolution(float32 squareDistance);
+    
+    void GenerateVertices(uint32 maxClusters,
+                          size_t maxTotalClusters,
+                          uint32 maxClusterRowSize,
+                          uint32 tilesPerRow,
+                          Vector2 unitSize,
+                          Vector<uint32>& layerOffsets);
+                          
+    void GenerateIndices(uint32 maxClusters,
+                         uint32 maxClusterRowSize,
+                         Vector<uint32>& layerOffsets);
+    
+    void PrepareIndexBufferData(uint32 indexBufferIndex,
+                                uint32 maxClusters,
+                                uint32 maxClusterRowSize,
+                                size_t resolutionIndex,
+                                uint32 resolutionOffset,
+                                Vector<uint32>& layerOffsets,
+                                Vector<int16>& preparedIndices,
+                                AABBox3& indexBufferBBox);
+    
+    void PrepareSortedIndexBufferVariations(size_t& currentIndexIndex,
+                                            uint32 indexBufferIndex,
+                                            size_t polygonElementCount,
+                                            AABBox3& indexBufferBBox,
+                                            Vector<Vector3>& directionPoints,
+                                            Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
+                                            Vector<PolygonSortData>& sortingArray,
+                                            Vector<int16>& preparedIndices);
+    
+    void GenerateRenderDataObjects();
     
 private:
     
@@ -295,6 +327,8 @@ private:
     
     bool vegetationVisible;
     bool useLowCameraScale;
+    
+    Vector<Vector2> resolutionRanges;
     
 public:
     
@@ -434,6 +468,25 @@ inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialD
         }
     }
 }
+
+inline uint32 VegetationRenderObject::MapToResolution(float32 squareDistance)
+{
+    uint32 resolutionId = 0;
+        
+    size_t rangesCount = resolutionRanges.size();
+    for(size_t i = 0; i < rangesCount; ++i)
+    {
+        if(squareDistance > resolutionRanges[i].x &&
+            squareDistance <= resolutionRanges[i].y)
+        {
+            resolutionId = (uint32)i;
+            break;
+        }
+    }
+    
+    return resolutionId;
+}
+
 
 };
 
