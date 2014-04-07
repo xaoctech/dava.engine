@@ -34,6 +34,7 @@
 #include "Utils/UTF8Utils.h"
 #include "Debug/DVAssert.h"
 #include "FileSystem/FileSystem.h"
+#include "Sound/SoundSystem.h"
 #if defined(__DAVAENGINE_IPHONE__)
 #include "FileSystem/LocalizationIPhone.h"
 #elif defined(__DAVAENGINE_ANDROID__)
@@ -43,6 +44,18 @@
 
 namespace DAVA 
 {
+const LocalizationSystem::LanguageLocalePair LocalizationSystem::languageLocaleMap[] =
+{
+    { "en", "en_US" },
+    { "ru", "ru_RU" },
+    { "de", "de_DE" },
+    { "it", "it_IT" },
+    { "fr", "fr_FR" },
+    { "es", "es_ES" },
+    { "zh", "zh_CN" },
+    { "ja", "ja_JP" },
+    { "uk", "uk_UA" }
+};
 
 LocalizationSystem::LocalizationSystem()
 {
@@ -84,6 +97,8 @@ const FilePath &LocalizationSystem::GetDirectoryPath() const
 void LocalizationSystem::SetCurrentLocale(const String &newLangId)
 {//TODO: add reloading strings data on langId changing
 	langId = newLangId;
+
+    SoundSystem::Instance()->SetCurrentLocale(langId);
 }
 	
 LocalizationSystem::StringFile * LocalizationSystem::LoadFromYamlFile(const String & langID, const FilePath & pathName)
@@ -245,7 +260,7 @@ WideString LocalizationSystem::GetLocalizedString(const WideString & key)
 	for (List<StringFile*>::reverse_iterator it = stringsList.rbegin(); it != stringsList.rend(); ++it)
 	{
 		StringFile * file = *it;
-		
+
 		Map<WideString, WideString>::iterator res = file->strings.find(key);
 		if (res != file->strings.end())
 		{
@@ -253,6 +268,24 @@ WideString LocalizationSystem::GetLocalizedString(const WideString & key)
 		}
 	}
 	return key;
+}
+
+WideString LocalizationSystem::GetLocalizedString(const WideString & key, const String &langId)
+{
+    for (List<StringFile*>::reverse_iterator it = stringsList.rbegin(); it != stringsList.rend(); ++it)
+    {
+        StringFile * file = *it;
+
+        if(file->langId.compare(langId) == 0)
+        {
+            Map<WideString, WideString>::iterator res = file->strings.find(key);
+            if (res != file->strings.end())
+            {
+                return res->second;
+            }
+        }
+    }
+    return key;
 }
 
 void LocalizationSystem::SetLocalizedString(const WideString & key, const WideString & value)
@@ -316,6 +349,19 @@ bool LocalizationSystem::GetStringsForCurrentLocale(Map<WideString, WideString>&
 	
 	// No strings found.
 	return false;
+}
+    
+String LocalizationSystem::GetCountryCode() const
+{
+    int32 knownLocalesNumber = COUNT_OF(languageLocaleMap);
+	for (int32 i = 0; i < knownLocalesNumber; i ++)
+	{
+		if (languageLocaleMap[i].languageCode == langId)
+		{
+			return languageLocaleMap[i].localeCode;
+		}
+	}
+    return "en_US";
 }
 	
 };
