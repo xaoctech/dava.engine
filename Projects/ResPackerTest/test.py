@@ -16,15 +16,13 @@ if (len(arguments) > 0):
 
 currentDir = os.getcwd();
 
+toolDir = os.path.realpath(currentDir + "/../../Tools/Bin/")
 data = os.path.realpath(currentDir + "/DataSource/")
 input = os.path.realpath(currentDir + "/DataSource/TestData/")
 output =  os.path.realpath(currentDir + "/Data/TestData")
 data_folder =  os.path.realpath(currentDir + "/Data")
 process = os.path.realpath(currentDir + "/DataSource/$process/")
-if (platform.system() == "Darwin"):
-    results = os.path.realpath(currentDir + "/Results_mac/" + gpu)
-else:
-    results = os.path.realpath(currentDir + "/Results/" + gpu)
+results = os.path.realpath(currentDir + "/Results/" + gpu)
 
 tests_results = {"Tests" : {}}
 
@@ -45,7 +43,7 @@ if os.path.exists(process):
 if not os.path.exists(data_folder):
     print "Create folder " + data_folder
     os.mkdir(data_folder)
-    
+
 print "*** DAVA AUTOTEST Run convert_graphics.py script for %s ***" % gpu
 os.chdir(data)
 
@@ -58,6 +56,13 @@ subprocess.call(params)
 
 print "*** DAVA AUTOTEST Check result for %s ***" % gpu
 i = 0
+
+print "Convert DDS files:"
+if (platform.system() == "Windows"):
+    subprocess.call(toolDir + "/ImageUnpacker.exe -folder " + output, shell=True)
+else:
+    subprocess.call(toolDir + "/ImageUnpacker -folder " + output, shell=True)
+
 for test in os.listdir(results):
     if(os.path.isdir(os.path.realpath(results + "/" + test))):
         i = i + 1
@@ -108,34 +113,15 @@ for test in os.listdir(results):
             print files
         
         for file in files:
-            res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
-            if res != None:
+            res = utils.compare_img(expected + "/" + file, actual + "/" + file)
+            if isinstance(res, str):
                 result['img_Success'] = False
                 result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
-                print res
-        
-        files = filter(lambda x: x[-3:] == "pvr", os.listdir(expected))
-        if len(files) != 0:
-            print files
-        
-        for file in files:
-            res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
-            if res != None:
-                result['img_Success'] = False
-                result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
-                print res
-
-        files = filter(lambda x: x[-3:] == "dds", os.listdir(expected))
-        if len(files) != 0:
-            print files
-        
-        for file in files:
-            res = utils.compare_txt(expected + "/" + file, actual + "/" + file)
-            if res != None:
-                result['img_Success'] = False
-                result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
-                print res
-        
+            else:
+                if res > 0.02:
+                    result['img_Success'] = False
+                    result['Error_msg'] = result['Error_msg'] + "Image %s differce from expected on %f%%.\n" % (actual + "/" + file, res * 100)
+                    utils.save_diff(expected + "/" + file, actual + "/" + file)
         
         
         result['Success'] = result['tex_Success'] and result['txt_Success'] and result['img_Success']
