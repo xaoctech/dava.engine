@@ -74,6 +74,11 @@ void SceneSystem::SetParent(Entity *entity, Entity *parent)
 {
     
 }
+    
+void SceneSystem::SceneDidLoaded()
+{
+    
+}
 
 void SceneSystem::ImmediateEvent(Entity * entity, uint32 event)
 {

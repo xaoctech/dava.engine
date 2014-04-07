@@ -147,6 +147,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
           <property name="editTriggers">
            <set>QAbstractItemView::AllEditTriggers</set>
           </property>
@@ -249,14 +252,15 @@
      <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
+     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
      <addaction name="actionAddWind"/>
+     <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
-     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
@@ -342,6 +346,9 @@
     <addaction name="actionAddActionComponent"/>
     <addaction name="actionAddQualitySettingsComponent"/>
     <addaction name="actionAddStaticOcclusionComponent"/>
+    <addaction name="separator"/>
+    <addaction name="actionAddSoundComponent"/>
+    <addaction name="actionRemoveSoundComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -678,13 +685,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
    <addaction name="actionCustomColorsEditor"/>
    <addaction name="actionVisibilityCheckTool"/>
+   <addaction name="separator"/>
+   <addaction name="actionGrasEditor"/>
   </widget>
   <widget class="QDockWidget" name="dockLandscapeEditorControls">
    <property name="windowTitle">
@@ -732,6 +740,12 @@
   <widget class="QToolBar" name="testingToolBar">
    <property name="windowTitle">
     <string>Testing Toolbar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -1547,6 +1561,16 @@
     <string>Invisible Wall</string>
    </property>
   </action>
+  <action name="actionAddSoundComponent">
+   <property name="text">
+    <string>Add Sound Component</string>
+   </property>
+  </action>
+  <action name="actionRemoveSoundComponent">
+   <property name="text">
+    <string>Remove Sound Component</string>
+   </property>
+  </action>
   <action name="actionHangingObjects">
    <property name="checkable">
     <bool>true</bool>
@@ -1733,7 +1757,7 @@
      <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
    </property>
    <property name="text">
-    <string>Editor 2D Camera</string>
+    <string>Camera 2D</string>
    </property>
   </action>
   <action name="actionAddLandscape">
@@ -1799,6 +1823,18 @@
     <string>Show Lightmap Canvas</string>
    </property>
   </action>
+  <action name="actionGrasEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>GrasEditor</string>
+   </property>
+  </action>
   <action name="actionImageSplitter">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1818,6 +1854,15 @@
    </property>
    <property name="toolTip">
     <string>Add Wind</string>
+   </property>
+ </action>
+  <action name="actionAddVegetation">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vegetation</string>
    </property>
   </action>
   <action name="actionReloadShader">

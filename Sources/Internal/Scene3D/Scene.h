@@ -79,6 +79,7 @@ class SkyboxSystem;
 class MaterialSystem;
 class StaticOcclusionSystem;
 class SpeedTreeUpdateSystem;
+class FoliageSystem;
     
 /**
     \ingroup scene3d
@@ -94,7 +95,28 @@ class Scene : public Entity
 protected:
 	virtual ~Scene();
 public:	
-	Scene();
+    enum
+    {
+        SCENE_SYSTEM_TRANSFORM_FLAG         = 1 << 0,
+        SCENE_SYSTEM_RENDER_UPDATE_FLAG     = 1 << 1,
+        SCENE_SYSTEM_LOD_FLAG               = 1 << 2,
+        SCENE_SYSTEM_DEBUG_RENDER_FLAG      = 1 << 3,
+        SCENE_SYSTEM_PARTICLE_EFFECT_FLAG   = 1 << 4,
+        SCENE_SYSTEM_UPDATEBLE_FLAG         = 1 << 5,
+        SCENE_SYSTEM_LIGHT_UPDATE_FLAG      = 1 << 6,
+        SCENE_SYSTEM_SWITCH_FLAG            = 1 << 7,
+        SCENE_SYSTEM_SOUND_UPDATE_FLAG      = 1 << 8,
+        SCENE_SYSTEM_ACTION_UPDATE_FLAG     = 1 << 9,
+        SCENE_SYSTEM_SKYBOX_FLAG            = 1 << 10,
+        SCENE_SYSTEM_STATIC_OCCLUSION_FLAG  = 1 << 11,
+        SCENE_SYSTEM_MATERIAL_FLAG          = 1 << 12,
+        SCENE_SYSTEM_FOLIAGE_FLAG           = 1 << 13,
+        SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG  = 1 << 14,
+
+        SCENE_SYSTEM_ALL_MASK               = 0xFFFFFFFF
+    };
+
+	Scene(uint32 systemsMask = SCENE_SYSTEM_ALL_MASK);
 	
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
@@ -105,12 +127,13 @@ public:
     //virtual void    AddComponent(Entity * entity, Component * component);
     //virtual void    RemoveComponent(Entity * entity, Component * component);
     
-    virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags);
+    virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needProcess = false, SceneSystem * insertBeforeSceneForProcess = NULL);
     virtual void    RemoveSystem(SceneSystem * sceneSystem);
     
 	//virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
     Vector<SceneSystem*> systems;
+    Vector<SceneSystem*> systemsToProcess;
     //HashMap<uint32, Set<SceneSystem*> > componentTypeMapping;
     TransformSystem * transformSystem;
     RenderUpdateSystem * renderUpdateSystem;
@@ -128,6 +151,7 @@ public:
 	StaticOcclusionSystem * staticOcclusionSystem;
     MaterialSystem *materialSystem;
     SpeedTreeUpdateSystem* speedTreeUpdateSystem;
+    FoliageSystem* foliageSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -181,7 +205,8 @@ public:
 	
 	virtual void	Update(float timeElapsed);
 	virtual void	Draw();
-	
+    virtual void    SceneDidLoaded();
+
 	
 	virtual void	SetupTestLighting();
 	
@@ -218,15 +243,19 @@ public:
 
     virtual void OptimizeBeforeExport();
 
-	inline NMaterial * GetGlobalMaterial() const;
-protected:	
-    
+    DAVA::NMaterial* GetGlobalMaterial() const;
+    void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
+    void CreateGlobalMaterial();
+
+protected:
     void UpdateLights();
 
 	uint64 updateTime;
 
     uint64 drawTime;
     uint32 nodeCounter;
+
+    uint32 systemsMask;
 
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
@@ -273,13 +302,6 @@ int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
 }  
-
-inline NMaterial * Scene::GetGlobalMaterial() const
-{
-	return sceneGlobalMaterial; 
-}
-
-
 
 };
 

@@ -49,6 +49,7 @@
 #include "Scene3D/Components/SpeedTreeComponents/MovingOscillatorComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Base/ObjectFactory.h"
 
@@ -86,7 +87,7 @@ Component * Component::CreateByType(uint32 componentType)
 		return new UserComponent();
 		break;
 	case SOUND_COMPONENT:
-		return new SoundComponent();
+        return new SoundComponent();
 		break;
     case SPEEDTREE_COMPONENT:
         return new SpeedTreeComponent();
