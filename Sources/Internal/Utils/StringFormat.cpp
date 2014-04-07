@@ -29,6 +29,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h> 
 #include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
 #include "Debug/DVAssert.h"
