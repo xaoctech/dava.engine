@@ -245,7 +245,13 @@ int32 do_div(int64 &n, int32 base)
             else if (precision == 0)
                 whole++;
         }
-        
+
+		if (tail >= pow(10.f, precision))
+		{
+			whole++;
+			tail -= pow(10.f, precision);
+		}
+		
         type = SIGN | LEFT;
         char16 *firstStr = Number(str, whole, 10, -1, -1, type);
         if (isNegativeValue)
@@ -263,7 +269,7 @@ int32 do_div(int64 &n, int32 base)
                 firstStr++;
             }
         }
-        if(tail)
+        if (precision > 0)
         {
             *firstStr++ = '.';
             
