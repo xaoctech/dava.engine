@@ -89,6 +89,7 @@ PreviewController::PreviewController() :
     activePreviewSettingsID(EMPTY_PREVIEW_SETTINGS_ID),
     isApplyPreviewScale(false)
 {
+    LoadPredefinedPreviewSettings();
 }
 
 PreviewController::~PreviewController()
@@ -137,13 +138,7 @@ bool previewSettingsDataSortFn(const PreviewSettingsData & a, const PreviewSetti
 void PreviewController::LoadPreviewSettings(const YamlNode* rootNode)
 {
     previewSettings.clear();
-
-    // Predefined preview settings aren't stored in the Yaml.
-    int32 predefinedItemsCount = COUNT_OF(predefinedPreviewSettings);
-    for (int32 i = 0; i < predefinedItemsCount; i ++)
-    {
-        previewSettings.push_back(predefinedPreviewSettings[i]);
-    }
+    LoadPredefinedPreviewSettings();
 
     const YamlNode* previewSettingsNode = rootNode->Get(PREVIEW_SETTINGS_NODE);
     if (!previewSettingsNode)
@@ -190,6 +185,16 @@ void PreviewController::LoadPreviewSettings(const YamlNode* rootNode)
     
     // At this moment no changes were made.
     SetDirty(false);
+}
+
+void PreviewController::LoadPredefinedPreviewSettings()
+{
+    // Predefined preview settings aren't stored in the Yaml.
+    int32 predefinedItemsCount = COUNT_OF(predefinedPreviewSettings);
+    for (int32 i = 0; i < predefinedItemsCount; i ++)
+    {
+        previewSettings.push_back(predefinedPreviewSettings[i]);
+    }
 }
 
 void PreviewController::SavePreviewSettings(YamlNode* rootNode)
