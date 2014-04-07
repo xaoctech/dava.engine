@@ -107,6 +107,9 @@ protected:
                                             const Vector2& virtualScreenSize,
                                             uint32 screenDPI);
 
+    // Load the predefined (hardcoded) preview settings.
+    void LoadPredefinedPreviewSettings();
+
     // Set the dirty flag.
     void SetDirty(bool value);
 
