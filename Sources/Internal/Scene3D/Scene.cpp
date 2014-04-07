@@ -299,11 +299,8 @@ void Scene::CreateSystems()
 
     if(SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG & systemsMask)
     {
-        uint32 speedTreeComponentsFlags = (1 << Component::SPEEDTREE_COMPONENT) | (1 << Component::WIND_COMPONENT) 
-            | (1 << Component::IMPULSE_OSCILLATOR_COMPONENT) | (1 << Component::MOVING_OSCILLATOR_COMPONENT);
-
         speedTreeUpdateSystem = new SpeedTreeUpdateSystem(this);
-        AddSystem(speedTreeUpdateSystem, speedTreeComponentsFlags, true);
+        AddSystem(speedTreeUpdateSystem, SpeedTreeUpdateSystem::SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK, true);
     }
 }
 

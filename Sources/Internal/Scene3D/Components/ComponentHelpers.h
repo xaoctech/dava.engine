@@ -54,7 +54,7 @@ class TransformComponent;
 class RenderComponent;
 class SpeedTreeComponent;
 class WindComponent;
-class ImpuleOscillatorComponent;
+class ImpulseOscillatorComponent;
 class MovingOscillatorComponent;
 
 class VegetationRenderObject;
@@ -92,7 +92,7 @@ VegetationRenderObject* FindVegetation(Entity * rootEntity);
 
 SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity);
 WindComponent * GetWindComponent(Entity * fromEntity);
-ImpuleOscillatorComponent * GetImpuleOscillatorComponent(Entity * fromEntity);
+ImpulseOscillatorComponent * GetImpuleOscillatorComponent(Entity * fromEntity);
 MovingOscillatorComponent * GetMovingOscillatorComponent(Entity * fromEntity);
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);

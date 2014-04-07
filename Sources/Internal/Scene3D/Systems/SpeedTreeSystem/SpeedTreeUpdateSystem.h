@@ -45,6 +45,9 @@ class TreeOscillator;
 class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
 public:
+
+    static const uint32 SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK;
+
     struct TreeInfo
     {
         TreeInfo(float32 startTime) :
@@ -83,7 +86,7 @@ private:
 
     bool isAnimationEnabled;
 
-friend class ImpuleOscillatorComponent;
+friend class ImpulseOscillatorComponent;
 };
     
 } // ns

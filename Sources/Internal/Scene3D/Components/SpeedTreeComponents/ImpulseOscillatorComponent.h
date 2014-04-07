@@ -40,12 +40,12 @@ namespace DAVA
 {
 
 class ImpulseTreeOscillator;
-class ImpuleOscillatorComponent : public Component
+class ImpulseOscillatorComponent : public Component
 {
 protected:
-	virtual ~ImpuleOscillatorComponent();
+	virtual ~ImpulseOscillatorComponent();
 public:
-	ImpuleOscillatorComponent(float32 inflDistance = 0.f, float32 force = 0.f);
+	ImpulseOscillatorComponent(float32 inflDistance = 0.f, float32 force = 0.f);
 
 	IMPLEMENT_COMPONENT_TYPE(IMPULSE_OSCILLATOR_COMPONENT);
 
@@ -60,7 +60,7 @@ protected:
     float32 influenceDistance;
     
 public:
-	INTROSPECTION_EXTEND(ImpuleOscillatorComponent, Component,
+	INTROSPECTION_EXTEND(ImpulseOscillatorComponent, Component,
         MEMBER(forceValue, "forceValue", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)
         );

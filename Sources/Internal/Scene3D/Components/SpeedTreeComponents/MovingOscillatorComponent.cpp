@@ -53,6 +53,9 @@ Component * MovingOscillatorComponent::Clone(Entity * toEntity)
 {
     MovingOscillatorComponent * component = new MovingOscillatorComponent();
 	component->SetEntity(toEntity);
+
+    component->speedClampValue = speedClampValue;
+    component->influenceDistance = influenceDistance;
     
     return component;
 }
@@ -60,10 +63,22 @@ Component * MovingOscillatorComponent::Clone(Entity * toEntity)
 void MovingOscillatorComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	Component::Serialize(archive, serializationContext);
+
+    if(archive != 0)
+    {
+        archive->SetFloat("moc.speedClampValue", speedClampValue);
+        archive->SetFloat("moc.influenceDistance", influenceDistance);
+    }
 }
     
 void MovingOscillatorComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
+    if(archive)
+    {
+        speedClampValue = archive->GetFloat("moc.speedClampValue");
+        influenceDistance = archive->GetFloat("moc.influenceDistance");
+    }
+
 	Component::Deserialize(archive, serializationContext);
 }
     

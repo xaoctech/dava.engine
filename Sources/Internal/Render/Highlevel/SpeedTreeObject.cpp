@@ -33,6 +33,10 @@
 namespace DAVA 
 {
 
+const FastName SpeedTreeObject::PARAM_PROP_TRUNK_OSCILLATION("trunkOscillationParams");
+const FastName SpeedTreeObject::PARAM_PROP_LEAF_OSCILLATION("leafOscillationParams");
+const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
+
 SpeedTreeObject::SpeedTreeObject() :
     isAnimationEnabled(false),
     isAnimationForceDisabled(false)
@@ -68,8 +72,8 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector3 & trunkOscillationPar
     for(uint32 i = 0; i < matCount; ++i)
     {
         NMaterial * material = materials[i];
-        material->SetPropertyValue(FastName("trunkOscillationParams"), Shader::UT_FLOAT_VEC3, 1, &trunkOscillationParams);
-        material->SetPropertyValue(FastName("leafOscillationParams"), Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
+        material->SetPropertyValue(PARAM_PROP_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC3, 1, &trunkOscillationParams);
+        material->SetPropertyValue(PARAM_PROP_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
     }
 }
 
@@ -79,7 +83,7 @@ void SpeedTreeObject::SetAnimationFlag(bool flagOn)
 
     uint32 matCount = materials.size();
     for(uint32 i = 0; i < matCount; ++i)
-        materials[i]->SetFlag(FastName("WIND_ANIMATION"), flagValue);
+        materials[i]->SetFlag(FLAG_WIND_ANIMATION, flagValue);
 }
 
 void SpeedTreeObject::SetAnimationEnabled(bool isEnabled)

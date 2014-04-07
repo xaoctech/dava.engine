@@ -54,6 +54,10 @@ public:
     void SetForceDisabledAnimation(bool disabled);
 
 protected:
+    static const FastName PARAM_PROP_TRUNK_OSCILLATION;
+    static const FastName PARAM_PROP_LEAF_OSCILLATION;
+    static const FastName FLAG_WIND_ANIMATION;
+
     void SetTreeAnimationParams(const Vector3 & trunkOscillationParams, const Vector2 & leafOscillationParams);
     void SetAnimationEnabled(bool isEnabled);
     void SetAnimationFlag(bool flagOn);
