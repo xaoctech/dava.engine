@@ -38,31 +38,32 @@
 
 namespace DAVA 
 {
-	REGISTER_CLASS(ImpuleOscillatorComponent);
+	REGISTER_CLASS(ImpulseOscillatorComponent);
 
-ImpuleOscillatorComponent::ImpuleOscillatorComponent(float32 inflDistance /* = 0.f */, float32 force /* = 0.f */) :
+ImpulseOscillatorComponent::ImpulseOscillatorComponent(float32 inflDistance /* = 0.f */, float32 force /* = 0.f */) :
     influenceDistance(influenceDistance),
     forceValue(force)
 {
     
 }
 
-ImpuleOscillatorComponent::~ImpuleOscillatorComponent()
+ImpulseOscillatorComponent::~ImpulseOscillatorComponent()
 {
     
 }
  
-Component * ImpuleOscillatorComponent::Clone(Entity * toEntity)
+Component * ImpulseOscillatorComponent::Clone(Entity * toEntity)
 {
-    ImpuleOscillatorComponent * component = new ImpuleOscillatorComponent();
+    ImpulseOscillatorComponent * component = new ImpulseOscillatorComponent();
 	component->SetEntity(toEntity);
     
     component->forceValue = forceValue;
+    component->influenceDistance = influenceDistance;
     
     return component;
 }
 
-void ImpuleOscillatorComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+void ImpulseOscillatorComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	Component::Serialize(archive, serializationContext);
 
@@ -73,7 +74,7 @@ void ImpuleOscillatorComponent::Serialize(KeyedArchive *archive, SerializationCo
     }
 }
     
-void ImpuleOscillatorComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+void ImpulseOscillatorComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(archive)
 	{
@@ -84,8 +85,11 @@ void ImpuleOscillatorComponent::Deserialize(KeyedArchive *archive, Serialization
 	Component::Deserialize(archive, serializationContext);
 }
 
-void ImpuleOscillatorComponent::TriggerImpulse()
+void ImpulseOscillatorComponent::TriggerImpulse()
 {
+    DVASSERT(entity);
+    DVASSERT(entity->GetScene());
+
 	entity->GetScene()->speedTreeUpdateSystem->TriggerImpulseOscillator(entity);
 }
 

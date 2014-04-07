@@ -92,6 +92,7 @@ void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
             int32 indCount = pg->GetIndexCount();
             PolygonGroup * newPG = new PolygonGroup();
 
+            DVASSERT((vertexFormat & EVF_BINORMAL) == 0);
             newPG->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
 
             //copy indicies

@@ -96,7 +96,7 @@ Component * Component::CreateByType(uint32 componentType)
         return new MovingOscillatorComponent();
         break;
     case IMPULSE_OSCILLATOR_COMPONENT:
-        return new ImpuleOscillatorComponent();
+        return new ImpulseOscillatorComponent();
         break;
     case WIND_COMPONENT:
         return new WindComponent();

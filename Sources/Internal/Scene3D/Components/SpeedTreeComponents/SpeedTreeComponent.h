@@ -44,32 +44,8 @@ class SpeedTreeComponent : public Component
 {
 protected:
 	virtual ~SpeedTreeComponent();
+
 public:
-    struct OscillationParams
-    {
-        OscillationParams() :
-        trunkOscillationAmplitude(1.5f),
-        leafsOscillationAmplitude(3.f),
-        leafsOscillationSpeed(3.f),
-        movingOscillationLeafsSpeed(1.f),
-        maxAnimatedLOD(0)
-        {}
-        
-        float32 trunkOscillationAmplitude;
-        float32 leafsOscillationAmplitude;
-        float32 leafsOscillationSpeed;
-        float32 movingOscillationLeafsSpeed;
-        int32 maxAnimatedLOD;
-        
-        INTROSPECTION(OscillationParams,
-                      MEMBER(trunkOscillationAmplitude, "trunkOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(leafsOscillationAmplitude, "leafsOscillationAmplitude", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(leafsOscillationSpeed, "leafsOscillationSpeed", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(movingOscillationLeafsSpeed, "movingOscillationLeafsSpeed", I_VIEW | I_EDIT | I_SAVE)
-                      MEMBER(maxAnimatedLOD, "maxAnimatedLOD", I_VIEW | I_EDIT | I_SAVE)
-                      );
-    };
-    
 	SpeedTreeComponent();
 
 	IMPLEMENT_COMPONENT_TYPE(SPEEDTREE_COMPONENT);
@@ -78,15 +54,33 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    OscillationParams & GetOcciliationParameters();
+    float32 GetTrunkOscillationAmplitude() const;
+    float32 GetLeafsOscillationApmlitude() const;
+    float32 GetLeafOscillationSpeed() const;
+    float32 GetMovingOscillationLeafsSpeed() const;
+    int32 GetMaxAnimatedLOD() const;
+
+    void SetTrunkOscillationAmplitude(const float32 & amplitude);
+    void SetLeafsOscillationApmlitude(const float32 & amplitude);
+    void SetLeafOscillationSpeed(const float32 & speed);
+    void SetMovingOscillationLeafsSpeed(const float32 & speed);
+    void SetMaxAnimatedLOD(const int32 & lodIndex);
     
 protected:
-    OscillationParams params;
+    float32 trunkOscillationAmplitude;
+    float32 leafsOscillationAmplitude;
+    float32 leafsOscillationSpeed;
+    float32 movingOscillationLeafsSpeed;
+    int32 maxAnimatedLOD;
 
 public:
-	INTROSPECTION_EXTEND(SpeedTreeComponent, Component,
-                         MEMBER(params, "params", I_VIEW | I_EDIT | I_SAVE)
-                         );
+    INTROSPECTION_EXTEND(SpeedTreeComponent, Component, 
+        PROPERTY("trunkOscillationAmplitude", "trunkOscillationAmplitude", GetTrunkOscillationAmplitude, SetTrunkOscillationAmplitude, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("leafsOscillationAmplitude", "leafsOscillationAmplitude", GetLeafsOscillationApmlitude, SetLeafsOscillationApmlitude, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("leafsOscillationSpeed", "leafsOscillationSpeed", GetLeafOscillationSpeed, SetLeafOscillationSpeed, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("movingOscillationLeafsSpeed", "movingOscillationLeafsSpeed", GetMovingOscillationLeafsSpeed, SetMovingOscillationLeafsSpeed, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("maxAnimatedLOD", "maxAnimatedLOD", GetMaxAnimatedLOD, SetMaxAnimatedLOD, I_SAVE | I_VIEW | I_EDIT)
+        );
     
 	friend class SpeedTreeUpdateSystem;
 };

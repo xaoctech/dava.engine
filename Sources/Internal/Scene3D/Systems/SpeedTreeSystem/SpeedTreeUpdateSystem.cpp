@@ -43,6 +43,9 @@
 namespace DAVA
 {
     
+const uint32 SpeedTreeUpdateSystem::SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK = (1 << Component::SPEEDTREE_COMPONENT) | (1 << Component::WIND_COMPONENT) 
+        | (1 << Component::IMPULSE_OSCILLATOR_COMPONENT) | (1 << Component::MOVING_OSCILLATOR_COMPONENT);
+
 SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 :	SceneSystem(scene)
 {
@@ -85,10 +88,7 @@ void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 bool SpeedTreeUpdateSystem::IsNeedProcessEntity(Entity * entity)
 {
 	uint32 componentsMask = entity->GetAvailableComponentFlags();
-	return	(componentsMask & (1 << Component::SPEEDTREE_COMPONENT)) ||
-			(componentsMask & (1 << Component::WIND_COMPONENT)) ||
-			(componentsMask & (1 << Component::IMPULSE_OSCILLATOR_COMPONENT)) ||
-			(componentsMask & (1 << Component::MOVING_OSCILLATOR_COMPONENT));
+	return (componentsMask & SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK) > 0;
 }
 
 void SpeedTreeUpdateSystem::TriggerImpulseOscillator(Entity * entity)
@@ -218,10 +218,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         
 		SpeedTreeComponent * component = GetSpeedTreeComponent(info->treeEntity);
 		SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(info->treeEntity));
-
-        const SpeedTreeComponent::OscillationParams & params = component->GetOcciliationParameters();
         
-        if(treeObject->GetLodIndex() > params.maxAnimatedLOD)
+        if(treeObject->GetLodIndex() > component->GetMaxAnimatedLOD())
         {
             treeObject->SetAnimationEnabled(false);
             continue;
@@ -240,24 +238,25 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
 			if(!osc->HasInfluence(treePosition))
 				continue;
             
-            oscillationOffsetAll += osc->GetOsscilationTrunkOffset(treePosition);
+            oscillationOffsetAll += osc->GetOscillationTrunkOffset(treePosition);
             
-            float32 leafSpeed = osc->GetOsscilationLeafsSpeed(treePosition);
+            float32 leafSpeed = osc->GetOscillationLeafsSpeed(treePosition);
             if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_MOVING)
             {
-                leafSpeed *= params.movingOscillationLeafsSpeed;
+                leafSpeed *= component->GetMovingOscillationLeafsSpeed();
             }
             
             leafSpeedAll += leafSpeed;
         }
         
-        info->elapsedTime += timeElapsed * (params.leafsOscillationSpeed * leafSpeedAll);
+        info->elapsedTime += timeElapsed * (component->GetLeafOscillationSpeed() * leafSpeedAll);
         
         float32 sine, cosine;
         SinCosFast(info->elapsedTime, sine, cosine);
-        Vector2 leafOscillationParams(params.leafsOscillationAmplitude * sine, params.leafsOscillationAmplitude * cosine);
+        float32 leafsOscillationAmplitude = component->GetLeafsOscillationApmlitude();
+        Vector2 leafOscillationParams(leafsOscillationAmplitude * sine, leafsOscillationAmplitude * cosine);
         
-		Vector3 localOffset = MultiplyVectorMat3x3(oscillationOffsetAll * params.trunkOscillationAmplitude, info->wtInvMx);
+		Vector3 localOffset = MultiplyVectorMat3x3(oscillationOffsetAll * component->GetTrunkOscillationAmplitude(), info->wtInvMx);
         treeObject->SetTreeAnimationParams(localOffset, leafOscillationParams);
     }
 }

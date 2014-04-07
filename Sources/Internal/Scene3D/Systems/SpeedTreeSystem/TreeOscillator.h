@@ -56,8 +56,8 @@ public:
     virtual uint32 GetType() const = 0;
     
     virtual void Update(float32 timeElapsed) {};
-    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const = 0;
-    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const = 0;
+    virtual Vector3 GetOscillationTrunkOffset(const Vector3 & forPosition) const = 0;
+    virtual float32 GetOscillationLeafsSpeed(const Vector3 & forPosition) const = 0;
     
     virtual bool HasInfluence(const Vector3 & forPosition);
 
@@ -81,8 +81,8 @@ public:
     virtual uint32 GetType() const {return OSCILLATION_TYPE_IMPULSE; };
     
     virtual void Update(float32 timeElapsed);
-    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
-    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
+    virtual Vector3 GetOscillationTrunkOffset(const Vector3 & forPosition) const;
+    virtual float32 GetOscillationLeafsSpeed(const Vector3 & forPosition) const;
     
 	virtual bool HasInfluence(const Vector3 & forPosition);
 
@@ -91,6 +91,8 @@ public:
 protected:
     float32 time;
 	bool triggered;
+
+    ImpulseOscillatorComponent * component;
 };
     
 class WindTreeOscillator : public TreeOscillator
@@ -102,11 +104,13 @@ public:
     virtual uint32 GetType() const {return OSCILLATION_TYPE_WIND; };
     
     virtual void Update(float32 timeElapsed);
-    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
-    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
+    virtual Vector3 GetOscillationTrunkOffset(const Vector3 & forPosition) const;
+    virtual float32 GetOscillationLeafsSpeed(const Vector3 & forPosition) const;
     
 protected:
     float32 time;
+
+    WindComponent * windComponent;
 };
     
 class MovingTreeOscillator : public TreeOscillator
@@ -118,13 +122,14 @@ public:
     virtual uint32 GetType() const {return OSCILLATION_TYPE_MOVING; };
     
     virtual void Update(float32 timeElapsed);
-    virtual Vector3 GetOsscilationTrunkOffset(const Vector3 & forPosition) const;
-    virtual float32 GetOsscilationLeafsSpeed(const Vector3 & forPosition) const;
+    virtual Vector3 GetOscillationTrunkOffset(const Vector3 & forPosition) const;
+    virtual float32 GetOscillationLeafsSpeed(const Vector3 & forPosition) const;
     
 protected:
     float32 currentSpeed;
 	Vector3 prevUpdatePosition;
-	float32 speedClampValue;
+
+    MovingOscillatorComponent * component;
 };
     
 }

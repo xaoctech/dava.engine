@@ -59,7 +59,8 @@ protected:
 
 public:
     INTROSPECTION_EXTEND(MovingOscillatorComponent, Component,
-        MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)                 
+        MEMBER(influenceDistance, "influenceDistance", I_SAVE | I_VIEW | I_EDIT)  
+        MEMBER(speedClampValue, "speedClampValue", I_SAVE | I_VIEW | I_EDIT)                
         );
     
 friend class MovingTreeOscillator;

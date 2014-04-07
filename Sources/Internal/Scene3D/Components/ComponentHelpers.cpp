@@ -293,11 +293,11 @@ WindComponent * GetWindComponent(Entity * fromEntity)
     return NULL;
 }
 
-ImpuleOscillatorComponent * GetImpuleOscillatorComponent(Entity * fromEntity)
+ImpulseOscillatorComponent * GetImpuleOscillatorComponent(Entity * fromEntity)
 {
     if(fromEntity)
     {
-        return static_cast<ImpuleOscillatorComponent *>(fromEntity->GetComponent(Component::IMPULSE_OSCILLATOR_COMPONENT));
+        return static_cast<ImpulseOscillatorComponent *>(fromEntity->GetComponent(Component::IMPULSE_OSCILLATOR_COMPONENT));
     }
 
     return NULL;

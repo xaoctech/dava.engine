@@ -81,6 +81,9 @@ void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
     
 Vector3 WindComponent::GetWindDirection() const
 {
+    DVASSERT(entity);
+    DVASSERT(GetTransformComponent(entity));
+
     return MultiplyVectorMat3x3(Vector3(1.f, 0.f, 0.f), GetTransformComponent(entity)->GetWorldTransform());
 }
     
