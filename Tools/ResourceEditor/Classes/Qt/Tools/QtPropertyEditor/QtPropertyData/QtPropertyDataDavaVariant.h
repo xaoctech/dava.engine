@@ -63,6 +63,8 @@ public:
     void SetDefaultOpenDialogPath(const QString&);
     QString GetDefaultOpenDialogPath();
 
+    QVariant GetToolTip() const;
+
 protected:
 	DAVA::VariantType curVariantValue;
 
