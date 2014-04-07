@@ -1131,15 +1131,15 @@ void MainWindow::DoSaveProject(bool changesOnly)
 
 void MainWindow::OnOpenProject()
 {
-	// Close and save current project if any
-	if (!CloseProject())
-		return;
-
 	QString projectPath = QFileDialog::getOpenFileName(this, tr("Select a project file"),
 														ResourcesManageHelper::GetDefaultDirectory(),
 														tr( "Project (*.uieditor)"));
     if (projectPath.isNull() || projectPath.isEmpty())
         return;
+
+	// Close and save current project if any
+	if (!CloseProject())
+		return;
 
 	// Convert file path into Unix-style path
 	projectPath = ResourcesManageHelper::ConvertPathToUnixStyle(projectPath);
