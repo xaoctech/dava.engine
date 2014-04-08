@@ -59,7 +59,7 @@ print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
 print "*** DAVA AUTOTEST Check result for %s ***" % gpu
-
+os.chdir(currentDir)
 
 os_name = "Windows"
 print "Convert DDS files:"
