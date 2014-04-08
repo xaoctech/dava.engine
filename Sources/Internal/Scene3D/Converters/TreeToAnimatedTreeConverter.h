@@ -35,6 +35,8 @@ using namespace DAVA;
 class TreeToAnimatedTreeConverter
 {
 public:
+    static void CalculateBinormalsForTreeObject(SpeedTreeObject * object);
+
 	void ConvertTreesRecursive(Entity *scene);
 
 private:
