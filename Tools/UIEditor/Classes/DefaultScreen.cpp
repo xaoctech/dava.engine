@@ -54,6 +54,10 @@
 #define COARSE_CONTROL_MOVE_DELTA 10
 #define FINE_CONTROL_MOVE_DELTA 1
 
+// Coarse/Fine Guides Move delta.
+#define COARSE_GUIDE_MOVE_DELTA 10
+#define FINE_GUIDE_MOVE_DELTA 1
+
 #define MOVE_SCREEN_KEY DVKEY_SPACE
 
 const char* MENU_PROPERTY_ID = "id";
@@ -508,6 +512,136 @@ void DefaultScreen::SaveControlsPostion()
 			startControlPos[control] = control->GetPosition();
 		}
 	}
+}
+
+void DefaultScreen::DoKeyboardMove(eKeyboardMoveDirection moveDirection)
+{
+    // In case guides are selected - move guides, otherwise control.
+    HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (!screenNode)
+    {
+        return;
+    }
+
+    bool moveGuides = screenNode && screenNode->AreGuidesSelected();
+    
+    int32 treshold = moveGuides ? GetGuideMoveDelta() : GetControlMoveDelta();
+    Vector2 delta;
+    
+    switch (moveDirection)
+    {
+        case moveUp:
+        {
+            delta = Vector2 (0, -treshold);
+            break;
+        }
+            
+        case moveDown:
+        {
+            delta = Vector2(0, treshold);
+            break;
+        }
+            
+        case moveLeft:
+        {
+            delta = Vector2(-treshold, 0);
+            break;
+        }
+        
+        case moveRight:
+        {
+            delta = Vector2(treshold, 0);
+            break;
+        }
+            
+        default:
+        {
+            DVASSERT(false);
+            break;
+        }
+    }
+    
+    if (moveGuides)
+    {
+        MoveGuides(moveDirection, delta);
+    }
+    else
+    {
+        MoveControl(delta);
+    }
+}
+
+void DefaultScreen::MoveGuides(eKeyboardMoveDirection moveDirection, const Vector2& delta)
+{
+    HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+    DVASSERT(screenNode);
+
+    Vector2 minGuidePos = Vector2(FLT_MAX, FLT_MAX);
+    Vector2 maxGuidePos = Vector2(FLT_MIN, FLT_MIN);
+    bool horzGuidesSelected = false;
+    bool vertGuidesSelected = false;
+
+    // Check whether move is possible.
+    const List<GuideData*> selectedGuides = screenNode->GetSelectedGuides();
+    for (List<GuideData*>::const_iterator iter = selectedGuides.begin(); iter != selectedGuides.end(); iter ++)
+    {
+        GuideData* curGuideData =  *iter;
+        const Vector2& curPos = curGuideData->GetPosition();
+        if (curGuideData->GetType() == GuideData::Horizontal)
+        {
+            horzGuidesSelected = true;
+        }
+        if (curGuideData->GetType() == GuideData::Vertical)
+        {
+            vertGuidesSelected = true;
+        }
+
+        if (curPos.x < minGuidePos.x)
+        {
+            minGuidePos.x = curPos.x;
+        }
+        if (curPos.y < minGuidePos.y)
+        {
+            minGuidePos.y = curPos.y;
+        }
+        if (curPos.x > maxGuidePos.x)
+        {
+            maxGuidePos.x = curPos.x;
+        }
+        if (curPos.y > maxGuidePos.y)
+        {
+            maxGuidePos.y = curPos.y;
+        }
+    }
+    
+    // No way to move vertically if no horz guides selected.
+    if ((moveDirection == moveUp || moveDirection == moveDown) && !horzGuidesSelected)
+    {
+        return;
+    }
+
+    // No way to move horisontally if no vert guides selected.
+    if ((moveDirection == moveLeft || moveDirection == moveRight) && !vertGuidesSelected)
+    {
+        return;
+    }
+
+    // Check whether guides remain in the screen bounds after move.
+    Rect screenRect = ScreenWrapper::Instance()->GetBackgroundFrameRect();
+    if (((minGuidePos.x + delta.x) <= screenRect.x) || ((minGuidePos.y + delta.y) <= screenRect.y))
+    {
+        return;
+    }
+    
+    if (((maxGuidePos.x + delta.x) >= (screenRect.x + screenRect.dx)) || ((maxGuidePos.y + delta.y) >= (screenRect.y + screenRect.dy)))
+    {
+        return;
+    }
+
+    // All is OK - can move.
+    MoveGuideByKeyboardCommand* cmd = new MoveGuideByKeyboardCommand(screenNode, delta);
+    CommandsController::Instance()->ExecuteCommand(cmd);
+    SafeRelease(cmd);
 }
 
 void DefaultScreen::MoveControl(const Vector2& delta)
@@ -1152,19 +1286,19 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 		}break;
 		case DVKEY_UP:
 		{
-			MoveControl(Vector2(0, -GetControlMoveDelta()));
+			DoKeyboardMove(moveUp);
 		}break;
 		case DVKEY_DOWN:
 		{
-			MoveControl(Vector2(0, GetControlMoveDelta()));
+			DoKeyboardMove(moveDown);
 		}break;
 		case DVKEY_LEFT:
 		{
-			MoveControl(Vector2(-GetControlMoveDelta(), 0));
+			DoKeyboardMove(moveLeft);
 		}break;
 		case DVKEY_RIGHT:
 		{
-			MoveControl(Vector2(GetControlMoveDelta(), 0));
+			DoKeyboardMove(moveRight);
 		}break;
 		case DVKEY_DELETE:
 		case DVKEY_BACKSPACE:
@@ -1415,6 +1549,12 @@ int32 DefaultScreen::GetControlMoveDelta()
 {
 	Qt::KeyboardModifiers modifiers = QApplication::queryKeyboardModifiers();
 	return (modifiers & Qt::ShiftModifier) ? COARSE_CONTROL_MOVE_DELTA : FINE_CONTROL_MOVE_DELTA;
+}
+
+int32 DefaultScreen::GetGuideMoveDelta()
+{
+	Qt::KeyboardModifiers modifiers = QApplication::queryKeyboardModifiers();
+	return (modifiers & Qt::ShiftModifier) ? COARSE_GUIDE_MOVE_DELTA : FINE_GUIDE_MOVE_DELTA;
 }
 
 void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)

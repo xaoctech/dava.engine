@@ -70,6 +70,8 @@ public:
 
     // Selected guides.
     bool AreGuidesSelected() const;
+    const List<GuideData*> GetSelectedGuides() const;
+
     List<GuideData> DeleteSelectedGuides();
     void ResetSelection();
 
