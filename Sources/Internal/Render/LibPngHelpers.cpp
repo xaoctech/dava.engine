@@ -95,24 +95,42 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 	self->file->Read(data, (uint32)size);
 }
 
-int LibPngWrapper::ReadPngFile(const FilePath & file, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
+bool LibPngWrapper::IsFileImage(File *file)
+{
+    char sig[8];
+    file->Read(sig, 8);
+	
+    return (0 != png_check_sig((unsigned char *) sig, 8));
+}
+
+bool LibPngWrapper::ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap)
 {
 	File * infile = File::Create(file, File::OPEN | File::READ);
 	if (!infile)
 	{
 		return 0;
 	}
-
-    int retCode = ReadPngFile(infile, image, targetFormat);
+    
+    bool res = ReadFile(infile, imageSet);
     SafeRelease(infile);
     
-    return retCode;
+    return res;
 }
 
-int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
+bool LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
 {
-    DVASSERT(targetFormat == FORMAT_INVALID || targetFormat == FORMAT_RGBA8888);
-    
+    Image* image = new Image();
+    bool retCode = ReadPngFile(infile, image);
+    if(!image)
+    {
+        return false;
+    }
+    imageSet.push_back(image);
+    return retCode == 1;
+}
+
+int LibPngWrapper::ReadPngFile(File *infile, Image * image)
+{
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
@@ -178,18 +196,10 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	if (color_type == PNG_COLOR_TYPE_GRAY ||
 		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
     {
-        if(targetFormat == FORMAT_RGBA8888)
+        image->format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
+        if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
         {
-            png_set_gray_to_rgb(png_ptr);
-            png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
-        }
-        else
-        {
-            image->format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
-            if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-            {
-                png_set_strip_alpha(png_ptr);
-            }
+            png_set_strip_alpha(png_ptr);
         }
 	}
 	else if(color_type == PNG_COLOR_TYPE_PALETTE)
@@ -249,14 +259,6 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	image->data = image_data;
 	
 	return 1;
-}
-
-bool LibPngWrapper::IsPngFile(File *file)
-{
-    char sig[8];
-    file->Read(sig, 8);
-	
-    return (0 != png_check_sig((unsigned char *) sig, 8));
 }
 
 uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
@@ -336,9 +338,7 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 	return imageSize;
 }
 
-
-
-bool LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
+bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps)
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
@@ -524,7 +524,7 @@ bool PngImage::Load(const FilePath & filename)
 
 bool PngImage::Save(const FilePath & filename)
 {
-	LibPngWrapper::WritePngFile(filename, width, height, data, format);
+	LibPngWrapper::Instance()->WriteFile(filename, width, height, data, format);
 	return true;
 }
 
@@ -589,22 +589,3 @@ bool PngImage::CreateFromFBOSprite(Sprite * fboSprite)
 	return true;
 }
 
-/*void process_file(void)
-{
-	if (info_ptr->color_type != PNG_COLOR_TYPE_RGBA)
-		abort_("[process_file] color_type of input file must be PNG_COLOR_TYPE_RGBA (is %d)", info_ptr->color_type);
-	
-	for (y=0; y<height; y++) {
-		png_byte* row = row_pointers[y];
-		for (x=0; x<width; x++) {
-			png_byte* ptr = &(row[x*4]);
-			printf("Pixel at position [ %d - %d ] has the following RGBA values: %d - %d - %d - %d\n",
-			       x, y, ptr[0], ptr[1], ptr[2], ptr[3]);
-			
-			
-			ptr[0] = 0;
-			ptr[1] = ptr[2];
-		}
-	}
-	
-}*/

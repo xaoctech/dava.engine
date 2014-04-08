@@ -37,9 +37,6 @@
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 
-//#include "Utils/Utils.h"
-//#include "Utils/CRC32.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -48,7 +45,7 @@
 
 namespace DAVA
 {
-
+//
 struct jpegErrorManager
 {
     /* "public" fields */
@@ -74,17 +71,18 @@ void jpegErrorExit (j_common_ptr cinfo)
     /* Jump to the setjmp point */
     longjmp(myerr->setjmp_buffer, 1);
 }
-    
-bool LibJpegWrapper::IsJpegFile(const FilePath & fileName)
+
+bool LibJpegWrapper::IsFileImage(File *file)
 {
+    String path = file->GetFilename().GetAbsolutePathname();
     struct jpeg_decompress_struct cinfo;
     struct jpegErrorManager jerr;
     
-    FILE *infile = fopen( fileName.GetAbsolutePathname().c_str(), "rb" );
+    FILE *infile = fopen( path.c_str(), "rb" );
     
     if ( !infile )
     {
-        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s could not be opened for reading", path.c_str());
         return false;
     }
     cinfo.err = jpeg_std_error( &jerr.pub );
@@ -94,7 +92,7 @@ bool LibJpegWrapper::IsJpegFile(const FilePath & fileName)
     {
         jpeg_destroy_decompress(&cinfo);
         fclose(infile);
-        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", fileName.GetAbsolutePathname().c_str());
+        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", path.c_str());
         return false;
     }
     jpeg_create_decompress( &cinfo );
@@ -105,11 +103,11 @@ bool LibJpegWrapper::IsJpegFile(const FilePath & fileName)
     return true;
 }
 
-bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
+bool LibJpegWrapper::ReadFile(const FilePath & fileName, Vector<Image *> &imageSet, int32 baseMipMap)
 {
     struct jpeg_decompress_struct cinfo;
     struct jpegErrorManager jerr;
-
+    
     FILE *infile = fopen( fileName.GetAbsolutePathname().c_str(), "rb" );
     if ( !infile )
     {
@@ -119,12 +117,12 @@ bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
     
     cinfo.err = jpeg_std_error( &jerr.pub );
     jerr.pub.error_exit = jpegErrorExit;
-    SafeDelete(image->data);
+    Image* image = NULL;
     if (setjmp(jerr.setjmp_buffer))
     {
         jpeg_destroy_decompress(&cinfo);
         fclose(infile);
-        SafeDelete(image->data);
+        SafeRelease(image);
         Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s has wrong jpeg header", fileName.GetAbsolutePathname().c_str());
         return false;
     }
@@ -134,10 +132,14 @@ bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
     jpeg_read_header( &cinfo, TRUE );
     jpeg_start_decompress( &cinfo );
     
-    image->width = cinfo.image_width;
-    image->height = cinfo.image_height;
-    image->data = new uint8 [cinfo.output_width*cinfo.output_height*cinfo.num_components];
+    PixelFormat format = FORMAT_RGB888;
+    if(cinfo.jpeg_color_space == JCS_GRAYSCALE)
+    {
+        format = FORMAT_A8;
+    }
     
+    image = Image::Create(cinfo.image_width, cinfo.image_height, format);
+
     JSAMPROW output_data;
     unsigned int scanline_len = cinfo.output_width * cinfo.output_components;
     
@@ -148,19 +150,20 @@ bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
         jpeg_read_scanlines(&cinfo, &output_data, 1);
         scanline_count++;
     }
-    
-    image->format = FORMAT_RGB888;
-    if(cinfo.jpeg_color_space == JCS_GRAYSCALE)
-    {
-        image->format = FORMAT_A8;
-    }
+        
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
     fclose(infile);
+    imageSet.push_back(image);
     return true;
 }
+
+bool LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
+{
+    return ReadFile(infile->GetFilename(), imageSet);
+}
     
-bool LibJpegWrapper::WriteJpegFile(const FilePath & file_name, int32 width, int32 height, uint8 * raw_image, PixelFormat format)
+bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 height, uint8 * raw_image, PixelFormat format, bool generateMipmaps)
 {
     DVASSERT(format == FORMAT_A8 || format == FORMAT_RGB888);
     struct jpeg_compress_struct cinfo;

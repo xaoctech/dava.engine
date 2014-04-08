@@ -1190,5 +1190,25 @@ uint32 NvttHelper::GetCubeFaceId(uint32 nvttFaceDesc, int faceIndex)
 	
 	return faceId;
 }
+    
+    bool LibDxtHelper::IsFileImage(File *file)
+    {
+        return IsDxtFile(file);
+    }
+    
+    bool LibDxtHelper::ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap)
+    {
+        return ReadDxtFile(file, imageSet, baseMipMap);
+    }
+	
+    bool LibDxtHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
+    {
+        return ReadDxtFile(infile, imageSet, baseMipMap);
+    }
+	
+    bool LibDxtHelper::WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps)
+    {
+        return WriteDdsFile(fileName, width, height, &data, 1, format, generateMipmaps);
+    }
 	
 };

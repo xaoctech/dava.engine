@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "FileSystem/FilePath.h"
+#include "Render/ImageFileWrapper.h"
 
 namespace DAVA 
 {
@@ -65,6 +66,24 @@ protected:
     static bool IsPNGFile(File *file);
 	static bool IsDDSFile(File *file);
     static bool IsJPEGFile(File *file);
+};
+    
+class ImageFileWrapperFactory
+{
+    public:
+    
+    enum eSupportedImageFileFormats
+	{
+		FILE_FORMAT_PNG = 0,
+        FILE_FORMAT_DDS,
+        FILE_FORMAT_PVR,
+        FILE_FORMAT_JPEG,
+        
+        FILE_FORMAT_COUNT
+	};
+	
+
+    static ImageFileWapper* GetImageFileWrapper(eSupportedImageFileFormats);
 };
 	
 };

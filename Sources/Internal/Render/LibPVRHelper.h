@@ -37,6 +37,7 @@
 #include "FileSystem/FilePath.h"
 
 #include "Render/RenderBase.h"
+#include "Render/ImageFileWrapper.h"
 
 
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
@@ -112,16 +113,22 @@ class Texture;
 class Image;
 class ImageSet;
 class File;
-class LibPVRHelper
+class LibPVRHelper: public ImageFileWapper
 {
 public:
+    
+    virtual bool IsFileImage(File *file);
+    
+	virtual bool ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap = 0);
+	
+    virtual bool ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
+	
+    virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false);
 
     static bool IsPvrFile(File *file);
     static uint32 GetMipMapLevelsCount(File *file);
 	static uint32 GetCubemapFaceCount(File* file);
-    
-    static bool ReadFile(File *file, const Vector<Image *> &imageSet, int32 baseMipMap);
-    
+        
     static PixelFormat GetPixelFormat(const FilePath &filePathname);
     static uint32 GetDataSize(const FilePath &filePathname);
 	
@@ -163,7 +170,7 @@ protected:
     //static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Image *image, uint32 mipMapLevel);
     
 	//load cubemap
-	static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel, uint32 baseMipMap);
+	static bool ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Vector<Image*>& images, uint32 mipMapLevel, uint32 baseMipMap);
     
     static bool CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData);
     

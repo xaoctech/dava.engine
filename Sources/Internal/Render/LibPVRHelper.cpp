@@ -57,6 +57,74 @@ namespace DAVA
 	
 const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
+
+bool LibPVRHelper::IsFileImage(File *file)
+{
+    file->Seek(0, File::SEEK_FROM_START);
+    PVRHeaderV3 header = GetHeader(file);
+    return (PVRTEX3_IDENT == header.u32Version);
+}
+
+bool LibPVRHelper::ReadFile(const FilePath & fileName, Vector<Image *> &imageSet, int32 baseMipMap)
+{
+    File *file = File::Create(fileName, File::READ | File::OPEN);
+    if(!file)
+    {
+        Logger::Error("[LibPVRHelper::ReadFile] cannot open file %s", fileName.GetAbsolutePathname().c_str());
+    }
+    
+    bool res = ReadFile(file, imageSet);
+    SafeRelease(file);
+    return res;
+}
+
+    
+bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMipMap)
+{
+    uint32 fileSize = file->GetSize();
+    uint8 *fileData = new uint8[fileSize];
+    if(!fileData)
+    {
+        Logger::Error("[LibPVRHelper::ReadFile]: cannot allocate buffer for file data");
+        return false;
+    }
+    
+    uint32 readSize = file->Read(fileData, fileSize);
+    if(readSize != fileSize)
+    {
+        Logger::Error("[LibPVRHelper::ReadFile]: cannot read from file");
+        
+        SafeDeleteArray(fileData);
+        return false;
+    }
+    
+    
+    bool preloaded = LibPVRHelper::PreparePVRData((const char *)fileData, fileSize);
+    if(!preloaded)
+    {
+        Logger::Error("[LibPVRHelper::ReadFile]: cannot prepare pvr data for parsing");
+        SafeDeleteArray(fileData);
+        return false;
+    }
+    
+    bool read = true;
+    uint32 mipmapLevelCount = LibPVRHelper::GetMipMapLevelsCount(file);
+    for (uint32 i = baseMipMap; i < mipmapLevelCount; ++i)
+    {
+        read &= ReadMipMapLevel((const char *)fileData, fileSize, imageSet, i, baseMipMap);
+    }
+    
+    SafeDeleteArray(fileData);
+    return read;
+}
+
+bool LibPVRHelper::WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps )
+{
+    DVASSERT(0);
+    // not implemented
+    return false;
+}
+
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
 {
 #if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -1792,7 +1860,7 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 	
-bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, const Vector<Image*>& images, uint32 mipMapLevel, uint32 baseMipMap)
+bool LibPVRHelper::ReadMipMapLevel(const char* pvrData, const int32 pvrDataSize, Vector<Image*>& images, uint32 mipMapLevel, uint32 baseMipMap)
 {
     DVASSERT(mipMapLevel >= baseMipMap);
     
@@ -2530,45 +2598,6 @@ uint32 LibPVRHelper::GetCubemapFaceCount(File* file)
 	file->Seek(0, File::SEEK_FROM_START);
 	PVRHeaderV3 header = GetHeader(file);
 	return header.u32NumFaces;
-}
-    
-bool LibPVRHelper::ReadFile(File *file, const Vector<Image *> &imageSet, int32 baseMipMap)
-{
-    uint32 fileSize = file->GetSize();
-    uint8 *fileData = new uint8[fileSize];
-    if(!fileData)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile]: cannot allocate buffer for file data");
-        return false;
-    }
-    
-    uint32 readSize = file->Read(fileData, fileSize);
-    if(readSize != fileSize)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile]: cannot read from file");
-        
-        SafeDeleteArray(fileData);
-        return false;
-    }
-    
-    
-    bool preloaded = LibPVRHelper::PreparePVRData((const char *)fileData, fileSize);
-    if(!preloaded)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile]: cannot prepare pvr data for parsing");
-        SafeDeleteArray(fileData);
-        return false;
-    }
-
-    bool read = true;
-	uint32 mipmapLevelCount = LibPVRHelper::GetMipMapLevelsCount(file);
-    for (uint32 i = baseMipMap; i < mipmapLevelCount; ++i)
-    {
-        read &= ReadMipMapLevel((const char *)fileData, fileSize, imageSet, i, baseMipMap);
-    }
-    
-    SafeDeleteArray(fileData);
-    return read;
 }
 
 uint32 LibPVRHelper::GetCubemapLayout(PVRHeaderV3* pvrHeader, const char* pvrData, const int32 pvrDataSize)
