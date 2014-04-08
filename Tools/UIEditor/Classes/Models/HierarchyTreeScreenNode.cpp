@@ -310,6 +310,11 @@ Vector2 HierarchyTreeScreenNode::GetMoveGuideStartPos() const
     return guides.GetMoveGuideStartPos();
 }
 
+const List<GuideData*> HierarchyTreeScreenNode::GetSelectedGuides() const
+{
+    return guides.GetSelectedGuides();
+}
+
 bool HierarchyTreeScreenNode::AreGuidesSelected() const
 {
     return guides.AreGuidesSelected();

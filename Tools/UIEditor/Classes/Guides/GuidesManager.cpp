@@ -358,16 +358,23 @@ void GuidesManager::ResetSelection()
     }
 }
 
-List<GuideData> GuidesManager::DeleteSelectedGuides()
+const List<GuideData*> GuidesManager::GetSelectedGuides() const
 {
     List<GuideData*> selectedGuides;
-    for (List<GuideData*>::iterator iter = activeGuides.begin(); iter != activeGuides.end(); iter ++)
+    for (List<GuideData*>::const_iterator iter = activeGuides.begin(); iter != activeGuides.end(); iter ++)
     {
         if ((*iter)->IsSelected())
         {
             selectedGuides.push_back(*iter);
         }
     }
+
+    return selectedGuides;
+}
+
+List<GuideData> GuidesManager::DeleteSelectedGuides()
+{
+    List<GuideData*> selectedGuides = GetSelectedGuides();
 
     List<GuideData> deletedGuides;
     for (List<GuideData*>::iterator iter = selectedGuides.begin(); iter != selectedGuides.end(); iter ++)

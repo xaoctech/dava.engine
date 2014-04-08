@@ -85,6 +85,22 @@ private:
     GuideData movedGuideData;
 };
 
+class MoveGuideByKeyboardCommand : public BaseGuideCommand
+{
+public:
+    MoveGuideByKeyboardCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta);
+
+    virtual void Execute();
+    virtual void Rollback();
+    
+   	virtual bool IsUndoRedoSupported() {return true;};
+    
+private:
+    bool isFirstMovePerformed;
+    Vector2 moveDelta;
+    List<Vector2> guidesPositions;
+};
+
 // Delete the guides.
 class DeleteGuidesCommand : public BaseGuideCommand
 {

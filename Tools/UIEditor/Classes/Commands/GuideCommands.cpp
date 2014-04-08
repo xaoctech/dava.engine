@@ -177,6 +177,86 @@ void MoveGuideCommand::UpdateGuidePosition(const GuideData& guideData, const Vec
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+MoveGuideByKeyboardCommand::MoveGuideByKeyboardCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta) :
+    BaseGuideCommand(screenNode),
+    isFirstMovePerformed(false),
+    moveDelta(delta)
+{
+}
+    
+void MoveGuideByKeyboardCommand::Execute()
+{
+    HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
+    if (!screen)
+    {
+        return;
+    }
+    
+    if (!isFirstMovePerformed)
+    {
+        // Gather all the selected guides and remember their original positions.
+        const List<GuideData*> selectedGuides = screen->GetSelectedGuides();
+        for (List<GuideData*>::const_iterator iter = selectedGuides.begin(); iter != selectedGuides.end(); iter ++)
+        {
+            GuideData* guideData = *iter;
+            guidesPositions.push_back(guideData->GetPosition());
+            guideData->SetPosition(guideData->GetPosition() + moveDelta);
+        }
+    
+        isFirstMovePerformed = true;
+    }
+    else
+    {
+        // Called after Rollback. Restore the guide position.
+        const List<GuideData*> allGuides = screen->GetGuides(false);
+        for (List<GuideData*>::const_iterator iter = allGuides.begin(); iter != allGuides.end(); iter ++)
+        {
+            GuideData* guideData = *iter;
+            
+            for (List<Vector2>::iterator innerIter = guidesPositions.begin(); innerIter != guidesPositions.end(); innerIter ++)
+            {
+                const Vector2& origPos = *innerIter;
+                if (guideData->GetPosition() == origPos)
+                {
+                    guideData->SetPosition(guideData->GetPosition() + moveDelta);
+                }
+            }
+        }
+    }
+
+    IncrementUnsavedChanges();
+    HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+void MoveGuideByKeyboardCommand::Rollback()
+{
+    HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
+    if (!screen || !isFirstMovePerformed)
+    {
+        return;
+    }
+
+    const List<GuideData*> allGuides = screen->GetGuides(false);
+    for (List<GuideData*>::const_iterator iter = allGuides.begin(); iter != allGuides.end(); iter ++)
+    {
+        GuideData* guideData = *iter;
+
+        for (List<Vector2>::iterator innerIter = guidesPositions.begin(); innerIter != guidesPositions.end(); innerIter ++)
+        {
+            const Vector2& origPos = *innerIter;
+            if (guideData->GetPosition() - moveDelta == origPos)
+            {
+                guideData->SetPosition(origPos);
+            }
+        }
+    }
+
+    DecrementUnsavedChanges();
+    HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 DeleteGuidesCommand::DeleteGuidesCommand(const HierarchyTreeScreenNode* screenNode) :
     BaseGuideCommand(screenNode),
     isFirstDeletePerformed(false)

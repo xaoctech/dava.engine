@@ -115,7 +115,8 @@ public:
     bool UpdateGuidePosition(const GuideData& guideData, const Vector2& newPos);
 
     const List<GuideData*> GetGuides(bool includeNewGuide) const;
-
+    const List<GuideData*> GetSelectedGuides() const;
+    
     // Set the guide enabled mode.
     bool AreGuidesEnabled() const;
     void SetGuidesEnabled(bool value);
