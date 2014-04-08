@@ -28,31 +28,30 @@
 
 
 
-#ifndef __DAVAENGINE_JPEG_HELPER_H__
-#define __DAVAENGINE_JPEG_HELPER_H__
+#ifndef __DAVAENGINE_IMAGE_FILE_WRAPPER_H__
+#define __DAVAENGINE_IMAGE_FILE_WRAPPER_H__
 
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFileWrapper.h"
 
 namespace DAVA 
 {
 
-class LibJpegWrapper: public ImageFileWapper
+class Image;
+class File;
+
+class ImageFileWapper:public Singleton<ImageFileWapper>
 {
 public:
     
-    virtual bool IsFileImage(File *file);
+    virtual bool IsFileImage(File *file) = 0;
     
-	virtual bool ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
-    virtual bool ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
-    virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false);
-    
+	virtual bool ReadFile(const FilePath & file,  Vector<Image *> &imageSet, int32 baseMipMap = 0) = 0;
+	virtual bool ReadFile(File *infile,  Vector<Image *> &imageSet, int32 baseMipMap = 0) = 0;
+	virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false) = 0;
 };
 
 };
 
-#endif // __DAVAENGINE_JPEG_HELPER_H__
+#endif // __DAVAENGINE_IMAGE_FILE_WRAPPER_H__
