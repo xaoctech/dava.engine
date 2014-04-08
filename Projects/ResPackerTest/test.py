@@ -10,9 +10,13 @@ import sys;
     
 arguments = sys.argv[1:]
 
-gpu = "Default"
-if (len(arguments) > 0):
-    gpu = arguments[0]
+if 3 != len(arguments):
+    print 'Usage: ./create_performance_mail_report.py Gpu Recepients Link'
+    exit(1)
+
+gpu = arguments[0]  
+recipients = arguments[1]
+link = arguments[2]
 
 currentDir = os.getcwd();
 
@@ -55,14 +59,17 @@ print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
 subprocess.call(params)
 
 print "*** DAVA AUTOTEST Check result for %s ***" % gpu
-i = 0
 
+
+os_name = "Windows"
 print "Convert DDS files:"
 if (platform.system() == "Windows"):
     subprocess.call(toolDir + "/ImageUnpacker.exe -folder " + output, shell=True)
 else:
+    os_name = "MacOS"
     subprocess.call(toolDir + "/ImageUnpacker -folder " + output, shell=True)
 
+i = 0
 for test in os.listdir(results):
     if(os.path.isdir(os.path.realpath(results + "/" + test))):
         i = i + 1
@@ -169,3 +176,11 @@ report_utils.create_html(tests_results, currentDir + "/" + gpu + ".html")
 print "*** DAVA AUTOTEST Copy results for artifact storing ***"
 print "Copy results for storing in TC %s -> %s" % (output, currentDir + "/Artifacts/" + gpu)
 shutil.copytree(output, currentDir + "/Artifacts/" + gpu)
+
+if tests_results["success"] != tests_results['tests']:
+    subject = "[AUTOTEST] Test for resource packer: Platform = %s GPU = %s" % (os_name, gpu)
+    msg = "Test: runned= %d succes= %d failed= %d <br>" % (tests_results['tests'], tests_results['success'], tests_results['tests'] - tests_results['success'])
+    msg += "Failures: Txt %d Tex %d Image %d <br>" % (tests_results['txt_failure'], tests_results['tex_failure'], tests_results['img_failure'])
+    msg += "<br> Link: %s/%s.html" % (link, gpu)
+    
+    utils.call("python", "mail.py", recipients, subject, msg)
