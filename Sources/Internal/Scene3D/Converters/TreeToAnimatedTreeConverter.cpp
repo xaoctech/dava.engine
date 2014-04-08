@@ -32,6 +32,47 @@
 
 #include "Render/Material/NMaterialNames.h"
 
+#define LEAF_BASE_ANGLE_DIFFERENCE_FACTOR 100
+#define LEAF_AMPLITUDE_USERFRIENDLY_FACTOR 0.01f
+#define TRUNK_AMPLITUDE_USERFRIENDLY_FACTOR 0.1f
+
+void TreeToAnimatedTreeConverter::CalculateBinormalsForTreeObject(SpeedTreeObject * object)
+{
+    float32 treeHeight = object->GetBoundingBox().GetSize().z;
+
+    uint32 size = object->GetRenderBatchCount();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        RenderBatch * rb = object->GetRenderBatch(k);
+        PolygonGroup * pg = rb->GetPolygonGroup();
+        if(pg)
+        {
+            int32 vertexFormat = pg->GetFormat();
+            DVASSERT((vertexFormat & EVF_BINORMAL) > 0);
+
+            int32 vxCount = pg->GetVertexCount();
+            for(int32 i = 0; i < vxCount; ++i)
+            {
+                Vector3 vxPosition;
+
+                pg->GetCoord(i, vxPosition);
+                float32 t0 = vxPosition.Length() * LEAF_BASE_ANGLE_DIFFERENCE_FACTOR;
+
+                float32 x = vxPosition.z / treeHeight;
+                float32 flexebility = logf((expf(1.0) - 1) * x + 1);
+
+                float32 leafHeightOscillationCoeff = (.5f + x/2);
+                //Binormal: x: cos(T0);  y: sin(T0); z - flexebility
+                Vector3 binormal(cosf(t0) * leafHeightOscillationCoeff * LEAF_AMPLITUDE_USERFRIENDLY_FACTOR, 
+                    sinf(t0) * leafHeightOscillationCoeff * LEAF_AMPLITUDE_USERFRIENDLY_FACTOR, 
+                    flexebility * TRUNK_AMPLITUDE_USERFRIENDLY_FACTOR);
+
+                pg->SetBinormal(i, binormal);
+            }
+        }
+    }
+}
+
 void TreeToAnimatedTreeConverter::ConvertTreesRecursive(Entity * node)
 {
     for(int32 c = 0; c < node->GetChildrenCount(); ++c)
@@ -76,8 +117,6 @@ void TreeToAnimatedTreeConverter::ConvertTreesRecursive(Entity * node)
 
 void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
 {
-    float32 treeHeight = object->GetBoundingBox().GetSize().z;
-
     uint32 size = object->GetRenderBatchCount();
     for (uint32 k = 0; k < size; ++k)
     {
@@ -128,18 +167,11 @@ void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
                     pg->GetTangent(i, vxTangent);
                     newPG->SetTangent(i, vxTangent);
                 }
-
-				float32 t0  = vxPosition.Length() * 100;
-                float32 x = vxPosition.z / treeHeight;
-                float32 flexebility = logf((expf(1.0) - 1) * x + 1);
-
-                //Binormal: x: cos(T0);  y: sin(T0); z - flexebility
-                Vector3 binormal(cosf(t0) * (.5f + x/2) / 100.f, sinf(t0) * (.5f + x/2) / 100.f, flexebility / 10.f);
-
-                newPG->SetBinormal(i, binormal);
             }
 
             rb->SetPolygonGroup(newPG);
         }
     }
+
+    CalculateBinormalsForTreeObject(object);
 }
