@@ -208,7 +208,7 @@ void main()
     vec3 windVectorFlex = trunkOscillationParams * inBinormal.z; //inBinormal.z - flexebility
     vec3 pivot = inTangent + windVectorFlex;
     
-    vec3 offset = inPosition.xyz - pivot;
+    vec3 offset = inPosition.xyz - inTangent;
     
     vec2 SinCos = vec2(inBinormal) * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
     float sinT = SinCos.x + SinCos.y;     //sin(t+t0)*A = sin*cos + cos*sin
@@ -221,7 +221,7 @@ void main()
     offset.x = rotatedOffsetXY.z - rotatedOffsetXY.w; //x*cos - y*sin
     offset.y = rotatedOffsetXY.x + rotatedOffsetXY.y; //x*sin + y*cos
 
-    gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate + windVectorFlex, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
+    gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
     
 #else // not WIND_ANIMATION and SPEED_TREE_LEAF
     
