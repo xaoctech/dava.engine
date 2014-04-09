@@ -74,69 +74,100 @@ void jpegErrorExit (j_common_ptr cinfo)
     /* Jump to the setjmp point */
     longjmp(myerr->setjmp_buffer, 1);
 }
-    
+
 bool LibJpegWrapper::IsJpegFile(const FilePath & fileName)
+{
+    File * infile = File::Create(fileName, File::OPEN | File::READ);
+	if (!infile)
+	{
+        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+		return false;
+	}
+    
+    bool retValue = IsJpegFile(infile);
+    SafeRelease(infile);
+    return retValue;
+} 
+    
+bool LibJpegWrapper::IsJpegFile(File *infile)
 {
     struct jpeg_decompress_struct cinfo;
     struct jpegErrorManager jerr;
-    
-    FILE *infile = fopen( fileName.GetAbsolutePathname().c_str(), "rb" );
-    
-    if ( !infile )
-    {
-        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
-        return false;
-    }
+
+    infile->Seek(0, File::SEEK_FROM_START);
+	uint32 fileSize = infile->GetSize();
+	uint8* fileBuffer= new uint8[fileSize];
+	infile->Read(fileBuffer, fileSize);
+    infile->Seek(0, File::SEEK_FROM_START);
     cinfo.err = jpeg_std_error( &jerr.pub );
     
     jerr.pub.error_exit = jpegErrorExit;
     if (setjmp(jerr.setjmp_buffer))
     {
         jpeg_destroy_decompress(&cinfo);
-        fclose(infile);
-        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", fileName.GetAbsolutePathname().c_str());
+        SafeDeleteArray(fileBuffer);
+        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", infile->GetFilename().GetAbsolutePathname().c_str());
         return false;
     }
     jpeg_create_decompress( &cinfo );
-    jpeg_stdio_src( &cinfo, infile );
+    jpeg_mem_src( &cinfo, fileBuffer,fileSize);
     jpeg_read_header( &cinfo, TRUE );
     jpeg_destroy_decompress( &cinfo );
-    fclose( infile );
+    SafeDeleteArray(fileBuffer);
     return true;
 }
 
 bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
 {
+    File * infile = File::Create(fileName, File::OPEN | File::READ);
+	if (!infile)
+	{
+        Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+		return false;
+	}
+    
+    bool retValue = ReadJpegFile(infile, image);
+    SafeRelease(infile);
+    return retValue;
+}
+    
+bool LibJpegWrapper::ReadJpegFile(File *infile, Image * image)
+{
+    if(NULL == image)
+    {
+        return false;
+    }
+    //as image->data will be rewrited, need to erase present buffer
+    SafeDeleteArray(image->data);
     struct jpeg_decompress_struct cinfo;
     struct jpegErrorManager jerr;
 
-    FILE *infile = fopen( fileName.GetAbsolutePathname().c_str(), "rb" );
-    if ( !infile )
-    {
-        Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
-        return false;
-    }
+    infile->Seek(0, File::SEEK_FROM_START);
+	uint32 fileSize = infile->GetSize();
+	uint8* fileBuffer= new uint8[fileSize];
+	infile->Read(fileBuffer, fileSize);
+	infile->Seek(0, File::SEEK_FROM_START);
     
     cinfo.err = jpeg_std_error( &jerr.pub );
     jerr.pub.error_exit = jpegErrorExit;
-    SafeDelete(image->data);
+    //set error handling block, which will be called in case of fail of jpeg_start_decompress,jpeg_read_scanlines...
     if (setjmp(jerr.setjmp_buffer))
     {
         jpeg_destroy_decompress(&cinfo);
-        fclose(infile);
-        SafeDelete(image->data);
-        Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s has wrong jpeg header", fileName.GetAbsolutePathname().c_str());
+        SafeDeleteArray(fileBuffer);
+        SafeDeleteArray(image->data);
+        Logger::Error("[LibJpegWrapper::ReadJpegFile] File %s has wrong jpeg header", infile->GetFilename() .GetAbsolutePathname().c_str());
         return false;
     }
     
-    jpeg_create_decompress( &cinfo );
-    jpeg_stdio_src( &cinfo, infile );
+    jpeg_create_decompress(&cinfo);
+    jpeg_mem_src(&cinfo, fileBuffer, fileSize);
     jpeg_read_header( &cinfo, TRUE );
-    jpeg_start_decompress( &cinfo );
+    jpeg_start_decompress(&cinfo);
     
     image->width = cinfo.image_width;
     image->height = cinfo.image_height;
-    image->data = new uint8 [cinfo.output_width*cinfo.output_height*cinfo.num_components];
+    image->data = new uint8 [cinfo.output_width * cinfo.output_height * cinfo.num_components];
     
     JSAMPROW output_data;
     unsigned int scanline_len = cinfo.output_width * cinfo.output_components;
@@ -156,7 +187,7 @@ bool LibJpegWrapper::ReadJpegFile(const FilePath & fileName, Image * image)
     }
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
-    fclose(infile);
+	SafeDeleteArray(fileBuffer);
     return true;
 }
     
