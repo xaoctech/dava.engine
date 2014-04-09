@@ -108,9 +108,14 @@ public:
     virtual float32 GetOscillationLeafsSpeed(const Vector3 & forPosition) const;
     
 protected:
+    void UpdateWindDirection();
+
+    Vector3 windDirection;
     float32 time;
 
     WindComponent * windComponent;
+
+    friend class SpeedTreeUpdateSystem;
 };
     
 class MovingTreeOscillator : public TreeOscillator
