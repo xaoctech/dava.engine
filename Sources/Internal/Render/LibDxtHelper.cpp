@@ -1190,25 +1190,39 @@ uint32 NvttHelper::GetCubeFaceId(uint32 nvttFaceDesc, int faceIndex)
 	
 	return faceId;
 }
-    
-    bool LibDxtHelper::IsFileImage(File *file)
+
+bool LibDxtHelper::IsImage(const FilePath & fileName)
+{
+    File * infile = File::Create(fileName, File::OPEN | File::READ);
+    if (!infile)
     {
-        return IsDxtFile(file);
+        Logger::Error("[LibDxtHelper::IsImage] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+        return false;
     }
     
-    bool LibDxtHelper::ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap)
-    {
-        return ReadDxtFile(file, imageSet, baseMipMap);
-    }
-	
-    bool LibDxtHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
-    {
-        return ReadDxtFile(infile, imageSet, baseMipMap);
-    }
-	
-    bool LibDxtHelper::WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps)
-    {
-        return WriteDdsFile(fileName, width, height, &data, 1, format, generateMipmaps);
-    }
+    bool retValue = IsImage(infile);
+    SafeRelease(infile);
+    return retValue;
+}
+    
+bool LibDxtHelper::IsImage(File *file)
+{
+    return IsDxtFile(file);
+}
+
+bool LibDxtHelper::ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap)
+{
+    return ReadDxtFile(file, imageSet, baseMipMap);
+}
+
+bool LibDxtHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
+{
+    return ReadDxtFile(infile, imageSet, baseMipMap);
+}
+
+bool LibDxtHelper::WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps)
+{
+    return WriteDdsFile(fileName, width, height, &data, 1, format, generateMipmaps);
+}
 	
 };

@@ -31,10 +31,7 @@
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/RenderBase.h"
-#include "Render/LibPngHelpers.h"
-#include "Render/LibJpegHelper.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+
 #include "Platform/SystemTimer.h"
 #include "Utils/Utils.h"
 #include "Render/ImageConvert.h"
@@ -42,6 +39,11 @@
 namespace DAVA 
 {
 
+LibPngWrapper   ImageFileWrapperFactory::pngHelper = LibPngWrapper();
+LibDxtHelper    ImageFileWrapperFactory::dxtHelper = LibDxtHelper();
+LibPVRHelper    ImageFileWrapperFactory::pvrHelper = LibPVRHelper();
+LibJpegWrapper  ImageFileWrapperFactory::jpegHelper = LibJpegWrapper();
+    
 bool ImageLoader::CreateFromFileByExtension(const FilePath &pathname, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
 {
     if(pathname.IsEqualToExtension("*.pvr"))
@@ -222,7 +224,7 @@ bool ImageLoader::CreateFromJPEG(File *file, Vector<Image *> & imageSet)
 
 bool ImageLoader::CreateFromDDS(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
 {
-	return LibDxtHelper::ReadDxtFile(file, imageSet, baseMipmap);
+	//return LibDxtHelper::ReadDxtFile(file, imageSet, baseMipmap);
 }
 
 bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
@@ -261,7 +263,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
 bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
 {
     bool retValue = false;
-    DVASSERT(image ||pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"));
+    DVASSERT(image && (pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg")));
     
     DVASSERT((FORMAT_RGB888 == image->format)||(FORMAT_RGBA8888 == image->format) ||
              (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
@@ -317,22 +319,27 @@ ImageFileWapper* ImageFileWrapperFactory::GetImageFileWrapper(eSupportedImageFil
     switch (format)
     {
         case FILE_FORMAT_PNG:
-            return LibPngWrapper::Instance();
+            return &pngHelper;
             break;
         case FILE_FORMAT_DDS:
-            return LibDxtHelper::Instance();
+            return &dxtHelper;
             break;
         case FILE_FORMAT_PVR:
-            return LibPVRHelper::Instance();
+            return &pvrHelper;
             break;
         case FILE_FORMAT_JPEG:
-            return LibJpegWrapper::Instance();
+            return &jpegHelper;
             break;
-
     }
+    
     DVASSERT(0);
     return NULL;
+}
 
+ImageFileWapper* ImageFileWrapperFactory::GetImageFileWrapper(const FilePath&)
+{
+    DVASSERT(0);
+    return NULL;
 }
     
 };

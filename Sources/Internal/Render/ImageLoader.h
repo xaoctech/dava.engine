@@ -33,13 +33,18 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFileWrapper.h"
+#include "Render/LibPngHelpers.h"
+#include "Render/LibJpegHelper.h"
+#include "Render/LibPVRHelper.h"
+#include "Render/LibDxtHelper.h"
 
 namespace DAVA 
 {
 
 class File;
 class Image;
+    
+   
 class ImageLoader
 {
 public:
@@ -70,20 +75,30 @@ protected:
     
 class ImageFileWrapperFactory
 {
-    public:
+
+public:
     
     enum eSupportedImageFileFormats
 	{
 		FILE_FORMAT_PNG = 0,
         FILE_FORMAT_DDS,
         FILE_FORMAT_PVR,
-        FILE_FORMAT_JPEG,
-        
-        FILE_FORMAT_COUNT
-	};
-	
+        FILE_FORMAT_JPEG
+    };	
 
     static ImageFileWapper* GetImageFileWrapper(eSupportedImageFileFormats);
+    
+    static ImageFileWapper* GetImageFileWrapper(const FilePath&);
+    
+private:
+    
+    static LibPngWrapper  pngHelper;
+    
+    static LibDxtHelper   dxtHelper;
+    
+    static LibPVRHelper   pvrHelper;
+    
+    static LibJpegWrapper jpegHelper;
 };
 	
 };

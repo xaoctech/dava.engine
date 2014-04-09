@@ -44,7 +44,7 @@
 #include "Render/RenderManager.h"
 #include "Render/2D/Sprite.h"
 #include "Render/Texture.h"
-#include "Render/Image.h"
+//#include "Render/Image.h"
 #include "FileSystem/FileSystem.h"
 
 using namespace DAVA;
@@ -95,7 +95,21 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 	self->file->Read(data, (uint32)size);
 }
 
-bool LibPngWrapper::IsFileImage(File *file)
+bool LibPngWrapper::IsImage(const FilePath & fileName)
+{
+    File * infile = File::Create(fileName, File::OPEN | File::READ);
+    if (!infile)
+    {
+        Logger::Error("[LibPngWrapper::IsImage] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+    bool retValue = IsImage(infile);
+    SafeRelease(infile);
+    return retValue;
+}
+
+bool LibPngWrapper::IsImage(File *file)
 {
     char sig[8];
     file->Read(sig, 8);
@@ -524,7 +538,7 @@ bool PngImage::Load(const FilePath & filename)
 
 bool PngImage::Save(const FilePath & filename)
 {
-	LibPngWrapper::Instance()->WriteFile(filename, width, height, data, format);
+	LibPngWrapper().WriteFile(filename, width, height, data, format);
 	return true;
 }
 
