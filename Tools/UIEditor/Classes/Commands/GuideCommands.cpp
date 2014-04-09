@@ -195,7 +195,7 @@ void MoveGuideByKeyboardCommand::Execute()
     if (!isFirstMovePerformed)
     {
         // Gather all the selected guides and remember their original positions.
-        const List<GuideData*> selectedGuides = screen->GetSelectedGuides();
+        const List<GuideData*>& selectedGuides = screen->GetSelectedGuides();
         for (List<GuideData*>::const_iterator iter = selectedGuides.begin(); iter != selectedGuides.end(); iter ++)
         {
             GuideData* guideData = *iter;
@@ -208,7 +208,7 @@ void MoveGuideByKeyboardCommand::Execute()
     else
     {
         // Called after Rollback. Restore the guide position.
-        const List<GuideData*> allGuides = screen->GetGuides(false);
+        const List<GuideData*>& allGuides = screen->GetGuides(false);
         for (List<GuideData*>::const_iterator iter = allGuides.begin(); iter != allGuides.end(); iter ++)
         {
             GuideData* guideData = *iter;
@@ -236,7 +236,7 @@ void MoveGuideByKeyboardCommand::Rollback()
         return;
     }
 
-    const List<GuideData*> allGuides = screen->GetGuides(false);
+    const List<GuideData*>& allGuides = screen->GetGuides(false);
     for (List<GuideData*>::const_iterator iter = allGuides.begin(); iter != allGuides.end(); iter ++)
     {
         GuideData* guideData = *iter;

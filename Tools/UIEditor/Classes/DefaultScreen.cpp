@@ -582,7 +582,7 @@ void DefaultScreen::MoveGuides(eKeyboardMoveDirection moveDirection, const Vecto
     bool vertGuidesSelected = false;
 
     // Check whether move is possible.
-    const List<GuideData*> selectedGuides = screenNode->GetSelectedGuides();
+    const List<GuideData*>& selectedGuides = screenNode->GetSelectedGuides();
     for (List<GuideData*>::const_iterator iter = selectedGuides.begin(); iter != selectedGuides.end(); iter ++)
     {
         GuideData* curGuideData =  *iter;
@@ -1646,7 +1646,7 @@ void DefaultScreen::DrawGuides()
     Vector<float32> unselectedGuides;
     Rect rect = ScreenWrapper::Instance()->GetBackgroundFrameRect();
     
-    const List<GuideData*> guides = activeScreen->GetGuides(true);
+    const List<GuideData*>& guides = activeScreen->GetGuides(true);
     for (List<GuideData*>::const_iterator iter = guides.begin(); iter != guides.end(); iter ++)
     {
         GuideData* curData = *iter;
