@@ -131,8 +131,12 @@ class MainForwardRenderPass : public RenderPass
 {
 	WaterReflectionRenderPass *reflectionPass;
     WaterRefractionRenderPass *refractionPass;
-    Texture *reflectionTexture, *refractionTexture;
-    Sprite *reflectionSprite, *refractionSprite;
+    Texture *reflectionTexture, *refractionTexture;    
+    
+    bool needWaterPrepass;
+    AABBox3 waterBox;
+
+    void PrepareReflectionRefractionTextures(Camera * camera, RenderSystem * renderSystem);
 public:
     MainForwardRenderPass(const FastName & name, RenderPassID id);
 	~MainForwardRenderPass();
