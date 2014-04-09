@@ -146,6 +146,8 @@ WindTreeOscillator::WindTreeOscillator(Entity * owner) :
     windComponent = GetWindComponent(entityOwner);
     DVASSERT(windComponent);
 
+    windDirection = windComponent->GetWindDirection();
+
     SetInfluenceDistance(1e6);
 }
     
@@ -156,12 +158,18 @@ void WindTreeOscillator::Update(float32 timeElapsed)
     
 Vector3 WindTreeOscillator::GetOscillationTrunkOffset(const Vector3 & forPosition) const
 {
-    return windComponent->GetWindDirection() * windComponent->GetWindForce() * (sinf(time * windComponent->GetWindForce()) + .5f);
+    float32 windForce = windComponent->GetWindForce();
+    return windDirection * windForce * (sinf(time * windForce) + .5f);
 }
     
 float32 WindTreeOscillator::GetOscillationLeafsSpeed(const Vector3 & forPosition) const
 {
     return windComponent->GetWindForce();
+}
+
+void WindTreeOscillator::UpdateWindDirection()
+{
+    windDirection = windComponent->GetWindDirection();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

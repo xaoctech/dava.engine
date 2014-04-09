@@ -74,17 +74,33 @@ void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
 	if(event == EventSystem::WORLD_TRANSFORM_CHANGED)
 	{
-		uint32 treeCount = allTrees.size();
-		for(uint32 i = 0; i < treeCount; ++i)
-		{
-			TreeInfo * info = allTrees[i];
-			if(info->treeEntity == entity)
-			{
-				Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
-				info->wtPosition = wtMx.GetTranslationVector();
-				wtMx.GetInverse(info->wtInvMx);
-			}
-		}
+        if(GetSpeedTreeComponent(entity))
+        {
+            uint32 treeCount = allTrees.size();
+            for(uint32 i = 0; i < treeCount; ++i)
+            {
+                TreeInfo * info = allTrees[i];
+                if(info->treeEntity == entity)
+                {
+                    Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
+                    info->wtPosition = wtMx.GetTranslationVector();
+                    wtMx.GetInverse(info->wtInvMx);
+                }
+            }
+        }
+
+        if(GetWindComponent(entity))
+        {
+            int32 oscCount = activeOscillators.size();
+            for(int32 i = 0; i < oscCount; ++i)
+            {
+                TreeOscillator * osc = activeOscillators[i];
+                if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_WIND && osc->GetOwner() == entity)
+                {
+                    DynamicTypeCheck<WindTreeOscillator*>(osc)->UpdateWindDirection();
+                }
+            }
+        }
 	}
 }
 
