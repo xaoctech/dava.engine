@@ -65,6 +65,9 @@ SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
     }
     
     activeOscillators.clear();
+
+    RenderOptions * options = RenderManager::Instance()->GetOptions();
+    options->RemoveObserver(this);
 }
 
 void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
