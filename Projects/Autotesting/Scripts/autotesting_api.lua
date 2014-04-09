@@ -750,18 +750,21 @@ function ClickControl(name, time, touchId)
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
        
-        local control = autotestingSystem:FindControl(name)
-        local screen = autotestingSystem:GetScreen()
-		
-        if control and IsVisible(name) and IsCenterOnScreen(control) then     
-            local position = GetCenter(name)
-            ClickPosition(position, TIMECLICK, touchId)
-            return true
-        else
-			coroutine.yield()
+        if autotestingSystem:FindControl(name) then     
+            break
+		else
+			Yield()
         end
     end
-		
+	
+	local control = autotestingSystem:FindControl(name)
+	--local screen = autotestingSystem:GetScreen()
+	if control and IsVisible(name) and IsCenterOnScreen(control) then     
+        local position = GetCenter(name)
+        ClickPosition(position, TIMECLICK, touchId)
+        return true
+    end
+	
 	local control = autotestingSystem:FindControl(name)
 	if  control then
 		if not IsVisible(name) then
