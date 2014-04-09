@@ -46,15 +46,18 @@ class LibDxtHelper: public ImageFileWapper
 {
 public:
     
-    virtual bool IsFileImage(File *file);
+    virtual bool IsImage(File *file);
+    
+    virtual bool IsImage(const FilePath & fileName);
     
 	virtual bool ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap = 0);
 	
     virtual bool ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
+       
     virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false);
     
-	
+
+    
 	static bool IsDxtFile(const FilePath & fileName);
 	static bool IsDxtFile(File * file);
 

@@ -57,8 +57,21 @@ namespace DAVA
 	
 const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
-
-bool LibPVRHelper::IsFileImage(File *file)
+bool LibPVRHelper::IsImage(const FilePath & fileName)
+{
+    File * infile = File::Create(fileName, File::OPEN | File::READ);
+    if (!infile)
+    {
+        Logger::Error("[LibPVRHelper::IsImage] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
+        return false;
+    }
+    
+    bool retValue = IsImage(infile);
+    SafeRelease(infile);
+    return retValue;
+}
+    
+bool LibPVRHelper::IsImage(File *file)
 {
     file->Seek(0, File::SEEK_FROM_START);
     PVRHeaderV3 header = GetHeader(file);

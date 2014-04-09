@@ -43,14 +43,14 @@ class LibJpegWrapper: public ImageFileWapper
 {
 public:
     
-    virtual bool IsFileImage(File *file);
+    bool IsImage(const FilePath & fileName);
+    bool IsImage(File *file);
     
-	virtual bool ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
-    virtual bool ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
-    virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false);
+    bool ReadFile(const FilePath & file,  Vector<Image *> &imageSet, int32 baseMipMap = 0);
+    bool ReadFile(File *infile,  Vector<Image *> &imageSet, int32 baseMipMap = 0);
     
+    //only RGB888 or A8
+    bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps);
 };
 
 };
