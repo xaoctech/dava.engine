@@ -119,6 +119,13 @@ uniform lowp vec4 flatColor;
 #if defined(MATERIAL_GRASS)
 uniform sampler2D vegetationmap;
 varying vec2 varTexCoord2;
+
+#if defined(VEGETATION_DRAW_LOD_COLOR)
+
+uniform vec3 lodColor;
+
+#endif
+
 #endif
 
 void main()
@@ -126,29 +133,29 @@ void main()
     // FETCH PHASE
 #if defined(MATERIAL_TEXTURE)
     
-    #if defined(PIXEL_LIT) || defined(ALPHATEST) || defined(ALPHABLEND) || defined(VERTEX_LIT)
-        lowp vec4 textureColor0 = texture2D(albedo, varTexCoord0);
-    #else
-        lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
-    #endif
+#if defined(PIXEL_LIT) || defined(ALPHATEST) || defined(ALPHABLEND) || defined(VERTEX_LIT)
+    lowp vec4 textureColor0 = texture2D(albedo, varTexCoord0);
+#else
+    lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
+#endif
     
-    #if defined(FRAME_BLEND)
-        lowp vec4 blendFrameColor = texture2D(albedo, varTexCoord1);
-        textureColor0 = mix(textureColor0, blendFrameColor, varTime);
-    #endif
+#if defined(FRAME_BLEND)
+    lowp vec4 blendFrameColor = texture2D(albedo, varTexCoord1);
+    textureColor0 = mix(textureColor0, blendFrameColor, varTime);
+#endif
     
 #elif defined(MATERIAL_SKYBOX)
     lowp vec4 textureColor0 = textureCube(cubemap, varTexCoord0);
 #endif
     
 #if defined(MATERIAL_TEXTURE)
-    #if defined(ALPHATEST)
-        float alpha = textureColor0.a;
-        #if defined(VERTEX_COLOR)
-            alpha *= varVertexColor.a;
-        #endif
-        if (alpha < 0.5)discard;
-    #endif
+#if defined(ALPHATEST)
+    float alpha = textureColor0.a;
+#if defined(VERTEX_COLOR)
+    alpha *= varVertexColor.a;
+#endif
+    if (alpha < 0.5)discard;
+#endif
 #endif
     
 #if defined(MATERIAL_DECAL)
@@ -159,45 +166,45 @@ void main()
     lowp vec3 textureColor1 = texture2D(detail, varTexCoord1).rgb;
 #endif
     
-//#if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
+    //#if defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
 #if defined(MATERIAL_LIGHTMAP)
     lowp vec3 textureColor1 = texture2D(lightmap, varTexCoord1).rgb;
 #endif
     
-//#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
+    //#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY)
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP)
-    #if defined(SETUP_LIGHTMAP)
-        vec3 lightGray = vec3(0.75, 0.75, 0.75);
-        vec3 darkGray = vec3(0.25, 0.25, 0.25);
-
-        bool isXodd;
-        bool isYodd;
-        if(fract(floor(varTexCoord1.x*varLightmapSize)/2.0) == 0.0)
-        {
-            isXodd = true;
-        }
-        else
-        {
-            isXodd = false;
-        }
-        if(fract(floor(varTexCoord1.y*varLightmapSize)/2.0) == 0.0)
-        {
-            isYodd = true;
-        }
-        else
-        {
-            isYodd = false;
-        }
+#if defined(SETUP_LIGHTMAP)
+    vec3 lightGray = vec3(0.75, 0.75, 0.75);
+    vec3 darkGray = vec3(0.25, 0.25, 0.25);
     
-        if((isXodd && isYodd) || (!isXodd && !isYodd))
-        {
-            textureColor1 = lightGray;
-        }
-        else
-        {
-            textureColor1 = darkGray;
-        }
-    #endif
+    bool isXodd;
+    bool isYodd;
+    if(fract(floor(varTexCoord1.x*varLightmapSize)/2.0) == 0.0)
+    {
+        isXodd = true;
+    }
+    else
+    {
+        isXodd = false;
+    }
+    if(fract(floor(varTexCoord1.y*varLightmapSize)/2.0) == 0.0)
+    {
+        isYodd = true;
+    }
+    else
+    {
+        isYodd = false;
+    }
+    
+    if((isXodd && isYodd) || (!isXodd && !isYodd))
+    {
+        textureColor1 = lightGray;
+    }
+    else
+    {
+        textureColor1 = darkGray;
+    }
+#endif
 #endif
     
     // DRAW PHASE
@@ -206,37 +213,37 @@ void main()
     //ATTENTION:
     //BE CAREFUL TO MODIFY BOTH PARTS OF THIS CONDITION
     //THEY SHOULD BE IDENTICAL IN MATH!
-    #if defined(VIEW_AMBIENT) || defined(VIEW_DIFFUSE) || defined(VIEW_SPECULAR) || defined(VIEW_ALBEDO)
+#if defined(VIEW_AMBIENT) || defined(VIEW_DIFFUSE) || defined(VIEW_SPECULAR) || defined(VIEW_ALBEDO)
     
-        //THIS PART IS USED BY RES EDITOR
+    //THIS PART IS USED BY RES EDITOR
     
-        vec3 color = vec3(0.0);
-        #if defined(VIEW_AMBIENT)
-            color += materialLightAmbientColor;
-        #endif
+    vec3 color = vec3(0.0);
+#if defined(VIEW_AMBIENT)
+    color += materialLightAmbientColor;
+#endif
     
-        #if defined(VIEW_DIFFUSE)
-            color += varDiffuseColor * materialLightDiffuseColor;
-        #endif
+#if defined(VIEW_DIFFUSE)
+    color += varDiffuseColor * materialLightDiffuseColor;
+#endif
     
-        #if defined(VIEW_SPECULAR)
-            color += (varSpecularColor * textureColor0.a) * materialLightSpecularColor;
-        #endif
+#if defined(VIEW_SPECULAR)
+    color += (varSpecularColor * textureColor0.a) * materialLightSpecularColor;
+#endif
     
-        #if defined(VIEW_ALBEDO)
-            color *= textureColor0.rgb;
-        #endif
+#if defined(VIEW_ALBEDO)
+    color *= textureColor0.rgb;
+#endif
     
-    #else
+#else
     
-        //THIS PART IS USED BY GAME CODE
+    //THIS PART IS USED BY GAME CODE
     
-        vec3 color = (materialLightAmbientColor + //VIEW_AMBIENT
-                      varDiffuseColor * materialLightDiffuseColor + //VIEW_DIFFUSE
-                      (varSpecularColor * textureColor0.a) * materialLightSpecularColor) * //VIEW_SPECULAR
-                      textureColor0.rgb; //VIEW_ALBEDO
+    vec3 color = (materialLightAmbientColor + //VIEW_AMBIENT
+                  varDiffuseColor * materialLightDiffuseColor + //VIEW_DIFFUSE
+                  (varSpecularColor * textureColor0.a) * materialLightSpecularColor) * //VIEW_SPECULAR
+    textureColor0.rgb; //VIEW_ALBEDO
     
-    #endif
+#endif
     
 #elif defined(PIXEL_LIT)
     
@@ -245,9 +252,9 @@ void main()
     normal = normalize (normal);
     
     float attenuation = lightIntensity0;
-    #if defined(DISTANCE_ATTENUATION)
-        attenuation /= (varPerPixelAttenuation * varPerPixelAttenuation);
-    #endif
+#if defined(DISTANCE_ATTENUATION)
+    attenuation /= (varPerPixelAttenuation * varPerPixelAttenuation);
+#endif
     
     // compute diffuse lighting
     float lambertFactor = max (dot (varLightVec, normal), 0.0);
@@ -255,74 +262,74 @@ void main()
     //ATTENTION:
     //BE CAREFUL TO MODIFY BOTH PARTS OF THIS CONDITION
     //THEY SHOULD BE IDENTICAL IN MATH!
-    #if defined(VIEW_AMBIENT) || defined(VIEW_DIFFUSE) || defined(VIEW_SPECULAR) || defined(VIEW_ALBEDO)
+#if defined(VIEW_AMBIENT) || defined(VIEW_DIFFUSE) || defined(VIEW_SPECULAR) || defined(VIEW_ALBEDO)
     
-        //THIS PART IS USED BY RES EDITOR
+    //THIS PART IS USED BY RES EDITOR
     
-        vec3 color = vec3(0.0);
-        #if defined(VIEW_AMBIENT)
-            color += materialLightAmbientColor;
-        #endif
+    vec3 color = vec3(0.0);
+#if defined(VIEW_AMBIENT)
+    color += materialLightAmbientColor;
+#endif
     
-        #if defined(VIEW_DIFFUSE)
-            color += materialLightDiffuseColor * lambertFactor * attenuation;
-        #endif
+#if defined(VIEW_DIFFUSE)
+    color += materialLightDiffuseColor * lambertFactor * attenuation;
+#endif
     
-        #if defined(SPECULAR) && defined(VIEW_SPECULAR)
-            if (lambertFactor > 0.0)
-            {
-                float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
-                color += materialLightSpecularColor * (shininess * textureColor0.a * attenuation);
-            }
-        #endif
+#if defined(SPECULAR) && defined(VIEW_SPECULAR)
+    if (lambertFactor > 0.0)
+    {
+        float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
+        color += materialLightSpecularColor * (shininess * textureColor0.a * attenuation);
+    }
+#endif
     
-        #if defined(VIEW_ALBEDO)
-            color *= textureColor0.rgb;
-        #endif
+#if defined(VIEW_ALBEDO)
+    color *= textureColor0.rgb;
+#endif
     
-    #else
+#else
     
-        //THIS PART IS USED BY GAME CODE
+    //THIS PART IS USED BY GAME CODE
     
-        // compute ambient
-        vec3 color = materialLightAmbientColor + materialLightDiffuseColor * lambertFactor * attenuation;
+    // compute ambient
+    vec3 color = materialLightAmbientColor + materialLightDiffuseColor * lambertFactor * attenuation;
     
-        #if defined(SPECULAR)
-        if (lambertFactor > 0.0)
-        {
-            float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
-            color += materialLightSpecularColor * (shininess * textureColor0.a * attenuation);
-        }
-        #endif
+#if defined(SPECULAR)
+    if (lambertFactor > 0.0)
+    {
+        float shininess = pow (max (dot (varHalfVec, normal), 0.0), materialSpecularShininess);
+        color += materialLightSpecularColor * (shininess * textureColor0.a * attenuation);
+    }
+#endif
     
-        color *= textureColor0.rgb;
+    color *= textureColor0.rgb;
     
-    #endif
+#endif
     
 #elif defined(MATERIAL_DECAL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_DETAIL)
-
-
+    
+    
     //ATTENTION:
     //BE CAREFUL TO MODIFY BOTH PARTS OF THIS CONDITION
     //THEY SHOULD BE IDENTICAL IN MATH!
-    #if defined(VIEW_DIFFUSE) || defined(VIEW_ALBEDO)
+#if defined(VIEW_DIFFUSE) || defined(VIEW_ALBEDO)
     
-        #if defined(VIEW_ALBEDO)
+#if defined(VIEW_ALBEDO)
     
-            #if defined(VIEW_DIFFUSE)
-                vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
-            #else
-                vec3 color = textureColor0.rgb;
-            #endif
+#if defined(VIEW_DIFFUSE)
+    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+#else
+    vec3 color = textureColor0.rgb;
+#endif
     
-        #else
-            vec3 color = textureColor1.rgb;
-        #endif
+#else
+    vec3 color = textureColor1.rgb;
+#endif
     
-    #else
-        vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
-    #endif
-
+#else
+    vec3 color = textureColor0.rgb * textureColor1.rgb * 2.0;
+#endif
+    
 #elif defined(MATERIAL_TEXTURE)
     vec3 color = textureColor0.rgb;
 #elif defined(MATERIAL_SKYBOX)
@@ -363,26 +370,30 @@ void main()
 #endif
     
 #if defined(MATERIAL_GRASS)
-
+    
     gl_FragColor.a = gl_FragColor.a * varTexCoord2.x;
     
 #if defined(FRAMEBUFFER_FETCH)
     //VI: fog is taken to account here
-    #if defined(VERTEX_FOG)
-        gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
-    #else
-        gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
-    #endif
+#if defined(VERTEX_FOG)
+    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
+#else
+    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
+#endif
 #else
     gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
 #endif
-
+    
+#if defined(VEGETATION_DRAW_LOD_COLOR)
+    gl_FragColor.rgb += lodColor;
+#endif
+    
 #endif
     
 #if defined(VERTEX_FOG)
-    #if !defined(FRAMEBUFFER_FETCH) 
-        //VI: fog equation is inside of color equatin for framebuffer fetch
-        gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
-    #endif
+#if !defined(FRAMEBUFFER_FETCH)
+    //VI: fog equation is inside of color equation for framebuffer fetch
+    gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
+#endif
 #endif
 }
