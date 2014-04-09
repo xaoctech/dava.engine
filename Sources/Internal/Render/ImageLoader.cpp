@@ -257,7 +257,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
 bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
 {
     bool retValue = false;
-    DVASSERT(image ||pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg"));
+    DVASSERT(image && (pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg")));
     
     DVASSERT((FORMAT_RGB888 == image->format)||(FORMAT_RGBA8888 == image->format) ||
              (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
