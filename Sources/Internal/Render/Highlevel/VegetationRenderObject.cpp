@@ -63,8 +63,12 @@ static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
     
 static const size_t MAX_RENDER_CELLS = 512;
-static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 130.0f * 130.0f; //meters * meters (square length)
-static const float32 MAX_VISIBLE_SCALING_DISTANCE = 100.0f * 100.0f;
+static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 70.0f * 70.0f; //meters * meters (square length)
+static const float32 MAX_VISIBLE_SCALING_DISTANCE = 50.0f * 50.0f;
+
+//static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 130.0f * 130.0f; //meters * meters (square length)
+//static const float32 MAX_VISIBLE_SCALING_DISTANCE = 100.0f * 100.0f;
+
     
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
 
@@ -161,7 +165,8 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
     COUNT_OF(CLUSTER_INDICES)
 };
 
-static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 12.0f);
+static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 6.0f);
+//static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 12.0f);
 
 static float32 RESOLUTION_SCALE[] =
 {
@@ -197,6 +202,20 @@ static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
     1.4f,
     1.4f
 };
+
+//#define VEGETATION_DRAW_LOD_COLOR
+
+#ifdef VEGETATION_DRAW_LOD_COLOR
+static const FastName UNIFORM_LOD_COLOR = FastName("lodColor");
+static const FastName FLAG_VEGETATION_DRAW_LOD_COLOR = FastName("VEGETATION_DRAW_LOD_COLOR");
+
+static Vector4 RESOLUTION_COLOR[] =
+{
+    Vector4(0.5f, 0.0f, 0.0f, 1.0f),
+    Vector4(0.0f, 0.5f, 0.0f, 1.0f),
+    Vector4(0.0f, 0.0f, 0.5f, 1.0f),
+};
+#endif
     
 int32 RandomShuffleFunc(int32 limit)
 {
@@ -310,6 +329,12 @@ VegetationRenderObject::VegetationRenderObject() :
     {
         vegetationMaterial->SetFlag(FLAG_FRAMEBUFFER_FETCH, NMaterial::FlagOn);
     }
+    
+#ifdef VEGETATION_DRAW_LOD_COLOR
+
+    vegetationMaterial->SetFlag(FLAG_VEGETATION_DRAW_LOD_COLOR, NMaterial::FlagOn);
+    
+#endif
     
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
@@ -581,6 +606,10 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                               Shader::UT_FLOAT,
                               shaderScaleDensityUniforms.size(),
                               &shaderScaleDensityUniforms[0]);
+        
+#ifdef VEGETATION_DRAW_LOD_COLOR
+        mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
+#endif
     }
 
 }
