@@ -367,7 +367,10 @@ void Scene::RegisterNode(Entity * node)
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        if(systems[k]->IsNeedProcessEntity(node))
+        uint32 requiredComponents = systems[k]->GetComponentsFlags();
+        bool needAdd = ((requiredComponents & node->componentFlags) == requiredComponents);
+
+        if (needAdd)
             systems[k]->AddEntity(node);
     }
 }
@@ -377,7 +380,10 @@ void Scene::UnregisterNode(Entity * node)
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        if(systems[k]->IsNeedProcessEntity(node))
+        uint32 requiredComponents = systems[k]->GetComponentsFlags();
+        bool needRemove = ((requiredComponents & node->componentFlags) == requiredComponents);
+
+        if (needRemove)
             systems[k]->RemoveEntity(node);
     }
 }

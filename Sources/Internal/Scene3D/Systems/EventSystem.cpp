@@ -57,32 +57,36 @@ void EventSystem::UnregisterSystemForEvent(SceneSystem * system, uint32 event)
     
 void EventSystem::GroupNotifyAllSystems(Vector<Entity *> & entities, uint32 event)
 {
-	Vector<SceneSystem*> & container = registeredSystems[event];
-	uint32 size = container.size();
-	for(uint32 i = 0; i < size; ++i)
-	{
+    Vector<SceneSystem*> & container = registeredSystems[event];
+    uint32 size = container.size();
+    for(uint32 i = 0; i < size; ++i)
+    {
         SceneSystem * system = container[i];
+        uint32 requiredComponentFlags = system->GetComponentsFlags();
 
         uint32 entityVectorSize = entities.size();
         for (uint32 k = 0; k < entityVectorSize; ++k)
         {
             Entity * entity = entities[k];
-            if (system->IsNeedProcessEntity(entity))
+            uint32 componentsInEntity = entity->GetAvailableComponentFlags();
+
+            if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
                 system->ImmediateEvent(entity, event);
         }
     }
-    
+
 }
-    
+
 void EventSystem::NotifyAllSystems(Entity * entity, uint32 event)
 {
-	Vector<SceneSystem*> & container = registeredSystems[event];
-	uint32 size = container.size();
+    Vector<SceneSystem*> & container = registeredSystems[event];
+    uint32 size = container.size();
     uint32 componentsInEntity = entity->GetAvailableComponentFlags();
-	for(uint32 i = 0; i < size; ++i)
-	{
+    for(uint32 i = 0; i < size; ++i)
+    {
         SceneSystem * system = container[i];
-        if (system->IsNeedProcessEntity(entity))
+        uint32 requiredComponentFlags = system->GetComponentsFlags();
+        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
             system->ImmediateEvent(entity, event);
     }
 }
