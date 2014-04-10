@@ -137,8 +137,7 @@ bool LibJpegWrapper::ReadJpegFile(File *infile, Image * image)
     {
         return false;
     }
-    //as image->data will be rewrited, need to erase present buffer
-    SafeDeleteArray(image->data);
+    
     struct jpeg_decompress_struct cinfo;
     struct jpegErrorManager jerr;
 
@@ -167,6 +166,8 @@ bool LibJpegWrapper::ReadJpegFile(File *infile, Image * image)
     
     image->width = cinfo.image_width;
     image->height = cinfo.image_height;
+    //as image->data will be rewrited, need to erase present buffer
+    SafeDeleteArray(image->data);
     image->data = new uint8 [cinfo.output_width * cinfo.output_height * cinfo.num_components];
     
     JSAMPROW output_data;
