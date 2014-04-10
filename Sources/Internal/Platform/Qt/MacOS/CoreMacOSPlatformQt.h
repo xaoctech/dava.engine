@@ -27,61 +27,31 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
+#define __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
 
-#ifndef __SCENE_EXPORTER_H__
-#define __SCENE_EXPORTER_H__
 
 #include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
+#include "Platform/TemplateMacOS/CoreMacOSPlatformBase.h"
 
-using namespace DAVA;
+#if defined(__DAVAENGINE_MACOS__)
 
-class SceneExporter
+namespace DAVA {
+
+class CoreMacOSPlatformQt : public CoreMacOSPlatformBase
 {
 public:
+	virtual eScreenMode GetScreenMode();
+	virtual void SwitchScreenToMode(eScreenMode screenMode); 
+	virtual void ToggleFullscreen();
+	virtual void Quit();
 
-	SceneExporter();
-	virtual ~SceneExporter();
-    
-    void SetGPUForExporting(const String &newGPU);
-    void SetGPUForExporting(const eGPUFamily newGPU);
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    void SetOutSoundsFolder(const FilePath &folderPathname);
-    
-	void EnableOptimizations( bool enable );
-
-    void ExportFile(const String &fileName, Set<String> &errorLog);
-    void ExportFolder(const String &folderName, Set<String> &errorLog);
-    
-    void ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-protected:
-    
-    void RemoveEditorNodes(Entity *rootNode);
-    void RemoveEditorCustomProperties(Entity *rootNode);
-    
-    bool ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
-    bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
-    bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
-    void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
-
-    bool ExportLandscape(Scene *scene, Set<String> &errorLog);
-    bool ExportVegetation(Scene *scene, Set<String> &errorLog);
-    
-    void ExportSounds(const FilePath &scenePath);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-
-    FilePath soundsOutFolder;
-
-    eGPUFamily exportForGPU;
-	bool optimizeOnExport;
+	virtual Vector2 GetMousePosition();
+	virtual void* GetOpenGLView();
+};
 };
 
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
 
-#endif // __SCENE_EXPORTER_H__
+#endif // __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
