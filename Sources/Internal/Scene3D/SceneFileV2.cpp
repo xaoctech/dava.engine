@@ -1192,11 +1192,11 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
     }
 	
-    //if(GetVersion() < TREE_ANIMATION_SCENE_VERSION)
-    //{
-    //    TreeToAnimatedTreeConverter treeConverter;
-    //    treeConverter.ConvertTrees(rootNode);
-    //}
+    if(GetVersion() < TREE_ANIMATION_SCENE_VERSION)
+    {
+        TreeToAnimatedTreeConverter treeConverter;
+        treeConverter.ConvertTrees(rootNode);
+    }
 
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
