@@ -481,6 +481,7 @@ bool NvttHelper::DecompressDxt(const nvtt::Decompressor & dec, DDSInfo info, Vec
 
 bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, PixelFormat format, Vector<Image*> &imageSet, int32 baseMipMap)
 {
+#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
 #if defined(__DAVAENGINE_MACOS__)
 	if (format == FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
 	{
@@ -574,6 +575,9 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 	
 	SafeDeleteArray(compressedImges);
 	return res;
+#else
+	return false;
+#endif //defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
 }
 
 bool LibDxtHelper::WriteDdsFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
@@ -662,6 +666,7 @@ bool LibDxtHelper::WriteDxtFile(const FilePath & fileNameOriginal, int32 width, 
 
 bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps)
 {
+#if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
 	const int32 minSize = 0;
 	
 	if (compressionFormat != FORMAT_ATC_RGB &&
@@ -793,6 +798,9 @@ bool LibDxtHelper::WriteAtcFile(const FilePath & fileNameOriginal, int32 width, 
 	SafeDeleteArray(mipSize);
 	SafeDeleteArray(buffer);
 	return res;
+#else
+	return false;
+#endif //defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
 }
 	
 bool LibDxtHelper::IsDxtFile(const FilePath & filePathname)
