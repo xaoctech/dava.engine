@@ -45,7 +45,6 @@ MaterialTree::MaterialTree(QWidget *parent /* = 0 */)
 	setContextMenuPolicy(Qt::CustomContextMenu);
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setIconSize(QSize(24, 24));
-    setSortingEnabled(true);
 
 	QObject::connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ShowContextMenu(const QPoint&)));
 
@@ -65,6 +64,7 @@ MaterialTree::~MaterialTree()
 
 void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 {
+    setSortingEnabled(false);
 	treeModel->SetScene(sceneEditor);
 
 	if(NULL != sceneEditor)
@@ -79,6 +79,7 @@ void MaterialTree::SetScene(SceneEditor2 *sceneEditor)
 	}
 
     sortByColumn(0);
+    setSortingEnabled(true);
 }
 
 void MaterialTree::AssignMaterialToSelection( DAVA::NMaterial *material )

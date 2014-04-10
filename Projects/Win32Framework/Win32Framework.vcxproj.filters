@@ -1419,6 +1419,9 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
+      <Filter>Internal\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2536,6 +2539,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\DateTime.cpp">
+      <Filter>Internal\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
