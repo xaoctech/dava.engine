@@ -27,6 +27,7 @@
  =====================================================================================*/
 
 #include "FileSystem/FilePath.h"
+#include "Sound/SoundSystem.h"
 
 #ifdef __DAVAENGINE_IPHONE__
 
@@ -179,6 +180,8 @@ MusicIOSSoundEvent::~MusicIOSSoundEvent()
 {
     [(AvSound*)avSound release];
     avSound = 0;
+    
+    SoundSystem::Instance()->RemoveSoundEventFromGroups(this);
 }
 
 bool MusicIOSSoundEvent::Trigger()
