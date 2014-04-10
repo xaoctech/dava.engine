@@ -44,7 +44,6 @@
 #include <QCoreApplication>
 #include <QKeyEvent>
 
-#define FLOAT_DECIMALS_MAXCOUNT 7
 #define FLOAT_PRINTF_FORMAT1 "% .7f"
 #define FLOAT_PRINTF_FORMAT2 "% .7f, % .7f"
 #define FLOAT_PRINTF_FORMAT3 "% .7f, % .7f, % .7f"
@@ -932,10 +931,8 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
         {
             case DAVA::VariantType::TYPE_FLOAT:
                 {
-                    QDoubleSpinBox *sb = new QDoubleSpinBox(parent);
-                    sb->setDecimals(FLOAT_DECIMALS_MAXCOUNT);
-                    sb->setMinimum(-9999999);
-                    sb->setMaximum(9999999);
+                    QLineEdit *sb = new QLineEdit(parent);
+                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d+[,\\.]?\\d*\\s*")));
                     ret = sb;
                 }
                 break;
@@ -967,8 +964,10 @@ bool QtPropertyDataDavaVariant::SetEditorDataInternal(QWidget *editor)
         {
             case DAVA::VariantType::TYPE_FLOAT:
                 {
-                    QDoubleSpinBox *sb = (QDoubleSpinBox *) editor;
-                    sb->setValue((double) curVariantValue.AsFloat());
+                    QLineEdit *sb = (QLineEdit *) editor;
+                    QString strValue = FromFloat(curVariantValue.AsFloat()).toString();
+                    strValue.replace(" ", "");
+                    sb->setText(strValue);
                     ret = true;
                 }
                 break;
@@ -997,8 +996,10 @@ bool QtPropertyDataDavaVariant::EditorDoneInternal(QWidget *editor)
         {
             case DAVA::VariantType::TYPE_FLOAT:
                 {
-                    QDoubleSpinBox *sb = (QDoubleSpinBox *) editor;
-                    SetValue((float) sb->value(), QtPropertyData::VALUE_EDITED);
+                    QLineEdit *sb = (QLineEdit *) editor;
+                    float newValue = sb->text().toFloat();
+
+                    SetValue(QVariant(newValue), QtPropertyData::VALUE_EDITED);
                     ret = true;
                 }
                 break;
