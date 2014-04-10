@@ -43,6 +43,12 @@ void JobQueue::Update()
 
 		job->Perform();
 
+        BaseObject * bo = job->GetMessage().GetTargetObject();
+        if(bo)
+        {
+            bo->Release();
+        }
+
 		mutex.Lock();
 		queue.pop_front();
 		job->Release();
