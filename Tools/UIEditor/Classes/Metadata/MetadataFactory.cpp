@@ -243,7 +243,7 @@ BaseMetadata* MetadataFactory::GetCustomMetadata(HierarchyTreeScreenNode* screen
     }
 
     // For now only Guides metadata is supported.
-    const List<GuideData*> selectedGuides = screenNode->GetSelectedGuides(true);
+    const List<GuideData*>& selectedGuides = screenNode->GetSelectedGuides(true);
     if (selectedGuides.size() != 1)
     {
         // Display Guide Widget only if one and only guide is selected.

@@ -116,13 +116,13 @@ void AddNewGuideCommand::AcceptNewGuide()
 
 /////////////////////////////////////////////////////////////////////////////////////////
     
-MoveGuideCommand::MoveGuideCommand(const HierarchyTreeScreenNode* screenNode) :
+MoveGuideByMouseCommand::MoveGuideByMouseCommand(const HierarchyTreeScreenNode* screenNode) :
     BaseGuideCommand(screenNode),
     isFirstMovePerformed(false)
 {
 }
 
-void MoveGuideCommand::Execute()
+void MoveGuideByMouseCommand::Execute()
 {
     HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
     if (!screen)
@@ -154,7 +154,7 @@ void MoveGuideCommand::Execute()
     HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
 }
     
-void MoveGuideCommand::Rollback()
+void MoveGuideByMouseCommand::Rollback()
 {
     if (isFirstMovePerformed)
     {
@@ -164,7 +164,7 @@ void MoveGuideCommand::Rollback()
     }
 }
 
-void MoveGuideCommand::UpdateGuidePosition(const GuideData& guideData, const Vector2& newPos)
+void MoveGuideByMouseCommand::UpdateGuidePosition(const GuideData& guideData, const Vector2& newPos)
 {
     HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
     if (!screen)
@@ -177,14 +177,14 @@ void MoveGuideCommand::UpdateGuidePosition(const GuideData& guideData, const Vec
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-MoveGuideByKeyboardCommand::MoveGuideByKeyboardCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta) :
+MoveGuideCommand::MoveGuideCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta) :
     BaseGuideCommand(screenNode),
     isFirstMovePerformed(false),
     moveDelta(delta)
 {
 }
     
-void MoveGuideByKeyboardCommand::Execute()
+void MoveGuideCommand::Execute()
 {
     HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
     if (!screen)
@@ -228,7 +228,7 @@ void MoveGuideByKeyboardCommand::Execute()
     HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
 }
 
-void MoveGuideByKeyboardCommand::Rollback()
+void MoveGuideCommand::Rollback()
 {
     HierarchyTreeScreenNode* screen = dynamic_cast<HierarchyTreeScreenNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(activeScreen));
     if (!screen || !isFirstMovePerformed)

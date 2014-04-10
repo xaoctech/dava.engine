@@ -639,7 +639,7 @@ void DefaultScreen::MoveGuides(eKeyboardMoveDirection moveDirection, const Vecto
     }
 
     // All is OK - can move.
-    MoveGuideByKeyboardCommand* cmd = new MoveGuideByKeyboardCommand(screenNode, delta);
+    MoveGuideCommand* cmd = new MoveGuideCommand(screenNode, delta);
     CommandsController::Instance()->ExecuteCommand(cmd);
     SafeRelease(cmd);
 }
@@ -691,7 +691,7 @@ void DefaultScreen::DeleteSelectedControls()
 
 void DefaultScreen::MoveGuide(HierarchyTreeScreenNode* screenNode)
 {
-    MoveGuideCommand* command = new MoveGuideCommand(screenNode);
+    MoveGuideByMouseCommand* command = new MoveGuideByMouseCommand(screenNode);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 }
