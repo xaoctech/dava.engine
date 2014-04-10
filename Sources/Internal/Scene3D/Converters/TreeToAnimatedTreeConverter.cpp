@@ -125,21 +125,27 @@ void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
         if(pg)
         {
             int32 vertexFormat = pg->GetFormat();
-
-            bool isLeaf = ((vertexFormat & EVF_TANGENT) > 0); //speedtree leaf batch
             int32 vxCount = pg->GetVertexCount();
             int32 indCount = pg->GetIndexCount();
-            PolygonGroup * newPG = new PolygonGroup();
+            bool isLeaf = ((vertexFormat & EVF_TANGENT) > 0); //speedtree leaf batch
 
-            DVASSERT((vertexFormat & EVF_BINORMAL) == 0);
-            newPG->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
+            if((vertexFormat & EVF_BINORMAL) > 0) continue;
+
+            PolygonGroup * pgCopy = new PolygonGroup();
+            pgCopy->AllocateData(vertexFormat, vxCount, indCount);
+
+            Memcpy(pgCopy->meshData, pg->meshData, vxCount*pg->vertexStride);
+            Memcpy(pgCopy->indexArray, pg->indexArray, indCount*sizeof(int16));
+
+            pg->ReleaseData();
+            pg->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
 
             //copy indicies
             for(int32 i = 0; i < indCount; ++i)
             {
                 int32 index;
-                pg->GetIndex(i, index);
-                newPG->SetIndex(i, index);
+                pgCopy->GetIndex(i, index);
+                pg->SetIndex(i, index);
             }
 
             //copy vertex data
@@ -149,27 +155,26 @@ void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
                 uint32 color;
                 Vector2 vxTx;
 
-                pg->GetCoord(i, vxPosition);
+                pgCopy->GetCoord(i, vxPosition);
                 if((vertexFormat & EVF_COLOR) > 0)
-                    pg->GetColor(i, color);
+                    pgCopy->GetColor(i, color);
                 if((vertexFormat & EVF_TEXCOORD0) > 0)
-                    pg->GetTexcoord(0, i, vxTx);
+                    pgCopy->GetTexcoord(0, i, vxTx);
 
-                newPG->SetCoord(i, vxPosition);
+                pg->SetCoord(i, vxPosition);
                 if((vertexFormat & EVF_COLOR) > 0)
-                    newPG->SetColor(i, color);
+                    pg->SetColor(i, color);
                 if((vertexFormat & EVF_TEXCOORD0) > 0)
-                    newPG->SetTexcoord(0, i, vxTx);
+                    pg->SetTexcoord(0, i, vxTx);
 
                 if(isLeaf)
                 {
                     Vector3 vxTangent;
-                    pg->GetTangent(i, vxTangent);
-                    newPG->SetTangent(i, vxTangent);
+                    pgCopy->GetTangent(i, vxTangent);
+                    pg->SetTangent(i, vxTangent);
                 }
             }
-
-            rb->SetPolygonGroup(newPG);
+            SafeRelease(pgCopy);
         }
     }
 
