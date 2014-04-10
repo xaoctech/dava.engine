@@ -37,11 +37,14 @@ class TreeToAnimatedTreeConverter
 public:
     static void CalculateBinormalsForTreeObject(SpeedTreeObject * object);
 
-	void ConvertTreesRecursive(Entity *scene);
+    void ConvertTrees(Entity *scene);
 
 private:
-    void ConvertForAnimations(SpeedTreeObject * object);
+    void ConvertingPathRecursive(Entity *scene);
+    void ConvertForAnimations(PolygonGroup * geometry);
 
+    Set<PolygonGroup *> uniqPGs;
+    Set<SpeedTreeObject *> uniqTreeObjects;
 };
 
 #endif //__DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
