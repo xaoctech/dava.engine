@@ -73,12 +73,28 @@ void TreeToAnimatedTreeConverter::CalculateBinormalsForTreeObject(SpeedTreeObjec
     }
 }
 
-void TreeToAnimatedTreeConverter::ConvertTreesRecursive(Entity * node)
+void TreeToAnimatedTreeConverter::ConvertTrees(Entity *scene)
+{
+    uniqPGs.clear();
+    uniqTreeObjects.clear();
+
+    ConvertingPathRecursive(scene);
+
+    Set<PolygonGroup *>::iterator pgIt = uniqPGs.begin();
+    for(; pgIt != uniqPGs.end(); ++pgIt)
+        ConvertForAnimations((*pgIt));
+
+    Set<SpeedTreeObject *>::iterator treeIt = uniqTreeObjects.begin();
+    for(; treeIt != uniqTreeObjects.end(); ++treeIt)
+        CalculateBinormalsForTreeObject((*treeIt));
+}
+
+void TreeToAnimatedTreeConverter::ConvertingPathRecursive(Entity * node)
 {
     for(int32 c = 0; c < node->GetChildrenCount(); ++c)
     {
         Entity * childNode = node->GetChild(c);
-        ConvertTreesRecursive(childNode);
+        ConvertingPathRecursive(childNode);
     }
 
     RenderComponent *rc = GetRenderComponent(node);
@@ -110,73 +126,72 @@ void TreeToAnimatedTreeConverter::ConvertTreesRecursive(Entity * node)
         treeObject->RecalcBoundingBox();
     }
 
-    ConvertForAnimations(treeObject);
-
     node->AddComponent(new SpeedTreeComponent());
-}
 
-void TreeToAnimatedTreeConverter::ConvertForAnimations(SpeedTreeObject * object)
-{
-    uint32 size = object->GetRenderBatchCount();
+    uniqTreeObjects.insert(treeObject);
+
+    uint32 size = treeObject->GetRenderBatchCount();
     for (uint32 k = 0; k < size; ++k)
     {
-        RenderBatch * rb = object->GetRenderBatch(k);
+        RenderBatch * rb = treeObject->GetRenderBatch(k);
         PolygonGroup * pg = rb->GetPolygonGroup();
-        if(pg)
-        {
-            int32 vertexFormat = pg->GetFormat();
-            int32 vxCount = pg->GetVertexCount();
-            int32 indCount = pg->GetIndexCount();
-            bool isLeaf = ((vertexFormat & EVF_TANGENT) > 0); //speedtree leaf batch
+        uniqPGs.insert(pg);
+    }
+}
 
-            if((vertexFormat & EVF_BINORMAL) > 0) continue;
+void TreeToAnimatedTreeConverter::ConvertForAnimations(PolygonGroup * pg)
+{
+    DVASSERT(pg);
 
-            PolygonGroup * pgCopy = new PolygonGroup();
-            pgCopy->AllocateData(vertexFormat, vxCount, indCount);
+    int32 vertexFormat = pg->GetFormat();
+    int32 vxCount = pg->GetVertexCount();
+    int32 indCount = pg->GetIndexCount();
+    bool isLeaf = ((vertexFormat & EVF_TANGENT) > 0); //speedtree leaf batch
 
-            Memcpy(pgCopy->meshData, pg->meshData, vxCount*pg->vertexStride);
-            Memcpy(pgCopy->indexArray, pg->indexArray, indCount*sizeof(int16));
+    DVASSERT((vertexFormat & EVF_BINORMAL) == 0);
 
-            pg->ReleaseData();
-            pg->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
+    PolygonGroup * pgCopy = new PolygonGroup();
+    pgCopy->AllocateData(vertexFormat, vxCount, indCount);
 
-            //copy indicies
-            for(int32 i = 0; i < indCount; ++i)
-            {
-                int32 index;
-                pgCopy->GetIndex(i, index);
-                pg->SetIndex(i, index);
-            }
+    Memcpy(pgCopy->meshData, pg->meshData, vxCount*pg->vertexStride);
+    Memcpy(pgCopy->indexArray, pg->indexArray, indCount*sizeof(int16));
 
-            //copy vertex data
-            for(int32 i = 0; i < vxCount; ++i)
-            {
-                Vector3 vxPosition;
-                uint32 color;
-                Vector2 vxTx;
+    pg->ReleaseData();
+    pg->AllocateData(vertexFormat | EVF_BINORMAL, vxCount, indCount);
 
-                pgCopy->GetCoord(i, vxPosition);
-                if((vertexFormat & EVF_COLOR) > 0)
-                    pgCopy->GetColor(i, color);
-                if((vertexFormat & EVF_TEXCOORD0) > 0)
-                    pgCopy->GetTexcoord(0, i, vxTx);
-
-                pg->SetCoord(i, vxPosition);
-                if((vertexFormat & EVF_COLOR) > 0)
-                    pg->SetColor(i, color);
-                if((vertexFormat & EVF_TEXCOORD0) > 0)
-                    pg->SetTexcoord(0, i, vxTx);
-
-                if(isLeaf)
-                {
-                    Vector3 vxTangent;
-                    pgCopy->GetTangent(i, vxTangent);
-                    pg->SetTangent(i, vxTangent);
-                }
-            }
-            SafeRelease(pgCopy);
-        }
+    //copy indicies
+    for(int32 i = 0; i < indCount; ++i)
+    {
+        int32 index;
+        pgCopy->GetIndex(i, index);
+        pg->SetIndex(i, index);
     }
 
-    CalculateBinormalsForTreeObject(object);
+    //copy vertex data
+    for(int32 i = 0; i < vxCount; ++i)
+    {
+        Vector3 vxPosition;
+        uint32 color;
+        Vector2 vxTx;
+
+        pgCopy->GetCoord(i, vxPosition);
+        if((vertexFormat & EVF_COLOR) > 0)
+            pgCopy->GetColor(i, color);
+        if((vertexFormat & EVF_TEXCOORD0) > 0)
+            pgCopy->GetTexcoord(0, i, vxTx);
+
+        pg->SetCoord(i, vxPosition);
+        if((vertexFormat & EVF_COLOR) > 0)
+            pg->SetColor(i, color);
+        if((vertexFormat & EVF_TEXCOORD0) > 0)
+            pg->SetTexcoord(0, i, vxTx);
+
+        if(isLeaf)
+        {
+            Vector3 vxTangent;
+            pgCopy->GetTangent(i, vxTangent);
+            pg->SetTangent(i, vxTangent);
+        }
+    }
+    SafeRelease(pgCopy);
 }
