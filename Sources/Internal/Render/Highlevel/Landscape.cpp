@@ -89,7 +89,8 @@ static FastName TILEMASK_TILING_PROPS_NAMES[] =
 	FastName("texture1Tiling"),
 	FastName("texture2Tiling"),
 	FastName("texture3Tiling"),
-	INVALID_PROPERTY_NAME
+	INVALID_PROPERTY_NAME,
+    INVALID_PROPERTY_NAME
 };
 
 static FastName TILEMASK_COLOR_PROPS_NAMES[] =
@@ -100,7 +101,8 @@ static FastName TILEMASK_COLOR_PROPS_NAMES[] =
 	FastName("tileColor1"),
 	FastName("tileColor2"),
 	FastName("tileColor3"),
-	INVALID_PROPERTY_NAME
+	INVALID_PROPERTY_NAME,
+    INVALID_PROPERTY_NAME
 };
 	
 const float32 DEFAULT_FOG_DENSITY = 0.006f;
@@ -1657,6 +1659,9 @@ Texture * Landscape::CreateLandscapeTexture()
     
     prevLodLayer = -1;
 
+    int32 fogFlag = tileMaskMaterial->GetFlagValue(NMaterial::FLAG_VERTEXFOG);
+    tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOff);
+
 	BindMaterial(0, NULL);
 
 	RenderManager::Instance()->SetRenderData(ftRenderData);
@@ -1664,6 +1669,15 @@ Texture * Landscape::CreateLandscapeTexture()
 
 	RenderManager::Instance()->HWDrawArrays(PRIMITIVETYPE_TRIANGLESTRIP, 0, 4);
     UnbindMaterial();
+
+    if(fogFlag & NMaterial::FlagInherited)
+    {
+        tileMaskMaterial->ResetFlag(NMaterial::FLAG_VERTEXFOG);
+    }
+    else
+    {
+        tileMaskMaterial->SetFlag(NMaterial::FLAG_VERTEXFOG, (NMaterial::eFlagValue) (fogFlag & NMaterial::FlagOn));
+    }
 
 #ifdef __DAVAENGINE_OPENGL__
 	RenderManager::Instance()->HWglBindFBO(RenderManager::Instance()->GetFBOViewFramebuffer());
@@ -1730,6 +1744,9 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	}
     
     Landscape *newLandscape = static_cast<Landscape *>(newObject);
+
+    newLandscape->flags = flags;
+	
     newLandscape->BuildLandscapeFromHeightmapImage(heightmapPath, bbox);
     
     for (int32 k = 0; k < TEXTURE_COUNT; ++k)
