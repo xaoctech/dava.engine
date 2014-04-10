@@ -6,25 +6,36 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := iconv_android-prebuilt
-LOCAL_SRC_FILES := ../../Libs/libs/libiconv_android.so
+LOCAL_SRC_FILES := ../../Libs/libs/android/$(TARGET_ARCH_ABI)/libiconv_android.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := fmodex_android-prebuilt
-LOCAL_SRC_FILES := ../../Libs/fmod/lib/libfmodex.so
+LOCAL_MODULE            := fmodex-prebuild
+LOCAL_SRC_FILES         := ../../Libs/fmod/lib/android/$(TARGET_ARCH_ABI)/libfmodexL.so
+ #../../../api/lib/$(TARGET_ARCH_ABI)/libfmodex.so
+#LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../api/inc
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := fmodevent_android-prebuilt
-LOCAL_SRC_FILES := ../../Libs/fmod/lib/libfmodevent.so
+LOCAL_MODULE            := fmodevent-prebuild
+LOCAL_SRC_FILES         := ../../Libs/fmod/lib/android/$(TARGET_ARCH_ABI)/libfmodeventL.so
+#LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../api/inc
 include $(PREBUILT_SHARED_LIBRARY)
+
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := fmodex_android-prebuilt
+#LOCAL_SRC_FILES := ../../Libs/fmod/lib/libfmodex.so
+#include $(PREBUILT_SHARED_LIBRARY)
+
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := fmodevent_android-prebuilt
+#LOCAL_SRC_FILES := ../../Libs/fmod/lib/libfmodevent.so
+#include $(PREBUILT_SHARED_LIBRARY)
 
 DAVA_ROOT := $(LOCAL_PATH)
 
 # clear all variables
 include $(CLEAR_VARS)
-
-LOCAL_ARM_NEON := true
 
 # set module name
 LOCAL_MODULE := libInternal
@@ -78,8 +89,10 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Job/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/DLC/*.cpp))
 
+ifneq ($(filter $(TARGET_ARCH_ABI), armeabi-v7a armeabi-v7a-hard),)
 LOCAL_ARM_NEON := true
 LOCAL_NEON_CFLAGS := -mfloat-abi=softfp -mfpu=neon -march=armv7
+endif
 
 # set build flags
 LOCAL_CFLAGS := -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
@@ -95,19 +108,19 @@ LIBS_PATH := $(call host-path,$(LOCAL_PATH)/../../Libs/libs)
 
 LOCAL_LDLIBS := -lGLESv1_CM -llog -lEGL
 LOCAL_LDLIBS += $(LIBS_PATH)/libxml_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libpng_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libfreetype_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libyaml_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libmongodb_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libpng_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libfreetype_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libyaml_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libmongodb_android.a
 LOCAL_LDLIBS += $(LIBS_PATH)/liblua_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libdxt_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libcurl_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libTextureConverter_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libssl_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libcrypto_android.a
-LOCAL_LDLIBS += $(LIBS_PATH)/libiconv_android.so
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodex.so
-LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodevent.so
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libdxt_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libcurl_android.a
+#LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libTextureConverter_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libssl_android.a
+LOCAL_LDLIBS += $(LIBS_PATH)/android/$(TARGET_ARCH_ABI)/libcrypto_android.a
+#LOCAL_LDLIBS += $(LIBS_PATH)/libiconv_android.so
+#LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodex.so
+#LOCAL_LDLIBS += $(LOCAL_PATH)/../../Libs/fmod/lib/libfmodevent.so
 
 APP_PLATFORM_LEVEL := $(strip $(subst android-,,$(APP_PLATFORM)))
 IS_GL2_PLATFORM := $(shell (if [ $(APP_PLATFORM_LEVEL) -lt 18 ]; then echo "GLES2"; else echo "GLES3"; fi))
@@ -126,9 +139,13 @@ LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 # set included libraries
 LOCAL_STATIC_LIBRARIES := libbox2d
 
+#LOCAL_SHARED_LIBRARIES += iconv_android-prebuilt
+#LOCAL_SHARED_LIBRARIES += fmodex_android-prebuilt
+#LOCAL_SHARED_LIBRARIES += fmodevent_android-prebuilt
+#LOCAL_SHARED_LIBRARIES += fmodex
 LOCAL_SHARED_LIBRARIES += iconv_android-prebuilt
-LOCAL_SHARED_LIBRARIES += fmodex_android-prebuilt
-LOCAL_SHARED_LIBRARIES += fmodevent_android-prebuilt
+LOCAL_SHARED_LIBRARIES += fmodex-prebuild
+LOCAL_SHARED_LIBRARIES += fmodevent-prebuild
 
 include $(BUILD_STATIC_LIBRARY)
 

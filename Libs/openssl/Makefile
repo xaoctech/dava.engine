@@ -11,11 +11,11 @@ SHLIB_VERSION_NUMBER=1.0.0
 SHLIB_VERSION_HISTORY=
 SHLIB_MAJOR=1
 SHLIB_MINOR=0.0
-SHLIB_EXT=.$(SHLIB_MAJOR).$(SHLIB_MINOR).dylib
-PLATFORM=darwin-i386-cc
-OPTIONS=-openssldir=/Users/adebt/Library/Developer/Xcode/DerivedData/openssl-dbunffbopcqzxlbymsutenhdyxtk/Build/Products -Wa,--noexecstack no-ec_nistp_64_gcc_128 no-gmp no-gost no-jpake no-krb5 no-md2 no-rc5 no-rfc3779 no-sctp no-shared no-store no-zlib no-zlib-dynamic static-engine
-CONFIGURE_ARGS=darwin-i386-cc no-krb5 no-gost -openssldir=/Users/adebt/Library/Developer/Xcode/DerivedData/openssl-dbunffbopcqzxlbymsutenhdyxtk/Build/Products -Wa,--noexecstack
-SHLIB_TARGET=darwin-shared
+SHLIB_EXT=.so.$(SHLIB_MAJOR).$(SHLIB_MINOR)
+PLATFORM=android-x86
+OPTIONS= no-ec_nistp_64_gcc_128 no-gmp no-jpake no-krb5 no-md2 no-rc5 no-rfc3779 no-sctp no-shared no-store no-zlib no-zlib-dynamic static-engine
+CONFIGURE_ARGS=android-x86
+SHLIB_TARGET=linux-shared
 
 # HERE indicates where this Makefile lives.  This can be used to indicate
 # where sub-Makefiles are expected to be.  Currently has very limited usage,
@@ -59,17 +59,17 @@ OPENSSLDIR=/usr/local/ssl
 # equal 4.
 # PKCS1_CHECK - pkcs1 tests.
 
-CC= cc
-CFLAG= -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -openssldir=/Users/adebt/Library/Developer/Xcode/DerivedData/openssl-dbunffbopcqzxlbymsutenhdyxtk/Build/Products -Wa,--noexecstack -arch i386 -O3 -fomit-frame-pointer -DL_ENDIAN -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DRMD160_ASM -DAES_ASM -DVPAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
-DEPFLAG= -DOPENSSL_NO_EC_NISTP_64_GCC_128 -DOPENSSL_NO_GMP -DOPENSSL_NO_GOST -DOPENSSL_NO_JPAKE -DOPENSSL_NO_MD2 -DOPENSSL_NO_RC5 -DOPENSSL_NO_RFC3779 -DOPENSSL_NO_SCTP -DOPENSSL_NO_STORE
-PEX_LIBS= -Wl,-search_paths_first
-EX_LIBS= 
+CC= i686-linux-android-gcc
+CFLAG= -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -mandroid -I$(ANDROID_DEV)/include -B$(ANDROID_DEV)/lib -O3 -fomit-frame-pointer -Wall -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DRMD160_ASM -DAES_ASM -DVPAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
+DEPFLAG= -DOPENSSL_NO_EC_NISTP_64_GCC_128 -DOPENSSL_NO_GMP -DOPENSSL_NO_JPAKE -DOPENSSL_NO_MD2 -DOPENSSL_NO_RC5 -DOPENSSL_NO_RFC3779 -DOPENSSL_NO_SCTP -DOPENSSL_NO_STORE
+PEX_LIBS= 
+EX_LIBS= -ldl
 EXE_EXT= 
 ARFLAGS= 
-AR= ar $(ARFLAGS) r
-RANLIB= /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib
+AR= i686-linux-android-ar $(ARFLAGS) r
+RANLIB= i686-linux-android-ranlib
 NM= nm
-PERL= /usr/bin/perl
+PERL= /opt/local/bin/perl5
 TAR= tar
 TARFLAGS= --no-recursion --record-size=10240
 MAKEDEPPROG=makedepend
@@ -93,7 +93,7 @@ BN_ASM= bn-586.o co-586.o x86-mont.o x86-gf2m.o
 DES_ENC= des-586.o crypt586.o
 AES_ENC= aes-586.o vpaes-x86.o aesni-x86.o
 BF_ENC= bf-586.o
-CAST_ENC= c_enc.o
+CAST_ENC= cast-586.o
 RC4_ENC= rc4-586.o
 RC5_ENC= rc5-586.o
 MD5_ASM_OBJ= md5-586.o
@@ -103,7 +103,7 @@ WP_ASM_OBJ= wp_block.o wp-mmx.o
 CMLL_ENC= cmll-x86.o
 MODES_ASM_OBJ= ghash-x86.o
 ENGINES_ASM_OBJ= 
-PERLASM_SCHEME= macosx
+PERLASM_SCHEME= android
 
 # KRB5 stuff
 KRB5_INCLUDES=
@@ -138,7 +138,7 @@ FIPSCANLIB=
 BASEADDR=0xFB00000
 
 DIRS=   crypto ssl engines apps test tools
-ENGDIRS= 
+ENGDIRS= ccgost
 SHLIBDIRS= crypto ssl
 
 # dirs in crypto to build
@@ -175,8 +175,8 @@ LIBS=   libcrypto.a libssl.a
 SHARED_CRYPTO=libcrypto$(SHLIB_EXT)
 SHARED_SSL=libssl$(SHLIB_EXT)
 SHARED_LIBS=
-SHARED_LIBS_LINK_EXTS=.$(SHLIB_MAJOR).dylib .dylib
-SHARED_LDFLAGS=-arch i386 -dynamiclib
+SHARED_LIBS_LINK_EXTS=.so.$(SHLIB_MAJOR) .so
+SHARED_LDFLAGS=
 
 GENERAL=        Makefile
 BASENAME=       openssl
