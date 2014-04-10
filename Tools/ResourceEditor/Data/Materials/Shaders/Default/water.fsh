@@ -27,7 +27,7 @@ varying mediump vec3 reflectionDirectionInWorldSpace;
 uniform sampler2D decal;
 uniform sampler2D albedo;
 uniform lowp vec3 decalTintColor;
-uniform lowp float reflectance;
+uniform lowp vec3 reflectanceColor;
 varying highp vec2 varTexCoord1;
 varying mediump vec2 varTexCoord0;
 #endif
@@ -48,7 +48,12 @@ uniform lowp vec3 refractionTintColor;
 
 uniform lowp float fresnelBias;
 uniform mediump float fresnelPow;
+
+#if defined CONST_REFRACTION_COLOR
+uniform lowp vec3 refractionConstColor;
+#else
 uniform lowp float eta;
+#endif
 
 uniform mediump float materialSpecularShininess;
 uniform lowp vec3 materialLightSpecularColor;    // engine pass premultiplied material * light specular color
@@ -99,7 +104,7 @@ void main()
 	#if defined(MATERIAL_DECAL)
 		lowp vec3 textureColor1 = texture2D(decal, varTexCoord1).rgb;
 		lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
-		gl_FragColor = vec4(mix(textureColor0, reflectionColor * decalTintColor, reflectance) * textureColor1 * 2.0, 1.0);
+		gl_FragColor = vec4((textureColor0 * decalTintColor + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
 	#else
 		gl_FragColor = vec4(reflectionColor * reflectionTintColor, 1.0);
 	#endif
@@ -109,7 +114,7 @@ void main()
     lowp vec3 normal1 = texture2D (normalmap, varTexCoord0).rgb;
     lowp vec3 normal2 = texture2D (normalmap, varTexCoord1).rgb;
     lowp vec3 normal = normalize (normal1 + normal2 - 1.0); //same as * 2 -2
-
+	
 #if defined (DEBUG_UNITY_Z_NORMAL)    
 	normal = vec3(0.0,0.0,1.0);
 #endif
@@ -162,10 +167,13 @@ void main()
     gl_FragColor = vec4(resColor, fresnel);
     
     #else	
-        lowp vec3 refractedVectorInTangentSpace = refract(cameraToPointInTangentSpaceNorm, normal, eta);
-        lowp vec3 refractedVectorInWorldSpace = (tbnToWorldMatrix * refractedVectorInTangentSpace);
-        lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; 
-           		
+		#if defined CONST_REFRACTION_COLOR
+			lowp vec3 refractionColor = refractionConstColor; 
+		#else
+			lowp vec3 refractedVectorInTangentSpace = refract(cameraToPointInTangentSpaceNorm, normal, eta);
+			lowp vec3 refractedVectorInWorldSpace = (tbnToWorldMatrix * refractedVectorInTangentSpace);
+			lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; 
+        #endif   		
         lowp vec3 resColor = mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel);
         #if defined (SPECULAR)
             resColor+=resSpecularColor;

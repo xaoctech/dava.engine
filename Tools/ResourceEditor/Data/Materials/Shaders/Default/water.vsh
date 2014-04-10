@@ -24,6 +24,9 @@ attribute vec2 inTexCoord0;
 attribute vec2 inTexCoord1;
 varying vec2 varTexCoord0;
 varying vec2 varTexCoord1;
+varying vec2 varTexCoord2;
+uniform mediump vec2 normal0ShiftPerSecond;
+uniform mediump vec2 normal1ShiftPerSecond;
 #endif
 
 // UNIFORMS
@@ -141,7 +144,7 @@ void main()
 	
 	
 	varTexCoord0 = inTexCoord0 * normal0Scale + normal0ShiftPerSecond * globalTime;
-    varTexCoord1 = inTexCoord0 * normal1Scale + normal1ShiftPerSecond * globalTime;
+    varTexCoord1 = vec2(inTexCoord0.x+inTexCoord0.y, inTexCoord0.x-inTexCoord0.y) * normal1Scale + normal1ShiftPerSecond * globalTime;
 #endif
 
 #if defined(VERTEX_FOG)
