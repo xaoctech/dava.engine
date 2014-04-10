@@ -22,6 +22,7 @@ attribute vec2 inTexCoord0;
 
 #if defined(MATERIAL_DECAL)
 attribute vec2 inTexCoord1;
+varying vec2 varTexCoord0;
 varying vec2 varTexCoord1;
 #endif
 
@@ -104,6 +105,7 @@ void main()
     vec3 normalDirectionInWorldSpace = normalize(vec3(worldInvTransposeMatrix * inNormal));
     reflectionDirectionInWorldSpace = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
 	#if defined(MATERIAL_DECAL)
+		varTexCoord0 = inTexCoord0;
 		varTexCoord1 = inTexCoord1;
 	#endif	
 #endif    

@@ -1,5 +1,6 @@
 <CONFIG>
 normalmap = 0
+albedo = 0
 cubemap = 1
 decal = 2
 dynamicReflection = 1
@@ -24,8 +25,11 @@ varying mediump vec3 reflectionDirectionInWorldSpace;
 
 #if defined(MATERIAL_DECAL)
 uniform sampler2D decal;
+uniform sampler2D albedo;
 uniform lowp vec3 decalTintColor;
+uniform lowp float reflectance;
 varying highp vec2 varTexCoord1;
+varying mediump vec2 varTexCoord0;
 #endif
 
 #elif defined(PIXEL_LIT)
@@ -94,7 +98,8 @@ void main()
     lowp vec3 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
 	#if defined(MATERIAL_DECAL)
 		lowp vec3 textureColor1 = texture2D(decal, varTexCoord1).rgb;
-		gl_FragColor = vec4(reflectionColor * decalTintColor * textureColor1 * 2.0, 1.0);
+		lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
+		gl_FragColor = vec4(mix(textureColor0, reflectionColor * decalTintColor, reflectance) * textureColor1 * 2.0, 1.0);
 	#else
 		gl_FragColor = vec4(reflectionColor * reflectionTintColor, 1.0);
 	#endif
