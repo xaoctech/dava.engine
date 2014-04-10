@@ -50,57 +50,13 @@ GuideData* GuideMetadata::GetSelectedGuide() const
         return NULL;
     }
     
-    const List<GuideData*> selectedGuides = activeScreen->GetSelectedGuides(true);
+    const List<GuideData*>& selectedGuides = activeScreen->GetSelectedGuides(true);
     if (selectedGuides.size() != 1)
     {
         return NULL;
     }
     
     return selectedGuides.front();
-}
-
-int GuideMetadata::GetPosX() const
-{
-    GuideData* selectedGuide = GetSelectedGuide();
-    if (selectedGuide)
-    {
-        return selectedGuide->GetPosition().x;
-    }
-
-    return 0;
-}
-
-void GuideMetadata::SetPosX(int value)
-{
-    GuideData* selectedGuide = GetSelectedGuide();
-    if (!selectedGuide)
-    {
-        return;
-    }
-
-    GetActiveScreen()->SetGuidePosition(selectedGuide, Vector2(value, selectedGuide->GetPosition().y));
-}
-
-int GuideMetadata::GetPosY() const
-{
-    GuideData* selectedGuide = GetSelectedGuide();
-    if (selectedGuide)
-    {
-        return selectedGuide->GetPosition().y;
-    }
-
-    return 0;
-}
-
-void GuideMetadata::SetPosY(int value)
-{
-    GuideData* selectedGuide = GetSelectedGuide();
-    if (!selectedGuide)
-    {
-        return;
-    }
-
-    GetActiveScreen()->SetGuidePosition(selectedGuide, Vector2(selectedGuide->GetPosition().x, value));
 }
 
 };

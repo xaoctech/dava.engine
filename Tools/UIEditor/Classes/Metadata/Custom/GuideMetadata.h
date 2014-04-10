@@ -45,21 +45,11 @@ public:
     GuideMetadata(HierarchyTreeScreenNode* screenNode);
     HierarchyTreeScreenNode* GetActiveScreen() const;
 
-    Q_PROPERTY(int PosX READ GetPosX WRITE SetPosX);
-    Q_PROPERTY(int PosY READ GetPosY WRITE SetPosY);
-
     // Get the selected guide or NULL if nothing/more then one guide is selected.
     GuideData* GetSelectedGuide() const;
 
 protected:
     virtual bool GetInitialInputEnabled() const {return false;};
-
-    // Getters/Setters.
-    int GetPosX() const;
-    void SetPosX(int value);
-    
-    int GetPosY() const;
-    void SetPosY(int value);
 
 private:
     HierarchyTreeScreenNode* activeScreen;

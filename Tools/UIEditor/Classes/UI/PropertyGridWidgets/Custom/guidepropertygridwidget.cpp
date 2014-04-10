@@ -31,6 +31,9 @@
 
 #include "WidgetSignalsBlocker.h"
 
+#include "GuideCommands.h"
+#include "CommandsController.h"
+
 static const QString HORZ_GUIDE_PROPERTY_BLOCK_NAME = "Horizontal Guide";
 static const QString VERT_GUIDE_PROPERTY_BLOCK_NAME = "Vertical Guide";
 
@@ -64,14 +67,16 @@ void GuidePropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     if (selectedGuide->GetType() == GuideData::Horizontal)
     {
         SetPropertyBlockName(HORZ_GUIDE_PROPERTY_BLOCK_NAME);
-        RegisterSpinBoxWidgetForProperty(propertiesMap, "PosY", ui->positionSpinBox, true);
+        ui->positionSpinBox->setValue(selectedGuide->GetPosition().y);
+        connect(ui->positionSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnGuidePositionChanged(int)));
     }
     else
     {
         SetPropertyBlockName(VERT_GUIDE_PROPERTY_BLOCK_NAME);
-        RegisterSpinBoxWidgetForProperty(propertiesMap, "PosX", ui->positionSpinBox, true);
+        ui->positionSpinBox->setValue(selectedGuide->GetPosition().x);
+        connect(ui->positionSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnGuidePositionChanged(int)));
     }
-    
+
     connect(&metadata->GetActiveScreen()->GetGuidesManager(), SIGNAL(GuideMoved(GuideData*)), this, SLOT(OnGuideMoved(GuideData*)));
 }
 
@@ -84,7 +89,7 @@ void GuidePropertyGridWidget::Cleanup()
         return;
     }
 
-    UnregisterSpinBoxWidget(ui->positionSpinBox);
+    disconnect(ui->positionSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnGuidePositionChanged(int)));
     disconnect(&metadata->GetActiveScreen()->GetGuidesManager(), SIGNAL(GuideMoved(GuideData*)), this, SLOT(OnGuideMoved(GuideData*)));
 }
 
@@ -97,4 +102,36 @@ void GuidePropertyGridWidget::OnGuideMoved(GuideData* guideData)
 {
     WidgetSignalsBlocker blocker(ui->positionSpinBox);
     ui->positionSpinBox->setValue(guideData->GetType() == GuideData::Horizontal ? guideData->GetPosition().y : guideData->GetPosition().x);
+}
+
+void GuidePropertyGridWidget::OnGuidePositionChanged(int value)
+{
+    GuideMetadata* metadata = GetGuideMetadata();
+    if (!metadata || !metadata->GetActiveScreen())
+    {
+        return;
+    }
+
+    GuideData* selectedGuide = metadata->GetSelectedGuide();
+    DVASSERT(selectedGuide);
+
+    Vector2 delta;
+    if (selectedGuide->GetType() == GuideData::Horizontal)
+    {
+        delta.y = value - selectedGuide->GetPosition().y;
+    }
+    else
+    {
+        delta.x = value - selectedGuide->GetPosition().x;
+    }
+
+    if (delta.IsZero())
+    {
+        // Nothing was changed.
+        return;
+    }
+    
+    MoveGuideCommand* cmd = new MoveGuideCommand(metadata->GetActiveScreen(), delta);
+    CommandsController::Instance()->ExecuteCommand(cmd);
+    SafeRelease(cmd);
 }

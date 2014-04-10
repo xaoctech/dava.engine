@@ -53,6 +53,7 @@ protected:
     
 protected slots:
     void OnGuideMoved(GuideData* guideData);
+    void OnGuidePositionChanged(int value);
 
 private:
     Ui::GuidePropertyGridWidget *ui;

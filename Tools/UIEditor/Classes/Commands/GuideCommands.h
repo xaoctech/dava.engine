@@ -65,11 +65,11 @@ private:
     GuideData guideData;
 };
 
-// Move the guide.
-class MoveGuideCommand : public BaseGuideCommand
+// Move the guide by mouse.
+class MoveGuideByMouseCommand : public BaseGuideCommand
 {
 public:
-    MoveGuideCommand(const HierarchyTreeScreenNode* screenNode);
+    MoveGuideByMouseCommand(const HierarchyTreeScreenNode* screenNode);
     
     virtual void Execute();
     virtual void Rollback();
@@ -85,10 +85,11 @@ private:
     GuideData movedGuideData;
 };
 
-class MoveGuideByKeyboardCommand : public BaseGuideCommand
+// Move guide by setting its position.
+class MoveGuideCommand : public BaseGuideCommand
 {
 public:
-    MoveGuideByKeyboardCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta);
+    MoveGuideCommand(const HierarchyTreeScreenNode* screenNode, const Vector2& delta);
 
     virtual void Execute();
     virtual void Rollback();
