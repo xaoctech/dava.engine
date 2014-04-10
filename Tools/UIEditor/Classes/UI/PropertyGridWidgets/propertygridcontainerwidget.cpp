@@ -70,8 +70,11 @@ void PropertyGridContainerWidget::OnPropertiesGridUpdated()
     const HierarchyTreeNode* activeTreeNode = PropertiesGridController::Instance()->GetActiveTreeNode();
     if (activeTreeNode == NULL)
     {
-        // Nothing is selected - cleanup the properties grid.
+        // No Tree Node selected, try to build custom properties grid.
         CleanupPropertiesGrid();
+        
+        HierarchyTreeScreenNode* activeScreenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+        BuildCustomPropertiesGrid(activeScreenNode);
         return;
     }
 
@@ -111,6 +114,24 @@ void PropertyGridContainerWidget::CleanupPropertiesGrid()
 
     // Also release the Active Metadata, if any.
     CleanupActiveMetadata();
+}
+
+void PropertyGridContainerWidget::BuildCustomPropertiesGrid(HierarchyTreeScreenNode* screenNode)
+{
+    if (!screenNode)
+    {
+        return;
+    }
+
+    BaseMetadata* customMetadata = MetadataFactory::Instance()->GetCustomMetadata(screenNode);
+    if (!customMetadata)
+    {
+        return;
+    }
+
+    METADATAPARAMSVECT params;
+    params.push_back(BaseMetadataParams(HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY, NULL));
+    BuildPropertiesGrid(customMetadata, params);
 }
 
 void PropertyGridContainerWidget::BuildPropertiesGridList()

@@ -200,7 +200,7 @@ void MoveGuideByKeyboardCommand::Execute()
         {
             GuideData* guideData = *iter;
             guidesPositions.push_back(guideData->GetPosition());
-            guideData->SetPosition(guideData->GetPosition() + moveDelta);
+            screen->SetGuidePosition(guideData, guideData->GetPosition() + moveDelta);
         }
     
         isFirstMovePerformed = true;
@@ -218,7 +218,7 @@ void MoveGuideByKeyboardCommand::Execute()
                 const Vector2& origPos = *innerIter;
                 if (guideData->GetPosition() == origPos)
                 {
-                    guideData->SetPosition(guideData->GetPosition() + moveDelta);
+                    screen->SetGuidePosition(guideData, guideData->GetPosition() + moveDelta);
                 }
             }
         }
@@ -246,7 +246,7 @@ void MoveGuideByKeyboardCommand::Rollback()
             const Vector2& origPos = *innerIter;
             if (guideData->GetPosition() - moveDelta == origPos)
             {
-                guideData->SetPosition(origPos);
+                screen->SetGuidePosition(guideData, origPos);
             }
         }
     }

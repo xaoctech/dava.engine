@@ -47,6 +47,8 @@
 #include "UIScrollBarMetadata.h"
 #include "UIParticlesMetadata.h"
 
+#include "GuideMetadata.h"
+
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
 #include "HierarchyTreeControlNode.h"
@@ -231,4 +233,22 @@ BaseMetadata* MetadataFactory::GetMetadataForTreeNodesList(const HierarchyTreeCo
         uiControl->Release();
         return resultMetadata;
     }
+}
+
+BaseMetadata* MetadataFactory::GetCustomMetadata(HierarchyTreeScreenNode* screenNode)
+{
+    if (!screenNode)
+    {
+        return NULL;
+    }
+
+    // For now only Guides metadata is supported.
+    const List<GuideData*> selectedGuides = screenNode->GetSelectedGuides(true);
+    if (selectedGuides.size() != 1)
+    {
+        // Display Guide Widget only if one and only guide is selected.
+        return NULL;
+    }
+
+    return new GuideMetadata(screenNode);
 }

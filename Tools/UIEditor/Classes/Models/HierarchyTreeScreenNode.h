@@ -112,10 +112,12 @@ public:
     // Access to the guides.
     void AddGuide(const GuideData& guideData);
     bool RemoveGuide(const GuideData& guideData);
+
+    void SetGuidePosition(GuideData* guideData, const Vector2& newPos);
     bool UpdateGuidePosition(const GuideData& guideData, const Vector2& newPos);
 
     const List<GuideData*> GetGuides(bool includeNewGuide) const;
-    const List<GuideData*> GetSelectedGuides() const;
+    const List<GuideData*> GetSelectedGuides(bool includeNewGuide = false) const;
     
     // Set the guide enabled mode.
     bool AreGuidesEnabled() const;
@@ -127,6 +129,9 @@ public:
 
     // Set the stick mode.
     void SetStickMode(int32 stickMode);
+
+    // Access to Guides Manager.
+    const GuidesManager& GetGuidesManager() const;
 
 protected:
 	void CombineRectWithChild(Rect& rect) const;

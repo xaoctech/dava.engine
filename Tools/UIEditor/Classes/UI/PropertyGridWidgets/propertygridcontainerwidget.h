@@ -67,6 +67,9 @@ protected:
     // Cleanup the existing Properties Grid.
     void CleanupPropertiesGrid();
 
+    // Build the custom Properties Grid for items which aren't bound to any UI Control.
+    void BuildCustomPropertiesGrid(HierarchyTreeScreenNode* activeScreenNode);
+
     // Work with Active Metadata.
     BaseMetadata* GetActiveMetadata(const HierarchyTreeNode* activeTreeNode);
     BaseMetadata* GetActiveMetadata(const HierarchyTreeController::SELECTEDCONTROLNODES activeNodes);
