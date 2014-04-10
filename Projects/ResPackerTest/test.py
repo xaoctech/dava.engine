@@ -10,13 +10,19 @@ import sys;
     
 arguments = sys.argv[1:]
 
-if 3 != len(arguments):
-    print 'Usage: ./create_performance_mail_report.py Gpu Recepients Link'
+if 3 > len(arguments):
+    print 'Usage: ./create_performance_mail_report.py Gpu Recepients Link [Branch Revision]'
     exit(1)
 
 gpu = arguments[0]  
 recipients = arguments[1]
 link = arguments[2]
+branch = 0
+revision = 0
+
+if 5 == len(arguments):
+    branch = arguments[3]
+    revision = arguments[4]
 
 currentDir = os.getcwd();
 
@@ -182,5 +188,7 @@ if tests_results["success"] != tests_results['tests']:
     msg = "Test: runned= %d succes= %d failed= %d <br>" % (tests_results['tests'], tests_results['success'], tests_results['tests'] - tests_results['success'])
     msg += "Failures: Txt %d Tex %d Image %d <br>" % (tests_results['txt_failure'], tests_results['tex_failure'], tests_results['img_failure'])
     msg += "<br> Link: %s/%s.html" % (link, gpu)
+    if (branch != 0):
+        msg += "<br>Framewok: %s %s" % (branch, revision)
     
     utils.call("python", "mail.py", recipients, subject, msg)
