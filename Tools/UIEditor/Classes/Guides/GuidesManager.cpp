@@ -86,8 +86,8 @@ void GuidesManager::MoveNewGuide(const Vector2& pos)
     {
         return;
     }
-    
-    newGuide->SetPosition(pos);
+
+    SetGuidePosition(newGuide, pos);
 }
 
 bool GuidesManager::CanAcceptNewGuide() const
@@ -161,7 +161,7 @@ bool GuidesManager::UpdateGuidePosition(const GuideData& guideData, const Vector
         GuideData* curGuide = *iter;
         if (*curGuide == guideData)
         {
-            curGuide->SetPosition(newPos);
+            SetGuidePosition(curGuide, newPos);
             return true;
         }
     }
@@ -288,9 +288,8 @@ void GuidesManager::MoveGuide(const Vector2& pos)
     {
         return;
     }
-    
-    Vector2 moveDelta = pos - moveGuideStartPos;
-    moveGuide->SetPosition(moveGuideStartPos + moveDelta);
+
+    SetGuidePosition(moveGuide, pos);
 }
 
 const GuideData* GuidesManager::AcceptMoveGuide()
@@ -358,7 +357,7 @@ void GuidesManager::ResetSelection()
     }
 }
 
-const List<GuideData*> GuidesManager::GetSelectedGuides() const
+const List<GuideData*> GuidesManager::GetSelectedGuides(bool includeNewGuide) const
 {
     List<GuideData*> selectedGuides;
     for (List<GuideData*>::const_iterator iter = activeGuides.begin(); iter != activeGuides.end(); iter ++)
@@ -367,6 +366,11 @@ const List<GuideData*> GuidesManager::GetSelectedGuides() const
         {
             selectedGuides.push_back(*iter);
         }
+    }
+
+    if (includeNewGuide && newGuide)
+    {
+        selectedGuides.push_back(newGuide);
     }
 
     return selectedGuides;
@@ -626,6 +630,16 @@ void GuidesManager::LockGuides(bool value)
     if (value)
     {
         ResetSelection();
+    }
+}
+
+void GuidesManager::SetGuidePosition(GuideData* guideData, const Vector2& pos)
+{
+    DVASSERT(guideData);
+    if (guideData->GetPosition() != pos)
+    {
+        guideData->SetPosition(pos);
+        emit GuideMoved(guideData);
     }
 }
 

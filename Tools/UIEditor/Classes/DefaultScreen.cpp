@@ -957,6 +957,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 	if (screenNode && event->tid == UIEvent::BUTTON_1 && screenNode->AreGuidesEnabled() && screenNode->StartMoveGuide(point))
 	{
 		inputState = InputStateGuideMove;
+        HierarchyTreeController::Instance()->ResetSelectedControl();
         return;
 	}
 

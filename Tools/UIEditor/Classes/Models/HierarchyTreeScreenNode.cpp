@@ -310,9 +310,9 @@ Vector2 HierarchyTreeScreenNode::GetMoveGuideStartPos() const
     return guides.GetMoveGuideStartPos();
 }
 
-const List<GuideData*> HierarchyTreeScreenNode::GetSelectedGuides() const
+const List<GuideData*> HierarchyTreeScreenNode::GetSelectedGuides(bool includeNewGuide) const
 {
-    return guides.GetSelectedGuides();
+    return guides.GetSelectedGuides(includeNewGuide);
 }
 
 bool HierarchyTreeScreenNode::AreGuidesSelected() const
@@ -350,6 +350,11 @@ bool HierarchyTreeScreenNode::UpdateGuidePosition(const GuideData& guideData, co
     return guides.UpdateGuidePosition(guideData, newPos);
 }
 
+void HierarchyTreeScreenNode::SetGuidePosition(GuideData* guideData, const Vector2& newPos)
+{
+    return guides.SetGuidePosition(guideData, newPos);
+}
+
 const List<GuideData*> HierarchyTreeScreenNode::GetGuides(bool includeNewGuide) const
 {
     return guides.GetGuides(includeNewGuide);
@@ -378,4 +383,9 @@ bool HierarchyTreeScreenNode::AreGuidesLocked() const
 void HierarchyTreeScreenNode::LockGuides(bool value)
 {
     guides.LockGuides(value);
+}
+
+const GuidesManager& HierarchyTreeScreenNode::GetGuidesManager() const
+{
+    return guides;
 }

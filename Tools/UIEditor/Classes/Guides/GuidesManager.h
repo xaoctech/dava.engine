@@ -70,7 +70,7 @@ public:
 
     // Selected guides.
     bool AreGuidesSelected() const;
-    const List<GuideData*> GetSelectedGuides() const;
+    const List<GuideData*> GetSelectedGuides(bool includeNewGuide = false) const;
 
     List<GuideData> DeleteSelectedGuides();
     void ResetSelection();
@@ -81,7 +81,11 @@ public:
     // Add/remove/update.
     void AddGuide(const GuideData& guideData);
     bool RemoveGuide(const GuideData& guideData);
+
     bool UpdateGuidePosition(const GuideData& guideData, const Vector2& newPos);
+
+    // Set the guide position and emit the signal.
+    void SetGuidePosition(GuideData* guideData, const Vector2& pos);
 
     // Load/Save functionality.
     bool Load(const FilePath& fileName);
@@ -103,6 +107,9 @@ public:
     // Lock the guides.
     bool AreGuidesLocked() const;
     void LockGuides(bool value);
+    
+signals:
+    void GuideMoved(GuideData* guideData);
 
 protected:
     // Check whether the same guide exists.
