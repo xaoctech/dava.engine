@@ -31,7 +31,7 @@
 
 #include <QWidget>
 #include "rootpropertygridwidget.h"
-#include "Custom/GuideMetadata.h"
+#include "Metadata/Custom/GuideMetadata.h"
 
 namespace Ui {
 class GuidePropertyGridWidget;
