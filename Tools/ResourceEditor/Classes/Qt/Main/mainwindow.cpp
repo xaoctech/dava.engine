@@ -169,7 +169,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	LoadGPUFormat();
     LoadMaterialLightViewMode();
 
-	EnableGlobalTimeout(globalInvalidate);
+    EnableGlobalTimeout(globalInvalidate);
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
@@ -704,10 +704,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
-	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
-	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
-	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
-
     QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
     QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
 
@@ -916,7 +912,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuExport->setEnabled(enable);
 	ui->menuEdit->setEnabled(enable);
 	ui->menuCreateNode->setEnabled(enable);
-	ui->menuComponent->setEnabled(enable);
 	ui->menuScene->setEnabled(enable);
     ui->menuLightView->setEnabled(enable);
     ui->menuTexturesForGPU->setEnabled(enable);
@@ -2317,25 +2312,6 @@ void QtMainWindow::OnGrasEditor()
     }
 }
 
-void QtMainWindow::OnAddActionComponent()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Add Action Component");
-
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::ACTION_COMPONENT)));
-		}
-
-		scene->EndBatch();
-	}
-}
-
 void QtMainWindow::OnAddSoundComponent()
 {
     SceneEditor2* scene = GetCurrentScene();
@@ -2377,45 +2353,6 @@ void QtMainWindow::OnRemoveSoundComponent()
         scene->EndBatch();
     }
 }
-
-void QtMainWindow::OnAddStaticOcclusionComponent()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Add Static Occlusion Component");
-        
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
-		}
-        
-		scene->EndBatch();
-	}
-}
-
-void QtMainWindow::OnAddModelTypeComponent()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Add Model Type Component");
-        
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new QualitySettingsComponent()));
-		}
-        
-		scene->EndBatch();
-	}
-}
-
 void QtMainWindow::OnBuildStaticOcclusion()
 {
     SceneEditor2* scene = GetCurrentScene();
@@ -2684,8 +2621,8 @@ void QtMainWindow::DiableUIForFutureUsing()
 {
 	//TODO: temporary disabled
 	//-->
-	ui->actionAddNewComponent->setVisible(false);
-	ui->actionRemoveComponent->setVisible(false);
+	//ui->actionAddNewComponent->setVisible(false);
+	//ui->actionRemoveComponent->setVisible(false);
 	//<--
 }
 
@@ -2868,9 +2805,18 @@ void QtMainWindow::OnReloadShaders()
         
         DAVA::Set<DAVA::NMaterial *> materialList;
         DAVA::MaterialSystem *matSystem = scene->GetMaterialSystem();
-        matSystem->BuildMaterialList(scene, materialList);
+        matSystem->BuildMaterialList(scene, materialList, NMaterial::MATERIALTYPE_NONE, true);
         
-        
+        const Map<uint32, NMaterial *> & particleInstances = scene->particleEffectSystem->GetMaterialInstances();
+        Map<uint32, NMaterial *>::const_iterator endParticleIt = particleInstances.end();
+        Map<uint32, NMaterial *>::const_iterator particleIt = particleInstances.begin();
+        for( ; particleIt != endParticleIt; ++particleIt)
+        {
+            materialList.insert(particleIt->second);
+            if(particleIt->second->GetParent())
+                materialList.insert(particleIt->second->GetParent());
+        }
+
         DAVA::Set<DAVA::NMaterial *>::iterator it = materialList.begin();
         DAVA::Set<DAVA::NMaterial *>::iterator endIt = materialList.end();
         while (it != endIt)
@@ -2881,6 +2827,8 @@ void QtMainWindow::OnReloadShaders()
             
             ++it;
         }
+        
+        scene->GetGlobalMaterial()->BuildActiveUniformsCacheParamsCache();
     }
 }
 
