@@ -1446,6 +1446,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.h">
       <Filter>Internal\Scene3D\Systems\SpeeTreeSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.h">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2587,6 +2590,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.cpp">
       <Filter>Internal\Scene3D\Systems\SpeeTreeSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.cpp">
+      <Filter>Internal\Scene3D\Converters</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
