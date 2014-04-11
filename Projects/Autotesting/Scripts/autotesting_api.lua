@@ -328,24 +328,8 @@ function IsVisible(element, background)
 	Yield()
 	local result = false
 	local control = autotestingSystem:FindControl(element)
-	if control and control:GetVisible() then
-		Yield()
-		if background then
-			local back = autotestingSystem:FindControl(background)
-			assert(back, background.." background not found")
-			local geomData = control:GetGeometricData()
-            local rect = geomData:GetUnrotatedRect()
-			local geomData = back:GetGeometricData()
-			local backRect = geomData:GetUnrotatedRect()
-            --Log("Control "..tostring(rect.x)..","..tostring(rect.y).." ["..tostring(rect.dx)..", "..tostring(rect.dy).."]")
-            --Log("Background "..tostring(backRect.x)..","..tostring(backRect.y).." ["..tostring(backRect.dx)..", "..tostring(backRect.dy).."]")
-			
-			if (rect.x >= backRect.x) and (rect.x + rect.dx <= backRect.x + backRect.dx) and (rect.y >= backRect.y) and (rect.y + rect.dy <= backRect.y + backRect.dy) then
-				result = true
-			end
-		else
-			result = true
-		end
+	if control and control:GetVisible() and control:IsOnScreen() and IsOnScreen(control, background) then
+		result = true
 	end
 	
 	Log("Element " ..  element .. " is visible on " .. tostring(background) .. "= " .. tostring(result))
@@ -355,21 +339,22 @@ end
 function IsDisabled(element)
 	Yield()
 	local control = GetControl(element)
-	if control:GetDisabled() then
-		return true
-	else
-		return false
-	end 
+	return control:GetDisabled()
 end
 
-function IsOnScreen(control)
-	local screen = autotestingSystem:GetScreen()
+function IsOnScreen(control, background)
+	local screen 
+	if background then 
+		screen = autotestingSystem:FindControl(background)
+	else
+		screen = autotestingSystem:GetScreen()
+	end
+	
 	local geomData = control:GetGeometricData()
     local rect = geomData:GetUnrotatedRect()
+	
 	local geomData = screen:GetGeometricData()
 	local backRect = geomData:GetUnrotatedRect()
-    --Log("Control "..tostring(rect.x)..","..tostring(rect.y).." ["..tostring(rect.dx)..", "..tostring(rect.dy).."]")
-    --Log("Background "..tostring(backRect.x)..","..tostring(backRect.y).." ["..tostring(backRect.dx)..", "..tostring(backRect.dy).."]")
 			
 	if (rect.x >= backRect.x) and (rect.x + rect.dx <= backRect.x + backRect.dx) and (rect.y >= backRect.y) and (rect.y + rect.dy <= backRect.y + backRect.dy) then
 		return true
@@ -378,8 +363,14 @@ function IsOnScreen(control)
 	end
 end
 
-function IsCenterOnScreen(control)
-	local screen = autotestingSystem:GetScreen()
+function IsCenterOnScreen(control, background)
+	local screen 
+	if background then 
+		screen = autotestingSystem:FindControl(background)
+	else
+		screen = autotestingSystem:GetScreen()
+	end
+	
     local center = GetCenter(control)
 	local geomData = screen:GetGeometricData()
 	local backRect = geomData:GetUnrotatedRect()
@@ -744,37 +735,22 @@ function ClickControl(name, time, touchId)
     local waitTime = time or TIMEOUT
     local touchId = touchId or 1
 	
-    Log("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)
-    
-    local elapsedTime = 0.0
-    while elapsedTime < waitTime do
-        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
-       
-        if autotestingSystem:FindControl(name) then     
-            break
+    Log("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)  
+    if WaitControl(name, waitTime) then
+	
+		local control = autotestingSystem:FindControl(name)
+	
+		if IsVisible(name) then     
+			local position = GetCenter(name)
+			ClickPosition(position, TIMECLICK, touchId)
+			return true
+		elseif not IsCenterOnScreen(control) then
+			Log(name .. " is not on the Screen")
 		else
-			Yield()
-        end
-    end
-	
-	local control = autotestingSystem:FindControl(name)
-	--local screen = autotestingSystem:GetScreen()
-	if control and IsVisible(name) and IsCenterOnScreen(control) then     
-        local position = GetCenter(name)
-        ClickPosition(position, TIMECLICK, touchId)
-        return true
-    end
-	
-	local control = autotestingSystem:FindControl(name)
-	if  control then
-		if not IsVisible(name) then
 			Log(name .. " is not visible")
 		end
-		if not IsCenterOnScreen(control) then
-			Log(name .. " is not on the Screen")
-		end
 	else
-		Log("ClickControl not found "..name)
+			Log("ClickControl not found "..name)
 	end
     return false
 end
