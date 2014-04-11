@@ -28,7 +28,7 @@
 
 #include "DAVAEngine.h"
 #include "DAVAClassRegistrator.h"
-#include "SpriteRenderBatch.h"
+#include "Render/Highlevel/SpriteRenderBatch.h"
 
 using namespace DAVA;
 
