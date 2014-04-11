@@ -496,10 +496,9 @@ void SoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * 
     SoundGroup group;
     group.volume = 1.f;
     group.name = groupName;
-    soundGroups.push_back(group);
-
-    event->SetVolume(group.volume);
     group.events.push_back(event);
+
+    soundGroups.push_back(group);
 }
     
 void SoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
