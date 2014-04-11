@@ -160,11 +160,11 @@ void main()
     lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb;
     
     #if defined (FRESNEL_TO_ALPHA)	
-    lowp vec3 resColor = reflectionTintColor * reflectionColor;
-    #if defined (SPECULAR)
-        resColor+=resSpecularColor;
-    #endif
-    gl_FragColor = vec4(resColor, fresnel);
+		lowp vec3 resColor = reflectionTintColor * reflectionColor;
+		#if defined (SPECULAR)
+			resColor+=resSpecularColor;
+		#endif
+		gl_FragColor = vec4(resColor, fresnel);
     
     #else	
 		#if defined CONST_REFRACTION_COLOR
