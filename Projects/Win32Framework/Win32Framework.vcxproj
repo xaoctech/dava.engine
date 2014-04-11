@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugQt|Win32">
@@ -499,6 +499,10 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\ImpulseOscillatorComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\MovingOscillatorComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\SpeedTreeComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\WindComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\StaticOcclusionComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
@@ -543,6 +547,8 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\SpeedTreeUpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\StaticOcclusionSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
@@ -893,6 +899,10 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\ImpulseOscillatorComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\MovingOscillatorComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\SpeedTreeComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\WindComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\StaticOcclusionComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
@@ -937,6 +947,8 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\SpeedTreeUpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\StaticOcclusionSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />

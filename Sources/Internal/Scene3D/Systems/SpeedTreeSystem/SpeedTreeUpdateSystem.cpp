@@ -51,7 +51,7 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 {
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
-    isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+    isAnimationEnabled = false; //options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
