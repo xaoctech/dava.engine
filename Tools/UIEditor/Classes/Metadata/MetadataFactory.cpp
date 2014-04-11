@@ -47,7 +47,7 @@
 #include "UIScrollBarMetadata.h"
 #include "UIParticlesMetadata.h"
 
-#include "GuideMetadata.h"
+#include "Custom/GuideMetadata.h"
 
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"

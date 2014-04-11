@@ -47,7 +47,7 @@
 #include "UITextFieldMetadata.h"
 #include "UIParticlesMetadata.h"
 
-#include "GuideMetadata.h"
+#include "Custom/GuideMetadata.h"
 
 using namespace DAVA;
 
