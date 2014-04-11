@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -135,12 +135,6 @@
     </Filter>
     <Filter Include="Internal\Scene3D\Converters">
       <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Scene3D\Systems\SpeedTreeSystem">
-      <UniqueIdentifier>{61e4b9df-6932-4a52-a121-bfa0449ad474}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Scene3D\Components\SpeedTreeComponents">
-      <UniqueIdentifier>{37ec398f-19ca-49fe-ade5-03727828ec75}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -909,13 +903,7 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
       <Filter>Internal\Platform\Qt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
@@ -1425,29 +1413,14 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CoreWin32PlatformBase.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.h">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
       <Filter>Internal\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\SpeedTreeUpdateSystem.h">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.h">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.h">
-      <Filter>Internal\Scene3D\Converters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\ImpulseOscillatorComponent.h">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\MovingOscillatorComponent.h">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\SpeedTreeComponent.h">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\WindComponent.h">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2090,9 +2063,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
@@ -2564,32 +2534,17 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CoreWin32PlatformBase.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.cpp">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\DateTime.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\SpeedTreeUpdateSystem.cpp">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeSystem\TreeOscillator.cpp">
-      <Filter>Internal\Scene3D\Systems\SpeedTreeSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.cpp">
-      <Filter>Internal\Scene3D\Converters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\ImpulseOscillatorComponent.cpp">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\MovingOscillatorComponent.cpp">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\SpeedTreeComponent.cpp">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponents\WindComponent.cpp">
-      <Filter>Internal\Scene3D\Components\SpeedTreeComponents</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
