@@ -2784,9 +2784,18 @@ void QtMainWindow::OnReloadShaders()
         
         DAVA::Set<DAVA::NMaterial *> materialList;
         DAVA::MaterialSystem *matSystem = scene->GetMaterialSystem();
-        matSystem->BuildMaterialList(scene, materialList);
+        matSystem->BuildMaterialList(scene, materialList, NMaterial::MATERIALTYPE_NONE, true);
         
-        
+        const Map<uint32, NMaterial *> & particleInstances = scene->particleEffectSystem->GetMaterialInstances();
+        Map<uint32, NMaterial *>::const_iterator endParticleIt = particleInstances.end();
+        Map<uint32, NMaterial *>::const_iterator particleIt = particleInstances.begin();
+        for( ; particleIt != endParticleIt; ++particleIt)
+        {
+            materialList.insert(particleIt->second);
+            if(particleIt->second->GetParent())
+                materialList.insert(particleIt->second->GetParent());
+        }
+
         DAVA::Set<DAVA::NMaterial *>::iterator it = materialList.begin();
         DAVA::Set<DAVA::NMaterial *>::iterator endIt = materialList.end();
         while (it != endIt)
@@ -2797,6 +2806,8 @@ void QtMainWindow::OnReloadShaders()
             
             ++it;
         }
+        
+        scene->GetGlobalMaterial()->BuildActiveUniformsCacheParamsCache();
     }
 }
 
