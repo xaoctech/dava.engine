@@ -69,7 +69,7 @@ protected:
 	eState state;
 	ePerformedWhere performedWhere;
 
-	friend class JobQueue;
+	friend class MainThreadJobQueue;
 	friend class JobManager;
 };
 
