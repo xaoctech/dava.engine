@@ -28,8 +28,10 @@ uniform sampler2D decal;
 uniform sampler2D albedo;
 uniform lowp vec3 decalTintColor;
 uniform lowp vec3 reflectanceColor;
+varying highp vec2 varTexCoord0;
 varying highp vec2 varTexCoord1;
-varying mediump vec2 varTexCoord0;
+varying highp vec2 varTexCoordDecal;
+
 #endif
 
 #elif defined(PIXEL_LIT)
@@ -102,9 +104,10 @@ void main()
 #if defined(VERTEX_LIT)
     lowp vec3 reflectionColor = textureCube(cubemap, reflectionDirectionInWorldSpace).rgb; //vec3(reflectedDirection.x, reflectedDirection.y, reflectedDirection.z));
 	#if defined(MATERIAL_DECAL)
-		lowp vec3 textureColor1 = texture2D(decal, varTexCoord1).rgb;
+		lowp vec3 textureColorDecal = texture2D(decal, varTexCoordDecal).rgb;
 		lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
-		gl_FragColor = vec4((textureColor0 * decalTintColor + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
+		lowp vec3 textureColor1 = texture2D(albedo, varTexCoord1).rgb;
+		gl_FragColor = vec4((textureColor0 *textureColorDecal* decalTintColor * 2.0 + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
 	#else
 		gl_FragColor = vec4(reflectionColor * reflectionTintColor, 1.0);
 	#endif
