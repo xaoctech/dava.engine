@@ -54,7 +54,7 @@ QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &va
 	, allowedValuesLocked(false)
 	, allowedButton(NULL)
     , isSettingMeFromChilds(false)
-    , treatAllowedValuesAsFlags(false)
+    , allowedValueType(Default)
 {
 	InitFlags();
 	ChildsCreate();
@@ -179,14 +179,14 @@ void QtPropertyDataDavaVariant::ClearAllowedValues()
 	}
 }
 
-void QtPropertyDataDavaVariant::SetAllowedValuesAsFlags(bool set)
+void QtPropertyDataDavaVariant::SetAllowedValueType(AllowedValueType type)
 {
-    treatAllowedValuesAsFlags = set;
+    allowedValueType = type;
 }
 
-bool QtPropertyDataDavaVariant::IsAllovedValuesFlags() const
+QtPropertyDataDavaVariant::AllowedValueType QtPropertyDataDavaVariant::GetAllowedValueType( ) const
 {
-    return treatAllowedValuesAsFlags;
+    return allowedValueType;
 }
 
 
@@ -196,26 +196,31 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
 
     if (allowedValues.size() > 0)
     {
-        if (IsAllovedValuesFlags())
+        switch (allowedValueType)
         {
-            const int flags = FromDavaVariant(curVariantValue).toInt();
-            QStringList values;
-		    for (int i = 0; i < allowedValues.size(); ++i)
-		    {
-                const int flag = FromDavaVariant(allowedValues[i].realValue).toInt();
-                if ((flag & flags) == flag)
+        case TypeFlags:
+            {
+                const int flags = FromDavaVariant( curVariantValue ).toInt();
+                QStringList values;
+                for ( int i = 0; i < allowedValues.size(); ++i )
                 {
-                    const QString visible = allowedValues[i].visibleValue.toString();
-                    const QString real = QString::number( FromDavaVariant(allowedValues[i].realValue).toInt() );
-                    values << ( allowedValues[i].visibleValue.isValid() ? visible : real );
+                    const int flag = FromDavaVariant( allowedValues[i].realValue ).toInt();
+                    if ( ( flag & flags ) == flag )
+                    {
+                        const QString visible = allowedValues[i].visibleValue.toString();
+                        const QString real = QString::number( FromDavaVariant( allowedValues[i].realValue ).toInt() );
+                        values << ( allowedValues[i].visibleValue.isValid() ? visible : real );
+                    }
                 }
-		    }
-            ret = values.join("\n");
-        }
-        else
-        {
-            ret = GetValueAlias();
-        }
+                ret = values.join( "\n" );
+            }
+            break;
+        default:
+            {
+                ret = GetValueAlias();
+            }
+            break;
+        } // end switch
     }
     else
     {
@@ -245,7 +250,7 @@ QVariant QtPropertyDataDavaVariant::GetValueAlias() const
 
 	if(allowedValues.size() > 0)
 	{
-        if (IsAllovedValuesFlags())
+        if (allowedValueType == TypeFlags)
         {
             const quint64 val = FromDavaVariant(curVariantValue).toULongLong();
             const QString alias = QString("Flags: %1").arg(val);
@@ -914,7 +919,7 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
 	// user will only be able to select values from combobox
 	if(allowedValues.size() > 0)
 	{
-        if (treatAllowedValuesAsFlags)
+        if (allowedValueType == TypeFlags)
         {
 		    ret = CreateAllowedFlagsEditor(parent);
         }
@@ -1116,7 +1121,7 @@ QWidget* QtPropertyDataDavaVariant::CreateAllowedFlagsEditor(QWidget *parent) co
 
 void QtPropertyDataDavaVariant::SetAllowedValueEditorData(QWidget *editorWidget)
 {
-    if (IsAllovedValuesFlags())
+    if (allowedValueType == TypeFlags)
     {
         FlagSelectorCombo *cb = qobject_cast< FlagSelectorCombo * >( editorWidget );
 
@@ -1155,7 +1160,7 @@ void QtPropertyDataDavaVariant::SetAllowedValueEditorData(QWidget *editorWidget)
 
 void QtPropertyDataDavaVariant::ApplyAllowedValueFromEditor(QWidget *editorWidget)
 {
-    if (IsAllovedValuesFlags())
+    if (allowedValueType == TypeFlags)
     {
         FlagSelectorCombo *cb = qobject_cast< FlagSelectorCombo * >( editorWidget );
 

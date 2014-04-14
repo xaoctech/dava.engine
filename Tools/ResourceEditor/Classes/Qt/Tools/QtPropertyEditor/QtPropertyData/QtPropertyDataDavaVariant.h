@@ -44,6 +44,13 @@ class QtPropertyDataDavaVariant : public QtPropertyData
 	friend class QtPropertyDataDavaVariantSubValue;
 
 public:
+    enum AllowedValueType
+    {
+        Default,
+        TypeFlags,
+    };
+
+public:
 	QtPropertyDataDavaVariant(const DAVA::VariantType &value);
 	virtual ~QtPropertyDataDavaVariant();
 
@@ -52,8 +59,8 @@ public:
 
 	void AddAllowedValue(const DAVA::VariantType& realValue, const QVariant& visibleValue = QVariant());
 	void ClearAllowedValues();
-    void SetAllowedValuesAsFlags(bool set);
-    bool IsAllovedValuesFlags() const;
+    void SetAllowedValueType(AllowedValueType type);
+    AllowedValueType GetAllowedValueType() const;
 
 	QVariant FromDavaVariant(const DAVA::VariantType &variant) const;
     
@@ -92,7 +99,7 @@ protected:
 	QVector<AllowedValue> allowedValues;
 	mutable bool allowedValuesLocked;
 	QtPropertyToolButton *allowedButton;
-    bool treatAllowedValuesAsFlags;
+    AllowedValueType allowedValueType;
     
     QString openDialogFilter;
     QString defaultOpenDialogPath;
