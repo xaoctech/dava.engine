@@ -726,11 +726,22 @@ void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
 void RenderManager::AttachRenderData()
 {
     if (!currentRenderData)return;
+    RENDERER_UPDATE_STATS(attachRenderDataCount++);
+    
+    if (attachedRenderData == currentRenderData)
+    {
+        if ((attachedRenderData->vboBuffer != 0) && (attachedRenderData->indexBuffer != 0))
+        {
+            RENDERER_UPDATE_STATS(attachRenderDataSkipCount++);
+            return;
+        }
+    }
+    
+    attachedRenderData = currentRenderData;
 
     const int DEBUG = 0;
 	Shader * shader = hardwareState.shader;
 	
-	GetStats().attachRenderDataCount++;
     
     {
         int32 currentEnabledAttribCount = 0;
@@ -738,6 +749,7 @@ void RenderManager::AttachRenderData()
         HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
         HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
         
+
         
         int32 size = (int32)currentRenderData->streamArray.size();
         

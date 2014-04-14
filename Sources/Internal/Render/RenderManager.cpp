@@ -122,6 +122,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     
 	cursor = 0;
     currentRenderData = 0;
+    attachedRenderData = 0;
     enabledAttribCount = 0;
     
     statsFrameCountToShowDebug = 0;
@@ -726,6 +727,7 @@ void RenderManager::Stats::Clear()
 	renderStateFullSwitches = 0;
 	textureStateFullSwitches = 0;
 	attachRenderDataCount = 0;
+    attachRenderDataSkipCount = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
     dynamicParamUniformBindCount = 0;
