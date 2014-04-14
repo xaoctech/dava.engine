@@ -421,7 +421,7 @@ public:
 	INTROSPECTION_EXTEND(Entity, BaseObject,
 		MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(flags, InspDesc("Flags", GlobalEnumMap<Entity::EntityFlags>::Instance(), InspDesc::T_ENUM), I_SAVE | I_VIEW | I_EDIT)
+        MEMBER( flags, "Flags", I_SAVE | I_VIEW | I_EDIT )
 
         PROPERTY("visible", "Visible", GetVisible, SetVisible, I_VIEW | I_EDIT)
 
