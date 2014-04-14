@@ -105,6 +105,8 @@ SoundEvent * SoundSystem::CreateSoundEventFromFile(const FilePath & fileName, co
         MusicIOSSoundEvent * musicEvent = MusicIOSSoundEvent::CreateMusicEvent(fileName);
         if(musicEvent && (flags & SoundEvent::SOUND_EVENT_CREATE_LOOP))
             musicEvent->SetLoopCount(-1);
+        
+        event = musicEvent;
     }
 #endif //__DAVAENGINE_IPHONE__
     
