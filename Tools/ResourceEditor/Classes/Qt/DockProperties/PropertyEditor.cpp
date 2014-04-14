@@ -53,6 +53,8 @@
 #include "Commands2/ConvertToShadowCommand.h"
 #include "Commands2/DeleteRenderBatchCommand.h"
 #include "Commands2/CloneLastBatchCommand.h"
+#include "Commands2/AddComponentCommand.h"
+#include "Commands2/RemoveComponentCommand.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Project/ProjectManager.h"
 
@@ -81,6 +83,11 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
 	if(v.GetType() == DAVA::VariantType::TYPE_INT32) header()->resizeSection(0, v.AsInt32());
+
+    Ui::MainWindow* mainUi = QtMainWindow::Instance()->GetUI();
+    connect(mainUi->actionAddActionComponent, SIGNAL(triggered()), SLOT(OnAddActionComponent()));
+    connect(mainUi->actionAddQualitySettingsComponent, SIGNAL(triggered()), SLOT(OnAddModelTypeComponent()));
+    connect(mainUi->actionAddStaticOcclusionComponent, SIGNAL(triggered()), SLOT(OnAddStaticOcclusionComponent()));
 
 	SetUpdateTimeout(5000);
 	SetEditTracking(true);
@@ -175,7 +182,7 @@ void PropertyEditor::ResetProperties()
             DAVA::Entity *node = curNodes.at(i);
             QtPropertyData *curEntityData = CreateInsp(node, node->GetTypeInfo());
 
-            PropEditorUserData* userData = GetUserData(root);
+            PropEditorUserData* userData = GetUserData(curEntityData);
             userData->entity = node;
 
             root->MergeChild( curEntityData, node->GetTypeInfo()->Name());
@@ -183,12 +190,41 @@ void PropertyEditor::ResetProperties()
 		    // add info about components
             for (int ic = 0; ic < Component::COMPONENT_COUNT; ic++)
             {
-                Component *component = node->GetComponent(ic);
-			    if (component)
-			    {
-				    QtPropertyData *componentData = CreateInsp(component, component->GetTypeInfo());
-				    root->MergeChild(componentData, component->GetTypeInfo()->Name());
-			    }
+                const int nComponents = node->GetComponentCount(ic);
+                for ( int cidx = 0; cidx < nComponents; cidx++ )
+                {
+                    Component *component = node->GetComponent(ic, cidx);
+			        if (component)
+			        {
+				        QtPropertyData *componentData = CreateInsp(component, component->GetTypeInfo());
+                        PropEditorUserData* userData = GetUserData(componentData);
+                        userData->entity = node;
+
+                        bool isRemovable = true;
+                        switch (component->GetType())
+                        {
+                        case Component::TRANSFORM_COMPONENT:
+                            isRemovable = false;
+                            break;
+                        }
+
+                        if (isRemovable)
+                        {
+				            QtPropertyToolButton * deleteButton = CreateButton(componentData, QIcon(":/QtIcons/remove.png"), "Remove Component");
+                            deleteButton->setEnabled(true);
+				            QObject::connect(deleteButton, SIGNAL(clicked()), this, SLOT(OnRemoveComponent()));
+                        }
+
+                        if ( i == 0 )
+                        {
+                            root->ChildAdd(component->GetTypeInfo()->Name(),componentData);
+                        }
+                        else
+                        {
+                            root->MergeChild(componentData, component->GetTypeInfo()->Name());
+                        }
+			        }
+                }
             }
         }
 
@@ -383,42 +419,74 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 			}
             else if(DAVA::MetaInfo::Instance<DAVA::FilePath>() == meta)
 			{
-                QString dataName = data->GetName();
-                if(dataName == "heightmapPath" || dataName == "texture")
-                {
-                    QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
-					QString defaultPath = ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname().c_str();
-                    FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
-					if (dataSourcePath.Exists())
+				struct PathDescriptor
+				{
+					enum eType
 					{
-						defaultPath = dataSourcePath.GetAbsolutePathname().c_str();
+						PATH_TEXTURE = 0,
+						PATH_IMAGE,
+						PATH_HEIGHTMAP,
+						PATH_TEXT,
+						PATH_NOT_SPECIFIED
+					};
+
+					PathDescriptor(const QString & name, const QString &filter, eType type) : pathName(name), fileFilter(filter), pathType(type) {;};
+
+					QString pathName;
+					QString fileFilter;
+					eType pathType;
+				};
+
+				static const PathDescriptor descriptors[] = 
+				{
+					PathDescriptor("", "All (*.*)", PathDescriptor::PATH_NOT_SPECIFIED),
+					PathDescriptor("heightmapPath", "All (*.heightmap *.png);;PNG (*.png);;Height map (*.heightmap)", PathDescriptor::PATH_HEIGHTMAP),
+					PathDescriptor("texture", "All (*.tex *.png);;PNG (*.png);;TEX (*.tex)", PathDescriptor::PATH_TEXTURE),
+					PathDescriptor("lightmap", "All (*.tex *.png);;PNG (*.png);;TEX (*.tex)", PathDescriptor::PATH_TEXTURE),
+					PathDescriptor("vegetationTexture", "All (*.tex *.png);;PNG (*.png);;TEX (*.tex)", PathDescriptor::PATH_TEXTURE),
+					PathDescriptor("textureSheet", "All (*.txt);;TXT (*.tex)", PathDescriptor::PATH_TEXT),
+					PathDescriptor("densityMap", "All (*.png);;PNG (*.png)", PathDescriptor::PATH_IMAGE),
+				};
+
+
+				QString dataName = data->GetName();
+				PathDescriptor *pathDescriptor = (PathDescriptor *)&descriptors[0];
+
+				DAVA::uint32 count = sizeof(descriptors)/sizeof(PathDescriptor);
+				for(DAVA::uint32 i = 0; i < count; ++i)
+				{
+					if(descriptors[i].pathName == dataName)
+					{
+						pathDescriptor = (PathDescriptor *)&descriptors[i];
+						break;
 					}
-                    SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
-					if (NULL != editor && editor->GetScenePath().Exists())
-                    {
-                        DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
-                        if(String::npos != scenePath.find(dataSourcePath.GetAbsolutePathname()))
-                        {
-                            defaultPath = scenePath.c_str();
-                        }
-                    }
-                    variantData->SetDefaultOpenDialogPath(defaultPath);
-                    QStringList pathList;
-					pathList.append(defaultPath);
-                    QString fileFilter = "All (*.*)";
-                    if(dataName == "heightmapPath")
-                    {
-                        fileFilter = "All (*.heightmap *.png);;PNG (*.png);;Height map (*.heightmap)";
-                        variantData->SetValidator(new HeightMapValidator(pathList));
-                    }
-                    else
-                    {
-                        fileFilter = "All (*.tex *.png);;PNG (*.png);;TEX (*.tex)";
-                        variantData->SetValidator(new TexturePathValidator(pathList));
-                    }
-                    variantData->SetOpenDialogFilter(fileFilter);
-                }
-                
+				}
+
+
+				QtPropertyDataDavaVariant* variantData = static_cast<QtPropertyDataDavaVariant*>(data);
+				QString defaultPath = GetDefaultFilePath();
+				variantData->SetDefaultOpenDialogPath(defaultPath);
+				variantData->SetOpenDialogFilter(pathDescriptor->fileFilter);
+
+				QStringList pathList;
+				pathList.append(defaultPath);
+
+				switch(pathDescriptor->pathType)
+				{
+					case PathDescriptor::PATH_HEIGHTMAP:
+						variantData->SetValidator(new HeightMapValidator(pathList));
+						break;
+					case PathDescriptor::PATH_TEXTURE:
+						variantData->SetValidator(new TexturePathValidator(pathList));
+						break;
+					case PathDescriptor::PATH_IMAGE:
+					case PathDescriptor::PATH_TEXT:
+						variantData->SetValidator(new PathValidator(pathList));
+						break;
+
+					default:
+						break;
+				}
             }
 		}
 
@@ -1219,4 +1287,132 @@ void PropertyEditor::CloneRenderBatchesToFixSwitchLODs()
             }
         }
     }
+}
+
+void PropertyEditor::OnAddActionComponent()
+{
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+	if(curNodes.size() > 0)
+	{
+		curScene->BeginBatch("Add Action Component");
+
+		for(int i = 0; i < curNodes.size(); ++i)
+		{
+            Entity* node = curNodes.at(i);
+            if (node->GetComponentCount(Component::ACTION_COMPONENT) == 0)
+            {
+    			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::ACTION_COMPONENT)));
+            }
+		}
+
+		curScene->EndBatch();
+	}
+}
+
+void PropertyEditor::OnAddStaticOcclusionComponent()
+{
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+	if(curNodes.size() > 0)
+	{
+		curScene->BeginBatch("Add Static Occlusion Component");
+        
+		for(int i = 0; i < curNodes.size(); ++i)
+		{
+            Entity* node = curNodes.at(i);
+            if (node->GetComponentCount(Component::STATIC_OCCLUSION_COMPONENT) == 0)
+            {
+    			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
+            }
+		}
+        
+		curScene->EndBatch();
+	}
+}
+
+void PropertyEditor::OnAddModelTypeComponent()
+{
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+	if(curNodes.size() > 0)
+	{
+		curScene->BeginBatch("Add Model Type Component");
+        
+		for(int i = 0; i < curNodes.size(); ++i)
+		{
+            Entity* node = curNodes.at(i);
+            if (node->GetComponentCount(Component::QUALITY_SETTINGS_COMPONENT) == 0)
+            {
+			    curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::QUALITY_SETTINGS_COMPONENT)));
+            }
+		}
+        
+		curScene->EndBatch();
+	}
+}
+
+void PropertyEditor::OnRemoveComponent()
+{
+	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+	if(NULL != btn)
+	{
+		QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+        SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+
+		if(NULL != data && NULL != curScene)
+		{
+            QList< QtPropertyDataIntrospection * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for (int i = 0; i < nMerged; i++)
+            {
+                QtPropertyDataIntrospection *dynamicData = dynamic_cast<QtPropertyDataIntrospection *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            const bool usebatch = (dataList.size() > 1);
+            if (usebatch)
+            {
+                curScene->BeginBatch("Remove Component");
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataIntrospection *data = dataList.at(i);
+                Component *component = (Component *)data->object;
+                PropEditorUserData* userData = GetUserData(data);
+                DVASSERT(userData);
+                Entity *node = userData->entity;
+
+		        curScene->Exec(new RemoveComponentCommand(node, component));
+            }
+
+            if (usebatch)
+            {
+                curScene->EndBatch();
+            }
+		}
+	}
+}
+
+QString PropertyEditor::GetDefaultFilePath()
+{
+	QString defaultPath = ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname().c_str();
+	FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+	if (dataSourcePath.Exists())
+	{
+		defaultPath = dataSourcePath.GetAbsolutePathname().c_str();
+	}
+	SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+	if (NULL != editor && editor->GetScenePath().Exists())
+	{
+		DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
+		if(String::npos != scenePath.find(dataSourcePath.GetAbsolutePathname()))
+		{
+			defaultPath = scenePath.c_str();
+		}
+	}
+
+	return defaultPath;
 }

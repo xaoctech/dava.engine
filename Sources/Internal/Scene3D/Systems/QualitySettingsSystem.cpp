@@ -44,6 +44,8 @@ QualitySettingsSystem::QualitySettingsSystem()
 
 void QualitySettingsSystem::Load(const FilePath &path)
 {
+    Logger::FrameworkDebug("Trying to loading QUALITY from: %s", path.GetAbsolutePathname().c_str());
+
     if(path.Exists())
     {
         YamlParser *parser = YamlParser::Create(path);
@@ -198,6 +200,8 @@ void QualitySettingsSystem::Load(const FilePath &path)
 
         parser->Release();
     }
+
+    Logger::FrameworkDebug("Loaded. TxQualities: %u, MaGrQualities: %u", textureQualities.size(), materialGroups.size());
 }
 
 size_t QualitySettingsSystem::GetTextureQualityCount() const

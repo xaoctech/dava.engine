@@ -93,8 +93,8 @@ public:
 		Caps() 
 		{
 			isHardwareCursorSupported = false;
-			isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
-			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+			isFramebufferFetchSupported = isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+			isVertexTextureUnitsSupported = isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
             
 #if defined(__DAVAENGINE_ANDROID__)
             isGlDepth24Stencil8Supported = isGlDepthNvNonLinearSupported = false;
@@ -110,6 +110,8 @@ public:
         bool isFloat32Supported;
 		bool isDXTSupported;
 		bool isATCSupported;
+		bool isVertexTextureUnitsSupported;
+        bool isFramebufferFetchSupported;
         
 #if defined(__DAVAENGINE_ANDROID__)
         bool isGlDepth24Stencil8Supported;
@@ -410,6 +412,7 @@ public:
 	 \param[out] true if render manager sets to a render targe. false if render manager draws to the screen now
 	 */
 	bool IsRenderTarget();
+       
 	
 	/** 
         \brief Sets the effect for the rendering. 
@@ -554,6 +557,8 @@ public:
     void HWglBindFBO(const int32 fbo);
     int32 lastBindedFBO;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
+    
+    void DiscardDepth();
     
     void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
     
@@ -818,6 +823,18 @@ public:
 	void SetHWClip(const Rect &rect);
 	void SetHWRenderTargetSprite(Sprite *renderTarget);
 	void SetHWRenderTargetTexture(Texture * renderTarget);
+    
+    enum eDiscardAttachments
+    {
+        COLOR_ATTACHMENT = 1,
+        DEPTH_ATTACHMENT = 2,
+        STENCIL_ATTACHMENT = 4
+    };
+    /**
+     \Hints renderer that attachment is not needed anymore 
+     \param[in] attachments - bitmask of eDiscardAttachments
+    */
+    void DiscardFramebufferHW(uint32 attachments);
 	
 	bool debugEnabled;
 

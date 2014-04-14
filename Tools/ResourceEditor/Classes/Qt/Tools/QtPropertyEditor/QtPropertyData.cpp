@@ -211,27 +211,31 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
     foreach ( QtPropertyData *merged, mergedData )
     {
         QtPropertyDataValidator *mergedValidator = merged->validator;
-        QVariant valueToValidate = value;
+        QVariant validatedValue = value;
+
         if(reason == VALUE_EDITED && NULL != mergedValidator)
         {
-            QVariant valueToValidate = value;
-            if ( !mergedValidator->Validate( valueToValidate ) )
+            if(!mergedValidator->Validate(validatedValue))
+            {
                 continue;
+            }
         }
 
-        merged->SetValueInternal( value );
+        merged->SetValueInternal(validatedValue);
     }
 
     // set value
-    bool valueValid = true;
+    bool valueIsValid = true;
+    QVariant validatedValue = value;
+
     if(reason == VALUE_EDITED && NULL != validator)
     {
-        QVariant valueToValidate = value;
-        valueValid = validator->Validate(valueToValidate);
+        valueIsValid = validator->Validate(validatedValue);
     }
-    if ( valueValid )
+   
+    if(valueIsValid)
     {
-        SetValueInternal(value);
+        SetValueInternal(validatedValue);
     }
 
     updatingValue = false;

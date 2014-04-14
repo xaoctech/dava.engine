@@ -42,8 +42,6 @@
 #include "Project/ProjectManager.h"
 #include "CommandLine/SceneExporter/SceneExporter.h"
 
-#include "Scene/FogSettingsChangedReceiver.h"
-
 // framework
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
@@ -95,6 +93,9 @@ SceneEditor2::SceneEditor2()
 	visibilityToolSystem = new VisibilityToolSystem(this);
 	AddSystem(visibilityToolSystem, 0, true, renderUpdateSystem);
 
+    grassEditorSystem = new GrassEditorSystem(this);
+    AddSystem(grassEditorSystem, 0);
+
 	rulerToolSystem = new RulerToolSystem(this);
 	AddSystem(rulerToolSystem, 0, true, renderUpdateSystem);
 
@@ -126,13 +127,6 @@ SceneEditor2::SceneEditor2()
 	AddSystem(materialSystem, 1 << Component::RENDER_COMPONENT, true, renderUpdateSystem);
 
 	SetShadowBlendMode(ShadowPassBlendMode::MODE_BLEND_MULTIPLY);
-
-	//setup fog for scene
-	DAVA::Color fogColor = SettingsManager::Instance()->GetValue("DefaultFogColor", SettingsManager::DEFAULT).AsColor();
-	DAVA::float32 fogDensity = SettingsManager::Instance()->GetValue("DefaultFogDensity", SettingsManager::DEFAULT).AsFloat();
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensity);
-	sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &fogColor);
-
 
 	SceneSignals::Instance()->EmitOpened(this);
 
@@ -373,6 +367,7 @@ void SceneEditor2::PostUIEvent(DAVA::UIEvent *event)
 	customColorsSystem->ProcessUIEvent(event);
 	visibilityToolSystem->ProcessUIEvent(event);
 	rulerToolSystem->ProcessUIEvent(event);
+    grassEditorSystem->ProcessUIEvent(event);
 
 	if(structureSystem)
 		structureSystem->ProcessUIEvent(event);
@@ -448,6 +443,7 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 	selectionSystem->ProcessCommand(command, redo);
 	hoodSystem->ProcessCommand(command, redo);
 	modifSystem->ProcessCommand(command, redo);
+    grassEditorSystem->ProcessCommand(command, redo);
 	
 	if(structureSystem)
 		structureSystem->ProcessCommand(command, redo);
@@ -461,6 +457,9 @@ void SceneEditor2::EditorCommandProcess(const Command2 *command, bool redo)
 		ownersSignatureSystem->ProcessCommand(command, redo);
 
 	materialSystem->ProcessCommand(command, redo);
+
+    if (landscapeEditorDrawSystem)
+        landscapeEditorDrawSystem->ProcessCommand(command, redo);
 }
 
 void SceneEditor2::AddEditorEntity( Entity *editorEntity )
@@ -584,6 +583,11 @@ void SceneEditor2::DisableTools(int32 toolFlags, bool saveChanges /*= true*/)
 	{
 		Exec(new ActionDisableNotPassable(this));
 	}
+
+    if(toolFlags & LANDSCAPE_TOOL_GRASS_EDITOR)
+    {
+        grassEditorSystem->EnableGrassEdit(false);
+    }
 }
 
 bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
@@ -619,6 +623,11 @@ bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
 	{
 		res |= landscapeEditorDrawSystem->IsNotPassableTerrainEnabled();
 	}
+
+    if(toolFlags & LANDSCAPE_TOOL_GRASS_EDITOR)
+    {
+        res |= grassEditorSystem->IsEnabledGrassEdit();
+    }
 
 	return res;
 }
@@ -656,7 +665,12 @@ int32 SceneEditor2::GetEnabledTools()
 	{
 		toolFlags |= LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN;
 	}
-	
+
+    if(grassEditorSystem->IsEnabledGrassEdit())
+    {
+        toolFlags |= LANDSCAPE_TOOL_GRASS_EDITOR;
+    }
+
 	return toolFlags;
 }
 
@@ -674,9 +688,11 @@ Entity* SceneEditor2::Clone( Entity *dstNode /*= NULL*/ )
 SceneEditor2 * SceneEditor2::CreateCopyForExport()
 {
 	SceneEditor2 *clonedScene = new SceneEditor2();
-    clonedScene->RemoveSystems();
+	clonedScene->RemoveSystems();
 
-	return (SceneEditor2 *)Scene::Clone(clonedScene);
+    clonedScene->SetGlobalMaterial(GetGlobalMaterial());
+
+	return (SceneEditor2 *)Clone(clonedScene);
 }
 
 void SceneEditor2::RemoveSystems()
