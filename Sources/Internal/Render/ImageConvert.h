@@ -52,9 +52,9 @@ struct ConvertRGBA5551toRGBA8888
 	{
 		uint16 pixel = *input;
 
-		uint32 r = ((pixel >> 11) & 0x01F) << 3;
-		uint32 g = ((pixel >> 6) & 0x03F) << 2;
-		uint32 b = ((pixel >> 1) & 0x01F) << 3;
+		uint32 r = (((pixel >> 11) & 0x01F) << 3);
+		uint32 g = (((pixel >> 6) & 0x01F) << 3);
+		uint32 b = (((pixel >> 1) & 0x01F) << 3);
 		uint32 a = ((pixel) & 0x0001) ? 0x00FF : 0;
 		*output = (r) | (g << 8) | (b << 16) | (a << 24);
 	}
@@ -65,28 +65,28 @@ struct ConvertRGBA4444toRGBA888
 	inline void operator()(const uint16 * input, uint32 *output)
 	{
 		uint16 pixel = *input;
-		uint32 r = ((pixel) & 0x0F) << 4;
-		uint32 g = ((pixel >> 4) & 0x0F) << 4;
- 		uint32 b = ((pixel >> 8) & 0x0F) << 4;
-		uint32 a = ((pixel >> 12) & 0x0F) << 4;
-
-		*output = (r << 24) | (g << 16) | (b << 8) | a;
+		uint32 r = (((pixel >> 12) & 0x0F) << 4);
+		uint32 g = (((pixel >> 8) & 0x0F) << 4);
+		uint32 b = (((pixel >> 4) & 0x0F) << 4);
+		uint32 a = (((pixel >> 0) & 0x0F) << 4);
+        
+        *output = (r) | (g << 8) | (b << 16) | (a << 24);
 	}
+    
 };
 
-
+struct RGB888
+{
+    uint8 r;
+    uint8 g;
+    uint8 b;
+};
+    
 struct ConvertRGB888toRGBA8888
 {
-	inline void operator()(const uint32 * input, uint16 *output)
+	inline void operator()(const RGB888 * input, uint32 *output)
 	{
-		uint32 pixel = *input;
-
-		uint32 r = ((pixel >> 11) & 0x01F) << 3;
-		uint32 g = ((pixel >> 6) & 0x03F) << 2;
-		uint32 b = ((pixel >> 0) & 0x01F) << 3;
-		uint32 a = 0xFF;
-
-		*output = (r << 24) | (g << 16) | (b << 8) | a;
+ 		*output = (input->r) | (input->g << 8) | (input->b << 16) | (0xFF << 24);
 	}
 };
 
@@ -96,9 +96,9 @@ struct ConvertRGB565toRGBA8888
 	inline void operator()(const uint16 * input, uint32 *output)
 	{
 		uint16 pixel = *input;
-		uint32 r = ((pixel >> 11) & 0x01F) << 3;
-		uint32 g = ((pixel >> 6) & 0x03F) << 2;
-		uint32 b = ((pixel >> 0) & 0x01F) << 3;
+		uint32 r = (((pixel >> 11) & 0x01F) << 3);
+		uint32 g = (((pixel >> 5) & 0x03F) << 2);
+		uint32 b = (((pixel >> 0) & 0x01F) << 3);
 		uint32 a = 0xFF;
 
  		*output = (r) | (g << 8) | (b << 16) | (a << 24);
@@ -158,7 +158,7 @@ public:
     void operator()(const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch,
                     void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
     {
-		CONVERT_FUNC func;
+        CONVERT_FUNC func;
         const uint8 * readPtr = reinterpret_cast<const uint8*>(inData);
         uint8 * writePtr = reinterpret_cast<uint8*>(outData);
         
@@ -172,12 +172,13 @@ public:
                 readPtrLine++;
                 writePtrLine++;
             }
-            readPtr += inPitch; 
+            readPtr += inPitch;
             writePtr += outPitch;
         }
     };
 };
 
+    
 template<class TYPE_IN, class TYPE_OUT, typename UNPACK_FUNC, typename PACK_FUNC>
 class ConvertDownscaleTwiceBillinear
 {
@@ -242,8 +243,8 @@ public:
 		}
 		else if(inFormat == FORMAT_RGB888 && outFormat == FORMAT_RGBA8888)
 		{
-// 			ConvertDirect<uint8, uint32, UnpackRGBA8888, PackRGBA8888> convert;
-// 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+ 			ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
+ 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
 		}
 		else if(inFormat == FORMAT_RGB565 && outFormat == FORMAT_RGBA8888)
 		{

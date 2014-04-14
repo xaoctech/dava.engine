@@ -27,43 +27,65 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_CORE_PLATFORM_WIN32_H__
-#define __DAVAENGINE_CORE_PLATFORM_WIN32_H__
+#include "Platform/TemplateWin32/CorePlatformWin32.h"
+#include "Platform/TemplateWin32/WindowsSpecifics.h"
+#include "Platform/Thread.h"
+#include "Utils/Utils.h"
 
-#include "DAVAEngine.h"
 #if defined(__DAVAENGINE_WIN32__)
 
-#include "WindowsSpecifics.h"
+#include <shellapi.h>
 
-namespace DAVA 
+namespace DAVA
 {
-class CoreWin32Platform : public Core
+
+CoreWin32PlatformBase::CoreWin32PlatformBase() :
+    hWindow(0),
+    hInstance(0)
 {
-public:
+}
 
-	virtual void Quit();
+HINSTANCE CoreWin32PlatformBase::GetInstance() const
+{
+    return hInstance;
+}
 
-	bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
-	bool WinEvent(MSG *message, long *result);
+HWND CoreWin32PlatformBase::GetWindow() const
+{
+    return hWindow;
+}
 
-	void InitArgs();
+void CoreWin32PlatformBase::InitArgs()
+{
+    LPWSTR *szArglist;
+    int nArgs;
+    int i;
+    szArglist = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
+    if( NULL == szArglist )
+    {
+        Logger::Error("CommandLineToArgvW failed\n");
+        return;
+    }
+    else
+    {
+        Vector<String> & cl = GetCommandLine();
+        for( i=0; i<nArgs; i++)
+        {
+            WideString w = szArglist[i];
+            String nonWide = WStringToString(w);
+            cl.push_back(nonWide);
+            Logger::FrameworkDebug("%d: %s\n", i, nonWide.c_str());
+        }
+    }
+    // Free memory allocated for CommandLineToArgvW arguments.
+    LocalFree(szArglist);
+}
 
-	
-	HWND hWindow;
+void CoreWin32PlatformBase::Quit()
+{
+    PostQuitMessage(0);
+}
 
-#if defined(__DAVAENGINE_DIRECTX9__)
-	LPDIRECT3D9 d3d9;
-#endif //#if defined(__DAVAENGINE_DIRECTX9__)
+}
 
-    
-    void SetFocused(bool focused);
-
-private:
-
-	bool willQuit;
-    bool needToSkipMouseUp;
-	bool isFocused;
-};	
-};
 #endif // #if defined(__DAVAENGINE_WIN32__)
-#endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
