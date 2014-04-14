@@ -132,6 +132,7 @@ public:
 		uint32 textureStateFullSwitches;
 		
 		uint32 attachRenderDataCount;
+        uint32 attachRenderDataSkipCount;
         uint32 dynamicParamUniformBindCount;
         uint32 materialParamUniformBindCount;
         uint32 spriteDrawCount;
@@ -791,6 +792,7 @@ public:
 	Shader * currentRenderEffect;
 	
     RenderDataObject * currentRenderData;
+    RenderDataObject * attachedRenderData;
 
     Rect viewport;
     
