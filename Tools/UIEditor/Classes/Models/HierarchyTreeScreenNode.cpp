@@ -267,7 +267,7 @@ bool HierarchyTreeScreenNode::IsNeedSave() const
 
 void HierarchyTreeScreenNode::StartNewGuide(GuideData::eGuideType guideType)
 {
-    guides.StartNewGuide(guideType);
+    guides.StartNewGuide(guideType, GetControlRectsList(true));
 }
 
 void HierarchyTreeScreenNode::MoveNewGuide(const Vector2& pos)
@@ -292,7 +292,7 @@ void HierarchyTreeScreenNode::CancelNewGuide()
 
 bool HierarchyTreeScreenNode::StartMoveGuide(const Vector2& pos)
 {
-    return guides.StartMoveGuide(pos);
+    return guides.StartMoveGuide(pos, GetControlRectsList(true));
 }
 
 void HierarchyTreeScreenNode::MoveGuide(const Vector2& pos)
@@ -388,4 +388,37 @@ void HierarchyTreeScreenNode::LockGuides(bool value)
 const GuidesManager& HierarchyTreeScreenNode::GetGuidesManager() const
 {
     return guides;
+}
+
+List<Rect> HierarchyTreeScreenNode::GetControlRectsList(bool includeScreenBounds) const
+{
+    List<Rect> rectsList;
+    
+    const HierarchyTreeNode::HIERARCHYTREENODESLIST& children = GetChildNodes();
+
+    for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = children.begin(); iter != children.end(); iter ++)
+    {
+        const HierarchyTreeControlNode* controlNode = static_cast<const HierarchyTreeControlNode*>(*iter);
+        GetControlRectsListRecursive(controlNode, rectsList);
+    }
+
+    if (includeScreenBounds)
+    {
+        const Vector2& screenSize = GetPlatform()->GetSize();
+        rectsList.push_back(Rect(0, 0, screenSize.x, screenSize.y));
+    }
+
+    return rectsList;
+}
+
+void HierarchyTreeScreenNode::GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<Rect>& rectsList) const
+{
+    rectsList.push_back(rootNode->GetUIObject()->GetRect(true));
+
+    const HierarchyTreeNode::HIERARCHYTREENODESLIST& children = rootNode->GetChildNodes();
+    for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = children.begin(); iter != children.end(); iter ++)
+    {
+        const HierarchyTreeControlNode* childNode = static_cast<const HierarchyTreeControlNode*>(*iter);
+        GetControlRectsListRecursive(childNode, rectsList);
+    }
 }
