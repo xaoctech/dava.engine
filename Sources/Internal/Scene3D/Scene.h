@@ -78,6 +78,7 @@ class ActionUpdateSystem;
 class SkyboxSystem;
 class MaterialSystem;
 class StaticOcclusionSystem;
+class FoliageSystem;
     
 /**
     \ingroup scene3d
@@ -108,6 +109,7 @@ public:
         SCENE_SYSTEM_SKYBOX_FLAG            = 1 << 10,
         SCENE_SYSTEM_STATIC_OCCLUSION_FLAG  = 1 << 11,
         SCENE_SYSTEM_MATERIAL_FLAG          = 1 << 12,
+        SCENE_SYSTEM_FOLIAGE_FLAG           = 1 << 13,
 
         SCENE_SYSTEM_ALL_MASK               = 0xFFFFFFFF
     };
@@ -146,6 +148,7 @@ public:
 	SkyboxSystem* skyboxSystem;
 	StaticOcclusionSystem * staticOcclusionSystem;
     MaterialSystem *materialSystem;
+    FoliageSystem* foliageSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
@@ -237,9 +240,11 @@ public:
 
     virtual void OptimizeBeforeExport();
 
-	inline NMaterial * GetGlobalMaterial() const;
-protected:	
-    
+    DAVA::NMaterial* GetGlobalMaterial() const;
+    void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
+    void CreateGlobalMaterial();
+
+protected:
     void UpdateLights();
 
 	uint64 updateTime;
@@ -294,13 +299,6 @@ int32 Scene::GetCameraCount()
 {
     return (int32)cameras.size();
 }  
-
-inline NMaterial * Scene::GetGlobalMaterial() const
-{
-	return sceneGlobalMaterial; 
-}
-
-
 
 };
 

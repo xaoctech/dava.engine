@@ -161,6 +161,13 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     {
         sceneUtils.AddFile(landscape->GetHeightmapPathname());
     }
+    
+    VegetationRenderObject* vegetation = FindVegetation(scene);
+    if(vegetation)
+    {
+        sceneUtils.AddFile(vegetation->GetVegetationMapPath());
+        sceneUtils.AddFile(vegetation->GetTextureSheetPath());
+    }
 
 	CopyReferencedObject(scene);
 	CopyEffects(scene);

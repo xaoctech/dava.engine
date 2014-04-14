@@ -110,6 +110,8 @@
 #include "RecentFilesManager.h"
 #include "Deprecated/SceneValidator.h"
 
+#include "Render/Highlevel/VegetationRenderObject.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -167,7 +169,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	LoadGPUFormat();
     LoadMaterialLightViewMode();
 
-	EnableGlobalTimeout(globalInvalidate);
+    EnableGlobalTimeout(globalInvalidate);
 
 	EnableProjectActions(false);
 	EnableSceneActions(false);
@@ -645,6 +647,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionTileMapEditor, SIGNAL(triggered()), this, SLOT(OnTilemaskEditor()));
 	QObject::connect(ui->actionVisibilityCheckTool, SIGNAL(triggered()), this, SLOT(OnVisibilityTool()));
 	QObject::connect(ui->actionRulerTool, SIGNAL(triggered()), this, SLOT(OnRulerTool()));
+    QObject::connect(ui->actionGrasEditor, SIGNAL(triggered()), this, SLOT(OnGrasEditor()));
 
 	QObject::connect(ui->actionLight, SIGNAL(triggered()), this, SLOT(OnLightDialog()));
 	QObject::connect(ui->actionCamera, SIGNAL(triggered()), this, SLOT(OnCameraDialog()));
@@ -660,6 +663,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
+    QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowGeneralSettings()));
 	QObject::connect(ui->actionCurrentSceneSettings, SIGNAL(triggered()), this, SLOT(OnShowCurrentSceneSettings()));
@@ -698,10 +702,6 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
-
-	QObject::connect(ui->actionAddActionComponent, SIGNAL(triggered()), this, SLOT(OnAddActionComponent()));
-	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
-	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
     QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
     QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
@@ -890,6 +890,7 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionRulerTool->setEnabled(enable);
 	ui->actionVisibilityCheckTool->setEnabled(enable);
 	ui->actionCustomColorsEditor->setEnabled(enable);
+    ui->actionGrasEditor->setEnabled(enable);
 
 	ui->actionEnableCameraLight->setEnabled(enable);
 	ui->actionReloadTextures->setEnabled(enable);
@@ -910,7 +911,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->menuExport->setEnabled(enable);
 	ui->menuEdit->setEnabled(enable);
 	ui->menuCreateNode->setEnabled(enable);
-	ui->menuComponent->setEnabled(enable);
 	ui->menuScene->setEnabled(enable);
     ui->menuLightView->setEnabled(enable);
     ui->menuTexturesForGPU->setEnabled(enable);
@@ -1438,6 +1438,27 @@ void QtMainWindow::OnAddSkybox()
     skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
     sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
     skyboxEntity->Release();
+}
+
+void QtMainWindow::OnAddVegetation()
+{
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(sceneEditor)
+    {
+        DAVA::VegetationRenderObject* vro = new DAVA::VegetationRenderObject();
+        RenderComponent* rc = new RenderComponent();
+        rc->SetRenderObject(vro);
+        SafeRelease(vro);
+
+        Entity* vegetationNode = new Entity();
+        vegetationNode->AddComponent(rc);
+        vegetationNode->SetName(FastName("Vegetation"));
+
+        sceneEditor->Exec(new EntityAddCommand(vegetationNode, sceneEditor));
+        sceneEditor->selectionSystem->SetSelection(vegetationNode);
+
+        SafeRelease(vegetationNode);
+    }
 }
 
 void QtMainWindow::OnLightDialog()
@@ -2036,6 +2057,7 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	ui->actionTileMapEditor->setChecked(false);
 	ui->actionVisibilityCheckTool->setChecked(false);
 	ui->actionShowNotPassableLandscape->setChecked(false);
+    ui->actionGrasEditor->setChecked(false);
 	
 	int32 tools = scene->GetEnabledTools();
 
@@ -2065,6 +2087,10 @@ void QtMainWindow::OnLandscapeEditorToggled(SceneEditor2* scene)
 	{
 		ui->actionShowNotPassableLandscape->setChecked(true);
 	}
+    if(tools & SceneEditor2::LANDSCAPE_TOOL_GRASS_EDITOR)
+    {
+        ui->actionGrasEditor->setChecked(true);
+    }
 }
 
 void QtMainWindow::OnCustomColorsEditor()
@@ -2259,23 +2285,30 @@ void QtMainWindow::OnNotPassableTerrain()
 	}
 }
 
-void QtMainWindow::OnAddActionComponent()
+void QtMainWindow::OnGrasEditor()
 {
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Add Action Component");
+    SceneEditor2* sceneEditor = GetCurrentScene();
+    if(!sceneEditor)
+    {
+        return;
+    }
 
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::ACTION_COMPONENT)));
-		}
+    bool toggled = false;
+    if(sceneEditor->grassEditorSystem->IsEnabledGrassEdit())
+    {
+        toggled = sceneEditor->grassEditorSystem->EnableGrassEdit(false);
+    }
+    else
+    {
+        sceneEditor->DisableTools(SceneEditor2::LANDSCAPE_TOOLS_ALL);
+        toggled = sceneEditor->grassEditorSystem->EnableGrassEdit(true);
+    }
 
-		scene->EndBatch();
-	}
+    if(toggled)
+    {
+        SceneSignals::Instance()->EmitGrassEditorToggled(sceneEditor);
+        OnLandscapeEditorToggled(sceneEditor);
+    }
 }
 
 void QtMainWindow::OnAddSoundComponent()
@@ -2319,51 +2352,28 @@ void QtMainWindow::OnRemoveSoundComponent()
         scene->EndBatch();
     }
 }
-
-void QtMainWindow::OnAddStaticOcclusionComponent()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Add Static Occlusion Component");
-        
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
-		}
-        
-		scene->EndBatch();
-	}
-}
-
-void QtMainWindow::OnAddModelTypeComponent()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-	
-	SceneSelectionSystem *ss = scene->selectionSystem;
-	if(ss->GetSelectionCount() > 0)
-	{
-		scene->BeginBatch("Add Model Type Component");
-        
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), new QualitySettingsComponent()));
-		}
-        
-		scene->EndBatch();
-	}
-}
-
 void QtMainWindow::OnBuildStaticOcclusion()
 {
     SceneEditor2* scene = GetCurrentScene();
     if(!scene) return;
     
-    scene->staticOcclusionBuildSystem->BuildOcclusionInformation();
+    QtWaitDialog *waitOcclusionDlg = new QtWaitDialog(this);
+    waitOcclusionDlg->Show("Static occlusion", "Please wait while building static occlusion.", true, true);
+
+    scene->staticOcclusionBuildSystem->Build();
+    while(scene->staticOcclusionBuildSystem->IsInBuild())
+    {
+        if(waitOcclusionDlg->WasCanceled())
+        {
+            scene->staticOcclusionBuildSystem->Cancel();
+        }
+        else
+        {
+            waitOcclusionDlg->SetValue(scene->staticOcclusionBuildSystem->GetBuildStatus());
+        }
+    }
+
+    delete waitOcclusionDlg;
 }
 
 bool QtMainWindow::IsSavingAllowed()
@@ -2610,8 +2620,8 @@ void QtMainWindow::DiableUIForFutureUsing()
 {
 	//TODO: temporary disabled
 	//-->
-	ui->actionAddNewComponent->setVisible(false);
-	ui->actionRemoveComponent->setVisible(false);
+	//ui->actionAddNewComponent->setVisible(false);
+	//ui->actionRemoveComponent->setVisible(false);
 	//<--
 }
 
@@ -2774,9 +2784,18 @@ void QtMainWindow::OnReloadShaders()
         
         DAVA::Set<DAVA::NMaterial *> materialList;
         DAVA::MaterialSystem *matSystem = scene->GetMaterialSystem();
-        matSystem->BuildMaterialList(scene, materialList);
+        matSystem->BuildMaterialList(scene, materialList, NMaterial::MATERIALTYPE_NONE, true);
         
-        
+        const Map<uint32, NMaterial *> & particleInstances = scene->particleEffectSystem->GetMaterialInstances();
+        Map<uint32, NMaterial *>::const_iterator endParticleIt = particleInstances.end();
+        Map<uint32, NMaterial *>::const_iterator particleIt = particleInstances.begin();
+        for( ; particleIt != endParticleIt; ++particleIt)
+        {
+            materialList.insert(particleIt->second);
+            if(particleIt->second->GetParent())
+                materialList.insert(particleIt->second->GetParent());
+        }
+
         DAVA::Set<DAVA::NMaterial *>::iterator it = materialList.begin();
         DAVA::Set<DAVA::NMaterial *>::iterator endIt = materialList.end();
         while (it != endIt)
@@ -2787,6 +2806,8 @@ void QtMainWindow::OnReloadShaders()
             
             ++it;
         }
+        
+        scene->GetGlobalMaterial()->BuildActiveUniformsCacheParamsCache();
     }
 }
 

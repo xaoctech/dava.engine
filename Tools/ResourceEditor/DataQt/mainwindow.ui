@@ -36,7 +36,16 @@
     <property name="spacing">
      <number>3</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
      <number>1</number>
     </property>
     <item>
@@ -69,7 +78,16 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -85,7 +103,6 @@
        </property>
        <addaction name="actionFavoritesEdit"/>
        <addaction name="actionAddNewComponent"/>
-       <addaction name="actionRemoveComponent"/>
       </widget>
      </item>
      <item>
@@ -97,7 +114,16 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -136,7 +162,16 @@
         <property name="spacing">
          <number>1</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -146,6 +181,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
           </property>
           <property name="editTriggers">
            <set>QAbstractItemView::AllEditTriggers</set>
@@ -255,6 +293,7 @@
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
@@ -330,20 +369,6 @@
     <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
     <addaction name="actionOnSceneSelection"/>
-   </widget>
-   <widget class="QMenu" name="menuComponent">
-    <property name="title">
-     <string>Component</string>
-    </property>
-    <addaction name="actionAddNewComponent"/>
-    <addaction name="actionRemoveComponent"/>
-    <addaction name="separator"/>
-    <addaction name="actionAddActionComponent"/>
-    <addaction name="actionAddQualitySettingsComponent"/>
-    <addaction name="actionAddStaticOcclusionComponent"/>
-    <addaction name="separator"/>
-    <addaction name="actionAddSoundComponent"/>
-    <addaction name="actionRemoveSoundComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -424,7 +449,6 @@
    <addaction name="menuView"/>
    <addaction name="menuQuality"/>
    <addaction name="menuCreateNode"/>
-   <addaction name="menuComponent"/>
    <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
@@ -522,7 +546,16 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -568,7 +601,16 @@
      <property name="spacing">
       <number>2</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
       <number>1</number>
      </property>
      <item>
@@ -600,7 +642,16 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -680,13 +731,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
    <addaction name="actionCustomColorsEditor"/>
    <addaction name="actionVisibilityCheckTool"/>
+   <addaction name="separator"/>
+   <addaction name="actionGrasEditor"/>
   </widget>
   <widget class="QDockWidget" name="dockLandscapeEditorControls">
    <property name="windowTitle">
@@ -1219,18 +1271,6 @@
    </property>
    <property name="toolTip">
     <string>Remove entity</string>
-   </property>
-  </action>
-  <action name="actionRemoveComponent">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove component</string>
    </property>
   </action>
   <action name="actionConvertToShadow">
@@ -1817,6 +1857,18 @@
     <string>Show Lightmap Canvas</string>
    </property>
   </action>
+  <action name="actionGrasEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>GrasEditor</string>
+   </property>
+  </action>
   <action name="actionImageSplitter">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1824,6 +1876,15 @@
    </property>
    <property name="text">
     <string>ImageSplitter</string>
+   </property>
+  </action>
+  <action name="actionAddVegetation">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vegetation</string>
    </property>
   </action>
   <action name="actionReloadShader">

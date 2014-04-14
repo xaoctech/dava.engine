@@ -64,8 +64,11 @@ void RenderUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
         // Update new transform pointer, and mark that transform is changed
         Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
 		RenderObject * object = ((RenderComponent*)entity->GetComponent(Component::RENDER_COMPONENT))->GetRenderObject();
-        object->SetWorldTransformPtr(worldTransformPointer);
-		entity->GetScene()->renderSystem->MarkForUpdate(object);
+        if(NULL != object)
+        {
+            object->SetWorldTransformPtr(worldTransformPointer);
+            entity->GetScene()->renderSystem->MarkForUpdate(object);
+        }
     }
     
     //if (event == EventSystem::ACTIVE_CAMERA_CHANGED)

@@ -54,19 +54,17 @@
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/ControlsFactory.h"
 
-#include "Scene/FogSettingsChangedReceiver.h"
-
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
 	#include "Platform/Qt/Win32/QtLayerWin32.h"
-	#include "Platform/Qt/Win32/CorePlatformWin32.h"
+	#include "Platform/Qt/Win32/CorePlatformWin32Qt.h"
 #endif
 
 #ifdef __DAVAENGINE_BEAST__
 #include "BeastProxyImpl.h"
 #else
-#include "BeastProxy.h"
+#include "Beast/BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
 void UnpackHelpDoc();
@@ -146,7 +144,6 @@ int main(int argc, char *argv[])
         {
             new SceneValidator();
             new TextureCache();
-		    new FogSettingsChangedReceiver();
 
 		    LocalizationSystem::Instance()->SetCurrentLocale("en");
 		    LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
@@ -172,7 +169,6 @@ int main(int argc, char *argv[])
 
 		    SceneValidator::Instance()->Release();
             TextureCache::Instance()->Release();
-		    FogSettingsChangedReceiver::Instance()->Release();
         }
 	}
 
