@@ -27,47 +27,31 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
+#define __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
 
-#include "Commands2/AddComponentCommand.h"
+
 #include "DAVAEngine.h"
+#include "Platform/TemplateMacOS/CoreMacOSPlatformBase.h"
 
-AddComponentCommand::AddComponentCommand(DAVA::Entity* entity, DAVA::Component * component)
-	: Command2(CMDID_COMPONENT_ADD, "Add Component")
-    , entityToAdd(entity)
-    , componentType(-1)
-    , backup(component)
-    , original(0)
+#if defined(__DAVAENGINE_MACOS__)
+
+namespace DAVA {
+
+class CoreMacOSPlatformQt : public CoreMacOSPlatformBase
 {
-	DVASSERT(entityToAdd);
-	DVASSERT(component);
+public:
+	virtual eScreenMode GetScreenMode();
+	virtual void SwitchScreenToMode(eScreenMode screenMode); 
+	virtual void ToggleFullscreen();
+	virtual void Quit();
 
-    componentType = component->GetType();
-}
+	virtual Vector2 GetMousePosition();
+	virtual void* GetOpenGLView();
+};
+};
 
-AddComponentCommand::~AddComponentCommand()
-{
-    if (backup!=original)
- 	    SafeDelete(backup);
-}
+#endif //#if defined(__DAVAENGINE_MACOS__)
 
-void AddComponentCommand::Redo()
-{
-    componentType = backup->GetType();
-	entityToAdd->AddComponent(backup);
-    original = backup;
-}
 
-void AddComponentCommand::Undo()
-{
-    const DAVA::uint32 nComponents = entityToAdd->GetComponentCount(componentType);
-    DAVA::Component * component = entityToAdd->GetComponent(componentType, nComponents - 1);
-    DVASSERT(component);
-    backup = component->Clone(entityToAdd);
-    original = 0;
-    entityToAdd->RemoveComponent(component);
-}
-
-DAVA::Entity* AddComponentCommand::GetEntity() const
-{
-	return entityToAdd;
-}
+#endif // __DAVAENGINE_CORE_MACOS_PLATFORM_QT__
