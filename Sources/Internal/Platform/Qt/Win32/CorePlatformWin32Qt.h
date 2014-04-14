@@ -27,36 +27,36 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
-#define __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
-
+#ifndef __DAVAENGINE_CORE_PLATFORM_WIN32_QT_H__
+#define __DAVAENGINE_CORE_PLATFORM_WIN32_QT_H__
 
 #include "DAVAEngine.h"
+#if defined(__DAVAENGINE_WIN32__)
 
-#if defined(__DAVAENGINE_MACOS__)
+#include "Platform/TemplateWin32/CoreWin32PlatformBase.h"
+#include "Platform/TemplateWin32/WindowsSpecifics.h"
 
-namespace DAVA 
-{
-class CoreMacOSPlatform : public Core
+namespace DAVA {
+
+class CoreWin32PlatformQt : public CoreWin32PlatformBase
 {
 public:
+    bool SetupWindow(HINSTANCE hInstance, HWND hWindow);
+    bool WinEvent(MSG *message, long *result);
 
-    CoreMacOSPlatform();
-    virtual ~CoreMacOSPlatform();
+#if defined(__DAVAENGINE_DIRECTX9__)
+        LPDIRECT3D9 d3d9;
+#endif //#if defined(__DAVAENGINE_DIRECTX9__)
 
-	virtual eScreenMode GetScreenMode();
-	virtual void SwitchScreenToMode(eScreenMode screenMode); 
-	virtual void ToggleFullscreen();
-	virtual void Quit();
-	
-	virtual void GetAvailableDisplayModes(List<DisplayMode> & availableModes);
-	virtual DisplayMode GetCurrentDisplayMode();
-	virtual Vector2 GetMousePosition();
-	virtual void* GetOpenGLView();
-};	
+    void SetFocused(bool focused);
+
+private:
+    bool willQuit;
+    bool needToSkipMouseUp;
+    bool isFocused;
 };
 
-#endif //#if defined(__DAVAENGINE_MACOS__)
+};
 
-
+#endif // #if defined(__DAVAENGINE_WIN32__)
 #endif // __DAVAENGINE_CORE_PLATFORM_MAC_OS_H__
