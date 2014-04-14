@@ -133,6 +133,10 @@ public:
     // Access to Guides Manager.
     const GuidesManager& GetGuidesManager() const;
 
+    // Access to the list of control rects for this node.
+    List<Rect> GetControlRectsList(bool includeScreenBounds) const;
+    void GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<Rect>& rectsList) const;
+
 protected:
 	void CombineRectWithChild(Rect& rect) const;
 
