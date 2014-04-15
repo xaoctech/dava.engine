@@ -159,7 +159,7 @@ enum PixelFormat
     FORMAT_ATC_RGBA_INTERPOLATED_ALPHA,
 
     FORMAT_COUNT,
-    FORMAT_CLOSEST = 256
+    FORMAT_CLOSEST = 255
 };
     
 struct PixelFormatDescriptor
@@ -182,9 +182,9 @@ struct PixelFormatDescriptor
     
 enum eGPUFamily
 {
-    GPU_UNKNOWN = -1,
+    GPU_UNKNOWN = 0,
     
-    GPU_POWERVR_IOS     =   0,
+    GPU_POWERVR_IOS,
     GPU_POWERVR_ANDROID,
     GPU_TEGRA,
     GPU_MALI,
