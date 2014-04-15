@@ -55,6 +55,8 @@ void PropertyGridContainerWidget::ConnectToSignals()
 {
     connect(PropertiesGridController::Instance(), SIGNAL(PropertiesGridUpdated()),
             this, SLOT(OnPropertiesGridUpdated()));
+    connect(PropertiesGridController::Instance(), SIGNAL(UIControlsDeselected()),
+            this, SLOT(OnUIControlsDeselected()));
 }
 
 void PropertyGridContainerWidget::OnPropertiesGridUpdated()
@@ -65,19 +67,12 @@ void PropertyGridContainerWidget::OnPropertiesGridUpdated()
         BuildPropertiesGridList();
         return;
     }
-    
+
     // Build the Properties Grid based on the active control.
     const HierarchyTreeNode* activeTreeNode = PropertiesGridController::Instance()->GetActiveTreeNode();
-    if (activeTreeNode == NULL)
-    {
-        // No Tree Node selected, try to build custom properties grid.
-        CleanupPropertiesGrid();
-        
-        HierarchyTreeScreenNode* activeScreenNode = HierarchyTreeController::Instance()->GetActiveScreen();
-        BuildCustomPropertiesGrid(activeScreenNode);
-        return;
-    }
+    DVASSERT(activeTreeNode);
 
+    // This code is executed when Screen/Platform are selected.
     UIControl* activeControl = NULL;
     const HierarchyTreeControlNode* activeTreeControlNode = dynamic_cast<const HierarchyTreeControlNode*>(activeTreeNode);
     if (activeTreeControlNode)
@@ -87,6 +82,15 @@ void PropertyGridContainerWidget::OnPropertiesGridUpdated()
 
     BaseMetadata* metaData = GetActiveMetadata(activeTreeNode);    
     BuildPropertiesGrid(activeControl, metaData, activeTreeNode->GetId());
+}
+
+void PropertyGridContainerWidget::OnUIControlsDeselected()
+{
+    // No Tree Node selected, try to build custom properties grid.
+    CleanupPropertiesGrid();
+
+    HierarchyTreeScreenNode* activeScreenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+    BuildCustomPropertiesGrid(activeScreenNode);
 }
 
 void PropertyGridContainerWidget::CleanupPropertiesGrid()

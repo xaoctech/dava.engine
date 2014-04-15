@@ -51,6 +51,9 @@ public slots:
     // Emitted by Controller when Properties Grid is updated.
     void OnPropertiesGridUpdated();
     
+    // Emitted by Controller when no UI Controls selected.
+    void OnUIControlsDeselected();
+
 protected:
     // Connect/disconnect to the signals.
     void ConnectToSignals();
