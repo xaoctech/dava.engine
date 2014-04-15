@@ -53,6 +53,7 @@ AddComponentCommand::~AddComponentCommand()
 void AddComponentCommand::Redo()
 {
     componentType = backup->GetType();
+    backup->SetEntity(entityToAdd);
 	entityToAdd->AddComponent(backup);
     original = backup;
 }
@@ -63,6 +64,7 @@ void AddComponentCommand::Undo()
     DAVA::Component * component = entityToAdd->GetComponent(componentType, nComponents - 1);
     DVASSERT(component);
     backup = component->Clone(entityToAdd);
+    backup->SetEntity(NULL);
     original = 0;
     entityToAdd->RemoveComponent(component);
 }
