@@ -68,9 +68,7 @@ void EventSystem::GroupNotifyAllSystems(Vector<Entity *> & entities, uint32 even
         for (uint32 k = 0; k < entityVectorSize; ++k)
         {
             Entity * entity = entities[k];
-            uint32 componentsInEntity = entity->GetAvailableComponentFlags();
-
-            if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
+            if (system->IsNeedProcessEntity(entity))
                 system->ImmediateEvent(entity, event);
         }
     }
@@ -85,8 +83,7 @@ void EventSystem::NotifyAllSystems(Entity * entity, uint32 event)
     for(uint32 i = 0; i < size; ++i)
     {
         SceneSystem * system = container[i];
-        uint32 requiredComponentFlags = system->GetComponentsFlags();
-        if ((requiredComponentFlags & componentsInEntity) == requiredComponentFlags)
+        if (system->IsNeedProcessEntity(entity))
             system->ImmediateEvent(entity, event);
     }
 }
