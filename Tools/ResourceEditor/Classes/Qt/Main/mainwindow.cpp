@@ -2801,13 +2801,16 @@ void QtMainWindow::OnReloadShaders()
         while (it != endIt)
         {
             DAVA::NMaterial * material = *it;
+            DVASSERT(material);
             
-            material->BuildActiveUniformsCacheParamsCache();
+            if(material)
+                material->BuildActiveUniformsCacheParamsCache();
             
             ++it;
         }
         
-        scene->GetGlobalMaterial()->BuildActiveUniformsCacheParamsCache();
+        if(scene->GetGlobalMaterial())
+            scene->GetGlobalMaterial()->BuildActiveUniformsCacheParamsCache();
     }
 }
 
