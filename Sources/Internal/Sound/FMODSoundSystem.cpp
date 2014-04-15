@@ -286,10 +286,7 @@ void SoundSystem::UnloadFMODProjects()
 void SoundSystem::Update(float32 timeElapsed)
 {
 	fmodEventSystem->update();
-}
-
-void SoundSystem::Suspend()
-{
+    
 	uint32 size = soundsToReleaseOnUpdate.size();
 	if(size)
 	{
@@ -297,6 +294,10 @@ void SoundSystem::Suspend()
 			soundsToReleaseOnUpdate[i]->Release();
 		soundsToReleaseOnUpdate.clear();
 	}
+}
+
+void SoundSystem::Suspend()
+{
 }
 
 void SoundSystem::ReleaseOnUpdate(SoundEvent * sound)
