@@ -251,6 +251,8 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 	}	
 
 	DrawLayers(camera);
+    
+    
 
     /*if (needWaterPrepass)
     {

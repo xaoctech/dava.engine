@@ -126,4 +126,13 @@ bool FoliageSystem::IsFoliageVisible() const
     return (NULL != vegetationRO) ? vegetationRO->GetVegetationVisible() : false;;
 }
 
+void FoliageSystem::DebugDrawVegetation()
+{
+    VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
+    if(NULL != vegetationRO)
+    {
+        vegetationRO->DebugDrawVisibleNodes();
+    }
+}
+
 };

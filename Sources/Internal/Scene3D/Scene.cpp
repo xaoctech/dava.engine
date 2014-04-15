@@ -800,7 +800,8 @@ void Scene::Draw()
     
     
     renderSystem->Render();
-
+    
+    //foliageSystem->DebugDrawVegetation();
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }

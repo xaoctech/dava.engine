@@ -36,6 +36,7 @@
 #include "Utils/Random.h"
 #include "Render/ImageLoader.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Render/RenderHelper.h"
 
 namespace DAVA
 {
@@ -205,16 +206,16 @@ static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
 
 //#define VEGETATION_DRAW_LOD_COLOR
 
+static Color RESOLUTION_COLOR[] =
+{
+    Color(0.5f, 0.0f, 0.0f, 1.0f),
+    Color(0.0f, 0.5f, 0.0f, 1.0f),
+    Color(0.0f, 0.0f, 0.5f, 1.0f),
+};
+
 #ifdef VEGETATION_DRAW_LOD_COLOR
 static const FastName UNIFORM_LOD_COLOR = FastName("lodColor");
 static const FastName FLAG_VEGETATION_DRAW_LOD_COLOR = FastName("VEGETATION_DRAW_LOD_COLOR");
-
-static Vector4 RESOLUTION_COLOR[] =
-{
-    Vector4(0.5f, 0.0f, 0.0f, 1.0f),
-    Vector4(0.0f, 0.5f, 0.0f, 1.0f),
-    Vector4(0.0f, 0.0f, 0.5f, 1.0f),
-};
 #endif
     
 int32 RandomShuffleFunc(int32 limit)
@@ -1698,5 +1699,17 @@ void VegetationRenderObject::GenerateRenderDataObjects()
     }
 }
 
+void VegetationRenderObject::DebugDrawVisibleNodes()
+{
+    uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
+    for(uint32 i = 0; i < requestedBatchCount; ++i)
+    {
+        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[i];
+        uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
+        
+        RenderManager::Instance()->SetColor(RESOLUTION_COLOR[resolutionIndex]);
+        RenderHelper::Instance()->DrawBox(treeNode->data.bbox, 1.0f, RenderState::RENDERSTATE_3D_OPAQUE);
+    }
+}
 
 };

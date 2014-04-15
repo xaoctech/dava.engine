@@ -144,6 +144,8 @@ public:
     void SetUseLowCameraScale(const bool& useScale);
     bool GetUseLowCameraScale() const;
     
+    void DebugDrawVisibleNodes();
+    
 private:
 
     struct VegetationVertex

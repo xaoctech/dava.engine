@@ -60,6 +60,8 @@ public:
     void SetFoliageVisible(bool show);
     bool IsFoliageVisible() const;
     
+    void DebugDrawVegetation();
+    
 private:
 
     Entity* landscapeEntity;
