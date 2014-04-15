@@ -131,7 +131,7 @@
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
-    musicEvent->PerformEvent(DAVA::MusicIOSSoundEvent::EVENT_END);
+    musicEvent->PerformEndCallback();
 }
 
 @end
@@ -186,6 +186,7 @@ MusicIOSSoundEvent::~MusicIOSSoundEvent()
 
 bool MusicIOSSoundEvent::Trigger()
 {
+    Retain();
     return [(AvSound*)avSound play];
 }
 
@@ -223,5 +224,11 @@ bool MusicIOSSoundEvent::IsActive() const
     return [((AvSound*)avSound).audioPlayer isPlaying];
 }
 
+void MusicIOSSoundEvent::PerformEndCallback()
+{
+    SoundSystem::Instance()->ReleaseOnUpdate(this);
+    PerformEvent(DAVA::MusicIOSSoundEvent::EVENT_END);
+}
+    
 };
 #endif //#ifdef __DAVAENGINE_IPHONE__
