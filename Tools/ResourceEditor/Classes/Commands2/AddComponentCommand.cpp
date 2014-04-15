@@ -53,7 +53,6 @@ AddComponentCommand::~AddComponentCommand()
 void AddComponentCommand::Redo()
 {
     componentType = backup->GetType();
-    backup->SetEntity(entityToAdd);
 	entityToAdd->AddComponent(backup);
     original = backup;
 }
