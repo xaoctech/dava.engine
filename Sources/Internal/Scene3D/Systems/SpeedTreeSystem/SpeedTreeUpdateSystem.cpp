@@ -51,7 +51,7 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 {
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
-    isAnimationEnabled = false; //options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+    isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
@@ -224,6 +224,10 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
     
     //Update oscillators
 	uint32 oscCount = activeOscillators.size();
+
+    if(oscCount == 0)
+        return;
+
 	for(uint32 i = 0; i < oscCount; ++i)
 	{
 		activeOscillators[i]->Update(timeElapsed);
