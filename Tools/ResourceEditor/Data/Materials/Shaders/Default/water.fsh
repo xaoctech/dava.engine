@@ -160,10 +160,10 @@ void main()
 #else
     lowp vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpaceNorm, normal);
     lowp vec3 reflectionVectorInWorldSpace = (tbnToWorldMatrix * reflectionVectorInTangentSpace);    
-    lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb;
+    lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb * reflectionTintColor;
     
     #if defined (FRESNEL_TO_ALPHA)	
-		lowp vec3 resColor = reflectionTintColor * reflectionColor;
+		lowp vec3 resColor = reflectionColor;
 		#if defined (SPECULAR)
 			resColor+=resSpecularColor;
 		#endif
@@ -175,9 +175,9 @@ void main()
 		#else
 			lowp vec3 refractedVectorInTangentSpace = refract(cameraToPointInTangentSpaceNorm, normal, eta);
 			lowp vec3 refractedVectorInWorldSpace = (tbnToWorldMatrix * refractedVectorInTangentSpace);
-			lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb; 
+			lowp vec3 refractionColor = textureCube(cubemap, refractedVectorInWorldSpace).rgb*refractionTintColor; 
         #endif   		
-        lowp vec3 resColor = mix(refractionColor*refractionTintColor, reflectionColor*reflectionTintColor, fresnel);
+        lowp vec3 resColor = mix(refractionColor, reflectionColor, fresnel);
         #if defined (SPECULAR)
             resColor+=resSpecularColor;
         #endif
