@@ -509,6 +509,16 @@ void TextBlock::Prepare()
 					textSize = font->GetStringSize(text);
 				};
 			}
+            
+            if (treatMultilineAsSingleLine)
+            {
+                // Another temporary solution to return correct multiline strings/
+                // string sizes.
+                multilineStrings.clear();
+                stringSizes.clear();
+                multilineStrings.push_back(text);
+				stringSizes.push_back(font->GetStringSize(text).dx);
+            }
 		}
 		else //if(!isMultilineEnabled)
 		{
