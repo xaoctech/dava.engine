@@ -34,6 +34,8 @@
 #include "Base/FastName.h"
 #include "Base/FastNameMap.h"
 
+#include "Platform/Mutex.h"
+
 namespace DAVA
 {
     
@@ -69,7 +71,14 @@ private:
     void SetShaderData(Data * _vertexShaderData, Data * _fragmentShaderData);
     void ReloadShaders();
 	
-	void BindShaderDefaultsInternal(BaseObject * caller, void * param, void *callerData);
+	struct CompiledShaderData
+	{
+		Shader *shader;
+		FastNameSet defines;
+	};
+
+	void CompileShaderInternal(BaseObject * caller, void * param, void *callerData);
+	void ReloadShaderInternal(BaseObject * caller, void * param, void *callerData);
 
     void ClearAllLastBindedCaches();
     
@@ -108,6 +117,7 @@ private:
     void LoadAsset(ShaderAsset *asset);
     void ParseShader(ShaderAsset * asset);
 
+	Mutex shaderAssetMapMutex;
     FastNameMap<ShaderAsset*> shaderAssetMap;
 };
 };
