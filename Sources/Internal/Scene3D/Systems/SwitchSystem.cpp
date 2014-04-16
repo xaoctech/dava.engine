@@ -70,7 +70,6 @@ void SwitchSystem::Process(float32 timeElapsed)
 				actionComponent->StartSwitch(sw->newSwitchIndex);
 			}
 		}
-        SafeRelease(entity);
 	}
 
 	updatableEntities.clear();
@@ -80,9 +79,13 @@ void SwitchSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
 	if(EventSystem::SWITCH_CHANGED == event)
 	{
-        SafeRetain( entity );
 		updatableEntities.insert(entity);
 	}
+}
+
+void SwitchSystem::RemoveEntity(Entity* entity)
+{
+    updatableEntities.erase(entity);
 }
 
 void SwitchSystem::SetSwitchHierarchy(Entity * entity, int32 switchIndex)
