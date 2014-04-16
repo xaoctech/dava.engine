@@ -58,7 +58,7 @@ void SwitchSystem::Process(float32 timeElapsed)
 		Entity * entity = *it;
 		SwitchComponent * sw = (SwitchComponent*)entity->GetComponent(Component::SWITCH_COMPONENT);
 
-        if ((sw != NULL) && (sw->oldSwitchIndex != sw->newSwitchIndex))
+        if (sw->oldSwitchIndex != sw->newSwitchIndex)
 		{
             SetSwitchHierarchy(entity, sw->newSwitchIndex);
 
