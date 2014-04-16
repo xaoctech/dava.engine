@@ -124,7 +124,7 @@ void RenderUpdateSystem::UpdateActiveIndexes(Entity *entity, RenderObject *objec
     parent = entity;
     while(NULL != parent)
     {
-        LodComponent *lc = GetLodComponent(entity);
+        LodComponent *lc = GetLodComponent(parent);
         if(NULL != lc)
         {
             object->SetLodIndex(lc->currentLod);
@@ -138,7 +138,7 @@ void RenderUpdateSystem::UpdateActiveIndexes(Entity *entity, RenderObject *objec
     parent = entity;
     while(NULL != parent)
     {
-        SwitchComponent *sc = GetSwitchComponent(entity);
+        SwitchComponent *sc = GetSwitchComponent(parent);
         if(NULL != sc)
         {
             object->SetSwitchIndex(sc->GetSwitchIndex());
