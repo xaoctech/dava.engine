@@ -1325,7 +1325,7 @@ void QtMainWindow::OnResetTransform()
 
 void QtMainWindow::OnMaterialEditor()
 { 
-	MaterialEditor::Instance()->show();
+	MaterialEditor::Instance()->showNormal();
 }
 
 void QtMainWindow::OnTextureBrowser()
@@ -1338,7 +1338,7 @@ void QtMainWindow::OnTextureBrowser()
 		selectedEntities = sceneEditor->selectionSystem->GetSelection();
 	}
 
-	TextureBrowser::Instance()->show();
+	TextureBrowser::Instance()->showNormal();
 	TextureBrowser::Instance()->sceneActivated(sceneEditor);
 	TextureBrowser::Instance()->sceneSelectionChanged(sceneEditor, &selectedEntities, NULL); 
 }
