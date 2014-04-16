@@ -79,7 +79,7 @@ void TreeToAnimatedTreeConverter::ConvertTrees(Entity *scene)
     uniqTreeObjects.clear();
 
     ConvertingPathRecursive(scene);
-
+    
     Set<PolygonGroup *>::iterator pgIt = uniqPGs.begin();
     for(; pgIt != uniqPGs.end(); ++pgIt)
         ConvertForAnimations((*pgIt));
@@ -194,4 +194,6 @@ void TreeToAnimatedTreeConverter::ConvertForAnimations(PolygonGroup * pg)
         }
     }
     SafeRelease(pgCopy);
+    
+    pg->BuildBuffers();
 }
