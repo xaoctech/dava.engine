@@ -10,13 +10,23 @@ LOCAL_SRC_FILES := ../../Libs/libs/android/$(TARGET_ARCH_ABI)/libiconv_android.s
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE            := fmodex-prebuild
+LOCAL_MODULE            := fmodex-prebuildL
 LOCAL_SRC_FILES         := ../../Libs/fmod/lib/android/$(TARGET_ARCH_ABI)/libfmodexL.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE            := fmodevent-prebuild
+LOCAL_MODULE            := fmodex-prebuild
+LOCAL_SRC_FILES         := ../../Libs/fmod/lib/android/$(TARGET_ARCH_ABI)/libfmodex.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE            := fmodevent-prebuildL
 LOCAL_SRC_FILES         := ../../Libs/fmod/lib/android/$(TARGET_ARCH_ABI)/libfmodeventL.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE            := fmodevent-prebuild
+LOCAL_SRC_FILES         := ../../Libs/fmod/lib/android/$(TARGET_ARCH_ABI)/libfmodevent.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 
@@ -125,7 +135,9 @@ LOCAL_EXPORT_LDLIBS := $(LOCAL_LDLIBS)
 LOCAL_STATIC_LIBRARIES := libbox2d
 LOCAL_SHARED_LIBRARIES += iconv_android-prebuilt
 LOCAL_SHARED_LIBRARIES += fmodex-prebuild
+LOCAL_SHARED_LIBRARIES += fmodex-prebuildL
 LOCAL_SHARED_LIBRARIES += fmodevent-prebuild
+LOCAL_SHARED_LIBRARIES += fmodevent-prebuildL
 
 include $(BUILD_STATIC_LIBRARY)
 
