@@ -32,7 +32,8 @@ namespace DAVA {
 
 // Minimum distance between rect and guide to apply stick.
 #define GUIDE_STICK_TRESHOLD 10.0f
-    
+#define GUIDE_STICK_TRESHOLD_HALF GUIDE_STICK_TRESHOLD / 2
+
 // Minimum distance between the point and the guide to decide "guide is under point".
 #define GUIDE_POSITION_TRESHOLD 3.0f
 
@@ -645,6 +646,15 @@ void GuidesManager::MoveGuideSticked(GuideData* guideData, const Vector2& pos)
     for (List<Rect>::const_iterator iter = stickRects.begin(); iter != stickRects.end(); iter ++)
     {
         const Rect& rect = *iter;
+
+        // Select only the rects which near the cursor pos.
+        Rect inflatedRect = Rect(rect.x - GUIDE_STICK_TRESHOLD_HALF, rect.y - GUIDE_STICK_TRESHOLD_HALF,
+                                 rect.dx + GUIDE_STICK_TRESHOLD, rect.dy + GUIDE_STICK_TRESHOLD);
+        if (inflatedRect.PointInside(pos) == false)
+        {
+            continue;
+        }
+
         Vector2 distance = CalculateDistanceToGuide(guideData->GetType(), pos, rect);
         if (fabs(distance.x) < fabs(minDistance.x))
         {
