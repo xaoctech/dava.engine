@@ -107,7 +107,7 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
     DAVA::VariantType savePath = posSaver.LoadValue("lastSavePath");
     DAVA::VariantType loadState = posSaver.LoadValue("lastLoadState");
     if(savePath.GetType() == DAVA::VariantType::TYPE_FILEPATH) lastSavePath = savePath.AsFilePath();
-    if(savePath.GetType() == DAVA::VariantType::TYPE_UINT32) lastCheckState = loadState.AsUInt32();
+    if(loadState.GetType() == DAVA::VariantType::TYPE_UINT32) lastCheckState = loadState.AsUInt32();
 
     expandMap[MaterialFilteringModel::SHOW_ALL] = false;
     expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
@@ -1066,6 +1066,8 @@ void MaterialEditor::OnMaterialLoad(bool checked)
                 materialArchive->Dump();
             }        }
     }
+
+    SetCurMaterial(curMaterials);
 }
 
 DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState)
