@@ -49,7 +49,10 @@ def create_html(result, filename):
 		return
 	
 	create_header("<h1> Resource Packer autotest results for %s</h1>" % (result['gpu']))
-	
+	report.write('<a href="%s/%s.zip" target="_blank"> %s.zip </a>' % ('Artifacts/',result['gpu'],result['gpu']))
+	report.write('<br>')
+	report.write('<br>')
+	report.write('<br>')
 	# Create Summary
 	open_table()
 	open_row()
