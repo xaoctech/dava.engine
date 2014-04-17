@@ -813,12 +813,8 @@ void MaterialEditor::OnAddFlag()
         QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
         if(NULL != data)
         {
-            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-            for(int i = 0; i < data->GetMergedCount(); i++)
-            {
-                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
-                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
-            }
+            const QVariant value = data->GetValue();
+            data->SetValue(value, QtPropertyData::VALUE_EDITED);
 
             // reload material properties
             SetCurMaterial(curMaterials);
