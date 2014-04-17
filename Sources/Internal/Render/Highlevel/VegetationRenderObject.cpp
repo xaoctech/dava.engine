@@ -49,6 +49,7 @@ static const FastName UNIFORM_SWITCH_LOD_SCALE = FastName("lodSwitchScale");
 static const FastName UNIFORM_PERTURBATION_FORCE = FastName("perturbationForce");
 static const FastName UNIFORM_PERTURBATION_POINT = FastName("perturbationPoint");
 static const FastName UNIFORM_PERTURBATION_FORCE_DISTANCE = FastName("perturbationForceDistance");
+static const FastName UNIFORM_BILLBOARD_DIRECTION = FastName("billboardDirection");
 
 static const FastName FLAG_FRAMEBUFFER_FETCH = FastName("FRAMEBUFFER_FETCH");
 
@@ -78,7 +79,7 @@ static const Vector3 MAX_DISPLACEMENT = Vector3(5.6f, 5.6f, 0.0f);
 static const uint32 SORT_DIRECTION_COUNT = 8;
     
     
-static const Vector3 CLUSTER_TYPE_0[] =
+/*static const Vector3 CLUSTER_TYPE_0[] =
 {
     Vector3(-0.5f, 0.0f, 1.0f),
     Vector3(0.5f, 0.0f, 1.0f),
@@ -115,18 +116,42 @@ static const Vector3 CLUSTER_TYPE_1[] =
     Vector3(-0.35f, 0.33f, 0.0f),
 };
 
-static const Vector3 CLUSTER_TYPE_0_CROSS[] =
+static const Vector3 CLUSTER_TYPE_0_NORMALS[] =
 {
-    Vector3(-0.35f, -0.35f, 1.0f),
-    Vector3(0.35f, 0.35f, 1.0f),
-    Vector3(0.35f, 0.35f, 0.0f),
-    Vector3(-0.35f, -0.35f, 0.0f),
-        
-    Vector3(-0.35f, 0.35f, 1.0f),
-    Vector3(0.35f, -0.35f, 1.0f),
-    Vector3(0.35f, -0.35f, 0.0f),
-    Vector3(-0.35f, 0.35f, 0.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
+    
+    Vector3(0.0f, 0.0f, -1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
+    
+    Vector3(0.0f, 0.0f, -1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
 };
+
+static const Vector3 CLUSTER_TYPE_1_NORMALS[] =
+{
+    Vector3(0.0f, 0.0f, -1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
+        
+    Vector3(0.0f, 0.0f, -1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
+        
+    Vector3(0.0f, 0.0f, -1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, 1.0f),
+    Vector3(0.0f, 0.0f, -1.0f),
+};
+
 
 static const int16 CLUSTER_INDICES[] =
 {
@@ -134,13 +159,6 @@ static const int16 CLUSTER_INDICES[] =
     4, 7,  5, 5, 7,  6,
     8, 11, 9, 9, 11, 10
 };
-
-static const int16 CLUSTER_INDICES_CROSS[] =
-{
-    0, 3,  1, 1, 3,  2,
-    4, 7,  5, 5, 7,  6
-};
-
     
 static const Vector3* VEGETATION_CLUSTER[] =
 {
@@ -153,6 +171,12 @@ static const int16* VEGETATION_CLUSTER_INDICES[] =
     CLUSTER_INDICES,
     CLUSTER_INDICES
 };
+
+static const Vector3* VEGETATION_CLUSTER_NORMALS[] =
+{
+    CLUSTER_TYPE_0_NORMALS,
+    CLUSTER_TYPE_1_NORMALS
+};
     
 static const uint32 VEGETATION_CLUSTER_SIZE[] =
 {
@@ -164,7 +188,76 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
 {
     COUNT_OF(CLUSTER_INDICES),
     COUNT_OF(CLUSTER_INDICES)
-};
+};*/
+
+    static const Vector3 CLUSTER_TYPE_0[] =
+    {
+        Vector3(-0.5f, 0.0f, 1.0f),
+        Vector3(0.5f, 0.0f, 1.0f),
+        Vector3(0.5f, 0.0f, 0.0f),
+        Vector3(-0.5f, 0.0f, 0.0f),
+    };
+    
+    
+    static const Vector3 CLUSTER_TYPE_1[] =
+    {
+        Vector3(-0.5f, 0.1f, 1.0f),
+        Vector3(0.5f, 0.1f, 1.0f),
+        Vector3(0.5f, 0.1f, 0.0f),
+        Vector3(-0.5f, 0.1f, 0.0f),
+    };
+    
+    static const Vector3 CLUSTER_TYPE_0_NORMALS[] =
+    {
+        Vector3(0.0f, 0.0f, 1.0f),
+        Vector3(0.0f, 0.0f, -1.0f),
+        Vector3(0.0f, 0.0f, -1.0f),
+        Vector3(0.0f, 0.0f, 1.0f),
+    };
+    
+    static const Vector3 CLUSTER_TYPE_1_NORMALS[] =
+    {
+        Vector3(0.0f, 0.0f, 1.0f),
+        Vector3(0.0f, 0.0f, -1.0f),
+        Vector3(0.0f, 0.0f, -1.0f),
+        Vector3(0.0f, 0.0f, 1.0f),
+    };
+    
+    
+    static const int16 CLUSTER_INDICES[] =
+    {
+        0, 3,  1, 1, 3,  2
+    };
+    
+    static const Vector3* VEGETATION_CLUSTER[] =
+    {
+        CLUSTER_TYPE_0,
+        CLUSTER_TYPE_1
+    };
+    
+    static const int16* VEGETATION_CLUSTER_INDICES[] =
+    {
+        CLUSTER_INDICES,
+        CLUSTER_INDICES
+    };
+    
+    static const Vector3* VEGETATION_CLUSTER_NORMALS[] =
+    {
+        CLUSTER_TYPE_0_NORMALS,
+        CLUSTER_TYPE_1_NORMALS
+    };
+    
+    static const uint32 VEGETATION_CLUSTER_SIZE[] =
+    {
+        COUNT_OF(CLUSTER_TYPE_0),
+        COUNT_OF(CLUSTER_TYPE_1)
+    };
+    
+    static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
+    {
+        COUNT_OF(CLUSTER_INDICES),
+        COUNT_OF(CLUSTER_INDICES)
+    };
 
 static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 6.0f);
 //static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 12.0f);
@@ -550,6 +643,13 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                      worldSize.x,
                      worldSize.y);
     Vector2 switchLodScale;
+    
+    Vector3 billboardDirection = -1.0f * camera->GetLeft();
+    billboardDirection.Normalize();
+    vegetationMaterial->SetPropertyValue(UNIFORM_BILLBOARD_DIRECTION,
+                                         Shader::UT_FLOAT_VEC3,
+                                         1,
+                                         billboardDirection.data);
     
     for(size_t i = 0; i < requestedBatchCount; ++i)
     {
@@ -1441,7 +1541,6 @@ void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
     }
 
     size_t vertexIndex = 0;
-    Vector3 normal(0.0f, 0.0f, 1.0f); //up
     for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
     {
         layerOffsets[layerIndex] = vertexIndex;
@@ -1449,6 +1548,7 @@ void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
         TextureSheetCell& cellData = textureSheet.cells[layerIndex];
         
         const Vector3* clusterVertices = VEGETATION_CLUSTER[cellData.geometryId];
+        const Vector3* clusterNormals = VEGETATION_CLUSTER_NORMALS[cellData.geometryId];
         uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
         
         std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
@@ -1482,7 +1582,7 @@ void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
                 vertex.coord.y = clusterCenter.y + clusterVertices[clusterVertexIndex].y * cellData.geometryScale.x;
                 vertex.coord.z = clusterCenter.z + clusterVertices[clusterVertexIndex].z * cellData.geometryScale.y;
                 
-                vertex.normal = normal;
+                vertex.normal = clusterNormals[clusterVertexIndex];
                 
                 vertex.binormal = clusterCenter;
                 
