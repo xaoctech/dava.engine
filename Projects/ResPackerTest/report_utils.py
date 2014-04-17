@@ -96,7 +96,7 @@ def create_html(result, filename):
 			write_cell_result(test["img_Success"])
 			write_cell(test['Error_msg'])
 		else:
-			names = parse_error(test['Error_msg'], "/(\S+png)")
+			names = parse_error(test['Error_msg'], "\S+/(\S+png)")
 			open_cell
 			for name in names:
 				insert_image('./Artifacts/' + result['gpu'], test['Name'], name)
