@@ -48,7 +48,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -158,6 +158,9 @@ uniform vec4 tilePos;
 uniform vec3 worldSize;
 uniform vec2 lodSwitchScale;
 
+uniform vec3 cameraPosition;
+uniform vec3 billboardDirection;
+
 uniform float clusterScaleDensityMap[128];
 
 uniform sampler2D detail;
@@ -235,6 +238,18 @@ void main()
                         inPosition.z,
                         inPosition.w);
     
+        //1st method of billboards when cameraPosition is point
+        vec3 toCamera = normalize(vec3(clusterCenter.xyz) - vec3(cameraPosition.xy, clusterCenter.z));
+        vec3 actualDirection = normalize(cross(inNormal, toCamera));
+    
+    
+        //2nd method of billboards when cameraDirection is vector
+        //vec2 actualDirection = inNormal.z * vec2(billboardDirection);
+        //
+    
+        vec2 planeDirection = vec2(actualDirection.x, actualDirection.y) * length(vec2(inPosition.x - inBinormal.x, inPosition.y - inBinormal.y));
+        pos = clusterCenter + vec4(planeDirection.x, planeDirection.y, inPosition.z, 0.0);
+    
         highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
                         clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
     
@@ -244,18 +259,17 @@ void main()
         highp vec4 heightVec = texture2DLod(detail, hUV, 0.0);
         float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
     
-    
         pos.z += height;
         clusterCenter.z += height;
     
         int clusterType = int(inTangent.y);
         int vertexTileIndex = int(inTangent.x);
     
-        float densityFactor;
+        lowp float densityFactor;
     
-        float clusterDensity = clusterScaleDensityMap[vertexTileIndex + clusterType];;
-        float clusterScale = clusterScaleDensityMap[vertexTileIndex + 4 + clusterType];
-        float clusterLodScale = 1.0;
+        lowp float clusterDensity = clusterScaleDensityMap[vertexTileIndex + clusterType];;
+        lowp float clusterScale = clusterScaleDensityMap[vertexTileIndex + 4 + clusterType];
+        lowp float clusterLodScale = 1.0;
     
         if(int(inTexCoord1.x) == int(lodSwitchScale.x))
         {
@@ -289,7 +303,12 @@ void main()
         //    pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
         //}
 
+        //gl_Position = worldViewProjMatrix * pos;
+        //gl_Position = projMatrix * pos;
+        //gl_Position = projMatrix * (worldViewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(pos.xy, 0.0, 0.0));
+    
         gl_Position = worldViewProjMatrix * pos;
+    
         varTexCoord1 = hUV;
     
     #else
