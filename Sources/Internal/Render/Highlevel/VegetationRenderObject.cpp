@@ -644,12 +644,12 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                      worldSize.y);
     Vector2 switchLodScale;
     
-    Vector3 billboardDirection = -1.0f * camera->GetLeft();
-    billboardDirection.Normalize();
-    vegetationMaterial->SetPropertyValue(UNIFORM_BILLBOARD_DIRECTION,
-                                         Shader::UT_FLOAT_VEC3,
-                                         1,
-                                         billboardDirection.data);
+    //Vector3 billboardDirection = -1.0f * camera->GetLeft();
+    //billboardDirection.Normalize();
+    //vegetationMaterial->SetPropertyValue(UNIFORM_BILLBOARD_DIRECTION,
+    //                                     Shader::UT_FLOAT_VEC3,
+    //                                     1,
+    //                                     billboardDirection.data);
     
     for(size_t i = 0; i < requestedBatchCount; ++i)
     {
