@@ -95,15 +95,15 @@ def create_html(result, filename):
 		else:
 			names = parse_error(test['Error_msg'], "/(\S+png)")
 			for name in names:
-				insert_image('./Artifacts/' + result['gpu'], test['Name'], name)
+				insert_image('Artifacts/' + result['gpu'], test['Name'], name)
 			write_cell_result(test["tex_Success"])
 			write_cell_result(test["txt_Success"])
 			for name in names:
-				insert_image('./Artifacts/' + result['gpu'] , test['Name']+ '/expected_results', name)
+				insert_image('Artifacts/' + result['gpu'] , test['Name']+ '/expected_results', name)
 			write_cell(test['Error_msg'])
 			for name in names:
-				insert_image('./Artifacts/' + result['gpu'] , test['Name'], name + '-diff1.png')
-				insert_image('./Artifacts/' + result['gpu'] , test['Name'], name + '-diff2.png')
+				insert_image('Artifacts/' + result['gpu'] , test['Name'], name + '-diff1.png')
+				insert_image('Artifacts/' + result['gpu'] , test['Name'], name + '-diff2.png')
 		close_row()
 	close_table()
 	#report.write('<table style="border: 1px solid; cellspacing: 0px; cellpadding: 0px; border-collapse: collapse;">')
