@@ -97,16 +97,22 @@ def create_html(result, filename):
 			write_cell(test['Error_msg'])
 		else:
 			names = parse_error(test['Error_msg'], "/(\S+png)")
+			open_cell
 			for name in names:
-				insert_image('Artifacts/' + result['gpu'], test['Name'], name)
+				insert_image('./Artifacts/' + result['gpu'], test['Name'], name)
+			close_cell()
 			write_cell_result(test["tex_Success"])
 			write_cell_result(test["txt_Success"])
+			open_cell
 			for name in names:
-				insert_image('Artifacts/' + result['gpu'] , test['Name']+ '/expected_results', name)
+				insert_image('./Artifacts/' + result['gpu'] , test['Name']+ '/expected_results', name)
+			close_cell()
 			write_cell(test['Error_msg'])
 			for name in names:
-				insert_image('Artifacts/' + result['gpu'] , test['Name'], name + '-diff1.png')
-				insert_image('Artifacts/' + result['gpu'] , test['Name'], name + '-diff2.png')
+				open_cell
+				insert_image('./Artifacts/' + result['gpu'] , test['Name'], name + '-diff1.png')
+				insert_image('./Artifacts/' + result['gpu'] , test['Name'], name + '-diff2.png')
+				close_cell()
 		close_row()
 	close_table()
 	#report.write('<table style="border: 1px solid; cellspacing: 0px; cellpadding: 0px; border-collapse: collapse;">')
@@ -147,11 +153,15 @@ def write_cell_result(txt):
 def insert_image(path, test, file):
 	global report
 	if None != report:  
-		report.write('<td style="border: 1px solid; cellspacing: 0px; cellpadding: 0px; color: green">\n')
 		report.write('<a href="%s/%s/%s" target="_blank">' % (path, test, file))
 		report.write('<img src="%s/%s/%s" alt="%s" style="height: 60px;" >\n' % (path, test, file, test))
-		report.write('</td>\n')
-		
+	
+def open_cell():
+	report.write('<td style="border: 1px solid; cellspacing: 0px; cellpadding: 0px; color: green">\n')
+	
+def close_cell():
+	report.write('</td>\n')
+	
 def close_table():
 	global report
 	if None != report:

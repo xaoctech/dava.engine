@@ -137,7 +137,7 @@ for test in os.listdir(results):
 				result['img_Success'] = False
 				result['Error_msg'] = result['Error_msg'] + str(res) + "\n"
 			else:
-				if res > 0.02:
+				if res > 0.01:
 					result['img_Success'] = False
 					result['Error_msg'] = result['Error_msg'] + "Image %s differce from expected on %f%%.\n" % (actual + "/" + file, res * 100)
 					utils.save_diff(expected + "/" + file, actual + "/" + file)
