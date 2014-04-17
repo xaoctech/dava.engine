@@ -157,10 +157,14 @@ def insert_image(path, test, file):
 		report.write('<img src="%s/%s/%s" alt="%s" style="height: 60px;" >\n' % (path, test, file, test))
 	
 def open_cell():
-	report.write('<td style="border: 1px solid; cellspacing: 0px; cellpadding: 0px; color: green">\n')
+	global report
+	if None != report:
+		report.write('<td style="border: 1px solid; cellspacing: 0px; cellpadding: 0px; color: green">\n')
 	
 def close_cell():
-	report.write('</td>\n')
+	global report
+	if None != report:
+		report.write('</td>\n')
 	
 def close_table():
 	global report
