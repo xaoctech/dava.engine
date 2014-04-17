@@ -97,19 +97,19 @@ def create_html(result, filename):
 			write_cell(test['Error_msg'])
 		else:
 			names = parse_error(test['Error_msg'], "\S+/(\S+png)")
-			open_cell
+			open_cell()
 			for name in names:
 				insert_image('./Artifacts/' + result['gpu'], test['Name'], name)
 			close_cell()
 			write_cell_result(test["tex_Success"])
 			write_cell_result(test["txt_Success"])
-			open_cell
+			open_cell()
 			for name in names:
 				insert_image('./Artifacts/' + result['gpu'] , test['Name']+ '/expected_results', name)
 			close_cell()
 			write_cell(test['Error_msg'])
 			for name in names:
-				open_cell
+				open_cell()
 				insert_image('./Artifacts/' + result['gpu'] , test['Name'], name + '-diff1.png')
 				insert_image('./Artifacts/' + result['gpu'] , test['Name'], name + '-diff2.png')
 				close_cell()
