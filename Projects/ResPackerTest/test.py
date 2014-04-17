@@ -60,10 +60,12 @@ os.chdir(data)
 
 params = [sys.executable, 'convert_graphics.py']
 if (len(arguments) > 0):
-	params = params + ["-gpu", arguments[0], ">", gpu + "_log.txt"]
+	params = params + ["-gpu", arguments[0]]
 	
 print "subprocess.call " + "[%s]" % ", ".join(map(str, params))
-subprocess.call(params, shell=True)
+f = open(gpu + "_log.txt", 'w')
+subprocess.call(params, stdout=f)
+f.close()
 
 shutil.move(gpu + "_log.txt", output)
 
