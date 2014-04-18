@@ -339,6 +339,7 @@
     <ClCompile Include="Classes\Commands2\AddComponentCommand.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.cpp" />
     <ClCompile Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.cpp" />
+    <ClCompile Include="Classes\Commands2\BakeTransformCommand.cpp" />
     <ClCompile Include="Classes\Commands2\BeastAction.cpp" />
     <ClCompile Include="Classes\Commands2\ChangeLODDistanceCommand.cpp" />
     <ClCompile Include="Classes\Commands2\CloneLastBatchCommand.cpp" />
@@ -976,6 +977,7 @@
     <ClInclude Include="Classes\Commands2\AddComponentCommand.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorTool.h" />
     <ClInclude Include="Classes\CommandLine\TextureDescriptor\TextureDescriptorUtils.h" />
+    <ClInclude Include="Classes\Commands2\BakeTransformCommand.h" />
     <ClInclude Include="Classes\Commands2\BeastAction.h" />
     <ClInclude Include="Classes\Commands2\ChangeLODDistanceCommand.h" />
     <ClInclude Include="Classes\Commands2\CloneLastBatchCommand.h" />
@@ -1229,6 +1231,9 @@
     <ClInclude Include="_GeneratedQt\ui_waitdialog.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DataQt\ActionComponentEditor.ui">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="DataQt\AddSwitchEntityDialog.ui" />
     <None Include="DataQt\BaseAddEntityDialog.ui">
       <SubType>Designer</SubType>

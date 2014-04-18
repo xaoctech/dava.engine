@@ -32,7 +32,7 @@
 namespace DAVA
 {
 
-void JobQueue::Update()
+void MainThreadJobQueue::Update()
 {
 	mutex.Lock();
 
@@ -57,8 +57,14 @@ void JobQueue::Update()
 	mutex.Unlock();
 }
 
-void JobQueue::AddJob(Job * job)
+void MainThreadJobQueue::AddJob(Job * job)
 {
+    BaseObject * bo = job->GetMessage().GetTargetObject();
+    if(bo)
+    {
+        bo->Retain();
+    }
+
 	mutex.Lock();
 
 	job->Retain();
