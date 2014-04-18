@@ -375,8 +375,8 @@ void RenderSystem::Update(float32 timeElapsed)
         FindNearestLights();
         
         forceUpdateLights = false;
+		movedLights.clear();
     }
-    movedLights.clear();
     
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
@@ -384,8 +384,6 @@ void RenderSystem::Update(float32 timeElapsed)
         objectsForUpdate[i]->RenderUpdate(clipCamera, timeElapsed);
     }
 	
-    
-
     ShaderCache::Instance()->ClearAllLastBindedCaches();
 }
 
