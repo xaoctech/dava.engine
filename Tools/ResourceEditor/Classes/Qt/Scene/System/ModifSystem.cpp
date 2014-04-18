@@ -881,10 +881,22 @@ void EntityModificationSystem::LockTransform(const EntityGroup &entities, bool l
     SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
 	if(NULL != sceneEditor)
 	{
+		bool isMultiple = (entities.Size() > 1);
+
+        if(isMultiple)
+		{
+			sceneEditor->BeginBatch("Lock entities");
+		}
+
  	    for(size_t i = 0; i < entities.Size(); ++i)
  	    {
             sceneEditor->Exec(new EntityLockCommand(entities.GetEntity(i), lock));
  	    }
+
+        if(isMultiple)
+		{
+			sceneEditor->EndBatch();
+		}
     }
 }
 
