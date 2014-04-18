@@ -48,9 +48,6 @@ protected:
 	DAVA::Entity* entity;
 	DAVA::Matrix4 origTransform;
     DAVA::Matrix4 toCenterModif;
-
-    void PivotToZeroPos();
-    void PivotToCenterPos();
 };
 
 

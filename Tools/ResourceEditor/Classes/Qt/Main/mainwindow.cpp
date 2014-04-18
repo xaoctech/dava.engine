@@ -837,6 +837,11 @@ void QtMainWindow::SceneDeactivated(SceneEditor2 *scene)
 	EnableSceneActions(false);
 }
 
+void QtMainWindow::SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected)
+{
+
+}
+
 void QtMainWindow::EnableProjectActions(bool enable)
 {
 	ui->actionNewScene->setEnabled(enable);
@@ -879,6 +884,8 @@ void QtMainWindow::EnableSceneActions(bool enable)
 	ui->actionConvertToShadow->setEnabled(enable);
 	ui->actionPivotCenter->setEnabled(enable);
 	ui->actionPivotCommon->setEnabled(enable);
+	ui->actionCenterPivotPoint->setEnabled(enable);
+	ui->actionZeroPivotPoint->setEnabled(enable);
 	ui->actionManualModifMode->setEnabled(enable);
 
     if(modificationWidget)
