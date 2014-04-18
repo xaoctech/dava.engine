@@ -474,7 +474,7 @@ Sprite * Sprite::CreateFromTexture(const Vector2 & spriteSize, Texture * fromTex
 	return spr;
 }
 
-Sprite* Sprite::CreateFromImage(const Image* image, bool contentScaleIncluded /* = false*/)
+Sprite* Sprite::CreateFromImage(const Image* image, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     uint32 width = image->GetWidth();
     uint32 height = image->GetHeight();
@@ -491,7 +491,20 @@ Sprite* Sprite::CreateFromImage(const Image* image, bool contentScaleIncluded /*
     Sprite* sprite = NULL;
     if (texture)
     {
-        sprite = Sprite::CreateFromTexture(texture, 0, 0, (float32)width, (float32)height, contentScaleIncluded);
+        float32 sprWidth = width;
+		float32 sprHeight = height;
+        if(inVirtualSpace)
+        {
+            sprWidth *= Core::GetPhysicalToVirtualFactor();
+            sprHeight *= Core::GetPhysicalToVirtualFactor();
+        }
+        
+        sprite = Sprite::CreateFromTexture(texture, 0, 0, sprWidth, sprHeight, contentScaleIncluded);
+        
+        if(inVirtualSpace)
+        {
+            sprite->ConvertToVirtualSize();
+        }
     }
 
     SafeRelease(texture);
@@ -500,7 +513,7 @@ Sprite* Sprite::CreateFromImage(const Image* image, bool contentScaleIncluded /*
     return sprite;
 }
 
-Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleIncluded /* = false*/)
+Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     if (data == NULL || size == 0)
     {
@@ -513,13 +526,14 @@ Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleI
         return NULL;
     }
 
-    Vector<Image*> images = ImageLoader::CreateFromFileByContent(file);
+    Vector<Image*> images;
+    ImageLoader::CreateFromFileByContent(file, images);
     if (images.size() == 0)
     {
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded);
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
     
     for_each(images.begin(), images.end(), SafeRelease<Image>);
     SafeRelease(file);
@@ -527,20 +541,21 @@ Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleI
     return sprite;
 }
 
-Sprite* Sprite::CreateFromPNG(const FilePath& path, bool contentScaleIncluded /* = false*/)
+Sprite* Sprite::CreateFromPNG(const FilePath& path, bool contentScaleIncluded /* = false*/, bool inVirtualSpace /* = false */)
 {
     if (path.GetExtension() != ".png")
     {
         return NULL;
     }
 
-    Vector<Image*> images = ImageLoader::CreateFromFileByExtension(path);
+    Vector<Image*> images;
+    ImageLoader::CreateFromFileByExtension(path, images);
     if (images.size() == 0)
     {
         return NULL;
     }
 
-    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded);
+    Sprite* sprite = CreateFromImage(images[0], contentScaleIncluded, inVirtualSpace);
 
     for_each(images.begin(), images.end(), SafeRelease<Image>);
 
@@ -1639,6 +1654,8 @@ const float32 * Sprite::GetTextureCoordsForFrame( int32 frame ) const
 
 void Sprite::PrepareForNewSize()
 {
+    if(relativePathname.IsEmpty()) return;
+    
 	String pathname = relativePathname.GetAbsolutePathname();
 
 	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));

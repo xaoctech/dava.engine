@@ -533,6 +533,22 @@ public:
 	 */
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
+    /**
+     \brief Returns control visibility.
+        Invisible controls don't process any inputs.
+        Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods. 
+     \returns control visibility.
+     */
+    virtual bool GetRecursiveVisible() const;
+
+    /**
+     \brief Sets contol recursive visibility.
+        Invisible controls don't process any inputs.
+        Also for invisible controls didn't calls Draw() and DrawAfterChilds() methods.
+     \param[in] isVisible new control visibility.
+     */
+    virtual void SetRecursiveVisible(bool isVisible);
+
 	/**
 	 \brief Returns control input processing ability.
 		Be ware! Base control processing inputs by default.
@@ -939,6 +955,14 @@ public:
 	 \returns Animation object
 	 */
 	Animation *		VisibleAnimation(bool visible, bool hierarhic = true, int32 track = 0);
+    /**
+	 \brief Starts control recursive visible animation. This animation changing control visibility
+		on the next frame after the animation start.
+	 \param[in] visible New control recursive visible value.
+	 \param[in] track animation track. 0 by default.
+	 \returns Animation object
+	 */
+	Animation *		RecursiveVisibleAnimation(bool visible, int32 track = 0);
 	/**
 	 \brief Starts control removation animation. This animation removes control from the parent
 	 on the next frame  after the animation start.
@@ -960,6 +984,7 @@ protected:
 	void TouchableAnimationCallback(BaseObject * caller, void * param, void *callerData);
 	void DisabledAnimationCallback(BaseObject * caller, void * param, void *callerData);
 	void VisibleAnimationCallback(BaseObject * caller, void * param, void *callerData);
+    void RecursiveVisibleAnimationCallback(BaseObject * caller, void * param, void *callerData);
 	void RemoveControlAnimationCallback(BaseObject * caller, void * param, void *callerData);
 
 public:
@@ -1228,6 +1253,7 @@ protected:
 
 	// boolean flags are grouped here to pack them together (see please DF-2149).
 	bool exclusiveInput : 1;
+    bool recursiveVisible : 1;
 	bool visible : 1;
 	bool clipContents : 1;
 	bool debugDrawEnabled : 1;

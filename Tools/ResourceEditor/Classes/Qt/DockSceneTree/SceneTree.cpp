@@ -384,14 +384,15 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 		QMenu contextMenu;
 		if(entityCustomFlags & SceneTreeModel::CF_Disabled)
 		{
-			// disabled entities can only be removed
-			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
-            
             if(selectionSize == 1 && GetCamera(entity))
             {
                 AddCameraActions(contextMenu);
+                contextMenu.addSeparator();
             }
-		}
+
+            // disabled entities can only be removed
+            contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+        }
 		else
 		{
 			// look at
@@ -719,7 +720,7 @@ void SceneTree::ReloadModelAs()
 				}
 				else
 				{
-					ownerPath = FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString()).GetAbsolutePathname();
+					ownerPath = ProjectManager::Instance()->CurProjectDataSourcePath().GetAbsolutePathname();
 				}
 			}
 
@@ -743,7 +744,7 @@ void SceneTree::SaveEntityAs()
 			DAVA::FilePath scenePath = sceneEditor->GetScenePath().GetDirectory();
 			if(!scenePath.Exists() || !sceneEditor->IsLoaded())
 			{
-				scenePath = DAVA::FilePath(ProjectManager::Instance()->CurProjectDataSourcePath().toStdString());
+				scenePath = ProjectManager::Instance()->CurProjectDataSourcePath();
 			}
 
 			QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save scene file"), QString(scenePath.GetDirectory().GetAbsolutePathname().c_str()), QString("DAVA SceneV2 (*.sc2)"));
@@ -1158,7 +1159,7 @@ void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
 	FilePath yamlPath;
 	if (forceAskFileName)
 	{
-		QString projectPath = QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+		QString projectPath = ProjectManager::Instance()->CurProjectDataParticles().GetAbsolutePathname().c_str();
 		QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
 			projectPath, QString("YAML File (*.yaml)"));
 
@@ -1280,9 +1281,9 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 	FilePath yamlPath;
     if (forceAskFileName)
     {
-        QString projectPath = QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+        QString particlesPath = ProjectManager::Instance()->CurProjectDataParticles().GetAbsolutePathname().c_str();
         QString filePath = QtFileDialog::getSaveFileName(NULL, QString("Save Particle Emitter YAML file"),
-                                                        projectPath, QString("YAML File (*.yaml)"));
+                                                        particlesPath, QString("YAML File (*.yaml)"));
 		
         if (filePath.isEmpty())
         {
@@ -1309,7 +1310,7 @@ void SceneTree::PerformSaveEmitter(bool forceAskFileName)
 
 QString SceneTree::GetParticlesConfigPath()
 {
-	return QString(FilePath(ProjectManager::Instance()->CurProjectPath().toStdString()+"Data/Configs/Particles/").GetAbsolutePathname().c_str());
+	return ProjectManager::Instance()->CurProjectDataParticles().GetAbsolutePathname().c_str();
 }
 
 void SceneTree::CleanupParticleEditorSelectedItems()

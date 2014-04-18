@@ -48,7 +48,7 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
-	maxTextureSize = TEXTURE_SIZE;
+	maxTextureSize = DEFAULT_TEXTURE_SIZE;
 	onlySquareTextures = false;
 	errors.clear();
 }
@@ -146,13 +146,13 @@ void TexturePacker::PackToTexturesSeparate(const FilePath & excludeFolder, const
 
 		
 		// try to pack for each resolution
-		int bestResolution = (maxTextureSize) * (maxTextureSize);
-		int bestXResolution, bestYResolution;
+		uint32 bestResolution = (maxTextureSize) * (maxTextureSize);
+		uint32 bestXResolution, bestYResolution;
 		
         Logger::FrameworkDebug("* Packing tries started: ");
 		
-		for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
-			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
+		for (uint32 yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
+			for (uint32 xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
 				Rect2i textureRect = Rect2i(0, 0, xResolution, yResolution);
 				
@@ -228,14 +228,14 @@ void TexturePacker::PackToTextures(const FilePath & excludeFolder, const FilePat
 	std::sort(sortVector.begin(), sortVector.end(), sortFn);
 
 	// try to pack for each resolution
-	int bestResolution = (maxTextureSize) * (maxTextureSize);
-	int bestXResolution, bestYResolution;
+	uint32 bestResolution = (maxTextureSize) * (maxTextureSize);
+	uint32 bestXResolution = 0, bestYResolution = 0;
 	
     Logger::FrameworkDebug("* Packing tries started: ");
 	
     bool needOnlySquareTexture = onlySquareTextures || NeedSquareTextureForCompression(forGPU);
-	for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
-		 for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
+	for (uint32 yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
+		 for (uint32 xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 		 {
 			 if (needOnlySquareTexture && (xResolution != yResolution))continue;
 			 
@@ -330,8 +330,8 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 		Vector<SizeSortItem> newWorkVector;
 		
         bool needOnlySquareTexture = onlySquareTextures || NeedSquareTextureForCompression(forGPU);
-		for (int yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
-			for (int xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
+		for (uint32 yResolution = 8; yResolution <= maxTextureSize; yResolution *= 2)
+			for (uint32 xResolution = 8; xResolution <= maxTextureSize; xResolution *= 2)
 			{
 				if (needOnlySquareTexture && (xResolution != yResolution))continue;
 				
@@ -348,10 +348,16 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 					bestPackerForThisStep = packer;
 					newWorkVector = tempSortVector;
 				}
+				else
+				{
+					SafeDelete(packer);
+				}
 			}
 		
 		sortVectorWork = newWorkVector;
-		packers.push_back(bestPackerForThisStep);
+
+		if(bestPackerForThisStep)
+			packers.push_back(bestPackerForThisStep);
 	}
 	
     Logger::FrameworkDebug("* Writing %d final textures", (int)packers.size());
@@ -577,6 +583,10 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, 
 			AddError(Format("*** FATAL ERROR: Can't find rect in all of packers for frame - %d. Definition file - %s.",
 								frame,
 								fileName.c_str()));
+
+			fclose(fp);
+			FileSystem::Instance()->DeleteFile(outputPath + fileName);
+			return false;
 		}
 	}
 	
@@ -595,7 +605,7 @@ void TexturePacker::UseOnlySquareTextures()
 	onlySquareTextures = true;
 }
 
-void TexturePacker::SetMaxTextureSize(int32 _maxTextureSize)
+void TexturePacker::SetMaxTextureSize(uint32 _maxTextureSize)
 {
 	maxTextureSize = _maxTextureSize;
 }

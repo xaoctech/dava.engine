@@ -121,18 +121,6 @@ public:
 		STATE_VALID
 	};
 	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	static const int MAX_WIDTH = 1024;
-	static const int MIN_WIDTH = 8;
-	static const int MAX_HEIGHT = 1024;
-	static const int MIN_HEIGHT = 8;
-#else //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	static const int MAX_WIDTH = 4096;
-	static const int MIN_WIDTH = 8;
-	static const int MAX_HEIGHT = 4096;
-	static const int MIN_HEIGHT = 8;
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-
 	// Main constructors
 	
     static void InitializePixelFormatDescriptors();
@@ -327,10 +315,12 @@ protected:
 		uint32 fboID;
 		uint32 rboID;
 #if defined(__DAVAENGINE_ANDROID__)
-        uint32		stencil_rboID;
+        uint32 stencilRboID;
 #endif
 	};
 
+
+    int32 GetBaseMipMap() const;
 
 public:							// properties for fast access
 
@@ -339,7 +329,7 @@ public:							// properties for fast access
 	uint32		fboID;			// id of frame buffer object
 	uint32		rboID;
 #if defined(__DAVAENGINE_ANDROID__)
-    uint32		stencil_rboID;
+    uint32		stencilRboID;
 #endif
 #endif //#if defined(__DAVAENGINE_OPENGL__)
 	
@@ -349,7 +339,7 @@ public:							// properties for fast access
     eGPUFamily loadedAsFile:3;
 	TextureState state:2;
 	uint32		textureType:2;
-	DepthFormat depthFormat:1;
+	DepthFormat depthFormat:2;
 	bool		isRenderTarget:1;
 	bool		isPink:1;
 

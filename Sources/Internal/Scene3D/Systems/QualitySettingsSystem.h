@@ -61,25 +61,35 @@ public:
     void Load(const FilePath &path);
 
     // textures quality
-    size_t GetTxQualityCount() const;
-    FastName GetTxQualityName(size_t index) const;
+    size_t GetTextureQualityCount() const;
+    FastName GetTextureQualityName(size_t index) const;
 
-    FastName GetCurTxQuality() const;
-    void SetCurTxQuality(const FastName &name);
+    FastName GetCurTextureQuality() const;
+    void SetCurTextureQuality(const FastName &name);
 
     const TextureQuality* GetTxQuality(const FastName &name) const;
 
     // materials quality
-    size_t GetMaQualityGroupCount() const;
-    FastName GetMaQualityGroupName(size_t index) const;
+    size_t GetMaterialQualityGroupCount() const;
+    FastName GetMaterialQualityGroupName(size_t index) const;
     
-    size_t GetMaQualityCount(const FastName &group) const;
-    FastName GetMaQualityName(const FastName &group, size_t index) const;
+    size_t GetMaterialQualityCount(const FastName &group) const;
+    FastName GetMaterialQualityName(const FastName &group, size_t index) const;
 
-    FastName GetCurMaQuality(const FastName &group) const;
-    void SetCurMaQuality(const FastName &group, const FastName &quality);
+    FastName GetCurMaterialQuality(const FastName &group) const;
+    void SetCurMaterialQuality(const FastName &group, const FastName &quality);
 
-    const MaterialQuality* GetMaQuality(const FastName &group, const FastName &quality) const;
+    const MaterialQuality* GetMaterialQuality(const FastName &group, const FastName &quality) const;
+
+    // sound quality
+    size_t GetSFXQualityCount() const;
+    FastName GetSFXQualityName(size_t index) const;
+
+    FastName GetCurSFXQuality() const;
+    void SetCurSFXQuality(const FastName &name);
+
+    FilePath GetSFXQualityConfigPath(const FastName &name) const;
+    FilePath GetSFXQualityConfigPath(size_t index) const;
 
     // ------------------------------------------
 
@@ -95,7 +105,6 @@ protected:
 
 	void RemoveModelsByType(const Vector<Entity *> & models);
 
-
 protected:
     struct TXQ
     {
@@ -109,12 +118,22 @@ protected:
         Vector<MaterialQuality> qualities;
     };
 
+    struct SFXQ
+    {
+        FastName name;
+        FilePath configPath;
+    };
+
     // textures
-    int curTextureQuality;
+    int32 curTextureQuality;
     Vector<TXQ> textureQualities;
 
     // materials
     FastNameMap<MAGrQ> materialGroups;
+
+    //sounds
+    int32 curSoundQuality;
+    Vector<SFXQ> soundQualities;
 
 	FastNameMap<bool> qualityOptions;
 };

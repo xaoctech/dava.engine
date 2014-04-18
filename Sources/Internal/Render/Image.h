@@ -52,19 +52,6 @@ public:
 
 class Image : public BaseObject
 {
-public:
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	static const int MAX_WIDTH = 1024;
-	static const int MIN_WIDTH = 8;
-	static const int MAX_HEIGHT = 1024;
-	static const int MIN_HEIGHT = 8;
-#else //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-	static const int MAX_WIDTH = 4096;
-	static const int MIN_WIDTH = 8;
-	static const int MAX_HEIGHT = 4096;
-	static const int MIN_HEIGHT = 8;
-#endif //#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
-    
 protected:
 	virtual ~Image();
 public:
@@ -83,7 +70,12 @@ public:
 	inline uint8 * GetData() const;
 	inline PixelFormat GetPixelFormat() const;
 
-    
+#ifdef __DAVAENGINE_IPHONE__
+    void *GetUIImage();
+#endif
+
+    bool Save(const FilePath &path) const;
+
 #ifdef __DAVAENGINE_IPHONE__
     void SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback = 0);
 #endif
