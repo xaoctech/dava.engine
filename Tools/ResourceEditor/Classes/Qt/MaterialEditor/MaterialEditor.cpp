@@ -991,8 +991,6 @@ void MaterialEditor::OnMaterialSave(bool checked)
 
             material->Save(materialArchive, &materialContext);
             materialArchive->Save(outputFile.toAscii().data());
-
-            materialArchive->Dump();
             materialArchive->Release();
         }
     }
@@ -1058,9 +1056,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
                 {
                     curMaterials[i]->Load(materialArchive, &materialContext);
                 }
-
-                materialArchive->Dump();
-            }        }
+            }            materialArchive->Release();        }
     }
 
     SetCurMaterial(curMaterials);
