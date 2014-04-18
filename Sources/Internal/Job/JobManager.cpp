@@ -39,7 +39,7 @@ namespace DAVA
 
 JobManager::JobManager()
 {
-	mainQueue = new JobQueue();
+	mainQueue = new MainThreadJobQueue();
 }
 
 JobManager::~JobManager()
@@ -71,12 +71,6 @@ ScopedPtr<Job> JobManager::CreateJob(eThreadType threadType, const Message & mes
 		}
 		else
 		{
-            BaseObject * bo = job->GetMessage().GetTargetObject();
-            if(bo)
-            {
-                bo->Retain();
-            }
-
 			job->SetPerformedOn(Job::PERFORMED_ON_MAIN_THREAD);
 			OnJobCreated(job);
 			mainQueue->AddJob(job);
