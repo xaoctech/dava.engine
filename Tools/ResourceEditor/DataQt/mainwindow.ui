@@ -329,6 +329,9 @@
     <addaction name="actionModifyRotate"/>
     <addaction name="actionModifyScale"/>
     <addaction name="separator"/>
+    <addaction name="actionLockTransform"/>
+    <addaction name="actionUnlockTransform"/>
+    <addaction name="separator"/>
     <addaction name="actionZeroPivotPoint"/>
     <addaction name="actionCenterPivotPoint"/>
     <addaction name="separator"/>
@@ -1867,6 +1870,24 @@
    </property>
    <property name="text">
     <string>Zero Pivot Point</string>
+   </property>
+  </action>
+  <action name="actionLockTransform">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/lock_add.png</normaloff>:/QtIcons/lock_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Lock Transform</string>
+   </property>
+  </action>
+  <action name="actionUnlockTransform">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/lock_delete.png</normaloff>:/QtIcons/lock_delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Unlock Transform</string>
    </property>
   </action>
  </widget>
