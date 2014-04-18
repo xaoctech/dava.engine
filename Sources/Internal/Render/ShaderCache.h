@@ -61,14 +61,16 @@ public:
     
     ~ShaderAsset();
     
-    Shader * Compile(const FastNameSet & defines);
     void Remove(const FastNameSet & defines);
     Shader * Get(const FastNameSet & defines);
     void BindShaderDefaults(Shader * shader);
     const DefaultValue & GetDefaultValue(const FastName & name) { return defaultValues[name]; };
 	
 private:
-    void SetShaderData(Data * _vertexShaderData, Data * _fragmentShaderData);
+
+	Shader * Compile(const FastNameSet & defines);
+
+	void SetShaderData(Data * _vertexShaderData, Data * _fragmentShaderData);
     void ReloadShaders();
 	
 	struct CompiledShaderData
@@ -90,6 +92,8 @@ protected:
     uint32 vertexShaderDataSize;
     uint8 * fragmentShaderDataStart;
     uint32 fragmentShaderDataSize;
+
+	Mutex compileShaderMutex;
     
     void BindDefaultValues();
 
