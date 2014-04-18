@@ -348,6 +348,15 @@ enum eAlign
 #pragma message("WARNING: You need to implement DAVA_DEPRECATED for this compiler")
 #define DAVA_DEPRECATED(func) func
 #endif
+    
+enum eErrorCode
+{
+    SUCCESS,
+    ERROR_FILE_FORMAT_INCORRECT,
+    ERROR_FILE_NOT_FOUND,
+    ERROR_READ_FAIL,
+    ERROR_WRITE_FAIL
+};
 
 };
 

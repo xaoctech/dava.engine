@@ -28,35 +28,30 @@
 
 
 
-#ifndef __DAVAENGINE_JPEG_HELPER_H__
-#define __DAVAENGINE_JPEG_HELPER_H__
+#ifndef __DAVAENGINE_IMAGE_FORMAT_INTERFACE_H__
+#define __DAVAENGINE_IMAGE_FORMAT_INTERFACE_H__
 
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFormatInterface.h"
 
 namespace DAVA 
 {
 
-class LibJpegWrapper: public ImageFormatInterface
+class Image;
+class File;
+
+class ImageFormatInterface
 {
 public:
     
-    virtual bool IsImage(File *file);
+    virtual bool IsImage(File *file) = 0;
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
-    {
-        return SUCCESS;
-    }
-
-    //only RGB888 or A8
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) = 0;
+    
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet) = 0;
 };
 
 };
 
-#endif // __DAVAENGINE_JPEG_HELPER_H__
+#endif // __DAVAENGINE_IMAGE_FORMAT_INTERFACE_H__

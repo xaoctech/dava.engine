@@ -131,7 +131,7 @@
 
 #include "Render/Cursor.h"
 
-#include "Render/LibDxtHelper.h"
+#include "Render/LibDdsHelper.h"
 
 #include "Render/MipmapReplacer.h"
 

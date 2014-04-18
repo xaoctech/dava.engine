@@ -207,7 +207,6 @@
 		176DE994174B5561007A983B /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6916BD24E400732C04 /* ImageConvert.h */; };
 		176DE995174B5561007A983B /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6B16BD24E400732C04 /* ImageLoader.h */; };
 		176DE996174B5561007A983B /* IndexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6C16BD24E400732C04 /* IndexBuffer.h */; };
-		176DE997174B5561007A983B /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6E16BD24E400732C04 /* LibDxtHelper.h */; };
 		176DE998174B5561007A983B /* LibPngHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7016BD24E400732C04 /* LibPngHelpers.h */; };
 		176DE999174B5561007A983B /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7216BD24E400732C04 /* LibPVRHelper.h */; };
 		176DE99A174B5561007A983B /* MaterialCompiler.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7516BD24E400732C04 /* MaterialCompiler.h */; };
@@ -485,7 +484,6 @@
 		176DEAB5174B5561007A983B /* TextureMulColorEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C3D16BD24E400732C04 /* TextureMulColorEffect.cpp */; };
 		176DEAB6174B5561007A983B /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6616BD24E400732C04 /* Image.cpp */; };
 		176DEAB7174B5561007A983B /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6A16BD24E400732C04 /* ImageLoader.cpp */; };
-		176DEAB8174B5561007A983B /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */; };
 		176DEAB9174B5561007A983B /* LibPngHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */; };
 		176DEABA174B5561007A983B /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */; };
 		176DEABB174B5561007A983B /* MaterialCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7416BD24E400732C04 /* MaterialCompiler.cpp */; };
@@ -779,8 +777,13 @@
 		620638B618EE9F5100C85F25 /* libjpeg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 627AFA6C18E964E300F2A52A /* libjpeg_macos.a */; };
 		6246724918EEA48C00046586 /* LibJpegHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C1212E18E961AE0008D201 /* LibJpegHelper.cpp */; };
 		6246724A18EEA50E00046586 /* libjpeg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 627AFA6C18E964E300F2A52A /* libjpeg_macos.a */; };
+		62BF6FDA18F7E84400246220 /* ImageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62BF6FD818F7E84400246220 /* ImageSystem.cpp */; };
+		62BF6FDB18F7E84400246220 /* ImageSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BF6FD918F7E84400246220 /* ImageSystem.h */; };
 		62C1213018E961AE0008D201 /* LibJpegHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C1212E18E961AE0008D201 /* LibJpegHelper.cpp */; };
 		62C1213118E961AE0008D201 /* LibJpegHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 62C1212F18E961AE0008D201 /* LibJpegHelper.h */; };
+		62C8E2B2190178BB00AD1D9C /* LibDdsHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C8E2B0190178BB00AD1D9C /* LibDdsHelper.cpp */; };
+		62C8E2B3190178BB00AD1D9C /* LibDdsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 62C8E2B1190178BB00AD1D9C /* LibDdsHelper.h */; };
+		62D44B791901597A007B5C59 /* ImageFormatInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 62D44B781901597A007B5C59 /* ImageFormatInterface.h */; };
 		7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
 		7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
@@ -829,7 +832,6 @@
 		846CFE60174D1A64004ECE3C /* OpenUDIDApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */; };
 		846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */; };
 		846CFE64174D1A75004ECE3C /* OpenUDIDMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */; };
-		849E8EBB18F4616F009C12B2 /* ImageFileWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 849E8EB918F4616F009C12B2 /* ImageFileWrapper.h */; };
 		9A0114637D598239F4C36EA3 /* GamepadDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A01179DABA55A139AC4C1DF /* GamepadDevice.h */; };
 		9A0114DFC94738EDBF7B7A79 /* GamepadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A01174F88AF59687E8EA7B1 /* GamepadManager.h */; };
 		9A01188C3CE745EA32A7DD33 /* GamepadDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A011951C57E3EEDBCB3EF43 /* GamepadDevice.cpp */; };
@@ -1355,8 +1357,6 @@
 		E8989F2916BD24E500732C04 /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6A16BD24E400732C04 /* ImageLoader.cpp */; };
 		E8989F2A16BD24E500732C04 /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6B16BD24E400732C04 /* ImageLoader.h */; };
 		E8989F2B16BD24E500732C04 /* IndexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6C16BD24E400732C04 /* IndexBuffer.h */; };
-		E8989F2C16BD24E500732C04 /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */; };
-		E8989F2D16BD24E500732C04 /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6E16BD24E400732C04 /* LibDxtHelper.h */; };
 		E8989F2E16BD24E500732C04 /* LibPngHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */; };
 		E8989F2F16BD24E500732C04 /* LibPngHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7016BD24E400732C04 /* LibPngHelpers.h */; };
 		E8989F3016BD24E500732C04 /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */; };
@@ -1740,7 +1740,6 @@
 		E898A10A16BD265400732C04 /* ImageConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6916BD24E400732C04 /* ImageConvert.h */; };
 		E898A10B16BD265400732C04 /* ImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6B16BD24E400732C04 /* ImageLoader.h */; };
 		E898A10C16BD265400732C04 /* IndexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6C16BD24E400732C04 /* IndexBuffer.h */; };
-		E898A10D16BD265400732C04 /* LibDxtHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C6E16BD24E400732C04 /* LibDxtHelper.h */; };
 		E898A10E16BD265400732C04 /* LibPngHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7016BD24E400732C04 /* LibPngHelpers.h */; };
 		E898A10F16BD265400732C04 /* LibPVRHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7216BD24E400732C04 /* LibPVRHelper.h */; };
 		E898A11016BD265400732C04 /* MaterialCompiler.h in Headers */ = {isa = PBXBuildFile; fileRef = E8989C7516BD24E400732C04 /* MaterialCompiler.h */; };
@@ -1971,7 +1970,6 @@
 		E898A21516BD265400732C04 /* TextureMulColorEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C3D16BD24E400732C04 /* TextureMulColorEffect.cpp */; };
 		E898A22816BD265400732C04 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6616BD24E400732C04 /* Image.cpp */; };
 		E898A22916BD265400732C04 /* ImageLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6A16BD24E400732C04 /* ImageLoader.cpp */; };
-		E898A22A16BD265400732C04 /* LibDxtHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */; };
 		E898A22B16BD265400732C04 /* LibPngHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */; };
 		E898A22C16BD265400732C04 /* LibPVRHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */; };
 		E898A22D16BD265400732C04 /* MaterialCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8989C7416BD24E400732C04 /* MaterialCompiler.cpp */; };
@@ -2319,8 +2317,13 @@
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		627AFA6C18E964E300F2A52A /* libjpeg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg_macos.a; path = ../../Libs/libs/libjpeg_macos.a; sourceTree = "<group>"; };
+		62BF6FD818F7E84400246220 /* ImageSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSystem.cpp; sourceTree = "<group>"; };
+		62BF6FD918F7E84400246220 /* ImageSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSystem.h; sourceTree = "<group>"; };
 		62C1212E18E961AE0008D201 /* LibJpegHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibJpegHelper.cpp; sourceTree = "<group>"; };
 		62C1212F18E961AE0008D201 /* LibJpegHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibJpegHelper.h; sourceTree = "<group>"; };
+		62C8E2B0190178BB00AD1D9C /* LibDdsHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDdsHelper.cpp; sourceTree = "<group>"; };
+		62C8E2B1190178BB00AD1D9C /* LibDdsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDdsHelper.h; sourceTree = "<group>"; };
+		62D44B781901597A007B5C59 /* ImageFormatInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFormatInterface.h; sourceTree = "<group>"; };
 		748A99711726C5ED00C6411B /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
 		748A99721726C5EE00C6411B /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
 		74A909A91701FA51003FDB31 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
@@ -2339,7 +2342,6 @@
 		846CFE5E174D1A64004ECE3C /* OpenUDIDApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDApple.mm; sourceTree = "<group>"; };
 		846CFE61174D1A75004ECE3C /* OpenUDIDMacOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDMacOS.h; sourceTree = "<group>"; };
 		846CFE62174D1A75004ECE3C /* OpenUDIDMacOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenUDIDMacOS.mm; sourceTree = "<group>"; };
-		849E8EB918F4616F009C12B2 /* ImageFileWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFileWrapper.h; sourceTree = "<group>"; };
 		9A0114540185567784808C54 /* GamepadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GamepadManager.cpp; sourceTree = "<group>"; };
 		9A01174F88AF59687E8EA7B1 /* GamepadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadManager.h; sourceTree = "<group>"; };
 		9A01179DABA55A139AC4C1DF /* GamepadDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GamepadDevice.h; sourceTree = "<group>"; };
@@ -2735,8 +2737,6 @@
 		E8989C6A16BD24E400732C04 /* ImageLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageLoader.cpp; sourceTree = "<group>"; };
 		E8989C6B16BD24E400732C04 /* ImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageLoader.h; sourceTree = "<group>"; };
 		E8989C6C16BD24E400732C04 /* IndexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndexBuffer.h; sourceTree = "<group>"; };
-		E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibDxtHelper.cpp; sourceTree = "<group>"; };
-		E8989C6E16BD24E400732C04 /* LibDxtHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibDxtHelper.h; sourceTree = "<group>"; };
 		E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPngHelpers.cpp; sourceTree = "<group>"; };
 		E8989C7016BD24E400732C04 /* LibPngHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibPngHelpers.h; sourceTree = "<group>"; };
 		E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibPVRHelper.cpp; sourceTree = "<group>"; };
@@ -3639,7 +3639,11 @@
 		E8989C1516BD24E400732C04 /* Render */ = {
 			isa = PBXGroup;
 			children = (
-				849E8EB918F4616F009C12B2 /* ImageFileWrapper.h */,
+				62C8E2B0190178BB00AD1D9C /* LibDdsHelper.cpp */,
+				62C8E2B1190178BB00AD1D9C /* LibDdsHelper.h */,
+				62D44B781901597A007B5C59 /* ImageFormatInterface.h */,
+				62BF6FD818F7E84400246220 /* ImageSystem.cpp */,
+				62BF6FD918F7E84400246220 /* ImageSystem.h */,
 				62C1212E18E961AE0008D201 /* LibJpegHelper.cpp */,
 				62C1212F18E961AE0008D201 /* LibJpegHelper.h */,
 				A670F2EF1847A99E0030E075 /* TextureStateData.h */,
@@ -3666,8 +3670,6 @@
 				E8989C6916BD24E400732C04 /* ImageConvert.h */,
 				E8989C6A16BD24E400732C04 /* ImageLoader.cpp */,
 				E8989C6B16BD24E400732C04 /* ImageLoader.h */,
-				E8989C6D16BD24E400732C04 /* LibDxtHelper.cpp */,
-				E8989C6E16BD24E400732C04 /* LibDxtHelper.h */,
 				E8989C6F16BD24E400732C04 /* LibPngHelpers.cpp */,
 				E8989C7016BD24E400732C04 /* LibPngHelpers.h */,
 				E8989C7116BD24E400732C04 /* LibPVRHelper.cpp */,
@@ -4378,7 +4380,6 @@
 				A6DBFA741887D804006BE11C /* NMaterialNames.h in Headers */,
 				0214140C181984D600925E51 /* DAVAClassRegistrator.h in Headers */,
 				A6931AD21868569D00006294 /* RenderTechnique.h in Headers */,
-				176DE997174B5561007A983B /* LibDxtHelper.h in Headers */,
 				505EB4131824CEC5009BEA3C /* OcclusionQuery.h in Headers */,
 				176DE998174B5561007A983B /* LibPngHelpers.h in Headers */,
 				176DE999174B5561007A983B /* LibPVRHelper.h in Headers */,
@@ -4743,7 +4744,6 @@
 				E8989EED16BD24E500732C04 /* StaticMesh.h in Headers */,
 				E8989EEE16BD24E500732C04 /* Cursor.h in Headers */,
 				E8989EF816BD24E500732C04 /* ColorOnlyEffect.h in Headers */,
-				849E8EBB18F4616F009C12B2 /* ImageFileWrapper.h in Headers */,
 				E8989EFA16BD24E500732C04 /* MultiTextureEffect.h in Headers */,
 				E8989EFC16BD24E500732C04 /* TextureMulColorAlphaTestEffect.h in Headers */,
 				E8989EFE16BD24E500732C04 /* TextureMulColorEffect.h in Headers */,
@@ -4751,7 +4751,6 @@
 				E8989F2816BD24E500732C04 /* ImageConvert.h in Headers */,
 				E8989F2A16BD24E500732C04 /* ImageLoader.h in Headers */,
 				E8989F2B16BD24E500732C04 /* IndexBuffer.h in Headers */,
-				E8989F2D16BD24E500732C04 /* LibDxtHelper.h in Headers */,
 				E8989F2F16BD24E500732C04 /* LibPngHelpers.h in Headers */,
 				E8989F3116BD24E500732C04 /* LibPVRHelper.h in Headers */,
 				E8989F3316BD24E500732C04 /* MaterialCompiler.h in Headers */,
@@ -4838,6 +4837,7 @@
 				E8989FDB16BD24E500732C04 /* EventSystem.h in Headers */,
 				E8989FDD16BD24E500732C04 /* LightUpdateSystem.h in Headers */,
 				E8989FDF16BD24E500732C04 /* LodSystem.h in Headers */,
+				62D44B791901597A007B5C59 /* ImageFormatInterface.h in Headers */,
 				E8989FE116BD24E500732C04 /* ParticleEffectSystem.h in Headers */,
 				E8989FE516BD24E500732C04 /* RenderUpdateSystem.h in Headers */,
 				E8989FE716BD24E500732C04 /* SwitchSystem.h in Headers */,
@@ -4903,6 +4903,7 @@
 				E9E798AB16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42716F1D6170061EA5D /* Camera.h in Headers */,
 				CCC7A42B16F1D6170061EA5D /* CullingSystem.h in Headers */,
+				62C8E2B3190178BB00AD1D9C /* LibDdsHelper.h in Headers */,
 				CCC7A42F16F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43316F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43516F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
@@ -4913,6 +4914,7 @@
 				CCC7A44916F1D6170061EA5D /* Mesh.h in Headers */,
 				CCC7A45116F1D6170061EA5D /* RenderBatch.h in Headers */,
 				A6931AD01868569D00006294 /* RenderTechnique.h in Headers */,
+				62BF6FDB18F7E84400246220 /* ImageSystem.h in Headers */,
 				CCC7A45316F1D6170061EA5D /* RenderDataSource.h in Headers */,
 				CCC7A45516F1D6170061EA5D /* RenderFastNames.h in Headers */,
 				CCC7A45916F1D6170061EA5D /* RenderLayer.h in Headers */,
@@ -5146,7 +5148,6 @@
 				E898A10A16BD265400732C04 /* ImageConvert.h in Headers */,
 				E898A10B16BD265400732C04 /* ImageLoader.h in Headers */,
 				E898A10C16BD265400732C04 /* IndexBuffer.h in Headers */,
-				E898A10D16BD265400732C04 /* LibDxtHelper.h in Headers */,
 				E898A10E16BD265400732C04 /* LibPngHelpers.h in Headers */,
 				E898A10F16BD265400732C04 /* LibPVRHelper.h in Headers */,
 				E89C58E518B2458E002C25FE /* Atomic.h in Headers */,
@@ -5577,7 +5578,6 @@
 				176DEAB5174B5561007A983B /* TextureMulColorEffect.cpp in Sources */,
 				176DEAB6174B5561007A983B /* Image.cpp in Sources */,
 				176DEAB7174B5561007A983B /* ImageLoader.cpp in Sources */,
-				176DEAB8174B5561007A983B /* LibDxtHelper.cpp in Sources */,
 				176DEAB9174B5561007A983B /* LibPngHelpers.cpp in Sources */,
 				176DEABA174B5561007A983B /* LibPVRHelper.cpp in Sources */,
 				176DEABB174B5561007A983B /* MaterialCompiler.cpp in Sources */,
@@ -5912,7 +5912,6 @@
 				E8989EFD16BD24E500732C04 /* TextureMulColorEffect.cpp in Sources */,
 				E8989F2516BD24E500732C04 /* Image.cpp in Sources */,
 				E8989F2916BD24E500732C04 /* ImageLoader.cpp in Sources */,
-				E8989F2C16BD24E500732C04 /* LibDxtHelper.cpp in Sources */,
 				E8989F2E16BD24E500732C04 /* LibPngHelpers.cpp in Sources */,
 				E8989F3016BD24E500732C04 /* LibPVRHelper.cpp in Sources */,
 				E8989F3216BD24E500732C04 /* MaterialCompiler.cpp in Sources */,
@@ -5951,6 +5950,7 @@
 				E8989F7C16BD24E500732C04 /* BillboardNode.cpp in Sources */,
 				E8989F7E16BD24E500732C04 /* BoneNode.cpp in Sources */,
 				E8989F8416BD24E500732C04 /* BulletComponent.cpp in Sources */,
+				62C8E2B2190178BB00AD1D9C /* LibDdsHelper.cpp in Sources */,
 				E8989F8616BD24E500732C04 /* CameraComponent.cpp in Sources */,
 				E8989F8816BD24E500732C04 /* DebugRenderComponent.cpp in Sources */,
 				E8989F8A16BD24E500732C04 /* LightComponent.cpp in Sources */,
@@ -6062,6 +6062,7 @@
 				CC24800816DD174E00183D40 /* UserComponent.cpp in Sources */,
 				E9EA496C16DF93FA00C44B6F /* UISpinner.cpp in Sources */,
 				02141407181984D600925E51 /* DAVAClassRegistrator.cpp in Sources */,
+				62BF6FDA18F7E84400246220 /* ImageSystem.cpp in Sources */,
 				E8B4F8CF16EF377D0072442A /* UTF8UtilsMac.mm in Sources */,
 				E9E798A916F0BE7600745AF5 /* UISwitch.cpp in Sources */,
 				CCC7A42516F1D6170061EA5D /* Camera.cpp in Sources */,
@@ -6268,7 +6269,6 @@
 				E898A21516BD265400732C04 /* TextureMulColorEffect.cpp in Sources */,
 				E898A22816BD265400732C04 /* Image.cpp in Sources */,
 				E898A22916BD265400732C04 /* ImageLoader.cpp in Sources */,
-				E898A22A16BD265400732C04 /* LibDxtHelper.cpp in Sources */,
 				E898A22B16BD265400732C04 /* LibPngHelpers.cpp in Sources */,
 				7A16933B180EE618005F1FBC /* KeyedArchiveSwig.cpp in Sources */,
 				E898A22C16BD265400732C04 /* LibPVRHelper.cpp in Sources */,

@@ -34,7 +34,7 @@
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFileWrapper.h"
+#include "Render/ImageFormatInterface.h"
 
 namespace DAVA 
 {
@@ -42,24 +42,21 @@ namespace DAVA
 class Image;
 class File;
 
-class LibDxtHelper: public ImageFileWapper
+class LibDdsHelper: public ImageFormatInterface
 {
 public:
     
     virtual bool IsImage(File *file);
     
-    virtual bool IsImage(const FilePath & fileName);
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
+    {
+        return SUCCESS;
+    }
     
-	virtual bool ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
-    virtual bool ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-       
-    virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false);
-    
-
-    
-	static bool IsDxtFile(const FilePath & fileName);
-	static bool IsDxtFile(File * file);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
+    {
+        return SUCCESS;
+    }
 
 	//input data only in RGBA8888
 	static bool WriteDdsFile(const FilePath & fileName, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps);

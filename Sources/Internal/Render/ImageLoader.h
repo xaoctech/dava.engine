@@ -36,7 +36,7 @@
 #include "Render/LibPngHelpers.h"
 #include "Render/LibJpegHelper.h"
 #include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/LibDdsHelper.h"
 
 namespace DAVA 
 {
@@ -86,15 +86,15 @@ public:
         FILE_FORMAT_JPEG
     };	
 
-    static ImageFileWapper* GetImageFileWrapper(eSupportedImageFileFormats);
+    static ImageFormatInterface* GetImageFileWrapper(eSupportedImageFileFormats);
     
-    static ImageFileWapper* GetImageFileWrapper(const FilePath&);
+    static ImageFormatInterface* GetImageFileWrapper(const FilePath&);
     
 private:
     
     static LibPngWrapper  pngHelper;
     
-    static LibDxtHelper   dxtHelper;
+    static LibDdsHelper   dxtHelper;
     
     static LibPVRHelper   pvrHelper;
     
