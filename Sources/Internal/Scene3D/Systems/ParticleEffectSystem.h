@@ -53,6 +53,7 @@ public:
 	virtual void RemoveEntity(Entity * entity);	
 	virtual void RemoveComponent(Entity * entity, Component * component);
 
+    void SetGlobalMaterial(NMaterial *material);
 	void SetGlobalExtertnalValue(const String& name, float32 value);
 	float32 GetGlobalExternalValue(const String& name);
 	Map<String, float32> GetGlobalExternals();
@@ -68,7 +69,7 @@ protected:
 	void PrepareEmitterParameters(Particle * particle, ParticleGroup &group, const Matrix4 &worldTransform);
 	void AddParticleToBBox(const Vector3& position, float radius, AABBox3& bbox);
 
-	void RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, int32 positionSource = 0);
+	void RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, const Vector3& spawnPosition, int32 positionSource = 0);
 	
 
 private:
