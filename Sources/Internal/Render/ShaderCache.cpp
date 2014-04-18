@@ -88,6 +88,15 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
     Shader * checkShader = compiledShaders.at(defines);
     if (checkShader)return checkShader;
     
+	compileShaderMutex.Lock();
+
+	Shader * shaderCreatedWhileMutexWasLocked = compiledShaders.at(defines);
+	if (shaderCreatedWhileMutexWasLocked)
+	{
+		compileShaderMutex.Unlock();
+		return shaderCreatedWhileMutexWasLocked;
+	}
+
     Shader * shader = Shader::CompileShader(name,
                                             vertexShaderData,
                                             fragmentShaderData,
@@ -105,6 +114,8 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
 														   Message(this, &ShaderAsset::CompileShaderInternal, shaderData));
 	JobInstanceWaiter waiter(job);
 	waiter.Wait();
+
+	compileShaderMutex.Unlock();
 
     return shader;
 }
@@ -455,16 +466,13 @@ void ShaderCache::ParseShader(ShaderAsset * asset)
 
 ShaderAsset * ShaderCache::Load(const FastName & shaderFastName)
 {
-	shaderAssetMapMutex.Lock();
-    ShaderAsset * checkAsset = shaderAssetMap.at(shaderFastName);
-	shaderAssetMapMutex.Unlock();
-    DVASSERT(checkAsset == 0);
-
-
     ShaderAsset * asset = new ShaderAsset(shaderFastName, NULL, NULL);
     LoadAsset(asset);
 
 	shaderAssetMapMutex.Lock();
+	ShaderAsset * checkAsset = shaderAssetMap.at(shaderFastName);
+	DVASSERT(checkAsset == 0);
+	
 	shaderAssetMap.Insert(shaderFastName, asset);
 	shaderAssetMapMutex.Unlock();
 
