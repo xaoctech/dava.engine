@@ -119,6 +119,8 @@ public slots:
 	void OnPlaceOnLandscape();
 	void OnSnapToLandscape();
 	void OnResetTransform();
+    void OnLockTransform();
+    void OnUnlockTransform();
 
     void OnCenterPivotPoint();
     void OnZeroPivotPoint();
@@ -236,6 +238,7 @@ protected slots:
 	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
 	void UnmodalDialogFinished(int);
+
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
@@ -256,6 +259,7 @@ private:
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
 	void UpdateConflictingActionsState(bool enable);
+    void UpdateModificationActionsState();
 
 	void LoadViewState(SceneEditor2 *scene);
 	void LoadUndoRedoState(SceneEditor2 *scene);
