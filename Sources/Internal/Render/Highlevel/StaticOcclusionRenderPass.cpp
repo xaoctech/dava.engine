@@ -63,9 +63,17 @@ bool StaticOcclusionRenderPass::CompareFunction(const RenderBatch * a, const Ren
     return a->layerSortingKey < b->layerSortingKey;
 }
     
-void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
+void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
 {
-    PrepareVisibilityArrays(camera, renderSystem);
+    Camera *drawCamera = renderSystem->GetCamera();   
+    Camera *clipCamera = renderSystem->GetClipCamera();        
+    DVASSERT(drawCamera);
+    DVASSERT(clipCamera);
+    drawCamera->SetupDynamicParameters();            
+    if (clipCamera!=drawCamera)    
+        clipCamera->PrepareDynamicParameters();
+
+    PrepareVisibilityArrays(clipCamera, renderSystem);
 	
     Vector<RenderBatch*> terrainBatches;
     Vector<RenderBatch*> batches;
@@ -103,14 +111,14 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
         RenderBatch * batch = terrainBatches[k];
         
         query.BeginQuery();
-        batch->Draw(name, camera);
+        batch->Draw(name, clipCamera);
         query.EndQuery();
         
         occlusion->RecordFrameQuery(batch, handle);
     }
     
     
-    Vector3 cameraPosition = camera->GetPosition();
+    Vector3 cameraPosition = clipCamera->GetPosition();
 
     size = (uint32)batches.size();
     for (uint32 k = 0; k < size; ++k)
@@ -135,7 +143,7 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
         RenderBatch * batch = batches[k];
         
         query.BeginQuery();
-        batch->Draw(name, camera);
+        batch->Draw(name, clipCamera);
         query.EndQuery();
         
         occlusion->RecordFrameQuery(batch, handle);

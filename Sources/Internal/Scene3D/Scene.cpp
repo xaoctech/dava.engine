@@ -791,12 +791,7 @@ void Scene::Draw()
     //RenderManager::Instance()->SetCullMode(FACE_BACK);
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->ClearDepthBuffer();
-    
-    if (currentCamera)
-    {
-        currentCamera->SetupDynamicParameters();
-    }
+	RenderManager::Instance()->ClearDepthBuffer();       
     
     
     renderSystem->Render();

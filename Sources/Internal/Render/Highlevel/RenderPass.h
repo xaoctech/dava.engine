@@ -54,7 +54,7 @@ public:
 	void AddRenderLayer(RenderLayer * layer, const FastName & afterLayer);
 	void RemoveRenderLayer(RenderLayer * layer);
 
-    virtual void Draw(Camera * camera, RenderSystem * renderSystem);
+    virtual void Draw(RenderSystem * renderSystem);
     
     inline uint32 GetRenderLayerCount() const;
     inline RenderLayer * GetRenderLayer(uint32 index) const;
@@ -109,21 +109,22 @@ public:
     WaterPrePass(const FastName & name, RenderPassID id);
     ~WaterPrePass();
 protected:
-    Camera *passCamera;
+    Camera *passDrawCamera, *passClipCamera;
     float32 waterLevel;
 };
 class WaterReflectionRenderPass  : public WaterPrePass
 {    
+    void UpdateCamera(Camera *camera);
 public:    
     WaterReflectionRenderPass(const FastName & name, RenderPassID id);
-	virtual void Draw(Camera * camera, RenderSystem * renderSystem);	
+	virtual void Draw(RenderSystem * renderSystem);	
 };
 
 class WaterRefractionRenderPass  : public WaterPrePass
-{    
+{       
 public:
     WaterRefractionRenderPass(const FastName & name, RenderPassID id);
-    virtual void Draw(Camera * camera, RenderSystem * renderSystem);
+    virtual void Draw(RenderSystem * renderSystem);
 
 };
 
@@ -136,7 +137,7 @@ class MainForwardRenderPass : public RenderPass
 public:
     MainForwardRenderPass(const FastName & name, RenderPassID id);
 	~MainForwardRenderPass();
-	virtual void Draw(Camera * camera, RenderSystem * renderSystem);
+	virtual void Draw(RenderSystem * renderSystem);
 };
 
 } // ns
