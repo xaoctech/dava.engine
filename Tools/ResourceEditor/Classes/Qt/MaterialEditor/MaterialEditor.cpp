@@ -987,7 +987,7 @@ void MaterialEditor::OnMaterialSave(bool checked)
             DAVA::SerializationContext materialContext;
 
             materialContext.SetScene(curScene);
-            materialContext.SetScenePath(curScene->GetScenePath().GetDirectory());
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
             material->Save(materialArchive, &materialContext);
             materialArchive->Save(outputFile.toAscii().data());
@@ -1014,7 +1014,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
 
             DAVA::SerializationContext materialContext;
             materialContext.SetScene(curScene);
-            materialContext.SetScenePath(curScene->GetScenePath().GetDirectory());
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
             DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState);
             if(0 != userChoiseWhatToLoad)
