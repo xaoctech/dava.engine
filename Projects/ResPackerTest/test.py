@@ -197,7 +197,7 @@ if tests_results["success"] != tests_results['tests']:
 	if (branch != 0):
 		msg += "<br>Framewok: %s %s" % (branch, revision)
 	
-	#utils.call("python", "mail.py", recipients, subject, msg)
+	utils.call("python", "mail.py", recipients, subject, msg)
 	print
 	print
 	
