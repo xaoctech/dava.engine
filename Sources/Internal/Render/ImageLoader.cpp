@@ -38,11 +38,6 @@
 
 namespace DAVA 
 {
-
-LibPngWrapper   ImageFileWrapperFactory::pngHelper = LibPngWrapper();
-LibDxtHelper    ImageFileWrapperFactory::dxtHelper = LibDxtHelper();
-LibPVRHelper    ImageFileWrapperFactory::pvrHelper = LibPVRHelper();
-LibJpegWrapper  ImageFileWrapperFactory::jpegHelper = LibJpegWrapper();
     
 bool ImageLoader::CreateFromFileByExtension(const FilePath &pathname, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
 {
@@ -192,7 +187,7 @@ bool ImageLoader::IsPVRFile(DAVA::File *file)
 
 bool ImageLoader::IsDDSFile(DAVA::File *file)
 {
-   /* bool isDXT = LibDxtHelper::IsDxtFile(file);
+   /* bool isDXT = LibDdsHelper::IsDxtFile(file);
     file->Seek(0, File::SEEK_FROM_START);
     return isDXT;*/
     return 0;
@@ -224,7 +219,7 @@ bool ImageLoader::CreateFromJPEG(File *file, Vector<Image *> & imageSet)
 
 bool ImageLoader::CreateFromDDS(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
 {
-	//return LibDxtHelper::ReadDxtFile(file, imageSet, baseMipmap);
+	//return LibDdsHelper::ReadDxtFile(file, imageSet, baseMipmap);
 }
 
 bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
@@ -263,7 +258,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
 bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
 {
     bool retValue = false;
-    DVASSERT(image && (pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg")));
+    /*DVASSERT(image && (pathname.IsEqualToExtension(".png") || pathname.IsEqualToExtension(".jpg") || pathname.IsEqualToExtension(".jpeg")));
     
     DVASSERT((FORMAT_RGB888 == image->format)||(FORMAT_RGBA8888 == image->format) ||
              (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format));
@@ -310,10 +305,10 @@ bool ImageLoader::Save(const DAVA::Image *image, const FilePath &pathname)
     else
     {
         retValue = ImageFileWrapperFactory::GetImageFileWrapper(targetImageFormat)->WriteFile(pathname, image->width, image->height, image->data, image->format);
-    }
+    }*/
     return retValue;
 }
-   
+ /*
 ImageFileWapper* ImageFileWrapperFactory::GetImageFileWrapper(eSupportedImageFileFormats format)
 {
     switch (format)
@@ -341,5 +336,5 @@ ImageFileWapper* ImageFileWrapperFactory::GetImageFileWrapper(const FilePath&)
     DVASSERT(0);
     return NULL;
 }
-    
+    */
 };

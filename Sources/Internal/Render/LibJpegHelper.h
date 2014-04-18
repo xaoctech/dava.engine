@@ -34,23 +34,27 @@
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFileWrapper.h"
+#include "Render/ImageFormatInterface.h"
 
 namespace DAVA 
 {
 
-class LibJpegWrapper: public ImageFileWapper
+class LibJpegWrapper: public ImageFormatInterface
 {
 public:
     
-    bool IsImage(const FilePath & fileName);
-    bool IsImage(File *file);
+    virtual bool IsImage(File *file);
     
-    bool ReadFile(const FilePath & file,  Vector<Image *> &imageSet, int32 baseMipMap = 0);
-    bool ReadFile(File *infile,  Vector<Image *> &imageSet, int32 baseMipMap = 0);
-    
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
+    {
+        return SUCCESS;
+    }
+
     //only RGB888 or A8
-    bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
+    {
+        return SUCCESS;
+    }
 };
 
 };

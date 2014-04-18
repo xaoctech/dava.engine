@@ -35,7 +35,7 @@
 #include "Render/Texture.h"
 #include "Utils/Utils.h"
 #include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/LibDdsHelper.h"
 
 #include "Render/GPUFamilyDescriptor.h"
 
@@ -575,7 +575,7 @@ uint32 TextureDescriptor::ReadConvertedCRC(eGPUFamily forGPU) const
 	}
 	else if(filePath.IsEqualToExtension(".dds"))
 	{
-		return LibDxtHelper::GetCRCFromFile(filePath);
+		return LibDdsHelper::GetCRCFromFile(filePath);
 	}
     DVASSERT(0);//converted means only pvr or dds
     return 0;

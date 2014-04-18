@@ -35,7 +35,7 @@
 #include "Base/BaseObject.h"
 #include "Render/Image.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFileWrapper.h"
+#include "Render/ImageFormatInterface.h"
 
 namespace DAVA 
 {
@@ -44,19 +44,21 @@ class Texture;
 class Sprite;
 class Image;
 
-class LibPngWrapper: public ImageFileWapper
+class LibPngWrapper: public ImageFormatInterface
 {
 public:
     
     virtual bool IsImage(File *file);
     
-    virtual bool IsImage(const FilePath & fileName);
-    
-    virtual bool ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-    
-	virtual bool ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-	
-    virtual bool WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps = false);
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
+    {
+        return SUCCESS;
+    }
+
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
+    {
+        return SUCCESS;
+    }
 
     static uint32 GetDataSize(const FilePath &filePathname);
 

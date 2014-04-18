@@ -57,41 +57,13 @@ namespace DAVA
 	
 const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
-bool LibPVRHelper::IsImage(const FilePath & fileName)
-{
-    File * infile = File::Create(fileName, File::OPEN | File::READ);
-    if (!infile)
-    {
-        Logger::Error("[LibPVRHelper::IsImage] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
-        return false;
-    }
-    
-    bool retValue = IsImage(infile);
-    SafeRelease(infile);
-    return retValue;
-}
-    
 bool LibPVRHelper::IsImage(File *file)
 {
     file->Seek(0, File::SEEK_FROM_START);
     PVRHeaderV3 header = GetHeader(file);
     return (PVRTEX3_IDENT == header.u32Version);
 }
-
-bool LibPVRHelper::ReadFile(const FilePath & fileName, Vector<Image *> &imageSet, int32 baseMipMap)
-{
-    File *file = File::Create(fileName, File::READ | File::OPEN);
-    if(!file)
-    {
-        Logger::Error("[LibPVRHelper::ReadFile] cannot open file %s", fileName.GetAbsolutePathname().c_str());
-    }
-    
-    bool res = ReadFile(file, imageSet);
-    SafeRelease(file);
-    return res;
-}
-
-    
+  /*
 bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMipMap)
 {
     uint32 fileSize = file->GetSize();
@@ -129,14 +101,14 @@ bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMip
     
     SafeDeleteArray(fileData);
     return read;
-}
-
+}*/
+/*
 bool LibPVRHelper::WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps )
 {
     DVASSERT(0);
     // not implemented
     return false;
-}
+}*/
 
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
 {
@@ -2590,13 +2562,6 @@ bool LibPVRHelper::IsFormatSupported(const PixelFormatDescriptor &format)
     }
     
     return true;
-}
-
-bool LibPVRHelper::IsPvrFile(DAVA::File *file)
-{
-	file->Seek(0, File::SEEK_FROM_START);
-    PVRHeaderV3 header = GetHeader(file);
-    return (PVRTEX3_IDENT == header.u32Version);
 }
 
 uint32 LibPVRHelper::GetMipMapLevelsCount(File *file)

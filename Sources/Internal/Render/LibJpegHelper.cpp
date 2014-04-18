@@ -74,19 +74,6 @@ void jpegErrorExit (j_common_ptr cinfo)
     longjmp(myerr->setjmp_buffer, 1);
 }
 
-bool LibJpegWrapper::IsImage(const FilePath & fileName)
-{
-    File * infile = File::Create(fileName, File::OPEN | File::READ);
-	if (!infile)
-	{
-        Logger::Error("[LibJpegWrapper::IsImage] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
-		return false;
-	}
-    
-    bool retValue = IsImage(infile);
-    SafeRelease(infile);
-    return retValue;
-} 
     
 bool LibJpegWrapper::IsImage(File *infile)
 {
@@ -115,7 +102,7 @@ bool LibJpegWrapper::IsImage(File *infile)
     SafeDeleteArray(fileBuffer);
     return true;
 }
-
+/*
 bool LibJpegWrapper::ReadFile(const FilePath & fileName,  Vector<Image *> &imageSet, int32 baseMipMap)
 {
     File * infile = File::Create(fileName, File::OPEN | File::READ);
@@ -187,7 +174,7 @@ bool LibJpegWrapper::ReadFile(File *infile,  Vector<Image *> &imageSet, int32 ba
     imageSet.push_back(image);
     return true;
 }
-    
+   
 bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 height, uint8 * raw_image, PixelFormat format, bool generateMipmaps)
 {
     DVASSERT(format == FORMAT_A8 || format == FORMAT_RGB888);
@@ -205,7 +192,7 @@ bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 he
     cinfo.err = jpeg_std_error( &jerr.pub );
     
     jerr.pub.error_exit = jpegErrorExit;
-    /* Establish the setjmp return context for my_error_exit to use. */
+    // Establish the setjmp return context for my_error_exit to use.
     if (setjmp(jerr.setjmp_buffer))
     {
         jpeg_destroy_compress( &cinfo );
@@ -216,7 +203,7 @@ bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 he
     jpeg_create_compress(&cinfo);
     jpeg_stdio_dest(&cinfo, outfile);
     
-    /* Setting the parameters of the output file here */
+    // Setting the parameters of the output file here
     cinfo.image_width = width;
     cinfo.image_height = height;
     
@@ -235,7 +222,7 @@ bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 he
     //cinfo.data_precision = 4;
     cinfo.dct_method = JDCT_FLOAT;
     
-    /*The quality value ranges from 0..100. If "force_baseline" is TRUE, the computed quantization table entries are limited to 1..255 for JPEG baseline compatibility.*/
+    //The quality value ranges from 0..100. If "force_baseline" is TRUE, the computed quantization table entries are limited to 1..255 for JPEG baseline compatibility.
     jpeg_set_quality(&cinfo, QUALITY, TRUE);
 
     jpeg_start_compress( &cinfo, TRUE );
@@ -248,7 +235,7 @@ bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 he
     jpeg_destroy_compress( &cinfo );
     fclose( outfile );
     return true;
-}
+}*/
    
     
 };

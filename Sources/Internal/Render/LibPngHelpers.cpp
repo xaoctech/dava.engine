@@ -95,20 +95,6 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 	self->file->Read(data, (uint32)size);
 }
 
-bool LibPngWrapper::IsImage(const FilePath & fileName)
-{
-    File * infile = File::Create(fileName, File::OPEN | File::READ);
-    if (!infile)
-    {
-        Logger::Error("[LibPngWrapper::IsImage] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
-        return false;
-    }
-    
-    bool retValue = IsImage(infile);
-    SafeRelease(infile);
-    return retValue;
-}
-
 bool LibPngWrapper::IsImage(File *file)
 {
     char sig[8];
@@ -116,21 +102,7 @@ bool LibPngWrapper::IsImage(File *file)
 	
     return (0 != png_check_sig((unsigned char *) sig, 8));
 }
-
-bool LibPngWrapper::ReadFile(const FilePath & file, Vector<Image *> &imageSet, int32 baseMipMap)
-{
-	File * infile = File::Create(file, File::OPEN | File::READ);
-	if (!infile)
-	{
-		return 0;
-	}
-    
-    bool res = ReadFile(infile, imageSet);
-    SafeRelease(infile);
-    
-    return res;
-}
-
+/*
 bool LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
 {
     Image* image = new Image();
@@ -141,7 +113,7 @@ bool LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 base
     }
     imageSet.push_back(image);
     return retCode == 1;
-}
+}*/
 
 int LibPngWrapper::ReadPngFile(File *infile, Image * image)
 {
@@ -351,7 +323,7 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 
 	return imageSize;
 }
-
+/*
 bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps)
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
@@ -387,7 +359,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 	}
 	
 	
-	/* create file */
+	//create file
 	FILE *fp = fopen(file_name.GetAbsolutePathname().c_str(), "wb");
 	if (!fp)
 	{
@@ -398,7 +370,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 	}
 	
 	
-	/* initialize stuff */
+	// initialize stuff
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	
 	if (!png_ptr)
@@ -433,8 +405,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 	
 	png_init_io(png_ptr, fp);
 	
-	
-	/* write header */
+	// write header
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing header");
@@ -483,7 +454,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 	png_set_shift(png_ptr, &sig_bit);
 	png_set_packing(png_ptr);
 	
-	/* write bytes */
+	// write bytes
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing bytes");
@@ -496,7 +467,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 	png_write_image(png_ptr, row_pointers);
 	
 	
-	/* end write */
+	// end write
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during end of write");
@@ -511,7 +482,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 	free(row_pointers);
 	fclose(fp);
     return true;
-}
+}*/
 
 PngImage::PngImage()
 :	width(0)
@@ -538,7 +509,8 @@ bool PngImage::Load(const FilePath & filename)
 
 bool PngImage::Save(const FilePath & filename)
 {
-	LibPngWrapper().WriteFile(filename, width, height, data, format);
+    //TODO!!!
+	//LibPngWrapper().WriteFile(filename, width, height, data, format);
 	return true;
 }
 
