@@ -42,6 +42,7 @@
 #include "Commands2/TransformCommand.h"
 #include "Commands2/BakeTransformCommand.h"
 #include "Commands2/EntityAddCommand.h"
+#include "Commands2/EntityLockCommand.h "
 #include <QApplication>
 
 EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys)
@@ -877,10 +878,26 @@ void EntityModificationSystem::MovePivotCenter(const EntityGroup &entities)
 
 void EntityModificationSystem::LockTransform(const EntityGroup &entities, bool lock)
 {
- 	for(size_t i = 0; i < entities.Size(); ++i)
- 	{
- 		entities.GetEntity(i)->SetLocked(lock);
- 	}
+    SceneEditor2 *sceneEditor = ((SceneEditor2 *) GetScene());
+	if(NULL != sceneEditor)
+	{
+		bool isMultiple = (entities.Size() > 1);
+
+        if(isMultiple)
+		{
+			sceneEditor->BeginBatch("Lock entities");
+		}
+
+ 	    for(size_t i = 0; i < entities.Size(); ++i)
+ 	    {
+            sceneEditor->Exec(new EntityLockCommand(entities.GetEntity(i), lock));
+ 	    }
+
+        if(isMultiple)
+		{
+			sceneEditor->EndBatch();
+		}
+    }
 }
 
 void EntityModificationSystem::Bake(const EntityGroup &entities, bool inverse)
