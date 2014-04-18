@@ -182,9 +182,9 @@ struct PixelFormatDescriptor
     
 enum eGPUFamily
 {
-    GPU_UNKNOWN = 0,
+    GPU_UNKNOWN = 255,
     
-    GPU_POWERVR_IOS,
+    GPU_POWERVR_IOS = 0,
     GPU_POWERVR_ANDROID,
     GPU_TEGRA,
     GPU_MALI,
