@@ -633,6 +633,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionModifyPlaceOnLandscape, SIGNAL(triggered()), this, SLOT(OnPlaceOnLandscape()));
 	QObject::connect(ui->actionModifySnapToLandscape, SIGNAL(triggered()), this, SLOT(OnSnapToLandscape()));
 	QObject::connect(ui->actionModifyReset, SIGNAL(triggered()), this, SLOT(OnResetTransform()));
+	QObject::connect(ui->actionCenterPivotPoint, SIGNAL(triggered()), this, SLOT(OnCenterPivotPoint()));
+	QObject::connect(ui->actionZeroPivotPoint, SIGNAL(triggered()), this, SLOT(OnZeroPivotPoint()));
 
 	// tools
 	QObject::connect(ui->actionMaterialEditor, SIGNAL(triggered()), this, SLOT(OnMaterialEditor()));
@@ -1321,6 +1323,26 @@ void QtMainWindow::OnResetTransform()
 		EntityGroup selection = scene->selectionSystem->GetSelection();
 		scene->modifSystem->ResetTransform(selection);
 	}
+}
+
+void QtMainWindow::OnCenterPivotPoint()
+{
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		EntityGroup selection = curScene->selectionSystem->GetSelection();
+		curScene->modifSystem->MovePivotCenter(selection);
+    }
+}
+
+void QtMainWindow::OnZeroPivotPoint()
+{
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+	if(NULL != curScene)
+	{
+		EntityGroup selection = curScene->selectionSystem->GetSelection();
+		curScene->modifSystem->MovePivotZero(selection);
+    }
 }
 
 void QtMainWindow::OnMaterialEditor()
