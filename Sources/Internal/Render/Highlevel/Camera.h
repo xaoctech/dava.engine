@@ -127,9 +127,14 @@ public:
     void SetIsOrtho(const bool &_ortho);
     
     
+    /** 
+        \brief Function prepares camera transformations (projection, model-view matrices) without submitting to RenderManager
+        This function normally is called internally from RenderPass class (or from SetupDynamicParameters). In most cases you'll not need it. 
+     */
+	void PrepareDynamicParameters(Vector4 *externalClipPlane = NULL);
 	/** 
         \brief Function applies camera transformations (projection, model-view matrices) to RenderManager
-        This function normally is called internally from Scene class. In most cases you'll not need it. 
+        This function normally is called internally from RenderPass class. In most cases you'll not need it. 
      */
 	void SetupDynamicParameters(Vector4 *externalClipPlane = NULL);
 	

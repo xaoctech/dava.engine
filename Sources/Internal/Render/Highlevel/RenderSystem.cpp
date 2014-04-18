@@ -398,7 +398,7 @@ void RenderSystem::Render()
     TIME_PROFILE("RenderSystem::Render");
 
     
-    mainRenderPass->Draw(camera, this);
+    mainRenderPass->Draw(this);
     
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
