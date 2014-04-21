@@ -150,7 +150,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(Camera * camera,
         
     RenderManager::Instance()->SetHWRenderTargetTexture(reflectionTexture);
     //discard everything here
-    RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
+    RenderManager::Instance()->SetViewport(Rect(0, 0, (float32)REFLECTION_TEX_SIZE, (float32)REFLECTION_TEX_SIZE), true);
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
@@ -164,7 +164,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(Camera * camera,
         
     RenderManager::Instance()->SetHWRenderTargetTexture(refractionTexture);
         
-    RenderManager::Instance()->SetViewport(Rect(0, 0, REFLECTION_TEX_SIZE, REFLECTION_TEX_SIZE), true);
+    RenderManager::Instance()->SetViewport(Rect(0, 0, (float32)REFLECTION_TEX_SIZE, (float32)REFLECTION_TEX_SIZE), true);
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     RenderManager::Instance()->FlushState();
     RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
@@ -205,6 +205,9 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
 {
     if (needWaterPrepass)
     {
+        /*water presence is cached from previous frame in optimization purpose*/
+        /*if on previous frame there was water - reflection and refraction textures are rendered first (it helps to avoid excessive renderPassBatchArray->PrepareVisibilityArray)*/
+        /* if there was no water on previous frame, and it appears on this frame - reflection and refractions textures are still to be rendered*/
         PrepareReflectionRefractionTextures(camera, renderSystem);
     }
 	
@@ -226,7 +229,10 @@ void MainForwardRenderPass::Draw(Camera * camera, RenderSystem * renderSystem)
     
 	if (!needWaterPrepass&&waterBatchesCount)
 	{
-        PrepareReflectionRefractionTextures(camera, renderSystem);        
+        PrepareReflectionRefractionTextures(camera, renderSystem); 
+        /*as PrepareReflectionRefractionTextures builds render batches according to reflection/refraction camera - render batches in main pass list are not valid anymore*/
+        /*to avoid this happening every frame water visibility is cached from previous frame (needWaterPrepass)*/
+        /*however if there was no water on previous frame and there is water on this frame visibilityArray should be re-prepared*/
         renderPassBatchArray->Clear();
         renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera);
                 
