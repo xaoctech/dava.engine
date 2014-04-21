@@ -182,7 +182,7 @@ DAVA::int32 EditorLightSystem::CountLightsForEntityRecursive( DAVA::Entity *enti
 	return lightsCount;
 }
 
-void EditorLightSystem::Process()
+void EditorLightSystem::Process(float32 timeElapsed)
 {
 	if(isEnabled)
 	{

@@ -66,13 +66,38 @@ void StaticOcclusionBuildSystem::RemoveEntity(Entity * entity)
     entities.erase( std::remove( entities.begin(), entities.end(), entity ), entities.end() );
 }
     
-void StaticOcclusionBuildSystem::BuildOcclusionInformation()
+void StaticOcclusionBuildSystem::Build()
 {
     if (entities.size() == 0)return;
     activeIndex = 0;
+    buildStepsCount = 0;
+    buildStepRemains = 0;
     needSetupNextOcclusion = true;
     if (!staticOcclusion)
         staticOcclusion = new StaticOcclusion();
+}
+
+void StaticOcclusionBuildSystem::Cancel()
+{
+    activeIndex = -1;
+    SafeDelete(staticOcclusion);
+}
+
+bool StaticOcclusionBuildSystem::IsInBuild() const
+{
+    return (-1 != activeIndex);
+}
+
+uint32 StaticOcclusionBuildSystem::GetBuildStatus() const
+{
+    uint32 ret = 0;
+
+    if(0 != buildStepsCount && buildStepsCount >= buildStepRemains)
+    {
+        ret = ((buildStepsCount - buildStepRemains) * 100) / buildStepsCount;
+    }
+
+    return ret;
 }
     
 void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
@@ -81,6 +106,8 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
     
     if (activeIndex == -1)return; // System inactive
     
+    SetCamera(GetScene()->GetClipCamera());
+
     Entity * entity = entities[activeIndex];
     StaticOcclusionComponent * occlusionComponent = (StaticOcclusionComponent*)entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT);
     TransformComponent * transformComponent = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
@@ -122,9 +149,7 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         
         staticOcclusion->SetScene(GetScene());
         staticOcclusion->SetRenderSystem(GetScene()->GetRenderSystem());
-        staticOcclusion->BuildOcclusionInParallel(renderObjectsArray,
-                                                  &data,
-                                                  GetScene()->GetRenderSystem()->GetRenderHierarchy());
+        staticOcclusion->BuildOcclusionInParallel(renderObjectsArray, &data);
         
         
         
@@ -180,15 +205,14 @@ void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
         needSetupNextOcclusion = false;
     }else
     {
-        //Logger::FrameworkDebug("start");
-        uint32 result = 0;
-        while(1)
+        buildStepRemains = staticOcclusion->RenderFrame();
+        if(buildStepRemains > buildStepsCount)
         {
-            result = staticOcclusion->RenderFrame();
-            if (result == 0)break;
+            buildStepsCount = buildStepRemains + 1;
         }
+
         //Logger::FrameworkDebug("end");
-        if (result == 0)
+        if (buildStepRemains == 0)
         {
             
             //occlusionComponent->renderPositions = staticOcclusion->renderPositions;
@@ -272,6 +296,8 @@ StaticOcclusionSystem::~StaticOcclusionSystem()
 
 void StaticOcclusionSystem::Process(float32 timeElapsed)
 {
+    SetCamera(GetScene()->GetClipCamera());
+
     // Verify that system is initialized
     if (!camera)return;
 
@@ -359,6 +385,7 @@ void StaticOcclusionSystem::RemoveEntity(Entity * entity)
         if (component == entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT))
         {
             staticOcclusionComponents[k] = staticOcclusionComponents[(uint32)staticOcclusionComponents.size() - 1];
+            staticOcclusionComponents.pop_back();
             break;
         }
     }
