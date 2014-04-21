@@ -35,6 +35,7 @@
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
 #include "Base/AbstractQuadTree.h"
+#include "Render/Image.h"
 
 #include "Render/3D/PolygonGroup.h"
 #include "Render/RenderDataObject.h"
@@ -165,18 +166,19 @@ private:
         int16 width;
         int16 height;
         int8 rdoIndex;
+        bool isVisible;
         
         AABBox3 bbox;
-        //Vector3 refPoint;
         float32 cameraDistance;
         uint8 clippingPlane;
         
         inline SpatialData();
         inline SpatialData& operator=(const SpatialData& src);
-        inline bool IsEmpty(uint32 cellValue) const;
+        inline static bool IsEmpty(uint32 cellValue);
         inline bool IsRenderable() const;
         inline int16 GetResolutionId() const;
         inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
+        inline bool IsElementaryCell() const;
     };
     
     struct PolygonSortData
@@ -284,6 +286,16 @@ private:
     
     void GenerateRenderDataObjects();
     
+    inline bool IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
+                            uint32 maxClusterTypes,
+                            float32 clusterScaleNormalizationValue,
+                            const VegetationMap& map) const;
+    inline uint8* GetCellValue(int x, int y, const VegetationMap& map) const;
+    inline void GetLayerDescription(uint8 cellLayerData,
+                                    float32 clusterScaleNormalizationValue,
+                                    float32& density,
+                                    float32& scale) const;
+    
 private:
     
     Heightmap* heightmap;
@@ -386,7 +398,8 @@ inline VegetationRenderObject::SpatialData::SpatialData()  :
         y(-1),
         cameraDistance(0.0f),
         clippingPlane(0),
-        rdoIndex(-1)
+        rdoIndex(-1),
+        isVisible(true)
 {
 }
     
@@ -404,7 +417,7 @@ inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData:
     return *this;
 }
 
-inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue) const
+inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue)
 {
     return (0 == (cellValue & 0x0F0F0F0F));
 }
@@ -423,6 +436,11 @@ inline bool VegetationRenderObject::SpatialData::IsRenderable() const
 inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
 {
     return (width * height);
+}
+
+bool VegetationRenderObject::SpatialData::IsElementaryCell() const
+{
+    return (1 == width);
 }
 
 inline VegetationRenderObject::PolygonSortData::PolygonSortData()
@@ -461,13 +479,9 @@ inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialD
                                                    uint32 cellValue,
                                                    Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
-    if(!node->data.IsEmpty(cellValue))
+    if(node->data.isVisible && node->data.cameraDistance <= refDistance)
     {
-        if(node->data.cameraDistance <= refDistance)
-        {
-                //Logger::FrameworkDebug("VegetationRenderObject::AddVisibleCell x = %d, y = %d", data->x, data->y);
-            cellList.push_back(node);
-        }
+        cellList.push_back(node);
     }
 }
 
@@ -489,6 +503,67 @@ inline uint32 VegetationRenderObject::MapToResolution(float32 squareDistance)
     return resolutionId;
 }
 
+inline bool VegetationRenderObject::IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
+                                                uint32 maxClusterTypes,
+                                                float32 clusterScaleNormalizationValue,
+                                                const VegetationMap& map) const
+{
+    if(node->data.x == -1)
+    {
+        int ddd = 0;
+        ddd++;
+    }
+    
+    bool nodeEmpty = true;
+    
+    int32 maxX = node->data.x + node->data.width;
+    int32 maxY = node->data.y + node->data.height;
+    
+    for(int32 y = node->data.y; y < maxY; ++y)
+    {
+        for(int32 x = node->data.x; x < maxX; ++x)
+        {
+            uint8* vegetationMapValuePtr = GetCellValue(x, y, *vegetationMap);
+            for(uint32 clusterType = 0; clusterType < maxClusterTypes; ++clusterType)
+            {
+                uint8 cellLayerData = vegetationMapValuePtr[clusterType];
+                
+                float32 clusterScale = 0.0f;
+                float32 density = 0.0f;
+                GetLayerDescription(cellLayerData, clusterScaleNormalizationValue, density, clusterScale);
+                
+                if(clusterScale > 0.0f &&
+                   density > 1.0f)
+                {
+                    nodeEmpty = false;
+                    break;
+                }
+            }
+        }
+    }
+    
+    return nodeEmpty;
+}
+
+inline uint8* VegetationRenderObject::GetCellValue(int x, int y, const VegetationMap& map) const
+{
+    int32 mapX = x + halfWidth;
+    int32 mapY = y + halfHeight;
+    uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
+    
+    uint8* vegetationMapValuePtr = (map.data + cellDescriptionIndex * 4);
+
+    return vegetationMapValuePtr;
+}
+
+inline void VegetationRenderObject::GetLayerDescription(uint8 cellLayerData,
+                                                        float32 clusterScaleNormalizationValue,
+                                                        float32& density,
+                                                        float32& scale) const
+{
+    scale = (1.0f * ((cellLayerData >> 4) & 0xF)) / clusterScaleNormalizationValue;
+    density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
+}
 
 };
 

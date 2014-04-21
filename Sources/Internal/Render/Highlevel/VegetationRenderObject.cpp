@@ -28,7 +28,6 @@
 
 #include <cfloat>
 
-#include "Render/Image.h"
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/VegetationRenderObject.h"
 #include "Render/Material/NMaterialNames.h"
@@ -52,6 +51,7 @@ static const FastName UNIFORM_PERTURBATION_FORCE_DISTANCE = FastName("perturbati
 static const FastName UNIFORM_BILLBOARD_DIRECTION = FastName("billboardDirection");
 
 static const FastName FLAG_FRAMEBUFFER_FETCH = FastName("FRAMEBUFFER_FETCH");
+static const FastName FLAG_BILLBOARD_DRAW = FastName("MATERIAL_GRASS_BILLBOARD");
 
 static const FastName VEGETATION_QUALITY_NAME_HIGH = FastName("HIGH");
 static const FastName VEGETATION_QUALITY_NAME_LOW = FastName("LOW");
@@ -297,7 +297,7 @@ static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
     1.4f
 };
 
-//#define VEGETATION_DRAW_LOD_COLOR
+#define VEGETATION_DRAW_LOD_COLOR
 
 static Color RESOLUTION_COLOR[] =
 {
@@ -423,6 +423,8 @@ VegetationRenderObject::VegetationRenderObject() :
     {
         vegetationMaterial->SetFlag(FLAG_FRAMEBUFFER_FETCH, NMaterial::FlagOn);
     }
+    
+    vegetationMaterial->SetFlag(FLAG_BILLBOARD_DRAW, NMaterial::FlagOn);
     
 #ifdef VEGETATION_DRAW_LOD_COLOR
 
@@ -960,6 +962,10 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     {
         node->data.width = width;
         node->data.height = height;
+        node->data.isVisible = !IsNodeEmpty(node,
+                                            MAX_CLUSTER_TYPES,
+                                            CLUSTER_SCALE_NORMALIZATION_VALUE,
+                                            *vegetationMap);
         
         if(width == RESOLUTION_SCALE[COUNT_OF(RESOLUTION_SCALE) - 1])
         {
@@ -1365,9 +1371,9 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
     {
         DVASSERT(node->data.rdoIndex >= 0 && node->data.rdoIndex < uniforms.size());
         
-        int32 mapX = node->data.x + halfWidth;
-        int32 mapY = node->data.y + halfHeight;
-        uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
+        //int32 mapX = node->data.x + halfWidth;
+        //int32 mapY = node->data.y + halfHeight;
+        //uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
         
         float32 distanceScale = 1.0f;
         
@@ -1376,19 +1382,15 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             distanceScale = Clamp(1.0f - ((cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
         }
         
-        uint8 *vegetationMapValuePtr = (vegetationMap->data + cellDescriptionIndex * 4);
+        uint8 *vegetationMapValuePtr = GetCellValue(node->data.x, node->data.y, *vegetationMap);//(vegetationMap->data + cellDescriptionIndex * 4);
         
         for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
         {
             uint8 cellLayerData = vegetationMapValuePtr[clusterType];
             
-            float32 clusterScale = (1.0f * ((cellLayerData >> 4) & 0xF)) / CLUSTER_SCALE_NORMALIZATION_VALUE;
-            float32 density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
-            
-            //clusterScale = 1.0f;
-            //density = 16.0f;
-            clusterScale *= distanceScale;
-            density = (((layerVisibilityMask >> clusterType) & 0x01) != 0) ? density : 0.0f;
+            float32 clusterScale = 0.0f;
+            float32 density = 0.0f;
+            GetLayerDescription(cellLayerData, CLUSTER_SCALE_NORMALIZATION_VALUE, density, clusterScale);
             
             if(cameraLowPosition &&
                sourceNode == node)
