@@ -2586,7 +2586,13 @@ namespace DAVA
 		SetVisible(params[0], params[1]);
 		delete[]params;
 	}
-	
+
+    void UIControl::RecursiveVisibleAnimationCallback( BaseObject * caller, void * param, void *callerData )
+    {
+        bool visible = ( pointer_size(param) > 0 );
+        SetRecursiveVisible(visible);
+    }
+
 	Animation * UIControl::VisibleAnimation(bool visible, bool hierarhic/* = true*/, int32 track/* = 0*/)
 	{
 		//TODO: change to bool animation - Dizz
@@ -2598,6 +2604,14 @@ namespace DAVA
 		animation->Start(track);
 		return animation;
 	}
+
+    Animation * UIControl::RecursiveVisibleAnimation(bool visible, int32 track/* = 0*/)
+    {
+        Animation * animation = new Animation(this, 0.01f, Interpolation::LINEAR);
+        animation->AddEvent(Animation::EVENT_ANIMATION_START, Message(this, &UIControl::RecursiveVisibleAnimationCallback, (void*)(pointer_size)visible));
+        animation->Start(track);
+        return animation;
+    }
 	
 	void UIControl::RemoveControlAnimationCallback(BaseObject * caller, void * param, void *callerData)
 	{

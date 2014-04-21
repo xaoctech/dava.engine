@@ -249,6 +249,10 @@ void Texture::ReleaseTextureData()
     container->stencilRboID = stencilRboID;
 #endif
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container));
+    
+    id = 0;
+	fboID = -1;
+	rboID = -1;
 }
 
 void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
@@ -737,7 +741,7 @@ bool Texture::CheckImageSize(const Vector<DAVA::Image *> &imageSet)
 Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &group, TextureType typeHint)
 {
 	Texture * texture = PureCreate(pathName, group);
-	if(!texture)
+ 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
         texture->texDescriptor->pathname = pathName;
@@ -752,6 +756,9 @@ Texture * Texture::PureCreate(const FilePath & pathName, const FastName &group)
 {
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
+
+    if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+        return NULL;
 
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
@@ -796,7 +803,12 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
-	bool loaded = LoadImages(gpuForLoading, images);
+    bool loaded = false;
+    if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+    {
+	    loaded = LoadImages(gpuForLoading, images);
+    }
+
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
@@ -1014,41 +1026,21 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 void Texture::Lost()
 {
 	RenderResource::Lost();
-
-	/*
-	if(RenderManager::Instance()->GetTexture() == this)
-	{//to avoid drawing deleted textures
-		RenderManager::Instance()->SetTexture(0);
-	}
-	
-	ReleaseImages();
-
-	if(fboID != (uint32)-1)
-	{
-		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
-		fboID = -1;
-	}
-	
-	if(id)
-	{
-		RENDER_VERIFY(glDeleteTextures(1, &id));
-		id = 0;
-	}
-	*/
+    
+    ReleaseTextureData();
 }
 
 void Texture::Invalidate()
 {
 	RenderResource::Invalidate();
 	
-	/*
-
 	DVASSERT(id == 0 && "Texture always invalidated");
 	if (id)
 	{
 		return;
 	}
 	
+    const FilePath& relativePathname = texDescriptor->GetSourceTexturePathname();
 	if (relativePathname.GetType() == FilePath::PATH_IN_FILESYSTEM ||
 		relativePathname.GetType() == FilePath::PATH_IN_RESOURCES ||
 		relativePathname.GetType() == FilePath::PATH_IN_DOCUMENTS)
@@ -1064,7 +1056,6 @@ void Texture::Invalidate()
 	{
 		MakePink((TextureType)textureType);
 	}
-	*/
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 

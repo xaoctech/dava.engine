@@ -95,7 +95,7 @@ void SceneSelectionSystem::ImmediateEvent(DAVA::Entity * entity, DAVA::uint32 ev
     }
 }
 
-void SceneSelectionSystem::Update(DAVA::float32 timeElapsed)
+void SceneSelectionSystem::Process(DAVA::float32 timeElapsed)
 {
 	ForceEmitSignals();
 
@@ -267,15 +267,12 @@ void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 			RemSelection(command->GetEntity());
 		}
 		else if(command->GetId() == CMDID_ENTITY_CHANGE_PARENT ||
-				command->GetId() == CMDID_TRANSFORM)
+				command->GetId() == CMDID_TRANSFORM ||
+                command->GetId() == CMDID_BAKE_TRANSFORM)
 		{
-			for(size_t i = 0; i < curSelections.Size(); ++i)
-			{
-				EntityGroupItem* selectedItem = curSelections.GetItem(i);
-				selectedItem->bbox = GetSelectionAABox(selectedItem->entity);
-			}
-		}
-	}
+            invalidSelectionBoxes = true;
+        }
+    }
 }
 
 void SceneSelectionSystem::SetSelection(DAVA::Entity *entity)
