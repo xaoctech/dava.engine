@@ -224,6 +224,11 @@ namespace DAVA
         
 	};
 
+	SerializationContext::SerializationContext()
+	{
+        customProperties = new KeyedArchive();
+    }
+
 	SerializationContext::~SerializationContext()
 	{
 		for(Map<uint64, DataNode*>::iterator it = dataBlocks.begin();
@@ -242,6 +247,8 @@ namespace DAVA
 
 		DVASSERT(materialBindings.size() == 0 && "Serialization context destroyed without resolving material bindings!");
 		materialBindings.clear();
+
+        customProperties->Release();
 	}
 	
 	void SerializationContext::ResolveMaterialBindings()
