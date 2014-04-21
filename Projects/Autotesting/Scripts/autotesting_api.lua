@@ -328,7 +328,7 @@ function IsVisible(element, background)
 	Yield()
 	local result = false
 	local control = autotestingSystem:FindControl(element)
-	if control and control:GetVisible() and control:IsOnScreen() and IsOnScreen(element, background) then
+	if control and control:GetVisible() and control:IsOnScreen() and IsOnScreen(control, background) then
 		result = true
 	end
 	
@@ -736,23 +736,21 @@ function ClickControl(name, time, touchId)
     local touchId = touchId or 1
 	
     Log("ClickControl name="..name.." touchId="..touchId.." waitTime="..waitTime)  
-    WaitControl(name, waitTime)
+    if WaitControl(name, waitTime) then
 	
-	local control = autotestingSystem:FindControl(name)
+		local control = autotestingSystem:FindControl(name)
 	
-	if IsVisible(name) then     
-        local position = GetCenter(name)
-        ClickPosition(position, TIMECLICK, touchId)
-        return true
-    elseif control then
-		if not IsVisible(name) then
+		if IsVisible(name) then     
+			local position = GetCenter(name)
+			ClickPosition(position, TIMECLICK, touchId)
+			return true
+		elseif not IsCenterOnScreen(control) then
+			Log(name .. " is not on the Screen")
+		else
 			Log(name .. " is not visible")
 		end
-		if not IsCenterOnScreen(control) then
-			Log(name .. " is not on the Screen")
-		end
 	else
-		Log("ClickControl not found "..name)
+			Log("ClickControl not found "..name)
 	end
     return false
 end
