@@ -52,7 +52,18 @@
 
 // Switch on/off messege box in assertion situation. In case this flag is
 // enabled the assertion message will be displayed even in release builds.
-#define ENABLE_ASSERT_MESSAGE
+
+#if defined(__DAVAENGINE_DEBUG__)   //always enable full DVASSERT service for debug configurations
+    #define ENABLE_ASSERT_LOGGING
+    #define ENABLE_ASSERT_MESSAGE
+    #define ENABLE_ASSERT_BREAK
+#else //not defined __DAVAENGINE_DEBUG__    // can disable or select any dvassert service
+    #define ENABLE_ASSERT_LOGGING
+//    #define ENABLE_ASSERT_MESSAGE
+//    #define ENABLE_ASSERT_BREAK
+#endif //
+
+
 #include "Autotesting/Config.h"
 
 #define USE_FILEPATH_IN_MAP
