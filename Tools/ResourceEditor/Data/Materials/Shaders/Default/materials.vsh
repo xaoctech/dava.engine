@@ -238,6 +238,7 @@ void main()
                         inPosition.z,
                         inPosition.w);
     
+    #if defined(MATERIAL_GRASS_BILLBOARD)
         //1st method of billboards when cameraPosition is point
         vec3 toCamera = normalize(vec3(clusterCenter.xyz) - vec3(cameraPosition.xy, clusterCenter.z));
         vec3 actualDirection = normalize(cross(inNormal, toCamera));
@@ -249,6 +250,7 @@ void main()
     
         vec2 planeDirection = vec2(actualDirection.x, actualDirection.y) * length(vec2(inPosition.x - inBinormal.x, inPosition.y - inBinormal.y));
         pos = clusterCenter + vec4(planeDirection.x, planeDirection.y, inPosition.z, 0.0);
+    #endif
     
         highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
                         clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));

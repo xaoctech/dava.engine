@@ -41,6 +41,8 @@
 		64B9018718BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018618BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp */; };
 		64B9018A18BF7B15001E6CCC /* GrassEditorProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018818BF7B15001E6CCC /* GrassEditorProxy.cpp */; };
 		64B9018D18BF7B25001E6CCC /* GrassEditorSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018B18BF7B25001E6CCC /* GrassEditorSystem.cpp */; };
+		64BB7E2A190024DD00673DC3 /* FlagSelectorCombo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64BB7E29190024DD00673DC3 /* FlagSelectorCombo_moc.cpp */; };
+		64BB7E341900252A00673DC3 /* FlagSelectorCombo.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64BB7E321900252A00673DC3 /* FlagSelectorCombo.cpp */; };
 		765A0ADB18CE0C7F0044516F /* MaterialTemplateModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765A0AD918CE0C7F0044516F /* MaterialTemplateModel.cpp */; };
 		76741C8818A3BDE20044A0BF /* CacheRequest.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C8618A3BDE20044A0BF /* CacheRequest.cpp */; };
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
@@ -701,6 +703,9 @@
 		64B9018918BF7B15001E6CCC /* GrassEditorProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrassEditorProxy.h; sourceTree = "<group>"; };
 		64B9018B18BF7B25001E6CCC /* GrassEditorSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrassEditorSystem.cpp; sourceTree = "<group>"; };
 		64B9018C18BF7B25001E6CCC /* GrassEditorSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrassEditorSystem.h; sourceTree = "<group>"; };
+		64BB7E29190024DD00673DC3 /* FlagSelectorCombo_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlagSelectorCombo_moc.cpp; sourceTree = "<group>"; };
+		64BB7E321900252A00673DC3 /* FlagSelectorCombo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlagSelectorCombo.cpp; sourceTree = "<group>"; };
+		64BB7E331900252A00673DC3 /* FlagSelectorCombo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlagSelectorCombo.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		765A0AD918CE0C7F0044516F /* MaterialTemplateModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTemplateModel.cpp; sourceTree = "<group>"; };
@@ -2449,6 +2454,7 @@
 		E8BAD68D1859F50300C98C8D /* QtPropertyWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				64BB7E29190024DD00673DC3 /* FlagSelectorCombo_moc.cpp */,
 			);
 			path = QtPropertyWidgets;
 			sourceTree = "<group>";
@@ -3866,6 +3872,8 @@
 		E8C991C7184CD0EB00AFBF3F /* QtPropertyWidgets */ = {
 			isa = PBXGroup;
 			children = (
+				64BB7E321900252A00673DC3 /* FlagSelectorCombo.cpp */,
+				64BB7E331900252A00673DC3 /* FlagSelectorCombo.h */,
 			);
 			path = QtPropertyWidgets;
 			sourceTree = "<group>";
@@ -4238,6 +4246,7 @@
 				E8BAD6F51859F50300C98C8D /* DebugDrawSystem_moc.cpp in Build Sources */,
 				E8BAD6F61859F50300C98C8D /* EditorLightSystem_moc.cpp in Build Sources */,
 				E8C99337184CD0EC00AFBF3F /* QtPropertyDataInspColl.cpp in Build Sources */,
+				64BB7E2A190024DD00673DC3 /* FlagSelectorCombo_moc.cpp in Build Sources */,
 				E8C99250184CD0EC00AFBF3F /* btSequentialImpulseConstraintSolver.cpp in Build Sources */,
 				E8BAD7301859F50300C98C8D /* QtPropertyDataInspDynamic_moc.cpp in Build Sources */,
 				E8C992E5184CD0EC00AFBF3F /* SceneTreeItemForce.cpp in Build Sources */,
@@ -4358,6 +4367,7 @@
 				E8BAD7381859F50300C98C8D /* QtPropertyItem_moc.cpp in Build Sources */,
 				E8BAD7071859F50300C98C8D /* VisibilityToolProxy_moc.cpp in Build Sources */,
 				E8C99248184CD0EC00AFBF3F /* btKinematicCharacterController.cpp in Build Sources */,
+				64BB7E341900252A00673DC3 /* FlagSelectorCombo.cpp in Build Sources */,
 				E8C99201184CD0EC00AFBF3F /* btConvexPlaneCollisionAlgorithm.cpp in Build Sources */,
 				E8C992EE184CD0EC00AFBF3F /* StatusBar.cpp in Build Sources */,
 				E8C99254184CD0EC00AFBF3F /* btUniversalConstraint.cpp in Build Sources */,
