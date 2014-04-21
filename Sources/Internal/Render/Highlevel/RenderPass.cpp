@@ -351,7 +351,7 @@ void WaterReflectionRenderPass::Draw(RenderSystem * renderSystem)
     }
     else
     {
-        passClipCamera->CopyMathOnly(*drawCamera);        
+        passClipCamera->CopyMathOnly(*clipCamera);        
         UpdateCamera(passClipCamera);
         currClipCamera = passClipCamera;
         currClipCamera->PrepareDynamicParameters(&clipPlane);
