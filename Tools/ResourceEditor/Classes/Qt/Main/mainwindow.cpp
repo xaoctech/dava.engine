@@ -965,6 +965,7 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	if(scene == GetCurrentScene())
 	{
 		LoadUndoRedoState(scene);
+        UpdateModificationActionsState();
 	}
 }
 
