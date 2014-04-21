@@ -111,7 +111,11 @@ void RenderPass::DrawLayers(Camera *camera)
 
 
 MainForwardRenderPass::MainForwardRenderPass(const FastName & name, RenderPassID id):RenderPass(name, id),
-    reflectionTexture(NULL), refractionTexture(NULL), reflectionPass(NULL), refractionPass(NULL), needWaterPrepass(false)
+    reflectionTexture(NULL), 
+    refractionTexture(NULL), 
+    reflectionPass(NULL), 
+    refractionPass(NULL), 
+    needWaterPrepass(false)
 {
     const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
