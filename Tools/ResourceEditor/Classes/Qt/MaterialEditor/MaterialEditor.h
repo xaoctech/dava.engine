@@ -91,6 +91,7 @@ protected:
 private slots:
     void onFilterChanged();
     void onCurrentExpandModeChange( bool mode );
+    void onContextMenuPrepare(QMenu *menu);
     void autoExpand();
 
 private:
@@ -104,12 +105,16 @@ private:
         CHECKED_PROPERTIES = 0x8,
         CHECKED_TEXTURES = 0x10,
 
+        CHECKED_CLEAR_MATERIAL = 0x20,
+
         CHECKED_ALL = 0xff
     };
 
     void initActions();
     void initTemplates();
     void setTemplatePlaceholder( const QString& text );
+    QString GetTemplatePath(int index) const;
+    DAVA::uint32 ExecMaterialLoadingDialog(DAVA::uint32 initialState);
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
