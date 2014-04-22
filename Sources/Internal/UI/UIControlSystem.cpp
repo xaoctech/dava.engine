@@ -77,7 +77,11 @@ void UIControlSystem::SetScreen(UIScreen *_nextScreen, UIScreenTransition * _tra
 {
 	if (_nextScreen == currentScreen)
 	{
-		Logger::Warning("Tried to switch to current screen again.");
+		if (nextScreen != 0)
+		{
+			SafeRelease(nextScreenTransition);
+			SafeRelease(nextScreen);
+		}
 		return;
 	}
 
