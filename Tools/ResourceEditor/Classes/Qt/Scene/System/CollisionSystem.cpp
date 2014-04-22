@@ -393,6 +393,7 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		switch(command->GetId())
 		{
 		case CMDID_TRANSFORM:
+        case CMDID_BAKE_TRANSFORM:
 			UpdateCollisionObject(entity);
 			break;
 		case CMDID_ENTITY_CHANGE_PARENT:
@@ -512,8 +513,11 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		NULL != renderObject && entity->IsLodMain(0))
 	{
         RenderObject::eType objType = renderObject->GetType();
-        if (objType!=RenderObject::TYPE_SPRITE) 
-		    cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+        if( objType != RenderObject::TYPE_SPRITE &&
+            objType != RenderObject::TYPE_VEGETATION)
+        {
+            cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+        }
 	}
 
 	DAVA::Camera *camera = DAVA::GetCamera(entity);
