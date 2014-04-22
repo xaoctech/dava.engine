@@ -384,14 +384,15 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 		QMenu contextMenu;
 		if(entityCustomFlags & SceneTreeModel::CF_Disabled)
 		{
-			// disabled entities can only be removed
-			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
-            
             if(selectionSize == 1 && GetCamera(entity))
             {
                 AddCameraActions(contextMenu);
+                contextMenu.addSeparator();
             }
-		}
+
+            // disabled entities can only be removed
+            contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+        }
 		else
 		{
 			// look at
@@ -405,28 +406,26 @@ void SceneTree::ShowContextMenuEntity(DAVA::Entity *entity, int entityCustomFlag
 
 			// add/remove
 			contextMenu.addSeparator();
-
             if(entity->GetLocked() == false)
             {
-			contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
+			    contextMenu.addAction(QIcon(":/QtIcons/remove.png"), "Remove entity", this, SLOT(RemoveSelection()));
             }
 
 			// lock/unlock
-			contextMenu.addSeparator();
-			QAction *lockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_add.png"), "Lock", this, SLOT(LockEntities()));
-			QAction *unlockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_delete.png"), "Unlock", this, SLOT(UnlockEntities()));
-			if(entity->GetLocked())
-			{
-				lockAction->setDisabled(true);
-			}
-			else
-			{
-				unlockAction->setDisabled(true);
-			}
-
+ 			contextMenu.addSeparator();
+ 			QAction *lockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_add.png"), "Lock", QtMainWindow::Instance(), SLOT(OnLockTransform()));
+ 			QAction *unlockAction = contextMenu.addAction(QIcon(":/QtIcons/lock_delete.png"), "Unlock", QtMainWindow::Instance(), SLOT(OnUnlockTransform()));
+ 			if(entity->GetLocked())
+ 			{
+ 				lockAction->setDisabled(true);
+ 			}
+ 			else
+ 			{
+ 				unlockAction->setDisabled(true);
+ 			}
 			
 			// show save as/reload/edit for regular entity
-				// save model as
+			// save model as
 			contextMenu.addSeparator();
 			contextMenu.addAction(QIcon(":/QtIcons/save_as.png"), "Save Entity As...", this, SLOT(SaveEntityAs()));
 
@@ -577,36 +576,6 @@ void SceneTree::RemoveSelection()
 		sceneEditor->structureSystem->Remove(selection);
 	}
 }
-
-void SceneTree::LockEntities()
-{
-	SceneEditor2 *sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		SceneSelectionSystem *ss = sceneEditor->selectionSystem;
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			ss->GetSelectionEntity(i)->SetLocked(true);
-		}
-
-		sceneEditor->MarkAsChanged();
-	}
-}
-
-void SceneTree::UnlockEntities()
-{
-	SceneEditor2 *sceneEditor = treeModel->GetScene();
-	if(NULL != sceneEditor)
-	{
-		SceneSelectionSystem *ss = sceneEditor->selectionSystem;
-		for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-		{
-			ss->GetSelectionEntity(i)->SetLocked(false);
-		}
-		sceneEditor->MarkAsChanged();
-	}
-}
-
 
 void SceneTree::CollapseSwitch()
 {

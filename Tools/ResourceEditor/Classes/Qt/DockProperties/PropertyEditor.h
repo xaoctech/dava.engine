@@ -94,15 +94,18 @@ public slots:
 	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 
 	void ActionEditComponent();
-	void ActionBakeTransform();
 	void ActionEditMaterial();
-
+    void ActionEditSoundComponent();
+	void OnAddActionComponent();
+    void OnAddStaticOcclusionComponent();
+    void OnAddModelTypeComponent();
+    void OnRemoveComponent();
 	
 	void ConvertToShadow();
+
 	void DeleteRenderBatch();
 
     void CloneRenderBatchesToFixSwitchLODs();
-
 
 protected:
 	eViewMode viewMode;
@@ -142,6 +145,8 @@ protected:
 	PropEditorUserData* GetUserData(QtPropertyData *data) const;
 
 	QtPropertyToolButton * CreateButton(QtPropertyData *data, const QIcon & icon, const QString & tooltip);
+
+	QString GetDefaultFilePath(); 
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__

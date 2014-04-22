@@ -30,7 +30,7 @@
 #include "GameCore.h"
 
 #include "Database/MongodbObject.h"
-
+#include "Platform/DateTime.h"
 
 #include "Config.h"
 #include "BaseScreen.h"
@@ -65,6 +65,8 @@
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
 #include "StringFormatTest.h"
+#include "SaveImageTest.h"
+#include "DateTimeTest.h"
 
 using namespace DAVA;
 
@@ -91,6 +93,9 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
     new DFFontTest();
+
+    new SaveImageTest();
+    
     new StringFormatTest();
     new RectSpriteTest();
 
@@ -103,6 +108,7 @@ void GameCore::OnAppStarted()
  	new InputTest();
      new FormatsTest();
  	new DeviceInfoTest();
+ 	new DateTimeTest();
  	new TransparentWebViewTest();
      new LocalizationTest();
  

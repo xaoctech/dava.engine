@@ -51,7 +51,7 @@ void TextBlockRender::Prepare()
 	
 void TextBlockRender::DrawText()
 {
-	if (!textBlock->isMultilineEnabled)
+	if (!textBlock->isMultilineEnabled || textBlock->treatMultilineAsSingleLine)
 	{
 		WideString drawText = textBlock->text;
 		
