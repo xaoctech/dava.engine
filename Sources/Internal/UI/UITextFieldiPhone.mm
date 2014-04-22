@@ -99,16 +99,6 @@ float GetUITextViewSizeDivider()
 		[self setupTraits];
         
         textField.userInteractionEnabled = NO;
-		
-		// Attach to "keyboard shown/keyboard hidden" notifications.
-		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-		[center addObserver:self selector:@selector(keyboardDidShow:)
-					   name:UIKeyboardDidShowNotification object:nil];
-		[center addObserver:self selector:@selector(keyboardWillHide:)
-					   name:UIKeyboardWillHideNotification object:nil];
-
-		[center addObserver:self selector:@selector(keyboardFrameDidChange:)
-					   name:UIKeyboardDidChangeFrameNotification object:nil];
 
 		// Done!
 		[self addSubview:textField];
@@ -609,12 +599,31 @@ namespace DAVA
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
         HelperAppDelegate* appDelegate = [[UIApplication sharedApplication] delegate];
         [[appDelegate glController].backgroundView addSubview:textFieldHolder];
-        //[[[UIApplication sharedApplication] keyWindow] addSubview: textFieldHolder];
+        
+        // Attach to "keyboard shown/keyboard hidden" notifications.
+		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+		[center addObserver:textFieldHolder selector:@selector(keyboardDidShow:)
+					   name:UIKeyboardDidShowNotification object:nil];
+		[center addObserver:textFieldHolder selector:@selector(keyboardWillHide:)
+					   name:UIKeyboardWillHideNotification object:nil];
+        
+		[center addObserver:textFieldHolder selector:@selector(keyboardFrameDidChange:)
+					   name:UIKeyboardDidChangeFrameNotification object:nil];
+
+        [center addObserver:textFieldHolder selector:@selector(keyboardFrameDidChange:)
+					   name:UIKeyboardDidChangeFrameNotification object:nil];
     }
     
     void UITextFieldiPhone::HideField()
     {
         UITextFieldHolder * textFieldHolder = (UITextFieldHolder*)objcClassPtr;
+
+        // Attach to "keyboard shown/keyboard hidden" notifications.
+		NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+		[center removeObserver:textFieldHolder name:UIKeyboardDidShowNotification object:nil];
+		[center removeObserver:textFieldHolder name:UIKeyboardWillHideNotification object:nil];
+        [center removeObserver:textFieldHolder name:UIKeyboardDidChangeFrameNotification object:nil];
+
         [textFieldHolder removeFromSuperview];
     }
     
@@ -635,7 +644,9 @@ namespace DAVA
         textFieldHolder->textField.text = [[ [ NSString alloc ]  
                                             initWithBytes : (char*)string.data()   
                                             length : string.size() * sizeof(wchar_t)   
-                                            encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ] autorelease]; 
+                                            encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ] autorelease];
+        
+        [textFieldHolder->textField.undoManager removeAllActions];
     }
 	
     void UITextFieldiPhone::GetText(std::wstring & string) const
