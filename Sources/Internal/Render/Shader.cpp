@@ -42,6 +42,7 @@
 #include "Utils/CRC32.h"
 #endif
 #include "Utils/Utils.h"
+#include "Render/ShaderCache.h"
 
 namespace DAVA
 {
@@ -491,12 +492,17 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
             case UT_FLOAT_MAT2:
             {
                 RENDER_VERIFY(glGetUniformfv(program, uniformStruct->location, (float32*)value));
-                Matrix2* m = (Matrix2*)value;
-                Matrix2 t;
-                for (int i = 0; i < 2; ++i)
-                    for (int j = 0; j < 2; ++j)
-                        t._data[i][j] = m->_data[j][i];
-                *m = t;
+                
+                
+                for(uint32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
+                {
+                    Matrix2* m = (Matrix2*)(((uint8*)value) + paramIndex * sizeof(Matrix2));
+                    Matrix2 t;
+                    for (int i = 0; i < 2; ++i)
+                        for (int j = 0; j < 2; ++j)
+                            t._data[i][j] = m->_data[j][i];
+                    *m = t;
+                }
                 
                 break;
             }
@@ -504,12 +510,17 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
             case UT_FLOAT_MAT3:
             {
                 RENDER_VERIFY(glGetUniformfv(program, uniformStruct->location, (float32*)value));
-                Matrix3* m = (Matrix3*)value;
-                Matrix3 t;
-                for (int i = 0; i < 3; ++i)
-                    for (int j = 0; j < 3; ++j)
-                        t._data[i][j] = m->_data[j][i];
-                *m = t;
+                
+                for(uint32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
+                {
+
+                    Matrix3* m = (Matrix3*)(((uint8*)value) + paramIndex * sizeof(Matrix3));
+                    Matrix3 t;
+                    for (int i = 0; i < 3; ++i)
+                        for (int j = 0; j < 3; ++j)
+                            t._data[i][j] = m->_data[j][i];
+                    *m = t;
+                }
                 
                 break;
             }
@@ -517,8 +528,12 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
             case UT_FLOAT_MAT4:
             {
                 RENDER_VERIFY(glGetUniformfv(program, uniformStruct->location, (float32*)value));
-                Matrix4* m = (Matrix4*)value;
-                m->Transpose();
+                
+                for(uint32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
+                {
+                    Matrix4* m = (Matrix4*)(((uint8*)value) + paramIndex * sizeof(Matrix4));
+                    m->Transpose();
+                }
                 
                 break;
             }
@@ -992,10 +1007,11 @@ void Shader::Bind()
         RENDER_VERIFY(glUseProgram(program));
         activeProgram = program;
     }
+}
     
-    //for (int32 k = 0; k < activeUniforms; ++k)
-    //{
-    //	Uniform* currentUniform = GET_UNIFORM(k);
+    
+void Shader::BindDynamicParameters()
+{
     for(uint8 k = 0; k < autobindUniformCount; ++k)
     {
         Uniform* currentUniform = autobindUniforms[k];
@@ -1301,6 +1317,10 @@ void Shader::Invalidate()
 {
     RenderResource::Invalidate();
     Recompile();
+    
+    ShaderAsset* asset = ShaderCache::Instance()->Get(assetName);
+    if (asset)
+        asset->BindShaderDefaults(this);
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 

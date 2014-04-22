@@ -112,6 +112,7 @@ TextBlock::TextBlock()
 	align = ALIGN_HCENTER|ALIGN_VCENTER;
 	RegisterTextBlock(this);
     isMultilineBySymbolEnabled = false;
+    treatMultilineAsSingleLine = false;
     
 	textBlockRender = NULL;
 }
@@ -374,8 +375,27 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 		
 		Size2i textSize;
 		stringSizes.clear();
-        
-		if(!isMultilineEnabled)
+
+        // This is a temporary fix to correctly handle long multiline texts
+        // which can't be broken to the separate lines.
+        if (isMultilineEnabled)
+        {
+            Vector<WideString> strings;
+            Vector2 rectSize;
+
+            if(isMultilineBySymbolEnabled)
+            {
+                font->SplitTextBySymbolsToStrings(text, rectSize, strings);
+            }
+            else
+            {
+                font->SplitTextToStrings(text, rectSize, strings);
+            }
+            
+            treatMultilineAsSingleLine = strings.size() == 1;
+        }
+
+		if(!isMultilineEnabled || treatMultilineAsSingleLine)
 		{
 			textSize = font->GetStringSize(text);
             pointsStr.clear();
@@ -536,6 +556,16 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 					textSize = font->GetStringSize(text);
 				};
 			}
+            
+            if (treatMultilineAsSingleLine)
+            {
+                // Another temporary solution to return correct multiline strings/
+                // string sizes.
+                multilineStrings.clear();
+                stringSizes.clear();
+                multilineStrings.push_back(text);
+				stringSizes.push_back(font->GetStringSize(text).dx);
+            }
 		}
 		else //if(!isMultilineEnabled)
 		{
@@ -729,26 +759,31 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
         cacheFinalSize.y = (float32)dy / Core::GetVirtualToPhysicalFactor();
         
         if (textBlockRender)
+        {
 			textBlockRender->Prepare();
+        }
+
         needRedraw = false;
     }
     
     mutex.Unlock();
-
 	Release();
 }
 	
 void TextBlock::PreDraw()
 {
 	if (textBlockRender)
+	{
 		textBlockRender->PreDraw();
+	}
 }
 	
 void TextBlock::Draw(const Color& textColor, const Vector2* offset/* = NULL*/)
 {
 	if (textBlockRender)
+	{
 		textBlockRender->Draw(textColor, offset);
-
+	}
 }
     
 TextBlock * TextBlock::Clone()

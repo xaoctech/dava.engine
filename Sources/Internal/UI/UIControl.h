@@ -955,6 +955,14 @@ public:
 	 \returns Animation object
 	 */
 	Animation *		VisibleAnimation(bool visible, bool hierarhic = true, int32 track = 0);
+    /**
+	 \brief Starts control recursive visible animation. This animation changing control visibility
+		on the next frame after the animation start.
+	 \param[in] visible New control recursive visible value.
+	 \param[in] track animation track. 0 by default.
+	 \returns Animation object
+	 */
+	Animation *		RecursiveVisibleAnimation(bool visible, int32 track = 0);
 	/**
 	 \brief Starts control removation animation. This animation removes control from the parent
 	 on the next frame  after the animation start.
@@ -976,6 +984,7 @@ protected:
 	void TouchableAnimationCallback(BaseObject * caller, void * param, void *callerData);
 	void DisabledAnimationCallback(BaseObject * caller, void * param, void *callerData);
 	void VisibleAnimationCallback(BaseObject * caller, void * param, void *callerData);
+    void RecursiveVisibleAnimationCallback(BaseObject * caller, void * param, void *callerData);
 	void RemoveControlAnimationCallback(BaseObject * caller, void * param, void *callerData);
 
 public:
@@ -1245,7 +1254,6 @@ protected:
 	// boolean flags are grouped here to pack them together (see please DF-2149).
 	bool exclusiveInput : 1;
     bool recursiveVisible : 1;
-    bool internalVisible : 1;
 	bool visible : 1;
 	bool clipContents : 1;
 	bool debugDrawEnabled : 1;
@@ -1315,8 +1323,6 @@ protected:
 
     void DrawDebugRect(const UIGeometricData &geometricData, bool useAlpha = false);
 	void DrawPivotPoint(const Rect &drawRect);
-
-    virtual void SetInternalVisible(bool isVisible);
 
 private:
 	String	name;

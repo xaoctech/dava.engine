@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "FileSystem/Logger.h"
+#include "Utils/StringFormat.h"
 
 /**
 	\page tutorial_debug Debugging
@@ -72,7 +73,7 @@
 
 
 
-#if defined(__DAVAENGINE_DEBUG__)
+#if defined(__DAVAENGINE_DEBUG__) && defined(ENABLE_ASSERT_BREAK)
 
     #if defined(__DAVAENGINE_WIN32__)
 
@@ -95,7 +96,22 @@
 #endif  //__DAVAENGINE_DEBUG__
 
 
-#if !defined(__DAVAENGINE_DEBUG__) && !defined(ENABLE_ASSERT_MESSAGE)
+#if defined(ENABLE_ASSERT_LOGGING)
+    #define LogFunction(logmessage) { DAVA::Logger::Instance()->Warning(logmessage); }
+#else //ENABLE_ASSERT_LOGGING
+    #define LogFunction(logmessage)
+#endif //ENABLE_ASSERT_LOGGING
+
+#if defined(ENABLE_ASSERT_MESSAGE)
+    #define MessageFunction(messagetype, message) { DAVA::DVAssertMessage::ShowMessage(messagetype, message); }
+#else //ENABLE_ASSERT_MESSAGE
+    #define MessageFunction(messagetype, message)
+#endif //ENABLE_ASSERT_MESSAGE
+
+
+
+
+#if !defined(__DAVAENGINE_DEBUG__) && !defined(ENABLE_ASSERT_MESSAGE) && !defined(ENABLE_ASSERT_LOGGING) && !defined(ENABLE_ASSERT_BREAK)
 
 	// no assert functions in release builds
 	#define DVASSERT(expr)
@@ -109,24 +125,27 @@
 #define DVASSERT(expr)\
 	if (!(expr))\
 	{\
-		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
-		DAVA::DVAssertMessage::ShowMessage(DAVA::DVAssertMessage::ALWAYS_MODAL, "*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__);\
+        DAVA::String messageText = DAVA::Format("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__); \
+        LogFunction(messageText.c_str());\
+		MessageFunction(DAVA::DVAssertMessage::ALWAYS_MODAL, messageText.c_str());\
 		DebugBreak()\
 	}\
 
 #define DVASSERT_MSG(expr, msg)\
 	if (!(expr))\
 	{\
-		DAVA::Logger::Instance()->Warning("*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
-		DAVA::DVAssertMessage::ShowMessage(DAVA::DVAssertMessage::ALWAYS_MODAL, "*** Warning : DV_ASSERT Expression(%s) msg(%s),\n                 File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+        DAVA::String messageText = DAVA::Format("*** Warning : DV_ASSERT Expression(%s),\n                         File(%s), Line(%d)\n", #expr, __FILE__, __LINE__); \
+        LogFunction(messageText.c_str());\
+		MessageFunction(DAVA::DVAssertMessage::ALWAYS_MODAL, messageText.c_str());\
 		DebugBreak()\
 	}\
 
 #define DVWARNING(expr, msg)\
     if (!(expr))\
     {\
-        DAVA::Logger::Instance()->Warning("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
-		DAVA::DVAssertMessage::ShowMessage(DAVA::DVAssertMessage::TRY_NONMODAL, "*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__);\
+        DAVA::String messageText = DAVA::Format("*** Warning : DV_WARNING Expression(%s) msg(%s),\n                         File(%s), Line(%d)\n", #expr, msg, __FILE__, __LINE__); \
+        LogFunction(messageText.c_str());\
+		MessageFunction(DAVA::DVAssertMessage::TRY_NONMODAL, messageText.c_str());\
     }\
 
 #define DVVERIFY(expr) DVASSERT(expr)

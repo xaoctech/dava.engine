@@ -41,6 +41,8 @@
 
 #include "../Qt/Main/QtUtils.h"
 
+#include "Qt/SoundComponentEditor/FMODSoundBrowser.h"
+
 using namespace DAVA;
 
 SceneExporter::SceneExporter()
@@ -62,6 +64,11 @@ void SceneExporter::SetInFolder(const FilePath &folderPathname)
 void SceneExporter::SetOutFolder(const FilePath &folderPathname)
 {
     sceneUtils.SetOutFolder(folderPathname);
+}
+
+void SceneExporter::SetOutSoundsFolder(const FilePath &folderPathname)
+{
+    soundsOutFolder = folderPathname;
 }
 
 void SceneExporter::SetGPUForExporting(const String &newGPU)
@@ -116,7 +123,6 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
     
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true); 
     
-    scene->Update(0.1f);
     //Export scene data
     RemoveEditorNodes(scene);
     
@@ -125,13 +131,14 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
         RemoveEditorCustomProperties(scene);
     }
 
-    ExportDescriptors(scene, errorLog);
+    bool sceneWasExportedCorrectly = ExportDescriptors(scene, errorLog);
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
-    ExportLandscape(scene, errorLog);
+    sceneWasExportedCorrectly &= ExportLandscape(scene, errorLog);
+    sceneWasExportedCorrectly &= ExportVegetation(scene, errorLog);
 
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
@@ -141,9 +148,19 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 	if(!moved)
 	{
 		errorLog.insert(Format("Can't move file %s", fileName.GetAbsolutePathname().c_str()));
+        sceneWasExportedCorrectly = false;
 	}
     
+    ExportSounds(fileName);
+
     SceneValidator::Instance()->SetPathForChecking(oldPath);
+    
+    if(!sceneWasExportedCorrectly)
+    {   // *** to highlight this message from other error messages
+        Logger::Error("***  Scene %s was exported with errors!", fileName.GetAbsolutePathname().c_str());
+    }
+    
+    return;
 }
 
 void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
@@ -217,10 +234,12 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 }
 
 
-void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
+bool SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
+    bool allDescriptorsWereExported = true;
+    
     DAVA::TexturesMap textures;
-    SceneHelper::EnumerateSceneTextures(scene, textures);
+    SceneHelper::EnumerateSceneTextures(scene, textures, SceneHelper::INCLUDE_NULL);
 
     auto endIt = textures.end();
     for(auto it = textures.begin(); it != endIt; ++it)
@@ -230,13 +249,14 @@ void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
         {
             continue;
         }
-        
-        ExportTextureDescriptor(it->first, errorLog);
+
+        allDescriptorsWereExported &= ExportTextureDescriptor(it->first, errorLog);
     }
 
     textures.clear();
+    
+    return allDescriptorsWereExported;
 }
-
 
 bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog)
 {
@@ -344,17 +364,57 @@ void SceneExporter::ExportFolder(const String &folderName, Set<String> &errorLog
     SafeRelease(fileList);
 }
 
+void SceneExporter::ExportSounds(const FilePath &scenePath)
+{
+#ifdef DAVA_FMOD
+    FilePath sfxDir = FMODSoundBrowser::MakeFEVPathFromScenePath(scenePath).GetDirectory();
+    if(sfxDir.IsEmpty())
+        return;
 
+    if(exportForGPU != GPU_POWERVR_IOS && exportForGPU != GPU_UNKNOWN)
+    {
+        String pathStr = sfxDir.GetAbsolutePathname();
+        pathStr = pathStr.substr(0, pathStr.length() - 4) + "Android/";
+        sfxDir = FilePath(pathStr);
+    }
 
-void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
+    if(!soundsOutFolder.IsEmpty())
+    {
+        if(!soundsOutFolder.Exists())
+            FileSystem::Instance()->CreateDirectory(soundsOutFolder, true);
+
+        FileSystem::Instance()->CopyDirectory(sfxDir, soundsOutFolder, true);
+    }
+#endif
+}
+
+bool SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     DVASSERT(scene);
 
     Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
-        sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
+        return sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
     }
+    
+    return true;
+}
+
+bool SceneExporter::ExportVegetation(Scene *scene, Set<String> &errorLog)
+{
+    DVASSERT(scene);
+    
+    bool wasExported = true;
+    
+    VegetationRenderObject *vegetation = FindVegetation(scene);
+    if (vegetation)
+    {
+        wasExported |= sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
+        wasExported |= sceneUtils.CopyFile(vegetation->GetVegetationMapPath(), errorLog);
+    }
+    
+    return wasExported;
 }
 
 void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog)
@@ -379,8 +439,13 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
 		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
         
         DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
-        DAVA::Texture *tex = texturesMap[FILEPATH_MAP_KEY(descriptor->pathname)];
-        tex->Reload();
+        
+        DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
+        if(found != texturesMap.end())
+        {
+            DAVA::Texture *tex = found->second;
+            tex->Reload();
+        }
     }
 }
 

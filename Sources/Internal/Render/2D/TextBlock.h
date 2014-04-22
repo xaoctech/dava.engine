@@ -123,16 +123,16 @@ protected:
 	int32 cacheDx;
 	int32 cacheDy;
 	int32 cacheW;
-	
-	Font * font;
-	WideString text;
-    WideString pointsStr;
+
     int32 fittingType;
     Vector2 rectSize;
 	Vector2 position;
 	Vector2 pivotPoint;
 	int32 align;
 
+	Font * font;
+	WideString text;
+    WideString pointsStr;
 	Vector<WideString> multilineStrings;
 	Vector<int32> stringSizes;
     
@@ -142,6 +142,7 @@ protected:
     bool isMultilineBySymbolEnabled:1;
 	bool isPredrawed:1;
 	bool cacheUseJustify:1;
+    bool treatMultilineAsSingleLine:1;
 
 	friend class TextBlockRender;
 	friend class TextBlockSoftwareRender;

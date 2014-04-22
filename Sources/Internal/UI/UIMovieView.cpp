@@ -81,12 +81,6 @@ void UIMovieView::SetVisible(bool isVisible, bool hierarchic)
 	movieViewControl->SetVisible(isVisible);
 }
 
-void UIMovieView::SetInternalVisible(bool isVisible)
-{
-    UIControl::SetInternalVisible(isVisible);
-    movieViewControl->SetVisible(internalVisible);
-}
-
 void UIMovieView::Play()
 {
 	movieViewControl->Play();
@@ -133,4 +127,15 @@ void UIMovieView::SystemDraw(const UIGeometricData &geometricData)
 #endif
 }
 
+void UIMovieView::WillAppear()
+{
+    UIControl::WillAppear();
+    movieViewControl->SetVisible(GetVisible());
+}
+
+void UIMovieView::WillDisappear()
+{
+    UIControl::WillDisappear();
+    movieViewControl->SetVisible(false);
+}
 };
