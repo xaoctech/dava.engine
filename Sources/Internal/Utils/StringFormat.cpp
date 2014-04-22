@@ -29,6 +29,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h> 
 #include "Utils/StringFormat.h"
 #include "Utils/Utils.h"
 #include "Debug/DVAssert.h"
@@ -70,11 +71,6 @@ String GetIndentString(char8 indentChar, int32 level)
 //         WideString info( Format(L"%ls", tank->GetName().c_str()) ); // tank->GetName() -> WideString&
 //         activeTankInfo->SetText(info);
 
-
-    
-    
-#if defined(__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)
-    
 #define ZEROPAD	1		/* pad with zero */
 #define SIGN	2		/* unsigned/signed long */
 #define PLUS	4		/* show plus */
@@ -83,13 +79,14 @@ String GetIndentString(char8 indentChar, int32 level)
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 #define LONG_LONG  128  /* use to convert long long '%lld' */
-    
-    
-#define do_div(n,base) ({ \
-int32 __res; \
-__res = ((unsigned long long) n) % (unsigned) base; \
-n = ((unsigned long long) n) / (unsigned) base; \
-__res; })
+  
+int32 do_div(int64 &n, int32 base)
+{
+	int32 __res;
+	__res = ((unsigned long long) n) % (unsigned) base;
+	n = ((unsigned long long) n) / (unsigned) base;
+	return __res;
+}
     
     static int32 SkipAtoi(const char16 **s)
     {
@@ -249,7 +246,13 @@ __res; })
             else if (precision == 0)
                 whole++;
         }
-        
+
+		if (tail >= pow(10.f, precision))
+		{
+			whole++;
+			tail -= pow(10.f, precision);
+		}
+		
         type = SIGN | LEFT;
         char16 *firstStr = Number(str, whole, 10, -1, -1, type);
         if (isNegativeValue)
@@ -267,7 +270,7 @@ __res; })
                 firstStr++;
             }
         }
-        if(tail)
+        if (precision > 0)
         {
             *firstStr++ = '.';
             
@@ -798,10 +801,6 @@ __res; })
         return str-buf;
     }
     
-#endif //#if defined(__DAVAENDGINE_ANDROID__) || defined(__DAVAENDGINE_IPHONE__)
-    
-    
-
 //! formatting function (use printf syntax (%ls for WideString))
 WideString Format(const char16 * text, ...)
 {
@@ -811,6 +810,9 @@ WideString Format(const char16 * text, ...)
     va_list ll;
 	va_start(ll, text);
 
+    Vsnwprintf((char16 *)buffer, FORMAT_STRING_MAX_LEN, (char16 *)text, ll);
+
+/*
 #if defined(_WIN32)
 	vswprintf((wchar_t *)buffer, (wchar_t *)text, ll);
 #elif defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_IPHONE__)
@@ -819,6 +821,8 @@ WideString Format(const char16 * text, ...)
     // MAC_OS & other nix systems
 	vswprintf((wchar_t *)buffer, FORMAT_STRING_MAX_LEN, (wchar_t *)text, ll);
 #endif
+	*/
+
 	va_end(ll);
 
 	str = buffer;

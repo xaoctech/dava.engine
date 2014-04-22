@@ -60,6 +60,9 @@ const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 
+const FastName NMaterial::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
+const FastName NMaterial::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
+
 const FastName NMaterial::PARAM_LIGHT_POSITION0("lightPosition0");
 const FastName NMaterial::PARAM_PROP_AMBIENT_COLOR("ambientColor");
 const FastName NMaterial::PARAM_PROP_DIFFUSE_COLOR("diffuseColor");
@@ -83,6 +86,10 @@ const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
+const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
+const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
+
+
 const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
 const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
@@ -90,6 +97,11 @@ const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED")
 const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
+const FastName NMaterial::FLAG_SPECULAR = FastName("SPECULAR");
+
+const FastName NMaterial::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
+
+const FastName NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL = FastName("DEBUG_UNITY_Z_NORMAL");
 
 const FastName NMaterial::FLAG_LIGHTMAPONLY = FastName("MATERIAL_VIEW_LIGHTMAP_ONLY");
 const FastName NMaterial::FLAG_TEXTUREONLY = FastName("MATERIAL_VIEW_TEXTURE_ONLY");
@@ -113,6 +125,8 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 	NMaterial::FLAG_LIGHTMAPONLY,
 	NMaterial::FLAG_TEXTUREONLY,
 	NMaterial::FLAG_SETUPLIGHTMAP,
+
+    NMaterial::FLAG_DEBUG_UNITY_Z_NORMAL,
 	
 	NMaterial::FLAG_VIEWALBEDO,
 	NMaterial::FLAG_VIEWAMBIENT,
@@ -122,12 +136,21 @@ static FastName RUNTIME_ONLY_FLAGS[] =
 
 static FastName RUNTIME_ONLY_PROPERTIES[] =
 {
-    NMaterial::PARAM_LIGHTMAP_SIZE,
+
+	NMaterial::PARAM_LIGHTMAP_SIZE,
     NMaterial::PARAM_LIGHT_POSITION0,
     NMaterial::PARAM_LIGHT_INTENSITY0,
     NMaterial::PARAM_LIGHT_AMBIENT_COLOR,
     NMaterial::PARAM_LIGHT_DIFFUSE_COLOR,
-    NMaterial::PARAM_LIGHT_SPECULAR_COLOR
+    NMaterial::PARAM_LIGHT_SPECULAR_COLOR,
+    NMaterial::PARAM_RCP_SCREEN_SIZE,
+    NMaterial::PARAM_SCREEN_OFFSET
+};
+
+static FastName RUNTIME_ONLY_TEXTURES[] =
+{
+    NMaterial::TEXTURE_DYNAMIC_REFLECTION,
+    NMaterial::TEXTURE_DYNAMIC_REFRACTION
 };
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -363,6 +386,10 @@ void NMaterial::Save(KeyedArchive * archive,
 		it != textures.end();
 		++it)
 	{
+
+		if (IsRuntimeTexture(it->first))
+			continue;
+		
         FilePath texturePath = it->second->GetPath();
         if(!texturePath.IsEmpty())
         {
@@ -425,14 +452,71 @@ void NMaterial::Save(KeyedArchive * archive,
 void NMaterial::Load(KeyedArchive * archive,
 					 SerializationContext* serializationContext)
 {
+    bool loadIds = true;
+    bool loadName = true;
+    bool loadGroup = true;
+    bool loadFlags = true;
+    bool loadProperties = true;
+    bool loadTextures = true;
+    bool loadTemplate = true;
+    bool loadClear = false;
+
 	DataNode::Load(archive, serializationContext);
+
+    KeyedArchive *loadSettings = serializationContext->customProperties->GetArchive("material");
+    if(NULL != loadSettings)
+    {
+        loadIds = loadSettings->GetBool("loadIds", loadIds);
+        loadName = loadSettings->GetBool("loadName", loadName);
+        loadGroup = loadSettings->GetBool("loadGroup", loadGroup);
+        loadFlags = loadSettings->GetBool("loadFlags", loadFlags);
+        loadProperties = loadSettings->GetBool("loadProperties", loadProperties);
+        loadTextures = loadSettings->GetBool("loadTextures", loadTextures);
+        loadTemplate = loadSettings->GetBool("loadTemplate", loadTemplate);
+        loadClear = loadSettings->GetBool("loadClear", loadClear);
+    }
+
+    if(loadClear)
+    {
+        materialSetFlags.clear();
+
+	    for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
+		    it != materialProperties.end();
+		    ++it)
+	    {
+		    SafeDelete(it->second);
+	    }
+	    materialProperties.clear();
 	
-	materialName = FastName(archive->GetString("materialName"));
-	materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
-	materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
-	pointer = materialKey;
+	    for(HashMap<FastName, TextureBucket*>::iterator it = textures.begin();
+		    it != textures.end();
+		    ++it)
+	    {
+		    SafeDelete(it->second);
+	    }
+	    textures.clear();
 	
-	//DataNode::SetName(materialName.c_str());
+	    SafeDelete(illuminationParams);
+    }
+	
+    if(loadName && archive->IsKeyExists("materialName"))
+    {
+        materialName = FastName(archive->GetString("materialName"));
+    }
+
+    if(loadIds)
+    {
+	    if(archive->IsKeyExists("materialType"))
+        {
+            materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
+        }
+
+	    if(archive->IsKeyExists("materialKey")) 
+        {
+            materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
+	        pointer = materialKey;
+        }
+    }
 	
 	if(archive->IsKeyExists("materialCustomStates"))
 	{
@@ -450,14 +534,14 @@ void NMaterial::Load(KeyedArchive * archive,
 			instancePassRenderStates.insert(FastName(it->first.c_str()), currentHandle);
 		}
 	}
-	
-	if(archive->IsKeyExists("materialGroup"))
+
+	if(loadGroup && archive->IsKeyExists("materialGroup"))
 	{
 		SetMaterialGroup(FastName(archive->GetString("materialGroup").c_str()));
 	}
 	else
 	{
-		SetMaterialGroup(FastName());
+		SetMaterialGroup(materialGroup);
 	}
 	
 	// orderedQuality will be set, after SetMaterialGroup call
@@ -465,42 +549,51 @@ void NMaterial::Load(KeyedArchive * archive,
 	// to process loading with exactly ordered quality
 	currentQuality = orderedQuality;
 	
-	String materialTemplateName = archive->GetString("materialTemplate");
-	if(materialTemplateName.size() > 0)
-	{
-		NMaterialHelper::SwitchTemplate(this, FastName(materialTemplateName.c_str()));
-	}
-	else
-	{
-		//VI: will inherit from parent probably
-		materialTemplate = NULL;
-	}
+    if(loadTemplate && archive->IsKeyExists("materialTemplate"))
+    {
+	    String materialTemplateName = archive->GetString("materialTemplate");
+	    if(materialTemplateName.size() > 0)
+	    {
+		    NMaterialHelper::SwitchTemplate(this, FastName(materialTemplateName.c_str()));
+	    }
+	    else
+	    {
+		    //VI: will inherit from parent probably
+		    materialTemplate = NULL;
+	    }
+    }
 	
-	const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
-	for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
-		it != propsMap.end();
-		++it)
-	{
-		const VariantType* propVariant = it->second;
-		DVASSERT(VariantType::TYPE_BYTE_ARRAY == propVariant->type);
-		DVASSERT(propVariant->AsByteArraySize() >= (sizeof(uint32) +sizeof(uint32)));
+    if(loadProperties && archive->IsKeyExists("properties"))
+    {
+	    const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
+	    for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
+		    it != propsMap.end();
+		    ++it)
+	    {
+		    const VariantType* propVariant = it->second;
+		    DVASSERT(VariantType::TYPE_BYTE_ARRAY == propVariant->type);
+		    DVASSERT(propVariant->AsByteArraySize() >= (sizeof(uint32) +sizeof(uint32)));
 		
-		const uint8* ptr = propVariant->AsByteArray();
+		    const uint8* ptr = propVariant->AsByteArray();
 		
-		SetPropertyValue(FastName(it->first),
-						 *(Shader::eUniformType*)ptr,
-						 *(ptr + sizeof(Shader::eUniformType)),
-						 ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
-	}
-	
-	const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
-	for(Map<String, VariantType*>::const_iterator it = texturesMap.begin();
-		it != texturesMap.end();
-		++it)
-	{
-		String relativePathname = it->second->AsString();
-		SetTexture(FastName(it->first), serializationContext->GetScenePath() + relativePathname);
-	}
+		    SetPropertyValue(FastName(it->first),
+						     *(Shader::eUniformType*)ptr,
+						     *(ptr + sizeof(Shader::eUniformType)),
+						     ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
+	    }
+    }
+
+    if(loadTextures && archive->IsKeyExists("textures"))
+    {
+	    const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
+	    for(Map<String, VariantType*>::const_iterator it = texturesMap.begin();
+		    it != texturesMap.end();
+		    ++it)
+	    {
+		    String relativePathname = it->second->AsString();
+		    SetTexture(FastName(it->first), serializationContext->GetScenePath() + relativePathname);
+	    }
+    }
 	
 	if(archive->IsKeyExists("illumination.isUsed"))
 	{
@@ -512,15 +605,18 @@ void NMaterial::Load(KeyedArchive * archive,
 		illuminationParams->SetLightmapSize(archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize));
 	}
 	
-	const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
-	for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
-		it != flagsMap.end();
-		++it)
-	{
-		SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
-	}
+    if(loadFlags && archive->IsKeyExists("setFlags"))
+    {
+	    const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
+	    for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
+		    it != flagsMap.end();
+		    ++it)
+	    {
+		    SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
+	    }
+    }
 	
-	if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+	if(loadIds && archive->IsKeyExists("parentMaterialKey") && NMaterial::MATERIALTYPE_INSTANCE == materialType)
 	{
 		uint64 parentKey = archive->GetUInt64("parentMaterialKey");
 		serializationContext->AddBinding(parentKey, this);
@@ -1826,6 +1922,11 @@ bool NMaterial::IsRuntimeProperty(const FastName& propName)
 	return IsNamePartOfArray(propName, RUNTIME_ONLY_PROPERTIES, COUNT_OF(RUNTIME_ONLY_PROPERTIES));
 }
 
+bool NMaterial::IsRuntimeTexture(const FastName& textureName)
+{
+    return IsNamePartOfArray(textureName, RUNTIME_ONLY_TEXTURES, COUNT_OF(RUNTIME_ONLY_TEXTURES));
+}
+
 void NMaterial::SetMaterialTemplateName(const FastName& templateName)
 {
 	const NMaterialTemplate* matTemplate = NMaterialTemplateCache::Instance()->Get(templateName);
@@ -2696,12 +2797,15 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 	
 	if(0 == ret.size())
 	{
-		ret.reserve(3);
+		ret.reserve(5);
 		ret.push_back(FLAG_VERTEXFOG);
         ret.push_back(FLAG_FOG_LINEAR);
 		ret.push_back(FLAG_FLATCOLOR);
 		ret.push_back(FLAG_TEXTURESHIFT);
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
+        ret.push_back(FLAG_SPECULAR);
+        ret.push_back(FLAG_TANGENT_SPACE_WATER_REFLECTIONS);
+        ret.push_back(FLAG_DEBUG_UNITY_Z_NORMAL);
 	}
 	return ret;
 }
