@@ -32,6 +32,10 @@
 #include "Sound/SoundSystem.h"
 #include "Scene3D/Entity.h"
 
+#ifdef __DAVAENGINE_IPHONE__
+#include "fmodiphone.h"
+#endif
+
 namespace DAVA
 {
 Map<FilePath, FMOD::Sound*> soundMap;
@@ -50,6 +54,12 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
 	if(flags & SOUND_EVENT_CREATE_3D)
         fmodMode |= FMOD_3D;
     
+    if(flags & SOUND_EVENT_CREATE_LOOP)
+        fmodMode |= FMOD_LOOP_NORMAL;
+    
+    if(flags & SOUND_EVENT_CREATE_STREAM)
+        fmodMode |= FMOD_CREATESTREAM;
+    
     soundMapMutex.Lock();
     Map<FilePath, FMOD::Sound*>::iterator it;
     it = soundMap.find(fileName);
@@ -60,41 +70,7 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
     }
     else
     {
-        File * file = File::Create(fileName, File::OPEN | File::READ);
-        if(!file)
-        {
-            soundMapMutex.Unlock();
-            SafeRelease(sound);
-            return 0;
-        }
-
-        uint32 fileSize = file->GetSize();
-        if(!fileSize)
-        {
-            soundMapMutex.Unlock();
-            SafeRelease(sound);
-            SafeRelease(file);
-            return 0;
-        }
-
-        sound->soundData = new uint8[fileSize];
-        file->Read(sound->soundData, fileSize);
-        SafeRelease(file);
-
-        FMOD_CREATESOUNDEXINFO exInfo;
-        memset(&exInfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
-        exInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
-        exInfo.length = fileSize;
-
-        if(flags & SOUND_EVENT_CREATE_STREAM)
-        {
-		    FMOD_VERIFY(soundSystem->fmodSystem->createStream((char *)sound->soundData, FMOD_LOOP_NORMAL | FMOD_OPENMEMORY | flags, &exInfo, &sound->fmodSound));
-        }
-        else
-        {
-            FMOD_VERIFY(soundSystem->fmodSystem->createSound((char *)sound->soundData, FMOD_LOOP_NORMAL | FMOD_OPENMEMORY | fmodMode, &exInfo, &sound->fmodSound));
-            SafeDelete(sound->soundData);
-        }
+        FMOD_VERIFY(soundSystem->fmodSystem->createSound(GetFMODPath(fileName), fmodMode, 0, &sound->fmodSound));
 
         if(!sound->fmodSound)
         {
@@ -105,8 +81,6 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
 
         if(flags & SOUND_EVENT_CREATE_LOOP)
             sound->SetLoopCount(-1);
-        else
-            sound->SetLoopCount(0);
 
         soundMap[sound->fileName] = sound->fmodSound;
         soundRefsMap[sound->fmodSound] = 1;
@@ -121,7 +95,6 @@ FMODFileSoundEvent::FMODFileSoundEvent(const FilePath & _fileName, uint32 _flags
     fileName(_fileName),
     flags(_flags),
     priority(_priority),
-    soundData(0),
     fmodSound(0),
     fmodInstanceGroup(0)
 {
@@ -129,8 +102,6 @@ FMODFileSoundEvent::FMODFileSoundEvent(const FilePath & _fileName, uint32 _flags
 
 FMODFileSoundEvent::~FMODFileSoundEvent()
 {
-    SafeDeleteArray(soundData);
-
     if(fmodInstanceGroup)
         FMOD_VERIFY(fmodInstanceGroup->release());
 
