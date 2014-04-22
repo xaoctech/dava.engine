@@ -54,6 +54,8 @@ namespace DAVA
 #ifdef DAVA_FMOD
 class FMODFileSoundEvent;
 class FMODSoundEvent;
+    
+const char * GetFMODPath(const FilePath & path);
 #endif
 
 class Component;
@@ -113,6 +115,11 @@ public:
     int32 GetChannelsUsed() const;
     int32 GetChannelsMax() const;
 
+#ifdef __DAVAENGINE_IPHONE__
+    bool IsSystemMusicPlaying();
+    void DuckSystemMusic(bool duck);
+#endif
+    
 protected:
     void GetGroupEventsNamesRecursive(FMOD::EventGroup * group, String & currNamePath, Vector<String> & names);
 
