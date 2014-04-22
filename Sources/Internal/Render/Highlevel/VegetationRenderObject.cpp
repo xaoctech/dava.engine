@@ -297,7 +297,7 @@ static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
     1.4f
 };
 
-#define VEGETATION_DRAW_LOD_COLOR
+//#define VEGETATION_DRAW_LOD_COLOR
 
 static Color RESOLUTION_COLOR[] =
 {
@@ -1535,14 +1535,29 @@ void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
                                               Vector2 unitSize,
                                               Vector<uint32>& layerOffsets)
 {
+    uint32 clustersPerTile = maxClusters * maxClusters;
+    float32 atomicOffsetY = unitSize.y / clustersPerTile;
+    
+    Vector<uint32> shuffleDepth;
+    shuffleDepth.reserve(maxTotalClusters);
+    
     Vector<uint32> shuffleDensity;
     shuffleDensity.reserve(maxTotalClusters);
-    for(uint32 i = 0; i < maxTotalClusters; ++i)
+    
+    Vector<uint32> depthScratchArray;
+    depthScratchArray.reserve(clustersPerTile);
+    
+    Vector<uint32> densityScratchArray;
+    densityScratchArray.reserve(clustersPerTile);
+    
+    for(uint32 i = 0; i < clustersPerTile; ++i)
     {
-        shuffleDensity.push_back((i % MAX_DENSITY_LEVELS) + 1);
+        depthScratchArray[i] = i;
+        densityScratchArray[i] = (i % MAX_DENSITY_LEVELS) + 1;
     }
-
+    
     size_t vertexIndex = 0;
+    uint32 totalTiles = tilesPerRow * tilesPerRow;
     for(uint32 layerIndex = 0; layerIndex < MAX_CLUSTER_TYPES; ++layerIndex)
     {
         layerOffsets[layerIndex] = vertexIndex;
@@ -1553,7 +1568,33 @@ void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
         const Vector3* clusterNormals = VEGETATION_CLUSTER_NORMALS[cellData.geometryId];
         uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
         
-        std::random_shuffle(shuffleDensity.begin(), shuffleDensity.end(), RandomShuffleFunc);
+        uint32 clusterCounter = 0;
+        for(uint32 i = 0; i < totalTiles; ++i)
+        {
+            std::random_shuffle(densityScratchArray.begin(), densityScratchArray.end(), RandomShuffleFunc);
+            std::random_shuffle(depthScratchArray.begin(), depthScratchArray.end(), RandomShuffleFunc);
+            for(uint32 k = 0; k < clustersPerTile; ++k)
+            {
+                shuffleDensity[clusterCounter] = densityScratchArray[k];
+                shuffleDepth[clusterCounter] = depthScratchArray[k];
+                clusterCounter++;
+            }
+        }
+        
+        DVASSERT(clusterCounter == maxTotalClusters);
+        
+        AABBox3 clusterBBox;
+        for(uint32 clusterVertexIndex = 0; clusterVertexIndex < clusterVertexCount; ++clusterVertexIndex)
+        {
+            clusterBBox.AddPoint(clusterVertices[clusterVertexIndex]);
+        }
+        
+        float32 clusterVisualSize = cellData.geometryScale.x * (clusterBBox.max.x - clusterBBox.min.x);
+        uint32 clustersInRow = unitSize.x / clusterVisualSize;
+        if(clustersInRow <= 0)
+        {
+            clustersInRow = 1;
+        }
         
         for(size_t clusterIndex = 0; clusterIndex < maxTotalClusters; ++clusterIndex)
         {
@@ -1568,8 +1609,8 @@ void VegetationRenderObject::GenerateVertices(uint32 maxClusters,
             
             Vector2 matrixCellStart(unitSize.x * matrixIndexX, unitSize.y * matrixIndexY);
             
-            float32 randomOffsetX = unitSize.x * Random::Instance()->RandFloat();
-            float32 randomOffsetY = unitSize.y * Random::Instance()->RandFloat();
+            float32 randomOffsetX = clusterVisualSize * (clusterIndex % clustersInRow) + clusterVisualSize * (0.5f - Random::Instance()->RandFloat());//unitSize.x * Random::Instance()->RandFloat();
+            float32 randomOffsetY = atomicOffsetY * shuffleDepth[clusterIndex]; //unitSize.y * Random::Instance()->RandFloat();
             
             Vector3 clusterCenter(matrixCellStart.x + randomOffsetX, matrixCellStart.y + randomOffsetY, 0.0f);
             
