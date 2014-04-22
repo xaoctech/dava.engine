@@ -42,7 +42,7 @@
 #include "Commands2/TransformCommand.h"
 #include "Commands2/BakeTransformCommand.h"
 #include "Commands2/EntityAddCommand.h"
-#include "Commands2/EntityLockCommand.h "
+#include "Commands2/EntityLockCommand.h"
 #include <QApplication>
 
 EntityModificationSystem::EntityModificationSystem(DAVA::Scene * scene, SceneCollisionSystem *colSys, SceneCameraSystem *camSys, HoodSystem *hoodSys)

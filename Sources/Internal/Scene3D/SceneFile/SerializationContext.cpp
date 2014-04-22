@@ -249,6 +249,7 @@ namespace DAVA
 		materialBindings.clear();
 
         customProperties->Release();
+        customProperties = NULL;
 	}
 	
 	void SerializationContext::ResolveMaterialBindings()

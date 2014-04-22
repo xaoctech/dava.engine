@@ -464,7 +464,7 @@ void NMaterial::Load(KeyedArchive * archive,
 	DataNode::Load(archive, serializationContext);
 
     KeyedArchive *loadSettings = serializationContext->customProperties->GetArchive("material");
-    if(NULL != loadProperties)
+    if(NULL != loadSettings)
     {
         loadIds = loadSettings->GetBool("loadIds", loadIds);
         loadName = loadSettings->GetBool("loadName", loadName);

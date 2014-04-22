@@ -93,7 +93,7 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
 	Shader * shaderCreatedWhileMutexWasLocked = compiledShaders.at(defines);
 	if (shaderCreatedWhileMutexWasLocked)
 	{
-		compileShaderMutex.Unlock();
+		compileShaderMutex.Unlock(); //test commit
 		return shaderCreatedWhileMutexWasLocked;
 	}
 
