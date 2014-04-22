@@ -92,7 +92,7 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 	    
 	new JPEGTest();
-    new SaveImageTest();
+    //new SaveImageTest();
     
     new StringFormatTest();
     new RectSpriteTest();
@@ -114,7 +114,7 @@ void GameCore::OnAppStarted()
  	new MemoryAllocatorsTest();
  	new HashMapTest();
  //	new SoundTest();
- 	new SplitTest();
+ 	//new SplitTest();
  	new AlignTest();
  	new EMailTest();
  	new DPITest();
