@@ -46,24 +46,47 @@
 
 namespace DAVA
 {
-    FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_OPENCALLBACK(const char * name, int unicode, unsigned int * filesize, void ** handle, void ** userdata);
-    FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_READCALLBACK(void * handle, void * buffer, unsigned int sizebytes, unsigned int * bytesread, void * userdata);
-    FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_SEEKCALLBACK(void * handle, unsigned int pos, void * userdata);
-    FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_CLOSECALLBACK(void * handle, void * userdata);
+    
+FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_OPENCALLBACK(const char * name, int unicode, unsigned int * filesize, void ** handle, void ** userdata);
+FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_READCALLBACK(void * handle, void * buffer, unsigned int sizebytes, unsigned int * bytesread, void * userdata);
+FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_SEEKCALLBACK(void * handle, unsigned int pos, void * userdata);
+FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_CLOSECALLBACK(void * handle, void * userdata);
 
 static const FastName SEREALIZE_EVENTTYPE_EVENTFILE("eventFromFile");
 static const FastName SEREALIZE_EVENTTYPE_EVENTSYSTEM("eventFromSystem");
 
+const char * GetFMODPath(const FilePath & path)
+{
+    if(path.GetType() == FilePath::PATH_IN_RESOURCES)
+    {
+        return path.GetFrameworkPath().c_str();
+    }
+    else
+    {
+        return path.GetAbsolutePathname().c_str();
+    }
+}
+    
 SoundSystem::SoundSystem()
 {
     DVASSERT(sizeof(FMOD_VECTOR) == sizeof(Vector3));
 
+    void * extraDriverData = 0;
+#ifdef __DAVAENGINE_IPHONE__
+    FMOD_IPHONE_EXTRADRIVERDATA iphoneDriverData;
+    Memset(&iphoneDriverData, 0, sizeof(FMOD_IPHONE_EXTRADRIVERDATA));
+    
+    iphoneDriverData.sessionCategory = FMOD_IPHONE_SESSIONCATEGORY_AMBIENTSOUND;
+    
+    extraDriverData = &iphoneDriverData;
+#endif
+    
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
 	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
 #ifdef DAVA_FMOD_PROFILE
-    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, 0));
+    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
 #else
-    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL, 0));
+    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL, extraDriverData));
 #endif
     FMOD_VERIFY(fmodSystem->setFileSystem(DAVA_FMOD_FILE_OPENCALLBACK, DAVA_FMOD_FILE_CLOSECALLBACK, DAVA_FMOD_FILE_READCALLBACK, DAVA_FMOD_FILE_SEEKCALLBACK, 0, 0, -1));
 }
@@ -233,14 +256,7 @@ void SoundSystem::LoadFEV(const FilePath & filePath)
         return;
 
     FMOD::EventProject * project = 0;
-    if(filePath.GetType() == FilePath::PATH_IN_RESOURCES)
-    {
-	    FMOD_VERIFY(fmodEventSystem->load(filePath.GetFrameworkPath().c_str(), 0, &project));
-    }
-    else
-    {
-        FMOD_VERIFY(fmodEventSystem->load(filePath.GetAbsolutePathname().c_str(), 0, &project));
-    }
+    FMOD_VERIFY(fmodEventSystem->load(GetFMODPath(filePath), 0, &project));
     
     if(project)
     {
@@ -530,7 +546,22 @@ void SoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
             ++it;
     }
 }
+    
+#ifdef __DAVAENGINE_IPHONE__
+bool SoundSystem::IsSystemMusicPlaying()
+{
+    bool ret = false;
+    FMOD_IPhone_OtherAudioIsPlaying(&ret);
+    return ret;
+}
 
+void SoundSystem::DuckSystemMusic(bool duck)
+{
+    FMOD_IPhone_DuckOtherAudio(duck);
+}
+
+#endif
+    
 FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_OPENCALLBACK(const char * name, int unicode, unsigned int * filesize, void ** handle, void ** userdata)
 {
     File * file = File::Create(FilePath(name), File::OPEN | File::READ);
