@@ -65,7 +65,6 @@
 #include "RectSpriteTest.h"
 #include "StringFormatTest.h"
 #include "SaveImageTest.h"
-
 #include "JPEGTest.h"
 
 using namespace DAVA;
@@ -91,7 +90,8 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
-
+	    
+	new JPEGTest();
     new SaveImageTest();
     
     new StringFormatTest();
@@ -122,7 +122,6 @@ void GameCore::OnAppStarted()
  	new CloneTest();
  	new PVRTest();
  	new DXTTest();
-    new JPEGTest();
  	new EntityTest();	
  	new MemoryAllocatorsTest();
  	new HashMapTest();
