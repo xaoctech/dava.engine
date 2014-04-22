@@ -57,11 +57,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MATERIAL_GROUP_LABEL "Group"
 #define MATERIAL_PROPERTIES_LABEL "Properties"
 #define MATERIAL_TEXTURES_LABEL "Textures"
+#define MATERIAL_TEMPLATE_LABEL "Template"
 
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
 , templatesFilterModel( NULL )
+, lastCheckState(CHECKED_ALL)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -83,14 +85,15 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// material tree
 	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
     QObject::connect(ui->materialTree, SIGNAL(Updated()), this, SLOT(autoExpand()));
+    QObject::connect(ui->materialTree, SIGNAL(ContextMenuPrepare(QMenu *)), this, SLOT(onContextMenuPrepare(QMenu *)));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
     QObject::connect(ui->actionAddGlobalMaterial, SIGNAL(triggered(bool)), this, SLOT(OnMaterialAddGlobal(bool)));
     QObject::connect(ui->actionRemoveGlobalMaterial, SIGNAL(triggered(bool)), this, SLOT(OnMaterialRemoveGlobal(bool)));
-    QObject::connect(ui->toolButtonSave, SIGNAL(clicked(bool)), this, SLOT(OnMaterialSave(bool)));
-    QObject::connect(ui->toolButtonLoad, SIGNAL(clicked(bool)), this, SLOT(OnMaterialLoad(bool)));
+    QObject::connect(ui->actionSaveMaterialPreset, SIGNAL(triggered(bool)), this, SLOT(OnMaterialSave(bool)));
+    QObject::connect(ui->actionLoadMaterialPreset, SIGNAL(triggered(bool)), this, SLOT(OnMaterialLoad(bool)));
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
@@ -102,7 +105,9 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	if(v2.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(1, v2.AsInt32());
 
     DAVA::VariantType savePath = posSaver.LoadValue("lastSavePath");
+    DAVA::VariantType loadState = posSaver.LoadValue("lastLoadState");
     if(savePath.GetType() == DAVA::VariantType::TYPE_FILEPATH) lastSavePath = savePath.AsFilePath();
+    if(loadState.GetType() == DAVA::VariantType::TYPE_UINT32) lastCheckState = loadState.AsUInt32();
 
     expandMap[MaterialFilteringModel::SHOW_ALL] = false;
     expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
@@ -120,7 +125,7 @@ MaterialEditor::~MaterialEditor()
 	posSaver.SaveValue("splitPosProperties", v1);
 	posSaver.SaveValue("splitPosPreview", v2);
     posSaver.SaveValue("lastSavePath", DAVA::VariantType(lastSavePath));
-    
+    posSaver.SaveValue("lastLoadState", DAVA::VariantType(lastCheckState));
 	posSaver.SaveState(ui->splitter);
 }
 
@@ -809,12 +814,8 @@ void MaterialEditor::OnAddFlag()
         QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
         if(NULL != data)
         {
-            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-            for(int i = 0; i < data->GetMergedCount(); i++)
-            {
-                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
-                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
-            }
+            const QVariant value = data->GetValue();
+            data->SetValue(value, QtPropertyData::VALUE_EDITED);
 
             // reload material properties
             SetCurMaterial(curMaterials);
@@ -844,7 +845,7 @@ void MaterialEditor::OnTemplateChanged(int index)
     if(curMaterials.size() == 1 && index > 0)
     {
         DAVA::NMaterial *material = curMaterials.at(0);
-        QString newTemplatePath = ui->templateBox->itemData(index, Qt::UserRole).toString();
+        QString newTemplatePath = GetTemplatePath(index);
         if(!newTemplatePath.isEmpty())
         {
             const DAVA::InspMember *templateMember = material->GetTypeInfo()->Member("materialTemplate");
@@ -858,6 +859,11 @@ void MaterialEditor::OnTemplateChanged(int index)
     }
 
     SetCurMaterial(curMaterials);
+}
+
+QString MaterialEditor::GetTemplatePath(int index) const
+{
+    return ui->templateBox->itemData(index, Qt::UserRole).toString();
 }
 
 void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
@@ -955,166 +961,174 @@ void MaterialEditor::OnMaterialRemoveGlobal(bool checked)
     }
 }
 
+void MaterialEditor::onContextMenuPrepare(QMenu *menu)
+{
+    if(curMaterials.size() > 0)
+    {
+        ui->actionSaveMaterialPreset->setEnabled(curMaterials.size() == 1);
+        menu->addSeparator();
+        menu->addAction(ui->actionLoadMaterialPreset);
+        menu->addAction(ui->actionSaveMaterialPreset);
+    }
+}
+
 void MaterialEditor::OnMaterialSave(bool checked)
 {
-    QString outputFile = QFileDialog::getSaveFileName(this, "Save Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
-
-    if(!outputFile.isEmpty())
+    if(curMaterials.size() == 1)
     {
+        QString outputFile = QFileDialog::getSaveFileName(this, "Save Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
         SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-        if(NULL != curScene)
+
+        if(!outputFile.isEmpty() && NULL != curScene)
         {
-            QtPropertyData *root = ui->materialProperty->GetRootProperty();
-            QtPropertyData *propertiesRoot = root->ChildGet(MATERIAL_PROPERTIES_LABEL);
-            QtPropertyData *texturesRoot = root->ChildGet(MATERIAL_TEXTURES_LABEL);
-            QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            QtPropertyDataInspMember *groupData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_GROUP_LABEL));
+            DAVA::NMaterial *material = curMaterials[0];
 
-            YamlParser* parser = YamlParser::Create();
-            YamlNode* rootYamlNode = new YamlNode(YamlNode::TYPE_MAP);
+            DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
+            DAVA::SerializationContext materialContext;
 
-            if(ui->templateBox->isEnabled())
-            {
-                rootYamlNode->Set("Template", DAVA::String());
-            }
+            materialContext.SetScene(curScene);
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
-            if(NULL != nameData)
-            {
-                DAVA::FastName nameValue = nameData->GetVariantValue().AsFastName();
-                if(nameValue.IsValid())
-                {
-                    DAVA::VariantType var(DAVA::String(nameValue.c_str()));
-                    rootYamlNode->Set(MATERIAL_NAME_LABEL, &var);
-                }
-            }
-
-            if(NULL != groupData)
-            {
-                DAVA::FastName groupValue = groupData->GetVariantValue().AsFastName();
-                if(groupValue.IsValid())
-                {
-                    DAVA::VariantType var(DAVA::String(groupValue.c_str()));
-                    rootYamlNode->Set(MATERIAL_GROUP_LABEL, &var);
-                }
-            }
-
-            if(NULL != propertiesRoot)
-            {
-                YamlNode* propertiesNode = new YamlNode(YamlNode::TYPE_MAP);
-
-                for(int i = 0; i < propertiesRoot->ChildCount(); ++i)
-                {
-                    QtPropertyDataInspDynamic *propertyData = dynamic_cast<QtPropertyDataInspDynamic *>(propertiesRoot->ChildGet(i));
-                    if(NULL != propertyData && propertyData->IsEnabled())
-                    {
-                        DAVA::VariantType value = propertyData->GetVariant();
-                        propertiesNode->Set(propertyData->GetName().toStdString(), &value);
-                    }
-                }
-
-                rootYamlNode->AddNodeToMap("Properties", propertiesNode);
-            }
-
-            if(NULL != texturesRoot)
-            {
-                YamlNode* texturesNode = new YamlNode(YamlNode::TYPE_MAP);
-
-                for(int i = 0; i < texturesRoot->ChildCount(); ++i)
-                {
-                    QtPropertyDataInspDynamic *textureData = dynamic_cast<QtPropertyDataInspDynamic *>(texturesRoot->ChildGet(i));
-                    if(NULL != textureData && textureData->IsEnabled())
-                    {
-                        DAVA::VariantType value = textureData->GetVariant();
-                        texturesNode->Set(textureData->GetName().toStdString(), value.AsFilePath().GetAbsolutePathname());
-                    }
-                }
-
-                rootYamlNode->AddNodeToMap("Textures", texturesNode);
-            }
-
-            lastSavePath = outputFile.toStdString();
-            parser->SaveToYamlFile(outputFile.toStdString(), rootYamlNode, true);
-            parser->Release();
+            material->Save(materialArchive, &materialContext);
+            materialArchive->Save(outputFile.toAscii().data());
+            materialArchive->Release();
         }
+    }
+    else
+    {
+        QMessageBox::warning(this, "Material properties save", "It is allowed to save only single material");
     }
 }
 
 void MaterialEditor::OnMaterialLoad(bool checked)
 {
-    QString inputFile = QFileDialog::getOpenFileName(this, "Load Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
-
-    if(!inputFile.isEmpty())
+    if(curMaterials.size() > 0)
     {
-        QtPropertyData *root = ui->materialProperty->GetRootProperty();
-//         QtPropertyData *propertiesRoot = root->ChildGet(MATERIAL_PROPERTIES_LABEL);
-//         QtPropertyData *texturesRoot = root->ChildGet(MATERIAL_TEXTURES_LABEL);
-//         QtPropertyDataInspMember *groupData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_GROUP_LABEL));
+        QString inputFile = QFileDialog::getOpenFileName(this, "Load Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
+        SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
 
-
-        YamlParser* parser = YamlParser::Create(inputFile.toStdString());
-        YamlNode* rootYamlNode = parser->GetRootNode();
-
-        const YamlNode *nameNode = rootYamlNode->Get(MATERIAL_NAME_LABEL);
-        if(NULL != nameNode)
+        if(!inputFile.isEmpty() && NULL != curScene)
         {
-            //QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            printf("%s\n", nameNode->AsString().c_str());
-        }
+            DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
+            materialArchive->Load(inputFile.toAscii().data());
 
-        const YamlNode *groupNode = rootYamlNode->Get(MATERIAL_GROUP_LABEL);
-        if(NULL != groupNode)
-        {
-            //QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            printf("%s\n", groupNode->AsString().c_str());
-        }
+            DAVA::SerializationContext materialContext;
+            materialContext.SetScene(curScene);
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
-        const YamlNode *templateNode = rootYamlNode->Get("Template");
-        if(NULL != templateNode)
-        {
-            //QtPropertyDataInspMember *nameData = dynamic_cast<QtPropertyDataInspMember *>(root->ChildGet(MATERIAL_NAME_LABEL));
-            printf("%s\n", templateNode->AsString().c_str());
-        }
-
-        const YamlNode *propertiesNode = rootYamlNode->Get(MATERIAL_PROPERTIES_LABEL);
-        if(NULL != propertiesNode)
-        {
-            for(int i = 0; i < propertiesNode->GetCount(); ++i)
+            DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState);
+            if(0 != userChoiseWhatToLoad)
             {
-                const YamlNode *propertyNode = propertiesNode->Get(i);
-                printf(" %s\n", propertiesNode->GetItemKeyName(i).c_str());
-            }
-        }
+                lastCheckState = userChoiseWhatToLoad;
 
-        const YamlNode *texturesNode = rootYamlNode->Get(MATERIAL_TEXTURES_LABEL);
-        if(NULL != texturesNode)
-        {
-            for(int i = 0; i < texturesNode->GetCount(); ++i)
-            {
-                const YamlNode *textureNode = texturesNode->Get(i);
-                printf(" %s\n", texturesNode->GetItemKeyName(i).c_str());
-            }
-        }
+                DAVA::KeyedArchive *materialProperties = new DAVA::KeyedArchive();
+                materialProperties->SetBool("loadIds", false);
 
-//         if(usebatch)
-//         {
-//             QObject::disconnect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
-//             curScene->BeginBatch("Property multiedit");
-//         }
-// 
-//         for(int i = 0; i < commands.size(); i++)
-//         {
-//             Command2 *cmd = commands.at(i);
-//             curScene->Exec(cmd);
-//         }
-// 
-//         if(usebatch)
-//         {
-//             curScene->EndBatch();
-//             QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
-//             SetCurMaterial(curMaterials);
-//         }
+                if(!(lastCheckState & CHECKED_NAME))
+                {
+                    materialProperties->SetBool("loadName", false);
+                }
+            
+                if(!(lastCheckState & CHECKED_GROUP))
+                {
+                    materialProperties->SetBool("loadGroup", false);
+                }
 
-        parser->Release();
+                if(!(lastCheckState & CHECKED_TEMPLATE))
+                {
+                    materialProperties->SetBool("loadTemplate", false);
+                }
+
+                if(!(lastCheckState & CHECKED_PROPERTIES))
+                {
+                    materialProperties->SetBool("loadProperties", false);
+                    materialProperties->SetBool("loadFlags", false);
+                }
+
+                if(!(lastCheckState & CHECKED_TEXTURES))
+                {
+                    materialProperties->SetBool("loadTextures", false);
+                }
+
+                if(lastCheckState & CHECKED_CLEAR_MATERIAL)
+                {
+                    materialProperties->SetBool("loadClear", true);
+                }
+
+                materialContext.customProperties->SetArchive("material", materialProperties);
+                materialProperties->Release();
+
+                for(int i = 0; i < curMaterials.size(); ++i)
+                {
+                    curMaterials[i]->Load(materialArchive, &materialContext);
+                }
+            }            materialArchive->Release();        }
     }
+
+    SetCurMaterial(curMaterials);
+}
+
+DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState)
+{
+    DAVA::uint32 ret = 0;
+
+    QDialog *dlg = new QDialog(this);
+    QVBoxLayout *dlgLayout = new QVBoxLayout();
+    dlgLayout->setMargin(10);
+
+    dlg->setWindowTitle("Reload Model options");
+    dlg->setLayout(dlgLayout);
+
+    QComboBox *modeCombo = new QComboBox(dlg);
+    QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
+    QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
+    QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
+    QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, dlg);
+    QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
+
+    // restore last user choice
+    modeCombo->addItem("Combine");
+    modeCombo->addItem("Clear");
+
+    if(initialState & CHECKED_CLEAR_MATERIAL)
+    {
+        modeCombo->setCurrentIndex(1);
+    }
+    else
+    {
+        modeCombo->setCurrentIndex(0);
+    }
+
+    templateChBox->setChecked((bool) (initialState & CHECKED_TEMPLATE));
+    nameChBox->setChecked((bool) (initialState & CHECKED_NAME));
+    groupChBox->setChecked((bool) (initialState & CHECKED_GROUP));
+    propertiesChBox->setChecked((bool) (initialState & CHECKED_PROPERTIES));
+    texturesChBox->setChecked((bool) (initialState & CHECKED_TEXTURES));
+
+    dlgLayout->addWidget(modeCombo);
+    dlgLayout->addWidget(templateChBox);
+    dlgLayout->addWidget(nameChBox);
+    dlgLayout->addWidget(groupChBox);
+    dlgLayout->addWidget(propertiesChBox);
+    dlgLayout->addWidget(texturesChBox);
+
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
+    dlgLayout->addWidget(buttons);
+
+    QObject::connect(buttons, SIGNAL(accepted()), dlg, SLOT(accept()));
+    QObject::connect(buttons, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+    if(QDialog::Accepted == dlg->exec())
+    {
+        if(templateChBox->checkState() == Qt::Checked) ret |= CHECKED_TEMPLATE;
+        if(nameChBox->checkState() == Qt::Checked) ret |= CHECKED_NAME;
+        if(groupChBox->checkState() == Qt::Checked) ret |= CHECKED_GROUP;
+        if(propertiesChBox->checkState() == Qt::Checked) ret |= CHECKED_PROPERTIES;
+        if(texturesChBox->checkState() == Qt::Checked) ret |= CHECKED_TEXTURES;
+        if(modeCombo->currentIndex() == 1) ret |= CHECKED_CLEAR_MATERIAL;
+    }
+
+    delete dlg;
+    return ret;
 }
 
