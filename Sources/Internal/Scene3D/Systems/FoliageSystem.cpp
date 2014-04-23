@@ -29,7 +29,7 @@
 #include "Scene3D/Systems/FoliageSystem.h"
 
 #include "Render/Highlevel/Landscape.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
 namespace DAVA
