@@ -130,7 +130,7 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();
+//     new ThreadSyncTest();
     
     errors.reserve(TestCount());
 
