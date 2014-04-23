@@ -67,8 +67,8 @@
     #define ENABLE_ASSERT_BREAK
 #else //not defined __DAVAENGINE_DEBUG__    // can disable or select any dvassert service
     #define ENABLE_ASSERT_LOGGING
-//    #define ENABLE_ASSERT_MESSAGE
-//    #define ENABLE_ASSERT_BREAK
+    #define ENABLE_ASSERT_MESSAGE
+    #define ENABLE_ASSERT_BREAK
 #endif //
 
 
