@@ -466,6 +466,7 @@ void VegetationFixedGeometryGenerator::GenerateIndices(uint32 maxClusters,
                                    indexBufferBBox,
                                    renderData);
             
+            directionPoints.clear();
             SetupCameraPositions(indexBufferBBox, directionPoints);
             
             PrepareSortedIndexBufferVariations(currentIndexIndex,
