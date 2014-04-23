@@ -35,6 +35,14 @@
 #ifndef __DAVAENGINE_CONFIG_H__
 #define __DAVAENGINE_CONFIG_H__
 
+// debug definition
+#if defined(DAVA_DEBUG)
+    #define __DAVAENGINE_DEBUG__
+#endif
+
+
+
+
 //#define ENABLE_MEMORY_MANAGER
 
 //#define ENABLE_BASE_OBJECT_CHECKS // separate thing to check if you release BaseObjects properly. Need to be disabled for release configurations 
@@ -59,8 +67,8 @@
     #define ENABLE_ASSERT_BREAK
 #else //not defined __DAVAENGINE_DEBUG__    // can disable or select any dvassert service
     #define ENABLE_ASSERT_LOGGING
-//    #define ENABLE_ASSERT_MESSAGE
-//    #define ENABLE_ASSERT_BREAK
+    #define ENABLE_ASSERT_MESSAGE
+    #define ENABLE_ASSERT_BREAK
 #endif //
 
 

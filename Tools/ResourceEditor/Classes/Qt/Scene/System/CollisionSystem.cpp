@@ -393,7 +393,6 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
 		switch(command->GetId())
 		{
 		case CMDID_TRANSFORM:
-        case CMDID_BAKE_TRANSFORM:
 			UpdateCollisionObject(entity);
 			break;
 		case CMDID_ENTITY_CHANGE_PARENT:
