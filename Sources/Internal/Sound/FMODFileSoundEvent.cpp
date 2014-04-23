@@ -70,8 +70,7 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
     }
     else
     {
-        String path = GetFMODPath(fileName);
-        FMOD_VERIFY(soundSystem->fmodSystem->createSound(path.c_str(), fmodMode, 0, &sound->fmodSound));
+        FMOD_VERIFY(soundSystem->fmodSystem->createSound(fileName.GetStringValue().c_str(), fmodMode, 0, &sound->fmodSound));
 
         if(!sound->fmodSound)
         {
