@@ -110,7 +110,7 @@
 #include "RecentFilesManager.h"
 #include "Deprecated/SceneValidator.h"
 
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)

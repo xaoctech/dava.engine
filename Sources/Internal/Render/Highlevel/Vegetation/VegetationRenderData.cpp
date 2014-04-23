@@ -42,6 +42,7 @@ VegetationRenderData::~VegetationRenderData()
     
 void VegetationRenderData::CreateRenderData()
 {
+    DVASSERT(NULL == vertexRenderDataObject);
     vertexRenderDataObject = new RenderDataObject();
 }
     

@@ -182,7 +182,8 @@ void GrassEditorPanel::RestoreState()
         if(NULL != vegetationRObj)
         {
             QPixmap txpix;
-            const DAVA::TextureSheet &sheet = vegetationRObj->GetTextureSheet();
+            DAVA::TextureSheet sheet;
+            sheet.Load(vegetationRObj->GetTextureSheetPath());
 
             DAVA::FilePath texturePath = vegetationRObj->GetVegetationTexture();
             texturePath.ReplaceExtension(".png");

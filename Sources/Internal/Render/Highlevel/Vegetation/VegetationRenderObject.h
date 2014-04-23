@@ -45,6 +45,8 @@
 
 #include "Scene3D/SceneFile/SerializationContext.h"
 
+#include "Render/Highlevel/Vegetation/VegetationRenderData.h"
+
 namespace DAVA
 {
     
@@ -80,7 +82,6 @@ public:
     Texture* GetLightmap() const;
     const FilePath& GetLightmapPath() const;
     
-    const TextureSheet& GetTextureSheet() const;
     void SetTextureSheet(const FilePath& path);
     const FilePath& GetTextureSheetPath() const;
     
@@ -117,9 +118,6 @@ public:
     
     void SetVegetationVisible(bool show);
     bool GetVegetationVisible() const;
-    
-    void SetUseLowCameraScale(const bool& useScale);
-    bool GetUseLowCameraScale() const;
     
     void DebugDrawVisibleNodes();
     
@@ -177,7 +175,6 @@ private:
                                Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
     
     static bool CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a, const AbstractQuadTreeNode<SpatialData>*  b);
-    static bool PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b);
     
     void InitHeightTextureFromHeightmap(Heightmap* heightMap);
     
@@ -195,43 +192,10 @@ private:
     void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
                            AbstractQuadTreeNode<SpatialData>* node,
                            float32 cameraDistance,
-                           bool cameraLowPosition,
-                           float32 cameraLowScale,
                            Vector<float32>& uniforms);
     size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
     
     inline uint32 MapToResolution(float32 squareDistance);
-    
-    void GenerateVertices(uint32 maxClusters,
-                          size_t maxTotalClusters,
-                          uint32 maxClusterRowSize,
-                          uint32 tilesPerRow,
-                          Vector2 unitSize,
-                          Vector<uint32>& layerOffsets);
-                          
-    void GenerateIndices(uint32 maxClusters,
-                         uint32 maxClusterRowSize,
-                         Vector<uint32>& layerOffsets);
-    
-    void PrepareIndexBufferData(uint32 indexBufferIndex,
-                                uint32 maxClusters,
-                                uint32 maxClusterRowSize,
-                                size_t resolutionIndex,
-                                uint32 resolutionOffset,
-                                Vector<uint32>& layerOffsets,
-                                Vector<int16>& preparedIndices,
-                                AABBox3& indexBufferBBox);
-    
-    void PrepareSortedIndexBufferVariations(size_t& currentIndexIndex,
-                                            uint32 indexBufferIndex,
-                                            size_t polygonElementCount,
-                                            AABBox3& indexBufferBBox,
-                                            Vector<Vector3>& directionPoints,
-                                            Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
-                                            Vector<PolygonSortData>& sortingArray,
-                                            Vector<int16>& preparedIndices);
-    
-    void GenerateRenderDataObjects();
     
     inline bool IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
                             uint32 maxClusterTypes,
@@ -261,10 +225,7 @@ private:
     NMaterial* vegetationMaterial;
     Vector<float32> shaderScaleDensityUniforms;
     
-    Vector<VegetationVertex> vertexData;
-    Vector<int16> indexData;
-    RenderDataObject* vertexRenderDataObject;
-    Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
+    VegetationRenderData renderData;
     
     AbstractQuadTree<SpatialData> quadTree;
     Vector<AbstractQuadTreeNode<SpatialData>*> visibleCells;
@@ -281,12 +242,9 @@ private:
     Vector3 perturbationPoint;
     float32 maxPerturbationDistance;
     
-    float32 maxLayerHeight;
-    
     uint8 layerVisibilityMask;
     
     bool vegetationVisible;
-    bool useLowCameraScale;
     
     Vector<Vector2> resolutionRanges;
     
@@ -301,7 +259,6 @@ public:
                          PROPERTY("lodRanges", "Lod ranges", GetLodRange, SetLodRange, I_EDIT | I_VIEW)
                          PROPERTY("visibilityDistance", "Visibility distances", GetVisibilityDistance, SetVisibilityDistance, I_EDIT | I_VIEW)
                          PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
-                         PROPERTY("useLowCameraScale", "Scale close clusters", GetUseLowCameraScale, SetUseLowCameraScale, I_EDIT | I_VIEW)
                          );
     
 };
