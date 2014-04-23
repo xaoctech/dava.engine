@@ -45,4 +45,9 @@ void VegetationGeometryGenerator::SetupCameraPositions(const AABBox3& bbox, Vect
     positions.push_back(Vector3(bbox.min.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
 }
 
+uint32 VegetationGeometryGenerator::GetSortDirectionCount()
+{
+    return 8;
+}
+
 }

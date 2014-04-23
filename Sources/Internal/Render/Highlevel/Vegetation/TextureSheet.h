@@ -26,8 +26,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_TEXTURESHEETCELL_H__
-#define __DAVAENGINE_TEXTURESHEETCELL_H__
+#ifndef __DAVAENGINE_TEXTURESHEET_H__
+#define __DAVAENGINE_TEXTURESHEET_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"

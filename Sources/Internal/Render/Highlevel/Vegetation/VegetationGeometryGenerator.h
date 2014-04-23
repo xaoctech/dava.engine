@@ -62,7 +62,16 @@ public:
     virtual void Build(VegetationRenderData& renderData) = 0;
     
     virtual void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
+    
+    virtual uint32 GetSortDirectionCount();
 };
+
+inline VegetationGeometryGenerator::PolygonSortData::PolygonSortData()
+{
+    indices[0] = indices[1] = indices[2] = -1;
+    cameraDistance = -1.0f;
+}
+    
 };
 
 

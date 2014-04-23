@@ -26,6 +26,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
+#include <cfloat>
+
 #include "Render/Highlevel/Vegetation/TextureSheet.h"
 #include "Render/Highlevel/Vegetation/VegetationFixedGeometryGenerator.h"
 #include "Utils/Random.h"
@@ -219,8 +221,10 @@ int32 RandomShuffleFunc(int32 limit)
 }
     
 VegetationFixedGeometryGenerator::VegetationFixedGeometryGenerator(
+                                    uint32 _maxClusters,
                                     uint32 _maxDensityLevels,
                                     uint32 _maxLayerTypes,
+                                    Vector2 _unitSize,
                                     const FilePath& textureSheetPath,
                                     uint32* _resolutionCellSquare,
                                     uint32 resolutionCellSquareCount,
@@ -230,35 +234,80 @@ VegetationFixedGeometryGenerator::VegetationFixedGeometryGenerator(
                                     uint32* _resolutionTilesPerRow,
                                     uint32 resolutionTilesPerRowCount)
 {
-     maxDensityLevels = _maxDensityLevels;
-     maxLayerTypes = _maxLayerTypes;
-     textureSheet.Load(textureSheetPath);
+    maxClusters = _maxClusters;
+    maxDensityLevels = _maxDensityLevels;
+    maxLayerTypes = _maxLayerTypes;
+    unitSize = _unitSize;
+    textureSheet.Load(textureSheetPath);
     
-     for(uint32 i = 0; i < resolutionCellSquareCount; ++i)
-     {
-         resolutionCellSquare.push_back(_resolutionCellSquare[i]);
-     }
+    for(uint32 i = 0; i < resolutionCellSquareCount; ++i)
+    {
+        resolutionCellSquare.push_back(_resolutionCellSquare[i]);
+    }
     
-     for(uint32 i = 0; i < resolutionScaleCount; ++i)
-     {
-         resolutionScale.push_back(_resolutionScale[i]);
-     }
+    for(uint32 i = 0; i < resolutionScaleCount; ++i)
+    {
+        resolutionScale.push_back(_resolutionScale[i]);
+    }
     
-     for(size_t i = 0; i < _resolutionRanges.size(); ++i)
-     {
-         resolutionRanges.push_back(_resolutionRanges[i]);
-     }
+    for(size_t i = 0; i < _resolutionRanges.size(); ++i)
+    {
+        resolutionRanges.push_back(_resolutionRanges[i]);
+    }
     
-     for(uint32 i = 0; i < resolutionTilesPerRowCount; ++i)
-     {
-         resolutionTilesPerRow.push_back(_resolutionTilesPerRow[i]);
-     }
+    for(uint32 i = 0; i < resolutionTilesPerRowCount; ++i)
+    {
+        resolutionTilesPerRow.push_back(_resolutionTilesPerRow[i]);
+    }
 }
 
 
 void VegetationFixedGeometryGenerator::Build(VegetationRenderData& renderData)
 {
-        
+    size_t resolutionCount = resolutionScale.size();
+    uint32 sortDirectionCount = GetSortDirectionCount();
+    Vector<int16>& indexData = renderData.GetIndices();
+    Vector<VegetationVertex>& vertexData = renderData.GetVertices();
+    
+    uint32 tilesPerRow = (uint32)resolutionScale[resolutionCount - 1];
+    uint32 maxClusterRowSize = (tilesPerRow * maxClusters);
+    size_t maxTotalClusters = maxClusterRowSize * maxClusterRowSize;
+    
+    uint32 layerDataCount = 0;
+    uint32 indexDataCount = 0;
+    for(uint32 layerIndex = 0; layerIndex < maxLayerTypes; ++layerIndex)
+    {
+        TextureSheetCell& cellData = textureSheet.cells[layerIndex];
+        layerDataCount += VEGETATION_CLUSTER_SIZE[cellData.geometryId];
+        indexDataCount += VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
+    }
+    
+    uint32 totalIndexCount = 0;
+    for(uint32 i = 0; i < resolutionCount; ++i)
+    {
+        totalIndexCount += indexDataCount * (maxTotalClusters / (uint32)resolutionScale[i]);
+    }
+    
+    totalIndexCount *= sortDirectionCount;
+    
+    indexData.resize(totalIndexCount);
+    vertexData.resize(maxTotalClusters * layerDataCount);
+    
+    Vector<uint32> layerOffsets(maxLayerTypes);
+    
+    GenerateVertices(maxClusters,
+                     maxTotalClusters,
+                     maxClusterRowSize,
+                     tilesPerRow,
+                     unitSize,
+                     layerOffsets,
+                     renderData);
+    
+    GenerateIndices(maxClusters, maxClusterRowSize, layerOffsets, renderData);
+    
+    //VI: need to build vertex & index objects AFTER initialization
+    GenerateRenderDataObjects(renderData);
+    
 }
     
 void VegetationFixedGeometryGenerator::GenerateVertices(uint32 maxClusters,
@@ -493,12 +542,114 @@ void VegetationFixedGeometryGenerator::PrepareSortedIndexBufferVariations(size_t
                                     Vector<int16>& preparedIndices,
                                     VegetationRenderData& renderData)
 {
+    size_t sortItemCount = preparedIndices.size() / polygonElementCount;
+    sortingArray.resize(sortItemCount);
+    for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+    {
+        PolygonSortData& sortData = sortingArray[sortItemIndex];
         
+        sortData.indices[0] = preparedIndices[sortItemIndex * polygonElementCount + 0];
+        sortData.indices[1] = preparedIndices[sortItemIndex * polygonElementCount + 1];
+        sortData.indices[2] = preparedIndices[sortItemIndex * polygonElementCount + 2];
+    }
+    
+    Vector<int16>& indexData = renderData.GetIndices();
+    Vector<VegetationVertex>& vertexData = renderData.GetVertices();
+    
+    currentResolutionIndexArray.push_back(Vector<SortedBufferItem>());
+    Vector<SortedBufferItem>& currentDirectionBuffers = currentResolutionIndexArray[indexBufferIndex];
+    
+    uint32 sortDirectionCount = (uint32)directionPoints.size();
+    for(uint32 sortDirectionIndex = 0; sortDirectionIndex < sortDirectionCount; ++sortDirectionIndex)
+    {
+        Vector3 cameraPosition = directionPoints[sortDirectionIndex];
+        
+        for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+        {
+            PolygonSortData& sortData = sortingArray[sortItemIndex];
+            sortData.cameraDistance = FLT_MAX;
+            
+            for(uint32 polygonIndex = 0; polygonIndex < polygonElementCount; ++polygonIndex)
+            {
+                float32 distance = (vertexData[sortData.indices[polygonIndex]].coord - cameraPosition).SquareLength();
+                if(distance < sortData.cameraDistance)
+                {
+                    sortData.cameraDistance = distance;
+                }
+            }
+        }
+        
+        std::stable_sort(sortingArray.begin(), sortingArray.end(), PolygonByDistanceCompareFunction);
+        
+        size_t prevIndexIndex = currentIndexIndex;
+        for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
+        {
+            PolygonSortData& sortData = sortingArray[sortItemIndex];
+            
+            DVASSERT(currentIndexIndex < indexData.size());
+            
+            indexData[currentIndexIndex] = sortData.indices[0];
+            currentIndexIndex++;
+            
+            indexData[currentIndexIndex] = sortData.indices[1];
+            currentIndexIndex++;
+            
+            indexData[currentIndexIndex] = sortData.indices[2];
+            currentIndexIndex++;
+        }
+        
+        RenderDataObject* indexBuffer = new RenderDataObject();
+        indexBuffer->SetIndices(EIF_16, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
+        
+        SortedBufferItem sortedBufferItem;
+        sortedBufferItem.SetRenderDataObject(indexBuffer);
+        sortedBufferItem.sortDirection = indexBufferBBox.GetCenter() - cameraPosition;
+        sortedBufferItem.sortDirection.Normalize();
+        
+        currentDirectionBuffers.push_back(sortedBufferItem);
+    }
 }
     
 void VegetationFixedGeometryGenerator::GenerateRenderDataObjects(VegetationRenderData& renderData)
 {
+    renderData.CreateRenderData();
+    
+    RenderDataObject* vertexRenderDataObject = renderData.GetRenderDataObject();
+    Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderData.GetIndexBuffers();
+    Vector<VegetationVertex>& vertexData = renderData.GetVertices();
+    
+    vertexRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].coord));
+    vertexRenderDataObject->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].normal));
+    vertexRenderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
+    vertexRenderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
+    vertexRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
+    vertexRenderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
+    vertexRenderDataObject->BuildVertexBuffer(vertexData.size(), true);
+    
+    size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
+    for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
+    {
+        Vector<Vector<SortedBufferItem> >& indexObjectArray = indexRenderDataObject[indexArrayIndex];
+        size_t totalIndexObjectCount = indexObjectArray.size();
         
+        for(size_t i = 0; i < totalIndexObjectCount; ++i)
+        {
+            Vector<SortedBufferItem>& directionArray = indexObjectArray[i];
+            size_t directionCount = directionArray.size();
+            for(size_t directionIndex = 0; directionIndex < directionCount; ++directionIndex)
+            {
+                directionArray[directionIndex].rdo->BuildIndexBuffer(true);
+                directionArray[directionIndex].rdo->AttachVertices(vertexRenderDataObject);
+            }
+        }
+    }
+    
 }
+
+bool VegetationFixedGeometryGenerator::PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b)
+{
+    return a.cameraDistance > b.cameraDistance; //back to front order
+}
+
 
 };

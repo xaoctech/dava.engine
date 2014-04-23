@@ -41,6 +41,7 @@
 #include "Render/Material.h"
 #include "Render/Material/NMaterial.h"
 
+#include "Render/Highlevel/Vegetation/TextureSheet.h"
 #include "Render/Highlevel/Vegetation/VegetationGeometryGenerator.h"
 
 namespace DAVA
@@ -49,8 +50,10 @@ class VegetationFixedGeometryGenerator : public VegetationGeometryGenerator
 {
 public:
 
-    VegetationFixedGeometryGenerator(uint32 _maxDensityLevels,
+    VegetationFixedGeometryGenerator(uint32 _maxClusters,
+                                     uint32 _maxDensityLevels,
                                      uint32 _maxLayerTypes,
+                                     Vector2 _unitSize,
                                      const FilePath& textureSheetPath,
                                      uint32* _resolutionCellSquare,
                                      uint32 resolutionCellSquareCount,
@@ -99,8 +102,11 @@ private:
     
     void GenerateRenderDataObjects(VegetationRenderData& renderData);
     
+    static bool PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b);
+    
 private:
     
+    uint32 maxClusters;
     uint32 maxDensityLevels;
     uint32 maxLayerTypes;
     TextureSheet textureSheet;
@@ -108,6 +114,7 @@ private:
     Vector<float32> resolutionScale;
     Vector<Vector2> resolutionRanges;
     Vector<uint32> resolutionTilesPerRow;
+    Vector2 unitSize;
 };
 
 };

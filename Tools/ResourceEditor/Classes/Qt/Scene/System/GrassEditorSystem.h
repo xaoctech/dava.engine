@@ -33,7 +33,7 @@
 
 #include "DAVAEngine.h"
 #include "LandscapeEditorDrawSystem.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 class SceneCollisionSystem;
 class SceneSelectionSystem;

@@ -83,7 +83,6 @@ private:
     RenderDataObject* vertexRenderDataObject;
     Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
 };
-};
 
 inline Vector<VegetationVertex>& VegetationRenderData::GetVertices()
 {
@@ -103,12 +102,6 @@ inline RenderDataObject* VegetationRenderData::GetRenderDataObject()
 inline Vector<Vector<Vector<SortedBufferItem> > >& VegetationRenderData::GetIndexBuffers()
 {
     return indexRenderDataObject;
-}
-
-inline VegetationRenderData::PolygonSortData::PolygonSortData()
-{
-    indices[0] = indices[1] = indices[2] = -1;
-    cameraDistance = -1.0f;
 }
 
 inline SortedBufferItem::SortedBufferItem()
@@ -135,5 +128,7 @@ inline void SortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
         rdo = SafeRetain(dataObject);
     }
 }
+
+};
 
 #endif /* defined(__Framework__VegetationRenderData__) */
