@@ -48,6 +48,36 @@
 namespace DAVA
 {
 
+static Set<PixelFormat> InitPixelFormatsWithCompression()
+{
+    Set<PixelFormat> set;
+    set.insert(FORMAT_PVR4);
+    set.insert(FORMAT_PVR2);
+    set.insert(FORMAT_DXT1);
+    set.insert(FORMAT_DXT1NM);
+    set.insert(FORMAT_DXT1A);
+    set.insert(FORMAT_DXT3);
+    set.insert(FORMAT_DXT5);
+    set.insert(FORMAT_DXT5NM);
+    set.insert(FORMAT_ETC1);
+    set.insert(FORMAT_ATC_RGB);
+    set.insert(FORMAT_ATC_RGBA_EXPLICIT_ALPHA);
+    set.insert(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA);
+	set.insert(FORMAT_PVR2_2);
+	set.insert(FORMAT_PVR4_2);
+	set.insert(FORMAT_EAC_R11_UNSIGNED);
+	set.insert(FORMAT_EAC_R11_SIGNED);
+	set.insert(FORMAT_EAC_RG11_UNSIGNED);
+	set.insert(FORMAT_EAC_RG11_SIGNED);
+	set.insert(FORMAT_ETC2_RGB);
+	set.insert(FORMAT_ETC2_RGBA);
+	set.insert(FORMAT_ETC2_RGB_A1);
+
+    return set;
+}
+
+const Set<PixelFormat> TexturePacker::PIXEL_FORMATS_WITH_COMPRESSION = InitPixelFormatsWithCompression();
+
 TexturePacker::TexturePacker()
 {
 	quality = TextureConverter::ECQ_VERY_HIGH;
@@ -749,11 +779,19 @@ TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMap
     
 bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
 {
-    if(forGPU == GPU_UNKNOWN)   // not need compression
-        return false;
-    
-    const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
-    return (CommandLineParser::Instance()->IsFlagSet(gpuNameFlag));
+    if(forGPU != GPU_UNKNOWN)
+    {
+        const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
+        if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
+        {
+            String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
+            PixelFormat format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName));
+            bool result = PIXEL_FORMATS_WITH_COMPRESSION.count(format) > 0;
+            return result;
+        }
+    }
+
+    return false;
 }
 
 bool TexturePacker::IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU)

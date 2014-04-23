@@ -303,11 +303,6 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
         batch->SetLight(0, nearestLight);
-//        NMaterial * material = batch->GetMaterial();
-//        if (material)
-//        {
-//            material->SetLight(0, nearestLight, forceUpdateLights);
-//        }
     }
 }
 
