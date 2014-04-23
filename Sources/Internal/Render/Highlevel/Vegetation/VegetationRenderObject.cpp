@@ -29,7 +29,7 @@
 #include <cfloat>
 
 #include "Render/Highlevel/Heightmap.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Material/NMaterial.h"
 #include "Utils/Random.h"
@@ -310,11 +310,6 @@ static Color RESOLUTION_COLOR[] =
 static const FastName UNIFORM_LOD_COLOR = FastName("lodColor");
 static const FastName FLAG_VEGETATION_DRAW_LOD_COLOR = FastName("VEGETATION_DRAW_LOD_COLOR");
 #endif
-    
-int32 RandomShuffleFunc(int32 limit)
-{
-    return (Random::Instance()->Rand() % limit);
-}
 
 inline uint32 MapCellSquareToResolutionIndex(uint32 cellSquare)
 {
@@ -332,59 +327,6 @@ inline uint32 MapCellSquareToResolutionIndex(uint32 cellSquare)
     return index;
 }
 
-void TextureSheet::Load(const FilePath &yamlPath)
-{
-    if(yamlPath.Exists())
-    {
-        YamlParser *parser = YamlParser::Create(yamlPath);
-        YamlNode *rootNode = parser->GetRootNode();
-            
-        cells.clear();
-            
-        if(NULL != rootNode)
-        {
-            for(int i = 0; i < rootNode->GetCount(); ++i)
-            {
-                if(rootNode->GetItemKeyName(i) == "cell")
-                {
-                    const YamlNode *cellNode = rootNode->Get(i);
-                    const YamlNode *cellType = cellNode->Get("type");
-                    const YamlNode *cellScale = cellNode->Get("scale");
-                    const YamlNode *cellCoords = cellNode->Get("coords");
-                        
-                    TextureSheetCell c;
-                        
-                    if(NULL != cellType)
-                    {
-                        c.geometryId = cellType->AsUInt32();
-                    }
-                        
-                    if(NULL != cellScale)
-                    {
-                        c.geometryScale = cellScale->AsVector2();
-                    }
-                        
-                    for(int j = 0; j < cellCoords->GetCount(); ++j)
-                    {
-                        if(j < MAX_CELL_TEXTURE_COORDS)
-                        {
-                            const YamlNode *singleCellCoord = cellCoords->Get(j);
-                            c.coords[j] = singleCellCoord->AsVector2();
-                        }
-                        else
-                        {
-                            DVASSERT(0 && "Too much vertexes");
-                        }
-                    }
-                        
-                    cells.push_back(c);
-                }
-            }
-        }
-            
-        parser->Release();
-    }
-}
 
     
 VegetationRenderObject::VegetationRenderObject() :
@@ -1502,20 +1444,6 @@ size_t VegetationRenderObject::SelectDirectionIndex(Camera* cam, Vector<SortedBu
     }
     
     return index;
-}
-
-void VegetationRenderObject::SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions)
-{
-    float32 z = bbox.min.z + (bbox.max.z - bbox.min.z) * 0.5f;
-
-    positions[0] = Vector3(bbox.min.x, bbox.min.y, z);
-    positions[1] = Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.min.y, z);
-    positions[2] = Vector3(bbox.max.x, bbox.min.y, z);
-    positions[3] = Vector3(bbox.max.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z);
-    positions[4] = Vector3(bbox.max.x, bbox.max.y, z);
-    positions[5] = Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.max.y, z);
-    positions[6] = Vector3(bbox.min.x, bbox.max.y, z);
-    positions[7] = Vector3(bbox.min.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z);
 }
 
 void VegetationRenderObject::SetUseLowCameraScale(const bool& useScale)

@@ -45,35 +45,11 @@
 
 #include "Scene3D/SceneFile/SerializationContext.h"
 
-#define MAX_CELL_TEXTURE_COORDS 4
-
 namespace DAVA
 {
     
 typedef Image VegetationMap;
-    
-struct TextureSheetCell
-{
-    Vector2 coords[MAX_CELL_TEXTURE_COORDS];
-    uint32 geometryId;
-    Vector2 geometryScale;
-    
-    inline TextureSheetCell();
-    
-    inline TextureSheetCell& operator=(const TextureSheetCell& src);
-};
- 
 class Heightmap;
-class TextureSheet
-{
-public:
-    
-    Vector<TextureSheetCell> cells;
-    
-    inline TextureSheet& operator=(const TextureSheet& src);
-
-    void Load(const FilePath &yamlPath);
-};
 
 class VegetationRenderObject : public RenderObject
 {
@@ -149,16 +125,6 @@ public:
     
 private:
 
-    struct VegetationVertex
-    {
-        Vector3 coord;
-        Vector3 normal;
-        Vector3 binormal;
-        Vector3 tangent;
-        Vector2 texCoord0;
-        Vector2 texCoord1;
-    };
-    
     struct SpatialData
     {
         int16 x;
@@ -180,26 +146,7 @@ private:
         inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
         inline bool IsElementaryCell() const;
     };
-    
-    struct PolygonSortData
-    {
-        int16 indices[3];
-        float32 cameraDistance;
         
-        inline PolygonSortData();
-    };
-    
-    struct SortedBufferItem
-    {
-        RenderDataObject* rdo;
-        Vector3 sortDirection;
-        
-        inline SortedBufferItem();
-        inline SortedBufferItem(const SortedBufferItem& src);
-        inline ~SortedBufferItem();
-        inline void SetRenderDataObject(RenderDataObject* dataObject);
-    };
-    
     //void BuildVegetationBrush(uint32 maxClusters);
     RenderBatch* GetRenderBatchFromPool(NMaterial* material);
     void ReturnToPool(int32 batchCount);
@@ -242,7 +189,7 @@ private:
     void SetupHeightmapParameters(BaseObject * caller, void * param, void *callerData);
     
     void CreateRenderData(uint32 maxClusters);
-    void ReleaseRenderData();
+    
     bool ReadyToRender(bool externalRenderFlag);
     
     void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
@@ -252,7 +199,7 @@ private:
                            float32 cameraLowScale,
                            Vector<float32>& uniforms);
     size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
-    void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
+    
     inline uint32 MapToResolution(float32 squareDistance);
     
     void GenerateVertices(uint32 maxClusters,
@@ -300,7 +247,6 @@ private:
     
     Heightmap* heightmap;
     VegetationMap* vegetationMap;
-    TextureSheet textureSheet;
     uint32 clusterLimit;
     Vector3 worldSize;
     Vector<Vector2> unitWorldSize;
@@ -361,37 +307,6 @@ public:
 };
     
     
-inline TextureSheetCell::TextureSheetCell() :
-        geometryId(0),
-        geometryScale(1.0f, 1.0f)
-{
-}
-    
-inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src)
-{
-    coords[0] = src.coords[0];
-    coords[1] = src.coords[1];
-    coords[2] = src.coords[2];
-    coords[3] = src.coords[3];
-    
-    geometryId = src.geometryId;
-    geometryScale = src.geometryScale;
-    
-    return *this;
-}
-    
-inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
-{
-    cells.resize(src.cells.size());
-    
-    size_t size = cells.size();
-    for(size_t i = 0; i < size; ++i)
-    {
-        cells[i] = src.cells[i];
-    }
-    
-    return *this;
-}
     
 inline VegetationRenderObject::SpatialData::SpatialData()  :
         x(-1),
@@ -441,37 +356,6 @@ inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
 bool VegetationRenderObject::SpatialData::IsElementaryCell() const
 {
     return (1 == width);
-}
-
-inline VegetationRenderObject::PolygonSortData::PolygonSortData()
-{
-    indices[0] = indices[1] = indices[2] = -1;
-    cameraDistance = -1.0f;
-}
-    
-inline VegetationRenderObject::SortedBufferItem::SortedBufferItem()
-{
-    rdo = NULL;
-}
-
-inline VegetationRenderObject::SortedBufferItem::SortedBufferItem(const SortedBufferItem& src)
-{
-    rdo = SafeRetain(src.rdo);
-    sortDirection = src.sortDirection;
-}
-
-inline VegetationRenderObject::SortedBufferItem::~SortedBufferItem()
-{
-     SafeRelease(rdo)
-;}
-    
-inline void VegetationRenderObject::SortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
-{
-    if(dataObject != rdo)
-    {
-        SafeRelease(rdo);
-        rdo = SafeRetain(dataObject);
-    }
 }
 
 inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
