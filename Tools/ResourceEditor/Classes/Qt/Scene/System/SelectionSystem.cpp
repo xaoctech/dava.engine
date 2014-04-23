@@ -267,8 +267,7 @@ void SceneSelectionSystem::ProcessCommand(const Command2 *command, bool redo)
 			RemSelection(command->GetEntity());
 		}
 		else if(command->GetId() == CMDID_ENTITY_CHANGE_PARENT ||
-				command->GetId() == CMDID_TRANSFORM ||
-                command->GetId() == CMDID_BAKE_TRANSFORM)
+				command->GetId() == CMDID_TRANSFORM)
 		{
             invalidSelectionBoxes = true;
         }

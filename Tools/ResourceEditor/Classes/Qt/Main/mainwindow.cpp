@@ -953,18 +953,22 @@ void QtMainWindow::EnableSceneActions(bool enable)
 void QtMainWindow::UpdateModificationActionsState()
 {
     bool canModify = false;
+    bool isMultiple = false;
 
     SceneEditor2 *scene = GetCurrentScene();
     if(NULL != scene)
     {
         EntityGroup selection = scene->selectionSystem->GetSelection();
         canModify = scene->modifSystem->ModifCanStart(selection);
+        isMultiple = (selection.Size() > 1);
     }
 
     ui->actionModifyReset->setEnabled(canModify);
-    ui->actionCenterPivotPoint->setEnabled(canModify);
-    ui->actionZeroPivotPoint->setEnabled(canModify);
     ui->actionModifyPlaceOnLandscape->setEnabled(canModify);
+
+    ui->actionCenterPivotPoint->setEnabled(canModify && !isMultiple);
+    ui->actionZeroPivotPoint->setEnabled(canModify && !isMultiple);
+
     modificationWidget->setEnabled(canModify);
 }
 
@@ -973,6 +977,7 @@ void QtMainWindow::SceneCommandExecuted(SceneEditor2 *scene, const Command2* com
 	if(scene == GetCurrentScene())
 	{
 		LoadUndoRedoState(scene);
+        UpdateModificationActionsState();
 	}
 }
 

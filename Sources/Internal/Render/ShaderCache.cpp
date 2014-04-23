@@ -90,14 +90,10 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
     
 	compileShaderMutex.Lock();
 
-	Shader * shaderCreatedWhileMutexWasLocked = compiledShaders.at(defines);
-	if (shaderCreatedWhileMutexWasLocked)
+	Shader * shader = compiledShaders.at(defines); //to check if shader was created while mutex was locked
+	if (NULL == shader)
 	{
-		compileShaderMutex.Unlock();
-		return shaderCreatedWhileMutexWasLocked;
-	}
-
-    Shader * shader = Shader::CompileShader(name,
+        shader = Shader::CompileShader(name,
                                             vertexShaderData,
                                             fragmentShaderData,
                                             vertexShaderDataStart,
@@ -106,15 +102,16 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
                                             fragmentShaderDataSize,
                                             defines);
 	
-	CompiledShaderData * shaderData = new CompiledShaderData();
-	shaderData->shader = shader;
-	shaderData->defines = defines;
+        CompiledShaderData * shaderData = new CompiledShaderData();
+        shaderData->shader = shader;
+        shaderData->defines = defines;
 
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
-														   Message(this, &ShaderAsset::CompileShaderInternal, shaderData));
-	JobInstanceWaiter waiter(job);
-	waiter.Wait();
-
+        ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
+                                                               Message(this, &ShaderAsset::CompileShaderInternal, shaderData));
+        JobInstanceWaiter waiter(job);
+        waiter.Wait();
+    }
+    
 	compileShaderMutex.Unlock();
 
     return shader;
@@ -617,12 +614,9 @@ void ShaderCache::Reload()
     for( ; it != endIt; ++it)
     {
         ShaderAsset *asset = it->second;
-		shaderAssetMapMutex.Unlock();
 
         LoadAsset(asset);
         asset->ReloadShaders();
-
-		shaderAssetMapMutex.Lock();
     }
 
 	shaderAssetMapMutex.Unlock();

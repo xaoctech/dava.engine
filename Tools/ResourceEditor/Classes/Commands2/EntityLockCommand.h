@@ -28,26 +28,24 @@
 
 
 
-#ifndef __BAKE_TRANSFORM_COMMAND_H__
-#define __BAKE_TRANSFORM_COMMAND_H__
+#ifndef __ENTITY_LOCK_COMMAND_H__
+#define __ENTITY_LOCK_COMMAND_H__
 
 #include "Commands2/Command2.h"
-#include "Render/Highlevel/RenderObject.h"
 
-class BakeGeometryCommand : public Command2
+class EntityLockCommand : public Command2
 {
 public:
-	BakeGeometryCommand(DAVA::RenderObject* _object, DAVA::Matrix4 _transform);
-	~BakeGeometryCommand();
+	EntityLockCommand(DAVA::Entity* entity, bool lock);
+	~EntityLockCommand();
 
 	virtual void Undo();
 	virtual void Redo();
-    virtual DAVA::Entity* GetEntity() const { return NULL; }
+	virtual DAVA::Entity* GetEntity() const;
 
-protected:
-    DAVA::RenderObject* object;
-	DAVA::Matrix4 transform;
+    DAVA::Entity *entity;
+	bool oldState;
+    bool newState;
 };
 
-
-#endif // __BAKE_COMMAND_BATCH_H__
+#endif // __ENTITY_LOCK_COMMAND_H__
