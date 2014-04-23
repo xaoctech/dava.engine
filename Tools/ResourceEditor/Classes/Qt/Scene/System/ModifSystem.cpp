@@ -977,6 +977,9 @@ void EntityModificationSystem::SearchEntitiesWithRenderObject(DAVA::RenderObject
             bool isSame = false;
             if(NULL != enRenderObject && ro->GetRenderBatchCount() == enRenderObject->GetRenderBatchCount())
             {
+                // if renderObjects has same number of render batches we also should
+                // check if polygon groups used inside that render batches are completely identical
+                // but we should deal with the fact, that polygon groups order can differ 
                 for(int j = 0; j < enRenderObject->GetRenderBatchCount(); ++j)
                 {
                     bool found = false;
