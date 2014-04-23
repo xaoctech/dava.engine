@@ -93,7 +93,7 @@ Shader * ShaderAsset::Compile(const FastNameSet & defines)
 	Shader * shader = compiledShaders.at(defines); //to check if shader was created while mutex was locked
 	if (NULL == shader)
 	{
-        shader = Shader::CompileShader(name,
+        shader = Shader::CreateShader(name,
                                             vertexShaderData,
                                             fragmentShaderData,
                                             vertexShaderDataStart,
@@ -121,33 +121,21 @@ void ShaderAsset::ReloadShaders()
 {
     HashMap < FastNameSet, Shader *>::iterator it = compiledShaders.begin();
     HashMap < FastNameSet, Shader *>::iterator endIt = compiledShaders.end();
-    while (it != endIt)
-    {
-        it->second->Reload(vertexShaderData,
-                           fragmentShaderData,
-                           vertexShaderDataStart,
-                           vertexShaderDataSize,
-                           fragmentShaderDataStart,
-                           fragmentShaderDataSize);
-        
-        ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN,
-                                                               Message(this, &ShaderAsset::ReloadShaderInternal, it->second));
-        
-        ++it;
-        if(it == endIt)
-        {
-            JobInstanceWaiter waiter(job);
-            waiter.Wait();
-            
-            break;
-        }
-    }
+	for( ; it != endIt; ++it)
+	{
+		Shader *shader = it->second;
+
+		shader->Reload(vertexShaderData, fragmentShaderData, vertexShaderDataStart, vertexShaderDataSize, fragmentShaderDataStart, fragmentShaderDataSize);
+		ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &ShaderAsset::ReloadShaderInternal, shader));
+	}
 }
 
 void ShaderAsset::CompileShaderInternal( BaseObject * caller, void * param, void *callerData )
 {
 	CompiledShaderData *shaderData = (CompiledShaderData*)param;
 	DVASSERT(shaderData);
+
+	shaderData->shader->Recompile();
 
 	BindShaderDefaults(shaderData->shader);
 	compiledShaders.insert(shaderData->defines, shaderData->shader);
@@ -158,7 +146,10 @@ void ShaderAsset::CompileShaderInternal( BaseObject * caller, void * param, void
 
 void ShaderAsset::ReloadShaderInternal(BaseObject * caller, void * param, void *callerData)
 {
-	BindShaderDefaults((Shader*)param);
+	Shader *shader = (Shader*)param;
+	shader->Recompile();
+
+	BindShaderDefaults(shader);
 }
 
 void ShaderAsset::BindShaderDefaults(Shader * shader)
