@@ -934,7 +934,7 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
                         break;
                     default:
                         DVASSERT(0 && "Unknown bake mode");
-                        break;
+                        return;
                 }
 
                 sceneEditor->BeginBatch(commandMessage);
