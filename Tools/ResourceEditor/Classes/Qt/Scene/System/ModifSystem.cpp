@@ -917,17 +917,20 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
             if(entityList.size() > 0)
             {
                 const char *commandMessage;
-                DAVA::Vector3 bakeTranslation;
+                DAVA::Vector3 bakeMove;
+                DAVA::Matrix4 bakeTransform;
 
                 switch(mode)
                 {
                     case BAKE_ZERO_PIVOT:
                         commandMessage = "Move pivot point to zero";
-                        bakeTranslation = entity->GetLocalTransform().GetTranslationVector();
+                        bakeMove = entity->GetLocalTransform().GetTranslationVector();
+                        bakeTransform = entity->GetLocalTransform();
                         break;
                     case BAKE_CENTER_PIVOT:
                         commandMessage = "Move pivot point to center";
-                        bakeTranslation = DAVA::Vector3() - ro->GetBoundingBox().GetCenter();
+                        bakeMove = DAVA::Vector3() - ro->GetBoundingBox().GetCenter();
+                        bakeTransform.SetTranslationVector(bakeMove);
                         break;
                     default:
                         DVASSERT(0 && "Unknown bake mode");
@@ -937,9 +940,11 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
                 sceneEditor->BeginBatch(commandMessage);
 
                 // bake render object
-                DAVA::Matrix4 bakeTransform;
-                bakeTransform.SetTranslationVector(bakeTranslation);
                 sceneEditor->Exec(new BakeGeometryCommand(ro, bakeTransform));
+
+                // inverse bake to be able to move object on same place
+                // after it geometry was baked
+                bakeTransform.Inverse();
 
                 // for entities with same render object set new transform
                 // to make them match their previous position
@@ -948,11 +953,8 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
                 {
                     DAVA::Entity *en = *it;
                     DAVA::Matrix4 origTransform = en->GetLocalTransform();
-                    DAVA::Matrix4 newTransform = origTransform;
-
-                    DAVA::Vector3 newPos = origTransform.GetTranslationVector() - bakeTransform.GetTranslationVector();
-                    newTransform.SetTranslationVector(newPos);
-
+                    DAVA::Matrix4 newTransform = bakeTransform * origTransform;
+                    
                     sceneEditor->Exec(new TransformCommand(en, origTransform, newTransform));
                 }
 
@@ -975,6 +977,9 @@ void EntityModificationSystem::SearchEntitiesWithRenderObject(DAVA::RenderObject
             bool isSame = false;
             if(NULL != enRenderObject && ro->GetRenderBatchCount() == enRenderObject->GetRenderBatchCount())
             {
+                // if renderObjects has same number of render batches we also should
+                // check if polygon groups used inside that render batches are completely identical
+                // but we should deal with the fact, that polygon groups order can differ 
                 for(int j = 0; j < enRenderObject->GetRenderBatchCount(); ++j)
                 {
                     bool found = false;

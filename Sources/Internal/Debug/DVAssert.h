@@ -97,13 +97,13 @@
 
 #if defined(ENABLE_ASSERT_LOGGING)
 //    #define LogFunction(logmessage) { DAVA::Logger::Instance()->Warning(logmessage); }
-    #define LogFunction(assertType, expr, msg, file, line) { DAVA::Logger::Warning("*** Warning: %s Expression(%s) msg(%s),\nFile(%s), Line(%d)", assertType, expr, msg, file, line); }
+    #define LogFunction(assertType, expr, msg, file, line) { DAVA::Logger::Warning("========================================\n%s\n%s\n%s\nFile: %s\nLine: %d\n========================================", assertType, expr, msg, file, line); }
 #else //ENABLE_ASSERT_LOGGING
     #define LogFunction(assertType, expr, msg, file, line)
 #endif //ENABLE_ASSERT_LOGGING
 
 #if defined(ENABLE_ASSERT_MESSAGE)
-    #define MessageFunction(messagetype, assertType, expr, msg, file, line) { DAVA::DVAssertMessage::ShowMessage(messagetype, "*** Warning: %s Expression(%s) msg(%s),\nFile(%s), Line(%d)", assertType, expr, msg, file, line); }
+    #define MessageFunction(messagetype, assertType, expr, msg, file, line) { DAVA::DVAssertMessage::ShowMessage(messagetype, "%s\n\n%s\n%s\n\nFile: %s\nLine: %d", assertType, expr, msg, file, line); }
 #else //ENABLE_ASSERT_MESSAGE
     #define MessageFunction(messagetype, assertType, expr, msg, file, line)
 #endif //ENABLE_ASSERT_MESSAGE
