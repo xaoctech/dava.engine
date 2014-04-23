@@ -55,18 +55,6 @@ FMOD_RESULT F_CALLBACK DAVA_FMOD_FILE_CLOSECALLBACK(void * handle, void * userda
 static const FastName SEREALIZE_EVENTTYPE_EVENTFILE("eventFromFile");
 static const FastName SEREALIZE_EVENTTYPE_EVENTSYSTEM("eventFromSystem");
 
-String GetFMODPath(const FilePath & path)
-{
-    if(path.GetType() == FilePath::PATH_IN_RESOURCES)
-    {
-        return path.GetFrameworkPath();
-    }
-    else
-    {
-        return path.GetAbsolutePathname();
-    }
-}
-    
 SoundSystem::SoundSystem()
 {
     DVASSERT(sizeof(FMOD_VECTOR) == sizeof(Vector3));
@@ -255,9 +243,8 @@ void SoundSystem::LoadFEV(const FilePath & filePath)
     if(projectsMap.find(filePath) != projectsMap.end())
         return;
 
-    String path = GetFMODPath(filePath);
     FMOD::EventProject * project = 0;
-    FMOD_VERIFY(fmodEventSystem->load(path.c_str(), 0, &project));
+    FMOD_VERIFY(fmodEventSystem->load(filePath.GetStringValue().c_str(), 0, &project));
     
     if(project)
     {

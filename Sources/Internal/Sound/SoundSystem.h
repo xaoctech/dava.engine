@@ -54,8 +54,6 @@ namespace DAVA
 #ifdef DAVA_FMOD
 class FMODFileSoundEvent;
 class FMODSoundEvent;
-    
-String GetFMODPath(const FilePath & path);
 #endif
 
 class Component;
