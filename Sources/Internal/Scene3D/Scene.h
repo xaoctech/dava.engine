@@ -218,8 +218,8 @@ public:
         This camera is used for clipping only. If you do not call this function GetClipCamera returns currentCamera. 
         You can use SetClipCamera function if you want to test frustum clipping, and view the scene from different angles.
      */
-    void SetClipCamera(Camera * clipCamera);
-    Camera * GetClipCamera() const;
+    void SetCustomDrawCamera(Camera * clipCamera);
+    Camera * GetDrawCamera() const;
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
     
@@ -273,8 +273,8 @@ protected:
 
 	ProxyNodeMap rootNodes;
 
-    Camera * currentCamera;
-    Camera * clipCamera;
+    Camera * mainCamera;
+    Camera * drawCamera;
 
 	Vector<ShadowVolumeNode*> shadowVolumes;
     Set<Light*> lights;
