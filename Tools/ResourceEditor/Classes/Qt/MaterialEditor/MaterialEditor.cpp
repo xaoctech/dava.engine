@@ -814,12 +814,8 @@ void MaterialEditor::OnAddFlag()
         QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
         if(NULL != data)
         {
-            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
-            for(int i = 0; i < data->GetMergedCount(); i++)
-            {
-                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
-                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
-            }
+            const QVariant value = data->GetValue();
+            data->SetValue(value, QtPropertyData::VALUE_EDITED);
 
             // reload material properties
             SetCurMaterial(curMaterials);
@@ -991,12 +987,10 @@ void MaterialEditor::OnMaterialSave(bool checked)
             DAVA::SerializationContext materialContext;
 
             materialContext.SetScene(curScene);
-            materialContext.SetScenePath(curScene->GetScenePath().GetDirectory());
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
             material->Save(materialArchive, &materialContext);
             materialArchive->Save(outputFile.toAscii().data());
-
-            materialArchive->Dump();
             materialArchive->Release();
         }
     }
@@ -1020,51 +1014,55 @@ void MaterialEditor::OnMaterialLoad(bool checked)
 
             DAVA::SerializationContext materialContext;
             materialContext.SetScene(curScene);
-            materialContext.SetScenePath(curScene->GetScenePath().GetDirectory());
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
             DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState);
             if(0 != userChoiseWhatToLoad)
             {
                 lastCheckState = userChoiseWhatToLoad;
 
-                materialArchive->DeleteKey("materialType");
-                materialArchive->DeleteKey("##name");
-                materialArchive->DeleteKey("#index");
-                materialArchive->DeleteKey("materialKey");
-            
+                DAVA::KeyedArchive *materialProperties = new DAVA::KeyedArchive();
+                materialProperties->SetBool("loadIds", false);
+
                 if(!(lastCheckState & CHECKED_NAME))
                 {
-                    materialArchive->DeleteKey("materialName");
+                    materialProperties->SetBool("loadName", false);
                 }
-
+            
                 if(!(lastCheckState & CHECKED_GROUP))
                 {
-                    materialArchive->DeleteKey("materialGroup");
+                    materialProperties->SetBool("loadGroup", false);
                 }
 
                 if(!(lastCheckState & CHECKED_TEMPLATE))
                 {
-                    materialArchive->DeleteKey("materialTemplate");
+                    materialProperties->SetBool("loadTemplate", false);
                 }
 
                 if(!(lastCheckState & CHECKED_PROPERTIES))
                 {
-                    materialArchive->DeleteKey("properties");
-                    materialArchive->DeleteKey("setFlags");
+                    materialProperties->SetBool("loadProperties", false);
+                    materialProperties->SetBool("loadFlags", false);
                 }
 
                 if(!(lastCheckState & CHECKED_TEXTURES))
                 {
-                    materialArchive->DeleteKey("textures");
+                    materialProperties->SetBool("loadTextures", false);
                 }
+
+                if(lastCheckState & CHECKED_CLEAR_MATERIAL)
+                {
+                    materialProperties->SetBool("loadClear", true);
+                }
+
+                materialContext.customProperties->SetArchive("material", materialProperties);
+                materialProperties->Release();
 
                 for(int i = 0; i < curMaterials.size(); ++i)
                 {
                     curMaterials[i]->Load(materialArchive, &materialContext);
                 }
-
-                materialArchive->Dump();
-            }        }
+            }            materialArchive->Release();        }
     }
 
     SetCurMaterial(curMaterials);
@@ -1081,6 +1079,7 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
     dlg->setWindowTitle("Reload Model options");
     dlg->setLayout(dlgLayout);
 
+    QComboBox *modeCombo = new QComboBox(dlg);
     QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
     QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
     QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
@@ -1088,12 +1087,25 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
     QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
 
     // restore last user choice
+    modeCombo->addItem("Combine");
+    modeCombo->addItem("Clear");
+
+    if(initialState & CHECKED_CLEAR_MATERIAL)
+    {
+        modeCombo->setCurrentIndex(1);
+    }
+    else
+    {
+        modeCombo->setCurrentIndex(0);
+    }
+
     templateChBox->setChecked((bool) (initialState & CHECKED_TEMPLATE));
     nameChBox->setChecked((bool) (initialState & CHECKED_NAME));
     groupChBox->setChecked((bool) (initialState & CHECKED_GROUP));
     propertiesChBox->setChecked((bool) (initialState & CHECKED_PROPERTIES));
     texturesChBox->setChecked((bool) (initialState & CHECKED_TEXTURES));
 
+    dlgLayout->addWidget(modeCombo);
     dlgLayout->addWidget(templateChBox);
     dlgLayout->addWidget(nameChBox);
     dlgLayout->addWidget(groupChBox);
@@ -1113,6 +1125,7 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
         if(groupChBox->checkState() == Qt::Checked) ret |= CHECKED_GROUP;
         if(propertiesChBox->checkState() == Qt::Checked) ret |= CHECKED_PROPERTIES;
         if(texturesChBox->checkState() == Qt::Checked) ret |= CHECKED_TEXTURES;
+        if(modeCombo->currentIndex() == 1) ret |= CHECKED_CLEAR_MATERIAL;
     }
 
     delete dlg;
