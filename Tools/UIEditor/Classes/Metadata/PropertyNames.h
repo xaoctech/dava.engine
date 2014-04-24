@@ -43,7 +43,6 @@ public:
 	
     static const char* LOCALIZED_TEXT_KEY_PROPERTY_NAME;
     static const char* FONT_PROPERTY_NAME;
-//    static const char* FONT_PRESET_PROPERTY_NAME;
     static const char* FONT_SIZE_PROPERTY_NAME;
     static const char* FONT_COLOR_PROPERTY_NAME;
     
