@@ -69,7 +69,7 @@ void RenderLayerManager::InsertLayer(RenderLayer * renderLayer)
 
 RenderLayerManager::RenderLayerManager()
     : array(RENDER_LAYER_ID_COUNT)
-    , map(RENDER_LAYER_ID_COUNT)
+    , map(NextPowerOf2(RENDER_LAYER_ID_COUNT))
 {
     RenderLayer * renderLayerOpaque = new RenderLayer(LAYER_OPAQUE,
                                                       RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL,
