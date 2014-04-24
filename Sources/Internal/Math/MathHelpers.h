@@ -114,7 +114,7 @@ namespace DAVA
         return ret;
     }
 
-    inline int EnsurePowerOf2(int32 & x)
+    inline void EnsurePowerOf2(int32 & x)
     {
 		x = NextPowerOf2(x);
     }
