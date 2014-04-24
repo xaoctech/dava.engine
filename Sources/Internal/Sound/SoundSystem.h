@@ -45,6 +45,7 @@ class EventGroup;
 class System;
 class EventSystem;
 class EventProject;
+class ChannelGroup;
 };
 #endif
 
@@ -131,6 +132,9 @@ protected:
     FMOD::System * fmodSystem;
     FMOD::EventSystem * fmodEventSystem;
 
+    FMOD::ChannelGroup * masterChannelGroup;
+    FMOD::ChannelGroup * masterEventChannelGroup;
+    
     Vector<SoundGroup> soundGroups;
     Map<FilePath, FMOD::EventProject *> projectsMap;
 
