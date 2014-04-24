@@ -100,16 +100,23 @@ namespace DAVA
         return (x&(x-1))==0;
     }
 
-    inline void EnsurePowerOf2(int32 & x)
+    inline int32 NextPowerOf2(int32 x)
     {
-        if (IsPowerOf2(x))
-            return;
+        if (IsPowerOf2(x)) return x;
 
-        int32 i = 1;
-		while(i < x)
-			i *= 2;
+        int32 ret = 1;
 
-		x = i;
+        while(ret < x)
+        {
+			ret *= 2;
+        }
+
+        return ret;
+    }
+
+    inline int EnsurePowerOf2(int32 & x)
+    {
+		x = NextPowerOf2(x);
     }
 
     template<typename T> 
