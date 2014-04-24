@@ -389,10 +389,10 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
     
     if(!descriptorReady)
     {
-        descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
-        descriptor->settings.generateMipMaps = true;
-        descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-        descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+        descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+        descriptor->drawSettings.generateMipMaps = true;
+        descriptor->drawSettings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
+        descriptor->drawSettings.magFilter = Texture::FILTER_LINEAR;
         descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
         descriptor->exportedAsPixelFormat = FORMAT_INVALID;
     }

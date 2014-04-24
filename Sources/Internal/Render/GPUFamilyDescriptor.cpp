@@ -173,7 +173,9 @@ FilePath GPUFamilyDescriptor::CreatePathnameForGPU(const TextureDescriptor *desc
     DVASSERT(descriptor);
     
     eGPUFamily requestedGPU = gpuFamily;
-    PixelFormat requestedFormat = (PixelFormat) descriptor->compression[gpuFamily].format;
+	
+	DVASSERT(descriptor->compression);
+    PixelFormat requestedFormat = (PixelFormat) descriptor->compression[gpuFamily]->format;
     
     if(descriptor->IsCompressedFile())
     {

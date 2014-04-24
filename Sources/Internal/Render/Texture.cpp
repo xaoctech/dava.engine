@@ -685,8 +685,8 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeS]));
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeT]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[texDescriptor->drawSettings.wrapModeS]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[texDescriptor->drawSettings.wrapModeT]));
 
     if (pixelizationFlag)
     {
@@ -695,8 +695,8 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
     }
     else
     {
-        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.minFilter]));
-        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.magFilter]));
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->drawSettings.minFilter]));
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->drawSettings.magFilter]));
     }
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
@@ -840,7 +840,8 @@ bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily) const
     
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
     
-    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily].format == FORMAT_INVALID)
+	DVASSERT(texDescriptor->compression);
+    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily]->format == FORMAT_INVALID)
     {
         return false;
     }
@@ -1172,7 +1173,7 @@ void Texture::MakePink(TextureType requestedType, bool checkers)
 			images->push_back(img);
 		}
 		
-		texDescriptor->faceDescription = 0x000000FF;
+		texDescriptor->dataSettings.faceDescription = 0x000000FF;
 	}
 	else
 	{
@@ -1425,8 +1426,8 @@ void Texture::SetPixelization(bool value)
     for (Map<FilePath, Texture *>::const_iterator iter = texturesMap.begin(); iter != texturesMap.end(); iter ++)
     {
         Texture* texture = iter->second;
-        TextureFilter minFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.minFilter;
-        TextureFilter magFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.magFilter;
+        TextureFilter minFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->drawSettings.minFilter;
+        TextureFilter magFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->drawSettings.magFilter;
         texture->SetMinMagFilter(minFilter, magFilter);
     }
     textureMapMutex.Unlock();
