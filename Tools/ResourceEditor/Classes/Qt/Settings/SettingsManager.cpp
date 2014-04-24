@@ -49,6 +49,9 @@ const SettingRow SETTINGS_GROUP_GENERAL_MAP[] =
     SettingRow("LodColor1", DAVA::VariantType(DAVA::Color(0.7f, 0.7f, 0.7f, 1.0f))),
     SettingRow("LodColor2", DAVA::VariantType(DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f))),
     SettingRow("LodColor3", DAVA::VariantType(DAVA::Color(0.3f, 0.3f, 0.3f, 1.0f))),
+    SettingRow("UserBoxScale", DAVA::VariantType(DAVA::float32(1.0))),
+    SettingRow("DebugBoxScale", DAVA::VariantType(DAVA::float32(1.0))),
+    SettingRow("ParticleBoxScale", DAVA::VariantType(DAVA::float32(1.0))),
 };
 
 const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
