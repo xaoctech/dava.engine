@@ -152,6 +152,9 @@ HashMap<K, V>::HashMap(size_t _hashSize, V _defaultV)
 	, szTable(_hashSize)
 	, defaultV(_defaultV)
 {
+	// not 0 and power of 2
+	DVASSERT(0 != szTable && 0 == (szTable & (szTable - 1)));
+
 	table = new HashMapItem*[szTable];
 	for(size_t i = 0; i < szTable; ++i)
 	{
