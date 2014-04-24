@@ -828,7 +828,7 @@ int QtPropertyDataDavaVariant::ParseFloatList(const QString &str, int maxCount, 
 	if(!str.isEmpty() && maxCount > 0 && NULL != dest)
 	{
 		int pos = 0;
-		QRegExp rx("(-?\\d+([\\.,]\\d+){0,1})");
+		QRegExp rx("(-?\\d*([\\.,]\\d+){0,1})");
 
 		while(index < maxCount && 
 			  (pos = rx.indexIn(str, pos)) != -1)
@@ -937,7 +937,7 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
             case DAVA::VariantType::TYPE_FLOAT:
                 {
                     QLineEdit *sb = new QLineEdit(parent);
-                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d+[,\\.]?\\d*\\s*")));
+                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d*[,\\.]?\\d*\\s*")));
                     ret = sb;
                 }
                 break;
@@ -1110,7 +1110,26 @@ QWidget* QtPropertyDataDavaVariant::CreateAllowedFlagsEditor(QWidget *parent) co
             const QString text = value.visibleValue.isValid()
                 ? value.visibleValue.toString()
                 : FromDavaVariant(curVariantValue).toString();
-            const quint64 intVal = value.realValue.AsUInt64();
+            const DAVA::VariantType real = value.realValue;
+            quint64 intVal = 0;
+            switch ( real.type )
+            {
+            case DAVA::VariantType::TYPE_INT32:
+                intVal = real.AsInt32();
+                break;
+            case DAVA::VariantType::TYPE_UINT32:
+                intVal = real.AsUInt32();
+                break;
+            case DAVA::VariantType::TYPE_INT64:
+                intVal = real.AsInt64();
+                break;
+            case DAVA::VariantType::TYPE_UINT64:
+                intVal = real.AsUInt64();
+                break;
+            default:
+                DVASSERT( false && "Unsupported type of flags" );
+                break;
+            }
 
             allowedWidget->AddFlagItem(intVal, text);
 		}
