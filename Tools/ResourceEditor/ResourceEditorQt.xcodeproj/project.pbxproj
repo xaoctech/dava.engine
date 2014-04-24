@@ -70,6 +70,7 @@
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		E8064AC3189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */; };
+		E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */; };
 		E86F97CF18DB38F1007330E1 /* CloneLastBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */; };
 		E879F45D189802680008E0B1 /* DeleteLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */; };
 		E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */; };
@@ -755,6 +756,8 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteRenderBatchCommand.cpp; sourceTree = "<group>"; };
 		E8064AC2189A95FA00EE7164 /* DeleteRenderBatchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteRenderBatchCommand.h; sourceTree = "<group>"; };
+		E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGlobalCommand.cpp; sourceTree = "<group>"; };
+		E8185C2A190950E500AAD457 /* MaterialGlobalCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialGlobalCommand.h; sourceTree = "<group>"; };
 		E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloneLastBatchCommand.cpp; sourceTree = "<group>"; };
 		E86F97CE18DB38F1007330E1 /* CloneLastBatchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloneLastBatchCommand.h; sourceTree = "<group>"; };
 		E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteLODCommand.cpp; sourceTree = "<group>"; };
@@ -3102,6 +3105,8 @@
 		E8C99008184CD0EB00AFBF3F /* Commands2 */ = {
 			isa = PBXGroup;
 			children = (
+				E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */,
+				E8185C2A190950E500AAD457 /* MaterialGlobalCommand.h */,
 				504697D3190175CE00BE1E6C /* EntityLockCommand.h */,
 				504697D4190175CE00BE1E6C /* EntityLockCommand.cpp */,
 				E8AA9AC91901001500334823 /* BakeTransformCommand.cpp */,
@@ -4358,6 +4363,7 @@
 				62B0D9901868359D00A60F7E /* GeneralSettingsDialog_moc.cpp in Build Sources */,
 				E8BAD6C71859F50300C98C8D /* ParticleEffectPropertiesWidget_moc.cpp in Build Sources */,
 				0282B88018BC745C006F1EE4 /* SoundComponentEditor_moc.cpp in Build Sources */,
+				E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */,
 				E8BAD6FD1859F50300C98C8D /* NormalHood_moc.cpp in Build Sources */,
 				62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */,
 				E8C9927D184CD0EC00AFBF3F /* TextureDescriptorUtils.cpp in Build Sources */,
