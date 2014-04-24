@@ -439,6 +439,24 @@ function WaitControlDisappeared(name, time)
     return false
 end
 
+function WaitControlBecomeVisible(name, time)
+    local waitTime = time or TIMEOUT
+    Log("WaitControlBecomeVisible name="..name.." waitTime="..waitTime,"DEBUG")
+    
+    local elapsedTime = 0.0
+    while elapsedTime < waitTime do
+        elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
+		coroutine.yield()
+        
+        if IsVisible(name) then
+            --Log("WaitControl found "..name, "DEBUG")
+            return true
+        end
+    end
+    
+    Log("WaitControl not found "..name, "DEBUG")
+    return false
+end
 -- Work with Text field and labels 
 function SetText(path, text, time)
 	local waitTime = time or DELAY
