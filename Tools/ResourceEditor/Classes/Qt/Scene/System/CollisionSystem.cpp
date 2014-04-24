@@ -41,6 +41,8 @@
 #include "Commands2/EntityParentChangeCommand.h"
 #include "Commands2/InspMemberModifyCommand.h"
 
+#include "Settings/SettingsManager.h"
+
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/TransformComponent.h"
@@ -489,6 +491,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	CollisionBaseObject *cObj = NULL;
 	bool isLandscape = false;
 
+    DAVA::float32 debugBoxScale = SettingsManager::Instance()->GetValue("DebugBoxScale", SettingsManager::GENERAL).AsFloat();
+
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
 	if( NULL == cObj &&
@@ -503,7 +507,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj &&
 		NULL != particleEffect)
 	{
-		cObj = new CollisionParticleEffect(entity, objectsCollWorld);
+        DAVA::float32 scale = SettingsManager::Instance()->GetValue("ParticleBoxScale", SettingsManager::GENERAL).AsFloat();
+		cObj = new CollisionParticleEffect(entity, objectsCollWorld, 1.0f * scale);
 	}
 
 
@@ -523,19 +528,23 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj && 
 		NULL != camera)
 	{
-		cObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), 0.75f);
+		cObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), 1.0 * debugBoxScale);
 	}
 
 	// build simple collision box for all other entities, that has more than two components
 	if( NULL == cObj &&
 		NULL != entity)
 	{
-		if( NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT) ||
-			NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
+		if( NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
 			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
 		{
-			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 0.5f);
+			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 1.0 * debugBoxScale);
 		}
+        else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
+        {
+            DAVA::float32 scale = SettingsManager::Instance()->GetValue("UserBoxScale", SettingsManager::GENERAL).AsFloat();
+            cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 1.0 * scale);
+        }
 	}
 
 	if(NULL != cObj)

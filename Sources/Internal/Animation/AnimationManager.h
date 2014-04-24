@@ -86,15 +86,23 @@ private:
 	bool IsAnimating(AnimatedObject * owner, int32 trackId);
 	
 	void AddAnimation(Animation * _animation);
-	void RemoveAnimation(Animation * _animation);
+    void AddAnimationInternal(BaseObject * caller, void * param, void *callerData);
+	
+    void RemoveAnimation(Animation * _animation);
+    void RemoveAnimationInternal(BaseObject * caller, void * param, void *callerData);
 	
 	/*
 	 Function remove all animations for given object from update and delete objects and their references
 	 */
 	void DeleteAnimations(AnimatedObject * _owner, int32 track = -1);
+    void DeleteAnimationInternal(BaseObject * caller, void * param, void *callerData);
+    struct DeleteAnimationsData
+    {
+        AnimatedObject * owner;
+        int32 track;
+    };
 	
 	Vector<Animation*> animations;
-	Mutex animationMutex;
 	
 	friend class Animation;
 	friend class AnimatedObject;

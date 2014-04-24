@@ -243,9 +243,6 @@ public:
     DAVA::NMaterial* GetGlobalMaterial() const;
     void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
 
-    void CreateGlobalMaterial();
-    void ResetGlobalMaterial();
-
 protected:
     void UpdateLights();
 
