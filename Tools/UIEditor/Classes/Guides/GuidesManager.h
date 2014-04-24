@@ -132,7 +132,7 @@ protected:
     int32 GetGuideStickResult(const Vector2& distance, Vector2& offset) const;
 
     // Get the closest stick position.
-    Vector2 GetClosedStickPosition(const Rect& rect, const Vector2& pos, int32 stickResult);
+    Vector2 GetClosedStickPosition(const Rect& rect, const Vector2& pos, int32 stickResult) const;
 
 private:
     List<GuideData*> activeGuides;

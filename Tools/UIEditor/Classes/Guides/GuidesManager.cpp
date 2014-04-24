@@ -675,7 +675,7 @@ void GuidesManager::MoveGuideSticked(GuideData* guideData, const Vector2& pos)
     SetGuidePosition(guideData, stickedPos);
 }
 
-Vector2 GuidesManager::GetClosedStickPosition(const Rect& rect, const Vector2& pos, int32 stickResult)
+Vector2 GuidesManager::GetClosedStickPosition(const Rect& rect, const Vector2& pos, int32 stickResult) const
 {
     Vector2 resultPos = pos;
 
