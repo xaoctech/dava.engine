@@ -298,7 +298,7 @@ inline FilePath::ePathType FilePath::GetType() const
 {
     return pathType;
 }
-    
+  
 };
 
 #endif //__DAVAENGINE_FILE_PATH_H__

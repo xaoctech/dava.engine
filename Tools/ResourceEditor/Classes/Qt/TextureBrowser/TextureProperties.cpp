@@ -158,10 +158,10 @@ void TextureProperties::ReloadProperties()
 		QModelIndex headerIndex;
 		DAVA::InspBase *object = NULL;
 
-		object = &curTextureDescriptor->settings;
+		object = &curTextureDescriptor->drawSettings;
 
-		// add common texture settings
-		headerIndex = AppendHeader("Texture settings");
+		// add common texture drawSettings
+		headerIndex = AppendHeader("Texture drawSettings");
 		propMipMap = AddPropertyItem("generateMipMaps", object, headerIndex);
 		propMipMap->SetCheckable(true);
 		propMipMap->SetEditable(false);
@@ -177,9 +177,10 @@ void TextureProperties::ReloadProperties()
 		propMinFilter = AddPropertyItem("minFilter", object, headerIndex);
 		propMagFilter = AddPropertyItem("magFilter", object, headerIndex);
 
-		object = &curTextureDescriptor->compression[curGPU];
+		DVASSERT(curTextureDescriptor->compression);
+		object = curTextureDescriptor->compression[curGPU];
 
-		// add per-gpu settings
+		// add per-gpu drawSettings
 		headerIndex = AppendHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
 		propFormat = AddPropertyItem("format", object, headerIndex);
 
@@ -345,7 +346,8 @@ void TextureProperties::LoadCurSizeToProp()
 	if( NULL != curTextureDescriptor && NULL != propSizes && 
 		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
-		QSize curSize(curTextureDescriptor->compression[curGPU].compressToWidth, curTextureDescriptor->compression[curGPU].compressToHeight);
+		DVASSERT(curTextureDescriptor->compression);
+		QSize curSize(curTextureDescriptor->compression[curGPU]->compressToWidth, curTextureDescriptor->compression[curGPU]->compressToHeight);
 		int level = availableSizes.key(curSize, -1); 
 
 		if(-1 != level)
@@ -367,8 +369,9 @@ void TextureProperties::SaveCurSizeFromProp()
 
 		if(availableSizes.contains(level))
 		{
-			curTextureDescriptor->compression[curGPU].compressToWidth = availableSizes[level].width();
-			curTextureDescriptor->compression[curGPU].compressToHeight = availableSizes[level].height();
+			DVASSERT(curTextureDescriptor->compression);
+			curTextureDescriptor->compression[curGPU]->compressToWidth = availableSizes[level].width();
+			curTextureDescriptor->compression[curGPU]->compressToHeight = availableSizes[level].height();
 		}
 	}
 }

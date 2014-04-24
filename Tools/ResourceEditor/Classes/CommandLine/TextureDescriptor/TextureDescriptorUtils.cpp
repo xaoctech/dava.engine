@@ -86,8 +86,9 @@ void TextureDescriptorUtils::CopyCompressionParams(const FilePath &descriptorPat
     TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
     if(!descriptor) return;
 
-    const TextureDescriptor::Compression &srcCompression = descriptor->compression[GPU_POWERVR_IOS];
-    if(srcCompression.format == FORMAT_INVALID)
+	DVASSERT(descriptor->compression);
+    const TextureDescriptor::Compression * srcCompression = descriptor->compression[GPU_POWERVR_IOS];
+    if(srcCompression->format == FORMAT_INVALID)
     {   //source format not set
         delete descriptor;
         return;
@@ -95,20 +96,20 @@ void TextureDescriptorUtils::CopyCompressionParams(const FilePath &descriptorPat
     
     for(int32 gpu = GPU_POWERVR_ANDROID; gpu < GPU_FAMILY_COUNT; ++gpu)
     {
-        if(descriptor->compression[gpu].format != FORMAT_INVALID)
+        if(descriptor->compression[gpu]->format != FORMAT_INVALID)
             continue;
         
-        descriptor->compression[gpu].compressToWidth = srcCompression.compressToWidth;
-        descriptor->compression[gpu].compressToHeight = srcCompression.compressToHeight;
-        descriptor->compression[gpu].sourceFileCrc = srcCompression.sourceFileCrc;
+        descriptor->compression[gpu]->compressToWidth = srcCompression->compressToWidth;
+        descriptor->compression[gpu]->compressToHeight = srcCompression->compressToHeight;
+        descriptor->compression[gpu]->sourceFileCrc = srcCompression->sourceFileCrc;
         
-        if((srcCompression.format == FORMAT_PVR2 || srcCompression.format == FORMAT_PVR4) && (gpu != GPU_POWERVR_ANDROID))
+        if((srcCompression->format == FORMAT_PVR2 || srcCompression->format == FORMAT_PVR4) && (gpu != GPU_POWERVR_ANDROID))
         {
-            descriptor->compression[gpu].format = FORMAT_ETC1;
+            descriptor->compression[gpu]->format = FORMAT_ETC1;
         }
         else
         {
-            descriptor->compression[gpu].format = srcCompression.format;
+            descriptor->compression[gpu]->format = srcCompression.format;
         }
     }
     
