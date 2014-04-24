@@ -63,15 +63,15 @@ bool LibPVRHelper::IsImage(File *file)
     PVRHeaderV3 header = GetHeader(file);
     return (PVRTEX3_IDENT == header.u32Version);
 }
-  /*
-bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMipMap)
+
+eErrorCode LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMipMap)
 {
     uint32 fileSize = file->GetSize();
     uint8 *fileData = new uint8[fileSize];
     if(!fileData)
     {
         Logger::Error("[LibPVRHelper::ReadFile]: cannot allocate buffer for file data");
-        return false;
+        return ERROR_READ_FAIL;
     }
     
     uint32 readSize = file->Read(fileData, fileSize);
@@ -80,7 +80,7 @@ bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMip
         Logger::Error("[LibPVRHelper::ReadFile]: cannot read from file");
         
         SafeDeleteArray(fileData);
-        return false;
+        return ERROR_FILE_NOT_FOUND;
     }
     
     
@@ -89,7 +89,7 @@ bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMip
     {
         Logger::Error("[LibPVRHelper::ReadFile]: cannot prepare pvr data for parsing");
         SafeDeleteArray(fileData);
-        return false;
+        return ERROR_READ_FAIL;
     }
     
     bool read = true;
@@ -100,15 +100,8 @@ bool LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 baseMip
     }
     
     SafeDeleteArray(fileData);
-    return read;
-}*/
-/*
-bool LibPVRHelper::WriteFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps )
-{
-    DVASSERT(0);
-    // not implemented
-    return false;
-}*/
+    return SUCCESS;
+}
 
 uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
 {

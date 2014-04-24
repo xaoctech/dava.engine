@@ -50,15 +50,9 @@ public:
     
     virtual bool IsImage(File *file);
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
-    {
-        return SUCCESS;
-    }
-
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
+    
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
 
     static uint32 GetDataSize(const FilePath &filePathname);
 
@@ -77,10 +71,7 @@ public:
 	
 	bool Create(int32 _width, int32 _height);
 	bool CreateFromFBOSprite(Sprite * fboSprite);
-	
-	bool Load(const FilePath & filename);
-	bool Save(const FilePath & filename);
-	
+		
 	void DrawImage(int sx, int sy, PngImage * image);
 	void DrawRect(const Rect2i & rect, uint32 color);
 

@@ -119,14 +119,12 @@ public:
     
     virtual bool IsImage(File *file);
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
+    
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false)
     {
-        return SUCCESS;
-    }
-
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
-    {
-        return SUCCESS;
+        DVASSERT(0);
+        return ERROR_WRITE_FAIL;
     }
     
     static uint32 GetMipMapLevelsCount(File *file);

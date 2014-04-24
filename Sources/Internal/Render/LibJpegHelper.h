@@ -45,16 +45,10 @@ public:
     
     virtual bool IsImage(File *file);
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
 
     //only RGB888 or A8
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
 };
 
 };

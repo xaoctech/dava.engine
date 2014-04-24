@@ -102,22 +102,8 @@ bool LibJpegWrapper::IsImage(File *infile)
     SafeDeleteArray(fileBuffer);
     return true;
 }
-/*
-bool LibJpegWrapper::ReadFile(const FilePath & fileName,  Vector<Image *> &imageSet, int32 baseMipMap)
-{
-    File * infile = File::Create(fileName, File::OPEN | File::READ);
-	if (!infile)
-	{
-        Logger::Error("[LibJpegWrapper::ReadFile] File %s could not be opened for reading", fileName.GetAbsolutePathname().c_str());
-		return false;
-	}
-    
-    bool retValue = ReadFile(infile, imageSet);
-    SafeRelease(infile);
-    return retValue;
-}
-    
-bool LibJpegWrapper::ReadFile(File *infile,  Vector<Image *> &imageSet, int32 baseMipMap)
+  
+eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
 {
     struct jpeg_decompress_struct cinfo;
     struct jpegErrorManager jerr;
@@ -140,7 +126,7 @@ bool LibJpegWrapper::ReadFile(File *infile,  Vector<Image *> &imageSet, int32 ba
         SafeDeleteArray(fileBuffer);
         SafeDeleteArray(image->data);
         Logger::Error("[LibJpegWrapper::ReadFile] File %s has wrong jpeg header", infile->GetFilename() .GetAbsolutePathname().c_str());
-        return false;
+        return ERROR_FILE_FORMAT_INCORRECT;
     }
     
     jpeg_create_decompress(&cinfo);
@@ -172,22 +158,27 @@ bool LibJpegWrapper::ReadFile(File *infile,  Vector<Image *> &imageSet, int32 ba
     jpeg_destroy_decompress(&cinfo);
 	SafeDeleteArray(fileBuffer);
     imageSet.push_back(image);
-    return true;
+    return SUCCESS;
 }
    
-bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 height, uint8 * raw_image, PixelFormat format, bool generateMipmaps)
+eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
 {
-    DVASSERT(format == FORMAT_A8 || format == FORMAT_RGB888);
+    DVASSERT(imageSet.size());
+    Image* imageToSave = imageSet[0];
+    
+    DVASSERT(imageToSave->format == FORMAT_A8 || imageToSave->format == FORMAT_RGB888);
+
     struct jpeg_compress_struct cinfo;
     struct jpegErrorManager jerr;
     
     JSAMPROW row_pointer[1];
-    FILE *outfile = fopen( file_name.GetAbsolutePathname().c_str(), "wb" );
+    const char* absolutePathName = fileName.GetAbsolutePathname().c_str();
+    FILE *outfile = fopen( absolutePathName, "wb" );
     
     if ( !outfile )
     {
-        Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", file_name.GetAbsolutePathname().c_str());
-        return false;
+        Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", absolutePathName);
+        return ERROR_FILE_NOT_FOUND;
     }
     cinfo.err = jpeg_std_error( &jerr.pub );
     
@@ -197,19 +188,19 @@ bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 he
     {
         jpeg_destroy_compress( &cinfo );
         fclose(outfile);
-        Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", file_name.GetAbsolutePathname().c_str());
-        return false;
+        Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", absolutePathName);
+        return ERROR_WRITE_FAIL;
     }
     jpeg_create_compress(&cinfo);
     jpeg_stdio_dest(&cinfo, outfile);
     
     // Setting the parameters of the output file here
-    cinfo.image_width = width;
-    cinfo.image_height = height;
+    cinfo.image_width = imageToSave->width;
+    cinfo.image_height = imageToSave->height;
     
     cinfo.in_color_space = JCS_RGB;
     int colorComponents = 3;
-    if(format != FORMAT_RGB888)
+    if(imageToSave->format != FORMAT_RGB888)
     {
         cinfo.in_color_space = JCS_GRAYSCALE;
         colorComponents = 1;
@@ -228,14 +219,14 @@ bool LibJpegWrapper::WriteFile(const FilePath & file_name, int32 width, int32 he
     jpeg_start_compress( &cinfo, TRUE );
     while( cinfo.next_scanline < cinfo.image_height )
     {
-        row_pointer[0] = &raw_image[ cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
+        row_pointer[0] = &imageToSave->data[ cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
         jpeg_write_scanlines( &cinfo, row_pointer, 1 );
     }
     jpeg_finish_compress( &cinfo );
     jpeg_destroy_compress( &cinfo );
     fclose( outfile );
-    return true;
-}*/
+    return SUCCESS;
+}
    
     
 };
