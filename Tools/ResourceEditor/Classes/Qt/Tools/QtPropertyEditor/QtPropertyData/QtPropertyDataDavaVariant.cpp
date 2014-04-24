@@ -828,7 +828,7 @@ int QtPropertyDataDavaVariant::ParseFloatList(const QString &str, int maxCount, 
 	if(!str.isEmpty() && maxCount > 0 && NULL != dest)
 	{
 		int pos = 0;
-		QRegExp rx("(-?\\d*([\\.,]\\d+){0,1})");
+		QRegExp rx("(-?(\\d*)([\\.,])(\\d+){0,1})");
 
 		while(index < maxCount && 
 			  (pos = rx.indexIn(str, pos)) != -1)
