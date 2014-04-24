@@ -85,12 +85,12 @@ void ShaderAsset::SetShaderData(Data * _vertexShaderData, Data * _fragmentShader
 
 Shader * ShaderAsset::Compile(const FastNameSet & defines)
 {
-    Shader * checkShader = compiledShaders.at(defines);
-    if (checkShader)return checkShader;
+    Shader * shader = compiledShaders.at(defines);
+    if (shader)return shader;
     
 	compileShaderMutex.Lock();
 
-	Shader * shader = compiledShaders.at(defines); //to check if shader was created while mutex was locked
+	shader = compiledShaders.at(defines); //to check if shader was created while mutex was locked
 	if (NULL == shader)
 	{
         shader = Shader::CreateShader(name,
@@ -127,6 +127,9 @@ void ShaderAsset::ReloadShaders()
 
 		shader->Reload(vertexShaderData, fragmentShaderData, vertexShaderDataStart, vertexShaderDataSize, fragmentShaderDataStart, fragmentShaderDataSize);
 		ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &ShaderAsset::ReloadShaderInternal, shader));
+
+        JobInstanceWaiter waiter(job);
+        waiter.Wait();
 	}
 }
 
