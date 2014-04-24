@@ -81,17 +81,18 @@ void RenderPass::RemoveRenderLayer(RenderLayer * layer)
 }
 
 void RenderPass::Draw(RenderSystem * renderSystem)
-{    
-    Camera *drawCamera = renderSystem->GetCamera();   
-    Camera *clipCamera = renderSystem->GetClipCamera();        
-    DVASSERT(drawCamera);
-    DVASSERT(clipCamera);
-    drawCamera->SetupDynamicParameters();            
-    if (clipCamera!=drawCamera)    
-        clipCamera->PrepareDynamicParameters();
+{   
+    Camera *mainCamera = renderSystem->GetMainCamera();        
+    Camera *drawCamera = renderSystem->GetDrawCamera();   
     
-    PrepareVisibilityArrays(clipCamera, renderSystem);
-    DrawLayers(clipCamera);
+    DVASSERT(drawCamera);
+    DVASSERT(mainCamera);
+    drawCamera->SetupDynamicParameters();            
+    if (mainCamera!=drawCamera)    
+        mainCamera->PrepareDynamicParameters();
+    
+    PrepareVisibilityArrays(mainCamera, renderSystem);
+    DrawLayers(mainCamera);
 }
 
 void RenderPass::PrepareVisibilityArrays(Camera *camera, RenderSystem * renderSystem)
@@ -134,15 +135,15 @@ MainForwardRenderPass::MainForwardRenderPass(const FastName & name, RenderPassID
 
 void MainForwardRenderPass::Draw(RenderSystem * renderSystem)
 {
-    Camera *drawCamera = renderSystem->GetCamera();   
-    Camera *clipCamera = renderSystem->GetClipCamera();        
+    Camera *mainCamera = renderSystem->GetMainCamera();        
+    Camera *drawCamera = renderSystem->GetDrawCamera();   
+    DVASSERT(mainCamera);
     DVASSERT(drawCamera);
-    DVASSERT(clipCamera);
     drawCamera->SetupDynamicParameters();            
-    if (clipCamera!=drawCamera)    
-        clipCamera->PrepareDynamicParameters();
+    if (mainCamera!=drawCamera)    
+        mainCamera->PrepareDynamicParameters();
 
-	PrepareVisibilityArrays(clipCamera, renderSystem);
+	PrepareVisibilityArrays(mainCamera, renderSystem);
 	
 	RenderLayerBatchArray *waterLayer = renderPassBatchArray->Get(RenderLayerManager::Instance()->GetLayerIDByName(LAYER_WATER));
 	bool needWaterPrepass = false;
@@ -258,14 +259,14 @@ void MainForwardRenderPass::Draw(RenderSystem * renderSystem)
 
         /*hack for now*/
         renderPassBatchArray->Clear();
-        renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, clipCamera);
+        renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, mainCamera);
         
         RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
         RenderManager::Instance()->FlushState();
         RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
 	}	
 
-	DrawLayers(clipCamera);
+	DrawLayers(mainCamera);
 
     /*if (needWaterPrepass)
     {
@@ -291,7 +292,7 @@ MainForwardRenderPass::~MainForwardRenderPass()
 	SafeDelete(refractionPass);
 }
 
-WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(name, id), passDrawCamera(NULL), passClipCamera(NULL)
+WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(name, id), passMainCamera(NULL), passDrawCamera(NULL)
 {
     const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
@@ -303,8 +304,8 @@ WaterPrePass::WaterPrePass(const FastName & name, RenderPassID id):RenderPass(na
 }
 WaterPrePass::~WaterPrePass()
 {
+    SafeRelease(passMainCamera);
     SafeRelease(passDrawCamera);
-    SafeRelease(passClipCamera);
 }
 
 WaterReflectionRenderPass::WaterReflectionRenderPass(const FastName & name, RenderPassID id):WaterPrePass(name, id)
@@ -324,48 +325,46 @@ void WaterReflectionRenderPass::UpdateCamera(Camera *camera)
 
 void WaterReflectionRenderPass::Draw(RenderSystem * renderSystem)
 {    
-    Camera *drawCamera = renderSystem->GetCamera();   
-    Camera *clipCamera = renderSystem->GetClipCamera();        
-        
-    drawCamera->SetupDynamicParameters();            
-    if (clipCamera!=drawCamera)    
-        clipCamera->PrepareDynamicParameters();
+    Camera *mainCamera = renderSystem->GetMainCamera();        
+    Camera *drawCamera = renderSystem->GetDrawCamera();    
+            
 
     if (!passDrawCamera)
     {
-        passDrawCamera = new Camera();    
-        passClipCamera = new Camera();    
+        passMainCamera = new Camera();    
+        passDrawCamera = new Camera();            
     }
 
-    passDrawCamera->CopyMathOnly(*drawCamera);        
-    UpdateCamera(passDrawCamera);
+    passMainCamera->CopyMathOnly(*mainCamera);        
+    UpdateCamera(passMainCamera);
 
     Vector4 clipPlane(0,0,1, -(waterLevel-0.1f));
 
-    Camera* currDrawCamera = passDrawCamera;
-    Camera* currClipCamera;
-    currDrawCamera->SetupDynamicParameters(&clipPlane);
-    if (drawCamera==clipCamera)
+    Camera* currMainCamera = passMainCamera;
+    Camera* currDrawCamera;
+    
+    if (drawCamera==mainCamera)
     {
-        currClipCamera = currDrawCamera;
+        currDrawCamera = currMainCamera;    
     }
     else
     {
-        passClipCamera->CopyMathOnly(*clipCamera);        
-        UpdateCamera(passClipCamera);
-        currClipCamera = passClipCamera;
-        currClipCamera->PrepareDynamicParameters(&clipPlane);
+        passDrawCamera->CopyMathOnly(*drawCamera);        
+        UpdateCamera(passDrawCamera);
+        currDrawCamera = passDrawCamera;
+        currMainCamera->PrepareDynamicParameters(&clipPlane);
     }
+    currDrawCamera->SetupDynamicParameters(&clipPlane);
     
     //add clipping plane
     
     
     
 	visibilityArray.Clear();
-	renderSystem->GetRenderHierarchy()->Clip(currClipCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFLECTION);	
+	renderSystem->GetRenderHierarchy()->Clip(currMainCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFLECTION);	
 	renderPassBatchArray->Clear();
-	renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currClipCamera); 
-    DrawLayers(currClipCamera);
+	renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currMainCamera); 
+    DrawLayers(currMainCamera);
 }
 
 
@@ -377,42 +376,44 @@ WaterRefractionRenderPass::WaterRefractionRenderPass(const FastName & name, Rend
 
 void WaterRefractionRenderPass::Draw(RenderSystem * renderSystem)
 {
-    Camera *drawCamera = renderSystem->GetCamera();   
-    Camera *clipCamera = renderSystem->GetClipCamera();        
+    Camera *mainCamera = renderSystem->GetMainCamera();        
+    Camera *drawCamera = renderSystem->GetDrawCamera();    
 
-    drawCamera->SetupDynamicParameters();            
-    if (clipCamera!=drawCamera)    
-        clipCamera->PrepareDynamicParameters();
 
     if (!passDrawCamera)
     {
-        passDrawCamera = new Camera();    
-        passClipCamera = new Camera();    
+        passMainCamera = new Camera();    
+        passDrawCamera = new Camera();            
     }
 
-    passDrawCamera->CopyMathOnly(*drawCamera);            
+    passMainCamera->CopyMathOnly(*mainCamera);                    
 
     Vector4 clipPlane(0,0,-1, waterLevel+0.1f);
 
-    Camera* currDrawCamera = passDrawCamera;
-    Camera* currClipCamera;
-    currDrawCamera->SetupDynamicParameters(&clipPlane);
-    if (drawCamera==clipCamera)
+    Camera* currMainCamera = passMainCamera;
+    Camera* currDrawCamera;
+
+    if (drawCamera==mainCamera)
     {
-        currClipCamera = currDrawCamera;
+        currDrawCamera = currMainCamera;    
     }
     else
     {
-        passClipCamera->CopyMathOnly(*drawCamera);                
-        currClipCamera = passClipCamera;
-        currClipCamera->PrepareDynamicParameters(&clipPlane);
+        passDrawCamera->CopyMathOnly(*drawCamera);                
+        currDrawCamera = passDrawCamera;
+        currMainCamera->PrepareDynamicParameters(&clipPlane);
     }
-    
+    currDrawCamera->SetupDynamicParameters(&clipPlane);
+
+    //add clipping plane
+
+
+
     visibilityArray.Clear();
-    renderSystem->GetRenderHierarchy()->Clip(currClipCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFRACTION);	
+    renderSystem->GetRenderHierarchy()->Clip(currMainCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFLECTION);	
     renderPassBatchArray->Clear();
-    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currClipCamera); 
-    DrawLayers(currClipCamera);
+    renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currMainCamera); 
+    DrawLayers(currMainCamera);       
     
 }
 

@@ -147,7 +147,7 @@ void ParticleEffectSystem::RunEffect(ParticleEffectComponent *effect)
 {	
     Scene *scene = GetScene();
     if (scene)
-        scene->lodSystem->ForceUpdate(effect->GetEntity(), scene->GetClipCamera(), 1.0f/60.0f);
+        scene->lodSystem->ForceUpdate(effect->GetEntity(), scene->GetCurrentCamera(), 1.0f/60.0f);
 
 	if (effect->effectData.groups.empty()) //clean position sources
 		effect->effectData.infoSources.resize(1);

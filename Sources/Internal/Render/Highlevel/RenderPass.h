@@ -109,15 +109,16 @@ public:
     WaterPrePass(const FastName & name, RenderPassID id);
     ~WaterPrePass();
 protected:
-    Camera *passDrawCamera, *passClipCamera;
+    Camera *passMainCamera, *passDrawCamera;
     float32 waterLevel;
 };
 class WaterReflectionRenderPass  : public WaterPrePass
-{    
-    void UpdateCamera(Camera *camera);
+{        
 public:    
     WaterReflectionRenderPass(const FastName & name, RenderPassID id);
 	virtual void Draw(RenderSystem * renderSystem);	
+private:
+    void UpdateCamera(Camera *camera);
 };
 
 class WaterRefractionRenderPass  : public WaterPrePass
@@ -129,15 +130,17 @@ public:
 };
 
 class MainForwardRenderPass : public RenderPass
-{
-	WaterReflectionRenderPass *reflectionPass;
-    WaterRefractionRenderPass *refractionPass;
-    Texture *reflectionTexture, *refractionTexture;
-    Sprite *reflectionSprite, *refractionSprite;
+{	
 public:
     MainForwardRenderPass(const FastName & name, RenderPassID id);
 	~MainForwardRenderPass();
 	virtual void Draw(RenderSystem * renderSystem);
+
+private:
+    WaterReflectionRenderPass *reflectionPass;
+    WaterRefractionRenderPass *refractionPass;
+    Texture *reflectionTexture, *refractionTexture;
+    Sprite *reflectionSprite, *refractionSprite;
 };
 
 } // ns
