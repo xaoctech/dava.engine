@@ -828,7 +828,7 @@ int QtPropertyDataDavaVariant::ParseFloatList(const QString &str, int maxCount, 
 	if(!str.isEmpty() && maxCount > 0 && NULL != dest)
 	{
 		int pos = 0;
-		QRegExp rx("(-?\\d+([\\.,]\\d+){0,1})");
+		QRegExp rx("(-?\\d*([\\.,]\\d+){0,1})");
 
 		while(index < maxCount && 
 			  (pos = rx.indexIn(str, pos)) != -1)
@@ -937,7 +937,7 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
             case DAVA::VariantType::TYPE_FLOAT:
                 {
                     QLineEdit *sb = new QLineEdit(parent);
-                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d+[,\\.]?\\d*\\s*")));
+                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d*[,\\.]?\\d*\\s*")));
                     ret = sb;
                 }
                 break;
