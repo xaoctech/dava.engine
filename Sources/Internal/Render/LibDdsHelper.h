@@ -53,7 +53,7 @@ public:
         return SUCCESS;
     }
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet)
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false)
     {
         return SUCCESS;
     }

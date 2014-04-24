@@ -102,18 +102,23 @@ bool LibPngWrapper::IsImage(File *file)
 	
     return (0 != png_check_sig((unsigned char *) sig, 8));
 }
-/*
-bool LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
+
+eErrorCode LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap )
 {
     Image* image = new Image();
-    bool retCode = ReadPngFile(infile, image);
-    if(!image)
+    int innerRetCode = ReadPngFile(infile, image);
+
+    if(innerRetCode == 1)
     {
-        return false;
+        imageSet.push_back(image);
+        return SUCCESS;
     }
-    imageSet.push_back(image);
-    return retCode == 1;
-}*/
+    else
+    {
+        SafeRelease(image);
+        return innerRetCode == 0 ? ERROR_FILE_FORMAT_INCORRECT : ERROR_READ_FAIL;
+    }
+}
 
 int LibPngWrapper::ReadPngFile(File *infile, Image * image)
 {
@@ -323,10 +328,12 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 
 	return imageSize;
 }
-/*
-bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format, bool generateMipmaps)
+
+eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat format, bool isCubeMap)
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
+    DVASSERT(imageSet.size());
+    Image* imageToSave = imageSet[0];
 	png_color_8 sig_bit;
 	
 	png_structp png_ptr;
@@ -349,24 +356,24 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
         bytes_for_color = 2;
     }
     
-	png_bytep * row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+	png_bytep * row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * imageToSave->height);
     
     
-	for (int y = 0; y < height; y++)
+	for (int y = 0; y < imageToSave->height; y++)
 	{
 //		row_pointers[y] = (png_byte*) &data[y * width * 4];
-		row_pointers[y] = (png_byte*) &data[y * width * bytes_for_color];
+		row_pointers[y] = (png_byte*) &imageToSave->data[y * imageToSave->width * bytes_for_color];
 	}
 	
 	
 	//create file
-	FILE *fp = fopen(file_name.GetAbsolutePathname().c_str(), "wb");
+	FILE *fp = fopen(fileName.GetAbsolutePathname().c_str(), "wb");
 	if (!fp)
 	{
-		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name.GetAbsolutePathname().c_str());
+		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", fileName.GetAbsolutePathname().c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
         free(row_pointers);
-		return false;
+		return ERROR_FILE_NOT_FOUND;
 	}
 	
 	
@@ -380,7 +387,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 		//abort_("[write_png_file] png_create_write_struct failed");
         free(row_pointers);
         fclose(fp);
-		return false;
+		return ERROR_WRITE_FAIL;
 	}
 	
 	info_ptr = png_create_info_struct(png_ptr);
@@ -391,7 +398,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 		//abort_("[write_png_file] png_create_info_struct failed");
         free(row_pointers);
         fclose(fp);
-		return false;
+		return ERROR_WRITE_FAIL;
 	}
 	
 	if (setjmp(png_jmpbuf(png_ptr)))
@@ -400,7 +407,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 		//abort_("[write_png_file] Error during init_io");
         free(row_pointers);
         fclose(fp);
-		return false;
+		return ERROR_READ_FAIL;
 	}
 	
 	png_init_io(png_ptr, fp);
@@ -412,11 +419,11 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 		//abort_("[write_png_file] Error during writing header");
         free(row_pointers);
         fclose(fp);
-		return false;
+		return ERROR_WRITE_FAIL;
 	}
     
 	
-	png_set_IHDR(png_ptr, info_ptr, width, height,
+	png_set_IHDR(png_ptr, info_ptr, imageToSave->width, imageToSave->height,
 				 bit_depth, color_type, PNG_INTERLACE_NONE,
 				 PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	
@@ -461,7 +468,7 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 		//abort_("[write_png_file] Error during writing bytes");
         free(row_pointers);
         fclose(fp);
-		return false;
+		return ERROR_WRITE_FAIL;
 	}
 	
 	png_write_image(png_ptr, row_pointers);
@@ -474,15 +481,15 @@ bool LibPngWrapper::WriteFile(const FilePath & file_name, int32 width, int32 hei
 		//abort_("[write_png_file] Error during end of write");
         free(row_pointers);
         fclose(fp);
-		return false;
+		return ERROR_WRITE_FAIL;
 	}
 	
 	png_write_end(png_ptr, NULL);
 	
 	free(row_pointers);
 	fclose(fp);
-    return true;
-}*/
+    return SUCCESS;
+}
 
 PngImage::PngImage()
 :	width(0)
@@ -499,19 +506,6 @@ PngImage::~PngImage()
 	width = 0;
 	height = 0;
     format = FORMAT_INVALID;
-}
-
-bool PngImage::Load(const FilePath & filename)
-{
-	//LibPngWrapper::ReadPngFile(filename, &width, &height, &data);
-	return true;
-}
-
-bool PngImage::Save(const FilePath & filename)
-{
-    //TODO!!!
-	//LibPngWrapper().WriteFile(filename, width, height, data, format);
-	return true;
 }
 
 bool PngImage::Create(int _width, int _height)

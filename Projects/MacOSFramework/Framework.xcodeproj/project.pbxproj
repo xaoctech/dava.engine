@@ -777,6 +777,7 @@
 		620638B618EE9F5100C85F25 /* libjpeg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 627AFA6C18E964E300F2A52A /* libjpeg_macos.a */; };
 		6246724918EEA48C00046586 /* LibJpegHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C1212E18E961AE0008D201 /* LibJpegHelper.cpp */; };
 		6246724A18EEA50E00046586 /* libjpeg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 627AFA6C18E964E300F2A52A /* libjpeg_macos.a */; };
+		62BF29A81907AD4100BA31F0 /* LibDdsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 62C8E2B1190178BB00AD1D9C /* LibDdsHelper.h */; };
 		62BF6FDA18F7E84400246220 /* ImageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62BF6FD818F7E84400246220 /* ImageSystem.cpp */; };
 		62BF6FDB18F7E84400246220 /* ImageSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BF6FD918F7E84400246220 /* ImageSystem.h */; };
 		62C1213018E961AE0008D201 /* LibJpegHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C1212E18E961AE0008D201 /* LibJpegHelper.cpp */; };
@@ -5258,6 +5259,7 @@
 				E898A18516BD265400732C04 /* UIJoypad.h in Headers */,
 				A650F4BC1864A10100D3278D /* NMaterialTemplate.h in Headers */,
 				E898A18616BD265400732C04 /* UIList.h in Headers */,
+				62BF29A81907AD4100BA31F0 /* LibDdsHelper.h in Headers */,
 				E898A18716BD265400732C04 /* UIListCell.h in Headers */,
 				E898A18816BD265400732C04 /* UILoadingTransition.h in Headers */,
 				E898A18916BD265400732C04 /* UIMoveInTransition.h in Headers */,

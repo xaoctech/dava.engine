@@ -38,28 +38,17 @@
 #include "Render/LibDdsHelper.h"
 #include "Render/LibPngHelpers.h"
 #include "Render/LibPVRHelper.h"
+#include "FileSystem/File.h"
 
 
 namespace DAVA 
 {
-
-class File;
 class Image;
 
     
 class ImageSystem: public Singleton<ImageSystem>
 {
 public:
-    ImageSystem()
-    {
-        
-    }
-    
-    virtual ~ImageSystem()
-    {
-        
-    }
-    
     enum eSupportedImageFileFormats
     {
         FILE_FORMAT_PNG = 0,
@@ -69,6 +58,22 @@ public:
         FILE_FORMAT_COUNT
     };
     
+    ImageSystem()
+    {
+        wrappers[FILE_FORMAT_PNG] = new LibPngWrapper();
+        wrappers[FILE_FORMAT_DDS] = new LibDdsHelper();
+        wrappers[FILE_FORMAT_PVR] = new LibPVRHelper();
+        wrappers[FILE_FORMAT_JPEG] = new LibJpegWrapper();
+    }
+    
+    virtual ~ImageSystem()
+    {
+        for(size_t i = 0; i < FILE_FORMAT_COUNT; ++i)
+        {
+            delete wrappers[i];
+        }
+    }
+    
     ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat)
     {
         return wrappers[fileFormat];
@@ -76,90 +81,90 @@ public:
     
     eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0)
     {
-        if(!pathname.Exists())
+        File *fileRead = File::Create(pathname, File::READ | File::OPEN);
+        if(!fileRead)
         {
             return ERROR_FILE_NOT_FOUND;
         }
         
-        ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(pathname);
+        eErrorCode result = Load(fileRead, imageSet, baseMipmap);
         
-       /* if (!propperWrapper->IsImage(pathname))
+        SafeRelease(fileRead);
+        
+        return result;
+    }
+    
+    eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0)
+    {
+        ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
+        
+        if (NULL == propperWrapper || !propperWrapper->IsImage(file))
         {
             return ERROR_FILE_FORMAT_INCORRECT;
         }
         
-        return propperWrapper->ReadFile(pathname, imageSet, baseMipmap) ? SUCCESS : ERROR_READ_FAIL;
-        */
-        return SUCCESS;
+        return propperWrapper->ReadFile(file, imageSet, baseMipmap) ? SUCCESS : ERROR_READ_FAIL;
     }
     
-    eErrorCode Load(File &file, Vector<Image *> & imageSet, int32 baseMipmap = 0)
+    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false)
     {
-        /*ImageFileWrapper* propperWrapper = DetectImageTypeByContent(&file);
-        
-        if (!propperWrapper->IsImage(&file))
+        ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
+        if(!propperWrapper)
         {
-            return RC_FILE_FORMAT_INCORRECT;
+            return ERROR_FILE_FORMAT_INCORRECT;
         }
-        
-        return propperWrapper->ReadFile(&file, imageSet, baseMipmap) ? RC_SUCCESS : RC_READ_FAIL;*/
-        return SUCCESS;
+
+        return propperWrapper->WriteFile(fileName, imageSet, compressionFormat, isCubeMap);
     }
-    
-    eErrorCode Save(const Vector<Image *> &imageSet, const FilePath & pathname);
     
 protected:
     
-
-    
-    static ImageFormatInterface* DetectImageFormatInterfaceByExtension(const FilePath & pathname)
+    ImageFormatInterface* DetectImageFormatInterfaceByExtension(const FilePath & pathname)
     {
-        /*if(pathname.IsEqualToExtension("*.pvr"))
+        if(pathname.IsEqualToExtension("*.pvr"))
         {
-            return &pvrWrapper;
+            return wrappers[FILE_FORMAT_PVR];
         }
         else if(pathname.IsEqualToExtension("*.dds"))
         {
-            return &dxtWrapper;
+            return wrappers[FILE_FORMAT_DDS];
         }
         else if(pathname.IsEqualToExtension("*.png"))
         {
-            return &pngWrapper;
+            return wrappers[FILE_FORMAT_PNG];
         }
         else if(pathname.IsEqualToExtension("*.jpeg")||pathname.IsEqualToExtension("*.jpg"))
         {
-            return &jpegWrapper;
+            return wrappers[FILE_FORMAT_JPEG];
         }
-        DVASSERT(0);*/
+        DVASSERT(0);
         
         return NULL;
     }
     
-    static ImageFormatInterface* DetectImageFormatInterfaceByContent(File *file)
+    ImageFormatInterface* DetectImageFormatInterfaceByContent(File *file)
     {
-        /*if(pvrWrapper.IsImage(file))
+        if( wrappers[FILE_FORMAT_PVR]->IsImage(file))
         {
-            return &pvrWrapper;
+            return  wrappers[FILE_FORMAT_PVR];
         }
-        else if(dxtWrapper.IsImage(file))
+        else if(wrappers[FILE_FORMAT_DDS]->IsImage(file))
         {
-            return &dxtWrapper;
+            return wrappers[FILE_FORMAT_DDS];
         }
-        else if(pngWrapper.IsImage(file))
+        else if(wrappers[FILE_FORMAT_PNG]->IsImage(file))
         {
-            return &pngWrapper;
+            return wrappers[FILE_FORMAT_PNG];
         }
-        else if(jpegWrapper.IsImage(file))
+        else if(wrappers[FILE_FORMAT_JPEG]->IsImage(file))
         {
-            return &jpegWrapper;
+            return wrappers[FILE_FORMAT_JPEG];
         }
-        DVASSERT(0);*/
+        DVASSERT(0);
         
         return NULL;
     }
-    
-    
-    
+       
     ImageFormatInterface* wrappers[FILE_FORMAT_COUNT];
 };
    
