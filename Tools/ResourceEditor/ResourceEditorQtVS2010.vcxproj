@@ -366,6 +366,7 @@
     <ClCompile Include="Classes\Commands2\KeyedArchiveCommand.cpp" />
     <ClCompile Include="Classes\Commands2\LandscapeEditorDrawSystemActions.cpp" />
     <ClCompile Include="Classes\Commands2\LandscapeSetTexturesCommands.cpp" />
+    <ClCompile Include="Classes\Commands2\MaterialGlobalCommand.cpp" />
     <ClCompile Include="Classes\Commands2\MaterialSwitchParentCommand.cpp" />
     <ClCompile Include="Classes\Commands2\MetaObjModifyCommand.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleEditorCommands.cpp" />
@@ -1006,6 +1007,7 @@
     <ClInclude Include="Classes\Commands2\KeyedArchiveCommand.h" />
     <ClInclude Include="Classes\Commands2\LandscapeEditorDrawSystemActions.h" />
     <ClInclude Include="Classes\Commands2\LandscapeSetTexturesCommands.h" />
+    <ClInclude Include="Classes\Commands2\MaterialGlobalCommand.h" />
     <ClInclude Include="Classes\Commands2\MaterialSwitchParentCommand.h" />
     <ClInclude Include="Classes\Commands2\MetaObjModifyCommand.h" />
     <ClInclude Include="Classes\Commands2\ParticleEditorCommands.h" />
