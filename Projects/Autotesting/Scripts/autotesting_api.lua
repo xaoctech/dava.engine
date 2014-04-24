@@ -442,13 +442,14 @@ end
 function WaitControlBecomeVisible(name, time)
     local waitTime = time or TIMEOUT
     Log("WaitControlBecomeVisible name="..name.." waitTime="..waitTime,"DEBUG")
-    
+
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
         elapsedTime = elapsedTime + autotestingSystem:GetTimeElapsed()
 		coroutine.yield()
-        
-        if IsVisible(name) then
+		
+		local control = autotestingSystem:FindControl(name)
+        if control and control:GetVisible() and control:IsOnScreen() and IsOnScreen(control, background) then
             --Log("WaitControl found "..name, "DEBUG")
             return true
         end
