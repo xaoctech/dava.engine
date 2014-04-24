@@ -37,7 +37,6 @@ const char* PropertyNames::SIZE_Y = "SizeY";
 	
 const char* PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME = "LocalizedTextKey";
 const char* PropertyNames::FONT_PROPERTY_NAME = "Font";
-//const char* PropertyNames::FONT_PRESET_PROPERTY_NAME = "FontPreset";
 const char* PropertyNames::FONT_SIZE_PROPERTY_NAME = "FontSize";
 const char* PropertyNames::FONT_COLOR_PROPERTY_NAME = "FontColor";
 

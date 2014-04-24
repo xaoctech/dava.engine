@@ -73,7 +73,6 @@ void UITextControlMetadata::SetLocalizedTextKey(const QString& value)
     // Note - the actual update of the control's text should be performed in the derived classes!
 }
 
-
 void UITextControlMetadata::UpdateStaticTextExtraData(UIStaticText* staticText, UIControl::eControlState state,
                                                       HierarchyTreeNodeExtraData& extraData,
                                                       eExtraDataUpdateStyle updateStyle)
