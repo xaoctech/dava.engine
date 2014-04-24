@@ -87,7 +87,8 @@ FMODFileSoundEvent * FMODFileSoundEvent::CreateWithFlags(const FilePath & fileNa
     }
     soundMapMutex.Unlock();
 	FMOD_VERIFY(soundSystem->fmodSystem->createChannelGroup(0, &sound->fmodInstanceGroup));
-
+    FMOD_VERIFY(soundSystem->masterChannelGroup->addGroup(sound->fmodInstanceGroup));
+    
 	return sound;
 }
     
