@@ -674,7 +674,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 		// Additional check whether this format type is accepted for this GPU.
 		if (IsFormatSupportedForGPU(format, forGPU))
 		{
-			descriptor->exportedAsPixelFormat = format;
+			descriptor->format = format;
 
 			DVASSERT(descriptor->compression);
 			descriptor->compression[forGPU]->format = format;

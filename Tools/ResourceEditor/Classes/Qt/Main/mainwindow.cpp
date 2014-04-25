@@ -179,6 +179,13 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	DiableUIForFutureUsing();
 
 	DAVA::Logger::FrameworkDebug("size of TextureDescriptor is %d bytes", sizeof(TextureDescriptor));
+	DAVA::Logger::FrameworkDebug("size of TextureDescriptor::TextureDrawSettings is %d bytes", sizeof(TextureDescriptor::TextureDrawSettings));
+	DAVA::Logger::FrameworkDebug("size of TextureDescriptor::TextureDataSettings is %d bytes", sizeof(TextureDescriptor::TextureDataSettings));
+	DAVA::Logger::FrameworkDebug("size of FilePath is %d bytes", sizeof(FilePath));
+	DAVA::Logger::FrameworkDebug("size of FilePath::ePathType is %d bytes", sizeof(FilePath::ePathType));
+	DAVA::Logger::FrameworkDebug("size of String is %d bytes", sizeof(String));
+	DAVA::Logger::FrameworkDebug("size of FastName is %d bytes", sizeof(FastName));
+	DAVA::Logger::FrameworkDebug("size of TextureDescriptor::Compression ** is %d bytes", sizeof(TextureDescriptor::Compression **));
 }
 
 QtMainWindow::~QtMainWindow()

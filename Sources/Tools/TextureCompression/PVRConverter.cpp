@@ -123,7 +123,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 										Vector<String>& args)
 {
 	DVASSERT(descriptor.compression);
-	TextureDescriptor::Compression *compression = descriptor.compression[gpuFamily];
+	const TextureDescriptor::Compression *compression = descriptor.compression[gpuFamily];
 
 	String format = pixelFormatToPVRFormat[(PixelFormat) compression->format];
 	FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);

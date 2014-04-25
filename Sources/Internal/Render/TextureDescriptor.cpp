@@ -101,19 +101,21 @@ void TextureDescriptor::Compression::Clear()
 }
     
 //================   TextureDescriptor  ===================
+const String TextureDescriptor::DESCRIPTOR_EXTENSION = ".tex";
+const String TextureDescriptor::SOURCEFILE_EXTENSION = ".png";
+
+
 TextureDescriptor::TextureDescriptor(bool needCompressionSettings /*= true*/)
 	: isCompressedFile(!needCompressionSettings)
 	, compression(NULL)
 {
-	if(needCompressionSettings)
-		AllocateCompressionData();
-
-    SetDefaultValues();
+	SetDefaultValues();
 }
 
 TextureDescriptor::~TextureDescriptor()
 {
-	ReleaseCompressionData();
+	if(isCompressedFile == false)
+		ReleaseCompressionData();
 }
 
 TextureDescriptor * TextureDescriptor::CreateFromFile(const FilePath &filePathname)
@@ -143,16 +145,12 @@ TextureDescriptor * TextureDescriptor::CreateDescriptor(Texture::TextureWrap wra
 }
     
     
-void TextureDescriptor::SetDefaultValues(bool needCompressionSettings /*= true*/)
+void TextureDescriptor::SetDefaultValues()
 {
 	pathname = FilePath();
 	format = FORMAT_INVALID;
 
-	isCompressedFile = !needCompressionSettings;
-	if(needCompressionSettings && !compression)
-		AllocateCompressionData();
-	else if(!needCompressionSettings && compression)
-		ReleaseCompressionData();
+//	isCompressedFile = false; not need reset this flag
 
 	drawSettings.SetDefaultValues();
 	dataSettings.SetDefaultValues();
@@ -165,7 +163,6 @@ void TextureDescriptor::SetDefaultValues(bool needCompressionSettings /*= true*/
 	}
 
 	exportedAsGpuFamily = GPU_UNKNOWN;
-	exportedAsPixelFormat = FORMAT_INVALID;
 }
 
 void TextureDescriptor::SetQualityGroup(const FastName &group)
@@ -182,7 +179,7 @@ bool TextureDescriptor::IsCompressedTextureActual(eGPUFamily forGPU) const
 {
     const Compression *compression = GetCompressionParams(forGPU);
 	uint32 sourceCRC = ReadSourceCRC();
-    uint32 convertedCRC = ReadConvertedCRC(forGPU);
+    uint32 convertedCRC = GetConvertedCRC(forGPU);
     
 	return ((compression->sourceFileCrc == sourceCRC) && (compression->convertedFileCrc == convertedCRC));
 }
@@ -199,7 +196,7 @@ bool TextureDescriptor::UpdateCrcForFormat(eGPUFamily forGPU) const
 		wasUpdated = true;
 	}
     
-    uint32 convertedCRC = ReadConvertedCRC(forGPU);
+    uint32 convertedCRC = GetConvertedCRC(forGPU);
 	if(compression->convertedFileCrc != convertedCRC)
 	{
 		compression->convertedFileCrc = convertedCRC;
@@ -211,6 +208,8 @@ bool TextureDescriptor::UpdateCrcForFormat(eGPUFamily forGPU) const
     
 bool TextureDescriptor::Load(const FilePath &filePathname)
 {
+	DVASSERT(compression == NULL);
+
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
@@ -223,6 +222,12 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
     int32 signature;
 	ReadFromFile(file, &signature);
 
+	isCompressedFile = (COMPRESSED_FILE == signature);
+	if(isCompressedFile == false)
+	{
+		AllocateCompressionData();
+	}
+
     int8 version = 0;
 	ReadFromFile(file, &version);
     if(version != CURRENT_VERSION)
@@ -232,7 +237,6 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
         return true;
     }
     
-    isCompressedFile = (COMPRESSED_FILE == signature);
     if(isCompressedFile)
     {
         LoadCompressed(file);
@@ -279,12 +283,9 @@ void TextureDescriptor::Save(const FilePath &filePathname) const
     
     //Compression
 	DVASSERT(compression);
-	if(compression)
+	for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
 	{
-		for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
-		{
-			WriteCompression(file, compression[i]);
-		}
+		WriteCompression(file, compression[i]);
 	}
 	
 	WriteToFile(file, &dataSettings.faceDescription);
@@ -292,7 +293,7 @@ void TextureDescriptor::Save(const FilePath &filePathname) const
     SafeRelease(file);
 }
   
-void TextureDescriptor::Export(const FilePath &filePathname)
+void TextureDescriptor::Export(const FilePath &filePathname) const
 {
     File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
     if(!file)
@@ -309,6 +310,7 @@ void TextureDescriptor::Export(const FilePath &filePathname)
 
     WriteGeneralSettings(file);
 	WriteToFile(file, &exportedAsGpuFamily);
+	int8 exportedAsPixelFormat = format;
 	WriteToFile(file, &exportedAsPixelFormat);
 	
 	WriteToFile(file, &dataSettings.faceDescription);
@@ -318,8 +320,6 @@ void TextureDescriptor::Export(const FilePath &filePathname)
     
 void TextureDescriptor::ConvertToCurrentVersion(int8 version, int32 signature, DAVA::File *file)
 {
-//    Logger::Info("[TextureDescriptor::ConvertToCurrentVersion] (%s) from version %d", pathname.c_str(), version);
-    
 	if(version == 5)
     {
         LoadVersion5(signature, file);
@@ -348,21 +348,18 @@ void TextureDescriptor::LoadVersion5(int32 signature, DAVA::File *file)
         int8 format;
 		ReadFromFile(file, &format);
 
-		DVASSERT(compression);
 		if(format == FORMAT_ETC1)
 		{
 			Logger::Warning("[TextureDescriptor::LoadVersion5] format for pvr was ETC1");
 
-			if(compression)
-				compression[GPU_POWERVR_IOS]->Clear();
+			compression[GPU_POWERVR_IOS]->Clear();
 
 			uint32 dummy32 = 0;
-
 			ReadFromFile(file, &dummy32);
 			ReadFromFile(file, &dummy32);
 			ReadFromFile(file, &dummy32);
 		}
-		else if(compression)
+		else
 		{
 			compression[GPU_POWERVR_IOS]->format = (PixelFormat)format;
 
@@ -404,12 +401,12 @@ void TextureDescriptor::LoadVersion6(int32 signature, DAVA::File *file)
 	ReadFromFile(file, &drawSettings.minFilter);
 	ReadFromFile(file, &drawSettings.magFilter);
 
-	DVASSERT(compression);
-
     if(signature == COMPRESSED_FILE)
     {
 		ReadFromFile(file, &exportedAsGpuFamily);
+		int8 exportedAsPixelFormat = FORMAT_INVALID;
 		ReadFromFile(file, &exportedAsPixelFormat);
+		format = (PixelFormat)exportedAsPixelFormat;
     }
     else if(signature == NOTCOMPRESSED_FILE)
     {
@@ -430,13 +427,9 @@ void TextureDescriptor::LoadNotCompressed(File *file)
 {
     ReadGeneralSettings(file);
     
-	DVASSERT(compression);
-	if(compression)
+	for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
 	{
-		for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
-		{
-			ReadCompression(file, compression[i]);
-		}
+		ReadCompression(file, compression[i]);
 	}
 }
     
@@ -444,7 +437,9 @@ void TextureDescriptor::LoadCompressed(File *file)
 {
     ReadGeneralSettings(file);
 	ReadFromFile(file, &exportedAsGpuFamily);
+	int8 exportedAsPixelFormat = FORMAT_INVALID;
 	ReadFromFile(file, &exportedAsPixelFormat);
+	format = (PixelFormat)exportedAsPixelFormat;
 }
 
 void TextureDescriptor::ReadGeneralSettings(File *file)
@@ -549,14 +544,14 @@ FilePath TextureDescriptor::GetDescriptorPathname(const FilePath &texturePathnam
 }
 
 
-String TextureDescriptor::GetDescriptorExtension()
+const String & TextureDescriptor::GetDescriptorExtension()
 {
-    return String(".tex");
+    return DESCRIPTOR_EXTENSION;
 }
     
-String TextureDescriptor::GetSourceTextureExtension()
+const String & TextureDescriptor::GetSourceTextureExtension()
 {
-    return String(".png");
+    return SOURCEFILE_EXTENSION;
 }
     
     
@@ -624,29 +619,30 @@ uint32 TextureDescriptor::ReadSourceCRC() const
 	return crc;
 }
     
-uint32 TextureDescriptor::ReadConvertedCRC(eGPUFamily forGPU) const
+uint32 TextureDescriptor::GetConvertedCRC(eGPUFamily forGPU) const
 {
 	FilePath filePath = GPUFamilyDescriptor::CreatePathnameForGPU(this, forGPU);
 	if(filePath.IsEqualToExtension(".pvr"))
 	{
-		return LibPVRHelper::GetCRCFromFile(filePath);
+		return LibPVRHelper::GetCRCFromFile(filePath) + GenerateDescriptorCRC();
 	}
 	else if(filePath.IsEqualToExtension(".dds"))
 	{
-		return LibDxtHelper::GetCRCFromFile(filePath);
+		return LibDxtHelper::GetCRCFromFile(filePath) + GenerateDescriptorCRC();
 	}
     DVASSERT(0);//converted means only pvr or dds
     return 0;
 }
 
     
-PixelFormat TextureDescriptor::GetPixelFormatForCompression(eGPUFamily forGPU)
+PixelFormat TextureDescriptor::GetPixelFormatForCompression(eGPUFamily forGPU) const
 {
+	DVASSERT(compression);
+
 	if(forGPU == GPU_UNKNOWN)	
 		return FORMAT_INVALID;
 
     DVASSERT(0 <= forGPU && forGPU < GPU_FAMILY_COUNT);
-	DVASSERT(compression);
     return (PixelFormat) compression[forGPU]->format;
 }
 
@@ -682,16 +678,24 @@ void TextureDescriptor::Initialize( const TextureDescriptor *descriptor )
 
 	drawSettings = descriptor->drawSettings;
 
-	DVASSERT(compression && descriptor->compression);
-	for(uint32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+	isCompressedFile = descriptor->isCompressedFile;
+	if(descriptor->compression && !compression)
+		AllocateCompressionData();
+	else if(!descriptor->compression && compression)
 	{
-		compression[i] = descriptor->compression[i];
+		ReleaseCompressionData();
+	}
+
+	if(compression && descriptor->compression)
+	{
+		for(uint32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+		{
+			*compression[i] = *descriptor->compression[i];
+		}
 	}
 
     qualityGroup = descriptor->qualityGroup;
 	exportedAsGpuFamily = descriptor->exportedAsGpuFamily;
-	exportedAsPixelFormat = descriptor->exportedAsPixelFormat;
-	isCompressedFile = descriptor->isCompressedFile;
 
 	dataSettings.faceDescription = descriptor->dataSettings.faceDescription;
 	format = descriptor->format;
@@ -735,6 +739,31 @@ void TextureDescriptor::ReleaseCompressionData()
 
 		SafeDeleteArray(compression);
 	}
+}
+
+void TextureDescriptor::Reload()
+{
+	if((pathname.IsEmpty() == false) && pathname.Exists())
+	{
+		if((isCompressedFile == false) && (compression))
+			ReleaseCompressionData();
+
+		FilePath savedPath = pathname;
+		Initialize(savedPath);
+	}
+}
+
+uint32 TextureDescriptor::GenerateDescriptorCRC() const
+{
+	static const uint32 CRC_BUFFER_SIZE = 16;
+	static const uint8 CRC_BUFFER_VALUE = 0x3F; //to create nonzero buffer
+
+	uint8 crcBuffer[CRC_BUFFER_SIZE];
+	Memset(crcBuffer, CRC_BUFFER_VALUE, CRC_BUFFER_SIZE); 
+
+	crcBuffer[0] = dataSettings.textureFlags;
+
+	return CRC32::ForBuffer((const char8 *)crcBuffer, CRC_BUFFER_SIZE);
 }
 
 

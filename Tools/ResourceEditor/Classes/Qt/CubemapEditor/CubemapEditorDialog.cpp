@@ -394,7 +394,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
         descriptor->drawSettings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
         descriptor->drawSettings.magFilter = Texture::FILTER_LINEAR;
         descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
-        descriptor->exportedAsPixelFormat = FORMAT_INVALID;
+        descriptor->format = FORMAT_INVALID;
     }
     
 	descriptor->dataSettings.faceDescription = faceMask;
