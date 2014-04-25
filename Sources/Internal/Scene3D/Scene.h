@@ -215,10 +215,10 @@ public:
     Camera * GetCurrentCamera() const;
     
     /* 
-        This camera is used for clipping only. If you do not call this function GetClipCamera returns currentCamera. 
-        You can use SetClipCamera function if you want to test frustum clipping, and view the scene from different angles.
+        This camera is used for visualization setup only. Most system functions use mainCamere, draw camera is used to setup matrices for render. If you do not call this function GetDrawCamera returns currentCamera. 
+        You can use SetCustomDrawCamera function if you want to test frustum clipping, and view the scene from different angles.
      */
-    void SetCustomDrawCamera(Camera * clipCamera);
+    void SetCustomDrawCamera(Camera * camera);
     Camera * GetDrawCamera() const;
 
 	void AddDrawTimeShadowVolume(ShadowVolumeNode * shadowVolume);
