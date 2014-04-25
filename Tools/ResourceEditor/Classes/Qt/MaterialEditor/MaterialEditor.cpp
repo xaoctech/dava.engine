@@ -47,16 +47,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Commands2/MaterialGlobalCommand.h"
 
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 
+#define MATERIAL_NAME_LABEL "Name"
+#define MATERIAL_GROUP_LABEL "Group"
+#define MATERIAL_PROPERTIES_LABEL "Properties"
+#define MATERIAL_TEXTURES_LABEL "Textures"
+#define MATERIAL_TEMPLATE_LABEL "Template"
+
 MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 : QDialog(parent)
 , ui(new Ui::MaterialEditor)
-, curMaterial(NULL)
+, templatesFilterModel( NULL )
+, lastCheckState(CHECKED_ALL)
 {
 	ui->setupUi(this);
 	setWindowFlags(WINDOWFLAG_ON_TOP_OF_APPLICATION);
@@ -78,23 +86,29 @@ MaterialEditor::MaterialEditor(QWidget *parent /* = 0 */)
 	// material tree
 	QObject::connect(ui->materialTree->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(materialSelected(const QItemSelection &, const QItemSelection &)));
     QObject::connect(ui->materialTree, SIGNAL(Updated()), this, SLOT(autoExpand()));
+    QObject::connect(ui->materialTree, SIGNAL(ContextMenuPrepare(QMenu *)), this, SLOT(onContextMenuPrepare(QMenu *)));
 
 	// material properties
 	QObject::connect(ui->materialProperty, SIGNAL(PropertyEdited(const QModelIndex &)), this, SLOT(OnPropertyEdited(const QModelIndex &)));
 	QObject::connect(ui->templateBox, SIGNAL(activated(int)), this, SLOT(OnTemplateChanged(int)));
-    QObject::connect(ui->actionMaterialReload, SIGNAL(triggered(bool)), this, SLOT(OnMaterialReload(bool)));
-    QObject::connect(ui->actionSwitchQuality, SIGNAL(triggered(bool)), this, SLOT(OnSwitchQuality(bool)));
-    QObject::connect(ui->actionSetFog, SIGNAL(triggered(bool)), this, SLOT(OnMaterialSetFog(bool)));
+    QObject::connect(ui->actionAddGlobalMaterial, SIGNAL(triggered(bool)), this, SLOT(OnMaterialAddGlobal(bool)));
+    QObject::connect(ui->actionRemoveGlobalMaterial, SIGNAL(triggered(bool)), this, SLOT(OnMaterialRemoveGlobal(bool)));
+    QObject::connect(ui->actionSaveMaterialPreset, SIGNAL(triggered(bool)), this, SLOT(OnMaterialSave(bool)));
+    QObject::connect(ui->actionLoadMaterialPreset, SIGNAL(triggered(bool)), this, SLOT(OnMaterialLoad(bool)));
 
 	posSaver.Attach(this);
 	posSaver.LoadState(ui->splitter);
-
 	treeStateHelper = new PropertyEditorStateHelper(ui->materialProperty, (QtPropertyModel *) ui->materialProperty->model());
 
 	DAVA::VariantType v1 = posSaver.LoadValue("splitPosProperties");
 	DAVA::VariantType v2 = posSaver.LoadValue("splitPosPreview");
 	if(v1.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(0, v1.AsInt32());
 	if(v2.GetType() == DAVA::VariantType::TYPE_INT32) ui->materialProperty->header()->resizeSection(1, v2.AsInt32());
+
+    DAVA::VariantType savePath = posSaver.LoadValue("lastSavePath");
+    DAVA::VariantType loadState = posSaver.LoadValue("lastLoadState");
+    if(savePath.GetType() == DAVA::VariantType::TYPE_FILEPATH) lastSavePath = savePath.AsFilePath();
+    if(loadState.GetType() == DAVA::VariantType::TYPE_UINT32) lastCheckState = loadState.AsUInt32();
 
     expandMap[MaterialFilteringModel::SHOW_ALL] = false;
     expandMap[MaterialFilteringModel::SHOW_ONLY_INSTANCES] = true;
@@ -111,7 +125,8 @@ MaterialEditor::~MaterialEditor()
 	DAVA::VariantType v2(ui->materialProperty->header()->sectionSize(1));
 	posSaver.SaveValue("splitPosProperties", v1);
 	posSaver.SaveValue("splitPosPreview", v2);
-    
+    posSaver.SaveValue("lastSavePath", DAVA::VariantType(lastSavePath));
+    posSaver.SaveValue("lastLoadState", DAVA::VariantType(lastCheckState));
 	posSaver.SaveState(ui->splitter);
 }
 
@@ -130,6 +145,38 @@ void MaterialEditor::initActions()
     }
 
     connect( ui->actionAutoExpand, SIGNAL( triggered( bool ) ), SLOT( onCurrentExpandModeChange( bool ) ) );
+}
+
+void MaterialEditor::initTemplates()
+{
+    if ( templatesFilterModel )
+        return ;
+
+    QStandardItemModel *templatesModel = new QStandardItemModel( this );
+
+    const QVector<ProjectManager::AvailableMaterialTemplate> *templates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
+    QStandardItem *emptyItem = new QStandardItem( QString() );
+    templatesModel->appendRow( emptyItem );
+
+    for(int i = 0; i < templates->size(); ++i)
+    {
+        QStandardItem *item = new QStandardItem();
+        item->setText( templates->at(i).name );
+        item->setData( templates->at(i).path, Qt::UserRole );
+        templatesModel->appendRow( item );
+    }
+
+    templatesFilterModel = new MaterialTemplateModel( this );
+    templatesFilterModel->setSourceModel( templatesModel );
+
+    ui->templateBox->setModel( templatesFilterModel );
+}
+
+void MaterialEditor::setTemplatePlaceholder( const QString& text )
+{
+    QAbstractItemModel *model = ui->templateBox->model();
+    const QModelIndex index = model->index( 0, 0 );
+    model->setData( index, text, Qt::DisplayRole );
 }
 
 void MaterialEditor::autoExpand()
@@ -162,17 +209,19 @@ void MaterialEditor::SelectMaterial(DAVA::NMaterial *material)
 
 void MaterialEditor::SelectEntities(DAVA::NMaterial *material)
 {
-	ui->materialTree->SelectEntities(material);
+    QList<DAVA::NMaterial *> materials;
+    materials << material;
+	ui->materialTree->SelectEntities(materials);
 }
 
-void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
+void MaterialEditor::SetCurMaterial(const QList< DAVA::NMaterial *>& materials)
 {
-	curMaterial = material;
+	curMaterials = materials;
 
 	treeStateHelper->SaveTreeViewState(false);
 
-	FillMaterialProperties(material);
-    FillMaterialTemplates(material);
+	FillMaterialProperties(materials);
+    FillMaterialTemplates(materials);
 
 	// Restore back the tree view state from the shared storage.
 	if(!treeStateHelper->IsTreeStateStorageEmpty())
@@ -184,12 +233,27 @@ void MaterialEditor::SetCurMaterial(DAVA::NMaterial *material)
 		// Expand the root elements as default value.
 		ui->materialProperty->expandToDepth(0);
 	}
+
+    // check if there is global material and enable appropriate actions
+    SceneEditor2 *sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
+    if(NULL != sceneEditor)
+    {
+        bool isGlobalMaterialPresent = (NULL != sceneEditor->GetGlobalMaterial());
+        ui->actionAddGlobalMaterial->setEnabled(!isGlobalMaterialPresent);
+        ui->actionRemoveGlobalMaterial->setEnabled(isGlobalMaterialPresent);
+    }
+    else
+    {
+        ui->actionAddGlobalMaterial->setEnabled(false);
+        ui->actionRemoveGlobalMaterial->setEnabled(false);
+    }
 }
 
 void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 {
 	if(isVisible())
 	{
+        SetCurMaterial(QList< DAVA::NMaterial *>());
 		ui->materialTree->SetScene(scene);
         autoExpand();
 	}
@@ -197,32 +261,47 @@ void MaterialEditor::sceneActivated(SceneEditor2 *scene)
 
 void MaterialEditor::sceneDeactivated(SceneEditor2 *scene)
 { 
-	ui->materialTree->SetScene(NULL);
-	SetCurMaterial(NULL);
+    ui->materialTree->SetScene(NULL);
+    SetCurMaterial(QList< DAVA::NMaterial *>());
 }
 
 void MaterialEditor::materialSelected(const QItemSelection & selected, const QItemSelection & deselected)
 {
-	if(1 == selected.size())
-	{
-        QModelIndex selectedIndex = selected.indexes().at(0);
-		DAVA::NMaterial *material = ui->materialTree->GetMaterial(selectedIndex);
-		SetCurMaterial(material);
-	}
-	else
-	{
-		SetCurMaterial(NULL);
-	}
+    QList< DAVA::NMaterial *> materials;
+    QItemSelectionModel *selection = ui->materialTree->selectionModel();
+    const QModelIndexList selectedRows = selection->selectedRows();
+
+    foreach ( const QModelIndex& index, selectedRows )
+    {
+        if ( index.column() == 0 )
+        {
+            DAVA::NMaterial *material = ui->materialTree->GetMaterial( index );
+            if ( material )
+                materials << material;
+        }
+    }
+
+    SetCurMaterial( materials );
 }
 
 void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
 {
-	if( command->GetId() == CMDID_INSP_DYNAMIC_MODIFY ||
-		command->GetId() == CMDID_INSP_MEMBER_MODIFY || 
-		command->GetId() == CMDID_META_OBJ_MODIFY)
-	{
-		SetCurMaterial(curMaterial);
-	}
+    if(scene == QtMainWindow::Instance()->GetCurrentScene())
+    {
+        int cmdId = command->GetId();
+
+        if(cmdId == CMDID_INSP_DYNAMIC_MODIFY ||
+           cmdId == CMDID_INSP_MEMBER_MODIFY ||
+           cmdId == CMDID_META_OBJ_MODIFY)
+        {
+            SetCurMaterial(curMaterials);
+        }
+        else if(cmdId == CMDID_MATERIAL_GLOBAL_SET)
+        {
+            sceneActivated(scene);
+            SetCurMaterial(curMaterials);
+        }
+    }
 }
 
 void MaterialEditor::onCurrentExpandModeChange( bool mode )
@@ -245,11 +324,11 @@ void MaterialEditor::onCurrentExpandModeChange( bool mode )
 
 void MaterialEditor::showEvent(QShowEvent * event)
 {
-    FillMaterialTemplates(NULL);
+    FillMaterialTemplates(QList<DAVA::NMaterial *>());
 	sceneActivated(QtMainWindow::Instance()->GetCurrentScene());
 }
 
-void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
+void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& materials)
 {
     // Clear current properties
     // But don't remove properties immediately. Just extract them and remove later
@@ -265,20 +344,34 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
         }
     }
 
-    if(NULL != material)
+    if ( materials.count() == 0 )
+        return ;
+
+    foreach ( DAVA::NMaterial *material, materials )
     {
+        DVASSERT( material );
+
 	    const DAVA::InspInfo *info = material->GetTypeInfo();
 	    const DAVA::InspMember *materialProperties = info->Member("materialProperties");
 	    const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
 	    const DAVA::InspMember *materialIllumination = info->Member("illuminationParams");
         const DAVA::InspMember *materialTextures = info->Member("textures");
 
+//         {
+//             const DAVA::InspInfo *baseInfo = info->BaseInfo()->BaseInfo();
+//             QtPropertyData *refCount = new QtPropertyDataInspMember(material, baseInfo->Member("referenceCount"));
+//             refCount->SetName("referenceCount");
+//             ui->materialProperty->MergeProperty(refCount);
+//         }
+
+
 	    // fill material name
 	    const DAVA::InspMember *nameMember = info->Member("materialName");
 	    if(NULL != nameMember)
 	    {
 		    QtPropertyDataInspMember *name = new QtPropertyDataInspMember(material, nameMember);
-		    ui->materialProperty->AppendProperty("Name", name);
+            name->SetName(MATERIAL_NAME_LABEL);
+		    ui->materialProperty->MergeProperty(name);
 	    }
 
         // fill material group, only for material type
@@ -288,7 +381,8 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
             if(NULL != groupMember)
             {
                 QtPropertyDataInspMember *group = new QtPropertyDataInspMember(material, groupMember);
-                ui->materialProperty->AppendProperty("Group", group);
+                group->SetName(MATERIAL_GROUP_LABEL);
+                ui->materialProperty->MergeProperty(group);
 
                 for(size_t i = 0; i < DAVA::QualitySettingsSystem::Instance()->GetMaterialQualityGroupCount(); ++i)
                 {
@@ -312,7 +406,36 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 			
 			    for(size_t i = 0; i < membersList.size(); ++i)
 			    {
+                    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+
+                    if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
+                    {
+                        // self property
+                        if(memberFlags & DAVA::I_EDIT)
+                        {
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemFlag()));
+                        }
+                        else if(memberFlags)
+                        {
+                            dynamicMember->SetEnabled(false);
+                            for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                            {
+                                dynamicMember->ChildGet(m)->SetEnabled(false);
+                            }
+
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddFlag()));
+
+                            dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+                        }
+                    }
+
 				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
 			    }
 		    }
@@ -330,52 +453,57 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 
 			    for(size_t i = 0; i < membersList.size(); ++i)
 			    {
-				    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 				    QtPropertyDataInspDynamic *dynamicMember = new QtPropertyDataInspDynamic(material, dynamicInfo, membersList[i]);
+                    int memberFlags = dynamicInfo->MemberFlags(material, membersList[i]);
 
-				    // self property
-				    if(memberFlags & DAVA::I_EDIT)
-				    {
-					    QtPropertyToolButton* btn = dynamicMember->AddButton();
-					    btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-					    btn->setIconSize(QSize(14, 14));
-					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
+                    if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
+                    {
+				        // self property
+				        if(memberFlags & DAVA::I_EDIT)
+				        {
+					        QtPropertyToolButton* btn = dynamicMember->AddButton();
+					        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+					        btn->setIconSize(QSize(14, 14));
+					        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
 
-					    // isn't set in parent or shader
-					    if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
-					    {
-						    dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
-					    }
-				    }
-				    // not self property (is set in parent or shader)
-				    else
-				    {
-					    // disable property and it childs
-					    dynamicMember->SetEnabled(false);
-					    for(int m = 0; m < dynamicMember->ChildCount(); ++m)
-					    {
-						    dynamicMember->ChildGet(m)->SetEnabled(false);
-					    }
+					        // isn't set in parent or shader
+					        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+					        {
+						        dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+					        }
+				        }
+				        // not self property (is set in parent or shader)
+				        else
+				        {
+					        // disable property and it childs
+					        dynamicMember->SetEnabled(false);
+					        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+					        {
+						        dynamicMember->ChildGet(m)->SetEnabled(false);
+					        }
 
-					    QtPropertyToolButton* btn = dynamicMember->AddButton();
-					    btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-					    btn->setIconSize(QSize(14, 14));
-					    QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
+					        QtPropertyToolButton* btn = dynamicMember->AddButton();
+					        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+					        btn->setIconSize(QSize(14, 14));
+					        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
 
-					    dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
+					        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
 
-					    // required by shader
-					    //if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
-					    //{	}
-				    }
+					        // required by shader
+					        //if(!(memberFlags & DAVA::I_VIEW) && (memberFlags & DAVA::I_SAVE))
+					        //{	}
+				        }
+                    }
 
 				    propertiesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
 			    }
 		    }
 	    }
 
-	    ui->materialProperty->AppendProperty("Properties", propertiesParent);
-	    ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
+        propertiesParent->SetName(MATERIAL_PROPERTIES_LABEL);
+	    ui->materialProperty->MergeProperty(propertiesParent);
+        if ( propertiesParent->Parent() != NULL )
+	        ui->materialProperty->ApplyStyle(propertiesParent, QtPropertyEditor::HEADER_STYLE);
 
 	    // fill illumination params
 	    if(NULL != materialIllumination)
@@ -384,8 +512,10 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
 
 		    if(illumParams->ChildCount() > 0)
 		    {
-			    ui->materialProperty->AppendProperty(materialIllumination->Name(), illumParams);
-			    ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
+                illumParams->SetName(materialIllumination->Name());
+			    ui->materialProperty->MergeProperty(illumParams);
+                if ( illumParams->Parent() != NULL )
+			        ui->materialProperty->ApplyStyle(illumParams, QtPropertyEditor::HEADER_STYLE);
 		    }
 		    else
 		    {
@@ -427,124 +557,163 @@ void MaterialEditor::FillMaterialProperties(DAVA::NMaterial *material)
                     dynamicMember->SetDefaultOpenDialogPath(defaultPath);
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
                     QStringList path;
-					path.append(defaultPath);
+					path.append(dataSourcePath.GetAbsolutePathname().c_str());
                     dynamicMember->SetValidator(new TexturePathValidator(path));
-                    // self property
-                    if(memberFlags & DAVA::I_EDIT)
+                    
+                    if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
                     {
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cminus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
-
-                        // isn't set in parent or shader
-                        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+                        // self property
+                        if(memberFlags & DAVA::I_EDIT)
                         {
-                            dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemTexture()));
+
+                            // isn't set in parent or shader
+                            if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+                            {
+                                dynamicMember->SetBackground(QBrush(QColor(255, 0, 0, 10)));
+                            }
                         }
-                    }
-                    // not self property (is set in parent or shader)
-                    else
-                    {
-                        // disable property and it childs
-                        dynamicMember->SetEnabled(false);
-                        for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                        // not self property (is set in parent or shader)
+                        else
                         {
-                            dynamicMember->ChildGet(m)->SetEnabled(false);
+                            // disable property and it childs
+                            dynamicMember->SetEnabled(false);
+                            for(int m = 0; m < dynamicMember->ChildCount(); ++m)
+                            {
+                                dynamicMember->ChildGet(m)->SetEnabled(false);
+                            }
+
+                            QtPropertyToolButton* btn = dynamicMember->AddButton();
+                            btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                            btn->setIconSize(QSize(14, 14));
+                            QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
+
+                            dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
                         }
-
-                        QtPropertyToolButton* btn = dynamicMember->AddButton();
-                        btn->setIcon(QIcon(":/QtIcons/cplus.png"));
-                        btn->setIconSize(QSize(14, 14));
-                        QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddTexture()));
-
-                        dynamicMember->SetBackground(QBrush(QColor(0, 0, 0, 10)));
                     }
 
                     texturesParent->ChildAdd(membersList[i].c_str(), dynamicMember);
                 }
 
-                ui->materialProperty->AppendProperty("Textures", texturesParent);
-                ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
+                texturesParent->SetName(MATERIAL_TEXTURES_LABEL);
+                ui->materialProperty->MergeProperty(texturesParent);
+                if ( texturesParent->Parent() != NULL )
+                    ui->materialProperty->ApplyStyle(texturesParent, QtPropertyEditor::HEADER_STYLE);
             }
-        }
+        }        
     }
 }
 
-void MaterialEditor::FillMaterialTemplates(DAVA::NMaterial *material)
+void MaterialEditor::FillMaterialTemplates(const QList<DAVA::NMaterial *>& materials)
 {
-    if(0 == ui->templateBox->count())
-    {
-        ui->templateBox->addItem("");
+    initTemplates();
 
-        const QVector<ProjectManager::AvailableMaterialTemplate> *templates = ProjectManager::Instance()->GetAvailableMaterialTemplates();
-        for(int i = 0; i < templates->size(); ++i)
+    const int nMaterials = materials.count();
+    bool enableTemplate = ( nMaterials > 0 );
+    bool isTemplatesSame = true;
+    int rowToSelect = -1;
+    const QString curMaterialTemplate = ( nMaterials > 0 && NULL != materials[0]->GetMaterialTemplate()) ? materials[0]->GetMaterialTemplate()->name.c_str() : QString();
+    QString placeHolder;
+
+    if ( nMaterials > 0)
+    {
+        for ( int i = 0; i < nMaterials; i++ )
         {
-            ui->templateBox->addItem(templates->at(i).name, templates->at(i).path);
+            DAVA::NMaterial *material = materials[i];
+            // Test template name
+            if ( isTemplatesSame && (NULL != material->GetMaterialTemplate()) && (curMaterialTemplate != material->GetMaterialTemplate()->name.c_str()) )
+            {
+                isTemplatesSame = false;
+            }
+            // Test material flags
+            if( material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_MATERIAL ||
+               (material->GetNodeGlags() & DAVA::DataNode::NodeRuntimeFlag) )
+            {
+                enableTemplate = false;
+            }
+            if ( !isTemplatesSame && !enableTemplate )
+                break;
         }
+
+        if ( !isTemplatesSame )
+            enableTemplate = false;
     }
 
-    if(NULL != material)
-    {
-        int indexToSet = -1;
-        QString curMaterialTemplate = material->GetMaterialTemplate()->name.c_str();
+    if ( nMaterials !=  1)
+        enableTemplate = false;
 
-        for(int i = 0; i < ui->templateBox->count(); ++i)
+    if ( isTemplatesSame )
+    {
+        QAbstractItemModel *model = ui->templateBox->model();
+        const int n = model->rowCount();
+        const int pathRole = Qt::UserRole;
+        for ( int i = 0; i < n; i++ )
         {
-            if(curMaterialTemplate == ui->templateBox->itemData(i).toString())
+            const QModelIndex index = model->index( i, 0 );
+            if ( index.data( pathRole ).toString() == curMaterialTemplate )
             {
-                indexToSet = i;
+                rowToSelect = i;
                 break;
             }
         }
+    }
 
-        if(-1 != indexToSet)
-        {
-            ui->templateBox->setCurrentIndex(indexToSet);
-            ui->templateBox->setItemText(0, "");
-        }
-        else
-        {
-            // add template path to the name
-            ui->templateBox->setCurrentIndex(0);
-            ui->templateBox->setItemText(0, "NON-ASSIGNABLE: " + curMaterialTemplate);
-        }
+    const bool isTemplateFound = (rowToSelect != -1);
 
-        // enable template selection only for real materials, not instances
-        // but don't allow to change template for runtime materials
-        if(material->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_MATERIAL &&
-            material->GetNodeGlags() != DAVA::DataNode::NodeRuntimeFlag)
+    if ( isTemplatesSame )
+    {
+        if ( !isTemplateFound )
         {
-            ui->templateBox->setEnabled(true);
-        }
-        else
-        {
-            ui->templateBox->setEnabled(false);
+            placeHolder = QString( "NON-ASSIGNABLE: %1" ).arg( curMaterialTemplate );
+            rowToSelect = 0;
         }
     }
     else
     {
-        ui->templateBox->setCurrentIndex(0);
-        ui->templateBox->setItemText(0, "");
-        ui->templateBox->setEnabled(false);
+        if ( nMaterials > 0 )
+        {
+            placeHolder = QString( "Different templates selected" );    // TODO: fix text?
+            rowToSelect = 0;
+        }
     }
+    setTemplatePlaceholder( placeHolder );
+    ui->templateBox->setCurrentIndex( rowToSelect );
+    ui->templateBox->setEnabled( enableTemplate );
 }
 
 void MaterialEditor::OnAddProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
 	
-	if(NULL != btn && NULL != curMaterial)
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetVariantValue(data->GetAliasVariant());
-			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged );
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            data->SetVariantValue(data->GetAliasVariant());
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+			    dynamicData->SetVariantValue(data->GetAliasVariant());
+            }
+            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
 			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
@@ -552,16 +721,31 @@ void MaterialEditor::OnAddProperty()
 void MaterialEditor::OnRemProperty()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
-
-	if(NULL != btn && NULL != curMaterial)
+	
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            }
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
@@ -569,18 +753,33 @@ void MaterialEditor::OnRemProperty()
 void MaterialEditor::OnAddTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
-
-	if(NULL != btn && NULL != curMaterial)
+	
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetVariantValue(data->GetAliasVariant());
-			data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged );
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            data->SetVariantValue(data->GetAliasVariant());
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+			    dynamicData->SetVariantValue(data->GetAliasVariant());
+            }
+            data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
 			data->EmitDataChanged(QtPropertyData::VALUE_EDITED);
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
@@ -588,38 +787,94 @@ void MaterialEditor::OnAddTexture()
 void MaterialEditor::OnRemTexture()
 {
 	QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
-
-	if(NULL != btn && NULL != curMaterial)
+	
+    if(NULL != btn && curMaterials.size() > 0 )
 	{
 		QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
 		if(NULL != data)
 		{
-			data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            QList< QtPropertyDataInspDynamic * > dataList;
+            const int nMerged = data->GetMergedCount();
+            dataList.reserve( nMerged + 1 );
+            dataList << data;
+            for ( int i = 0; i < nMerged; i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dynamic_cast<QtPropertyDataInspDynamic *>(data->GetMergedData(i));
+                if (dynamicData != NULL)
+                    dataList << dynamicData;
+            }
+
+            for ( int i = 0; i < dataList.size(); i++ )
+            {
+                QtPropertyDataInspDynamic *dynamicData = dataList.at(i);
+                dynamicData->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+            }
 
 			// reload material properties
-			SetCurMaterial(curMaterial);
+			SetCurMaterial(curMaterials);
 		}
 	}
 }
 
+void MaterialEditor::OnAddFlag()
+{
+    QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+    if(NULL != btn && curMaterials.size() > 0)
+    {
+        QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+        if(NULL != data)
+        {
+            const QVariant value = data->GetValue();
+            data->SetValue(value, QtPropertyData::VALUE_EDITED);
+
+            // reload material properties
+            SetCurMaterial(curMaterials);
+        }
+    }
+}
+
+void MaterialEditor::OnRemFlag()
+{
+    QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+    if(NULL != btn && curMaterials.size() > 0)
+    {
+        QtPropertyDataInspDynamic *data = dynamic_cast<QtPropertyDataInspDynamic *>(btn->GetPropertyData());
+        if(NULL != data)
+        {
+            data->SetValue(QVariant(), QtPropertyData::VALUE_EDITED);
+
+            // reload material properties
+            SetCurMaterial(curMaterials);
+        }
+    }
+}
+
 void MaterialEditor::OnTemplateChanged(int index)
 {
-	if(NULL != curMaterial && index > 0)
-	{
-        QString newTemplatePath = ui->templateBox->itemData(index).toString();
+    if(curMaterials.size() == 1 && index > 0)
+    {
+        DAVA::NMaterial *material = curMaterials.at(0);
+        QString newTemplatePath = GetTemplatePath(index);
         if(!newTemplatePath.isEmpty())
         {
-            const DAVA::InspMember *templateMember = curMaterial->GetTypeInfo()->Member("materialTemplate");
+            const DAVA::InspMember *templateMember = material->GetTypeInfo()->Member("materialTemplate");
 
             if(NULL != templateMember)
             {
-                QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, curMaterial, 
+                QtMainWindow::Instance()->GetCurrentScene()->Exec(new InspMemberModifyCommand(templateMember, material, 
                     DAVA::VariantType(DAVA::FastName(newTemplatePath.toStdString().c_str()))));
             }
         }
-	}
+    }
 
-	SetCurMaterial(curMaterial);
+    SetCurMaterial(curMaterials);
+}
+
+QString MaterialEditor::GetTemplatePath(int index) const
+{
+    return ui->templateBox->itemData(index, Qt::UserRole).toString();
 }
 
 void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
@@ -631,22 +886,47 @@ void MaterialEditor::OnPropertyEdited(const QModelIndex &index)
 
 		if(NULL != propData)
 		{
-			Command2 *command = (Command2 *) propData->CreateLastCommand();
-			if(NULL != command)
-			{
-				SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-				if(NULL != curScene)
-				{
-					QtMainWindow::Instance()->GetCurrentScene()->Exec(command);
-				}
-			}
+            QList<QtPropertyData *> propDatList; //propData->GetMergedData();
+            propDatList.reserve( propData->GetMergedCount() + 1 );
+            for ( int i = 0; i < propData->GetMergedCount(); i++ )
+                propDatList << propData->GetMergedData( i );
+            propDatList << propData;
+
+            QList<Command2 *> commands;
+            foreach ( QtPropertyData *data, propDatList )
+            {
+                Command2 *command = (Command2 *) data->CreateLastCommand();
+                if ( command )
+                {
+                    commands << command;
+                }
+            }
+            const bool usebatch = (commands.count() > 1);
+
+            SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+            if (curScene)
+            {
+                if (usebatch)
+                {
+                    QObject::disconnect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
+                    curScene->BeginBatch( "Property multiedit" );
+                }
+
+                for (int i = 0; i < commands.size(); i++)
+                {
+                    Command2 *cmd = commands.at( i );
+                    curScene->Exec( cmd );
+                }
+
+                if (usebatch)
+                {
+                    curScene->EndBatch();
+                    QObject::connect(SceneSignals::Instance(), SIGNAL(CommandExecuted(SceneEditor2 *, const Command2*, bool)), this, SLOT(commandExecuted(SceneEditor2 *, const Command2 *, bool)));
+                    SetCurMaterial( curMaterials );
+                }
+            }
 		}
 	}
-}
-
-void MaterialEditor::OnSwitchQuality(bool checked)
-{
-    QualitySwitcher::Show();
 }
 
 QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
@@ -668,248 +948,197 @@ QVariant MaterialEditor::CheckForTextureDescriptor(const QVariant& value)
     return QVariant();
 }
 
-void MaterialEditor::OnMaterialReload(bool checked)
+void MaterialEditor::OnMaterialAddGlobal(bool checked)
 {
-    if (curMaterial != 0)
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+    if(NULL != curScene)
     {
-        
+        DAVA::NMaterial *global = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+        curScene->Exec(new MaterialGlobalSetCommand(curScene, global));
+        sceneActivated(curScene);
+
+        SelectMaterial(curScene->GetGlobalMaterial());
     }
 }
 
-void MaterialEditor::OnMaterialSetFog(bool checked)
+void MaterialEditor::OnMaterialRemoveGlobal(bool checked)
 {
-   MaterialEditorFogDialog dlg;
-   SceneEditor2 *sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-   DAVA::Landscape *landscape = sceneEditor->collisionSystem->GetLandscape();
-
-   if(NULL != landscape)
-   {
-       MaterialEditorFogDialog::FogParams params;
-
-       params.type = MaterialEditorFogDialog::FOG_DISABLED;
-       if(landscape->IsFogEnabled())
-       {
-            params.type = MaterialEditorFogDialog::FOG_EXPONENTIAL;
-       }
-
-       params.color = landscape->GetFogColor();
-       params.density = landscape->GetFogDensity();
-       dlg.SetFogParams(params);
-
-       if(QDialog::Accepted == dlg.exec())
-       {
-           params = dlg.GetFogParams();
-
-           // set to landscape (will be saved)
-           landscape->SetFogColor(params.color);
-           landscape->SetFogDensity(params.density);
-           landscape->SetFog(params.type != MaterialEditorFogDialog::FOG_DISABLED);
-
-           // set to global material (runtime)
-           DAVA::NMaterial *globalMaterial = sceneEditor->GetGlobalMaterial();
-           globalMaterial->SetPropertyValue(DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::Shader::UT_FLOAT, 1, &params.density);
-           globalMaterial->SetPropertyValue(DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::Shader::UT_FLOAT_VEC4, 1, &params.color);
-
-           DAVA::Set<DAVA::NMaterial *> materials;
-           sceneEditor->materialSystem->BuildMaterialsList(materials);
-
-           DAVA::Set<DAVA::NMaterial *>::const_iterator i = materials.begin();
-           DAVA::Set<DAVA::NMaterial *>::const_iterator end = materials.end();
-
-           sceneEditor->BeginBatch("Set scene fog");
-           // set flags for materials
-           for(; i != end; ++i)
-           {
-               DAVA::NMaterial *material = *i;
-               const DAVA::InspInfo *insp = material->GetTypeInfo();
-               const DAVA::InspMemberDynamic *dynamicFlags = insp->Member("materialSetFlags")->Dynamic();
-               const DAVA::InspMemberDynamic *dynamicProps = insp->Member("materialProperties")->Dynamic();
-
-               if(params.type != MaterialEditorFogDialog::FOG_DISABLED)
-               {
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicFlags->GetDynamicInfo(), material, DAVA::NMaterial::FLAG_VERTEXFOG, DAVA::VariantType(true)));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::VariantType(params.density)));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::VariantType(params.color)));
-               }
-               else
-               {
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicFlags->GetDynamicInfo(), material, DAVA::NMaterial::FLAG_VERTEXFOG, DAVA::VariantType(false)));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_DENSITY, DAVA::VariantType()));
-                   sceneEditor->Exec(new InspDynamicModifyCommand(dynamicProps->GetDynamicInfo(), material, DAVA::NMaterial::PARAM_FOG_COLOR, DAVA::VariantType()));
-               }
-           }
-           sceneEditor->EndBatch();
-       }
-   }
-}
-
-// ==============================================================================
-// MaterialEditorFogDialog
-// ==============================================================================
-
-MaterialEditorFogDialog::MaterialEditorFogDialog()
-: QDialog(NULL, Qt::Tool)
-{
-    int row = 0;
-    QGridLayout *layout = new QGridLayout(this);
-    QGroupBox *groupBox = new QGroupBox(this);
-
-    disabled = new QRadioButton("Disabled");
-    exponential = new QRadioButton("Exponential");
-    //linear = new QRadioButton("Linear");
-
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(disabled);
-    vbox->addWidget(exponential);
-    //vbox->addWidget(linear);
-    vbox->addStretch(1);
-    groupBox->setLayout(vbox);
-    disabled->setChecked(true);
-
-    layout->addWidget(groupBox, row, 0, 1, 2);
-
-    row++;
-    labelColor = new QLabel("Color:", this);
-    layout->addWidget(labelColor, row, 0, Qt::AlignRight);
-    fogColor = new QPushButton(this);
-    fogColor->setFlat(true);
-    fogColor->setAutoFillBackground(true);
-    layout->addWidget(fogColor, row, 1);
-
-    QObject::connect(fogColor, SIGNAL(pressed()), this, SLOT(OnColorPick()));
-
-    row++;
-    labelDensity = new QLabel("Density:", this);
-    layout->addWidget(labelDensity, row, 0, Qt::AlignRight);
-    fogDensity = new QDoubleSpinBox(this);
-    fogDensity->setDecimals(5);
-    layout->addWidget(fogDensity, row, 1);
-
-    row++;
-    labelStart = new QLabel("Start at:", this);
-    layout->addWidget(labelStart, row, 0, Qt::AlignRight);
-    fogStart = new QDoubleSpinBox(this);
-    fogStart->setDecimals(5);
-    fogStart->setMaximum(9999);
-    fogStart->setMinimum(-9999);
-    layout->addWidget(fogStart, row, 1);
-
-    row++;
-    labelEnd = new QLabel("End at:", this);
-    layout->addWidget(labelEnd, row, 0, Qt::AlignRight);
-    fogEnd = new QDoubleSpinBox(this);
-    fogEnd->setDecimals(5);
-    fogEnd->setMaximum(9999);
-    fogEnd->setMinimum(-9999);
-    layout->addWidget(fogEnd, row, 1);
-
-    row++;
-    QPushButton *okBtn = new QPushButton("Set", this);
-    layout->addWidget(okBtn, row, 1);
-
-    okBtn->setDefault(true);
-
-    QObject::connect(okBtn, SIGNAL(pressed()), this, SLOT(accept()));
-    QObject::connect(disabled, SIGNAL(toggled(bool)), this, SLOT(OnModeSwitch(bool)));
-    QObject::connect(exponential, SIGNAL(toggled(bool)), this, SLOT(OnModeSwitch(bool)));
-    //QObject::connect(linear, SIGNAL(toggled(bool)), this, SLOT(OnModeSwitch(bool)));
-}
-
-
-void MaterialEditorFogDialog::SetFogParams(const MaterialEditorFogDialog::FogParams &params)
-{
-    switch(params.type)
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+    if(NULL != curScene)
     {
-        case FOG_EXPONENTIAL:
-            exponential->click();
-            break;
-        case FOG_LINEAR:
-            //linear->click();
-            //break;
-        case FOG_DISABLED:
-        default:
-            disabled->click();
-            break;
-    }
-
-    QColor c = ColorToQColor(params.color);
-    fogColor->setPalette(QPalette(c));
-    fogDensity->setValue(params.density);
-    fogStart->setValue(params.start);
-    fogEnd->setValue(params.end);
-
-    OnModeSwitch(true);
-}
-
-MaterialEditorFogDialog::FogParams MaterialEditorFogDialog::GetFogParams() const
-{
-    FogParams ret;
-
-    ret.type = FOG_DISABLED;
-    if(exponential->isChecked())
-    {
-        ret.type = FOG_EXPONENTIAL;
-    }
-    //else if(linear->isChecked())
-    //{
-    //    ret.type = FOG_LINEAR;
-    //}
-
-    QColor c = fogColor->palette().color(QPalette::Button);
-    ret.color = QColorToColor(c);
-    ret.density = (DAVA::float32) fogDensity->value();
-    ret.start = (DAVA::float32) fogStart->value();
-    ret.end = (DAVA::float32) fogEnd->value();
-
-    return ret;
-}
-
-void MaterialEditorFogDialog::OnColorPick()
-{
-    QColor c = fogColor->palette().color(QPalette::Button);
-    c = QColorDialog::getColor(c);
-
-    if(c.isValid())
-    {
-        fogColor->setPalette(QPalette(c));
+        curScene->Exec(new MaterialGlobalSetCommand(curScene, NULL));
+        sceneActivated(curScene);
     }
 }
 
-void MaterialEditorFogDialog::OnModeSwitch(bool state)
+void MaterialEditor::onContextMenuPrepare(QMenu *menu)
 {
-    if(disabled->isChecked())
+    if(curMaterials.size() > 0)
     {
-        labelColor->setVisible(false);
-        fogColor->setVisible(false);
-        labelDensity->setVisible(false);
-        fogDensity->setVisible(false);
-        labelStart->setVisible(false);
-        fogStart->setVisible(false);
-        labelEnd->setVisible(false);
-        fogEnd->setVisible(false);
+        ui->actionSaveMaterialPreset->setEnabled(curMaterials.size() == 1);
+        menu->addSeparator();
+        menu->addAction(ui->actionLoadMaterialPreset);
+        menu->addAction(ui->actionSaveMaterialPreset);
+    }
+}
+
+void MaterialEditor::OnMaterialSave(bool checked)
+{
+    if(curMaterials.size() == 1)
+    {
+        QString outputFile = QFileDialog::getSaveFileName(this, "Save Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
+        SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+
+        if(!outputFile.isEmpty() && NULL != curScene)
+        {
+            DAVA::NMaterial *material = curMaterials[0];
+
+            DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
+            DAVA::SerializationContext materialContext;
+
+            materialContext.SetScene(curScene);
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
+
+            material->Save(materialArchive, &materialContext);
+            materialArchive->Save(outputFile.toAscii().data());
+            materialArchive->Release();
+        }
     }
     else
     {
-        labelColor->setVisible(true);
-        fogColor->setVisible(true);
-
-        if(exponential->isChecked())
-        {
-            labelDensity->setVisible(true);
-            fogDensity->setVisible(true);
-            labelStart->setVisible(false);
-            fogStart->setVisible(false);
-            labelEnd->setVisible(false);
-            fogEnd->setVisible(false);
-        }
-        else
-        {
-            labelDensity->setVisible(false);
-            fogDensity->setVisible(false);
-            labelStart->setVisible(true);
-            fogStart->setVisible(true);
-            labelEnd->setVisible(true);
-            fogEnd->setVisible(true);
-        }
+        QMessageBox::warning(this, "Material properties save", "It is allowed to save only single material");
     }
 }
+
+void MaterialEditor::OnMaterialLoad(bool checked)
+{
+    if(curMaterials.size() > 0)
+    {
+        QString inputFile = QFileDialog::getOpenFileName(this, "Load Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
+        SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+
+        if(!inputFile.isEmpty() && NULL != curScene)
+        {
+            DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
+            materialArchive->Load(inputFile.toAscii().data());
+
+            DAVA::SerializationContext materialContext;
+            materialContext.SetScene(curScene);
+            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
+
+            DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState);
+            if(0 != userChoiseWhatToLoad)
+            {
+                lastCheckState = userChoiseWhatToLoad;
+
+                DAVA::KeyedArchive *materialProperties = new DAVA::KeyedArchive();
+                materialProperties->SetBool("loadIds", false);
+
+                if(!(lastCheckState & CHECKED_NAME))
+                {
+                    materialProperties->SetBool("loadName", false);
+                }
+            
+                if(!(lastCheckState & CHECKED_GROUP))
+                {
+                    materialProperties->SetBool("loadGroup", false);
+                }
+
+                if(!(lastCheckState & CHECKED_TEMPLATE))
+                {
+                    materialProperties->SetBool("loadTemplate", false);
+                }
+
+                if(!(lastCheckState & CHECKED_PROPERTIES))
+                {
+                    materialProperties->SetBool("loadProperties", false);
+                    materialProperties->SetBool("loadFlags", false);
+                }
+
+                if(!(lastCheckState & CHECKED_TEXTURES))
+                {
+                    materialProperties->SetBool("loadTextures", false);
+                }
+
+                if(lastCheckState & CHECKED_CLEAR_MATERIAL)
+                {
+                    materialProperties->SetBool("loadClear", true);
+                }
+
+                materialContext.customProperties->SetArchive("material", materialProperties);
+                materialProperties->Release();
+
+                for(int i = 0; i < curMaterials.size(); ++i)
+                {
+                    curMaterials[i]->Load(materialArchive, &materialContext);
+                }
+            }            materialArchive->Release();        }
+    }
+
+    SetCurMaterial(curMaterials);
+}
+
+DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState)
+{
+    DAVA::uint32 ret = 0;
+
+    QDialog *dlg = new QDialog(this);
+    QVBoxLayout *dlgLayout = new QVBoxLayout();
+    dlgLayout->setMargin(10);
+
+    dlg->setWindowTitle("Reload Model options");
+    dlg->setLayout(dlgLayout);
+
+    QComboBox *modeCombo = new QComboBox(dlg);
+    QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
+    QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
+    QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
+    QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, dlg);
+    QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
+
+    // restore last user choice
+    modeCombo->addItem("Combine");
+    modeCombo->addItem("Clear");
+
+    if(initialState & CHECKED_CLEAR_MATERIAL)
+    {
+        modeCombo->setCurrentIndex(1);
+    }
+    else
+    {
+        modeCombo->setCurrentIndex(0);
+    }
+
+    templateChBox->setChecked((bool) (initialState & CHECKED_TEMPLATE));
+    nameChBox->setChecked((bool) (initialState & CHECKED_NAME));
+    groupChBox->setChecked((bool) (initialState & CHECKED_GROUP));
+    propertiesChBox->setChecked((bool) (initialState & CHECKED_PROPERTIES));
+    texturesChBox->setChecked((bool) (initialState & CHECKED_TEXTURES));
+
+    dlgLayout->addWidget(modeCombo);
+    dlgLayout->addWidget(templateChBox);
+    dlgLayout->addWidget(nameChBox);
+    dlgLayout->addWidget(groupChBox);
+    dlgLayout->addWidget(propertiesChBox);
+    dlgLayout->addWidget(texturesChBox);
+
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
+    dlgLayout->addWidget(buttons);
+
+    QObject::connect(buttons, SIGNAL(accepted()), dlg, SLOT(accept()));
+    QObject::connect(buttons, SIGNAL(rejected()), dlg, SLOT(reject()));
+
+    if(QDialog::Accepted == dlg->exec())
+    {
+        if(templateChBox->checkState() == Qt::Checked) ret |= CHECKED_TEMPLATE;
+        if(nameChBox->checkState() == Qt::Checked) ret |= CHECKED_NAME;
+        if(groupChBox->checkState() == Qt::Checked) ret |= CHECKED_GROUP;
+        if(propertiesChBox->checkState() == Qt::Checked) ret |= CHECKED_PROPERTIES;
+        if(texturesChBox->checkState() == Qt::Checked) ret |= CHECKED_TEXTURES;
+        if(modeCombo->currentIndex() == 1) ret |= CHECKED_CLEAR_MATERIAL;
+    }
+
+    delete dlg;
+    return ret;
+}
+

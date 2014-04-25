@@ -36,7 +36,7 @@
 namespace DAVA
 {
     
-RenderPassBatchArray::RenderPassBatchArray(RenderSystem * rs)
+RenderPassBatchArray::RenderPassBatchArray()
 {
     const RenderLayerManager * manager = RenderLayerManager::Instance();
     for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
@@ -64,6 +64,17 @@ void RenderPassBatchArray::InitPassLayers(RenderPass * renderPass)
         {
             layerBatchArrays[id]->SetFlags(layer->GetFlags());
         }
+    }
+}
+    
+void RenderPassBatchArray::InitPassLayersWithSingleLayer(RenderPass * renderPass, RenderLayerBatchArray * singleLayer)
+{
+    // const RenderLayerManager * manager = RenderLayerManager::Instance();
+    for (RenderLayerID id = 0; id < RENDER_LAYER_ID_COUNT; ++id)
+    {
+        SafeDelete(layerBatchArrays[id]);
+        layerBatchArrays[id] = singleLayer;
+        //->SetFlags(layer->GetFlags());
     }
 }
     
@@ -184,13 +195,16 @@ void RenderLayerBatchArray::Sort(Camera * camera)
         else if (flags & SORT_BY_DISTANCE_BACK_TO_FRONT)
         {
             Vector3 cameraPosition = camera->GetPosition();
+            Vector3 cameraDirection = camera->GetDirection();
             
             for (uint32 k = 0; k < renderBatchCount; ++k)
             {
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
-                Vector3 position = batch->GetSortingTransformPtr()->GetTranslationVector();
-                uint32 distance = ((uint32)((position - cameraPosition).Length())) + 31 - batch->GetSortingOffset();                
+                Vector3 delta = batch->GetSortingTransformPtr()->GetTranslationVector() - cameraPosition;
+                float fDist = delta.Length();
+                uint32 distance = delta.DotProduct(cameraDirection)<0?0:((uint32)fDist);
+                distance = distance + 31 - batch->GetSortingOffset();
                 batch->layerSortingKey = (distance & 0x0fffffff) | (batch->GetSortingKey() << 28);
             }
             
@@ -206,7 +220,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
-                uint32 distance = ((uint32)((position - cameraPosition).Length())) + 31 - batch->GetSortingOffset();                                
+                uint32 distance = ((uint32)((position - cameraPosition).Length() * 100.0f)) + 31 - batch->GetSortingOffset();
                 uint32 distanceBits = 0x0fffffff - distance & 0x0fffffff;
 
                 batch->layerSortingKey = distanceBits | (batch->GetSortingKey() << 28);

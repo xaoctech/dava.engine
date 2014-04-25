@@ -222,7 +222,7 @@ Texture::Texture()
 	fboID = -1;
 	rboID = -1;
 #if defined(__DAVAENGINE_ANDROID__)
-    stencil_rboID = -1;
+    stencilRboID = -1;
 #endif
 
 #endif
@@ -246,9 +246,13 @@ void Texture::ReleaseTextureData()
 	container->fboID = fboID;
 	container->rboID = rboID;
 #if defined(__DAVAENGINE_ANDROID__)
-    container->stencil_rboID = stencil_rboID;
+    container->stencilRboID = stencilRboID;
 #endif
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container));
+    
+    id = 0;
+	fboID = -1;
+	rboID = -1;
 }
 
 void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
@@ -275,9 +279,9 @@ void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void
 	}
     
 #if defined(__DAVAENGINE_ANDROID__)
-    if (container->stencil_rboID != (uint32)-1)
+    if (container->stencilRboID != (uint32)-1)
     {
-        RENDER_VERIFY(glDeleteRenderbuffers(1, &container->stencil_rboID));
+        RENDER_VERIFY(glDeleteRenderbuffers(1, &container->stencilRboID));
     }
 #endif
 
@@ -565,6 +569,8 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	if(!IsLoadAvailable(gpu))
 		return false;
 	
+    int32 baseMipMap = GetBaseMipMap();
+
 	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
 	{
 		Vector<FilePath> faceNames;
@@ -572,7 +578,8 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
-			Vector<Image *> imageFace = ImageLoader::CreateFromFileByExtension(faceNames[i]);
+            Vector<Image *> imageFace;
+			ImageLoader::CreateFromFileByExtension(faceNames[i], imageFace, baseMipMap);
 			if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
@@ -602,56 +609,12 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
-		*images = ImageLoader::CreateFromFileByExtension(imagePathname);
+		ImageLoader::CreateFromFileByExtension(imagePathname, *images, baseMipMap);
         if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
         {
             Image * img = *images->begin();
             *images = img->CreateMipMapsImages();
             SafeRelease(img);
-        }
-
-        if(texDescriptor->GetQualityGroup().IsValid() && images->size() > 1)
-        {
-            const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTextureQuality());
-            if(NULL != curTxQuality)
-            {
-                // TODO:
-                // this is draft code and should be reimplemented
-                // to use texture group qualities
-                // -->
-                
-                int baselevel = curTxQuality->albedoBaseMipMapLevel;
-                
-                if(baselevel > 0)
-                {
-                    int leaveCount = images->size() - baselevel;
-                    
-                    // we should leave at last one last image
-                    if(leaveCount < 1)
-                    {
-                        leaveCount = 1;
-                    }
-                    
-                    int leaveOffset = images->size() - leaveCount;
-                    
-                    // release all images, except last one
-                    for(int i = 0; i < leaveOffset; ++i)
-                    {
-                        SafeRelease(images->at(i));
-                    }
-                    
-                    // move last items to the beginning of the vector vector
-                    for(int i = 0; i < leaveCount; ++i)
-                    {
-                        images->operator[](i) = images->operator[](leaveOffset + i);
-                        images->operator[](i)->mipmapLevel = i;
-                    }
-                    
-                    images->resize(leaveCount);
-                }
-                
-                // <-
-            }
         }
     }
 
@@ -783,7 +746,7 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &group, TextureType typeHint)
 {
 	Texture * texture = PureCreate(pathName, group);
-	if(!texture)
+ 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
         texture->texDescriptor->pathname = pathName;
@@ -798,6 +761,9 @@ Texture * Texture::PureCreate(const FilePath & pathName, const FastName &group)
 {
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
+
+    if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+        return NULL;
 
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
@@ -842,7 +808,12 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
-	bool loaded = LoadImages(gpuForLoading, images);
+    bool loaded = false;
+    if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+    {
+	    loaded = LoadImages(gpuForLoading, images);
+    }
+
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
@@ -974,8 +945,8 @@ void Texture::HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, vo
 
             if (!RenderManager::Instance()->GetCaps().isGlDepth24Stencil8Supported)
             {
-                glGenRenderbuffers(1, &stencil_rboID);
-                glBindRenderbuffer(GL_RENDERBUFFER, stencil_rboID);
+                glGenRenderbuffers(1, &stencilRboID);
+                glBindRenderbuffer(GL_RENDERBUFFER, stencilRboID);
                 glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, width, height);
             }
         }
@@ -996,7 +967,7 @@ void Texture::HWglCreateFBOBuffersInternal(BaseObject * caller, void * param, vo
 #if defined(__DAVAENGINE_ANDROID__)
         else
         {
-            RENDER_VERIFY(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencil_rboID));
+            RENDER_VERIFY(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilRboID));
         }
 #endif
 	}
@@ -1059,41 +1030,21 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 void Texture::Lost()
 {
 	RenderResource::Lost();
-
-	/*
-	if(RenderManager::Instance()->GetTexture() == this)
-	{//to avoid drawing deleted textures
-		RenderManager::Instance()->SetTexture(0);
-	}
-	
-	ReleaseImages();
-
-	if(fboID != (uint32)-1)
-	{
-		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
-		fboID = -1;
-	}
-	
-	if(id)
-	{
-		RENDER_VERIFY(glDeleteTextures(1, &id));
-		id = 0;
-	}
-	*/
+    
+    ReleaseTextureData();
 }
 
 void Texture::Invalidate()
 {
 	RenderResource::Invalidate();
 	
-	/*
-
 	DVASSERT(id == 0 && "Texture always invalidated");
 	if (id)
 	{
 		return;
 	}
 	
+    const FilePath& relativePathname = texDescriptor->GetSourceTexturePathname();
 	if (relativePathname.GetType() == FilePath::PATH_IN_FILESYSTEM ||
 		relativePathname.GetType() == FilePath::PATH_IN_RESOURCES ||
 		relativePathname.GetType() == FilePath::PATH_IN_DOCUMENTS)
@@ -1109,7 +1060,6 @@ void Texture::Invalidate()
 	{
 		MakePink((TextureType)textureType);
 	}
-	*/
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
@@ -1480,6 +1430,21 @@ void Texture::SetPixelization(bool value)
         texture->SetMinMagFilter(minFilter, magFilter);
     }
     textureMapMutex.Unlock();
+}
+
+
+int32 Texture::GetBaseMipMap() const
+{
+    if(texDescriptor->GetQualityGroup().IsValid())
+    {
+        const TextureQuality *curTxQuality = QualitySettingsSystem::Instance()->GetTxQuality(QualitySettingsSystem::Instance()->GetCurTextureQuality());
+        if(NULL != curTxQuality)
+        {
+            return curTxQuality->albedoBaseMipMapLevel;
+        }
+    }
+
+    return 0;
 }
 
 };

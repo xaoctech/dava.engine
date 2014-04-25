@@ -194,10 +194,11 @@ void UIScreen::UnloadGroup()
 		isLoaded = false;
 	}else
 	{
+        int32 screenGroupId = groupId;
 		for (List<UIScreen*>::iterator t = appScreens.begin(); t != appScreens.end(); ++t)
 		{
 			UIScreen * screen = *t;
-			if ((screen->groupId == groupId) && (screen->isLoaded))
+			if ((screen->groupId == screenGroupId) && (screen->isLoaded))
 			{
 				screen->UnloadResources();
 				screen->isLoaded = false;
@@ -216,7 +217,7 @@ void UIScreen::AddToGroup(int32 _groupId)
 	groupId = _groupId;
 }
 
-void UIScreen::RemoveFromGroup(int32 _groupId)
+void UIScreen::RemoveFromGroup()
 {
 	groupId = groupIdCounter--;
 }
