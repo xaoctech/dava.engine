@@ -32,10 +32,6 @@
 #include "Sound/SoundSystem.h"
 #include "Scene3D/Entity.h"
 
-#ifdef __DAVAENGINE_IPHONE__
-#include "fmodiphone.h"
-#endif
-
 namespace DAVA
 {
 Map<FilePath, FMOD::Sound*> soundMap;
