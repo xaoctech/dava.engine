@@ -48,6 +48,13 @@ namespace DAVA
 {
 
 class UIScreen;
+
+class ScreenSwitchListener
+{
+public:
+	virtual void OnScreenSwitched(UIScreen* newScreen) {}
+};
+
 	/**
 	 \brief	UIControlSystem it's a core of the all controls work.
 		ControlSystem managed all update, draw, appearence and disappearence of the controls.
@@ -103,15 +110,6 @@ public:
 	UIScreen *GetScreen();
 
 	/**
-	 \brief Instantly replace one screen to enother.
-		Call this only on your own risk if you are really know what you need. 
-		May cause to abnormal behavior!
-		Internally used by UITransition.
-	 \param[in] Screen you want to set as current.
-	 */
-	void ReplaceScreen(UIScreen *newMainControl);
-
-	/**
 	 \brief Adds new popup to the popup container.
 	 \param[in] Popup control to add.
 	 */
@@ -159,7 +157,7 @@ public:
 	 \brief Cancel all inputs for the requested control.
 	 \param[in] control to cancel inputs for.
 	 */
-	void CancelInputs(UIControl *control);
+	void CancelInputs(UIControl *control, bool hierarchical = true);
 
 	/**
 	 \brief Cancel requested input.
@@ -306,14 +304,42 @@ public:
 	Vector2 GetInputOffset() const { return inputOffset; };
 	float32 GetScaleFactor() const { return scaleFactor; };
 	
+	void AddScreenSwitchListener(ScreenSwitchListener * listener);
+	void RemoveScreenSwitchListener(ScreenSwitchListener * listener);
+
+	/**
+	 \brief Disallow screen switch.
+	 Locking screen switch or incrementing lock counter.
+	 \returns current screen switch lock counter
+	 */
+	int32 LockSwitch();
+
+	/**
+	 \brief Allow screen switch.
+	 Decrementing lock counter if counter is zero unlocking screen switch.
+	 \returns current screen switch lock counter
+	 */
+	int32 UnlockSwitch();
+
 private:
+	/**
+	 \brief Instantly replace one screen to enother.
+		Call this only on your own risk if you are really know what you need. 
+		May cause to abnormal behavior!
+		Internally used by UITransition.
+	 \param[in] Screen you want to set as current.
+	 */
+	void ReplaceScreen(UIScreen *newMainControl);
 
 	void ProcessScreenLogic();
 
-	
+	Vector<ScreenSwitchListener*> screenSwitchListeners;
+
 	UIScreen * currentScreen;
 	UIScreen * nextScreen;
 	UIScreen * prevScreen;
+
+	int32 screenLockCount;
 
 	bool removeCurrentScreen;
 	
@@ -327,7 +353,7 @@ private:
 	
 	int32 lockInputCounter;
 	
-	UIScreenTransition * transition;
+	UIScreenTransition * nextScreenTransition;
 	
 	UIGeometricData baseGeometricData;
 	

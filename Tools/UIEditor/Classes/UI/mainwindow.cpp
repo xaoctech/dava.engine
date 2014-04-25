@@ -593,6 +593,7 @@ void MainWindow::OnSelectedScreenChanged()
 		ui->libraryDockWidget->setEnabled(true);
         
         ui->actionEnable_Guides->setChecked(activeScreen->AreGuidesEnabled());
+        ui->actionLock_Guides->setChecked(activeScreen->AreGuidesLocked());
 	}
 	else
 	{	// Disable library widget if no screen is selected
@@ -769,6 +770,7 @@ void MainWindow::InitMenu()
     OnStickModeChanged();
 
     connect(ui->actionEnable_Guides, SIGNAL(triggered()), this, SLOT(OnEnableGuidesChanged()));
+    connect(ui->actionLock_Guides, SIGNAL(triggered()), this, SLOT(OnLockGuidesChanged()));
     UpdateMenu();
 }
 
@@ -872,6 +874,7 @@ void MainWindow::UpdateMenu()
     
     // Guides.
     ui->actionEnable_Guides->setEnabled(projectNotEmpty);
+    ui->actionLock_Guides->setEnabled(projectNotEmpty);
     ui->actionStickMode->setEnabled(projectNotEmpty);
 }
 
@@ -1103,6 +1106,10 @@ void MainWindow::DoSaveProject(bool changesOnly)
 
 void MainWindow::OnOpenProject()
 {
+	// Close and save current project if any
+	if (!CloseProject())
+		return;
+
 	QString projectPath = QFileDialog::getOpenFileName(this, tr("Select a project file"),
 														ResourcesManageHelper::GetDefaultDirectory(),
 														tr( "Project (*.uieditor)"));
@@ -1617,5 +1624,14 @@ void MainWindow::OnEnableGuidesChanged()
     if (activeScreen)
     {
         activeScreen->SetGuidesEnabled(ui->actionEnable_Guides->isChecked());
+    }
+}
+
+void MainWindow::OnLockGuidesChanged()
+{
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (activeScreen)
+    {
+        activeScreen->LockGuides(ui->actionLock_Guides->isChecked());
     }
 }

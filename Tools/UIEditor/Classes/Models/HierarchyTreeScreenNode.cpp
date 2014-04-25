@@ -376,3 +376,13 @@ void HierarchyTreeScreenNode::InitializeControlBeforeAddingToTree(UIControl* uiC
         webViewControl->SetNativeControlVisible(false);
     }
 }
+
+bool HierarchyTreeScreenNode::AreGuidesLocked() const
+{
+    return guides.AreGuidesLocked();
+}
+
+void HierarchyTreeScreenNode::LockGuides(bool value)
+{
+    guides.LockGuides(value);
+}

@@ -39,6 +39,9 @@
 
 #include "Commands2/EntityRemoveCommand.h"
 #include "Commands2/EntityParentChangeCommand.h"
+#include "Commands2/InspMemberModifyCommand.h"
+
+#include "Settings/SettingsManager.h"
 
 // framework
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -181,13 +184,11 @@ const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &fro
 
 const EntityGroup* SceneCollisionSystem::ObjectsRayTestFromCamera()
 {
-	SceneCameraSystem *cameraSystem	= ((SceneEditor2 *) GetScene())->cameraSystem;
+    DAVA::Vector3 traceFrom;
+    DAVA::Vector3 traceTo;
 
-	DAVA::Vector3 camPos = cameraSystem->GetCameraPosition();
-	DAVA::Vector3 camDir = cameraSystem->GetPointDirection(lastMousePos);
-
-	DAVA::Vector3 traceFrom = camPos;
-	DAVA::Vector3 traceTo = traceFrom + camDir * 1000.0f;
+    SceneCameraSystem *cameraSystem = ((SceneEditor2 *) GetScene())->cameraSystem;
+    cameraSystem->GetRayTo2dPoint(lastMousePos, 1000.0f, traceFrom, traceTo);
 
 	return ObjectsRayTest(traceFrom, traceTo);
 }
@@ -284,7 +285,7 @@ DAVA::AABBox3 SceneCollisionSystem::GetBoundingBox(DAVA::Entity *entity)
 	return aabox;
 }
 
-void SceneCollisionSystem::Update(DAVA::float32 timeElapsed)
+void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 {
 	// check in there are entities that should be added or removed
 	if(entitiesToAdd.size() > 0 || entitiesToRemove.size() > 0)
@@ -430,6 +431,17 @@ void SceneCollisionSystem::ProcessCommand(const Command2 *command, bool redo)
                 UpdateCollisionObject(command->GetEntity());
                 break;
             }
+
+        case CMDID_INSP_MEMBER_MODIFY:
+            {
+                const InspMemberModifyCommand* cmd = static_cast<const InspMemberModifyCommand*>(command);
+                if (String("heightmapPath") == cmd->member->Name())
+                {
+                    UpdateCollisionObject(curLandscapeEntity);
+                }
+            }
+            break;
+
 		default:
 			break;
 		}
@@ -479,6 +491,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	CollisionBaseObject *cObj = NULL;
 	bool isLandscape = false;
 
+    DAVA::float32 debugBoxScale = SettingsManager::Instance()->GetValue("DebugBoxScale", SettingsManager::GENERAL).AsFloat();
+
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
 	if( NULL == cObj &&
@@ -493,7 +507,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj &&
 		NULL != particleEffect)
 	{
-		cObj = new CollisionParticleEffect(entity, objectsCollWorld);
+        DAVA::float32 scale = SettingsManager::Instance()->GetValue("ParticleBoxScale", SettingsManager::GENERAL).AsFloat();
+		cObj = new CollisionParticleEffect(entity, objectsCollWorld, 1.0f * scale);
 	}
 
 
@@ -502,27 +517,34 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		NULL != renderObject && entity->IsLodMain(0))
 	{
         RenderObject::eType objType = renderObject->GetType();
-        if (objType!=RenderObject::TYPE_SPRITE) 
-		    cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+        if( objType != RenderObject::TYPE_SPRITE &&
+            objType != RenderObject::TYPE_VEGETATION)
+        {
+            cObj = new CollisionRenderObject(entity, objectsCollWorld, renderObject);
+        }
 	}
 
 	DAVA::Camera *camera = DAVA::GetCamera(entity);
 	if( NULL == cObj && 
 		NULL != camera)
 	{
-		cObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), 0.75f);
+		cObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), 1.0 * debugBoxScale);
 	}
 
 	// build simple collision box for all other entities, that has more than two components
 	if( NULL == cObj &&
 		NULL != entity)
 	{
-		if( NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT) ||
-			NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
+		if( NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
 			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
 		{
-			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 0.5f);
+			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 1.0 * debugBoxScale);
 		}
+        else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
+        {
+            DAVA::float32 scale = SettingsManager::Instance()->GetValue("UserBoxScale", SettingsManager::GENERAL).AsFloat();
+            cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 1.0 * scale);
+        }
 	}
 
 	if(NULL != cObj)

@@ -134,4 +134,15 @@ YamlNode* UIMovieView::SaveToYamlNode(UIYamlLoader * loader)
     return node;
 }
 
+void UIMovieView::WillAppear()
+{
+    UIControl::WillAppear();
+    movieViewControl->SetVisible(GetVisible());
+}
+
+void UIMovieView::WillDisappear()
+{
+    UIControl::WillDisappear();
+    movieViewControl->SetVisible(false);
+}
 };

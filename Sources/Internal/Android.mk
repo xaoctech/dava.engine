@@ -78,12 +78,20 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/Job/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/DLC/*.cpp))
 
+ifndef USE_NEON
+#ifneq ($(USE_NEON),)
+USE_NEON := true
+endif
+ifeq ($(USE_NEON), true)
 LOCAL_ARM_NEON := true
 LOCAL_NEON_CFLAGS := -mfloat-abi=softfp -mfpu=neon -march=armv7
+LOCAL_CFLAGS += -DUSE_NEON
+endif
 
 # set build flags
-LOCAL_CFLAGS := -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
+LOCAL_CFLAGS += -frtti -DGL_GLEXT_PROTOTYPES=1 -Wno-psabi
 LOCAL_CFLAGS += -Wno-invalid-offsetof
+LOCAL_CFLAGS += -DDAVA_FMOD
 
 # set exported build flags
 LOCAL_EXPORT_CFLAGS := $(LOCAL_CFLAGS)
@@ -112,8 +120,11 @@ APP_PLATFORM_LEVEL := $(strip $(subst android-,,$(APP_PLATFORM)))
 IS_GL2_PLATFORM := $(shell (if [ $(APP_PLATFORM_LEVEL) -lt 18 ]; then echo "GLES2"; else echo "GLES3"; fi))
 ifeq ($(IS_GL2_PLATFORM), GLES2)
 LOCAL_LDLIBS += -lGLESv2
-else
+else ifeq ($(IS_GL2_PLATFORM), GLES3)
 LOCAL_LDLIBS += -lGLESv3
+else
+#$(warning UNKNOWN GL VERSION)
+LOCAL_LDLIBS += -lGLESv2
 endif
 
 # set exported used libs

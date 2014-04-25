@@ -464,8 +464,8 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 		HierarchyTreePlatformNode* platformNode = dynamic_cast<HierarchyTreePlatformNode*>(*iter);
 		if (!platformNode)
 			continue;
-		
-		bool res = platformNode->Save(platforms, saveAll);
+		// In case platform is changed - we should always perform "Save All" sequence
+		bool res = platformNode->Save(platforms, (platformNode->IsNeedSave() || saveAll));
 		if (res)
 		{
 			platformNode->ResetUnsavedChanges();
@@ -629,7 +629,7 @@ bool HierarchyTree::IsPlatformNamePresent(const QString& name) const
 		{
 			continue;
 		}
-		if(name.compare(platformNode->GetName()) == 0)
+		if(name.compare(platformNode->GetName(), Qt::CaseInsensitive) == 0)
 		{
 			return true;
 		}

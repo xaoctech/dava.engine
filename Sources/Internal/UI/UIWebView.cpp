@@ -55,6 +55,8 @@ UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
     UpdateControlRect();
 
     UpdateNativeControlVisible(false, true); // will be displayed in WillAppear.
+
+    SetDataDetectorTypes(DATA_DETECTOR_LINKS);
 }
 
 UIWebView::~UIWebView()
@@ -157,4 +159,14 @@ void UIWebView::UpdateNativeControlVisible(bool value, bool hierarchic)
     // In case isDisplayNativeControl is set to false - always hide the native control.
     bool visibleValue = isNativeControlVisible ? value : false;
     webViewControl->SetVisible(visibleValue, hierarchic);
+}
+
+void UIWebView::SetDataDetectorTypes(int32 value)
+{
+    this->webViewControl->SetDataDetectorTypes(value);
+}
+
+int32 UIWebView::GetDataDetectorTypes() const
+{
+    return this->webViewControl->GetDataDetectorTypes();
 }

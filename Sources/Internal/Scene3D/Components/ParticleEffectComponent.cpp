@@ -80,6 +80,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 	newComponent->stopWhenEmpty = stopWhenEmpty;	
 	newComponent->playbackComplete = playbackComplete;
 	newComponent->effectDuration = effectDuration;
+    newComponent->clearOnRestart = clearOnRestart;
 	uint32 emittersCount = emitters.size();
 	newComponent->emitters.resize(emittersCount);
 	for (uint32 i=0; i<emittersCount; ++i)
@@ -458,6 +459,37 @@ void ParticleEffectComponent::RemoveEmitter(ParticleEmitter *emitter)
     std::advance(itSpawn, Min(id, (int32)spawnPositions.size()));    
     spawnPositions.erase(itSpawn);
     
+}
+
+/*statistics for editor*/
+int32 ParticleEffectComponent::GetLayerActiveParticlesCount(ParticleLayer *layer)
+{
+    int32 count = 0;
+    for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
+    {
+        if (it->layer == layer)
+        {
+            count+=it->activeParticleCount;
+        }
+    }
+    return count;
+}
+float32 ParticleEffectComponent::GetLayerActiveParticlesSquare(ParticleLayer *layer)
+{
+    float32 square = 0;
+    for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
+    {
+        if (it->layer == layer)
+        {
+            Particle *currParticle = it->head;
+            while (currParticle)
+            {
+                square+=currParticle->currSize.x*currParticle->currSize.y;
+                currParticle = currParticle->next;
+            }
+        }
+    }
+    return square;
 }
 
 float32 ParticleEffectComponent::GetCurrTime()

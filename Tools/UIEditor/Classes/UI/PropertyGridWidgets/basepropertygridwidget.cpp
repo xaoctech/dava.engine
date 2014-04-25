@@ -29,6 +29,7 @@
 
 #include <QLayout>
 #include <QColorDialog>
+#include <QMessageBox>
 
 #include "basepropertygridwidget.h"
 #include "ui_basepropertygridwidget.h"
@@ -72,7 +73,7 @@ void BasePropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
             this, SLOT(OnChangePropertySucceeded(const QString&)));
     connect(CommandsController::Instance(), SIGNAL(ChangePropertyFailed(const QString&)),
             this, SLOT(OnChangePropertyFailed(const QString&)));
-            
+    
     this->activeMetadata = activeMetadata;
 }
 
@@ -365,9 +366,8 @@ void BasePropertyGridWidget::HandleLineEditEditingFinished(QLineEdit* senderWidg
 	{
 		return;
 	}
-
-	// The property was indeed changed, call the command.
-    BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
+	
+	BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
@@ -739,7 +739,7 @@ void BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *, 
 																const double)
 {
     // In case Base handler is called, particular handler for the Combobox is missed - this is treated as error.
-    Logger::Error("BasePropertyGridWidget::ProcessComboboxValueChanged is called - you've forgot to create custom handler for some combo!!!");
+    Logger::Error("BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged is called - you've forgot to create custom handler for some combo!!!");
 }
 
 void BasePropertyGridWidget::UpdateColorWidgetWithPropertyValue(QColorWidget *colorWidget, const QMetaProperty &curProperty)
@@ -971,6 +971,12 @@ void BasePropertyGridWidget::InstallEventFiltersForWidgets(QWidget *widget)
 	{
         sliderWidget->installEventFilter( this );
         sliderWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+
+	Q_FOREACH( QLineEdit *lineWidget, widget->findChildren<QLineEdit*>() )
+	{
+        lineWidget->installEventFilter( this );
+        lineWidget->setFocusPolicy( Qt::StrongFocus );
     }
 }
 

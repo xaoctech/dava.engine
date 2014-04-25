@@ -152,7 +152,7 @@ int TextureConvertor::Reconvert(DAVA::Scene *scene, eTextureConvertMode convertM
 	{
 		// get list of all scenes textures
 		DAVA::TexturesMap allTextures;
-		SceneHelper::EnumerateSceneTextures(scene, allTextures);
+		SceneHelper::EnumerateSceneTextures(scene, allTextures, SceneHelper::EXCLUDE_NULL);
 
 		// add jobs to convert every texture
 		if(allTextures.size() > 0)
@@ -607,7 +607,8 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 			outputPath = TextureConverter::ConvertTexture(*descriptor, gpu, true);
         }
 		
-		Vector<DAVA::Image *> davaImages = DAVA::ImageLoader::CreateFromFileByContent(outputPath);
+        Vector<DAVA::Image *> davaImages;
+		DAVA::ImageLoader::CreateFromFileByContent(outputPath, davaImages);
 		
 		if(davaImages.size() > 0)
 		{

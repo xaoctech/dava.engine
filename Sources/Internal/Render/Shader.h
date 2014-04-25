@@ -205,7 +205,7 @@ public:
     
     void SetDefines(const String & _defines);
 
-    static Shader * CompileShader(const FastName & assetName,
+    static Shader * CreateShader(const FastName & assetName,
                                   Data * vertexShaderData,
                                   Data * fragmentShaderData,
                                   uint8 * vertexShaderDataStart,
@@ -213,6 +213,15 @@ public:
                                   uint8 * fragmentShaderDataStart,
                                   uint32 fragmentShaderDataSize,
                                   const FastNameSet & definesSet);
+    
+    void Reload(    Data * vertexShaderData,
+                    Data * fragmentShaderData,
+                    uint8 * vertexShaderDataStart,
+                    uint32 vertexShaderDataSize,
+                    uint8 * fragmentShaderDataStart,
+                    uint32 fragmentShaderDataSize);
+
+    
     
     const FastName & GetAssetName() { return assetName; };
     
@@ -222,6 +231,7 @@ public:
     void ClearLastBindedCaches();
 
     void Bind();
+    void BindDynamicParameters();
     static void Unbind();
     
 	static bool IsAutobindUniform(eShaderSemantic uniformId);
@@ -278,6 +288,9 @@ public:
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
 private:
+    
+    void ReleaseShaderData();
+    
 #if defined(__DAVAENGINE_DIRECTX9__)
 #elif defined(__DAVAENGINE_OPENGL__)
     String shaderDefines;
