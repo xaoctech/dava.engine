@@ -117,7 +117,6 @@ template<typename T>
         
     int paramsCount = activeMetadata->GetParamsCount();
     T firstValue;
-    bool isFirstValueTaken = false;
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
     {
 		activeMetadata->SetActiveParamID(i);
@@ -126,10 +125,9 @@ template<typename T>
 		{
 			activeMetadata->SetActiveStateIndex(stateIndex);
 			const T& curValue = activeMetadata->property(propertyName.toStdString().c_str()).value<T>();
-            if (!isFirstValueTaken)
+            if (i == 0 && stateIndex == 0)
             {
                 firstValue = curValue;
-                isFirstValueTaken = true;
             }
 			else if (curValue != firstValue)
 			{
