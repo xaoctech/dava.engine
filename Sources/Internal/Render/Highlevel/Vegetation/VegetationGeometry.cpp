@@ -26,57 +26,40 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#include "Render/Material/NMaterial.h"
-#include "Render/Highlevel/Vegetation/VegetationRenderData.h"
+#include "Render/Highlevel/Vegetation/VegetationGeometry.h"
 
 namespace DAVA
 {
-VegetationRenderData::VegetationRenderData() :
-    vertexRenderDataObject(NULL),
-    material(NULL)
+
+void VegetationGeometry::SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions)
 {
-}
+    float32 z = bbox.min.z + (bbox.max.z - bbox.min.z) * 0.5f;
     
-VegetationRenderData::~VegetationRenderData()
-{
-    SafeRelease(material);
-    ReleaseRenderData();
+    positions.push_back(Vector3(bbox.min.x, bbox.min.y, z));
+    positions.push_back(Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.min.y, z));
+    positions.push_back(Vector3(bbox.max.x, bbox.min.y, z));
+    positions.push_back(Vector3(bbox.max.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
+    positions.push_back(Vector3(bbox.max.x, bbox.max.y, z));
+    positions.push_back(Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.max.y, z));
+    positions.push_back(Vector3(bbox.min.x, bbox.max.y, z));
+    positions.push_back(Vector3(bbox.min.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
 }
-    
-void VegetationRenderData::CreateRenderData()
+
+uint32 VegetationGeometry::GetSortDirectionCount()
 {
-    DVASSERT(NULL == vertexRenderDataObject);
-    vertexRenderDataObject = new RenderDataObject();
+    return 8;
 }
-    
-void VegetationRenderData::ReleaseRenderData()
+
+void VegetationGeometry::ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray)
 {
-    size_t indexBufferResolutionCount = indexRenderDataObject.size();
-    for(size_t indexBufferIndex = 0; indexBufferIndex < indexBufferResolutionCount; ++indexBufferIndex)
+    size_t renderDataCount = renderDataArray.size();
+    for(size_t i = 0; i < renderDataCount; ++i)
     {
-        Vector<Vector<SortedBufferItem> >& indexBufferArray = indexRenderDataObject[indexBufferIndex];
-        size_t indexObjectCount = indexBufferArray.size();
-        for(size_t i = 0; i < indexObjectCount; ++i)
-        {
-            Vector<SortedBufferItem>& directionArray = indexBufferArray[i];
-                
-            size_t directionBufferCount = directionArray.size();
-            for(size_t directionIndex = 0; directionIndex < directionBufferCount; ++directionIndex)
-            {
-                    directionArray[directionIndex].rdo->DetachVertices();
-            }
-                
-            directionArray.clear();
-        }
-        
-        indexBufferArray.clear();
+        renderDataArray[i]->ReleaseRenderData();
+        SafeDelete(renderDataArray[i]);
     }
-    indexRenderDataObject.clear();
-        
-    SafeRelease(vertexRenderDataObject);
-        
-    vertexData.clear();
-    indexData.clear();
+    
+    renderDataArray.clear();
 }
 
 }

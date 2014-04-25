@@ -50,6 +50,8 @@ struct VegetationVertex
     Vector2 texCoord1;
 };
 
+/////////////////////////////////////////////////////////////////////////////////
+
 struct SortedBufferItem
 {
     RenderDataObject* rdo;
@@ -60,6 +62,8 @@ struct SortedBufferItem
     inline ~SortedBufferItem();
     inline void SetRenderDataObject(RenderDataObject* dataObject);
 };
+
+/////////////////////////////////////////////////////////////////////////////////
     
 class VegetationRenderData
 {
@@ -72,17 +76,22 @@ public:
     inline Vector<int16>& GetIndices();
     inline RenderDataObject* GetRenderDataObject();
     inline Vector<Vector<Vector<SortedBufferItem> > >& GetIndexBuffers();
+    inline NMaterial* GetMaterial();
+    inline void SetMaterial(NMaterial* mat);
     
     void CreateRenderData();
     void ReleaseRenderData();
 
 private:
-        
+    
+    NMaterial* material;
     Vector<VegetationVertex> vertexData;
     Vector<int16> indexData;
     RenderDataObject* vertexRenderDataObject;
     Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
 };
+
+/////////////////////////////////////////////////////////////////////////////////
 
 inline Vector<VegetationVertex>& VegetationRenderData::GetVertices()
 {
@@ -103,6 +112,22 @@ inline Vector<Vector<Vector<SortedBufferItem> > >& VegetationRenderData::GetInde
 {
     return indexRenderDataObject;
 }
+
+inline NMaterial* VegetationRenderData::GetMaterial()
+{
+    return material;
+}
+    
+inline void VegetationRenderData::SetMaterial(NMaterial* mat)
+{
+    if(mat != material)
+    {
+        SafeRelease(material);
+        material = SafeRetain(mat);
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 
 inline SortedBufferItem::SortedBufferItem()
 {

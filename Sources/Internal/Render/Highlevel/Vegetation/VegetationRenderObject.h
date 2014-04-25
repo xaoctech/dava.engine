@@ -45,6 +45,7 @@
 
 #include "Scene3D/SceneFile/SerializationContext.h"
 
+#include "Render/Highlevel/Vegetation/RenderBatchPool.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderData.h"
 
 namespace DAVA
@@ -52,6 +53,7 @@ namespace DAVA
     
 typedef Image VegetationMap;
 class Heightmap;
+class VegetationGeometry;
 
 class VegetationRenderObject : public RenderObject
 {
@@ -79,7 +81,6 @@ public:
     const FilePath& GetVegetationMapPath() const;
     
     void SetLightmap(const FilePath& filePath);
-    Texture* GetLightmap() const;
     const FilePath& GetLightmapPath() const;
     
     void SetTextureSheet(const FilePath& path);
@@ -145,10 +146,6 @@ private:
         inline bool IsElementaryCell() const;
     };
         
-    //void BuildVegetationBrush(uint32 maxClusters);
-    RenderBatch* GetRenderBatchFromPool(NMaterial* material);
-    void ReturnToPool(int32 batchCount);
-
     bool IsValidGeometryData() const;
     bool IsValidSpatialData() const;
     
@@ -207,6 +204,8 @@ private:
                                     float32& density,
                                     float32& scale) const;
     
+    void ClearRenderBatches();
+    
 private:
     
     Heightmap* heightmap;
@@ -219,13 +218,11 @@ private:
     uint16 halfWidth;
     uint16 halfHeight;
     
-    Vector<RenderBatch*> renderBatchPool;
-    int32 renderBatchPoolLine;
+    RenderBatchPool renderBatchPool;
     
-    NMaterial* vegetationMaterial;
     Vector<float32> shaderScaleDensityUniforms;
     
-    VegetationRenderData renderData;
+    Vector<VegetationRenderData*> renderData;
     
     AbstractQuadTree<SpatialData> quadTree;
     Vector<AbstractQuadTreeNode<SpatialData>*> visibleCells;
@@ -233,6 +230,8 @@ private:
     FilePath heightmapPath;
     FilePath vegetationMapPath;
     FilePath textureSheetPath;
+    FilePath albedoTexturePath;
+    FilePath lightmapTexturePath;
     
     Vector2 visibleClippingDistances;
     Vector3 lodRanges;
@@ -247,6 +246,10 @@ private:
     bool vegetationVisible;
     
     Vector<Vector2> resolutionRanges;
+    
+    VegetationGeometry* vegetationGeometry;
+    
+    Texture* heightmapTexture;
     
 public:
     

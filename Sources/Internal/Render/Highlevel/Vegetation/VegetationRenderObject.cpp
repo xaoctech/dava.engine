@@ -37,30 +37,12 @@
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/RenderHelper.h"
 
-#include "Render/Highlevel/Vegetation/VegetationFixedGeometryGenerator.h"
+#include "Render/Highlevel/Vegetation/VegetationPropertyNames.h"
+#include "Render/Highlevel/Vegetation/VegetationFixedGeometry.h"
 
 namespace DAVA
 {
-    
-static const FastName UNIFORM_TILEPOS = FastName("tilePos");
-static const FastName UNIFORM_WORLD_SIZE = FastName("worldSize");
-static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP = FastName("clusterScaleDensityMap[0]");
-static const FastName UNIFORM_HEIGHTMAP_SCALE = FastName("heightmapScale");
-static const FastName UNIFORM_SWITCH_LOD_SCALE = FastName("lodSwitchScale");
-static const FastName UNIFORM_PERTURBATION_FORCE = FastName("perturbationForce");
-static const FastName UNIFORM_PERTURBATION_POINT = FastName("perturbationPoint");
-static const FastName UNIFORM_PERTURBATION_FORCE_DISTANCE = FastName("perturbationForceDistance");
-static const FastName UNIFORM_BILLBOARD_DIRECTION = FastName("billboardDirection");
 
-static const FastName FLAG_FRAMEBUFFER_FETCH = FastName("FRAMEBUFFER_FETCH");
-static const FastName FLAG_BILLBOARD_DRAW = FastName("MATERIAL_GRASS_BILLBOARD");
-
-static const FastName VEGETATION_QUALITY_NAME_HIGH = FastName("HIGH");
-static const FastName VEGETATION_QUALITY_NAME_LOW = FastName("LOW");
-static const FastName VEGETATION_QUALITY_GROUP_NAME = FastName("Vegetation");
-
-static const FastName UNIFORM_SAMPLER_VEGETATIONMAP = FastName("vegetationmap");
-    
 static const uint32 MAX_CLUSTER_TYPES = 4;
 static const uint32 MAX_DENSITY_LEVELS = 16;
 static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
@@ -105,13 +87,6 @@ static uint32 RESOLUTION_TILES_PER_ROW[] =
     1
 };
 
-static float32 RESOLUTION_DISTANCE_SCALE_COMPENSATION[] =
-{
-    1.0f,
-    1.4f,
-    1.4f
-};
-
 //#define VEGETATION_DRAW_LOD_COLOR
 
 static Color RESOLUTION_COLOR[] =
@@ -152,7 +127,9 @@ VegetationRenderObject::VegetationRenderObject() :
     halfHeight(0),
     maxPerturbationDistance(1000000.0f),
     layerVisibilityMask(0xFF),
-    vegetationVisible(true)
+    vegetationVisible(true),
+    vegetationGeometry(NULL),
+    heightmapTexture(NULL)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -167,25 +144,6 @@ VegetationRenderObject::VegetationRenderObject() :
     uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
     shaderScaleDensityUniforms.resize(maxParams);
     
-    renderBatchPoolLine = 0;
-    
-    vegetationMaterial = NMaterial::CreateMaterial(FastName("Vegetation_Material"),
-                                                           NMaterialName::GRASS,
-                                                           NMaterial::DEFAULT_QUALITY_NAME);
-    vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
-    if(RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
-    {
-        vegetationMaterial->SetFlag(FLAG_FRAMEBUFFER_FETCH, NMaterial::FlagOn);
-    }
-    
-    vegetationMaterial->SetFlag(FLAG_BILLBOARD_DRAW, NMaterial::FlagOn);
-    
-#ifdef VEGETATION_DRAW_LOD_COLOR
-
-    vegetationMaterial->SetFlag(FLAG_VEGETATION_DRAW_LOD_COLOR, NMaterial::FlagOn);
-    
-#endif
-    
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
@@ -193,16 +151,17 @@ VegetationRenderObject::VegetationRenderObject() :
 
 VegetationRenderObject::~VegetationRenderObject()
 {
-    SafeRelease(vegetationMap);
-    SafeRelease(heightmap);
-    
-    size_t poolCount = renderBatchPool.size();
-    for(size_t i = 0; i < poolCount; ++i)
+    if(renderData.size())
     {
-        SafeRelease(renderBatchPool[i]);
+        DVASSERT(vegetationGeometry);
+        vegetationGeometry->ReleaseRenderData(renderData);
     }
     
-    SafeRelease(vegetationMaterial);
+    SafeDelete(vegetationGeometry);
+
+    SafeRelease(vegetationMap);
+    SafeRelease(heightmap);
+    SafeRelease(heightmapTexture);
 }
     
 RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
@@ -240,12 +199,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
 void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
     //VI: need to remove render batches since they are temporary
-    int32 batchesToRemove = GetRenderBatchCount();
-    while(GetRenderBatchCount())
-    {
-        RemoveRenderBatch(GetRenderBatchCount() - 1);
-    }
-    ReturnToPool(batchesToRemove);
+    ClearRenderBatches();
     
     RenderObject::Save(archive, serializationContext);
     
@@ -260,17 +214,15 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
 	{
 		archive->SetString("vro.texturesheet", textureSheetPath.GetRelativePathname(serializationContext->GetScenePath()));
 	}
-
-	const FilePath & albedoPath = vegetationMaterial->GetTexturePath(NMaterial::TEXTURE_ALBEDO);
-	if(albedoPath.IsEmpty() == false)
+    
+	if(albedoTexturePath.IsEmpty() == false)
 	{
-		archive->SetString("vro.vegtexture", albedoPath.GetRelativePathname(serializationContext->GetScenePath()));
+		archive->SetString("vro.vegtexture", albedoTexturePath.GetRelativePathname(serializationContext->GetScenePath()));
 	}
 
-	const FilePath & mapPath = vegetationMaterial->GetTexturePath(UNIFORM_SAMPLER_VEGETATIONMAP);
-	if(mapPath.IsEmpty() == false)
+	if(lightmapTexturePath.IsEmpty() == false)
 	{
-		archive->SetString("vro.lightmap", mapPath.GetRelativePathname(serializationContext->GetScenePath()));
+		archive->SetString("vro.lightmap", lightmapTexturePath.GetRelativePathname(serializationContext->GetScenePath()));
 	}
 }
     
@@ -282,8 +234,8 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     bool shouldLoadData = deviceCaps.isVertexTextureUnitsSupported;
     
-    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VEGETATION_QUALITY_GROUP_NAME);
-    bool qualityAllowsVegetation = (VEGETATION_QUALITY_NAME_HIGH == currentQuality);
+    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
+    bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
     
     shouldLoadData = shouldLoadData && qualityAllowsVegetation;
     
@@ -333,28 +285,17 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
 #if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
 //VI: case when vegetation was turned off and then qualit changed from low t high is not a real-world scenario
 //VI: real-world scenario is in resource editor when quality has been changed.
-    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VEGETATION_QUALITY_GROUP_NAME);
-    bool qualityAllowsVegetation = (VEGETATION_QUALITY_NAME_HIGH == currentQuality);
+    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
+    bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
     
     renderFlag = (renderFlag && qualityAllowsVegetation);
 #endif
 
     visibleCells.clear();
-    uint32 currentBatchCount = GetRenderBatchCount();
+    ClearRenderBatches();
     
     if(!ReadyToRender(renderFlag))
     {
-        if(currentBatchCount > 0)
-        {
-            while(currentBatchCount > 0)
-            {
-                RemoveRenderBatch(GetRenderBatchCount() - 1);
-                currentBatchCount = GetRenderBatchCount();
-            }
-            
-            ReturnToPool(currentBatchCount);
-        }
-        
         return;
     }
     
@@ -362,31 +303,6 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     
     std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
-    uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
-
-    if(requestedBatchCount > currentBatchCount)
-    {
-        int32 batchesToAdd = requestedBatchCount - currentBatchCount;
-        
-        for(int32 i = 0; i < batchesToAdd; ++i)
-        {
-            RenderBatch* rb = GetRenderBatchFromPool(vegetationMaterial);
-            
-            AddRenderBatch(rb);
-        }
-    }
-    else if (requestedBatchCount < currentBatchCount)
-    {
-        int32 batchesToRemove = currentBatchCount - requestedBatchCount;
-        
-        for(int32 i = 0; i < batchesToRemove; ++i)
-        {
-            RemoveRenderBatch(GetRenderBatchCount() - 1);
-        }
-        
-        ReturnToPool(batchesToRemove);
-    }
-
     Vector4 posScale(0.0f,
                      0.0f,
                      worldSize.x,
@@ -400,55 +316,63 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     //                                     1,
     //                                     billboardDirection.data);
     
-    Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderData.GetIndexBuffers();
-    for(size_t i = 0; i < requestedBatchCount; ++i)
+    size_t renderDataCount = renderData.size();
+    size_t visibleCellCount = visibleCells.size();
+    
+    for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
-        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[i];
+        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[cellIndex];
         
-        RenderBatch* rb = GetRenderBatch(i);
-        
-        NMaterial* mat = rb->GetMaterial();
-        
-        uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
-        
-        Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
-        
-        uint32 indexBufferIndex = treeNode->data.rdoIndex;
-        
-        DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
-        
-        size_t directionIndex = SelectDirectionIndex(camera, rdoVector[indexBufferIndex]);
-        rb->SetRenderDataObject(rdoVector[indexBufferIndex][directionIndex].rdo);
-        
-        SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
-        
-        posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
-        posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
-        
-        switchLodScale.x = resolutionIndex;
-        switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
-        
-        
-        mat->SetPropertyValue(UNIFORM_SWITCH_LOD_SCALE,
-                              Shader::UT_FLOAT_VEC2,
-                              1,
-                              switchLodScale.data);
-        
-        mat->SetPropertyValue(UNIFORM_TILEPOS,
-                              Shader::UT_FLOAT_VEC4,
-                              1,
-                              posScale.data);
-        
-        mat->SetPropertyValue(UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
-                              Shader::UT_FLOAT,
-                              shaderScaleDensityUniforms.size(),
-                              &shaderScaleDensityUniforms[0]);
-        
+        for(size_t layerIndex = 0; layerIndex < renderDataCount; ++layerIndex)
+        {
+            VegetationRenderData* renderDataObj = renderData[layerIndex];
+            Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
+            
+            RenderBatch* rb = renderBatchPool.Get(renderDataObj->GetMaterial());
+            NMaterial* mat = rb->GetMaterial();
+            
+            AddRenderBatch(rb);
+            
+            uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
+            
+            Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
+            
+            uint32 indexBufferIndex = treeNode->data.rdoIndex;
+            
+            DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
+            
+            size_t directionIndex = SelectDirectionIndex(camera, rdoVector[indexBufferIndex]);
+            rb->SetRenderDataObject(rdoVector[indexBufferIndex][directionIndex].rdo);
+            
+            SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
+            
+            posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            
+            switchLodScale.x = resolutionIndex;
+            switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
+            
+            
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
+                                  Shader::UT_FLOAT_VEC2,
+                                  1,
+                                  switchLodScale.data);
+            
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_TILEPOS,
+                                  Shader::UT_FLOAT_VEC4,
+                                  1,
+                                  posScale.data);
+            
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
+                                  Shader::UT_FLOAT,
+                                  shaderScaleDensityUniforms.size(),
+                                  &shaderScaleDensityUniforms[0]);
+            
 #ifdef VEGETATION_DRAW_LOD_COLOR
-        mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
+            mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
 #endif
+        }
     }
-
 }
 
 void VegetationRenderObject::SetVegetationMap(VegetationMap* map)
@@ -510,13 +434,22 @@ void VegetationRenderObject::SetTextureSheet(const FilePath& path)
 
 void VegetationRenderObject::SetVegetationTexture(const FilePath& texturePath)
 {
-    vegetationMaterial->SetTexture(NMaterial::TEXTURE_ALBEDO,
-                                   texturePath);
+    albedoTexturePath = texturePath;
+    
+    if(vegetationGeometry != NULL)
+    {
+        KeyedArchive* props = new KeyedArchive();
+        props->SetString(NMaterial::TEXTURE_ALBEDO.c_str(), albedoTexturePath.GetAbsolutePathname());
+        
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+        
+        SafeRelease(props);
+    }
 }
 
 const FilePath& VegetationRenderObject::GetVegetationTexture() const
 {
-    return vegetationMaterial->GetTexturePath(NMaterial::TEXTURE_ALBEDO);
+    return albedoTexturePath;
 }
     
 const FilePath& VegetationRenderObject::GetTextureSheetPath() const
@@ -569,71 +502,28 @@ void VegetationRenderObject::SetHeightmapPath(const FilePath& path)
     
 void VegetationRenderObject::SetLightmap(const FilePath& filePath)
 {
-    vegetationMaterial->SetTexture(UNIFORM_SAMPLER_VEGETATIONMAP, filePath);
+    lightmapTexturePath = filePath;
+    
+    if(vegetationGeometry != NULL)
+    {
+        KeyedArchive* props = new KeyedArchive();
+        props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str(), lightmapTexturePath.GetAbsolutePathname());
+        
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+        
+        SafeRelease(props);
+    }
 }
     
-Texture* VegetationRenderObject::GetLightmap() const
-{
-    return vegetationMaterial->GetTexture(UNIFORM_SAMPLER_VEGETATIONMAP);
-}
-
 const FilePath& VegetationRenderObject::GetLightmapPath() const
 {
-    return vegetationMaterial->GetTexturePath(UNIFORM_SAMPLER_VEGETATIONMAP);
-}
-
-RenderBatch* VegetationRenderObject::GetRenderBatchFromPool(NMaterial* material)
-{
-    RenderBatch* rb = NULL;
-    
-    size_t currentPoolSize = renderBatchPool.size();
-    if(currentPoolSize <= renderBatchPoolLine)
-    {
-        rb = new RenderBatch();
-        
-        NMaterial* batchMaterial = NMaterial::CreateMaterialInstance();
-        batchMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
-        batchMaterial->SetParent(vegetationMaterial);
-        
-        if(false == RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
-        {
-            NMaterialHelper::EnableStateFlags(DAVA::PASS_FORWARD,
-                                              batchMaterial,
-                                              RenderStateData::STATE_BLEND);
-        }
-
-        
-        rb->SetMaterial(batchMaterial);
-        
-        SafeRelease(batchMaterial);
-        
-        renderBatchPool.push_back(rb);
-    }
-    else
-    {
-        rb = renderBatchPool[renderBatchPoolLine];
-    }
-    
-    renderBatchPoolLine++;
-    
-    return rb;
-}
-    
-void VegetationRenderObject::ReturnToPool(int32 batchCount)
-{
-    renderBatchPoolLine -= batchCount;
-    DVASSERT(renderBatchPoolLine >= 0);
+    return lightmapTexturePath;
 }
 
 void VegetationRenderObject::SetWorldSize(const Vector3 size)
 {
     worldSize = size;
     
-    vegetationMaterial->SetPropertyValue(UNIFORM_WORLD_SIZE,
-                                         Shader::UT_FLOAT_VEC3,
-                                         1,
-                                         &worldSize);
-
     UpdateVegetationSetup();
 }
     
@@ -819,6 +709,8 @@ bool VegetationRenderObject::CellByDistanceCompareFunction(const AbstractQuadTre
     
 void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap)
 {
+    SafeRelease(heightmapTexture);
+
     Image* originalImage = Image::CreateFromData(heightMap->Size(),
                                                  heightMap->Size(),
                                                  FORMAT_A16,
@@ -857,8 +749,18 @@ void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap
 	JobInstanceWaiter waiter(job);
 	waiter.Wait();
     
-    vegetationMaterial->SetTexture(NMaterial::TEXTURE_DETAIL, tx);
-    vegetationMaterial->SetPropertyValue(UNIFORM_HEIGHTMAP_SCALE, Shader::UT_FLOAT_VEC2, 1, heightmapScale.data);
+    heightmapTexture = SafeRetain(tx);
+    
+    if(vegetationGeometry != NULL)
+    {
+        KeyedArchive* props = new KeyedArchive();
+        props->SetUInt64(NMaterial::TEXTURE_HEIGHTMAP.c_str(), (uint64)heightmapTexture);
+        props->SetVector2(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str(), heightmapScale);
+        
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+        
+        SafeRelease(props);
+    }
     
     SafeRelease(tx);
 }
@@ -992,7 +894,12 @@ const uint32& VegetationRenderObject::GetMaxVisibleQuads() const
 
 void VegetationRenderObject::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-     dataNodes.insert(vegetationMaterial);
+    size_t layerCount = renderData.size();
+    for(size_t i = 0; i < layerCount; ++i)
+    {
+        VegetationRenderData* renderDataObj = renderData[i];
+        dataNodes.insert(renderDataObj->GetMaterial());
+    }
 }
 
 void VegetationRenderObject::SetupHeightmapParameters(BaseObject * caller,
@@ -1009,28 +916,70 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     DVASSERT(maxClusters > 0);
     
     InitLodRanges();
-    renderData.ReleaseRenderData();
     
-    VegetationFixedGeometryGenerator generator(maxClusters,
-                                               MAX_DENSITY_LEVELS,
-                                               MAX_CLUSTER_TYPES,
-                                               GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
-                                               textureSheetPath,
-                                               RESOLUTION_CELL_SQUARE,
-                                               COUNT_OF(RESOLUTION_CELL_SQUARE),
-                                               RESOLUTION_SCALE,
-                                               COUNT_OF(RESOLUTION_SCALE),
-                                               resolutionRanges,
-                                               RESOLUTION_TILES_PER_ROW,
-                                               COUNT_OF(RESOLUTION_TILES_PER_ROW));
+    if(renderData.size() > 0)
+    {
+        DVASSERT(vegetationGeometry);
+        vegetationGeometry->ReleaseRenderData(renderData);
+    }
     
-    generator.Build(renderData);
+    SafeDelete(vegetationGeometry);
+    
+    vegetationGeometry = new VegetationFixedGeometry(maxClusters,
+                                                     MAX_DENSITY_LEVELS,
+                                                     MAX_CLUSTER_TYPES,
+                                                     GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
+                                                     textureSheetPath,
+                                                     RESOLUTION_CELL_SQUARE,
+                                                     COUNT_OF(RESOLUTION_CELL_SQUARE),
+                                                     RESOLUTION_SCALE,
+                                                     COUNT_OF(RESOLUTION_SCALE),
+                                                     resolutionRanges,
+                                                     RESOLUTION_TILES_PER_ROW,
+                                                     COUNT_OF(RESOLUTION_TILES_PER_ROW),
+                                                     worldSize);
+    
+    FastNameSet materialFlags;
+    if(RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
+    {
+        materialFlags.Insert(VegetationPropertyNames::FLAG_FRAMEBUFFER_FETCH);
+    }
+    
+    materialFlags.Insert(VegetationPropertyNames::FLAG_BILLBOARD_DRAW);
+    
+#ifdef VEGETATION_DRAW_LOD_COLOR
+    
+    materialFlags.Insert(VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR);
+    
+#endif
+
+    vegetationGeometry->Build(renderData, materialFlags);
+    
+    KeyedArchive* props = new KeyedArchive();
+    props->SetUInt64(NMaterial::TEXTURE_HEIGHTMAP.c_str(), (uint64)heightmapTexture);
+    props->SetVector2(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str(), heightmapScale);
+    props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE.c_str(), perturbationForce);
+    props->SetFloat(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE.c_str(), maxPerturbationDistance);
+    props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
+    props->SetString(NMaterial::TEXTURE_ALBEDO.c_str(), albedoTexturePath.GetAbsolutePathname());
+    props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str(), lightmapTexturePath.GetAbsolutePathname());
+    
+    vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+    
+    SafeRelease(props);
+
+    renderBatchPool.Clear();
+    size_t renderDataCount = renderData.size();
+    for(size_t i = 0; i < renderDataCount; ++i)
+    {
+        renderBatchPool.Init(renderData[i]->GetMaterial(), 16);
+    }
 }
     
 
 bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
 {
-    return vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.GetRenderDataObject() != NULL);
+    return vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
 }
 
 void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
@@ -1085,9 +1034,17 @@ void VegetationRenderObject::SetPerturbation(const Vector3& point,
     maxPerturbationDistance = distance;
     perturbationPoint = point;
     
-    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_FORCE, Shader::UT_FLOAT_VEC3, 1, perturbationForce.data);
-    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_FORCE_DISTANCE, Shader::UT_FLOAT, 1, &maxPerturbationDistance);
-    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_POINT, Shader::UT_FLOAT_VEC3, 1, perturbationPoint.data);
+    if(vegetationGeometry != NULL)
+    {
+        KeyedArchive* props = new KeyedArchive();
+        props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE.c_str(), perturbationForce);
+        props->SetFloat(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE.c_str(), maxPerturbationDistance);
+        props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
+        
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+        
+        SafeRelease(props);
+    }
 }
 
 float32 VegetationRenderObject::GetPerturbationDistance() const
@@ -1108,7 +1065,16 @@ const Vector3& VegetationRenderObject::GetPerturbationPoint() const
 void VegetationRenderObject::SetPerturbationPoint(const Vector3& point)
 {
     perturbationPoint = point;
-    vegetationMaterial->SetPropertyValue(UNIFORM_PERTURBATION_POINT, Shader::UT_FLOAT_VEC3, 1, perturbationPoint.data);
+    
+    if(vegetationGeometry != NULL)
+    {
+        KeyedArchive* props = new KeyedArchive();
+        props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
+        
+        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+        
+        SafeRelease(props);
+    }
 }
 
 void VegetationRenderObject::SetLayerVisibilityMask(const uint8& mask)
@@ -1175,6 +1141,18 @@ void VegetationRenderObject::DebugDrawVisibleNodes()
         RenderManager::Instance()->SetColor(RESOLUTION_COLOR[resolutionIndex]);
         RenderHelper::Instance()->DrawBox(treeNode->data.bbox, 1.0f, RenderState::RENDERSTATE_3D_OPAQUE);
     }
+}
+
+void VegetationRenderObject::ClearRenderBatches()
+{
+    int32 batchesToRemove = GetRenderBatchCount();
+    while(batchesToRemove > 0)
+    {
+        RemoveRenderBatch(batchesToRemove - 1);
+        batchesToRemove = GetRenderBatchCount();
+    }
+    
+    renderBatchPool.ReturnAll();
 }
 
 };

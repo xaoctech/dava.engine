@@ -26,57 +26,56 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
+#ifndef __DAVAENGINE_VEGETATIONGEOMETRYGENERATOR_H__
+#define __DAVAENGINE_VEGETATIONGEOMETRYGENERATOR_H__
+
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
+
+#include "Render/3D/PolygonGroup.h"
+#include "Render/RenderDataObject.h"
+#include "Render/Highlevel/RenderObject.h"
+#include "Render/Material.h"
 #include "Render/Material/NMaterial.h"
+
 #include "Render/Highlevel/Vegetation/VegetationRenderData.h"
 
 namespace DAVA
 {
-VegetationRenderData::VegetationRenderData() :
-    vertexRenderDataObject(NULL),
-    material(NULL)
+class VegetationGeometry
 {
-}
-    
-VegetationRenderData::~VegetationRenderData()
-{
-    SafeRelease(material);
-    ReleaseRenderData();
-}
-    
-void VegetationRenderData::CreateRenderData()
-{
-    DVASSERT(NULL == vertexRenderDataObject);
-    vertexRenderDataObject = new RenderDataObject();
-}
-    
-void VegetationRenderData::ReleaseRenderData()
-{
-    size_t indexBufferResolutionCount = indexRenderDataObject.size();
-    for(size_t indexBufferIndex = 0; indexBufferIndex < indexBufferResolutionCount; ++indexBufferIndex)
-    {
-        Vector<Vector<SortedBufferItem> >& indexBufferArray = indexRenderDataObject[indexBufferIndex];
-        size_t indexObjectCount = indexBufferArray.size();
-        for(size_t i = 0; i < indexObjectCount; ++i)
-        {
-            Vector<SortedBufferItem>& directionArray = indexBufferArray[i];
-                
-            size_t directionBufferCount = directionArray.size();
-            for(size_t directionIndex = 0; directionIndex < directionBufferCount; ++directionIndex)
-            {
-                    directionArray[directionIndex].rdo->DetachVertices();
-            }
-                
-            directionArray.clear();
-        }
-        
-        indexBufferArray.clear();
-    }
-    indexRenderDataObject.clear();
-        
-    SafeRelease(vertexRenderDataObject);
-        
-    vertexData.clear();
-    indexData.clear();
-}
+protected:
 
+    struct PolygonSortData
+    {
+        int16 indices[3];
+        float32 cameraDistance;
+        
+        inline PolygonSortData();
+    };
+    
+public:
+        
+    virtual void Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags) = 0;
+    virtual void OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props) = 0;
+    
+    virtual void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
+    
+    virtual uint32 GetSortDirectionCount();
+    
+    virtual void ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray);
+};
+
+inline VegetationGeometry::PolygonSortData::PolygonSortData()
+{
+    indices[0] = indices[1] = indices[2] = -1;
+    cameraDistance = -1.0f;
 }
+    
+};
+
+
+#endif /* defined(__DAVAENGINE_VEGETATIONGEOMETRYGENERATOR_H__) */

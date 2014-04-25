@@ -59,6 +59,7 @@ const FastName NMaterial::TEXTURE_DETAIL("detail");
 const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
+const FastName NMaterial::TEXTURE_HEIGHTMAP("heightmap");
 
 const FastName NMaterial::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
 const FastName NMaterial::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
