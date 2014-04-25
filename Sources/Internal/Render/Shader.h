@@ -205,7 +205,7 @@ public:
     
     void SetDefines(const String & _defines);
 
-    static Shader * CompileShader(const FastName & assetName,
+    static Shader * CreateShader(const FastName & assetName,
                                   Data * vertexShaderData,
                                   Data * fragmentShaderData,
                                   uint8 * vertexShaderDataStart,

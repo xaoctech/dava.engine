@@ -242,7 +242,6 @@ public:
 
     DAVA::NMaterial* GetGlobalMaterial() const;
     void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
-    void CreateGlobalMaterial();
 
 protected:
     void UpdateLights();
@@ -261,6 +260,8 @@ protected:
     static Texture* stubTexture2d;
     static Texture* stubTextureCube;
     static Texture* stubTexture2dLightmap; //this texture should be all-pink without checkers
+    
+    bool isDefaultGlobalMaterial;
     NMaterial* sceneGlobalMaterial;
     //TODO: think about data-driven initialization. Need to set default properties from outside and save/load per scene
     void InitGlobalMaterial();
