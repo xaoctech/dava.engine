@@ -281,7 +281,7 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 		bool cubemapLoadResult = true;
 		for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
 		{
-			if(texDescriptor->faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
+			if(texDescriptor->dataSettings.faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
 			{
 				FilePath faceFilePath = filePath;
 				faceFilePath.ReplaceFilename(fileNameWithoutExtension +
@@ -390,14 +390,14 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
     if(!descriptorReady)
     {
         descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
-        descriptor->drawSettings.generateMipMaps = true;
+        descriptor->SetGenerateMipmaps(true);
         descriptor->drawSettings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
         descriptor->drawSettings.magFilter = Texture::FILTER_LINEAR;
         descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
         descriptor->exportedAsPixelFormat = FORMAT_INVALID;
     }
     
-	descriptor->faceDescription = faceMask;
+	descriptor->dataSettings.faceDescription = faceMask;
     
     descriptor->Save(filePath);
 	delete descriptor;

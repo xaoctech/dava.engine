@@ -149,6 +149,7 @@ public:
     
     
     bool IsCompressedFile() const;
+	void SetGenerateMipmaps(bool generateMipmaps);
     bool GetGenerateMipMaps() const;
 	bool IsCubeMap() const;
 
@@ -164,7 +165,6 @@ public:
     
 protected:
 
-	void SetGenerateMipmaps(bool generateMipmaps);
 
 	void AllocateCompressionData();
 	void ReleaseCompressionData();

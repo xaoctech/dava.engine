@@ -151,7 +151,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor,
 	args.push_back("-yflip0");
 		
 	// mipmaps
-	if(descriptor.drawSettings.generateMipMaps)
+	if(descriptor.GetGenerateMipMaps())
 	{
 		args.push_back("-m");
 	}

@@ -109,7 +109,7 @@ void TextureDescriptorUtils::CopyCompressionParams(const FilePath &descriptorPat
         }
         else
         {
-            descriptor->compression[gpu]->format = srcCompression.format;
+            descriptor->compression[gpu]->format = srcCompression->format;
         }
     }
     
@@ -178,18 +178,20 @@ void TextureDescriptorUtils::SetCompressionParams( const FilePath &descriptorPat
 	TextureDescriptor *descriptor = TextureDescriptor::CreateFromFile(descriptorPathname);
 	if(!descriptor) return;
 
+	DVASSERT(descriptor->compression);
+
 	auto endIt = compressionParams.end();
 	for(auto it = compressionParams.begin(); it != endIt; ++it)
 	{
 		eGPUFamily gpu = it->first;
 
-		if(force || (descriptor->compression[gpu].format == FORMAT_INVALID))
+		if(force || (descriptor->compression[gpu]->format == FORMAT_INVALID))
 		{
-			descriptor->compression[gpu] = it->second;
+			*descriptor->compression[gpu] = it->second;
 
 			if(convertionEnabled)
 			{
-				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu].format);
+				ImageTools::ConvertImage(descriptor, gpu, (PixelFormat)descriptor->compression[gpu]->format);
 			}
 		}
 	}
