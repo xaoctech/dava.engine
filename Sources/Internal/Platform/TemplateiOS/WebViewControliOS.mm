@@ -383,7 +383,7 @@ void WebViewControl::SetDataDetectorTypes(int32 value)
     int detectorsCount = COUNT_OF(detectorsMap);
     for (int i = 0; i < detectorsCount; i ++)
     {
-        if (value & detectorsMap[i].davaDetectorType)
+        if ((value & detectorsMap[i].davaDetectorType) == detectorsMap[i].davaDetectorType)
         {
             systemDetectorTypes |= detectorsMap[i].systemDetectorType;
         }
@@ -403,7 +403,7 @@ int32 WebViewControl::GetDataDetectorTypes() const
     int detectorsCount = COUNT_OF(detectorsMap);
     for (int i = 0; i < detectorsCount; i ++)
     {
-        if (systemDetectorTypes & detectorsMap[i].systemDetectorType)
+        if ((systemDetectorTypes & detectorsMap[i].systemDetectorType) == detectorsMap[i].systemDetectorType)
         {
             davaDetectorTypes |= detectorsMap[i].davaDetectorType;
         }
