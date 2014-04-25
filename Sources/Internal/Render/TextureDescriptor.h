@@ -42,6 +42,9 @@ namespace DAVA
 class File;
 class TextureDescriptor 
 {
+	static const String DESCRIPTOR_EXTENSION;
+	static const String SOURCEFILE_EXTENSION;
+
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
     static const int8 CURRENT_VERSION = 7;
@@ -123,7 +126,7 @@ public:
     
 
 public:
-    TextureDescriptor(bool needCompressionSettings = true);
+    TextureDescriptor(bool needCompressionSettings = false);
 	virtual ~TextureDescriptor();
 
 	static TextureDescriptor * CreateFromFile(const FilePath &filePathname);
@@ -133,7 +136,7 @@ public:
 	void Initialize(const TextureDescriptor *descriptor);
 	bool Initialize(const FilePath &filePathname);
 
-	void SetDefaultValues(bool needCompressionSettings = true);
+	void SetDefaultValues();
 
     void SetQualityGroup(const FastName &group);
     FastName GetQualityGroup() const;
@@ -142,7 +145,7 @@ public:
 
     void Save() const;
     void Save(const FilePath &filePathname) const;
-    void Export(const FilePath &filePathname);
+    void Export(const FilePath &filePathname) const;
 
     bool IsCompressedTextureActual(eGPUFamily forGPU) const;
     bool UpdateCrcForFormat(eGPUFamily forGPU) const;
@@ -155,23 +158,21 @@ public:
 
     FilePath GetSourceTexturePathname() const; 
 
-    static String GetSourceTextureExtension();
-    static String GetSupportedTextureExtensions();
+	static const String & GetDescriptorExtension();
+    static const String & GetSourceTextureExtension();
+	static String GetSupportedTextureExtensions();
 
     static FilePath GetDescriptorPathname(const FilePath &texturePathname);
-    static String GetDescriptorExtension();
     
-    PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU);
+    PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU) const;
     
-protected:
+	void Reload();
 
+protected:
 
 	void AllocateCompressionData();
 	void ReleaseCompressionData();
 
-
-protected:
-    
     const Compression * GetCompressionParams(eGPUFamily forGPU) const;
     
     void LoadNotCompressed(File *file);
@@ -188,28 +189,27 @@ protected:
     
     
     void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
-
 	void LoadVersion5(int32 signature, File *file);
 	void LoadVersion6(int32 signature, File *file);
     
 	uint32 ReadSourceCRC() const;
-	uint32 ReadConvertedCRC(eGPUFamily forGPU) const;
-    
+	uint32 GetConvertedCRC(eGPUFamily forGPU) const;
+
+	uint32 GenerateDescriptorCRC() const;
+
 public:
     
     FilePath pathname;
 
 	//moved from Texture
-	PixelFormat format:8;			// texture format
 	FastName qualityGroup;
-    
 	TextureDrawSettings drawSettings;
 	TextureDataSettings dataSettings;
 	Compression **compression;
     
+	PixelFormat format:8;			// texture format
     //Binary only
     int8 exportedAsGpuFamily;
-    int8 exportedAsPixelFormat;
 	
     bool isCompressedFile:1;
 };

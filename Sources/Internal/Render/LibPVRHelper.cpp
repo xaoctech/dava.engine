@@ -1707,10 +1707,26 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
         {
             return FORMAT_RGBA8888;
         }
+		case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
+		{
+			return FORMAT_INVALID;
+		}
+		case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
+		{
+			return FORMAT_RGBA4444;
+		}
+		case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
+		{
+			return FORMAT_RGBA5551;
+		}
         case PVRTGENPIXELID3('r','g','b',8,8,8):
         {
             return FORMAT_RGB888;
         }
+		case PVRTGENPIXELID3('r','g','b',5,6,5):
+		{
+			return FORMAT_RGB888;
+		}
         case PVRTGENPIXELID2('l','a',8,8):
         {
             return FORMAT_INVALID;
@@ -1722,10 +1738,6 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
         case PVRTGENPIXELID1('a',8):
         {
             return FORMAT_A8;
-        }
-        case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
-        {
-            return FORMAT_INVALID;
         }
     }
 

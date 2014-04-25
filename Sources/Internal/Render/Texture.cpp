@@ -798,10 +798,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
     
     ReleaseTextureData();
 
-    if(savedPath.Exists())
-    {
-        texDescriptor->Initialize(savedPath);
-    }
+	texDescriptor->Reload();
     
 	DVASSERT(NULL != texDescriptor);
     
