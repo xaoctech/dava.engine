@@ -155,6 +155,10 @@ QtPropertyData * QtPropertyDataIntrospection::CreateMemberData(void *_object, co
 							}
 						}
 					}
+
+                    const bool isFlags = (desc.type == DAVA::InspDesc::T_FLAGS);
+                    if ( isFlags )
+                        childData->SetAllowedValueType( QtPropertyDataDavaVariant::TypeFlags );
 				}
                 
                 retData = childData;
