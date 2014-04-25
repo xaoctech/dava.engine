@@ -26,28 +26,43 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#include "Render/Highlevel/Vegetation/VegetationGeometryGenerator.h"
+#ifndef __DAVAENGINE_VEGETATIONPROPERTYNAMES_H__
+#define __DAVAENGINE_VEGETATIONPROPERTYNAMES_H__
+
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
 
-void VegetationGeometryGenerator::SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions)
+class VegetationPropertyNames
 {
-    float32 z = bbox.min.z + (bbox.max.z - bbox.min.z) * 0.5f;
+public:
+
+    static const FastName UNIFORM_TILEPOS;
+    static const FastName UNIFORM_WORLD_SIZE;
+    static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP;
+    static const FastName UNIFORM_HEIGHTMAP_SCALE;
+    static const FastName UNIFORM_SWITCH_LOD_SCALE;
+    static const FastName UNIFORM_PERTURBATION_FORCE;
+    static const FastName UNIFORM_PERTURBATION_POINT;
+    static const FastName UNIFORM_PERTURBATION_FORCE_DISTANCE;
+    static const FastName UNIFORM_BILLBOARD_DIRECTION;
     
-    positions.push_back(Vector3(bbox.min.x, bbox.min.y, z));
-    positions.push_back(Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.min.y, z));
-    positions.push_back(Vector3(bbox.max.x, bbox.min.y, z));
-    positions.push_back(Vector3(bbox.max.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
-    positions.push_back(Vector3(bbox.max.x, bbox.max.y, z));
-    positions.push_back(Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.max.y, z));
-    positions.push_back(Vector3(bbox.min.x, bbox.max.y, z));
-    positions.push_back(Vector3(bbox.min.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
-}
+    static const FastName FLAG_FRAMEBUFFER_FETCH;
+    static const FastName FLAG_BILLBOARD_DRAW;
+    static const FastName FLAG_GRASS_TRANSFROM;
+    
+    static const FastName VEGETATION_QUALITY_NAME_HIGH;
+    static const FastName VEGETATION_QUALITY_NAME_LOW;
+    static const FastName VEGETATION_QUALITY_GROUP_NAME;
+    
+    static const FastName UNIFORM_SAMPLER_VEGETATIONMAP;
+};
 
-uint32 VegetationGeometryGenerator::GetSortDirectionCount()
-{
-    return 8;
-}
+};
 
-}
+#endif /* defined(__DAVAENGINE_VEGETATIONPROPERTYNAMES_H__) */

@@ -5,7 +5,8 @@ decal = 1
 detail = 1
 lightmap = 1
 normalmap = 1,
-vegetationmap = 2
+vegetationmap = 3,
+heightmap = 4
 <FRAGMENT_SHADER>
 
 #if defined(FRAMEBUFFER_FETCH)

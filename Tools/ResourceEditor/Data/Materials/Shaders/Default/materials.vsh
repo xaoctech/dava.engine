@@ -12,7 +12,7 @@ precision highp float;
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(MATERIAL_GRASS)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec3 inNormal;
 #endif 
 
@@ -22,7 +22,7 @@ attribute vec3 inTexCoord0;
 attribute vec2 inTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec2 inTexCoord1;
 #endif
 
@@ -30,14 +30,14 @@ attribute vec2 inTexCoord1;
 attribute vec4 inColor;
 #endif
 
-#if defined(MATERIAL_GRASS)
+#if defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec3 inBinormal;
 #endif
 
 #if defined(VERTEX_LIT)
 #endif
 
-#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS)
+#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec3 inTangent;
 #endif
 
@@ -48,7 +48,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS_TRANSFORM)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -94,11 +94,11 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_TRANSFORM)
 varying vec2 varTexCoord1;
 #endif
 
-#if defined(MATERIAL_GRASS)
+#if defined(MATERIAL_GRASS_TRANSFORM)
 varying vec2 varTexCoord2;
 #endif
 
@@ -153,7 +153,7 @@ uniform float globalTime;
 uniform vec2 tex0ShiftPerSecond;
 #endif
 
-#if defined(MATERIAL_GRASS)
+#if defined(MATERIAL_GRASS_TRANSFORM)
 uniform vec4 tilePos;
 uniform vec3 worldSize;
 uniform vec2 lodSwitchScale;
@@ -163,7 +163,7 @@ uniform vec3 billboardDirection;
 
 uniform float clusterScaleDensityMap[128];
 
-uniform sampler2D detail;
+uniform sampler2D heightmap;
 
 uniform vec2 heightmapScale;
 
@@ -220,7 +220,7 @@ void main()
 #endif
 #else
     
-    #if defined(MATERIAL_GRASS)
+    #if defined(MATERIAL_GRASS_TRANSFORM)
     
         //inTangent.y - cluster type (0...3)
         //inTangent.z - cluster's reference density (0...15)
@@ -258,7 +258,7 @@ void main()
         hUV = vec2(clamp(hUV.x * heightmapScale.x, 0.0, 1.0),
                    clamp(hUV.y * heightmapScale.y, 0.0, 1.0));
     
-        highp vec4 heightVec = texture2DLod(detail, hUV, 0.0);
+        highp vec4 heightVec = texture2DLod(heightmap, hUV, 0.0);
         float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
     
         pos.z += height;
@@ -319,7 +319,7 @@ void main()
 #endif
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
-#if defined(MATERIAL_GRASS)
+#if defined(MATERIAL_GRASS_TRANSFORM)
     vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos);
 #else
     vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);

@@ -42,28 +42,30 @@
 #include "Render/Material/NMaterial.h"
 
 #include "Render/Highlevel/Vegetation/TextureSheet.h"
-#include "Render/Highlevel/Vegetation/VegetationGeometryGenerator.h"
+#include "Render/Highlevel/Vegetation/VegetationGeometry.h"
 
 namespace DAVA
 {
-class VegetationFixedGeometryGenerator : public VegetationGeometryGenerator
+class VegetationFixedGeometry : public VegetationGeometry
 {
 public:
 
-    VegetationFixedGeometryGenerator(uint32 _maxClusters,
-                                     uint32 _maxDensityLevels,
-                                     uint32 _maxLayerTypes,
-                                     Vector2 _unitSize,
-                                     const FilePath& textureSheetPath,
-                                     uint32* _resolutionCellSquare,
-                                     uint32 resolutionCellSquareCount,
-                                     float32* _resolutionScale,
-                                     uint32 resolutionScaleCount,
-                                     const Vector<Vector2>& _resolutionRanges,
-                                     uint32* _resolutionTilesPerRow,
-                                     uint32 resolutionTilesPerRowCount);
+    VegetationFixedGeometry(uint32 _maxClusters,
+                            uint32 _maxDensityLevels,
+                            uint32 _maxLayerTypes,
+                            Vector2 _unitSize,
+                            const FilePath& textureSheetPath,
+                            uint32* _resolutionCellSquare,
+                            uint32 resolutionCellSquareCount,
+                            float32* _resolutionScale,
+                            uint32 resolutionScaleCount,
+                            const Vector<Vector2>& _resolutionRanges,
+                            uint32* _resolutionTilesPerRow,
+                            uint32 resolutionTilesPerRowCount,
+                            Vector3 _worldSize);
         
-    virtual void Build(VegetationRenderData& renderData);
+    virtual void Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags);
+    virtual void OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props);
     
 private:
 
@@ -115,6 +117,7 @@ private:
     Vector<Vector2> resolutionRanges;
     Vector<uint32> resolutionTilesPerRow;
     Vector2 unitSize;
+    Vector3 worldSize;
 };
 
 };

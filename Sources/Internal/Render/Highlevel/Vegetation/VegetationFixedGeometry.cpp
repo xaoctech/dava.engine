@@ -28,9 +28,13 @@
 
 #include <cfloat>
 
+#include "Render/Material/NMaterial.h"
+#include "Render/Material/NMaterialNames.h"
 #include "Render/Highlevel/Vegetation/TextureSheet.h"
-#include "Render/Highlevel/Vegetation/VegetationFixedGeometryGenerator.h"
+#include "Render/Highlevel/Vegetation/VegetationFixedGeometry.h"
 #include "Utils/Random.h"
+#include "FileSystem/KeyedArchive.h"
+#include "Render/Highlevel/Vegetation/VegetationPropertyNames.h"
 
 namespace DAVA
 {
@@ -220,24 +224,25 @@ int32 RandomShuffleFunc(int32 limit)
     return (Random::Instance()->Rand() % limit);
 }
     
-VegetationFixedGeometryGenerator::VegetationFixedGeometryGenerator(
-                                    uint32 _maxClusters,
-                                    uint32 _maxDensityLevels,
-                                    uint32 _maxLayerTypes,
-                                    Vector2 _unitSize,
-                                    const FilePath& textureSheetPath,
-                                    uint32* _resolutionCellSquare,
-                                    uint32 resolutionCellSquareCount,
-                                    float32* _resolutionScale,
-                                    uint32 resolutionScaleCount,
-                                    const Vector<Vector2>& _resolutionRanges,
-                                    uint32* _resolutionTilesPerRow,
-                                    uint32 resolutionTilesPerRowCount)
+VegetationFixedGeometry::VegetationFixedGeometry(uint32 _maxClusters,
+                                                 uint32 _maxDensityLevels,
+                                                 uint32 _maxLayerTypes,
+                                                 Vector2 _unitSize,
+                                                 const FilePath& textureSheetPath,
+                                                 uint32* _resolutionCellSquare,
+                                                 uint32 resolutionCellSquareCount,
+                                                 float32* _resolutionScale,
+                                                 uint32 resolutionScaleCount,
+                                                 const Vector<Vector2>& _resolutionRanges,
+                                                 uint32* _resolutionTilesPerRow,
+                                                 uint32 resolutionTilesPerRowCount,
+                                                 Vector3 _worldSize)
 {
     maxClusters = _maxClusters;
     maxDensityLevels = _maxDensityLevels;
     maxLayerTypes = _maxLayerTypes;
     unitSize = _unitSize;
+    worldSize = _worldSize;
     textureSheet.Load(textureSheetPath);
     
     for(uint32 i = 0; i < resolutionCellSquareCount; ++i)
@@ -262,8 +267,30 @@ VegetationFixedGeometryGenerator::VegetationFixedGeometryGenerator(
 }
 
 
-void VegetationFixedGeometryGenerator::Build(VegetationRenderData& renderData)
+void VegetationFixedGeometry::Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags)
 {
+    ReleaseRenderData(renderDataArray);
+    renderDataArray.push_back(new VegetationRenderData());
+    VegetationRenderData& renderData = *renderDataArray[0];
+    
+    NMaterial* vegetationMaterial = NMaterial::CreateMaterial(FastName("Vegetation_Material"),
+                                                   NMaterialName::GRASS,
+                                                   NMaterial::DEFAULT_QUALITY_NAME);
+    vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
+    FastNameSet::iterator end = materialFlags.end();
+    for(FastNameSet::iterator it = materialFlags.begin(); it != end; ++it)
+    {
+        vegetationMaterial->SetFlag(it->first, NMaterial::FlagOn);
+    }
+    
+    vegetationMaterial->SetPropertyValue(VegetationPropertyNames::UNIFORM_WORLD_SIZE,
+                                         Shader::UT_FLOAT_VEC3,
+                                         1,
+                                         &worldSize);
+    
+    renderData.SetMaterial(vegetationMaterial);
+    SafeRelease(vegetationMaterial);
+    
     size_t resolutionCount = resolutionScale.size();
     uint32 sortDirectionCount = GetSortDirectionCount();
     Vector<int16>& indexData = renderData.GetIndices();
@@ -310,7 +337,7 @@ void VegetationFixedGeometryGenerator::Build(VegetationRenderData& renderData)
     
 }
     
-void VegetationFixedGeometryGenerator::GenerateVertices(uint32 maxClusters,
+void VegetationFixedGeometry::GenerateVertices(uint32 maxClusters,
                     size_t maxTotalClusters,
                     uint32 maxClusterRowSize,
                     uint32 tilesPerRow,
@@ -427,7 +454,7 @@ void VegetationFixedGeometryGenerator::GenerateVertices(uint32 maxClusters,
     }
 }
     
-void VegetationFixedGeometryGenerator::GenerateIndices(uint32 maxClusters,
+void VegetationFixedGeometry::GenerateIndices(uint32 maxClusters,
                     uint32 maxClusterRowSize,
                     Vector<uint32>& layerOffsets,
                     VegetationRenderData& renderData)
@@ -482,7 +509,7 @@ void VegetationFixedGeometryGenerator::GenerateIndices(uint32 maxClusters,
     }
 }
     
-void VegetationFixedGeometryGenerator::PrepareIndexBufferData(uint32 indexBufferIndex,
+void VegetationFixedGeometry::PrepareIndexBufferData(uint32 indexBufferIndex,
                         uint32 maxClusters,
                         uint32 maxClusterRowSize,
                         size_t resolutionIndex,
@@ -533,7 +560,7 @@ void VegetationFixedGeometryGenerator::PrepareIndexBufferData(uint32 indexBuffer
     }
 }
     
-void VegetationFixedGeometryGenerator::PrepareSortedIndexBufferVariations(size_t& currentIndexIndex,
+void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& currentIndexIndex,
                                     uint32 indexBufferIndex,
                                     size_t polygonElementCount,
                                     AABBox3& indexBufferBBox,
@@ -611,7 +638,7 @@ void VegetationFixedGeometryGenerator::PrepareSortedIndexBufferVariations(size_t
     }
 }
     
-void VegetationFixedGeometryGenerator::GenerateRenderDataObjects(VegetationRenderData& renderData)
+void VegetationFixedGeometry::GenerateRenderDataObjects(VegetationRenderData& renderData)
 {
     renderData.CreateRenderData();
     
@@ -647,10 +674,81 @@ void VegetationFixedGeometryGenerator::GenerateRenderDataObjects(VegetationRende
     
 }
 
-bool VegetationFixedGeometryGenerator::PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b)
+bool VegetationFixedGeometry::PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b)
 {
     return a.cameraDistance > b.cameraDistance; //back to front order
 }
 
+void VegetationFixedGeometry::OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props)
+{
+    DVASSERT(renderDataArray.size() <= 1);
+    
+    if(renderDataArray.size() > 0)
+    {
+        NMaterial* mat = renderDataArray[0]->GetMaterial();
+    
+        String albedoKey = NMaterial::TEXTURE_ALBEDO.c_str();
+        if(props->IsKeyExists(albedoKey))
+        {
+            FilePath albedoPath = props->GetString(albedoKey);
+            mat->SetTexture(NMaterial::TEXTURE_ALBEDO, albedoPath);
+        }
+        
+        String lightmapKeyName = VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str();
+        if(props->IsKeyExists(lightmapKeyName))
+        {
+            FilePath lightmapPath = props->GetString(lightmapKeyName);
+            mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP, lightmapPath);
+        }
+        
+        String heightmapKeyName = NMaterial::TEXTURE_HEIGHTMAP.c_str();
+        if(props->IsKeyExists(heightmapKeyName))
+        {
+            Texture* heightmap = (Texture*)props->GetUInt64(heightmapKeyName);
+            mat->SetTexture(NMaterial::TEXTURE_HEIGHTMAP, heightmap);
+        }
+        
+        String heightmapScaleKeyName = VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str();
+        if(props->IsKeyExists(heightmapScaleKeyName))
+        {
+            Vector2 heightmapScale = props->GetVector2(heightmapScaleKeyName);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE,
+                                  Shader::UT_FLOAT_VEC2,
+                                  1,
+                                  heightmapScale.data);
+        }
+        
+        String perturbationForceKeyName = VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE.c_str();
+        if(props->IsKeyExists(perturbationForceKeyName))
+        {
+            Vector3 perturbationForce = props->GetVector3(perturbationForceKeyName);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE,
+                                  Shader::UT_FLOAT_VEC3,
+                                  1,
+                                  perturbationForce.data);
+        }
+        
+        String perturbationForceDistanceKeyName = VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE.c_str();
+        if(props->IsKeyExists(perturbationForceDistanceKeyName))
+        {
+            float32 perturbationForceDistance = props->GetFloat(perturbationForceDistanceKeyName);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE,
+                                  Shader::UT_FLOAT,
+                                  1,
+                                  &perturbationForceDistance);
+        }
+        
+        String perturbationPointKeyName = VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str();
+        if(props->IsKeyExists(perturbationPointKeyName))
+        {
+            Vector3 perturbationPoint = props->GetVector3(perturbationPointKeyName);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT,
+                                  Shader::UT_FLOAT_VEC3,
+                                  1,
+                                  perturbationPoint.data);
+        }
+
+    }
+}
 
 };

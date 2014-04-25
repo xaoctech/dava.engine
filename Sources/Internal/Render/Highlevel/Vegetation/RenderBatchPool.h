@@ -26,8 +26,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_VEGETATIONGEOMETRYGENERATOR_H__
-#define __DAVAENGINE_VEGETATIONGEOMETRYGENERATOR_H__
+#ifndef __DAVAENGINE_RENDERBATCHPOOL_H__
+#define __DAVAENGINE_RENDERBATCHPOOL_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -35,44 +35,43 @@
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
 
-#include "Render/3D/PolygonGroup.h"
-#include "Render/RenderDataObject.h"
-#include "Render/Highlevel/RenderObject.h"
-#include "Render/Material.h"
-#include "Render/Material/NMaterial.h"
-
-#include "Render/Highlevel/Vegetation/VegetationRenderData.h"
-
 namespace DAVA
 {
-class VegetationGeometryGenerator
-{
-protected:
 
-    struct PolygonSortData
+class RenderBatch;
+class NMaterial;
+
+class RenderBatchPool
+{
+public:
+
+    RenderBatchPool();
+    ~RenderBatchPool();
+
+    void Init(NMaterial* key, uint32 initialCount);
+    void Clear();
+    RenderBatch* Get(NMaterial* key);
+    void Return(NMaterial* key, uint32 count);
+    void ReturnAll(NMaterial* key);
+    void ReturnAll();
+    
+private:
+
+    struct RenderBatchPoolEntry
     {
-        int16 indices[3];
-        float32 cameraDistance;
+        RenderBatchPoolEntry();
+        ~RenderBatchPoolEntry();
         
-        inline PolygonSortData();
+        Vector<RenderBatch*> renderBatches;
+        int32 poolLine;
     };
     
-public:
-        
-    virtual void Build(VegetationRenderData& renderData) = 0;
+    HashMap<NMaterial*, RenderBatchPoolEntry*> pool;
     
-    virtual void SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions);
-    
-    virtual uint32 GetSortDirectionCount();
+    void ReleasePool();
+    RenderBatch* CreateRenderBatch(NMaterial* mat, RenderBatchPoolEntry* entry);
 };
 
-inline VegetationGeometryGenerator::PolygonSortData::PolygonSortData()
-{
-    indices[0] = indices[1] = indices[2] = -1;
-    cameraDistance = -1.0f;
 }
-    
-};
 
-
-#endif /* defined(__DAVAENGINE_VEGETATIONGEOMETRYGENERATOR_H__) */
+#endif /* defined(__DAVAENGINE_RENDERBATCHPOOL_H__) */
