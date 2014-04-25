@@ -407,7 +407,7 @@ TextureInfo TextureConvertor::GetThumbnailThread(JobItem *item)
 
 			for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
 			{
-				if((descriptor->faceDescription & (1 << i)) != 0)
+				if((descriptor->dataSettings.faceDescription & (1 << i)) != 0)
 				{
 					QImage img;
 					img = QImage(cubeFaceNames[i].GetAbsolutePathname().c_str());
@@ -452,7 +452,7 @@ TextureInfo TextureConvertor::GetOriginalThread(JobItem *item)
 			
 			for(int i = 0; i < DAVA::Texture::CUBE_FACE_MAX_COUNT; ++i)
 			{
-				if((descriptor->faceDescription & (1 << i)) != 0)
+				if((descriptor->dataSettings.faceDescription & (1 << i)) != 0)
 				{
 					QImage img;
 					img = QImage(cubeFaceNames[i].GetAbsolutePathname().c_str());
