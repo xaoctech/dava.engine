@@ -101,7 +101,7 @@ uniform lowp vec3 treeLeafColorMul;
 uniform lowp float treeLeafOcclusionOffset;
 uniform lowp float treeLeafOcclusionMul;
 #if defined(WIND_ANIMATION)
-uniform lowp vec2 leafOscillationParams; //x - A*sin(T); y - A*cos(T);
+uniform lowp vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
 #endif
 
