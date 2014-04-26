@@ -62,6 +62,8 @@ public:
     void SetAllowedValueType(AllowedValueType type);
     AllowedValueType GetAllowedValueType() const;
 
+    void SetInspDescription(const DAVA::InspDesc &desc);
+
 	QVariant FromDavaVariant(const DAVA::VariantType &variant) const;
     
     void SetOpenDialogFilter(const QString&);
