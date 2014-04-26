@@ -28,6 +28,7 @@
 
 
 #include "Render/Highlevel/SpeedTreeObject.h"
+#include "Render/Material/NMaterialNames.h"
 #include "Utils/Utils.h"
 
 namespace DAVA 
@@ -38,8 +39,7 @@ const FastName SpeedTreeObject::PARAM_PROP_LEAF_OSCILLATION("leafOscillationPara
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
 SpeedTreeObject::SpeedTreeObject() :
-    isAnimationEnabled(false),
-    isAnimationForceDisabled(false)
+    animationFlagOn(false)
 {
 }
     
@@ -55,14 +55,7 @@ void SpeedTreeObject::RecalcBoundingBox()
     for (uint32 k = 0; k < size; ++k)
     {
         RenderBatch * rb = renderBatchArray[k].renderBatch;
-        PolygonGroup * pg = rb->GetPolygonGroup();
-        if(pg)
-        {
-            if((pg->GetFormat() & EVF_TANGENT) > 0) //speedtree leaf batch
-                bbox.AddAABBox(CalcBBoxForSpeedTreeLeafGeometry(pg));
-            else
-                bbox.AddAABBox(rb->GetBoundingBox());
-        }   
+        bbox.AddAABBox(CalcBBoxForSpeedTreeGeometry(rb));
     }
 }
     
@@ -79,6 +72,11 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector3 & trunkOscillationPar
 
 void SpeedTreeObject::SetAnimationFlag(bool flagOn)
 {
+    if(animationFlagOn == flagOn)
+        return;
+
+    animationFlagOn = flagOn;
+
     NMaterial::eFlagValue flagValue = flagOn ? NMaterial::FlagOn : NMaterial::FlagOff;
 
     uint32 matCount = materials.size();
@@ -86,30 +84,6 @@ void SpeedTreeObject::SetAnimationFlag(bool flagOn)
         materials[i]->SetFlag(FLAG_WIND_ANIMATION, flagValue);
 }
 
-void SpeedTreeObject::SetAnimationEnabled(bool isEnabled)
-{
-    if(isAnimationEnabled != isEnabled)
-    {
-        isAnimationEnabled = isEnabled;
-        if(!isAnimationForceDisabled)
-            SetAnimationFlag(isAnimationEnabled);
-    }
-}
-
-void SpeedTreeObject::SetForceDisabledAnimation(bool disabled)
-{
-    isAnimationForceDisabled = disabled;
-    if(isAnimationForceDisabled)
-        SetAnimationFlag(false);
-    else
-        SetAnimationFlag(isAnimationEnabled);
-}
-
-void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-    Mesh::Save(archive, serializationContext);
-}
-    
 void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
     Mesh::Load(archive, serializationContext);
@@ -144,29 +118,30 @@ void SpeedTreeObject::CollectMaterials()
         materialSet.insert(rb->GetMaterial());
     }
 
-    Set<NMaterial *>::const_iterator endIt = materialSet.end();
-    for(Set<NMaterial *>::const_iterator it = materialSet.begin(); it != endIt; ++it)
-        materials.push_back(*it);
+    materials.insert(materials.begin(), materialSet.begin(), materialSet.end());
 }
     
-AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * pg)
+AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)
 {
-    AABBox3 pgBbox;
-    if(pg)
+    if(IsTreeLeafBatch(rb))
     {
-        DVASSERT((pg->GetFormat() & EVF_TANGENT) > 0); //non speedtree leaf batch
+        AABBox3 pgBbox;
+        PolygonGroup * pg = rb->GetPolygonGroup();
+
+        if((pg->GetFormat() & EVF_PIVOT) == 0)
+            return rb->GetBoundingBox();
 
         int32 vertexCount = pg->GetVertexCount();
         for(int32 vi = 0; vi < vertexCount; vi++)
         {
             Vector3 pivot;
-            pg->GetTangent(vi, pivot);
+            pg->GetPivot(vi, pivot);
 
             Vector3 pointX, pointY, pointZ;
-            Vector3 offsetX, offsetY, offsetZ;
+            Vector3 offsetX, offsetY;
 
             pg->GetCoord(vi, pointZ);
-            offsetX = offsetY = offsetZ = pointZ - pivot;
+            offsetX = offsetY = pointZ - pivot;
 
             Swap(offsetX.x, offsetX.z);
             Swap(offsetX.y, offsetX.z);
@@ -178,9 +153,16 @@ AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * pg)
             pgBbox.AddPoint(pointY);
             pgBbox.AddPoint(pointZ);
         }
+
+        return pgBbox;
     }
 
-    return pgBbox;
+    return rb->GetBoundingBox();
+}
+
+bool SpeedTreeObject::IsTreeLeafBatch(RenderBatch * batch)
+{
+    return (batch && batch->GetMaterial() && batch->GetMaterial()->GetMaterialTemplate()->name == NMaterialName::SPEEDTREE_LEAF);
 }
 
 };

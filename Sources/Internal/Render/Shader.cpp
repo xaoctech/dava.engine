@@ -117,7 +117,10 @@ FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
     FastName("inTangent"),
     FastName("inBinormal"),
     FastName("inJointWeight"),
-    FastName("inTime")
+    FastName("inTime"),
+    FastName("inPivot"),
+    FastName("inFlexibility"),
+    FastName("inAngle")
 };
 
 eShaderSemantic Shader::GetShaderSemanticByName(const FastName & name)

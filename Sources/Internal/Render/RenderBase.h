@@ -359,30 +359,33 @@ enum ePrimitiveType
 // TODO: we have same structs & functions in PolygonGroup -- we should find a right place for them
 enum eVertexFormat
 {
-    EVF_VERTEX			= 1,
-    EVF_NORMAL			= 2,
-    EVF_COLOR			= 4,
-    EVF_TEXCOORD0		= 8,
-    EVF_TEXCOORD1		= 16,
-    EVF_TEXCOORD2		= 32,
-    EVF_TEXCOORD3		= 64,
-    EVF_TANGENT			= 128,
-    EVF_BINORMAL		= 256,
-    EVF_JOINTWEIGHT		= 512,
-	EVF_TIME			= 1024,
-	EVF_CUBETEXCOORD0	= 2048,
-    EVF_CUBETEXCOORD1	= 4096,
-    EVF_CUBETEXCOORD2	= 8192,
-    EVF_CUBETEXCOORD3	= 16384,	
-    EVF_LOWER_BIT		= EVF_VERTEX,
-    EVF_HIGHER_BIT		= EVF_TIME, 
+    EVF_VERTEX          = 1,
+    EVF_NORMAL          = 1 << 1,
+    EVF_COLOR           = 1 << 2,
+    EVF_TEXCOORD0       = 1 << 3,
+    EVF_TEXCOORD1       = 1 << 4,
+    EVF_TEXCOORD2       = 1 << 5,
+    EVF_TEXCOORD3       = 1 << 6,
+    EVF_TANGENT         = 1 << 7,
+    EVF_BINORMAL        = 1 << 8,
+    EVF_JOINTWEIGHT     = 1 << 9,
+    EVF_TIME            = 1 << 10,
+    EVF_PIVOT           = 1 << 11,
+    EVF_FLEXIBILITY     = 1 << 12,
+    EVF_ANGLE           = 1 << 13,
+    EVF_CUBETEXCOORD0   = 1 << 14,
+    EVF_CUBETEXCOORD1   = 1 << 15,
+    EVF_CUBETEXCOORD2   = 1 << 16,
+    EVF_CUBETEXCOORD3   = 1 << 17,	
+    EVF_LOWER_BIT       = EVF_VERTEX,
+    EVF_HIGHER_BIT      = EVF_ANGLE, 
     EVF_NEXT_AFTER_HIGHER_BIT
     = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD     = 0x7fffffff,
 };
 enum
 {
-    VERTEX_FORMAT_STREAM_MAX_COUNT = 11
+    VERTEX_FORMAT_STREAM_MAX_COUNT = 14
 };
 
 inline int32 GetTexCoordCount(int32 vertexFormat)
@@ -437,6 +440,10 @@ inline int32 GetVertexSize(int32 flags)
 
 	if (flags & EVF_TIME) size+=sizeof(float32);
 	
+    if (flags & EVF_PIVOT) size += 3 * sizeof(float32);
+    if (flags & EVF_FLEXIBILITY) size += sizeof(float32);
+    if (flags & EVF_ANGLE) size += 2 * sizeof(float32);
+
     return size;
 }
 

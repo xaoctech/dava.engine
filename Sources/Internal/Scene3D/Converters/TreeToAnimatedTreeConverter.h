@@ -35,15 +35,17 @@ using namespace DAVA;
 class TreeToAnimatedTreeConverter
 {
 public:
-    static void CalculateBinormalsForTreeObject(SpeedTreeObject * object);
+    static void CalculateAnimationParams(SpeedTreeObject * object);
 
     void ConvertTrees(Entity *scene);
 
 private:
     void ConvertingPathRecursive(Entity *scene);
-    void ConvertForAnimations(PolygonGroup * geometry);
+    void ConvertLeafPGForAnimations(PolygonGroup * geometry);
+    void ConvertTrunkForAnimations(PolygonGroup * geometry);
 
-    Set<PolygonGroup *> uniqPGs;
+    Set<PolygonGroup *> uniqLeafPGs;
+    Set<PolygonGroup *> uniqTrunkPGs;
     Set<SpeedTreeObject *> uniqTreeObjects;
 };
 

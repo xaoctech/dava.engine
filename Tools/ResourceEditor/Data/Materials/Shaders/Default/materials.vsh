@@ -37,12 +37,19 @@ attribute vec3 inBinormal;
 #if defined(VERTEX_LIT)
 #endif
 
-#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS)
+#if defined(PIXEL_LIT) || defined(MATERIAL_GRASS)
 attribute vec3 inTangent;
 #endif
 
+#if defined(SPEED_TREE_LEAF)
+attribute vec3 inPivot;
 #if defined(WIND_ANIMATION)
-attribute vec3 inBinormal; //x - cos(T0); y - sin(T0); z - flexebility
+attribute vec2 inAngle;
+#endif
+#endif
+
+#if defined(WIND_ANIMATION)
+attribute float inFlexibility;
 #endif
 
 #if defined(FRAME_BLEND)
@@ -193,24 +200,24 @@ void main()
 #elif defined(SPEED_TREE_LEAF)
 
 #if defined (CUT_LEAF)
-    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inTangent, 1.0);
+    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inPivot, 1.0);
     if (tangentInCameraSpace.z < -cutDistance)
     {
-        gl_Position = projMatrix * vec4(worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
+        gl_Position = projMatrix * vec4(worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
     }
     else
     {
 #endif        
 
 #if defined(WIND_ANIMATION)
-    //inBinormal:             x: cos(T0);  y: sin(T0);  z - flexebility
+    //inAngle:        x: cos(T0);  y: sin(T0);
     //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
-    vec3 windVectorFlex = trunkOscillationParams * inBinormal.z; //inBinormal.z - flexebility
-    vec3 pivot = inTangent + windVectorFlex;
+    vec3 windVectorFlex = trunkOscillationParams * inFlexibility;
+    vec3 pivot = inPivot + windVectorFlex;
     
-    vec3 offset = inPosition.xyz - inTangent;
+    vec3 offset = inPosition.xyz - inPivot;
     
-    vec2 SinCos = vec2(inBinormal) * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
+    vec2 SinCos = inAngle * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
     float sinT = SinCos.x + SinCos.y;     //sin(t+t0)*A = sin*cos + cos*sin
     float cosT = 1.0 - 0.5 * sinT * sinT; //cos(t+t0)*A = 1 - 0.5*sin^2
     
@@ -225,7 +232,7 @@ void main()
     
 #else // not WIND_ANIMATION and SPEED_TREE_LEAF
     
-    gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
+    gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inPivot) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
 
 #if defined (CUT_LEAF)   
     }
@@ -236,10 +243,10 @@ void main()
 #else // not SPEED_TREE_LEAF
     
 #if defined(WIND_ANIMATION)
-    //inBinormal: x: cos(T0);  y: sin(T0);  z - flexebility
-    vec3 windVectorFlex = trunkOscillationParams * inBinormal.z; //inBinormal.z - flexebility
-    
+
+    vec3 windVectorFlex = trunkOscillationParams * inFlexibility;
     gl_Position = worldViewProjMatrix * vec4(inPosition.xyz + windVectorFlex, inPosition.w);
+	
 #else //!defined(WIND_ANIMATION)
 
     #if defined(MATERIAL_GRASS)
