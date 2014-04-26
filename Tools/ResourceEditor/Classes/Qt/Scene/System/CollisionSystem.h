@@ -55,11 +55,24 @@ class SceneCollisionSystem : public DAVA::SceneSystem
 	friend class EntityModificationSystem;
 
 public:
+    enum DrawMode
+    {
+	    DRAW_NOTHING = 0x0,
+
+	    DRAW_OBJECTS = 0x1,
+	    DRAW_OBJECTS_SELECTED = 0x2,
+	    DRAW_OBJECTS_RAYTEST = 0x4,
+
+	    DRAW_LAND = 0x10,
+	    DRAW_LAND_RAYTEST = 0x20,
+	    DRAW_LAND_COLLISION = 0x40,
+
+        DRAW_DEFAULT = DRAW_NOTHING,
+	    DRAW_ALL = 0xFFFFFFFF
+    };
+
 	SceneCollisionSystem(DAVA::Scene * scene);
 	~SceneCollisionSystem();
-
-	void SetDrawMode(int mode);
-	int GetDrawMode();
 
 	DAVA::AABBox3 GetBoundingBox(DAVA::Entity *entity);
 
@@ -126,11 +139,6 @@ protected:
 
 	CollisionBaseObject* BuildFromEntity(DAVA::Entity * entity);
 	void DestroyFromEntity(DAVA::Entity * entity);
-
-public:
-    INTROSPECTION(SceneCollisionSystem,
-        PROPERTY("collisionDrawMode", "Debug Draw mode for CollisionSystem", GetDrawMode, SetDrawMode, DAVA::I_VIEW | DAVA::I_EDIT)
-        )
 };
 
 class SceneCollisionDebugDrawer : public btIDebugDraw
