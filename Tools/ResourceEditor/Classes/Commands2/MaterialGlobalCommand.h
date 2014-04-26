@@ -28,69 +28,27 @@
 
 
 
-#ifndef __DAVAENGINE_WEBVIEWCONTROL_IOS_H__
-#define __DAVAENGINE_WEBVIEWCONTROL_IOS_H__
+#ifndef __MATERIAL_GLOBAL_COMMAND_H__
+#define __MATERIAL_GLOBAL_COMMAND_H__
 
-#include "../../UI/IWebViewControl.h"
+#include "Commands2/Command2.h"
+#include "Render/Material/NMaterial.h"
 
-namespace DAVA {
-
-class FilePath;
-    
-// Web View Control - MacOS version.
-class WebViewControl : public IWebViewControl
+class MaterialGlobalSetCommand: public Command2
 {
 public:
-	WebViewControl();
-	virtual ~WebViewControl();
-	
-	// Initialize the control.
-	virtual void Initialize(const Rect& rect);
-	
-	// Open the URL requested.
-	virtual void OpenURL(const String& urlToOpen);
+	MaterialGlobalSetCommand(DAVA::Scene *_scene, DAVA::NMaterial *global);
+	~MaterialGlobalSetCommand();
 
-    virtual void OpenFromBuffer(const String& string, const FilePath& basePath);
+	virtual void Undo();
+	virtual void Redo();
+
+	virtual DAVA::Entity* GetEntity() const;
     
-	// Size/pos/visibility changes.
-	virtual void SetRect(const Rect& rect);
-	virtual void SetVisible(bool isVisible, bool hierarchic);
-
-	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
-	virtual void SetBackgroundTransparency(bool enabled);
-
-	// Bounces control.
-	virtual bool GetBounces() const;
-	virtual void SetBounces(bool value);
-    virtual void SetGestures(bool value);
-
-    // Data detector types.
-    virtual void SetDataDetectorTypes(int32 value);
-    virtual int32 GetDataDetectorTypes() const;
-
 protected:
-	// Get the scale divider for Retina devices.
-	float GetScaleDivider();
-
-	//A pointer to iOS WebView.
-	void* webViewPtr;
-	
-	// A pointer to the WebView delegate.
-	void* webViewDelegatePtr;
-
-	void* webViewURLDelegatePtr;
-
-    void *rightSwipeGesturePtr;
-    void *leftSwipeGesturePtr;
-
-    
-	Map<void*, bool> subviewVisibilityMap;
-
-	void HideSubviewImages(void* view);
-	void RestoreSubviewImages();
-    bool gesturesEnabled;
+    DAVA::Scene *scene;
+    DAVA::NMaterial *oldGlobal;
+    DAVA::NMaterial *newGlobal;
 };
 
-};
-
-#endif /* defined(__DAVAENGINE_WEBVIEWCONTROL_IOS_H__) */
+#endif // __MATERIAL_GLOBAL_COMMAND_H__
