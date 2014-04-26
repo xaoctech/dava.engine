@@ -47,8 +47,6 @@ public:
 private:
 	DAVA::Entity* entityToAdd;
     DAVA::Component* backup;
-    DAVA::Component* original;
-    int componentType;
 };
 
 #endif // __ADD_COMPONENT_COMMAND_H__
