@@ -157,7 +157,7 @@ void SpeedTreeUpdateSystem::AddTreeEntity(Entity * entity)
 	SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
 	DVASSERT(treeObject);
 
-	treeObject->SetAnimationEnabled(isAnimationEnabled);
+	treeObject->SetAnimationFlag(isAnimationEnabled);
 
 	TreeInfo * treeInfo = new TreeInfo((float32)Random::Instance()->RandFloat(1000.f));
 	treeInfo->treeEntity = entity;
@@ -244,10 +244,10 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         
         if(treeObject->GetLodIndex() > component->GetMaxAnimatedLOD())
         {
-            treeObject->SetAnimationEnabled(false);
+            treeObject->SetAnimationFlag(false);
             continue;
         }
-        treeObject->SetAnimationEnabled(true);
+        treeObject->SetAnimationFlag(true);
         
 		Vector3 treePosition = info->wtPosition;
 
@@ -292,11 +292,14 @@ void SpeedTreeUpdateSystem::HandleEvent(Observable * observable)
     {
         isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
         
-        uint32 treeCount = allTrees.size();
-        for(uint32 i = 0; i < treeCount; ++i)
+        if(!isAnimationEnabled)
         {
-			SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(allTrees[i]->treeEntity));
-            treeObject->SetAnimationEnabled(isAnimationEnabled);
+            uint32 treeCount = allTrees.size();
+            for(uint32 i = 0; i < treeCount; ++i)
+            {
+                SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(allTrees[i]->treeEntity));
+                treeObject->SetAnimationFlag(false);
+            }
         }
     }
 }

@@ -48,10 +48,9 @@ public:
     virtual void RecalcBoundingBox();
     virtual RenderObject * Clone(RenderObject *newObject);
 
-    virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    void SetForceDisabledAnimation(bool disabled);
+    static bool IsTreeLeafBatch(RenderBatch * batch);
 
 protected:
     static const FastName PARAM_PROP_TRUNK_OSCILLATION;
@@ -59,14 +58,12 @@ protected:
     static const FastName FLAG_WIND_ANIMATION;
 
     void SetTreeAnimationParams(const Vector3 & trunkOscillationParams, const Vector2 & leafOscillationParams);
-    void SetAnimationEnabled(bool isEnabled);
     void SetAnimationFlag(bool flagOn);
     
-    AABBox3 CalcBBoxForSpeedTreeLeafGeometry(PolygonGroup * rb);
+    AABBox3 CalcBBoxForSpeedTreeGeometry(RenderBatch * rb);
     void CollectMaterials();
 
-    bool isAnimationEnabled;
-    bool isAnimationForceDisabled;
+    bool animationFlagOn;
     
     Vector<NMaterial *> materials;
     
