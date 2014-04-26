@@ -48,7 +48,6 @@ private:
 
 	DAVA::Entity* entity;
     DAVA::Component* backup;
-    int componentType;
 };
 
 #endif // __REMOVE_COMPONENT_COMMAND_H__
