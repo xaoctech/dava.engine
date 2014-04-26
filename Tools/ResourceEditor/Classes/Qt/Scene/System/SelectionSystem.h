@@ -51,7 +51,20 @@ class SceneSelectionSystem : public DAVA::SceneSystem
 	friend class EntityModificationSystem;
 
 public:
-	SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
+    enum DrawMode
+    {
+	    DRAW_NOTHING = 0x0,
+
+	    DRAW_SHAPE          = 0x1,
+	    DRAW_CORNERS	    = 0x2,
+	    DRAW_BOX            = 0x4,
+	    DRAW_NO_DEEP_TEST   = 0x10,
+
+        DRAW_DEFAULT = DRAW_CORNERS | DRAW_BOX,
+	    DRAW_ALL = 0xFFFFFFFF
+    };
+    
+    SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
 	~SceneSelectionSystem();
 
 	void SetSelection(DAVA::Entity *entity);
@@ -63,9 +76,6 @@ public:
 
 	size_t GetSelectionCount() const;
 	DAVA::Entity* GetSelectionEntity(int index) const;
-
-	void SetDrawMode(int mode);
-	int GetDrawMode() const;
 
 	void SetPivotPoint(ST_PivotPoint pp);
 	ST_PivotPoint GetPivotPoint() const;
@@ -97,10 +107,8 @@ protected:
 	void SelectedItemsWereModified();
 
 	EntityGroup GetSelecetableFromCollision(const EntityGroup *collisionEntities);
-    
 
 private:
-	int drawMode;
 	bool selectionAllowed;
 	bool applyOnPhaseEnd;
     bool invalidSelectionBoxes;
