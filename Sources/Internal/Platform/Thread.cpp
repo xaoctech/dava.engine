@@ -68,29 +68,13 @@ Thread * Thread::Create(const Message& msg)
 	
 	return t;
 }
-
-Thread::Thread(const Thread& t)
-{
-}
 	
 Thread::Thread(const Message& _msg)
 {
 	msg = _msg;
+    Init();
 }
 
-void Thread::Start()
-{
-	Retain();
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	StartMacOS();
-#elif defined(__DAVAENGINE_WIN32__) 
-	StartWin32();
-#elif defined(__DAVAENGINE_ANDROID__)
-	StartAndroid();
-#else //PLATFORMS
-	//other platforms
-#endif //PLATFORMS
-}
 
 Thread::eThreadState Thread::GetState()
 {

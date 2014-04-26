@@ -34,9 +34,40 @@ namespace DAVA
 
 #if defined(__DAVAENGINE_WIN32__)
 
-Thread::ThreadId Thread::mainThreadId;
-HDC Thread::currentDC = 0;
-HGLRC Thread::secondaryContext = 0;
+Thread::ThreadId Thread::mainThreadId = 0;
+
+void Thread::Init()
+{
+    threadHandle = 0;
+}
+
+void Thread::Start()
+{
+    Retain();
+
+    threadHandle = CreateThread 
+        (
+        0, // Security attributes
+        0, // Stack size
+        ThreadFunc,
+        this,
+        CREATE_SUSPENDED,
+        0);
+
+    if(!SetThreadPriority(threadHandle, THREAD_PRIORITY_ABOVE_NORMAL))
+    {
+        Logger::Error("Thread::StartWin32 error %d", (int32)GetLastError());
+    }
+    ResumeThread(threadHandle);
+}
+
+Thread::~Thread()
+{
+    if(threadHandle)
+    {
+        CloseHandle(threadHandle);
+    }
+}
 
 void Thread::InitMainThread()
 {
@@ -45,7 +76,7 @@ void Thread::InitMainThread()
 
 bool Thread::IsMainThread()
 {
-	if (mainThreadId.internalTid == 0)
+	if (mainThreadId == 0)
 	{
 		Logger::Error("Main thread not initialized");
 	}
@@ -66,31 +97,10 @@ DWORD WINAPI ThreadFunc(void* param)
 	t->msg(t);
 
 	t->state = Thread::STATE_ENDED;
-	t->Release();
+
+    t->Release();
 	
 	return 0;
-}
-
-
-void Thread::StartWin32()
-{
-	HANDLE handle;
-	handle = CreateThread 
-		(
-		0, // Security attributes
-		0, // Stack size
-		ThreadFunc,
-		this,
-		CREATE_SUSPENDED,
-		0);
-
-    threadHandle = handle;
-	
-	if(!SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL))
-	{
-		Logger::Error("Thread::StartWin32 error %d", (int32)GetLastError());
-	}
-	ResumeThread(handle);
 }
 
 void Thread::YieldThread()
@@ -100,10 +110,7 @@ void Thread::YieldThread()
 
 Thread::ThreadId Thread::GetCurrentThreadId()
 {
-	ThreadId ret;
-	ret.internalTid = ::GetCurrentThreadId();
-
-	return ret;
+    return ::GetCurrentThreadId();
 }
 
 void Thread::Join()

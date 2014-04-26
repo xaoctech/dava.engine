@@ -67,51 +67,15 @@ private:
 class Thread : public BaseObject
 {
 public:
+#if defined(__DAVAENGINE_WIN32__)
+    typedef DWORD ThreadId;
+#endif
+
 	enum eThreadState
 	{
 		STATE_CREATED = 0,
 		STATE_RUNNING,
 		STATE_ENDED
-	};
-
-	class ThreadId
-	{
-#if defined (__DAVAENGINE_WIN32__)
-	public:
-		bool operator<(const ThreadId & otherThread) const 
-		{ 
-			return internalTid < otherThread.internalTid; 
-		}
-
-	private:
-		ThreadId(DWORD _internalTid = 0) 
-		{ 
-			internalTid = _internalTid; 
-		}
-		bool operator==(const ThreadId & otherThread) const
-		{ 
-			return internalTid == otherThread.internalTid; 
-		}
-		DWORD internalTid;
-#else
-    public:
-		bool operator<(const ThreadId & otherThread) const
-		{
-			return internalTid < otherThread.internalTid;
-		}
-        
-    private:
-        ThreadId(pthread_t _internalTid = 0)
-		{
-			internalTid = _internalTid;
-		}
-		bool operator==(const ThreadId & otherThread) const
-		{
-			return internalTid == otherThread.internalTid;
-		}
-		pthread_t internalTid;
-#endif
-		friend class Thread;
 	};
 	
 	/**
@@ -122,23 +86,22 @@ public:
 
 	/**
 		\brief static function to create instance of thread object based on Message.
-
 		This function create thread based on message. It do not start the thread until Start function called.
-
 		\returns ptr to thread object 
 	*/
-	static Thread		* Create(const Message& msg);
+	static Thread * Create(const Message& msg);
 
 	/**
-		\brief start execution of the thread
+		\brief Start execution of the thread
 	*/
-	void			Start();
+	void Start();
+
 	/**
 		\brief get current thread state. 
 
 		This function return state of the thread. It can be STATE_CREATED, STATE_RUNNING, STATE_ENDED.
 	*/
-	eThreadState	GetState();
+	eThreadState GetState();
 
     /** Wait until thread's finished.
     */
@@ -165,14 +128,18 @@ public:
 
 	static ThreadId GetCurrentThreadId();
 
-	void SetThreadId(const ThreadId & threadId);
 	ThreadId GetThreadId();
 
+    static void	InitMainThread();
+
 private:
-    ~Thread() {};
-	Thread() {};
-	Thread(const Thread& t);
-	Thread(const Message& msg);
+    Thread();
+    virtual ~Thread();
+    Thread(const Thread& t);
+    Thread(const Message& msg);
+    void Init();
+
+    void SetThreadId(const ThreadId & threadId);
 	
 	Message	msg;
 	eThreadState state;
@@ -189,17 +156,9 @@ private:
 	void		StartMacOS();
 	static void	InitMacOS();
 #elif defined (__DAVAENGINE_WIN32__)
-public:
-	static HDC		currentDC;
-	static HGLRC	secondaryContext;
-
 private:
     HANDLE threadHandle;
-	void		StartWin32();
 	friend DWORD WINAPI ThreadFunc(void* param);
-public:
-	static void	InitMainThread();
-
 #elif defined(__DAVAENGINE_ANDROID__)
 private:
 	static ThreadId glThreadId;
@@ -209,8 +168,6 @@ private:
 public:
 	static void	InitMainThread();
 	static void	InitGLThread();
-#else //PLATFORMS
-	// other platforms
 #endif //PLATFORMS	
 };
 
