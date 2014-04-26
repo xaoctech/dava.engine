@@ -28,69 +28,35 @@
 
 
 
-#ifndef __DAVAENGINE_WEBVIEWCONTROL_IOS_H__
-#define __DAVAENGINE_WEBVIEWCONTROL_IOS_H__
+#include "MaterialGlobalCommand.h"
 
-#include "../../UI/IWebViewControl.h"
-
-namespace DAVA {
-
-class FilePath;
-    
-// Web View Control - MacOS version.
-class WebViewControl : public IWebViewControl
+MaterialGlobalSetCommand::MaterialGlobalSetCommand(DAVA::Scene *_scene, DAVA::NMaterial *global)
+	: Command2(CMDID_MATERIAL_GLOBAL_SET, "Set global material")
+    , scene(_scene)
 {
-public:
-	WebViewControl();
-	virtual ~WebViewControl();
-	
-	// Initialize the control.
-	virtual void Initialize(const Rect& rect);
-	
-	// Open the URL requested.
-	virtual void OpenURL(const String& urlToOpen);
+    DVASSERT(NULL != scene);
 
-    virtual void OpenFromBuffer(const String& string, const FilePath& basePath);
-    
-	// Size/pos/visibility changes.
-	virtual void SetRect(const Rect& rect);
-	virtual void SetVisible(bool isVisible, bool hierarchic);
+    newGlobal = global;
+    oldGlobal = SafeRetain(scene->GetGlobalMaterial());
+}
 
-	virtual void SetDelegate(DAVA::IUIWebViewDelegate *delegate, DAVA::UIWebView* webView);
-	virtual void SetBackgroundTransparency(bool enabled);
+MaterialGlobalSetCommand::~MaterialGlobalSetCommand()
+{
+    SafeRelease(oldGlobal);
+    SafeRelease(newGlobal);
+}
 
-	// Bounces control.
-	virtual bool GetBounces() const;
-	virtual void SetBounces(bool value);
-    virtual void SetGestures(bool value);
+void MaterialGlobalSetCommand::Redo()
+{
+	scene->SetGlobalMaterial(newGlobal);
+}
 
-    // Data detector types.
-    virtual void SetDataDetectorTypes(int32 value);
-    virtual int32 GetDataDetectorTypes() const;
+void MaterialGlobalSetCommand::Undo()
+{
+	scene->SetGlobalMaterial(oldGlobal);
+}
 
-protected:
-	// Get the scale divider for Retina devices.
-	float GetScaleDivider();
-
-	//A pointer to iOS WebView.
-	void* webViewPtr;
-	
-	// A pointer to the WebView delegate.
-	void* webViewDelegatePtr;
-
-	void* webViewURLDelegatePtr;
-
-    void *rightSwipeGesturePtr;
-    void *leftSwipeGesturePtr;
-
-    
-	Map<void*, bool> subviewVisibilityMap;
-
-	void HideSubviewImages(void* view);
-	void RestoreSubviewImages();
-    bool gesturesEnabled;
-};
-
-};
-
-#endif /* defined(__DAVAENGINE_WEBVIEWCONTROL_IOS_H__) */
+DAVA::Entity* MaterialGlobalSetCommand::GetEntity() const
+{
+	return scene;
+}
