@@ -139,6 +139,11 @@ public:
 	String GetRelativePathname(const String &forDirectory) const;
     String GetRelativePathname(const char * forDirectory) const;
     
+    /**
+     \brief Function to retrieve string path value, passed in constructor
+     \returns relative string path value
+	 */
+    const String & GetStringValue() const;
     
 	/**
         \brief Function for replacement of original filename
