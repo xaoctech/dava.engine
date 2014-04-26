@@ -159,7 +159,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                     isEnabled = true;
                     ret = true;
 
-                    DVASSERT(vegetationMap);
+                    DVASSERT(NULL == vegetationMap);
                     vegetationMap = SafeRetain(veg->GetVegetationMap());
 
                     selectionSystem->SetLocked(true);

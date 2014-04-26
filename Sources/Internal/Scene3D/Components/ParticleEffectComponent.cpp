@@ -224,39 +224,42 @@ void ParticleEffectComponent::SetDesiredLodLevel(int32 level)
 
     if (desiredLodLevel == 0) //degrade existing groups if needed
     {
-        for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;)
+        for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;++it)
         {
             ParticleGroup& group = *it;
             if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_REMOVE)
             {
-                ClearGroup(group);
-                it = effectData.groups.erase(it);
-            }
-            else
-            {
-                ++it;
-                if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_CUT_PARTICLES)
+                Particle * current = group.head;
+                while (current)
                 {
-                    Particle * current = group.head;
-                    Particle * prev = NULL;
-                    int32 i=0;
-                    while (current)
-                    {
-                        Particle *next = current->next;
-                        if (i%2) //cut every second particle
-                        {                            
-                            delete current;                 
-                            group.activeParticleCount--;
-                            if (prev)
-                                prev->next = next;
-                            else
-                                group.head = next;
-                        }
-                        prev = current;
-                        current = next;
-                        i++;                        
-                    }
+                    Particle *next = current->next;
+                    delete current;
+                    current = next;
                 }
+                group.head = NULL;
+            }
+            else if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_CUT_PARTICLES)
+            {
+                                
+                Particle * current = group.head;
+                Particle * prev = NULL;
+                int32 i=0;
+                while (current)
+                {
+                    Particle *next = current->next;
+                    if (i%2) //cut every second particle
+                    {                            
+                        delete current;                 
+                        group.activeParticleCount--;
+                        if (prev)
+                            prev->next = next;
+                        else
+                            group.head = next;
+                    }
+                    prev = current;
+                    current = next;
+                    i++;                        
+                }               
             }
         }
     }
