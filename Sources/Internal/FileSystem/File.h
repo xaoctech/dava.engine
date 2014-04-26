@@ -41,6 +41,8 @@
 
 namespace DAVA 
 {
+
+
 /**
 	\ingroup filesystem
 	\brief class to work with file on disk
