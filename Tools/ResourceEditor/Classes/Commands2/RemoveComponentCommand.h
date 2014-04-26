@@ -45,8 +45,8 @@ public:
 	virtual DAVA::Entity* GetEntity() const;
 
 private:
-
 	DAVA::Entity* entity;
+    DAVA::Component* component;
     DAVA::Component* backup;
 };
 
