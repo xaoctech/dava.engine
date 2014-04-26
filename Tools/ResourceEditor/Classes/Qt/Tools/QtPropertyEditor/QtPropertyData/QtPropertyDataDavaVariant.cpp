@@ -216,24 +216,12 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
             }
             break;
         default:
-            {
-                ret = GetValueAlias();
-            }
             break;
         } // end switch
     }
-    else
+    if (!ret.isValid())
     {
-        switch (curVariantValue.type)
-        {
-        case DAVA::VariantType::TYPE_STRING:
-        case DAVA::VariantType::TYPE_FASTNAME:
-        case DAVA::VariantType::TYPE_FILEPATH:
-            ret = GetValueAlias();
-            break;
-        default:
-            break;
-        }
+        ret = GetValueAlias();
     }
 
     return ret;
