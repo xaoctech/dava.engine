@@ -39,6 +39,7 @@ Thread::ThreadId Thread::mainThreadId = 0;
 void Thread::Init()
 {
     threadHandle = 0;
+    threadId = 0;
 }
 
 void Thread::Start()

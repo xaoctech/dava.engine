@@ -67,9 +67,7 @@ private:
 class Thread : public BaseObject
 {
 public:
-#if defined(__DAVAENGINE_WIN32__)
-    typedef DWORD ThreadId;
-#endif
+    class Id;
 
 	enum eThreadState
 	{
@@ -126,9 +124,9 @@ public:
      */
     static void SleepThread(uint32 timeMS);
 
-	static ThreadId GetCurrentThreadId();
+	static Id GetCurrentThreadId();
 
-	ThreadId GetThreadId();
+	Id GetId();
 
     static void	InitMainThread();
 
@@ -139,13 +137,13 @@ private:
     Thread(const Message& msg);
     void Init();
 
-    void SetThreadId(const ThreadId & threadId);
+    void SetThreadId(const Id & threadId);
 	
 	Message	msg;
 	eThreadState state;
 
-	ThreadId threadId;
-	static ThreadId mainThreadId;
+	Id * threadId;
+	static Id mainThreadId;
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
 	#if defined (__DAVAENGINE_NPAPI__)
@@ -171,6 +169,16 @@ public:
 #endif //PLATFORMS	
 };
 
+class Thread::Id
+{
+public:
+
+private:
 };
+
+
+};
+
+
 
 #endif // __DAVAENGINE_THREAD_H__
