@@ -42,6 +42,19 @@
 namespace DAVA 
 {
 
+class File;
+template <class T>
+uint32 ReadFromFile(File *file, T * value)
+{
+	return file->Read(value, sizeof(T));
+}
+
+template <class T>
+uint32 WriteToFile(File *file, const T * value)
+{
+	return file->Write(value, sizeof(T));
+}
+
 
 /**
 	\ingroup filesystem
