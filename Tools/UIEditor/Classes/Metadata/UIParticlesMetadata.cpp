@@ -33,10 +33,6 @@ UIParticlesMetadata::UIParticlesMetadata(QObject* parent) :
 {
 }
 
-void UIParticlesMetadata::InitializeControl(const String& controlName, const Vector2& position)
-{
-	UIControlMetadata::InitializeControl(controlName, position);
-}
 
 UIParticles* UIParticlesMetadata::GetActiveUIParticles() const
 {

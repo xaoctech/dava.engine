@@ -61,11 +61,6 @@ void UIListMetadata::InitializeControl(const String& controlName, const Vector2&
     }	
 }
 
-void UIListMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
-{
-	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
-}
-
 int UIListMetadata::GetAggregatorID()
 {
     if (!VerifyActiveParamID())

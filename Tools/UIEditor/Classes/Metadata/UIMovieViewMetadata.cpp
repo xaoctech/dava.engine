@@ -36,9 +36,4 @@ UIMovieViewMetadata::UIMovieViewMetadata(QObject* parent) :
 {
 }
 
-void UIMovieViewMetadata::InitializeControl(const String& controlName, const Vector2& position)
-{
-    BaseMetadata::InitializeControl(controlName, position);
-}
-
 };

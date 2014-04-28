@@ -82,8 +82,6 @@ public:
     void SetDataDetectorTypes(int32 value);
     int32 GetDataDetectorTypes() const;
 
-    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
-    
 protected:
 
     // Set the visibility of native control.

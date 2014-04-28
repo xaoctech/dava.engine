@@ -46,10 +46,7 @@ public:
 protected:
     virtual bool GetInitialInputEnabled() const {return true;};
 
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
-
-    virtual QString GetUIControlClassName() { return "UIMovieView"; };
+    virtual QString GetUIControlClassName() const { return "UIMovieView"; };
 };
 };
 

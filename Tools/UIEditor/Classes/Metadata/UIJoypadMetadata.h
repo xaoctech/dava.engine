@@ -51,11 +51,8 @@ public:
 protected:
     virtual bool GetInitialInputEnabled() const {return true;};
 
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
+    virtual QString GetUIControlClassName() const { return "UIJoypad"; };
 
-    virtual QString GetUIControlClassName() { return "UIJoypad"; };
-    
     // Helper to access active UIJoypad.
     UIJoypad* GetActiveJoypad() const;
 
