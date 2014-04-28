@@ -119,7 +119,8 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
 	CreateComponents();
 	CreateSystems();
 
-    ResetGlobalMaterial();
+    // this will force scene to create hidden global material
+    SetGlobalMaterial(NULL);
 }
 
 void Scene::CreateComponents()
@@ -160,17 +161,6 @@ void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
 
     renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
     particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
-}
-
-void Scene::CreateGlobalMaterial()
-{
-    SetGlobalMaterial(NULL);
-    isDefaultGlobalMaterial = false;
-}
-
-void Scene::ResetGlobalMaterial()
-{
-    SetGlobalMaterial(NULL);
 }
 
 void Scene::InitGlobalMaterial()
