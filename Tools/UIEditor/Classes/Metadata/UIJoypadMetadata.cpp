@@ -36,11 +36,6 @@ UIJoypadMetadata::UIJoypadMetadata(QObject* parent) :
     UIControlMetadata(parent)
 {
 }
-    
-void UIJoypadMetadata::InitializeControl(const String& controlName, const Vector2& position)
-{
-    BaseMetadata::InitializeControl(controlName, position);
-}
 
 UIJoypad* UIJoypadMetadata::GetActiveJoypad() const
 {

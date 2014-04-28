@@ -65,11 +65,6 @@ void UIScrollViewMetadata::InitializeControl(const String& controlName, const Ve
     }	
 }
 
-void UIScrollViewMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
-{
-	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
-}
-
 float UIScrollViewMetadata::GetHorizontalScrollPosition() const
 {
     if (!VerifyActiveParamID())

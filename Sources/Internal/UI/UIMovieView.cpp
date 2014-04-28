@@ -127,13 +127,6 @@ void UIMovieView::SystemDraw(const UIGeometricData &geometricData)
 #endif
 }
 
-YamlNode* UIMovieView::SaveToYamlNode(UIYamlLoader * loader)
-{
-    YamlNode* node = UIControl::SaveToYamlNode(loader);
-    SetPreferredNodeType(node, "UIMovieView");
-    return node;
-}
-
 void UIMovieView::WillAppear()
 {
     UIControl::WillAppear();

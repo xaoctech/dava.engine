@@ -56,11 +56,6 @@ void UIScrollBarMetadata::InitializeControl(const String& controlName, const Vec
     }
 }
 
-void UIScrollBarMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
-{
-	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
-}
-
 int UIScrollBarMetadata::GetScrollOrientation()
 {
     if (!VerifyActiveParamID())

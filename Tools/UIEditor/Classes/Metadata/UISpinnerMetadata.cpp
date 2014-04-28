@@ -58,11 +58,6 @@ void UISpinnerMetadata::InitializeControl(const String& controlName, const Vecto
     }
 }
 
-void UISpinnerMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle)
-{
-	UIControlMetadata::UpdateExtraData(extraData, updateStyle);
-}
-
 QString UISpinnerMetadata::GetPrevButtonText()
 {
 	if (!VerifyActiveParamID() || !GetPrevButton())

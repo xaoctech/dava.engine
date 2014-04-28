@@ -66,8 +66,6 @@ public:
 	// Whether the movie is being played?
 	bool IsPlaying();
 
-    virtual YamlNode* SaveToYamlNode(UIYamlLoader * loader);
-
 protected:
 	// Platform-specific implementation of the Movie Control.
 	IMovieViewControl* movieViewControl;

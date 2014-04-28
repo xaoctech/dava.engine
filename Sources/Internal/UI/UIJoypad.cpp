@@ -326,7 +326,6 @@ YamlNode*  UIJoypad::SaveToYamlNode(DAVA::UIYamlLoader *loader)
     UIJoypad* baseControl = new UIJoypad();
 
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-	SetPreferredNodeType(node, "UIJoypad");
     
     // Sprite
     if (stick && stick->GetSprite())
