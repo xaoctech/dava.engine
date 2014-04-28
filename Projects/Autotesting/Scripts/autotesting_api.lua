@@ -1,5 +1,5 @@
 TIMEOUT = 30.0 -- Big time out for waiting
-TIMECLICK = 0.2 -- time for simple action
+TIMECLICK = 0.5 -- time for simple action
 DELAY = 0.5 -- time for simulation of human reaction
 
 MULTIPLAYER_TIMEOUT = 300 -- Multiplayer timeout
@@ -507,76 +507,46 @@ function SelectHorizontal(list, item)
 	assert(WaitControl(list), "Couldn't select "..cell)
 	
 	if IsVisible(cell, list) then
-		ClickControl(cell)
-		return true
+		return ClickControl(cell)
 	end
 	
-	local last_visible = 0
-	local previous_last = 0
+	local first_visible = 0
+	local previous = 0
 	local index = 0
 	
 	-- find first visible element
 	for i = 0, 100 do --to avoid hanging up in empty list
-		if IsVisible(list.."/"..tostring(i)) then
-			previous_last = i
-			last_visible = i
-			--Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
+		if IsVisible(list.."/"..tostring(i), list) then
+			first_visible = i
+			--Log( "previous = "..tostring(previous)..",first_visible = "..tostring(first_visible) )
 			break
 		end
 	end
-    
-	-- find last visible
-	index = previous_last + 1
-	while true do
-		if not IsVisible(list.."/"..tostring(index)) then
-			last_visible = index - 1
-			--Log( "last_visible = "..tostring(last_visible) )
-			break
-		end
-		index = index + 1
+	
+    invert = false
+	if item < first_visible then
+		invert = true
 	end
 	
 	repeat
 		if IsVisible(cell, list) then
-			break
-		else
-			previous_last = last_visible
-			ScrollLeft(list)
-			
-			index = last_visible + 1
-			while true do
-				if not IsVisible(list.."/"..tostring(index), list) then
-					last_visible = index - 1
-					--Log( "previous_last = "..tostring(previous_last) )
-					break
-				end
-				index = index + 1
-			end
-		end
-	until previous_last == last_visible
-    
-	if IsVisible(cell, list) then
-		ClickControl(cell)
-		return true
-	else
-		Log("Item "..item.." in "..list.." not found")
-		return false
-	end
-end
-
-function SelectFirstHorizontal(list)
-	Log("Select first item in horizontal list "..list)
-	
-	-- find first visible element
-	for i = 0, 100 do --to avoid hanging up in empty list
-		if IsVisible(list.."/0", list) then
+			ClickControl(cell)
 			return true
 		else
-			ScrollLeft(list, true)
+			HorizontalScroll(list, invert)
+			previous = first_visible
+			
+			for i = 0, 100 do --to avoid hanging up in empty list
+				if IsVisible(list.."/"..tostring(i), list) then
+					first_visible = i
+					--Log( "previous = "..tostring(previous)..",first_visible = "..tostring(first_visible) )
+					break
+				end
+			end
 		end
-	end
-    
-	Log("First item in "..list.." not found")
+	until previous == first_visible
+		
+	Log("Item "..item.." in "..list.." not found")
 	return false
 end
 
@@ -620,7 +590,7 @@ function SelectVertical(list, item)
 			break
 		else
 			previous_last = last_visible
-			ScrollDown(list)
+			VerticalScroll(list)
 
 			index = last_visible + 1
 			while true do
@@ -651,7 +621,7 @@ function SelectFirstVertical(list)
 		if IsVisible(list.."/0", list) then
 			return true
 		else
-			ScrollDown(list, true)
+			VerticalScroll(list, true)
 		end
 	end
     
@@ -659,7 +629,7 @@ function SelectFirstVertical(list)
 	return false
 end
 
-function ScrollDown(list, invert)
+function VerticalScroll(list, invert)
 	Log("Make horizontal scroll for "..list)
 	local control = GetControl(list)
 
@@ -673,17 +643,17 @@ function ScrollDown(list, invert)
     position.y = rect.y + rect.dy/2
 		
 	if invert then
-		new_position.y = position.y + rect.dy/3
+		new_position.y = position.y + rect.dy/2
 		new_position.x = position.x
 	else
-       	new_position.y = position.y - rect.dy/3
+       	new_position.y = position.y - rect.dy/2
 		new_position.x = position.x
     end
 	
 	TouchMove(position, new_position)
 end
 
-function ScrollLeft(list, invert)
+function HorizontalScroll(list, invert)
 	Log("Make horizontal scroll for "..list)
 	local control = GetControl(list)	
     
@@ -697,10 +667,10 @@ function ScrollLeft(list, invert)
     position.y = rect.y + rect.dy/2
 	
 	if invert then
-		new_position.x = position.x + rect.dx/3
+		new_position.x = position.x + rect.dx/2
 		new_position.y = position.y
 	else
-      	new_position.x = position.x - rect.dx/3
+      	new_position.x = position.x - rect.dx/2
 		new_position.y = position.y
     end	
 	
@@ -789,6 +759,7 @@ function TouchMove(position, new_position, time, touchId)
     TouchDownPosition(position, touchId)
     Wait(waitTime)
 	TouchMovePosition(new_position, touchId)
+	Wait(waitTime)
 	Wait(waitTime)
 	TouchUp(touchId)
 	Wait(waitTime)
