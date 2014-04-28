@@ -39,11 +39,18 @@
 #include <QApplication>
 #include "Scene/SceneEditor2.h"
 
+ENUM_DECLARE(SceneSelectionSystem::DrawMode)
+{
+	ENUM_ADD(SceneSelectionSystem::DRAW_SHAPE);
+	ENUM_ADD(SceneSelectionSystem::DRAW_CORNERS);
+	ENUM_ADD(SceneSelectionSystem::DRAW_BOX);
+	ENUM_ADD(SceneSelectionSystem::DRAW_NO_DEEP_TEST);
+}
+
 SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys)
 	: DAVA::SceneSystem(scene)
 	, collisionSystem(collSys)
 	, hoodSystem(hoodSys)
-	, drawMode(ST_SELDRAW_FILL_SHAPE | ST_SELDRAW_DRAW_CORNERS)
 	, curPivotPoint(ST_PIVOT_COMMON_CENTER)
 	, applyOnPhaseEnd(false)
 	, selectionAllowed(true)
@@ -158,7 +165,7 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				DAVA::Entity *nextEntity = selectableItems.GetEntity(0);
 
                 // sequent selection?
-                if(SettingsManager::Instance()->GetValue("SequentSelection", SettingsManager::GENERAL).AsBool())
+                if(SettingsManager::GetValue("Scene/SelectionSequent").AsBool())
                 {
 				    // search possible next item only if now there is no selection or is only single selection
 				    if(curSelections.Size() <= 1)
@@ -227,28 +234,29 @@ void SceneSelectionSystem::Draw()
 
 	if(curSelections.Size() > 0)
 	{
-        DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
-        UniqueHandle renderState = (!(drawMode & ST_SELDRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState;
+        DAVA::int32 drawMode = SettingsManager::GetValue("Scene/SelectionDrawMode").AsInt32();
+        DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
+        UniqueHandle renderState = (!(drawMode & DRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState;
 
 		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
             DAVA::AABBox3 selectionBox = curSelections.GetBbox(i);
 
 			// draw selection share
-			if(drawMode & ST_SELDRAW_DRAW_SHAPE)
+			if(drawMode & DRAW_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawBox(selectionBox, 1.0f, renderState);
 			}
 			// draw selection share
-			else if(drawMode & ST_SELDRAW_DRAW_CORNERS)
+			else if(drawMode & DRAW_CORNERS)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox, 1.0f, renderState);
 			}
 
 			// fill selection shape
-			if(drawMode & ST_SELDRAW_FILL_SHAPE)
+			if(drawMode & DRAW_BOX)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
 				DAVA::RenderHelper::Instance()->FillBox(selectionBox, renderState);
@@ -541,16 +549,3 @@ DAVA::AABBox3 SceneSelectionSystem::GetSelectionAABox(DAVA::Entity *entity, cons
 
 	return ret;
 }
-
-void SceneSelectionSystem::SetDrawMode(int mode)
-{
-	drawMode = mode;
-}
-
-int SceneSelectionSystem::GetDrawMode() const
-{
-	return drawMode;
-}
-
-
-
