@@ -156,10 +156,53 @@ void UIWebView::UpdateNativeControlVisible(bool value, bool hierarchic)
 
 void UIWebView::SetDataDetectorTypes(int32 value)
 {
+    dataDetectorTypes = value;
     this->webViewControl->SetDataDetectorTypes(value);
 }
 
 int32 UIWebView::GetDataDetectorTypes() const
 {
-    return this->webViewControl->GetDataDetectorTypes();
+    return dataDetectorTypes;
 }
+
+void UIWebView::LoadFromYamlNode(const DAVA::YamlNode *node, DAVA::UIYamlLoader *loader)
+{
+    UIControl::LoadFromYamlNode(node, loader);
+    
+    const YamlNode * dataDetectorTypesNode = node->Get("dataDetectorTypes");
+    if (dataDetectorTypesNode)
+    {
+        SetDataDetectorTypes(dataDetectorTypesNode->AsInt32());
+    }
+}
+
+YamlNode* UIWebView::SaveToYamlNode(DAVA::UIYamlLoader *loader)
+{
+    UIWebView* baseControl = new UIWebView();
+    YamlNode *node = UIControl::SaveToYamlNode(loader);
+    
+    // Data Detector Types.
+    if (baseControl->GetDataDetectorTypes() != GetDataDetectorTypes())
+    {
+        node->Set("dataDetectorTypes", GetDataDetectorTypes());
+    }
+    
+    SafeRelease(baseControl);
+    return node;
+}
+
+UIControl* UIWebView::Clone()
+{
+    UIWebView* webView = new UIWebView(GetRect());
+    webView->CopyDataFrom(this);
+    return webView;
+}
+
+void UIWebView::CopyDataFrom(UIControl *srcControl)
+{
+    UIControl::CopyDataFrom(srcControl);
+
+    UIWebView* webView = (UIWebView*) srcControl;
+    SetDataDetectorTypes(webView->GetDataDetectorTypes());
+}
+

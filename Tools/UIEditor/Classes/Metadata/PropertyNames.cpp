@@ -127,6 +127,9 @@ const char* PropertyNames::JOYPAD_STICK_SPRITE_FRAME_PROPERTY_NAME = "StickSprit
 const char* PropertyNames::JOYPAD_DEAD_AREA_PROPERTY_NAME = "DeadArea";
 const char* PropertyNames::JOYPAD_DIGITAL_SENSE_PROPERTY_NAME = "DigitalSense";
 
+// UI Web View properties.
+const char* PropertyNames::WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME = "DataDetectorTypes";
+
 // Custom Control properties.
 const char* PropertyNames::CUSTOM_CONTROL_NAME = "CustomControlName";
 
