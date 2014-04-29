@@ -147,6 +147,11 @@ void UIWebView::SetNativeControlVisible(bool isVisible)
     UpdateNativeControlVisible(GetVisible(), true);
 }
 
+bool UIWebView::GetNativeControlVisible() const
+{
+    return isNativeControlVisible;
+}
+
 void UIWebView::UpdateNativeControlVisible(bool value, bool hierarchic)
 {
     // In case isDisplayNativeControl is set to false - always hide the native control.
@@ -203,6 +208,7 @@ void UIWebView::CopyDataFrom(UIControl *srcControl)
     UIControl::CopyDataFrom(srcControl);
 
     UIWebView* webView = (UIWebView*) srcControl;
+    SetNativeControlVisible(webView->GetNativeControlVisible());
     SetDataDetectorTypes(webView->GetDataDetectorTypes());
 }
 
