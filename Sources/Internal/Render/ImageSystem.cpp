@@ -42,6 +42,13 @@
 
 namespace DAVA 
 {
-    
+
+ImageSystem::ImageSystem()
+{
+    wrappers[FILE_FORMAT_PNG] = new LibPngWrapper();
+    wrappers[FILE_FORMAT_DDS] = new LibDdsHelper();
+    wrappers[FILE_FORMAT_PVR] = new LibPVRHelper();
+    wrappers[FILE_FORMAT_JPEG] = new LibJpegWrapper();
+}
    
 };

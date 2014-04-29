@@ -48,21 +48,14 @@ public:
     
     virtual bool IsImage(File *file);
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
+    
+    static eErrorCode ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap = 0, bool forceSoftwareConvertation = false);
 
 	//input data only in RGBA8888
-	static bool WriteDdsFile(const FilePath & fileName, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps);
-
-	static bool ReadDxtFile(const FilePath & fileName, Vector<Image*> &imageSet, int32 baseMipMap, bool forceSoftwareConvertation = false);
-	static bool ReadDxtFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap, bool forceSoftwareConvertation = false);
+	//static bool WriteDxtFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
 
 	static bool DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA::Image*> &imageSet, bool forceSoftwareConvertation = false);
 
@@ -86,8 +79,8 @@ private:
 	static bool GetCRCFromDDSHeader(const FilePath &filePathname, uint32* tag, uint32* outputCRC);
 	
 	//input data only in RGBA8888
-	static bool WriteDxtFile(const FilePath & fileName, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps);
-	static bool WriteAtcFile(const FilePath & fileName, int32 width, int32 height, uint8 ** data, uint32 dataCount, PixelFormat compressionFormat, bool generateMipmaps);
+	static bool WriteDxtFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
+	static bool WriteAtcFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
 };
 
 };
