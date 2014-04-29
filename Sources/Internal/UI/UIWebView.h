@@ -75,6 +75,7 @@ public:
     virtual void CopyDataFrom(UIControl *srcControl);
 
     void SetNativeControlVisible(bool isVisible);
+    bool GetNativeControlVisible() const;
 
 	void SetDelegate(IUIWebViewDelegate* delegate);
 	void SetBackgroundTransparency(bool enabled);
