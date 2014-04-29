@@ -27,37 +27,46 @@
  =====================================================================================*/
 
 
-#ifndef __UIEditor__UIWebViewMetadata__
-#define __UIEditor__UIWebViewMetadata__
+#ifndef __WEB_VIEW_PROPERTY_GRID_WIDGET_H__
+#define __WEB_VIEW_PROPERTY_GRID_WIDGET_H__
 
-#include "UIControlMetadata.h"
-#include "UI/UIWebView.h"
+#include <QWidget>
+#include "basepropertygridwidget.h"
 
-namespace DAVA {
-    
-// Metadata class for DAVA UIWebView control.
-class UIWebViewMetadata : public UIControlMetadata
+namespace Ui {
+    class WebViewPropertyGridWidget;
+}
+
+class WebViewPropertyGridWidget : public BasePropertyGridWidget
 {
     Q_OBJECT
-
+    
 public:
-    UIWebViewMetadata(QObject* parent = 0);
-    Q_PROPERTY(int DataDetectorTypes READ GetDataDetectorTypes WRITE SetDataDetectorTypes);
+    explicit WebViewPropertyGridWidget(QWidget *parent = 0);
+    ~WebViewPropertyGridWidget();
+    
+    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Cleanup();
 
 protected:
-    virtual bool GetInitialInputEnabled() const {return true;};
-    UIWebView* GetActiveWebView() const;
+    void FillControlsMap();
+    void UpdateAvailableDataDetectorControls(bool isChecked, UIWebView::eDataDetectorType value);
 
-    // Initialize the appropriate control.
-    virtual void InitializeControl(const String& controlName, const Vector2& position);
+    // Translate current data detector values to checkbox states and vice versa.
+    int CheckboxesToDataDetectorTypes() const;
+    void DataDetectorTypesToCheckboxes(int value);
+    
+    // Read/update the data detector types.
+    void ReadDataDetectorTypes();
+    void UpdateDataDetectorTypes(int value);
 
-    virtual QString GetUIControlClassName() const { return "UIWebView"; };
-
-    // Getters/setters.
-    int GetDataDetectorTypes() const;
-    void SetDataDetectorTypes(int value);
+protected slots:
+    void OnDataDetectorValueChanged(int value);
+    
+private:
+    Map<QCheckBox*, UIWebView::eDataDetectorType> dataDetectorControlsMap;
+    
+    Ui::WebViewPropertyGridWidget *ui;
 };
 
-};
-
-#endif /* defined(__UIEditor__UIWebViewMetadata__) */
+#endif // __WEB_VIEW_PROPERTY_GRID_WIDGET_H__

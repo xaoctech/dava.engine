@@ -48,4 +48,29 @@ void UIWebViewMetadata::InitializeControl(const String& controlName, const Vecto
     }
 }
 
+UIWebView* UIWebViewMetadata::GetActiveWebView() const
+{
+    return dynamic_cast<UIWebView*>(GetActiveUIControl());
+}
+
+int UIWebViewMetadata::GetDataDetectorTypes() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return -1;
+    }
+
+    return GetActiveWebView()->GetDataDetectorTypes();
+}
+
+void UIWebViewMetadata::SetDataDetectorTypes(int value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+
+    GetActiveWebView()->SetDataDetectorTypes(value);
+}
+
 };

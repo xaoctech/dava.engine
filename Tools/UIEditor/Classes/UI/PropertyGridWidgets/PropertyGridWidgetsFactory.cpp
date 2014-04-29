@@ -47,6 +47,7 @@
 #include "UITextFieldMetadata.h"
 #include "UIParticlesMetadata.h"
 #include "UIJoypadMetadata.h"
+#include "UIWebViewMetadata.h"
 
 using namespace DAVA;
 
@@ -105,6 +106,9 @@ PropertyGridWidgetsFactory::PropertyGridWidgetsFactory()
     
     joypadWidget = new JoypadPropertyGridWidget();
     registeredWidgets.push_back(joypadWidget);
+    
+    webViewWidget = new WebViewPropertyGridWidget();
+    registeredWidgets.push_back(webViewWidget);
 }
 
 PropertyGridWidgetsFactory::~PropertyGridWidgetsFactory()
@@ -297,6 +301,20 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
         resultList.push_back(backgroundWidget);
         resultList.push_back(flagsWidget);
 
+        return resultList;
+	}
+
+    // UIWebView
+	const UIWebViewMetadata* uiWebViewMetadata = dynamic_cast<const UIWebViewMetadata*>(metaData);
+	if (uiWebViewMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
+		resultList.push_back(webViewWidget);
+        resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
         return resultList;
 	}
 
