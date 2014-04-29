@@ -58,13 +58,7 @@ public:
         FILE_FORMAT_COUNT
     };
     
-    ImageSystem()
-    {
-        wrappers[FILE_FORMAT_PNG] = new LibPngWrapper();
-        wrappers[FILE_FORMAT_DDS] = new LibDdsHelper();
-        wrappers[FILE_FORMAT_PVR] = new LibPVRHelper();
-        wrappers[FILE_FORMAT_JPEG] = new LibJpegWrapper();
-    }
+    ImageSystem();
     
     virtual ~ImageSystem()
     {
@@ -96,6 +90,7 @@ public:
     
     eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0)
     {
+        file->Seek(0,  File::SEEK_FROM_START);
         ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
         
         if (NULL == propperWrapper || !propperWrapper->IsImage(file))
@@ -106,7 +101,7 @@ public:
         return propperWrapper->ReadFile(file, imageSet, baseMipmap) ? SUCCESS : ERROR_READ_FAIL;
     }
     
-    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false)
+    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false)
     {
         ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
         if(!propperWrapper)
@@ -121,19 +116,19 @@ protected:
     
     ImageFormatInterface* DetectImageFormatInterfaceByExtension(const FilePath & pathname)
     {
-        if(pathname.IsEqualToExtension("*.pvr"))
+        if(pathname.IsEqualToExtension(".pvr"))
         {
             return wrappers[FILE_FORMAT_PVR];
         }
-        else if(pathname.IsEqualToExtension("*.dds"))
+        else if(pathname.IsEqualToExtension(".dds"))
         {
             return wrappers[FILE_FORMAT_DDS];
         }
-        else if(pathname.IsEqualToExtension("*.png"))
+        else if(pathname.IsEqualToExtension(".png"))
         {
             return wrappers[FILE_FORMAT_PNG];
         }
-        else if(pathname.IsEqualToExtension("*.jpeg")||pathname.IsEqualToExtension("*.jpg"))
+        else if(pathname.IsEqualToExtension(".jpeg")||pathname.IsEqualToExtension(".jpg"))
         {
             return wrappers[FILE_FORMAT_JPEG];
         }

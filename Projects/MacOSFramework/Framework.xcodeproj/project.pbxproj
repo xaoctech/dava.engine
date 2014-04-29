@@ -785,6 +785,8 @@
 		62C8E2B2190178BB00AD1D9C /* LibDdsHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62C8E2B0190178BB00AD1D9C /* LibDdsHelper.cpp */; };
 		62C8E2B3190178BB00AD1D9C /* LibDdsHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 62C8E2B1190178BB00AD1D9C /* LibDdsHelper.h */; };
 		62D44B791901597A007B5C59 /* ImageFormatInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 62D44B781901597A007B5C59 /* ImageFormatInterface.h */; };
+		62E133FD190FDD4E00D003BF /* ImageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 62BF6FD818F7E84400246220 /* ImageSystem.cpp */; };
+		62E133FE190FDD5500D003BF /* ImageSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BF6FD918F7E84400246220 /* ImageSystem.h */; };
 		7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
 		7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
@@ -5002,6 +5004,7 @@
 				E898A06A16BD265400732C04 /* Exception.h in Headers */,
 				E898A06B16BD265400732C04 /* FastName.h in Headers */,
 				E898A06C16BD265400732C04 /* FastNameMap.h in Headers */,
+				62E133FE190FDD5500D003BF /* ImageSystem.h in Headers */,
 				E898A06D16BD265400732C04 /* FixedSizePoolAllocator.h in Headers */,
 				E898A06E16BD265400732C04 /* Hash.h in Headers */,
 				7A169357180EE75A005F1FBC /* GameAPI.h in Headers */,
@@ -6160,6 +6163,7 @@
 				A6931ACE1868569D00006294 /* RenderTechnique.cpp in Sources */,
 				E898A1A816BD265400732C04 /* BaseObject.cpp in Sources */,
 				E898A1A916BD265400732C04 /* BaseObjectChecker.cpp in Sources */,
+				62E133FD190FDD4E00D003BF /* ImageSystem.cpp in Sources */,
 				E898A1AA16BD265400732C04 /* Data.cpp in Sources */,
 				50B06921186D4C4C00B44A39 /* RenderLayerManager.cpp in Sources */,
 				E8BAD5B1185213F100C98C8D /* IntrospectionDynamic.cpp in Sources */,

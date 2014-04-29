@@ -48,6 +48,7 @@
 #include "Platform/DPIHelper.h"
 #include "Base/AllocatorFactory.h"
 #include "Render/2D/FTFont.h"
+#include "Render/ImageSystem.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 #include "Input/AccelerometeriPhone.h"
@@ -137,6 +138,7 @@ void Core::CreateSingletons()
 	new InputSystem();
 	new RenderHelper();
 	new PerformanceSettings();
+    new ImageSystem();
 	
 #if defined __DAVAENGINE_IPHONE__
 	new AccelerometeriPhoneImpl();
@@ -194,6 +196,7 @@ void Core::ReleaseSingletons()
 	JobManager::Instance()->Release();
 	AllocatorFactory::Instance()->Release();
 	Logger::Instance()->Release();
+    ImageSystem::Instance()->Release();
 }
 
 void Core::SetOptions(KeyedArchive * archiveOfOptions)
