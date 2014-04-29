@@ -133,6 +133,8 @@ void SceneInfo::Initialize3DDrawSection()
 {
     QtPropertyData* header = CreateInfoHeader("DrawInfo");
 
+    AddChild("Visible Render Object Count", header);
+    AddChild("Occluded Object Count",  header);
     AddChild("ArraysCalls", header);
     AddChild("ElementsCalls",  header);
     AddChild("PointsList", header);
@@ -155,6 +157,11 @@ void SceneInfo::Refresh3DDrawInfo()
     QtPropertyData* header = GetInfoHeader("DrawInfo");
     
     const RenderManager::Stats & renderStats = activeScene->GetRenderStats();
+
+    
+    SetChild("Visible Render Object Count", renderStats.visibleRenderObjectCount, header);
+    SetChild("Occluded Object Count", renderStats.occludedRenderObjectCount, header);
+
     
     SetChild("ArraysCalls", renderStats.drawArraysCalls, header);
     SetChild("ElementsCalls", renderStats.drawElementsCalls, header);
