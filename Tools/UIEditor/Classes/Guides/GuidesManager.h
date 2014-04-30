@@ -66,6 +66,7 @@ public:
     void MoveGuide(const Vector2& pos);
     
     Vector2 GetMoveGuideStartPos() const;
+    const GuideData* GetMoveGuide() const;
     const GuideData* AcceptMoveGuide();
 
     // Selected guides.

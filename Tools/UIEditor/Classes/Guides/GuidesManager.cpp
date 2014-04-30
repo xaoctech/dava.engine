@@ -297,6 +297,11 @@ void GuidesManager::MoveGuide(const Vector2& pos)
     MoveGuideSticked(moveGuide, pos);
 }
 
+const GuideData* GuidesManager::GetMoveGuide() const
+{
+    return moveGuide;
+}
+
 const GuideData* GuidesManager::AcceptMoveGuide()
 {
     GuideData* resultData = moveGuide;

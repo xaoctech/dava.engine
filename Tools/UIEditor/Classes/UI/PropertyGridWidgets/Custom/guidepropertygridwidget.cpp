@@ -61,7 +61,7 @@ void GuidePropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 
     PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-    GuideData* selectedGuide = metadata->GetSelectedGuide();
+    const GuideData* selectedGuide = metadata->GetActiveGuide();
     DVASSERT(selectedGuide);
 
     if (selectedGuide->GetType() == GuideData::Horizontal)
@@ -112,7 +112,7 @@ void GuidePropertyGridWidget::OnGuidePositionChanged(int value)
         return;
     }
 
-    GuideData* selectedGuide = metadata->GetSelectedGuide();
+    const GuideData* selectedGuide = metadata->GetActiveGuide();
     DVASSERT(selectedGuide);
 
     Vector2 delta;

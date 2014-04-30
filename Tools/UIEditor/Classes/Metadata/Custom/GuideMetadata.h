@@ -45,8 +45,8 @@ public:
     GuideMetadata(HierarchyTreeScreenNode* screenNode);
     HierarchyTreeScreenNode* GetActiveScreen() const;
 
-    // Get the selected guide or NULL if nothing/more then one guide is selected.
-    GuideData* GetSelectedGuide() const;
+    // Get the active guide or NULL if nothing is selected.
+    const GuideData* GetActiveGuide() const;
 
 protected:
     virtual bool GetInitialInputEnabled() const {return false;};
