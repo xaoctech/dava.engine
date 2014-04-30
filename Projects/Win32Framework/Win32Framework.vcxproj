@@ -430,8 +430,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDdsHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
@@ -825,7 +826,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusionRenderPass.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDdsHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />

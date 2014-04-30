@@ -1161,7 +1161,7 @@ eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 b
 {
     if(NULL == file)
     {
-        return ERROR_FILE_NOT_FOUND;
+        return ERROR_FILE_NOTFOUND;
     }
     nvtt::Decompressor dec;
         

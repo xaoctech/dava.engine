@@ -80,7 +80,7 @@ eErrorCode LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 b
         Logger::Error("[LibPVRHelper::ReadFile]: cannot read from file");
         
         SafeDeleteArray(fileData);
-        return ERROR_FILE_NOT_FOUND;
+        return ERROR_FILE_NOTFOUND;
     }
     
     

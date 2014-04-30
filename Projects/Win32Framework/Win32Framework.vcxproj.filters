@@ -127,11 +127,11 @@
     <Filter Include="Internal\Scene3D\SceneFile">
       <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Job">
-      <UniqueIdentifier>{94116b3a-757d-4e56-95a2-a621c48f12e9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Internal\Scene3D\Converters">
       <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Internal\Particles\Job">
+      <UniqueIdentifier>{94116b3a-757d-4e56-95a2-a621c48f12e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1095,9 +1095,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
@@ -1342,16 +1339,16 @@
       <Filter>Internal\Particles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobWaiter.h">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\Job.h">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobManager.h">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobQueue.h">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionDynamic.h">
       <Filter>Internal\Base</Filter>
@@ -1417,6 +1414,12 @@
       <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDdsHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageSystem.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2204,9 +2207,6 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
@@ -2460,16 +2460,16 @@
       <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\Job.cpp">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobManager.cpp">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobQueue.cpp">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp">
-      <Filter>Internal\Job</Filter>
+      <Filter>Internal\Particles\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionDynamic.cpp">
       <Filter>Internal\Base</Filter>
@@ -2538,6 +2538,12 @@
       <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDdsHelper.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageSystem.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>

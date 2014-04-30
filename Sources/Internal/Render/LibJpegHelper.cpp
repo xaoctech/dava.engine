@@ -178,7 +178,7 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     if ( !outfile )
     {
         Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", absolutePathName);
-        return ERROR_FILE_NOT_FOUND;
+        return ERROR_FILE_NOTFOUND;
     }
     cinfo.err = jpeg_std_error( &jerr.pub );
     
