@@ -78,7 +78,7 @@ public:
         File *fileRead = File::Create(pathname, File::READ | File::OPEN);
         if(!fileRead)
         {
-            return ERROR_FILE_NOT_FOUND;
+            return ERROR_FILE_NOTFOUND;
         }
         
         eErrorCode result = Load(fileRead, imageSet, baseMipmap);
@@ -90,14 +90,13 @@ public:
     
     eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0)
     {
-        file->Seek(0,  File::SEEK_FROM_START);
         ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
         
         if (NULL == propperWrapper || !propperWrapper->IsImage(file))
         {
             return ERROR_FILE_FORMAT_INCORRECT;
         }
-        
+        file->Seek(0,  File::SEEK_FROM_START);
         return propperWrapper->ReadFile(file, imageSet, baseMipmap) ? SUCCESS : ERROR_READ_FAIL;
     }
     

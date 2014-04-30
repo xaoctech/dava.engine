@@ -373,7 +373,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", fileName.GetAbsolutePathname().c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
         free(row_pointers);
-		return ERROR_FILE_NOT_FOUND;
+		return ERROR_FILE_NOTFOUND;
 	}
 	
 	

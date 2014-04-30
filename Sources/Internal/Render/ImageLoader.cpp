@@ -220,6 +220,7 @@ bool ImageLoader::CreateFromJPEG(File *file, Vector<Image *> & imageSet)
 bool ImageLoader::CreateFromDDS(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
 {
 	//return LibDdsHelper::ReadDxtFile(file, imageSet, baseMipmap);
+	return false;
 }
 
 bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
