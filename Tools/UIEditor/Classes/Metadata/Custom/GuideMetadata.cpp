@@ -43,20 +43,14 @@ HierarchyTreeScreenNode* GuideMetadata::GetActiveScreen() const
     return activeScreen;
 }
 
-GuideData* GuideMetadata::GetSelectedGuide() const
+const GuideData* GuideMetadata::GetActiveGuide() const
 {
     if (!activeScreen)
     {
         return NULL;
     }
     
-    const List<GuideData*>& selectedGuides = activeScreen->GetSelectedGuides(true);
-    if (selectedGuides.size() != 1)
-    {
-        return NULL;
-    }
-    
-    return selectedGuides.front();
+    return activeScreen->GetActiveGuide();
 }
 
 };

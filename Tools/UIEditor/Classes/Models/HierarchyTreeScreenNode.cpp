@@ -315,6 +315,24 @@ const List<GuideData*> HierarchyTreeScreenNode::GetSelectedGuides(bool includeNe
     return guides.GetSelectedGuides(includeNewGuide);
 }
 
+const GuideData* HierarchyTreeScreenNode::GetActiveGuide() const
+{
+    // Firstly try if exactly one guide is selected.
+    const List<GuideData*>& selectedGuides = guides.GetSelectedGuides(true);
+    if (selectedGuides.empty())
+    {
+        return NULL;
+    }
+    
+    if (selectedGuides.size() == 1)
+    {
+        return selectedGuides.front();
+    }
+    
+    // Retry with the move guide.
+    return guides.GetMoveGuide();
+}
+
 bool HierarchyTreeScreenNode::AreGuidesSelected() const
 {
     return guides.AreGuidesSelected();
