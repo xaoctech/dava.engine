@@ -482,13 +482,13 @@ bool VariantType::AsBool() const
 
 int32  VariantType::AsInt32() const
 {
-	DVASSERT(type == TYPE_INT32);
+	DVASSERT(type == TYPE_INT32 || type == TYPE_UINT32);
 	return int32Value;
 }
     
 uint32  VariantType::AsUInt32() const
 {
-    DVASSERT(type == TYPE_UINT32);
+    DVASSERT(type == TYPE_UINT32 || type == TYPE_INT32);
     return uint32Value;
 }
 

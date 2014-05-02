@@ -45,11 +45,14 @@ class LightComponent;
 class Landscape;
 class Camera;
 class LodComponent;
+class SoundComponent;
+class SoundEvent;
 class SkyboxRenderObject;
 class SwitchComponent;
 class QualitySettingsComponent;
 class RenderComponent;
 class TransformComponent;
+class VegetationRenderObject;
 class CustomPropertiesComponent;
 class KeyedArchive;
 
@@ -58,12 +61,15 @@ TransformComponent * GetTransformComponent(Entity * fromEntity);
 RenderComponent * GetRenderComponent(const Entity *fromEntity);
 RenderObject * GetRenderObject(const Entity * fromEntity);
 SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
+VegetationRenderObject * GetVegetation(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 LightComponent *GetLightComponent(Entity * fromEntity);
 Landscape *GetLandscape(Entity * fromEntity);
 
 Camera * GetCamera(Entity * fromEntity);
+
+SoundComponent * GetSoundComponent(Entity * fromEntity);
 
 LodComponent * GetLodComponent(Entity *fromEntity);
 SwitchComponent* GetSwitchComponent(Entity *fromEntity);
@@ -77,6 +83,8 @@ void RecursiveProcessLodNode(Entity * curr, int32 lod, void * userData, void(*pr
 
 Entity * FindLandscapeEntity(Entity * rootEntity);
 Landscape * FindLandscape(Entity * rootEntity);
+Entity * FindVegetationEntity(Entity * rootEntity);
+VegetationRenderObject* FindVegetation(Entity * rootEntity);
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);
     

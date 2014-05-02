@@ -76,6 +76,14 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
             NMaterialHelper::DisableStateFlags(PASS_FORWARD, material, RenderStateData::STATE_DEPTH_TEST);
 		NMaterialHelper::SetBlendMode(PASS_FORWARD, material, srcFactor, dstFactor);
 		materialMap[materialKey] = material;
+
+        // if fog is disabled for this material - we also shouldn't inherit fog from global material
+        // so force set fog flag to OFF in this instance
+        if(!enableFog)
+        {
+            material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOff);
+        }
+
 		return material;
 	}
 }
@@ -84,7 +92,10 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 ParticleEffectSystem::ParticleEffectSystem(Scene * scene, bool _forceDisableDepthTest) :	SceneSystem(scene), forceDisableDepthTest(_forceDisableDepthTest)	
 {	
     if (scene) //for 2d particles there would be no scene
+    {
 	    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::START_PARTICLE_EFFECT);
+        scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STOP_PARTICLE_EFFECT);
+    }
 	particleRegularMaterial = NMaterial::CreateMaterial(FastName("Particle_Material"),  NMaterialName::PARTICLES, NMaterial::DEFAULT_QUALITY_NAME);		
 	particleFrameBlendMaterial = NMaterial::CreateMaterial(FastName("Particle_Frameblend_Material"),  NMaterialName::PARTICLES_FRAMEBLEND, NMaterial::DEFAULT_QUALITY_NAME);	
 }
@@ -96,6 +107,12 @@ ParticleEffectSystem::~ParticleEffectSystem()
 	}
 	SafeRelease(particleRegularMaterial);
 	SafeRelease(particleFrameBlendMaterial);
+}
+
+void ParticleEffectSystem::SetGlobalMaterial(NMaterial *material)
+{
+    particleRegularMaterial->SetParent(material, false);
+    particleFrameBlendMaterial->SetParent(material, false);
 }
 
 void ParticleEffectSystem::RunEmitter(ParticleEffectComponent *effect, ParticleEmitter *emitter, const Vector3& spawnPosition, int32 positionSource)

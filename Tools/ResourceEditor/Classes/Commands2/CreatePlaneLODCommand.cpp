@@ -111,8 +111,8 @@ DAVA::Entity* CreatePlaneLODCommand::GetEntity() const
 void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camera * camera, DAVA::Texture * toTexture, DAVA::int32 fromLodLayer, const DAVA::Rect & viewport /* = DAVA::Rect(0, 0, -1, -1) */, bool clearTarget /* = true */)
 {
     DAVA::TexturesMap textures;
-    SceneHelper::EnumerateEntityTextures(fromEntity->GetScene(), fromEntity, textures);
-    DAVA::eGPUFamily currentGPU = (DAVA::eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32();
+    SceneHelper::EnumerateEntityTextures(fromEntity->GetScene(), fromEntity, textures, SceneHelper::EXCLUDE_NULL);
+    DAVA::eGPUFamily currentGPU = (DAVA::eGPUFamily) SettingsManager::GetValue("Internal/TextureViewGPU").AsInt32();
 
     DAVA::TexturesMap::const_iterator it = textures.begin();
     DAVA::TexturesMap::const_iterator end = textures.end();
@@ -204,13 +204,13 @@ void CreatePlaneLODCommand::CreatePlaneImage()
     float32 depth = 0.f;
     //draw 1st side
     depth = max.y - min.y;
- 	camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
+ 	camera->Setup(min.x, max.x, min.z, max.z, -depth, depth * 2);
     camera->SetPosition(Vector3(0.f, min.y, 0.f));
     DrawToTexture(fromEntity, camera, fboTexture, fromLodLayer, firstSideViewport, true);
     
     //draw 2nd side
     depth = max.x - min.x;
-	camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
+	camera->Setup(min.y, max.y, min.z, max.z, -depth, depth * 2);
     camera->SetPosition(Vector3(max.x, 0.f, 0.f));
     DrawToTexture(fromEntity, camera, fboTexture, fromLodLayer, secondSideViewport, false);
     
