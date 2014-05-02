@@ -253,6 +253,7 @@ void Texture::ReleaseTextureData()
     id = 0;
 	fboID = -1;
 	rboID = -1;
+    isRenderTarget = false;
 }
 
 void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
@@ -794,6 +795,8 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
+    DVASSERT(isRenderTarget == false);
+    
     FilePath savedPath = texDescriptor->pathname;
     
     ReleaseTextureData();

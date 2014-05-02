@@ -609,7 +609,7 @@ void TextureBrowser::reloadTextureToScene(DAVA::Texture *texture, const DAVA::Te
 {
 	if(NULL != descriptor && NULL != texture)
 	{
-		DAVA::eGPUFamily curEditorImageGPUForTextures = (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32();
+		DAVA::eGPUFamily curEditorImageGPUForTextures = QtMainWindow::Instance()->GetGPUFormat();
 
 		// reload only when editor view format is the same as given texture format
 		// or if given texture format if not a file (will happened if some common texture params changed - mipmap/filtering etc.)
