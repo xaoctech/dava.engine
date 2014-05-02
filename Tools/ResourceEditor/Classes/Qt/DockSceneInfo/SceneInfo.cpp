@@ -393,10 +393,37 @@ void SceneInfo::CollectLODDataInFrame()
 {
     lodInfoInFrame.Clear();
 
-    if(!activeScene) return;
+    if(!activeScene||!activeScene->renderSystem||!activeScene->renderSystem->IsRenderHierarchyInitialized()||!activeScene->GetClipCamera())
+        return;
 
-    CollectLODDataInFrameRecursive(activeScene);
-    lodInfoInFrame.trianglesOnObjects += GetTrianglesForNotLODEntityRecursive(activeScene, true);
+    visibilityArray.Clear();
+    activeScene->renderSystem->GetRenderHierarchy()->Clip(activeScene->GetClipCamera(), &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA);
+
+    uint32 size = (uint32)visibilityArray.visibilityArray.size();
+    for (uint32 ro = 0; ro < size; ++ro)
+    {
+        RenderObject * renderObject = visibilityArray.visibilityArray[ro];
+        uint32 batchCount = renderObject->GetActiveRenderBatchCount();
+        int32 indexCount = 0;
+        for(uint32 i = 0; i < batchCount; ++i)
+        {            
+            RenderBatch *rb = renderObject->GetActiveRenderBatch(i);
+            if(IsPointerToExactClass<RenderBatch>(rb))
+            {                
+                PolygonGroup *pg = rb->GetPolygonGroup();
+                if(pg)                
+                    indexCount += pg->GetIndexCount();                
+            }
+        }
+        int32 currLodIndex = renderObject->GetLodIndex();
+        if (currLodIndex==-1)
+            lodInfoInFrame.trianglesOnObjects += indexCount/3;
+        else
+            lodInfoInFrame.trianglesOnLod[currLodIndex] += indexCount/3;
+    }
+
+    /*CollectLODDataInFrameRecursive(activeScene);
+    lodInfoInFrame.trianglesOnObjects += GetTrianglesForNotLODEntityRecursive(activeScene, true);*/
 }
 
 void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)

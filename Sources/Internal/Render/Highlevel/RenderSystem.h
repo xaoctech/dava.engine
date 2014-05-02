@@ -145,6 +145,8 @@ public:
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
 
     RenderHierarchy * GetRenderHierarchy(){return renderHierarchy;}
+
+    inline bool IsRenderHierarchyInitialized() const {return hierarchyInitialized;}
     
 private:
 	void CreateSpatialTree();
