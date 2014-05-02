@@ -38,6 +38,8 @@
 
 #include <QMouseEvent>
 
+using namespace DAVA;
+
 const String CUBEMAP_LAST_FACE_DIR_KEY = "cubemap_last_face_dir";
 
 CubemapEditorDialog::CubemapEditorDialog(QWidget *parent) :
@@ -99,7 +101,7 @@ void CubemapEditorDialog::ConnectSignals()
 
 void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 {
-	FilePath projectPath = CubemapUtils::GetDialogSavedPath(ResourceEditor::SETTINGS_CUBEMAP_LAST_FACE_DIR,
+	FilePath projectPath = CubemapUtils::GetDialogSavedPath("Internal/CubemapLastFaceDir",
 															ProjectManager::Instance()->CurProjectDataSourcePath().GetAbsolutePathname());
 		
 	QString fileName = QtFileDialog::getOpenFileName(this,
@@ -113,7 +115,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 		LoadImageTo(stdFilePath, face, false);
 		
 		projectPath = stdFilePath;
-		SettingsManager::Instance()->SetValue("cubemap_last_face_dir", VariantType(projectPath.GetDirectory()), SettingsManager::INTERNAL);
+		SettingsManager::SetValue("Internal/CubemapLastFaceDir", VariantType(projectPath.GetDirectory()));
 		
 		if(AllFacesLoaded())
 		{

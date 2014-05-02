@@ -189,6 +189,28 @@ QtPropertyDataDavaVariant::AllowedValueType QtPropertyDataDavaVariant::GetAllowe
     return allowedValueType;
 }
 
+void QtPropertyDataDavaVariant::SetInspDescription(const DAVA::InspDesc &desc)
+{
+    ClearAllowedValues();
+
+	if(NULL != desc.enumMap)
+	{
+		for(size_t i = 0; i < desc.enumMap->GetCount(); ++i)
+		{
+			int v;
+			if(desc.enumMap->GetValue(i, v))
+			{
+				AddAllowedValue(DAVA::VariantType(v), desc.enumMap->ToString(v));
+			}
+		}
+	}
+
+    const bool isFlags = (desc.type == DAVA::InspDesc::T_FLAGS);
+    if(isFlags)
+    {
+        SetAllowedValueType(QtPropertyDataDavaVariant::TypeFlags);
+    }
+}
 
 QVariant QtPropertyDataDavaVariant::GetToolTip() const
 {
@@ -216,24 +238,12 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
             }
             break;
         default:
-            {
-                ret = GetValueAlias();
-            }
             break;
         } // end switch
     }
-    else
+    if (!ret.isValid())
     {
-        switch (curVariantValue.type)
-        {
-        case DAVA::VariantType::TYPE_STRING:
-        case DAVA::VariantType::TYPE_FASTNAME:
-        case DAVA::VariantType::TYPE_FILEPATH:
-            ret = GetValueAlias();
-            break;
-        default:
-            break;
-        }
+        ret = GetValueAlias();
     }
 
     return ret;
