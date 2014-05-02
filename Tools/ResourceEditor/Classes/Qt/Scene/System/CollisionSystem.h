@@ -49,28 +49,28 @@
 class CollisionBaseObject;
 class SceneCollisionDebugDrawer;
 
+enum CollisionSystemDrawMode
+{
+	CS_DRAW_NOTHING = 0x0,
+
+	CS_DRAW_OBJECTS = 0x1,
+	CS_DRAW_OBJECTS_SELECTED = 0x2,
+	CS_DRAW_OBJECTS_RAYTEST = 0x4,
+
+	CS_DRAW_LAND = 0x10,
+	CS_DRAW_LAND_RAYTEST = 0x20,
+	CS_DRAW_LAND_COLLISION = 0x40,
+
+    CS_DRAW_DEFAULT = CS_DRAW_NOTHING,
+	CS_DRAW_ALL = 0xFFFFFFFF
+};
+
 class SceneCollisionSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
 	friend class EntityModificationSystem;
 
 public:
-    enum DrawMode
-    {
-	    DRAW_NOTHING = 0x0,
-
-	    DRAW_OBJECTS = 0x1,
-	    DRAW_OBJECTS_SELECTED = 0x2,
-	    DRAW_OBJECTS_RAYTEST = 0x4,
-
-	    DRAW_LAND = 0x10,
-	    DRAW_LAND_RAYTEST = 0x20,
-	    DRAW_LAND_COLLISION = 0x40,
-
-        DRAW_DEFAULT = DRAW_NOTHING,
-	    DRAW_ALL = 0xFFFFFFFF
-    };
-
 	SceneCollisionSystem(DAVA::Scene * scene);
 	~SceneCollisionSystem();
 
