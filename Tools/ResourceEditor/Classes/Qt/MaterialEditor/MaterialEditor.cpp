@@ -955,8 +955,9 @@ void MaterialEditor::OnMaterialAddGlobal(bool checked)
     {
         DAVA::NMaterial *global = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
         curScene->Exec(new MaterialGlobalSetCommand(curScene, global));
-        sceneActivated(curScene);
+        SafeRelease(global);
 
+        sceneActivated(curScene);
         SelectMaterial(curScene->GetGlobalMaterial());
     }
 }
