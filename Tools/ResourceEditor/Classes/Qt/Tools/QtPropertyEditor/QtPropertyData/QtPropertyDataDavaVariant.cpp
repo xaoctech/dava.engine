@@ -45,9 +45,9 @@
 #include <QKeyEvent>
 
 #define FLOAT_PRINTF_FORMAT1 "% .7f"
-#define FLOAT_PRINTF_FORMAT2 "% .7f, % .7f"
-#define FLOAT_PRINTF_FORMAT3 "% .7f, % .7f, % .7f"
-#define FLOAT_PRINTF_FORMAT4 "% .7f, % .7f, % .7f, % .7f"
+#define FLOAT_PRINTF_FORMAT2 "% .7f; % .7f"
+#define FLOAT_PRINTF_FORMAT3 "% .7f; % .7f; % .7f"
+#define FLOAT_PRINTF_FORMAT4 "% .7f; % .7f; % .7f; % .7f"
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
@@ -189,6 +189,28 @@ QtPropertyDataDavaVariant::AllowedValueType QtPropertyDataDavaVariant::GetAllowe
     return allowedValueType;
 }
 
+void QtPropertyDataDavaVariant::SetInspDescription(const DAVA::InspDesc &desc)
+{
+    ClearAllowedValues();
+
+	if(NULL != desc.enumMap)
+	{
+		for(size_t i = 0; i < desc.enumMap->GetCount(); ++i)
+		{
+			int v;
+			if(desc.enumMap->GetValue(i, v))
+			{
+				AddAllowedValue(DAVA::VariantType(v), desc.enumMap->ToString(v));
+			}
+		}
+	}
+
+    const bool isFlags = (desc.type == DAVA::InspDesc::T_FLAGS);
+    if(isFlags)
+    {
+        SetAllowedValueType(QtPropertyDataDavaVariant::TypeFlags);
+    }
+}
 
 QVariant QtPropertyDataDavaVariant::GetToolTip() const
 {
@@ -216,24 +238,12 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
             }
             break;
         default:
-            {
-                ret = GetValueAlias();
-            }
             break;
         } // end switch
     }
-    else
+    if (!ret.isValid())
     {
-        switch (curVariantValue.type)
-        {
-        case DAVA::VariantType::TYPE_STRING:
-        case DAVA::VariantType::TYPE_FASTNAME:
-        case DAVA::VariantType::TYPE_FILEPATH:
-            ret = GetValueAlias();
-            break;
-        default:
-            break;
-        }
+        ret = GetValueAlias();
     }
 
     return ret;
@@ -828,7 +838,7 @@ int QtPropertyDataDavaVariant::ParseFloatList(const QString &str, int maxCount, 
 	if(!str.isEmpty() && maxCount > 0 && NULL != dest)
 	{
 		int pos = 0;
-		QRegExp rx("(-?\\d*([\\.,]\\d+){0,1})");
+		QRegExp rx("(-?(\\d*)([,\\.])(\\d+){0,1})");
 
 		while(index < maxCount && 
 			  (pos = rx.indexIn(str, pos)) != -1)

@@ -66,10 +66,10 @@ SceneCameraSystem::SceneCameraSystem(DAVA::Scene * scene)
 {
 	renderState = RenderManager::Instance()->Subclass3DRenderState(RenderStateData::STATE_COLORMASK_ALL | RenderStateData::STATE_DEPTH_WRITE);
 	
-	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_0", SettingsManager::DEFAULT).AsFloat());
-	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_1", SettingsManager::DEFAULT).AsFloat());
-	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_2", SettingsManager::DEFAULT).AsFloat());
-	cameraSpeedArray.push_back(SettingsManager::Instance()->GetValue("CameraSpeedValue_3", SettingsManager::DEFAULT).AsFloat());
+	cameraSpeedArray.push_back(SettingsManager::GetValue("Scene/CameraSpeed0").AsFloat());
+	cameraSpeedArray.push_back(SettingsManager::GetValue("Scene/CameraSpeed1").AsFloat());
+	cameraSpeedArray.push_back(SettingsManager::GetValue("Scene/CameraSpeed2").AsFloat());
+	cameraSpeedArray.push_back(SettingsManager::GetValue("Scene/CameraSpeed3").AsFloat());
 }
 
 SceneCameraSystem::~SceneCameraSystem()
@@ -489,7 +489,7 @@ void SceneCameraSystem::CreateDebugCameras()
 		topCamera->SetUp(DAVA::Vector3(0.0f, 0.0f, 1.0f));
 		topCamera->SetPosition(DAVA::Vector3(-50.0f, 0.0f, 50.0f));
 		topCamera->SetTarget(DAVA::Vector3(0.0f, 0.1f, 0.0f));
-		float fov = SettingsManager::Instance()->GetValue(ResourceEditor::SETTINGS_DEFAULT_FOV, SettingsManager::DEFAULT).AsFloat();
+		float fov = SettingsManager::GetValue("Scene/CameraFOV").AsFloat();
 		topCamera->SetupPerspective(fov, 320.0f / 480.0f, 1.0f, 5000.0f);
 		topCamera->SetAspect(1.0f);
 

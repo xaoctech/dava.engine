@@ -147,9 +147,8 @@ public slots:
     void On2DSpriteDialog();
 	void OnAddEntityFromSceneTree();
 	
-	void OnShowGeneralSettings();
+	void OnShowSettings();
 	void OnOpenHelp();
-	void OnShowCurrentSceneSettings();
 
 	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();

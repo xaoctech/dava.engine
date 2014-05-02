@@ -26,67 +26,55 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #ifndef __RESOURCEEDITORQT__SETTINGS_MANAGER__
 #define __RESOURCEEDITORQT__SETTINGS_MANAGER__
 
 #include <QObject>
 #include "DAVAEngine.h"
 #include "FileSystem/VariantType.h"
-#include "../StringConstants.h"
 
-#include "Base/EnumMap.h"
 
-struct SettingRow
+struct SettingsNode
 {
-	DAVA::String key;
-	DAVA::VariantType defValue;
-    const EnumMap *enumMap;
+    SettingsNode() {};
+    SettingsNode(const DAVA::FastName &name);
+    ~SettingsNode();
 
-	SettingRow(const char* _key,const DAVA::VariantType& _defaultValue, const EnumMap *_enumMap = NULL)
-	{
-		key = _key;
-		defValue  = _defaultValue;
-        enumMap = _enumMap;
-	}
+    DAVA::FastName name;
+    DAVA::FastName path;
+    DAVA::VariantType value;
+    DAVA::InspDesc description;
+    DAVA::Vector<SettingsNode *> childs;
+
+    SettingsNode* GetChild(const DAVA::FastName &name);
 };
 
 class SettingsManager: public DAVA::Singleton<SettingsManager>
 {
 public:
-
-	enum eSettingsGroups
-	{
-		GENERAL = 0,
-		DEFAULT,
-		INTERNAL,
-
-		GROUPS_COUNT
-	};
-	
 	SettingsManager();
-
 	~SettingsManager();
 
-	DAVA::KeyedArchive* GetSettingsGroup(eSettingsGroups group);
+    static DAVA::VariantType GetValue(const DAVA::FastName& path);
+	static void SetValue(const DAVA::FastName& path, const DAVA::VariantType &value);
 
-	DAVA::VariantType GetValue(const DAVA::String& _name, eSettingsGroups group) const;
-    const EnumMap * GetAllowedValues(const DAVA::String& _name, eSettingsGroups group) const;
+    static DAVA::VariantType GetValue(const DAVA::String& path);
+	static void SetValue(const DAVA::String& path, const DAVA::VariantType &value);
 
-	void SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, eSettingsGroups group);
+    static const SettingsNode* GetSettingsTree();
 
-	DAVA::String GetNameOfGroup(eSettingsGroups group) const;
+protected:
+    SettingsNode root;
 
-private:
-
-	void Save();
-
+    void Init();
+    void Save();
 	void Load();
 
-	void InitSettingsGroup(eSettingsGroups groupID, const SettingRow* groupMap, DAVA::uint32 mapSize);
-	
-	DAVA::KeyedArchive* settings;
+private:
+    void MergeSettingsIn(SettingsNode *target, DAVA::KeyedArchive *source);
+    void MergeSettingsOut(DAVA::KeyedArchive *target, SettingsNode *source);
+    void CreateValue(const DAVA::String& path, const DAVA::VariantType &defaultValue, DAVA::InspDesc description = DAVA::InspDesc(""));
+	SettingsNode* GetPath(const DAVA::FastName& path, bool create);
 };
 
 #endif /* defined(__RESOURCEEDITORQT__SETTINGS_MANAGER__) */
