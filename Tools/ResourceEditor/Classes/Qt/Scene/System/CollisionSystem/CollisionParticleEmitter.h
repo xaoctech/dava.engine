@@ -37,7 +37,7 @@
 class CollisionParticleEffect : public CollisionBaseObject
 {
 public:
-	CollisionParticleEffect(DAVA::Entity *entity, btCollisionWorld *world, DAVA::float32 boxHalfSize);
+	CollisionParticleEffect(DAVA::Entity *entity, btCollisionWorld *world, DAVA::float32 boxSize);
 	virtual ~CollisionParticleEffect();
 
 protected:
