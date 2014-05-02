@@ -43,17 +43,6 @@ namespace DAVA
 {
 
 class File;
-template <class T>
-uint32 ReadFromFile(File *file, T * value)
-{
-	return file->Read(value, sizeof(T));
-}
-
-template <class T>
-uint32 WriteToFile(File *file, const T * value)
-{
-	return file->Write(value, sizeof(T));
-}
 
 
 /**
@@ -203,6 +192,22 @@ private:
 protected:
 	FilePath	filename;
 };
+    
+    
+template <class T>
+uint32 ReadFromFile(File *file, T * value)
+{
+    return file->Read(value, sizeof(T));
+}
+
+template <class T>
+uint32 WriteToFile(File *file, const T * value)
+{
+    return file->Write(value, sizeof(T));
+}
+
 };
+
+
 
 #endif
