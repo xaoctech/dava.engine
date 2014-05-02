@@ -205,7 +205,7 @@ public:
     
     void SetDefines(const String & _defines);
 
-    static Shader * CompileShader(const FastName & assetName,
+    static Shader * CreateShader(const FastName & assetName,
                                   Data * vertexShaderData,
                                   Data * fragmentShaderData,
                                   uint8 * vertexShaderDataStart,
@@ -231,6 +231,7 @@ public:
     void ClearLastBindedCaches();
 
     void Bind();
+    void BindDynamicParameters();
     static void Unbind();
     
 	static bool IsAutobindUniform(eShaderSemantic uniformId);

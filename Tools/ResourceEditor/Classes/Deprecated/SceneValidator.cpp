@@ -253,14 +253,39 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
 
 
 
-void SceneValidator::ValidateParticleEffectComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog)
+void SceneValidator::ValidateParticleEffectComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog) const
 {
 	ParticleEffectComponent *effect = GetEffectComponent(ownerNode);
-    if(!effect)
+    if(effect)
 	{
-		return;
+        DAVA::uint32 count = effect->GetEmittersCount();
+        for(DAVA::uint32 i = 0; i < count; ++i)
+        {
+            ValidateParticleEmitter(effect->GetEmitter(i), errorsLog);
+        }
 	}
+}
 
+void SceneValidator::ValidateParticleEmitter(ParticleEmitter *emitter, Set<String> &errorsLog) const
+{
+    DVASSERT(emitter);
+    if(!emitter) return;
+
+    if(emitter->configPath.IsEmpty())
+    {
+        errorsLog.insert(Format("Empty config path for emitter %s", emitter->name.c_str()));
+    }
+    
+    const Vector<ParticleLayer*> &layers = emitter->layers;
+    
+	uint32 count = (uint32)layers.size();
+	for(uint32 i = 0; i < count; ++i)
+	{
+		if(layers[i]->type == ParticleLayer::TYPE_SUPEREMITTER_PARTICLES)
+		{
+			ValidateParticleEmitter(layers[i]->innerEmitter, errorsLog);
+		}
+	}
 }
 
 void SceneValidator::ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog)
@@ -284,22 +309,25 @@ void SceneValidator::ValidateMaterials(DAVA::Scene *scene, Set<String> &errorsLo
 	auto endItMaterials = materials.end();
 	for(auto it = materials.begin(); it != endItMaterials; ++it)
 	{
-		DAVA::uint32 count = (*it)->GetTextureCount();
-		for(DAVA::uint32 t = 0; t < count; ++t)
-		{
-			Texture *tex = (*it)->GetTexture(t);
-			if(tex)
-			{
-				if(((*it)->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_INSTANCE) && (*it)->GetParent())
-				{
-					texturesMap[tex] = Format("Material: %s (%s). Texture %s.", (*it)->GetName().c_str(), (*it)->GetParent()->GetName().c_str(), (*it)->GetTextureName(t).c_str());
-				}
-				else
-				{
-					texturesMap[tex] = Format("Material: %s. Texture %s.", (*it)->GetName().c_str(), (*it)->GetTextureName(t).c_str());
-				}
-			}
-		}
+        if(((*it)->GetNodeGlags() & DataNode::NodeRuntimeFlag) == 0) //VI: don't validate runtime materials
+        {
+            DAVA::uint32 count = (*it)->GetTextureCount();
+            for(DAVA::uint32 t = 0; t < count; ++t)
+            {
+                Texture *tex = (*it)->GetTexture(t);
+                if(tex&&(!NMaterial::IsRuntimeTexture((*it)->GetTextureName(t))))
+                {
+                    if(((*it)->GetMaterialType() == DAVA::NMaterial::MATERIALTYPE_INSTANCE) && (*it)->GetParent())
+                    {
+                        texturesMap[tex] = Format("Material: %s (%s). Texture %s.", (*it)->GetMaterialName().c_str(), (*it)->GetParent()->GetMaterialName().c_str(), (*it)->GetTextureName(t).c_str());
+                    }
+                    else
+                    {
+                        texturesMap[tex] = Format("Material: %s. Texture %s.", (*it)->GetMaterialName().c_str(), (*it)->GetTextureName(t).c_str());
+                    }
+                }
+            }
+        }
 	}
 
 	auto endItTextures = texturesMap.end();

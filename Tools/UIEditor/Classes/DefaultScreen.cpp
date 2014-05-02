@@ -416,17 +416,25 @@ void DefaultScreen::GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST
 			continue;
 		
 		UIControl* control = controlNode->GetUIObject();
-		if (!control->GetVisible())
-			continue;
-        
-        if (!control->GetVisibleForUIEditor())
-			continue;
-		
-		Rect controlRect = GetControlRect(controlNode);
-		if (controlRect.RectIntersects(rect))
-			list.push_back(node);
-		
-		GetSelectedControl(list, rect, node);
+        if (!control)
+            continue;
+
+        if (!control->GetRecursiveVisible())
+            continue;
+
+        bool controlVisible = IsControlVisible(control);
+
+        if (controlVisible)
+        {
+            Rect controlRect = GetControlRect(controlNode);
+            if (controlRect.RectIntersects(rect))
+                list.push_back(node);
+        }
+
+        if (controlVisible || IsControlContentVisible(control))
+        {
+            GetSelectedControl(list, rect, node);
+        }
 	}
 }
 

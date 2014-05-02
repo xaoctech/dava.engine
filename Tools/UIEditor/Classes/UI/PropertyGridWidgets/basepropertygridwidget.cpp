@@ -738,7 +738,7 @@ void BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *, 
 																const double)
 {
     // In case Base handler is called, particular handler for the Combobox is missed - this is treated as error.
-    Logger::Error("BasePropertyGridWidget::ProcessComboboxValueChanged is called - you've forgot to create custom handler for some combo!!!");
+    Logger::Error("BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged is called - you've forgot to create custom handler for some combo!!!");
 }
 
 void BasePropertyGridWidget::UpdateColorWidgetWithPropertyValue(QColorWidget *colorWidget, const QMetaProperty &curProperty)
@@ -932,7 +932,7 @@ void BasePropertyGridWidget::UpdateWidgetPalette(QWidget* widget, const QString&
 void BasePropertyGridWidget::PreparePalettes()
 {
     dirtyPropertyPalette.setColor(QPalette::Text, Qt::red);
-    clearPropertyPalette.setColor(QPalette::Text, Qt::black);
+    clearPropertyPalette.setColor(QPalette::Text, QApplication::palette().text().color());
 }
 
 const QPalette& BasePropertyGridWidget::GetWidgetPaletteForDirtyProperty() const

@@ -288,7 +288,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
+        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily) SettingsManager::GetValue("Internal/TextureViewGPU").AsInt32());
     }
 
     return textureSize;
@@ -306,7 +306,7 @@ void SceneInfo::CollectSceneData(SceneEditor2 *scene)
 		//VI: remove skybox materials so they not to appear in the lists
 		//MaterialHelper::FilterMaterialsByType(materialsAtScene, DAVA::Material::MATERIAL_SKYBOX);
 
-        SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
+        SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures, SceneHelper::EXCLUDE_NULL);
         sceneTexturesSize = CalculateTextureSize(sceneTextures);
 
         CollectParticlesData();
@@ -671,7 +671,7 @@ SceneInfo::SpeedTreeInfo SceneInfo::GetSpeedTreeLeafsSquare(DAVA::RenderObject *
 void SceneInfo::TexturesReloaded()
 {
     sceneTextures.clear();
-    SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures);
+    SceneHelper::EnumerateSceneTextures(activeScene, sceneTextures, SceneHelper::EXCLUDE_NULL);
     sceneTexturesSize = CalculateTextureSize(sceneTextures);
     
     RefreshSceneGeneralInfo();

@@ -148,8 +148,6 @@ void Entity::AddComponent(Component * component)
 		Vector<Component*>* componentsVector = componentsMap.at(componentType);
 		if(NULL == componentsVector)
 		{
-			DVASSERT(componentsMap.size() < COMPONENTS_IN_MAP_COUNT);
-				
 			componentsVector = new Vector<Component*>();
 			componentsMap.insert(componentType, componentsVector);
 		}
@@ -1431,20 +1429,6 @@ Entity * Entity::GetNodeByPathID(Entity * root, String pathID)
 		offs++;
 	}
 	return result;
-}
-    
-void Entity::SetFog_Kostil(float32 density, const Color &color)
-{
-    //DVASSERT(false && "Should be removed, because fog settings are applied at MaterialSystem");
-        
-	Vector<Material *> materials;
-	GetDataNodes(materials);
-		
-	for(int32 i = 0; i < (int32)materials.size(); ++i)
-	{
-		materials[i]->SetFogDensity(density);
-		materials[i]->SetFogColor(color);
-	}
 }
 	
 Matrix4 & Entity::ModifyLocalTransform()

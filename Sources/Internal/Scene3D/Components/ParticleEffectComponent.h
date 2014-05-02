@@ -105,6 +105,7 @@ public:
     void SetSortingOffset(uint32 offset);
 
 private:
+    void ClearGroup(ParticleGroup& group);
 	void ClearCurrentGroups();
     void SetGroupsFinishing();
 	
@@ -148,6 +149,10 @@ public: //mostly editor commands
     void InsertEmitterAt(ParticleEmitter *emitter, int32 position);
 	void RemoveEmitter(ParticleEmitter *emitter);
     float32 GetCurrTime();
+
+    /*statistics for editor*/
+    int32 GetLayerActiveParticlesCount(ParticleLayer *layer);
+    float32 GetLayerActiveParticlesSquare(ParticleLayer *layer);
 
 public:
 	uint32 loadedVersion;

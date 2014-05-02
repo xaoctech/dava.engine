@@ -956,18 +956,6 @@ void UITextField::SetVisible(bool isVisible, bool hierarchic)
 	textFieldAndroid->SetVisible(isVisible);
 #endif
 }
-
-void UITextField::SetInternalVisible( bool isVisible )
-{
-    UIControl::SetInternalVisible(isVisible);
-
-#ifdef __DAVAENGINE_IPHONE__
-    textFieldiPhone->SetVisible(internalVisible);
-#elif defined(__DAVAENGINE_ANDROID__)
-    textFieldAndroid->SetVisible(internalVisible);
-#endif
-}
-
 }; // namespace
 
 
