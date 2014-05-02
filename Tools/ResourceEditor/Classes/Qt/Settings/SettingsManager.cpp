@@ -70,8 +70,8 @@ void SettingsManager::Init()
 	CreateValue("Scene/CameraSpeed3", DAVA::VariantType(400.0f));
 	CreateValue("Scene/CameraFOV", DAVA::VariantType(70.0f));
     CreateValue("Scene/SelectionSequent", DAVA::VariantType(false));
-    CreateValue("Scene/SelectionDrawMode", DAVA::VariantType(SceneSelectionSystem::DRAW_DEFAULT), DAVA::InspDesc("Selection draw modes", GlobalEnumMap<SceneSelectionSystem::DrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
-    CreateValue("Scene/CollisionDrawMode", DAVA::VariantType(SceneCollisionSystem::DRAW_DEFAULT), DAVA::InspDesc("Collision draw modes", GlobalEnumMap<SceneCollisionSystem::DrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
+    CreateValue("Scene/SelectionDrawMode", DAVA::VariantType(SS_DRAW_DEFAULT), DAVA::InspDesc("Selection draw modes", GlobalEnumMap<SelectionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
+    CreateValue("Scene/CollisionDrawMode", DAVA::VariantType(CS_DRAW_DEFAULT), DAVA::InspDesc("Collision draw modes", GlobalEnumMap<CollisionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
     CreateValue("Scene/GizmoScale", DAVA::VariantType(DAVA::float32(1.0)));
     CreateValue("Scene/DebugBoxScale", DAVA::VariantType(DAVA::float32(1.0)));
     CreateValue("Scene/DebugBoxUserScale", DAVA::VariantType(DAVA::float32(1.0)));
