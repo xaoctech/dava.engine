@@ -170,6 +170,8 @@ protected:
     LODInfo lodInfoSelection;
     LODInfo lodInfoInFrame;
 
+    DAVA::VisibilityArray visibilityArray;
+
 	bool isUpToDate;
 };
 
