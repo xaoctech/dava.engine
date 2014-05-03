@@ -111,6 +111,14 @@ public:
 	 */
 	virtual uint32 Write(const void * sourceBuffer, uint32 dataSize);
 
+	/**
+		\brief Write [sizeof(T)] bytes to this file from [value]
+		\param[in] value function get data from this buffer
+		\returns number of bytes actually written
+	 */
+    template <class T>
+    uint32 Write(const T * value);
+
 	/** 
 		\brief Write string.
 		write null-terminated string from current position in file.
@@ -145,6 +153,16 @@ public:
 	virtual uint32 Read(void * destinationBuffer, uint32 dataSize);
 
 	/**
+		\brief Read [sizeof(T)] bytes from this file to [value]
+		\param[in, out] value function write data to this pointer
+		\return number of bytes actually read
+	 */
+    template <class T>
+    uint32 Read(T * value);
+
+	
+    
+    /**
 		\brief Read one line from text file to [pointerToData] buffer
 		\param[in, out] destinationBuffer function write data to this buffer
 		\param[in] bufferSize size of [pointerToData] buffer
@@ -161,7 +179,8 @@ public:
 	 */
 	virtual uint32 ReadString(char8 * destinationBuffer, uint32 destinationBufferSize);
     uint32 ReadString(String & destinationString);
-	
+    
+    
 	/** 
 		\brief Get current file position
 	*/
@@ -195,15 +214,15 @@ protected:
     
     
 template <class T>
-uint32 ReadFromFile(File *file, T * value)
+uint32 File::Read(T * value)
 {
-    return file->Read(value, sizeof(T));
+    return Read(value, sizeof(T));
 }
 
 template <class T>
-uint32 WriteToFile(File *file, const T * value)
+uint32 File::Write(const T * value)
 {
-    return file->Write(value, sizeof(T));
+    return Write(value, sizeof(T));
 }
 
 };

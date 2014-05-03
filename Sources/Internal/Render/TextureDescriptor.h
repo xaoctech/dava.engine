@@ -71,7 +71,7 @@ public:
 
 		INTROSPECTION(TextureDrawSettings,
 			MEMBER(wrapModeS, InspDesc("wrapModeS", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT | I_SAVE)
-			MEMBER(wrapModeT, InspDesc("wrapModeT", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT)
+			MEMBER(wrapModeT, InspDesc("wrapModeT", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(minFilter, InspDesc("minFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(magFilter, InspDesc("magFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 		)
@@ -79,9 +79,6 @@ public:
     
 	struct TextureDataSettings: public InspBase
 	{
-	private:
-		void EnableFlag(bool enable, int8 flag);
-		bool IsFlagEnabled(int8 flag) const;
 	public:
 		enum eOptionsFlag
 		{
@@ -102,6 +99,11 @@ public:
 			PROPERTY("generateMipMaps", "generateMipMaps", GetGenerateMipMaps, SetGenerateMipmaps, I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(faceDescription, "faceDescription", I_SAVE)
 		)
+
+    private:
+		void EnableFlag(bool enable, int8 flag);
+		bool IsFlagEnabled(int8 flag) const;
+
 	};
 
     struct Compression: public InspBase

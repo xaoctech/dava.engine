@@ -176,10 +176,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	EnableSceneActions(false);
 
 	DiableUIForFutureUsing();
-
-	DAVA::Logger::FrameworkDebug("size of TextureDescriptor is %d bytes", sizeof(TextureDescriptor));
-	DAVA::Logger::FrameworkDebug("size of TextureDescriptor::TextureDrawSettings is %d bytes", sizeof(TextureDescriptor::TextureDrawSettings));
-	DAVA::Logger::FrameworkDebug("size of TextureDescriptor::TextureDataSettings is %d bytes", sizeof(TextureDescriptor::TextureDataSettings));
 }
 
 QtMainWindow::~QtMainWindow()
