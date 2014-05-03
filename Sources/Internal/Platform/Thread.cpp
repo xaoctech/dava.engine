@@ -75,10 +75,6 @@ bool Thread::IsMainThread()
 
 Thread * Thread::Create(const Message& msg)
 {
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	InitMacOS();
-#endif //defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
 	Thread * t = new Thread(msg);
 	t->state = STATE_CREATED;
 	
@@ -100,17 +96,6 @@ Thread::eThreadState Thread::GetState()
 {
 	return state;
 }
-
-
-#ifndef __DAVAENGINE_WIN32__
-void Thread::Join()
-{
-    if (pthread_join(GetId().internalTid, NULL) != 0)
-        DAVA::Logger::Error("Thread::Join() failed in pthread_join");
-
-}
-#endif
-
 
 void Thread::Wait(ConditionalVariable * cv)
 {
@@ -148,21 +133,6 @@ Thread::Id Thread::GetId()
 {
 	return id;
 }
-    
-#ifndef __DAVAENGINE_WIN32__
-void Thread::SleepThread(uint32 timeMS)
-{
-    timespec req, rem;
-    req.tv_sec = timeMS / 1000;
-    req.tv_nsec = (timeMS % 1000) * 1000000L;
-    int32 ret = EINTR;
-    while(ret == EINTR)
-    {
-        ret = nanosleep(&req, &rem);
-        req = rem;
-    }
-}
-#endif
 
 Thread::Id::Id()
 {
@@ -176,6 +146,11 @@ Thread::Id::Id(const NativeId & _nativeId)
 Thread::Id::Id(const Id & other)
 :   nativeId(other.nativeId)
 {}
+
+const Thread::Id::NativeId & Thread::Id::GetNativeId()
+{
+    return nativeId;
+}
 
 bool Thread::Id::operator==(const Id & other) const
 {

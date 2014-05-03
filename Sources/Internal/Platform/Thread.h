@@ -84,6 +84,7 @@ public:
         Id();
         Id(const NativeId & _nativeId);
         Id(const Id & other);
+        const NativeId & GetNativeId();
 
         bool operator==(const Id & other) const;
         bool operator!=(const Id & other) const;
@@ -175,11 +176,9 @@ private:
 	Id id;
 	static Id mainThreadId;
 	
-#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-
+#if defined(DAVAENGINE_PTHREAD)
+    bool joined;
 	friend void	* PthreadMain(void * param);
-	void		StartMacOS();
-	static void	InitMacOS();
 #elif defined (__DAVAENGINE_WIN32__)
 private:
     HANDLE threadHandle;
