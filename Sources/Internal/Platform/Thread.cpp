@@ -70,11 +70,15 @@ Thread * Thread::Create(const Message& msg)
 }
 	
 Thread::Thread(const Message& _msg)
+:   msg(_msg)
 {
-	msg = _msg;
     Init();
 }
 
+Thread::~Thread()
+{
+    Shutdown();
+}
 
 Thread::eThreadState Thread::GetState()
 {
@@ -85,7 +89,7 @@ Thread::eThreadState Thread::GetState()
 #ifndef __DAVAENGINE_WIN32__
 void Thread::Join()
 {
-    if (pthread_join(GetThreadId().internalTid, NULL) != 0)
+    if (pthread_join(GetId().internalTid, NULL) != 0)
         DAVA::Logger::Error("Thread::Join() failed in pthread_join");
 
 }
@@ -119,14 +123,14 @@ void Thread::Broadcast(ConditionalVariable * cv)
         Logger::FrameworkDebug("[Thread::Broadcast]: pthread_cond_broadcast error code %d", ret);
 }
 
-void Thread::SetThreadId(const ThreadId & _threadId)
+void Thread::SetThreadId(const Id & _id)
 {
-	threadId = _threadId;
+	id = _id;
 }
 
-Thread::ThreadId Thread::GetThreadId()
+Thread::Id Thread::GetId()
 {
-	return threadId;
+	return id;
 }
     
 #ifndef __DAVAENGINE_WIN32__
@@ -143,5 +147,48 @@ void Thread::SleepThread(uint32 timeMS)
     }
 }
 #endif
+
+Thread::Id::Id()
+{
+    nativeId = 0;
+}
+
+Thread::Id::Id(const NativeId & _nativeId) 
+:   nativeId(_nativeId)
+{}
+
+Thread::Id::Id(const Id & other)
+:   nativeId(other.nativeId)
+{}
+
+bool Thread::Id::operator==(const Id & other) const
+{
+    return nativeId == other.nativeId;
+}
+
+bool Thread::Id::operator!=(const Id & other) const
+{
+    return nativeId != other.nativeId;
+}
+
+bool Thread::Id::operator<(const Id & other) const
+{
+    return nativeId < other.nativeId;
+}
+
+bool Thread::Id::operator>(const Id & other) const
+{
+    return nativeId > other.nativeId;
+}
+
+bool Thread::Id::operator<=(const Id & other) const
+{
+    return !(nativeId > other.nativeId);
+}
+
+bool Thread::Id::operator>=(const Id & other) const
+{
+    return !(nativeId < other.nativeId);
+}
 
 };

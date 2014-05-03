@@ -34,12 +34,33 @@ namespace DAVA
 
 #if defined(__DAVAENGINE_WIN32__)
 
-Thread::ThreadId Thread::mainThreadId = 0;
+Thread::Id Thread::mainThreadId = 0;
+
+void Thread::InitMainThread()
+{
+    mainThreadId = GetCurrentThreadId();
+}
 
 void Thread::Init()
 {
     threadHandle = 0;
-    threadId = 0;
+}
+
+bool Thread::IsMainThread()
+{
+    if (mainThreadId == 0)
+    {
+        Logger::Error("Main thread not initialized");
+    }
+    return (mainThreadId == GetCurrentThreadId());
+}
+
+void Thread::Shutdown()
+{
+    if(threadHandle)
+    {
+        CloseHandle(threadHandle);
+    }
 }
 
 void Thread::Start()
@@ -60,28 +81,6 @@ void Thread::Start()
         Logger::Error("Thread::StartWin32 error %d", (int32)GetLastError());
     }
     ResumeThread(threadHandle);
-}
-
-Thread::~Thread()
-{
-    if(threadHandle)
-    {
-        CloseHandle(threadHandle);
-    }
-}
-
-void Thread::InitMainThread()
-{
-	mainThreadId = GetCurrentThreadId();
-}
-
-bool Thread::IsMainThread()
-{
-	if (mainThreadId == 0)
-	{
-		Logger::Error("Main thread not initialized");
-	}
-	return (mainThreadId == GetCurrentThreadId());
 }
 
 void Thread::SleepThread(uint32 timeMS)
@@ -106,10 +105,10 @@ DWORD WINAPI ThreadFunc(void* param)
 
 void Thread::YieldThread()
 {
-    SwitchToThread();
+    ::SwitchToThread();
 }
 
-Thread::ThreadId Thread::GetCurrentThreadId()
+Thread::Id Thread::GetCurrentThreadId()
 {
     return ::GetCurrentThreadId();
 }

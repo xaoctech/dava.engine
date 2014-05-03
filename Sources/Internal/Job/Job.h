@@ -53,7 +53,7 @@ public:
 		PERFORMED_ON_MAIN_THREAD
 	};
 
-	Job(const Message & message, const Thread::ThreadId & creatorThreadId);
+	Job(const Message & message, const Thread::Id & creatorThreadId);
 	eState GetState();
 	ePerformedWhere PerformedWhere();
     const Message & GetMessage();
@@ -64,7 +64,7 @@ protected:
 	void SetPerformedOn(ePerformedWhere performedWhere);
 
 	Message message;
-	Thread::ThreadId creatorThreadId;
+	Thread::Id creatorThreadId;
 
 	eState state;
 	ePerformedWhere performedWhere;
