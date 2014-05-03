@@ -151,10 +151,7 @@ void Core::CreateSingletons()
 #ifdef __DAVAENGINE_AUTOTESTING__
     new AutotestingSystem();
 #endif
-
-#if defined(__DAVAENGINE_WIN32__)
 	Thread::InitMainThread();
-#endif
     
     RegisterDAVAClasses();
     
