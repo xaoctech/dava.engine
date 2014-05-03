@@ -45,25 +45,25 @@
 class SceneCollisionSystem;
 class HoodSystem;
 
+enum SelectionSystemDrawMode
+{
+	SS_DRAW_NOTHING = 0x0,
+
+	SS_DRAW_SHAPE          = 0x1,
+	SS_DRAW_CORNERS	    = 0x2,
+	SS_DRAW_BOX            = 0x4,
+	SS_DRAW_NO_DEEP_TEST   = 0x10,
+
+    SS_DRAW_DEFAULT = SS_DRAW_CORNERS | SS_DRAW_BOX,
+	SS_DRAW_ALL = 0xFFFFFFFF
+};
+
 class SceneSelectionSystem : public DAVA::SceneSystem
 {
 	friend class SceneEditor2;
 	friend class EntityModificationSystem;
 
 public:
-    enum DrawMode
-    {
-	    DRAW_NOTHING = 0x0,
-
-	    DRAW_SHAPE          = 0x1,
-	    DRAW_CORNERS	    = 0x2,
-	    DRAW_BOX            = 0x4,
-	    DRAW_NO_DEEP_TEST   = 0x10,
-
-        DRAW_DEFAULT = DRAW_CORNERS | DRAW_BOX,
-	    DRAW_ALL = 0xFFFFFFFF
-    };
-    
     SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys);
 	~SceneSelectionSystem();
 
