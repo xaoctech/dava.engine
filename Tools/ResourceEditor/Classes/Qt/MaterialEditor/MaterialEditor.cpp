@@ -47,6 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Commands2/MaterialGlobalCommand.h"
 
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
@@ -285,11 +286,21 @@ void MaterialEditor::materialSelected(const QItemSelection & selected, const QIt
 
 void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
 {
-    if(command->GetId() == CMDID_INSP_DYNAMIC_MODIFY ||
-        command->GetId() == CMDID_INSP_MEMBER_MODIFY ||
-        command->GetId() == CMDID_META_OBJ_MODIFY)
+    if(scene == QtMainWindow::Instance()->GetCurrentScene())
     {
-        SetCurMaterial(curMaterials);
+        int cmdId = command->GetId();
+
+        if(cmdId == CMDID_INSP_DYNAMIC_MODIFY ||
+           cmdId == CMDID_INSP_MEMBER_MODIFY ||
+           cmdId == CMDID_META_OBJ_MODIFY)
+        {
+            SetCurMaterial(curMaterials);
+        }
+        else if(cmdId == CMDID_MATERIAL_GLOBAL_SET)
+        {
+            sceneActivated(scene);
+            SetCurMaterial(curMaterials);
+        }
     }
 }
 
@@ -942,9 +953,11 @@ void MaterialEditor::OnMaterialAddGlobal(bool checked)
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
     if(NULL != curScene)
     {
-        curScene->CreateGlobalMaterial();
-        sceneActivated(curScene);
+        DAVA::NMaterial *global = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+        curScene->Exec(new MaterialGlobalSetCommand(curScene, global));
+        SafeRelease(global);
 
+        sceneActivated(curScene);
         SelectMaterial(curScene->GetGlobalMaterial());
     }
 }
@@ -954,9 +967,7 @@ void MaterialEditor::OnMaterialRemoveGlobal(bool checked)
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
     if(NULL != curScene)
     {
-        SelectMaterial(NULL);
-
-        curScene->SetGlobalMaterial(NULL);
+        curScene->Exec(new MaterialGlobalSetCommand(curScene, NULL));
         sceneActivated(curScene);
     }
 }
