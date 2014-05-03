@@ -106,14 +106,6 @@ DAVA::TextureDescriptor* TextureListModel::getDescriptor(const QModelIndex &inde
 	return ret;
 }
 
-void TextureListModel::setTexture(const DAVA::TextureDescriptor* descriptor, DAVA::Texture *texture)
-{
-	if(texturesAll.contains(descriptor))
-	{
-		texturesAll[descriptor] = texture;
-	}
-}
-
 bool TextureListModel::isHighlited(const QModelIndex &index) const
 {
 	bool ret = false;
