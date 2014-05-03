@@ -30,7 +30,7 @@
 
 #include "Scene/System/CollisionSystem/CollisionParticleEmitter.h"
 
-CollisionParticleEffect::CollisionParticleEffect(DAVA::Entity *entity, btCollisionWorld *world, DAVA::float32 boxHalfSize)
+CollisionParticleEffect::CollisionParticleEffect(DAVA::Entity *entity, btCollisionWorld *world, DAVA::float32 boxSize)
 	: CollisionBaseObject(entity, world)
 {
 	if(NULL != entity && NULL != world)
@@ -39,7 +39,7 @@ CollisionParticleEffect::CollisionParticleEffect(DAVA::Entity *entity, btCollisi
 		DAVA::Vector3 pos = curEntityTransform.GetTranslationVector();
 
 		btObject = new btCollisionObject();
-		btShape = new btBoxShape(btVector3(boxHalfSize, boxHalfSize, boxHalfSize));
+		btShape = new btBoxShape(btVector3(boxSize / 2, boxSize / 2, boxSize / 2));
 
 		btObject->setCollisionShape(btShape);
 
@@ -50,7 +50,7 @@ CollisionParticleEffect::CollisionParticleEffect(DAVA::Entity *entity, btCollisi
 
 		btWord->addCollisionObject(btObject);
 
-		boundingBox = DAVA::AABBox3(DAVA::Vector3(), boxHalfSize * 2);
+		boundingBox = DAVA::AABBox3(DAVA::Vector3(), boxSize);
 	}
 }
 
