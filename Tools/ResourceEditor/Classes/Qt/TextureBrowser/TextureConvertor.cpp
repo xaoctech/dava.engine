@@ -606,7 +606,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
 		{
 			TextureConverter::CleanupOldTextures(descriptor, gpu, (DAVA::PixelFormat)descriptor->compression[gpu].format);
             
-            DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality");
+            DAVA::VariantType quality = SettingsManager::Instance()->GetValue("General/CompressionQuality");
             
 			outputPath = TextureConverter::ConvertTexture(*descriptor, gpu, true, (TextureConverter::eConvertQuality)quality.AsInt32());
         }
