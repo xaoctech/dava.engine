@@ -250,7 +250,7 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
     exporter.SetOutSoundsFolder(projectPath + String("Data/Sfx/"));
 	exporter.SetGPUForExporting(newGPU);
 
-	DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality");
+	DAVA::VariantType quality = SettingsManager::Instance()->GetValue("General/CompressionQuality");
 	exporter.SetCompressionQuality((DAVA::TextureConverter::eConvertQuality)quality.AsInt32());
 
 	Set<String> errorLog;

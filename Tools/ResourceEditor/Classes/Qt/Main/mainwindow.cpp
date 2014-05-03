@@ -1995,7 +1995,7 @@ void QtMainWindow::OnConvertModifiedTextures()
 			continue;
 		}
 
-        DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality");
+        DAVA::VariantType quality = SettingsManager::Instance()->GetValue("General/CompressionQuality");
         
 		Vector<eGPUFamily> updatedGPUs = it->second;
 		WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
