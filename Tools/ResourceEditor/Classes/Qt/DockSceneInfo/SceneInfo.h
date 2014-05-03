@@ -130,7 +130,8 @@ protected:
     void CollectSceneData(SceneEditor2 *scene);
     void CollectParticlesData();
     void CollectLODDataInFrame();
-    void CollectLODDataInFrameRecursive(DAVA::Entity *entity);
+    void CollectLODDataInScene();
+    void CollectLODDataInEntityRecursive(DAVA::Entity *entity);
     void CollectLODDataForSelection();
     void CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup);
     static void CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info);
