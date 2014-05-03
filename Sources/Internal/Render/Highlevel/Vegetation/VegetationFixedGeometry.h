@@ -43,6 +43,7 @@
 
 #include "Render/Highlevel/Vegetation/TextureSheet.h"
 #include "Render/Highlevel/Vegetation/VegetationGeometry.h"
+#include "Render/Highlevel/Vegetation/VegetationMaterialTransformer.h"
 
 namespace DAVA
 {
@@ -67,6 +68,15 @@ public:
     virtual void Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags);
     virtual void OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props);
     
+private:
+
+    class FixedMaterialTransformer : public VegetationMaterialTransformer
+    {
+        public:
+        
+            virtual void TransformMaterialOnCreate(NMaterial* mat);
+    };
+
 private:
 
     void GenerateVertices(uint32 maxClusters,

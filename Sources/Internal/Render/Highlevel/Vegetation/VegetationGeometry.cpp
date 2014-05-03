@@ -31,6 +31,16 @@
 namespace DAVA
 {
 
+VegetationGeometry::VegetationGeometry() : materialTransform(NULL)
+{
+}
+
+VegetationGeometry::~VegetationGeometry()
+{
+    SafeDelete(materialTransform);
+}
+
+
 void VegetationGeometry::SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions)
 {
     float32 z = bbox.min.z + (bbox.max.z - bbox.min.z) * 0.5f;
