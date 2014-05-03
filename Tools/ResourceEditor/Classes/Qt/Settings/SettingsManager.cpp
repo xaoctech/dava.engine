@@ -52,7 +52,7 @@ SettingsManager::~SettingsManager()
 void SettingsManager::Init()
 {
 	CreateValue("General/DesignerName", DAVA::VariantType(DAVA::String("nobody")));
-    CreateValue("General/RecentFilesCount", DAVA::VariantType(5));
+    CreateValue("General/RecentFilesCount", DAVA::VariantType((DAVA::int32) 5));
 	CreateValue("General/PreviewEnabled", DAVA::VariantType(false));
 
     CreateValue("General/MaterialEditor/SwitchColor0", DAVA::VariantType(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f)));
@@ -70,23 +70,23 @@ void SettingsManager::Init()
 	CreateValue("Scene/CameraSpeed3", DAVA::VariantType(400.0f));
 	CreateValue("Scene/CameraFOV", DAVA::VariantType(70.0f));
     CreateValue("Scene/SelectionSequent", DAVA::VariantType(false));
-    CreateValue("Scene/SelectionDrawMode", DAVA::VariantType(SS_DRAW_DEFAULT), DAVA::InspDesc("Selection draw modes", GlobalEnumMap<SelectionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
-    CreateValue("Scene/CollisionDrawMode", DAVA::VariantType(CS_DRAW_DEFAULT), DAVA::InspDesc("Collision draw modes", GlobalEnumMap<CollisionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
+    CreateValue("Scene/SelectionDrawMode", DAVA::VariantType((DAVA::int32) SS_DRAW_DEFAULT), DAVA::InspDesc("Selection draw modes", GlobalEnumMap<SelectionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
+    CreateValue("Scene/CollisionDrawMode", DAVA::VariantType((DAVA::int32) CS_DRAW_DEFAULT), DAVA::InspDesc("Collision draw modes", GlobalEnumMap<CollisionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
     CreateValue("Scene/GizmoScale", DAVA::VariantType(DAVA::float32(1.0)));
     CreateValue("Scene/DebugBoxScale", DAVA::VariantType(DAVA::float32(1.0)));
     CreateValue("Scene/DebugBoxUserScale", DAVA::VariantType(DAVA::float32(1.0)));
     CreateValue("Scene/DebugBoxParticleScale", DAVA::VariantType(DAVA::float32(1.0)));
 
-    CreateValue("Internal/TextureViewGPU", DAVA::VariantType(GPU_UNKNOWN));
+    CreateValue("Internal/TextureViewGPU", DAVA::VariantType((DAVA::int32) GPU_UNKNOWN));
 	CreateValue("Internal/LastProjectPath", DAVA::VariantType(DAVA::FilePath()));
 	CreateValue("Internal/EditorVersion", DAVA::VariantType(DAVA::String("local build")));
 	CreateValue("Internal/CubemapLastFaceDir", DAVA::VariantType(DAVA::FilePath()));
 	CreateValue("Internal/CubemapLastProjDir", DAVA::VariantType(DAVA::FilePath()));
 
 	CreateValue("Internal/RecentFiles", DAVA::VariantType((KeyedArchive *) NULL));
-    CreateValue("Internal/MaterialsLightViewMode", DAVA::VariantType(EditorMaterialSystem::LIGHTVIEW_ALL));
-    CreateValue("Internal/MaterialsShowLightmapCanvas", DAVA::VariantType(false));
-    CreateValue("Internal/LicenceAccepted", DAVA::VariantType(false));
+    CreateValue("Internal/MaterialsLightViewMode", DAVA::VariantType((DAVA::int32) EditorMaterialSystem::LIGHTVIEW_ALL));
+    CreateValue("Internal/MaterialsShowLightmapCanvas", DAVA::VariantType((bool) false));
+    CreateValue("Internal/LicenceAccepted", DAVA::VariantType((bool) false));
 }
 
 DAVA::VariantType SettingsManager::GetValue(const DAVA::FastName& path)
