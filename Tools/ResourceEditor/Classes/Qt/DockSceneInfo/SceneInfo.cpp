@@ -420,13 +420,20 @@ void SceneInfo::CollectLODDataInFrame()
             lodInfoInFrame.trianglesOnObjects += indexCount/3;
         else
             lodInfoInFrame.trianglesOnLod[currLodIndex] += indexCount/3;
-    }
-
-    /*CollectLODDataInFrameRecursive(activeScene);
-    lodInfoInFrame.trianglesOnObjects += GetTrianglesForNotLODEntityRecursive(activeScene, true);*/
+    }    
 }
 
-void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
+void SceneInfo::CollectLODDataInScene()
+{
+    lodInfoInFrame.Clear();
+    if(!activeScene)
+        return;
+
+    CollectLODDataInEntityRecursive(activeScene);
+    lodInfoInFrame.trianglesOnObjects += GetTrianglesForNotLODEntityRecursive(activeScene, true);
+}
+
+void SceneInfo::CollectLODDataInEntityRecursive(DAVA::Entity *entity)
 {
     DAVA::LodComponent *lod = GetLodComponent(entity);
     
@@ -438,7 +445,7 @@ void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
     DAVA::int32 count = entity->GetChildrenCount();
     for(DAVA::int32 i = 0; i < count; ++i)
     {
-        CollectLODDataInFrameRecursive(entity->GetChild(i));
+        CollectLODDataInEntityRecursive(entity->GetChild(i));
     }
 }
 
