@@ -42,6 +42,7 @@
 #include "Render/Material/NMaterial.h"
 
 #include "Render/Highlevel/Vegetation/VegetationRenderData.h"
+#include "Render/Highlevel/Vegetation/VegetationMaterialTransformer.h"
 
 namespace DAVA
 {
@@ -57,7 +58,12 @@ protected:
         inline PolygonSortData();
     };
     
+    VegetationMaterialTransformer* materialTransform;
+    
 public:
+
+    VegetationGeometry();
+    virtual ~VegetationGeometry();
         
     virtual void Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags) = 0;
     virtual void OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props) = 0;
@@ -67,12 +73,19 @@ public:
     virtual uint32 GetSortDirectionCount();
     
     virtual void ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray);
+    
+    inline VegetationMaterialTransformer* GetMaterialTransform();
 };
 
 inline VegetationGeometry::PolygonSortData::PolygonSortData()
 {
     indices[0] = indices[1] = indices[2] = -1;
     cameraDistance = -1.0f;
+}
+
+inline VegetationMaterialTransformer* VegetationGeometry::GetMaterialTransform()
+{
+    return materialTransform;
 }
     
 };

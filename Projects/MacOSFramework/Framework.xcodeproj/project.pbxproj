@@ -824,6 +824,9 @@
 		641C22A319094CC3008F3438 /* VegetationPropertyNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 641C229F19094CC3008F3438 /* VegetationPropertyNames.h */; };
 		641C22A419094CC3008F3438 /* VegetationPropertyNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 641C229F19094CC3008F3438 /* VegetationPropertyNames.h */; };
 		641C22A519094CC3008F3438 /* VegetationPropertyNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 641C229F19094CC3008F3438 /* VegetationPropertyNames.h */; };
+		6422DEC419155044009507DA /* VegetationMaterialTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6422DEC019155044009507DA /* VegetationMaterialTransformer.h */; };
+		6422DEC519155044009507DA /* VegetationMaterialTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6422DEC019155044009507DA /* VegetationMaterialTransformer.h */; };
+		6422DEC619155044009507DA /* VegetationMaterialTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6422DEC019155044009507DA /* VegetationMaterialTransformer.h */; };
 		6435963B18C1FA3200862C31 /* AbstractQuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 6435963718C1FA3200862C31 /* AbstractQuadTree.h */; };
 		6435963C18C1FA3200862C31 /* AbstractQuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 6435963718C1FA3200862C31 /* AbstractQuadTree.h */; };
 		6435963D18C1FA3200862C31 /* AbstractQuadTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 6435963718C1FA3200862C31 /* AbstractQuadTree.h */; };
@@ -2377,6 +2380,7 @@
 		641C229319090D91008F3438 /* RenderBatchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderBatchPool.h; sourceTree = "<group>"; };
 		641C229E19094CC3008F3438 /* VegetationPropertyNames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationPropertyNames.cpp; sourceTree = "<group>"; };
 		641C229F19094CC3008F3438 /* VegetationPropertyNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationPropertyNames.h; sourceTree = "<group>"; };
+		6422DEC019155044009507DA /* VegetationMaterialTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationMaterialTransformer.h; sourceTree = "<group>"; };
 		6435963718C1FA3200862C31 /* AbstractQuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractQuadTree.h; sourceTree = "<group>"; };
 		6435E24E1907AEE9008B1052 /* TextureSheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureSheet.cpp; sourceTree = "<group>"; };
 		6435E24F1907AEE9008B1052 /* TextureSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSheet.h; sourceTree = "<group>"; };
@@ -3236,6 +3240,7 @@
 				641C229319090D91008F3438 /* RenderBatchPool.h */,
 				641C229E19094CC3008F3438 /* VegetationPropertyNames.cpp */,
 				641C229F19094CC3008F3438 /* VegetationPropertyNames.h */,
+				6422DEC019155044009507DA /* VegetationMaterialTransformer.h */,
 			);
 			path = Vegetation;
 			sourceTree = "<group>";
@@ -4528,6 +4533,7 @@
 				176DE9D0174B5561007A983B /* ParticleEmitterNode.h in Headers */,
 				176DE9D1174B5561007A983B /* PathManip.h in Headers */,
 				50A3044318575C370082CA8D /* StaticOcclusionRenderPass.h in Headers */,
+				6422DEC619155044009507DA /* VegetationMaterialTransformer.h in Headers */,
 				176DE9D2174B5561007A983B /* PolygonGroupInstance.h in Headers */,
 				176DE9D3174B5561007A983B /* ProxyNode.h in Headers */,
 				176DE9D4174B5561007A983B /* Scene.h in Headers */,
@@ -4849,6 +4855,7 @@
 				E8989F4016BD24E500732C04 /* RenderBase.h in Headers */,
 				E8989F4216BD24E500732C04 /* RenderDataObject.h in Headers */,
 				E8989F4416BD24E500732C04 /* RenderEffect.h in Headers */,
+				6422DEC419155044009507DA /* VegetationMaterialTransformer.h in Headers */,
 				E8989F4616BD24E500732C04 /* RenderGrayscaleEffect.h in Headers */,
 				E8989F4816BD24E500732C04 /* RenderHelper.h in Headers */,
 				E8989F4A16BD24E500732C04 /* RenderManager.h in Headers */,
@@ -5249,6 +5256,7 @@
 				E898A11216BD265400732C04 /* MaterialGraphNode.h in Headers */,
 				50ED334E1858B5A200A917D5 /* StaticOcclusionComponent.h in Headers */,
 				E898A11316BD265400732C04 /* NMaterial.h in Headers */,
+				6422DEC519155044009507DA /* VegetationMaterialTransformer.h in Headers */,
 				E898A11416BD265400732C04 /* NMaterialConsts.h in Headers */,
 				E898A11516BD265400732C04 /* Material.h in Headers */,
 				E898A11616BD265400732C04 /* OGLHelpers.h in Headers */,

@@ -264,6 +264,8 @@ VegetationFixedGeometry::VegetationFixedGeometry(uint32 _maxClusters,
     {
         resolutionTilesPerRow.push_back(_resolutionTilesPerRow[i]);
     }
+    
+    materialTransform = new FixedMaterialTransformer();
 }
 
 
@@ -277,10 +279,16 @@ void VegetationFixedGeometry::Build(Vector<VegetationRenderData*>& renderDataArr
                                                    NMaterialName::GRASS,
                                                    NMaterial::DEFAULT_QUALITY_NAME);
     vegetationMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
+    
     FastNameSet::iterator end = materialFlags.end();
     for(FastNameSet::iterator it = materialFlags.begin(); it != end; ++it)
     {
         vegetationMaterial->SetFlag(it->first, NMaterial::FlagOn);
+    }
+    
+    if(RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
+    {
+        vegetationMaterial->SetFlag(VegetationPropertyNames::FLAG_FRAMEBUFFER_FETCH, NMaterial::FlagOn);
     }
     
     vegetationMaterial->SetPropertyValue(VegetationPropertyNames::UNIFORM_WORLD_SIZE,
@@ -750,5 +758,17 @@ void VegetationFixedGeometry::OnVegetationPropertiesChanged(Vector<VegetationRen
 
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+void VegetationFixedGeometry::FixedMaterialTransformer::TransformMaterialOnCreate(NMaterial* mat)
+{
+    if(false == RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
+    {
+        NMaterialHelper::EnableStateFlags(DAVA::PASS_FORWARD,
+                                          mat,
+                                          RenderStateData::STATE_BLEND);
+    }
+};
 
 };

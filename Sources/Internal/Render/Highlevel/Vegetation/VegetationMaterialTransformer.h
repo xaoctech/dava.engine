@@ -26,54 +26,19 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_RENDERBATCHPOOL_H__
-#define __DAVAENGINE_RENDERBATCHPOOL_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "Base/FastName.h"
-#include "Render/RenderBase.h"
-#include "Base/BaseMath.h"
-#include "Render/Highlevel/Vegetation/VegetationMaterialTransformer.h"
+#ifndef __DAVAENGINE_VEGETATIONMATERIALTRANSFORMER_H__
+#define __DAVAENGINE_VEGETATIONMATERIALTRANSFORMER_H__
 
 
 namespace DAVA
 {
 
-class RenderBatch;
 class NMaterial;
-
-class RenderBatchPool
+class VegetationMaterialTransformer
 {
 public:
-
-    RenderBatchPool();
-    ~RenderBatchPool();
-
-    void Init(NMaterial* key, uint32 initialCount, VegetationMaterialTransformer* transform);
-    void Clear();
-    RenderBatch* Get(NMaterial* key, VegetationMaterialTransformer* transform);
-    void Return(NMaterial* key, uint32 count);
-    void ReturnAll(NMaterial* key);
-    void ReturnAll();
-    
-private:
-
-    struct RenderBatchPoolEntry
-    {
-        RenderBatchPoolEntry();
-        ~RenderBatchPoolEntry();
-        
-        Vector<RenderBatch*> renderBatches;
-        int32 poolLine;
-    };
-    
-    HashMap<NMaterial*, RenderBatchPoolEntry*> pool;
-    
-    void ReleasePool();
-    RenderBatch* CreateRenderBatch(NMaterial* mat, RenderBatchPoolEntry* entry, VegetationMaterialTransformer* transform);
+    virtual void TransformMaterialOnCreate(NMaterial* mat) = 0;
+};
 };
 
-}
-
-#endif /* defined(__DAVAENGINE_RENDERBATCHPOOL_H__) */
+#endif /* defined(__DAVAENGINE_VEGETATIONMATERIALTRANSFORMER_H__) */

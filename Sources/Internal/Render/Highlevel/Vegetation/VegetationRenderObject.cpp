@@ -319,6 +319,8 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     size_t renderDataCount = renderData.size();
     size_t visibleCellCount = visibleCells.size();
     
+    VegetationMaterialTransformer* materialTransform = vegetationGeometry->GetMaterialTransform();
+    
     for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
         AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[cellIndex];
@@ -328,7 +330,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             VegetationRenderData* renderDataObj = renderData[layerIndex];
             Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
             
-            RenderBatch* rb = renderBatchPool.Get(renderDataObj->GetMaterial());
+            RenderBatch* rb = renderBatchPool.Get(renderDataObj->GetMaterial(), materialTransform);
             NMaterial* mat = rb->GetMaterial();
             
             AddRenderBatch(rb);
@@ -940,12 +942,8 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
                                                      worldSize);
     
     FastNameSet materialFlags;
-    if(RenderManager::Instance()->GetCaps().isFramebufferFetchSupported)
-    {
-        materialFlags.Insert(VegetationPropertyNames::FLAG_FRAMEBUFFER_FETCH);
-    }
-    
     materialFlags.Insert(VegetationPropertyNames::FLAG_BILLBOARD_DRAW);
+    materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
     
 #ifdef VEGETATION_DRAW_LOD_COLOR
     
@@ -968,11 +966,12 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     
     SafeRelease(props);
 
+    VegetationMaterialTransformer* materialTransform = vegetationGeometry->GetMaterialTransform();
     renderBatchPool.Clear();
     size_t renderDataCount = renderData.size();
     for(size_t i = 0; i < renderDataCount; ++i)
     {
-        renderBatchPool.Init(renderData[i]->GetMaterial(), 16);
+        renderBatchPool.Init(renderData[i]->GetMaterial(), 16, materialTransform);
     }
 }
     

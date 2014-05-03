@@ -52,7 +52,7 @@ varying mediump mat3 tbnToWorldMatrix;
 uniform sampler2D decal;
 #endif
 
-#if defined(MATERIAL_DETAIL) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DETAIL) || defined(MATERIAL_GRASS_TRANSFORM)
 uniform sampler2D detail;
 #endif
 
@@ -62,7 +62,7 @@ uniform sampler2D lightmap; //[1]:ONCE
 #endif
 
 //#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_TRANSFORM)
 varying highp vec2 varTexCoord1;
 #endif
 
@@ -117,7 +117,7 @@ varying lowp float varTime;
 uniform lowp vec4 flatColor;
 #endif
 
-#if defined(MATERIAL_GRASS)
+#if defined(MATERIAL_GRASS_TRANSFORM)
 uniform sampler2D vegetationmap;
 varying vec2 varTexCoord2;
 
@@ -370,7 +370,7 @@ void main()
 #endif
 #endif
     
-#if defined(MATERIAL_GRASS)
+#if defined(MATERIAL_GRASS_TRANSFORM)
     
     gl_FragColor.a = gl_FragColor.a * varTexCoord2.x;
     

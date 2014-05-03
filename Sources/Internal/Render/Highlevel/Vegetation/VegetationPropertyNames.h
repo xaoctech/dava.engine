@@ -54,7 +54,7 @@ public:
     
     static const FastName FLAG_FRAMEBUFFER_FETCH;
     static const FastName FLAG_BILLBOARD_DRAW;
-    static const FastName FLAG_GRASS_TRANSFROM;
+    static const FastName FLAG_GRASS_TRANSFORM;
     
     static const FastName VEGETATION_QUALITY_NAME_HIGH;
     static const FastName VEGETATION_QUALITY_NAME_LOW;

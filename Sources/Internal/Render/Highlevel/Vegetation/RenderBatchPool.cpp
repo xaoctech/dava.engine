@@ -58,7 +58,7 @@ RenderBatchPool::~RenderBatchPool()
     ReleasePool();
 }
 
-void RenderBatchPool::Init(NMaterial* key, uint32 initialCount)
+void RenderBatchPool::Init(NMaterial* key, uint32 initialCount, VegetationMaterialTransformer* transform)
 {
     DVASSERT(key);
     
@@ -68,7 +68,7 @@ void RenderBatchPool::Init(NMaterial* key, uint32 initialCount)
         entry = new RenderBatchPoolEntry();
         for(uint32 i = 0; i < initialCount; ++i)
         {
-            CreateRenderBatch(key, entry);
+            CreateRenderBatch(key, entry, transform);
         }
         
         pool.insert(key, entry);
@@ -80,7 +80,7 @@ void RenderBatchPool::Clear()
     ReleasePool();
 }
 
-RenderBatch* RenderBatchPool::Get(NMaterial* key)
+RenderBatch* RenderBatchPool::Get(NMaterial* key, VegetationMaterialTransformer* transform)
 {
     DVASSERT(key);
 
@@ -92,7 +92,7 @@ RenderBatch* RenderBatchPool::Get(NMaterial* key)
     size_t currentPoolSize = entry->renderBatches.size();
     if(currentPoolSize <= entry->poolLine)
     {
-        rb = CreateRenderBatch(key, entry);
+        rb = CreateRenderBatch(key, entry, transform);
     }
     else
     {
@@ -146,13 +146,19 @@ void RenderBatchPool::ReleasePool()
 }
 
 RenderBatch* RenderBatchPool::CreateRenderBatch(NMaterial* mat,
-                                        RenderBatchPoolEntry* entry)
+                                        RenderBatchPoolEntry* entry,
+                                        VegetationMaterialTransformer* transform)
 {
     RenderBatch* rb = new RenderBatch();
     
     NMaterial* batchMaterial = NMaterial::CreateMaterialInstance();
     batchMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
     batchMaterial->SetParent(mat);
+    
+    if(transform)
+    {
+        transform->TransformMaterialOnCreate(batchMaterial);
+    }
     
     rb->SetMaterial(batchMaterial);
     
