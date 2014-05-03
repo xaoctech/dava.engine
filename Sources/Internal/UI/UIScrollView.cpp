@@ -147,7 +147,7 @@ Vector2 UIScrollView::GetMaxSize(UIControl * parentControl, Vector2 currentMaxSi
 	for(List<UIControl*>::const_iterator it = childslist.begin(); it != childslist.end(); ++it)
 	{
     	UIControl *childControl = (*it);
-		if (!childControl)
+		if ( !(childControl && childControl->IsOnScreen()) )
 			continue;
 		
 		Rect childRect = childControl->GetRect();
