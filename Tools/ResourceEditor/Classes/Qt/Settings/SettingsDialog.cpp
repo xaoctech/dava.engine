@@ -37,6 +37,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
     setLayout(dlgLayout);
 
     FillProperties(editor->GetRootProperty(), SettingsManager::GetSettingsTree());
+    editor->expandToDepth(1);
 
     posSaver.Attach(this, "SettingsDialog");
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
