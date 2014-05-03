@@ -59,7 +59,7 @@ void JobManager::UpdateMainQueue()
 
 ScopedPtr<Job> JobManager::CreateJob(eThreadType threadType, const Message & message)
 {
-	const Thread::ThreadId & creatorThreadId = Thread::GetCurrentThreadId();
+	const Thread::Id & creatorThreadId = Thread::GetCurrentThreadId();
 	ScopedPtr<Job> job(new Job(message, creatorThreadId));
 
 	if(THREAD_MAIN == threadType)
@@ -103,7 +103,7 @@ void JobManager::OnJobCompleted(Job * job)
 	{
 		jobsDoneMutex.Lock();
 		//check jobs done for ThreadId
-		Map<Thread::ThreadId, uint32>::iterator iter = jobsPerCreatorThread.find(job->creatorThreadId);
+		Map<Thread::Id, uint32>::iterator iter = jobsPerCreatorThread.find(job->creatorThreadId);
 		if(iter != jobsPerCreatorThread.end())
 		{
 			uint32 & jobsCount = (*iter).second;
@@ -126,11 +126,11 @@ void JobManager::OnJobCompleted(Job * job)
 JobManager::eWaiterRegistrationResult JobManager::RegisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter)
 {
 	JobManager::eWaiterRegistrationResult result = JobManager::WAITER_RETURN_IMMEDIATELY;
-	const Thread::ThreadId threadId = waiter->GetThreadId();
+	const Thread::Id threadId = waiter->GetThreadId();
 
 	jobsDoneMutex.Lock();
 	//check if all desired jobs are already done
-	Map<Thread::ThreadId, uint32>::iterator iter = jobsPerCreatorThread.find(threadId);
+	Map<Thread::Id, uint32>::iterator iter = jobsPerCreatorThread.find(threadId);
 	if(iter != jobsPerCreatorThread.end())
 	{
 		uint32 & jobsCount = (*iter).second;
@@ -154,7 +154,7 @@ void JobManager::UnregisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter)
 {
 	jobsDoneMutex.Lock();
 
-	Map<Thread::ThreadId,  ThreadIdJobWaiter *>::iterator it = waitersPerCreatorThread.find(waiter->GetThreadId());
+	Map<Thread::Id,  ThreadIdJobWaiter *>::iterator it = waitersPerCreatorThread.find(waiter->GetThreadId());
 	if(waitersPerCreatorThread.end() != it)
 	{
 		waitersPerCreatorThread.erase(it);
@@ -163,9 +163,9 @@ void JobManager::UnregisterWaiterForCreatorThread(ThreadIdJobWaiter * waiter)
 	jobsDoneMutex.Unlock();
 }
 
-void JobManager::CheckAndCallWaiterForThreadId(const Thread::ThreadId & threadId)
+void JobManager::CheckAndCallWaiterForThreadId(const Thread::Id & threadId)
 {
-	Map<Thread::ThreadId,  ThreadIdJobWaiter *>::iterator it = waitersPerCreatorThread.find(threadId);
+	Map<Thread::Id,  ThreadIdJobWaiter *>::iterator it = waitersPerCreatorThread.find(threadId);
 	if(waitersPerCreatorThread.end() != it)
 	{
 		Thread::Broadcast(((*it).second)->GetConditionalVariable());

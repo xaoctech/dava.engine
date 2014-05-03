@@ -34,9 +34,14 @@
 #include "Base/Message.h"
 #include "Base/BaseObject.h"
 
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
+    #define DAVAENGINE_PTHREAD
+#endif
+
+
 #if defined (__DAVAENGINE_WIN32__)
 #include "Platform/TemplateWin32/pThreadWin32.h"
-#else
+#elif defined(DAVAENGINE_PTHREAD)
 #include <pthread.h>
 #endif
 
@@ -67,7 +72,31 @@ private:
 class Thread : public BaseObject
 {
 public:
-    class Id;
+    class Id
+    {
+#if defined(DAVAENGINE_PTHREAD)
+        typedef pthread_t NativeId;
+#elif defined(__DAVAENGINE_WIN32__)
+        typedef DWORD NativeId;
+#endif 
+
+    public:
+        Id();
+        Id(const NativeId & _nativeId);
+        Id(const Id & other);
+
+        bool operator==(const Id & other) const;
+        bool operator!=(const Id & other) const;
+        bool operator<(const Id & other) const;
+        bool operator>(const Id & other) const;
+        bool operator<=(const Id & other) const;
+        bool operator>=(const Id & other) const;
+
+    private:
+        NativeId nativeId;
+
+        friend class Thread;
+    };
 
 	enum eThreadState
 	{
@@ -136,19 +165,17 @@ private:
     Thread(const Thread& t);
     Thread(const Message& msg);
     void Init();
+    void Shutdown();
 
     void SetThreadId(const Id & threadId);
 	
 	Message	msg;
 	eThreadState state;
 
-	Id * threadId;
+	Id id;
 	static Id mainThreadId;
 	
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
-	#if defined (__DAVAENGINE_NPAPI__)
-		CGLContextObj npAPIGLContext;
-	#endif // #if defined (__DAVAENGINE_NPAPI__)
 
 	friend void	* PthreadMain(void * param);
 	void		StartMacOS();
@@ -169,16 +196,6 @@ public:
 #endif //PLATFORMS	
 };
 
-class Thread::Id
-{
-public:
-
-private:
 };
-
-
-};
-
-
 
 #endif // __DAVAENGINE_THREAD_H__
