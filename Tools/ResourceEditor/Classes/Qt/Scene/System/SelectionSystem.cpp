@@ -39,12 +39,12 @@
 #include <QApplication>
 #include "Scene/SceneEditor2.h"
 
-ENUM_DECLARE(SceneSelectionSystem::DrawMode)
+ENUM_DECLARE(SelectionSystemDrawMode)
 {
-	ENUM_ADD(SceneSelectionSystem::DRAW_SHAPE);
-	ENUM_ADD(SceneSelectionSystem::DRAW_CORNERS);
-	ENUM_ADD(SceneSelectionSystem::DRAW_BOX);
-	ENUM_ADD(SceneSelectionSystem::DRAW_NO_DEEP_TEST);
+	ENUM_ADD(SS_DRAW_SHAPE);
+	ENUM_ADD(SS_DRAW_CORNERS);
+	ENUM_ADD(SS_DRAW_BOX);
+	ENUM_ADD(SS_DRAW_NO_DEEP_TEST);
 }
 
 SceneSelectionSystem::SceneSelectionSystem(DAVA::Scene * scene, SceneCollisionSystem *collSys, HoodSystem *hoodSys)
@@ -236,27 +236,27 @@ void SceneSelectionSystem::Draw()
 	{
         DAVA::int32 drawMode = SettingsManager::GetValue("Scene/SelectionDrawMode").AsInt32();
         DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
-        UniqueHandle renderState = (!(drawMode & DRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState;
+        UniqueHandle renderState = (!(drawMode & SS_DRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState;
 
 		for (DAVA::uint32 i = 0; i < curSelections.Size(); i++)
 		{
             DAVA::AABBox3 selectionBox = curSelections.GetBbox(i);
 
 			// draw selection share
-			if(drawMode & DRAW_SHAPE)
+			if(drawMode & SS_DRAW_SHAPE)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawBox(selectionBox, 1.0f, renderState);
 			}
 			// draw selection share
-			else if(drawMode & DRAW_CORNERS)
+			else if(drawMode & SS_DRAW_CORNERS)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
 				DAVA::RenderHelper::Instance()->DrawCornerBox(selectionBox, 1.0f, renderState);
 			}
 
 			// fill selection shape
-			if(drawMode & DRAW_BOX)
+			if(drawMode & SS_DRAW_BOX)
 			{
 				DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 0.15f));
 				DAVA::RenderHelper::Instance()->FillBox(selectionBox, renderState);
