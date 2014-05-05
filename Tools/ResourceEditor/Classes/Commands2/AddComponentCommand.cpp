@@ -43,6 +43,7 @@ AddComponentCommand::AddComponentCommand(DAVA::Entity* _entity, DAVA::Component 
 
 AddComponentCommand::~AddComponentCommand()
 {
+    SafeDelete(backup);
 }
 
 void AddComponentCommand::Redo()
