@@ -366,7 +366,6 @@
     </property>
     <addaction name="actionFontManager"/>
     <addaction name="actionLocalizationManager"/>
-    <addaction name="actionLocalizationFontsManager"/>
     <addaction name="actionEditPreviewSettings"/>
    </widget>
    <widget class="QMenu" name="menuHelp">

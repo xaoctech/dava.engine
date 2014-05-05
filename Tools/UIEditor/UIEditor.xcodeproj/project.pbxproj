@@ -278,9 +278,6 @@
 		C1C62A54162D7455000C1B32 /* hierarchytreewidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A53162D7455000C1B32 /* hierarchytreewidget.ui */; };
 		C1C62A70162EC800000C1B32 /* librarywidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C1C62A6F162EC800000C1B32 /* librarywidget.ui */; };
 		C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C1C62A71162EC809000C1B32 /* librarywidget.cpp */; };
-		C709A15318D08EE4002B55AB /* localizationfontseditordialog.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C709A15218D08EE4002B55AB /* localizationfontseditordialog.ui */; };
-		C709A15B18D0B850002B55AB /* localizationfontseditordialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C709A15918D0B850002B55AB /* localizationfontseditordialog.cpp */; };
-		C709A15F18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C709A15E18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp */; };
 		C737D1ED18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C737D1EB18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp */; };
 		C737D1F418D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = C737D1F318D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp */; };
 		C737D1F818D9C3AD005B4C8F /* textpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = C737D1F718D9C3AD005B4C8F /* textpropertygridwidget.ui */; };
@@ -795,10 +792,6 @@
 		C1C62A71162EC809000C1B32 /* librarywidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = librarywidget.cpp; sourceTree = "<group>"; };
 		C1C62A72162EC809000C1B32 /* librarywidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = librarywidget.h; sourceTree = "<group>"; };
 		C6766F86E49E9C8701C8E637 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
-		C709A15218D08EE4002B55AB /* localizationfontseditordialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = localizationfontseditordialog.ui; sourceTree = "<group>"; };
-		C709A15918D0B850002B55AB /* localizationfontseditordialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = localizationfontseditordialog.cpp; path = Dialogs/localizationfontseditordialog.cpp; sourceTree = "<group>"; };
-		C709A15A18D0B850002B55AB /* localizationfontseditordialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = localizationfontseditordialog.h; path = Dialogs/localizationfontseditordialog.h; sourceTree = "<group>"; };
-		C709A15E18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = localizationfontseditordialog_moc.cpp; sourceTree = "<group>"; };
 		C737D1EB18D9B855005B4C8F /* uistatictextpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = uistatictextpropertygridwidget.cpp; path = PropertyGridWidgets/uistatictextpropertygridwidget.cpp; sourceTree = "<group>"; };
 		C737D1EC18D9B855005B4C8F /* uistatictextpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uistatictextpropertygridwidget.h; path = PropertyGridWidgets/uistatictextpropertygridwidget.h; sourceTree = "<group>"; };
 		C737D1F318D9C200005B4C8F /* uistatictextpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uistatictextpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
@@ -949,7 +942,6 @@
 			isa = PBXGroup;
 			children = (
 				C746392C18DCED0C0045C57B /* editfontdialog_moc.cpp */,
-				C709A15E18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp */,
 				74BCC57618D0673100C98406 /* errorslistdialog_moc.cpp */,
 				1742272918A277B3003D53F4 /* editpreviewsettingsdialog_moc.cpp */,
 				17FC1338189F90ED009D83A8 /* previewsettingsdialog_moc.cpp */,
@@ -1296,7 +1288,6 @@
 			isa = PBXGroup;
 			children = (
 				C746392918DCECBA0045C57B /* editfontdialog.ui */,
-				C709A15218D08EE4002B55AB /* localizationfontseditordialog.ui */,
 				74BCC57418D0671E00C98406 /* errorslistdialog.ui */,
 				174226C918A27628003D53F4 /* editpreviewsettingsdialog.ui */,
 				17FC132D189F8F45009D83A8 /* previewsettingsdialog.ui */,
@@ -1340,8 +1331,6 @@
 			children = (
 				C746392118DCE8640045C57B /* editfontdialog.cpp */,
 				C746392218DCE8640045C57B /* editfontdialog.h */,
-				C709A15918D0B850002B55AB /* localizationfontseditordialog.cpp */,
-				C709A15A18D0B850002B55AB /* localizationfontseditordialog.h */,
 				174226D318A276F3003D53F4 /* editpreviewsettingsdialog.cpp */,
 				174226D418A276F3003D53F4 /* editpreviewsettingsdialog.h */,
 				17FC1334189F8F50009D83A8 /* previewsettingsdialog.cpp */,
@@ -1726,7 +1715,6 @@
 				02D69A5916F0783000F3803F /* statepropertygridwidget.ui in Bundle Resources */,
 				C18593EF16F30D67005D30E2 /* backgroundpropertygridwidget.ui in Bundle Resources */,
 				C18593F016F30D67005D30E2 /* basepropertygridwidget.ui in Bundle Resources */,
-				C709A15318D08EE4002B55AB /* localizationfontseditordialog.ui in Bundle Resources */,
 				C18593F116F30D67005D30E2 /* controlpropertygridwidget.ui in Bundle Resources */,
 				17A4F58618A3E1ED00182E44 /* particleeffectpropertygridwidget.ui in Bundle Resources */,
 				C737D1F818D9C3AD005B4C8F /* textpropertygridwidget.ui in Bundle Resources */,
@@ -1808,7 +1796,6 @@
 				176D395E162C3DF90099AACF /* UIButtonMetadata.cpp in Build Sources */,
 				176D3961162C3E890099AACF /* UIControlMetadata.cpp in Build Sources */,
 				C1C62A24162C33FC000C1B32 /* ScreenWrapper.cpp in Build Sources */,
-				C709A15F18D0BBDC002B55AB /* localizationfontseditordialog_moc.cpp in Build Sources */,
 				C1C62A39162D370E000C1B32 /* HierarchyTreeScreenNode.cpp in Build Sources */,
 				C1C62A3C162D371E000C1B32 /* DefaultScreen.cpp in Build Sources */,
 				C1C62A41162D4991000C1B32 /* hierarchytreewidget.cpp in Build Sources */,
@@ -1818,7 +1805,6 @@
 				17FC1339189F90ED009D83A8 /* previewsettingsdialog_moc.cpp in Build Sources */,
 				C1C62A73162EC809000C1B32 /* librarywidget.cpp in Build Sources */,
 				C14FF9C2162EE4DF00F77F70 /* controllist.cpp in Build Sources */,
-				C709A15B18D0B850002B55AB /* localizationfontseditordialog.cpp in Build Sources */,
 				7426F56518D85918003D3D25 /* rootpropertygridwidget_moc.cpp in Build Sources */,
 				17E897F3162FEB3600A2A946 /* MetadataFactory.cpp in Build Sources */,
 				173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */,

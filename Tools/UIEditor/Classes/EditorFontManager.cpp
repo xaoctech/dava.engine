@@ -378,6 +378,52 @@ void EditorFontManager::ResetLocalizedFontsPath()
 //	return NULL;
 //}
 
+String EditorFontManager::GetFontDisplayName(DAVA::Font *font)
+{
+    if(!font)
+    {
+        return "NULL";
+    }
+    
+    String fontDisplayName;
+
+    Font::eFontType fontType = font->GetFontType();
+    
+    switch(fontType)
+    {
+        case Font::TYPE_FT:
+        {
+            FTFont *ftFont = dynamic_cast<FTFont*>(font);
+            //Set pushbutton widget text
+            fontDisplayName = ftFont->GetFontPath().GetFrameworkPath();
+            break;
+        }
+        case Font::TYPE_GRAPHICAL:
+        {
+            GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(font);
+            //Put into result string font definition and font sprite path
+            Sprite *fontSprite = gFont->GetFontSprite();
+            if (fontSprite) //If no sprite available - quit
+            {
+                //Get font definition and sprite relative path
+                String fontDefinitionName = gFont->GetFontDefinitionName().GetFrameworkPath();
+                String fontSpriteName = fontSprite->GetRelativePathname().GetFrameworkPath();
+                //Set push button widget text - for grapics font it contains font definition and sprite names
+                fontDisplayName = Format("%s\n%s", fontDefinitionName.c_str(), fontSpriteName.c_str());
+            }
+            break;
+        }
+        default:
+        {
+            //Do nothing if we can't determine font type
+            //TODO: do we need to return a name of preset or maybe "unknown"?
+            return "unknown";
+        }
+    }
+
+    return fontDisplayName;
+}
+
 const Map<String, Font*> &EditorFontManager::GetLocalizedFonts(const String& locale) const
 {
     Map<String, Map<String, Font*> >::const_iterator findIt = localizedFonts.find(locale);

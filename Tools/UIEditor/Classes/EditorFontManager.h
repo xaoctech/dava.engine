@@ -62,6 +62,9 @@ public:
     
     const Vector<String> &GetLocales() { return locales; }
     
+    String GetFontDisplayName(Font* font);
+    
+    const Map<String, Font*> &GetLocalizedFonts(const String& locale = "default") const;
     Font* GetLocalizedFont(const String& fontName, const String& locale = "default") const;
     String GetLocalizedFontName(Font* font, const String& locale = "default") const;
     
@@ -95,8 +98,6 @@ signals:
 	
 private:
 	void Init();
-    
-    const Map<String, Font*> &GetLocalizedFonts(const String& locale = "default") const;
     
 	Font* CreateDefaultFont(const String& fontPath, const String& fontName);
     
