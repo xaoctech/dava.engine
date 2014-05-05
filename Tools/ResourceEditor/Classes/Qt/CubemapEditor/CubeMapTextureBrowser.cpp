@@ -167,7 +167,7 @@ void CubeMapTextureBrowser::ReloadTexturesFromUI(QString& path)
 	ui->textRootPath->setText(path);
 	
 	FilePath projectPath = path.toStdString();
-	SettingsManager::SetValue("Internal/CubemapLastProjDir", VariantType(projectPath));
+	SettingsManager::SetValue(Settings::Internal_CubemapLastProjDir, VariantType(projectPath));
 	
 	ReloadTextures(path.toStdString());
 }
