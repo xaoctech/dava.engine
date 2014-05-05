@@ -944,7 +944,8 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
 
                 // inverse bake to be able to move object on same place
                 // after it geometry was baked
-                bakeTransform.Inverse();
+                DAVA::Matrix4 afterBakeTransform = bakeTransform;
+                afterBakeTransform.Inverse();
 
                 // for entities with same render object set new transform
                 // to make them match their previous position
@@ -953,9 +954,21 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
                 {
                     DAVA::Entity *en = *it;
                     DAVA::Matrix4 origTransform = en->GetLocalTransform();
-                    DAVA::Matrix4 newTransform = bakeTransform * origTransform;
+                    DAVA::Matrix4 newTransform = afterBakeTransform * origTransform;
                     
                     sceneEditor->Exec(new TransformCommand(en, origTransform, newTransform));
+
+                    // also modify childs transform to make them be at
+                    // right position after parent entity changed
+                    for(size_t i = 0; i < en->GetChildrenCount(); ++i)
+                    {
+                        DAVA::Entity *childEntity = en->GetChild(i);
+
+                        DAVA::Matrix4 childOrigTransform = childEntity->GetLocalTransform();
+                        DAVA::Matrix4 childNewTransform = childOrigTransform * bakeTransform;
+
+                        sceneEditor->Exec(new TransformCommand(childEntity, childOrigTransform, childNewTransform));
+                    }
                 }
 
 		        sceneEditor->EndBatch();
@@ -980,12 +993,12 @@ void EntityModificationSystem::SearchEntitiesWithRenderObject(DAVA::RenderObject
                 // if renderObjects has same number of render batches we also should
                 // check if polygon groups used inside that render batches are completely identical
                 // but we should deal with the fact, that polygon groups order can differ 
-                for(int j = 0; j < enRenderObject->GetRenderBatchCount(); ++j)
+                for(size_t j = 0; j < enRenderObject->GetRenderBatchCount(); ++j)
                 {
                     bool found = false;
                     DAVA::PolygonGroup *pg = enRenderObject->GetRenderBatch(j)->GetPolygonGroup();
 
-                    for(int k = 0; k < ro->GetRenderBatchCount(); ++k)
+                    for(size_t k = 0; k < ro->GetRenderBatchCount(); ++k)
                     {
                         if(ro->GetRenderBatch(k)->GetPolygonGroup() == pg)
                         {
