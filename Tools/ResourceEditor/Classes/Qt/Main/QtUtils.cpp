@@ -105,7 +105,7 @@ DAVA::Image * CreateTopLevelImage(const DAVA::FilePath &imagePathname)
 {
     Image *image = NULL;
     Vector<Image *> imageSet;
-    ImageLoader::CreateFromFileByContent(imagePathname, imageSet);
+    ImageSystem::Instance()->Load(imagePathname, imageSet);
     if(0 != imageSet.size())
     {
         image = SafeRetain(imageSet[0]);

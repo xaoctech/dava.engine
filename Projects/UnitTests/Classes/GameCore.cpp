@@ -94,7 +94,7 @@ void GameCore::OnAppStarted()
 
     new SaveImageTest();
     
-    new StringFormatTest();
+   /* new StringFormatTest();
     new RectSpriteTest();
 
 	new ComponentsTest();
@@ -131,7 +131,7 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();
+     new ThreadSyncTest();*/
     
     errors.reserve(TestCount());
 

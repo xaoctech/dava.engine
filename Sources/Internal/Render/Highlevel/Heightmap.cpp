@@ -30,9 +30,9 @@
 
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/ImageSystem.h"
 
 
 namespace DAVA
@@ -111,7 +111,7 @@ void Heightmap::SaveToImage(const FilePath & filename)
 
     SafeDeleteArray(unpackedBytes);
     
-    ImageLoader::Save(image, filename);
+    ImageSystem::Instance()->Save(filename, image, image->format);
     SafeRelease(image);
 }
   

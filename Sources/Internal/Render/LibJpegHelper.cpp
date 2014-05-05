@@ -36,6 +36,7 @@
 
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/ImageConvert.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -164,10 +165,25 @@ eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int
 eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
 {
     DVASSERT(imageSet.size());
-    Image* imageToSave = imageSet[0];
-    
-    DVASSERT(imageToSave->format == FORMAT_A8 || imageToSave->format == FORMAT_RGB888);
+    Image* originalImage = imageSet[0];
+    Image* imageToSave = originalImage;
+    if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
+    {
+        if(FORMAT_RGBA8888 == originalImage->format)
+        {
+            imageToSave = Image::Create(originalImage->width, originalImage->height, FORMAT_RGB888);
+            ConvertDirect<uint32, RGB888, ConvertRGBA8888toRGB888> convert;
+            convert(originalImage->data, originalImage->width, originalImage->height, sizeof(uint32)*originalImage->width, imageToSave->data, imageToSave->width, imageToSave->height, sizeof(RGB888)*originalImage->width);
+        }
+        else if(FORMAT_A16 == originalImage->format)
+        {
+            imageToSave = Image::Create(originalImage->width, originalImage->height, FORMAT_A8);
+            ConvertDirect<uint16, uint8, ConvertA16toA8> convert;
+            convert(originalImage->data, originalImage->width, originalImage->height, sizeof(uint16)*originalImage->width, imageToSave->data, imageToSave->width, imageToSave->height, sizeof(uint8)*originalImage->width);
+        }
+    }
 
+    
     struct jpeg_compress_struct cinfo;
     struct jpegErrorManager jerr;
     
@@ -178,6 +194,10 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     if ( !outfile )
     {
         Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", absolutePathName);
+        if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
+        {
+            SafeRelease(imageToSave);
+        }
         return ERROR_FILE_NOTFOUND;
     }
     cinfo.err = jpeg_std_error( &jerr.pub );
@@ -189,6 +209,10 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
         jpeg_destroy_compress( &cinfo );
         fclose(outfile);
         Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", absolutePathName);
+        if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
+        {
+            SafeRelease(imageToSave);
+        }
         return ERROR_WRITE_FAIL;
     }
     jpeg_create_compress(&cinfo);
@@ -225,6 +249,10 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     jpeg_finish_compress( &cinfo );
     jpeg_destroy_compress( &cinfo );
     fclose( outfile );
+    if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
+    {
+        SafeRelease(imageToSave);
+    }
     return SUCCESS;
 }
    

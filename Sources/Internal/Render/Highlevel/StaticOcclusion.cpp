@@ -33,7 +33,6 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/RenderFastNames.h"
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
 #include "Utils/StringFormat.h"
 #include "Platform/SystemTimer.h"
 

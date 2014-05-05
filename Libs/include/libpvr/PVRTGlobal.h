@@ -70,7 +70,7 @@
 	BYTE    rgbRed;
 	BYTE    rgbReserved;
 	} RGBQUAD;
-	#define BOOL int
+//	#define BOOL int
 #if !defined(TRUE)
 	#define TRUE 1
 #endif

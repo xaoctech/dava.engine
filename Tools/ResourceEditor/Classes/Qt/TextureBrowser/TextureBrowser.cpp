@@ -36,7 +36,7 @@
 #include "Main/QtUtils.h"
 #include "Main/mainwindow.h"
 #include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/LibDdsHelper.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Scene/SceneHelper.h"
 #include "CubemapEditor/CubemapUtils.h"

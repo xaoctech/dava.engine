@@ -41,7 +41,7 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/TextureDescriptor.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 #include "LandscapeChunk.h"
 #include "Debug/Stats.h"
 #include "Render/Material/NMaterial.h"
@@ -277,7 +277,7 @@ bool Landscape::BuildHeightmap()
     if(heightmapPath.IsEqualToExtension(".png"))
     {
         Vector<Image *> imageSet;
-        ImageLoader::CreateFromFileByExtension(heightmapPath, imageSet);
+        ImageSystem::Instance()->Load(heightmapPath, imageSet);
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))

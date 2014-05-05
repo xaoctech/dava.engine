@@ -30,7 +30,7 @@
 #include "TexturePacker/PngImage.h"
 #include "TexturePacker/CommandLineParser.h"
 #include "Render/LibPngHelpers.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 #include "Render/Texture.h"
 
 namespace DAVA
@@ -52,22 +52,21 @@ bool PngImageExt::Read(const FilePath & filename)
 {
     SafeRelease(internalData);
     
-    internalData = new Image();
-    
-    int32 retCode = LibPngWrapper::ReadPngFile(filename, internalData, FORMAT_RGBA8888);
-    if(1 != retCode)
+    Vector<Image*> imageSet;
+    eErrorCode retCode = ImageSystem::Instance()->Load(filename, imageSet);
+    if(SUCCESS != retCode)
     {
         Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.GetAbsolutePathname().c_str());
-        SafeRelease(internalData);
+        for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
     }
-    
+    internalData = imageSet[0];
 	return (internalData != NULL);
 }
 
 void PngImageExt::Write(const FilePath & filename)
 {
     DVASSERT(internalData);
-    ImageLoader::Save(internalData, filename);
+    ImageSystem::Instance()->Save(filename, internalData, internalData->format);
 }
 
 bool PngImageExt::Create(uint32 width, uint32 height)

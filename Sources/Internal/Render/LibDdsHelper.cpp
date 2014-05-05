@@ -315,7 +315,14 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 		return false;
 	}
 
-    baseMipMap = Min(baseMipMap, (int32)(info.mipmapsCount - 1));
+    if(baseMipMap == -1)
+    {
+        baseMipMap = (int32)(info.mipmapsCount - 1);
+    }
+    else
+    {
+        baseMipMap = Min(baseMipMap, (int32)(info.mipmapsCount - 1));
+    }
 
 	nvtt::Format format;
 	if(!dec.getCompressionFormat(format))
@@ -579,12 +586,12 @@ bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<
         DVASSERT(imageSet.size() == Texture::CUBE_FACE_MAX_COUNT);
         textureType = nvtt::TextureType_Cube;
     }
+    int32 dataCount = imageSet.size();
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(textureType, imageSet[0]->width, imageSet[0]->height);
-    inputOptions.setMipmapGeneration(false);
-	
-    int32 dataCount = imageSet.size();
-	int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    inputOptions.setMipmapGeneration(dataCount > 1, dataCount - 1);
+
+    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
 	for(uint32 i = 0; i < dataCount; ++i)
 	{
         uint32 imgDataSize = imageSet[i]->width * imageSet[i]->height * pixelSize;
@@ -649,10 +656,6 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
 	int32 bufSize = 0;
     Vector<int32> mipSize;
     mipSize.resize(imageSet.size());
-	//std::map<int32, int32>* mipSize = new std::map<int32, int32>[dataCount];
-	//int32 baseWidth = 0;
-	//int32 baseHeight = 0;
-	
     int32 dataCount = imageSet.size();
     if(imageSet.size() == 0)
 	{
@@ -685,11 +688,6 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
 		}
         bufSize += dstImg.nDataSize;
 		mipSize[i] = dstImg.nDataSize;
-			
-		//	baseWidth = baseWidth >> 1;
-		//	baseHeight = baseHeight >> 1;
-		//}
-		//while(generateMipmaps && baseWidth > minSize && baseHeight > minSize);
 	}
 	
 	//VI: convert faces
@@ -732,8 +730,8 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
     }
 	InputOptions inputOptions;
 	inputOptions.setTextureLayout(textureType, imageSet[0]->width, imageSet[0]->height);
-    inputOptions.setMipmapGeneration(false);
-	
+    inputOptions.setMipmapGeneration(dataCount > 1, dataCount - 1);
+
 	CompressionOptions compressionOptions;
 	compressionOptions.setFormat(innerComprFormat);
 	
@@ -1157,7 +1155,7 @@ eErrorCode LibDdsHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32
     return ReadFile(infile, imageSet, baseMipMap, false);
 }
 
-eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap /*= 0*/, bool forceSoftwareConvertation /*= false*/)
+eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap /*= -1*/, bool forceSoftwareConvertation /*= false*/)
 {
     if(NULL == file)
     {
@@ -1175,7 +1173,7 @@ eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 b
  
 eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat /*= FORMAT_INVALID*/, bool isCubeMap /*= false*/)
 {
-    if(compressionFormat == FORMAT_INVALID)
+    if(imageSet[0]->format != FORMAT_RGBA8888)
     {
         return ERROR_WRITE_FAIL;
     }

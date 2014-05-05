@@ -30,7 +30,7 @@
 #include "ImageTools/ImageTools.h"
 #include "Render/LibPngHelpers.h"
 #include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/LibDdsHelper.h"
 
 #include "TextureCompression/TextureConverter.h"
 
@@ -76,16 +76,16 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 			return 0;
 		}
 		
-		
-		if(ImageLoader::IsPNGFile(imageFile))
+		ImageSystem* system = ImageSystem::Instance();
+		if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PNG)->IsImage(imageFile))//ImageLoader::IsPNGFile(imageFile))
 		{
 			size += LibPngWrapper::GetDataSize(imagePathname);
 		}
-		else if(ImageLoader::IsDDSFile(imageFile))
+		else if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_DDS)->IsImage(imageFile))
 		{
-			size += LibDxtHelper::GetDataSize(imagePathname);
+			size += LibDdsHelper::GetDataSize(imagePathname);
 		}
-		else if(ImageLoader::IsPVRFile(imageFile))
+		else if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PVR)->IsImage(imageFile))
 		{
 			size += LibPVRHelper::GetDataSize(imagePathname);
 		}
@@ -167,8 +167,7 @@ bool ImageTools::MergeImages(const FilePath &folder, Set<String> &errorLog)
     
     Image *mergedImage = CreateMergedImage(channels);
     
-    ImageLoader::Save(mergedImage, folder + "merged.png");
-    
+    ImageSystem::Instance()->Save(folder + "merged.png", mergedImage, mergedImage->format);
     channels.ReleaseImages();
     SafeRelease(mergedImage);
     return true;
@@ -176,7 +175,7 @@ bool ImageTools::MergeImages(const FilePath &folder, Set<String> &errorLog)
 
 void ImageTools::SaveImage(Image *image, const FilePath &pathname)
 {
-    ImageLoader::Save(image, pathname);
+    ImageSystem::Instance()->Save(pathname, image, image->format);
 }
 
 Image * ImageTools::LoadImage(const FilePath &pathname)

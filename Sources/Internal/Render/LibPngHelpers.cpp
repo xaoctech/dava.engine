@@ -46,6 +46,7 @@
 #include "Render/Texture.h"
 //#include "Render/Image.h"
 #include "FileSystem/FileSystem.h"
+#include "Render/ImageConvert.h"
 
 using namespace DAVA;
 
@@ -333,7 +334,16 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
     DVASSERT(imageSet.size());
-    Image* imageToSave = imageSet[0];
+    Image* originalImage = imageSet[0];
+    Image* imageToSave = originalImage;
+    if(FORMAT_RGB888 == originalImage->format)
+    {
+        imageToSave = Image::Create(originalImage->width, originalImage->height, FORMAT_RGBA8888);
+        
+        ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
+        convert(originalImage->data, originalImage->width, originalImage->height, sizeof(RGB888)*originalImage->width, imageToSave->data, imageToSave->width, imageToSave->height, sizeof(uint32)*imageToSave->width);
+    }
+    
 	png_color_8 sig_bit;
 	
 	png_structp png_ptr;
@@ -373,6 +383,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", fileName.GetAbsolutePathname().c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
         free(row_pointers);
+        if(FORMAT_RGB888 == originalImage->format)
+        {
+            SafeRelease(imageToSave);
+        }
 		return ERROR_FILE_NOTFOUND;
 	}
 	
@@ -387,6 +401,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		//abort_("[write_png_file] png_create_write_struct failed");
         free(row_pointers);
         fclose(fp);
+        if(FORMAT_RGB888 == originalImage->format)
+        {
+            SafeRelease(imageToSave);
+        }
 		return ERROR_WRITE_FAIL;
 	}
 	
@@ -398,6 +416,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		//abort_("[write_png_file] png_create_info_struct failed");
         free(row_pointers);
         fclose(fp);
+        if(FORMAT_RGB888 == originalImage->format)
+        {
+            SafeRelease(imageToSave);
+        }
 		return ERROR_WRITE_FAIL;
 	}
 	
@@ -407,6 +429,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		//abort_("[write_png_file] Error during init_io");
         free(row_pointers);
         fclose(fp);
+        if(FORMAT_RGB888 == originalImage->format)
+        {
+            SafeRelease(imageToSave);
+        }
 		return ERROR_READ_FAIL;
 	}
 	
@@ -419,6 +445,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		//abort_("[write_png_file] Error during writing header");
         free(row_pointers);
         fclose(fp);
+        if(FORMAT_RGB888 == originalImage->format)
+        {
+            SafeRelease(imageToSave);
+        }
 		return ERROR_WRITE_FAIL;
 	}
     
@@ -468,6 +498,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		//abort_("[write_png_file] Error during writing bytes");
         free(row_pointers);
         fclose(fp);
+        if(FORMAT_RGB888 == originalImage->format)
+        {
+            SafeRelease(imageToSave);
+        }
 		return ERROR_WRITE_FAIL;
 	}
 	
@@ -488,6 +522,10 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 	
 	free(row_pointers);
 	fclose(fp);
+    if(FORMAT_RGB888 == originalImage->format)
+    {
+        SafeRelease(imageToSave);
+    }
     return SUCCESS;
 }
 

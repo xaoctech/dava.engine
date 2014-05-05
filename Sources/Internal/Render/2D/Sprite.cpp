@@ -41,7 +41,7 @@
 #include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 #include "FileSystem/DynamicMemoryFile.h"
 
 #define NEW_PPA
@@ -527,7 +527,7 @@ Sprite* Sprite::CreateFromPNG(const uint8* data, uint32 size, bool contentScaleI
     }
 
     Vector<Image*> images;
-    ImageLoader::CreateFromFileByContent(file, images);
+    ImageSystem::Instance()->Load(file, images);
     if (images.size() == 0)
     {
         return NULL;
@@ -549,7 +549,7 @@ Sprite* Sprite::CreateFromPNG(const FilePath& path, bool contentScaleIncluded /*
     }
 
     Vector<Image*> images;
-    ImageLoader::CreateFromFileByExtension(path, images);
+    ImageSystem::Instance()->Load(path, images);
     if (images.size() == 0)
     {
         return NULL;

@@ -105,9 +105,8 @@ void JPEGTest::TestFunction(PerfFuncData * data)
     Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(jpegSprite);
     
     FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-    ImageLoader::Save(firstComparer, documentsPath + (Format("JPEGTest/src_number_%d.png", currentTest)));
-    ImageLoader::Save(secondComparer, documentsPath + (Format("JPEGTest/dst_number_%d.png", currentTest)));
-
+    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/src_number_%d.png", currentTest), firstComparer, firstComparer->format);
+    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/dst_number_%d.png", currentTest), secondComparer, secondComparer->format);
     ++currentTest;
 }
 
@@ -120,12 +119,11 @@ void JPEGTest::ReloadSprites()
     
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/JPEGTest/PNG/number_%d.png", currentTest)));
     Image* img = pngSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    ImageLoader::Save(img, path);
+    ImageSystem::Instance()->Save(path,img, img->format);
     SafeRelease(img);
     
     Vector<Image *> imageSet;
-	ImageLoader::CreateFromFileByContent( path, imageSet);
-    
+    ImageSystem::Instance()->Load(path, imageSet);
     DVASSERT(imageSet.size());
     Image* imgJpeg = imageSet[0];
     Texture* tex = Texture::CreateFromData(imgJpeg->GetPixelFormat(), imgJpeg->data, imgJpeg->width, imgJpeg->height, false);
