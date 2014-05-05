@@ -1024,7 +1024,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
             DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
             materialArchive->Load(inputFile.toAscii().data());
 
-            DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState);
+            DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState, inputFile);
             if(0 != userChoiseWhatToLoad)
             {
 	            const DAVA::InspInfo *info = material->GetTypeInfo();
@@ -1034,11 +1034,6 @@ void MaterialEditor::OnMaterialLoad(bool checked)
 
                 lastCheckState = userChoiseWhatToLoad;
 
-                if(!(lastCheckState & CHECKED_NAME))
-                {
-                    materialArchive->DeleteKey("materialName");
-                }
-            
                 if(!(lastCheckState & CHECKED_GROUP))
                 {
                     materialArchive->DeleteKey("materialGroup");
@@ -1072,6 +1067,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
                 materialArchive->DeleteKey("##name");
                 materialArchive->DeleteKey("#id");
                 materialArchive->DeleteKey("#index");
+                materialArchive->DeleteKey("materialName");
                 materialArchive->DeleteKey("materialType");
 
                 DAVA::SerializationContext materialContext;
@@ -1097,35 +1093,45 @@ void MaterialEditor::ClearMaterialDynamicMember(DAVA::NMaterial *material, const
     }
 }
 
-DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState)
+DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState, const QString &inputFile)
 {
     DAVA::uint32 ret = 0;
 
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *dlgLayout = new QVBoxLayout();
     dlgLayout->setMargin(10);
+    dlgLayout->setSpacing(15);
 
-    dlg->setWindowTitle("Reload Model options");
+    dlg->setWindowTitle("Loading material preset...");
     dlg->setWindowFlags(Qt::Tool);
     dlg->setLayout(dlgLayout);
 
-    QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
-    QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
-    QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
-    QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, dlg);
-    QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
+    QLineEdit* pathLine = new QLineEdit(dlg);
+    pathLine->setText(inputFile);
+    pathLine->setReadOnly(false);
+    pathLine->setToolTip(inputFile);
+    dlgLayout->addWidget(pathLine);
+
+    QGroupBox *groupbox = new QGroupBox("Load parameters", dlg);
+    dlgLayout->addWidget(groupbox);
+
+    QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, groupbox);
+    QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, groupbox);
+    QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, groupbox);
+    QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, groupbox);
 
     templateChBox->setChecked((bool) (initialState & CHECKED_TEMPLATE));
-    nameChBox->setChecked((bool) (initialState & CHECKED_NAME));
     groupChBox->setChecked((bool) (initialState & CHECKED_GROUP));
     propertiesChBox->setChecked((bool) (initialState & CHECKED_PROPERTIES));
     texturesChBox->setChecked((bool) (initialState & CHECKED_TEXTURES));
 
-    dlgLayout->addWidget(templateChBox);
-    dlgLayout->addWidget(nameChBox);
-    dlgLayout->addWidget(groupChBox);
-    dlgLayout->addWidget(propertiesChBox);
-    dlgLayout->addWidget(texturesChBox);
+    QGridLayout *gridLayout = new QGridLayout();
+    groupbox->setLayout(gridLayout);
+    gridLayout->setHorizontalSpacing(50);
+    gridLayout->addWidget(templateChBox, 0, 0);
+    gridLayout->addWidget(groupChBox, 1, 0);
+    gridLayout->addWidget(propertiesChBox, 0, 1);
+    gridLayout->addWidget(texturesChBox, 1, 1);
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
     dlgLayout->addWidget(buttons);
@@ -1136,7 +1142,6 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
     if(QDialog::Accepted == dlg->exec())
     {
         if(templateChBox->checkState() == Qt::Checked) ret |= CHECKED_TEMPLATE;
-        if(nameChBox->checkState() == Qt::Checked) ret |= CHECKED_NAME;
         if(groupChBox->checkState() == Qt::Checked) ret |= CHECKED_GROUP;
         if(propertiesChBox->checkState() == Qt::Checked) ret |= CHECKED_PROPERTIES;
         if(texturesChBox->checkState() == Qt::Checked) ret |= CHECKED_TEXTURES;
