@@ -3502,5 +3502,8 @@
     <None Include="DataQt\ActionComponentEditor.ui">
       <Filter>QtData</Filter>
     </None>
+    <None Include="DataQt\LODEditor.ui">
+      <Filter>QtData</Filter>
+    </None>
   </ItemGroup>
 </Project>
