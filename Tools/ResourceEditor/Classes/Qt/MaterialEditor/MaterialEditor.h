@@ -85,6 +85,7 @@ protected:
 	void SetCurMaterial(const QList< DAVA::NMaterial *>& materials);
 	void FillMaterialProperties(const QList<DAVA::NMaterial *>& materials);
     void FillMaterialTemplates(const QList<DAVA::NMaterial *>& materials);
+    void ClearMaterialDynamicMember(DAVA::NMaterial *material, const DAVA::InspMemberDynamic *dynamicInsp);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
 
@@ -104,8 +105,6 @@ private:
         CHECKED_GROUP = 0x4,
         CHECKED_PROPERTIES = 0x8,
         CHECKED_TEXTURES = 0x10,
-
-        CHECKED_CLEAR_MATERIAL = 0x20,
 
         CHECKED_ALL = 0xff
     };
