@@ -66,7 +66,8 @@ void SettingsDialog::InitProperties()
             keys.push_back(key.c_str());
         }
 
-        if(keys.size() > 0 && keys[0] != QString("Internal"))
+        if( keys.size() > 0 && 
+            keys[0] != QString(Settings::InternalGroup.c_str())) // skip internal settings
         {
             // go deep into tree to find penultimate propertyData
             QtPropertyData *parent = editor->GetRootProperty();
