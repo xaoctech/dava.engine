@@ -117,7 +117,7 @@ void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::Texture
             if(mode == EXCLUDE_NULL)
             {
                 DAVA::Texture *texture = material->GetTexture(t);
-                if(texture && texture->isRenderTarget == false)
+                if(texture && !texture->isRenderTarget)
                 {
                     const DAVA::FilePath & path = texture->texDescriptor->pathname;
 
