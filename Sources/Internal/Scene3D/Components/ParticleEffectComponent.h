@@ -111,6 +111,7 @@ public:
     void SetRefractionVisible(bool visible);
 
 private:
+    void ClearGroup(ParticleGroup& group);
 	void ClearCurrentGroups();
     void SetGroupsFinishing();
 	
