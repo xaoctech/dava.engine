@@ -217,6 +217,9 @@
     <Filter Include="Classes\Qt\LicenceDialog">
       <UniqueIdentifier>{c8c29a9c-afc6-4b9c-b487-3d322a66bf50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\DeveloperTools">
+      <UniqueIdentifier>{9a192b7c-b9d4-4a69-b284-ee131d63d6c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1932,6 +1935,12 @@
     <ClCompile Include="_GeneratedQt\LicenceDialog\LicenceDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.cpp">
+      <Filter>Classes\Qt\Tools\DeveloperTools</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\DeveloperTools\DeveloperTools_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3400,6 +3409,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\LicenceDialog\LicenceDialog.h">
       <Filter>Classes\Qt\LicenceDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.h">
+      <Filter>Classes\Qt\Tools\DeveloperTools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

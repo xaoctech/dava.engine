@@ -87,7 +87,7 @@ void ShadowVolume::Draw(const FastName & ownerRenderPass, Camera * camera)
     if ((flags & SHADOW_VOLUME_VISIBILITY_CRITERIA) != SHADOW_VOLUME_VISIBILITY_CRITERIA)
         return;
     
-    Light * light = GetMaterial()->GetLight(0);
+    Light * light = GetLight(0);
     if((!light) || (!(light->GetFlags() & Light::CAST_SHADOW)))
 	{
 		return;

@@ -32,7 +32,11 @@
 #include "Deprecated/ControlsFactory.h"
 #include "Render/RenderManager.h"
 #include "Scene/System/EditorMaterialSystem.h"
+#include "TextureCompression/TextureConverter.h"
+#include "Base/GlobalEnum.h"
+
 #include <QHeaderView>
+
 
 #define CONFIG_FILE						"~doc:/ResourceEditorOptions.archive"
 #define SETTINGS_VERSION_NUMBER			1
@@ -63,6 +67,7 @@ const SettingRow SETTINGS_GROUP_DEFAULT_MAP[] =
     SettingRow("DefaultLandscapeHeight", DAVA::VariantType(50.0f)),
 	SettingRow("DefaultFogColor", DAVA::VariantType(DAVA::Color(1.f, 0, 0.f, 1.f))),
 	SettingRow("DefaultFogDensity", DAVA::VariantType(1.0f)),
+	SettingRow("Compression Quality", DAVA::VariantType(DAVA::TextureConverter::ECQ_DEFAULT), GlobalEnumMap<DAVA::TextureConverter::eConvertQuality>::Instance()),
 };
 
 const SettingRow SETTINGS_GROUP_INTERNAL_MAP[] =
@@ -154,6 +159,45 @@ DAVA::VariantType SettingsManager::GetValue(const DAVA::String& _name, eSettings
 	DVASSERT(foundedGroupSettings->IsKeyExists(_name));
 	return *foundedGroupSettings->GetVariant(_name);
 }
+
+const EnumMap * SettingsManager::GetAllowedValues(const DAVA::String& _name, eSettingsGroups group) const
+{
+    SettingRow * settingMap = NULL;
+    DAVA::uint32 settingsCount = 0;
+    
+    switch (group)
+    {
+        case GENERAL:
+            settingMap = (SettingRow *)SETTINGS_GROUP_GENERAL_MAP;
+            settingsCount = COUNT_OF(SETTINGS_GROUP_GENERAL_MAP);
+            break;
+
+        case DEFAULT:
+            settingMap = (SettingRow *)SETTINGS_GROUP_DEFAULT_MAP;
+            settingsCount = COUNT_OF(SETTINGS_GROUP_DEFAULT_MAP);
+            break;
+
+        case INTERNAL:
+            settingMap = (SettingRow *)SETTINGS_GROUP_INTERNAL_MAP;
+            settingsCount = COUNT_OF(SETTINGS_GROUP_INTERNAL_MAP);
+            break;
+
+        default:
+            DVASSERT(false);
+            return NULL;
+    }
+
+    for(DAVA::uint32 i = 0; i < settingsCount; ++i)
+    {
+        if(settingMap[i].key == _name)
+        {
+            return settingMap[i].enumMap;
+        }
+    }
+    
+    return NULL;
+}
+
 
 void SettingsManager::SetValue(const DAVA::String& _name, const DAVA::VariantType& _value, eSettingsGroups group)
 {

@@ -476,9 +476,11 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
 
                     dynamicMember->SetDefaultOpenDialogPath(defaultPath);
                     dynamicMember->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
+
                     QStringList path;
 					path.append(dataSourcePath.GetAbsolutePathname().c_str());
                     dynamicMember->SetValidator(new TexturePathValidator(path));
+
                     // self property
                     if(memberFlags & DAVA::I_EDIT)
                     {
@@ -909,7 +911,7 @@ MaterialEditorFogDialog::MaterialEditorFogDialog()
 {
     int row = 0;
     QGridLayout *layout = new QGridLayout(this);
-    QGroupBox *groupBox = new QGroupBox(this);
+	QGroupBox *groupBox = new QGroupBox(this);
 
     disabled = new QRadioButton("Disabled");
     exponential = new QRadioButton("Exponential");

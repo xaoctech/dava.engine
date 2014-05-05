@@ -47,7 +47,8 @@ namespace DAVA
 
     
 RenderBatch::RenderBatch()
-    :   sortingKey(0xF8)
+    :   renderLayerIDsBitmaskFromMaterial(0)
+    ,   sortingKey(0xF8)
     ,   dataSource(0)
     ,   renderDataObject(0)
     ,   material(0)
@@ -66,6 +67,9 @@ RenderBatch::RenderBatch()
     queryRequestFrame = 0;
     lastFraemDrawn = -10;
 #endif
+    
+    lights[0] = NULL;
+    lights[1] = NULL;
 }
     
 RenderBatch::~RenderBatch()
@@ -101,6 +105,18 @@ void RenderBatch::SetMaterial(NMaterial * _material)
     renderLayerIDsBitmaskFromMaterial = material->GetRenderLayerIDsBitmask();
 }
     
+    
+void RenderBatch::BindDynamicParameters(Camera * camera)
+{
+	if(camera && material->IsDynamicLit() && lights[0])
+	{
+		const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
+        RenderManager::SetDynamicParam(PARAM_LIGHT0_POSITION, &lightPositionDirection0InCameraSpace, (pointer_size)&lightPositionDirection0InCameraSpace);
+        RenderManager::SetDynamicParam(PARAM_LIGHT0_COLOR, &lights[0]->GetDiffuseColor(), (pointer_size)&lights[0]->GetDiffuseColor());
+        RenderManager::SetDynamicParam(PARAM_LIGHT0_AMBIENT_COLOR, &lights[0]->GetAmbientColor(), (pointer_size)&lights[0]->GetAmbientColor());
+    }
+}
+
 void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 {
 //  TIME_PROFILE("RenderBatch::Draw");
@@ -146,9 +162,10 @@ void RenderBatch::Draw(const FastName & ownerRenderPass, Camera * camera)
 //        return;
 	
     RenderManager::SetDynamicParam(PARAM_WORLD, worldTransformPtr, (pointer_size)worldTransformPtr);
-
+    
+    BindDynamicParameters(camera);
     material->BindMaterialTechnique(ownerRenderPass, camera);
-
+    
 #if defined(DYNAMIC_OCCLUSION_CULLING_ENABLED)
     if (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::DYNAMIC_OCCLUSION_ENABLE))
     {
@@ -366,11 +383,11 @@ void RenderBatch::UpdateAABBoxFromSource()
 	}
 }
     
-bool RenderBatch::GetVisible() const
-{
-    uint32 flags = renderObject->GetFlags();
-    return ((flags & visiblityCriteria) == visiblityCriteria);
-}
+//bool RenderBatch::GetVisible() const
+//{
+//    uint32 flags = renderObject->GetFlags();
+//    return ((flags & visiblityCriteria) == visiblityCriteria);
+//}
 
 ShadowVolume * RenderBatch::CreateShadow()
 {

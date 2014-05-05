@@ -43,7 +43,7 @@ JPEGTest::JPEGTest()
     currentTest = FIRST_TEST;
     for(int32 i = 0; i < TESTS_COUNT; ++i)
     {
-        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+        PixelFormatDescriptor formatDescriptor = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RGBA8888);
         RegisterFunction(this, &JPEGTest::TestFunction, Format("JPEGTest of %s", formatDescriptor.name.c_str()), NULL);
     }
 }
@@ -91,7 +91,7 @@ void JPEGTest::TestFunction(PerfFuncData * data)
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
     
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+    PixelFormatDescriptor formatDescriptor = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
                                     differencePersentage, 100.f - differencePersentage);
 

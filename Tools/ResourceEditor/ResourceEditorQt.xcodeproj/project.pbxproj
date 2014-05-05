@@ -62,6 +62,8 @@
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		E8064AC3189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */; };
 		E86F97CF18DB38F1007330E1 /* CloneLastBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */; };
+		E86F97BD18DB2978007330E1 /* DeveloperTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97BB18DB2978007330E1 /* DeveloperTools.cpp */; };
+		E86F97C718DB2990007330E1 /* DeveloperTools_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97C618DB2990007330E1 /* DeveloperTools_moc.cpp */; };
 		E879F45D189802680008E0B1 /* DeleteLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */; };
 		E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */; };
 		E89DFD30163ED2A900B51706 /* DataQt in Bundle Resources */ = {isa = PBXBuildFile; fileRef = E89DFD2F163ED2A900B51706 /* DataQt */; };
@@ -729,6 +731,9 @@
 		E8064AC2189A95FA00EE7164 /* DeleteRenderBatchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteRenderBatchCommand.h; sourceTree = "<group>"; };
 		E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloneLastBatchCommand.cpp; sourceTree = "<group>"; };
 		E86F97CE18DB38F1007330E1 /* CloneLastBatchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloneLastBatchCommand.h; sourceTree = "<group>"; };
+		E86F97BB18DB2978007330E1 /* DeveloperTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeveloperTools.cpp; sourceTree = "<group>"; };
+		E86F97BC18DB2978007330E1 /* DeveloperTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeveloperTools.h; sourceTree = "<group>"; };
+		E86F97C618DB2990007330E1 /* DeveloperTools_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeveloperTools_moc.cpp; sourceTree = "<group>"; };
 		E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteLODCommand.cpp; sourceTree = "<group>"; };
 		E879F45C189802680008E0B1 /* DeleteLODCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteLODCommand.h; sourceTree = "<group>"; };
 		E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InspDynamicModifyCommand.cpp; sourceTree = "<group>"; };
@@ -1870,6 +1875,23 @@
 			path = _GeneratedQt/PlaneLODDialog;
 			sourceTree = "<group>";
 		};
+		E86F97BA18DB2978007330E1 /* DeveloperTools */ = {
+			isa = PBXGroup;
+			children = (
+				E86F97BB18DB2978007330E1 /* DeveloperTools.cpp */,
+				E86F97BC18DB2978007330E1 /* DeveloperTools.h */,
+			);
+			path = DeveloperTools;
+			sourceTree = "<group>";
+		};
+		E86F97C518DB2990007330E1 /* DeveloperTools */ = {
+			isa = PBXGroup;
+			children = (
+				E86F97C618DB2990007330E1 /* DeveloperTools_moc.cpp */,
+			);
+			path = DeveloperTools;
+			sourceTree = "<group>";
+		};
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
@@ -2234,6 +2256,7 @@
 		E8BAD65F1859F50300C98C8D /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E86F97C518DB2990007330E1 /* DeveloperTools */,
 				E8BAD6601859F50300C98C8D /* AddParticleEmitterDialog */,
 				E8BAD6621859F50300C98C8D /* AddSkyboxDialog */,
 				E8BAD6641859F50300C98C8D /* AddSwitchEntityDialog */,
@@ -3610,6 +3633,7 @@
 		E8C9917F184CD0EB00AFBF3F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				E86F97BA18DB2978007330E1 /* DeveloperTools */,
 				4FA41987188EA4C500395C70 /* RunGuard */,
 				E8C99180184CD0EB00AFBF3F /* AddParticleEmitterDialog */,
 				E8C99183184CD0EB00AFBF3F /* AddSkyboxDialog */,
@@ -4187,6 +4211,7 @@
 				E8BAD6F61859F50300C98C8D /* EditorLightSystem_moc.cpp in Build Sources */,
 				E8C99337184CD0EC00AFBF3F /* QtPropertyDataInspColl.cpp in Build Sources */,
 				E8C99250184CD0EC00AFBF3F /* btSequentialImpulseConstraintSolver.cpp in Build Sources */,
+				E86F97C718DB2990007330E1 /* DeveloperTools_moc.cpp in Build Sources */,
 				E8BAD7301859F50300C98C8D /* QtPropertyDataInspDynamic_moc.cpp in Build Sources */,
 				E8C992E5184CD0EC00AFBF3F /* SceneTreeItemForce.cpp in Build Sources */,
 				E8BAD769185A578000C98C8D /* ConsoleWidget_moc.cpp in Build Sources */,
@@ -4289,6 +4314,7 @@
 				E8BAD7251859F50300C98C8D /* LandscapeDialog_moc.cpp in Build Sources */,
 				E8C99324184CD0EC00AFBF3F /* TextureListModel.cpp in Build Sources */,
 				E8C99218184CD0EC00AFBF3F /* btConvexPointCloudShape.cpp in Build Sources */,
+				E86F97BD18DB2978007330E1 /* DeveloperTools.cpp in Build Sources */,
 				E8BAD6FB1859F50300C98C8D /* HoodObject_moc.cpp in Build Sources */,
 				E8BAD70A1859F50300C98C8D /* OwnersSignatureSystem_moc.cpp in Build Sources */,
 				E8C992F5184CD0EC00AFBF3F /* SceneTabWidget.cpp in Build Sources */,

@@ -54,7 +54,7 @@ DXTTest::DXTTest()
     currentTest = FIRST_TEST;
     for(int32 i = 0; i < TESTS_COUNT; ++i)
     {
-        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[i]);
+        PixelFormatDescriptor formatDescriptor = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(formats[i]);
         RegisterFunction(this, &DXTTest::TestFunction, Format("DXTTest of %s", formatDescriptor.name.c_str()), NULL);
     }
 }
@@ -105,7 +105,7 @@ void DXTTest::TestFunction(PerfFuncData * data)
 			differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 		}
         
-        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(formats[currentTest]);
+        PixelFormatDescriptor formatDescriptor = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(formats[currentTest]);
         data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
                                         differencePersentage, 100.f - differencePersentage);
 
@@ -150,7 +150,7 @@ bool DXTTest::IsCurrentTestAccepted()
     }
 
 
-	PixelFormatDescriptor pixelFormat = Texture::GetPixelFormatDescriptor(formats[currentTest]);
+	PixelFormatDescriptor pixelFormat = DAVA::PixelFormatDescriptor::GetPixelFormatDescriptor(formats[currentTest]);
 	
 	if (pixelFormat.format == 0)
 		return false;
@@ -188,8 +188,6 @@ void DXTTest::Draw(const DAVA::UIGeometricData &geometricData)
 {
     RenderManager::Instance()->ClearWithColor(0.f, 0.0f, 0.f, 1.f);
     
-//    RenderManager::Instance()->SetBlendMode(BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA);
-
     Sprite::DrawState state;
     state.SetFrame(0);
 

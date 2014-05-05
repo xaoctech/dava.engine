@@ -34,7 +34,7 @@
 #include "Render/Texture.h"
 #include "Render/RenderManager.h"
 #include "Render/ImageSystem.h"
-
+#include "Render/PixelFormatDescriptor.h"
 #include <libdxt/nvtt.h>
 #include <libdxt/nvtt_extra.h>
 
@@ -374,7 +374,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 					break;
 				}
 
-                if(i >= baseMipMap)
+                if((int32)i >= baseMipMap)
                 {   // load only actual image data
                     Image* innerImage = Image::Create(faceWidth, faceHeight, pixFormat);
                     innerImage->mipmapLevel = i - baseMipMap;
@@ -427,7 +427,7 @@ bool NvttHelper::DecompressDxt(const nvtt::Decompressor & dec, DDSInfo info, Vec
 		uint32 faceWidth = info.width;
 		uint32 faceHeight = info.height;
         
-        for(uint32 i = 0; i < baseMipMap; ++i)
+        for(int32 i = 0; i < baseMipMap; ++i)
         {
             faceWidth = Max((uint32)1, faceWidth / 2);
 			faceHeight = Max((uint32)1, faceHeight / 2);
@@ -491,7 +491,7 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 		uint32 faceWidth = info.width;
 		uint32 faceHeight = info.height;
 
-        for(uint32 i = 0; i < baseMipMap; ++i)
+        for(int32 i = 0; i < baseMipMap; ++i)
         {
             unsigned int mipMapSize = 0;
 			dec.getMipmapSize(i, mipMapSize);
@@ -591,7 +591,7 @@ bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<
 	inputOptions.setTextureLayout(textureType, imageSet[0]->width, imageSet[0]->height);
     inputOptions.setMipmapGeneration(dataCount > 1, dataCount - 1);
 
-    int32 pixelSize = Texture::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
+    int32 pixelSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
 	for(uint32 i = 0; i < dataCount; ++i)
 	{
         uint32 imgDataSize = imageSet[i]->width * imageSet[i]->height * pixelSize;
@@ -689,7 +689,7 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
         bufSize += dstImg.nDataSize;
 		mipSize[i] = dstImg.nDataSize;
 	}
-	
+
 	//VI: convert faces
 	unsigned char* buffer = new unsigned char[bufSize];
 	unsigned char* tmpBuffer = buffer;
@@ -759,6 +759,7 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
 	}
 
 	SafeDeleteArray(buffer);
+
 	return res;
 }
 	

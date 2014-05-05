@@ -109,6 +109,8 @@
 #include "RecentFilesManager.h"
 #include "Deprecated/SceneValidator.h"
 
+#include "Tools/DeveloperTools/DeveloperTools.h"
+
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, ui(new Ui::MainWindow)
@@ -119,6 +121,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	, hangingObjectsWidget(NULL)
 	, globalInvalidate(false)
     , modificationWidget(NULL)
+    , developerTools(new DeveloperTools(this))
 {
 	new Console();
 	new ProjectManager();
@@ -175,6 +178,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 QtMainWindow::~QtMainWindow()
 {
 	SafeDelete(addSwitchEntityDialog);
+    SafeDelete(developerTools);
     
     TextureBrowser::Instance()->Release();
 	MaterialEditor::Instance()->Release();
@@ -700,6 +704,11 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionAddStaticOcclusionComponent, SIGNAL(triggered()), this, SLOT(OnAddStaticOcclusionComponent()));
 	QObject::connect(ui->actionAddQualitySettingsComponent, SIGNAL(triggered()), this, SLOT(OnAddModelTypeComponent()));
 
+    // Debug functions
+	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
+    
+    
+    
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
  	objectTypesLabel->setMenu(ui->menuObjectTypes);
@@ -1882,12 +1891,15 @@ void QtMainWindow::OnConvertModifiedTextures()
 		{
 			continue;
 		}
-		
+
+        DAVA::VariantType quality = SettingsManager::Instance()->GetValue("Compression Quality", SettingsManager::DEFAULT);
+        
 		Vector<eGPUFamily> updatedGPUs = it->second;
 		WaitSetMessage(descriptor->GetSourceTexturePathname().GetAbsolutePathname().c_str());
 		foreach(eGPUFamily gpu, updatedGPUs)
 		{
-			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true);
+
+			DAVA::TextureConverter::ConvertTexture(*descriptor, gpu, true, (TextureConverter::eConvertQuality)quality.AsInt32());
 			WaitSetValue(++convretedNumber);
 		}
 	}
@@ -2715,6 +2727,7 @@ bool QtMainWindow::SaveTilemask(bool forAllTabs /* = true */)
 	return true;
 }
 
+
 void QtMainWindow::OnReloadShaders()
 {
     ShaderCache::Instance()->Reload();
@@ -2764,5 +2777,4 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
         }
     }
 }
-
 

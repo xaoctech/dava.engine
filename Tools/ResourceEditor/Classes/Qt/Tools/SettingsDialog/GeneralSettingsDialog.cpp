@@ -88,7 +88,19 @@ void GeneralSettingsDialog::InitSettings()
 
 		for(; it != data.end(); ++it)
 		{
-			QtPropertyData*  propData = new QtPropertyKeyedArchiveMember(settingsGroup, it->first);
+			QtPropertyDataDavaVariant* propData = new QtPropertyKeyedArchiveMember(settingsGroup, it->first);
+            
+            const EnumMap * allowedValues = SettingsManager::Instance()->GetAllowedValues(it->first, groupsTodisplay[groupID]);
+            if(allowedValues)
+            {
+                DAVA::uint32 count = allowedValues->GetCount();
+                for(DAVA::uint32 i = 0; i < count; ++i)
+                {
+                    int value = 0;
+                    allowedValues->GetValue(i, value);
+                    propData->AddAllowedValue(DAVA::VariantType(value), allowedValues->ToString(value));
+                }
+            }
 			groupEditor->AppendProperty( it->first.c_str(), propData);
 		}
 

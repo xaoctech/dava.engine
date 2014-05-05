@@ -93,9 +93,12 @@ public:
 		Caps() 
 		{
 			isHardwareCursorSupported = false;
-			isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+			isPVRTCSupported = isETCSupported = false;
+			isPVRTC2Supported = false;
+			isDXTSupported = isATCSupported = false;
 			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
-            
+			isOpenGLES3Supported = false;
+
 #if defined(__DAVAENGINE_ANDROID__)
             isGlDepth24Stencil8Supported = isGlDepthNvNonLinearSupported = false;
 #endif
@@ -104,7 +107,9 @@ public:
         Core::eRenderer renderer;
 		bool isHardwareCursorSupported;
         bool isPVRTCSupported;
-        bool isETCSupported;
+		bool isPVRTC2Supported;
+		bool isETCSupported;
+        bool isOpenGLES3Supported;
         bool isBGRA8888Supported;
         bool isFloat16Supported;
         bool isFloat32Supported;
@@ -777,7 +782,7 @@ public:
     RenderState currentState;
     RenderState hardwareState;
 
-    int32 enabledAttribCount;
+    int32 cachedEnabledStreams;
 
     
     

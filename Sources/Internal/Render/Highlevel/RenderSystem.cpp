@@ -228,10 +228,10 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
 {
 	//do not calculate nearest lights for non-lit objects
 	bool needUpdate = false;
-	uint32 renderBatchCount = renderObject->GetActiveRenderBatchCount();
+	uint32 renderBatchCount = renderObject->GetRenderBatchCount();
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
-        RenderBatch * batch = renderObject->GetActiveRenderBatch(k);
+        RenderBatch * batch = renderObject->GetRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
         if (material && material->IsDynamicLit())
         {
@@ -276,12 +276,13 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
-        RenderBatch * batch = renderObject->GetActiveRenderBatch(k);
-        NMaterial * material = batch->GetMaterial();
-        if (material)
-        {
-            material->SetLight(0, nearestLight, forceUpdateLights);
-        }
+        RenderBatch * batch = renderObject->GetRenderBatch(k);
+        batch->SetLight(0, nearestLight);
+//        NMaterial * material = batch->GetMaterial();
+//        if (material)
+//        {
+//            material->SetLight(0, nearestLight, forceUpdateLights);
+//        }
     }
 }
 
@@ -302,7 +303,7 @@ void RenderSystem::AddLight(Light * light)
     
 void RenderSystem::RemoveLight(Light * light)
 {
-    lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
+    FindAndRemoveExchangingWithLast(lights, light);
     FindNearestLights();
     
     SafeRelease(light);
@@ -386,19 +387,6 @@ void RenderSystem::Render()
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
 }
-
-//RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer)
-//{
-//	DVASSERT(false == renderLayersMap.count(layerName));
-//
-//	RenderLayer * newLayer = new RenderLayer(layerName, sortingFlags);
-//	renderLayersMap.Insert(layerName, newLayer);
-//
-//	RenderPass * inPass = renderPassesMap[passName];
-//	inPass->AddRenderLayer(newLayer, afterLayer);
-//
-//	return newLayer;
-//}
     
 void RenderSystem::SetShadowRectColor(const Color &color)
 {
