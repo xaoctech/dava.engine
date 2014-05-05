@@ -73,7 +73,7 @@ public:
     ~VegetationRenderData();
 
     inline Vector<VegetationVertex>& GetVertices();
-    inline Vector<int16>& GetIndices();
+    inline Vector<uint16>& GetIndices();
     inline RenderDataObject* GetRenderDataObject();
     inline Vector<Vector<Vector<SortedBufferItem> > >& GetIndexBuffers();
     inline NMaterial* GetMaterial();
@@ -86,7 +86,7 @@ private:
     
     NMaterial* material;
     Vector<VegetationVertex> vertexData;
-    Vector<int16> indexData;
+    Vector<uint16> indexData;
     RenderDataObject* vertexRenderDataObject;
     Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
 };
@@ -98,7 +98,7 @@ inline Vector<VegetationVertex>& VegetationRenderData::GetVertices()
     return vertexData;
 }
 
-inline Vector<int16>& VegetationRenderData::GetIndices()
+inline Vector<uint16>& VegetationRenderData::GetIndices()
 {
     return indexData;
 }

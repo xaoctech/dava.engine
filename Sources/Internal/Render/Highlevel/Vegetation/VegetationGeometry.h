@@ -52,7 +52,7 @@ protected:
 
     struct PolygonSortData
     {
-        int16 indices[3];
+        uint16 indices[3];
         float32 cameraDistance;
         
         inline PolygonSortData();

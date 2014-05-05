@@ -98,7 +98,7 @@ private:
                                 size_t resolutionIndex,
                                 uint32 resolutionOffset,
                                 Vector<uint32>& layerOffsets,
-                                Vector<int16>& preparedIndices,
+                                Vector<uint16>& preparedIndices,
                                 AABBox3& indexBufferBBox,
                                 VegetationRenderData& renderData);
     
@@ -109,7 +109,7 @@ private:
                                             Vector<Vector3>& directionPoints,
                                             Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
                                             Vector<PolygonSortData>& sortingArray,
-                                            Vector<int16>& preparedIndices,
+                                            Vector<uint16>& preparedIndices,
                                             VegetationRenderData& renderData);
     
     void GenerateRenderDataObjects(VegetationRenderData& renderData);
