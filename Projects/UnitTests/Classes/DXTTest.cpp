@@ -29,6 +29,7 @@
 
 #include "DXTTest.h"
 #include "TextureUtils.h"
+#include "Render/ImageSystem.h"
 
 static const PixelFormat formats[] =
 {
@@ -118,8 +119,9 @@ void DXTTest::TestFunction(PerfFuncData * data)
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(dxtSprite);
         
         FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-        ImageLoader::Save(firstComparer, documentsPath + (Format("DXTTest/src_number_%d.png", currentTest)));
-        ImageLoader::Save(secondComparer, documentsPath + (Format("DXTTest/dst_number_%d.png", currentTest)));
+        
+        ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/src_number_%d.png", currentTest), firstComparer, firstComparer->format);
+        ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/dst_number_%d.png", currentTest), secondComparer, secondComparer->format);
     }
 
     ++currentTest;

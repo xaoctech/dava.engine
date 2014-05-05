@@ -30,7 +30,7 @@
 #include "Render/Image.h"
 #include "Render/Texture.h"
 #include "Render/ImageConvert.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 
 namespace DAVA 
 {
@@ -383,7 +383,10 @@ void Image::InsertImage(const Image* image, const Vector2& dstPos, const Rect& s
 
 bool Image::Save(const FilePath &path) const
 {
-    return ImageLoader::Save(this, path);
+    Image* imageToSave = CopyImageRegion(this, width, height, 0, 0);
+    eErrorCode res = ImageSystem::Instance()->Save(path, imageToSave, format);
+    SafeRelease(imageToSave);
+    return res == SUCCESS;
 }
     
 };

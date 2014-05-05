@@ -32,8 +32,8 @@
 #include "FileSystem/FilePath.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/ImageSystem.h"
+#include "Render/LibDdsHelper.h"
 #include "Render/GPUFamilyDescriptor.h"
 
 namespace DAVA
@@ -44,7 +44,8 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
     FilePath fileToConvert = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
     
     Vector<Image*> inputImages;
-    ImageLoader::CreateFromFileByExtension(fileToConvert, inputImages, 0);
+    Vector<Image*> imagesToSave;
+    ImageSystem::Instance()->Load(fileToConvert, inputImages, 0);
     if(inputImages.size() == 1)
     {
         Image* image = inputImages[0];
@@ -57,13 +58,23 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
             image->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
         }
         
-        if(LibDxtHelper::WriteDdsFile(outputName,
-                                      image->width, image->height, &(image->data), 1,
-                                      (PixelFormat) descriptor.compression[gpuFamily].format,
-                                      (descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
+        if(descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)
+        {
+            imagesToSave = image->CreateMipMapsImages();
+        }
+        else
+        {
+            imagesToSave.push_back(image);
+        }
+        eErrorCode retCode = ImageSystem::Instance()->Save(outputName, imagesToSave, (PixelFormat) descriptor.compression[gpuFamily].format);
+        if(SUCCESS == retCode)
         {
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-			LibDxtHelper::AddCRCIntoMetaData(outputName);
+            if(descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)
+            {
+                for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
+            }
+			LibDdsHelper::AddCRCIntoMetaData(outputName);
             return outputName;
         }
     }
@@ -71,6 +82,10 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
     Logger::Error("[DXTConverter::ConvertPngToDxt] can't convert %s to DXT", fileToConvert.GetAbsolutePathname().c_str());
     
     for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
+    if(descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)
+    {
+        for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
+    }
     return FilePath();
 }
 	
@@ -84,7 +99,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 	for(size_t i = 0; i < faceNames.size(); ++i)
 	{
         Vector<Image*> tempImages;
-		ImageLoader::CreateFromFileByExtension(faceNames[i], tempImages);
+        ImageSystem::Instance()->Load(faceNames[i], tempImages);
 		if(tempImages.size() == 1)
 		{
 			inputImages.push_back(tempImages[0]);
@@ -117,24 +132,13 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 			}
         }
 		
-		uint8** faceData = new uint8*[inputImages.size()];
-		for(size_t i = 0; i < inputImages.size(); ++i)
-		{
-			faceData[i] = inputImages[i]->data;
-		}
-        
-        if(LibDxtHelper::WriteDdsFile(outputName,
-                                      inputImages[0]->width, inputImages[0]->height, faceData, (uint32)inputImages.size(),
-                                      (PixelFormat) descriptor.compression[gpuFamily].format,
-                                      (descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)))
+        eErrorCode retCode = ImageSystem::Instance()->Save(outputName, inputImages, (PixelFormat) descriptor.compression[gpuFamily].format, true);
+        if(SUCCESS == retCode)
         {
-			SafeDeleteArray(faceData);
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-            LibDxtHelper::AddCRCIntoMetaData(outputName);
+            LibDdsHelper::AddCRCIntoMetaData(outputName);
             return outputName;
         }
-		
-		SafeDeleteArray(faceData);
     }
     
     Logger::Error("[DXTConverter::ConvertCubemapPngToDxt] can't convert %s to cubemap DXT", fileToConvert.GetAbsolutePathname().c_str());

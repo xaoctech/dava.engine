@@ -54,7 +54,7 @@
 #include "Render/OGLHelpers.h"
 
 #include "Render/TextureDescriptor.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 
 #include "Render/GPUFamilyDescriptor.h"
 #include "Job/JobManager.h"
@@ -575,7 +575,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
             Vector<Image *> imageFace;
-			ImageLoader::CreateFromFileByExtension(faceNames[i], imageFace, baseMipMap);
+            ImageSystem::Instance()->Load(faceNames[i], imageFace, baseMipMap);
 			if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
@@ -605,7 +605,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
-		ImageLoader::CreateFromFileByExtension(imagePathname, *images, baseMipMap);
+        ImageSystem::Instance()->Load(imagePathname, *images, baseMipMap);
         if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
         {
             Image * img = *images->begin();

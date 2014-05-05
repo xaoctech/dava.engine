@@ -37,7 +37,7 @@
 #include "Render/Shader.h"
 
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
 

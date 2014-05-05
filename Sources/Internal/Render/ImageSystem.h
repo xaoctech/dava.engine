@@ -60,104 +60,26 @@ public:
     
     ImageSystem();
     
-    virtual ~ImageSystem()
-    {
-        for(size_t i = 0; i < FILE_FORMAT_COUNT; ++i)
-        {
-            delete wrappers[i];
-        }
-    }
+    virtual ~ImageSystem();
     
     ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat)
     {
         return wrappers[fileFormat];
     }
     
-    eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0)
-    {
-        File *fileRead = File::Create(pathname, File::READ | File::OPEN);
-        if(!fileRead)
-        {
-            return ERROR_FILE_NOTFOUND;
-        }
-        
-        eErrorCode result = Load(fileRead, imageSet, baseMipmap);
-        
-        SafeRelease(fileRead);
-        
-        return result;
-    }
+    eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = -1);
     
-    eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0)
-    {
-        ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
-        
-        if (NULL == propperWrapper || !propperWrapper->IsImage(file))
-        {
-            return ERROR_FILE_FORMAT_INCORRECT;
-        }
-        file->Seek(0,  File::SEEK_FROM_START);
-        return propperWrapper->ReadFile(file, imageSet, baseMipmap) ? SUCCESS : ERROR_READ_FAIL;
-    }
+    eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = -1);
     
-    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false)
-    {
-        ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
-        if(!propperWrapper)
-        {
-            return ERROR_FILE_FORMAT_INCORRECT;
-        }
-
-        return propperWrapper->WriteFile(fileName, imageSet, compressionFormat, isCubeMap);
-    }
+    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
+    
+    eErrorCode Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat, bool isCubeMap = false);
     
 protected:
     
-    ImageFormatInterface* DetectImageFormatInterfaceByExtension(const FilePath & pathname)
-    {
-        if(pathname.IsEqualToExtension(".pvr"))
-        {
-            return wrappers[FILE_FORMAT_PVR];
-        }
-        else if(pathname.IsEqualToExtension(".dds"))
-        {
-            return wrappers[FILE_FORMAT_DDS];
-        }
-        else if(pathname.IsEqualToExtension(".png"))
-        {
-            return wrappers[FILE_FORMAT_PNG];
-        }
-        else if(pathname.IsEqualToExtension(".jpeg")||pathname.IsEqualToExtension(".jpg"))
-        {
-            return wrappers[FILE_FORMAT_JPEG];
-        }
-        DVASSERT(0);
-        
-        return NULL;
-    }
+    ImageFormatInterface* DetectImageFormatInterfaceByExtension(const FilePath & pathname);
     
-    ImageFormatInterface* DetectImageFormatInterfaceByContent(File *file)
-    {
-        if( wrappers[FILE_FORMAT_PVR]->IsImage(file))
-        {
-            return  wrappers[FILE_FORMAT_PVR];
-        }
-        else if(wrappers[FILE_FORMAT_DDS]->IsImage(file))
-        {
-            return wrappers[FILE_FORMAT_DDS];
-        }
-        else if(wrappers[FILE_FORMAT_PNG]->IsImage(file))
-        {
-            return wrappers[FILE_FORMAT_PNG];
-        }
-        else if(wrappers[FILE_FORMAT_JPEG]->IsImage(file))
-        {
-            return wrappers[FILE_FORMAT_JPEG];
-        }
-        DVASSERT(0);
-        
-        return NULL;
-    }
+    ImageFormatInterface* DetectImageFormatInterfaceByContent(File *file);
        
     ImageFormatInterface* wrappers[FILE_FORMAT_COUNT];
 };

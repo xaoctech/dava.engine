@@ -37,7 +37,7 @@
 #include "Utils/CRC32.h"
 
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 
 
 #if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_WIN32__)
@@ -83,7 +83,6 @@ eErrorCode LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 b
         return ERROR_FILE_NOTFOUND;
     }
     
-    
     bool preloaded = LibPVRHelper::PreparePVRData((const char *)fileData, fileSize);
     if(!preloaded)
     {
@@ -93,10 +92,38 @@ eErrorCode LibPVRHelper::ReadFile(File *file, Vector<Image *> &imageSet, int32 b
     }
     
     bool read = true;
-    uint32 mipmapLevelCount = LibPVRHelper::GetMipMapLevelsCount(file);
+    int32 mipmapLevelCount = GetMipMapLevelsCount(file);
+    
+    if(baseMipMap == -1)
+    {
+        baseMipMap = mipmapLevelCount - 1;
+    }
+    else
+    {
+        baseMipMap = Min(baseMipMap, mipmapLevelCount - 1);
+    }
+    
+    
+	int32 faceCount = GetCubemapFaceCount(file);
+	int32 totalImageCount = (mipmapLevelCount - baseMipMap) * faceCount;
+    if(totalImageCount)
+    {
+        imageSet.reserve(totalImageCount);
+        for(int32 i = 0; i < totalImageCount; ++i)
+        {
+            Image *image = new Image();
+            imageSet.push_back(image);
+        }
+    }
     for (uint32 i = baseMipMap; i < mipmapLevelCount; ++i)
     {
         read &= ReadMipMapLevel((const char *)fileData, fileSize, imageSet, i, baseMipMap);
+    }
+    
+    if(!read)
+    {
+        for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
+        return ERROR_READ_FAIL;
     }
     
     SafeDeleteArray(fileData);

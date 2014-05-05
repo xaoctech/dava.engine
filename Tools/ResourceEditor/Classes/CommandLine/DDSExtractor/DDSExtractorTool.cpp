@@ -31,7 +31,7 @@
 #include "DDSExtractorTool.h"
 
 #include "TexturePacker/CommandLineParser.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/LibDdsHelper.h"
 
 void DDSExtractorTool::PrintUsage()
 {
@@ -100,8 +100,11 @@ void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& pathToDDS)
 	
 	DAVA::Vector<DAVA::Image *> imageSet;
 	//extracted images should have rgba format, but not DX1..DX5, even in case of dxt supporting systems(like windows)
-	DAVA::LibDxtHelper::ReadDxtFile(pathToDDS, imageSet, true);
-	
+    DAVA::int32 mipMapsCount = DAVA::LibDdsHelper::GetMipMapLevelsCount(pathToDDS);
+    DAVA::File* file = DAVA::File::Create(pathToDDS, DAVA::File::OPEN | DAVA::File::READ);
+    DAVA::LibDdsHelper* helper = static_cast<DAVA::LibDdsHelper* >(DAVA::ImageSystem::Instance()->GetImageFormatInterface(DAVA::ImageSystem::FILE_FORMAT_DDS));
+    DAVA::eErrorCode retCode = helper->ReadFile(file, imageSet, mipMapsCount, true);
+	SafeRelease(file);
 	if (mipmapNumber == 0 && imageSet.size())
 	{
 		// if "-mipmap" argumant is blank -> all mipmaps will be extracted
@@ -133,7 +136,7 @@ void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& pathToDDS, DAVA::Ima
 		saveFilePath.ReplaceBasename(pathToDDS.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
 	}
 	
-	DAVA::ImageLoader::Save(imageToSave, saveFilePath);
+    DAVA::ImageSystem::Instance()->Save(saveFilePath, imageToSave, imageToSave->format);
 	printf("\n");
 	printf(DAVA::Format("Converted: %s", saveFilePath.GetAbsolutePathname().c_str()).c_str());
 }

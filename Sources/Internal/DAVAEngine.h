@@ -120,7 +120,7 @@
 #include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
 #include "Render/Image.h"
-#include "Render/ImageLoader.h"
+#include "Render/ImageSystem.h"
 #include "Render/Shader.h"
 #include "Render/ShaderCache.h"
 

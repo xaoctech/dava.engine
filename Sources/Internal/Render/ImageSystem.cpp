@@ -50,5 +50,108 @@ ImageSystem::ImageSystem()
     wrappers[FILE_FORMAT_PVR] = new LibPVRHelper();
     wrappers[FILE_FORMAT_JPEG] = new LibJpegWrapper();
 }
-   
+    
+ImageSystem::~ImageSystem()
+{
+    for(size_t i = 0; i < FILE_FORMAT_COUNT; ++i)
+    {
+        delete wrappers[i];
+    }
+}
+
+eErrorCode ImageSystem::Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap)
+{
+    File *fileRead = File::Create(pathname, File::READ | File::OPEN);
+    if(!fileRead)
+    {
+        return ERROR_FILE_NOTFOUND;
+    }
+    
+    eErrorCode result = Load(fileRead, imageSet, baseMipmap);
+    
+    SafeRelease(fileRead);
+    
+    return result;
+}
+
+eErrorCode ImageSystem::Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap)
+{
+    ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
+    
+    if (NULL == propperWrapper || !propperWrapper->IsImage(file))
+    {
+        return ERROR_FILE_FORMAT_INCORRECT;
+    }
+    file->Seek(0,  File::SEEK_FROM_START);
+    return propperWrapper->ReadFile(file, imageSet, baseMipmap);
+}
+
+eErrorCode ImageSystem::Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
+{
+    ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
+    if(!propperWrapper)
+    {
+        return ERROR_FILE_FORMAT_INCORRECT;
+    }
+    
+    return propperWrapper->WriteFile(fileName, imageSet, compressionFormat, isCubeMap);
+}
+
+eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat, bool isCubeMap)
+{
+    if (NULL == image)
+    {
+        return ERROR_WRITE_FAIL;
+    }
+    Vector<Image*> imageSet;
+    imageSet.push_back(image);
+    return Save(fileName, imageSet, compressionFormat, isCubeMap);
+}
+    
+ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const FilePath & pathname)
+{
+    if(pathname.IsEqualToExtension(".pvr"))
+    {
+        return wrappers[FILE_FORMAT_PVR];
+    }
+    else if(pathname.IsEqualToExtension(".dds"))
+    {
+        return wrappers[FILE_FORMAT_DDS];
+    }
+    else if(pathname.IsEqualToExtension(".png"))
+    {
+        return wrappers[FILE_FORMAT_PNG];
+    }
+    else if(pathname.IsEqualToExtension(".jpeg")||pathname.IsEqualToExtension(".jpg"))
+    {
+        return wrappers[FILE_FORMAT_JPEG];
+    }
+    DVASSERT(0);
+    
+    return NULL;
+}
+
+ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByContent(File *file)
+{
+    if( wrappers[FILE_FORMAT_PVR]->IsImage(file))
+    {
+        return  wrappers[FILE_FORMAT_PVR];
+    }
+    else if(wrappers[FILE_FORMAT_DDS]->IsImage(file))
+    {
+        return wrappers[FILE_FORMAT_DDS];
+    }
+    else if(wrappers[FILE_FORMAT_PNG]->IsImage(file))
+    {
+        return wrappers[FILE_FORMAT_PNG];
+    }
+    else if(wrappers[FILE_FORMAT_JPEG]->IsImage(file))
+    {
+        return wrappers[FILE_FORMAT_JPEG];
+    }
+    DVASSERT(0);
+    
+    return NULL;
+}
+    
 };

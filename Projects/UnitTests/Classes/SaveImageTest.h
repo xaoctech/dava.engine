@@ -36,10 +36,11 @@ class SaveImageTest: public TestTemplate<SaveImageTest>
 public:
     SaveImageTest();
     
-    void PngTest(PerfFuncData * data);
-    void JpegTest(PerfFuncData * data);
+    void Test(PerfFuncData * data);
+    
 private:
     Image* GetImage() const;
+    void InnerTest(const FilePath& source, const FilePath& dest, PerfFuncData * data);
 };
 
 #endif //__SAVE_IMAGE_TEST_H__
