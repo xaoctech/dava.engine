@@ -507,8 +507,8 @@
     <ClCompile Include="Classes\Qt\Scene\System\TextDrawSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\TilemaskEditorSystem.cpp" />
     <ClCompile Include="Classes\Qt\Scene\System\VisibilityToolSystem.cpp" />
+    <ClCompile Include="Classes\Qt\Settings\SettingsDialog.cpp" />
     <ClCompile Include="Classes\Qt\Settings\SettingsManager.cpp" />
-    <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp" />
     <ClCompile Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.cpp" />
     <ClCompile Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.cpp" />
     <ClCompile Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.cpp" />
@@ -564,8 +564,6 @@
     <ClCompile Include="Classes\Qt\Tools\RunGuard\RunGuard.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp" />
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.cpp" />
     <ClCompile Include="Classes\Qt\Tools\SliderWidget\SliderWidget.cpp" />
     <ClCompile Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.cpp" />
@@ -684,8 +682,7 @@
     <ClCompile Include="_GeneratedQt\Scene\System\TextDrawSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\TilemaskEditorSystem_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Scene\System\VisibilityToolSystem_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\Settings\SettingsDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SoundComponentEditor\FMODSoundBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SoundComponentEditor\SoundComponentEditor_moc.cpp" />
     <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp" />
@@ -733,7 +730,6 @@
     <ClCompile Include="_GeneratedQt\Tools\QtWaitDialog\QtWaitDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectEntityPathWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SelectPathWidget\SelectPathWidgetBase_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\PopupEditorDialog_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\SliderWidget\SliderWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidgetItemDelegate_moc.cpp" />
@@ -1151,8 +1147,8 @@
     <ClInclude Include="Classes\Qt\Scene\System\TextDrawSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\TilemaskEditorSystem.h" />
     <ClInclude Include="Classes\Qt\Scene\System\VisibilityToolSystem.h" />
+    <ClInclude Include="Classes\Qt\Settings\SettingsDialog.h" />
     <ClInclude Include="Classes\Qt\Settings\SettingsManager.h" />
-    <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h" />
     <ClInclude Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.h" />
     <ClInclude Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.h" />
     <ClInclude Include="Classes\Qt\SpeedTreeImport\SpeedTreeImportDialog.h" />
@@ -1212,8 +1208,6 @@
     <ClInclude Include="Classes\Qt\Tools\RunGuard\RunGuard.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectEntityPathWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\SelectPathWidget\SelectPathWidgetBase.h" />
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.h" />
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\PopupEditorDialog.h" />
     <ClInclude Include="Classes\Qt\Tools\SliderWidget\SliderWidget.h" />
     <ClInclude Include="Classes\Qt\Tools\TileTexturePreviewWidget\TileTexturePreviewWidget.h" />
@@ -1246,6 +1240,7 @@
     <None Include="DataQt\CubeMapTextureBrowser.ui" />
     <None Include="DataQt\ImageSplitter.ui" />
     <None Include="DataQt\LicenceDialog.ui" />
+    <None Include="DataQt\LODEditor.ui" />
     <None Include="DataQt\mainwindow.ui">
       <SubType>Designer</SubType>
     </None>

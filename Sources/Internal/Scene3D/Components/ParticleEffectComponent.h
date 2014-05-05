@@ -105,6 +105,7 @@ public:
     void SetSortingOffset(uint32 offset);
 
 private:
+    void ClearGroup(ParticleGroup& group);
 	void ClearCurrentGroups();
     void SetGroupsFinishing();
 	

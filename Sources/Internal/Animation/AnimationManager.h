@@ -49,9 +49,6 @@ namespace DAVA
 class AnimationManager : public Singleton <AnimationManager>
 {
 public:
-	AnimationManager();
-	virtual ~AnimationManager();
-		
 	/**
 		\brief Updates all animations in the system on current frame
 		This method is called from ApplicationCore::Update function. 
@@ -65,16 +62,6 @@ public:
 		\brief Dump animations state to console
 	 */
 	void DumpState();
-	
-	/**
-		\brief Internal function. For debugging purposes
-	 */
-	void SetAnimationLoggerEnabled(bool isEnabled);
-	
-	/**
-		\brief Internal function. For debugging purposes
-	 */
-	bool IsAnimationLoggerEnabled();
 	
 	Animation * FindPlayingAnimation(AnimatedObject * owner, int32 _groupId);
 	
@@ -106,9 +93,6 @@ private:
 	
 	friend class Animation;
 	friend class AnimatedObject;
-#ifdef ANIMATIONS_DEBUG	
-	bool animationLoggerEnabled;
-#endif
 };
 	
 };
