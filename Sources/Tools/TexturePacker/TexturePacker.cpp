@@ -38,6 +38,8 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
 #include "Utils/StringFormat.h"
+#include "Render/PixelFormatDescriptor.h"
+
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -48,6 +50,17 @@ namespace DAVA
 
 TexturePacker::TexturePacker()
 {
+	quality = TextureConverter::ECQ_VERY_HIGH;
+	if (CommandLineParser::Instance()->IsFlagSet("--quality"))
+	{
+		String qualityName = CommandLineParser::Instance()->GetParamForFlag("--quality");
+		int32 q = atoi(qualityName.c_str());
+		if((q >= TextureConverter::ECQ_FASTEST) && (q <= TextureConverter::ECQ_VERY_HIGH))
+		{
+			quality = (TextureConverter::eConvertQuality)q;
+		}
+	}
+    
 	maxTextureSize = DEFAULT_TEXTURE_SIZE;
 	onlySquareTextures = false;
 	errors.clear();
@@ -612,7 +625,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
     eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
     if(gpuFamily != GPU_UNKNOWN)
     {
-		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false, quality);
         
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
@@ -626,9 +639,10 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     TextureDescriptor *descriptor = new TextureDescriptor();
 
     descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
-    descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+    bool generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+    descriptor->settings.SetGenerateMipmaps(generateMipMaps);
 	
-	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED);
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.GetGenerateMipMaps());
 	descriptor->settings.minFilter = ftItem.minFilter;
 	descriptor->settings.magFilter = ftItem.magFilter;
 	
@@ -641,7 +655,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
     {
 		String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
-		PixelFormat format = Texture::GetPixelFormatByName(formatName);
+		PixelFormat format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName.c_str()));
 
 		// Additional check whether this format type is accepted for this GPU.
 		if (IsFormatSupportedForGPU(format, forGPU))
@@ -788,6 +802,12 @@ const Set<String>& TexturePacker::GetErrors() const
 {
 	return errors;
 }
+    
+void TexturePacker::SetConvertQuality(TextureConverter::eConvertQuality _quality)
+{
+    quality = _quality;
+}
+
 
 void TexturePacker::AddError(const String& errorMsg)
 {

@@ -231,6 +231,8 @@ public:
     void ClearLastBindedCaches();
 
     void Bind();
+    void BindDynamicParameters();
+
     static void Unbind();
     
 	static bool IsAutobindUniform(eShaderSemantic uniformId);

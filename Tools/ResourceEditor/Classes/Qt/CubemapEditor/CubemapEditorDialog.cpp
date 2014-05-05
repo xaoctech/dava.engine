@@ -381,12 +381,12 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 	
 	TextureDescriptor* descriptor = new TextureDescriptor();
 	descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
-    descriptor->settings.generateMipMaps = true;
 	descriptor->settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
-	descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+    descriptor->settings.magFilter = Texture::FILTER_LINEAR;
+    descriptor->settings.SetGenerateMipmaps(true);
     descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
 	descriptor->exportedAsPixelFormat = FORMAT_INVALID;
-	descriptor->faceDescription = faceMask;
+    descriptor->faceDescription = faceMask;
 	    
     descriptor->Save(filePath);
 	delete descriptor;

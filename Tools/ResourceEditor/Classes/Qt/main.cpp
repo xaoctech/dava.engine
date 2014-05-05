@@ -41,7 +41,6 @@
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TextureCompression/PVRConverter.h"
 #include "CommandLine/CommandLineManager.h"
-#include "CommandLine/SceneExporter/SceneExporter.h"
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "FileSystem/ResourceArchive.h"
 #include "TextureBrowser/TextureCache.h"
@@ -80,12 +79,12 @@ int main(int argc, char *argv[])
 #if defined (__DAVAENGINE_MACOS__)
     DAVA::Core::Run(argc, argv);
 	new DAVA::QtLayerMacOS();
-	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL"));
+	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCLI"));
 #elif defined (__DAVAENGINE_WIN32__)
 	HINSTANCE hInstance = (HINSTANCE)::GetModuleHandle(NULL);
 	DAVA::Core::Run(argc, argv, hInstance);
 	new DAVA::QtLayerWin32();
-	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCL.exe"));
+	DAVA::PVRConverter::Instance()->SetPVRTexTool(String("~res:/PVRTexToolCLI.exe"));
 #else
 	DVASSERT(false && "Wrong platform")
 #endif
@@ -117,6 +116,7 @@ int main(int argc, char *argv[])
         
 		new SceneValidator();
 		DavaGLWidget* davaGL = new DavaGLWidget();
+        RenderManager::Instance()->DetectRenderingCapabilities();
 
 		//DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
 		//DAVA::Logger::AddCustomOutput(out);

@@ -49,12 +49,38 @@ void TextureDescriptor::TextureSettings::SetDefaultValues()
     wrapModeS = Texture::WRAP_REPEAT;
     wrapModeT = Texture::WRAP_REPEAT;
     
-    generateMipMaps = OPTION_ENABLED;
+    optionsFlags = OPTION_GENERATE_MIP_MAPS;
     
     minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
     magFilter = Texture::FILTER_LINEAR;
 }
     
+
+bool TextureDescriptor::TextureSettings::GetGenerateMipMaps() const
+{
+    return (OPTION_GENERATE_MIP_MAPS & optionsFlags) != 0;
+}
+
+bool TextureDescriptor::TextureSettings::GetIsNormalMap() const
+{
+    return (OPTION_AS_NORMAL_MAP & optionsFlags) != 0;
+}
+
+void TextureDescriptor::TextureSettings::SetGenerateMipmaps(bool generateMipmaps)
+{
+    if(generateMipmaps)
+        optionsFlags |= OPTION_GENERATE_MIP_MAPS;
+    else
+        optionsFlags &= ~OPTION_GENERATE_MIP_MAPS;
+}
+
+void TextureDescriptor::TextureSettings::SetIsNormalMap(bool asNormalMap)
+{
+    if(asNormalMap)
+        optionsFlags |= OPTION_AS_NORMAL_MAP;
+    else
+        optionsFlags &= ~OPTION_AS_NORMAL_MAP;
+}
     
 void TextureDescriptor::Compression::Clear()
 {
@@ -288,7 +314,7 @@ void TextureDescriptor::LoadVersion5(int32 signature, DAVA::File *file)
 {
     file->Read(&settings.wrapModeS, sizeof(settings.wrapModeS));
     file->Read(&settings.wrapModeT, sizeof(settings.wrapModeT));
-    file->Read(&settings.generateMipMaps, sizeof(settings.generateMipMaps));
+    file->Read(&settings.optionsFlags, sizeof(settings.optionsFlags));
     file->Read(&settings.minFilter, sizeof(settings.minFilter));
     file->Read(&settings.magFilter, sizeof(settings.magFilter));
 
@@ -351,7 +377,7 @@ void TextureDescriptor::LoadVersion6(int32 signature, DAVA::File *file)
 {
     file->Read(&settings.wrapModeS, sizeof(settings.wrapModeS));
     file->Read(&settings.wrapModeT, sizeof(settings.wrapModeT));
-    file->Read(&settings.generateMipMaps, sizeof(settings.generateMipMaps));
+    file->Read(&settings.optionsFlags, sizeof(settings.optionsFlags));
     file->Read(&settings.minFilter, sizeof(settings.minFilter));
     file->Read(&settings.magFilter, sizeof(settings.magFilter));
     
@@ -396,7 +422,7 @@ void TextureDescriptor::ReadGeneralSettings(File *file)
 {
     file->Read(&settings.wrapModeS, sizeof(settings.wrapModeS));
     file->Read(&settings.wrapModeT, sizeof(settings.wrapModeT));
-    file->Read(&settings.generateMipMaps, sizeof(settings.generateMipMaps));
+    file->Read(&settings.optionsFlags, sizeof(settings.optionsFlags));
     file->Read(&settings.minFilter, sizeof(settings.minFilter));
     file->Read(&settings.magFilter, sizeof(settings.magFilter));
 }
@@ -405,7 +431,7 @@ void TextureDescriptor::WriteGeneralSettings(File *file) const
 {
     file->Write(&settings.wrapModeS, sizeof(settings.wrapModeS));
     file->Write(&settings.wrapModeT, sizeof(settings.wrapModeT));
-    file->Write(&settings.generateMipMaps, sizeof(settings.generateMipMaps));
+    file->Write(&settings.optionsFlags, sizeof(settings.optionsFlags));
     file->Write(&settings.minFilter, sizeof(settings.minFilter));
     file->Write(&settings.magFilter, sizeof(settings.magFilter));
 }
@@ -464,12 +490,6 @@ void TextureDescriptor::WriteCompression(File *file, const Compression &compress
 	file->Write(&compression.convertedFileCrc, sizeof(compression.convertedFileCrc));
 }
 
-bool TextureDescriptor::GetGenerateMipMaps() const
-{
-    return (OPTION_DISABLED != settings.generateMipMaps);
-}
-    
-    
 FilePath TextureDescriptor::GetSourceTexturePathname() const
 {
     if(pathname.IsEmpty())
@@ -529,7 +549,7 @@ bool TextureDescriptor::IsCubeMap() const
 {
 	return (faceDescription != 0);
 }
-	
+
 uint32 TextureDescriptor::ReadSourceCRC() const
 {
 	uint32 crc = 0;
@@ -598,14 +618,15 @@ void TextureDescriptor::Initialize( Texture::TextureWrap wrap, bool generateMipm
 	settings.wrapModeS = wrap;
 	settings.wrapModeT = wrap;
 
-	settings.generateMipMaps = generateMipmaps;
-	if(settings.generateMipMaps)
+	if(generateMipmaps)
 	{
+        settings.optionsFlags |= OPTION_GENERATE_MIP_MAPS;
 		settings.minFilter = Texture::FILTER_LINEAR_MIPMAP_LINEAR;
 		settings.magFilter = Texture::FILTER_LINEAR;
 	}
 	else
-	{
+    {
+        settings.optionsFlags &= ~OPTION_GENERATE_MIP_MAPS;
 		settings.minFilter = Texture::FILTER_LINEAR;
 		settings.magFilter = Texture::FILTER_LINEAR;
 	}

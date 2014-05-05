@@ -116,7 +116,7 @@ void SceneCollisionSystem::SetDrawMode(int mode)
 	drawMode = mode;
 }
 
-int SceneCollisionSystem::GetDrawMode()
+int SceneCollisionSystem::GetDrawMode() const
 {
 	return drawMode;
 }

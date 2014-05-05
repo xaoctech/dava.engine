@@ -46,13 +46,13 @@ class TextureDescriptor
     static const int32 LINE_SIZE = 256;
     static const int8 CURRENT_VERSION = 7;
     
-public:
-	enum eOptionsState
+	enum eOptionsFlag
 	{
-		OPTION_DISABLED = 0,
-		OPTION_ENABLED = 1,
+		OPTION_GENERATE_MIP_MAPS = 1 << 0,
+		OPTION_AS_NORMAL_MAP = 1 << 1
 	};
 
+public:
 	enum eSignatures
 	{
 		COMPRESSED_FILE = 0x00EEEE00,
@@ -87,15 +87,22 @@ public:
         int8 wrapModeS;
         int8 wrapModeT;
         
-        int8 generateMipMaps;
+        int8 optionsFlags;
         
         int8 minFilter;
         int8 magFilter;
 
         void SetDefaultValues();
 
+        void SetGenerateMipmaps(bool generateMipmaps);
+        void SetIsNormalMap(bool asNormalMap);
+
+        bool GetGenerateMipMaps() const;
+        bool GetIsNormalMap() const;
+
 		INTROSPECTION(TextureSettings,
-			MEMBER(generateMipMaps, "generateMipMaps", I_VIEW | I_EDIT | I_SAVE)
+			PROPERTY("generateMipMaps", "generateMipMaps", GetGenerateMipMaps, SetGenerateMipmaps, I_VIEW | I_EDIT | I_SAVE)
+			PROPERTY("asNormalMap", "asNormalMap", GetIsNormalMap, SetIsNormalMap, I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(wrapModeS, InspDesc("wrapModeS", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(wrapModeT, InspDesc("wrapModeT", GlobalEnumMap<Texture::TextureWrap>::Instance()), I_VIEW | I_EDIT)
 			MEMBER(minFilter, InspDesc("minFilter", GlobalEnumMap<Texture::TextureFilter>::Instance()), I_VIEW | I_EDIT | I_SAVE)
@@ -130,7 +137,6 @@ public:
     
     
     bool IsCompressedFile() const;
-    bool GetGenerateMipMaps() const;
 	bool IsCubeMap() const;
 
     FilePath GetSourceTexturePathname() const; 

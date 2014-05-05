@@ -64,7 +64,7 @@ void FormatsTest::LoadResources()
         int32 y = (i-1) / columnCount;
         int32 x = (i-1) % columnCount;
         
-        String formatName = Texture::GetPixelFormatString((PixelFormat)i);
+        String formatName = DAVA::PixelFormatDescriptor::GetPixelFormatString((PixelFormat)i);
         
         UIControl *c = new UIControl(Rect(x*size, y*size, size - 2, size - 2));
         c->SetSprite(Format("~res:/TestData/FormatTest/%s/number_0", formatName.c_str()), 0);

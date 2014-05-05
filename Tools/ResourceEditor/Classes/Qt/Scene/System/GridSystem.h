@@ -57,7 +57,7 @@ public:
 		gridMax = value;
 	}
 	
-	float GetGridStep()
+	float GetGridStep() const
 	{
 		return gridStep;
 	}

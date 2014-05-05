@@ -58,7 +58,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
             image->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
         }
         
-        if(descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)
+        if(descriptor.settings.GetGenerateMipMaps())
         {
             imagesToSave = image->CreateMipMapsImages();
         }
@@ -70,7 +70,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
         if(SUCCESS == retCode)
         {
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-            if(descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)
+            if(descriptor.settings.GetGenerateMipMaps())
             {
                 for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
             }
@@ -82,7 +82,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
     Logger::Error("[DXTConverter::ConvertPngToDxt] can't convert %s to DXT", fileToConvert.GetAbsolutePathname().c_str());
     
     for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-    if(descriptor.settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED)
+    if(descriptor.settings.GetGenerateMipMaps())
     {
         for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
     }

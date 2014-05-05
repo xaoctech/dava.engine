@@ -34,10 +34,13 @@
 #include "TextureProperties.h"
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
+#include "Render/RenderBase.h"
+
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
 	, curTextureDescriptor(NULL)
 	, skipPropSizeChanged(false)
+    , curGPU(DAVA::GPU_UNKNOWN)
 {
 	SetEditTracking(true);
 }
@@ -162,7 +165,7 @@ void TextureProperties::ReloadProperties()
 
 		// add common texture settings
 		headerIndex = AppendHeader("Texture settings");
-		propMipMap = AddPropertyItem("generateMipMaps", object, headerIndex);
+		propMipMap = AddPropertyItemMember("generateMipMaps", object, headerIndex);
 		propMipMap->SetCheckable(true);
 		propMipMap->SetEditable(false);
 		
@@ -172,16 +175,26 @@ void TextureProperties::ReloadProperties()
 		propMipMap->SetValue(savedValue);
 		//END of TODO
 
-		propWrapModeS = AddPropertyItem("wrapModeS", object, headerIndex);
-		propWrapModeT = AddPropertyItem("wrapModeT", object, headerIndex);
-		propMinFilter = AddPropertyItem("minFilter", object, headerIndex);
-		propMagFilter = AddPropertyItem("magFilter", object, headerIndex);
+        propNormalMap = AddPropertyItemMember("asNormalMap", object, headerIndex);
+        propNormalMap->SetCheckable(true);
+        propNormalMap->SetEditable(false);
+
+        //TODO: magic to display introspection info as bool, not int
+        savedValue = propNormalMap->GetValue().toBool();
+        propNormalMap->SetValue(!savedValue);
+        propNormalMap->SetValue(savedValue);
+        //END of TODO
+
+		propWrapModeS = AddPropertyItemMeta("wrapModeS", object, headerIndex);
+		propWrapModeT = AddPropertyItemMeta("wrapModeT", object, headerIndex);
+		propMinFilter = AddPropertyItemMeta("minFilter", object, headerIndex);
+		propMagFilter = AddPropertyItemMeta("magFilter", object, headerIndex);
 
 		object = &curTextureDescriptor->compression[curGPU];
 
 		// add per-gpu settings
 		headerIndex = AppendHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
-		propFormat = AddPropertyItem("format", object, headerIndex);
+		propFormat = AddPropertyItemMeta("format", object, headerIndex);
 
 		propSizes = new QtPropertyDataMetaObject(&curSizeLevelObject, DAVA::MetaInfo::Instance<int>());
 		AppendProperty("Size", propSizes, headerIndex);
@@ -270,7 +283,7 @@ void TextureProperties::ReloadEnumWrap()
 	enumWpar.Register(DAVA::Texture::WRAP_CLAMP_TO_EDGE, globalFormats->ToString(DAVA::Texture::WRAP_CLAMP_TO_EDGE));
 }
 
-QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
+QtPropertyDataMetaObject* TextureProperties::AddPropertyItemMeta(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
 {
 	QtPropertyDataMetaObject* ret = NULL;
 	const DAVA::InspInfo* info = object->GetTypeInfo();
@@ -286,6 +299,24 @@ QtPropertyDataMetaObject* TextureProperties::AddPropertyItem(const char *name, D
 	}
 
 	return ret;
+}
+
+QtPropertyDataInspMember* TextureProperties::AddPropertyItemMember(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
+{
+    QtPropertyDataInspMember* ret = NULL;
+    const DAVA::InspInfo* info = object->GetTypeInfo();
+
+    if(NULL != info)
+    {
+        const DAVA::InspMember *member = info->Member(name);
+        if(NULL != member)
+        {
+            ret = new QtPropertyDataInspMember(object, member);
+            AppendProperty(member->Name(), ret, parent);
+        }
+    }
+
+    return ret;
 }
 
 void TextureProperties::SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues)
@@ -316,6 +347,10 @@ void TextureProperties::OnItemEdited(const QModelIndex &index)
 
 		emit PropertyChanged(PROP_MIPMAP);
 	}
+    else if(data == propNormalMap)
+    {
+        emit PropertyChanged(PROP_NORMALMAP);
+    }
 	else if(data == propFormat)
 	{
 		emit PropertyChanged(PROP_FORMAT);
