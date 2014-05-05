@@ -158,7 +158,7 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 {
 	if(!IsLocked())
 	{
-        scale = scale * SettingsManager::GetValue("Scene/GizmoScale").AsFloat();
+        scale = scale * SettingsManager::GetValue(Settings::Scene_GizmoScale).AsFloat();
 
 		if(curScale != scale && 0 != scale)
 		{
