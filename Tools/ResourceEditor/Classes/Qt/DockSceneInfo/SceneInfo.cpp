@@ -288,7 +288,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily) SettingsManager::GetValue("Internal/TextureViewGPU").AsInt32());
+        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
     }
 
     return textureSize;
