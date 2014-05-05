@@ -47,6 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataInspDynamic.h"
 #include "Tools/QtPropertyEditor/QtPropertyDataValidator/TexturePathValidator.h"
 #include "Qt/Settings/SettingsManager.h"
+#include "Commands2/MaterialGlobalCommand.h"
 
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 
@@ -285,11 +286,21 @@ void MaterialEditor::materialSelected(const QItemSelection & selected, const QIt
 
 void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *command, bool redo)
 {
-    if(command->GetId() == CMDID_INSP_DYNAMIC_MODIFY ||
-        command->GetId() == CMDID_INSP_MEMBER_MODIFY ||
-        command->GetId() == CMDID_META_OBJ_MODIFY)
+    if(scene == QtMainWindow::Instance()->GetCurrentScene())
     {
-        SetCurMaterial(curMaterials);
+        int cmdId = command->GetId();
+
+        if(cmdId == CMDID_INSP_DYNAMIC_MODIFY ||
+           cmdId == CMDID_INSP_MEMBER_MODIFY ||
+           cmdId == CMDID_META_OBJ_MODIFY)
+        {
+            SetCurMaterial(curMaterials);
+        }
+        else if(cmdId == CMDID_MATERIAL_GLOBAL_SET)
+        {
+            sceneActivated(scene);
+            SetCurMaterial(curMaterials);
+        }
     }
 }
 
@@ -942,9 +953,11 @@ void MaterialEditor::OnMaterialAddGlobal(bool checked)
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
     if(NULL != curScene)
     {
-        curScene->CreateGlobalMaterial();
-        sceneActivated(curScene);
+        DAVA::NMaterial *global = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+        curScene->Exec(new MaterialGlobalSetCommand(curScene, global));
+        SafeRelease(global);
 
+        sceneActivated(curScene);
         SelectMaterial(curScene->GetGlobalMaterial());
     }
 }
@@ -954,9 +967,7 @@ void MaterialEditor::OnMaterialRemoveGlobal(bool checked)
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
     if(NULL != curScene)
     {
-        SelectMaterial(NULL);
-
-        curScene->SetGlobalMaterial(NULL);
+        curScene->Exec(new MaterialGlobalSetCommand(curScene, NULL));
         sceneActivated(curScene);
     }
 }
@@ -1021,36 +1032,42 @@ void MaterialEditor::OnMaterialLoad(bool checked)
             {
                 lastCheckState = userChoiseWhatToLoad;
 
-                materialArchive->DeleteKey("materialType");
-                materialArchive->DeleteKey("##name");
-                materialArchive->DeleteKey("#index");
-                materialArchive->DeleteKey("materialKey");
-            
+                DAVA::KeyedArchive *materialProperties = new DAVA::KeyedArchive();
+                materialProperties->SetBool("loadIds", false);
+
                 if(!(lastCheckState & CHECKED_NAME))
                 {
-                    materialArchive->DeleteKey("materialName");
+                    materialProperties->SetBool("loadName", false);
                 }
-
+            
                 if(!(lastCheckState & CHECKED_GROUP))
                 {
-                    materialArchive->DeleteKey("materialGroup");
+                    materialProperties->SetBool("loadGroup", false);
                 }
 
                 if(!(lastCheckState & CHECKED_TEMPLATE))
                 {
-                    materialArchive->DeleteKey("materialTemplate");
+                    materialProperties->SetBool("loadTemplate", false);
                 }
 
                 if(!(lastCheckState & CHECKED_PROPERTIES))
                 {
-                    materialArchive->DeleteKey("properties");
-                    materialArchive->DeleteKey("setFlags");
+                    materialProperties->SetBool("loadProperties", false);
+                    materialProperties->SetBool("loadFlags", false);
                 }
 
                 if(!(lastCheckState & CHECKED_TEXTURES))
                 {
-                    materialArchive->DeleteKey("textures");
+                    materialProperties->SetBool("loadTextures", false);
                 }
+
+                if(lastCheckState & CHECKED_CLEAR_MATERIAL)
+                {
+                    materialProperties->SetBool("loadClear", true);
+                }
+
+                materialContext.customProperties->SetArchive("material", materialProperties);
+                materialProperties->Release();
 
                 for(int i = 0; i < curMaterials.size(); ++i)
                 {
@@ -1073,6 +1090,7 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
     dlg->setWindowTitle("Reload Model options");
     dlg->setLayout(dlgLayout);
 
+    QComboBox *modeCombo = new QComboBox(dlg);
     QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
     QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
     QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
@@ -1080,12 +1098,25 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
     QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
 
     // restore last user choice
+    modeCombo->addItem("Combine");
+    modeCombo->addItem("Clear");
+
+    if(initialState & CHECKED_CLEAR_MATERIAL)
+    {
+        modeCombo->setCurrentIndex(1);
+    }
+    else
+    {
+        modeCombo->setCurrentIndex(0);
+    }
+
     templateChBox->setChecked((bool) (initialState & CHECKED_TEMPLATE));
     nameChBox->setChecked((bool) (initialState & CHECKED_NAME));
     groupChBox->setChecked((bool) (initialState & CHECKED_GROUP));
     propertiesChBox->setChecked((bool) (initialState & CHECKED_PROPERTIES));
     texturesChBox->setChecked((bool) (initialState & CHECKED_TEXTURES));
 
+    dlgLayout->addWidget(modeCombo);
     dlgLayout->addWidget(templateChBox);
     dlgLayout->addWidget(nameChBox);
     dlgLayout->addWidget(groupChBox);
@@ -1105,6 +1136,7 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
         if(groupChBox->checkState() == Qt::Checked) ret |= CHECKED_GROUP;
         if(propertiesChBox->checkState() == Qt::Checked) ret |= CHECKED_PROPERTIES;
         if(texturesChBox->checkState() == Qt::Checked) ret |= CHECKED_TEXTURES;
+        if(modeCombo->currentIndex() == 1) ret |= CHECKED_CLEAR_MATERIAL;
     }
 
     delete dlg;
