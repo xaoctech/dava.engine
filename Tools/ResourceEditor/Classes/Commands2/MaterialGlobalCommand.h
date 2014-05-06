@@ -28,59 +28,27 @@
 
 
 
-#include "SceneSettingsDialog.h"
-#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-#include "Main/mainwindow.h"
-#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataIntrospection.h"
+#ifndef __MATERIAL_GLOBAL_COMMAND_H__
+#define __MATERIAL_GLOBAL_COMMAND_H__
 
-#define EDITOR_TAB_WIDTH 400
+#include "Commands2/Command2.h"
+#include "Render/Material/NMaterial.h"
 
-SceneSettingsDialog::SceneSettingsDialog( QWidget* parent)
-		:QDialog(parent)
+class MaterialGlobalSetCommand: public Command2
 {
-	setWindowTitle("Scene Settings");
-	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-	sceneSettingsEditor = new QtPropertyEditor(this);
-	InitSceneSettingsEditor();
-	sceneSettingsEditor->setMinimumWidth(EDITOR_TAB_WIDTH);
-	sceneSettingsEditor->resizeColumnToContents(0);
-	btnOk = new QPushButton("OK", this);
-	btnOk->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	connect(btnOk, SIGNAL(clicked()), this, SLOT(close()));
+public:
+	MaterialGlobalSetCommand(DAVA::Scene *_scene, DAVA::NMaterial *global);
+	~MaterialGlobalSetCommand();
 
-	mainLayout = new QVBoxLayout;
-	mainLayout->addWidget(sceneSettingsEditor);
-	mainLayout->addWidget(btnOk, 0, Qt::AlignRight);
-	setLayout(mainLayout);
-}
+	virtual void Undo();
+	virtual void Redo();
 
-SceneSettingsDialog::~SceneSettingsDialog()
-{
-	SafeDelete(sceneSettingsEditor);
-	SafeDelete(btnOk);
-}
+	virtual DAVA::Entity* GetEntity() const;
+    
+protected:
+    DAVA::Scene *scene;
+    DAVA::NMaterial *oldGlobal;
+    DAVA::NMaterial *newGlobal;
+};
 
-void SceneSettingsDialog::InitSceneSettingsEditor()
-{
-	SceneEditor2* sceneEditor = QtMainWindow::Instance()->GetCurrentScene();
-	if(!sceneEditor)
-	{
-		return;
-	}
-	const InspInfo* inspInfo = sceneEditor->GetTypeInfo();
-
-	uint32 membCount = inspInfo->MembersCount();
-	for(uint32 i = 0; i < membCount; i++)
-	{
-		const InspMember* member = inspInfo->Member(i);//get to systems layer
-		const MetaInfo* memberInfo = member->Type();
-		if(NULL != memberInfo->GetIntrospection())
-		{
-			QtPropertyData* propData = QtPropertyDataIntrospection::CreateMemberData(sceneEditor, member);
-			sceneSettingsEditor->AppendProperty(member->Desc().text, propData);
-		}
-	}
-	
-	sceneSettingsEditor->expandAll();
-}
-
+#endif // __MATERIAL_GLOBAL_COMMAND_H__
