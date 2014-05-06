@@ -80,35 +80,6 @@ namespace ResourceEditor
     //service strings
     static const String TAG = "tag";
 	
-	//settings properties names
-	static const char* SETTINGS_3D_DATA_SOURCEPATH	=	"3dDataSourcePath";
-	static const char* SETTINGS_PROJECT_PATH =			"LastProjectPath";
-	static const char* SETTINGS_CAMERA_SPEED_INDEX =	"CameraSpeedIndex";
-	static const char* SETTINGS_CAMERA_SPEED_VALUE =	"CameraSpeedValue";
-	static const char* SETTINGS_SCREEN_WIDTH =			"ScreenWidth";
-	static const char* SETTINGS_SCREEN_HEIGHT =			"ScreenHeight";
-	static const char* SETTINGS_LANGUAGE =				"Language";
-	static const char* SETTINGS_SHOW_OUTPUT =			"ShowOutput";
-	static const char* SETTINGS_LEFT_PANEL_WIDTH =		"LeftPanelWidth";
-	static const char* SETTINGS_RIGHT_PANEL_WIDTH =		"RightPanelWidth";
-	static const char* SETTINGS_LOD_LAYER =				"LODLayer";
-	static const char* SETTINGS_LAST_OPENED_FILE =		"LastOpenedFile";
-	//static const char* SETTINGS_LAST_OPENED_FILES_COUNT = "LastOpenedFilesCount";
-	static const char* SETTINGS_DRAW_GRID =				"DrawGrid";
-	static const char* SETTINGS_GRID_STEP =				"GridStep";
-	static const char* SETTINGS_ENABLE_IMPOSTERS =		"enableImposters";
-	static const char* SETTINGS_TEXTURE_VIEW_GPU =		"TextureViewGPU";
-	static const char* SETTINGS_MATERIALS_AMBIENT =		"materials.ambient";
-	static const char* SETTINGS_MATERIALS_DIFFUSE =		"materials.diffuse";
-	static const char* SETTINGS_MATERIALS_SPECULAR	=	"materials.specular";
-	static const char* SETTINGS_DESIGNER_NAME =			"DesignerName";
-	static const char* SETTINGS_PREVIEW_DIALOG_ENABLED = "PreviewDialogEnabled";
-	static const char* SETTINGS_DEFAULT_FOV =			"DefaultCameraFOV";
-	static const char* SETTINGS_EDITOR_VERSION =		"editor.version";
-	static const char* SETTINGS_CUBEMAP_LAST_FACE_DIR =	"cubemap_last_face_dir";
-	static const char* SETTINGS_CUBEMAP_LAST_PROJECT_DIR = "cubemap_last_proj_dir";
-    static const char* SETTINGS_LICENCE_ACCEPTED =      "editor.licence.accepted";
-	
 	static const String CUSTOM_COLOR_TEXTURE_PROP = "customColorTexture";
 	
 	static const String TILEMASK_EDITOR_BRUSH_SIZE_CAPTION	= "Brush\nsize:";

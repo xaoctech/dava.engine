@@ -28,29 +28,35 @@
 
 
 
-#ifndef __RESOURCEEDITORQT__SCENE_SETTINGS_DIALOG__
-#define __RESOURCEEDITORQT__SCENE_SETTINGS_DIALOG__
+#include "MaterialGlobalCommand.h"
 
-#include <QDialog.h>
-#include <QVBoxLayout>
-#include <QPushButton.h>
-#include "DAVAEngine.h"
-#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
-
-class SceneSettingsDialog: public QDialog
+MaterialGlobalSetCommand::MaterialGlobalSetCommand(DAVA::Scene *_scene, DAVA::NMaterial *global)
+	: Command2(CMDID_MATERIAL_GLOBAL_SET, "Set global material")
+    , scene(_scene)
 {
-public:
-	explicit SceneSettingsDialog(QWidget* parent = 0);
-	
-	~SceneSettingsDialog();
+    DVASSERT(NULL != scene);
 
-protected:
+    newGlobal = SafeRetain(global);
+    oldGlobal = SafeRetain(scene->GetGlobalMaterial());
+}
 
-	void InitSceneSettingsEditor();
-	
-	QVBoxLayout*		mainLayout;
-	QPushButton*		btnOk;
-	QtPropertyEditor*	sceneSettingsEditor;
-	
-};
-#endif /* defined(__RESOURCEEDITORQT__SCENE_SETTINGS_DIALOG__) */
+MaterialGlobalSetCommand::~MaterialGlobalSetCommand()
+{
+    SafeRelease(oldGlobal);
+    SafeRelease(newGlobal);
+}
+
+void MaterialGlobalSetCommand::Redo()
+{
+	scene->SetGlobalMaterial(newGlobal);
+}
+
+void MaterialGlobalSetCommand::Undo()
+{
+	scene->SetGlobalMaterial(oldGlobal);
+}
+
+DAVA::Entity* MaterialGlobalSetCommand::GetEntity() const
+{
+	return scene;
+}
