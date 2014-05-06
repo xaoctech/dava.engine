@@ -548,7 +548,7 @@ SceneTreeItemParticleLayer::SceneTreeItemParticleLayer(DAVA::ParticleEffectCompo
 		{
 			setCheckState(Qt::Checked);
 		}
-		hasInnerEmmiter = (layer->innerEmitter!=NULL);
+		hasInnerEmmiter = (layer->type == DAVA::ParticleLayer::TYPE_SUPEREMITTER_PARTICLES); //layer can still have inner emitter cached
 	}
 
 	DoSync(this, layer);

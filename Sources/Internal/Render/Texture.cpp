@@ -253,6 +253,7 @@ void Texture::ReleaseTextureData()
     id = 0;
 	fboID = -1;
 	rboID = -1;
+    isRenderTarget = false;
 }
 
 void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
@@ -746,7 +747,7 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &group, TextureType typeHint)
 {
 	Texture * texture = PureCreate(pathName, group);
-	if(!texture)
+ 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
         texture->texDescriptor->pathname = pathName;
@@ -761,6 +762,9 @@ Texture * Texture::PureCreate(const FilePath & pathName, const FastName &group)
 {
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
+
+    if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+        return NULL;
 
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
@@ -791,6 +795,8 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
+    DVASSERT(isRenderTarget == false);
+    
     FilePath savedPath = texDescriptor->pathname;
     
     ReleaseTextureData();
@@ -805,7 +811,12 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
-	bool loaded = LoadImages(gpuForLoading, images);
+    bool loaded = false;
+    if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+    {
+	    loaded = LoadImages(gpuForLoading, images);
+    }
+
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;

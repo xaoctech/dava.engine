@@ -100,25 +100,29 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , currentCamera(0)
     , clipCamera(0)
 	, imposterManager(0)
-    ,   systemsMask(_systemsMask)
-    ,   transformSystem(0)
-    ,   renderUpdateSystem(0)
-    ,   lodSystem(0)
-    ,   debugRenderSystem(0)
-    ,   particleEffectSystem(0)
-    ,   updatableSystem(0)
-    ,   lightUpdateSystem(0)
-    ,   switchSystem(0)
-    ,   soundSystem(0)
-    ,   actionSystem(0)
-    ,   skyboxSystem(0)
-    ,   staticOcclusionSystem(0)
-	,   materialSystem(0)
-    ,   foliageSystem(0)
-	,   sceneGlobalMaterial(0)
+    , systemsMask(_systemsMask)
+    , transformSystem(0)
+    , renderUpdateSystem(0)
+    , lodSystem(0)
+    , debugRenderSystem(0)
+    , particleEffectSystem(0)
+    , updatableSystem(0)
+    , lightUpdateSystem(0)
+    , switchSystem(0)
+    , soundSystem(0)
+    , actionSystem(0)
+    , skyboxSystem(0)
+    , staticOcclusionSystem(0)
+	, materialSystem(0)
+    , foliageSystem(0)
+	, sceneGlobalMaterial(0)
+    , isDefaultGlobalMaterial(true)
 {   
 	CreateComponents();
 	CreateSystems();
+
+    // this will force scene to create hidden global material
+    SetGlobalMaterial(NULL);
 }
 
 void Scene::CreateComponents()
@@ -126,7 +130,16 @@ void Scene::CreateComponents()
 
 NMaterial* Scene::GetGlobalMaterial() const
 {
-    return sceneGlobalMaterial;
+    NMaterial *ret = NULL;
+
+    // default global material is for internal use only
+    // so all external object should assume, that scene hasn't any global material
+    if(!isDefaultGlobalMaterial)
+    {
+        ret = sceneGlobalMaterial;
+    }
+
+    return ret;
 }
 
 void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
@@ -136,19 +149,20 @@ void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
     if(NULL != globalMaterial)
     {
         DVASSERT(globalMaterial->GetMaterialType() == NMaterial::MATERIALTYPE_GLOBAL);
+
+        isDefaultGlobalMaterial = false;
         sceneGlobalMaterial = SafeRetain(globalMaterial);
-        InitGlobalMaterial();
     }
+    else
+    {
+        isDefaultGlobalMaterial = true;
+        sceneGlobalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+    }
+
+    InitGlobalMaterial();
 
     renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
     particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
-}
-
-void Scene::CreateGlobalMaterial()
-{
-    NMaterial *globalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
-    SetGlobalMaterial(globalMaterial);
-    SafeRelease(globalMaterial);
 }
 
 void Scene::InitGlobalMaterial()

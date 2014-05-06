@@ -71,8 +71,6 @@ protected:
 public slots:
 	void LookAtSelection();
 	void RemoveSelection();
-	void LockEntities();
-	void UnlockEntities();
 
 	void CollapseSwitch();
 	
@@ -80,6 +78,7 @@ public slots:
 
 	// Particle Emitter handlers.
 	void AddEmitter();
+    void SaveEffectEmitters();
 	void StartEffect();
 	void StopEffect();
 	void RestartEffect();
@@ -141,7 +140,7 @@ protected:
 	QString GetParticlesConfigPath();
 	
 	// Perform save for selected Emitters.
-	void PerformSaveEmitter(bool forceAskFileName);
+	void PerformSaveEmitter(ParticleEmitter *emitter, bool forceAskFileName);
 
 	// Cleanup the selected Particle Editor items.
 	void CleanupParticleEditorSelectedItems();
