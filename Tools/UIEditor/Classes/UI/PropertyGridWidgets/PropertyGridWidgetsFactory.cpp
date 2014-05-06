@@ -48,6 +48,7 @@
 #include "UIParticlesMetadata.h"
 #include "UIJoypadMetadata.h"
 #include "UIWebViewMetadata.h"
+#include "UI3DViewMetadata.h"
 
 using namespace DAVA;
 
@@ -313,6 +314,18 @@ const PropertyGridWidgetsFactory::PROPERTYGRIDWIDGETSLIST PropertyGridWidgetsFac
 		resultList.push_back(alignWidget);
 		resultList.push_back(webViewWidget);
         resultList.push_back(backgroundWidget);
+        resultList.push_back(flagsWidget);
+        
+        return resultList;
+	}
+
+    // UI3DView - no background widget needed.
+	const UI3DViewMetadata* ui3DViewMetadata = dynamic_cast<const UI3DViewMetadata*>(metaData);
+	if (ui3DViewMetadata)
+	{
+		resultList.push_back(controlWidget);
+        resultList.push_back(rectWidget);
+		resultList.push_back(alignWidget);
         resultList.push_back(flagsWidget);
         
         return resultList;

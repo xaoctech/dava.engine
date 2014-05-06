@@ -97,3 +97,4 @@ REGISTER_CLASS(UIJoypad);
 REGISTER_CLASS(VegetationRenderObject);
 REGISTER_CLASS(SpriteObject);
 REGISTER_CLASS(SpriteRenderBatch);
+REGISTER_CLASS(UI3DView);
