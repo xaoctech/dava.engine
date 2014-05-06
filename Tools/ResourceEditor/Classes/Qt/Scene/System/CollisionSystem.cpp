@@ -48,14 +48,16 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Scene.h"
 
-ENUM_DECLARE(SceneCollisionSystem::DrawMode)
+#define SIMPLE_COLLISION_BOX_SIZE 1.0f
+
+ENUM_DECLARE(CollisionSystemDrawMode)
 {
-	ENUM_ADD(SceneCollisionSystem::DRAW_OBJECTS);
-	ENUM_ADD(SceneCollisionSystem::DRAW_OBJECTS_SELECTED);
-	ENUM_ADD(SceneCollisionSystem::DRAW_OBJECTS_RAYTEST);
-	ENUM_ADD(SceneCollisionSystem::DRAW_LAND);
-	ENUM_ADD(SceneCollisionSystem::DRAW_LAND_RAYTEST);
-	ENUM_ADD(SceneCollisionSystem::DRAW_LAND_COLLISION);
+	ENUM_ADD(CS_DRAW_OBJECTS);
+	ENUM_ADD(CS_DRAW_OBJECTS_SELECTED);
+	ENUM_ADD(CS_DRAW_OBJECTS_RAYTEST);
+	ENUM_ADD(CS_DRAW_LAND);
+	ENUM_ADD(CS_DRAW_LAND_RAYTEST);
+	ENUM_ADD(CS_DRAW_LAND_COLLISION);
 }
 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
@@ -312,8 +314,8 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 	// reset ray cache on new frame
 	rayIntersectCached = false;
 
-    drawMode = SettingsManager::GetValue("Scene/CollisionDrawMode").AsInt32();
-	if(drawMode & DRAW_LAND_COLLISION)
+    drawMode = SettingsManager::GetValue(Settings::Scene_CollisionDrawMode).AsInt32();
+	if(drawMode & CS_DRAW_LAND_COLLISION)
 	{
 		DAVA::Vector3 tmp;
 		LandRayTestFromCamera(tmp);
@@ -331,36 +333,36 @@ void SceneCollisionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneCollisionSystem::Draw()
 {
-	if(drawMode & DRAW_LAND)
+	if(drawMode & CS_DRAW_LAND)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.5f, 0, 1.0f));
 		landCollWorld->debugDrawWorld();
 	}
 
-	if(drawMode & DRAW_LAND_RAYTEST)
+	if(drawMode & CS_DRAW_LAND_RAYTEST)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(lastLandRayFrom, lastLandRayTo, 1.0f, renderState);
 	}
 
-	if(drawMode & DRAW_LAND_COLLISION)
+	if(drawMode & CS_DRAW_LAND_COLLISION)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 1.0f, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawPoint(lastLandCollision, 7.0f, renderState);
 	}
 
-	if(drawMode & DRAW_OBJECTS)
+	if(drawMode & CS_DRAW_OBJECTS)
 	{
 		objectsCollWorld->debugDrawWorld();
 	}
 
-	if(drawMode & DRAW_OBJECTS_RAYTEST)
+	if(drawMode & CS_DRAW_OBJECTS_RAYTEST)
 	{
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(lastRayFrom, lastRayTo, 1.0f, renderState);
 	}
 
-	if(drawMode & DRAW_OBJECTS_SELECTED)
+	if(drawMode & CS_DRAW_OBJECTS_SELECTED)
 	{
 		// current selected entities
 		SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
@@ -491,7 +493,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	CollisionBaseObject *cObj = NULL;
 	bool isLandscape = false;
 
-    DAVA::float32 debugBoxScale = SettingsManager::GetValue("Scene/DebugBoxScale").AsFloat();
+    DAVA::float32 debugBoxScale = SettingsManager::GetValue(Settings::Scene_DebugBoxScale).AsFloat();
 
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
@@ -507,8 +509,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj &&
 		NULL != particleEffect)
 	{
-        DAVA::float32 scale = SettingsManager::GetValue("Scene/DebugBoxParticleScale").AsFloat();
-		cObj = new CollisionParticleEffect(entity, objectsCollWorld, 1.0f * scale);
+        DAVA::float32 scale = SettingsManager::GetValue(Settings::Scene_DebugBoxParticleScale).AsFloat();
+		cObj = new CollisionParticleEffect(entity, objectsCollWorld, SIMPLE_COLLISION_BOX_SIZE * scale);
 	}
 
 
@@ -528,7 +530,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj && 
 		NULL != camera)
 	{
-		cObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), 1.0 * debugBoxScale);
+		cObj = new CollisionBox(entity, objectsCollWorld, camera->GetPosition(), SIMPLE_COLLISION_BOX_SIZE * debugBoxScale);
 	}
 
 	// build simple collision box for all other entities, that has more than two components
@@ -538,12 +540,12 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		if( NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
 			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
 		{
-			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 1.0 * debugBoxScale);
+			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), SIMPLE_COLLISION_BOX_SIZE * debugBoxScale);
 		}
         else if(NULL != entity->GetComponent(DAVA::Component::USER_COMPONENT))
         {
             DAVA::float32 scale = SettingsManager::GetValue("Scene/DebugBoxUserScale").AsFloat();
-            cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), 1.0 * scale);
+            cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), SIMPLE_COLLISION_BOX_SIZE * scale);
         }
 	}
 
