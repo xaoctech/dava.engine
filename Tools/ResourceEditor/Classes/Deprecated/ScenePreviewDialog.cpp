@@ -67,7 +67,7 @@ ScenePreviewDialog::~ScenePreviewDialog()
 
 void ScenePreviewDialog::Show(const FilePath &scenePathname)
 {
-    bool enabled = SettingsManager::GetValue("General/PreviewEnabled").AsBool();
+    bool enabled = SettingsManager::GetValue(Settings::General_PreviewEnabled).AsBool();
     if(!enabled)
         return;
     
