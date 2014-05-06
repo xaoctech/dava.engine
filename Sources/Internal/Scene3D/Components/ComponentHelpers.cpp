@@ -45,10 +45,8 @@
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Render/Highlevel/VegetationRenderObject.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
-#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
-#include "Scene3D/Components/SpeedTreeComponents/MovingOscillatorComponent.h"
-#include "Scene3D/Components/SpeedTreeComponents/ImpulseOscillatorComponent.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/WindComponent.h"
 
 namespace DAVA
 {
@@ -290,26 +288,6 @@ WindComponent * GetWindComponent(Entity * fromEntity)
         return static_cast<WindComponent *>(fromEntity->GetComponent(Component::WIND_COMPONENT));
     }
     
-    return NULL;
-}
-
-ImpulseOscillatorComponent * GetImpuleOscillatorComponent(Entity * fromEntity)
-{
-    if(fromEntity)
-    {
-        return static_cast<ImpulseOscillatorComponent *>(fromEntity->GetComponent(Component::IMPULSE_OSCILLATOR_COMPONENT));
-    }
-
-    return NULL;
-}
-
-MovingOscillatorComponent * GetMovingOscillatorComponent(Entity * fromEntity)
-{
-    if(fromEntity)
-    {
-        return static_cast<MovingOscillatorComponent *>(fromEntity->GetComponent(Component::MOVING_OSCILLATOR_COMPONENT));
-    }
-
     return NULL;
 }
 
