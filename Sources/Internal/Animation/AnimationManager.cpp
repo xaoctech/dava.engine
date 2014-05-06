@@ -35,32 +35,6 @@
 
 namespace DAVA
 {
-		
-AnimationManager::AnimationManager()
-{
-#ifdef ANIMATIONS_DEBUG	
-	animationLoggerEnabled = false;
-#endif
-}
-	
-AnimationManager::~AnimationManager()
-{
-}
-	
-void AnimationManager::SetAnimationLoggerEnabled(bool isEnabled)
-{
-#ifdef ANIMATIONS_DEBUG
-	animationLoggerEnabled = isEnabled;
-#endif
-}
-bool AnimationManager::IsAnimationLoggerEnabled()
-{
-#ifdef ANIMATIONS_DEBUG
-	return animationLoggerEnabled;
-#endif
-	return false;
-}
-
 
 void AnimationManager::AddAnimation(Animation * animation)
 {

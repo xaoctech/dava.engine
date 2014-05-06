@@ -105,6 +105,7 @@ public:
     void SetSortingOffset(uint32 offset);
 
 private:
+    void ClearGroup(ParticleGroup& group);
 	void ClearCurrentGroups();
     void SetGroupsFinishing();
 	
@@ -136,7 +137,7 @@ private:
 		
 	ParticleEffectData effectData;
 	ParticleRenderObject *effectRenderObject;
-	int32 desiredLodLevel;
+	int32 desiredLodLevel, activeLodLevel;
 
 public: //mostly editor commands
 	int32 GetEmittersCount();

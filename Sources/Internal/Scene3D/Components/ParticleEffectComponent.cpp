@@ -59,6 +59,7 @@ ParticleEffectComponent::ParticleEffectComponent()
     effectRenderObject->SetWorldTransformPtr(&Matrix4::IDENTITY); //world transform doesn't effect particle render object drawing - instead particles are generated in corresponding world position
 	time = 0;
 	desiredLodLevel = 1;
+    activeLodLevel = 1;
 }
 
 ParticleEffectComponent::~ParticleEffectComponent()
@@ -156,19 +157,24 @@ void ParticleEffectComponent::StopWhenEmpty(bool value /*= true*/)
 	stopWhenEmpty = value;
 }
 
+void ParticleEffectComponent::ClearGroup(ParticleGroup& group)
+{
+    Particle * current = group.head;
+    while (current)
+    {
+        Particle *next = current->next;
+        delete current;
+        current = next;
+    }
+    group.layer->Release();
+    group.emitter->Release();		
+}
+
 void ParticleEffectComponent::ClearCurrentGroups()
 {
 	for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
 	{
-		Particle * current = (*it).head;
-		while (current)
-		{
-			Particle *next = current->next;
-			delete current;
-			current = next;
-		}
-		it->layer->Release();
-		it->emitter->Release();		
+		ClearGroup(*it);
 	}
 	effectData.groups.clear();
 }
@@ -209,13 +215,7 @@ void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 
 void ParticleEffectComponent::SetDesiredLodLevel(int32 level)
 {
-	desiredLodLevel = level;
-	for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;++it)
-	{
-		ParticleGroup& group = *it;
-		if (!group.emitter->shortEffect)
-			group.visibleLod = group.layer->IsLodActive(level);
-	}
+	desiredLodLevel = level;	
 }
 
 
