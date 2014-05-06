@@ -84,6 +84,37 @@ namespace DAVA
     
     const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
+    bool LibPVRHelper::IsImage(DAVA::File *file)
+    {
+        bool isPvrFile = false;
+        
+        file->Seek(0, File::SEEK_FROM_START);
+        PVRFile *pvrFile = ReadFile(file, false, false);
+        if(pvrFile)
+        {
+            isPvrFile = (PVRTEX3_IDENT == pvrFile->header.u32Version);
+            delete pvrFile;
+        }
+        return isPvrFile;
+    }
+    
+    eErrorCode LibPVRHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap)
+    {
+        PVRFile * pvrFile = ReadFile(infile, true, true);
+        if(pvrFile && LoadImages(pvrFile, imageSet, fromMipmap))
+        {
+            return SUCCESS;
+        }
+        return ERROR_READ_FAIL;
+    }
+    
+    eErrorCode LibPVRHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
+    {
+        //not implemented due to external tool
+        DVASSERT(0);
+        return ERROR_WRITE_FAIL;
+    }
+    
     uint32 LibPVRHelper::GetBitsPerPixel(uint64 pixelFormat)
     {
 #if defined (__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
@@ -1972,23 +2003,7 @@ namespace DAVA
         
         return true;
     }
-    
-    bool LibPVRHelper::IsImage(DAVA::File *file)
-    {
-        bool isPvrFile = false;
-        
-        file->Seek(0, File::SEEK_FROM_START);
-        PVRFile *pvrFile = ReadFile(file, false, false);
-        if(pvrFile)
-        {
-            isPvrFile = (PVRTEX3_IDENT == pvrFile->header.u32Version);
-            delete pvrFile;
-        }
-        
-        return isPvrFile;
-    }
-    
-    
+
     uint32 LibPVRHelper::GetCubemapLayout(const PVRFile *pvrFile)
     {
         uint32 layout = 0;

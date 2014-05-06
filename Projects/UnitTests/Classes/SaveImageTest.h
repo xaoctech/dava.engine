@@ -39,8 +39,8 @@ public:
     void Test(PerfFuncData * data);
     
 private:
-    Image* GetImage() const;
-    void InnerTest(const FilePath& source, const FilePath& dest, PerfFuncData * data);
+    
+    void ReadWriteTest(PerfFuncData * data, const FilePath& source, const FilePath& dest, bool writing);
 };
 
 #endif //__SAVE_IMAGE_TEST_H__
