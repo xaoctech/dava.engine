@@ -157,6 +157,8 @@
 		178D10F0188406A100529DA8 /* QtColorLineEdit_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178D10EF188406A100529DA8 /* QtColorLineEdit_moc.cpp */; };
 		178F303E165677BF008678AD /* StringUtils.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 178F303C165677BF008678AD /* StringUtils.cpp */; };
 		179BCD45189AA3DC003EA256 /* PreviewController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 179BCD43189AA3DC003EA256 /* PreviewController.cpp */; };
+		179DCD9D1918DFD800BE6F43 /* UI3DViewMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 179DCD9B1918DFD800BE6F43 /* UI3DViewMetadata.cpp */; };
+		179DCDA41918E2C700BE6F43 /* UI3DViewMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 179DCDA31918E2C700BE6F43 /* UI3DViewMetadata_moc.cpp */; };
 		17A4F58418A3E1C000182E44 /* particleeffectpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A4F58218A3E1C000182E44 /* particleeffectpropertygridwidget.cpp */; };
 		17A4F58618A3E1ED00182E44 /* particleeffectpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17A4F58518A3E1ED00182E44 /* particleeffectpropertygridwidget.ui */; };
 		17A6305218AA2B3500957C77 /* GuidesManager_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A6305118AA2B3500957C77 /* GuidesManager_moc.cpp */; };
@@ -585,6 +587,9 @@
 		179BCD43189AA3DC003EA256 /* PreviewController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PreviewController.cpp; path = Controllers/PreviewController.cpp; sourceTree = "<group>"; };
 		179BCD44189AA3DC003EA256 /* PreviewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreviewController.h; path = Controllers/PreviewController.h; sourceTree = "<group>"; };
 		179D0ECB17C5F65B006F59CA /* AlignDistributeEnums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlignDistributeEnums.h; path = AlignDistribute/AlignDistributeEnums.h; sourceTree = "<group>"; };
+		179DCD9B1918DFD800BE6F43 /* UI3DViewMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UI3DViewMetadata.cpp; path = Metadata/UI3DViewMetadata.cpp; sourceTree = "<group>"; };
+		179DCD9C1918DFD800BE6F43 /* UI3DViewMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UI3DViewMetadata.h; path = Metadata/UI3DViewMetadata.h; sourceTree = "<group>"; };
+		179DCDA31918E2C700BE6F43 /* UI3DViewMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UI3DViewMetadata_moc.cpp; sourceTree = "<group>"; };
 		17A4F58218A3E1C000182E44 /* particleeffectpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particleeffectpropertygridwidget.cpp; path = PropertyGridWidgets/particleeffectpropertygridwidget.cpp; sourceTree = "<group>"; };
 		17A4F58318A3E1C000182E44 /* particleeffectpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = particleeffectpropertygridwidget.h; path = PropertyGridWidgets/particleeffectpropertygridwidget.h; sourceTree = "<group>"; };
 		17A4F58518A3E1ED00182E44 /* particleeffectpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = particleeffectpropertygridwidget.ui; sourceTree = "<group>"; };
@@ -899,6 +904,7 @@
 		02D69C4616F08CED00F3803F /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				179DCDA31918E2C700BE6F43 /* UI3DViewMetadata_moc.cpp */,
 				17C4116718C9CE01002BA05F /* UIJoypadMetadata_moc.cpp */,
 				17183C3418C8800400491E66 /* UIMovieViewMetadata_moc.cpp */,
 				17183C3518C8800400491E66 /* UIWebViewMetadata_moc.cpp */,
@@ -1214,6 +1220,8 @@
 		176D3958162C3C8C0099AACF /* Metadata */ = {
 			isa = PBXGroup;
 			children = (
+				179DCD9B1918DFD800BE6F43 /* UI3DViewMetadata.cpp */,
+				179DCD9C1918DFD800BE6F43 /* UI3DViewMetadata.h */,
 				1712331D1741118F0051D960 /* PropertyNames.cpp */,
 				C185940216F31DD4005D30E2 /* AggregatorMetadata.cpp */,
 				C185940316F31DD4005D30E2 /* AggregatorMetadata.h */,
@@ -1876,6 +1884,7 @@
 				17FF160016400A75001B130F /* localizationeditordialog.cpp in Build Sources */,
 				17607FC2164121FB004E36DE /* LocalizationSystemHelper.cpp in Build Sources */,
 				C15D3E5116415A3600161684 /* ControlCommands.cpp in Build Sources */,
+				179DCD9D1918DFD800BE6F43 /* UI3DViewMetadata.cpp in Build Sources */,
 				170A18AE190F8EF300252A1F /* webviewpropertygridwidget.cpp in Build Sources */,
 				748955FD1641620200070AE1 /* QColorWidget.cpp in Build Sources */,
 				1742272A18A277B3003D53F4 /* editpreviewsettingsdialog_moc.cpp in Build Sources */,
@@ -1921,6 +1930,7 @@
 				02D69CAD16F08CEE00F3803F /* LocalizationSystemHelper_moc.cpp in Build Sources */,
 				02D69CAE16F08CEE00F3803F /* PropertiesHelper_moc.cpp in Build Sources */,
 				02D69CAF16F08CEE00F3803F /* ResourcesManageHelper_moc.cpp in Build Sources */,
+				179DCDA41918E2C700BE6F43 /* UI3DViewMetadata_moc.cpp in Build Sources */,
 				17660BC9186C22B400CF7A14 /* RulerSettings_moc.cpp in Build Sources */,
 				179BCD45189AA3DC003EA256 /* PreviewController.cpp in Build Sources */,
 				02D69CB016F08CEE00F3803F /* UIControlStateHelper_moc.cpp in Build Sources */,
