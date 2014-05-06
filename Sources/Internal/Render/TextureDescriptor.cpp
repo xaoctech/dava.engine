@@ -58,6 +58,7 @@ void TextureDescriptor::TextureDrawSettings::SetDefaultValues()
 void TextureDescriptor::TextureDataSettings::SetDefaultValues()
 {
 	textureFlags = FLAG_GENERATE_MIPMAPS;
+    faceDescription = 0;
 }
 
 void TextureDescriptor::TextureDataSettings::SetGenerateMipmaps(const bool & generateMipmaps)
@@ -108,6 +109,9 @@ TextureDescriptor::TextureDescriptor(bool needCompressionSettings /*= true*/)
 	: isCompressedFile(!needCompressionSettings)
 	, compression(NULL)
 {
+    if(needCompressionSettings)
+        AllocateCompressionData();
+    
 	SetDefaultValues();
 }
 
