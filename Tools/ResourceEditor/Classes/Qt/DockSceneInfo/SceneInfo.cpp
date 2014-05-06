@@ -288,7 +288,7 @@ uint32 SceneInfo::CalculateTextureSize(const TexturesMap &textures)
             continue;
         }
         
-        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
+        textureSize += ImageTools::GetTexturePhysicalSize(tex->GetDescriptor(), (eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
     }
 
     return textureSize;
@@ -393,13 +393,47 @@ void SceneInfo::CollectLODDataInFrame()
 {
     lodInfoInFrame.Clear();
 
-    if(!activeScene) return;
+    if(!activeScene||!activeScene->renderSystem||!activeScene->renderSystem->IsRenderHierarchyInitialized()||!activeScene->GetClipCamera())
+        return;
 
-    CollectLODDataInFrameRecursive(activeScene);
+    visibilityArray.Clear();
+    activeScene->renderSystem->GetRenderHierarchy()->Clip(activeScene->GetClipCamera(), &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA);
+
+    uint32 size = (uint32)visibilityArray.visibilityArray.size();
+    for (uint32 ro = 0; ro < size; ++ro)
+    {
+        RenderObject * renderObject = visibilityArray.visibilityArray[ro];
+        uint32 batchCount = renderObject->GetActiveRenderBatchCount();
+        int32 indexCount = 0;
+        for(uint32 i = 0; i < batchCount; ++i)
+        {            
+            RenderBatch *rb = renderObject->GetActiveRenderBatch(i);
+            if(IsPointerToExactClass<RenderBatch>(rb))
+            {                
+                PolygonGroup *pg = rb->GetPolygonGroup();
+                if(pg)                
+                    indexCount += pg->GetIndexCount();                
+            }
+        }
+        int32 currLodIndex = renderObject->GetLodIndex();
+        if (currLodIndex==-1)
+            lodInfoInFrame.trianglesOnObjects += indexCount/3;
+        else
+            lodInfoInFrame.trianglesOnLod[currLodIndex] += indexCount/3;
+    }    
+}
+
+void SceneInfo::CollectLODDataInScene()
+{
+    lodInfoInFrame.Clear();
+    if(!activeScene)
+        return;
+
+    CollectLODDataInEntityRecursive(activeScene);
     lodInfoInFrame.trianglesOnObjects += GetTrianglesForNotLODEntityRecursive(activeScene, true);
 }
 
-void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
+void SceneInfo::CollectLODDataInEntityRecursive(DAVA::Entity *entity)
 {
     DAVA::LodComponent *lod = GetLodComponent(entity);
     
@@ -411,7 +445,7 @@ void SceneInfo::CollectLODDataInFrameRecursive(DAVA::Entity *entity)
     DAVA::int32 count = entity->GetChildrenCount();
     for(DAVA::int32 i = 0; i < count; ++i)
     {
-        CollectLODDataInFrameRecursive(entity->GetChild(i));
+        CollectLODDataInEntityRecursive(entity->GetChild(i));
     }
 }
 

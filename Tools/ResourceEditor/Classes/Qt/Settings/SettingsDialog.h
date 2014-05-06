@@ -14,41 +14,42 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __RESOURCEEDITORQT__SETTINGS_STATE_DIALOG__
-#define __RESOURCEEDITORQT__SETTINGS_STATE_DIALOG__
+#ifndef __RESOURCEEDITORQT_SETTINGS_DIALOG__
+#define __RESOURCEEDITORQT_SETTINGS_DIALOG__
 
 #include <QDialog.h>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QCheckBox>
-#include "DAVAEngine.h"
+#include "Tools/QtPosSaver/QtPosSaver.h"
+#include "Tools/QtPropertyEditor/QtPropertyEditor.h"
+#include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataDavaVariant.h"
+#include "Settings/SettingsManager.h"
 
-class SettingsStateDialog: public QDialog
+class SettingsDialog: public QDialog
 {
 	Q_OBJECT
 
 public:
-	explicit SettingsStateDialog(DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> >* flags, QWidget* parent = 0);
-	
-	~SettingsStateDialog();
-
-public	slots:
-	
-	void reject();
-
-protected slots:
-
-	void CheckBoxChecked(int);
+	explicit SettingsDialog(QWidget* parent = 0);
+	~SettingsDialog();
 
 protected:
+    QtPosSaver posSaver;
+    QtPropertyEditor *editor;
 
-	DAVA::Map<DAVA::String,std::pair<DAVA::uint32, bool> >* flags;
-	DAVA::Map<DAVA::String, bool> initialValues; 
-	DAVA::List<QCheckBox*> checkList;
-	QDialogButtonBox* btnBox;
-	QVBoxLayout* mainLayout;
-
-	QCheckBox* checkBoxForNothing;
-	QCheckBox* checkBoxForAll;
+    void InitProperties();
 };
-#endif /* defined(__RESOURCEEDITORQT__SETTINGS_STATE_DIALOG__) */
+
+class QtPropertyDataSettingsNode : public QtPropertyDataDavaVariant
+{
+public:
+    QtPropertyDataSettingsNode(DAVA::FastName path);
+    ~QtPropertyDataSettingsNode();
+
+private:
+    DAVA::FastName settingPath;
+
+    virtual void SetValueInternal(const QVariant &value);
+	virtual bool UpdateValueInternal();
+	virtual bool EditorDoneInternal(QWidget *editor);
+};
+
+#endif // __RESOURCEEDITORQT_SETTINGS_DIALOG__
