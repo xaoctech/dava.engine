@@ -26,15 +26,14 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
 #include "SettingsManager.h"
-#include "Deprecated/ControlsFactory.h"
-#include "Render/RenderManager.h"
 #include "Scene/System/EditorMaterialSystem.h"
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/CollisionSystem.h"
-#include <QHeaderView>
+
+// framework
+#include "FileSystem/KeyedArchive.h"
+#include "Render/RenderBase.h"
 
 #define SETTINGS_CONFIG_FILE "~doc:/ResourceEditorOptions.archive"
 
@@ -51,245 +50,129 @@ SettingsManager::~SettingsManager()
 
 void SettingsManager::Init()
 {
-	CreateValue("General/DesignerName", DAVA::VariantType(DAVA::String("nobody")));
-    CreateValue("General/RecentFilesCount", DAVA::VariantType(5));
-	CreateValue("General/PreviewEnabled", DAVA::VariantType(false));
+	CreateValue(Settings::General_DesinerName, DAVA::VariantType(DAVA::String("nobody")));
+    CreateValue(Settings::General_RecentFilesCount, DAVA::VariantType((DAVA::int32) 5));
+	CreateValue(Settings::General_PreviewEnabled, DAVA::VariantType(false));
 
-    CreateValue("General/MaterialEditor/SwitchColor0", DAVA::VariantType(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f)));
-    CreateValue("General/MaterialEditor/SwitchColor1", DAVA::VariantType(DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f)));
-    CreateValue("General/MaterialEditor/LodColor0", DAVA::VariantType(DAVA::Color(0.9f, 0.9f, 0.9f, 1.0f)));
-    CreateValue("General/MaterialEditor/LodColor1", DAVA::VariantType(DAVA::Color(0.7f, 0.7f, 0.7f, 1.0f)));
-    CreateValue("General/MaterialEditor/LodColor2", DAVA::VariantType(DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f)));
-    CreateValue("General/MaterialEditor/LodColor3", DAVA::VariantType(DAVA::Color(0.3f, 0.3f, 0.3f, 1.0f)));
+    CreateValue(Settings::General_MaterialEditor_SwitchColor0, DAVA::VariantType(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f)));
+    CreateValue(Settings::General_MaterialEditor_SwitchColor1, DAVA::VariantType(DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f)));
+    CreateValue(Settings::General_MaterialEditor_LodColor0, DAVA::VariantType(DAVA::Color(0.9f, 0.9f, 0.9f, 1.0f)));
+    CreateValue(Settings::General_MaterialEditor_LodColor1, DAVA::VariantType(DAVA::Color(0.7f, 0.7f, 0.7f, 1.0f)));
+    CreateValue(Settings::General_MaterialEditor_LodColor2, DAVA::VariantType(DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f)));
+    CreateValue(Settings::General_MaterialEditor_LodColor3, DAVA::VariantType(DAVA::Color(0.3f, 0.3f, 0.3f, 1.0f)));
 
-	CreateValue("Scene/GridStep", DAVA::VariantType(10.0f));
-	CreateValue("Scene/GridSize", DAVA::VariantType(600.0f));
-	CreateValue("Scene/CameraSpeed0", DAVA::VariantType(35.0f));
-	CreateValue("Scene/CameraSpeed1", DAVA::VariantType(100.0f));
-	CreateValue("Scene/CameraSpeed2", DAVA::VariantType(250.0f));
-	CreateValue("Scene/CameraSpeed3", DAVA::VariantType(400.0f));
-	CreateValue("Scene/CameraFOV", DAVA::VariantType(70.0f));
-    CreateValue("Scene/SelectionSequent", DAVA::VariantType(false));
-    CreateValue("Scene/SelectionDrawMode", DAVA::VariantType(SS_DRAW_DEFAULT), DAVA::InspDesc("Selection draw modes", GlobalEnumMap<SelectionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
-    CreateValue("Scene/CollisionDrawMode", DAVA::VariantType(CS_DRAW_DEFAULT), DAVA::InspDesc("Collision draw modes", GlobalEnumMap<CollisionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
-    CreateValue("Scene/GizmoScale", DAVA::VariantType(DAVA::float32(1.0)));
-    CreateValue("Scene/DebugBoxScale", DAVA::VariantType(DAVA::float32(1.0)));
-    CreateValue("Scene/DebugBoxUserScale", DAVA::VariantType(DAVA::float32(1.0)));
-    CreateValue("Scene/DebugBoxParticleScale", DAVA::VariantType(DAVA::float32(1.0)));
+	CreateValue(Settings::Scene_GridStep, DAVA::VariantType(10.0f));
+	CreateValue(Settings::Scene_GridSize, DAVA::VariantType(600.0f));
+	CreateValue(Settings::Scene_CameraSpeed0, DAVA::VariantType(35.0f));
+	CreateValue(Settings::Scene_CameraSpeed1, DAVA::VariantType(100.0f));
+	CreateValue(Settings::Scene_CameraSpeed2, DAVA::VariantType(250.0f));
+	CreateValue(Settings::Scene_CameraSpeed3, DAVA::VariantType(400.0f));
+	CreateValue(Settings::Scene_CameraFOV, DAVA::VariantType(70.0f));
+    CreateValue(Settings::Scene_SelectionSequent, DAVA::VariantType(false));
+    CreateValue(Settings::Scene_SelectionDrawMode, DAVA::VariantType((DAVA::int32) SS_DRAW_DEFAULT), DAVA::InspDesc("Selection draw modes", GlobalEnumMap<SelectionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
+    CreateValue(Settings::Scene_CollisionDrawMode, DAVA::VariantType((DAVA::int32) CS_DRAW_DEFAULT), DAVA::InspDesc("Collision draw modes", GlobalEnumMap<CollisionSystemDrawMode>::Instance(), DAVA::InspDesc::T_FLAGS));
+    CreateValue(Settings::Scene_GizmoScale, DAVA::VariantType(DAVA::float32(1.0)));
+    CreateValue(Settings::Scene_DebugBoxScale, DAVA::VariantType(DAVA::float32(1.0)));
+    CreateValue(Settings::Scene_DebugBoxUserScale, DAVA::VariantType(DAVA::float32(1.0)));
+    CreateValue(Settings::Scene_DebugBoxParticleScale, DAVA::VariantType(DAVA::float32(1.0)));
 
-    CreateValue("Internal/TextureViewGPU", DAVA::VariantType(GPU_UNKNOWN));
-	CreateValue("Internal/LastProjectPath", DAVA::VariantType(DAVA::FilePath()));
-	CreateValue("Internal/EditorVersion", DAVA::VariantType(DAVA::String("local build")));
-	CreateValue("Internal/CubemapLastFaceDir", DAVA::VariantType(DAVA::FilePath()));
-	CreateValue("Internal/CubemapLastProjDir", DAVA::VariantType(DAVA::FilePath()));
+    CreateValue(Settings::Internal_TextureViewGPU, DAVA::VariantType((DAVA::int32) DAVA::GPU_UNKNOWN));
+	CreateValue(Settings::Internal_LastProjectPath, DAVA::VariantType(DAVA::FilePath()));
+	CreateValue(Settings::Internal_EditorVersion, DAVA::VariantType(DAVA::String("local build")));
+	CreateValue(Settings::Internal_CubemapLastFaceDir, DAVA::VariantType(DAVA::FilePath()));
+	CreateValue(Settings::Internal_CubemapLastProjDir, DAVA::VariantType(DAVA::FilePath()));
 
-	CreateValue("Internal/RecentFiles", DAVA::VariantType((KeyedArchive *) NULL));
-    CreateValue("Internal/MaterialsLightViewMode", DAVA::VariantType(EditorMaterialSystem::LIGHTVIEW_ALL));
-    CreateValue("Internal/MaterialsShowLightmapCanvas", DAVA::VariantType(false));
-    CreateValue("Internal/LicenceAccepted", DAVA::VariantType(false));
+	CreateValue(Settings::Internal_RecentFiles, DAVA::VariantType((DAVA::KeyedArchive *) NULL));
+    CreateValue(Settings::Internal_MaterialsLightViewMode, DAVA::VariantType((DAVA::int32) EditorMaterialSystem::LIGHTVIEW_ALL));
+    CreateValue(Settings::Internal_MaterialsShowLightmapCanvas, DAVA::VariantType((bool) false));
+    CreateValue(Settings::Internal_LicenceAccepted, DAVA::VariantType((bool) false));
 }
 
 DAVA::VariantType SettingsManager::GetValue(const DAVA::FastName& path)
 {
-    SettingsNode* node = SettingsManager::Instance()->GetPath(path, false);
-     
-    DVASSERT(NULL != node);
-    DVASSERT(node->childs.size() == 0 && "Value can't be get from intermediate node");
+    DAVA::FastNameMap<SettingsNode>::iterator i = SettingsManager::Instance()->settingsMap.find(path);
+    DVASSERT(i != SettingsManager::Instance()->settingsMap.end() && "No such setting path");
 
-    return node->value;
+    return i->second.value;
 }
 
 void SettingsManager::SetValue(const DAVA::FastName& path, const DAVA::VariantType &value)
 {
-    SettingsNode* node = SettingsManager::Instance()->GetPath(path, false);
-    
-    DVASSERT(NULL != node);
-    DVASSERT(node->childs.size() == 0 && "Value can't be set into intermediate node");
-    DVASSERT(node->value.type == value.type);
+    DAVA::FastNameMap<SettingsNode>::iterator i = SettingsManager::Instance()->settingsMap.find(path);
+    DVASSERT(i != SettingsManager::Instance()->settingsMap.end() && "No such setting path");
+    DVASSERT(i->second.value.type == value.type && "Setting different type");
 
-    node->value.SetVariant(value);
+    i->second.value.SetVariant(value);
 }
 
-DAVA::VariantType SettingsManager::GetValue(const DAVA::String& path)
+size_t SettingsManager::GetSettingsCount()
 {
-    return GetValue(DAVA::FastName(path));
+    return SettingsManager::Instance()->settingsMap.size();
 }
 
-void SettingsManager::SetValue(const DAVA::String& path, const DAVA::VariantType& value)
+SettingsNode* SettingsManager::GetSettingsNode(const DAVA::FastName &name)
 {
-    SetValue(DAVA::FastName(path), value);
+    DVASSERT(0 != SettingsManager::Instance()->settingsMap.count(name));
+    return &SettingsManager::Instance()->settingsMap.at(name);
 }
 
-const SettingsNode* SettingsManager::GetSettingsTree()
+DAVA::FastName SettingsManager::GetSettingsName(size_t index)
 {
-    return &SettingsManager::Instance()->root;
+    DVASSERT(index < SettingsManager::Instance()->settingsOrder.size());
+    return SettingsManager::Instance()->settingsOrder[index];
 }
 
 void SettingsManager::Load()
 {
-	KeyedArchive* toLoad = new KeyedArchive();
+	DAVA::KeyedArchive* toLoad = new DAVA::KeyedArchive();
 	if(toLoad->Load(SETTINGS_CONFIG_FILE))
 	{
-        MergeSettingsIn(&root, toLoad);
-	}
-
-    toLoad->Release();
-}
-
-void SettingsManager::Save()
-{
-	KeyedArchive* toSave = new KeyedArchive();
-
-    MergeSettingsOut(toSave, &root);
-
-	toSave->Save(SETTINGS_CONFIG_FILE);
-    toSave->Release();
-}
-
-void SettingsManager::MergeSettingsIn(SettingsNode *target, DAVA::KeyedArchive *source)
-{
-    for(size_t i = 0; i < target->childs.size(); ++i)
-    {
-        SettingsNode *node = target->childs[i];
-        DAVA::String nodeName = node->name.c_str();
-
-        if(source->IsKeyExists(nodeName))
+        DAVA::FastNameMap<SettingsNode>::iterator i;
+        DAVA::FastNameMap<SettingsNode>::iterator end = settingsMap.end();
+        for(i = settingsMap.begin(); i != end; ++i)
         {
-            DAVA::VariantType* sourceValue = source->GetVariant(nodeName);
+            SettingsNode *node = &i->second;
+            DAVA::String name = i->first.c_str();
 
-            // if this node hasn't child try to load
-            // value from source
-            if(node->childs.size() == 0)
+            if(toLoad->IsKeyExists(name))
             {
+                DAVA::VariantType* sourceValue = toLoad->GetVariant(name);
                 if(sourceValue->type == node->value.type)
                 {
                     node->value.SetVariant(*sourceValue);
                 }
             }
-            // this is intermediate node, try to load it from source
-            // (can be done only if source variant type is KeyedArchive)
-            else
-            {
-                if(sourceValue->type == DAVA::VariantType::TYPE_KEYED_ARCHIVE)
-                {
-                    MergeSettingsIn(node, sourceValue->AsKeyedArchive());
-                }
-            }
         }
-    }
+	}
+
+    SafeRelease(toLoad);
 }
 
-void SettingsManager::MergeSettingsOut(DAVA::KeyedArchive *target, SettingsNode *source)
+void SettingsManager::Save()
 {
-    for(size_t i = 0; i < source->childs.size(); ++i)
+	DAVA::KeyedArchive* toSave = new DAVA::KeyedArchive();
+
+    DAVA::FastNameMap<SettingsNode>::iterator i;
+    DAVA::FastNameMap<SettingsNode>::iterator end = settingsMap.end();
+    for(i = settingsMap.begin(); i != end; ++i)
     {
-        SettingsNode *node = source->childs[i];
-        DAVA::String nodeName = node->name.c_str();
-        DAVA::VariantType nodeValue = node->value;
+        SettingsNode *node = &i->second;
+        DAVA::String name = i->first.c_str();
 
-        if(0 != node->childs.size())
-        {
-            DAVA::KeyedArchive *intermediateArchive = new DAVA::KeyedArchive();
-
-            MergeSettingsOut(intermediateArchive, node);
-
-            nodeValue.SetKeyedArchive(intermediateArchive);
-            intermediateArchive->Release();
-        }
-
-        target->SetVariant(nodeName, nodeValue);
+        toSave->SetVariant(name, node->value);
     }
+
+	toSave->Save(SETTINGS_CONFIG_FILE);
+    toSave->Release();
 }
 
-void SettingsManager::CreateValue(const DAVA::String& path, const DAVA::VariantType &defaultValue, DAVA::InspDesc description)
+void SettingsManager::CreateValue(const DAVA::FastName& pathName, const DAVA::VariantType &defaultValue, const DAVA::InspDesc &description)
 {
-    DAVA::FastName pathName = DAVA::FastName(path);
-    SettingsNode* node = GetPath(pathName, true);
+    DVASSERT(pathName.IsValid());
+    DVASSERT(0 == settingsMap.count(pathName));
     
-    DVASSERT(NULL != node);
-    DVASSERT(node->childs.size() == 0 && "Value can't be set into node, that has childs");
+    settingsMap[pathName].value = defaultValue;
+    settingsMap[pathName].desc = description;
 
-    node->value = defaultValue;
-    node->path = DAVA::FastName(path);
-    node->description = description;
-}
-
-SettingsNode* SettingsManager::GetPath(const DAVA::FastName& path, bool create)
-{
-    SettingsNode *ret = NULL;
-
-    DAVA::String key;
-    DAVA::Vector<DAVA::FastName> keys;
-
-    std::stringstream ss(path.c_str());
-    while(std::getline(ss, key, '/'))
-    {
-        keys.push_back(DAVA::FastName(key));
-    }
-
-    if(keys.size() > 0)
-    {
-        SettingsNode *parent = &root;
-
-        // we should go deep into structure to find
-        // requested path
-        for(size_t i = 0; i < keys.size(); ++i)
-        {
-            SettingsNode *node = parent->GetChild(keys[i]);
-            if(NULL == node && create)
-            {
-                DAVA::String createdPath = "";
-
-                if(parent->path.IsValid())
-                {
-                    createdPath += DAVA::String(parent->path.c_str());
-                    createdPath += DAVA::String("/");
-                }
-
-                createdPath += DAVA::String(keys[i].c_str());
-
-                node = new SettingsNode(keys[i]);
-                node->path = DAVA::FastName(createdPath);
-                parent->childs.push_back(node);
-            }
-
-            parent = node;
-            if(NULL == parent)
-            {
-                break;
-            }
-        }
-
-        ret = parent;
-    }
-
-    return ret;
-}
-
-SettingsNode::SettingsNode(const DAVA::FastName &_name)
-: name(_name)
-{ }
-
-SettingsNode::~SettingsNode()
-{
-    for(size_t i = 0; i < childs.size(); ++i)
-    {
-        delete childs[i];
-    }
-}
-
-SettingsNode* SettingsNode::GetChild(const DAVA::FastName &name)
-{
-    SettingsNode* ret = NULL;
-
-    for(size_t i = 0; i < childs.size(); ++i)
-    {
-        if(childs[i]->name == name)
-        {
-            ret = childs[i];
-            break;
-        }
-    }
-
-    return ret;
+    settingsOrder.push_back(pathName);
 }

@@ -36,8 +36,8 @@ SettingsDialog::SettingsDialog(QWidget* parent)
     dlgLayout->addWidget(buttonBox);
     setLayout(dlgLayout);
 
-    FillProperties(editor->GetRootProperty(), SettingsManager::GetSettingsTree());
-    editor->expandToDepth(1);
+    InitProperties();
+    editor->expandToDepth(0);
 
     posSaver.Attach(this, "SettingsDialog");
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
@@ -50,36 +50,51 @@ SettingsDialog::~SettingsDialog()
 	posSaver.SaveValue("splitPos", v);
 }
 
-void SettingsDialog::FillProperties(QtPropertyData *root, const SettingsNode *sourceNode)
+void SettingsDialog::InitProperties()
 {
-    if(NULL != root && NULL != sourceNode)
+    for(size_t i = 0; i < SettingsManager::GetSettingsCount(); ++i)
     {
-        for(size_t i = 0; i < sourceNode->childs.size(); ++i)
+        DAVA::FastName name = SettingsManager::GetSettingsName(i);
+        SettingsNode *node = SettingsManager::GetSettingsNode(name);
+
+        DAVA::String key;
+        QVector<QString> keys;
+
+        std::stringstream ss(name.c_str());
+        while(std::getline(ss, key, Settings::Delimiter))
         {
-            const SettingsNode *node = sourceNode->childs[i];
+            keys.push_back(key.c_str());
+        }
 
-            // this is intermediate node and we should create one more deep level in propertiesData
-            if(node->childs.size() > 0)
+        if( keys.size() > 0 && 
+            keys[0] != QString(Settings::InternalGroup.c_str())) // skip internal settings
+        {
+            // go deep into tree to find penultimate propertyData
+            QtPropertyData *parent = editor->GetRootProperty();
+            for(int i = 0; i < keys.size() - 1; ++i)
             {
-                if(node->path != DAVA::FastName("Internal"))
+                QtPropertyData *prop = parent->ChildGet(keys[i]);
+                if(NULL == prop)
                 {
-                    QtPropertyData *child = new QtPropertyData();
-
-				    QFont boldFont = child->GetFont();
+                    prop = new QtPropertyData();
+                    QFont boldFont = prop->GetFont();
 				    boldFont.setBold(true);
-				    child->SetFont(boldFont);
-				    child->SetBackground(QBrush(QColor(Qt::lightGray)));
-                    child->SetEnabled(false);
+                    prop->SetFont(boldFont);
+				    prop->SetBackground(QBrush(QColor(Qt::lightGray)));
+                    prop->SetEnabled(false);
 
-                    root->ChildAdd(node->name.c_str(), child);
-                    FillProperties(child, node);
+                    parent->ChildAdd(keys[i], prop);
                 }
+
+                parent = prop;
             }
-            else
+
+            if(NULL != parent)
             {
-                QtPropertyDataSettingsNode *child = new QtPropertyDataSettingsNode(node->path);
-                child->SetInspDescription(node->description);
-                root->ChildAdd(node->name.c_str(), child);
+                QtPropertyDataSettingsNode *settingProp = new QtPropertyDataSettingsNode(name);
+                settingProp->SetInspDescription(node->desc);
+
+                parent->ChildAdd(keys.last(), settingProp);
             }
         }
     }
