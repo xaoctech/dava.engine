@@ -62,6 +62,7 @@
     <ClCompile Include="Classes\Metadata\PlatformMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\PropertyNames.cpp" />
     <ClCompile Include="Classes\Metadata\ScreenMetadata.cpp" />
+    <ClCompile Include="Classes\Metadata\UI3DViewMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIAggregatorMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIButtonMetadata.cpp" />
     <ClCompile Include="Classes\Metadata\UIControlMetadata.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="GeneratedFiles\Metadata\PlatformMetadata_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Metadata\PropertyNames_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Metadata\ScreenMetadata_moc.cpp" />
+    <ClCompile Include="GeneratedFiles\Metadata\UI3DViewMetadata_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Metadata\UIButtonMetadata_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Metadata\UIControlMetadata_moc.cpp" />
     <ClCompile Include="GeneratedFiles\Metadata\UIJoypadMetadata_moc.cpp" />
@@ -372,6 +374,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">"$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe"   -D_WINDOWS -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -D_CRT_SECURE_NO_DEPRECATE -DDAVA_QT -DDAVA_SAVE_TO_YAML  "-I." "-I.\..\..\Sources\Internal" "-I.\..\..\Sources\External" "-I.\..\..\Libs\glew\Include" "-I.\..\..\Libs\include" "-I.\Classes" "-I.\Classes\Commands" "-I.\Classes\Controllers" "-I.\Classes\Helpers" "-I.\Classes\Metadata" "-I.\Classes\Models" "-I.\Classes\UI" "-I.\Classes\UI\Dialogs" "-I.\Classes\UI\PropertyGridWidgets" "-I$(DXSDK_DIR)\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtCore" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtNetwork" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtGui" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\QtOpenGL" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\include\ActiveQt" "-I$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\mkspecs\default" "-Ic:\Program Files\OpenAL 1.1 SDK\include" "-Ic:\Program Files (x86)\OpenAL 1.1 SDK\include" "-I$(Configuration)\." "-I.\GeneratedFiles" "-I." "-I." "-I." "-I." "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"</Command>
     </ClInclude>
+    <ClInclude Include="Classes\Metadata\UI3DViewMetadata.h" />
     <ClInclude Include="Classes\Metadata\UIAggregatorMetadata.h" />
     <ClInclude Include="Classes\Metadata\UIButtonMetadata.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">$(QT_HOME)\Desktop\Qt\4.8.1\msvc2010\bin\moc.exe;%(FullPath)</AdditionalInputs>

@@ -138,4 +138,11 @@ void UIMovieView::WillDisappear()
     UIControl::WillDisappear();
     movieViewControl->SetVisible(false);
 }
+
+UIControl* UIMovieView::Clone()
+{
+    UIMovieView* ui3DView = new UIMovieView(GetRect());
+    ui3DView->CopyDataFrom(this);
+    return ui3DView;
+}
 };
