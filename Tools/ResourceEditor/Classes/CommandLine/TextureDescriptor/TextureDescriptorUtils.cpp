@@ -145,7 +145,7 @@ void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pngPathname);
     if(false == FileSystem::Instance()->IsFile(descriptorPathname))
     {
-        TextureDescriptor *descriptor = new TextureDescriptor();
+        TextureDescriptor *descriptor = new TextureDescriptor(true);
         descriptor->Save(descriptorPathname);
 		delete descriptor;
     }
