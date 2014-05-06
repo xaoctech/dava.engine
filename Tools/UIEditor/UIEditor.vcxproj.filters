@@ -789,6 +789,12 @@
     <ClCompile Include="GeneratedFiles\UI\PropertyGridWidgets\webviewpropertygridwidget_moc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Metadata\UI3DViewMetadata_moc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Metadata\UI3DViewMetadata.cpp">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\DefaultScreen.h">
@@ -1264,6 +1270,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_webviewpropertygridwidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Metadata\UI3DViewMetadata.h">
+      <Filter>Sources\UI\PropertyGridWidgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

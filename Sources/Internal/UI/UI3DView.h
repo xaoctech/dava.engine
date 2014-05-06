@@ -62,8 +62,8 @@ public:
 	}
 
     virtual void SetSize(const Vector2 &newSize);
-    
-    
+    virtual UIControl* Clone();
+
 protected:
     Scene * scene;
 	Rect viewportRc;

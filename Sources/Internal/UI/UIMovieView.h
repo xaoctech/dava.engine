@@ -55,6 +55,8 @@ public:
     virtual void WillAppear();
     virtual void WillDisappear();
 
+    virtual UIControl* Clone();
+
 	// Start/stop the video playback.
 	void Play();
 	void Stop();
