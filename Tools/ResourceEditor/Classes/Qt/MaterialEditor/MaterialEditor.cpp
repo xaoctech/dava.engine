@@ -1017,111 +1017,121 @@ void MaterialEditor::OnMaterialLoad(bool checked)
     {
         QString inputFile = QFileDialog::getOpenFileName(this, "Load Material Preset", lastSavePath.GetAbsolutePathname().c_str(), "Material Preset (*.mpreset)");
         SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+        DAVA::NMaterial *material = curMaterials[0];
 
         if(!inputFile.isEmpty() && NULL != curScene)
         {
             DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
             materialArchive->Load(inputFile.toAscii().data());
 
-            DAVA::SerializationContext materialContext;
-            materialContext.SetScene(curScene);
-            materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
-
-            DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState);
+            DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState, inputFile);
             if(0 != userChoiseWhatToLoad)
             {
+	            const DAVA::InspInfo *info = material->GetTypeInfo();
+	            const DAVA::InspMember *materialProperties = info->Member("materialProperties");
+	            const DAVA::InspMember *materialFlags = info->Member("materialSetFlags");
+                const DAVA::InspMember *materialTextures = info->Member("textures");
+
                 lastCheckState = userChoiseWhatToLoad;
 
-                DAVA::KeyedArchive *materialProperties = new DAVA::KeyedArchive();
-                materialProperties->SetBool("loadIds", false);
-
-                if(!(lastCheckState & CHECKED_NAME))
-                {
-                    materialProperties->SetBool("loadName", false);
-                }
-            
                 if(!(lastCheckState & CHECKED_GROUP))
                 {
-                    materialProperties->SetBool("loadGroup", false);
+                    materialArchive->DeleteKey("materialGroup");
                 }
 
                 if(!(lastCheckState & CHECKED_TEMPLATE))
                 {
-                    materialProperties->SetBool("loadTemplate", false);
+                    materialArchive->DeleteKey("materialTemplate");
                 }
 
                 if(!(lastCheckState & CHECKED_PROPERTIES))
                 {
-                    materialProperties->SetBool("loadProperties", false);
-                    materialProperties->SetBool("loadFlags", false);
+                    materialArchive->DeleteKey("properties");
+                    materialArchive->DeleteKey("setFlags");
+                }
+                else
+                {
+                    ClearMaterialDynamicMember(material, materialFlags->Dynamic());
+                    ClearMaterialDynamicMember(material, materialProperties->Dynamic());
                 }
 
                 if(!(lastCheckState & CHECKED_TEXTURES))
                 {
-                    materialProperties->SetBool("loadTextures", false);
+                    materialArchive->DeleteKey("textures");
                 }
-
-                if(lastCheckState & CHECKED_CLEAR_MATERIAL)
+                else
                 {
-                    materialProperties->SetBool("loadClear", true);
+                    ClearMaterialDynamicMember(material, materialTextures->Dynamic());
                 }
 
-                materialContext.customProperties->SetArchive("material", materialProperties);
-                materialProperties->Release();
+                materialArchive->DeleteKey("##name");
+                materialArchive->DeleteKey("#id");
+                materialArchive->DeleteKey("#index");
+                materialArchive->DeleteKey("materialName");
+                materialArchive->DeleteKey("materialType");
 
-                for(int i = 0; i < curMaterials.size(); ++i)
-                {
-                    curMaterials[i]->Load(materialArchive, &materialContext);
-                }
+                DAVA::SerializationContext materialContext;
+                materialContext.SetScene(curScene);
+                materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
+                material->Load(materialArchive, &materialContext);
             }            materialArchive->Release();        }
     }
 
     SetCurMaterial(curMaterials);
 }
 
-DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState)
+void MaterialEditor::ClearMaterialDynamicMember(DAVA::NMaterial *material, const DAVA::InspMemberDynamic *dynamicMember)
+{
+	if(NULL != dynamicMember)
+	{
+		DAVA::InspInfoDynamic *dynamicInfo = dynamicMember->GetDynamicInfo();
+		DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
+        for(size_t i = 0; i < membersList.size(); ++i)
+		{
+            dynamicInfo->MemberValueSet(material, membersList[i], DAVA::VariantType());
+        }
+    }
+}
+
+DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState, const QString &inputFile)
 {
     DAVA::uint32 ret = 0;
 
     QDialog *dlg = new QDialog(this);
     QVBoxLayout *dlgLayout = new QVBoxLayout();
     dlgLayout->setMargin(10);
+    dlgLayout->setSpacing(15);
 
-    dlg->setWindowTitle("Reload Model options");
+    dlg->setWindowTitle("Loading material preset...");
+    dlg->setWindowFlags(Qt::Tool);
     dlg->setLayout(dlgLayout);
 
-    QComboBox *modeCombo = new QComboBox(dlg);
-    QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, dlg);
-    QCheckBox *nameChBox = new QCheckBox(MATERIAL_NAME_LABEL, dlg);
-    QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, dlg);
-    QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, dlg);
-    QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, dlg);
+    QLineEdit* pathLine = new QLineEdit(dlg);
+    pathLine->setText(inputFile);
+    pathLine->setReadOnly(false);
+    pathLine->setToolTip(inputFile);
+    dlgLayout->addWidget(pathLine);
 
-    // restore last user choice
-    modeCombo->addItem("Combine");
-    modeCombo->addItem("Clear");
+    QGroupBox *groupbox = new QGroupBox("Load parameters", dlg);
+    dlgLayout->addWidget(groupbox);
 
-    if(initialState & CHECKED_CLEAR_MATERIAL)
-    {
-        modeCombo->setCurrentIndex(1);
-    }
-    else
-    {
-        modeCombo->setCurrentIndex(0);
-    }
+    QCheckBox *templateChBox = new QCheckBox(MATERIAL_TEMPLATE_LABEL, groupbox);
+    QCheckBox *groupChBox = new QCheckBox(MATERIAL_GROUP_LABEL, groupbox);
+    QCheckBox *propertiesChBox = new QCheckBox(MATERIAL_PROPERTIES_LABEL, groupbox);
+    QCheckBox *texturesChBox = new QCheckBox(MATERIAL_TEXTURES_LABEL, groupbox);
 
     templateChBox->setChecked((bool) (initialState & CHECKED_TEMPLATE));
-    nameChBox->setChecked((bool) (initialState & CHECKED_NAME));
     groupChBox->setChecked((bool) (initialState & CHECKED_GROUP));
     propertiesChBox->setChecked((bool) (initialState & CHECKED_PROPERTIES));
     texturesChBox->setChecked((bool) (initialState & CHECKED_TEXTURES));
 
-    dlgLayout->addWidget(modeCombo);
-    dlgLayout->addWidget(templateChBox);
-    dlgLayout->addWidget(nameChBox);
-    dlgLayout->addWidget(groupChBox);
-    dlgLayout->addWidget(propertiesChBox);
-    dlgLayout->addWidget(texturesChBox);
+    QGridLayout *gridLayout = new QGridLayout();
+    groupbox->setLayout(gridLayout);
+    gridLayout->setHorizontalSpacing(50);
+    gridLayout->addWidget(templateChBox, 0, 0);
+    gridLayout->addWidget(groupChBox, 1, 0);
+    gridLayout->addWidget(propertiesChBox, 0, 1);
+    gridLayout->addWidget(texturesChBox, 1, 1);
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
     dlgLayout->addWidget(buttons);
@@ -1132,11 +1142,9 @@ DAVA::uint32 MaterialEditor::ExecMaterialLoadingDialog(DAVA::uint32 initialState
     if(QDialog::Accepted == dlg->exec())
     {
         if(templateChBox->checkState() == Qt::Checked) ret |= CHECKED_TEMPLATE;
-        if(nameChBox->checkState() == Qt::Checked) ret |= CHECKED_NAME;
         if(groupChBox->checkState() == Qt::Checked) ret |= CHECKED_GROUP;
         if(propertiesChBox->checkState() == Qt::Checked) ret |= CHECKED_PROPERTIES;
         if(texturesChBox->checkState() == Qt::Checked) ret |= CHECKED_TEXTURES;
-        if(modeCombo->currentIndex() == 1) ret |= CHECKED_CLEAR_MATERIAL;
     }
 
     delete dlg;

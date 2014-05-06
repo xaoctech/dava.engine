@@ -115,7 +115,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 		LoadImageTo(stdFilePath, face, false);
 		
 		projectPath = stdFilePath;
-		SettingsManager::SetValue("Internal/CubemapLastFaceDir", VariantType(projectPath.GetDirectory()));
+		SettingsManager::SetValue(Settings::Internal_CubemapLastFaceDir, VariantType(projectPath.GetDirectory()));
 		
 		if(AllFacesLoaded())
 		{

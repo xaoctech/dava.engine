@@ -35,7 +35,7 @@ protected:
     QtPosSaver posSaver;
     QtPropertyEditor *editor;
 
-    void FillProperties(QtPropertyData *root, const SettingsNode *sourceNode);
+    void InitProperties();
 };
 
 class QtPropertyDataSettingsNode : public QtPropertyDataDavaVariant
