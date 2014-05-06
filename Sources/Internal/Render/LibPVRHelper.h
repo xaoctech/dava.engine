@@ -132,16 +132,9 @@ public:
     
     virtual bool IsImage(File *file);
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap = -1)
-    {
-        PVRFile * pvrFile = ReadFile(infile);
-        return SUCCESS;
-    }
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap = 0);
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false)
-    {
-        return SUCCESS;
-    }
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
     
     static uint32 GetDataSize(const FilePath &filePathname);
     

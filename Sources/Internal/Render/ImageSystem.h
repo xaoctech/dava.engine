@@ -67,9 +67,9 @@ public:
         return wrappers[fileFormat];
     }
     
-    eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = -1);
+    eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
     
-    eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = -1);
+    eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
     
     eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
     

@@ -50,7 +50,7 @@ public:
     
     virtual bool IsImage(File *file) = 0;
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap = -1) = 0;
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap) = 0;
     
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false) = 0;
 };
