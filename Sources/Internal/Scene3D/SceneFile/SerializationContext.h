@@ -83,6 +83,7 @@ namespace DAVA
 	
 	public:
 		
+        SerializationContext();
 		~SerializationContext();
 				
 		inline void SetVersion(uint32 curVersion)

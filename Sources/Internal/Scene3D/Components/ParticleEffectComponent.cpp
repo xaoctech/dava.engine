@@ -156,19 +156,24 @@ void ParticleEffectComponent::StopWhenEmpty(bool value /*= true*/)
 	stopWhenEmpty = value;
 }
 
+void ParticleEffectComponent::ClearGroup(ParticleGroup& group)
+{
+    Particle * current = group.head;
+    while (current)
+    {
+        Particle *next = current->next;
+        delete current;
+        current = next;
+    }
+    group.layer->Release();
+    group.emitter->Release();		
+}
+
 void ParticleEffectComponent::ClearCurrentGroups()
 {
 	for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
 	{
-		Particle * current = (*it).head;
-		while (current)
-		{
-			Particle *next = current->next;
-			delete current;
-			current = next;
-		}
-		it->layer->Release();
-		it->emitter->Release();		
+		ClearGroup(*it);
 	}
 	effectData.groups.clear();
 }
@@ -214,8 +219,50 @@ void ParticleEffectComponent::SetDesiredLodLevel(int32 level)
 	{
 		ParticleGroup& group = *it;
 		if (!group.emitter->shortEffect)
-			group.visibleLod = group.layer->IsLodActive(level);
-	}
+			group.visibleLod = group.layer->IsLodActive(level);                           
+	}    
+
+    if (desiredLodLevel == 0) //degrade existing groups if needed
+    {
+        for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;++it)
+        {
+            ParticleGroup& group = *it;
+            if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_REMOVE)
+            {
+                Particle * current = group.head;
+                while (current)
+                {
+                    Particle *next = current->next;
+                    delete current;
+                    current = next;
+                }
+                group.head = NULL;
+            }
+            else if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_CUT_PARTICLES)
+            {
+                                
+                Particle * current = group.head;
+                Particle * prev = NULL;
+                int32 i=0;
+                while (current)
+                {
+                    Particle *next = current->next;
+                    if (i%2) //cut every second particle
+                    {                            
+                        delete current;                 
+                        group.activeParticleCount--;
+                        if (prev)
+                            prev->next = next;
+                        else
+                            group.head = next;
+                    }
+                    prev = current;
+                    current = next;
+                    i++;                        
+                }               
+            }
+        }
+    }
 }
 
 
@@ -459,6 +506,37 @@ void ParticleEffectComponent::RemoveEmitter(ParticleEmitter *emitter)
     std::advance(itSpawn, Min(id, (int32)spawnPositions.size()));    
     spawnPositions.erase(itSpawn);
     
+}
+
+/*statistics for editor*/
+int32 ParticleEffectComponent::GetLayerActiveParticlesCount(ParticleLayer *layer)
+{
+    int32 count = 0;
+    for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
+    {
+        if (it->layer == layer)
+        {
+            count+=it->activeParticleCount;
+        }
+    }
+    return count;
+}
+float32 ParticleEffectComponent::GetLayerActiveParticlesSquare(ParticleLayer *layer)
+{
+    float32 square = 0;
+    for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e = effectData.groups.end(); it!=e; ++it)
+    {
+        if (it->layer == layer)
+        {
+            Particle *currParticle = it->head;
+            while (currParticle)
+            {
+                square+=currParticle->currSize.x*currParticle->currSize.y;
+                currParticle = currParticle->next;
+            }
+        }
+    }
+    return square;
 }
 
 float32 ParticleEffectComponent::GetCurrTime()
