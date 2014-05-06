@@ -124,8 +124,8 @@ public:
     virtual void    RegisterNode(Entity * entity);
     virtual void    UnregisterNode(Entity * entity);
     
-    //virtual void    AddComponent(Entity * entity, Component * component);
-    //virtual void    RemoveComponent(Entity * entity, Component * component);
+    virtual void    AddComponent(Entity * entity, Component * component);
+    virtual void    RemoveComponent(Entity * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needProcess = false, SceneSystem * insertBeforeSceneForProcess = NULL);
     virtual void    RemoveSystem(SceneSystem * sceneSystem);

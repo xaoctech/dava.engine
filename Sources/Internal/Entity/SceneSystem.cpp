@@ -28,13 +28,12 @@
 
 
 #include "Entity/SceneSystem.h"
-#include "Scene3D/Entity.h"
 
 namespace DAVA 
 {
     
 SceneSystem::SceneSystem(Scene * _scene)
-:	componentsFlags(0),
+:	requiredComponents(0),
 	scene(_scene)
 ,	locked(false)
 {
@@ -45,19 +44,14 @@ SceneSystem::~SceneSystem()
     
 }
 
-void SceneSystem::SetComponentsFlags(uint32 _componentsFlags)
+void SceneSystem::SetRequiredComponents(uint32 _requiredComponents)
 {
-    componentsFlags = _componentsFlags;
+    requiredComponents = _requiredComponents;
 }
     
-uint32 SceneSystem::GetComponentsFlags()
+uint32 SceneSystem::GetRequiredComponents()
 {
-    return componentsFlags;
-}
-
-bool SceneSystem::IsNeedProcessEntity(Entity * entity)
-{
-	return ((componentsFlags & entity->GetAvailableComponentFlags()) == componentsFlags);
+    return requiredComponents;
 }
 
 void SceneSystem::AddEntity(Entity * entity)
