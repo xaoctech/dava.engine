@@ -1404,9 +1404,6 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
       <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.h">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
@@ -1424,6 +1421,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
+      <Filter>Internal\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2528,9 +2528,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\AtomicWin32.cpp">
       <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
@@ -2551,6 +2548,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
