@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -1425,6 +1425,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2550,6 +2553,9 @@
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
