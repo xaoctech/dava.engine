@@ -315,14 +315,7 @@ bool NvttHelper::ReadDxtFile(nvtt::Decompressor & dec, Vector<Image*> &imageSet,
 		return false;
 	}
 
-    if(baseMipMap == -1)
-    {
-        baseMipMap = (int32)(info.mipmapsCount - 1);
-    }
-    else
-    {
-        baseMipMap = Min(baseMipMap, (int32)(info.mipmapsCount - 1));
-    }
+    baseMipMap = Min(baseMipMap, (int32)(info.mipmapsCount - 1));
 
 	nvtt::Format format;
 	if(!dec.getCompressionFormat(format))
@@ -1156,7 +1149,7 @@ eErrorCode LibDdsHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32
     return ReadFile(infile, imageSet, baseMipMap, false);
 }
 
-eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap /*= -1*/, bool forceSoftwareConvertation /*= false*/)
+eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap, bool forceSoftwareConvertation)
 {
     if(NULL == file)
     {
@@ -1172,7 +1165,7 @@ eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 b
     return NvttHelper::ReadDxtFile(dec, imageSet, baseMipMap,forceSoftwareConvertation) ? SUCCESS : ERROR_READ_FAIL;
 }
  
-eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat /*= FORMAT_INVALID*/, bool isCubeMap /*= false*/)
+eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap /*= false*/)
 {
     if(imageSet[0]->format != FORMAT_RGBA8888)
     {
