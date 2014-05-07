@@ -41,8 +41,7 @@ namespace DAVA
 {
 
 WindSystem::WindSystem(Scene * scene)
-:	SceneSystem(scene),
-    globalTime(0.f)
+:	SceneSystem(scene)
 {
 }
 
