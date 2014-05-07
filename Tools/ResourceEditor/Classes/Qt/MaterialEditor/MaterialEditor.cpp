@@ -1085,7 +1085,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
 
 void MaterialEditor::ClearMaterialDynamicMember(DAVA::NMaterial *material, const DAVA::InspMemberDynamic *dynamicMember)
 {
-	if(NULL != dynamicMember)
+	if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL && NULL != dynamicMember)
 	{
 		DAVA::InspInfoDynamic *dynamicInfo = dynamicMember->GetDynamicInfo();
 		DAVA::Vector<DAVA::FastName> membersList = dynamicInfo->MembersList(material); // this function can be slow
