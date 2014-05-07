@@ -679,7 +679,8 @@ void TextureDescriptor::Initialize( const TextureDescriptor *descriptor )
 
 	pathname = descriptor->pathname;
 
-	drawSettings = descriptor->drawSettings;
+    drawSettings = descriptor->drawSettings;
+    dataSettings = descriptor->dataSettings;
 
 	isCompressedFile = descriptor->isCompressedFile;
 	if(descriptor->compression && !compression)
@@ -700,7 +701,6 @@ void TextureDescriptor::Initialize( const TextureDescriptor *descriptor )
     qualityGroup = descriptor->qualityGroup;
 	exportedAsGpuFamily = descriptor->exportedAsGpuFamily;
 
-	dataSettings.faceDescription = descriptor->dataSettings.faceDescription;
 	format = descriptor->format;
 }
 
