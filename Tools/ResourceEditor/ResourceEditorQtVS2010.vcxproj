@@ -1243,6 +1243,7 @@
     <None Include="DataQt\CubeMapTextureBrowser.ui" />
     <None Include="DataQt\ImageSplitter.ui" />
     <None Include="DataQt\LicenceDialog.ui" />
+    <None Include="DataQt\LODEditor.ui" />
     <None Include="DataQt\mainwindow.ui">
       <SubType>Designer</SubType>
     </None>

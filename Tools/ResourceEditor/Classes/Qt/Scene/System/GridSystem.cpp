@@ -35,6 +35,9 @@
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 
+#define LOWEST_GRID_STEP 0.1f
+#define LOWEST_GRID_SIZE 1.0f
+
 SceneGridSystem::SceneGridSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
 {
@@ -61,10 +64,10 @@ void SceneGridSystem::ProcessUIEvent(DAVA::UIEvent *event)
 
 void SceneGridSystem::Draw()
 {
-    float gridStep = SettingsManager::GetValue("Scene/GridStep").AsFloat();
-	float gridMax = SettingsManager::GetValue("Scene/GridSize").AsFloat();
+    float gridStep = SettingsManager::GetValue(Settings::Scene_GridStep).AsFloat();
+	float gridMax = SettingsManager::GetValue(Settings::Scene_GridSize).AsFloat();
 
-    if(gridStep > 0.1f && gridMax > 0.1f)
+    if(gridStep >= LOWEST_GRID_STEP && gridMax >= LOWEST_GRID_SIZE)
     {
 	    DAVA::RenderManager* rm = DAVA::RenderManager::Instance();
 	    DAVA::RenderHelper* rh = DAVA::RenderHelper::Instance();

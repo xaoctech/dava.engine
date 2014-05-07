@@ -214,9 +214,6 @@
     <Filter Include="Classes\Qt\ImageSplitterDialog">
       <UniqueIdentifier>{4be62135-b0d0-44b6-bc2f-9a5d42461a85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\Tools\DeveloperTools">
-      <UniqueIdentifier>{9a192b7c-b9d4-4a69-b284-ee131d63d6c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\LicenceDialog">
       <UniqueIdentifier>{c8c29a9c-afc6-4b9c-b487-3d322a66bf50}</UniqueIdentifier>
     </Filter>
@@ -1920,12 +1917,6 @@
     <ClCompile Include="_GeneratedQt\ImageSplitterDialog\SizeDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.cpp">
-      <Filter>Classes\Qt\Tools\DeveloperTools</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\DeveloperTools\DeveloperTools_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\CloneLastBatchCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -3431,9 +3422,6 @@
     <ClInclude Include="Classes\Qt\ImageSplitterDialog\SizeDialog.h">
       <Filter>Classes\Qt\ImageSplitterDialog</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.h">
-      <Filter>Classes\Qt\Tools\DeveloperTools</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\CloneLastBatchCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3512,6 +3500,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\ActionComponentEditor.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\LODEditor.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
