@@ -502,7 +502,7 @@ float32 ParticleEffectComponent::GetCurrTime()
     return time;
 }
 
-bool ParticleEffectComponent::GetReflectionVisible()
+bool ParticleEffectComponent::GetReflectionVisible() const
 {
     return effectRenderObject->GetReflectionVisible();
 }
@@ -510,7 +510,7 @@ void ParticleEffectComponent::SetReflectionVisible(bool visible)
 {
     effectRenderObject->SetReflectionVisible(visible);
 }
-bool ParticleEffectComponent::GetRefractionVisible()
+bool ParticleEffectComponent::GetRefractionVisible() const
 {
     return effectRenderObject->GetRefractionVisible();
 }

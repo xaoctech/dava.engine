@@ -2168,12 +2168,12 @@ bool LibPVRHelper::WriteFileFromMipMapFiles(const FilePath & outputFilePath, con
     {
         if(!WriteFile(outPvr, outFile))
         {
-            Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
+            Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname().c_str());
         }
     }
     else
     {
-        Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname());
+        Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname().c_str());
     }
 
     SafeRelease(outFile);
