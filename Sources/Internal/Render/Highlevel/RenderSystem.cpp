@@ -54,8 +54,8 @@ namespace DAVA
 
 RenderSystem::RenderSystem()
     :   renderPassManager(this)
-    ,   camera(0)
-    ,   clipCamera(0)
+    ,   mainCamera(0)
+    ,   drawCamera(0)
     ,   forceUpdateLights(false)
     ,   globalMaterial(NULL)
 {
@@ -70,8 +70,8 @@ RenderSystem::RenderSystem()
 
 RenderSystem::~RenderSystem()
 {
-    SafeRelease(camera);
-    SafeRelease(clipCamera);
+    SafeRelease(mainCamera);
+    SafeRelease(drawCamera);
 
     SafeRelease(globalMaterial);
     
@@ -381,7 +381,7 @@ void RenderSystem::Update(float32 timeElapsed)
 	uint32 size = objectsForUpdate.size();
 	for(uint32 i = 0; i < size; ++i)
 	{
-        objectsForUpdate[i]->RenderUpdate(clipCamera, timeElapsed);
+        objectsForUpdate[i]->RenderUpdate(mainCamera, timeElapsed);
     }
 	
     ShaderCache::Instance()->ClearAllLastBindedCaches();
@@ -398,7 +398,7 @@ void RenderSystem::Render()
     TIME_PROFILE("RenderSystem::Render");
 
     
-    mainRenderPass->Draw(camera, this);
+    mainRenderPass->Draw(this);
     
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
