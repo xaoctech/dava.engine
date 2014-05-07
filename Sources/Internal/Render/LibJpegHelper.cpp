@@ -165,24 +165,30 @@ eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int
 eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
 {
     DVASSERT(imageSet.size());
-    Image* originalImage = imageSet[0];
-    Image* imageToSave = originalImage;
-    if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
+    const Image* original = imageSet[0];
+    int32 width = original->width;
+    int32 height = original->height;
+    uint8* imageData = original->data;
+    PixelFormat format = original->format;
+    Image* convertedImage = NULL;
+    if(!(FORMAT_RGB888 == original->format || FORMAT_A8 == original->format))
     {
-        if(FORMAT_RGBA8888 == originalImage->format)
+        if(FORMAT_RGBA8888 == original->format)
         {
-            imageToSave = Image::Create(originalImage->width, originalImage->height, FORMAT_RGB888);
+            convertedImage = Image::Create(width, height, FORMAT_RGB888);
             ConvertDirect<uint32, RGB888, ConvertRGBA8888toRGB888> convert;
-            convert(originalImage->data, originalImage->width, originalImage->height, sizeof(uint32)*originalImage->width, imageToSave->data, imageToSave->width, imageToSave->height, sizeof(RGB888)*originalImage->width);
+            convert(imageData, width, height, sizeof(uint32)*width, convertedImage->data, width, height, sizeof(RGB888)*width);
         }
-        else if(FORMAT_A16 == originalImage->format)
+        else if(FORMAT_A16 == original->format)
         {
-            imageToSave = Image::Create(originalImage->width, originalImage->height, FORMAT_A8);
+            convertedImage = Image::Create(width, height, FORMAT_A8);
             ConvertDirect<uint16, uint8, ConvertA16toA8> convert;
-            convert(originalImage->data, originalImage->width, originalImage->height, sizeof(uint16)*originalImage->width, imageToSave->data, imageToSave->width, imageToSave->height, sizeof(uint8)*originalImage->width);
+            convert(imageData, width, height, sizeof(uint16)*width, convertedImage->data, width, height, sizeof(uint8)*width);
         }
+        DVASSERT(convertedImage);
+        imageData = convertedImage->data;
+        format = convertedImage->format;
     }
-
     
     struct jpeg_compress_struct cinfo;
     struct jpegErrorManager jerr;
@@ -194,10 +200,7 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     if ( !outfile )
     {
         Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", absolutePathName);
-        if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
-        {
-            SafeRelease(imageToSave);
-        }
+        SafeRelease(convertedImage);
         return ERROR_FILE_NOTFOUND;
     }
     cinfo.err = jpeg_std_error( &jerr.pub );
@@ -209,22 +212,19 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
         jpeg_destroy_compress( &cinfo );
         fclose(outfile);
         Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", absolutePathName);
-        if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
-        {
-            SafeRelease(imageToSave);
-        }
+        SafeRelease(convertedImage);
         return ERROR_WRITE_FAIL;
     }
     jpeg_create_compress(&cinfo);
     jpeg_stdio_dest(&cinfo, outfile);
     
     // Setting the parameters of the output file here
-    cinfo.image_width = imageToSave->width;
-    cinfo.image_height = imageToSave->height;
+    cinfo.image_width = width;
+    cinfo.image_height = height;
     
     cinfo.in_color_space = JCS_RGB;
     int colorComponents = 3;
-    if(imageToSave->format != FORMAT_RGB888)
+    if(format == FORMAT_A8)
     {
         cinfo.in_color_space = JCS_GRAYSCALE;
         colorComponents = 1;
@@ -243,16 +243,13 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     jpeg_start_compress( &cinfo, TRUE );
     while( cinfo.next_scanline < cinfo.image_height )
     {
-        row_pointer[0] = &imageToSave->data[ cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
+        row_pointer[0] = &imageData[ cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
         jpeg_write_scanlines( &cinfo, row_pointer, 1 );
     }
     jpeg_finish_compress( &cinfo );
     jpeg_destroy_compress( &cinfo );
     fclose( outfile );
-    if(!(FORMAT_RGB888 == originalImage->format || FORMAT_A8 == originalImage->format))
-    {
-        SafeRelease(imageToSave);
-    }
+    SafeRelease(convertedImage);
     return SUCCESS;
 }
    

@@ -58,9 +58,12 @@ bool PngImageExt::Read(const FilePath & filename)
     if(SUCCESS != retCode)
     {
         Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.GetAbsolutePathname().c_str());
-        for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
     }
-    internalData = imageSet[0];
+    else
+    {
+        internalData = SafeRetain(imageSet[0]);
+    }
+    for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 	return (internalData != NULL);
 }
 

@@ -21,24 +21,18 @@ void SaveImageTest::Test(PerfFuncData * data)
     
     ReadWriteTest(data, "~res:/TestData/SaveImageTest/Source/t4.pvr", "", false);
     ReadWriteTest(data, "~res:/TestData/SaveImageTest/Source/t5.dds", "", false);
-    
-    Vector<Image*> images;
-    eErrorCode retCode = ImageSystem::Instance()->Load("~res:/TestData/SaveImageTest/Source/t4.pvr", images);
-    TEST_VERIFY(retCode == SUCCESS);
-    retCode = ImageSystem::Instance()->Save(FilePath::FilepathInDocuments("SaveImageTest/Dest/t5.dds"), images, FORMAT_DXT3);
-    TEST_VERIFY( retCode == SUCCESS);
-    for_each(images.begin(), images.end(), SafeRelease<Image>);
+    ReadWriteTest(data, "~res:/TestData/SaveImageTest/Source/t4.pvr",FilePath::FilepathInDocuments("SaveImageTest/Dest/t5.dds"), true, FORMAT_DXT3);
 }
 
 
-void SaveImageTest::ReadWriteTest(PerfFuncData * data, const FilePath& sourcePath, const FilePath& destPath, bool writing)
+void SaveImageTest::ReadWriteTest(PerfFuncData * data, const FilePath& sourcePath, const FilePath& destPath, bool writing, PixelFormat format)
 {
     Vector<Image*> images;
     eErrorCode retCode = ImageSystem::Instance()->Load(sourcePath, images);
     TEST_VERIFY(retCode == SUCCESS);
     if(writing)
     {
-        retCode = ImageSystem::Instance()->Save(destPath, images, images[0]->format);
+        retCode = ImageSystem::Instance()->Save(destPath, images, format);
         TEST_VERIFY( retCode == SUCCESS);
     }
     
