@@ -368,6 +368,23 @@ DAVA::Entity* SceneSelectionSystem::GetSelectionEntity(int index) const
 	return curSelections.GetEntity(index);
 }
 
+bool SceneSelectionSystem::IsEntitySelected(Entity *entity)
+{
+    return curSelections.HasEntity(entity);
+}
+
+bool SceneSelectionSystem::IsEntitySelectedHierarchically(Entity *entity)
+{
+    while (entity)
+    {
+        if (curSelections.HasEntity(entity))
+            return true;
+
+        entity = entity->GetParent();
+    }
+    return false;
+}
+
 void SceneSelectionSystem::SelectedItemsWereModified()
 {
 	// don't change selection on phase end
