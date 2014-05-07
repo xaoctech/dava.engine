@@ -402,10 +402,7 @@ void Image::InsertImage(const Image* image, const Vector2& dstPos, const Rect& s
 
 bool Image::Save(const FilePath &path) const
 {
-    Image* imageToSave = CopyImageRegion(this, width, height, 0, 0);
-    eErrorCode res = ImageSystem::Instance()->Save(path, imageToSave, format);
-    SafeRelease(imageToSave);
-    return res == SUCCESS;
+    return ImageSystem::Instance()->Save(path, const_cast<Image*>(this), format) == SUCCESS;
 }
     
 };

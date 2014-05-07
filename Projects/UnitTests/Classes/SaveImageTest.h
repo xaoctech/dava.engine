@@ -40,7 +40,7 @@ public:
     
 private:
     
-    void ReadWriteTest(PerfFuncData * data, const FilePath& source, const FilePath& dest, bool writing);
+    void ReadWriteTest(PerfFuncData * data, const FilePath& source, const FilePath& dest, bool writing, PixelFormat = FORMAT_RGBA8888);
 };
 
 #endif //__SAVE_IMAGE_TEST_H__

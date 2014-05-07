@@ -105,7 +105,7 @@
 		#define DWORD unsigned int
 	#endif
 	#if !defined(BOOL) && !defined(OBJC_BOOL_DEFINED)
-//		#define BOOL	int
+		#define BOOL	int
 	#endif
 	typedef struct tagRGBQUAD {
 	BYTE    rgbBlue;

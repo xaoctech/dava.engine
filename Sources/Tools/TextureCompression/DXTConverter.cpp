@@ -44,9 +44,8 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
     FilePath fileToConvert = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
     
     Vector<Image*> inputImages;
-    Vector<Image*> imagesToSave;
     ImageSystem::Instance()->Load(fileToConvert, inputImages, 0);
-    if(inputImages.size() == 1)
+    if(inputImages.size())
     {
         Image* image = inputImages[0];
         
@@ -58,34 +57,26 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
             image->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
         }
         
+        Vector<Image*> imagesToSave;
         if(descriptor.settings.GetGenerateMipMaps())
         {
             imagesToSave = image->CreateMipMapsImages();
         }
         else
         {
-            imagesToSave.push_back(image);
+            imagesToSave.push_back(SafeRetain(image));
         }
         eErrorCode retCode = ImageSystem::Instance()->Save(outputName, imagesToSave, (PixelFormat) descriptor.compression[gpuFamily].format);
+        for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
+        for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
         if(SUCCESS == retCode)
         {
-            for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-            if(descriptor.settings.GetGenerateMipMaps())
-            {
-                for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
-            }
 			LibDdsHelper::AddCRCIntoMetaData(outputName);
             return outputName;
         }
     }
     
     Logger::Error("[DXTConverter::ConvertPngToDxt] can't convert %s to DXT", fileToConvert.GetAbsolutePathname().c_str());
-    
-    for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-    if(descriptor.settings.GetGenerateMipMaps())
-    {
-        for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
-    }
     return FilePath();
 }
 	

@@ -100,12 +100,17 @@ void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& pathToDDS)
 	
 	DAVA::Vector<DAVA::Image *> imageSet;
 	//extracted images should have rgba format, but not DX1..DX5, even in case of dxt supporting systems(like windows)
-    DAVA::int32 mipMapsCount = DAVA::LibDdsHelper::GetMipMapLevelsCount(pathToDDS);
     DAVA::File* file = DAVA::File::Create(pathToDDS, DAVA::File::OPEN | DAVA::File::READ);
+    DAVA::int32 mipMapsCount = DAVA::LibDdsHelper::GetMipMapLevelsCount(file);
     DAVA::LibDdsHelper* helper = static_cast<DAVA::LibDdsHelper* >(DAVA::ImageSystem::Instance()->GetImageFormatInterface(DAVA::ImageSystem::FILE_FORMAT_DDS));
     DAVA::eErrorCode retCode = helper->ReadFile(file, imageSet, mipMapsCount, true);
 	SafeRelease(file);
-	if (mipmapNumber == 0 && imageSet.size())
+    if(!imageSet.size())
+    {
+        errors.insert(DAVA::Format("Can not read file %s", pathToDDS.GetAbsolutePathname().c_str()));
+        return;
+    }
+	if (mipmapNumber == 0)
 	{
 		// if "-mipmap" argumant is blank -> all mipmaps will be extracted
 		for (DAVA::uint32 i = 0; i < imageSet.size(); ++i)
@@ -115,16 +120,17 @@ void DDSExtractorTool::ExtractImagesFromFile(const DAVA::FilePath& pathToDDS)
 	}
 	else
 	{
-        if (mipmapNumber > imageSet.size())
+        if (mipmapNumber <= imageSet.size())
+        {
+            SaveImageAsPNG(pathToDDS, imageSet[mipmapNumber - 1], false);
+        }
+        else
         {
             errors.insert(DAVA::Format("Incorrect mipmap number argument: %d, size of mipmaps set in file %s : %d",
                                        mipmapNumber, pathToDDS.GetAbsolutePathname().c_str(), imageSet.size()));
-            return;
         }
-        SaveImageAsPNG(pathToDDS, imageSet[mipmapNumber - 1], false);
     }
-	
-	for_each(imageSet.begin(), imageSet.end(), DAVA::SafeRelease<DAVA::Image>);
+    for_each(imageSet.begin(), imageSet.end(), DAVA::SafeRelease<DAVA::Image>);
 }
 
 void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& pathToDDS, DAVA::Image* imageToSave, bool addHeightIntoName)
