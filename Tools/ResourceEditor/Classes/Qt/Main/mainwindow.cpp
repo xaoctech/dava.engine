@@ -132,10 +132,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
     SetupTitle();
 
 	qApp->installEventFilter(this);
-    VariantType projPathValue = SettingsManager::GetValue("Internal/LastProjectPath");
-    // for old format of serialyzed settings check of inner type needed
-    String projPathStr = projPathValue.GetType() == VariantType::TYPE_STRING ? projPathValue.AsString() : projPathValue.AsFilePath().GetAbsolutePathname();
-	EditorConfig::Instance()->ParseConfig( projPathStr + "EditorConfig.yaml");
 
 	SetupMainMenu();
 	SetupToolBars();
@@ -285,7 +281,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
 {
-	return (eGPUFamily) SettingsManager::GetValue("Internal/TextureViewGPU").AsInt32();
+	return (eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32();
 }
 
 void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
@@ -293,7 +289,7 @@ void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
 	// before reloading textures we should save tilemask texture for all opened scenes
 	if(SaveTilemask())
 	{
-		SettingsManager::SetValue("Internal/TextureViewGPU", VariantType(gpu));
+		SettingsManager::SetValue(Settings::Internal_TextureViewGPU, VariantType(gpu));
 		DAVA::Texture::SetDefaultGPU(gpu);
 
 		DAVA::TexturesMap allScenesTextures;
@@ -808,6 +804,8 @@ void QtMainWindow::AddRecent(const QString &pathString)
 
 void QtMainWindow::ProjectOpened(const QString &path)
 {
+	EditorConfig::Instance()->ParseConfig(ProjectManager::Instance()->CurProjectPath() + "EditorConfig.yaml");
+
 	EnableProjectActions(true);
 	SetupTitle();
 }
@@ -1213,9 +1211,9 @@ void QtMainWindow::OnEditorGizmoToggle(bool show)
 void QtMainWindow::OnViewLightmapCanvas(bool show)
 {
     bool showCanvas = ui->actionLightmapCanvas->isChecked();
-    if(showCanvas != SettingsManager::GetValue("Internal/MaterialsShowLightmapCanvas").AsBool())
+    if(showCanvas != SettingsManager::GetValue(Settings::Internal_MaterialsShowLightmapCanvas).AsBool())
     {
-        SettingsManager::SetValue("Internal/MaterialsShowLightmapCanvas", DAVA::VariantType(showCanvas));
+        SettingsManager::SetValue(Settings::Internal_MaterialsShowLightmapCanvas, DAVA::VariantType(showCanvas));
     }
 
     if(NULL != GetCurrentScene())
@@ -1707,7 +1705,7 @@ void QtMainWindow::LoadViewState(SceneEditor2 *scene)
 		ui->actionShowEditorGizmo->setChecked(scene->IsHUDVisible());
 		ui->actionOnSceneSelection->setChecked(scene->selectionSystem->IsSelectionAllowed());
      
-        bool viewLMCanvas = SettingsManager::GetValue("Internal/MaterialsShowLightmapCanvas").AsBool();
+        bool viewLMCanvas = SettingsManager::GetValue(Settings::Internal_MaterialsShowLightmapCanvas).AsBool();
         ui->actionLightmapCanvas->setChecked(viewLMCanvas);
 	}
 }
@@ -1813,7 +1811,7 @@ void QtMainWindow::LoadGPUFormat()
 
 void QtMainWindow::LoadMaterialLightViewMode()
 {
-    int curViewMode = SettingsManager::GetValue("Internal/MaterialsLightViewMode").AsInt32();
+    int curViewMode = SettingsManager::GetValue(Settings::Internal_MaterialsLightViewMode).AsInt32();
 
     ui->actionAlbedo->setChecked((bool) (curViewMode & EditorMaterialSystem::LIGHTVIEW_ALBEDO));
     ui->actionAmbient->setChecked((bool) (curViewMode & EditorMaterialSystem::LIGHTVIEW_AMBIENT));
@@ -2680,9 +2678,9 @@ void QtMainWindow::OnMaterialLightViewChanged(bool)
     if(ui->actionAmbient->isChecked()) newMode |= EditorMaterialSystem::LIGHTVIEW_AMBIENT;
     if(ui->actionSpecular->isChecked()) newMode |= EditorMaterialSystem::LIGHTVIEW_SPECULAR;
 
-    if(newMode != SettingsManager::GetValue("Internal/MaterialsLightViewMode").AsInt32())
+    if(newMode != SettingsManager::GetValue(Settings::Internal_MaterialsLightViewMode).AsInt32())
     {
-        SettingsManager::SetValue("Internal/MaterialsLightViewMode", DAVA::VariantType(newMode));
+        SettingsManager::SetValue(Settings::Internal_MaterialsLightViewMode, DAVA::VariantType(newMode));
     }
 
     if(NULL != GetCurrentScene())

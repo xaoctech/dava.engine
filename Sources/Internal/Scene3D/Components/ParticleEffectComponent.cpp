@@ -59,6 +59,7 @@ ParticleEffectComponent::ParticleEffectComponent()
     effectRenderObject->SetWorldTransformPtr(&Matrix4::IDENTITY); //world transform doesn't effect particle render object drawing - instead particles are generated in corresponding world position
 	time = 0;
 	desiredLodLevel = 1;
+    activeLodLevel = 1;
 }
 
 ParticleEffectComponent::~ParticleEffectComponent()
@@ -214,55 +215,7 @@ void ParticleEffectComponent::SetPlaybackSpeed(float32 value)
 
 void ParticleEffectComponent::SetDesiredLodLevel(int32 level)
 {
-	desiredLodLevel = level;
-	for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;++it)
-	{
-		ParticleGroup& group = *it;
-		if (!group.emitter->shortEffect)
-			group.visibleLod = group.layer->IsLodActive(level);                           
-	}    
-
-    if (desiredLodLevel == 0) //degrade existing groups if needed
-    {
-        for (List<ParticleGroup>::iterator it = effectData.groups.begin(), e=effectData.groups.end(); it!=e;++it)
-        {
-            ParticleGroup& group = *it;
-            if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_REMOVE)
-            {
-                Particle * current = group.head;
-                while (current)
-                {
-                    Particle *next = current->next;
-                    delete current;
-                    current = next;
-                }
-                group.head = NULL;
-            }
-            else if (group.layer->degradeStrategy==ParticleLayer::DEGRADE_CUT_PARTICLES)
-            {
-                                
-                Particle * current = group.head;
-                Particle * prev = NULL;
-                int32 i=0;
-                while (current)
-                {
-                    Particle *next = current->next;
-                    if (i%2) //cut every second particle
-                    {                            
-                        delete current;                 
-                        group.activeParticleCount--;
-                        if (prev)
-                            prev->next = next;
-                        else
-                            group.head = next;
-                    }
-                    prev = current;
-                    current = next;
-                    i++;                        
-                }               
-            }
-        }
-    }
+	desiredLodLevel = level;	
 }
 
 

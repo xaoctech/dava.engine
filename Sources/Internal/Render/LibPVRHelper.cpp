@@ -1578,7 +1578,6 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         {
             return FORMAT_ETC1;
         }
-
 		case ePVRTPF_EAC_R11:
 		{
 			return FORMAT_EAC_R11_UNSIGNED;
@@ -1612,45 +1611,25 @@ const PixelFormat LibPVRHelper::GetFloatTypeFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',16,16,16,16):
-        {
             return FORMAT_RGBA16161616;
-        }
         case PVRTGENPIXELID3('r','g','b',16,16,16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID2('l','a',16,16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('a',16):
-        {
             return FORMAT_A16;
-        }
         case PVRTGENPIXELID4('r','g','b','a',32,32,32,32):
-        {
             return FORMAT_RGBA32323232;
-        }
         case PVRTGENPIXELID3('r','g','b',32,32,32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID2('l','a',32,32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('a',32):
-        {
             return FORMAT_INVALID;
-        }
     }
     
     return FORMAT_INVALID;
@@ -1661,41 +1640,23 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',8,8,8,8):
-        {
             return FORMAT_RGBA8888;
-        }
-        case PVRTGENPIXELID3('r','g','b',8,8,8):
-        {
-            return FORMAT_RGB888;
-        }
-        case PVRTGENPIXELID2('l','a',8,8):
-        {
-            return FORMAT_INVALID;
-        }
-        case PVRTGENPIXELID1('l',8):
-        {
-            return FORMAT_A8;
-        }
-        case PVRTGENPIXELID1('a',8):
-        {
-            return FORMAT_A8;
-        }
-        case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
-        {
-            return FORMAT_INVALID;
-        }
-        case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
-        {
-            return FORMAT_RGBA4444;
-        }
+		case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
+			return FORMAT_INVALID;
+		case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
+			return FORMAT_RGBA4444;
 		case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
-		{
 			return FORMAT_RGBA5551;
-		}
+        case PVRTGENPIXELID3('r','g','b',8,8,8):
+            return FORMAT_RGB888;
 		case PVRTGENPIXELID3('r','g','b',5,6,5):
-		{
 			return FORMAT_RGB565;
-		}
+        case PVRTGENPIXELID2('l','a',8,8):
+            return FORMAT_INVALID;
+        case PVRTGENPIXELID1('l',8):
+            return FORMAT_A8;
+        case PVRTGENPIXELID1('a',8):
+            return FORMAT_A8;
     }
 
     return FORMAT_INVALID;
@@ -1706,17 +1667,11 @@ const PixelFormat LibPVRHelper::GetUnsignedShortFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
-        {
             return FORMAT_RGBA4444;
-        }
         case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
-        {
             return FORMAT_RGBA5551;
-        }
         case PVRTGENPIXELID3('r','g','b',5,6,5):
-        {
             return FORMAT_RGB565;
-        }
     }
     
     return FORMAT_INVALID;
@@ -1741,17 +1696,11 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
         switch (ChannelType)
         {
             case ePVRTVarTypeFloat:
-            {
                 return GetFloatTypeFormat(pixelFormat);
-            }
             case ePVRTVarTypeUnsignedByteNorm:
-            {
                 return GetUnsignedByteFormat(pixelFormat);
-            }
             case ePVRTVarTypeUnsignedShortNorm:
-            {
                 return GetUnsignedShortFormat(pixelFormat);
-            }
             default:
                 break;
         }

@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 		    LocalizationSystem::Instance()->SetCurrentLocale("en");
 		    LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
-		    DAVA::Texture::SetDefaultGPU((eGPUFamily) SettingsManager::GetValue("Internal/TextureViewGPU").AsInt32());
+		    DAVA::Texture::SetDefaultGPU((eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
 
 		    // check and unpack help documents
 		    UnpackHelpDoc();
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 
 void UnpackHelpDoc()
 {
-	DAVA::String editorVer =SettingsManager::GetValue("Internal/EditorVersion").AsString();
+	DAVA::String editorVer =SettingsManager::GetValue(Settings::Internal_EditorVersion).AsString();
 	DAVA::FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
 	if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
 	{
@@ -198,5 +198,5 @@ void UnpackHelpDoc()
 		}
 		DAVA::SafeRelease(helpRA);
 	}
-	SettingsManager::SetValue("Internal/EditorVersion", VariantType(String(RESOURCE_EDITOR_VERSION)));
+	SettingsManager::SetValue(Settings::Internal_EditorVersion, VariantType(String(RESOURCE_EDITOR_VERSION)));
 }

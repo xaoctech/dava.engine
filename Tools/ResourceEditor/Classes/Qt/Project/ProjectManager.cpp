@@ -114,12 +114,12 @@ void ProjectManager::ProjectOpen(const FilePath & incomePath)
             DAVA::FilePath particlesPathname = curProjectPath + "Data/Configs/Particles/";
 			curProjectPathParticles = particlesPathname.GetAbsolutePathname().c_str();
 
-			SettingsManager::SetValue("Internal/LastProjectPath", VariantType(curProjectPath));
+			SettingsManager::SetValue(Settings::Internal_LastProjectPath, VariantType(curProjectPath));
 
 			EditorConfig::Instance()->ParseConfig(curProjectPath + "EditorConfig.yaml");
 
 			SceneValidator::Instance()->SetPathForChecking(curProjectPath);
-            SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily) SettingsManager::GetValue("Internal/TextureViewGPU").AsInt32());
+            SpritePackerHelper::Instance()->UpdateParticleSprites((eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
 
             DAVA::FilePath::AddTopResourcesFolder(curProjectPath);
 
@@ -133,10 +133,7 @@ void ProjectManager::ProjectOpen(const FilePath & incomePath)
 
 void ProjectManager::ProjectOpenLast()
 {
-    VariantType projPathValue = SettingsManager::GetValue("Internal/LastProjectPath");
-    // for old format of serialyzed settings check of inner type needed
-    String projPathStr = projPathValue.GetType() == VariantType::TYPE_STRING ? projPathValue.AsString() : projPathValue.AsFilePath().GetAbsolutePathname();
-	DAVA::FilePath projectPath (projPathStr);
+    DAVA::FilePath projectPath = SettingsManager::GetValue(Settings::Internal_LastProjectPath).AsFilePath();
 	if(!projectPath.IsEmpty())
 	{
 		ProjectOpen(QString(projectPath.GetAbsolutePathname().c_str()));
