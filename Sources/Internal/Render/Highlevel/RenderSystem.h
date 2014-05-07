@@ -106,10 +106,10 @@ public:
     /**
         \brief Set main camera
      */
-    inline void SetCamera(Camera * camera);
-	inline Camera * GetCamera() const;
-    inline void SetClipCamera(Camera * camera);
-	inline Camera * GetClipCamera() const;
+    inline void SetMainCamera(Camera * camera);
+	inline Camera * GetMainCamera() const;
+    inline void SetDrawCamera(Camera * camera);
+	inline Camera * GetDrawCamera() const;
     
     void SetGlobalMaterial(NMaterial *material);
     NMaterial *GetGlobalMaterial() const;
@@ -173,8 +173,8 @@ private:
     RenderHierarchy * renderHierarchy;
 	bool hierarchyInitialized;    
     
-    Camera * camera;
-    Camera * clipCamera;
+    Camera * mainCamera;
+    Camera * drawCamera;
 
     NMaterial *globalMaterial;
 
@@ -192,26 +192,26 @@ inline RenderHierarchy * RenderSystem::GetRenderHierarchy() const
 }
 
     
-inline void RenderSystem::SetCamera(Camera * _camera)
+inline void RenderSystem::SetMainCamera(Camera * _camera)
 {
-    SafeRelease(camera);
-    camera = SafeRetain(_camera);
+    SafeRelease(mainCamera);
+    mainCamera = SafeRetain(_camera);
 }
 
-inline void RenderSystem::SetClipCamera(Camera * _camera)
+inline void RenderSystem::SetDrawCamera(Camera * _camera)
 {
-    SafeRelease(clipCamera);
-    clipCamera = SafeRetain(_camera);
+    SafeRelease(drawCamera);
+    drawCamera = SafeRetain(_camera);
 }
 
-inline Camera * RenderSystem::GetCamera() const
+inline Camera * RenderSystem::GetMainCamera() const
 {
-    return camera;
+    return mainCamera;
 }
 
-inline Camera * RenderSystem::GetClipCamera() const
+inline Camera * RenderSystem::GetDrawCamera() const
 {
-    return clipCamera;
+    return drawCamera;
 }
     
 } // ns
