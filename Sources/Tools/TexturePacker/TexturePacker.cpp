@@ -48,6 +48,36 @@
 namespace DAVA
 {
 
+static Set<PixelFormat> InitPixelFormatsWithCompression()
+{
+    Set<PixelFormat> set;
+    set.insert(FORMAT_PVR4);
+    set.insert(FORMAT_PVR2);
+    set.insert(FORMAT_DXT1);
+    set.insert(FORMAT_DXT1NM);
+    set.insert(FORMAT_DXT1A);
+    set.insert(FORMAT_DXT3);
+    set.insert(FORMAT_DXT5);
+    set.insert(FORMAT_DXT5NM);
+    set.insert(FORMAT_ETC1);
+    set.insert(FORMAT_ATC_RGB);
+    set.insert(FORMAT_ATC_RGBA_EXPLICIT_ALPHA);
+    set.insert(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA);
+	set.insert(FORMAT_PVR2_2);
+	set.insert(FORMAT_PVR4_2);
+	set.insert(FORMAT_EAC_R11_UNSIGNED);
+	set.insert(FORMAT_EAC_R11_SIGNED);
+	set.insert(FORMAT_EAC_RG11_UNSIGNED);
+	set.insert(FORMAT_EAC_RG11_SIGNED);
+	set.insert(FORMAT_ETC2_RGB);
+	set.insert(FORMAT_ETC2_RGBA);
+	set.insert(FORMAT_ETC2_RGB_A1);
+
+    return set;
+}
+
+const Set<PixelFormat> TexturePacker::PIXEL_FORMATS_WITH_COMPRESSION = InitPixelFormatsWithCompression();
+
 TexturePacker::TexturePacker()
 {
 	quality = TextureConverter::ECQ_VERY_HIGH;
@@ -361,10 +391,16 @@ void TexturePacker::PackToMultipleTextures(const FilePath & excludeFolder, const
 					bestPackerForThisStep = packer;
 					newWorkVector = tempSortVector;
 				}
+				else
+				{
+					SafeDelete(packer);
+				}
 			}
 		
 		sortVectorWork = newWorkVector;
-		packers.push_back(bestPackerForThisStep);
+
+		if(bestPackerForThisStep)
+			packers.push_back(bestPackerForThisStep);
 	}
 	
     Logger::FrameworkDebug("* Writing %d final textures", (int)packers.size());
@@ -500,9 +536,7 @@ bool TexturePacker::WriteDefinition(const FilePath & /*excludeFolder*/, const Fi
 
 		if(!CheckFrameSize(Size2i(defFile->spriteWidth, defFile->spriteHeight), writeRect.GetSize()))
         {
-			AddError(Format("In sprite %s.psd frame %d has size bigger than sprite size!",
-								defFile->filename.GetBasename().c_str(),
-								frame));
+            Logger::Warning("In sprite %s.psd frame %d has size bigger than sprite size. Frame will be cropped.", defFile->filename.GetBasename().c_str(), frame);
         }
 	}
 	
@@ -590,6 +624,10 @@ bool TexturePacker::WriteMultipleDefinition(const FilePath & /*excludeFolder*/, 
 			AddError(Format("*** FATAL ERROR: Can't find rect in all of packers for frame - %d. Definition file - %s.",
 								frame,
 								fileName.c_str()));
+
+			fclose(fp);
+			FileSystem::Instance()->DeleteFile(outputPath + fileName);
+			return false;
 		}
 	}
 	
@@ -638,13 +676,12 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
 
-    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
-    bool generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
-    descriptor->settings.SetGenerateMipmaps(generateMipMaps);
+    descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = GetDescriptorWrapMode();
+    descriptor->SetGenerateMipmaps(CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps")));
 	
-	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.GetGenerateMipMaps());
-	descriptor->settings.minFilter = ftItem.minFilter;
-	descriptor->settings.magFilter = ftItem.magFilter;
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->GetGenerateMipMaps());
+	descriptor->drawSettings.minFilter = ftItem.minFilter;
+	descriptor->drawSettings.magFilter = ftItem.magFilter;
 	
     if(forGPU == GPU_UNKNOWN)   // not need compression
         return descriptor;
@@ -660,8 +697,11 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 		// Additional check whether this format type is accepted for this GPU.
 		if (IsFormatSupportedForGPU(format, forGPU))
 		{
-			descriptor->exportedAsPixelFormat = format;
-			descriptor->compression[forGPU].format = format;
+			descriptor->format = format;
+
+			DVASSERT(descriptor->compression);
+			descriptor->compression[forGPU]->format = format;
+
 		}
 		else
 		{
@@ -742,11 +782,19 @@ TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMap
     
 bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
 {
-    if(forGPU == GPU_UNKNOWN)   // not need compression
-        return false;
-    
-    const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
-    return (CommandLineParser::Instance()->IsFlagSet(gpuNameFlag));
+    if(forGPU != GPU_UNKNOWN)
+    {
+        const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
+        if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
+        {
+            String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
+            PixelFormat format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName));
+            bool result = PIXEL_FORMATS_WITH_COMPRESSION.count(format) > 0;
+            return result;
+        }
+    }
+
+    return false;
 }
 
 bool TexturePacker::IsFormatSupportedForGPU(PixelFormat format, eGPUFamily forGPU)

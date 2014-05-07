@@ -1657,6 +1657,8 @@ const float32 * Sprite::GetTextureCoordsForFrame( int32 frame ) const
 
 void Sprite::PrepareForNewSize()
 {
+    if(relativePathname.IsEmpty()) return;
+    
 	String pathname = relativePathname.GetAbsolutePathname();
 
 	int pos = (int)pathname.find(Core::Instance()->GetResourceFolder(Core::Instance()->GetBaseResourceIndex()));
@@ -1829,15 +1831,14 @@ void Sprite::Reload()
 {
 	if(type == SPRITE_FROM_FILE)
 	{
-		ReloadExistingTextures();
-
 		int32 sizeIndex = resourceSizeIndex;
 
 		Clear();
 
 		resourceSizeIndex = sizeIndex;
 
-		File *fp = File::Create(relativePathname, File::READ | File::OPEN);
+        FilePath pathName = FilePath::CreateWithNewExtension(relativePathname, ".txt");
+		File *fp = File::Create(pathName, File::READ | File::OPEN);
 		if(fp)
 		{
 			InitFromFile(fp, relativePathname);
@@ -1858,25 +1859,6 @@ void Sprite::Reload()
 
 			type = SPRITE_FROM_FILE;
 			relativePathname = spriteName;
-		}
-	}
-}
-
-void Sprite::ReloadExistingTextures()
-{
-	//this function need to be sure that textures really would reload
-	for(int32 i = 0; i < textureCount; ++i)
-	{
-		if(textures[i] && !textures[i]->GetPathname().IsEmpty())
-		{
-			if(textures[i]->GetPathname().Exists())
-			{
-				textures[i]->Reload();
-			}
-		}
-		else
-		{
-			Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
 		}
 	}
 }

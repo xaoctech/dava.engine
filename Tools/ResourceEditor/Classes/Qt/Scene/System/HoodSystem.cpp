@@ -110,6 +110,8 @@ void HoodSystem::SetPosition(const DAVA::Vector3 &pos)
 			{
 				curHood->UpdatePos(curPos);
 				normalHood.UpdatePos(curPos);
+
+                collWorld->updateAabbs();
 			}
 		}
 	}
@@ -129,6 +131,8 @@ void HoodSystem::SetModifOffset(const DAVA::Vector3 &offset)
 			{
 				curHood->UpdatePos(curPos + modifOffset);
 				normalHood.UpdatePos(curPos + modifOffset);
+
+                collWorld->updateAabbs();
 			}
 		}
 	}
@@ -154,6 +158,8 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 {
 	if(!IsLocked())
 	{
+        scale = scale * SettingsManager::GetValue(Settings::Scene_GizmoScale).AsFloat();
+
 		if(curScale != scale && 0 != scale)
 		{
 			curScale = scale;
@@ -268,13 +274,24 @@ void HoodSystem::ResetModifValues()
 	scaleHood.modifScale = 0;
 }
 
-void HoodSystem::Update(float timeElapsed)
+void HoodSystem::Process(float timeElapsed)
 {
 	if(!IsLocked() && !lockedScale)
 	{
 		// scale hood depending on current camera position
-		DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
-		SetScale((GetPosition() - camPosition).Length() / 20.f);
+        DAVA::Camera *curCamera = cameraSystem->GetCurCamera();
+        if(NULL != curCamera)
+        {
+            DAVA::float32 camToHoodDist = (GetPosition() - curCamera->GetPosition()).Length();
+            if(curCamera->GetIsOrtho())
+            {
+                SetScale(30.0f);
+            }
+            else
+            {
+                SetScale(camToHoodDist / 20.f);
+            }
+        }
 	}
 }
 
@@ -291,11 +308,12 @@ void HoodSystem::ProcessUIEvent(DAVA::UIEvent *event)
 			if(!lockedModif && NULL != curHood)
 			{
 				// get intersected items in the line from camera to current mouse position
-				DAVA::Vector3 camPosition = cameraSystem->GetCameraPosition();
-				DAVA::Vector3 camToPointDirection = cameraSystem->GetPointDirection(event->point);
-				DAVA::Vector3 traceTo = camPosition + camToPointDirection * 1000.0f;
+				DAVA::Vector3 traceFrom;
+                DAVA::Vector3 traceTo;
 
-				btVector3 btFrom(camPosition.x, camPosition.y, camPosition.z);
+                cameraSystem->GetRayTo2dPoint(event->point, 99999.0f, traceFrom, traceTo);
+
+				btVector3 btFrom(traceFrom.x, traceFrom.y, traceFrom.z);
 				btVector3 btTo(traceTo.x, traceTo.y, traceTo.z);
 
 				btCollisionWorld::AllHitsRayResultCallback btCallback(btFrom, btTo);
@@ -343,8 +361,9 @@ void HoodSystem::Draw()
 			curHood->Draw(showAsSelected, moseOverAxis, textDrawSys);
 
 			// zero pos point
+            RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
 			DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
-			DAVA::RenderHelper::Instance()->DrawPoint(GetPosition(), 1.0f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
+			DAVA::RenderHelper::Instance()->DrawPoint(GetPosition(), 2.0f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			
 			// debug draw axis collision word
 			//collWorld->debugDrawWorld();

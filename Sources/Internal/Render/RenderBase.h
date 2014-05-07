@@ -171,7 +171,7 @@ enum PixelFormat
 	FORMAT_ETC2_RGB_A1,
 
     FORMAT_COUNT,
-    FORMAT_CLOSEST = 256
+    FORMAT_CLOSEST = 255 // fit PixelFormat at 8bits (PixelFormat format:8;)
 };
     
 enum eGPUFamily

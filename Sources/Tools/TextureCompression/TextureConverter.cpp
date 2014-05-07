@@ -49,14 +49,17 @@ namespace DAVA
 {
 	FilePath TextureConverter::ConvertTexture(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, bool updateAfterConversion, eConvertQuality quality)
 	{
+		DVASSERT(descriptor.compression);
+		const TextureDescriptor::Compression * compression = descriptor.compression[gpuFamily];
+
 		FilePath outputPath;
-		const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpuFamily, (DAVA::PixelFormat)descriptor.compression[gpuFamily].format);
+		const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpuFamily, (DAVA::PixelFormat)compression->format);
 		if(outExtension == ".pvr")
 		{
 			Logger::FrameworkDebug("Starting PVR (%s) conversion (%s)...",
-							   GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor.compression[gpuFamily].format), descriptor.pathname.GetAbsolutePathname().c_str());
+							   GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(compression->format), descriptor.pathname.GetAbsolutePathname().c_str());
 			
-            if(descriptor.settings.GetIsNormalMap())
+            if(descriptor.dataSettings.GetIsNormalMap())
             {
                 outputPath = PVRConverter::Instance()->ConvertNormalMapPngToPvr(descriptor, gpuFamily, quality);
             }
@@ -68,7 +71,7 @@ namespace DAVA
 		else if(outExtension == ".dds")
 		{
 			DAVA::Logger::FrameworkDebug("Starting DXT(%s) conversion (%s)...",
-							   GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(descriptor.compression[gpuFamily].format), descriptor.pathname.GetAbsolutePathname().c_str());
+							   GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(compression->format), descriptor.pathname.GetAbsolutePathname().c_str());
 			
 			
 			if(descriptor.IsCubeMap())
