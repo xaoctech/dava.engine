@@ -158,6 +158,8 @@ void HoodSystem::SetScale(DAVA::float32 scale)
 {
 	if(!IsLocked())
 	{
+        scale = scale * SettingsManager::GetValue(Settings::Scene_GizmoScale).AsFloat();
+
 		if(curScale != scale && 0 != scale)
 		{
 			curScale = scale;
@@ -272,7 +274,7 @@ void HoodSystem::ResetModifValues()
 	scaleHood.modifScale = 0;
 }
 
-void HoodSystem::Update(float timeElapsed)
+void HoodSystem::Process(float timeElapsed)
 {
 	if(!IsLocked() && !lockedScale)
 	{
@@ -359,11 +361,12 @@ void HoodSystem::Draw()
 			curHood->Draw(showAsSelected, moseOverAxis, textDrawSys);
 
 			// zero pos point
+            RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
 			DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 1.0f, 1.0f, 1.0f));
-			DAVA::RenderHelper::Instance()->DrawPoint(GetPosition(), 1.0f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
+			DAVA::RenderHelper::Instance()->DrawPoint(GetPosition(), 2.0f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			
 			// debug draw axis collision word
-			collWorld->debugDrawWorld();
+			//collWorld->debugDrawWorld();
 		}
 		else
 		{

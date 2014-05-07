@@ -35,24 +35,47 @@
 namespace DAVA
 {
 
-StaticOcclusionRenderPass::StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * _occlusion, RenderPassID id)
-    : RenderPass(rs, name, id)
+StaticOcclusionRenderPass::StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * _occlusion, RenderPassID id)
+    : RenderPass(name, id)
     , occlusion(_occlusion)
 {
+    
+    AddRenderLayer(new RenderLayer(LAYER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, RENDER_LAYER_OPAQUE_ID), LAST_LAYER);
+    AddRenderLayer(new RenderLayer(LAYER_AFTER_OPAQUE, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, RENDER_LAYER_AFTER_OPAQUE_ID), LAST_LAYER);
+    AddRenderLayer(new RenderLayer(LAYER_ALPHA_TEST_LAYER, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, RENDER_LAYER_ALPHA_TEST_LAYER_ID), LAST_LAYER);
+    AddRenderLayer(new RenderLayer(LAYER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, RENDER_LAYER_TRANSLUCENT_ID), LAST_LAYER);
+    AddRenderLayer(new RenderLayer(LAYER_AFTER_TRANSLUCENT, RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_DISTANCE_FRONT_TO_BACK, RENDER_LAYER_AFTER_TRANSLUCENT_ID), LAST_LAYER);
+    
+    renderPassBatchArray->InitPassLayers(this);
 }
     
 StaticOcclusionRenderPass::~StaticOcclusionRenderPass()
 {
     
 }
+
+
+
+
     
 bool StaticOcclusionRenderPass::CompareFunction(const RenderBatch * a, const RenderBatch *  b)
 {
     return a->layerSortingKey < b->layerSortingKey;
 }
     
-void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray)
+void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
 {
+    Camera *mainCamera = renderSystem->GetMainCamera();        
+    Camera *drawCamera = renderSystem->GetDrawCamera();   
+
+    DVASSERT(drawCamera);
+    DVASSERT(mainCamera);
+    drawCamera->SetupDynamicParameters();            
+    if (mainCamera!=drawCamera)    
+        mainCamera->PrepareDynamicParameters();
+
+    PrepareVisibilityArrays(mainCamera, renderSystem);
+	
     Vector<RenderBatch*> terrainBatches;
     Vector<RenderBatch*> batches;
     
@@ -89,14 +112,14 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * ren
         RenderBatch * batch = terrainBatches[k];
         
         query.BeginQuery();
-        batch->Draw(name, camera);
+        batch->Draw(name, mainCamera);
         query.EndQuery();
         
         occlusion->RecordFrameQuery(batch, handle);
     }
     
     
-    Vector3 cameraPosition = camera->GetPosition();
+    Vector3 cameraPosition = mainCamera->GetPosition();
 
     size = (uint32)batches.size();
     for (uint32 k = 0; k < size; ++k)
@@ -121,7 +144,7 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderPassBatchArray * ren
         RenderBatch * batch = batches[k];
         
         query.BeginQuery();
-        batch->Draw(name, camera);
+        batch->Draw(name, mainCamera);
         query.EndQuery();
         
         occlusion->RecordFrameQuery(batch, handle);

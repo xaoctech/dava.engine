@@ -66,15 +66,18 @@ public slots:
 	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:
-	void OnAddProperty();
+    void OnAddFlag();
+    void OnRemFlag();
+    void OnAddProperty();
 	void OnRemProperty();
 	void OnAddTexture();
 	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
-    void OnSwitchQuality(bool checked);
-    void OnMaterialReload(bool checked);
-    void OnMaterialSetFog(bool checked);
+    void OnMaterialAddGlobal(bool checked);
+    void OnMaterialRemoveGlobal(bool checked);
+    void OnMaterialSave(bool checked);
+    void OnMaterialLoad(bool checked);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -82,19 +85,34 @@ protected:
 	void SetCurMaterial(const QList< DAVA::NMaterial *>& materials);
 	void FillMaterialProperties(const QList<DAVA::NMaterial *>& materials);
     void FillMaterialTemplates(const QList<DAVA::NMaterial *>& materials);
+    void ClearMaterialDynamicMember(DAVA::NMaterial *material, const DAVA::InspMemberDynamic *dynamicInsp);
 
     QVariant CheckForTextureDescriptor(const QVariant& value);
 
 private slots:
     void onFilterChanged();
     void onCurrentExpandModeChange( bool mode );
+    void onContextMenuPrepare(QMenu *menu);
     void autoExpand();
 
 private:
+    enum 
+    {
+        CHECKED_NOTHING = 0x0,
+
+        CHECKED_TEMPLATE = 0x1,
+        CHECKED_GROUP = 0x2,
+        CHECKED_PROPERTIES = 0x4,
+        CHECKED_TEXTURES = 0x8,
+
+        CHECKED_ALL = 0xff
+    };
+
     void initActions();
     void initTemplates();
-
     void setTemplatePlaceholder( const QString& text );
+    QString GetTemplatePath(int index) const;
+    DAVA::uint32 ExecMaterialLoadingDialog(DAVA::uint32 initialState, const QString &inputFile);
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
@@ -104,53 +122,9 @@ private:
 	PropertyEditorStateHelper *treeStateHelper;
     ExpandMap expandMap;
     QPointer< MaterialTemplateModel > templatesFilterModel;
-};
 
-class MaterialEditorFogDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    enum FogType
-    {
-        FOG_DISABLED,
-        FOG_EXPONENTIAL,
-        FOG_LINEAR
-    };
-
-    struct FogParams
-    {
-        FogType type;
-        DAVA::Color color;
-        DAVA::float32 density;
-        DAVA::float32 start;
-        DAVA::float32 end;
-
-        FogParams() : type(FOG_DISABLED), density(0), start(0), end(0) {}
-    };
-
-    MaterialEditorFogDialog();
-
-    void SetFogParams(const FogParams &params);
-    FogParams GetFogParams() const;
-
-public slots:
-    void OnColorPick();
-    void OnModeSwitch(bool state);
-
-protected:
-    QRadioButton *disabled;
-    QRadioButton *exponential;
-    QRadioButton *linear;
-    QPushButton *fogColor;
-    QDoubleSpinBox *fogDensity;
-    QDoubleSpinBox *fogStart;
-    QDoubleSpinBox *fogEnd;
-    QLabel *labelColor;
-    QLabel *labelDensity;
-    QLabel *labelStart;
-    QLabel *labelEnd;
-
+    DAVA::FilePath lastSavePath;
+    DAVA::uint32 lastCheckState;
 };
 
 #endif

@@ -44,11 +44,11 @@ namespace DAVA
 
 bool ImageLoader::CreateFromFileByExtension(const FilePath &pathname, Vector<Image *> & imageSet, int32 baseMipmap /*= 0*/)
 {
-    if(pathname.IsEqualToExtension("*.pvr"))
+    if(pathname.IsEqualToExtension(".pvr"))
     {
         return ImageLoader::CreateFromPVRFile(pathname, imageSet, baseMipmap);
     }
-    else if(pathname.IsEqualToExtension("*.dds"))
+    else if(pathname.IsEqualToExtension(".dds"))
     {
         return ImageLoader::CreateFromDDSFile(pathname, imageSet, baseMipmap);
     }
@@ -245,6 +245,7 @@ bool ImageLoader::CreateFromPVR(DAVA::File *file, Vector<Image *> & imageSet, in
         {
             Logger::Error("[ImageLoader::CreateFromPVR] Cannot read images from PVR file (%s)", file->GetFilename().GetAbsolutePathname().c_str());
 			for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
+            imageSet.clear();
             return false;
         }
 //        loadTime = SystemTimer::Instance()->AbsoluteMS() - loadTime;

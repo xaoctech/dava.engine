@@ -53,15 +53,19 @@ public:
 	virtual void RemoveEntity(Entity * entity);	
 	virtual void RemoveComponent(Entity * entity, Component * component);
 
+    void SetGlobalMaterial(NMaterial *material);
 	void SetGlobalExtertnalValue(const String& name, float32 value);
 	float32 GetGlobalExternalValue(const String& name);
 	Map<String, float32> GetGlobalExternals();
 	
+    inline const Map<uint32, NMaterial *> & GetMaterialInstances() const;
+    
 protected:
 	void RunEffect(ParticleEffectComponent *effect);	
     void AddToActive(ParticleEffectComponent *effect);
 	void RemoveFromActive(ParticleEffectComponent *effect);
 
+    void UpdateActiveLod(ParticleEffectComponent *effect);
 	void UpdateEffect(ParticleEffectComponent *effect, float32 time, float32 shortEffectTime);
 	Particle* GenerateNewParticle(ParticleEffectComponent *effect, ParticleGroup& group, float32 currLoopTime, const Matrix4 &worldTransform);
 	
@@ -84,6 +88,12 @@ private: //materials stuff
     bool forceDisableDepthTest;
 };
 
+inline const Map<uint32, NMaterial *> & ParticleEffectSystem::GetMaterialInstances() const
+{
+    return materialMap;
+}
+
+    
 }
 
 #endif //__DAVAENGINE_SCENE3D_PARTICLEEFFECTSYSTEM_H__
