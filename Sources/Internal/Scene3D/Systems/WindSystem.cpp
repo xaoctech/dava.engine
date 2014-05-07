@@ -27,74 +27,64 @@
 =====================================================================================*/
 
 
-
-#include "Scene3D/Components/SpeedTreeComponents/WindComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/ComponentHelpers.h"
+#include "WindSystem.h"
 #include "Scene3D/Entity.h"
-#include "FileSystem/KeyedArchive.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Scene.h"
+#include "Utils/Random.h"
+#include "Math/Math2D.h"
 
-namespace DAVA 
+namespace DAVA
 {
-	REGISTER_CLASS(WindComponent)
 
-WindComponent::WindComponent() :
-    windForce(1.f)
+WindSystem::WindSystem(Scene * scene)
+:	SceneSystem(scene),
+    globalTime(0.f)
 {
-    
 }
 
-WindComponent::~WindComponent()
+WindSystem::~WindSystem()
 {
-    
-}
- 
-Component * WindComponent::Clone(Entity * toEntity)
-{
-    WindComponent * component = new WindComponent();
-	component->SetEntity(toEntity);
-    
-	component->windForce = windForce;
-    
-    return component;
+
 }
 
-void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+void WindSystem::AddEntity(Entity * entity)
 {
-	Component::Serialize(archive, serializationContext);
+    WindComponent * wind = GetWindComponent(entity);
+    winds.push_back(wind);
+}
 
-	if(archive != 0)
-	{
-        archive->SetFloat("wc.windForce", windForce);
+void WindSystem::RemoveEntity(Entity * entity)
+{
+    Vector<WindComponent *>::iterator it = winds.begin();
+    while(it != winds.end())
+    {
+        if((*it)->entity == entity)
+        {
+            winds.erase(it);
+            break;
+        }
+        ++it;
     }
-}
-    
-void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-	if(archive)
-	{
-        windForce = archive->GetFloat("wc.windForce");
-	}
 
-	Component::Deserialize(archive, serializationContext);
 }
-    
-Vector3 WindComponent::GetWindDirection() const
-{
-    DVASSERT(entity);
-    DVASSERT(GetTransformComponent(entity));
 
-    return MultiplyVectorMat3x3(Vector3(1.f, 0.f, 0.f), GetTransformComponent(entity)->GetWorldTransform());
-}
-    
-void WindComponent::SetWindForce(const float32 & force)
+void WindSystem::Process(float32 timeElapsed)
 {
-    windForce = force;
+
 }
-    
-float32 WindComponent::GetWindForce() const
+
+Vector4 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
 {
-    return windForce;
+    return Vector4(1.f, 0.f, 0.f, 3.f);
 }
-    
+
+void WindSystem::WindTriggered(WindComponent * wind)
+{
+
+}
+
 };

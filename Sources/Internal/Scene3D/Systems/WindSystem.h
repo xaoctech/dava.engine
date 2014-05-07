@@ -27,45 +27,50 @@
 =====================================================================================*/
 
 
-
-#ifndef __DAVAENGINE_SCENE3D_WIND_COMPONENT_H__
-#define __DAVAENGINE_SCENE3D_WIND_COMPONENT_H__
+#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
 
 #include "Base/BaseTypes.h"
-#include "Entity/Component.h"
-#include "Scene3D/Entity.h"
-#include "Scene3D/SceneFile/SerializationContext.h"
+#include "Base/BaseMath.h"
+#include "Entity/SceneSystem.h"
 
-namespace DAVA 
+namespace DAVA
 {
-
-class WindComponent : public Component
+class Entity;
+class WindComponent;
+    
+class WindSystem : public SceneSystem
 {
-protected:
-	virtual ~WindComponent();
 public:
-	WindComponent();
+    enum eWindType
+    {
+        WIND_TYPE_GLOBAL     = 1,
+        WIND_TYPE_EXPLOSION  = 1 << 1,
+        WIND_TYPE_MOVING     = 1 << 2,
 
-	IMPLEMENT_COMPONENT_TYPE(WIND_COMPONENT);
+        WIND_TYPE_MASK_ALL   = 0xFF
+    };
 
-	virtual Component * Clone(Entity * toEntity);
-	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
-	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
-    
-    Vector3 GetWindDirection() const;
-    
-    void SetWindForce(const float32 & force);
-    float32 GetWindForce() const;
-    
-protected:
-    float32 windForce;
-    
-public:
-	INTROSPECTION_EXTEND(WindComponent, Component,
-                         PROPERTY("windForce", "Wind Force", GetWindForce, SetWindForce, I_SAVE | I_VIEW | I_EDIT)
-                         );
+    WindSystem(Scene * scene);
+    virtual ~WindSystem();
+	
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void Process(float32 timeElapsed);
+
+    void WindTriggered(WindComponent * wind);
+
+    Vector4 GetWind(const Vector3 & inPosition, uint32 typeMask = WIND_TYPE_MASK_ALL);
+
+private:
+    Vector4 globalWind;
+
+    Vector<WindComponent *> winds;
+
+    friend class WindComponent;
 };
+    
+} // ns
 
-};
+#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
 
-#endif

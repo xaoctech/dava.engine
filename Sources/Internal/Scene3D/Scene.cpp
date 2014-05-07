@@ -67,6 +67,7 @@
 #include "Scene3D/Systems/SoundUpdateSystem.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
+#include "Scene3D/Systems/WindSystem.h"
 
 #include "Sound/SoundSystem.h"
 
@@ -115,6 +116,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , staticOcclusionSystem(0)
 	, materialSystem(0)
     , foliageSystem(0)
+    , windSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
 {   
@@ -314,7 +316,13 @@ void Scene::CreateSystems()
     if(SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG & systemsMask)
     {
         speedTreeUpdateSystem = new SpeedTreeUpdateSystem(this);
-        AddSystem(speedTreeUpdateSystem, SpeedTreeUpdateSystem::SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK, true);
+        AddSystem(speedTreeUpdateSystem, (1 << Component::SPEEDTREE_COMPONENT), true);
+    }
+
+    if(SCENE_SYSTEM_WIND_UPDATE_FLAG & systemsMask)
+    {
+        windSystem = new WindSystem(this);
+        AddSystem(windSystem, (1 << Component::WIND_COMPONENT), true);
     }
 }
 

@@ -134,7 +134,7 @@ protected:
     float32 currentSpeed;
 	Vector3 prevUpdatePosition;
 
-    MovingOscillatorComponent * component;
+    //MovingOscillatorComponent * component;
 };
     
 }

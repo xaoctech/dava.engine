@@ -40,14 +40,11 @@ namespace DAVA
 class Entity;
 class SpeedTreeObject;
 class SpeedTreeComponent;
-class TreeOscillator;
+class WindComponent;
     
 class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
 public:
-
-    static const uint32 SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK;
-
     struct TreeInfo
     {
         TreeInfo(float32 startTime) :
@@ -57,13 +54,11 @@ public:
 		Matrix4 wtInvMx;
 		Vector3 wtPosition;
 		Entity * treeEntity;
-        float32 elapsedTime;
+        float32 curOscOffset;
     };
     
     SpeedTreeUpdateSystem(Scene * scene);
     virtual ~SpeedTreeUpdateSystem();
-
-	virtual bool IsNeedProcessEntity(Entity * entity);
 	
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
@@ -72,17 +67,8 @@ public:
     
 	virtual void HandleEvent(Observable * observable);
 
-	void TriggerImpulseOscillator(Entity * entity);
-
 private:
-	void AddTreeEntity(Entity * entity);
-	void RemoveTreeEntity(Entity * entity);
-
-	void AddOscillatorEntity(Entity * entity);
-	void RemoveOscillatorEntity(Entity * entity);
-
     Vector<TreeInfo *> allTrees;
-    Vector<TreeOscillator *> activeOscillators;
 
     bool isAnimationEnabled;
 

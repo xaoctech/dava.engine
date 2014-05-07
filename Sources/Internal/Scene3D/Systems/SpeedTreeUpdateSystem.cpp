@@ -32,8 +32,8 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/RenderComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
-#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
-#include "Scene3D/Systems/SpeedTreeSystem/TreeOscillator.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
@@ -42,9 +42,6 @@
 
 namespace DAVA
 {
-    
-const uint32 SpeedTreeUpdateSystem::SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK = (1 << Component::SPEEDTREE_COMPONENT) | (1 << Component::WIND_COMPONENT) 
-        | (1 << Component::IMPULSE_OSCILLATOR_COMPONENT) | (1 << Component::MOVING_OSCILLATOR_COMPONENT);
 
 SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 :	SceneSystem(scene)
@@ -58,14 +55,6 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 
 SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
 {
-    uint32 oscCount = activeOscillators.size();
-    for(uint32 oi = 0; oi < oscCount; ++oi)
-    {
-        SafeDelete(activeOscillators[oi]);
-    }
-    
-    activeOscillators.clear();
-
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->RemoveObserver(this);
 }
@@ -88,133 +77,40 @@ void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
                 }
             }
         }
-
-        if(GetWindComponent(entity))
-        {
-            int32 oscCount = activeOscillators.size();
-            for(int32 i = 0; i < oscCount; ++i)
-            {
-                TreeOscillator * osc = activeOscillators[i];
-                if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_WIND && osc->GetOwner() == entity)
-                {
-                    DynamicTypeCheck<WindTreeOscillator*>(osc)->UpdateWindDirection();
-                }
-            }
-        }
-	}
-}
-
-bool SpeedTreeUpdateSystem::IsNeedProcessEntity(Entity * entity)
-{
-	uint32 componentsMask = entity->GetAvailableComponentFlags();
-	return (componentsMask & SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK) > 0;
-}
-
-void SpeedTreeUpdateSystem::TriggerImpulseOscillator(Entity * entity)
-{
-	uint32 oscCount = activeOscillators.size();
-	for(uint32 i = 0; i < oscCount; ++i)
-	{
-		TreeOscillator * osc = activeOscillators[i];
-		if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_IMPULSE && osc->GetOwner() == entity)
-		{
-			ImpulseTreeOscillator * impulse = static_cast<ImpulseTreeOscillator *>(osc);
-			impulse->Trigger();
-		}
 	}
 }
 
 void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
 {
-	uint32 componentsMask = entity->GetAvailableComponentFlags();
-	if(componentsMask & (1 << Component::SPEEDTREE_COMPONENT))
-	{
-		AddTreeEntity(entity);
-	}
-	else
-	{
-		AddOscillatorEntity(entity);
-	}
+    DVASSERT(GetSpeedTreeComponent(entity));
+
+    SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
+    DVASSERT(treeObject);
+
+    treeObject->SetAnimationFlag(isAnimationEnabled);
+
+    TreeInfo * treeInfo = new TreeInfo((float32)Random::Instance()->RandFloat(1000.f));
+    treeInfo->treeEntity = entity;
+
+    Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
+    treeInfo->wtPosition = wtMx.GetTranslationVector();
+    wtMx.GetInverse(treeInfo->wtInvMx);
+
+    allTrees.push_back(treeInfo);
 }
 
 void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
 {
-	uint32 componentsMask = entity->GetAvailableComponentFlags();
-	if(componentsMask & (1 << Component::SPEEDTREE_COMPONENT))
-	{
-		RemoveTreeEntity(entity);
-	}
-	else
-	{
-		RemoveOscillatorEntity(entity);
-	}
-}
-
-void SpeedTreeUpdateSystem::AddTreeEntity(Entity * entity)
-{
-	DVASSERT(GetSpeedTreeComponent(entity));
-
-	SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
-	DVASSERT(treeObject);
-
-	treeObject->SetAnimationFlag(isAnimationEnabled);
-
-	TreeInfo * treeInfo = new TreeInfo((float32)Random::Instance()->RandFloat(1000.f));
-	treeInfo->treeEntity = entity;
-
-	Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
-	treeInfo->wtPosition = wtMx.GetTranslationVector();
-	wtMx.GetInverse(treeInfo->wtInvMx);
-
-	allTrees.push_back(treeInfo);
-}
-
-void SpeedTreeUpdateSystem::RemoveTreeEntity(Entity * entity)
-{
-	Vector<TreeInfo *>::iterator it = allTrees.begin();
-	Vector<TreeInfo *>::iterator itEnd = allTrees.end();
-	for(; it != itEnd; ++it)
-	{
-		if((*it)->treeEntity == entity)
-		{
-			allTrees.erase(it);
-			break;
-		}
-	}
-}
-
-void SpeedTreeUpdateSystem::AddOscillatorEntity(Entity * entity)
-{
-	uint32 componentsFlags = entity->GetAvailableComponentFlags();
-	if((componentsFlags & (1 << Component::WIND_COMPONENT)) != 0)
-	{
-		activeOscillators.push_back(new WindTreeOscillator(entity));
-	}
-	if((componentsFlags & (1 << Component::IMPULSE_OSCILLATOR_COMPONENT)) != 0)
-	{
-		activeOscillators.push_back(new ImpulseTreeOscillator(entity));
-	}
-	if((componentsFlags & (1 << Component::MOVING_OSCILLATOR_COMPONENT)) != 0)
-	{
-		activeOscillators.push_back(new MovingTreeOscillator(entity));
-	}
-}
-
-void SpeedTreeUpdateSystem::RemoveOscillatorEntity(Entity * entity)
-{
-	Vector<TreeOscillator *>::iterator it = activeOscillators.begin();
-	if(it != activeOscillators.end())
-	{
-		if((*it)->GetOwner() == entity)
-		{
-			SafeDelete((*it));
-			it = activeOscillators.erase(it);
-		}
-		else
-		{
-			++it;
-		}
-	}
+    Vector<TreeInfo *>::iterator it = allTrees.begin();
+    Vector<TreeInfo *>::iterator itEnd = allTrees.end();
+    for(; it != itEnd; ++it)
+    {
+        if((*it)->treeEntity == entity)
+        {
+            allTrees.erase(it);
+            break;
+        }
+    }
 }
 
 void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
@@ -222,17 +118,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
     if(!isAnimationEnabled)
         return;
     
-    //Update oscillators
-	uint32 oscCount = activeOscillators.size();
+    WindSystem * windSystem = GetScene()->windSystem;
 
-    if(oscCount == 0)
-        return;
-
-	for(uint32 i = 0; i < oscCount; ++i)
-	{
-		activeOscillators[i]->Update(timeElapsed);
-	}
-    
     //Update trees
     uint32 treeCount = allTrees.size();
     for(uint32 i = 0; i < treeCount; ++i)
@@ -248,31 +135,11 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
             continue;
         }
         treeObject->SetAnimationFlag(true);
-        
-		Vector3 treePosition = info->wtPosition;
 
-        Vector3 oscillationOffsetAll;
-        float32 leafSpeedAll = 0.f;
-        
-        uint32 oscCount = activeOscillators.size();
-        for(uint32 oi = 0; oi < oscCount; ++oi)
-        {
-            TreeOscillator * osc = activeOscillators[oi];
-			if(!osc->HasInfluence(treePosition))
-				continue;
-            
-            oscillationOffsetAll += osc->GetOscillationTrunkOffset(treePosition);
-            
-            float32 leafSpeed = osc->GetOscillationLeafsSpeed(treePosition);
-            if(osc->GetType() == TreeOscillator::OSCILLATION_TYPE_MOVING)
-            {
-                leafSpeed *= component->GetMovingOscillationLeafsSpeed();
-            }
-            
-            leafSpeedAll += leafSpeed;
-        }
-        
-        info->elapsedTime += timeElapsed * (component->GetLeafOscillationSpeed() * leafSpeedAll);
+        Vector4 wind = windSystem->GetWind(info->wtPosition);
+        Vector3 oscillationOffsetAll = Vector3(wind) * wind.w;
+
+        info->elapsedTime += timeElapsed * (component->GetLeafOscillationSpeed() * wind.w);
         
         float32 sine, cosine;
         SinCosFast(info->elapsedTime, sine, cosine);
