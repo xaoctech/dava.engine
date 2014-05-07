@@ -1072,6 +1072,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
                 materialArchive->DeleteKey("#index");
                 materialArchive->DeleteKey("materialName");
                 materialArchive->DeleteKey("materialType");
+                materialArchive->DeleteKey("parentMaterialKey");
 
                 DAVA::SerializationContext materialContext;
                 materialContext.SetScene(curScene);
