@@ -88,6 +88,7 @@ Component * ParticleEffectComponent::Clone(Entity * toEntity)
 		newComponent->emitters[i] = emitters[i]->Clone();
     newComponent->spawnPositions = spawnPositions;
     newComponent->RebuildEffectModifiables();
+    newComponent->effectRenderObject->SetFlags(effectRenderObject->GetFlags());
 	return newComponent;
 }
 
@@ -312,6 +313,8 @@ void ParticleEffectComponent::Serialize(KeyedArchive *archive, SerializationCont
 		emitterArch->Release();
 	} 
 	archive->SetArchive("pe.emitters", emittersArch);
+    
+    archive->SetUInt32("ro.flags", effectRenderObject->GetFlags() & PARTICLE_FLAGS_SERIALIZATION_CRITERIA);
 	emittersArch->Release();
 }
 	
@@ -342,6 +345,8 @@ void ParticleEffectComponent::Deserialize(KeyedArchive *archive, SerializationCo
                 emitters[i]=new ParticleEmitter();
             spawnPositions[i] = emitterArch->GetVector3("emitter.position");
 		} 	
+        uint32 savedFlags = RenderObject::SERIALIZATION_CRITERIA & archive->GetUInt32("ro.flags", RenderObject::VISIBLE);
+        effectRenderObject->SetFlags(savedFlags | (effectRenderObject->GetFlags() & ~PARTICLE_FLAGS_SERIALIZATION_CRITERIA));        
         RebuildEffectModifiables();
 	}
 }
@@ -495,6 +500,23 @@ float32 ParticleEffectComponent::GetLayerActiveParticlesSquare(ParticleLayer *la
 float32 ParticleEffectComponent::GetCurrTime()
 {
     return time;
+}
+
+bool ParticleEffectComponent::GetReflectionVisible()
+{
+    return effectRenderObject->GetReflectionVisible();
+}
+void ParticleEffectComponent::SetReflectionVisible(bool visible)
+{
+    effectRenderObject->SetReflectionVisible(visible);
+}
+bool ParticleEffectComponent::GetRefractionVisible()
+{
+    return effectRenderObject->GetRefractionVisible();
+}
+void ParticleEffectComponent::SetRefractionVisible(bool visible)
+{
+    effectRenderObject->SetRefractionVisible(visible);
 }
 
 }
