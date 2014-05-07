@@ -393,11 +393,11 @@ void SceneInfo::CollectLODDataInFrame()
 {
     lodInfoInFrame.Clear();
 
-    if(!activeScene||!activeScene->renderSystem||!activeScene->renderSystem->IsRenderHierarchyInitialized()||!activeScene->GetClipCamera())
+    if(!activeScene||!activeScene->renderSystem||!activeScene->renderSystem->IsRenderHierarchyInitialized()||!activeScene->GetCurrentCamera())
         return;
 
     visibilityArray.Clear();
-    activeScene->renderSystem->GetRenderHierarchy()->Clip(activeScene->GetClipCamera(), &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA);
+    activeScene->renderSystem->GetRenderHierarchy()->Clip(activeScene->GetCurrentCamera(), &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA);
 
     uint32 size = (uint32)visibilityArray.visibilityArray.size();
     for (uint32 ro = 0; ro < size; ++ro)
