@@ -1,4 +1,4 @@
-/*==================================================================================
+﻿/*==================================================================================
     Copyright (c) 2008, DAVA, INC
     All rights reserved.
 
@@ -19,7 +19,9 @@
 #include "Tools/QtPropertyEditor/QtPropertyData/QtPropertyDataKeyedArchiveMember.h"
 
 #include <QBoxLayout>
+#include <QPushButton>
 #include <QHeaderView>
+#include <QMessageBox>
 #include <QDialogButtonBox>
 
 SettingsDialog::SettingsDialog(QWidget* parent) 
@@ -31,8 +33,12 @@ SettingsDialog::SettingsDialog(QWidget* parent)
     QVBoxLayout *dlgLayout = new QVBoxLayout();
     editor = new QtPropertyEditor(this);
 
+    QPushButton *defaultsBtn = new QPushButton("Defaults");
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok, Qt::Horizontal, this);
+    buttonBox->addButton(defaultsBtn, QDialogButtonBox::ResetRole);
+
     QObject::connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    QObject::connect(defaultsBtn, SIGNAL(pressed()), this, SLOT(OnResetPressed()));
 
     dlgLayout->setMargin(5);
     dlgLayout->addWidget(editor);
@@ -40,7 +46,6 @@ SettingsDialog::SettingsDialog(QWidget* parent)
     setLayout(dlgLayout);
 
     InitProperties();
-    editor->expandToDepth(0);
 
     posSaver.Attach(this, "SettingsDialog");
 	DAVA::VariantType v = posSaver.LoadValue("splitPos");
@@ -55,6 +60,8 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::InitProperties()
 {
+    editor->RemovePropertyAll();
+
     for(size_t i = 0; i < SettingsManager::GetSettingsCount(); ++i)
     {
         DAVA::FastName name = SettingsManager::GetSettingsName(i);
@@ -100,6 +107,17 @@ void SettingsDialog::InitProperties()
                 parent->ChildAdd(keys.last(), settingProp);
             }
         }
+    }
+
+    editor->expandToDepth(0);
+}
+
+void SettingsDialog::OnResetPressed()
+{
+    if(QMessageBox::Yes == QMessageBox::question(this, "Reseting settings", "Are you sure you want to reset settings to their default values?", (QMessageBox::Yes | QMessageBox::No), QMessageBox::Yes))
+    {
+        SettingsManager::ResetToDefault();
+        InitProperties();
     }
 }
 
