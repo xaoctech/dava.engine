@@ -241,7 +241,7 @@ void SceneCameraSystem::Process(float timeElapsed)
 	DAVA::Scene *scene = GetScene();
 	if(NULL != scene)
 	{
-		DAVA::Camera* camera = scene->GetCurrentCamera();
+		DAVA::Camera* camera = scene->GetDrawCamera();
 
 		// is current camera in scene changed?
 		if(curSceneCamera != camera)

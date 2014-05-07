@@ -145,6 +145,8 @@ protected:
     QWidget* CreateAllowedFlagsEditor(QWidget *parent) const;
 	void SetAllowedValueEditorData(QWidget *editorWidget);
 	void ApplyAllowedValueFromEditor(QWidget *editorWidget);
+
+    QStringList GetFlagsList() const;
 };
 
 class QtPropertyDataDavaVariantSubValue : public QtPropertyDataDavaVariant
