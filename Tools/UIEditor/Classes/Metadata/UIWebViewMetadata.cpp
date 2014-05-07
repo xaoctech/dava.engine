@@ -43,14 +43,14 @@ void UIWebViewMetadata::InitializeControl(const String& controlName, const Vecto
     int paramsCount = this->GetParamsCount();
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
     {
-        UIWebView* webView = dynamic_cast<UIWebView*>(this->treeNodeParams[i].GetUIControl());
+        UIWebView* webView = static_cast<UIWebView*>(this->treeNodeParams[i].GetUIControl());
         webView->SetNativeControlVisible(false);
     }
 }
 
 UIWebView* UIWebViewMetadata::GetActiveWebView() const
 {
-    return dynamic_cast<UIWebView*>(GetActiveUIControl());
+    return static_cast<UIWebView*>(GetActiveUIControl());
 }
 
 int UIWebViewMetadata::GetDataDetectorTypes() const

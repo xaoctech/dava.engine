@@ -39,7 +39,7 @@ UIJoypadMetadata::UIJoypadMetadata(QObject* parent) :
 
 UIJoypad* UIJoypadMetadata::GetActiveJoypad() const
 {
-    return dynamic_cast<UIJoypad*>(GetActiveUIControl());
+    return static_cast<UIJoypad*>(GetActiveUIControl());
 }
 
 void UIJoypadMetadata::SetStickSprite(const QString& value)

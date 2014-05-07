@@ -40,7 +40,7 @@ UIControlMetadata(parent)
 
 UISwitch* UISwitchMetadata::GetActiveUISwitch()
 {
-    return dynamic_cast<UISwitch*>(GetActiveUIControl());
+    return static_cast<UISwitch*>(GetActiveUIControl());
 }
 
 bool UISwitchMetadata::GetIsLeftSelected()

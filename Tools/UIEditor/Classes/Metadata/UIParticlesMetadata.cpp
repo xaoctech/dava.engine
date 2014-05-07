@@ -36,7 +36,7 @@ UIParticlesMetadata::UIParticlesMetadata(QObject* parent) :
 
 UIParticles* UIParticlesMetadata::GetActiveUIParticles() const
 {
-    return dynamic_cast<UIParticles*>(GetActiveUIControl());
+    return static_cast<UIParticles*>(GetActiveUIControl());
 }
 
 void UIParticlesMetadata::Start()
