@@ -1325,7 +1325,7 @@ void SceneTree::SetEntityNameAsFilter()
 void SceneTree::AddCameraActions(QMenu &menu)
 {
     menu.addAction(QIcon(":/QtIcons/eye.png"), "Look from", this, SLOT(SetCurrentCamera()));
-    menu.addAction(QIcon(":/QtIcons/camera.png"), "Set clip camera", this, SLOT(SetClipCamera()));
+    menu.addAction(QIcon(":/QtIcons/camera.png"), "Set custom draw camera", this, SLOT(SetCustomDrawCamera()));
 }
 
 void SceneTree::SetCurrentCamera()
@@ -1341,7 +1341,7 @@ void SceneTree::SetCurrentCamera()
 	}
 }
 
-void SceneTree::SetClipCamera()
+void SceneTree::SetCustomDrawCamera()
 {
     SceneEditor2 *sceneEditor = treeModel->GetScene();
 	if(NULL != sceneEditor)
@@ -1349,7 +1349,7 @@ void SceneTree::SetClipCamera()
 		DAVA::Camera *camera = GetCamera(sceneEditor->selectionSystem->GetSelectionEntity(0));
 		if(NULL != camera)
 		{
-			sceneEditor->SetClipCamera(camera);
+			sceneEditor->SetCustomDrawCamera(camera);
 		}
 	}
 
