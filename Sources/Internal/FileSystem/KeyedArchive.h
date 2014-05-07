@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
+#include "Base/FastName.h"
 #include "FileSystem/VariantType.h"
 #include "FileSystem/File.h"
 
@@ -40,7 +41,6 @@
 #include "Math/Matrix3.h"
 #include "Math/Matrix4.h"
 #include "Math/Math2D.h"
-
 
 namespace DAVA 
 {
@@ -119,6 +119,15 @@ public:
         \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
         \returns value of variable or defaultValue if key isn't available
 	 */
+    
+    FastName GetFastName(const String & key, const FastName & defaultValue = FastName());
+	/**
+        \brief Function to get variable from archive.
+        \param[in] key string key
+        \param[in] defaultValue this is value that is used if variable with this key do not exists in archive
+        \returns value of variable or defaultValue if key isn't available
+	 */
+
 	const uint8 *GetByteArray(const String & key, const uint8 *defaultValue = NULL);
 	/**
         \brief Function to get variable from archive.
@@ -267,6 +276,15 @@ public:
         \param[in] value we want to set for this key
         \param[in] arraySize size fo the array we want tot save
 	 */
+    	
+    void SetFastName(const String & key, const FastName & value);
+	/**
+        \brief Function to set variable in archive.
+        \param[in] key string key
+        \param[in] value we want to set for this key
+        \param[in] arraySize size fo the array we want tot save
+	 */
+
 	void SetByteArray(const String & key, const uint8 * value, int32 arraySize);
 	/**
 		\brief Function to set variable in archive. Variant value is copying inside this method
@@ -294,55 +312,55 @@ public:
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetInt64(const String & key, int64 &value);
+	void SetInt64(const String & key, const int64 &value);
 	/**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetUInt64(const String & key, uint64 &value);
+	void SetUInt64(const String & key, const uint64 &value);
     
 	/**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetVector2(const String & key, Vector2 &value);
+	void SetVector2(const String & key, const Vector2 &value);
     
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetVector3(const String & key, Vector3 &value);
+	void SetVector3(const String & key, const Vector3 &value);
  
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetVector4(const String & key, Vector4 &value);
+	void SetVector4(const String & key, const Vector4 &value);
 
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetMatrix2(const String & key, Matrix2 &value);
+	void SetMatrix2(const String & key, const Matrix2 &value);
     
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetMatrix3(const String & key, Matrix3 &value);
+	void SetMatrix3(const String & key, const Matrix3 &value);
     
     /**
      \brief Function to set variable in archive.
      \param[in] key string key
      \param[in] value we want to set for this key
 	 */
-	void SetMatrix4(const String & key, Matrix4 &value);
+	void SetMatrix4(const String & key, const Matrix4 &value);
     
     /**
         \brief Function to set value from template type to byte array.  

@@ -50,7 +50,7 @@ public:
 	DAVA::NMaterial* GetMaterial(const QModelIndex &index) const;
 
 	void SelectMaterial(DAVA::NMaterial *material);
-	void SelectEntities(DAVA::NMaterial *material);
+	void SelectEntities(const QList<DAVA::NMaterial *>& materials);
 
 	void Update();
 
@@ -60,6 +60,7 @@ public:
 
 signals:
     void Updated();
+    void ContextMenuPrepare(QMenu *);
 
 public slots:
 	void ShowContextMenu(const QPoint &pos);

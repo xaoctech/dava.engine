@@ -36,6 +36,8 @@
 #include <QIcon>
 #include <QEvent>
 #include <QToolButton>
+#include <QList>
+
 #include "QtPropertyModel.h"
 
 // model class
@@ -99,6 +101,8 @@ public:
 	virtual UserData* GetUserData() const;
 	virtual void SetUserData(UserData* userdata);
 
+    virtual QVariant GetToolTip() const;
+
 	virtual const DAVA::MetaInfo* MetaInfo() const;
 
 	// reset background/foreground/font settings
@@ -153,8 +157,17 @@ public:
 	// edit command
 	virtual void* CreateLastCommand() const;
 
+    // Merging
+    bool IsMergedDataEqual() const;
+    QtPropertyData * GetMergedData(int idx) const;
+    int GetMergedCount() const;
+    void Merge(QtPropertyData *data);
+    void MergeChild(QtPropertyData *data, const QString& key = QString());
+    virtual bool IsMergable() const;
+
 protected:
 	mutable QVariant curValue;
+    mutable bool isValuesMerged;
 
 	QString curName;
 	Qt::ItemFlags curFlags;
@@ -168,6 +181,7 @@ protected:
 
 	QList<QString> childrenNames;
 	QList<QtPropertyData*> childrenData;
+    QList<QtPropertyData*> mergedData;
 	
 	QWidget *optionalButtonsViewport;
 	QVector<QtPropertyToolButton*> optionalButtons;
@@ -175,6 +189,7 @@ protected:
     QtPropertyDataValidator* validator;
 
 	void SetModel(QtPropertyModel *model);
+    void BuildCurrentValue();
 
 	virtual void UpdateUp();
 	virtual void UpdateDown();

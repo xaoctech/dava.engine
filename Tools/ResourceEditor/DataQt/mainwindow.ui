@@ -85,7 +85,6 @@
        </property>
        <addaction name="actionFavoritesEdit"/>
        <addaction name="actionAddNewComponent"/>
-       <addaction name="actionRemoveComponent"/>
       </widget>
      </item>
      <item>
@@ -146,6 +145,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
           </property>
           <property name="editTriggers">
            <set>QAbstractItemView::AllEditTriggers</set>
@@ -249,13 +251,14 @@
      <addaction name="actionAddEmptyEntity"/>
      <addaction name="actionLight"/>
      <addaction name="actionCamera"/>
+     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionUserNode"/>
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
-     <addaction name="actionEditor_2D_Camera"/>
      <addaction name="actionEditor_Sprite"/>
     </widget>
     <addaction name="actionParticleEmitter"/>
@@ -326,21 +329,16 @@
     <addaction name="actionModifyRotate"/>
     <addaction name="actionModifyScale"/>
     <addaction name="separator"/>
+    <addaction name="actionLockTransform"/>
+    <addaction name="actionUnlockTransform"/>
+    <addaction name="separator"/>
+    <addaction name="actionZeroPivotPoint"/>
+    <addaction name="actionCenterPivotPoint"/>
+    <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
     <addaction name="actionOnSceneSelection"/>
-   </widget>
-   <widget class="QMenu" name="menuComponent">
-    <property name="title">
-     <string>Component</string>
-    </property>
-    <addaction name="actionAddNewComponent"/>
-    <addaction name="actionRemoveComponent"/>
-    <addaction name="separator"/>
-    <addaction name="actionAddActionComponent"/>
-    <addaction name="actionAddQualitySettingsComponent"/>
-    <addaction name="actionAddStaticOcclusionComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -405,9 +403,6 @@
     <addaction name="menuObjectTypes"/>
     <addaction name="actionHangingObjects"/>
     <addaction name="actionSwitchesWithDifferentLODs"/>
-    <addaction name="separator"/>
-    <addaction name="actionCurrentSceneSettings"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuQuality">
     <property name="title">
@@ -427,7 +422,6 @@
    <addaction name="menuView"/>
    <addaction name="menuQuality"/>
    <addaction name="menuCreateNode"/>
-   <addaction name="menuComponent"/>
    <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
@@ -480,6 +474,9 @@
    <addaction name="separator"/>
    <addaction name="actionPivotCommon"/>
    <addaction name="actionPivotCenter"/>
+   <addaction name="separator"/>
+   <addaction name="actionZeroPivotPoint"/>
+   <addaction name="actionCenterPivotPoint"/>
    <addaction name="separator"/>
    <addaction name="actionModifyPlaceOnLandscape"/>
    <addaction name="actionModifySnapToLandscape"/>
@@ -684,13 +681,14 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="separator"/>
    <addaction name="actionHeightMapEditor"/>
    <addaction name="actionTileMapEditor"/>
    <addaction name="actionShowNotPassableLandscape"/>
    <addaction name="actionRulerTool"/>
    <addaction name="actionCustomColorsEditor"/>
    <addaction name="actionVisibilityCheckTool"/>
+   <addaction name="separator"/>
+   <addaction name="actionGrasEditor"/>
   </widget>
   <widget class="QDockWidget" name="dockLandscapeEditorControls">
    <property name="windowTitle">
@@ -724,7 +722,6 @@
    <addaction name="actionReloadShader"/>
    <addaction name="actionSetShadowColor"/>
    <addaction name="actionConvertModifiedTextures"/>
-   <addaction name="actionCurrentSceneSettings"/>
   </widget>
   <widget class="QDockWidget" name="dockLibrary">
    <property name="windowTitle">
@@ -738,6 +735,12 @@
   <widget class="QToolBar" name="testingToolBar">
    <property name="windowTitle">
     <string>Testing Toolbar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -1219,18 +1222,6 @@
     <string>Remove entity</string>
    </property>
   </action>
-  <action name="actionRemoveComponent">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove component</string>
-   </property>
-  </action>
   <action name="actionConvertToShadow">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1553,6 +1544,16 @@
     <string>Invisible Wall</string>
    </property>
   </action>
+  <action name="actionAddSoundComponent">
+   <property name="text">
+    <string>Add Sound Component</string>
+   </property>
+  </action>
+  <action name="actionRemoveSoundComponent">
+   <property name="text">
+    <string>Remove Sound Component</string>
+   </property>
+  </action>
   <action name="actionHangingObjects">
    <property name="checkable">
     <bool>true</bool>
@@ -1671,15 +1672,6 @@
     <string>Convert Modified texture's PNGs</string>
    </property>
   </action>
-  <action name="actionCurrentSceneSettings">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/settings.png</normaloff>:/QtIcons/settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>Current scene settings...</string>
-   </property>
-  </action>
   <action name="actionAlbedo">
    <property name="checkable">
     <bool>true</bool>
@@ -1739,7 +1731,7 @@
      <normaloff>:/QtIcons/camera.png</normaloff>:/QtIcons/camera.png</iconset>
    </property>
    <property name="text">
-    <string>Editor 2D Camera</string>
+    <string>Camera 2D</string>
    </property>
   </action>
   <action name="actionAddLandscape">
@@ -1810,6 +1802,18 @@
     <string>Show Lightmap Canvas</string>
    </property>
   </action>
+  <action name="actionGrasEditor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>GrasEditor</string>
+   </property>
+  </action>
   <action name="actionImageSplitter">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1817,6 +1821,15 @@
    </property>
    <property name="text">
     <string>ImageSplitter</string>
+   </property>
+  </action>
+  <action name="actionAddVegetation">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/grass.png</normaloff>:/QtIcons/grass.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vegetation</string>
    </property>
   </action>
   <action name="actionReloadShader">
@@ -1838,6 +1851,42 @@
    </property>
    <property name="text">
     <string>Switches with Different LODs</string>
+   </property>
+  </action>
+  <action name="actionCenterPivotPoint">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/pivot_mote_to_center.png</normaloff>:/QtIcons/pivot_mote_to_center.png</iconset>
+   </property>
+   <property name="text">
+    <string>Center Pivot Point</string>
+   </property>
+  </action>
+  <action name="actionZeroPivotPoint">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/pivot_move_to_zero.png</normaloff>:/QtIcons/pivot_move_to_zero.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zero Pivot Point</string>
+   </property>
+  </action>
+  <action name="actionLockTransform">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/lock_add.png</normaloff>:/QtIcons/lock_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Lock Transform</string>
+   </property>
+  </action>
+  <action name="actionUnlockTransform">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/lock_delete.png</normaloff>:/QtIcons/lock_delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Unlock Transform</string>
    </property>
   </action>
  </widget>

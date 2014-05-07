@@ -3,6 +3,7 @@ uniform sampler2D albedo = 0;
 uniform sampler2D decal = 1;
 uniform sampler2D detail = 1;
 uniform sampler2D lightmap = 1;
+uniform sampler2D vegetationmap = 2
 uniform sampler2D normalmap = 2;
 uniform sampler2D cubemap = 3;
 
@@ -20,6 +21,10 @@ uniform float dielectricFresnelReflectance = 0.5;
 //#define REFLECTION
 
 #extension GL_ARB_shader_texture_lod : enable
+
+#if defined(FRAMEBUFFER_FETCH)
+#extension GL_EXT_shader_framebuffer_fetch : require
+#endif
 
 #ifdef GL_ES
 // define default precision for float, vec, mat.
@@ -63,7 +68,7 @@ varying mediump mat3 tbnToWorldMatrix;
 uniform sampler2D decal;
 #endif
 
-#if defined(MATERIAL_DETAIL)
+#if defined(MATERIAL_DETAIL) || defined(MATERIAL_GRASS)
 uniform sampler2D detail;
 #endif
 
@@ -73,7 +78,7 @@ uniform sampler2D lightmap;
 #endif
 
 //#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
 varying highp vec2 varTexCoord1;
 #endif
 
@@ -142,7 +147,6 @@ varying lowp float varTime;
 uniform lowp vec4 flatColor;
 #endif
 
-
 float FresnelShlick(float NdotL, float Cspec)
 {
     float expf = 5.0;
@@ -154,6 +158,11 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
     float expf = 5.0;
 	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, expf));
 }
+
+#if defined(MATERIAL_GRASS)
+uniform sampler2D vegetationmap;
+varying vec2 varTexCoord2;
+#endif
 
 void main()
 {
@@ -459,8 +468,27 @@ void main()
 #endif
     //    gl_FragColor.r += 0.5;
     
+#if defined(MATERIAL_GRASS)
+
+    gl_FragColor.a = gl_FragColor.a * varTexCoord2.x;
+    
+#if defined(FRAMEBUFFER_FETCH)
+    //VI: fog is taken to account here
+    #if defined(VERTEX_FOG)
+        gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
+    #else
+        gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
+    #endif
+#else
+    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+#endif
+
+#endif
     
 #if defined(VERTEX_FOG)
-    gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
+    #if !defined(FRAMEBUFFER_FETCH) 
+        //VI: fog equation is inside of color equatin for framebuffer fetch
+        gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
+    #endif
 #endif
 }

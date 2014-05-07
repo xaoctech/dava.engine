@@ -77,6 +77,9 @@
  name: "Skybox"
  path: Skybox.material
 -
+ name: "Skyobject"
+ path: Skyobject.material
+-
  name: "Landscape"
  path: TileMask.material
 -
@@ -86,11 +89,26 @@
  name: "PixelLit SpecularMap Reflection Opaque"
  path: PixelLit.SpecularMap.Reflection.Opaque.material
 -
+ name: "Water All Qualities"
+ path: WaterAllQualities.material
+-
  name: "WaterPerVertex Cubemap"
  path: WaterPerVertexCubemap.material
 -
+ name: "Water Per Vertex Cubemap Decal"
+ path: WaterPerVertexCubemapDecal.material 
+-
  name: "WaterPerPixel Cubemap"
  path: WaterPerPixelCubemap.material
+-
+ name: "Water Per Pixel Cubemap Fresnael to Alpha"
+ path: WaterPerPixelCubemapAlphablend.material
+-
+ name: "Water Real Reflections"
+ path: WaterPerPixelRealReflections.material
+-
+ name: "Grass"
+ path: Grass.material
 -
  name: "Normalized BlinnPhong Per Vertex Opaque"
  path: NormalizedBlinnPhongPerVertex.Opaque.material
@@ -124,7 +142,5 @@
 -
  name: "Normalized BlinnPhong With Lightmap All Qualities"
  path: NormalizedBlinnPhongWithLightmapAllQualities.Opaque.material
-
-
 
  

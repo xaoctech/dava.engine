@@ -71,6 +71,11 @@ QModelIndex QtPropertyEditor::AppendProperty(const QString &name, QtPropertyData
 	return curModel->AppendProperty(name, data, parent);
 }
 
+void QtPropertyEditor::MergeProperty(QtPropertyData* data, QModelIndex const& parent)
+{
+    curModel->MergeProperty(data, parent);
+}
+
 QModelIndex QtPropertyEditor::InsertProperty(const QString &name, QtPropertyData* data, int row, const QModelIndex &parent)
 {
 	return curModel->InsertProperty(name, data, row, parent);
@@ -227,8 +232,6 @@ void QtPropertyEditor::ApplyStyle(QtPropertyData *data, int style)
 				QFont boldFont = data->GetFont();
 				boldFont.setBold(true);
 				data->SetFont(boldFont);
-
-				data->SetBackground(QBrush(QColor(Qt::lightGray)));
 				data->SetBackground(QBrush(QColor(Qt::lightGray)));
 			}
 			break;
