@@ -99,6 +99,8 @@ public:
     static DAVA::FastName GetSettingsName(size_t index);
     static SettingsNode* GetSettingsNode(const DAVA::FastName &name);
 
+    static void ResetToDefault();
+
 protected:
     DAVA::Vector<DAVA::FastName> settingsOrder;
     DAVA::FastNameMap<SettingsNode> settingsMap;
