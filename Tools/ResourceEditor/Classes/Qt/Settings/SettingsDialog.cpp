@@ -25,6 +25,9 @@
 SettingsDialog::SettingsDialog(QWidget* parent) 
 : QDialog(parent)
 {
+    setWindowFlags(Qt::Tool);
+    setWindowTitle("ResourceEditor Settings");
+    
     QVBoxLayout *dlgLayout = new QVBoxLayout();
     editor = new QtPropertyEditor(this);
 
