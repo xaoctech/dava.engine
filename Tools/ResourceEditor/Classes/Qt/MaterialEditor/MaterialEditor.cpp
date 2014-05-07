@@ -1000,8 +1000,9 @@ void MaterialEditor::OnMaterialSave(bool checked)
             materialContext.SetScene(curScene);
             materialContext.SetScenePath(ProjectManager::Instance()->CurProjectPath());
 
+            lastSavePath = outputFile.toAscii().data();
             material->Save(materialArchive, &materialContext);
-            materialArchive->Save(outputFile.toAscii().data());
+            materialArchive->Save(lastSavePath);
             materialArchive->Release();
         }
     }
@@ -1022,7 +1023,9 @@ void MaterialEditor::OnMaterialLoad(bool checked)
         if(!inputFile.isEmpty() && NULL != curScene)
         {
             DAVA::KeyedArchive *materialArchive = new DAVA::KeyedArchive();
-            materialArchive->Load(inputFile.toAscii().data());
+
+            lastSavePath = inputFile.toAscii().data();
+            materialArchive->Load(lastSavePath);
 
             DAVA::uint32 userChoiseWhatToLoad = ExecMaterialLoadingDialog(lastCheckState, inputFile);
             if(0 != userChoiseWhatToLoad)
