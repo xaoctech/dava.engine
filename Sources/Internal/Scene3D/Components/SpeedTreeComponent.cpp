@@ -28,7 +28,7 @@
 
 
 
-#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"

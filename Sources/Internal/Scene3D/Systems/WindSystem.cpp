@@ -27,69 +27,64 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/Observer.h"
-#include "Entity/SceneSystem.h"
+#include "WindSystem.h"
+#include "Scene3D/Entity.h"
+#include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Scene.h"
+#include "Utils/Random.h"
+#include "Math/Math2D.h"
 
 namespace DAVA
 {
-class Entity;
-class SpeedTreeObject;
-class SpeedTreeComponent;
-class TreeOscillator;
-    
-class SpeedTreeUpdateSystem : public SceneSystem, public Observer
+
+WindSystem::WindSystem(Scene * scene)
+:	SceneSystem(scene),
+    globalTime(0.f)
 {
-public:
+}
 
-    static const uint32 SPEED_TREE_UPDATE_SYSTEM_COMPONENTS_MASK;
+WindSystem::~WindSystem()
+{
 
-    struct TreeInfo
+}
+
+void WindSystem::AddEntity(Entity * entity)
+{
+    WindComponent * wind = GetWindComponent(entity);
+    winds.push_back(wind);
+}
+
+void WindSystem::RemoveEntity(Entity * entity)
+{
+    Vector<WindComponent *>::iterator it = winds.begin();
+    while(it != winds.end())
     {
-        TreeInfo(float32 startTime) :
-		elapsedTime(startTime)
-        {}
+        if((*it)->entity == entity)
+        {
+            winds.erase(it);
+            break;
+        }
+        ++it;
+    }
 
-		Matrix4 wtInvMx;
-		Vector3 wtPosition;
-		Entity * treeEntity;
-        float32 elapsedTime;
-    };
-    
-    SpeedTreeUpdateSystem(Scene * scene);
-    virtual ~SpeedTreeUpdateSystem();
+}
 
-	virtual bool IsNeedProcessEntity(Entity * entity);
-	
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    virtual void ImmediateEvent(Entity * entity, uint32 event);
-    virtual void Process(float32 timeElapsed);
-    
-	virtual void HandleEvent(Observable * observable);
+void WindSystem::Process(float32 timeElapsed)
+{
 
-	void TriggerImpulseOscillator(Entity * entity);
+}
 
-private:
-	void AddTreeEntity(Entity * entity);
-	void RemoveTreeEntity(Entity * entity);
+Vector4 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
+{
+    return Vector4(1.f, 0.f, 0.f, 3.f);
+}
 
-	void AddOscillatorEntity(Entity * entity);
-	void RemoveOscillatorEntity(Entity * entity);
+void WindSystem::WindTriggered(WindComponent * wind)
+{
 
-    Vector<TreeInfo *> allTrees;
-    Vector<TreeOscillator *> activeOscillators;
+}
 
-    bool isAnimationEnabled;
-
-friend class ImpulseOscillatorComponent;
 };
-    
-} // ns
-
-#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
-

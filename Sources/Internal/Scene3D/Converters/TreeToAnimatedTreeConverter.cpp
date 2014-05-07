@@ -27,7 +27,7 @@
 =====================================================================================*/
 
 #include "TreeToAnimatedTreeConverter.h"
-#include "Scene3D/Components/SpeedTreeComponents/SpeedTreeComponent.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 
 #define LEAF_BASE_ANGLE_DIFFERENCE_FACTOR 30
