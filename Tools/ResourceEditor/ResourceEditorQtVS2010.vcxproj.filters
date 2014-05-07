@@ -142,9 +142,6 @@
     <Filter Include="Classes\Qt\Tools\LabeledSlider">
       <UniqueIdentifier>{6ede20eb-ce62-4548-96a9-aa34fa463912}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\Tools\SettingsDialog">
-      <UniqueIdentifier>{2a103ada-c8f2-4c94-9110-478ab33c842e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Classes\Qt\Settings">
       <UniqueIdentifier>{0c11ce84-cd79-4a91-8ae8-eb63aca96f0e}</UniqueIdentifier>
     </Filter>
@@ -210,6 +207,9 @@
     </Filter>
     <Filter Include="Classes\Qt\QualitySwitcher">
       <UniqueIdentifier>{78cae0e6-5732-4a8b-a860-f44cd544a7df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\SoundEditor">
+      <UniqueIdentifier>{35afcf69-5850-44e6-92f0-296db84c77ce}</UniqueIdentifier>
     </Filter>
     <Filter Include="Classes\Qt\ImageSplitterDialog">
       <UniqueIdentifier>{4be62135-b0d0-44b6-bc2f-9a5d42461a85}</UniqueIdentifier>
@@ -1056,9 +1056,6 @@
     <ClCompile Include="Classes\Qt\Main\StatusBar.cpp">
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Settings\SettingsStateDialog.cpp">
-      <Filter>Classes\Qt\Settings</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Commands2\InspMemebrModifyCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -1623,12 +1620,6 @@
     <ClCompile Include="_GeneratedQt\Scene\System\VisibilityToolSystem_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Settings\SettingsManager_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Settings\SettingsStateDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="_GeneratedQt\SpeedTreeImport\SpeedTreeImportDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
@@ -1764,12 +1755,6 @@
     <ClCompile Include="_GeneratedQt\PlaneLODDialog\PlaneLODDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\FogSettingsChangedReceiver.cpp">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\FogSettingsChangedReceiver_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\EditorMaterialSystem.cpp">
       <Filter>Classes\Qt\Scene\System</Filter>
     </ClCompile>
@@ -1800,15 +1785,6 @@
     <ClCompile Include="_GeneratedQt\MaterialEditor\MaterialTree_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.cpp">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\SettingsDialog\GeneralSettingsDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\RecentFilesManager.cpp">
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
@@ -1822,12 +1798,6 @@
       <Filter>Classes\Qt\PlaneLODDialog</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\PlaneLODDialog\PlaneLODDialog_moc.cpp">
-      <Filter>QtGenerated</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Qt\Scene\FogSettingsChangedReceiver.cpp">
-      <Filter>Classes\Qt\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="_GeneratedQt\Scene\FogSettingsChangedReceiver_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\Scene\System\EditorMaterialSystem.cpp">
@@ -1878,6 +1848,18 @@
     <ClCompile Include="_GeneratedQt\QualitySwitcher\QualitySwitcher_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.cpp">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.cpp">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SoundComponentEditor\FMODSoundBrowser_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\SoundComponentEditor\SoundComponentEditor_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands2\DeleteLODCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -1896,8 +1878,26 @@
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Commands2\SoundComponentEditCommands.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.cpp">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\GrassEditorSystem.cpp">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\GrassEditorProxy.cpp">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\GrassEditorPanel.cpp">
+      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\DockLandscapeEditorControls\LandscapeEditorPanels\GrassEditorPanel_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\ImageRegionCopyCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Qt\ImageSplitterDialog\ImageArea.cpp">
       <Filter>Classes\Qt\ImageSplitterDialog</Filter>
@@ -1930,6 +1930,27 @@
       <Filter>Classes\Qt\LicenceDialog</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\LicenceDialog\LicenceDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\FlagSelectorCombo.cpp">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\QtPropertyEditor\QtPropertyWidgets\FlagSelectorCombo_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\BakeTransformCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\EntityLockCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\MaterialGlobalCommand.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\Settings\SettingsDialog.cpp">
+      <Filter>Classes\Qt\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Settings\SettingsDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3005,9 +3026,6 @@
     <ClInclude Include="Classes\Qt\Main\StatusBar.h">
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Settings\SettingsStateDialog.h">
-      <Filter>Classes\Qt\Settings</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Commands2\InspMemberModifyCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
@@ -3302,12 +3320,6 @@
     <ClInclude Include="Classes\Qt\MaterialEditor\MaterialTree.h">
       <Filter>Classes\Qt\MaterialEditor</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\GeneralSettingsDialog.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\SettingsDialog\SceneSettingsDialog.h">
-      <Filter>Classes\Qt\Tools\SettingsDialog</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Qt\Main\RecentFilesManager.h">
       <Filter>Classes\Qt\Main</Filter>
     </ClInclude>
@@ -3319,9 +3331,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\PlaneLODDialog\PlaneLODDialog.h">
       <Filter>Classes\Qt\PlaneLODDialog</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Scene\FogSettingsChangedReceiver.h">
-      <Filter>Classes\Qt\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ParticleEmitterMoveCommands.h">
       <Filter>Classes\Commands2</Filter>
@@ -3368,6 +3377,12 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\PathValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\SoundComponentEditor\FMODSoundBrowser.h">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\SoundComponentEditor\SoundComponentEditor.h">
+      <Filter>Classes\Qt\SoundEditor</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\CacheRequest.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
     </ClInclude>
@@ -3377,11 +3392,26 @@
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\TexturePathValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Commands2\SoundComponentEditCommands.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator\HeightmapValidator.h">
       <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyDataValidator</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\TextureBrowser\TextureConvertMode.h">
       <Filter>Classes\Qt\TextureBrowser</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\GrassEditorSystem.h">
+      <Filter>Classes\Qt\Scene\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Scene\System\LandscapeEditorDrawSystem\GrassEditorProxy.h">
+      <Filter>Classes\Qt\Scene\System\LandscapeEditorDrawSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels\GrassEditorPanel.h">
+      <Filter>Classes\Qt\DockLandscapeEditorControls\LandscapeEditorPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\ImageRegionCopyCommand.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\ImageSplitterDialog\ImageArea.h">
       <Filter>Classes\Qt\ImageSplitterDialog</Filter>
@@ -3400,6 +3430,21 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\LicenceDialog\LicenceDialog.h">
       <Filter>Classes\Qt\LicenceDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets\FlagSelectorCombo.h">
+      <Filter>Classes\Qt\Tools\QtPropertyEditor\QtPropertyWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\BakeTransformCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\EntityLockCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\MaterialGlobalCommand.h">
+      <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Settings\SettingsDialog.h">
+      <Filter>Classes\Qt\Settings</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3442,10 +3487,22 @@
     <None Include="DataQt\materialeditor.ui">
       <Filter>QtData</Filter>
     </None>
+    <None Include="DataQt\soundbrowser.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\soundcomponenteditor.ui">
+      <Filter>QtData</Filter>
+    </None>
     <None Include="DataQt\ImageSplitter.ui">
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\LicenceDialog.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\ActionComponentEditor.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\LODEditor.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

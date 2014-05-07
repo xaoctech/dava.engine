@@ -80,8 +80,9 @@ public:
 		COLLECTION(cameraSpeedArray, "Camera speed array", DAVA::I_VIEW | DAVA::I_EDIT)
 		)
 
+    virtual void Process(DAVA::float32 timeElapsed);
+
 protected:
-	void Update(DAVA::float32 timeElapsed);
 	void Draw();
 
 	void ProcessUIEvent(DAVA::UIEvent *event);

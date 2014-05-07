@@ -54,19 +54,17 @@
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/ControlsFactory.h"
 
-#include "Scene/FogSettingsChangedReceiver.h"
-
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
 	#include "Platform/Qt/Win32/QtLayerWin32.h"
-	#include "Platform/Qt/Win32/CorePlatformWin32.h"
+	#include "Platform/Qt/Win32/CorePlatformWin32Qt.h"
 #endif
 
 #ifdef __DAVAENGINE_BEAST__
 #include "BeastProxyImpl.h"
 #else
-#include "BeastProxy.h"
+#include "Beast/BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
 void UnpackHelpDoc();
@@ -146,12 +144,11 @@ int main(int argc, char *argv[])
         {
             new SceneValidator();
             new TextureCache();
-		    new FogSettingsChangedReceiver();
 
 		    LocalizationSystem::Instance()->SetCurrentLocale("en");
 		    LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
-		    DAVA::Texture::SetDefaultGPU((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
+		    DAVA::Texture::SetDefaultGPU((eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
 
 		    // check and unpack help documents
 		    UnpackHelpDoc();
@@ -172,7 +169,6 @@ int main(int argc, char *argv[])
 
 		    SceneValidator::Instance()->Release();
             TextureCache::Instance()->Release();
-		    FogSettingsChangedReceiver::Instance()->Release();
         }
 	}
 
@@ -188,7 +184,7 @@ int main(int argc, char *argv[])
 
 void UnpackHelpDoc()
 {
-	DAVA::String editorVer =SettingsManager::Instance()->GetValue("editor.version", SettingsManager::INTERNAL).AsString();
+	DAVA::String editorVer =SettingsManager::GetValue(Settings::Internal_EditorVersion).AsString();
 	DAVA::FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
 	if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
 	{
@@ -202,5 +198,5 @@ void UnpackHelpDoc()
 		}
 		DAVA::SafeRelease(helpRA);
 	}
-	SettingsManager::Instance()->SetValue("editor.version", VariantType(String(RESOURCE_EDITOR_VERSION)), SettingsManager::INTERNAL);
+	SettingsManager::SetValue(Settings::Internal_EditorVersion, VariantType(String(RESOURCE_EDITOR_VERSION)));
 }

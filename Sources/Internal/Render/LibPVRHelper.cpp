@@ -1622,26 +1622,15 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case ePVRTPF_PVRTCI_2bpp_RGB:
-        {
             return FORMAT_PVR2;
-        }
         case ePVRTPF_PVRTCI_2bpp_RGBA:
-        {
             return FORMAT_PVR2;
-            break;
-        }
         case ePVRTPF_PVRTCI_4bpp_RGB:
-        {
             return FORMAT_PVR4;
-        }
         case ePVRTPF_PVRTCI_4bpp_RGBA:
-        {
             return FORMAT_PVR4;
-        }
         case ePVRTPF_ETC1:
-        {
             return FORMAT_ETC1;
-        }
             
         default:
             break;
@@ -1655,45 +1644,25 @@ const PixelFormat LibPVRHelper::GetFloatTypeFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',16,16,16,16):
-        {
             return FORMAT_RGBA16161616;
-        }
         case PVRTGENPIXELID3('r','g','b',16,16,16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID2('l','a',16,16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('a',16):
-        {
             return FORMAT_A16;
-        }
         case PVRTGENPIXELID4('r','g','b','a',32,32,32,32):
-        {
             return FORMAT_RGBA32323232;
-        }
         case PVRTGENPIXELID3('r','g','b',32,32,32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID2('l','a',32,32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('a',32):
-        {
             return FORMAT_INVALID;
-        }
     }
     
     return FORMAT_INVALID;
@@ -1704,29 +1673,23 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',8,8,8,8):
-        {
             return FORMAT_RGBA8888;
-        }
+		case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
+			return FORMAT_INVALID;
+		case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
+			return FORMAT_RGBA4444;
+		case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
+			return FORMAT_RGBA5551;
         case PVRTGENPIXELID3('r','g','b',8,8,8):
-        {
             return FORMAT_RGB888;
-        }
+		case PVRTGENPIXELID3('r','g','b',5,6,5):
+			return FORMAT_RGB565;
         case PVRTGENPIXELID2('l','a',8,8):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',8):
-        {
             return FORMAT_A8;
-        }
         case PVRTGENPIXELID1('a',8):
-        {
             return FORMAT_A8;
-        }
-        case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
-        {
-            return FORMAT_INVALID;
-        }
     }
 
     return FORMAT_INVALID;
@@ -1737,17 +1700,11 @@ const PixelFormat LibPVRHelper::GetUnsignedShortFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
-        {
             return FORMAT_RGBA4444;
-        }
         case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
-        {
             return FORMAT_RGBA5551;
-        }
         case PVRTGENPIXELID3('r','g','b',5,6,5):
-        {
             return FORMAT_RGB565;
-        }
     }
     
     return FORMAT_INVALID;
@@ -1773,17 +1730,11 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
         switch (ChannelType)
         {
             case ePVRTVarTypeFloat:
-            {
                 return GetFloatTypeFormat(pixelFormat);
-            }
             case ePVRTVarTypeUnsignedByteNorm:
-            {
                 return GetUnsignedByteFormat(pixelFormat);
-            }
             case ePVRTVarTypeUnsignedShortNorm:
-            {
                 return GetUnsignedShortFormat(pixelFormat);
-            }
             default:
                 break;
         }
@@ -2302,9 +2253,9 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 	}
 
     uint32 originalFileSize = fileRead->GetSize();
-    //create single buffer for incresed data amount
+    //create single buffer for increased data amount
     uint32 newFileSize = originalFileSize + METADATA_CRC_SIZE;
-    char *fileBuffer = new char[newFileSize];
+    uint8 *fileBuffer = new uint8[newFileSize];
 	if(!fileBuffer)
 	{
 		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot allocate buffer for file data");
@@ -2322,17 +2273,16 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
     }
     SafeRelease(fileRead);
     //calculate for only existed part of buffer(fileSize)
-    uint32 newCRC = CRC32::ForBuffer(fileBuffer, originalFileSize);
+    uint32 newCRC = CRC32::ForBuffer((const char *)fileBuffer, originalFileSize);
     uint32 textureDataSize = originalFileSize - sizeof(header) - header.u32MetaDataSize;
-    char* currentTextureDataPointer = fileBuffer + sizeof(header) + header.u32MetaDataSize;
+    uint8* currentTextureDataPointer = fileBuffer + sizeof(header) + header.u32MetaDataSize;
     //shift texture data to get space for new crc metadata
     memmove((currentTextureDataPointer + METADATA_CRC_SIZE), currentTextureDataPointer, textureDataSize);
     
-    uint32 metadata[4] = {METADATA_CRC_TAG, 0, 0, newCRC};
-    metadata[2] = sizeof(metadata);
-    memcpy(fileBuffer + sizeof(header) + header.u32MetaDataSize, &metadata, metadata[2]);
+    uint32 metadata[4] = {PVRTEX3_METADATAIDENT, METADATA_CRC_TAG, 4, newCRC};
+    memcpy(fileBuffer + sizeof(header) + header.u32MetaDataSize, metadata, METADATA_CRC_SIZE);
     
-    uint32* metaDataSizePointer = (uint32*)(fileBuffer + sizeof(header) - sizeof(header.u32MetaDataSize))	;
+    uint32* metaDataSizePointer = (uint32*)(fileBuffer + sizeof(header) - sizeof(header.u32MetaDataSize));
     *metaDataSizePointer = header.u32MetaDataSize + METADATA_CRC_SIZE;
     
     FilePath filePathnameTmp(filePathname.GetAbsolutePathname() + "_");

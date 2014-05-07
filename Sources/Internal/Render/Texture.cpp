@@ -249,6 +249,11 @@ void Texture::ReleaseTextureData()
     container->stencilRboID = stencilRboID;
 #endif
 	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container));
+    
+    id = 0;
+	fboID = -1;
+	rboID = -1;
+    isRenderTarget = false;
 }
 
 void Texture::ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData)
@@ -681,8 +686,8 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
 
 	RenderManager::Instance()->HWglBindTexture(id, textureType);
 
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeS]));
-	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[texDescriptor->settings.wrapModeT]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_S, TEXTURE_WRAP_MAP[texDescriptor->drawSettings.wrapModeS]));
+	RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_WRAP_T, TEXTURE_WRAP_MAP[texDescriptor->drawSettings.wrapModeT]));
 
     if (pixelizationFlag)
     {
@@ -691,8 +696,8 @@ void Texture::FlushDataToRendererInternal(BaseObject * caller, void * param, voi
     }
     else
     {
-        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.minFilter]));
-        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->settings.magFilter]));
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MIN_FILTER, TEXTURE_FILTER_MAP[texDescriptor->drawSettings.minFilter]));
+        RENDER_VERIFY(glTexParameteri(SELECT_GL_TEXTURE_TYPE(textureType), GL_TEXTURE_MAG_FILTER, TEXTURE_FILTER_MAP[texDescriptor->drawSettings.magFilter]));
     }
 
 	RenderManager::Instance()->HWglBindTexture(saveId, textureType);
@@ -742,7 +747,7 @@ bool Texture::IsCompressedFormat(PixelFormat format)
 Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &group, TextureType typeHint)
 {
 	Texture * texture = PureCreate(pathName, group);
-	if(!texture)
+ 	if(!texture)
 	{
 		texture = CreatePink(typeHint);
         texture->texDescriptor->pathname = pathName;
@@ -757,6 +762,9 @@ Texture * Texture::PureCreate(const FilePath & pathName, const FastName &group)
 {
 	if(pathName.IsEmpty() || pathName.GetType() == FilePath::PATH_IN_MEMORY)
 		return NULL;
+
+    if(!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+        return NULL;
 
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pathName);
     Texture * texture = Texture::Get(descriptorPathname);
@@ -787,21 +795,25 @@ void Texture::Reload()
     
 void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
+    DVASSERT(isRenderTarget == false);
+    
     FilePath savedPath = texDescriptor->pathname;
     
     ReleaseTextureData();
 
-    if(savedPath.Exists())
-    {
-        texDescriptor->Initialize(savedPath);
-    }
+	texDescriptor->Reload();
     
 	DVASSERT(NULL != texDescriptor);
     
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
-	bool loaded = LoadImages(gpuForLoading, images);
+    bool loaded = false;
+    if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+    {
+	    loaded = LoadImages(gpuForLoading, images);
+    }
+
 	if(loaded)
 	{
 		loadedAsFile = gpuForLoading;
@@ -828,7 +840,8 @@ bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily) const
     
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
     
-    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily].format == FORMAT_INVALID)
+	DVASSERT(texDescriptor->compression);
+    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily]->format == FORMAT_INVALID)
     {
         return false;
     }
@@ -1018,41 +1031,21 @@ void Texture::SetDebugInfo(const String & _debugInfo)
 void Texture::Lost()
 {
 	RenderResource::Lost();
-
-	/*
-	if(RenderManager::Instance()->GetTexture() == this)
-	{//to avoid drawing deleted textures
-		RenderManager::Instance()->SetTexture(0);
-	}
-	
-	ReleaseImages();
-
-	if(fboID != (uint32)-1)
-	{
-		RENDER_VERIFY(glDeleteFramebuffers(1, &fboID));
-		fboID = -1;
-	}
-	
-	if(id)
-	{
-		RENDER_VERIFY(glDeleteTextures(1, &id));
-		id = 0;
-	}
-	*/
+    
+    ReleaseTextureData();
 }
 
 void Texture::Invalidate()
 {
 	RenderResource::Invalidate();
 	
-	/*
-
 	DVASSERT(id == 0 && "Texture always invalidated");
 	if (id)
 	{
 		return;
 	}
 	
+    const FilePath& relativePathname = texDescriptor->GetSourceTexturePathname();
 	if (relativePathname.GetType() == FilePath::PATH_IN_FILESYSTEM ||
 		relativePathname.GetType() == FilePath::PATH_IN_RESOURCES ||
 		relativePathname.GetType() == FilePath::PATH_IN_DOCUMENTS)
@@ -1068,7 +1061,6 @@ void Texture::Invalidate()
 	{
 		MakePink((TextureType)textureType);
 	}
-	*/
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 
@@ -1181,7 +1173,7 @@ void Texture::MakePink(TextureType requestedType, bool checkers)
 			images->push_back(img);
 		}
 		
-		texDescriptor->faceDescription = 0x000000FF;
+		texDescriptor->dataSettings.faceDescription = 0x000000FF;
 	}
 	else
 	{
@@ -1434,8 +1426,8 @@ void Texture::SetPixelization(bool value)
     for (Map<FilePath, Texture *>::const_iterator iter = texturesMap.begin(); iter != texturesMap.end(); iter ++)
     {
         Texture* texture = iter->second;
-        TextureFilter minFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.minFilter;
-        TextureFilter magFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->settings.magFilter;
+        TextureFilter minFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->drawSettings.minFilter;
+        TextureFilter magFilter = pixelizationFlag ? FILTER_NEAREST : (TextureFilter)texture->GetDescriptor()->drawSettings.magFilter;
         texture->SetMinMagFilter(minFilter, magFilter);
     }
     textureMapMutex.Unlock();
