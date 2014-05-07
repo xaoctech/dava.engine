@@ -89,7 +89,7 @@ void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
 
     treeObject->SetAnimationFlag(isAnimationEnabled);
 
-    TreeInfo * treeInfo = new TreeInfo((float32)Random::Instance()->RandFloat(1000.f));
+    TreeInfo * treeInfo = new TreeInfo();
     treeInfo->treeEntity = entity;
 
     Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
@@ -137,16 +137,17 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         treeObject->SetAnimationFlag(true);
 
         Vector4 wind = windSystem->GetWind(info->wtPosition);
-        Vector3 oscillationOffsetAll = Vector3(wind) * wind.w;
 
-        info->elapsedTime += timeElapsed * (component->GetLeafOscillationSpeed() * wind.w);
+        info->oscVelocity += (Vector3(wind) * wind.w - info->oscOffset * 2.f) * timeElapsed;
+        info->oscOffset += info->oscVelocity * timeElapsed;
         
-        float32 sine, cosine;
-        SinCosFast(info->elapsedTime, sine, cosine);
+        float32 sine = 0, cosine = 1;
+        //SinCosFast(info->elapsedTime, sine, cosine);
+        SinCosFast(0.f, sine, cosine);
         float32 leafsOscillationAmplitude = component->GetLeafsOscillationApmlitude();
         Vector2 leafOscillationParams(leafsOscillationAmplitude * sine, leafsOscillationAmplitude * cosine);
         
-		Vector3 localOffset = MultiplyVectorMat3x3(oscillationOffsetAll * component->GetTrunkOscillationAmplitude(), info->wtInvMx);
+		Vector3 localOffset = MultiplyVectorMat3x3(info->oscOffset * component->GetTrunkOscillationAmplitude(), info->wtInvMx);
         treeObject->SetTreeAnimationParams(localOffset, leafOscillationParams);
     }
 }
