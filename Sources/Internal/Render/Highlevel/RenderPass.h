@@ -131,16 +131,21 @@ public:
 
 class MainForwardRenderPass : public RenderPass
 {	
+
 public:
     MainForwardRenderPass(const FastName & name, RenderPassID id);
 	~MainForwardRenderPass();
 	virtual void Draw(RenderSystem * renderSystem);
 
 private:
-    WaterReflectionRenderPass *reflectionPass;
+	WaterReflectionRenderPass *reflectionPass;
     WaterRefractionRenderPass *refractionPass;
-    Texture *reflectionTexture, *refractionTexture;
-    Sprite *reflectionSprite, *refractionSprite;
+    Texture *reflectionTexture, *refractionTexture;    
+    
+    bool needWaterPrepass;
+    AABBox3 waterBox;
+
+    void PrepareReflectionRefractionTextures(RenderSystem * renderSystem);
 };
 
 } // ns
