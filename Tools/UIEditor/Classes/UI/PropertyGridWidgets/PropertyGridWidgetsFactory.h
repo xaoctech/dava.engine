@@ -58,6 +58,8 @@
 #include "joypadpropertygridwidget.h"
 #include "webviewpropertygridwidget.h"
 
+#include "Custom/guidepropertygridwidget.h"
+
 namespace DAVA {
     
 // Property Grid Widgets Factory - a class which stores pointers to all existing
@@ -98,7 +100,8 @@ private:
 	ScrollViewPropertyGridWidget* scrollViewWidget;
     ParticleEffectPropertyGridWidget* particleWidget;
     JoypadPropertyGridWidget* joypadWidget;
-    WebViewPropertyGridWidget* webViewWidget;
+    WebViewPropertyGridWidget* webViewWidget;    
+    GuidePropertyGridWidget* guideWidget;
 
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;

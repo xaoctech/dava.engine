@@ -51,6 +51,8 @@
 #include "UIJoypadMetadata.h"
 #include "UI3DViewMetadata.h"
 
+#include "Custom/GuideMetadata.h"
+
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeScreenNode.h"
 #include "HierarchyTreeControlNode.h"
@@ -255,4 +257,20 @@ BaseMetadata* MetadataFactory::GetMetadataForTreeNodesList(const HierarchyTreeCo
         uiControl->Release();
         return resultMetadata;
     }
+}
+
+BaseMetadata* MetadataFactory::GetCustomMetadata(HierarchyTreeScreenNode* screenNode)
+{
+    if (!screenNode)
+    {
+        return NULL;
+    }
+
+    const GuideData* activeGuide = screenNode->GetActiveGuide();
+    if (!activeGuide)
+    {
+        return NULL;
+    }
+
+    return new GuideMetadata(screenNode);
 }

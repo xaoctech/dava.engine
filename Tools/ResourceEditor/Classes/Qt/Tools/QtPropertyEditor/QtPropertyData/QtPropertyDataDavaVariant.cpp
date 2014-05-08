@@ -265,6 +265,10 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
     {
         ret = GetValueAlias();
     }
+    if (!ret.isValid())
+    {
+        ret = GetValue();
+    }
 
     return ret;
 }
