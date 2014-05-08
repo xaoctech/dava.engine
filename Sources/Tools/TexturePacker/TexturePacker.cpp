@@ -38,6 +38,8 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "FramePathHelper.h"
 #include "Utils/StringFormat.h"
+#include "Render/PixelFormatDescriptor.h"
+
 
 #ifdef WIN32
 #define snprintf _snprintf
@@ -61,6 +63,16 @@ static Set<PixelFormat> InitPixelFormatsWithCompression()
     set.insert(FORMAT_ATC_RGB);
     set.insert(FORMAT_ATC_RGBA_EXPLICIT_ALPHA);
     set.insert(FORMAT_ATC_RGBA_INTERPOLATED_ALPHA);
+	set.insert(FORMAT_PVR2_2);
+	set.insert(FORMAT_PVR4_2);
+	set.insert(FORMAT_EAC_R11_UNSIGNED);
+	set.insert(FORMAT_EAC_R11_SIGNED);
+	set.insert(FORMAT_EAC_RG11_UNSIGNED);
+	set.insert(FORMAT_EAC_RG11_SIGNED);
+	set.insert(FORMAT_ETC2_RGB);
+	set.insert(FORMAT_ETC2_RGBA);
+	set.insert(FORMAT_ETC2_RGB_A1);
+
     return set;
 }
 
@@ -68,6 +80,17 @@ const Set<PixelFormat> TexturePacker::PIXEL_FORMATS_WITH_COMPRESSION = InitPixel
 
 TexturePacker::TexturePacker()
 {
+	quality = TextureConverter::ECQ_VERY_HIGH;
+	if (CommandLineParser::Instance()->IsFlagSet("--quality"))
+	{
+		String qualityName = CommandLineParser::Instance()->GetParamForFlag("--quality");
+		int32 q = atoi(qualityName.c_str());
+		if((q >= TextureConverter::ECQ_FASTEST) && (q <= TextureConverter::ECQ_VERY_HIGH))
+		{
+			quality = (TextureConverter::eConvertQuality)q;
+		}
+	}
+    
 	maxTextureSize = DEFAULT_TEXTURE_SIZE;
 	onlySquareTextures = false;
 	errors.clear();
@@ -640,7 +663,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
     eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
     if(gpuFamily != GPU_UNKNOWN)
     {
-		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false, quality);
         
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
@@ -669,7 +692,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
     if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
     {
 		String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
-		PixelFormat format = Texture::GetPixelFormatByName(formatName);
+		PixelFormat format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName.c_str()));
 
 		// Additional check whether this format type is accepted for this GPU.
 		if (IsFormatSupportedForGPU(format, forGPU))
@@ -765,7 +788,7 @@ bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
         if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))
         {
             String formatName = CommandLineParser::Instance()->GetParamForFlag(gpuNameFlag);
-            PixelFormat format = Texture::GetPixelFormatByName(formatName);
+            PixelFormat format = PixelFormatDescriptor::GetPixelFormatByName(FastName(formatName));
             bool result = PIXEL_FORMATS_WITH_COMPRESSION.count(format) > 0;
             return result;
         }
@@ -827,6 +850,12 @@ const Set<String>& TexturePacker::GetErrors() const
 {
 	return errors;
 }
+    
+void TexturePacker::SetConvertQuality(TextureConverter::eConvertQuality _quality)
+{
+    quality = _quality;
+}
+
 
 void TexturePacker::AddError(const String& errorMsg)
 {
