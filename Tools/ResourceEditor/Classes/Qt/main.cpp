@@ -110,6 +110,8 @@ int main(int argc, char *argv[])
 
 	if(cmdLine.IsEnabled())
 	{
+		Core::Instance()->EnableConsoleMode();
+
         DAVA::Logger::Instance()->SetLogLevel(DAVA::Logger::LEVEL_WARNING);
         
 		new SceneValidator();
