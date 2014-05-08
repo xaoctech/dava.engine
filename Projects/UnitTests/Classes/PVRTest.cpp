@@ -121,8 +121,8 @@ void PVRTest::TestFunction(PerfFuncData * data)
         Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(pvrSprite);
         
         FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-        ImageSystem::Instance()->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest), firstComparer, firstComparer->format);
-        ImageSystem::Instance()->Save(documentsPath + Format("PVRTest/dst_number_%d.png", currentTest), secondComparer, secondComparer->format);
+        ImageSystem::Instance()->Save(documentsPath + Format("PVRTest/src_number_%d.png", currentTest), firstComparer);
+        ImageSystem::Instance()->Save(documentsPath + Format("PVRTest/dst_number_%d.png", currentTest), secondComparer);
     }
     
     ++currentTest;

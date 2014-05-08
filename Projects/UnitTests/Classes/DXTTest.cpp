@@ -120,8 +120,8 @@ void DXTTest::TestFunction(PerfFuncData * data)
         
         FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
         
-        ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/src_number_%d.png", currentTest), firstComparer, firstComparer->format);
-        ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/dst_number_%d.png", currentTest), secondComparer, secondComparer->format);
+        ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/src_number_%d.png", currentTest), firstComparer);
+        ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/dst_number_%d.png", currentTest), secondComparer);
     }
 
     ++currentTest;

@@ -95,6 +95,7 @@ namespace DAVA
             isPvrFile = (PVRTEX3_IDENT == pvrFile->header.u32Version);
             delete pvrFile;
         }
+        file->Seek(0,  File::SEEK_FROM_START);
         return isPvrFile;
     }
     

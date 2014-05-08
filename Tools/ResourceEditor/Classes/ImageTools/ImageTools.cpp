@@ -168,7 +168,7 @@ bool ImageTools::MergeImages(const FilePath &folder, Set<String> &errorLog)
     
     Image *mergedImage = CreateMergedImage(channels);
     
-    ImageSystem::Instance()->Save(folder + "merged.png", mergedImage, mergedImage->format);
+    ImageSystem::Instance()->Save(folder + "merged.png", mergedImage);
     channels.ReleaseImages();
     SafeRelease(mergedImage);
     return true;
@@ -176,7 +176,7 @@ bool ImageTools::MergeImages(const FilePath &folder, Set<String> &errorLog)
 
 void ImageTools::SaveImage(Image *image, const FilePath &pathname)
 {
-    ImageSystem::Instance()->Save(pathname, image, image->format);
+    ImageSystem::Instance()->Save(pathname, image);
 }
 
 Image * ImageTools::LoadImage(const FilePath &pathname)

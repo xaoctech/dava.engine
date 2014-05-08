@@ -54,26 +54,26 @@ public:
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
     
     static eErrorCode ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap = 0, bool forceSoftwareConvertation = false);
-
+       
 	static bool DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA::Image*> &imageSet, bool forceSoftwareConvertation = false);
+    
+    static uint32 GetMipMapLevelsCount(const FilePath & fileName);
+	static uint32 GetMipMapLevelsCount(File * file);
+    
+	static bool AddCRCIntoMetaData(const FilePath &filePathname);
+	static uint32 GetCRCFromFile(const FilePath &filePathname);
+    
+    static uint32 GetDataSize(const FilePath & fileName);
+	static uint32 GetDataSize(File * file);
+	
+private:
 
 	static PixelFormat GetPixelFormat(const FilePath & fileName);
 	static PixelFormat GetPixelFormat(File * file);
 	
 	static bool GetTextureSize(const FilePath & fileName, uint32 & width, uint32 & height);
 	static bool GetTextureSize(File * file, uint32 & width, uint32 & height);
-
-	static uint32 GetMipMapLevelsCount(const FilePath & fileName);
-	static uint32 GetMipMapLevelsCount(File * file);
-
-	static uint32 GetDataSize(const FilePath & fileName);
-	static uint32 GetDataSize(File * file);
-
-	static bool AddCRCIntoMetaData(const FilePath &filePathname);
-	static uint32 GetCRCFromFile(const FilePath &filePathname);
-	
-private:
-
+    
 	static bool GetCRCFromDDSHeader(const FilePath &filePathname, uint32* tag, uint32* outputCRC);
 	
 	//input data only in RGBA8888

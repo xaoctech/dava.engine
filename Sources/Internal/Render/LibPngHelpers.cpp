@@ -99,10 +99,11 @@ static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
 
 bool LibPngWrapper::IsImage(File *file)
 {
-    char sig[8];
+    unsigned char sig[8];
     file->Read(sig, 8);
-	
-    return (0 != png_check_sig((unsigned char *) sig, 8));
+	bool retValue = 0 != png_check_sig(sig, 8);
+    file->Seek(0,  File::SEEK_FROM_START);
+    return retValue;
 }
 
 eErrorCode LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap )
@@ -422,7 +423,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
         free(row_pointers);
         fclose(fp);
         SafeRelease(convertedImage);
-		return ERROR_READ_FAIL;
+		return ERROR_WRITE_FAIL;
 	}
 	
 	png_init_io(png_ptr, fp);

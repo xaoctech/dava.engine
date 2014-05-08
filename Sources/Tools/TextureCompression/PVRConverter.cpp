@@ -189,7 +189,7 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
     for(int32 i = 0; i < imgCount; ++i)
     {
         FilePath imgPath = dirPath + Format("mip%d.png", i);
-        ImageSystem::Instance()->Save(imgPath, images[i], images[i]->format);
+        ImageSystem::Instance()->Save(imgPath, images[i]);
 
         TextureDescriptor desc;
         desc.Initialize(&descriptor);

@@ -760,7 +760,10 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
 bool LibDdsHelper::IsImage(File * file)
 {
 	nvtt::Decompressor dec;
-	return NvttHelper::InitDecompressor(dec,file);
+    
+	bool retValue = NvttHelper::InitDecompressor(dec,file);
+    file->Seek(0,  File::SEEK_FROM_START);
+    return retValue;
 }
 
 PixelFormat LibDdsHelper::GetPixelFormat(const FilePath & fileName)

@@ -597,7 +597,7 @@ void LandscapeEditorDrawSystem::SaveTileMaskTexture()
 
 		if(image)
 		{
-            ImageSystem::Instance()->Save(texturePathname, image, image->format);
+            ImageSystem::Instance()->Save(texturePathname, image);
 			SafeRelease(image);
 		}
 
