@@ -43,6 +43,7 @@ const FastName VegetationPropertyNames::UNIFORM_BILLBOARD_DIRECTION("billboardDi
 const FastName VegetationPropertyNames::FLAG_FRAMEBUFFER_FETCH("FRAMEBUFFER_FETCH");
 const FastName VegetationPropertyNames::FLAG_BILLBOARD_DRAW("MATERIAL_GRASS_BILLBOARD");
 const FastName VegetationPropertyNames::FLAG_GRASS_TRANSFORM("MATERIAL_GRASS_TRANSFORM");
+const FastName VegetationPropertyNames::FLAG_GRASS_BLEND("MATERIAL_GRASS_BLEND");
     
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH("HIGH");
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_LOW("LOW");

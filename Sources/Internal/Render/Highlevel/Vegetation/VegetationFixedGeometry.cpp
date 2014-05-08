@@ -184,7 +184,7 @@ static const Vector3 CLUSTER_TYPE_1_NORMALS[] =
 };
 
 
-static const uint16 CLUSTER_INDICES[] =
+static const VegetationIndex CLUSTER_INDICES[] =
 {
     0, 3,  1, 1, 3,  2
 };
@@ -195,7 +195,7 @@ static const Vector3* VEGETATION_CLUSTER[] =
     CLUSTER_TYPE_1
 };
 
-static const uint16* VEGETATION_CLUSTER_INDICES[] =
+static const VegetationIndex* VEGETATION_CLUSTER_INDICES[] =
 {
     CLUSTER_INDICES,
     CLUSTER_INDICES
@@ -219,7 +219,7 @@ static const uint32 VEGETATION_CLUSTER_INDEX_SIZE[] =
     COUNT_OF(CLUSTER_INDICES)
 };
 
-int32 RandomShuffleFunc(int32 limit)
+int32 VegetationFixedGeometry::RandomShuffleFunc(int32 limit)
 {
     return (Random::Instance()->Rand() % limit);
 }
@@ -301,7 +301,7 @@ void VegetationFixedGeometry::Build(Vector<VegetationRenderData*>& renderDataArr
     
     size_t resolutionCount = resolutionScale.size();
     uint32 sortDirectionCount = GetSortDirectionCount();
-    Vector<uint16>& indexData = renderData.GetIndices();
+    Vector<VegetationIndex>& indexData = renderData.GetIndices();
     Vector<VegetationVertex>& vertexData = renderData.GetVertices();
     
     uint32 tilesPerRow = (uint32)resolutionScale[resolutionCount - 1];
@@ -468,7 +468,7 @@ void VegetationFixedGeometry::GenerateIndices(uint32 maxClusters,
                     VegetationRenderData& renderData)
 {
     Vector<PolygonSortData> sortingArray(1);
-    Vector<uint16> preparedIndices;
+    Vector<VegetationIndex> preparedIndices;
     size_t polygonElementCount = COUNT_OF(sortingArray[0].indices);
     
     //generate indices
@@ -523,7 +523,7 @@ void VegetationFixedGeometry::PrepareIndexBufferData(uint32 indexBufferIndex,
                         size_t resolutionIndex,
                         uint32 resolutionOffset,
                         Vector<uint32>& layerOffsets,
-                        Vector<uint16>& preparedIndices,
+                        Vector<VegetationIndex>& preparedIndices,
                         AABBox3& indexBufferBBox,
                         VegetationRenderData& renderData)
 {
@@ -540,7 +540,7 @@ void VegetationFixedGeometry::PrepareIndexBufferData(uint32 indexBufferIndex,
     {
         TextureSheetCell& cellData = textureSheet.cells[layerIndex];
         
-        const uint16* clusterIndices = VEGETATION_CLUSTER_INDICES[cellData.geometryId];
+        const VegetationIndex* clusterIndices = VEGETATION_CLUSTER_INDICES[cellData.geometryId];
         uint32 clusterIndexCount = VEGETATION_CLUSTER_INDEX_SIZE[cellData.geometryId];
         uint32 clusterVertexCount = VEGETATION_CLUSTER_SIZE[cellData.geometryId];
         
@@ -575,7 +575,7 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
                                     Vector<Vector3>& directionPoints,
                                     Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
                                     Vector<PolygonSortData>& sortingArray,
-                                    Vector<uint16>& preparedIndices,
+                                    Vector<VegetationIndex>& preparedIndices,
                                     VegetationRenderData& renderData)
 {
     size_t sortItemCount = preparedIndices.size() / polygonElementCount;
@@ -589,7 +589,7 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
         sortData.indices[2] = preparedIndices[sortItemIndex * polygonElementCount + 2];
     }
     
-    Vector<uint16>& indexData = renderData.GetIndices();
+    Vector<VegetationIndex>& indexData = renderData.GetIndices();
     Vector<VegetationVertex>& vertexData = renderData.GetVertices();
     
     currentResolutionIndexArray.push_back(Vector<SortedBufferItem>());
@@ -641,6 +641,8 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
         sortedBufferItem.SetRenderDataObject(indexBuffer);
         sortedBufferItem.sortDirection = indexBufferBBox.GetCenter() - cameraPosition;
         sortedBufferItem.sortDirection.Normalize();
+        
+        SafeRelease(indexBuffer);
         
         currentDirectionBuffers.push_back(sortedBufferItem);
     }

@@ -98,7 +98,7 @@ private:
                                 size_t resolutionIndex,
                                 uint32 resolutionOffset,
                                 Vector<uint32>& layerOffsets,
-                                Vector<uint16>& preparedIndices,
+                                Vector<VegetationIndex>& preparedIndices,
                                 AABBox3& indexBufferBBox,
                                 VegetationRenderData& renderData);
     
@@ -109,12 +109,13 @@ private:
                                             Vector<Vector3>& directionPoints,
                                             Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
                                             Vector<PolygonSortData>& sortingArray,
-                                            Vector<uint16>& preparedIndices,
+                                            Vector<VegetationIndex>& preparedIndices,
                                             VegetationRenderData& renderData);
     
     void GenerateRenderDataObjects(VegetationRenderData& renderData);
     
     static bool PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b);
+    static int32 RandomShuffleFunc(int32 limit);
     
 private:
     

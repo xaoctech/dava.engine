@@ -39,6 +39,7 @@
 
 #include "Render/Highlevel/Vegetation/VegetationPropertyNames.h"
 #include "Render/Highlevel/Vegetation/VegetationFixedGeometry.h"
+#include "Render/Highlevel/Vegetation/VegetationCustomGeometry.h"
 
 namespace DAVA
 {
@@ -85,6 +86,13 @@ static uint32 RESOLUTION_TILES_PER_ROW[] =
     4,
     2,
     1
+};
+
+static uint32 RESOLUTION_CLUSTER_STRIDE[] =
+{
+    1,
+    2,
+    4
 };
 
 //#define VEGETATION_DRAW_LOD_COLOR
@@ -188,6 +196,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetLightmap(GetLightmapPath());
     vegetationRenderObject->SetVegetationTexture(GetVegetationTexture());
     vegetationRenderObject->SetWorldSize(GetWorldSize());
+    vegetationRenderObject->SetCustomGeometryPath(GetCustomGeometryPath());
     
     vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
@@ -927,30 +936,18 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     
     SafeDelete(vegetationGeometry);
     
-    vegetationGeometry = new VegetationFixedGeometry(maxClusters,
-                                                     MAX_DENSITY_LEVELS,
-                                                     MAX_CLUSTER_TYPES,
-                                                     GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
-                                                     textureSheetPath,
-                                                     RESOLUTION_CELL_SQUARE,
-                                                     COUNT_OF(RESOLUTION_CELL_SQUARE),
-                                                     RESOLUTION_SCALE,
-                                                     COUNT_OF(RESOLUTION_SCALE),
-                                                     resolutionRanges,
-                                                     RESOLUTION_TILES_PER_ROW,
-                                                     COUNT_OF(RESOLUTION_TILES_PER_ROW),
-                                                     worldSize);
-    
     FastNameSet materialFlags;
-    materialFlags.Insert(VegetationPropertyNames::FLAG_BILLBOARD_DRAW);
-    materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
     
-#ifdef VEGETATION_DRAW_LOD_COLOR
+    if(!customGeometryPath.IsEmpty() &&
+       customGeometryPath.Exists())
+    {
+        InitWithCustomGeometry(maxClusters, materialFlags);
+    }
+    else
+    {
+        InitWithFixedGeometry(maxClusters, materialFlags);
+    }
     
-    materialFlags.Insert(VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR);
-    
-#endif
-
     vegetationGeometry->Build(renderData, materialFlags);
     
     KeyedArchive* props = new KeyedArchive();
@@ -975,10 +972,61 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     }
 }
     
+void VegetationRenderObject::InitWithFixedGeometry(uint32 maxClusters, FastNameSet& materialFlags)
+{
+    vegetationGeometry = new VegetationFixedGeometry(maxClusters,
+                                                     MAX_DENSITY_LEVELS,
+                                                     MAX_CLUSTER_TYPES,
+                                                     GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
+                                                     textureSheetPath,
+                                                     RESOLUTION_CELL_SQUARE,
+                                                     COUNT_OF(RESOLUTION_CELL_SQUARE),
+                                                     RESOLUTION_SCALE,
+                                                     COUNT_OF(RESOLUTION_SCALE),
+                                                     resolutionRanges,
+                                                     RESOLUTION_TILES_PER_ROW,
+                                                     COUNT_OF(RESOLUTION_TILES_PER_ROW),
+                                                     worldSize);
+    
+    materialFlags.Insert(VegetationPropertyNames::FLAG_BILLBOARD_DRAW);
+    materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
+    materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_BLEND);
+    
+#ifdef VEGETATION_DRAW_LOD_COLOR
+    
+    materialFlags.Insert(VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR);
+    
+#endif
+}
+
+void VegetationRenderObject::InitWithCustomGeometry(uint32 maxClusters, FastNameSet& materialFlags)
+{
+    Vector<uint32> maxClustersArray;
+    for(uint32 i = 0; i < MAX_CLUSTER_TYPES; ++i)
+    {
+        maxClustersArray.push_back(maxClusters);
+    }
+    
+    vegetationGeometry = new VegetationCustomGeometry(maxClustersArray,
+                                                      MAX_DENSITY_LEVELS,
+                                                      GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
+                                                      customGeometryPath,
+                                                      RESOLUTION_CELL_SQUARE,
+                                                      COUNT_OF(RESOLUTION_CELL_SQUARE),
+                                                      RESOLUTION_SCALE,
+                                                      COUNT_OF(RESOLUTION_SCALE),
+                                                      RESOLUTION_TILES_PER_ROW,
+                                                      COUNT_OF(RESOLUTION_TILES_PER_ROW),
+                                                      RESOLUTION_CLUSTER_STRIDE,
+                                                      COUNT_OF(RESOLUTION_CLUSTER_STRIDE),
+                                                      worldSize);
+    
+    materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
+}
 
 bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
 {
-    return vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
+    return externalRenderFlag && vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
 }
 
 void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
@@ -1152,6 +1200,21 @@ void VegetationRenderObject::ClearRenderBatches()
     }
     
     renderBatchPool.ReturnAll();
+}
+
+const FilePath& VegetationRenderObject::GetCustomGeometryPath() const
+{
+    return customGeometryPath;
+}
+    
+void VegetationRenderObject::SetCustomGeometryPath(const FilePath& path)
+{
+    customGeometryPath = path;
+    
+    if(IsValidGeometryData())
+    {
+        CreateRenderData(clusterLimit);
+    }
 }
 
 };

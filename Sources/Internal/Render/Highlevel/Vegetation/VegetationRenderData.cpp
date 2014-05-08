@@ -63,7 +63,10 @@ void VegetationRenderData::ReleaseRenderData()
             size_t directionBufferCount = directionArray.size();
             for(size_t directionIndex = 0; directionIndex < directionBufferCount; ++directionIndex)
             {
+                if(directionArray[directionIndex].rdo->HasVertexAttachment())
+                {
                     directionArray[directionIndex].rdo->DetachVertices();
+                }
             }
                 
             directionArray.clear();

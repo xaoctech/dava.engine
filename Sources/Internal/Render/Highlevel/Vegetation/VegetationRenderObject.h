@@ -47,6 +47,7 @@
 
 #include "Render/Highlevel/Vegetation/RenderBatchPool.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderData.h"
+#include "Render/Highlevel/Vegetation/VegetationSpatialData.h"
 
 namespace DAVA
 {
@@ -122,30 +123,11 @@ public:
     
     void DebugDrawVisibleNodes();
     
+    const FilePath& GetCustomGeometryPath() const;
+    void SetCustomGeometryPath(const FilePath& path);
+    
 private:
-
-    struct SpatialData
-    {
-        int16 x;
-        int16 y;
-        int16 width;
-        int16 height;
-        int8 rdoIndex;
-        bool isVisible;
-        
-        AABBox3 bbox;
-        float32 cameraDistance;
-        uint8 clippingPlane;
-        
-        inline SpatialData();
-        inline SpatialData& operator=(const SpatialData& src);
-        inline static bool IsEmpty(uint32 cellValue);
-        inline bool IsRenderable() const;
-        inline int16 GetResolutionId() const;
-        inline bool IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const;
-        inline bool IsElementaryCell() const;
-    };
-        
+    
     bool IsValidGeometryData() const;
     bool IsValidSpatialData() const;
     
@@ -206,6 +188,9 @@ private:
     
     void ClearRenderBatches();
     
+    void InitWithFixedGeometry(uint32 maxClusters, FastNameSet& materialFlags);
+    void InitWithCustomGeometry(uint32 maxClusters, FastNameSet& materialFlags);
+    
 private:
     
     Heightmap* heightmap;
@@ -232,6 +217,8 @@ private:
     FilePath textureSheetPath;
     FilePath albedoTexturePath;
     FilePath lightmapTexturePath;
+    
+    FilePath customGeometryPath;
     
     Vector2 visibleClippingDistances;
     Vector3 lodRanges;
@@ -262,62 +249,11 @@ public:
                          PROPERTY("lodRanges", "Lod ranges", GetLodRange, SetLodRange, I_EDIT | I_VIEW)
                          PROPERTY("visibilityDistance", "Visibility distances", GetVisibilityDistance, SetVisibilityDistance, I_EDIT | I_VIEW)
                          PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
+                         PROPERTY("customGeometry", "Custom geometry", GetCustomGeometryPath, SetCustomGeometryPath, I_SAVE | I_EDIT | I_VIEW)
                          );
     
 };
     
-    
-    
-inline VegetationRenderObject::SpatialData::SpatialData()  :
-        x(-1),
-        y(-1),
-        cameraDistance(0.0f),
-        clippingPlane(0),
-        rdoIndex(-1),
-        isVisible(true)
-{
-}
-    
-inline VegetationRenderObject::SpatialData& VegetationRenderObject::SpatialData::operator=(const VegetationRenderObject::SpatialData& src)
-{
-    x = src.x;
-    y = src.y;
-    bbox = src.bbox;
-    cameraDistance = src.cameraDistance;
-    clippingPlane = src.clippingPlane;
-    width = src.width;
-    height = src.height;
-    rdoIndex = src.rdoIndex;
-    
-    return *this;
-}
-
-inline bool VegetationRenderObject::SpatialData::IsEmpty(uint32 cellValue)
-{
-    return (0 == (cellValue & 0x0F0F0F0F));
-}
-
-inline bool VegetationRenderObject::SpatialData::IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const
-{
-    uint32 refResolution = ((x * y) % maxResolutions);
-    return (refResolution >= resolutionId);
-}
-
-inline bool VegetationRenderObject::SpatialData::IsRenderable() const
-{
-    return (width > 0 && height > 0);
-}
-
-inline int16 VegetationRenderObject::SpatialData::GetResolutionId() const
-{
-    return (width * height);
-}
-
-bool VegetationRenderObject::SpatialData::IsElementaryCell() const
-{
-    return (1 == width);
-}
-
 inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                                    float32 refDistance,
                                                    uint32 cellValue,

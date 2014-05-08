@@ -99,6 +99,7 @@ public:
     
     void AttachVertices(RenderDataObject* vertexSource);
     void DetachVertices();
+    bool HasVertexAttachment() const;
 
     
 private:
