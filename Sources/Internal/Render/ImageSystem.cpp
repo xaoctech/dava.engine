@@ -43,6 +43,15 @@
 namespace DAVA 
 {
 
+const ImageSystem::ExtensionFormatPair ImageSystem::extensionFormatMap[] =
+{
+    { ".png", ImageSystem::FILE_FORMAT_PNG },
+    { ".pvr", ImageSystem::FILE_FORMAT_PVR },
+    { ".dds", ImageSystem::FILE_FORMAT_DDS },
+    { ".jpeg", ImageSystem::FILE_FORMAT_JPEG },
+    { ".jpg", ImageSystem::FILE_FORMAT_JPEG },
+};
+    
 ImageSystem::ImageSystem()
 {
     wrappers[FILE_FORMAT_PNG] = new LibPngWrapper();
@@ -82,7 +91,7 @@ eErrorCode ImageSystem::Load(File *file, Vector<Image *> & imageSet, int32 baseM
     {
         return ERROR_FILE_FORMAT_INCORRECT;
     }
-    file->Seek(0,  File::SEEK_FROM_START);
+
     return propperWrapper->ReadFile(file, imageSet, baseMipmap);
 }
 
@@ -110,21 +119,13 @@ eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelForma
     
 ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const FilePath & pathname)
 {
-    if(pathname.IsEqualToExtension(".pvr"))
+    const char* extension = pathname.GetExtension().c_str();
+    for(int32 i = 0; i < COUNT_OF(extensionFormatMap); ++i)
     {
-        return wrappers[FILE_FORMAT_PVR];
-    }
-    else if(pathname.IsEqualToExtension(".dds"))
-    {
-        return wrappers[FILE_FORMAT_DDS];
-    }
-    else if(pathname.IsEqualToExtension(".png"))
-    {
-        return wrappers[FILE_FORMAT_PNG];
-    }
-    else if(pathname.IsEqualToExtension(".jpeg")||pathname.IsEqualToExtension(".jpg"))
-    {
-        return wrappers[FILE_FORMAT_JPEG];
+        if(strcmp(extensionFormatMap[i].extension, extension) == 0)
+        {
+            return wrappers[extensionFormatMap[i].format];
+        }
     }
     DVASSERT(0);
     
@@ -133,21 +134,12 @@ ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const F
 
 ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByContent(File *file)
 {
-    if( wrappers[FILE_FORMAT_PVR]->IsImage(file))
+    for(int32 i = 0; i < FILE_FORMAT_COUNT; ++i)
     {
-        return  wrappers[FILE_FORMAT_PVR];
-    }
-    else if(wrappers[FILE_FORMAT_DDS]->IsImage(file))
-    {
-        return wrappers[FILE_FORMAT_DDS];
-    }
-    else if(wrappers[FILE_FORMAT_PNG]->IsImage(file))
-    {
-        return wrappers[FILE_FORMAT_PNG];
-    }
-    else if(wrappers[FILE_FORMAT_JPEG]->IsImage(file))
-    {
-        return wrappers[FILE_FORMAT_JPEG];
+        if( wrappers[i]->IsImage(file))
+        {
+            return  wrappers[i];
+        }
     }
     DVASSERT(0);
     

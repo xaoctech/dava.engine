@@ -1854,7 +1854,7 @@ void QtMainWindow::OnSaveTiledTexture()
 		Image *image = landscapeTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
 		if(image)
 		{
-            ImageSystem::Instance()->Save(pathToSave, image, image->format);
+            ImageSystem::Instance()->Save(pathToSave, image);
 			SafeRelease(image);
 		}
 

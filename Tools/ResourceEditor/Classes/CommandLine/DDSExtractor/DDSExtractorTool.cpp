@@ -142,7 +142,7 @@ void DDSExtractorTool::SaveImageAsPNG(const DAVA::FilePath& pathToDDS, DAVA::Ima
 		saveFilePath.ReplaceBasename(pathToDDS.GetBasename() + DAVA::Format("_%u", imageToSave->GetHeight()));
 	}
 	
-    DAVA::ImageSystem::Instance()->Save(saveFilePath, imageToSave, imageToSave->format);
+    DAVA::ImageSystem::Instance()->Save(saveFilePath, imageToSave);
 	printf("\n");
 	printf(DAVA::Format("Converted: %s", saveFilePath.GetAbsolutePathname().c_str()).c_str());
 }

@@ -376,7 +376,7 @@ void CustomColorsSystem::SaveTexture(const DAVA::FilePath &filePath)
 	Texture* customColorsTexture = customColorsSprite->GetTexture();
 
 	Image* image = customColorsTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    ImageSystem::Instance()->Save(filePath, image, image->format);
+    ImageSystem::Instance()->Save(filePath, image);
 	SafeRelease(image);
 
 	StoreSaveFileName(filePath);

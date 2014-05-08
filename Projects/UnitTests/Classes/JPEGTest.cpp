@@ -105,8 +105,8 @@ void JPEGTest::TestFunction(PerfFuncData * data)
     Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(jpegSprite);
     
     FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/src_number_%d.png", currentTest), firstComparer, firstComparer->format);
-    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/dst_number_%d.png", currentTest), secondComparer, secondComparer->format);
+    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/src_number_%d.png", currentTest), firstComparer);
+    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/dst_number_%d.png", currentTest), secondComparer);
     ++currentTest;
 }
 
@@ -119,7 +119,7 @@ void JPEGTest::ReloadSprites()
     
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/JPEGTest/PNG/number_%d.png", currentTest)));
     Image* img = pngSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    ImageSystem::Instance()->Save(path,img, img->format);
+    ImageSystem::Instance()->Save(path,img);
     SafeRelease(img);
     
     Vector<Image *> imageSet;

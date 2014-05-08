@@ -57,12 +57,12 @@ public:
         FILE_FORMAT_JPEG,
         FILE_FORMAT_COUNT
     };
-    
+
     ImageSystem();
     
     virtual ~ImageSystem();
     
-    ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat)
+    ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat) const
     {
         return wrappers[fileFormat];
     }
@@ -71,9 +71,9 @@ public:
     
     eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
     
-    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
+    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_RGBA8888, bool isCubeMap = false);
     
-    eErrorCode Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat, bool isCubeMap = false);
+    eErrorCode Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat = FORMAT_RGBA8888, bool isCubeMap = false);
     
 protected:
     
@@ -82,6 +82,14 @@ protected:
     ImageFormatInterface* DetectImageFormatInterfaceByContent(File *file);
        
     ImageFormatInterface* wrappers[FILE_FORMAT_COUNT];
+    
+    struct ExtensionFormatPair
+    {
+        const char* extension;
+        eSupportedImageFileFormats format;
+    };
+    
+    static const ExtensionFormatPair extensionFormatMap[];
 };
    
 };

@@ -93,12 +93,14 @@ bool LibJpegWrapper::IsImage(File *infile)
     {
         jpeg_destroy_decompress(&cinfo);
         SafeDeleteArray(fileBuffer);
+        infile->Seek(0,  File::SEEK_FROM_START);
         Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", infile->GetFilename().GetAbsolutePathname().c_str());
         return false;
     }
     jpeg_create_decompress( &cinfo );
     jpeg_mem_src( &cinfo, fileBuffer,fileSize);
     jpeg_read_header( &cinfo, TRUE );
+    infile->Seek(0,  File::SEEK_FROM_START);
     jpeg_destroy_decompress( &cinfo );
     SafeDeleteArray(fileBuffer);
     return true;
@@ -125,7 +127,7 @@ eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int
     {
         jpeg_destroy_decompress(&cinfo);
         SafeDeleteArray(fileBuffer);
-        SafeDeleteArray(image->data);
+        SafeRelease(image);
         Logger::Error("[LibJpegWrapper::ReadFile] File %s has wrong jpeg header", infile->GetFilename() .GetAbsolutePathname().c_str());
         return ERROR_FILE_FORMAT_INCORRECT;
     }
