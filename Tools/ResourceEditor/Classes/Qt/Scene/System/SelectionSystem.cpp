@@ -165,7 +165,7 @@ void SceneSelectionSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				DAVA::Entity *nextEntity = selectableItems.GetEntity(0);
 
                 // sequent selection?
-                if(SettingsManager::GetValue("Scene/SelectionSequent").AsBool())
+                if(SettingsManager::GetValue(Settings::Scene_SelectionSequent).AsBool())
                 {
 				    // search possible next item only if now there is no selection or is only single selection
 				    if(curSelections.Size() <= 1)
@@ -234,7 +234,7 @@ void SceneSelectionSystem::Draw()
 
 	if(curSelections.Size() > 0)
 	{
-        DAVA::int32 drawMode = SettingsManager::GetValue("Scene/SelectionDrawMode").AsInt32();
+        DAVA::int32 drawMode = SettingsManager::GetValue(Settings::Scene_SelectionDrawMode).AsInt32();
         DAVA::RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
         UniqueHandle renderState = (!(drawMode & SS_DRAW_NO_DEEP_TEST)) ? selectionDepthDrawState : selectionNormalDrawState;
 
@@ -366,6 +366,23 @@ size_t SceneSelectionSystem::GetSelectionCount() const
 DAVA::Entity* SceneSelectionSystem::GetSelectionEntity(int index) const
 {
 	return curSelections.GetEntity(index);
+}
+
+bool SceneSelectionSystem::IsEntitySelected(Entity *entity)
+{
+    return curSelections.HasEntity(entity);
+}
+
+bool SceneSelectionSystem::IsEntitySelectedHierarchically(Entity *entity)
+{
+    while (entity)
+    {
+        if (curSelections.HasEntity(entity))
+            return true;
+
+        entity = entity->GetParent();
+    }
+    return false;
 }
 
 void SceneSelectionSystem::SelectedItemsWereModified()

@@ -115,7 +115,7 @@ void CubemapEditorDialog::LoadImageFromUserFile(float rotation, int face)
 		LoadImageTo(stdFilePath, face, false);
 		
 		projectPath = stdFilePath;
-		SettingsManager::SetValue("Internal/CubemapLastFaceDir", VariantType(projectPath.GetDirectory()));
+		SettingsManager::SetValue(Settings::Internal_CubemapLastFaceDir, VariantType(projectPath.GetDirectory()));
 		
 		if(AllFacesLoaded())
 		{
@@ -283,7 +283,7 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 		bool cubemapLoadResult = true;
 		for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
 		{
-			if(texDescriptor->faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
+			if(texDescriptor->dataSettings.faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
 			{
 				FilePath faceFilePath = filePath;
 				faceFilePath.ReplaceFilename(fileNameWithoutExtension +
@@ -392,10 +392,10 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
     if(!descriptorReady)
     {
         descriptor->SetDefaultValues();
-        descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+        descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
     }
     
-	descriptor->faceDescription = faceMask;
+	descriptor->dataSettings.faceDescription = faceMask;
     
     descriptor->Save(filePath);
 	SafeDelete(descriptor);
