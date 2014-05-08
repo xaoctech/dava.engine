@@ -59,6 +59,9 @@ protected:
             }
             trianglesOnObjects = 0;
         }
+
+        void AddTriangles(DAVA::int32 index, DAVA::int32 count);
+        
     };
     
     struct SpeedTreeInfo
@@ -131,9 +134,10 @@ protected:
     void CollectParticlesData();
     void CollectLODDataInFrame();
     void CollectLODDataInScene();
-    void CollectLODDataInEntityRecursive(DAVA::Entity *entity);
-    void CollectLODDataForSelection();
+    void CollectLODDataInEntityRecursive(DAVA::Entity *entity);    
     void CollectSpeedTreeLeafsSquare(const EntityGroup * forGroup);
+    void CollectSelectedRenderObjects(const EntityGroup *selected);
+    void CollectSelectedRenderObjectsRecursivly(DAVA::Entity * entity);
     static void CollectLODTriangles(const DAVA::Vector<DAVA::LodComponent *> &lods, LODInfo &info);
     
     void CollectTexture(DAVA::TexturesMap &textures, const DAVA::FilePath &pathname, DAVA::Texture *tex);
@@ -172,6 +176,7 @@ protected:
     LODInfo lodInfoInFrame;
 
     DAVA::VisibilityArray visibilityArray;
+    DAVA::Set<DAVA::RenderObject *> selectedRenderObjects;
 
 	bool isUpToDate;
 };
