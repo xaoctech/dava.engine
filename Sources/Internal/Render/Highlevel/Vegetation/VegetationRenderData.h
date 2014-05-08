@@ -40,6 +40,9 @@
 namespace DAVA
 {
 
+typedef uint16 VegetationIndex;
+#define VEGETATION_INDEX_TYPE EIF_16
+
 struct VegetationVertex
 {
     Vector3 coord;
@@ -55,12 +58,14 @@ struct VegetationVertex
 struct SortedBufferItem
 {
     RenderDataObject* rdo;
+    RenderDataObject* rdoAttachment;
     Vector3 sortDirection;
         
     inline SortedBufferItem();
     inline SortedBufferItem(const SortedBufferItem& src);
     inline ~SortedBufferItem();
     inline void SetRenderDataObject(RenderDataObject* dataObject);
+    inline void SetRenderDataObjectAttachment(RenderDataObject* dataObject);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +78,7 @@ public:
     ~VegetationRenderData();
 
     inline Vector<VegetationVertex>& GetVertices();
-    inline Vector<uint16>& GetIndices();
+    inline Vector<VegetationIndex>& GetIndices();
     inline RenderDataObject* GetRenderDataObject();
     inline Vector<Vector<Vector<SortedBufferItem> > >& GetIndexBuffers();
     inline NMaterial* GetMaterial();
@@ -86,7 +91,7 @@ private:
     
     NMaterial* material;
     Vector<VegetationVertex> vertexData;
-    Vector<uint16> indexData;
+    Vector<VegetationIndex> indexData;
     RenderDataObject* vertexRenderDataObject;
     Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
 };
@@ -98,7 +103,7 @@ inline Vector<VegetationVertex>& VegetationRenderData::GetVertices()
     return vertexData;
 }
 
-inline Vector<uint16>& VegetationRenderData::GetIndices()
+inline Vector<VegetationIndex>& VegetationRenderData::GetIndices()
 {
     return indexData;
 }
@@ -132,16 +137,19 @@ inline void VegetationRenderData::SetMaterial(NMaterial* mat)
 inline SortedBufferItem::SortedBufferItem()
 {
     rdo = NULL;
+    rdoAttachment = NULL;
 }
 
 inline SortedBufferItem::SortedBufferItem(const SortedBufferItem& src)
 {
     rdo = SafeRetain(src.rdo);
+    rdoAttachment = SafeRetain(src.rdoAttachment);
     sortDirection = src.sortDirection;
 }
 
 inline SortedBufferItem::~SortedBufferItem()
 {
+    SafeRelease(rdoAttachment);
     SafeRelease(rdo);
 }
 
@@ -151,6 +159,15 @@ inline void SortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
     {
         SafeRelease(rdo);
         rdo = SafeRetain(dataObject);
+    }
+}
+
+inline void SortedBufferItem::SetRenderDataObjectAttachment(RenderDataObject* dataObject)
+{
+    if(dataObject != rdoAttachment)
+    {
+        SafeRelease(rdoAttachment);
+        rdoAttachment = SafeRetain(dataObject);
     }
 }
 

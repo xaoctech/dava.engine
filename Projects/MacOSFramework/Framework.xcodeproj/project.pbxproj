@@ -836,6 +836,15 @@
 		6435E2531907AEE9008B1052 /* TextureSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 6435E24F1907AEE9008B1052 /* TextureSheet.h */; };
 		6435E2541907AEE9008B1052 /* TextureSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 6435E24F1907AEE9008B1052 /* TextureSheet.h */; };
 		6435E2551907AEE9008B1052 /* TextureSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 6435E24F1907AEE9008B1052 /* TextureSheet.h */; };
+		64562A481919022300BBF92A /* VegetationSpatialData.h in Headers */ = {isa = PBXBuildFile; fileRef = 64562A471919022300BBF92A /* VegetationSpatialData.h */; };
+		64562A491919022300BBF92A /* VegetationSpatialData.h in Headers */ = {isa = PBXBuildFile; fileRef = 64562A471919022300BBF92A /* VegetationSpatialData.h */; };
+		64562A4A1919022300BBF92A /* VegetationSpatialData.h in Headers */ = {isa = PBXBuildFile; fileRef = 64562A471919022300BBF92A /* VegetationSpatialData.h */; };
+		6459008E19179F2300DBDEA5 /* VegetationCustomGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6459008C19179F2300DBDEA5 /* VegetationCustomGeometry.cpp */; };
+		6459008F19179F2300DBDEA5 /* VegetationCustomGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6459008C19179F2300DBDEA5 /* VegetationCustomGeometry.cpp */; };
+		6459009019179F2300DBDEA5 /* VegetationCustomGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6459008C19179F2300DBDEA5 /* VegetationCustomGeometry.cpp */; };
+		6459009119179F2300DBDEA5 /* VegetationCustomGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 6459008D19179F2300DBDEA5 /* VegetationCustomGeometry.h */; };
+		6459009219179F2300DBDEA5 /* VegetationCustomGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 6459008D19179F2300DBDEA5 /* VegetationCustomGeometry.h */; };
+		6459009319179F2300DBDEA5 /* VegetationCustomGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 6459008D19179F2300DBDEA5 /* VegetationCustomGeometry.h */; };
 		7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
 		7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
@@ -2384,6 +2393,9 @@
 		6435963718C1FA3200862C31 /* AbstractQuadTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractQuadTree.h; sourceTree = "<group>"; };
 		6435E24E1907AEE9008B1052 /* TextureSheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureSheet.cpp; sourceTree = "<group>"; };
 		6435E24F1907AEE9008B1052 /* TextureSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSheet.h; sourceTree = "<group>"; };
+		64562A471919022300BBF92A /* VegetationSpatialData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationSpatialData.h; sourceTree = "<group>"; };
+		6459008C19179F2300DBDEA5 /* VegetationCustomGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationCustomGeometry.cpp; sourceTree = "<group>"; };
+		6459008D19179F2300DBDEA5 /* VegetationCustomGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationCustomGeometry.h; sourceTree = "<group>"; };
 		748A99711726C5ED00C6411B /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
 		748A99721726C5EE00C6411B /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
 		74A909A91701FA51003FDB31 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
@@ -3241,6 +3253,9 @@
 				641C229E19094CC3008F3438 /* VegetationPropertyNames.cpp */,
 				641C229F19094CC3008F3438 /* VegetationPropertyNames.h */,
 				6422DEC019155044009507DA /* VegetationMaterialTransformer.h */,
+				6459008C19179F2300DBDEA5 /* VegetationCustomGeometry.cpp */,
+				6459008D19179F2300DBDEA5 /* VegetationCustomGeometry.h */,
+				64562A471919022300BBF92A /* VegetationSpatialData.h */,
 			);
 			path = Vegetation;
 			sourceTree = "<group>";
@@ -4419,6 +4434,7 @@
 				176DE96A174B5561007A983B /* Vector.h in Headers */,
 				176DE96B174B5561007A983B /* BaseNetworkConnection.h in Headers */,
 				176DE96C174B5561007A983B /* BTNetworkConnection.h in Headers */,
+				64562A4A1919022300BBF92A /* VegetationSpatialData.h in Headers */,
 				176DE96D174B5561007A983B /* NetworkConnection.h in Headers */,
 				7A169352180EE75A005F1FBC /* AutotestingDB.h in Headers */,
 				176DE96E174B5561007A983B /* NetworkConnectionIPhone.h in Headers */,
@@ -4581,6 +4597,7 @@
 				176DE9FB174B5561007A983B /* UIHoleTransition.h in Headers */,
 				0282B87918BC72BE006F1EE4 /* FMODFileSoundEvent.h in Headers */,
 				176DE9FC174B5561007A983B /* UIJoypad.h in Headers */,
+				6459009319179F2300DBDEA5 /* VegetationCustomGeometry.h in Headers */,
 				176DE9FD174B5561007A983B /* UIList.h in Headers */,
 				176DE9FE174B5561007A983B /* UIListCell.h in Headers */,
 				176DE9FF174B5561007A983B /* UILoadingTransition.h in Headers */,
@@ -4790,6 +4807,7 @@
 				E8989E7216BD24E500732C04 /* OOBBox.h in Headers */,
 				CC84B01918211A9000934482 /* Job.h in Headers */,
 				E8989E7316BD24E500732C04 /* Plane.h in Headers */,
+				6459009119179F2300DBDEA5 /* VegetationCustomGeometry.h in Headers */,
 				E8989E7516BD24E500732C04 /* Polygon2.h in Headers */,
 				E8989E7716BD24E500732C04 /* Polygon3.h in Headers */,
 				E8989E7816BD24E500732C04 /* Quaternion.h in Headers */,
@@ -4888,6 +4906,7 @@
 				E8989F8516BD24E500732C04 /* BulletComponent.h in Headers */,
 				E8989F8716BD24E500732C04 /* CameraComponent.h in Headers */,
 				E8989F8916BD24E500732C04 /* DebugRenderComponent.h in Headers */,
+				64562A481919022300BBF92A /* VegetationSpatialData.h in Headers */,
 				E8989F8B16BD24E500732C04 /* LightComponent.h in Headers */,
 				E8989F8D16BD24E500732C04 /* LodComponent.h in Headers */,
 				CC84B02518211A9000934482 /* JobQueue.h in Headers */,
@@ -5204,6 +5223,7 @@
 				E898A0C316BD265400732C04 /* Rect.h in Headers */,
 				E898A0C416BD265400732C04 /* RectPacker.h in Headers */,
 				E898A0C516BD265400732C04 /* Sphere.h in Headers */,
+				6459009219179F2300DBDEA5 /* VegetationCustomGeometry.h in Headers */,
 				E898A0C616BD265400732C04 /* Spline.h in Headers */,
 				E898A0C716BD265400732C04 /* Vector.h in Headers */,
 				E898A0C816BD265400732C04 /* BaseNetworkConnection.h in Headers */,
@@ -5323,6 +5343,7 @@
 				E898A15516BD265400732C04 /* SceneFileV2.h in Headers */,
 				E898A15616BD265400732C04 /* SceneManager.h in Headers */,
 				641C22A419094CC3008F3438 /* VegetationPropertyNames.h in Headers */,
+				64562A491919022300BBF92A /* VegetationSpatialData.h in Headers */,
 				E898A15816BD265400732C04 /* SceneNodeAnimation.h in Headers */,
 				E898A15916BD265400732C04 /* SceneNodeAnimationKey.h in Headers */,
 				E898A15A16BD265400732C04 /* SceneNodeAnimationList.h in Headers */,
@@ -5686,6 +5707,7 @@
 				176DEAB4174B5561007A983B /* TextureMulColorAlphaTestEffect.cpp in Sources */,
 				176DEAB5174B5561007A983B /* TextureMulColorEffect.cpp in Sources */,
 				176DEAB6174B5561007A983B /* Image.cpp in Sources */,
+				6459009019179F2300DBDEA5 /* VegetationCustomGeometry.cpp in Sources */,
 				176DEAB7174B5561007A983B /* ImageLoader.cpp in Sources */,
 				176DEAB8174B5561007A983B /* LibDxtHelper.cpp in Sources */,
 				176DEAB9174B5561007A983B /* LibPngHelpers.cpp in Sources */,
@@ -6109,6 +6131,7 @@
 				5022951C186DD1BC00F55478 /* RenderPassManager.cpp in Sources */,
 				E8989FDA16BD24E500732C04 /* EventSystem.cpp in Sources */,
 				CC84B01618211A9000934482 /* Job.cpp in Sources */,
+				6459008E19179F2300DBDEA5 /* VegetationCustomGeometry.cpp in Sources */,
 				E8989FDC16BD24E500732C04 /* LightUpdateSystem.cpp in Sources */,
 				E8989FDE16BD24E500732C04 /* LodSystem.cpp in Sources */,
 				E8989FE016BD24E500732C04 /* ParticleEffectSystem.cpp in Sources */,
@@ -6541,6 +6564,7 @@
 				CCC7A43216F1D6170061EA5D /* Heightmap.cpp in Sources */,
 				CCC7A43816F1D6170061EA5D /* Landscape.cpp in Sources */,
 				CCC7A43C16F1D6170061EA5D /* LandscapeChunk.cpp in Sources */,
+				6459008F19179F2300DBDEA5 /* VegetationCustomGeometry.cpp in Sources */,
 				641C229519090D91008F3438 /* RenderBatchPool.cpp in Sources */,
 				CCC7A44016F1D6170061EA5D /* LandscapeCursor.cpp in Sources */,
 				CCC7A44416F1D6170061EA5D /* Light.cpp in Sources */,
