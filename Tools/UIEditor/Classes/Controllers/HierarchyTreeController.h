@@ -189,7 +189,7 @@ protected:
 	// Whether align/distribute is possible.
 	bool CanPerformAlign(eAlignControlsType alignType);
 	bool CanPerformDistribute(eDistributeControlsType distributeType);
-
+    
     // Hierarchy Tree.
     HierarchyTree hierarchyTree;
     
