@@ -73,6 +73,7 @@ public:
 	bool IsDropEnable(const Vector2& pos)const;
 	
     void SetScreenControl(ScreenControl* control);
+    ScreenControl* GetScreenControl() const;
 
 private:
 	enum InputState

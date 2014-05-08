@@ -129,7 +129,7 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
         
         Rect previewClipRect;
         previewClipRect.SetSize(PreviewController::Instance()->GetTransformData().screenSize);
-        RenderManager::Instance()->ClipRect(previewClipRect);
+        RenderManager::Instance()->SetClip(previewClipRect);
     }
 
 	UIScreen::SystemDraw(geometricData);
@@ -1608,6 +1608,11 @@ bool DefaultScreen::IsControlContentVisible( const UIControl *control ) const
 void DefaultScreen::SetScreenControl(ScreenControl* control)
 {
     screenControl = control;
+}
+
+ScreenControl* DefaultScreen::GetScreenControl() const
+{
+    return screenControl;
 }
 
 UIEvent* DefaultScreen::PreprocessEventForPreview(UIEvent* event)
