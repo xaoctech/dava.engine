@@ -169,10 +169,15 @@ void SettingsManager::Save()
 void SettingsManager::CreateValue(const DAVA::FastName& pathName, const DAVA::VariantType &defaultValue, const DAVA::InspDesc &description)
 {
     DVASSERT(pathName.IsValid());
-    DVASSERT(0 == settingsMap.count(pathName));
     
     settingsMap[pathName].value = defaultValue;
     settingsMap[pathName].desc = description;
 
     settingsOrder.push_back(pathName);
 }
+
+void SettingsManager::ResetToDefault()
+{
+    SettingsManager::Instance()->Init();
+}
+

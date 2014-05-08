@@ -653,12 +653,12 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 {
     TextureDescriptor *descriptor = new TextureDescriptor();
 
-    descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = GetDescriptorWrapMode();
-    descriptor->settings.generateMipMaps = CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps"));
+    descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = GetDescriptorWrapMode();
+    descriptor->SetGenerateMipmaps(CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps")));
 	
-	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->settings.generateMipMaps == TextureDescriptor::OPTION_ENABLED);
-	descriptor->settings.minFilter = ftItem.minFilter;
-	descriptor->settings.magFilter = ftItem.magFilter;
+	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->GetGenerateMipMaps());
+	descriptor->drawSettings.minFilter = ftItem.minFilter;
+	descriptor->drawSettings.magFilter = ftItem.magFilter;
 	
     if(forGPU == GPU_UNKNOWN)   // not need compression
         return descriptor;
@@ -674,8 +674,11 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 		// Additional check whether this format type is accepted for this GPU.
 		if (IsFormatSupportedForGPU(format, forGPU))
 		{
-			descriptor->exportedAsPixelFormat = format;
-			descriptor->compression[forGPU].format = format;
+			descriptor->format = format;
+
+			DVASSERT(descriptor->compression);
+			descriptor->compression[forGPU]->format = format;
+
 		}
 		else
 		{
