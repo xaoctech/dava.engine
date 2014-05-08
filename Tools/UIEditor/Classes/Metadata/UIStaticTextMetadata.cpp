@@ -67,7 +67,16 @@ void UIStaticTextMetadata::SetFont(Font * font)
         //DF-3435 correct font size is set in font preset, not in control
         // font size is defined in font preset and can be changed only by modifying font preset
         //font->SetSize(GetFontSize());
-        GetActiveStaticText()->SetFont(font);
+        
+        //TODO: font should be set correctly, remove this workaround
+        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
+        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+        if(font != localizedFont)
+        {
+            Logger::Warning("UIStaticTextMetadata::SetFont font=%x, but localizedFont=%x for locale=%s", font, localizedFont, LocalizationSystem::Instance()->GetCurrentLocale().c_str());
+        }
+        
+        GetActiveStaticText()->SetFont(localizedFont);
     }
 }
 

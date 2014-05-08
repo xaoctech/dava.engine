@@ -397,7 +397,7 @@ void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget
         Font* curFont = PropertiesHelper::GetAllPropertyValues<Font*>(this->activeMetadata, iter->second.getProperty().name());
         QString curFontPresetName = QString::fromStdString(EditorFontManager::Instance()->GetLocalizedFontName(curFont));
         QString newFontPresetName = senderWidget->currentText();
-        Font* newFont = EditorFontManager::Instance()->GetLocalizedFont(newFontPresetName.toStdString());
+        Font* newFont = EditorFontManager::Instance()->GetLocalizedFont(newFontPresetName.toStdString(), LocalizationSystem::Instance()->GetCurrentLocale());
         
         Logger::Debug("TextPropertyGridWidget::ProcessComboboxValueChanged curFont=%x (%s) newFont=%x (%s)", curFont, curFontPresetName.toStdString().c_str(), newFont, newFontPresetName.toStdString().c_str());
         

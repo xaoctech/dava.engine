@@ -106,7 +106,7 @@ EditFontDialog::EditFontDialog(const String & editFontPresetName, QDialog *paren
     
     dialogResult.fontPresetOriginalName = editFontPresetName;
     dialogResult.fontPresetName = editFontPresetName;
-    Font* font = EditorFontManager::Instance()->GetLocalizedFont(editFontPresetName);
+    Font* font = EditorFontManager::Instance()->GetLocalizedFont(editFontPresetName, "default");
     
     dialogResult.font = font ? font->Clone() : EditorFontManager::Instance()->GetDefaultFont();
     
