@@ -165,7 +165,6 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	
 	emit AddSelectedControl(control);
 	emit SelectedControlNodesChanged(activeControlNodes);
-	UpdateSelection(control);
 }
 
 void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)

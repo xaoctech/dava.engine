@@ -107,7 +107,7 @@ public slots:
 	void CollapseAll();
     
 	void SetCurrentCamera();
-    void SetClipCamera();
+    void SetCustomDrawCamera();
 
 protected slots:
 	void SceneActivated(SceneEditor2 *scene);
