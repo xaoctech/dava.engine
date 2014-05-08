@@ -1094,6 +1094,12 @@ void QtMainWindow::OnCloseTabRequest(int tabIndex, Request *closeRequest)
         return;
 	}
 
+    if ( !IsSavingAllowed() )
+    {
+        closeRequest->Cancel();
+        return;
+    }
+
     int answer = QMessageBox::warning(NULL, "Scene was changed", "Do you want to save changes, made to scene?", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel);
     if(answer == QMessageBox::Cancel)
     {
