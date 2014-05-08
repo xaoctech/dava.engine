@@ -85,6 +85,14 @@ private:
         InputStateGuideMove
 	};
 	
+    enum eKeyboardMoveDirection
+    {
+        moveUp,
+        moveDown,
+        moveLeft,
+        moveRight
+    };
+
 	void GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST& list, const Rect& rect, const HierarchyTreeNode* parent) const;
 	
 	class SmartSelection
@@ -119,8 +127,13 @@ private:
 	void ResetMoveDelta();
 	void SaveControlsPostion();
 
+    // Entry point for performing move from keyboard.
+    void DoKeyboardMove(eKeyboardMoveDirection moveDirection);
+
 	void MoveControl(const Vector2& delta);
+
     void MoveGuide(HierarchyTreeScreenNode* screenNode);
+    void MoveGuides(eKeyboardMoveDirection moveDirection, const Vector2& delta);
 
 	void DeleteSelectedControls();
     void DeleteSelectedGuides(HierarchyTreeScreenNode* screenNode);
@@ -195,8 +208,9 @@ private:
 	// Get the state of the "Move Screen" key.
 	bool IsMoveScreenKeyPressed();
 
-	// Get the control move delta (coarse/fine, depending on whether Shift key is pressed).
+	// Get the control/guide move delta (coarse/fine, depending on whether Shift key is pressed).
 	int32 GetControlMoveDelta();
+    int32 GetGuideMoveDelta();
 
 	// Check control's visibility.
 	bool IsControlVisible(const UIControl* uiControl) const;
