@@ -1161,9 +1161,6 @@
     <ClInclude Include="..\..\Sources\Internal\UI\UIWebView.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h">
-      <Filter>Internal\Platform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Network\MailSender.h">
       <Filter>Internal\Network</Filter>
     </ClInclude>
@@ -1421,6 +1418,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
       <Filter>Internal\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
+      <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
@@ -2285,9 +2288,6 @@
     <ClCompile Include="..\..\Sources\Internal\UI\UIWebView.cpp">
       <Filter>Internal\UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp">
-      <Filter>Internal\Platform</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Network\MailSender.cpp">
       <Filter>Internal\Network</Filter>
     </ClCompile>
@@ -2560,6 +2560,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
