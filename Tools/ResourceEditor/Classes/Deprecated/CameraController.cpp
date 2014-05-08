@@ -218,25 +218,25 @@ void WASDCameraController::Input(UIEvent * event)
 
 			case DVKEY_1:
 				{
-					SetSpeed(SettingsManager::GetValue("Scene/CameraSpeed0").AsInt32());
+					SetSpeed(SettingsManager::GetValue(Settings::Scene_CameraSpeed0).AsInt32());
 					break;
 				}
 
 			case DVKEY_2:
 				{
-					SetSpeed(SettingsManager::GetValue("Scene/CameraSpeed1").AsInt32());
+					SetSpeed(SettingsManager::GetValue(Settings::Scene_CameraSpeed1).AsInt32());
 					break;
 				}
 
 			case DVKEY_3:
 				{
-					SetSpeed(SettingsManager::GetValue("Scene/CameraSpeed2").AsInt32());
+					SetSpeed(SettingsManager::GetValue(Settings::Scene_CameraSpeed2).AsInt32());
 					break;
 				}
 
 			case DVKEY_4:
 				{
-					SetSpeed(SettingsManager::GetValue("Scene/CameraSpeed3").AsInt32());
+					SetSpeed(SettingsManager::GetValue(Settings::Scene_CameraSpeed3).AsInt32());
 					break;
 				}
 
