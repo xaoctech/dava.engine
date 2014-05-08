@@ -1,10 +1,10 @@
 <CONFIG>
-normalmap = 0
-albedo = 0
-cubemap = 1
-decal = 2
-dynamicReflection = 1
-dynamicRefraction = 2
+uniform sampler2D normalmap = 0
+uniform sampler2D albedo = 0
+uniform samplerCube cubemap = 1
+uniform sampler2D decal = 2
+uniform sampler2D dynamicReflection = 1
+uniform sampler2D dynamicRefraction = 2
 <FRAGMENT_SHADER>
 
 #ifdef GL_ES
