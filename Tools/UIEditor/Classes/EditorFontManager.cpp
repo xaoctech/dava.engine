@@ -306,7 +306,7 @@ void EditorFontManager::Reset()
 
 Font* EditorFontManager::CreateDefaultFont(const String& fontPath, const String& fontName)
 {
-	Font* font = SafeRetain(GetLocalizedFont(fontName));
+	Font* font = SafeRetain(GetLocalizedFont(fontName, "default"));
 	if (font)
 		return font;
 	
@@ -436,28 +436,76 @@ const Map<String, Font*> &EditorFontManager::GetLocalizedFonts(const String& loc
     return defaultFonts;
 }
 
-String EditorFontManager::GetLocalizedFontName(Font* font, const String& locale) const
+String EditorFontManager::GetLocalizedFontName(Font* font) const
 {
     String fontName; //TODO: what if localized font is not found? try default?
     
+    bool isFound = false;
+    
+    const String &locale = LocalizationSystem::Instance()->GetCurrentLocale();
+    
     Map<String, Map<Font*, String> >::const_iterator findFontsIt = localizedRegisteredFonts.find(locale);
-    const Map<Font*, String> *fonts = NULL;
     
-    if(findFontsIt != localizedRegisteredFonts.end())
+    Map<String, Map<Font*, String> >::const_iterator fontsEndIt = localizedRegisteredFonts.end();
+    
+    if(findFontsIt != fontsEndIt)
     {
-        Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) found %d registered fonts", locale.c_str(), findFontsIt->second.size());
-        fonts = &findFontsIt->second;
-    }
-    else
-    {
-        fonts = &defaultRegisteredFonts;
+        
+        const Map<Font*, String> *fonts = &findFontsIt->second;
+        Map<Font*, String>::const_iterator findIt = fonts->find(font);
+        Map<Font*, String>::const_iterator endIt = fonts->end();
+        
+        if(findIt != endIt)
+        {
+            fontName = findIt->second;
+            
+            Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d localized fonts", locale.c_str(), font, fontName.c_str(), fonts->size());
+            
+            isFound = true;
+        }
     }
     
-    Map<Font*, String>::const_iterator findIt = fonts->find(font);
-    if(findIt != fonts->end())
+    //TODO: remove defaultFonts
+    if(!isFound)
     {
-        fontName = findIt->second;
+        const Map<Font*, String> *fonts = &defaultRegisteredFonts;
+        Map<Font*, String>::const_iterator findIt = fonts->find(font);
+        Map<Font*, String>::const_iterator endIt = fonts->end();
+        
+        if(findIt != endIt)
+        {
+            fontName = findIt->second;
+            
+            Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d default fonts", locale.c_str(), font, fontName.c_str(), fonts->size());
+            
+            isFound = true;
+        }
     }
+    
+    //TODO: remove this warning in case font not found in localized and default fonts
+    if(!isFound)
+    {
+        Logger::Warning("EditorFontManager::GetLocalizedFontName (locale=%s) font %x not found in localized and default fonts", locale.c_str(), font);
+        
+        Map<String, Map<Font*, String> >::const_iterator fontsIt = localizedRegisteredFonts.begin();
+        for(; fontsIt != fontsEndIt; ++fontsIt)
+        {
+            const Map<Font*, String> *fonts = &fontsIt->second;
+            Map<Font*, String>::const_iterator findIt = fonts->find(font);
+            Map<Font*, String>::const_iterator endIt = fonts->end();
+            
+            if(findIt != endIt)
+            {
+                fontName = findIt->second;
+                
+                Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d localized fonts for locale=%s", locale.c_str(), font, fontName.c_str(), fonts->size(), fontsIt->first.c_str());
+                
+                isFound = true;
+                break;
+            }
+        }
+    }
+
     
 //    const Map<String, Font*> &fonts = GetLocalizedFonts(locale);
 //    Map<String, Font*>::const_iterator it = fonts.begin();

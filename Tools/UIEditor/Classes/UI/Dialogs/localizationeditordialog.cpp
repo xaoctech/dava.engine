@@ -512,7 +512,9 @@ void LocalizationFontsTableController::CreateTableModel(QObject* parent)
 
 bool LocalizationFontsTableController::LoadTable()
 {
-	const Map<String, Font*> &localizationFonts = EditorFontManager::Instance()->GetLocalizedFonts(LocalizationSystem::Instance()->GetCurrentLocale());
+    const String &locale = LocalizationSystem::Instance()->GetCurrentLocale();
+    Logger::Debug("LocalizationFontsTableController::LoadTable locale=%s", locale.c_str());
+	const Map<String, Font*> &localizationFonts = EditorFontManager::Instance()->GetLocalizedFonts(locale);
 	if (localizationFonts.empty())
 	{
 		return false;
@@ -750,6 +752,7 @@ void LocalizationEditorDialog::ReinitializeLocalizationSystem(const QString& loc
         FilePath localizationFilePath(localizationDirectory.toStdString());
         localizationFilePath.MakeDirectoryPathname();
 
+        Logger::Debug("HierarchyTreeController::ReinitializeLocalizationSystem LocalizationSystem::Instance()->SetCurrentLocale(%s);", languageId.c_str());
         LocalizationSystem::Instance()->SetCurrentLocale(languageId);
         LocalizationSystem::Instance()->InitWithDirectory(localizationFilePath);
     }
