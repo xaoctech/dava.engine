@@ -86,10 +86,16 @@ const QVector<ProjectManager::AvailableMaterialQuality>* ProjectManager::GetAvai
 
 FilePath ProjectManager::ProjectOpenDialog()
 {
-    QString  newPathStr = QtFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
-    FilePath incomePath(PathnameToDAVAStyle(newPathStr));
-    incomePath.MakeDirectoryPathname();
-	return incomePath;
+    FilePath ret;
+
+    QString newPathStr = QtFileDialog::getExistingDirectory(NULL, QString("Open Project Folder"), QString("/"));
+    if(!newPathStr.isEmpty())
+    {
+        ret = FilePath(PathnameToDAVAStyle(newPathStr));
+        ret.MakeDirectoryPathname();
+    }
+    
+	return ret;
 }
 
 void ProjectManager::ProjectOpen(const QString &path)
