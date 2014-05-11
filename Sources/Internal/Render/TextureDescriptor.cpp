@@ -34,8 +34,8 @@
 #include "FileSystem/DynamicMemoryFile.h"
 #include "Render/Texture.h"
 #include "Utils/Utils.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDdsHelper.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "Render/Image/LibDdsHelper.h"
 
 #include "Render/GPUFamilyDescriptor.h"
 

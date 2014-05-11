@@ -27,10 +27,10 @@
 =====================================================================================*/
 
 
-#include "Render/Image.h"
+#include "Render/Image/Image.h"
 #include "Render/Texture.h"
-#include "Render/ImageConvert.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/ImageConvert.h"
+#include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"
 
 namespace DAVA 

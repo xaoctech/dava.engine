@@ -28,9 +28,9 @@
 
 
 #include "ImageTools/ImageTools.h"
-#include "Render/LibPngHelpers.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDdsHelper.h"
+#include "Render/Image/LibPngHelpers.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "Render/Image/LibDdsHelper.h"
 
 #include "TextureCompression/TextureConverter.h"
 

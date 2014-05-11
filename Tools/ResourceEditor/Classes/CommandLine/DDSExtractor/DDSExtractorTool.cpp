@@ -31,7 +31,7 @@
 #include "DDSExtractorTool.h"
 
 #include "TexturePacker/CommandLineParser.h"
-#include "Render/LibDdsHelper.h"
+#include "Render/Image/LibDdsHelper.h"
 
 void DDSExtractorTool::PrintUsage()
 {

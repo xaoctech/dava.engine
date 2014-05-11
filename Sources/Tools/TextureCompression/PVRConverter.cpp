@@ -34,9 +34,9 @@
 #include "Platform/Process.h"
 
 #include "Render/GPUFamilyDescriptor.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/ImageSystem.h"
-#include "Render/Image.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/Image/Image.h"
 
 #include "Base/GlobalEnum.h"
 

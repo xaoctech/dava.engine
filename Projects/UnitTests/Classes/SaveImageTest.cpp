@@ -1,6 +1,6 @@
 #include "SaveImageTest.h"
 #include "GameCore.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/ImageSystem.h"
 
 using namespace DAVA;
 
