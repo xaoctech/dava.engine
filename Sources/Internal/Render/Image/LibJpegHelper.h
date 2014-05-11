@@ -28,21 +28,18 @@
 
 
 
-#ifndef __DAVAENGINE_DXT_HELPER_H__
-#define __DAVAENGINE_DXT_HELPER_H__
+#ifndef __DAVAENGINE_JPEG_HELPER_H__
+#define __DAVAENGINE_JPEG_HELPER_H__
 
 #include "Base/BaseTypes.h"
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFormatInterface.h"
+#include "Render/Image/ImageFormatInterface.h"
 
 namespace DAVA 
 {
 
-class Image;
-class File;
-
-class LibDdsHelper: public ImageFormatInterface
+class LibJpegWrapper: public ImageFormatInterface
 {
 public:
     
@@ -50,37 +47,10 @@ public:
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
 
-  	//input data only in RGBA8888
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
-    
-    static eErrorCode ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap = 0, bool forceSoftwareConvertation = false);
-       
-	static bool DecompressImageToRGBA(const DAVA::Image & image, Vector<DAVA::Image*> &imageSet, bool forceSoftwareConvertation = false);
-    
-    static uint32 GetMipMapLevelsCount(const FilePath & fileName);
-	static uint32 GetMipMapLevelsCount(File * file);
-    
-	static bool AddCRCIntoMetaData(const FilePath &filePathname);
-	static uint32 GetCRCFromFile(const FilePath &filePathname);
-    
-    static uint32 GetDataSize(const FilePath & fileName);
-	static uint32 GetDataSize(File * file);
-	
-private:
-
-	static PixelFormat GetPixelFormat(const FilePath & fileName);
-	static PixelFormat GetPixelFormat(File * file);
-	
-	static bool GetTextureSize(const FilePath & fileName, uint32 & width, uint32 & height);
-	static bool GetTextureSize(File * file, uint32 & width, uint32 & height);
-    
-	static bool GetCRCFromDDSHeader(const FilePath &filePathname, uint32* tag, uint32* outputCRC);
-	
-	//input data only in RGBA8888
-	static bool WriteDxtFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
-	static bool WriteAtcFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
+    //only RGB888 or A8
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
 };
 
 };
 
-#endif // __DAVAENGINE_DXT_HELPER_H__
+#endif // __DAVAENGINE_JPEG_HELPER_H__

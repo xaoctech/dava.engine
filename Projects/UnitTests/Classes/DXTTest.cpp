@@ -29,7 +29,7 @@
 
 #include "DXTTest.h"
 #include "TextureUtils.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/ImageSystem.h"
 
 static const PixelFormat formats[] =
 {

@@ -27,30 +27,63 @@
 =====================================================================================*/
 
 
-
-#ifndef __DAVAENGINE_JPEG_HELPER_H__
-#define __DAVAENGINE_JPEG_HELPER_H__
+#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
+#define __DAVAENGINE_LIBPNG_HELPERS_H__
 
 #include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
+#include "Base/BaseObject.h"
+#include "Render/Image/Image.h"
 #include "FileSystem/FilePath.h"
-#include "Render/ImageFormatInterface.h"
+#include "Render/Image/ImageFormatInterface.h"
 
 namespace DAVA 
 {
 
-class LibJpegWrapper: public ImageFormatInterface
+class Texture;
+class Sprite;
+class Image;
+
+class LibPngWrapper: public ImageFormatInterface
 {
 public:
     
     virtual bool IsImage(File *file);
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
-
-    //only RGB888 or A8
+    
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
-};
+
+    static uint32 GetDataSize(const FilePath &filePathname);
+
+protected:
+    
+  	static int ReadPngFile(File *infile, Image * image);
 
 };
 
-#endif // __DAVAENGINE_JPEG_HELPER_H__
+class PngImage : public BaseObject
+{
+protected:
+	~PngImage();
+public:
+	PngImage();
+	
+	bool Create(int32 _width, int32 _height);
+	bool CreateFromFBOSprite(Sprite * fboSprite);
+		
+	void DrawImage(int sx, int sy, PngImage * image);
+	void DrawRect(const Rect2i & rect, uint32 color);
+
+	uint8 * GetData() { return data; };
+	int32 GetWidth() { return width; };
+	int32 GetHeight() { return height; }; 
+private:	
+	int32		width;
+	int32		height;
+	uint8  *	data;
+    PixelFormat format;
+};
+};
+
+#endif // __PNG_IMAGE_H__

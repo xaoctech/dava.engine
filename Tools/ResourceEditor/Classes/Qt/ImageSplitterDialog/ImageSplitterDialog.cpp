@@ -33,7 +33,7 @@
 #include "ImageTools/ImageTools.h"
 #include "SizeDialog.h"
 #include "Main/QtUtils.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/ImageSystem.h"
 
 #include <QMessageBox>
 #include <QFileDialog>

@@ -27,7 +27,7 @@
  =====================================================================================*/
 
 
-#include "Render/LibPVRHelper.h"
+#include "Render/Image/LibPVRHelper.h"
 #include "Render/Texture.h"
 #include "Render/RenderManager.h"
 #include "Render/OGLHelpers.h"
@@ -36,8 +36,8 @@
 #include "Utils/Utils.h"
 #include "Utils/CRC32.h"
 
-#include "Render/Image.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"
 
 

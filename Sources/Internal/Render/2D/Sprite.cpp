@@ -40,8 +40,8 @@
 #include "Render/RenderManagerGL20.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"
-#include "Render/Image.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "FileSystem/DynamicMemoryFile.h"
 
 #define NEW_PPA

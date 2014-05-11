@@ -48,7 +48,7 @@
 #include "Platform/DPIHelper.h"
 #include "Base/AllocatorFactory.h"
 #include "Render/2D/FTFont.h"
-#include "Render/ImageSystem.h"
+#include "Render/Image/ImageSystem.h"
 
 #if defined(__DAVAENGINE_IPHONE__)
 #include "Input/AccelerometeriPhone.h"

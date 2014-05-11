@@ -31,7 +31,7 @@
 #include "SceneValidator.h"
 #include "Qt/Settings/SettingsManager.h"
 #include "Project/ProjectManager.h"
-#include "Render/LibPVRHelper.h"
+#include "Render/Image/LibPVRHelper.h"
 #include "Render/TextureDescriptor.h"
 
 #include "Qt/Main/QtUtils.h"

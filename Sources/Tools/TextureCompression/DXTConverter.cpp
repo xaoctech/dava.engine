@@ -31,9 +31,9 @@
 
 #include "FileSystem/FilePath.h"
 #include "Render/TextureDescriptor.h"
-#include "Render/Image.h"
-#include "Render/ImageSystem.h"
-#include "Render/LibDdsHelper.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/Image/LibDdsHelper.h"
 #include "Render/GPUFamilyDescriptor.h"
 
 namespace DAVA

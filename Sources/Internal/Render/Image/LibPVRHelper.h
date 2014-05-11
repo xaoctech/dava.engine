@@ -38,14 +38,14 @@
 
 #include "Render/RenderBase.h"
 #include "Render/PixelFormatDescriptor.h"
-#include "Render/ImageFormatInterface.h"
+#include "Render/Image/ImageFormatInterface.h"
 
 #if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
 #include <objc/objc.h>
 #endif
 
 #if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
-#include "PVRDefines.h"
+#include "Render/PVRDefines.h"
 #else //#if defined (__DAVAENGINE_IPHONE__) || defined (__DAVAENGINE_ANDROID__)
 //    #include "libpvr/PVRTError.h"
 //    #include "libpvr/PVRTDecompress.h"
