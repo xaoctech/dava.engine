@@ -106,7 +106,7 @@ eErrorCode ImageSystem::Save(const FilePath & fileName, const Vector<Image *> &i
     return propperWrapper->WriteFile(fileName, imageSet, compressionFormat, isCubeMap);
 }
 
-eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat, bool isCubeMap)
+eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat)
 {
     if (NULL == image)
     {
@@ -114,7 +114,7 @@ eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelForma
     }
     Vector<Image*> imageSet;
     imageSet.push_back(image);
-    return Save(fileName, imageSet, compressionFormat, isCubeMap);
+    return Save(fileName, imageSet, compressionFormat, false);
 }
     
 ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const FilePath & pathname)

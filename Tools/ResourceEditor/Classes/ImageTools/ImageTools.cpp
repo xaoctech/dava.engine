@@ -78,17 +78,21 @@ uint32 ImageTools::GetTexturePhysicalSize(const TextureDescriptor *descriptor, c
 		}
 		
 		ImageSystem* system = ImageSystem::Instance();
-		if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PNG)->IsImage(imageFile))//ImageLoader::IsPNGFile(imageFile))
+		if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PNG)->IsImage(imageFile))
 		{
-			size += LibPngWrapper::GetDataSize(imagePathname);
+			size += system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PNG)->GetDataSize(imageFile);
 		}
 		else if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_DDS)->IsImage(imageFile))
 		{
-			size += LibDdsHelper::GetDataSize(imagePathname);
+            size += system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_DDS)->GetDataSize(imageFile);
 		}
 		else if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PVR)->IsImage(imageFile))
 		{
-			size += LibPVRHelper::GetDataSize(imagePathname);
+            size += system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_PVR)->GetDataSize(imageFile);
+		}
+        else if(system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_JPEG)->IsImage(imageFile))
+		{
+            size += system->GetImageFormatInterface(ImageSystem::FILE_FORMAT_JPEG)->GetDataSize(imageFile);
 		}
 		else
 		{

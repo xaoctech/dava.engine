@@ -54,7 +54,7 @@ public:
     
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
 
-    static uint32 GetDataSize(const FilePath &filePathname);
+    virtual uint32 GetDataSize(File *infile);
 
 protected:
     

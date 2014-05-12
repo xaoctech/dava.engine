@@ -140,7 +140,7 @@ public:
     
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
     
-    static uint32 GetDataSize(const FilePath &filePathname);
+    virtual uint32 GetDataSize(File *infile);
     
     static bool AddCRCIntoMetaData(const FilePath &filePathname);
     static uint32 GetCRCFromFile(const FilePath &filePathname);
