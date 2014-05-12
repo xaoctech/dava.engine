@@ -215,9 +215,6 @@ FilePath MipMapReplacer::GetDummyTextureFilePath(Texture * texture)
     case FORMAT_DXT1A:
         formatFile = "dxt1a.dds";
         break;
-    case FORMAT_DXT1NM:
-        formatFile = "dxt1nm.dds";
-        break;
     case FORMAT_DXT3:
         formatFile = "dxt3.dds";
         break;

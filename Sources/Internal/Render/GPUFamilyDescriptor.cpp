@@ -92,7 +92,6 @@ void GPUFamilyDescriptor::SetupGPUFormats()
     gpuData[GPU_TEGRA].availableFormats[FORMAT_RGBA8888] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT1] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT1A] = ".dds";
-    gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT1NM] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT3] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT5] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT5NM] = ".dds";
