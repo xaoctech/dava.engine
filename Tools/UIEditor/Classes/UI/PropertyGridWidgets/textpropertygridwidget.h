@@ -54,6 +54,7 @@ protected:
     
     //Update of internal propeperties
     virtual void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty& curProperty);
+    void UpdatePushButtonWidgetWithFont(QPushButton *pushButtonWidget, Font* font);
     
     virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
                                              const QString& value);

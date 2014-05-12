@@ -120,30 +120,37 @@ void TextPropertyGridWidget::FillFontPresetCombobox()
     WidgetSignalsBlocker blocker(ui->fontPresetComboBox);
     ui->fontPresetComboBox->clear();
     
-    const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
-    
-    Map<Font*, String> ::const_iterator it = fonts.begin();
-    Map<Font*, String> ::const_iterator endIt = fonts.end();
-    QString fontPresetName;
-    for(; it != endIt; ++it)
-    {
-        fontPresetName = QString::fromStdString(it->second);
-        ui->fontPresetComboBox->addItem(fontPresetName);
-    }
+    //const Map<Font*, String> &fonts = FontManager::Instance()->GetRegisteredFonts();
+    //Map<Font*, String> ::const_iterator it = fonts.begin();
+    //Map<Font*, String> ::const_iterator endIt = fonts.end();
     
     // Get current value of Font property
     Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
                                                                          PropertyNames::FONT_PROPERTY_NAME,
                                                                          false);
     
+    const Map<String, Font*> &fonts = EditorFontManager::Instance()->GetLocalizedFonts("default");
+    
+    Map<String, Font*> ::const_iterator it = fonts.begin();
+    Map<String, Font*> ::const_iterator endIt = fonts.end();
+    QString fontPresetName;
+    for(; it != endIt; ++it)
+    {
+        fontPresetName = QString::fromStdString(it->first);
+        ui->fontPresetComboBox->addItem(fontPresetName);
+    }
+    
     UITextControlMetadata* textMetaData = dynamic_cast<UITextControlMetadata*>(activeMetadata);
     if(textMetaData)
     {
-        Map<Font*, String> ::const_iterator findIt = fonts.find(fontPropertyValue);
-        if(findIt != endIt)
+        //Map<Font*, String> ::const_iterator findIt = fonts.find(fontPropertyValue);
+        //if(findIt != endIt)
+        String fontName = EditorFontManager::Instance()->GetLocalizedFontName(fontPropertyValue);
+
+        // Setup combo box value
+        int index = ui->fontPresetComboBox->findText(QString::fromStdString(fontName));
+        if(index != -1)
         {
-            // Setup combo box value
-            int index = ui->fontPresetComboBox->findText(QString::fromStdString(findIt->second));
             ui->fontPresetComboBox->setCurrentIndex(index);
         }
         else
@@ -170,8 +177,22 @@ void TextPropertyGridWidget::UpdateFontPresetValues()
     
     FillFontPresetCombobox();
     
-    int fontSize = BasePropertyGridWidget::GetPropertyIntValue(PropertyNames::FONT_SIZE_PROPERTY_NAME);
-    ui->fontSizeSpinBox->setValue(fontSize);
+    //int fontSize = BasePropertyGridWidget::GetPropertyIntValue(PropertyNames::FONT_SIZE_PROPERTY_NAME);
+    // Get current value of Font property
+    Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
+                                                                         PropertyNames::FONT_PROPERTY_NAME,
+                                                                         false);
+    if(fontPropertyValue)
+    {
+        int fontSize = fontPropertyValue->GetSize();
+        ui->fontSizeSpinBox->setValue(fontSize);
+        
+        UpdatePushButtonWidgetWithFont(this->ui->fontSelectButton, fontPropertyValue);
+    }
+    else
+    {
+        Logger::Warning("TextPropertyGridWidget::UpdateFontPresetValues failed to get font preset");
+    }
 }
 
 void TextPropertyGridWidget::HandleChangePropertySucceeded(const QString& propertyName)
@@ -298,35 +319,32 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
     }
 }
 
-void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
+void TextPropertyGridWidget::UpdatePushButtonWidgetWithFont(QPushButton *pushButtonWidget, Font* font)
 {
     if (pushButtonWidget != this->ui->fontSelectButton)
     {
         return; //Not font select button
     }
     
-    bool isPropertyValueDiffers = false;
-    Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
-                                                                         curProperty.name(), isPropertyValueDiffers);
-    if (fontPropertyValue)
+    if (font)
     {
         //Set button text
         WidgetSignalsBlocker blocker(pushButtonWidget);
-        Font::eFontType fontType = fontPropertyValue->GetFontType();
+        Font::eFontType fontType = font->GetFontType();
         QString buttonText;
         
         switch (fontType)
         {
             case Font::TYPE_FT:
             {
-                FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
+                FTFont *ftFont = dynamic_cast<FTFont*>(font);
                 //Set pushbutton widget text
 				buttonText = QString::fromStdString(ftFont->GetFontPath().GetFrameworkPath());
                 break;
             }
             case Font::TYPE_GRAPHICAL:
             {
-                GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(fontPropertyValue);
+                GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(font);
                 //Put into result string font definition and font sprite path
                 Sprite *fontSprite = gFont->GetFontSprite();
                 if (!fontSprite) //If no sprite available - quit
@@ -350,6 +368,14 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton
         
         pushButtonWidget->setText(buttonText);
     }
+}
+
+void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
+{
+    bool isPropertyValueDiffers = false;
+    Font *fontPropertyValue = PropertiesHelper::GetPropertyValue<Font *>(this->activeMetadata,
+                                                                         curProperty.name(), isPropertyValueDiffers);
+    UpdatePushButtonWidgetWithFont(pushButtonWidget, fontPropertyValue);
 }
 
 void TextPropertyGridWidget::FillComboboxes()
