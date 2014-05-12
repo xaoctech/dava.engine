@@ -21,6 +21,7 @@ uniform mat4 worldViewMatrix;
 
 #if defined(VERTEX_FOG)
     uniform float fogLimit;
+	varying float varFogFactor;
     #if !defined(FOG_LINEAR)
     uniform float fogDensity;
     #else
@@ -28,8 +29,8 @@ uniform mat4 worldViewMatrix;
     uniform float fogEnd;
     #endif
 	
-	varying float varFogFactor;
 	#if defined(FOG_GLOW)
+	uniform float fogGlowScattering;
 	varying float varFogGlowFactor;
 	#endif
 #endif
@@ -40,11 +41,11 @@ varying vec2 varTexCoordCursor;
 
 #if defined(SPECULAR_LAND) || defined(VERTEX_FOG)
 uniform vec4 lightPosition0;
-uniform float lightIntensity0;
 #endif
 #if defined(SPECULAR_LAND)
 attribute vec3 inNormal;
 uniform mat3 normalMatrix;
+uniform float lightIntensity0;
 uniform float materialSpecularShininess;
 varying float varSpecularColor;
 #endif
@@ -84,7 +85,7 @@ void main()
     #endif
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
-		varFogGlowFactor = (dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5);
+		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering);
 	#endif
 #endif
 	
