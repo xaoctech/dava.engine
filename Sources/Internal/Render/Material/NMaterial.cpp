@@ -77,6 +77,7 @@ const FastName NMaterial::PARAM_FOG_COLOR("fogColor");
 const FastName NMaterial::PARAM_FOG_DENSITY("fogDensity");
 const FastName NMaterial::PARAM_FOG_START("fogStart");
 const FastName NMaterial::PARAM_FOG_END("fogEnd");
+const FastName NMaterial::PARAM_FOG_GLOW_COLOR("fogGlowColor");
 const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
@@ -93,6 +94,7 @@ const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
 const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
 const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
 const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
+const FastName NMaterial::FLAG_FOG_GLOW = FastName("FOG_GLOW");
 const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED");
 const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 const FastName NMaterial::FLAG_WAVE_ANIMATION = FastName("WAVE_ANIMATION");
@@ -2758,6 +2760,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 
 		ret.push_back(FLAG_VERTEXFOG);
 		ret.push_back(FLAG_FOG_LINEAR);
+		ret.push_back(FLAG_FOG_GLOW);
 		ret.push_back(FLAG_FLATCOLOR);
 		ret.push_back(FLAG_TEXTURESHIFT);
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
