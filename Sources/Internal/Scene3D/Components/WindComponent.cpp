@@ -34,6 +34,7 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
+#include "Scene3D/Systems/WindSystem.h"
 #include "FileSystem/KeyedArchive.h"
 
 namespace DAVA 
@@ -41,7 +42,8 @@ namespace DAVA
 	REGISTER_CLASS(WindComponent)
 
 WindComponent::WindComponent() :
-    force(0.f)
+    force(0.f),
+    type(WIND_TYPE_GLOBAL)
 {
     
 }

@@ -54,36 +54,86 @@ public:
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
 
-    float32 GetTrunkOscillationAmplitude() const;
-    float32 GetLeafsOscillationApmlitude() const;
-    float32 GetLeafOscillationSpeed() const;
-    float32 GetMovingOscillationLeafsSpeed() const;
-    int32 GetMaxAnimatedLOD() const;
+    inline float32 GetTrunkOscillationAmplitude() const;
+    inline float32 GetTrunkOscillationSpring() const;
+    inline float32 GetLeafsOscillationApmlitude() const;
+    inline float32 GetLeafsOscillationSpeed() const;
+    inline int32 GetMaxAnimatedLOD() const;
 
-    void SetTrunkOscillationAmplitude(const float32 & amplitude);
-    void SetLeafsOscillationApmlitude(const float32 & amplitude);
-    void SetLeafOscillationSpeed(const float32 & speed);
-    void SetMovingOscillationLeafsSpeed(const float32 & speed);
-    void SetMaxAnimatedLOD(const int32 & lodIndex);
+    inline void SetTrunkOscillationAmplitude(const float32 & amplitude);
+    inline void SetTrunkOscillationSpring(const float32 & spring);
+    inline void SetLeafsOscillationApmlitude(const float32 & amplitude);
+    inline void SetLeafsOscillationSpeed(const float32 & speed);
+    inline void SetMaxAnimatedLOD(const int32 & lodIndex);
     
 protected:
     float32 trunkOscillationAmplitude;
+    float32 trunkOscillationSpring;
     float32 leafsOscillationAmplitude;
     float32 leafsOscillationSpeed;
-    float32 movingOscillationLeafsSpeed;
     int32 maxAnimatedLOD;
 
 public:
     INTROSPECTION_EXTEND(SpeedTreeComponent, Component, 
         PROPERTY("trunkOscillationAmplitude", "trunkOscillationAmplitude", GetTrunkOscillationAmplitude, SetTrunkOscillationAmplitude, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("trunkOscillationSpring", "trunkOscillationSpring", GetTrunkOscillationSpring, SetTrunkOscillationSpring, I_SAVE | I_VIEW | I_EDIT)
         PROPERTY("leafsOscillationAmplitude", "leafsOscillationAmplitude", GetLeafsOscillationApmlitude, SetLeafsOscillationApmlitude, I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("leafsOscillationSpeed", "leafsOscillationSpeed", GetLeafOscillationSpeed, SetLeafOscillationSpeed, I_SAVE | I_VIEW | I_EDIT)
-        PROPERTY("movingOscillationLeafsSpeed", "movingOscillationLeafsSpeed", GetMovingOscillationLeafsSpeed, SetMovingOscillationLeafsSpeed, I_SAVE | I_VIEW | I_EDIT)
+        PROPERTY("leafsOscillationSpeed", "leafsOscillationSpeed", GetLeafsOscillationSpeed, SetLeafsOscillationSpeed, I_SAVE | I_VIEW | I_EDIT)
         PROPERTY("maxAnimatedLOD", "maxAnimatedLOD", GetMaxAnimatedLOD, SetMaxAnimatedLOD, I_SAVE | I_VIEW | I_EDIT)
         );
     
 	friend class SpeedTreeUpdateSystem;
 };
+
+inline float32 SpeedTreeComponent::GetTrunkOscillationAmplitude() const
+{
+    return trunkOscillationAmplitude;
+}
+
+inline float32 SpeedTreeComponent::GetTrunkOscillationSpring() const
+{
+    return trunkOscillationSpring;
+}
+
+inline float32 SpeedTreeComponent::GetLeafsOscillationApmlitude() const
+{
+    return leafsOscillationAmplitude;
+}
+
+inline float32 SpeedTreeComponent::GetLeafsOscillationSpeed() const
+{
+    return leafsOscillationSpeed;
+}
+
+inline int32 SpeedTreeComponent::GetMaxAnimatedLOD() const
+{
+    return maxAnimatedLOD;
+}
+
+inline void SpeedTreeComponent::SetTrunkOscillationAmplitude(const float32 & amplitude)
+{
+    trunkOscillationAmplitude = amplitude;
+}
+
+inline void SpeedTreeComponent::SetTrunkOscillationSpring(const float32 & spring)
+{
+    trunkOscillationSpring = spring;
+}
+
+inline void SpeedTreeComponent::SetLeafsOscillationApmlitude(const float32 & amplitude)
+{
+    leafsOscillationAmplitude = amplitude;
+}
+
+inline void SpeedTreeComponent::SetLeafsOscillationSpeed(const float32 & speed)
+{
+    leafsOscillationSpeed = speed;
+}
+
+inline void SpeedTreeComponent::SetMaxAnimatedLOD(const int32 & lodIndex)
+{
+    maxAnimatedLOD = lodIndex;
+}
 
 };
 

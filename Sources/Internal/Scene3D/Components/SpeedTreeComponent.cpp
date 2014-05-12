@@ -38,10 +38,10 @@ namespace DAVA
 	REGISTER_CLASS(SpeedTreeComponent)
 
 SpeedTreeComponent::SpeedTreeComponent() :
-    trunkOscillationAmplitude(1.5f),
-    leafsOscillationAmplitude(3.f),
-    leafsOscillationSpeed(3.f),
-    movingOscillationLeafsSpeed(1.f),
+    trunkOscillationAmplitude(1.f),
+    trunkOscillationSpring(2.f),
+    leafsOscillationAmplitude(2.f),
+    leafsOscillationSpeed(1.f),
     maxAnimatedLOD(0)
 {
 }
@@ -57,9 +57,9 @@ Component * SpeedTreeComponent::Clone(Entity * toEntity)
 	component->SetEntity(toEntity);
 
     component->trunkOscillationAmplitude = trunkOscillationAmplitude;
+    component->trunkOscillationSpring = trunkOscillationSpring;
     component->leafsOscillationAmplitude = leafsOscillationAmplitude;
     component->leafsOscillationSpeed = leafsOscillationSpeed;
-    component->movingOscillationLeafsSpeed = movingOscillationLeafsSpeed;
     component->maxAnimatedLOD = maxAnimatedLOD;
     
     return component;
@@ -71,10 +71,10 @@ void SpeedTreeComponent::Serialize(KeyedArchive *archive, SerializationContext *
 
 	if(archive != 0)
 	{
-		archive->SetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
+        archive->SetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
+        archive->SetFloat("stc.trunkOscillationSpring", trunkOscillationSpring);
 		archive->SetFloat("stc.leafsOscillationAmplitude", leafsOscillationAmplitude);
 		archive->SetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
-        archive->SetFloat("stc.movingOscillationLeafsSpeed", movingOscillationLeafsSpeed);
         archive->SetInt32("stc.maxAnimatedLOD", maxAnimatedLOD);
     }
 }
@@ -83,64 +83,14 @@ void SpeedTreeComponent::Deserialize(KeyedArchive *archive, SerializationContext
 {
 	if(archive)
 	{
-		trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
+        trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
+        trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationSpring", trunkOscillationSpring);
 		leafsOscillationAmplitude = archive->GetFloat("stc.leafsOscillationAmplitude", leafsOscillationAmplitude);
 		leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
-        movingOscillationLeafsSpeed = archive->GetFloat("stc.movingOscillationLeafsSpeed", movingOscillationLeafsSpeed);
         maxAnimatedLOD = archive->GetInt32("stc.maxAnimatedLOD", maxAnimatedLOD);
 	}
 
 	Component::Deserialize(archive, serializationContext);
-}
-
-float32 SpeedTreeComponent::GetTrunkOscillationAmplitude() const
-{
-    return trunkOscillationAmplitude;
-}
-
-float32 SpeedTreeComponent::GetLeafsOscillationApmlitude() const
-{
-    return leafsOscillationAmplitude;
-}
-
-float32 SpeedTreeComponent::GetLeafOscillationSpeed() const
-{
-    return leafsOscillationSpeed;
-}
-
-float32 SpeedTreeComponent::GetMovingOscillationLeafsSpeed() const
-{
-    return movingOscillationLeafsSpeed;
-}
-
-int32 SpeedTreeComponent::GetMaxAnimatedLOD() const
-{
-    return maxAnimatedLOD;
-}
-
-void SpeedTreeComponent::SetTrunkOscillationAmplitude(const float32 & amplitude)
-{
-    trunkOscillationAmplitude = amplitude;
-}
-
-void SpeedTreeComponent::SetLeafsOscillationApmlitude(const float32 & amplitude)
-{
-    leafsOscillationAmplitude = amplitude;
-}
-
-void SpeedTreeComponent::SetLeafOscillationSpeed(const float32 & speed)
-{
-    leafsOscillationSpeed = speed;
-}
-
-void SpeedTreeComponent::SetMovingOscillationLeafsSpeed(const float32 & speed)
-{
-    movingOscillationLeafsSpeed = speed;
-}
-
-void SpeedTreeComponent::SetMaxAnimatedLOD(const int32 & lodIndex)
-{
-    maxAnimatedLOD = lodIndex;
 }
 
 };

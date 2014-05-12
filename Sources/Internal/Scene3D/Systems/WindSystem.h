@@ -33,24 +33,15 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Entity/SceneSystem.h"
+#include "Scene3D/Components/WindComponent.h"
 
 namespace DAVA
 {
 class Entity;
-class WindComponent;
     
 class WindSystem : public SceneSystem
 {
 public:
-    enum eWindType
-    {
-        WIND_TYPE_GLOBAL     = 1,
-        WIND_TYPE_EXPLOSION  = 1 << 1,
-        WIND_TYPE_MOVING     = 1 << 2,
-
-        WIND_TYPE_MASK_ALL   = 0xFF
-    };
-
     WindSystem(Scene * scene);
     virtual ~WindSystem();
 	
@@ -60,10 +51,11 @@ public:
 
     void WindTriggered(WindComponent * wind);
 
-    Vector4 GetWind(const Vector3 & inPosition, uint32 typeMask = WIND_TYPE_MASK_ALL);
+    Vector4 GetWind(const Vector3 & inPosition, uint32 typeMask = WindComponent::WIND_TYPE_MASK_ALL);
 
 private:
     Vector4 globalWind;
+    float32 globalTime;
 
     Vector<WindComponent *> winds;
 

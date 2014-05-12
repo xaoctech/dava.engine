@@ -35,16 +35,24 @@
 #include "Entity/Component.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
-#include "Scene3D/Systems/WindSystem.h"
 
 namespace DAVA 
 {
-
+class WindSystem;
 class WindComponent : public Component
 {
 protected:
 	virtual ~WindComponent();
 public:
+    enum eWindType
+    {
+        WIND_TYPE_GLOBAL     = 1,
+        WIND_TYPE_EXPLOSION  = 1 << 1,
+        WIND_TYPE_MOVING     = 1 << 2,
+
+        WIND_TYPE_MASK_ALL   = 0xFF
+    };
+
 	WindComponent();
 
 	IMPLEMENT_COMPONENT_TYPE(WIND_COMPONENT);

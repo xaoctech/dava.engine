@@ -41,7 +41,8 @@ namespace DAVA
 {
 
 WindSystem::WindSystem(Scene * scene)
-:	SceneSystem(scene)
+:	SceneSystem(scene),
+globalTime(0.f)
 {
 }
 
@@ -73,12 +74,19 @@ void WindSystem::RemoveEntity(Entity * entity)
 
 void WindSystem::Process(float32 timeElapsed)
 {
+    globalTime += timeElapsed;
 
+    globalWind.w = 0.f;
+    int32 windCount = winds.size();
+    for(int32 i = 0; i < windCount; ++i)
+        globalWind.w += winds[i]->force;
+
+    globalWind.w *= 2.f + sinf(globalTime) * 0.8f + cosf(globalTime * 10) * 0.2f;
 }
 
 Vector4 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
 {
-    return Vector4(1.f, 0.f, 0.f, 3.f);
+    return globalWind;
 }
 
 void WindSystem::WindTriggered(WindComponent * wind)
