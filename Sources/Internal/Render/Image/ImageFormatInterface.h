@@ -53,6 +53,8 @@ public:
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap) = 0;
     
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false) = 0;
+    
+    virtual uint32 GetDataSize(File *infile) = 0;
 };
 
 };

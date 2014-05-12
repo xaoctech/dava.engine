@@ -78,14 +78,18 @@ void jpegErrorExit (j_common_ptr cinfo)
     
 bool LibJpegWrapper::IsImage(File *infile)
 {
-    struct jpeg_decompress_struct cinfo;
-    struct jpegErrorManager jerr;
+    return GetDataSize(infile) != 0;
+}
+    
+uint32 LibJpegWrapper::GetDataSize(File *infile)
+{
+    jpeg_decompress_struct cinfo;
+    jpegErrorManager jerr;
 
     infile->Seek(0, File::SEEK_FROM_START);
 	uint32 fileSize = infile->GetSize();
 	uint8* fileBuffer= new uint8[fileSize];
 	infile->Read(fileBuffer, fileSize);
-    infile->Seek(0, File::SEEK_FROM_START);
     cinfo.err = jpeg_std_error( &jerr.pub );
     
     jerr.pub.error_exit = jpegErrorExit;
@@ -94,22 +98,23 @@ bool LibJpegWrapper::IsImage(File *infile)
         jpeg_destroy_decompress(&cinfo);
         SafeDeleteArray(fileBuffer);
         infile->Seek(0,  File::SEEK_FROM_START);
-        Logger::Error("[LibJpegWrapper::IsJpegFile] File %s has wrong jpeg header", infile->GetFilename().GetAbsolutePathname().c_str());
-        return false;
+        Logger::Error("[LibJpegWrapper::GetDataSize] File %s has wrong jpeg header", infile->GetFilename().GetAbsolutePathname().c_str());
+        return 0;
     }
     jpeg_create_decompress( &cinfo );
     jpeg_mem_src( &cinfo, fileBuffer,fileSize);
-    jpeg_read_header( &cinfo, TRUE );
+    jpeg_read_header( &cinfo, true );
     infile->Seek(0,  File::SEEK_FROM_START);
+    uint32 dataSize = cinfo.src->bytes_in_buffer;
     jpeg_destroy_decompress( &cinfo );
     SafeDeleteArray(fileBuffer);
-    return true;
+    return dataSize;
 }
   
 eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
 {
-    struct jpeg_decompress_struct cinfo;
-    struct jpegErrorManager jerr;
+    jpeg_decompress_struct cinfo;
+    jpegErrorManager jerr;
 
     infile->Seek(0, File::SEEK_FROM_START);
 	uint32 fileSize = infile->GetSize();
@@ -192,8 +197,8 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
         format = convertedImage->format;
     }
     
-    struct jpeg_compress_struct cinfo;
-    struct jpegErrorManager jerr;
+    jpeg_compress_struct cinfo;
+    jpegErrorManager jerr;
     
     JSAMPROW row_pointer[1];
     const char* absolutePathName = fileName.GetAbsolutePathname().c_str();

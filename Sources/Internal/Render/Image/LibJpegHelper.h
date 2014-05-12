@@ -49,6 +49,8 @@ public:
 
     //only RGB888 or A8
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
+    
+    virtual uint32 GetDataSize(File *infile);
 };
 
 };

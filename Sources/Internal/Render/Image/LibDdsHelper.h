@@ -52,6 +52,8 @@ public:
 
   	//input data only in RGBA8888
     virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
+
+    virtual uint32 GetDataSize(File * file);
     
     static eErrorCode ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap = 0, bool forceSoftwareConvertation = false);
        
@@ -63,9 +65,6 @@ public:
 	static bool AddCRCIntoMetaData(const FilePath &filePathname);
 	static uint32 GetCRCFromFile(const FilePath &filePathname);
     
-    static uint32 GetDataSize(const FilePath & fileName);
-	static uint32 GetDataSize(File * file);
-	
 private:
 
 	static PixelFormat GetPixelFormat(const FilePath & fileName);

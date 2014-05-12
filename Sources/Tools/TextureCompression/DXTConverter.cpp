@@ -45,7 +45,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
     
     Vector<Image*> inputImages;
     ImageSystem::Instance()->Load(fileToConvert, inputImages, 0);
-    if(inputImages.size())
+    if(inputImages.size() ==1 )
     {
         Image* image = inputImages[0];
         

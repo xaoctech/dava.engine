@@ -814,18 +814,6 @@ uint32 LibDdsHelper::GetMipMapLevelsCount(File * file)
 	return NvttHelper::GetMipMapLevelsCount(dec);
 }
 
-uint32 LibDdsHelper::GetDataSize(const FilePath & fileName)
-{
-	nvtt::Decompressor dec;
-
-	if(!NvttHelper::InitDecompressor(dec, fileName))
-	{
-		return 0;
-	}
-
-	return NvttHelper::GetDataSize(dec);
-}
-
 uint32 LibDdsHelper::GetDataSize(File * file)
 {
     nvtt::Decompressor dec ;

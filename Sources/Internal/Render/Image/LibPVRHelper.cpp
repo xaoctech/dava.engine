@@ -1841,15 +1841,8 @@ namespace DAVA
     }
     
     
-    uint32 LibPVRHelper::GetDataSize(const FilePath &filePathname)
+    uint32 LibPVRHelper::GetDataSize(File *file)
     {
-        File *file = File::Create(filePathname, File::OPEN | File::READ);
-        if(!file)
-        {
-            Logger::Error("[LibPVRHelper::GetDataSize]: cannot read file: %s", filePathname.GetAbsolutePathname().c_str());
-            return 0;
-        }
-        
         uint32 dataSize = 0;
         
         PVRFile *pvrFile = ReadFile(file, false, false);
@@ -1858,8 +1851,7 @@ namespace DAVA
             dataSize = file->GetSize() - (PVRTEX3_HEADERSIZE + pvrFile->header.u32MetaDataSize);
             delete pvrFile;
         }
-        
-        file->Release();
+ 
         return dataSize;
     }
     

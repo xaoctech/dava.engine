@@ -255,9 +255,8 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image)
 	return 1;
 }
 
-uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
+uint32 LibPngWrapper::GetDataSize(File * infile )
 {
-    File * infile = File::Create(filePathname, File::OPEN | File::READ);
 	if (!infile)
 	{
 		return 0;
@@ -267,7 +266,6 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 	infile->Read(sig, 8);
 	if (!png_check_sig((unsigned char *) sig, 8))
 	{
-        SafeRelease(infile);
 		return 0;
 	}
 
@@ -275,7 +273,6 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png_ptr)
 	{
-        SafeRelease(infile);
 		return 0;
 	}
 
@@ -283,16 +280,12 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 	if (!info_ptr)
 	{
 		png_destroy_read_struct(&png_ptr, (png_infopp) NULL, (png_infopp) NULL);
-        
-        SafeRelease(infile);
 		return 0;
 	}
 	
     if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        
-        SafeRelease(infile);
 		return 0;
 	}
 
@@ -326,8 +319,6 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
     
 	/* Clean up. */
 	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-	
-    SafeRelease(infile);
 
 	return imageSize;
 }
