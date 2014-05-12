@@ -678,7 +678,6 @@ QImage TextureConvertor::FromDavaImage(DAVA::Image *image)
 		{
 		case DAVA::FORMAT_DXT1:
 		case DAVA::FORMAT_DXT1A:
-		case DAVA::FORMAT_DXT1NM:
 		case DAVA::FORMAT_DXT3:
 		case DAVA::FORMAT_DXT5:
 		case DAVA::FORMAT_DXT5NM:

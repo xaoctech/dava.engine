@@ -54,7 +54,6 @@ static Set<PixelFormat> InitPixelFormatsWithCompression()
     set.insert(FORMAT_PVR4);
     set.insert(FORMAT_PVR2);
     set.insert(FORMAT_DXT1);
-    set.insert(FORMAT_DXT1NM);
     set.insert(FORMAT_DXT1A);
     set.insert(FORMAT_DXT3);
     set.insert(FORMAT_DXT5);
