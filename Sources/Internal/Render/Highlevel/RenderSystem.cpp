@@ -258,7 +258,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
-        if (material && material->IsDynamicLit())
+        if(material)
         {
 			needUpdate = true;
 			break;
@@ -378,9 +378,7 @@ void RenderSystem::Update(float32 timeElapsed)
 	for(uint32 i = 0; i < size; ++i)
 	{
         objectsForUpdate[i]->RenderUpdate(mainCamera, timeElapsed);
-    }
-	
-    ShaderCache::Instance()->ClearAllLastBindedCaches();
+    }	    
 }
 
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
