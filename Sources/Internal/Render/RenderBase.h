@@ -148,8 +148,7 @@ enum PixelFormat
     FORMAT_RGBA32323232,
 
     FORMAT_DXT1,
-    FORMAT_DXT1NM,
-    FORMAT_DXT1A,
+    FORMAT_DXT1A = 14, //back compatibility
     FORMAT_DXT3,
     FORMAT_DXT5,
     FORMAT_DXT5NM,
