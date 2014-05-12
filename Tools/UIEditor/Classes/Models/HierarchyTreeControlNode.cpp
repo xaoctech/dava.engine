@@ -388,5 +388,5 @@ void HierarchyTreeControlNode::UpdateUIObject()
         return;
     }
     
-    webView->SetRect(webView->GetRect());
+    webView->SetRect(webView->GetRect(true), true);
 }
