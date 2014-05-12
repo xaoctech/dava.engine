@@ -52,12 +52,12 @@
 
 ENUM_DECLARE(CollisionSystemDrawMode)
 {
-	ENUM_ADD(CS_DRAW_OBJECTS);
+	//ENUM_ADD(CS_DRAW_OBJECTS);
 	ENUM_ADD(CS_DRAW_OBJECTS_SELECTED);
 	ENUM_ADD(CS_DRAW_OBJECTS_RAYTEST);
-	ENUM_ADD(CS_DRAW_LAND);
+	//ENUM_ADD(CS_DRAW_LAND);
 	ENUM_ADD(CS_DRAW_LAND_RAYTEST);
-	ENUM_ADD(CS_DRAW_LAND_COLLISION);
+	//ENUM_ADD(CS_DRAW_LAND_COLLISION);
 }
 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
@@ -123,6 +123,16 @@ SceneCollisionSystem::~SceneCollisionSystem()
 	DAVA::SafeDelete(landBroadphase);
 	DAVA::SafeDelete(landCollDisp);
 	DAVA::SafeDelete(landCollConf);
+}
+
+void SceneCollisionSystem::SetDrawMode(int mode)
+{
+	drawMode = mode;
+}
+
+int SceneCollisionSystem::GetDrawMode() const
+{
+	return drawMode;
 }
 
 const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
@@ -314,7 +324,7 @@ void SceneCollisionSystem::Process(DAVA::float32 timeElapsed)
 	// reset ray cache on new frame
 	rayIntersectCached = false;
 
-    drawMode = SettingsManager::GetValue("Scene/CollisionDrawMode").AsInt32();
+    drawMode = SettingsManager::GetValue(Settings::Scene_CollisionDrawMode).AsInt32();
 	if(drawMode & CS_DRAW_LAND_COLLISION)
 	{
 		DAVA::Vector3 tmp;
@@ -493,7 +503,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	CollisionBaseObject *cObj = NULL;
 	bool isLandscape = false;
 
-    DAVA::float32 debugBoxScale = SettingsManager::GetValue("Scene/DebugBoxScale").AsFloat();
+    DAVA::float32 debugBoxScale = SettingsManager::GetValue(Settings::Scene_DebugBoxScale).AsFloat();
 
 	// check if this entity is landscape
 	DAVA::Landscape *landscape = DAVA::GetLandscape(entity);
@@ -509,7 +519,7 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 	if( NULL == cObj &&
 		NULL != particleEffect)
 	{
-        DAVA::float32 scale = SettingsManager::GetValue("Scene/DebugBoxParticleScale").AsFloat();
+        DAVA::float32 scale = SettingsManager::GetValue(Settings::Scene_DebugBoxParticleScale).AsFloat();
 		cObj = new CollisionParticleEffect(entity, objectsCollWorld, SIMPLE_COLLISION_BOX_SIZE * scale);
 	}
 
