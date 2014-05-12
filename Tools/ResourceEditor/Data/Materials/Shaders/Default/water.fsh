@@ -107,7 +107,10 @@ void main()
 		lowp vec3 textureColorDecal = texture2D(decal, varTexCoordDecal).rgb;
 		lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
 		lowp vec3 textureColor1 = texture2D(albedo, varTexCoord1).rgb;
-		gl_FragColor = vec4((textureColor0 *textureColorDecal* decalTintColor * 2.0 + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
+		//gl_FragColor = vec4((textureColor0 *textureColorDecal* decalTintColor * 2.0 + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
+		//gl_FragColor = vec4(((textureColor0 + textureColor1)* decalTintColor + reflectionColor * reflectanceColor) * textureColorDecal * 2.0, 1.0);
+		//gl_FragColor = vec4((textureColorDecal* decalTintColor * reflectionColor * reflectanceColor) * (textureColor0 + textureColor1) * 2.0, 1.0);
+		gl_FragColor = vec4(((textureColor0 * textureColor1) * 3.0 * decalTintColor * textureColorDecal + reflectionColor * reflectanceColor) , 1.0);
 	#else
 		gl_FragColor = vec4(reflectionColor * reflectionTintColor, 1.0);
 	#endif
