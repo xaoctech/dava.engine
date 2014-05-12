@@ -331,6 +331,8 @@ public:
 	// Needs to be overriden for the platforms where it has sence (MacOS only for now).
 	virtual void* GetOpenGLView() { return NULL; };
 	
+	void EnableConsoleMode();
+
 protected:
 	int32 screenOrientation;
 
@@ -361,7 +363,6 @@ private:
 
 	bool firstRun;//call begin frame 1st time
 	
-	void EnableConsoleMode();
 	void SetCommandLine(int argc, char *argv[]);
 	Vector<String> commandLine;
 	bool isConsoleMode;
