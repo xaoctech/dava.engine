@@ -177,6 +177,7 @@ public:
     static const FastName PARAM_FOG_START;
     static const FastName PARAM_FOG_END;
     static const FastName PARAM_FOG_GLOW_COLOR;
+    static const FastName PARAM_FOG_GLOW_SCATTERING;
 	static const FastName PARAM_FLAT_COLOR;
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
