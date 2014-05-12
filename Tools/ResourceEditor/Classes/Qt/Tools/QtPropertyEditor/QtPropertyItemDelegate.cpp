@@ -193,10 +193,11 @@ bool QtPropertyItemDelegate::helpEvent(QHelpEvent * event, QAbstractItemView * v
 
     if (showTooltip)
     {
-        const QString toolTip = view->model()->data( index, Qt::ToolTipRole ).toString();
+        const QString toolTip = view->model()->data(index, Qt::ToolTipRole).toString();
         if (!toolTip.isEmpty())
         {
-            QToolTip::showText(QCursor::pos(), toolTip);
+            const QRect updateRect( 0, 0, 10, 10 );
+            QToolTip::showText(QCursor::pos(), toolTip, view, updateRect);
             return true;
         }
     }
