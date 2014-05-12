@@ -248,7 +248,7 @@ void Texture::ReleaseTextureData()
 #if defined(__DAVAENGINE_ANDROID__)
     container->stencilRboID = stencilRboID;
 #endif
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container), 0);
     
     id = 0;
 	fboID = -1;
