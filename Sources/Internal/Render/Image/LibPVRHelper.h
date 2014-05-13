@@ -39,6 +39,7 @@
 #include "Render/RenderBase.h"
 #include "Render/PixelFormatDescriptor.h"
 #include "Render/Image/ImageFormatInterface.h"
+#include "Render/Image/CRCAdditionInterface.h"
 
 #if defined (__DAVAENGINE_MACOS__) || defined (__DAVAENGINE_IPHONE__)
 #include <objc/objc.h>
@@ -130,20 +131,24 @@ public:
 class Image;
 class File;
 
-class LibPVRHelper: public ImageFormatInterface
+class LibPVRHelper: public ImageFormatInterface, public CRCAdditionInterface
 {
 public:
     
-    virtual bool IsImage(File *file);
+    LibPVRHelper();
+    
+    virtual bool IsImage(File *file) const;
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap = 0);
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
     
-    virtual uint32 GetDataSize(File *infile);
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
     
-    static bool AddCRCIntoMetaData(const FilePath &filePathname);
-    static uint32 GetCRCFromFile(const FilePath &filePathname);
+    virtual uint32 GetDataSize(File *infile) const;
+    
+    virtual bool AddCRCIntoMetaData(const FilePath &filePathname);
+    virtual uint32 GetCRCFromFile(const FilePath &filePathname);
     
     static bool WriteFileFromMipMapFiles(const FilePath & outputFile, const Vector<FilePath> & imgPaths);
    

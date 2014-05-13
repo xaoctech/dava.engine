@@ -154,7 +154,8 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 		
     if(addCRC)
     {
-	    LibPVRHelper::AddCRCIntoMetaData(outputName);
+        LibPVRHelper helper;
+	    helper.AddCRCIntoMetaData(outputName);
     }
 	return outputName;
 }
@@ -207,7 +208,8 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
 
     if(ret)
     {
-        LibPVRHelper::AddCRCIntoMetaData(outputName);
+        LibPVRHelper helper;
+        helper.AddCRCIntoMetaData(outputName);
         return outputName;
     }
     else

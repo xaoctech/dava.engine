@@ -48,14 +48,27 @@ public:
     virtual ~ImageFormatInterface()
     {};
     
-    virtual bool IsImage(File *file) = 0;
+    virtual bool IsImage(File *file) const = 0;
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap) = 0;
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false) = 0;
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) = 0;
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) = 0;
     
-    virtual uint32 GetDataSize(File *infile) = 0;
+    virtual uint32 GetDataSize(File *infile) const = 0;
+    
+    inline bool IsFileExtensionSupported(const String& extension);
+    
+protected:
+
+    Vector<String> supportedExtensions;
+    
 };
+    
+inline bool ImageFormatInterface::IsFileExtensionSupported(const String& extension)
+{
+    return std::find(supportedExtensions.begin(), supportedExtensions.end(), extension) != supportedExtensions.end();
+}
 
 };
 

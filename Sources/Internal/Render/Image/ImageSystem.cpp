@@ -43,15 +43,6 @@
 namespace DAVA 
 {
 
-const ImageSystem::ExtensionFormatPair ImageSystem::extensionFormatMap[] =
-{
-    { ".png", ImageSystem::FILE_FORMAT_PNG },
-    { ".pvr", ImageSystem::FILE_FORMAT_PVR },
-    { ".dds", ImageSystem::FILE_FORMAT_DDS },
-    { ".jpeg", ImageSystem::FILE_FORMAT_JPEG },
-    { ".jpg", ImageSystem::FILE_FORMAT_JPEG },
-};
-    
 ImageSystem::ImageSystem()
 {
     wrappers[FILE_FORMAT_PNG] = new LibPngWrapper();
@@ -68,7 +59,7 @@ ImageSystem::~ImageSystem()
     }
 }
 
-eErrorCode ImageSystem::Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap)
+eErrorCode ImageSystem::Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap) const
 {
     File *fileRead = File::Create(pathname, File::READ | File::OPEN);
     if(!fileRead)
@@ -83,7 +74,7 @@ eErrorCode ImageSystem::Load(const FilePath & pathname, Vector<Image *> & imageS
     return result;
 }
 
-eErrorCode ImageSystem::Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap)
+eErrorCode ImageSystem::Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap) const
 {
     ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
     
@@ -95,7 +86,7 @@ eErrorCode ImageSystem::Load(File *file, Vector<Image *> & imageSet, int32 baseM
     return propperWrapper->ReadFile(file, imageSet, baseMipmap);
 }
 
-eErrorCode ImageSystem::Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
+eErrorCode ImageSystem::SaveAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
     ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
     if(!propperWrapper)
@@ -103,10 +94,21 @@ eErrorCode ImageSystem::Save(const FilePath & fileName, const Vector<Image *> &i
         return ERROR_FILE_FORMAT_INCORRECT;
     }
     
-    return propperWrapper->WriteFile(fileName, imageSet, compressionFormat, isCubeMap);
+    return propperWrapper->WriteFileAsCubeMap(fileName, imageSet, compressionFormat);
+}
+    
+eErrorCode ImageSystem::Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
+{
+    ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
+    if(!propperWrapper)
+    {
+        return ERROR_FILE_FORMAT_INCORRECT;
+    }
+    
+    return propperWrapper->WriteFile(fileName, imageSet, compressionFormat);
 }
 
-eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat)
+eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat) const
 {
     if (NULL == image)
     {
@@ -114,17 +116,17 @@ eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelForma
     }
     Vector<Image*> imageSet;
     imageSet.push_back(image);
-    return Save(fileName, imageSet, compressionFormat, false);
+    return Save(fileName, imageSet, compressionFormat);
 }
     
-ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const FilePath & pathname)
+ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const FilePath & pathname) const
 {
-    const char* extension = pathname.GetExtension().c_str();
-    for(int32 i = 0; i < COUNT_OF(extensionFormatMap); ++i)
+    String extension = pathname.GetExtension();
+    for(int32 i = 0; i < FILE_FORMAT_COUNT ; ++i)
     {
-        if(strcmp(extensionFormatMap[i].extension, extension) == 0)
+        if(wrappers[i]->IsFileExtensionSupported(extension))
         {
-            return wrappers[extensionFormatMap[i].format];
+            return wrappers[i];
         }
     }
     DVASSERT(0);
@@ -132,7 +134,7 @@ ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const F
     return NULL;
 }
 
-ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByContent(File *file)
+ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByContent(File *file) const
 {
     for(int32 i = 0; i < FILE_FORMAT_COUNT; ++i)
     {

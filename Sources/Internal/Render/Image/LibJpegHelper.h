@@ -43,14 +43,19 @@ class LibJpegWrapper: public ImageFormatInterface
 {
 public:
     
-    virtual bool IsImage(File *file);
+    LibJpegWrapper();
+    
+    virtual bool IsImage(File *file) const;
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
 
     //only RGB888 or A8
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
     
-    virtual uint32 GetDataSize(File *infile);
+    //only RGB888 or A8
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    
+    virtual uint32 GetDataSize(File *infile) const;
 };
 
 };

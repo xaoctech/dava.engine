@@ -71,7 +71,8 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
         for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
         if(SUCCESS == retCode)
         {
-			LibDdsHelper::AddCRCIntoMetaData(outputName);
+            LibDdsHelper helper;
+			helper.AddCRCIntoMetaData(outputName);
             return outputName;
         }
     }
@@ -123,11 +124,12 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 			}
         }
 		
-        eErrorCode retCode = ImageSystem::Instance()->Save(outputName, inputImages, (PixelFormat) descriptor.compression[gpuFamily].format, true);
+        eErrorCode retCode = ImageSystem::Instance()->SaveAsCubeMap(outputName, inputImages, (PixelFormat) descriptor.compression[gpuFamily].format);
         if(SUCCESS == retCode)
         {
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
-            LibDdsHelper::AddCRCIntoMetaData(outputName);
+            LibDdsHelper helper;
+            helper.AddCRCIntoMetaData(outputName);
             return outputName;
         }
     }
