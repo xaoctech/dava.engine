@@ -767,6 +767,7 @@
 		5C97965A14E3F09F00FFFA14 /* libyaml_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97965914E3F09F00FFFA14 /* libyaml_macos.a */; };
 		620638B618EE9F5100C85F25 /* libjpeg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 627AFA6C18E964E300F2A52A /* libjpeg_macos.a */; };
 		6246724A18EEA50E00046586 /* libjpeg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 627AFA6C18E964E300F2A52A /* libjpeg_macos.a */; };
+		62D1C35E1922624A00B8143B /* CRCAdditionInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 62D1C35D1922624A00B8143B /* CRCAdditionInterface.h */; };
 		7410E81C17144C120028AAAA /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C18593D816F30BED005D30E2 /* UIAggregatorControl.cpp */; };
 		7410E81D17144C160028AAAA /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = C18593D916F30BED005D30E2 /* UIAggregatorControl.h */; };
 		7489A9CF1702F5A200D9AE2D /* CRC32.h in Headers */ = {isa = PBXBuildFile; fileRef = 74A909AA1701FA51003FDB31 /* CRC32.h */; };
@@ -2318,6 +2319,7 @@
 		5C77AB7C14C7509D00E92D28 /* libpng_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng_macos.a; path = ../../Libs/libs/libpng_macos.a; sourceTree = "<group>"; };
 		5C97965914E3F09F00FFFA14 /* libyaml_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyaml_macos.a; path = ../../Libs/libs/libyaml_macos.a; sourceTree = "<group>"; };
 		627AFA6C18E964E300F2A52A /* libjpeg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg_macos.a; path = ../../Libs/libs/libjpeg_macos.a; sourceTree = "<group>"; };
+		62D1C35D1922624A00B8143B /* CRCAdditionInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRCAdditionInterface.h; path = Image/CRCAdditionInterface.h; sourceTree = "<group>"; };
 		748A99711726C5ED00C6411B /* UIScrollView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollView.cpp; sourceTree = "<group>"; };
 		748A99721726C5EE00C6411B /* UIScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollView.h; sourceTree = "<group>"; };
 		74A909A91701FA51003FDB31 /* CRC32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CRC32.cpp; sourceTree = "<group>"; };
@@ -3165,6 +3167,7 @@
 		84CB66EB191FC8420086483D /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				62D1C35D1922624A00B8143B /* CRCAdditionInterface.h */,
 				84CB670A191FC8850086483D /* Image.cpp */,
 				84CB670B191FC8850086483D /* Image.h */,
 				84CB670C191FC8850086483D /* Image.mm */,
@@ -4790,6 +4793,7 @@
 				CC84B01F18211A9000934482 /* JobManager.h in Headers */,
 				E8989F6916BD24E500732C04 /* VertexBuffer.h in Headers */,
 				E8989F6B16BD24E500732C04 /* Box2DDebugDraw.h in Headers */,
+				62D1C35E1922624A00B8143B /* CRCAdditionInterface.h in Headers */,
 				E8989F6D16BD24E500732C04 /* Box2DGameObject.h in Headers */,
 				E8989F6F16BD24E500732C04 /* Box2DGameObjectManager.h in Headers */,
 				E8989F7116BD24E500732C04 /* Box2DHelper.h in Headers */,

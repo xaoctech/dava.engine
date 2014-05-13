@@ -48,13 +48,17 @@ class LibPngWrapper: public ImageFormatInterface
 {
 public:
     
-    virtual bool IsImage(File *file);
+    LibPngWrapper();
+    
+    virtual bool IsImage(File *file) const;
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_INVALID, bool isCubeMap = false);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
 
-    virtual uint32 GetDataSize(File *infile);
+    virtual uint32 GetDataSize(File *infile) const;
 
 protected:
     

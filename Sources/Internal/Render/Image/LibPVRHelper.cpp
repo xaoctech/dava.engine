@@ -84,7 +84,12 @@ namespace DAVA
     
     const uint32 PVRTEX3_METADATAIDENT	= 0x03525650;
     
-    bool LibPVRHelper::IsImage(DAVA::File *file)
+    LibPVRHelper::LibPVRHelper()
+    {
+        supportedExtensions.push_back(".pvr");
+    }
+    
+    bool LibPVRHelper::IsImage(DAVA::File *file) const
     {
         bool isPvrFile = false;
         
@@ -109,7 +114,14 @@ namespace DAVA
         return ERROR_READ_FAIL;
     }
     
-    eErrorCode LibPVRHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
+    eErrorCode LibPVRHelper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+    {
+        //not implemented due to external tool
+        DVASSERT(0);
+        return ERROR_WRITE_FAIL;
+    }
+    
+    eErrorCode LibPVRHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
     {
         //not implemented due to external tool
         DVASSERT(0);
@@ -1841,7 +1853,7 @@ namespace DAVA
     }
     
     
-    uint32 LibPVRHelper::GetDataSize(File *file)
+    uint32 LibPVRHelper::GetDataSize(File *file) const
     {
         uint32 dataSize = 0;
         

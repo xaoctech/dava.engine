@@ -35,6 +35,7 @@
 #include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
 #include "Render/Image/ImageFormatInterface.h"
+#include "Render/Image/CRCAdditionInterface.h"
 
 namespace DAVA 
 {
@@ -42,18 +43,23 @@ namespace DAVA
 class Image;
 class File;
 
-class LibDdsHelper: public ImageFormatInterface
+class LibDdsHelper: public ImageFormatInterface, public CRCAdditionInterface
 {
 public:
     
-    virtual bool IsImage(File *file);
+    LibDdsHelper();
+    
+    virtual bool IsImage(File *file) const;
     
     virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
 
   	//input data only in RGBA8888
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap = false);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
 
-    virtual uint32 GetDataSize(File * file);
+    //input data only in RGBA8888
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    
+    virtual uint32 GetDataSize(File * file) const;
     
     static eErrorCode ReadFile(File * file, Vector<Image*> &imageSet, int32 baseMipMap = 0, bool forceSoftwareConvertation = false);
        
@@ -62,11 +68,13 @@ public:
     static uint32 GetMipMapLevelsCount(const FilePath & fileName);
 	static uint32 GetMipMapLevelsCount(File * file);
     
-	static bool AddCRCIntoMetaData(const FilePath &filePathname);
-	static uint32 GetCRCFromFile(const FilePath &filePathname);
+	virtual bool AddCRCIntoMetaData(const FilePath &filePathname);
+	virtual uint32 GetCRCFromFile(const FilePath &filePathname);
     
 private:
 
+    eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
+    
 	static PixelFormat GetPixelFormat(const FilePath & fileName);
 	static PixelFormat GetPixelFormat(File * file);
 	

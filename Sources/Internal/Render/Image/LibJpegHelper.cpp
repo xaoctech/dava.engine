@@ -74,14 +74,19 @@ void jpegErrorExit (j_common_ptr cinfo)
     /* Jump to the setjmp point */
     longjmp(myerr->setjmp_buffer, 1);
 }
-
     
-bool LibJpegWrapper::IsImage(File *infile)
+LibJpegWrapper::LibJpegWrapper()
+{
+    supportedExtensions.push_back(".jpeg");
+    supportedExtensions.push_back(".jpg");
+}
+    
+bool LibJpegWrapper::IsImage(File *infile) const
 {
     return GetDataSize(infile) != 0;
 }
     
-uint32 LibJpegWrapper::GetDataSize(File *infile)
+uint32 LibJpegWrapper::GetDataSize(File *infile) const
 {
     jpeg_decompress_struct cinfo;
     jpegErrorManager jerr;
@@ -168,8 +173,14 @@ eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int
     imageSet.push_back(image);
     return SUCCESS;
 }
-   
-eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
+
+eErrorCode LibJpegWrapper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+{
+    // for jpeg cubeMaps are not supported
+    return WriteFile(fileName, imageSet, compressionFormat);
+}
+    
+eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
 {
     DVASSERT(imageSet.size());
     const Image* original = imageSet[0];

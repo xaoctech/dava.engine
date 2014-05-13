@@ -36,7 +36,7 @@
 #include "Utils/Utils.h"
 #include "Render/Image/LibPVRHelper.h"
 #include "Render/Image/LibDdsHelper.h"
-
+#include "Render/Image/ImageSystem.h"
 #include "Render/GPUFamilyDescriptor.h"
 
 #include "Utils/CRC32.h"
@@ -591,11 +591,13 @@ uint32 TextureDescriptor::ReadConvertedCRC(eGPUFamily forGPU) const
 	FilePath filePath = GPUFamilyDescriptor::CreatePathnameForGPU(this, forGPU);
 	if(filePath.IsEqualToExtension(".pvr"))
 	{
-		return LibPVRHelper::GetCRCFromFile(filePath);
+        LibPVRHelper helper;
+        return helper.GetCRCFromFile(filePath);
 	}
 	else if(filePath.IsEqualToExtension(".dds"))
 	{
-		return LibDdsHelper::GetCRCFromFile(filePath);
+        LibDdsHelper helper;
+		return helper.GetCRCFromFile(filePath);
 	}
     DVASSERT(0);//converted means only pvr or dds
     return 0;
