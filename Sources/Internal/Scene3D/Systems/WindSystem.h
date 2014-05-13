@@ -60,12 +60,10 @@ public:
 
     void WindTriggered(WindComponent * wind);
 
-    Vector4 GetWind(const Vector3 & inPosition, uint32 typeMask = WindComponent::WIND_TYPE_MASK_ALL);
+    Vector3 GetWind(const Vector3 & inPosition, uint32 typeMask = WindComponent::WIND_TYPE_MASK_ALL);
 
-private:
-    void ProcessWind(WindInfo * wind, float32 timeElapsed);
-
-    Vector4 globalWind;
+protected:
+    virtual void ProcessWind(WindInfo * wind, float32 timeElapsed);
 
     Vector<WindInfo *> winds;
 

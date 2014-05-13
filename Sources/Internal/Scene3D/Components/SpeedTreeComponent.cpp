@@ -39,7 +39,7 @@ namespace DAVA
 
 SpeedTreeComponent::SpeedTreeComponent() :
     trunkOscillationAmplitude(1.f),
-    trunkOscillationSpring(2.f),
+    trunkOscillationSpringSqrt(1.4f),
     leafsOscillationAmplitude(2.f),
     leafsOscillationSpeed(1.f),
     maxAnimatedLOD(0)
@@ -57,7 +57,7 @@ Component * SpeedTreeComponent::Clone(Entity * toEntity)
 	component->SetEntity(toEntity);
 
     component->trunkOscillationAmplitude = trunkOscillationAmplitude;
-    component->trunkOscillationSpring = trunkOscillationSpring;
+    component->trunkOscillationSpringSqrt = trunkOscillationSpringSqrt;
     component->leafsOscillationAmplitude = leafsOscillationAmplitude;
     component->leafsOscillationSpeed = leafsOscillationSpeed;
     component->maxAnimatedLOD = maxAnimatedLOD;
@@ -72,7 +72,7 @@ void SpeedTreeComponent::Serialize(KeyedArchive *archive, SerializationContext *
 	if(archive != 0)
 	{
         archive->SetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
-        archive->SetFloat("stc.trunkOscillationSpring", trunkOscillationSpring);
+        archive->SetFloat("stc.trunkOscillationSpringSqrt", trunkOscillationSpringSqrt);
 		archive->SetFloat("stc.leafsOscillationAmplitude", leafsOscillationAmplitude);
 		archive->SetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
         archive->SetInt32("stc.maxAnimatedLOD", maxAnimatedLOD);
@@ -84,7 +84,7 @@ void SpeedTreeComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	if(archive)
 	{
         trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
-        trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationSpring", trunkOscillationSpring);
+        trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationSpringSqrt", trunkOscillationSpringSqrt);
 		leafsOscillationAmplitude = archive->GetFloat("stc.leafsOscillationAmplitude", leafsOscillationAmplitude);
 		leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
         maxAnimatedLOD = archive->GetInt32("stc.maxAnimatedLOD", maxAnimatedLOD);

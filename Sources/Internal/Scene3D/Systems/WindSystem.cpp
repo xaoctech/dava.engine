@@ -82,40 +82,62 @@ void WindSystem::RemoveEntity(Entity * entity)
 
 void WindSystem::Process(float32 timeElapsed)
 {
-    Vector3 windVector;
+    int32 windCount = winds.size();
+    for(int32 i = 0; i < windCount; ++i)
+    {
+        ProcessWind(winds[i], timeElapsed);
+    }
+}
+
+Vector3 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
+{
+    Vector3 ret;
     int32 windCount = winds.size();
     for(int32 i = 0; i < windCount; ++i)
     {
         WindInfo * info = winds[i];
-        ProcessWind(info, timeElapsed);
-        windVector += info->component->GetWindDirection() * info->currentWindValue;
+        if((typeMask & info->component->type) > 0 && info->component->influenceBbox.IsInside(inPosition))
+        {
+            ret += info->component->GetDirection() * info->currentWindValue;
+        }
     }
-    float32 globalForce = 0.f;
-    if(!windVector.IsZero())
-        globalForce = windVector.Normalize();
-    globalWind = Vector4(windVector);
-    globalWind.w = globalForce;
-}
 
-Vector4 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
-{
-    Vector4 ret;
-    if((typeMask & WindComponent::WIND_TYPE_GLOBAL) != 0)
-        ret += globalWind;
     return ret;
 }
 
 void WindSystem::WindTriggered(WindComponent * wind)
 {
-
+    //if(wind->type == WindComponent::WIND_TYPE_EXPLOSION)
+    //{
+    //    int32 windCount = winds.size();
+    //    for(int32 i = 0; i < windCount; ++i)
+    //    {
+    //        WindInfo * info = winds[i];
+    //        if(info->component == wind)
+    //        {
+    //            info->timeValue = 0.f;
+    //            break;
+    //        }
+    //    }
+    //}
 }
 
 void WindSystem::ProcessWind(WindInfo * wind, float32 timeElapsed)
 {
     wind->timeValue += timeElapsed;
-    if(wind->component->type == WindComponent::WIND_TYPE_GLOBAL)
+    
+    switch(wind->component->type)
     {
-        wind->currentWindValue = wind->component->force * (2.f + sinf(wind->timeValue) * 0.8f + cosf(wind->timeValue * 10) * 0.2f);
+    case WindComponent::WIND_TYPE_STATIC:
+        {
+            wind->currentWindValue = wind->component->amplitude * (2.f + sinf(wind->timeValue) * 0.8f + cosf(wind->timeValue * 10) * 0.2f);
+        }
+        break;
+    case WindComponent::WIND_TYPE_WAVE:
+        {
+            wind->currentWindValue = wind->component->amplitude * (sinf(wind->timeValue * 20) + .5f);
+        }
+        break;
     }
 }
 
