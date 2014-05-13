@@ -127,6 +127,11 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>Internal/Job</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>Internal/Math</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
@@ -1215,6 +1220,46 @@
 			<name>Internal/Input/KeyboardDevice.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Input/KeyboardDevice.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/Job.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/Job.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/Job.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/Job.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/JobManager.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/JobManager.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/JobManager.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/JobManager.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/JobQueue.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/JobQueue.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/JobQueue.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/JobQueue.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/JobWaiter.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/JobWaiter.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Job/JobWaiter.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Job/JobWaiter.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Math/AABBox2.cpp</name>

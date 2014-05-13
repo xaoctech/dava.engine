@@ -80,6 +80,7 @@ public:
     void AddComponent(Component * component);
     void RemoveComponent(Component * component);
     void RemoveComponent(uint32 componentType, uint32 index = 0);
+    void DetachComponent(Component * component);
 
     Component * GetComponent(uint32 componentType, uint32 index = 0) const;
     Component * GetOrCreateComponent(uint32 componentType, uint32 index = 0);
@@ -212,7 +213,7 @@ public:
      */
 	void PropagateBoolProperty(String name, bool value);
     
-	enum
+	enum EntityFlags
     {
         // NODE_STATIC = 0x1,  // this flag means that node is always static and we do not need to update it's worldTransform
         // NODE_DYNAMIC = 0x2, // node automatically become dynamic when we update it's local matrix
@@ -421,7 +422,7 @@ public:
 	INTROSPECTION_EXTEND(Entity, BaseObject,
 		MEMBER(name, "Name", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(tag, "Tag", I_SAVE | I_VIEW | I_EDIT)
-        MEMBER(flags, "Flags", I_SAVE | I_VIEW | I_EDIT)
+        MEMBER( flags, "Flags", I_SAVE | I_VIEW | I_EDIT )
 
         PROPERTY("visible", "Visible", GetVisible, SetVisible, I_VIEW | I_EDIT)
 
