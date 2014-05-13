@@ -334,7 +334,7 @@ void RenderHelper::DrawPoint(const Vector3 & pt, float32 ptSize, UniqueHandle re
 void RenderHelper::DrawCircle(const Vector2 & center, float32 radius, UniqueHandle renderState)
 {
 	Polygon2 pts;
-    float32 angle = Min(PI/6.0f, SEGMENT_LENGTH / radius);// minimum angle 30 degrees
+    float32 angle = Min(PI/6.0f, SEGMENT_LENGTH / radius);// maximum angle 30 degrees
 	int ptsCount = (int)(2 * PI / angle) + 1;
 	
     pts.points.reserve(ptsCount);
@@ -354,7 +354,7 @@ void RenderHelper::DrawCircle(const Vector2 & center, float32 radius, UniqueHand
 void RenderHelper::DrawCircle(const Vector3 & center, float32 radius, UniqueHandle renderState)
 {
 	Polygon3 pts;
-    float32 angle = SEGMENT_LENGTH / radius;
+    float32 angle = Min(PI/6.0f, SEGMENT_LENGTH / radius);// maximum angle 30 degrees
 	int ptsCount = (int)(2 * PI / (DegToRad(angle))) + 1;
 
     pts.points.reserve(ptsCount);
@@ -373,7 +373,7 @@ void RenderHelper::DrawCircle(const Vector3 & center, float32 radius, UniqueHand
 void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionVector, float32 radius, bool useFilling, UniqueHandle renderState)
 {
 	Polygon3 pts;
-    float32 angle = SEGMENT_LENGTH / radius;
+    float32 angle = Min(PI/6.0f, SEGMENT_LENGTH / radius);// maximum angle 30 degrees
 	int ptsCount = (int)(PI_2 / (DegToRad(angle))) + 1;
 
     pts.points.reserve(ptsCount);
@@ -432,7 +432,7 @@ void RenderHelper::DrawCircle3D(const Vector3 & center, const Vector3 &emissionV
 void RenderHelper::DrawCylinder(const Vector3 & center, float32 radius, bool useFilling, UniqueHandle renderState)
 {
 	Polygon3 pts;
-    float32 angle = SEGMENT_LENGTH / radius;
+    float32 angle = Min(PI/6.0f, SEGMENT_LENGTH / radius);// maximum angle 30 degrees
 	int32 ptsCount = (int32)(PI_2 / (DegToRad(angle))) + 1;
 
 	Vector<Vector2> vertexes;
