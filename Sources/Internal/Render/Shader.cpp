@@ -42,6 +42,7 @@
 #include "Utils/CRC32.h"
 #endif
 #include "Utils/Utils.h"
+#include "Render/ShaderCache.h"
 
 namespace DAVA
 {
@@ -1235,7 +1236,7 @@ void Shader::Dump()
     }
 }
 
-Shader * Shader::CompileShader(const FastName & assetName,
+Shader * Shader::CreateShader(const FastName & assetName,
                                Data * vertexShaderData,
                                Data * fragmentShaderData,
                                uint8 * vertexShaderDataStart,
@@ -1261,9 +1262,8 @@ Shader * Shader::CompileShader(const FastName & assetName,
         result += Format("#define %s\n", fname.c_str());
     }
     shader->SetDefines(result);
-    
-    shader->Recompile();
-    return shader;
+
+	return shader;
 }
 
 void Shader::Reload(DAVA::Data *vertexShaderData,
@@ -1281,8 +1281,6 @@ void Shader::Reload(DAVA::Data *vertexShaderData,
     this->vertexShaderDataSize = vertexShaderDataSize;
     this->fragmentShaderDataStart = fragmentShaderDataStart;
     this->fragmentShaderDataSize = fragmentShaderDataSize;
-
-    Recompile();
 }
 
     
@@ -1316,6 +1314,10 @@ void Shader::Invalidate()
 {
     RenderResource::Invalidate();
     Recompile();
+    
+    ShaderAsset* asset = ShaderCache::Instance()->Get(assetName);
+    if (asset)
+        asset->BindShaderDefaults(this);
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
 

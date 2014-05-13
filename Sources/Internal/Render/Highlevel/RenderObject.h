@@ -100,8 +100,7 @@ public:
 
 	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION;
 	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | VISIBLE_STATIC_OCCLUSION;
-    static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION;
-protected:
+    static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION | ALWAYS_CLIPPING_VISIBLE;protected:
     virtual ~RenderObject();
 public:
     RenderObject();
@@ -155,7 +154,7 @@ public:
     virtual void SetRenderSystem(RenderSystem * renderSystem);
 	RenderSystem * GetRenderSystem();
 
-	virtual void BakeTransform(const Matrix4 & transform);
+	virtual void BakeGeometry(const Matrix4 & transform);
 
 	virtual void RecalculateWorldBoundingBox();
     

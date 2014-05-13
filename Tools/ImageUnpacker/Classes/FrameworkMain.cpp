@@ -32,6 +32,8 @@
 #include "GameCore.h"
 #include "TexturePacker/CommandLineParser.h"
 
+#include "Render/ImageConvert.h"
+
 using namespace DAVA;
  
 void PrintUsage()
@@ -64,7 +66,22 @@ void UnpackFile(const FilePath & sourceImagePath)
     
     if(images.size() != 0)
     {
-        ImageLoader::Save(images[0], FilePath::CreateWithNewExtension(sourceImagePath,".png"));
+        Image *image = images[0];
+        if((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format))
+        {
+            ImageLoader::Save(image, FilePath::CreateWithNewExtension(sourceImagePath,".png"));
+        }
+        else
+        {
+			Image *savedImage = Image::Create(image->width, image->height, FORMAT_RGBA8888);
+
+			ImageConvert::ConvertImageDirect(image->format, savedImage->format, image->data, image->width, image->height, image->width * Texture::GetPixelFormatSizeInBytes(image->format), 
+					savedImage->data, savedImage->width, savedImage->height, savedImage->width * Texture::GetPixelFormatSizeInBytes(savedImage->format));
+
+			ImageLoader::Save(savedImage, FilePath::CreateWithNewExtension(sourceImagePath,".png"));
+			savedImage->Release();
+        }
+        
         for_each(images.begin(), images.end(), SafeRelease<Image>);
     }
     else
