@@ -56,16 +56,55 @@ static FastName VEGETATION_ENTITY_LAYER_NAMES[] =
     VEGETATION_ENTITY_LAYER_3
 };
 
-VegetationCustomGeometry::CustomGeometryData::CustomGeometryData() : material(NULL)
+VegetationCustomGeometry::CustomGeometryLayerData::CustomGeometryLayerData()
+{
+        
+}
+    
+VegetationCustomGeometry::CustomGeometryLayerData::CustomGeometryLayerData(const CustomGeometryLayerData& src)
+{
+    for(size_t i = 0; i < src.sourcePositions.size(); ++i)
+    {
+        sourcePositions.push_back(src.sourcePositions[i]);
+    }
+
+    for(size_t i = 0; i < src.sourceTextureCoords.size(); ++i)
+    {
+        sourceTextureCoords.push_back(src.sourceTextureCoords[i]);
+    }
+
+    for(size_t i = 0; i < src.sourceNormals.size(); ++i)
+    {
+        sourceNormals.push_back(src.sourceNormals[i]);
+    }
+
+    for(size_t i = 0; i < src.sourceIndices.size(); ++i)
+    {
+        sourceIndices.push_back(src.sourceIndices[i]);
+    }
+}
+
+VegetationCustomGeometry::CustomGeometryEntityData::CustomGeometryEntityData() : material(NULL)
 {
 }
 
-VegetationCustomGeometry::CustomGeometryData::~CustomGeometryData()
+VegetationCustomGeometry::CustomGeometryEntityData::CustomGeometryEntityData(const CustomGeometryEntityData& src)
+{
+    material = NULL;
+    SetMaterial(src.material);
+    
+    for(size_t i = 0; i < src.lods.size(); ++i)
+    {
+        lods.push_back(src.lods[i]);
+    }
+}
+    
+VegetationCustomGeometry::CustomGeometryEntityData::~CustomGeometryEntityData()
 {
     SafeRelease(material);
 }
     
-void VegetationCustomGeometry::CustomGeometryData::SetMaterial(NMaterial* mat)
+void VegetationCustomGeometry::CustomGeometryEntityData::SetMaterial(NMaterial* mat)
 {
     if(mat != material)
     {
@@ -106,7 +145,7 @@ VegetationCustomGeometry::VegetationCustomGeometry(const Vector<uint32>& _maxClu
                                                    const Vector3& _worldSize)
 {
     maxClusters.reserve(_maxClusters.size());
-    for(size_t i = 0; i < maxClusters.size(); ++i)
+    for(size_t i = 0; i < _maxClusters.size(); ++i)
     {
         maxClusters.push_back(_maxClusters[i]);
     }
@@ -158,7 +197,7 @@ void VegetationCustomGeometry::ReleaseRenderData(Vector<VegetationRenderData*>& 
     
 void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags)
 {
-    Vector<CustomGeometryData> customGeometryData;
+    Vector<CustomGeometryEntityData> customGeometryData;
     LoadCustomData(customGeometryData);
     
     markedRenderData.resize(customGeometryData.size());
@@ -167,7 +206,7 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
     size_t layerCount = customGeometryData.size();
     for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
-        CustomGeometryData& layerGeometryData = customGeometryData[layerIndex];
+        CustomGeometryEntityData& layerGeometryData = customGeometryData[layerIndex];
         
         VegetationRenderData* renderData = new VegetationRenderData();
         renderData->SetMaterial(layerGeometryData.material);
@@ -190,10 +229,7 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
         Vector<VegetationIndex>& indexData = renderData->GetIndices();
         
         BuildLayer(layerIndex,
-                   layerGeometryData.sourcePositions,
-                   layerGeometryData.sourceTextureCoords,
-                   layerGeometryData.sourceNormals,
-                   layerGeometryData.sourceIndices,
+                   layerGeometryData,
                    vertexData,
                    indexData,
                    markedRenderData[layerIndex].vertexOffset,
@@ -309,7 +345,7 @@ void VegetationCustomGeometry::GenerateClusterPositionData(uint32 layerMaxCluste
     std::random_shuffle(densityId.begin(), densityId.end(), RandomShuffleFunc);
     
     clusters.resize(totalClusterCount);
-    for(uint32 clusterIndex = 0; clusterIndex < totalClusterCount; ++totalClusterCount)
+    for(uint32 clusterIndex = 0; clusterIndex < totalClusterCount; ++clusterIndex)
     {
         ClusterPositionData& cluster = clusters[clusterIndex];
         
@@ -336,7 +372,7 @@ void VegetationCustomGeometry::GenerateClusterResolutionData(uint32 layerId,
     
     uint32 clusterRowSize = resolutionTilesPerRow[0] * layerMaxClusters;
     uint32 currentTilesPerRowCount = resolutionTilesPerRow[resolutionId];
-    uint32 resolutionRowSize = currentTilesPerRowCount * layerMaxClusters;
+    uint32 resolutionRowSize = (resolutionTilesPerRow[0] / currentTilesPerRowCount) * layerMaxClusters;
     
     size_t totalClusterCount = clusterPosition.size();
     size_t currentResolutionStride = resolutionClusterStride[resolutionId];
@@ -431,16 +467,14 @@ void VegetationCustomGeometry::GenerateVertexData(Vector<Vector3>& sourcePositio
     
     endIndex = vertexData.size() - 1;
     
-    if(perCellOffsets.empty())
-    {
-        VertexRangeData rangeData;
-        rangeData.index = startIndex;
-        rangeData.size = endIndex - startIndex;
+    VertexRangeData rangeData;
+    rangeData.index = currentVertexIndex;
+    rangeData.size =  vertexData.size() - currentVertexIndex;
         
-        perCellOffsets.push_back(rangeData);
-    }
-}
+    perCellOffsets.push_back(rangeData);
+    perCellClusterCount.push_back(clusterCount - currentCluster);
 
+}
 
 void VegetationCustomGeometry::GenerateIndexData(Vector<VegetationIndex>& sourceIndices,
                                                  VegetationIndex startIndex,
@@ -450,28 +484,35 @@ void VegetationCustomGeometry::GenerateIndexData(Vector<VegetationIndex>& source
                                                  Vector<SortBufferData>& directionOffsets)
 {
     uint32 totalIndexCount = sourceIndices.size() * clusterCount;
+    
+    size_t clusterIndexCount = sourceIndices.size();
+    Vector<VegetationIndex> sourceCellIndices;
+    sourceCellIndices.resize(totalIndexCount);
+    for(uint32 clusterIndex = 0; clusterIndex < clusterCount; ++clusterIndex)
+    {
+        for(size_t i = 0; i < clusterIndexCount; ++i)
+        {
+            sourceCellIndices[clusterIndex * clusterIndexCount + i] = startIndex + clusterIndex * clusterIndexCount + sourceIndices[i];
+        }
+    }
 
     AABBox3 boundingBox;
     Vector<PolygonSortData> sortDataArray;
     size_t sortItemCount = totalIndexCount / 3; //triangle is described by 3 vertices
     sortDataArray.resize(sortItemCount);
-    uint32 subIndex = 0;
     for(size_t sortItemIndex = 0; sortItemIndex < sortItemCount; ++sortItemIndex)
     {
         PolygonSortData& sortData = sortDataArray[sortItemIndex];
         
-        sortData.indices[0] = subIndex + sourceIndices[sortItemIndex * 3 + 0];
-        subIndex++;
+        sortData.indices[0] = sourceCellIndices[sortItemIndex * 3 + 0];
         
-        sortData.indices[1] = startIndex + sourceIndices[sortItemIndex * 3 + 1];
-        subIndex++;
+        sortData.indices[1] = sourceCellIndices[sortItemIndex * 3 + 1];
         
-        sortData.indices[2] = startIndex + sourceIndices[sortItemIndex * 3 + 2];
-        subIndex++;
+        sortData.indices[2] = sourceCellIndices[sortItemIndex * 3 + 2];
         
-        boundingBox.AddPoint(vertexData[startIndex + sortData.indices[0]].coord);
-        boundingBox.AddPoint(vertexData[startIndex + sortData.indices[1]].coord);
-        boundingBox.AddPoint(vertexData[startIndex + sortData.indices[2]].coord);
+        boundingBox.AddPoint(vertexData[sortData.indices[0]].coord);
+        boundingBox.AddPoint(vertexData[sortData.indices[1]].coord);
+        boundingBox.AddPoint(vertexData[sortData.indices[2]].coord);
     }
     
     Vector<Vector3> cameraPositions;
@@ -528,10 +569,7 @@ void VegetationCustomGeometry::GenerateSortedClusterIndexData(Vector3& cameraPos
 }
 
 void VegetationCustomGeometry::BuildLayer(uint32 layerId,
-                                          Vector<Vector<Vector3> >& sourcePositions,
-                                          Vector<Vector<Vector2> >& sourceTextureCoords,
-                                          Vector<Vector<Vector3> >& sourceNormals,
-                                          Vector<Vector<VegetationIndex> >& sourceIndices,
+                                          CustomGeometryEntityData& sourceLayerData,
                                           Vector<VegetationVertex>& vertexData,
                                           Vector<VegetationIndex>& indexData,
                                           Vector<Vector<VertexRangeData> >& vertexOffsets, //resolution-cell
@@ -565,9 +603,9 @@ void VegetationCustomGeometry::BuildLayer(uint32 layerId,
         uint32 vertexStartIndex = 0;
         uint32 vertexEndIndex = 0;
         Vector<uint32> perCellClusterCount;
-        GenerateVertexData(sourcePositions[resolutionIndex],
-                           sourceTextureCoords[resolutionIndex],
-                           sourceNormals[resolutionIndex],
+        GenerateVertexData(sourceLayerData.lods[resolutionIndex].sourcePositions,
+                           sourceLayerData.lods[resolutionIndex].sourceTextureCoords,
+                           sourceLayerData.lods[resolutionIndex].sourceNormals,
                            clusterResolution,
                            vertexStartIndex,
                            vertexEndIndex,
@@ -579,9 +617,9 @@ void VegetationCustomGeometry::BuildLayer(uint32 layerId,
         for(uint32 cellIndex = 0; cellIndex < cellCount; cellIndex++)
         {
             resolutionOffsets.push_back(Vector<SortBufferData>());
-            Vector<SortBufferData>& currentIndexOffsets = resolutionOffsets[indexOffsets.size() - 1];
+            Vector<SortBufferData>& currentIndexOffsets = resolutionOffsets[resolutionOffsets.size() - 1];
             
-            GenerateIndexData(sourceIndices[resolutionIndex],
+            GenerateIndexData(sourceLayerData.lods[resolutionIndex].sourceIndices,
                               vertexOffsets[resolutionIndex][cellIndex].index,
                               perCellClusterCount[cellIndex],
                               vertexData,
@@ -591,7 +629,7 @@ void VegetationCustomGeometry::BuildLayer(uint32 layerId,
     }
 }
 
-void VegetationCustomGeometry::LoadCustomData(Vector<CustomGeometryData>& geometryData)
+void VegetationCustomGeometry::LoadCustomData(Vector<CustomGeometryEntityData>& geometryData)
 {
     Scene* scene = new Scene();
     Entity* entity = scene->GetRootNode(sourceDataPath);
@@ -605,7 +643,7 @@ void VegetationCustomGeometry::LoadCustomData(Vector<CustomGeometryData>& geomet
         ThreadIdJobWaiter waiter(Thread::GetCurrentThreadId());
         waiter.Wait();
         
-        Entity* currentVariation = SelectDataVariation(scene);
+        Entity* currentVariation = SelectDataVariation(entity);
         DVASSERT(currentVariation && "Invalid scene structure: variations!");
         
         if(currentVariation)
@@ -634,8 +672,9 @@ void VegetationCustomGeometry::LoadCustomData(Vector<CustomGeometryData>& geomet
                             uint32 renderBatchCount = ro->GetRenderBatchCount();
                             if(renderBatchCount > 0)
                             {
-                                geometryData.push_back(CustomGeometryData());
-                                CustomGeometryData& geometryDataItem = geometryData[geometryData.size() - 1];
+                                geometryData.push_back(CustomGeometryEntityData());
+                                CustomGeometryEntityData& geometryDataItem = geometryData[geometryData.size() - 1];
+                                geometryDataItem.SetMaterial(ro->GetRenderBatch(0)->GetMaterial()->GetParent());
 
                                 for(uint32 resolutionIndex = 0;
                                     resolutionIndex < resolutionCount;
@@ -650,20 +689,17 @@ void VegetationCustomGeometry::LoadCustomData(Vector<CustomGeometryData>& geomet
                                     
                                     DVASSERT(pg);
                                     
-                                    geometryDataItem.sourcePositions.push_back(Vector<Vector3>());
-                                    geometryDataItem.sourceTextureCoords.push_back(Vector<Vector2>());
-                                    geometryDataItem.sourceNormals.push_back(Vector<Vector3>());
-                                    geometryDataItem.sourceIndices.push_back(Vector<VegetationIndex>());
+                                    geometryDataItem.lods.push_back(CustomGeometryLayerData());
+                                    CustomGeometryLayerData& geometryLayerData = geometryDataItem.lods[geometryDataItem.lods.size() - 1];
                                     
-                                    Vector<Vector3>& positions = geometryDataItem.sourcePositions[geometryDataItem.sourcePositions.size() - 1];
-                                    Vector<Vector2>& texCoords = geometryDataItem.sourceTextureCoords[geometryDataItem.sourceTextureCoords.size() - 1];
-                                    Vector<Vector3>& normals = geometryDataItem.sourceNormals[geometryDataItem.sourceNormals.size() - 1];
-                                    Vector<VegetationIndex>& indices = geometryDataItem.sourceIndices[geometryDataItem.sourceIndices.size() - 1];
+                                    Vector<Vector3>& positions = geometryLayerData.sourcePositions;
+                                    Vector<Vector2>& texCoords = geometryLayerData.sourceTextureCoords;
+                                    Vector<Vector3>& normals = geometryLayerData.sourceNormals;
+                                    Vector<VegetationIndex>& indices = geometryLayerData.sourceIndices;
                                     
                                     int32 vertexFormat = pg->GetFormat();
                                     DVASSERT((vertexFormat & EVF_VERTEX) != 0);
                                     
-                                    geometryDataItem.SetMaterial(rb->GetMaterial());
                                     uint32 vertexCount = pg->GetVertexCount();
                                     for(uint32 vertexIndex = 0;
                                         vertexIndex < vertexCount;

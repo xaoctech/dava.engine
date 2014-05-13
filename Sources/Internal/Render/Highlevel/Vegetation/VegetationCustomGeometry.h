@@ -92,16 +92,25 @@ private:
         uint32 resolutionId;
     };
     
-    struct CustomGeometryData
+    struct CustomGeometryLayerData
     {
-        Vector<Vector<Vector3> > sourcePositions;
-        Vector<Vector<Vector2> > sourceTextureCoords;
-        Vector<Vector<Vector3> > sourceNormals;
-        Vector<Vector<VegetationIndex> > sourceIndices;
+        Vector<Vector3> sourcePositions;
+        Vector<Vector2> sourceTextureCoords;
+        Vector<Vector3> sourceNormals;
+        Vector<VegetationIndex> sourceIndices;
+        
+        CustomGeometryLayerData();
+        CustomGeometryLayerData(const CustomGeometryLayerData& src);
+    };
+    
+    struct CustomGeometryEntityData
+    {
+        Vector<CustomGeometryLayerData> lods;
         NMaterial* material;
         
-        CustomGeometryData();
-        ~CustomGeometryData();
+        CustomGeometryEntityData();
+        CustomGeometryEntityData(const CustomGeometryEntityData& src);
+        ~CustomGeometryEntityData();
         
         void SetMaterial(NMaterial* mat);
     };
@@ -130,14 +139,11 @@ private:
     
 private:
 
-    void LoadCustomData(Vector<CustomGeometryData>& geometryData);
+    void LoadCustomData(Vector<CustomGeometryEntityData>& geometryData);
     Entity* SelectDataVariation(Entity* rootNode);
 
     void BuildLayer(uint32 layerId,
-                    Vector<Vector<Vector3> >& sourcePositions,
-                    Vector<Vector<Vector2> >& sourceTextureCoords,
-                    Vector<Vector<Vector3> >& sourceNormals,
-                    Vector<Vector<VegetationIndex> >& sourceIndices,
+                    CustomGeometryEntityData& sourceLayerData,
                     Vector<VegetationVertex>& vertexData,
                     Vector<VegetationIndex>& indexData,
                     Vector<Vector<VertexRangeData> >& vertexOffsets,
