@@ -42,8 +42,10 @@ namespace DAVA
 	REGISTER_CLASS(WindComponent)
 
 WindComponent::WindComponent() :
-    force(0.f),
-    type(WIND_TYPE_GLOBAL)
+    amplitude(0.f),
+    frequency(0.f),
+    wavelenght(0.f),
+    type(WIND_TYPE_STATIC)
 {
     
 }
@@ -58,7 +60,9 @@ Component * WindComponent::Clone(Entity * toEntity)
     WindComponent * component = new WindComponent();
 	component->SetEntity(toEntity);
     
-	component->force = force;
+    component->amplitude = amplitude;
+    component->frequency = frequency;
+    component->wavelenght = wavelenght;
     component->influenceBbox = influenceBbox;
     component->type = type;
     
@@ -71,7 +75,9 @@ void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *seria
 
 	if(archive != 0)
 	{
-        archive->SetFloat("wc.force", force);
+        archive->SetFloat("wc.amplitude", amplitude);
+        archive->SetFloat("wc.frequency", frequency);
+        archive->SetFloat("wc.wavelenght", wavelenght);
         archive->SetVariant("wc.aabbox", VariantType(influenceBbox));
         archive->SetUInt32("wc.type", type);
     }
@@ -81,7 +87,9 @@ void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
 {
 	if(archive)
     {
-        force = archive->GetFloat("wc.force");
+        amplitude = archive->GetFloat("wc.amplitude");
+        frequency = archive->GetFloat("wc.frequency");
+        wavelenght = archive->GetFloat("wc.wavelenght");
         influenceBbox = archive->GetVariant("wc.aabbox")->AsAABBox3();
         type = archive->GetUInt32("wc.type");
 	}
@@ -89,7 +97,7 @@ void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
 	Component::Deserialize(archive, serializationContext);
 }
     
-Vector3 WindComponent::GetWindDirection() const
+Vector3 WindComponent::GetDirection() const
 {
     DVASSERT(entity);
     DVASSERT(GetTransformComponent(entity));

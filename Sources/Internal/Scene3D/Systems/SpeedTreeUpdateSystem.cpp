@@ -139,15 +139,15 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         }
         treeObject->SetAnimationFlag(true);
 
-        Vector4 wind = windSystem->GetWind(info->wtPosition);
-        Vector3 windVec = Vector3(wind) * wind.w;
+        Vector3 windVec = windSystem->GetWind(info->wtPosition);
+        float32 windForce = windVec.Length();
 
         float32 trunkAmplitude = component->GetTrunkOscillationAmplitude();
-        float32 trunkSpring = component->GetTrunkOscillationSpring();
-        info->oscVelocity += (windVec - info->oscOffset * trunkSpring - info->oscVelocity * sqrtf(trunkSpring)) * timeElapsed;
+        float32 trunkSpring = component->GetTrunkOscillationSpringSqrt();
+        info->oscVelocity += (windVec - info->oscOffset * trunkSpring * trunkSpring - info->oscVelocity * trunkSpring) * timeElapsed;
         info->oscOffset += info->oscVelocity * timeElapsed;
         
-        info->leafTime += timeElapsed * sqrtf(wind.w) * component->GetLeafsOscillationSpeed();
+        info->leafTime += timeElapsed * sqrtf(windForce) * component->GetLeafsOscillationSpeed();
 
         float32 sine, cosine;
         SinCosFast(info->leafTime, sine, cosine);

@@ -46,9 +46,8 @@ protected:
 public:
     enum eWindType
     {
-        WIND_TYPE_GLOBAL     = 1,
-        WIND_TYPE_EXPLOSION  = 1 << 1,
-        WIND_TYPE_MOVING     = 1 << 2,
+        WIND_TYPE_STATIC     = 1,
+        WIND_TYPE_WAVE       = 1 << 1,
 
         WIND_TYPE_MASK_ALL   = 0xFF
     };
@@ -63,18 +62,23 @@ public:
     
     void Trigger();
 
-    Vector3 GetWindDirection() const;
+    Vector3 GetDirection() const;
     
 protected:
     AABBox3 influenceBbox;
-    float32 force;
     uint32 type;
+
+    float32 amplitude;
+    float32 frequency;
+    float32 wavelenght;
     
 public:
 	INTROSPECTION_EXTEND(WindComponent, Component,
                          MEMBER(influenceBbox, "Box", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(force, "Wind Force", I_SAVE | I_VIEW | I_EDIT)
                          MEMBER(type, "Wind Type", I_SAVE | I_VIEW | I_EDIT)
+                         MEMBER(amplitude, "Amplitude", I_SAVE | I_VIEW | I_EDIT)
+                         MEMBER(frequency, "Frequency", I_SAVE | I_VIEW | I_EDIT)
+                         MEMBER(wavelenght, "Wavelenght", I_SAVE | I_VIEW | I_EDIT)
                          );
 
     friend class WindSystem;
