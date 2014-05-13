@@ -91,7 +91,7 @@ void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
 
     TreeInfo * treeInfo = new TreeInfo();
     treeInfo->treeEntity = entity;
-    treeInfo->leafTime = 0.f;
+    treeInfo->leafTime = (float32)Random::Instance()->RandFloat(1000.f);
 
     Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
     treeInfo->wtPosition = wtMx.GetTranslationVector();
@@ -106,8 +106,10 @@ void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
     Vector<TreeInfo *>::iterator itEnd = allTrees.end();
     for(; it != itEnd; ++it)
     {
-        if((*it)->treeEntity == entity)
+        TreeInfo * info = *it;
+        if(info->treeEntity == entity)
         {
+            SafeDelete(info);
             allTrees.erase(it);
             break;
         }
@@ -156,7 +158,7 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         treeObject->SetTreeAnimationParams(localOffset, leafOscillationParams);
     }
 }
-    
+
 void SpeedTreeUpdateSystem::HandleEvent(Observable * observable)
 {
     RenderOptions * options = static_cast<RenderOptions *>(observable);

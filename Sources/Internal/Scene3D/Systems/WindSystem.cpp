@@ -40,9 +40,15 @@
 namespace DAVA
 {
 
-WindSystem::WindSystem(Scene * scene)
-:	SceneSystem(scene),
-globalTime(0.f)
+WindSystem::WindInfo::WindInfo(WindComponent * c) :
+component(c),
+currentWindValue(0.f)
+{
+    timeValue = (float32)Random::Instance()->RandFloat(1000.f);
+}
+
+WindSystem::WindSystem(Scene * scene) : 
+    SceneSystem(scene)
 {
 }
 
@@ -54,16 +60,18 @@ WindSystem::~WindSystem()
 void WindSystem::AddEntity(Entity * entity)
 {
     WindComponent * wind = GetWindComponent(entity);
-    winds.push_back(wind);
+    winds.push_back(new WindInfo(wind));
 }
 
 void WindSystem::RemoveEntity(Entity * entity)
 {
-    Vector<WindComponent *>::iterator it = winds.begin();
+    Vector<WindInfo *>::iterator it = winds.begin();
     while(it != winds.end())
     {
-        if((*it)->entity == entity)
+        WindInfo * info = *it;
+        if(info->component->entity == entity)
         {
+            SafeDelete(info);
             winds.erase(it);
             break;
         }
@@ -74,24 +82,41 @@ void WindSystem::RemoveEntity(Entity * entity)
 
 void WindSystem::Process(float32 timeElapsed)
 {
-    globalTime += timeElapsed;
-
-    globalWind.w = 0.f;
+    Vector3 windVector;
     int32 windCount = winds.size();
     for(int32 i = 0; i < windCount; ++i)
-        globalWind.w += winds[i]->force;
-
-    globalWind.w *= 2.f + sinf(globalTime) * 0.8f + cosf(globalTime * 10) * 0.2f;
+    {
+        WindInfo * info = winds[i];
+        ProcessWind(info, timeElapsed);
+        windVector += info->component->GetWindDirection() * info->currentWindValue;
+    }
+    float32 globalForce = 0.f;
+    if(!windVector.IsZero())
+        globalForce = windVector.Normalize();
+    globalWind = Vector4(windVector);
+    globalWind.w = globalForce;
 }
 
 Vector4 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
 {
-    return globalWind;
+    Vector4 ret;
+    if((typeMask & WindComponent::WIND_TYPE_GLOBAL) != 0)
+        ret += globalWind;
+    return ret;
 }
 
 void WindSystem::WindTriggered(WindComponent * wind)
 {
 
+}
+
+void WindSystem::ProcessWind(WindInfo * wind, float32 timeElapsed)
+{
+    wind->timeValue += timeElapsed;
+    if(wind->component->type == WindComponent::WIND_TYPE_GLOBAL)
+    {
+        wind->currentWindValue = wind->component->force * (2.f + sinf(wind->timeValue) * 0.8f + cosf(wind->timeValue * 10) * 0.2f);
+    }
 }
 
 };
