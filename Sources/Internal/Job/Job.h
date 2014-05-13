@@ -55,17 +55,18 @@ public:
 
     enum eCreationFlags
     {
-        RETAIN_WHILE_NOT_COMPLETE = 1 >> 0, //<! job will retain underlying BaseObject if one is found in Message, and release when job is done
+        NO_FLAGS = 0,
+        RETAIN_WHILE_NOT_COMPLETED = 1 << 0, //<! job will retain underlying BaseObject if one is found in Message, and release when job is done
     };
 
-    static const uint32 DEFAULT_FLAGS = RETAIN_WHILE_NOT_COMPLETE;
+    static const uint32 DEFAULT_FLAGS = RETAIN_WHILE_NOT_COMPLETED;
 
 	Job(const Message & message, const Thread::ThreadId & creatorThreadId, uint32 flags);
 	eState GetState();
 	ePerformedWhere PerformedWhere();
     const Message & GetMessage();
 
-    uint32 GetFlags();
+    uint32 GetFlags() const;
 
 protected:
 	void Perform();
@@ -90,7 +91,7 @@ const Message & Job::GetMessage()
     return message;
 }
 
-inline uint32 Job::GetFlags()
+inline uint32 Job::GetFlags() const
 {
     return flags;
 }
