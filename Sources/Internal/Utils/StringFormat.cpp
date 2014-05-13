@@ -274,7 +274,7 @@ int32 do_div(int64 &n, int32 base)
         {
             *firstStr++ = '.';
 			precision--;
-			while (pow(10.f, precision) > tail)
+			while (pow(10.f, precision) > tail && precision > 0)
 			{
 				*firstStr++ = '0';
 				precision--;
