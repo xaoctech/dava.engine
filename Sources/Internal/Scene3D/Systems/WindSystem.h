@@ -41,6 +41,15 @@ class Entity;
     
 class WindSystem : public SceneSystem
 {
+    struct WindInfo
+    {
+        WindInfo(WindComponent * c);
+
+        WindComponent * component;
+        float32 currentWindValue;
+        float32 timeValue;
+    };
+
 public:
     WindSystem(Scene * scene);
     virtual ~WindSystem();
@@ -54,10 +63,11 @@ public:
     Vector4 GetWind(const Vector3 & inPosition, uint32 typeMask = WindComponent::WIND_TYPE_MASK_ALL);
 
 private:
-    Vector4 globalWind;
-    float32 globalTime;
+    void ProcessWind(WindInfo * wind, float32 timeElapsed);
 
-    Vector<WindComponent *> winds;
+    Vector4 globalWind;
+
+    Vector<WindInfo *> winds;
 
     friend class WindComponent;
 };
