@@ -425,6 +425,8 @@ void main()
     vec3 color = vec3(0.0);
     #if defined(VIEW_ALBEDO)
         color = textureColor0.rgb;
+	#else
+		color = vec3(1.0);
     #endif
     #if defined(VIEW_DIFFUSE)
         color *= textureColor1.rgb * 2.0;
