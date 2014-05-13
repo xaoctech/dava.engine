@@ -2585,8 +2585,19 @@ bool QtMainWindow::OpenScene( const QString & path )
                 {
                     ui->sceneTabWidget->CloseTab(needCloseIndex);
                 }
-
 				ret = true;
+
+                VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion( scene->version );
+                switch ( status )
+                {
+                case VersionInfo::COMPATIBLE:
+                    QMessageBox::warning(this, "Compatibility warning", "Scene was created with older version of ResourceEditor. Saving scene may broke compatibility with....." );
+                    break;
+                case VersionInfo::INVALID:
+                    break;
+                default:
+                    break;
+                }
 			}
             else
             {
