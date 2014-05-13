@@ -140,9 +140,10 @@ DataNode * SceneFileV2::GetNodeByPointer(uint64 pointer)
     return 0;
 }*/
 
-int32 SceneFileV2::GetVersion()
+const VersionInfo::SceneVersion& SceneFileV2::GetVersion() const
 {
-    return header.version;
+    DVASSERT(scene);
+    return scene->version;
 }
     
 void SceneFileV2::SetError(eError error)
@@ -174,7 +175,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 11;
+    header.version = VersionInfo::Instance()->GetCurrentVersion().version;
     header.nodeCount = _scene->GetChildrenCount();
 
     if(NULL != scene->GetGlobalMaterial())
@@ -192,6 +193,18 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     
     file->Write(&header, sizeof(Header));
 	WriteDescriptor(file, descriptor);
+
+    // save version tags
+    {
+        KeyedArchive * tagsArchive = new KeyedArchive();
+        const VersionInfo::TagsMap& tags = VersionInfo::Instance()->GetCurrentVersion().tags;
+        for ( VersionInfo::TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++ )
+        {
+            tagsArchive->SetUInt32( it->first, it->second );
+        }
+        tagsArchive->Save( file );
+        SafeRelease( tagsArchive );
+    }
     
     // save data objects
     if(isDebugLogEnabled)
@@ -320,6 +333,28 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 		ReadDescriptor(file, descriptor);
 	}
 	
+    // load version tags
+    if ( header.version >= 12 )
+    {
+        KeyedArchive * tagsArchive = new KeyedArchive();
+        tagsArchive->Load( file );
+
+        VersionInfo::SceneVersion version;
+        version.version = header.version;
+
+        typedef Map<String, VariantType*> KeyedTagsMap;
+        const KeyedTagsMap& keyedTags = tagsArchive->GetArchieveData();
+        for ( KeyedTagsMap::const_iterator it = keyedTags.begin(); it != keyedTags.end(); it++ )
+        {
+            const String& tag = it->first;
+            const uint32 ver = it->second->AsUInt32();
+            version.tags.insert( VersionInfo::TagsMap::value_type( tag, ver ) );
+        }
+        _scene->version = version;
+
+        SafeRelease( tagsArchive );
+    }
+
 	serializationContext.SetRootNodePath(rootNodePathName);
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
@@ -329,7 +364,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     if(isDebugLogEnabled)
         Logger::FrameworkDebug("+ load data objects");
 
-    if (GetVersion() >= 2)
+    if (GetVersion().version >= 2)
     {
         int32 dataNodeCount = 0;
         file->Read(&dataNodeCount, sizeof(int32));
@@ -385,7 +420,6 @@ SceneArchive *SceneFileV2::LoadSceneArchive(const FilePath & filename)
         Logger::Error("SceneFileV2::LoadScene failed to create file: %s", filename.GetAbsolutePathname().c_str());        
         return res;
     }   
-        
 
     file->Read(&header, sizeof(Header));
     int requiredVersion = 3;
@@ -404,9 +438,9 @@ SceneArchive *SceneFileV2::LoadSceneArchive(const FilePath & filename)
         ReadDescriptor(file, descriptor);
     }
 
-   res = new SceneArchive();
+    res = new SceneArchive();
 
-    if (GetVersion() >= 2)
+    if (GetVersion().version >= 2)
     {
         int32 dataNodeCount = 0;
         file->Read(&dataNodeCount, sizeof(int32));
@@ -417,8 +451,6 @@ SceneArchive *SceneFileV2::LoadSceneArchive(const FilePath & filename)
             res->dataNodes.push_back(archive);
         }
     }
-
-    
 
     res->children.reserve(header.nodeCount);
     for (int ci = 0; ci < header.nodeCount; ++ci)
@@ -772,7 +804,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-				if(GetVersion() < 11 && GetLodComponent(parent))
+				if(GetVersion().version < 11 && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -821,11 +853,10 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
             if (parent)
             {
-				if(GetVersion() < 11 && GetLodComponent(parent))
+				if(GetVersion().version < 11 && GetLodComponent(parent))
 				{
 					return false;
 				}
-
 
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
                 FastName currentName = currentNode->GetName();
@@ -1184,7 +1215,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 
-    if(GetVersion() < 11)
+    if(GetVersion().version < 11)
     {
 	    LodToLod2Converter lodConverter;
 	    lodConverter.ConvertLodToV2(rootNode);
@@ -1204,12 +1235,12 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
-void SceneFileV2::SetVersion( int32 version )
+void SceneFileV2::SetVersion(const VersionInfo::SceneVersion& version)
 {
-	header.version = version;
+	header.version = version.version;
+    DVASSERT(scene);
+    scene->version = version;
 }
-
-
 
 SceneArchive::~SceneArchive()
 {    

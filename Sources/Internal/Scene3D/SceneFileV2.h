@@ -37,6 +37,7 @@
 #include "Utils/Utils.h"
 #include "FileSystem/File.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Scene3D/SceneFile/VersionInfo.h"
 
 namespace DAVA
 {
@@ -151,8 +152,8 @@ public:
     
     //DataNode * GetNodeByPointer(uint64 pointer);
     
-	void SetVersion(int32 version);
-    int32 GetVersion();
+    void SetVersion(const VersionInfo::SceneVersion& version);
+    const VersionInfo::SceneVersion& GetVersion() const;
     void SetError(eError error);
     eError GetError();
     
