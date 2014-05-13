@@ -97,11 +97,12 @@ void RenderPassBatchArray::Clear()
 void RenderPassBatchArray::PrepareVisibilityArray(VisibilityArray * visibilityArray, Camera * camera)
 {
     cameraWorldMatrices.clear();
-    uint32 size = (uint32)visibilityArray->visibilityArray.size();
+    uint32 size = visibilityArray->GetCount();
     for (uint32 ro = 0; ro < size; ++ro)
     {
-        RenderObject * renderObject = visibilityArray->visibilityArray[ro];
-        if (renderObject->GetFlags()&RenderObject::CUSTOM_PREPARE_TO_RENDER)
+        RenderObject * renderObject = visibilityArray->Get(ro);
+        if (renderObject->GetFlags() & RenderObject::CUSTOM_PREPARE_TO_RENDER)
+
 		    renderObject->PrepareToRender(camera);
         //cameraWorldMatrices[ro] = camera->GetTransform() * (*renderObject->GetWorldTransformPtr());
         
@@ -202,7 +203,7 @@ void RenderLayerBatchArray::Sort(Camera * camera)
                 RenderBatch * batch = renderBatchArray[k];
                 RenderObject * renderObject = batch->GetRenderObject();
                 Vector3 delta = batch->GetSortingTransformPtr()->GetTranslationVector() - cameraPosition;
-                float fDist = delta.Length();
+                float32 fDist = delta.Length();
                 uint32 distance = delta.DotProduct(cameraDirection)<0?0:((uint32)fDist);
                 distance = distance + 31 - batch->GetSortingOffset();
                 batch->layerSortingKey = (distance & 0x0fffffff) | (batch->GetSortingKey() << 28);

@@ -53,10 +53,18 @@ public:
 		PERFORMED_ON_MAIN_THREAD
 	};
 
-	Job(const Message & message, const Thread::Id & creatorThreadId);
-	eState GetState();
+    enum eCreationFlags
+    {
+        RETAIN_WHILE_NOT_COMPLETE = 1 >> 0, //<! job will retain underlying BaseObject if one is found in Message, and release when job is done
+    };
+
+    static const uint32 DEFAULT_FLAGS = RETAIN_WHILE_NOT_COMPLETE;
+
+	Job(const Message & message, const Thread::Id & creatorThreadId, uint32 flags);	eState GetState();
 	ePerformedWhere PerformedWhere();
     const Message & GetMessage();
+
+    uint32 GetFlags();
 
 protected:
 	void Perform();
@@ -69,6 +77,8 @@ protected:
 	eState state;
 	ePerformedWhere performedWhere;
 
+    uint32 flags;
+
 	friend class MainThreadJobQueue;
 	friend class JobManager;
 };
@@ -77,6 +87,11 @@ inline
 const Message & Job::GetMessage()
 {
     return message;
+}
+
+inline uint32 Job::GetFlags()
+{
+    return flags;
 }
 
 }

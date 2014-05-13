@@ -909,6 +909,20 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
         DAVA::Entity *entity = entities.GetEntity(0);
         DAVA::RenderObject *ro = GetRenderObject(entity);
 
+        const char *commandMessage;
+        switch(mode)
+        {
+            case BAKE_ZERO_PIVOT:
+                commandMessage = "Move pivot point to zero";
+                break;
+            case BAKE_CENTER_PIVOT:
+                commandMessage = "Move pivot point to center";
+                break;
+            default:
+                DVASSERT(0 && "Unknown bake mode");
+                return;
+        }
+
         if(NULL != ro)
         {
             DAVA::Set<DAVA::Entity *> entityList;
@@ -916,25 +930,16 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
 
             if(entityList.size() > 0)
             {
-                const char *commandMessage;
-                DAVA::Vector3 bakeMove;
                 DAVA::Matrix4 bakeTransform;
 
                 switch(mode)
                 {
                     case BAKE_ZERO_PIVOT:
-                        commandMessage = "Move pivot point to zero";
-                        bakeMove = entity->GetLocalTransform().GetTranslationVector();
                         bakeTransform = entity->GetLocalTransform();
                         break;
                     case BAKE_CENTER_PIVOT:
-                        commandMessage = "Move pivot point to center";
-                        bakeMove = DAVA::Vector3() - ro->GetBoundingBox().GetCenter();
-                        bakeTransform.SetTranslationVector(bakeMove);
+                        bakeTransform.SetTranslationVector(-ro->GetBoundingBox().GetCenter());
                         break;
-                    default:
-                        DVASSERT(0 && "Unknown bake mode");
-                        return;
                 }
 
                 sceneEditor->BeginBatch(commandMessage);
@@ -944,7 +949,8 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
 
                 // inverse bake to be able to move object on same place
                 // after it geometry was baked
-                bakeTransform.Inverse();
+                DAVA::Matrix4 afterBakeTransform = bakeTransform;
+                afterBakeTransform.Inverse();
 
                 // for entities with same render object set new transform
                 // to make them match their previous position
@@ -953,9 +959,57 @@ void EntityModificationSystem::BakeGeometry(const EntityGroup &entities, BakeMod
                 {
                     DAVA::Entity *en = *it;
                     DAVA::Matrix4 origTransform = en->GetLocalTransform();
-                    DAVA::Matrix4 newTransform = bakeTransform * origTransform;
+                    DAVA::Matrix4 newTransform = afterBakeTransform * origTransform;
                     
                     sceneEditor->Exec(new TransformCommand(en, origTransform, newTransform));
+
+                    // also modify childs transform to make them be at
+                    // right position after parent entity changed
+                    for(size_t i = 0; i < en->GetChildrenCount(); ++i)
+                    {
+                        DAVA::Entity *childEntity = en->GetChild(i);
+
+                        DAVA::Matrix4 childOrigTransform = childEntity->GetLocalTransform();
+                        DAVA::Matrix4 childNewTransform = childOrigTransform * bakeTransform;
+
+                        sceneEditor->Exec(new TransformCommand(childEntity, childOrigTransform, childNewTransform));
+                    }
+                }
+
+		        sceneEditor->EndBatch();
+            }
+        }
+        // just modify child entities
+        else
+        {
+            if(entity->GetChildrenCount() > 0)
+            {
+                DAVA::Vector3 newPivotPos;
+                DAVA::Matrix4 transform;
+                SceneSelectionSystem *selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
+
+                switch(mode)
+                {
+                    case BAKE_ZERO_PIVOT:
+                        newPivotPos = DAVA::Vector3(0, 0, 0);
+                        break;
+                    case BAKE_CENTER_PIVOT:
+                        newPivotPos = selectionSystem->GetSelectionAABox(entity).GetCenter();
+                        break;
+                }
+
+                sceneEditor->BeginBatch(commandMessage);
+
+                // transform parent entity
+                transform.SetTranslationVector(newPivotPos - entity->GetLocalTransform().GetTranslationVector());
+                sceneEditor->Exec(new TransformCommand(entity, entity->GetLocalTransform(), entity->GetLocalTransform() * transform));
+
+                // transform child entities with inversed parent transformation
+                transform.Inverse();
+                for(size_t i = 0; i < entity->GetChildrenCount(); ++i)
+                {
+                    DAVA::Entity *childEntity = entity->GetChild(i);
+                    sceneEditor->Exec(new TransformCommand(childEntity, childEntity->GetLocalTransform(), childEntity->GetLocalTransform() * transform));
                 }
 
 		        sceneEditor->EndBatch();
@@ -980,12 +1034,12 @@ void EntityModificationSystem::SearchEntitiesWithRenderObject(DAVA::RenderObject
                 // if renderObjects has same number of render batches we also should
                 // check if polygon groups used inside that render batches are completely identical
                 // but we should deal with the fact, that polygon groups order can differ 
-                for(int j = 0; j < enRenderObject->GetRenderBatchCount(); ++j)
+                for(size_t j = 0; j < enRenderObject->GetRenderBatchCount(); ++j)
                 {
                     bool found = false;
                     DAVA::PolygonGroup *pg = enRenderObject->GetRenderBatch(j)->GetPolygonGroup();
 
-                    for(int k = 0; k < ro->GetRenderBatchCount(); ++k)
+                    for(size_t k = 0; k < ro->GetRenderBatchCount(); ++k)
                     {
                         if(ro->GetRenderBatch(k)->GetPolygonGroup() == pg)
                         {

@@ -39,6 +39,8 @@
 #include "Scene/SceneSignals.h"
 #include "Commands2/ImageRegionCopyCommand.h"
 
+#include "Render/PixelFormatDescriptor.h"
+
 #include <QApplication>
 
 GrassEditorSystem::GrassEditorSystem(Scene* scene)
@@ -159,7 +161,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                     isEnabled = true;
                     ret = true;
 
-                    DVASSERT(vegetationMap);
+                    DVASSERT(NULL == vegetationMap);
                     vegetationMap = SafeRetain(veg->GetVegetationMap());
 
                     selectionSystem->SetLocked(true);
@@ -339,7 +341,7 @@ void GrassEditorSystem::DrawGrass(DAVA::Vector2 pos)
 
         for(DAVA::uint8 layer = applyFromLayer; layer <= applyToLayer; ++layer)
         {
-            DAVA::uint32 index = offset * Texture::GetPixelFormatSizeInBytes(vegetationMap->format);
+            DAVA::uint32 index = offset * DAVA::PixelFormatDescriptor::GetPixelFormatSizeInBytes(vegetationMap->format);
             index += layer;
 
             uint8 mapData = vegetationMap->data[index];

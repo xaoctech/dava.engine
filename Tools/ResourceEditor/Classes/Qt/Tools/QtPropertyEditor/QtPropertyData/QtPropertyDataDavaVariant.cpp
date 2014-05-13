@@ -189,6 +189,56 @@ QtPropertyDataDavaVariant::AllowedValueType QtPropertyDataDavaVariant::GetAllowe
     return allowedValueType;
 }
 
+void QtPropertyDataDavaVariant::SetInspDescription(const DAVA::InspDesc &desc)
+{
+    ClearAllowedValues();
+
+	if(NULL != desc.enumMap)
+	{
+		for(size_t i = 0; i < desc.enumMap->GetCount(); ++i)
+		{
+			int v;
+			if(desc.enumMap->GetValue(i, v))
+			{
+				AddAllowedValue(DAVA::VariantType(v), desc.enumMap->ToString(v));
+			}
+		}
+	}
+
+    const bool isFlags = (desc.type == DAVA::InspDesc::T_FLAGS);
+    if(isFlags)
+    {
+        SetAllowedValueType(QtPropertyDataDavaVariant::TypeFlags);
+    }
+}
+
+QStringList QtPropertyDataDavaVariant::GetFlagsList() const
+{
+    QStringList values;
+
+    switch (allowedValueType)
+    {
+    case TypeFlags:
+        {
+            const int flags = FromDavaVariant(curVariantValue).toInt();
+            for (int i = 0; i < allowedValues.size(); ++i)
+            {
+                const int flag = FromDavaVariant(allowedValues[i].realValue).toInt();
+                if ((flag & flags) == flag)
+                {
+                    const QString visible = allowedValues[i].visibleValue.toString( );
+                    const QString real = QString::number(FromDavaVariant(allowedValues[i].realValue).toInt());
+                    values << (allowedValues[i].visibleValue.isValid()?visible : real);
+                }
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    return values;
+}
 
 QVariant QtPropertyDataDavaVariant::GetToolTip() const
 {
@@ -202,38 +252,22 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
             {
                 const int flags = FromDavaVariant( curVariantValue ).toInt();
                 QStringList values;
-                for ( int i = 0; i < allowedValues.size(); ++i )
-                {
-                    const int flag = FromDavaVariant( allowedValues[i].realValue ).toInt();
-                    if ( ( flag & flags ) == flag )
-                    {
-                        const QString visible = allowedValues[i].visibleValue.toString();
-                        const QString real = QString::number( FromDavaVariant( allowedValues[i].realValue ).toInt() );
-                        values << ( allowedValues[i].visibleValue.isValid() ? visible : real );
-                    }
-                }
+                values << QString("Flags: %1").arg(flags);
+                values << GetFlagsList();
                 ret = values.join( "\n" );
             }
             break;
         default:
-            {
-                ret = GetValueAlias();
-            }
             break;
         } // end switch
     }
-    else
+    if (!ret.isValid())
     {
-        switch (curVariantValue.type)
-        {
-        case DAVA::VariantType::TYPE_STRING:
-        case DAVA::VariantType::TYPE_FASTNAME:
-        case DAVA::VariantType::TYPE_FILEPATH:
-            ret = GetValueAlias();
-            break;
-        default:
-            break;
-        }
+        ret = GetValueAlias();
+    }
+    if (!ret.isValid())
+    {
+        ret = GetValue();
     }
 
     return ret;
@@ -253,7 +287,7 @@ QVariant QtPropertyDataDavaVariant::GetValueAlias() const
         if (allowedValueType == TypeFlags)
         {
             const quint64 val = FromDavaVariant(curVariantValue).toULongLong();
-            const QString alias = QString("Flags: %1").arg(val);
+            const QString alias = GetFlagsList().join(" | ");
             ret = alias;
         }
         else
