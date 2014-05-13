@@ -128,6 +128,7 @@ public:
         ERROR_VERSION_IS_TOO_OLD = 1,
         ERROR_FAILED_TO_CREATE_FILE = 2,
         ERROR_FILE_WRITE_ERROR = 3,
+        ERROR_VERSION_IS_INCOMPATIBLE = 4,
     };
 
 	enum eFileType

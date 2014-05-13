@@ -351,11 +351,27 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
             version.tags.insert( VersionInfo::TagsMap::value_type( tag, ver ) );
         }
         _scene->version = version;
-
         SafeRelease( tagsArchive );
     }
+    else
+    {
+        _scene->version.version = header.version;
+    }
 
-	serializationContext.SetRootNodePath(rootNodePathName);
+    VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion( _scene->version );
+    switch ( status )
+    {
+    case VersionInfo::COMPATIBLE:
+        Logger::Warning( "SceneFileV2::LoadScene scene was saved with older version of framework. Saving scene will broke compatibility." );
+        break;
+    case VersionInfo::INVALID:
+        Logger::Error( "SceneFileV2::LoadScene scene is incompatible with current version" );
+        break;
+    default:
+        break;
+    }
+
+    serializationContext.SetRootNodePath(rootNodePathName);
 	serializationContext.SetScenePath(FilePath(rootNodePathName.GetDirectory()));
 	serializationContext.SetVersion(header.version);
 	serializationContext.SetScene(scene);
