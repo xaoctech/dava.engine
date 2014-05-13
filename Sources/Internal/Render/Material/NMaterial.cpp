@@ -452,14 +452,71 @@ void NMaterial::Save(KeyedArchive * archive,
 void NMaterial::Load(KeyedArchive * archive,
 					 SerializationContext* serializationContext)
 {
+    bool loadIds = true;
+    bool loadName = true;
+    bool loadGroup = true;
+    bool loadFlags = true;
+    bool loadProperties = true;
+    bool loadTextures = true;
+    bool loadTemplate = true;
+    bool loadClear = false;
+
 	DataNode::Load(archive, serializationContext);
+
+    KeyedArchive *loadSettings = serializationContext->customProperties->GetArchive("material");
+    if(NULL != loadSettings)
+    {
+        loadIds = loadSettings->GetBool("loadIds", loadIds);
+        loadName = loadSettings->GetBool("loadName", loadName);
+        loadGroup = loadSettings->GetBool("loadGroup", loadGroup);
+        loadFlags = loadSettings->GetBool("loadFlags", loadFlags);
+        loadProperties = loadSettings->GetBool("loadProperties", loadProperties);
+        loadTextures = loadSettings->GetBool("loadTextures", loadTextures);
+        loadTemplate = loadSettings->GetBool("loadTemplate", loadTemplate);
+        loadClear = loadSettings->GetBool("loadClear", loadClear);
+    }
+
+    if(loadClear)
+    {
+        materialSetFlags.clear();
+
+	    for(HashMap<FastName, NMaterialProperty*>::iterator it = materialProperties.begin();
+		    it != materialProperties.end();
+		    ++it)
+	    {
+		    SafeDelete(it->second);
+	    }
+	    materialProperties.clear();
 	
-	materialName = FastName(archive->GetString("materialName"));
-	materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
-	materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
-	pointer = materialKey;
+	    for(HashMap<FastName, TextureBucket*>::iterator it = textures.begin();
+		    it != textures.end();
+		    ++it)
+	    {
+		    SafeDelete(it->second);
+	    }
+	    textures.clear();
 	
-	//DataNode::SetName(materialName.c_str());
+	    SafeDelete(illuminationParams);
+    }
+	
+    if(loadName && archive->IsKeyExists("materialName"))
+    {
+        materialName = FastName(archive->GetString("materialName"));
+    }
+
+    if(loadIds)
+    {
+	    if(archive->IsKeyExists("materialType"))
+        {
+            materialType = (NMaterial::eMaterialType)archive->GetInt32("materialType");
+        }
+
+	    if(archive->IsKeyExists("materialKey")) 
+        {
+            materialKey = (NMaterial::NMaterialKey)archive->GetUInt64("materialKey");
+	        pointer = materialKey;
+        }
+    }
 	
 	if(archive->IsKeyExists("materialCustomStates"))
 	{
@@ -477,14 +534,14 @@ void NMaterial::Load(KeyedArchive * archive,
 			instancePassRenderStates.insert(FastName(it->first.c_str()), currentHandle);
 		}
 	}
-	
-	if(archive->IsKeyExists("materialGroup"))
+
+	if(loadGroup && archive->IsKeyExists("materialGroup"))
 	{
 		SetMaterialGroup(FastName(archive->GetString("materialGroup").c_str()));
 	}
 	else
 	{
-		SetMaterialGroup(FastName());
+		SetMaterialGroup(materialGroup);
 	}
 	
 	// orderedQuality will be set, after SetMaterialGroup call
@@ -492,42 +549,51 @@ void NMaterial::Load(KeyedArchive * archive,
 	// to process loading with exactly ordered quality
 	currentQuality = orderedQuality;
 	
-	String materialTemplateName = archive->GetString("materialTemplate");
-	if(materialTemplateName.size() > 0)
-	{
-		NMaterialHelper::SwitchTemplate(this, FastName(materialTemplateName.c_str()));
-	}
-	else
-	{
-		//VI: will inherit from parent probably
-		materialTemplate = NULL;
-	}
+    if(loadTemplate && archive->IsKeyExists("materialTemplate"))
+    {
+	    String materialTemplateName = archive->GetString("materialTemplate");
+	    if(materialTemplateName.size() > 0)
+	    {
+		    NMaterialHelper::SwitchTemplate(this, FastName(materialTemplateName.c_str()));
+	    }
+	    else
+	    {
+		    //VI: will inherit from parent probably
+		    materialTemplate = NULL;
+	    }
+    }
 	
-	const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
-	for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
-		it != propsMap.end();
-		++it)
-	{
-		const VariantType* propVariant = it->second;
-		DVASSERT(VariantType::TYPE_BYTE_ARRAY == propVariant->type);
-		DVASSERT(propVariant->AsByteArraySize() >= (sizeof(uint32) +sizeof(uint32)));
+    if(loadProperties && archive->IsKeyExists("properties"))
+    {
+	    const Map<String, VariantType*>& propsMap = archive->GetArchive("properties")->GetArchieveData();
+	    for(Map<String, VariantType*>::const_iterator it = propsMap.begin();
+		    it != propsMap.end();
+		    ++it)
+	    {
+		    const VariantType* propVariant = it->second;
+		    DVASSERT(VariantType::TYPE_BYTE_ARRAY == propVariant->type);
+		    DVASSERT(propVariant->AsByteArraySize() >= (sizeof(uint32) +sizeof(uint32)));
 		
-		const uint8* ptr = propVariant->AsByteArray();
+		    const uint8* ptr = propVariant->AsByteArray();
 		
-		SetPropertyValue(FastName(it->first),
-						 *(Shader::eUniformType*)ptr,
-						 *(ptr + sizeof(Shader::eUniformType)),
-						 ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
-	}
-	
-	const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
-	for(Map<String, VariantType*>::const_iterator it = texturesMap.begin();
-		it != texturesMap.end();
-		++it)
-	{
-		String relativePathname = it->second->AsString();
-		SetTexture(FastName(it->first), serializationContext->GetScenePath() + relativePathname);
-	}
+		    SetPropertyValue(FastName(it->first),
+						     *(Shader::eUniformType*)ptr,
+						     *(ptr + sizeof(Shader::eUniformType)),
+						     ptr + sizeof(Shader::eUniformType) + sizeof(uint8));
+	    }
+    }
+
+    if(loadTextures && archive->IsKeyExists("textures"))
+    {
+	    const Map<String, VariantType*>& texturesMap = archive->GetArchive("textures")->GetArchieveData();
+	    for(Map<String, VariantType*>::const_iterator it = texturesMap.begin();
+		    it != texturesMap.end();
+		    ++it)
+	    {
+		    String relativePathname = it->second->AsString();
+		    SetTexture(FastName(it->first), serializationContext->GetScenePath() + relativePathname);
+	    }
+    }
 	
 	if(archive->IsKeyExists("illumination.isUsed"))
 	{
@@ -539,15 +605,18 @@ void NMaterial::Load(KeyedArchive * archive,
 		illuminationParams->SetLightmapSize(archive->GetInt32("illumination.lightmapSize", illuminationParams->lightmapSize));
 	}
 	
-	const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
-	for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
-		it != flagsMap.end();
-		++it)
-	{
-		SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
-	}
+    if(loadFlags && archive->IsKeyExists("setFlags"))
+    {
+	    const Map<String, VariantType*>& flagsMap = archive->GetArchive("setFlags")->GetArchieveData();
+	    for(Map<String, VariantType*>::const_iterator it = flagsMap.begin();
+		    it != flagsMap.end();
+		    ++it)
+	    {
+		    SetFlag(FastName(it->first), (NMaterial::eFlagValue)it->second->AsInt32());
+	    }
+    }
 	
-	if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
+	if(loadIds && archive->IsKeyExists("parentMaterialKey") && NMaterial::MATERIALTYPE_INSTANCE == materialType)
 	{
 		uint64 parentKey = archive->GetUInt64("parentMaterialKey");
 		serializationContext->AddBinding(parentKey, this);

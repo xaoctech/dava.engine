@@ -21,16 +21,7 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>3</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>3</number>
    </property>
    <item>
@@ -67,16 +58,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -111,16 +93,7 @@
        <property name="spacing">
         <number>3</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -132,17 +105,20 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>3</number>
+           <number>1</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>3</number>
+           <number>1</number>
           </property>
           <item>
            <widget class="QLabel" name="label">
@@ -159,6 +135,12 @@
           </item>
           <item>
            <widget class="QComboBox" name="templateBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>22</height>
+             </size>
+            </property>
             <property name="maxVisibleItems">
              <number>20</number>
             </property>
@@ -216,6 +198,27 @@
    </property>
    <property name="toolTip">
     <string>Remove Global Material</string>
+   </property>
+  </action>
+  <action name="actionLoadMaterialPreset">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/openscene.png</normaloff>:/QtIcons/openscene.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load Materia Preset...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Materia Preset</string>
+   </property>
+  </action>
+  <action name="actionSaveMaterialPreset">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/save_as.png</normaloff>:/QtIcons/save_as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Material Preset As...</string>
    </property>
   </action>
   <actiongroup name="filterType">
