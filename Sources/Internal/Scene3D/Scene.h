@@ -38,6 +38,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Scene3D/SceneFile/VersionInfo.h"
 
 namespace DAVA
 {
@@ -149,6 +150,7 @@ public:
 	StaticOcclusionSystem * staticOcclusionSystem;
     MaterialSystem *materialSystem;
     FoliageSystem* foliageSystem;
+    VersionInfo::SceneVersion version;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.
