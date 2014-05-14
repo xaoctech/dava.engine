@@ -101,6 +101,14 @@ float UITextFieldMetadata::GetFontSize() const
         return 0.0f;
     }
     
+    //TODO: font should be set correctly, remove this workaround
+    String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
+    Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+    if(localizedFont)
+    {
+        return localizedFont->GetSize();
+    }
+    
     return font->GetSize();
 }
 

@@ -598,6 +598,7 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
     // Localization System is updated; need to look through all controls
     // and cause them to update their texts according to the new Localization.
     hierarchyTree.UpdateLocalization();
+    ResetSelectedControl();
 }
 
 void HierarchyTreeController::RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)

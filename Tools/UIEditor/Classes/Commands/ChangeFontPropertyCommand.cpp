@@ -66,7 +66,7 @@ void ChangeFontPropertyCommand::Execute()
 {
     //TODO: save data to be able to revert changes
     Logger::Debug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %x %s default", fontPresetOriginalName.c_str(), font, fontPresetName.c_str());
-    String newFontPresetName = EditorFontManager::Instance()->SetLocalizedFont(fontPresetOriginalName, font, fontPresetName, isApplyToAll);
+    String newFontPresetName = EditorFontManager::Instance()->SetLocalizedFont(fontPresetOriginalName, font, fontPresetName, isApplyToAll, "default");
     
     Map<String, Font*>::iterator it = localizedFonts.begin();
     Map<String, Font*>::const_iterator endIt = localizedFonts.end();

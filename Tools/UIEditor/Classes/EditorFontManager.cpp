@@ -660,7 +660,7 @@ String EditorFontManager::SetLocalizedFont(const String& fontOriginalName, Font*
     //TODO: also set font to FontManager?
     (*registeredFonts)[newFont] = newFontName;
     
-    if(locale == "default")
+    //if(locale == "default")
     {
         FontManager::Instance()->RegisterFont(newFont);
         FontManager::Instance()->SetFontName(newFont, newFontName);

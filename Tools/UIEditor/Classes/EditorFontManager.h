@@ -68,7 +68,7 @@ public:
     Font* GetLocalizedFont(const String& fontName, const String& locale) const;
     String GetLocalizedFontName(Font* font) const;
     
-    String SetLocalizedFont(const String& fontOriginalName, Font* font, const String& fontName, bool replaceExisting, const String& locale = "default");
+    String SetLocalizedFont(const String& fontOriginalName, Font* font, const String& fontName, bool replaceExisting, const String& locale);
 
 	//const FONTSMAP& GetAllFonts() const;
 	

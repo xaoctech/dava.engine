@@ -72,6 +72,8 @@ protected:
     
     // Handle dependent checkboxes.
     virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
+    //virtual void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget, const QMetaProperty& curProperty);
+    
     virtual void OnPropertiesChangedFromExternalSource() {};
     
     void FillFontPresetCombobox();
