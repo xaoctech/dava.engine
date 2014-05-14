@@ -184,10 +184,21 @@ void TextPropertyGridWidget::UpdateFontPresetValues()
                                                                          false);
     if(fontPropertyValue)
     {
-        int fontSize = fontPropertyValue->GetSize();
-        ui->fontSizeSpinBox->setValue(fontSize);
+        //TODO: remove this workaround
+        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(fontPropertyValue);
+        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
         
-        UpdatePushButtonWidgetWithFont(this->ui->fontSelectButton, fontPropertyValue);
+        if(localizedFont)
+        {
+            int fontSize = localizedFont->GetSize();
+            ui->fontSizeSpinBox->setValue(fontSize);
+        
+            UpdatePushButtonWidgetWithFont(this->ui->fontSelectButton, localizedFont);
+        }
+        else
+        {
+            Logger::Warning("TextPropertyGridWidget::UpdateFontPresetValues failed to get localized font");
+        }
     }
     else
     {

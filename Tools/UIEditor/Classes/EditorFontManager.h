@@ -110,11 +110,11 @@ private:
     FilePath defaultFontsPath;
     
     Vector<String> locales;
+    
     Map<String, Font*> defaultFonts;
     Map<String, Map<String, Font*> > localizedFonts;
     
     Map<Font*, String> defaultRegisteredFonts;
-    Map<String, Map<Font*, String> > localizedRegisteredFonts;
 };
 
 #endif /* defined(__UIEditor__FontManager__) */

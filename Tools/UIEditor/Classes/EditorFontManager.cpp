@@ -118,14 +118,14 @@ void EditorFontManager::OnProjectLoaded()
             {
                 String locale = locales[i];
                 
-                Map<Font*, String>::const_iterator localizedRegisteredEndIt = localizedRegisteredFonts[locale].end();
-                Map<Font*, String>::const_iterator localizedRegisteredFindIt = localizedRegisteredFonts[locale].find(it->first);
-                if(localizedRegisteredFindIt == localizedRegisteredEndIt)
+//                Map<Font*, String>::const_iterator localizedRegisteredEndIt = localizedRegisteredFonts[locale].end();
+//                Map<Font*, String>::const_iterator localizedRegisteredFindIt = localizedRegisteredFonts[locale].find(it->first);
+//                if(localizedRegisteredFindIt == localizedRegisteredEndIt)
                 {
                     Font* localizedFont = font;
                     
                     Logger::Debug("EditorFontManager::OnProjectLoaded localizedRegisteredFonts[%s][%x] = %s", locale.c_str(), localizedFont, fontName.c_str());
-                    localizedRegisteredFonts[locale][localizedFont] = fontName;
+                    //localizedRegisteredFonts[locale][localizedFont] = fontName;
                     
                     Map<String, Font*>::const_iterator localizedEndIt = localizedFonts[locale].end();
                     Map<String, Font*>::const_iterator localizedFindIt = localizedFonts[locale].find(fontName);
@@ -133,7 +133,8 @@ void EditorFontManager::OnProjectLoaded()
                     {
                         localizedFont = localizedFindIt->second;
                         Logger::Debug("EditorFontManager::OnProjectLoaded localizedRegisteredFonts[%s][%x] = %s", locale.c_str(), localizedFont, fontName.c_str());
-                        localizedRegisteredFonts[locale][localizedFont] = fontName;
+                        //localizedRegisteredFonts[locale][localizedFont] = fontName;
+                        defaultRegisteredFonts[font] = fontName;
                     }
                     else
                     {
@@ -141,17 +142,17 @@ void EditorFontManager::OnProjectLoaded()
                     }
                     
                 }
-                else
-                {
-                    if(it->second != localizedRegisteredFindIt->second)
-                    {
-                        Logger::Warning("EditorFontManager::OnProjectLoaded %s font %x is already registred, but as %s instead of %s", locale.c_str(), it->first, it->second.c_str(), localizedRegisteredFindIt->second.c_str());
-                    }
-                    else
-                    {
-                        Logger::Debug("EditorFontManager::OnProjectLoaded %s font %x is already registred as %s", locale.c_str(), it->first, it->second.c_str());
-                    }
-                }
+//                else
+//                {
+//                    if(it->second != localizedRegisteredFindIt->second)
+//                    {
+//                        Logger::Warning("EditorFontManager::OnProjectLoaded %s font %x is already registred, but as %s instead of %s", locale.c_str(), it->first, it->second.c_str(), localizedRegisteredFindIt->second.c_str());
+//                    }
+//                    else
+//                    {
+//                        Logger::Debug("EditorFontManager::OnProjectLoaded %s font %x is already registred as %s", locale.c_str(), it->first, it->second.c_str());
+//                    }
+//                }
             }
         }
         else
@@ -200,7 +201,9 @@ void EditorFontManager::LoadLocalizedFonts()
         Map<Font*, String>::const_iterator endIt = registeredFonts.end();
         for(; it != endIt; ++it)
         {
-            localizedRegisteredFonts[locale][it->first] = it->second;
+            //localizedRegisteredFonts[locale][it->first] = it->second;
+            defaultRegisteredFonts[it->first] = it->second;
+            
             localizedFonts[locale][it->second] = SafeRetain(it->first);
             
             Logger::Debug("EditorFontManager::LoadLocalizedFonts localizedRegisteredFonts[%s][%x] = %s", locale.c_str(), it->first, it->second.c_str());
@@ -234,11 +237,12 @@ void EditorFontManager::SaveLocalizedFonts()
         String locale = locales[i];
         
         //load localized fonts into FontManager
-        FontManager::Instance()->RegisterFonts(localizedRegisteredFonts[locale], localizedFonts[locale]);
+        //FontManager::Instance()->RegisterFonts(localizedRegisteredFonts[locale], localizedFonts[locale]);
+        FontManager::Instance()->RegisterFonts(defaultRegisteredFonts, localizedFonts[locale]);
         
         LogFonts(localizedFonts[locale], Format("EditorFontManager::SaveLocalizedFonts localizedFonts[%s]", locale.c_str()));
-        LogRegisteredFonts(localizedRegisteredFonts[locale], Format("EditorFontManager::SaveLocalizedFonts localizedRegisteredFonts[%s]", locale.c_str()));
-        
+        //LogRegisteredFonts(localizedRegisteredFonts[locale], Format("EditorFontManager::SaveLocalizedFonts localizedRegisteredFonts[%s]", locale.c_str()));
+
         FontManager::Instance()->PrepareToSaveFonts(true);
         
         UIYamlLoader::SaveFonts(EditorFontManager::Instance()->GetLocalizedFontsPath(locale));
@@ -260,7 +264,7 @@ void EditorFontManager::SaveLocalizedFonts()
 void EditorFontManager::ClearLocalizedFonts()
 {
     defaultRegisteredFonts.clear();
-    localizedRegisteredFonts.clear();
+    //localizedRegisteredFonts.clear();
     
     Logger::Debug("EditorFontManager::ClearLocalizedFonts defaultFonts.size()=%d", defaultFonts.size());
     ClearFonts(defaultFonts);
@@ -443,27 +447,27 @@ String EditorFontManager::GetLocalizedFontName(Font* font) const
     bool isFound = false;
     
     const String &locale = LocalizationSystem::Instance()->GetCurrentLocale();
-    
-    Map<String, Map<Font*, String> >::const_iterator findFontsIt = localizedRegisteredFonts.find(locale);
-    
-    Map<String, Map<Font*, String> >::const_iterator fontsEndIt = localizedRegisteredFonts.end();
-    
-    if(findFontsIt != fontsEndIt)
-    {
-        
-        const Map<Font*, String> *fonts = &findFontsIt->second;
-        Map<Font*, String>::const_iterator findIt = fonts->find(font);
-        Map<Font*, String>::const_iterator endIt = fonts->end();
-        
-        if(findIt != endIt)
-        {
-            fontName = findIt->second;
-            
-            Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d localized fonts", locale.c_str(), font, fontName.c_str(), fonts->size());
-            
-            isFound = true;
-        }
-    }
+//    
+//    Map<String, Map<Font*, String> >::const_iterator findFontsIt = localizedRegisteredFonts.find(locale);
+//    
+//    Map<String, Map<Font*, String> >::const_iterator fontsEndIt = localizedRegisteredFonts.end();
+//    
+//    if(findFontsIt != fontsEndIt)
+//    {
+//        
+//        const Map<Font*, String> *fonts = &findFontsIt->second;
+//        Map<Font*, String>::const_iterator findIt = fonts->find(font);
+//        Map<Font*, String>::const_iterator endIt = fonts->end();
+//        
+//        if(findIt != endIt)
+//        {
+//            fontName = findIt->second;
+//            
+//            Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d localized fonts", locale.c_str(), font, fontName.c_str(), fonts->size());
+//            
+//            isFound = true;
+//        }
+//    }
     
     //TODO: remove defaultFonts
     if(!isFound)
@@ -483,28 +487,28 @@ String EditorFontManager::GetLocalizedFontName(Font* font) const
     }
     
     //TODO: remove this warning in case font not found in localized and default fonts
-    if(!isFound)
-    {
-        Logger::Warning("EditorFontManager::GetLocalizedFontName (locale=%s) font %x not found in localized and default fonts", locale.c_str(), font);
-        
-        Map<String, Map<Font*, String> >::const_iterator fontsIt = localizedRegisteredFonts.begin();
-        for(; fontsIt != fontsEndIt; ++fontsIt)
-        {
-            const Map<Font*, String> *fonts = &fontsIt->second;
-            Map<Font*, String>::const_iterator findIt = fonts->find(font);
-            Map<Font*, String>::const_iterator endIt = fonts->end();
-            
-            if(findIt != endIt)
-            {
-                fontName = findIt->second;
-                
-                Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d localized fonts for locale=%s", locale.c_str(), font, fontName.c_str(), fonts->size(), fontsIt->first.c_str());
-                
-                isFound = true;
-                break;
-            }
-        }
-    }
+//    if(!isFound)
+//    {
+//        Logger::Warning("EditorFontManager::GetLocalizedFontName (locale=%s) font %x not found in localized and default fonts", locale.c_str(), font);
+//        
+//        Map<String, Map<Font*, String> >::const_iterator fontsIt = localizedRegisteredFonts.begin();
+//        for(; fontsIt != fontsEndIt; ++fontsIt)
+//        {
+//            const Map<Font*, String> *fonts = &fontsIt->second;
+//            Map<Font*, String>::const_iterator findIt = fonts->find(font);
+//            Map<Font*, String>::const_iterator endIt = fonts->end();
+//            
+//            if(findIt != endIt)
+//            {
+//                fontName = findIt->second;
+//                
+//                Logger::Debug("EditorFontManager::GetLocalizedFontName (locale=%s) font %x (%s) found in %d localized fonts for locale=%s", locale.c_str(), font, fontName.c_str(), fonts->size(), fontsIt->first.c_str());
+//                
+//                isFound = true;
+//                break;
+//            }
+//        }
+//    }
 
     
 //    const Map<String, Font*> &fonts = GetLocalizedFonts(locale);
@@ -558,16 +562,16 @@ String EditorFontManager::SetLocalizedFont(const String& fontOriginalName, Font*
         fonts = &defaultFonts;
     }
     
-    Map<String, Map<Font*, String> >::iterator findRegisteredFontsIt = localizedRegisteredFonts.find(locale);
-    
-    if(findFontsIt != localizedFonts.end())
-    {
-        registeredFonts = &findRegisteredFontsIt->second;
-    }
-    else if(locale == "default")
-    {
+//    Map<String, Map<Font*, String> >::iterator findRegisteredFontsIt = localizedRegisteredFonts.find(locale);
+//    
+//    if(findFontsIt != localizedFonts.end())
+//    {
+//        registeredFonts = &findRegisteredFontsIt->second;
+//    }
+//    else if(locale == "default")
+//    {
         registeredFonts = &defaultRegisteredFonts;
-    }
+//    }
     
     if(!fonts)
     {
