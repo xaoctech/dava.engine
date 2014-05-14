@@ -47,6 +47,8 @@ class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 public:
     struct TreeInfo
     {
+        TreeInfo(Entity * treeEntity);
+
         Entity * treeEntity;
 		Matrix4 wtInvMx;
 		Vector3 wtPosition;

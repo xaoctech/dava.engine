@@ -50,6 +50,9 @@ windValue(0.f)
 WindSystem::WindSystem(Scene * scene) : 
     SceneSystem(scene)
 {
+    RenderOptions * options = RenderManager::Instance()->GetOptions();
+    options->AddObserver(this);
+    HandleEvent(options);
 }
 
 WindSystem::~WindSystem()
@@ -82,6 +85,9 @@ void WindSystem::RemoveEntity(Entity * entity)
 
 void WindSystem::Process(float32 timeElapsed)
 {
+    if(!isWindUsed)
+        return;
+
     int32 windCount = winds.size();
     for(int32 i = 0; i < windCount; ++i)
     {
@@ -110,6 +116,12 @@ void WindSystem::ProcessWind(WindInfo * wind, float32 timeElapsed)
     wind->timeValue += timeElapsed;
     float32 t = wind->timeValue * wind->component->windSpeed;
     wind->windValue = wind->component->windForce * (2.f + sinf(t) * 0.8f + cosf(t * 10) * 0.2f);
+}
+
+void WindSystem::HandleEvent(Observable * observable)
+{
+    RenderOptions * options = static_cast<RenderOptions *>(observable);
+    isWindUsed = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 }
 
 };
