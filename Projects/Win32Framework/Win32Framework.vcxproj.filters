@@ -133,6 +133,9 @@
     <Filter Include="Internal\Particles\Job">
       <UniqueIdentifier>{94116b3a-757d-4e56-95a2-a621c48f12e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Render\Image">
+      <UniqueIdentifier>{4aeb201b-e943-4faa-9d67-cd383ea06dd8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -468,13 +471,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h">
@@ -927,9 +924,6 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -937,12 +931,6 @@
       <Filter>Internal\Base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
@@ -1413,17 +1401,35 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
       <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibDdsHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageSystem.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
       <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\Image.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageConvert.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageSystem.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.h">
+      <Filter>Internal\Render\Image</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1659,12 +1665,6 @@
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp">
@@ -2090,13 +2090,7 @@
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp">
@@ -2540,17 +2534,26 @@
     <ClCompile Include="..\..\Sources\Internal\Base\AtomicWin32.cpp">
       <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibDdsHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ImageSystem.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
       <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageSystem.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

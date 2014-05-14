@@ -212,12 +212,11 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     jpegErrorManager jerr;
     
     JSAMPROW row_pointer[1];
-    const char* absolutePathName = fileName.GetAbsolutePathname().c_str();
-    FILE *outfile = fopen( absolutePathName, "wb" );
+	FILE *outfile = fopen(fileName.GetAbsolutePathname().c_str(), "wb");
     
     if ( !outfile )
     {
-        Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", absolutePathName);
+		Logger::Error("[LibJpegWrapper::WriteJpegFile] File %s could not be opened for writing", fileName.GetAbsolutePathname().c_str());
         SafeRelease(convertedImage);
         return ERROR_FILE_NOTFOUND;
     }
@@ -229,7 +228,7 @@ eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Ima
     {
         jpeg_destroy_compress( &cinfo );
         fclose(outfile);
-        Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", absolutePathName);
+		Logger::Error("[LibJpegWrapper::WriteJpegFile] Error during compression of jpeg into file %s.", fileName.GetAbsolutePathname().c_str());
         SafeRelease(convertedImage);
         return ERROR_WRITE_FAIL;
     }
