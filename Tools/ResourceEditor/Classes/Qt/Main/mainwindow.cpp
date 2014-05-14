@@ -2589,22 +2589,22 @@ bool QtMainWindow::OpenScene( const QString & path )
 
                 scene = ui->sceneTabWidget->GetCurrentScene();
                 DVASSERT(scene);
-                VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion( scene->version );
+                VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(scene->version);
 
-                switch ( status )
+                switch (status)
                 {
                 case VersionInfo::COMPATIBLE:
                 {
-                    const String& branches = VersionInfo::Instance()->UnsupportedTagsMessage( scene->version );
-                    const QString msg = QString( "Scene was created with older version or another branch of ResourceEditor. Saving scene will broke compatibility. Next tags will be added:\n%1" ).arg( branches.c_str() );
-                    QMessageBox::warning( this, "Compatibility warning", msg );
+                    const String& branches = VersionInfo::Instance()->UnsupportedTagsMessage(scene->version);
+                    const QString msg = QString("Scene was created with older version or another branch of ResourceEditor. Saving scene will broke compatibility. Next tags will be added:\n%1" ).arg( branches.c_str());
+                    QMessageBox::warning(this, "Compatibility warning", msg);
                     break;
                 }
                 case VersionInfo::INVALID:
                 {
-                    const String& branches = VersionInfo::Instance()->NoncompatibleTagsMessage( scene->version );
-                    const QString msg = QString( "Scene was created with incompatible branch of ResourceEditor. It is not recommended to edit this scene. Next tags aren't implemented in current branch:\n%1" ).arg( branches.c_str( ) );
-                    QMessageBox::critical( this, "Compatibility error", msg );
+                    const String& branches = VersionInfo::Instance()->NoncompatibleTagsMessage(scene->version);
+                    const QString msg = QString("Scene was created with incompatible branch of ResourceEditor. It is not recommended to edit this scene. Next tags aren't implemented in current branch:\n%1" ).arg( branches.c_str());
+                    QMessageBox::critical( this,"Compatibility error", msg);
                     break;
                 }
                 default:

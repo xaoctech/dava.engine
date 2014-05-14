@@ -334,38 +334,38 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 	}
 	
     // load version tags
-    if ( header.version >= 12 )
+    if (header.version >= 12)
     {
         KeyedArchive * tagsArchive = new KeyedArchive();
-        tagsArchive->Load( file );
+        tagsArchive->Load(file);
 
         VersionInfo::SceneVersion version;
         version.version = header.version;
 
         typedef Map<String, VariantType*> KeyedTagsMap;
         const KeyedTagsMap& keyedTags = tagsArchive->GetArchieveData();
-        for ( KeyedTagsMap::const_iterator it = keyedTags.begin(); it != keyedTags.end(); it++ )
+        for (KeyedTagsMap::const_iterator it = keyedTags.begin(); it != keyedTags.end(); it++)
         {
             const String& tag = it->first;
             const uint32 ver = it->second->AsUInt32();
-            version.tags.insert( VersionInfo::TagsMap::value_type( tag, ver ) );
+            version.tags.insert(VersionInfo::TagsMap::value_type(tag, ver));
         }
         _scene->version = version;
-        SafeRelease( tagsArchive );
+        SafeRelease(tagsArchive);
     }
     else
     {
         _scene->version.version = header.version;
     }
 
-    VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion( _scene->version );
-    switch ( status )
+    VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(_scene->version);
+    switch (status)
     {
     case VersionInfo::COMPATIBLE:
-        Logger::Warning( "SceneFileV2::LoadScene scene was saved with older version of framework. Saving scene will broke compatibility." );
+        Logger::Warning("SceneFileV2::LoadScene scene was saved with older version of framework. Saving scene will broke compatibility.");
         break;
     case VersionInfo::INVALID:
-        Logger::Error( "SceneFileV2::LoadScene scene is incompatible with current version" );
+        Logger::Error("SceneFileV2::LoadScene scene is incompatible with current version");
         break;
     default:
         break;

@@ -45,72 +45,55 @@ namespace DAVA
     {
     }
 
-    void VersionInfo::AddVersion( const VersionInfo::SceneVersion& version )
+    void VersionInfo::AddVersion(const VersionInfo::SceneVersion& version)
     {
-        DVASSERT( versionMap.find( version.version ) == versionMap.end() );
-        versionMap.insert( VersionMap::value_type( version.version, version ) );
+        DVASSERT(versionMap.find(version.version) == versionMap.end());
+        versionMap.insert(VersionMap::value_type(version.version, version));
     }
 
     const VersionInfo::SceneVersion& VersionInfo::GetCurrentVersion() const
     {
-        DVASSERT( !versionMap.empty() );
+        DVASSERT(!versionMap.empty());
         return versionMap.rbegin()->second;
     }
 
-    void VersionInfo::FillVersionHistory()
-    {
-        SceneVersion currentVersion;
-        currentVersion.version = 12;
-        AddVersion( currentVersion );
-    }
-
-    void VersionInfo::SetCurrentBranch()
-    {
-        DVASSERT( !versionMap.empty() );
-        TagsMap& tags = versionMap.rbegin()->second.tags;
-
-        tags.insert( TagsMap::value_type( "water", 1 ) );
-        //tags.insert( TagsMap::value_type( "sky", 2 ) );
-        tags.insert( TagsMap::value_type( "grass", 1 ) );
-    }
-
-    String VersionInfo::UnsupportedTagsMessage( const SceneVersion& version ) const
+    String VersionInfo::UnsupportedTagsMessage(const SceneVersion& version) const
     {
         const TagsMap& allTags = GetTags();
-        const TagsMap& errTags = GetTagsDiff( allTags, version.tags );    // List of tags that not supported by current version of framework
-        const String& msg = FormatTagsString( errTags );
+        const TagsMap& errTags = GetTagsDiff(allTags, version.tags);    // List of tags that not supported by current version of framework
+        const String& msg = FormatTagsString(errTags);
 
         return msg;
     }
 
-    String VersionInfo::NoncompatibleTagsMessage( const SceneVersion& version ) const
+    String VersionInfo::NoncompatibleTagsMessage(const SceneVersion& version) const
     {
-        const TagsMap& allTags = GetTags( version.version );
-        const TagsMap& warnTags = GetTagsDiff( version.tags, allTags );   // List of tags that will be added to scene
-        const String& msg = FormatTagsString( warnTags );
+        const TagsMap& allTags = GetTags(version.version);
+        const TagsMap& warnTags = GetTagsDiff(version.tags, allTags);   // List of tags that will be added to scene
+        const String& msg = FormatTagsString(warnTags);
 
         return msg;
     }
 
-    VersionInfo::TagsMap VersionInfo::GetTagsDiff( const VersionInfo::TagsMap& from, const VersionInfo::TagsMap& what )
+    VersionInfo::TagsMap VersionInfo::GetTagsDiff(const VersionInfo::TagsMap& from, const VersionInfo::TagsMap& what)
     {
         TagsMap result;
 
-        for ( TagsMap::const_iterator it = from.begin(); it != from.end(); it++ )
+        for (TagsMap::const_iterator it = from.begin(); it != from.end(); it++)
         {
-            if ( what.find( it->first ) == what.end() )
+            if (what.find( it->first ) == what.end())
             {
-                result.insert( TagsMap::value_type( it->first, it->second ) );
+                result.insert(TagsMap::value_type(it->first,it->second));
             }
         }
 
         return result;
     }
 
-    String VersionInfo::FormatTagsString( const VersionInfo::TagsMap& tags )
+    String VersionInfo::FormatTagsString(const VersionInfo::TagsMap& tags)
     {
         std::stringstream ss;
-        for ( TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++ )
+        for (TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++)
         {
             ss << it->first << '_' << it->second << std::endl;
         }
@@ -118,34 +101,34 @@ namespace DAVA
         return ss.str();
     }
 
-    VersionInfo::TagsMap VersionInfo::GetTags( uint32 minVersion ) const
+    VersionInfo::TagsMap VersionInfo::GetTags(uint32 minVersion) const
     {
         TagsMap tags;
 
-        for ( VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++ )
+        for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++)
         {
-            if ( itVersion->first < minVersion )
+            if (itVersion->first < minVersion)
                 continue;
 
             const SceneVersion& version = itVersion->second;
-            tags.insert( version.tags.begin(), version.tags.end() );
+            tags.insert(version.tags.begin(), version.tags.end());
         }
 
         return tags;
     }
 
-    VersionInfo::eStatus VersionInfo::TestVersion( const SceneVersion& version ) const
+    VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
     {
         const SceneVersion& current = GetCurrentVersion();
 
         // Checking version
-        if ( current.version < version.version )
+        if (current.version < version.version)
             return INVALID;
 
         // Checking tags
         const TagsMap& tags = version.tags;
         size_t foundedTags = 0;
-        for ( VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++ )
+        for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++)
         {
             //if ( itVersion->first < version.version )
             //    continue;
@@ -153,32 +136,54 @@ namespace DAVA
             const TagsMap& currentTags = itVersion->second.tags;
 
             // Checking for non compatible tags
-            for ( TagsMap::const_iterator itTag = tags.begin(); itTag != tags.end(); itTag++ )
+            for (TagsMap::const_iterator itTag = tags.begin(); itTag != tags.end(); itTag++)
             {
                 const String& tagName = itTag->first;
                 const uint32 tagVer = itTag->second;
 
-                TagsMap::const_iterator itCurTag = currentTags.find( tagName );
-                const bool found = ( itCurTag != currentTags.end() ) && ( itCurTag->second == tagVer );
-                if ( found )
+                TagsMap::const_iterator itCurTag = currentTags.find(tagName);
+                const bool found = (itCurTag != currentTags.end()) && (itCurTag->second == tagVer);
+                if (found)
                     foundedTags++;
             }
         }
 
         // Map contains more tags, than are implemented in this build
-        if ( foundedTags < tags.size() )
+        if (foundedTags < tags.size())
             return INVALID;
 
-        if ( current.version > version.version )
+        if (current.version > version.version)
         {
             // TODO: add extra check for usability - if no new tags in `versionMap` are found, then return VALID
             return COMPATIBLE;
         }
 
-        if ( current.tags == version.tags )
+        if (current.tags == version.tags)
             return VALID;
 
         return COMPATIBLE;
+    }
+
+    void VersionInfo::FillVersionHistory()
+    {
+        // List of all supported featues:
+
+        SceneVersion currentVersion;
+        currentVersion.version = 12;    // Current version of scene
+        AddVersion(currentVersion);
+    }
+
+    void VersionInfo::SetCurrentBranch()
+    {
+        // List of featues, that are under development in current branch
+
+        DVASSERT(!versionMap.empty());
+        TagsMap& tags = versionMap.rbegin()->second.tags;
+
+        // TODO: remove after debug/test/review
+        tags.insert( TagsMap::value_type( "water", 1 ) );
+        //tags.insert( TagsMap::value_type( "sky", 2 ) );
+        tags.insert( TagsMap::value_type( "grass", 1 ) );
     }
 
 }
