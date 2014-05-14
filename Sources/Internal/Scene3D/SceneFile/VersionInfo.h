@@ -65,13 +65,19 @@ namespace DAVA
 
         const SceneVersion& GetCurrentVersion() const;
         eStatus TestVersion( const SceneVersion& version ) const;
+        String UnsupportedTagsMessage( const SceneVersion& version ) const;
+        String NoncompatibleTagsMessage( const SceneVersion& version ) const;
 
     private:
         void AddVersion( const SceneVersion& version );
         void FillVersionHistory();
         void SetCurrentBranch();
+        TagsMap GetTags( uint32 minVersion = 0 ) const;
 
         VersionMap versionMap;
+
+        static TagsMap GetTagsDiff( const TagsMap& src, const TagsMap& substr );
+        static String FormatTagsString( const TagsMap& tags );
     };
 
 };

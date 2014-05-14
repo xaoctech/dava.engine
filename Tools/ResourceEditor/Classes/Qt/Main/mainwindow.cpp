@@ -2587,14 +2587,26 @@ bool QtMainWindow::OpenScene( const QString & path )
                 }
 				ret = true;
 
+                scene = ui->sceneTabWidget->GetCurrentScene();
+                DVASSERT(scene);
                 VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion( scene->version );
+
                 switch ( status )
                 {
                 case VersionInfo::COMPATIBLE:
-                    QMessageBox::warning(this, "Compatibility warning", "Scene was created with older version of ResourceEditor. Saving scene may broke compatibility with....." );
+                {
+                    const String& branches = VersionInfo::Instance()->UnsupportedTagsMessage( scene->version );
+                    const QString msg = QString( "Scene was created with older version or another branch of ResourceEditor. Saving scene will broke compatibility. Next tags will be added:\n%1" ).arg( branches.c_str() );
+                    QMessageBox::warning( this, "Compatibility warning", msg );
                     break;
+                }
                 case VersionInfo::INVALID:
+                {
+                    const String& branches = VersionInfo::Instance()->NoncompatibleTagsMessage( scene->version );
+                    const QString msg = QString( "Scene was created with incompatible branch of ResourceEditor. It is not recommended to edit this scene. Next tags aren't implemented in current branch:\n%1" ).arg( branches.c_str( ) );
+                    QMessageBox::critical( this, "Compatibility error", msg );
                     break;
+                }
                 default:
                     break;
                 }
