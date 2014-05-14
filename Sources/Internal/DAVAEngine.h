@@ -86,6 +86,8 @@
 // Image formats stuff (PNG & JPG & other formats)
 #include "Render/Image/LibPngHelpers.h"
 #include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/Image/LibDdsHelper.h"
 
 // Files & Serialization
 #include "FileSystem/FileSystem.h"
@@ -119,8 +121,6 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageSystem.h"
 #include "Render/Shader.h"
 #include "Render/ShaderCache.h"
 
@@ -130,8 +130,6 @@
 #include "Render/RenderHelper.h"
 
 #include "Render/Cursor.h"
-
-#include "Render/Image/LibDdsHelper.h"
 
 #include "Render/MipmapReplacer.h"
 

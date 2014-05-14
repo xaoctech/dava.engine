@@ -919,7 +919,6 @@ void RenderManager::Lost()
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 0;
 
-	enabledAttribCount = 0;
 	for(int32 i = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
 	{
 		lastBindedTexture[i] = 0;

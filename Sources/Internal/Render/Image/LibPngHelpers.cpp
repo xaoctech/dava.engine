@@ -27,8 +27,6 @@
 =====================================================================================*/
 
 
-#include "Render/Image/LibPngHelpers.h"
-
 #if !defined(__DAVAENGINE_WIN32__)
 #include <unistd.h>
 #endif //#if !defined(__DAVAENGINE_WIN32__)
@@ -44,9 +42,9 @@
 #include "Render/RenderManager.h"
 #include "Render/2D/Sprite.h"
 #include "Render/Texture.h"
-//#include "Render/Image.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/Image/ImageConvert.h"
+#include "Render/Image/LibPngHelpers.h"
 #include "Render/PixelFormatDescriptor.h"
 
 using namespace DAVA;

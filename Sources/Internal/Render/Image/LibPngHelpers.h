@@ -33,8 +33,9 @@
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
 #include "Base/BaseObject.h"
-#include "Render/Image/Image.h"
 #include "FileSystem/FilePath.h"
+
+#include "Render/Image/Image.h"
 #include "Render/Image/ImageFormatInterface.h"
 
 namespace DAVA 

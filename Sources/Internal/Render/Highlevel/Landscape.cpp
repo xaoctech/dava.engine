@@ -29,6 +29,7 @@
 
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Render/RenderDataObject.h"
@@ -41,7 +42,6 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/TextureDescriptor.h"
-#include "Render/Image/ImageSystem.h"
 #include "LandscapeChunk.h"
 #include "Debug/Stats.h"
 #include "Render/Material/NMaterial.h"

@@ -30,9 +30,9 @@
 
 #include "Render/Highlevel/Heightmap.h"
 #include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
-#include "Render/Image/ImageSystem.h"
 
 
 namespace DAVA
