@@ -59,6 +59,28 @@ SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
     options->RemoveObserver(this);
 }
 
+SpeedTreeUpdateSystem::TreeInfo::TreeInfo(Entity * _treeEntity)
+{
+    treeEntity = _treeEntity;
+
+    Random * rnd = Random::Instance();
+    SpeedTreeComponent * sc = GetSpeedTreeComponent(treeEntity);
+    float32 spring = sc->GetTrunkOscillationSpringSqrt();
+    spring *= spring;
+
+#define BASE_OSCILLATION_VALUE (float32)((rnd->RandFloat() * 2.f - 1.f) * spring)
+
+    leafTime = (float32)rnd->RandFloat(1000.f);
+    oscVelocity = Vector3(BASE_OSCILLATION_VALUE, BASE_OSCILLATION_VALUE, BASE_OSCILLATION_VALUE);
+    oscOffset = oscVelocity;
+
+#undef BASE_OSCILLATION_VALUE
+
+    Matrix4 wtMx = GetTransformComponent(treeEntity)->GetWorldTransform();
+    wtPosition = wtMx.GetTranslationVector();
+    wtMx.GetInverse(wtInvMx);
+}
+
 void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
 	if(event == EventSystem::WORLD_TRANSFORM_CHANGED)
@@ -86,17 +108,9 @@ void SpeedTreeUpdateSystem::AddEntity(Entity * entity)
 
     SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
     DVASSERT(treeObject);
-
     treeObject->SetAnimationFlag(isAnimationEnabled);
 
-    TreeInfo * treeInfo = new TreeInfo();
-    treeInfo->treeEntity = entity;
-    treeInfo->leafTime = (float32)Random::Instance()->RandFloat(1000.f);
-
-    Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
-    treeInfo->wtPosition = wtMx.GetTranslationVector();
-    wtMx.GetInverse(treeInfo->wtInvMx);
-
+    TreeInfo * treeInfo = new TreeInfo(entity);
     allTrees.push_back(treeInfo);
 }
 

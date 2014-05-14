@@ -117,7 +117,7 @@ inline void SpeedTreeComponent::SetTrunkOscillationAmplitude(const float32 & amp
 
 inline void SpeedTreeComponent::SetTrunkOscillationSpringSqrt(const float32 & spring)
 {
-    trunkOscillationSpringSqrt = spring;
+    trunkOscillationSpringSqrt = Clamp(spring, .5f, 5.f);
 }
 
 inline void SpeedTreeComponent::SetLeafsOscillationApmlitude(const float32 & amplitude)

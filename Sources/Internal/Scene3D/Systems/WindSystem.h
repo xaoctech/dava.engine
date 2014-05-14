@@ -32,6 +32,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
+#include "Base/Observer.h"
 #include "Entity/SceneSystem.h"
 #include "Scene3D/Components/WindComponent.h"
 
@@ -39,7 +40,7 @@ namespace DAVA
 {
 class Entity;
     
-class WindSystem : public SceneSystem
+class WindSystem : public SceneSystem, public Observer
 {
     struct WindInfo
     {
@@ -60,10 +61,14 @@ public:
 
     Vector3 GetWind(const Vector3 & inPosition);
 
+    virtual void HandleEvent(Observable * observable);
+
 protected:
     virtual void ProcessWind(WindInfo * wind, float32 timeElapsed);
 
     Vector<WindInfo *> winds;
+
+    bool isWindUsed;
 
     friend class WindComponent;
 };
