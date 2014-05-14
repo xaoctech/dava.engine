@@ -84,7 +84,7 @@ void SpeedTreeComponent::Deserialize(KeyedArchive *archive, SerializationContext
 	if(archive)
 	{
         trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
-        trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationSpringSqrt", trunkOscillationSpringSqrt);
+        trunkOscillationSpringSqrt = archive->GetFloat("stc.trunkOscillationSpringSqrt", trunkOscillationSpringSqrt);
 		leafsOscillationAmplitude = archive->GetFloat("stc.leafsOscillationAmplitude", leafsOscillationAmplitude);
 		leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
         maxAnimatedLOD = archive->GetInt32("stc.maxAnimatedLOD", maxAnimatedLOD);
