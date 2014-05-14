@@ -78,7 +78,6 @@ const FastName NMaterial::PARAM_FOG_DENSITY("fogDensity");
 const FastName NMaterial::PARAM_FOG_START("fogStart");
 const FastName NMaterial::PARAM_FOG_END("fogEnd");
 const FastName NMaterial::PARAM_FOG_GLOW_COLOR("fogGlowColor");
-const FastName NMaterial::PARAM_FOG_GLOW_SCATTERING("fogGlowScattering");
 const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
