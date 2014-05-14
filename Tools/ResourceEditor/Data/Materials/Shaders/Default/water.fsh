@@ -89,10 +89,6 @@ uniform highp float distortionFallSquareDist;
 #if defined(VERTEX_FOG)
 uniform vec3 fogColor;
 varying float varFogFactor;
-#if defined(FOG_GLOW)
-uniform vec3 fogGlowColor;
-varying float varFogGlowFactor;
-#endif
 #endif
 
 
@@ -196,11 +192,6 @@ void main()
 #endif
     
 #if defined(VERTEX_FOG)
-	#if defined(FOG_GLOW)
-		vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-		gl_FragColor.rgb = mix(realFogColor, gl_FragColor.rgb, varFogFactor);
-	#else
-		gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
-	#endif
+    gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
 #endif
 }
