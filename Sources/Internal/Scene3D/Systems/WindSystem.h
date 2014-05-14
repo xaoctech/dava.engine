@@ -46,7 +46,7 @@ class WindSystem : public SceneSystem
         WindInfo(WindComponent * c);
 
         WindComponent * component;
-        float32 currentWindValue;
+        float32 windValue;
         float32 timeValue;
     };
 
@@ -58,9 +58,7 @@ public:
     virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
 
-    void WindTriggered(WindComponent * wind);
-
-    Vector3 GetWind(const Vector3 & inPosition, uint32 typeMask = WindComponent::WIND_TYPE_MASK_ALL);
+    Vector3 GetWind(const Vector3 & inPosition);
 
 protected:
     virtual void ProcessWind(WindInfo * wind, float32 timeElapsed);

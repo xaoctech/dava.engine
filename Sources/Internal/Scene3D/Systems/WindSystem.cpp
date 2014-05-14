@@ -42,7 +42,7 @@ namespace DAVA
 
 WindSystem::WindInfo::WindInfo(WindComponent * c) :
 component(c),
-currentWindValue(0.f)
+windValue(0.f)
 {
     timeValue = (float32)Random::Instance()->RandFloat(1000.f);
 }
@@ -89,56 +89,27 @@ void WindSystem::Process(float32 timeElapsed)
     }
 }
 
-Vector3 WindSystem::GetWind(const Vector3 & inPosition, uint32 typeMask /* = WIND_TYPE_MASK_ALL */)
+Vector3 WindSystem::GetWind(const Vector3 & inPosition)
 {
     Vector3 ret;
     int32 windCount = winds.size();
     for(int32 i = 0; i < windCount; ++i)
     {
         WindInfo * info = winds[i];
-        if((typeMask & info->component->type) > 0 && info->component->influenceBbox.IsInside(inPosition))
+        if(info->component->influenceBbox.IsInside(inPosition))
         {
-            ret += info->component->GetDirection() * info->currentWindValue;
+            ret += info->component->GetDirection() * info->windValue;
         }
     }
 
     return ret;
 }
 
-void WindSystem::WindTriggered(WindComponent * wind)
-{
-    //if(wind->type == WindComponent::WIND_TYPE_EXPLOSION)
-    //{
-    //    int32 windCount = winds.size();
-    //    for(int32 i = 0; i < windCount; ++i)
-    //    {
-    //        WindInfo * info = winds[i];
-    //        if(info->component == wind)
-    //        {
-    //            info->timeValue = 0.f;
-    //            break;
-    //        }
-    //    }
-    //}
-}
-
 void WindSystem::ProcessWind(WindInfo * wind, float32 timeElapsed)
 {
     wind->timeValue += timeElapsed;
-    
-    switch(wind->component->type)
-    {
-    case WindComponent::WIND_TYPE_STATIC:
-        {
-            wind->currentWindValue = wind->component->amplitude * (2.f + sinf(wind->timeValue) * 0.8f + cosf(wind->timeValue * 10) * 0.2f);
-        }
-        break;
-    case WindComponent::WIND_TYPE_WAVE:
-        {
-            wind->currentWindValue = wind->component->amplitude * (sinf(wind->timeValue * 20) + .5f);
-        }
-        break;
-    }
+    float32 t = wind->timeValue * wind->component->windSpeed;
+    wind->windValue = wind->component->windForce * (2.f + sinf(t) * 0.8f + cosf(t * 10) * 0.2f);
 }
 
 };

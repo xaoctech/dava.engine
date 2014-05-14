@@ -44,14 +44,6 @@ class WindComponent : public Component
 protected:
 	virtual ~WindComponent();
 public:
-    enum eWindType
-    {
-        WIND_TYPE_STATIC     = 1,
-        WIND_TYPE_WAVE       = 1 << 1,
-
-        WIND_TYPE_MASK_ALL   = 0xFF
-    };
-
 	WindComponent();
 
 	IMPLEMENT_COMPONENT_TYPE(WIND_COMPONENT);
@@ -59,26 +51,19 @@ public:
 	virtual Component * Clone(Entity * toEntity);
 	virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
 	virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
-    
-    void Trigger();
 
     Vector3 GetDirection() const;
     
 protected:
     AABBox3 influenceBbox;
-    uint32 type;
-
-    float32 amplitude;
-    float32 frequency;
-    float32 wavelenght;
+    float32 windForce;
+    float32 windSpeed;
     
 public:
 	INTROSPECTION_EXTEND(WindComponent, Component,
                          MEMBER(influenceBbox, "Box", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(type, "Wind Type", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(amplitude, "Amplitude", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(frequency, "Frequency", I_SAVE | I_VIEW | I_EDIT)
-                         MEMBER(wavelenght, "Wavelenght", I_SAVE | I_VIEW | I_EDIT)
+                         MEMBER(windForce, "Wind Force", I_SAVE | I_VIEW | I_EDIT)
+                         MEMBER(windSpeed, "Wind Force", I_SAVE | I_VIEW | I_EDIT)
                          );
 
     friend class WindSystem;

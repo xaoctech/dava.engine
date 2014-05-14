@@ -42,12 +42,10 @@ namespace DAVA
 	REGISTER_CLASS(WindComponent)
 
 WindComponent::WindComponent() :
-    amplitude(0.f),
-    frequency(0.f),
-    wavelenght(0.f),
-    type(WIND_TYPE_STATIC)
+    windForce(0.f),
+    windSpeed(1.f),
+    influenceBbox(Vector3(), 10000.f)
 {
-    
 }
 
 WindComponent::~WindComponent()
@@ -60,11 +58,8 @@ Component * WindComponent::Clone(Entity * toEntity)
     WindComponent * component = new WindComponent();
 	component->SetEntity(toEntity);
     
-    component->amplitude = amplitude;
-    component->frequency = frequency;
-    component->wavelenght = wavelenght;
+    component->windForce = windForce;
     component->influenceBbox = influenceBbox;
-    component->type = type;
     
     return component;
 }
@@ -75,11 +70,9 @@ void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *seria
 
 	if(archive != 0)
 	{
-        archive->SetFloat("wc.amplitude", amplitude);
-        archive->SetFloat("wc.frequency", frequency);
-        archive->SetFloat("wc.wavelenght", wavelenght);
+        archive->SetFloat("wc.windForce", windForce);
+        archive->SetFloat("wc.windSpeed", windSpeed);
         archive->SetVariant("wc.aabbox", VariantType(influenceBbox));
-        archive->SetUInt32("wc.type", type);
     }
 }
     
@@ -87,11 +80,9 @@ void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
 {
 	if(archive)
     {
-        amplitude = archive->GetFloat("wc.amplitude");
-        frequency = archive->GetFloat("wc.frequency");
-        wavelenght = archive->GetFloat("wc.wavelenght");
+        windForce = archive->GetFloat("wc.windForce");
+        windSpeed = archive->GetFloat("wc.windSpeed");
         influenceBbox = archive->GetVariant("wc.aabbox")->AsAABBox3();
-        type = archive->GetUInt32("wc.type");
 	}
 
 	Component::Deserialize(archive, serializationContext);
@@ -105,14 +96,6 @@ Vector3 WindComponent::GetDirection() const
     const Matrix4 & wtMx = GetTransformComponent(entity)->GetWorldTransform();
 
     return Vector3(wtMx._00, wtMx._10, wtMx._20); //Get world direction only: wtMx * Vec3(1, 0, 0)
-}
-
-void WindComponent::Trigger()
-{
-    DVASSERT(entity);
-    DVASSERT(entity->GetScene());
-
-    entity->GetScene()->windSystem->WindTriggered(this);
 }
 
 };
