@@ -1440,6 +1440,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2581,6 +2584,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
