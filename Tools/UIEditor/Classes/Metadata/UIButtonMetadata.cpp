@@ -110,7 +110,7 @@ void UIButtonMetadata::SetFont(Font * font)
         String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
         Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
         
-        localizedFont->SetSize(GetFontSize());
+        //localizedFont->SetSize(GetFontSize());
         
 		for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 		{
@@ -153,48 +153,48 @@ float UIButtonMetadata::GetFontSize() const
     return GetFontSizeForState(this->uiControlStates[GetActiveStateIndex()]);
 }
 
-void UIButtonMetadata::SetFontSize(float fontSize)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
+//void UIButtonMetadata::SetFontSize(float fontSize)
+//{
+//    if (!VerifyActiveParamID())
+//    {
+//        return;
+//    }
+//
+//	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+//	{
+//		UIStaticText *buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
+//		if (!buttonText)
+//		{
+//			return;
+//		}
+//    
+//		Font *font = buttonText->GetFont();
+//		if (!font)
+//		{
+//			return;
+//		}
+//
+//		Font* newFont = font->Clone();
+//		newFont->SetSize(fontSize);
+//		buttonText->SetFont(newFont);
+//		newFont->Release();
+//	}
+//
+//    UpdatePropertyDirtyFlagForFontSize();
+//}
 
-	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
-	{
-		UIStaticText *buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
-		if (!buttonText)
-		{
-			return;
-		}
-    
-		Font *font = buttonText->GetFont();
-		if (!font)
-		{
-			return;
-		}
-
-		Font* newFont = font->Clone();
-		newFont->SetSize(fontSize);
-		buttonText->SetFont(newFont);
-		newFont->Release();
-	}
-
-    UpdatePropertyDirtyFlagForFontSize();
-}
-
-void UIButtonMetadata::UpdatePropertyDirtyFlagForFontSize()
-{
-    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
-    for (int i = 0; i < statesCount; i ++)
-    {
-        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
-
-        bool curStateDirty = (GetFontSizeForState(curState) !=
-                              GetFontSizeForState(GetReferenceState()));
-        SetStateDirtyForProperty(curState, PropertyNames::FONT_SIZE_PROPERTY_NAME, curStateDirty);
-    }
-}
+//void UIButtonMetadata::UpdatePropertyDirtyFlagForFontSize()
+//{
+//    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+//    for (int i = 0; i < statesCount; i ++)
+//    {
+//        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+//
+//        bool curStateDirty = (GetFontSizeForState(curState) !=
+//                              GetFontSizeForState(GetReferenceState()));
+//        SetStateDirtyForProperty(curState, PropertyNames::FONT_SIZE_PROPERTY_NAME, curStateDirty);
+//    }
+//}
 
 float UIButtonMetadata::GetFontSizeForState(UIControl::eControlState state) const
 {
@@ -983,7 +983,7 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
 {
     UpdatePropertyDirtyFlagForLocalizedText();
     UpdatePropertyDirtyFlagForFont();
-    UpdatePropertyDirtyFlagForFontSize();
+    //UpdatePropertyDirtyFlagForFontSize();
     UpdatePropertyDirtyFlagForColor();
 
     UpdatePropertyDirtyFlagForSpriteName();

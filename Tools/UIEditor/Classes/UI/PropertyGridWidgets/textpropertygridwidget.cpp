@@ -381,6 +381,31 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithFont(QPushButton *pushBut
     }
 }
 
+//void TextPropertyGridWidget::UpdateSpinBoxWidgetWithPropertyValue(QSpinBox* spinBoxWidget,
+//                                                                  const QMetaProperty& curProperty)
+//{
+//    if (pushButtonWidget != this->ui->fontSelectButton)
+//    {
+//        return; //Not font select button
+//    }
+//    
+//    // Get the current value.
+//    bool isPropertyValueDiffers = false;
+//    float propertyValue =
+//    PropertiesHelper::GetAllPropertyValues<float>(this->activeMetadata,
+//                                                  curProperty.name(),
+//                                                  isPropertyValueDiffers);
+//    
+//    {
+//        // For Spin Box set some value irregardless of isPropertyValueDiffers flag.
+//        WidgetSignalsBlocker blocker(spinBoxWidget);
+//        spinBoxWidget->setValue(propertyValue);
+//    }
+//    
+//    
+//    BasePropertyGridWidget::UpdateSpinBoxWidgetWithPropertyValue(spinBoxWidget, curProperty);
+//}
+
 void TextPropertyGridWidget::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget, const QMetaProperty &curProperty)
 {
     bool isPropertyValueDiffers = false;

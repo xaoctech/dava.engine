@@ -96,6 +96,14 @@ float UIStaticTextMetadata::GetFontSize() const
         Font *font = GetActiveStaticText()->GetFont();
         if (font)
         {
+            //TODO: font should be set correctly, remove this workaround
+            String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
+            Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+            if(localizedFont)
+            {
+                return localizedFont->GetSize();
+            }
+            
             return font->GetSize();
         }
     }
