@@ -316,7 +316,7 @@ void DebugDrawSystem::DrawWindNode(DAVA::Entity *entity)
 		Vector3 worldPosition = worldMx.GetTranslationVector();
 
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.5f, 0.2f, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawArrow(worldPosition, worldPosition + wind->GetWindDirection() * 3.f, 10.f, 1.f, debugDrawState);
+		DAVA::RenderHelper::Instance()->DrawArrow(worldPosition, worldPosition + wind->GetDirection() * 3.f, 10.f, 1.f, debugDrawState);
 	}
 }
 
