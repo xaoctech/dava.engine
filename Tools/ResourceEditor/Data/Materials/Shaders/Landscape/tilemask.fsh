@@ -70,8 +70,9 @@ void main()
 #if defined(VERTEX_FOG)
 	#if defined(FOG_GLOW)
 		vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-		gl_FragColor.rgb = mix(realFogColor, color, varFogFactor);
+		gl_FragColor.rgb = color * varFogFactor + realFogColor * (1.0 - varFogFactor);
 	#else
+		//VI: fog equation is inside of color equatin for framebuffer fetch
 		gl_FragColor.rgb = mix(fogColor, color, varFogFactor);
 	#endif
 #else

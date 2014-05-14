@@ -481,12 +481,7 @@ void main()
 #if defined(FRAMEBUFFER_FETCH)
     //VI: fog is taken to account here
     #if defined(VERTEX_FOG)
-		#if defined(FOG_GLOW)
-			vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-			gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(realFogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
-		#else
-			gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
-		#endif
+        gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
     #else
         gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
     #endif
@@ -499,9 +494,10 @@ void main()
 #if defined(VERTEX_FOG)
     #if !defined(FRAMEBUFFER_FETCH)
 		#if defined(FOG_GLOW)
-			vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-			gl_FragColor.rgb = mix(realFogColor, gl_FragColor.rgb, varFogFactor);
+		vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
+		gl_FragColor.rgb = gl_FragColor.rgb * varFogFactor + realFogColor * (1.0 - varFogFactor);
 		#else
+			//VI: fog equation is inside of color equatin for framebuffer fetch
 			gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
 		#endif
     #endif

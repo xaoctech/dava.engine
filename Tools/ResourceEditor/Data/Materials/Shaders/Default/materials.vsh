@@ -66,7 +66,6 @@ uniform vec3 metalFresnelReflectance;
 
 #if defined(VERTEX_FOG)
     uniform float fogLimit;
-	varying float varFogFactor;
     #if !defined(FOG_LINEAR)
     uniform float fogDensity;
     #else
@@ -74,8 +73,8 @@ uniform vec3 metalFresnelReflectance;
     uniform float fogEnd;
     #endif
 
+	varying float varFogFactor;
 	#if defined(FOG_GLOW)
-	uniform float fogGlowScattering;
 	varying float varFogGlowFactor;
 	#endif
 #endif
@@ -494,7 +493,7 @@ void main()
 	
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
-		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering);
+		varFogGlowFactor = (dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5);
 	#endif
 #endif
 
