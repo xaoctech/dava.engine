@@ -26,9 +26,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#include "Render/Image/Image.h"
 #include "Render/Texture.h"
+#include "Render/Image/Image.h"
 #include "Render/Image/ImageConvert.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"

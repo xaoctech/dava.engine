@@ -27,7 +27,6 @@
 =====================================================================================*/
 
 
-#include "Render/Image/ImageSystem.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/RenderBase.h"
@@ -35,6 +34,7 @@
 #include "Platform/SystemTimer.h"
 #include "Utils/Utils.h"
 
+#include "Render/Image/ImageSystem.h"
 #include "Render/Image/LibJpegHelper.h"
 #include "Render/Image/LibDdsHelper.h"
 #include "Render/Image/LibPngHelpers.h"

@@ -27,13 +27,12 @@
 =====================================================================================*/
 
 
-
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "Render/Image/LibDdsHelper.h"
 
-#include "Render/Image/Image.h"
 #include "Render/Texture.h"
 #include "Render/RenderManager.h"
-#include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"
 #include <libdxt/nvtt.h>
 #include <libdxt/nvtt_extra.h>
