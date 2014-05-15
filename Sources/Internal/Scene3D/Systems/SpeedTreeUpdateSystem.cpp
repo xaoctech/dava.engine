@@ -43,42 +43,34 @@
 namespace DAVA
 {
 
+SpeedTreeUpdateSystem::TreeInfo::TreeInfo(Entity * _treeEntity)
+{
+    treeEntity = _treeEntity;
+
+    leafTime = (float32)Random::Instance()->RandFloat(1000.f);
+}
+
+void SpeedTreeUpdateSystem::TreeInfo::PositionUpdated()
+{
+    Matrix4 wtMx = GetTransformComponent(treeEntity)->GetWorldTransform();
+    wtPosition = wtMx.GetTranslationVector();
+    wtMx.GetInverse(wtInvMx);
+}
+
 SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
-:	SceneSystem(scene)
+    :	SceneSystem(scene)
 {
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 
-	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
 }
 
 SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
 {
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->RemoveObserver(this);
-}
-
-SpeedTreeUpdateSystem::TreeInfo::TreeInfo(Entity * _treeEntity)
-{
-    treeEntity = _treeEntity;
-
-    Random * rnd = Random::Instance();
-    SpeedTreeComponent * sc = GetSpeedTreeComponent(treeEntity);
-    float32 spring = sc->GetTrunkOscillationSpringSqrt();
-    spring *= spring;
-
-#define BASE_OSCILLATION_VALUE (float32)((rnd->RandFloat() * 2.f - 1.f) * spring)
-
-    leafTime = (float32)rnd->RandFloat(1000.f);
-    oscVelocity = Vector3(BASE_OSCILLATION_VALUE, BASE_OSCILLATION_VALUE, BASE_OSCILLATION_VALUE);
-    oscOffset = oscVelocity;
-
-#undef BASE_OSCILLATION_VALUE
-
-    Matrix4 wtMx = GetTransformComponent(treeEntity)->GetWorldTransform();
-    wtPosition = wtMx.GetTranslationVector();
-    wtMx.GetInverse(wtInvMx);
 }
 
 void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
@@ -93,9 +85,7 @@ void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
                 TreeInfo * info = allTrees[i];
                 if(info->treeEntity == entity)
                 {
-                    Matrix4 wtMx = GetTransformComponent(entity)->GetWorldTransform();
-                    info->wtPosition = wtMx.GetTranslationVector();
-                    wtMx.GetInverse(info->wtInvMx);
+                    info->PositionUpdated();
                 }
             }
         }
@@ -153,7 +143,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         }
         treeObject->SetAnimationFlag(true);
 
-        Vector3 windVec = windSystem->GetWind(info->wtPosition);
+        const Vector3 & treePosition = info->wtPosition;
+        Vector3 windVec = windSystem->GetWind(treePosition);
         float32 windForce = windVec.Length();
 
         float32 trunkAmplitude = component->GetTrunkOscillationAmplitude();

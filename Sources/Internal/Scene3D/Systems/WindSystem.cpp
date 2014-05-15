@@ -40,9 +40,10 @@
 namespace DAVA
 {
 
+const static float32 WIND_PERIOD = 2 * PI;
+
 WindSystem::WindInfo::WindInfo(WindComponent * c) :
-component(c),
-windValue(0.f)
+component(c)
 {
     timeValue = (float32)Random::Instance()->RandFloat(1000.f);
 }
@@ -53,6 +54,12 @@ WindSystem::WindSystem(Scene * scene) :
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     HandleEvent(options);
+
+    for(int32 i = 0; i < WIND_TABLE_SIZE; i++)
+    {
+        float32 t = WIND_PERIOD * i / (float32)WIND_TABLE_SIZE;
+        windValuesTable[i] = (2.f + sinf(t) * 0.8f + cosf(t * 10) * 0.2f);
+    }
 }
 
 WindSystem::~WindSystem()
@@ -91,11 +98,11 @@ void WindSystem::Process(float32 timeElapsed)
     int32 windCount = winds.size();
     for(int32 i = 0; i < windCount; ++i)
     {
-        ProcessWind(winds[i], timeElapsed);
+        winds[i]->timeValue += timeElapsed * winds[i]->component->windSpeed;
     }
 }
 
-Vector3 WindSystem::GetWind(const Vector3 & inPosition)
+Vector3 WindSystem::GetWind(const Vector3 & inPosition) const
 {
     Vector3 ret;
     int32 windCount = winds.size();
@@ -104,18 +111,24 @@ Vector3 WindSystem::GetWind(const Vector3 & inPosition)
         WindInfo * info = winds[i];
         if(info->component->influenceBbox.IsInside(inPosition))
         {
-            ret += info->component->GetDirection() * info->windValue;
+            ret += info->component->GetDirection() * info->component->windForce * GetWindValueFromTable(inPosition, info);
         }
     }
 
     return ret;
 }
 
-void WindSystem::ProcessWind(WindInfo * wind, float32 timeElapsed)
+float32 WindSystem::GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const
 {
-    wind->timeValue += timeElapsed;
-    float32 t = wind->timeValue * wind->component->windSpeed;
-    wind->windValue = wind->component->windForce * (2.f + sinf(t) * 0.8f + cosf(t * 10) * 0.2f);
+    Vector3 dir = info->component->GetDirection();
+    Vector3 projPt = dir * (inPosition.DotProduct(dir));
+    float32 t = projPt.Length() + info->timeValue;
+
+    float32 tMod = fmodf(t, WIND_PERIOD);
+    int32 i = (int32)floorf(tMod / WIND_PERIOD * WIND_TABLE_SIZE);
+
+    DVASSERT(i >= 0 && i < WIND_TABLE_SIZE);
+    return windValuesTable[i];
 }
 
 void WindSystem::HandleEvent(Observable * observable)
