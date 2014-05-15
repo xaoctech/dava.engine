@@ -51,13 +51,13 @@ public:
     
     virtual bool IsImage(File *file) const;
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0);
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) const;
 
   	//input data only in RGBA8888
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
 
     //input data only in RGBA8888
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
     
     virtual uint32 GetDataSize(File * file) const;
     
@@ -68,12 +68,12 @@ public:
     static uint32 GetMipMapLevelsCount(const FilePath & fileName);
 	static uint32 GetMipMapLevelsCount(File * file);
     
-	virtual bool AddCRCIntoMetaData(const FilePath &filePathname);
-	virtual uint32 GetCRCFromFile(const FilePath &filePathname);
+	virtual bool AddCRCIntoMetaData(const FilePath &filePathname) const;
+	virtual uint32 GetCRCFromFile(const FilePath &filePathname) const;
     
 private:
 
-    eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap);
+    eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap) const;
     
 	static PixelFormat GetPixelFormat(const FilePath & fileName);
 	static PixelFormat GetPixelFormat(File * file);

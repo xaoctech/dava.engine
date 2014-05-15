@@ -104,7 +104,7 @@ namespace DAVA
         return isPvrFile;
     }
     
-    eErrorCode LibPVRHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap)
+    eErrorCode LibPVRHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap) const
     {
         PVRFile * pvrFile = ReadFile(infile, true, true);
         if(pvrFile && LoadImages(pvrFile, imageSet, fromMipmap))
@@ -114,14 +114,14 @@ namespace DAVA
         return ERROR_READ_FAIL;
     }
     
-    eErrorCode LibPVRHelper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+    eErrorCode LibPVRHelper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
     {
         //not implemented due to external tool
         DVASSERT(0);
         return ERROR_WRITE_FAIL;
     }
     
-    eErrorCode LibPVRHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+    eErrorCode LibPVRHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
     {
         //not implemented due to external tool
         DVASSERT(0);
@@ -1867,7 +1867,7 @@ namespace DAVA
         return dataSize;
     }
     
-    bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
+    bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname) const
     {
         //read file
         PVRFile *pvrFile = ReadFile(filePathname, true, true);
@@ -1971,7 +1971,7 @@ namespace DAVA
         return crcRead;
     }
     
-    uint32 LibPVRHelper::GetCRCFromFile(const FilePath &filePathname)
+    uint32 LibPVRHelper::GetCRCFromFile(const FilePath &filePathname) const
     {
         uint32 crc = 0;
         bool success = GetCRCFromMetaData(filePathname, &crc);

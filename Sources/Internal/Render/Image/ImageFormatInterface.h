@@ -50,14 +50,14 @@ public:
     
     virtual bool IsImage(File *file) const = 0;
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap) = 0;
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap) const = 0;
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) = 0;
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) = 0;
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const = 0;
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const = 0;
     
     virtual uint32 GetDataSize(File *infile) const = 0;
     
-    inline bool IsFileExtensionSupported(const String& extension);
+    inline bool IsFileExtensionSupported(const String& extension) const;
     
 protected:
 
@@ -65,7 +65,7 @@ protected:
     
 };
     
-inline bool ImageFormatInterface::IsFileExtensionSupported(const String& extension)
+inline bool ImageFormatInterface::IsFileExtensionSupported(const String& extension) const
 {
     return std::find(supportedExtensions.begin(), supportedExtensions.end(), extension) != supportedExtensions.end();
 }

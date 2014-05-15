@@ -108,7 +108,7 @@ bool LibPngWrapper::IsImage(File *file) const
     return retValue;
 }
 
-eErrorCode LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap )
+eErrorCode LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap ) const
 {
     Image* image = new Image();
     int innerRetCode = ReadPngFile(infile, image);
@@ -325,13 +325,13 @@ uint32 LibPngWrapper::GetDataSize(File * infile ) const
 	return imageSize;
 }
 
-eErrorCode LibPngWrapper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+eErrorCode LibPngWrapper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
     // for png cubeMaps are not supported
     return WriteFile(fileName, imageSet, compressionFormat);
 }
 
-eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat format)
+eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat format) const
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
     DVASSERT(imageSet.size());

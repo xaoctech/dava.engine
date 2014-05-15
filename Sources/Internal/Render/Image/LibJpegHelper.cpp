@@ -116,7 +116,7 @@ uint32 LibJpegWrapper::GetDataSize(File *infile) const
     return dataSize;
 }
   
-eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
+eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap) const
 {
     jpeg_decompress_struct cinfo;
     jpegErrorManager jerr;
@@ -174,13 +174,13 @@ eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int
     return SUCCESS;
 }
 
-eErrorCode LibJpegWrapper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+eErrorCode LibJpegWrapper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
     // for jpeg cubeMaps are not supported
     return WriteFile(fileName, imageSet, compressionFormat);
 }
     
-eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+eErrorCode LibJpegWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
     DVASSERT(imageSet.size());
     const Image* original = imageSet[0];
