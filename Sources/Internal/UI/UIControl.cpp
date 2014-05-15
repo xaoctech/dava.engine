@@ -2129,9 +2129,6 @@ namespace DAVA
 		YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
 		// Model UIControl to be used in comparing
 		UIControl *baseControl = new UIControl();		
-        
-		// Control Type
-		SetPreferredNodeType(node, "UIControl");
 
 		// Control name
 		//node->Set("name", this->GetName());
@@ -2277,6 +2274,7 @@ namespace DAVA
 		// Release model variable
 		SafeRelease(baseControl);
 
+        SetPreferredNodeType(node, GetClassName());
 		return node;
 	}
 
