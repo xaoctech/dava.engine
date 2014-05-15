@@ -139,16 +139,16 @@ public:
     
     virtual bool IsImage(File *file) const;
     
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap = 0);
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 fromMipmap = 0) const;
     
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
     
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat);
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
     
     virtual uint32 GetDataSize(File *infile) const;
     
-    virtual bool AddCRCIntoMetaData(const FilePath &filePathname);
-    virtual uint32 GetCRCFromFile(const FilePath &filePathname);
+    virtual bool AddCRCIntoMetaData(const FilePath &filePathname) const;
+    virtual uint32 GetCRCFromFile(const FilePath &filePathname) const;
     
     static bool WriteFileFromMipMapFiles(const FilePath & outputFile, const Vector<FilePath> & imgPaths);
    

@@ -42,9 +42,9 @@ class CRCAdditionInterface
 {
 public:
     
-    virtual bool AddCRCIntoMetaData(const FilePath &filePathname) = 0;
+    virtual bool AddCRCIntoMetaData(const FilePath &filePathname) const = 0;
     
-    virtual uint32 GetCRCFromFile(const FilePath &filePathname) = 0;
+    virtual uint32 GetCRCFromFile(const FilePath &filePathname) const = 0;
     
 };
     

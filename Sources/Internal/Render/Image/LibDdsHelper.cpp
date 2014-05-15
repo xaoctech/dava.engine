@@ -854,7 +854,7 @@ bool LibDdsHelper::GetTextureSize(File * file, uint32 & width, uint32 & height)
 	return NvttHelper::GetTextureSize(dec, width, height);
 }
  
-bool LibDdsHelper::AddCRCIntoMetaData(const FilePath &filePathname)
+bool LibDdsHelper::AddCRCIntoMetaData(const FilePath &filePathname) const
 {
 	String fileNameStr = filePathname.GetAbsolutePathname();
 
@@ -971,7 +971,7 @@ bool LibDdsHelper::GetCRCFromDDSHeader(const FilePath &filePathname, uint32* out
 	return tag == METADATA_CRC_TAG;
 }
 
-uint32 LibDdsHelper::GetCRCFromFile(const FilePath &filePathname)
+uint32 LibDdsHelper::GetCRCFromFile(const FilePath &filePathname) const
 {
 	uint32 tag = 0, crc = 0;
 	bool success = GetCRCFromDDSHeader(filePathname, &tag, &crc);
@@ -1139,7 +1139,7 @@ uint32 NvttHelper::GetCubeFaceId(uint32 nvttFaceDesc, int faceIndex)
 	return faceId;
 }
 
-eErrorCode LibDdsHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap)
+eErrorCode LibDdsHelper::ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap) const
 {
     return ReadFile(infile, imageSet, baseMipMap, false);
 }
@@ -1160,17 +1160,17 @@ eErrorCode LibDdsHelper::ReadFile(File * file, Vector<Image*> &imageSet, int32 b
     return NvttHelper::ReadDxtFile(dec, imageSet, baseMipMap,forceSoftwareConvertation) ? SUCCESS : ERROR_READ_FAIL;
 }
  
-eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
     return WriteFile(fileName, imageSet, compressionFormat, false);
 }
     
-eErrorCode LibDdsHelper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat)
+eErrorCode LibDdsHelper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
     return WriteFile(fileName, imageSet, compressionFormat, true);
 }
 
-eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
+eErrorCode LibDdsHelper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap) const
 {
     if(imageSet[0]->format != FORMAT_RGBA8888)
     {
