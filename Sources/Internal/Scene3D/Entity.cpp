@@ -169,7 +169,7 @@ void Entity::RemoveAllComponents()
 		if(components[i])
 		{
 			CleanupComponent(components[i], 0);
-			components[i] = NULL;
+            SafeRelease(components[i]);
 		}
 	}
 
@@ -188,7 +188,8 @@ void Entity::RemoveAllComponents()
 			{
 				componentCount--;
 				CleanupComponent(*compIt, componentCount);
-			}
+                SafeRelease(*compIt);
+            }
 		}
 
 		SafeDelete(componentsVector);
