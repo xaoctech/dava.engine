@@ -68,6 +68,7 @@
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/WindSystem.h"
+#include "Scene3D/Systems/WaveSystem.h"
 
 #include "Sound/SoundSystem.h"
 
@@ -326,6 +327,12 @@ void Scene::CreateSystems()
         windSystem = new WindSystem(this);
         AddSystem(windSystem, (1 << Component::WIND_COMPONENT), true);
     }
+
+    if(SCENE_SYSTEM_WAVE_UPDATE_FLAG & systemsMask)
+    {
+        waveSystem = new WaveSystem(this);
+        AddSystem(waveSystem, (1 << Component::WAVE_COMPONENT), true);
+    }
 }
 
 Scene::~Scene()
@@ -366,7 +373,6 @@ Scene::~Scene()
     debugRenderSystem = 0;
     particleEffectSystem = 0;
     updatableSystem = 0;
-	lodSystem = 0;
     lightUpdateSystem = 0;
     switchSystem = 0;
     soundSystem = 0;
@@ -374,6 +380,10 @@ Scene::~Scene()
     skyboxSystem = 0;
     staticOcclusionSystem = 0;
     materialSystem = 0;
+    speedTreeUpdateSystem = 0;
+    foliageSystem = 0;
+    windSystem = 0;
+    waveSystem = 0;
     
     uint32 size = (uint32)systems.size();
     for (uint32 k = 0; k < size; ++k)

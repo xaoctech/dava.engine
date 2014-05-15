@@ -27,51 +27,41 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+#ifndef __DAVAENGINE_SCENE3D_WAVESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WAVESYSTEM_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
 #include "Base/Observer.h"
 #include "Entity/SceneSystem.h"
+#include "Scene3D/Components/WindComponent.h"
 
 namespace DAVA
 {
 
-#define WIND_TABLE_SIZE 63
-
 class Entity;
-class WindComponent;
-class WindSystem : public SceneSystem, public Observer
+class WaveComponent;
+class WaveSystem : public SceneSystem, public Observer
 {
-    struct WindInfo
-    {
-        WindInfo(WindComponent * c);
-
-        WindComponent * component;
-        float32 timeValue;
-    };
-
 public:
-    WindSystem(Scene * scene);
-    virtual ~WindSystem();
+    WaveSystem(Scene * scene);
+    virtual ~WaveSystem();
 	
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
 
-    Vector3 GetWind(const Vector3 & inPosition) const;
+    void WaveTriggered(WaveComponent * component);
+
+    Vector3 GetWaveDisturbance(const Vector3 & inPosition) const;
 
     virtual void HandleEvent(Observable * observable);
 
 protected:
-    float32 GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const;
 
-    Vector<WindInfo *> winds;
-    bool isWindUsed;
+    bool isWavesEnabled;
 
-    float32 windValuesTable[WIND_TABLE_SIZE];
-
-    friend class WindComponent;
+    friend class WaveComponent;
 };
     
 } // ns
