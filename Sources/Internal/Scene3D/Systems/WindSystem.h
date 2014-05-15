@@ -38,8 +38,10 @@
 
 namespace DAVA
 {
+
+#define WIND_TABLE_SIZE 63
+
 class Entity;
-    
 class WindSystem : public SceneSystem, public Observer
 {
     struct WindInfo
@@ -47,7 +49,6 @@ class WindSystem : public SceneSystem, public Observer
         WindInfo(WindComponent * c);
 
         WindComponent * component;
-        float32 windValue;
         float32 timeValue;
     };
 
@@ -59,16 +60,17 @@ public:
     virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
 
-    Vector3 GetWind(const Vector3 & inPosition);
+    Vector3 GetWind(const Vector3 & inPosition) const;
 
     virtual void HandleEvent(Observable * observable);
 
 protected:
-    virtual void ProcessWind(WindInfo * wind, float32 timeElapsed);
+    float32 GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const;
 
     Vector<WindInfo *> winds;
-
     bool isWindUsed;
+
+    float32 windValuesTable[WIND_TABLE_SIZE];
 
     friend class WindComponent;
 };

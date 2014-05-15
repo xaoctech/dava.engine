@@ -48,10 +48,12 @@ public:
     struct TreeInfo
     {
         TreeInfo(Entity * treeEntity);
+        void PositionUpdated();
 
         Entity * treeEntity;
 		Matrix4 wtInvMx;
 		Vector3 wtPosition;
+
         Vector3 oscVelocity;
         Vector3 oscOffset;
         float32 leafTime;
