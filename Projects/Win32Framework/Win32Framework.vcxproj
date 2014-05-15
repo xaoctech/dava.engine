@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugQt|Win32">
@@ -507,6 +507,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\WaveComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\WindComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.h" />
@@ -553,6 +554,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.h" />
@@ -908,6 +910,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\WaveComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\WindComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.cpp" />
@@ -954,6 +957,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.cpp" />

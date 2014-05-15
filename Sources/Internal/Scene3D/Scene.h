@@ -81,6 +81,7 @@ class StaticOcclusionSystem;
 class SpeedTreeUpdateSystem;
 class FoliageSystem;
 class WindSystem;
+class WaveSystem;
     
 /**
     \ingroup scene3d
@@ -114,6 +115,7 @@ public:
         SCENE_SYSTEM_FOLIAGE_FLAG           = 1 << 13,
         SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG  = 1 << 14,
         SCENE_SYSTEM_WIND_UPDATE_FLAG       = 1 << 15,
+        SCENE_SYSTEM_WAVE_UPDATE_FLAG       = 1 << 16,
 
         SCENE_SYSTEM_ALL_MASK               = 0xFFFFFFFF
     };
@@ -155,6 +157,7 @@ public:
     SpeedTreeUpdateSystem* speedTreeUpdateSystem;
     FoliageSystem* foliageSystem;
     WindSystem * windSystem;
+    WaveSystem * waveSystem;
     
     /**
         \brief Overloaded GetScene returns this, instead of normal functionality.

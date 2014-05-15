@@ -64,6 +64,8 @@ public:
 
         SPEEDTREE_LEAFS_DRAW,
         SPEEDTREE_ANIMATIONS,
+
+        WAVE_DISTURBANCE_PROCESS,
         
         DYNAMIC_OCCLUSION_ENABLE,
         

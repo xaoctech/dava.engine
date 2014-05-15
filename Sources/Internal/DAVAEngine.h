@@ -270,6 +270,7 @@
 #include "Scene3D/Components/QualitySettingsComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
 
 // Application core 
 #include "Core/Core.h"

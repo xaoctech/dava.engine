@@ -47,6 +47,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
 
 namespace DAVA
 {
@@ -288,6 +289,16 @@ WindComponent * GetWindComponent(Entity * fromEntity)
         return static_cast<WindComponent *>(fromEntity->GetComponent(Component::WIND_COMPONENT));
     }
     
+    return NULL;
+}
+
+WaveComponent * GetWaveComponent(Entity * fromEntity)
+{
+    if(fromEntity)
+    {
+        return static_cast<WaveComponent *>(fromEntity->GetComponent(Component::WAVE_COMPONENT));
+    }
+
     return NULL;
 }
 

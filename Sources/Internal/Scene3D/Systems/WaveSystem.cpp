@@ -27,11 +27,10 @@
 =====================================================================================*/
 
 
-#include "Base/BaseMath.h"
-#include "WindSystem.h"
+#include "WaveSystem.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Components/ComponentHelpers.h"
-#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
@@ -41,101 +40,72 @@
 namespace DAVA
 {
 
-const static float32 WIND_PERIOD = 2 * PI;
-
-WindSystem::WindInfo::WindInfo(WindComponent * c) :
-component(c)
-{
-    timeValue = (float32)Random::Instance()->RandFloat(1000.f);
-}
-
-WindSystem::WindSystem(Scene * scene) : 
+WaveSystem::WaveSystem(Scene * scene) : 
     SceneSystem(scene)
 {
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     HandleEvent(options);
-
-    for(int32 i = 0; i < WIND_TABLE_SIZE; i++)
-    {
-        float32 t = WIND_PERIOD * i / (float32)WIND_TABLE_SIZE;
-        windValuesTable[i] = (2.f + sinf(t) * 0.8f + cosf(t * 10) * 0.2f);
-    }
 }
 
-WindSystem::~WindSystem()
+WaveSystem::~WaveSystem()
 {
-
 }
 
-void WindSystem::AddEntity(Entity * entity)
+void WaveSystem::AddEntity(Entity * entity)
 {
-    WindComponent * wind = GetWindComponent(entity);
-    winds.push_back(new WindInfo(wind));
+    //WindComponent * wind = GetWindComponent(entity);
+    //winds.push_back(new WindInfo(wind));
 }
 
-void WindSystem::RemoveEntity(Entity * entity)
+void WaveSystem::RemoveEntity(Entity * entity)
 {
-    Vector<WindInfo *>::iterator it = winds.begin();
-    while(it != winds.end())
-    {
-        WindInfo * info = *it;
-        if(info->component->entity == entity)
-        {
-            SafeDelete(info);
-            winds.erase(it);
-            break;
-        }
-        ++it;
-    }
-
+    //Vector<WindInfo *>::iterator it = winds.begin();
+    //while(it != winds.end())
+    //{
+    //    WindInfo * info = *it;
+    //    if(info->component->entity == entity)
+    //    {
+    //        SafeDelete(info);
+    //        winds.erase(it);
+    //        break;
+    //    }
+    //    ++it;
+    //}
 }
 
-void WindSystem::Process(float32 timeElapsed)
+void WaveSystem::Process(float32 timeElapsed)
 {
-    if(!isWindUsed)
+    if(!isWavesEnabled)
         return;
 
-    int32 windCount = winds.size();
-    for(int32 i = 0; i < windCount; ++i)
-    {
-        winds[i]->timeValue += timeElapsed * winds[i]->component->windSpeed;
-    }
+    //int32 windCount = winds.size();
+    //for(int32 i = 0; i < windCount; ++i)
+    //{
+    //    winds[i]->timeValue += timeElapsed * winds[i]->component->windSpeed;
+    //}
 }
 
-Vector3 WindSystem::GetWind(const Vector3 & inPosition) const
+Vector3 WaveSystem::GetWaveDisturbance(const Vector3 & inPosition) const
 {
     Vector3 ret;
-    int32 windCount = winds.size();
-    for(int32 i = 0; i < windCount; ++i)
-    {
-        WindInfo * info = winds[i];
-        if(info->component->influenceBbox.IsInside(inPosition))
-        {
-            ret += info->component->GetDirection() * info->component->windForce * GetWindValueFromTable(inPosition, info);
-        }
-    }
+    //int32 windCount = winds.size();
+    //for(int32 i = 0; i < windCount; ++i)
+    //{
+    //    WindInfo * info = winds[i];
+    //    if(info->component->influenceBbox.IsInside(inPosition))
+    //    {
+    //        ret += info->component->GetDirection() * info->component->windForce * GetWindValueFromTable(inPosition, info);
+    //    }
+    //}
 
     return ret;
 }
 
-float32 WindSystem::GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const
-{
-    Vector3 dir = info->component->GetDirection();
-    Vector3 projPt = dir * (inPosition.DotProduct(dir));
-    float32 t = projPt.Length() + info->timeValue;
-
-    float32 tMod = fmodf(t, WIND_PERIOD);
-    int32 i = (int32)floorf(tMod / WIND_PERIOD * WIND_TABLE_SIZE);
-
-    DVASSERT(i >= 0 && i < WIND_TABLE_SIZE);
-    return windValuesTable[i];
-}
-
-void WindSystem::HandleEvent(Observable * observable)
+void WaveSystem::HandleEvent(Observable * observable)
 {
     RenderOptions * options = static_cast<RenderOptions *>(observable);
-    isWindUsed = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+    isWavesEnabled = options->IsOptionEnabled(RenderOptions::WAVE_DISTURBANCE_PROCESS);
 }
 
 };

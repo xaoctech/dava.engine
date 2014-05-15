@@ -28,73 +28,89 @@
 
 
 
-#include "Scene3D/Components/WindComponent.h"
-#include "Scene3D/Components/TransformComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Systems/WaveSystem.h"
 #include "FileSystem/KeyedArchive.h"
-#include "Scene3D/SceneFile/SerializationContext.h"
 
 namespace DAVA 
 {
-	REGISTER_CLASS(WindComponent)
+	REGISTER_CLASS(WaveComponent)
 
-WindComponent::WindComponent() :
-    windForce(0.f),
-    windSpeed(1.f),
-    influenceBbox(Vector3(), 10000.f)
+WaveComponent::WaveComponent() :
+    amplitude(0.f),
+    lenght(0.f),
+    speed(0.f),
+    damping(0.f),
+    infDistance(0.f)
 {
 }
 
-WindComponent::~WindComponent()
+WaveComponent::WaveComponent(float32 _amlitude, float32 _lenght, float32 _speed, float32 _damping, float32 _infDistance) :
+    amplitude(_amlitude),
+    lenght(_lenght),
+    speed(_speed),
+    damping(_damping),
+    infDistance(_infDistance)
+{
+}
+
+WaveComponent::~WaveComponent()
 {
     
 }
- 
-Component * WindComponent::Clone(Entity * toEntity)
+
+Component * WaveComponent::Clone(Entity * toEntity)
 {
-    WindComponent * component = new WindComponent();
+    WaveComponent * component = new WaveComponent();
 	component->SetEntity(toEntity);
     
-    component->windForce = windForce;
-    component->influenceBbox = influenceBbox;
+    component->amplitude = amplitude;
+    component->lenght = lenght;
+    component->speed = speed;
+    component->damping = damping;
+    component->infDistance = infDistance;
     
     return component;
 }
 
-void WindComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+void WaveComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	Component::Serialize(archive, serializationContext);
 
 	if(archive != 0)
-	{
-        archive->SetFloat("wc.windForce", windForce);
-        archive->SetFloat("wc.windSpeed", windSpeed);
-        archive->SetVariant("wc.aabbox", VariantType(influenceBbox));
+    {
+        archive->SetFloat("wavec.amplitude", amplitude);
+        archive->SetFloat("wavec.lenght", lenght);
+        archive->SetFloat("wavec.speed", speed);
+        archive->SetFloat("wavec.damping", damping);
+        archive->SetFloat("wavec.infDistance", infDistance);
     }
 }
     
-void WindComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+void WaveComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	if(archive)
     {
-        windForce = archive->GetFloat("wc.windForce");
-        windSpeed = archive->GetFloat("wc.windSpeed");
-        influenceBbox = archive->GetVariant("wc.aabbox")->AsAABBox3();
+        amplitude = archive->GetFloat("wavec.amplitude");
+        lenght = archive->GetFloat("wavec.lenght");
+        speed = archive->GetFloat("wavec.speed");
+        damping = archive->GetFloat("wavec.damping");
+        infDistance = archive->GetFloat("wavec.infDistance");
 	}
 
 	Component::Deserialize(archive, serializationContext);
 }
-    
-Vector3 WindComponent::GetDirection() const
+
+void WaveComponent::Trigger()
 {
-    DVASSERT(entity);
-    DVASSERT(GetTransformComponent(entity));
+    Scene * scene = entity->GetScene();
+    DVASSERT(scene);
+    DVASSERT(scene->waveSystem);
 
-    const Matrix4 & wtMx = GetTransformComponent(entity)->GetWorldTransform();
-
-    return Vector3(wtMx._00, wtMx._10, wtMx._20); //Get world direction only: wtMx * Vec3(1, 0, 0)
+    scene->waveSystem->WaveTriggered(this);
 }
 
 };
