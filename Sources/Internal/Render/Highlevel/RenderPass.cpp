@@ -32,6 +32,8 @@
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/Camera.h"
+#include "Render/ShaderCache.h"
+
 #include "Render/ImageLoader.h"
 
 namespace DAVA
@@ -104,7 +106,9 @@ void RenderPass::PrepareVisibilityArrays(Camera *camera, RenderSystem * renderSy
 }
 
 void RenderPass::DrawLayers(Camera *camera)
-{
+{    
+    ShaderCache::Instance()->ClearAllLastBindedCaches();
+
     // Draw all layers with their materials
     uint32 size = (uint32)renderLayers.size();
     for (uint32 k = 0; k < size; ++k)
@@ -405,7 +409,7 @@ void WaterRefractionRenderPass::Draw(RenderSystem * renderSystem)
 
 
     visibilityArray.Clear();
-    renderSystem->GetRenderHierarchy()->Clip(currMainCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFLECTION);	
+    renderSystem->GetRenderHierarchy()->Clip(currMainCamera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA | RenderObject::VISIBLE_REFRACTION);	
     renderPassBatchArray->Clear();
     renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currMainCamera); 
     DrawLayers(currMainCamera);       
