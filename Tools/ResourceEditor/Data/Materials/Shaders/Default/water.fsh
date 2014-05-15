@@ -41,7 +41,10 @@ uniform sampler2D normalmap; // [1]:ONCE
 uniform mat3 worldInvTransposeMatrix;
 varying mediump vec3 cameraToPointInTangentSpace;
 varying mediump mat3 tbnToWorldMatrix;
+
+#if defined(SPECULAR)
 varying vec3 varLightVec;
+#endif
 
 varying highp vec2 varTexCoord0;
 varying highp vec2 varTexCoord1;
@@ -57,8 +60,10 @@ uniform lowp vec3 refractionConstColor;
 uniform lowp float eta;
 #endif
 
+#if defined(SPECULAR)
 uniform mediump float materialSpecularShininess;
 uniform lowp vec3 materialLightSpecularColor;    // engine pass premultiplied material * light specular color
+#endif
 
 #if defined (REAL_REFLECTION)
 uniform sampler2D dynamicReflection;
@@ -107,7 +112,10 @@ void main()
 		lowp vec3 textureColorDecal = texture2D(decal, varTexCoordDecal).rgb;
 		lowp vec3 textureColor0 = texture2D(albedo, varTexCoord0).rgb;
 		lowp vec3 textureColor1 = texture2D(albedo, varTexCoord1).rgb;
-		gl_FragColor = vec4((textureColor0 *textureColorDecal* decalTintColor * 2.0 + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
+		//gl_FragColor = vec4((textureColor0 *textureColorDecal* decalTintColor * 2.0 + reflectionColor * reflectanceColor) * textureColor1 * 2.0, 1.0);
+		//gl_FragColor = vec4(((textureColor0 + textureColor1)* decalTintColor + reflectionColor * reflectanceColor) * textureColorDecal * 2.0, 1.0);
+		//gl_FragColor = vec4((textureColorDecal* decalTintColor * reflectionColor * reflectanceColor) * (textureColor0 + textureColor1) * 2.0, 1.0);
+		gl_FragColor = vec4(((textureColor0 * textureColor1) * 3.0 * decalTintColor * textureColorDecal + reflectionColor * reflectanceColor) , 1.0);
 	#else
 		gl_FragColor = vec4(reflectionColor * reflectionTintColor, 1.0);
 	#endif
@@ -159,6 +167,7 @@ void main()
 	//gl_FragColor = vec4(vec3(normalize(eyeDist)/100.0), 1.0);
 #else
     lowp vec3 reflectionVectorInTangentSpace = reflect(cameraToPointInTangentSpaceNorm, normal);
+	reflectionVectorInTangentSpace.z = abs(reflectionVectorInTangentSpace.z); //prevent reflection through surface
     lowp vec3 reflectionVectorInWorldSpace = (tbnToWorldMatrix * reflectionVectorInTangentSpace);    
     lowp vec3 reflectionColor = textureCube(cubemap, reflectionVectorInWorldSpace).rgb * reflectionTintColor;
     

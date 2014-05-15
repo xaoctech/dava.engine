@@ -140,6 +140,7 @@ public:
 		uint32 textureStateFullSwitches;
 		
 		uint32 attachRenderDataCount;
+        uint32 attachRenderDataSkipCount;
         uint32 dynamicParamUniformBindCount;
         uint32 materialParamUniformBindCount;
         uint32 spriteDrawCount;
@@ -448,11 +449,14 @@ public:
     
 	void SetDrawTranslate(const Vector3 &offset);
 
+    const Vector2& GetDrawTranslate() const;
+
 	/** 
 	 \brief 
 	 \param[in] offset
 	 */
 	void SetDrawScale(const Vector2 &scale);
+    const Vector2& GetDrawScale() const;
 
 	void IdentityDrawMatrix();
 	void IdentityMappingMatrix();
@@ -802,6 +806,7 @@ public:
 	Shader * currentRenderEffect;
 	
     RenderDataObject * currentRenderData;
+    RenderDataObject * attachedRenderData;
 
     Rect viewport;
     
