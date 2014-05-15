@@ -221,8 +221,6 @@ bool TextureDescriptor::UpdateCrcForFormat(eGPUFamily forGPU) const
     
 bool TextureDescriptor::Load(const FilePath &filePathname)
 {
-	DVASSERT(compression == NULL);
-
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
@@ -236,9 +234,13 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
 	file->Read(&signature);
 
 	isCompressedFile = (COMPRESSED_FILE == signature);
-	if(isCompressedFile == false)
+	if(isCompressedFile == false && !compression)
 	{
 		AllocateCompressionData();
+	}
+	else if(isCompressedFile && compression)
+	{
+		ReleaseCompressionData();
 	}
 
     int8 version = 0;
@@ -757,11 +759,9 @@ void TextureDescriptor::Reload()
 {
 	if((pathname.IsEmpty() == false) && pathname.Exists())
 	{
-		if((isCompressedFile == false) && (compression))
-			ReleaseCompressionData();
-
-		FilePath savedPath = pathname;
-		Initialize(savedPath);
+		FilePath descriptorPathname = pathname;
+		SetDefaultValues();
+		Load(descriptorPathname);
 	}
 }
 
