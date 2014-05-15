@@ -52,7 +52,8 @@ class UIScreen;
 class ScreenSwitchListener
 {
 public:
-	virtual void OnScreenSwitched(UIScreen* newScreen) {}
+	virtual void OnScreenWillSwitched(UIScreen* newScreen) {}
+    virtual void OnScreenDidSwitched(UIScreen* newScreen) {}
 };
 
 	/**
@@ -332,6 +333,9 @@ private:
 	void ReplaceScreen(UIScreen *newMainControl);
 
 	void ProcessScreenLogic();
+
+    void NotifyListenersWillSwitched( UIScreen* screen );
+    void NotifyListenersDidSwitched( UIScreen* screen );
 
 	Vector<ScreenSwitchListener*> screenSwitchListeners;
 
