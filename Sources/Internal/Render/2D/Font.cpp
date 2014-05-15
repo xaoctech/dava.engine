@@ -266,55 +266,80 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				break;
 			case GOODCHAR: 
 				if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
-				{ 
-					lastWordEnd = pos;
-					
-					//					WideString currentLine = text.substr(currentLineStart, lastWordEnd - currentLineStart);
-					//					Size2i currentLineSize = GetStringSize(currentLine);
-					int currentLineDx = 0;
-					for (int i = currentLineStart; i < lastWordEnd ; i++)
-					{
-						currentLineDx += sizes[i];
-					}
-					if ((currentLineDx < targetWidth) || (currentLineEnd <= currentLineStart)) // if current line size < rect size set line end to current word end
-					{
-						currentLineEnd = lastWordEnd;
-					}else // here we add current line to results because current word is too big for current line
-					{
-						//Logger::FrameworkDebug("before=%d %d", currentLineStart, currentLineEnd);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
-						resultVector.push_back(currentLineWithoutLastWord);
-						currentLineStart = lastWordStart;
-						//fix: 
-						// there can be case when last word on current line with one more word (lastWordEnd = pos;) will be wider than targetRect.dx
-						// in this case currentLineEnd could have been less than currentLineStart
-						currentLineEnd = lastWordEnd;   
-					}
-				}
-				if (t == ' ')state = SKIP; // if cur char is space go to skip
-				else if(t == '\n')
 				{
-					// this block is copied from case NEXTLINE: if(t == 'n')
-					// unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
-					// so last position is pos instead of (pos-1)
-					if (currentLineStart != -1) // if we already have something in current line we add to result
+                    //calculate current line width
+					int currentLineWidth = 0;
+					for (int i = currentLineStart; i < pos ; i++)
 					{
-						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
-						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
-						resultVector.push_back(currentLineWithoutLastWord);
-						
-						currentLineStart = -1;	// start search of characters for the new line
-					}else
-					{
-						resultVector.push_back(L""); // here we add empty line if there was no characters in current line
+						currentLineWidth += sizes[i];
 					}
-					state = SKIP; //always switch to SKIP because we do not know here what will be next
-					break;
-				}
+                    
+                    if((currentLineWidth <= targetWidth) || (t == ' ' && 0 == targetWidth))
+                    {   // add line if we can fit it at target width
+                        currentLineEnd = pos;
+                        lastWordEnd = pos;
+                    }
+                    else
+                    {
+                        int32 currentLineLength = currentLineEnd - currentLineStart;
+                        if((currentLineLength > 0)) // use previous position of separator to split text
+                        {
+                            WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineLength);
+                            resultVector.push_back(currentLineWithoutLastWord);
 
-				else if (t == 0) state = FINISH; 
+                            currentLineStart = -1;
+                            lastWordStart = lastWordEnd = 0;
+                            pos = currentLineEnd;
+                            currentLineEnd = 0;
+                            state = SKIP; // if cur char is space go to skip
+                            break;
+                        }
+                        else if(pos) // truncate text by symbol for very long word
+                        {
+                            if(0 == targetWidth)
+                            {
+                                WideString currentLine = text.substr(currentLineStart, pos - currentLineStart);
+                                resultVector.push_back(currentLine);
+                                
+                                lastWordStart = lastWordEnd = currentLineEnd = 0;
+                                currentLineStart = -1;
+                            }
+                            else
+                            {
+                                for (int i = pos-1; i >= currentLineStart; --i)
+                                {
+                                    currentLineWidth -= sizes[i];
+                                    if(currentLineWidth <= targetWidth)
+                                    {
+                                        currentLineEnd = i;
+                                        int32 currentLineLength = currentLineEnd - currentLineStart;
+                                        if((currentLineLength > 0)) // use previous position of separator to split text
+                                        {
+                                            WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineLength);
+                                            resultVector.push_back(currentLineWithoutLastWord);
+                                            
+                                            currentLineStart = -1;
+                                            lastWordStart = lastWordEnd = 0;
+                                            pos = currentLineEnd-1;
+                                            currentLineEnd = 0;
+                                        }
+                                        
+                                        break;
+                                    }
+                                    
+                                    DVASSERT(i);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            DVASSERT(0);
+                        }
+                    }
+				}
+                
+				if (t == ' ' || t == '\n') state = SKIP; // if cur char is space go to skip
+				else if (t == 0) state = FINISH;
 				
 				break;
 			case FINISH:
