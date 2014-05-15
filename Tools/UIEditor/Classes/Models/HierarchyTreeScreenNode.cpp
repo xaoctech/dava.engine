@@ -209,7 +209,9 @@ bool HierarchyTreeScreenNode::Save(const QString& path, bool saveAll)
 		return true;
 	}
 
-	FontManager::Instance()->PrepareToSaveFonts();
+    //TODO: if there is still any reason to group fonts by IsEqual and save using one name (instead of using registered font name assuming all fonts are registered), use FontManager::Instance()->PrepareToSaveFonts();, otherwise:
+    FontManager::Instance()->PrepareToSaveFonts(true);
+    
 	bool saveResult = UIYamlLoader::Save(screen, path.toStdString(), true);
 	if (saveResult)
 	{

@@ -138,7 +138,12 @@ Font * UIButtonMetadata::GetFontForState(UIControl::eControlState state) const
     UIStaticText *buttonText = GetActiveUIButton()->GetStateTextControl(state);
     if (buttonText)
     {
-        return buttonText->GetFont();
+        //return buttonText->GetFont();
+        
+        //TODO: remove this workaround
+        Font* font = buttonText->GetFont();
+        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
+        return EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
     }
     return EditorFontManager::Instance()->GetDefaultFont();
 }
