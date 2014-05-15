@@ -126,7 +126,7 @@ void main()
     
 	vec3 v;
 	#if defined(SPECULAR)
-		vec3 lightDir = lightPosition0 - eyeCoordsPosition;    
+		vec3 lightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;    
 		
 		// transform light and half angle vectors by tangent basis		
 		v.x = dot (lightDir, t);
