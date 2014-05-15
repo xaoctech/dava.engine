@@ -109,6 +109,7 @@ void UIControlSystem::ReplaceScreen(UIScreen *newMainControl)
 {
 	prevScreen = currentScreen;
 	currentScreen = newMainControl;
+    NotifyListenersDidSwitched(currentScreen);
 }
 
 	
@@ -175,9 +176,7 @@ void UIControlSystem::ProcessScreenLogic()
 		
 		CancelAllInputs();
 		
-		uint32 listenersCount = screenSwitchListeners.size();
-		for(uint32 i = 0; i < listenersCount; ++i)
-			screenSwitchListeners[i]->OnScreenSwitched(nextScreenProcessed);
+        NotifyListenersWillSwitched(nextScreenProcessed);
 
 		// If we have transition set
 		if (transitionProcessed)
@@ -243,6 +242,7 @@ void UIControlSystem::ProcessScreenLogic()
 				nextScreenProcessed->SystemWillAppear();
 			}
 			currentScreen = nextScreenProcessed;
+            NotifyListenersDidSwitched(currentScreen);
             if (nextScreenProcessed)
             {
 				nextScreenProcessed->SystemDidAppear();
@@ -806,6 +806,22 @@ void UIControlSystem::RemoveScreenSwitchListener(ScreenSwitchListener * listener
 	Vector<ScreenSwitchListener *>::iterator it = std::find(screenSwitchListeners.begin(), screenSwitchListeners.end(), listener);
 	if(it != screenSwitchListeners.end())
 		screenSwitchListeners.erase(it);
+}
+
+void UIControlSystem::NotifyListenersWillSwitched( UIScreen* screen )
+{
+    Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
+    uint32 listenersCount = screenSwitchListenersCopy.size();
+    for(uint32 i = 0; i < listenersCount; ++i)
+        screenSwitchListenersCopy[i]->OnScreenWillSwitched( screen );
+}
+
+void UIControlSystem::NotifyListenersDidSwitched( UIScreen* screen )
+{
+    Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
+    uint32 listenersCount = screenSwitchListenersCopy.size();
+    for(uint32 i = 0; i < listenersCount; ++i)
+        screenSwitchListenersCopy[i]->OnScreenDidSwitched( screen );
 }
 
 };
