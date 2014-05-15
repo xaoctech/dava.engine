@@ -674,6 +674,7 @@ void MainWindow::UpdateScreenPosition()
         frameRect.SetSize(Vector2(glWidgetRect.width(), glWidgetRect.height()));
 
         ScreenWrapper::Instance()->SetBackgroundFrameRect(frameRect);
+        currentScreen->SetScreenPositionChangedFlag();
     }
 }
 
@@ -1413,6 +1414,12 @@ void MainWindow::NotifyScaleUpdated(float32 newScale)
     GridVisualizer::Instance()->SetScale(newScale);
 
     RulerController::Instance()->SetScale(newScale);
+    
+    DefaultScreen* currentScreen = ScreenWrapper::Instance()->GetActiveScreen();
+    if (currentScreen)
+    {
+        currentScreen->SetScreenPositionChangedFlag();
+    }
 }
 
 void MainWindow::OnPixelizationStateChanged()
