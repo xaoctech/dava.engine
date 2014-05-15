@@ -765,3 +765,8 @@ void HierarchyTreeController::SetStickMode(int32 mode)
         activeScreen->SetStickMode(mode);
     }
 }
+
+HierarchyTreeNode::HIERARCHYTREENODESLIST HierarchyTreeController::GetNodes() const
+{
+    return hierarchyTree.GetNodes();
+}
