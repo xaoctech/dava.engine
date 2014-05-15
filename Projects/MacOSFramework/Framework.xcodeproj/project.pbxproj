@@ -691,6 +691,18 @@
 		17F53E2316D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
 		17F687E1174B63BA000783FD /* NPAPIEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1795D26C174B56900023F61E /* NPAPIEntryPoint.mm */; };
 		17F687E2174B63C0000783FD /* NPAPIEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 1795D26D174B56900023F61E /* NPAPIEntryPoint.h */; };
+		17FB4BB31923B97500F3E3BC /* UIScrollView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 748A99711726C5ED00C6411B /* UIScrollView.cpp */; };
+		17FB4BB41923B97800F3E3BC /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 748A99721726C5EE00C6411B /* UIScrollView.h */; };
+		17FB4BB51923B97D00F3E3BC /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74D1EAB6172E950700EDE0B7 /* UIScrollViewContainer.cpp */; };
+		17FB4BB61923B97F00F3E3BC /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74D1EAB7172E950700EDE0B7 /* UIScrollViewContainer.h */; };
+		17FB4BB71923B9A400F3E3BC /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
+		17FB4BB81923B9AB00F3E3BC /* UIMovieView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DC5FFE17DE11650075813E /* UIMovieView.cpp */; };
+		17FB4BB91923B9B000F3E3BC /* UIMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC5FFF17DE11650075813E /* UIMovieView.h */; };
+		17FB4BBA1923B9B100F3E3BC /* UIMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC5FFF17DE11650075813E /* UIMovieView.h */; };
+		17FB4BBB1923B9D900F3E3BC /* MovieViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4E17DF67E500000391 /* MovieViewControlMacOS.mm */; };
+		17FB4BBC1923B9D900F3E3BC /* MovieViewControlMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1770DF4F17DF67E500000391 /* MovieViewControlMacOS.h */; };
+		17FB4BBD1923B9DB00F3E3BC /* MovieViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4E17DF67E500000391 /* MovieViewControlMacOS.mm */; };
+		17FB4BBE1923B9DB00F3E3BC /* MovieViewControlMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1770DF4F17DF67E500000391 /* MovieViewControlMacOS.h */; };
 		1AD7C36717D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
 		1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
 		1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AD7C36617D895AE00B9977C /* Vector.cpp */; };
@@ -4329,6 +4341,7 @@
 				176DE951174B5561007A983B /* KeyboardDevice.h in Headers */,
 				176DE952174B5561007A983B /* AABBox2.h in Headers */,
 				176DE953174B5561007A983B /* AABBox3.h in Headers */,
+				17FB4BB41923B97800F3E3BC /* UIScrollView.h in Headers */,
 				176DE954174B5561007A983B /* BezierSpline.h in Headers */,
 				176DE955174B5561007A983B /* Circle.h in Headers */,
 				CC84B01B18211A9000934482 /* Job.h in Headers */,
@@ -4438,6 +4451,7 @@
 				176DE9B5174B5561007A983B /* Box2DGameObjectManager.h in Headers */,
 				176DE9B6174B5561007A983B /* Box2DHelper.h in Headers */,
 				176DE9B7174B5561007A983B /* Box2DTileCollider.h in Headers */,
+				17FB4BB61923B97F00F3E3BC /* UIScrollViewContainer.h in Headers */,
 				176DE9B8174B5561007A983B /* GameObject.h in Headers */,
 				176DE9B9174B5561007A983B /* GameObjectAnimations.h in Headers */,
 				176DE9BA174B5561007A983B /* GameObjectManager.h in Headers */,
@@ -4446,6 +4460,7 @@
 				176DE9BC174B5561007A983B /* BillboardNode.h in Headers */,
 				A650F4BD1864A10100D3278D /* NMaterialTemplate.h in Headers */,
 				176DE9BD174B5561007A983B /* BoneNode.h in Headers */,
+				17FB4BBA1923B9B100F3E3BC /* UIMovieView.h in Headers */,
 				176DE9BE174B5561007A983B /* BulletComponent.h in Headers */,
 				176DE9BF174B5561007A983B /* CameraComponent.h in Headers */,
 				176DE9C0174B5561007A983B /* DebugRenderComponent.h in Headers */,
@@ -4572,6 +4587,7 @@
 				176DEA31174B5561007A983B /* ShadowVolume.h in Headers */,
 				176DEA32174B5561007A983B /* ShadowVolumeRenderPass.h in Headers */,
 				176DEA33174B5561007A983B /* SpriteObject.h in Headers */,
+				17FB4BBC1923B9D900F3E3BC /* MovieViewControlMacOS.h in Headers */,
 				176DEA34174B5561007A983B /* SpriteRenderBatch.h in Headers */,
 				176DEA35174B5561007A983B /* RenderState.h in Headers */,
 				176DEA36174B5561007A983B /* UpdateSystem.h in Headers */,
@@ -5217,6 +5233,7 @@
 				E898A13316BD265400732C04 /* BillboardNode.h in Headers */,
 				E898A13416BD265400732C04 /* BoneNode.h in Headers */,
 				E898A13716BD265400732C04 /* BulletComponent.h in Headers */,
+				17FB4BB91923B9B000F3E3BC /* UIMovieView.h in Headers */,
 				E898A13816BD265400732C04 /* CameraComponent.h in Headers */,
 				E898A13916BD265400732C04 /* DebugRenderComponent.h in Headers */,
 				E898A13A16BD265400732C04 /* LightComponent.h in Headers */,
@@ -5314,12 +5331,14 @@
 				E9EA496F16DF93FA00C44B6F /* UISpinner.h in Headers */,
 				E9E798AC16F0BE7600745AF5 /* UISwitch.h in Headers */,
 				CCC7A42816F1D6170061EA5D /* Camera.h in Headers */,
+				17FB4BB71923B9A400F3E3BC /* UIWebView.h in Headers */,
 				CCC7A42C16F1D6170061EA5D /* CullingSystem.h in Headers */,
 				CCC7A43016F1D6170061EA5D /* Frustum.h in Headers */,
 				CCC7A43416F1D6170061EA5D /* Heightmap.h in Headers */,
 				CCC7A43616F1D6170061EA5D /* IRenderUpdatable.h in Headers */,
 				CCC7A43A16F1D6170061EA5D /* Landscape.h in Headers */,
 				CCC7A43E16F1D6170061EA5D /* LandscapeChunk.h in Headers */,
+				17FB4BBE1923B9DB00F3E3BC /* MovieViewControlMacOS.h in Headers */,
 				17B3EA9218E9A4ED0069AE7A /* CoreMacOSPlatformQt.h in Headers */,
 				E8FC12FD186972740095D8FE /* QualitySettingsComponent.h in Headers */,
 				CCC7A44216F1D6170061EA5D /* LandscapeCursor.h in Headers */,
@@ -5650,6 +5669,7 @@
 				176DEADC174B5561007A983B /* BulletComponent.cpp in Sources */,
 				176DEADD174B5561007A983B /* CameraComponent.cpp in Sources */,
 				176DEADE174B5561007A983B /* DebugRenderComponent.cpp in Sources */,
+				17FB4BB51923B97D00F3E3BC /* UIScrollViewContainer.cpp in Sources */,
 				176DEADF174B5561007A983B /* LightComponent.cpp in Sources */,
 				176DEAE0174B5561007A983B /* LodComponent.cpp in Sources */,
 				176DEAE1174B5561007A983B /* ParticleEffectComponent.cpp in Sources */,
@@ -5692,6 +5712,7 @@
 				E8FC12FE186972740095D8FE /* QualitySettingsComponent.cpp in Sources */,
 				E8FC12F81869726A0095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				176DEB00174B5561007A983B /* LightUpdateSystem.cpp in Sources */,
+				17FB4BB31923B97500F3E3BC /* UIScrollView.cpp in Sources */,
 				176DEB01174B5561007A983B /* LodSystem.cpp in Sources */,
 				176DEB02174B5561007A983B /* ParticleEffectSystem.cpp in Sources */,
 				176DEB04174B5561007A983B /* RenderUpdateSystem.cpp in Sources */,
@@ -5708,6 +5729,7 @@
 				176DEB0F174B5561007A983B /* UIControl.cpp in Sources */,
 				176DEB10174B5561007A983B /* UIControlBackground.cpp in Sources */,
 				176DEB11174B5561007A983B /* UIControlSystem.cpp in Sources */,
+				17FB4BB81923B9AB00F3E3BC /* UIMovieView.cpp in Sources */,
 				176DEB12174B5561007A983B /* UIEvent.cpp in Sources */,
 				176DEB13174B5561007A983B /* UIFadeTransition.cpp in Sources */,
 				176DEB14174B5561007A983B /* UIFileSystemDialog.cpp in Sources */,
@@ -5808,6 +5830,7 @@
 				1AD7C36917D895AE00B9977C /* Vector.cpp in Sources */,
 				A63BCD6C17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16E17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
+				17FB4BBB1923B9D900F3E3BC /* MovieViewControlMacOS.mm in Sources */,
 				024DF6EB17FDE4C400138748 /* FMODSoundEvent.cpp in Sources */,
 				024DF6F717FDE4C400138748 /* FMODSoundSystem.cpp in Sources */,
 			);
@@ -6279,6 +6302,7 @@
 				E898A20816BD265400732C04 /* FontManager.cpp in Sources */,
 				E898A20916BD265400732C04 /* FTFont.cpp in Sources */,
 				E898A20A16BD265400732C04 /* GraphicsFont.cpp in Sources */,
+				17FB4BBD1923B9DB00F3E3BC /* MovieViewControlMacOS.mm in Sources */,
 				E898A20B16BD265400732C04 /* Sprite.cpp in Sources */,
 				E898A20C16BD265400732C04 /* TextBlock.cpp in Sources */,
 				E898A20D16BD265400732C04 /* AnimatedMesh.cpp in Sources */,
