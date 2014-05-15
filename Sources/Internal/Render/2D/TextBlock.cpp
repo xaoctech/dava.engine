@@ -332,15 +332,21 @@ void TextBlock::Prepare()
         if (isMultilineEnabled)
         {
             Vector<WideString> strings;
-            Vector2 rectSize;
+//            Vector2 rectSize;
+            
+            Vector2 rcSize = rectSize;
+            if(requestedSize.dx > 0)
+            {
+                rcSize.dx = requestedSize.dx;
+            }
 
             if(isMultilineBySymbolEnabled)
             {
-                font->SplitTextBySymbolsToStrings(text, rectSize, strings);
+                font->SplitTextBySymbolsToStrings(text, rcSize, strings);
             }
             else
             {
-                font->SplitTextToStrings(text, rectSize, strings);
+                font->SplitTextToStrings(text, rcSize, strings);
             }
             
             treatMultilineAsSingleLine = strings.size() == 1;
