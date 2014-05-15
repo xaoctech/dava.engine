@@ -93,7 +93,7 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
     new SaveImageTest();
-    new OpenGLES30FormatTest();
+    /*new OpenGLES30FormatTest();
     new StringFormatTest();
     new RectSpriteTest();
 
@@ -131,7 +131,7 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();
+     new ThreadSyncTest();*/
     
     errors.reserve(TestCount());
 
