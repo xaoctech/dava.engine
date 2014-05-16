@@ -98,8 +98,11 @@ public slots:
     void ActionEditSoundComponent();
 	void OnAddActionComponent();
     void OnAddStaticOcclusionComponent();
+    void OnAddSoundComponent();
+    void OnAddWaveComponent();
     void OnAddModelTypeComponent();
     void OnRemoveComponent();
+    void OnTriggerWaveComponent();
 	
 	void ConvertToShadow();
 
@@ -130,6 +133,8 @@ protected:
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
 	void ApplyCustomExtensions(QtPropertyData *data);
+
+    void OnAddComponent(Component::eType type);
 
 	void AddFavoriteChilds(QtPropertyData *parent);
 	void RemFavoriteChilds(QtPropertyData *parent);

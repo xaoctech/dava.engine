@@ -59,13 +59,13 @@ void SpeedTreeObject::RecalcBoundingBox()
     }
 }
     
-void SpeedTreeObject::SetTreeAnimationParams(const Vector3 & trunkOscillationParams, const Vector2 & leafOscillationParams)
+void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams)
 {
     uint32 matCount = materials.size();
     for(uint32 i = 0; i < matCount; ++i)
     {
         NMaterial * material = materials[i];
-        material->SetPropertyValue(PARAM_PROP_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC3, 1, &trunkOscillationParams);
+        material->SetPropertyValue(PARAM_PROP_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
         material->SetPropertyValue(PARAM_PROP_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
     }
 }

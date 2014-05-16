@@ -54,8 +54,8 @@ public:
 		Matrix4 wtInvMx;
 		Vector3 wtPosition;
 
-        Vector3 oscVelocity;
-        Vector3 oscOffset;
+        Vector2 oscVelocity;
+        Vector2 oscOffset;
         float32 leafTime;
     };
     

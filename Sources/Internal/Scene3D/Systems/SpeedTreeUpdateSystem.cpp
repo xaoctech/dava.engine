@@ -34,6 +34,7 @@
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"
 #include "Scene3D/Systems/WindSystem.h"
+#include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
@@ -126,6 +127,7 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         return;
     
     WindSystem * windSystem = GetScene()->windSystem;
+    WaveSystem * waveSystem = GetScene()->waveSystem;
 
     //Update trees
     uint32 treeCount = allTrees.size();
@@ -144,22 +146,23 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         treeObject->SetAnimationFlag(true);
 
         const Vector3 & treePosition = info->wtPosition;
-        Vector3 windVec = windSystem->GetWind(treePosition);
-        float32 windForce = windVec.Length();
+        Vector3 wind3D = windSystem->GetWind(treePosition) + waveSystem->GetWaveDisturbance(treePosition);
+        float32 leafForce = wind3D.Length();
+        Vector2 windVec(wind3D.x, wind3D.y);
 
         float32 trunkAmplitude = component->GetTrunkOscillationAmplitude();
         float32 trunkSpring = component->GetTrunkOscillationSpringSqrt();
-        info->oscVelocity += (windVec - info->oscOffset * trunkSpring * trunkSpring - info->oscVelocity * trunkSpring) * timeElapsed;
+        info->oscVelocity += (windVec - info->oscOffset * trunkSpring * trunkSpring - trunkSpring * info->oscVelocity.Length() * info->oscVelocity) * timeElapsed;
         info->oscOffset += info->oscVelocity * timeElapsed;
         
-        info->leafTime += timeElapsed * sqrtf(windForce) * component->GetLeafsOscillationSpeed();
+        info->leafTime += timeElapsed * sqrtf(leafForce) * component->GetLeafsOscillationSpeed();
 
         float32 sine, cosine;
         SinCosFast(info->leafTime, sine, cosine);
         float32 leafsOscillationAmplitude = component->GetLeafsOscillationApmlitude();
         Vector2 leafOscillationParams(leafsOscillationAmplitude * sine, leafsOscillationAmplitude * cosine);
         
-		Vector3 localOffset = MultiplyVectorMat3x3(info->oscOffset * component->GetTrunkOscillationAmplitude(), info->wtInvMx);
+		Vector2 localOffset = MultiplyVectorMat2x2XY(info->oscOffset * component->GetTrunkOscillationAmplitude(), info->wtInvMx);
         treeObject->SetTreeAnimationParams(localOffset, leafOscillationParams);
     }
 }

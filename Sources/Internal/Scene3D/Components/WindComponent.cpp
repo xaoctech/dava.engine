@@ -41,7 +41,7 @@ namespace DAVA
 	REGISTER_CLASS(WindComponent)
 
 WindComponent::WindComponent() :
-    windForce(0.f),
+    windForce(1.f),
     windSpeed(1.f),
     influenceBbox(Vector3(), 10000.f)
 {
@@ -58,6 +58,7 @@ Component * WindComponent::Clone(Entity * toEntity)
 	component->SetEntity(toEntity);
     
     component->windForce = windForce;
+    component->windSpeed = windSpeed;
     component->influenceBbox = influenceBbox;
     
     return component;
@@ -94,7 +95,7 @@ Vector3 WindComponent::GetDirection() const
 
     const Matrix4 & wtMx = GetTransformComponent(entity)->GetWorldTransform();
 
-    return Vector3(wtMx._00, wtMx._10, wtMx._20); //Get world direction only: wtMx * Vec3(1, 0, 0)
+    return Vector3(wtMx._00, wtMx._01, wtMx._02); //Get world direction only: wtMx * Vec3(1, 0, 0)
 }
 
 };

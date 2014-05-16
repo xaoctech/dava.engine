@@ -73,8 +73,6 @@ public:
                          PROPERTY("windForce", "windForce", GetWindForce, SetWindForce, I_SAVE | I_VIEW | I_EDIT)
                          PROPERTY("windSpeed", "windSpeed", GetWindSpeed, SetWindSpeed, I_SAVE | I_VIEW | I_EDIT)
                          );
-
-    friend class WindSystem;
 };
 
 inline const AABBox3 & WindComponent::GetInfluenceBBox() const

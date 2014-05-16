@@ -43,23 +43,34 @@ class Entity;
 class WaveComponent;
 class WaveSystem : public SceneSystem, public Observer
 {
+    struct WaveInfo
+    {
+        WaveInfo(WaveComponent * component);
+
+        WaveComponent * component;
+        float32 maxRadius;
+        float32 maxRadiusSq;
+        Vector3 center;
+        float32 currentWaveRadius;
+    };
+
 public:
     WaveSystem(Scene * scene);
     virtual ~WaveSystem();
 	
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
 
     void WaveTriggered(WaveComponent * component);
-
     Vector3 GetWaveDisturbance(const Vector3 & inPosition) const;
 
     virtual void HandleEvent(Observable * observable);
 
 protected:
+    void ClearWaves();
 
     bool isWavesEnabled;
+
+    Vector<WaveInfo *> waves;
 
     friend class WaveComponent;
 };

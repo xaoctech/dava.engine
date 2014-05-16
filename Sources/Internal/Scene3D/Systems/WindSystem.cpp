@@ -59,7 +59,7 @@ WindSystem::WindSystem(Scene * scene) :
     for(int32 i = 0; i < WIND_TABLE_SIZE; i++)
     {
         float32 t = WIND_PERIOD * i / (float32)WIND_TABLE_SIZE;
-        windValuesTable[i] = (2.f + sinf(t) * 0.8f + cosf(t * 10) * 0.2f);
+        windValuesTable[i] = (2.f + sinf(t) * 0.7f + cosf(t * 10) * 0.3f);
     }
 }
 
@@ -80,7 +80,7 @@ void WindSystem::RemoveEntity(Entity * entity)
     while(it != winds.end())
     {
         WindInfo * info = *it;
-        if(info->component->entity == entity)
+        if(info->component->GetEntity() == entity)
         {
             SafeDelete(info);
             winds.erase(it);
@@ -99,7 +99,7 @@ void WindSystem::Process(float32 timeElapsed)
     int32 windCount = winds.size();
     for(int32 i = 0; i < windCount; ++i)
     {
-        winds[i]->timeValue += timeElapsed * winds[i]->component->windSpeed;
+        winds[i]->timeValue += timeElapsed * winds[i]->component->GetWindSpeed();
     }
 }
 
@@ -110,9 +110,9 @@ Vector3 WindSystem::GetWind(const Vector3 & inPosition) const
     for(int32 i = 0; i < windCount; ++i)
     {
         WindInfo * info = winds[i];
-        if(info->component->influenceBbox.IsInside(inPosition))
+        if(info->component->GetInfluenceBBox().IsInside(inPosition))
         {
-            ret += info->component->GetDirection() * info->component->windForce * GetWindValueFromTable(inPosition, info);
+            ret += info->component->GetDirection() * info->component->GetWindForce() * GetWindValueFromTable(inPosition, info) * winds[i]->component->GetWindSpeed();
         }
     }
 
