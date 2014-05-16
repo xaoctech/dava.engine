@@ -182,8 +182,6 @@ public slots:
 	void OnNotPassableTerrain();
     void OnGrasEditor();
 	
-    void OnAddSoundComponent();
-    void OnRemoveSoundComponent();
 	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);

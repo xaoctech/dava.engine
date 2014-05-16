@@ -88,6 +88,8 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
     connect(mainUi->actionAddActionComponent, SIGNAL(triggered()), SLOT(OnAddActionComponent()));
     connect(mainUi->actionAddQualitySettingsComponent, SIGNAL(triggered()), SLOT(OnAddModelTypeComponent()));
     connect(mainUi->actionAddStaticOcclusionComponent, SIGNAL(triggered()), SLOT(OnAddStaticOcclusionComponent()));
+    connect(mainUi->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
+    connect(mainUi->actionAddWaveComponent, SIGNAL(triggered()), SLOT(OnAddWaveComponent()));
 
 	SetUpdateTimeout(5000);
 	SetEditTracking(true);
@@ -364,6 +366,14 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 editSound->setAutoRaise(true);
 
                 QObject::connect(editSound, SIGNAL(pressed()), this, SLOT(ActionEditSoundComponent()));
+            }
+            else if(DAVA::MetaInfo::Instance<DAVA::WaveComponent>() == meta)
+            {
+                QtPropertyToolButton *triggerWave = data->AddButton();
+                triggerWave->setIcon(QIcon(":/QtIcons/clone.png"));
+                triggerWave->setAutoRaise(true);
+
+                QObject::connect(triggerWave, SIGNAL(pressed()), this, SLOT(OnTriggerWaveComponent()));
             }
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
 			{
@@ -1267,64 +1277,49 @@ void PropertyEditor::CloneRenderBatchesToFixSwitchLODs()
     }
 }
 
-void PropertyEditor::OnAddActionComponent()
+void PropertyEditor::OnAddComponent(Component::eType type)
 {
     SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-	if(curNodes.size() > 0)
-	{
-		curScene->BeginBatch("Add Action Component");
+    if(curNodes.size() > 0)
+    {
+        curScene->BeginBatch("Add Component");
 
-		for(int i = 0; i < curNodes.size(); ++i)
-		{
+        for(int i = 0; i < curNodes.size(); ++i)
+        {
             Entity* node = curNodes.at(i);
-            if (node->GetComponentCount(Component::ACTION_COMPONENT) == 0)
+            if (node->GetComponentCount(type) == 0)
             {
-    			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::ACTION_COMPONENT)));
+                curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(type)));
             }
-		}
+        }
 
-		curScene->EndBatch();
-	}
+        curScene->EndBatch();
+    }
+}
+
+void PropertyEditor::OnAddActionComponent()
+{
+    OnAddComponent(Component::ACTION_COMPONENT);
 }
 
 void PropertyEditor::OnAddStaticOcclusionComponent()
 {
-    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-	if(curNodes.size() > 0)
-	{
-		curScene->BeginBatch("Add Static Occlusion Component");
-        
-		for(int i = 0; i < curNodes.size(); ++i)
-		{
-            Entity* node = curNodes.at(i);
-            if (node->GetComponentCount(Component::STATIC_OCCLUSION_COMPONENT) == 0)
-            {
-    			curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::STATIC_OCCLUSION_COMPONENT)));
-            }
-		}
-        
-		curScene->EndBatch();
-	}
+    OnAddComponent(Component::STATIC_OCCLUSION_COMPONENT);
+}
+
+void PropertyEditor::OnAddSoundComponent()
+{
+    OnAddComponent(Component::SOUND_COMPONENT);
+}
+
+void PropertyEditor::OnAddWaveComponent()
+{
+    OnAddComponent(Component::WAVE_COMPONENT);
 }
 
 void PropertyEditor::OnAddModelTypeComponent()
 {
-    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
-	if(curNodes.size() > 0)
-	{
-		curScene->BeginBatch("Add Model Type Component");
-        
-		for(int i = 0; i < curNodes.size(); ++i)
-		{
-            Entity* node = curNodes.at(i);
-            if (node->GetComponentCount(Component::QUALITY_SETTINGS_COMPONENT) == 0)
-            {
-			    curScene->Exec(new AddComponentCommand(curNodes.at(i), Component::CreateByType(Component::QUALITY_SETTINGS_COMPONENT)));
-            }
-		}
-        
-		curScene->EndBatch();
-	}
+    OnAddComponent(Component::QUALITY_SETTINGS_COMPONENT);
 }
 
 void PropertyEditor::OnRemoveComponent()
@@ -1372,6 +1367,18 @@ void PropertyEditor::OnRemoveComponent()
             }
 		}
 	}
+}
+
+void PropertyEditor::OnTriggerWaveComponent()
+{
+    for(int i = 0; i < curNodes.size(); ++i)
+    {
+        WaveComponent * component = GetWaveComponent(curNodes.at(i));
+        if (component)
+        {
+            component->Trigger();
+        }
+    }
 }
 
 QString PropertyEditor::GetDefaultFilePath()

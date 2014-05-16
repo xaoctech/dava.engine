@@ -40,12 +40,12 @@ namespace DAVA
 	REGISTER_CLASS(WaveComponent)
 
 WaveComponent::WaveComponent() :
-    amplitude(0.f),
-    lenght(0.f),
-    speed(0.f),
-    damping(0.f),
-    infDistance(0.f)
+    amplitude(10.f),
+    lenght(5.f),
+    speed(5.f),
+    infRadius(25.f)
 {
+    damping = 1.f / infRadius;
 }
 
 WaveComponent::WaveComponent(float32 _amlitude, float32 _lenght, float32 _speed, float32 _damping, float32 _infDistance) :
@@ -53,13 +53,12 @@ WaveComponent::WaveComponent(float32 _amlitude, float32 _lenght, float32 _speed,
     lenght(_lenght),
     speed(_speed),
     damping(_damping),
-    infDistance(_infDistance)
+    infRadius(_infDistance)
 {
 }
 
 WaveComponent::~WaveComponent()
 {
-    
 }
 
 Component * WaveComponent::Clone(Entity * toEntity)
@@ -71,7 +70,7 @@ Component * WaveComponent::Clone(Entity * toEntity)
     component->lenght = lenght;
     component->speed = speed;
     component->damping = damping;
-    component->infDistance = infDistance;
+    component->infRadius = infRadius;
     
     return component;
 }
@@ -86,7 +85,7 @@ void WaveComponent::Serialize(KeyedArchive *archive, SerializationContext *seria
         archive->SetFloat("wavec.lenght", lenght);
         archive->SetFloat("wavec.speed", speed);
         archive->SetFloat("wavec.damping", damping);
-        archive->SetFloat("wavec.infDistance", infDistance);
+        archive->SetFloat("wavec.infRadius", infRadius);
     }
 }
     
@@ -98,7 +97,7 @@ void WaveComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
         lenght = archive->GetFloat("wavec.lenght");
         speed = archive->GetFloat("wavec.speed");
         damping = archive->GetFloat("wavec.damping");
-        infDistance = archive->GetFloat("wavec.infDistance");
+        infRadius = archive->GetFloat("wavec.infRadius");
 	}
 
 	Component::Deserialize(archive, serializationContext);

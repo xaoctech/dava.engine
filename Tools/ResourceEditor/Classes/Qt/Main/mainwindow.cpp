@@ -706,9 +706,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
-    QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
-    QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
-
     // Debug functions
 	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
     
@@ -2404,47 +2401,6 @@ void QtMainWindow::OnGrasEditor()
     }
 }
 
-void QtMainWindow::OnAddSoundComponent()
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
-    SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        scene->BeginBatch("Add Action Component");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::SOUND_COMPONENT)));
-        }
-
-        scene->EndBatch();
-    }
-}
-
-void QtMainWindow::OnRemoveSoundComponent()
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
-    SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        scene->BeginBatch("Add Action Component");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            SoundComponent * sc = GetSoundComponent(ss->GetSelectionEntity(i));
-            if(sc)
-            {
-                scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), sc));
-            }
-        }
-
-        scene->EndBatch();
-    }
-}
 void QtMainWindow::OnBuildStaticOcclusion()
 {
     SceneEditor2* scene = GetCurrentScene();

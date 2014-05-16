@@ -97,7 +97,7 @@ uniform mediump vec2 uvScale;
 #endif
 
 #if defined(WIND_ANIMATION)
-uniform lowp vec3 trunkOscillationParams;
+uniform lowp vec2 trunkOscillationParams;
 #endif
 
 #if defined(SPEED_TREE_LEAF)
@@ -273,7 +273,7 @@ void main()
 #if defined(WIND_ANIMATION)
     //inAngle:        x: cos(T0);  y: sin(T0);
     //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
-    vec3 windVectorFlex = trunkOscillationParams * inFlexibility;
+    vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
     vec3 pivot = inPivot + windVectorFlex;
     
     vec3 offset = inPosition.xyz - inPivot;
@@ -305,7 +305,7 @@ void main()
     
 #if defined(WIND_ANIMATION)
 
-    vec3 windVectorFlex = trunkOscillationParams * inFlexibility;
+    vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
     gl_Position = worldViewProjMatrix * vec4(inPosition.xyz + windVectorFlex, inPosition.w);
 	
 #else //!defined(WIND_ANIMATION)

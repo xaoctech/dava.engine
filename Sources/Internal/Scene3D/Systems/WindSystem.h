@@ -70,8 +70,6 @@ protected:
     bool isWindUsed;
 
     float32 windValuesTable[WIND_TABLE_SIZE];
-
-    friend class WindComponent;
 };
     
 } // ns

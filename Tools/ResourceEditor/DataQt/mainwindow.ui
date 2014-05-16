@@ -1835,7 +1835,7 @@
    <property name="toolTip">
     <string>Add Wind</string>
    </property>
- </action>
+  </action>
   <action name="actionAddVegetation">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1900,6 +1900,14 @@
    </property>
    <property name="text">
     <string>Unlock Transform</string>
+   </property>
+  </action>
+  <action name="actionAddWaveComponent">
+   <property name="text">
+    <string>Add Wave Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Wave Component</string>
    </property>
   </action>
  </widget>
