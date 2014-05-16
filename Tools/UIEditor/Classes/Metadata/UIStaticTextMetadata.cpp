@@ -69,8 +69,7 @@ void UIStaticTextMetadata::SetFont(Font * font)
         //font->SetSize(GetFontSize());
         
         //TODO: font should be set correctly, remove this workaround
-        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
-        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(font);
         if(font != localizedFont)
         {
             Logger::Warning("UIStaticTextMetadata::SetFont font=%x, but localizedFont=%x for locale=%s", font, localizedFont, LocalizationSystem::Instance()->GetCurrentLocale().c_str());
@@ -97,8 +96,7 @@ float UIStaticTextMetadata::GetFontSize() const
         if (font)
         {
             //TODO: font should be set correctly, remove this workaround
-            String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
-            Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+            Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(font);
             if(localizedFont)
             {
                 return localizedFont->GetSize();

@@ -107,8 +107,7 @@ void UIButtonMetadata::SetFont(Font * font)
     if (font)
     {
         //TODO: remove this workaround
-        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
-        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(font);
         
         //localizedFont->SetSize(GetFontSize());
         
@@ -141,9 +140,7 @@ Font * UIButtonMetadata::GetFontForState(UIControl::eControlState state) const
         //return buttonText->GetFont();
         
         //TODO: remove this workaround
-        Font* font = buttonText->GetFont();
-        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(font);
-        return EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+        return EditorFontManager::Instance()->GetLocalizedFont(buttonText->GetFont());
     }
     return EditorFontManager::Instance()->GetDefaultFont();
 }
@@ -209,8 +206,7 @@ float UIButtonMetadata::GetFontSizeForState(UIControl::eControlState state) cons
         Font* referenceFont = referenceButtonText->GetFont();
         
         //TODO: remove this workaround
-        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(referenceFont);
-        Font* localizedReferenceFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+        Font* localizedReferenceFont = EditorFontManager::Instance()->GetLocalizedFont(referenceFont);
         
         if (localizedReferenceFont)
         {

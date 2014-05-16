@@ -185,8 +185,7 @@ void TextPropertyGridWidget::UpdateFontPresetValues()
     if(fontPropertyValue)
     {
         //TODO: remove this workaround
-        String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(fontPropertyValue);
-        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(fontPropertyValue);
         
         if(localizedFont)
         {
@@ -340,7 +339,6 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithFont(QPushButton *pushBut
     if (font)
     {
         //Set button text
-        WidgetSignalsBlocker blocker(pushButtonWidget);
         Font::eFontType fontType = font->GetFontType();
         QString buttonText;
         
@@ -348,14 +346,14 @@ void TextPropertyGridWidget::UpdatePushButtonWidgetWithFont(QPushButton *pushBut
         {
             case Font::TYPE_FT:
             {
-                FTFont *ftFont = dynamic_cast<FTFont*>(font);
+                FTFont *ftFont = static_cast<FTFont*>(font);
                 //Set pushbutton widget text
 				buttonText = QString::fromStdString(ftFont->GetFontPath().GetFrameworkPath());
                 break;
             }
             case Font::TYPE_GRAPHICAL:
             {
-                GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(font);
+                GraphicsFont *gFont = static_cast<GraphicsFont*>(font);
                 //Put into result string font definition and font sprite path
                 Sprite *fontSprite = gFont->GetFontSprite();
                 if (!fontSprite) //If no sprite available - quit
@@ -511,8 +509,8 @@ void TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QComboBox* co
         
         UpdateWidgetPalette(comboBoxWidget, propertyName); // what is it for? - needed for controls like UIButton
         
-        int index = comboBoxWidget->findText(fontPresetName); //TODO: remove debug log
-        Logger::Debug("TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue %s index=%d", fontPresetName.toStdString().c_str(), index);
+//        int index = comboBoxWidget->findText(fontPresetName); //TODO: remove debug log
+//        Logger::Debug("TextPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue %s index=%d", fontPresetName.toStdString().c_str(), index);
         
         return SetComboboxSelectedItem(ui->fontPresetComboBox, fontPresetName );
     }

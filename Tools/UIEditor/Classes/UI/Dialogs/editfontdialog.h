@@ -39,28 +39,13 @@
 #include <QLineEdit>
 #include <QComboBox>
 
+#include "ChangeFontPropertyCommand.h"
+
 using namespace DAVA;
 
 namespace Ui {
 class EditFontDialog;
 }
-
-struct EditFontDialogResult
-{
-    EditFontDialogResult();
-    ~EditFontDialogResult();
-    
-    Font *GetLocalizedFont(const String& locale);
-    void SetLocalizedFont(Font* localizedFont, const String& locale);
-    
-    String fontPresetOriginalName;
-    
-    bool isApplyToAll;
-    Font *font;
-    String fontPresetName;
-    
-    Map<String, Font*> localizedFonts;
-};
 
 class EditFontDialog : public QDialog
 {
@@ -70,12 +55,12 @@ public:
     explicit EditFontDialog(const String & editFontPresetName, QDialog *parent = 0);
     ~EditFontDialog();
     
-    const EditFontDialogResult &GetResult() {return dialogResult; }
+    const ChangeFontPropertyCommandData &GetResult() {return dialogResult; }
     
 private:
     Ui::EditFontDialog *ui;
     
-    EditFontDialogResult dialogResult;
+    ChangeFontPropertyCommandData dialogResult;
     String currentLocale;
     
     void ConnectToSignals();
@@ -88,7 +73,7 @@ private:
     void UpdateLocalizedFontParams();
     
     void UpdateLineEditWidgetWithPropertyValue(QLineEdit *lineEditWidget);
-    void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);//, const QMetaProperty &curProperty);
+    void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);
     void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox *spinBoxWidget);
     void UpdateComboBoxWidgetWithPropertyValue(QComboBox *comboBoxWidget);
     
