@@ -170,7 +170,7 @@ public:
 		\return 0 if sprite is unavailable and ptr to sprite if sprite is available
 	 */
 	static Sprite* PureCreate(const FilePath & spriteName, Sprite* forPointer = NULL);
-	void InitFromFile(File *file, const FilePath &pathName);
+	void InitFromFile(File *file);
 
 	/**
 	 \brief Function to create sprite from the already created texture.
@@ -317,17 +317,20 @@ public:
 	inline void PrepareSpriteRenderData(Sprite::DrawState * drawState);
 	RenderDataObject * spriteRenderObject;
 
-	void Reload();
+    /**
+	 \brief Removes all sprite data.
+	 */
+	void Clear();
+
+    /**
+	 \brief Reloads the sprite.
+	 */
+	void Reload(bool needClear = true);
 
 protected:
 	Sprite();
 	Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);
 	virtual ~Sprite();
-
-	/**
-	 \brief Removes all sprite data.
-	 */
-	void Clear();
 	
     static Sprite* GetSpriteFromMap(const FilePath & pathname);
     static FilePath GetScaledName(const FilePath & spriteName);
@@ -336,6 +339,7 @@ protected:
 	void RegisterTextureStates();
 	void UnregisterTextureStates();
 
+    static File* GetSpriteFile(const FilePath & spriteName, int32& resourceSizeIndex);
 //private:
 
     static Mutex spriteMapMutex;

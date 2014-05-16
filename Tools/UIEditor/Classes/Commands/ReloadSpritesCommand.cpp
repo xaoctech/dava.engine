@@ -60,9 +60,18 @@ void ReloadSpritesCommand::RepackSprites()
 void ReloadSpritesCommand::ReloadSprites()
 {
     Set<Sprite*> spritesToReload = SpritesHelper::EnumerateSprites(rootNode);
+    
+    // All the sprites have to be cleared before performing reload to
+    // release appropriate textures (one texture can be used by more than
+    // one sprite).
     for (Set<Sprite*>::iterator iter = spritesToReload.begin(); iter != spritesToReload.end(); iter ++)
     {
-        (*iter)->Reload();
+        (*iter)->Clear();
+    }
+
+    for (Set<Sprite*>::iterator iter = spritesToReload.begin(); iter != spritesToReload.end(); iter ++)
+    {
+        (*iter)->Reload(false);
     }
 }
 
