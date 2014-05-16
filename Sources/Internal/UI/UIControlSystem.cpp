@@ -109,7 +109,7 @@ void UIControlSystem::ReplaceScreen(UIScreen *newMainControl)
 {
 	prevScreen = currentScreen;
 	currentScreen = newMainControl;
-    NotifyListenersDidSwitched(currentScreen);
+    NotifyListenersDidSwitch(currentScreen);
 }
 
 	
@@ -176,7 +176,7 @@ void UIControlSystem::ProcessScreenLogic()
 		
 		CancelAllInputs();
 		
-        NotifyListenersWillSwitched(nextScreenProcessed);
+        NotifyListenersWillSwitch(nextScreenProcessed);
 
 		// If we have transition set
 		if (transitionProcessed)
@@ -242,7 +242,7 @@ void UIControlSystem::ProcessScreenLogic()
 				nextScreenProcessed->SystemWillAppear();
 			}
 			currentScreen = nextScreenProcessed;
-            NotifyListenersDidSwitched(currentScreen);
+            NotifyListenersDidSwitch(currentScreen);
             if (nextScreenProcessed)
             {
 				nextScreenProcessed->SystemDidAppear();
@@ -808,7 +808,7 @@ void UIControlSystem::RemoveScreenSwitchListener(ScreenSwitchListener * listener
 		screenSwitchListeners.erase(it);
 }
 
-void UIControlSystem::NotifyListenersWillSwitched( UIScreen* screen )
+void UIControlSystem::NotifyListenersWillSwitch( UIScreen* screen )
 {
     Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
     uint32 listenersCount = screenSwitchListenersCopy.size();
@@ -816,7 +816,7 @@ void UIControlSystem::NotifyListenersWillSwitched( UIScreen* screen )
         screenSwitchListenersCopy[i]->OnScreenWillSwitch( screen );
 }
 
-void UIControlSystem::NotifyListenersDidSwitched( UIScreen* screen )
+void UIControlSystem::NotifyListenersDidSwitch( UIScreen* screen )
 {
     Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
     uint32 listenersCount = screenSwitchListenersCopy.size();
