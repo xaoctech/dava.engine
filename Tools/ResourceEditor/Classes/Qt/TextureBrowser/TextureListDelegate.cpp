@@ -282,7 +282,7 @@ int TextureListDelegate::drawFormatInfo(QPainter *painter, QRect rect, const DAV
 
 		// format lines
 		DVASSERT(descriptor->compression);
-		for(int i = (DAVA::GPU_FAMILY_COUNT - 1); i >= 0; --i)
+		for(int i = (DAVA::GPU_FAMILY_COUNT - 1); i >= 0 && descriptor->compression; --i)
 		{
 			r.moveLeft(r.x() - FORMAT_INFO_WIDTH);
 
