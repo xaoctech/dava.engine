@@ -334,8 +334,8 @@ private:
 
 	void ProcessScreenLogic();
 
-    void NotifyListenersWillSwitched( UIScreen* screen );
-    void NotifyListenersDidSwitched( UIScreen* screen );
+    void NotifyListenersWillSwitch( UIScreen* screen );
+    void NotifyListenersDidSwitch( UIScreen* screen );
 
 	Vector<ScreenSwitchListener*> screenSwitchListeners;
 
