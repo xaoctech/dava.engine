@@ -37,12 +37,15 @@ namespace DAVA
 
 QualitySettingsSystem::QualitySettingsSystem()
     : curTextureQuality(0)
+    , curSoundQuality(0)
 {
-
+    Load("~res:/quality.yaml");
 }
 
 void QualitySettingsSystem::Load(const FilePath &path)
 {
+    Logger::Info("Trying to loading QUALITY from: %s", path.GetAbsolutePathname().c_str());
+
     if(path.Exists())
     {
         YamlParser *parser = YamlParser::Create(path);
@@ -52,6 +55,7 @@ void QualitySettingsSystem::Load(const FilePath &path)
         {
             textureQualities.clear();
             materialGroups.clear();
+            soundQualities.clear();
 
             // materials
             const YamlNode *materialGroupsNode = rootNode->Get("materials");
@@ -150,10 +154,54 @@ void QualitySettingsSystem::Load(const FilePath &path)
 
                 }
             }
+
+            // sound
+            const YamlNode *soundsNode = rootNode->Get("sounds");
+            if(NULL != soundsNode)
+            {
+                const YamlNode *defltSfx = soundsNode->Get("default");
+                const YamlNode *qualitiesNode = soundsNode->Get("qualities");
+
+                if(NULL != qualitiesNode)
+                {
+                    FastName defSfxQualityName;
+                    if(NULL != defltSfx && defltSfx->GetType() == YamlNode::TYPE_STRING)
+                    {
+                        defSfxQualityName = FastName(defltSfx->AsString().c_str());
+                    }
+
+                    soundQualities.reserve(qualitiesNode->GetCount());
+                    for(int i = 0; i < qualitiesNode->GetCount(); ++i)
+                    {
+                        const YamlNode *qualityNode = qualitiesNode->Get(i);
+                        const YamlNode *name = qualityNode->Get("quality");
+                        const YamlNode *confgNode = qualityNode->Get("configPath");
+
+                        if(NULL != name && name->GetType() == YamlNode::TYPE_STRING &&
+                           NULL != confgNode && confgNode->GetType() == YamlNode::TYPE_STRING)
+                        {
+                            SFXQ sfxq;
+
+                            sfxq.name = FastName(name->AsString().c_str());
+                            sfxq.configPath = FilePath(confgNode->AsString());
+
+                            soundQualities.push_back(sfxq);
+
+                            if(sfxq.name == defSfxQualityName)
+                            {
+                                curSoundQuality = i;
+                            }
+                        }
+                    }
+
+                }
+            }
         }
 
         parser->Release();
     }
+
+    Logger::Info("Done. TxQualities: %u, MaGrQualities: %u", textureQualities.size(), materialGroups.size());
 }
 
 size_t QualitySettingsSystem::GetTextureQualityCount() const
@@ -206,6 +254,68 @@ const TextureQuality* QualitySettingsSystem::GetTxQuality(const FastName &name) 
     }
 
     //DVASSERT(NULL != ret && "No such quality");
+
+    return ret;
+}
+
+size_t QualitySettingsSystem::GetSFXQualityCount() const
+{
+    return soundQualities.size();
+}
+
+FastName QualitySettingsSystem::GetSFXQualityName(size_t index) const
+{
+    FastName ret;
+
+    if(index < soundQualities.size())
+    {
+        ret = soundQualities[index].name;
+    }
+
+    return ret;
+}
+
+FastName QualitySettingsSystem::GetCurSFXQuality() const
+{
+    return GetSFXQualityName(curSoundQuality);
+}
+
+void QualitySettingsSystem::SetCurSFXQuality(const FastName &name)
+{
+    for(size_t i = 0; i < soundQualities.size(); ++i)
+    {
+        if(soundQualities[i].name == name)
+        {
+            curSoundQuality = i;
+            return;
+        }
+    }
+}
+
+FilePath QualitySettingsSystem::GetSFXQualityConfigPath(const FastName &name) const
+{
+    FilePath ret;
+
+    for(size_t i = 0; i < soundQualities.size(); ++i)
+    {
+        if(soundQualities[i].name == name)
+        {
+            ret = soundQualities[i].configPath;
+            break;
+        }
+    }
+
+    return ret;
+}
+
+FilePath QualitySettingsSystem::GetSFXQualityConfigPath(size_t index) const
+{
+    FilePath ret;
+
+    if(index < soundQualities.size())
+    {
+        ret = soundQualities[index].configPath;
+    }
 
     return ret;
 }

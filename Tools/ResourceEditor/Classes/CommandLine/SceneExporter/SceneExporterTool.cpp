@@ -67,6 +67,7 @@ bool SceneExporterTool::InitializeFromCommandLine()
     
     inFolder = CommandLineParser::GetCommandParam(String("-indir"));
     outFolder = CommandLineParser::GetCommandParam(String("-outdir"));
+    outSoundsFolder = CommandLineParser::GetCommandParam(String("-outSoundDir"));
     if(inFolder.IsEmpty() && outFolder.IsEmpty())
     {
         errors.insert(Format("[SceneExporterTool] Incorrect indir (%s) or outdir (%s) parameter",inFolder.GetAbsolutePathname().c_str(), outFolder.GetAbsolutePathname().c_str()));
@@ -75,6 +76,9 @@ bool SceneExporterTool::InitializeFromCommandLine()
     
     inFolder.MakeDirectoryPathname();
     outFolder.MakeDirectoryPathname();
+    if(!outSoundsFolder.IsEmpty())
+        outSoundsFolder.MakeDirectoryPathname();
+
     
 	String qualityName = CommandLineParser::GetCommandParam(String("-quality"));
 	if(qualityName.empty())
@@ -114,6 +118,7 @@ void SceneExporterTool::Process()
 {
     SceneExporter exporter;
 
+    exporter.SetOutSoundsFolder(outSoundsFolder);
     exporter.SetOutFolder(outFolder);
     exporter.SetInFolder(inFolder);
     exporter.SetGPUForExporting(gpu);

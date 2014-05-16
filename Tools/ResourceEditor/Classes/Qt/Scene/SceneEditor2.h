@@ -34,10 +34,13 @@
 #include <QObject>
 #include "UI/UIEvent.h"
 #include "Scene3D/Scene.h"
+#include "Scene3D/Systems/StaticOcclusionSystem.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Base/StaticSingleton.h"
 
+#include "Main/Request.h"
 #include "Commands2/CommandStack.h"
+#include "Settings/SettingsManager.h"
 
 #include "Scene/System/CameraSystem.h"
 #include "Scene/System/CollisionSystem.h"
@@ -50,6 +53,7 @@
 #include "Scene/System/TilemaskEditorSystem.h"
 #include "Scene/System/CustomColorsSystem.h"
 #include "Scene/System/VisibilityToolSystem.h"
+#include "Scene/System/GrassEditorSystem.h"
 #include "Scene/System/RulerToolSystem.h"
 #include "Scene/System/StructureSystem.h"
 #include "Scene/System/EditorParticlesSystem.h"
@@ -58,10 +62,7 @@
 #include "Scene/System/DebugDrawSystem.h"
 #include "Scene/System/BeastSystem.h"
 #include "Scene/System/OwnersSignatureSystem.h"
-#include "Main/Request.h"
 #include "Scene/System/EditorMaterialSystem.h"
-
-#include "Scene3D/Systems/StaticOcclusionSystem.h"
 
 class FogSettingsChangedReceiver;
 
@@ -76,6 +77,7 @@ public:
 		LANDSCAPE_TOOL_TILEMAP_EDITOR		= 1 << 3,
 		LANDSCAPE_TOOL_RULER				= 1 << 4,
 		LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN	= 1 << 5,
+        LANDSCAPE_TOOL_GRASS_EDITOR     	= 1 << 6,
 
 		LANDSCAPE_TOOLS_ALL					= 0x7FFFFFFF
 	};
@@ -96,6 +98,7 @@ public:
 	CustomColorsSystem* customColorsSystem;
 	VisibilityToolSystem* visibilityToolSystem;
 	RulerToolSystem* rulerToolSystem;
+    GrassEditorSystem *grassEditorSystem;
 	StructureSystem *structureSystem;
 	EditorParticlesSystem *particlesSystem;
 	EditorLightSystem *editorLightSystem;
@@ -164,12 +167,14 @@ public:
 	int32 GetEnabledTools();
 
 	SceneEditor2 *CreateCopyForExport();	//Need to prevent changes of original scene
-	virtual Entity* Clone(Entity *dstNode = NULL);
+    virtual Entity * Clone(Entity *dstNode /* = NULL */);
 
 	DAVA_DEPRECATED(void MarkAsChanged()); // for old material & particle editors
 	
 	INTROSPECTION(SceneEditor2, 
 		MEMBER(cameraSystem, "CameraSystem", I_VIEW | I_EDIT)
+        MEMBER(collisionSystem, "Collision System", I_VIEW | I_EDIT)
+        MEMBER(selectionSystem, "Selection System", I_VIEW | I_EDIT)
 		MEMBER(gridSystem, "GridSystem", I_VIEW | I_EDIT)
         MEMBER(materialSystem, "Material System", I_VIEW | I_EDIT)
 		)

@@ -31,36 +31,34 @@
 #include "Commands2/AddComponentCommand.h"
 #include "DAVAEngine.h"
 
-AddComponentCommand::AddComponentCommand(DAVA::Entity* entity, DAVA::Component * component)
+AddComponentCommand::AddComponentCommand(DAVA::Entity* _entity, DAVA::Component * _component)
 	: Command2(CMDID_COMPONENT_ADD, "Add Component")
-    , entityToAdd(entity)
+    , entity(_entity)
+    , component(_component)
+    , backup(NULL)
 {
-	DVASSERT(entityToAdd);
+    DVASSERT(entity);
 	DVASSERT(component);
-
-	savedComponent = component;
-	currentComponent = NULL;
 }
 
 AddComponentCommand::~AddComponentCommand()
 {
- 	SafeDelete(savedComponent);
-	currentComponent = NULL;
+    SafeDelete(backup);
 }
 
 void AddComponentCommand::Redo()
 {
-	currentComponent = savedComponent->Clone(entityToAdd);
-	entityToAdd->AddComponent(currentComponent);
+    entity->AddComponent(component);
+    backup = NULL;
 }
 
 void AddComponentCommand::Undo()
 {
- 	entityToAdd->RemoveComponent(currentComponent);
-	currentComponent = NULL;
+    backup = component;
+    entity->DetachComponent(component);
 }
 
 DAVA::Entity* AddComponentCommand::GetEntity() const
 {
-	return entityToAdd;
+    return entity;
 }

@@ -73,11 +73,11 @@ protected:
 
     QtPropertyDataInspMember *propMipMap;
     QtPropertyDataInspMember *propNormalMap;
-	QtPropertyDataMetaObject *propWrapModeS;
-	QtPropertyDataMetaObject *propWrapModeT;
-	QtPropertyDataMetaObject *propMinFilter;
-	QtPropertyDataMetaObject *propMagFilter;
-	QtPropertyDataMetaObject *propFormat;
+	QtPropertyDataInspMember *propWrapModeS;
+	QtPropertyDataInspMember *propWrapModeT;
+	QtPropertyDataInspMember *propMinFilter;
+	QtPropertyDataInspMember *propMagFilter;
+	QtPropertyDataInspMember *propFormat;
 	QtPropertyDataMetaObject *propSizes;
 
 	bool skipPropSizeChanged;
@@ -103,8 +103,8 @@ protected:
 	void ReloadEnumFilters();
 	void ReloadProperties();
 
-	QtPropertyDataMetaObject* AddPropertyItemMeta(const char *name, DAVA::InspBase *object, const QModelIndex &parent);
-    QtPropertyDataInspMember* AddPropertyItemMember(const char *name, DAVA::InspBase *object, const QModelIndex &parent);
+	QtPropertyDataInspMember* AddPropertyItem(const char *name, DAVA::InspBase *object, const QModelIndex &parent);
+	void SetPropertyItemValidValues(QtPropertyDataInspMember* item, EnumMap *validValues);
 	void SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues);
 
 	void LoadCurSizeToProp();
