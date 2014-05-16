@@ -52,8 +52,8 @@ class UIScreen;
 class ScreenSwitchListener
 {
 public:
-	virtual void OnScreenWillSwitched(UIScreen* newScreen) {}
-    virtual void OnScreenDidSwitched(UIScreen* newScreen) {}
+	virtual void OnScreenWillSwitch(UIScreen* newScreen) {}
+    virtual void OnScreenDidSwitch(UIScreen* newScreen) {}
 };
 
 	/**
