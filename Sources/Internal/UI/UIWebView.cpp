@@ -43,7 +43,7 @@
 #pragma error UIWEbView control is not implemented for this platform yet!
 #endif
 
-using namespace DAVA;
+namespace DAVA {
 
 UIWebView::UIWebView(const Rect &rect, bool rectInAbsoluteCoordinates) :
     webViewControl(new WebViewControl()),
@@ -161,11 +161,9 @@ void UIWebView::UpdateNativeControlVisible(bool value, bool hierarchic)
 void UIWebView::SetDataDetectorTypes(int32 value)
 {
     dataDetectorTypes = value;
-
-void UIWebView::SetDataDetectorTypes(int32 value)
-{
-    this->webViewControl->SetDataDetectorTypes(value);
+	webViewControl->SetDataDetectorTypes(value);
 }
+
 
 int32 UIWebView::GetDataDetectorTypes() const
 {
@@ -214,4 +212,5 @@ void UIWebView::CopyDataFrom(UIControl *srcControl)
     SetDataDetectorTypes(webView->GetDataDetectorTypes());
 }
 
-}
+
+};
