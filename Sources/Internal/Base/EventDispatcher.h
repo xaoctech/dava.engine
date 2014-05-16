@@ -122,6 +122,9 @@ protected:
 	};
 	
 	List<Event> events;
+
+    void MakeEventsListCopy();
+    Vector<Event *> copyEventsList;
 };
 	
 /**

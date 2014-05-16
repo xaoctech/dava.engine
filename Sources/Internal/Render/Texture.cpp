@@ -798,8 +798,6 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 
 	texDescriptor->Reload();
     
-	DVASSERT(NULL != texDescriptor);
-    
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
