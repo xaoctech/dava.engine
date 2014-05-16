@@ -264,7 +264,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart == -1)currentLineStart = pos;
 				}
 				break;
-			case GOODCHAR: 
+			case GOODCHAR:
 				if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
 				{
                     //calculate current line width
@@ -274,28 +274,47 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 						currentLineWidth += sizes[i];
 					}
                     
-                    if((currentLineWidth <= targetWidth) || (t == ' ' && 0 == targetWidth))
-                    {   // add line if we can fit it at target width
-                        currentLineEnd = pos;
-                        lastWordEnd = pos;
+                    if((currentLineWidth < targetWidth) || (t == ' ' && 0 == targetWidth))
+                    {   // pos could be the end of line. We need to save it
+                        if(t == '\n' || t == 0)
+                        {
+                            WideString currentLine = text.substr(currentLineStart, pos - currentLineStart);
+                            resultVector.push_back(currentLine);
+                            
+                            lastWordStart = lastWordEnd = currentLineEnd = 0;
+                            currentLineStart = -1;
+                        }
+                        else
+                        {
+                            currentLineEnd = pos;
+                            lastWordEnd = pos;
+                        }
+                    }
+                    else if(currentLineWidth == targetWidth)
+                    {   // line fit all available space
+                        DVASSERT(pos > currentLineStart);
+                        
+                        WideString currentLine = text.substr(currentLineStart, pos - currentLineStart);
+                        resultVector.push_back(currentLine);
+                        
+                        lastWordStart = lastWordEnd = currentLineEnd = 0;
+                        currentLineStart = -1;
                     }
                     else
-                    {
+                    {   //currentLineWidth > targetWidth
                         int32 currentLineLength = currentLineEnd - currentLineStart;
-                        if((currentLineLength > 0)) // use previous position of separator to split text
-                        {
+                        if((currentLineLength > 0))
+                        {   // use previous position of separator to split text
                             WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineLength);
                             resultVector.push_back(currentLineWithoutLastWord);
 
-                            currentLineStart = -1;
-                            lastWordStart = lastWordEnd = 0;
                             pos = currentLineEnd;
-                            currentLineEnd = 0;
-                            state = SKIP; // if cur char is space go to skip
-                            break;
+
+                            lastWordStart = lastWordEnd = currentLineEnd = 0;
+                            currentLineStart = -1;
                         }
-                        else if(pos) // truncate text by symbol for very long word
-                        {
+                        else if(pos)
+                        {   // truncate text by symbol for very long word
                             if(0 == targetWidth)
                             {
                                 WideString currentLine = text.substr(currentLineStart, pos - currentLineStart);
@@ -318,10 +337,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                             WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineLength);
                                             resultVector.push_back(currentLineWithoutLastWord);
                                             
-                                            currentLineStart = -1;
-                                            lastWordStart = lastWordEnd = 0;
                                             pos = currentLineEnd-1;
-                                            currentLineEnd = 0;
+                                            lastWordStart = lastWordEnd = currentLineEnd = 0;
+                                            currentLineStart = -1;
                                         }
                                         
                                         break;
@@ -345,6 +363,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 			case FINISH:
 				if (currentLineStart != -1) // we check if we have something left in currentline and add this line to results
 				{
+                    DVASSERT(currentLineEnd > currentLineStart);
+
 					//Logger::FrameworkDebug("ending=%d %d", currentLineStart, currentLineEnd);
 					WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart);
 					//Logger::FrameworkDebug(L"after=%S", currentLine.c_str());

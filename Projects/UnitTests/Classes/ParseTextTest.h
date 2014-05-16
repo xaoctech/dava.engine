@@ -52,7 +52,7 @@ private:
     
     void ParseTestFunction(PerfFuncData * testData);
     
-    UIStaticText *CreateTextControl(const Rect &rect, const WideString & text, bool wrapBySymbol);
+    UIStaticText *CreateTextControl(const Rect &rect, const WideString & text, bool wrapBySymbol, const Vector2 &requestedSize = Vector2(0, 0));
 
     UIStaticText *wrapBySymbolShort;
     UIStaticText *wrapByWordShort;
