@@ -106,6 +106,8 @@ void SettingsManager::SetValue(const DAVA::FastName& path, const DAVA::VariantTy
     DVASSERT(i->second.value.type == value.type && "Setting different type");
 
     i->second.value.SetVariant(value);
+
+    SettingsManager::Instance()->Save();
 }
 
 size_t SettingsManager::GetSettingsCount()
