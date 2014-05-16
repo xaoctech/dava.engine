@@ -28,6 +28,7 @@
 
 
 #include "Base/EventDispatcher.h"
+#include <iterator>
 
 namespace DAVA 
 {
@@ -72,23 +73,12 @@ bool EventDispatcher::RemoveAllEvents()
 
 void EventDispatcher::PerformEvent(int32 eventType)
 {
-	PerformEvent(eventType, this);
+	PerformEventWithData(eventType, this, NULL);
 }
 
 void EventDispatcher::PerformEvent(int32 eventType, BaseObject *eventParam)
 {
-    if( events.empty() )
-        return;
-
-    MakeEventsListCopy();
-	Vector<Event *>::iterator it = copyEventsList.begin();
-	for(; it != copyEventsList.end(); it++)
-	{
-		if((*it)->eventType == eventType)
-		{
-			(*it)->msg(eventParam);
-		}
-	}
+    PerformEventWithData(eventType, eventParam, NULL);
 }
 
 void EventDispatcher::PerformEventWithData(int32 eventType, void *callerData)
@@ -98,12 +88,16 @@ void EventDispatcher::PerformEventWithData(int32 eventType, void *callerData)
 	
 void EventDispatcher::PerformEventWithData(int32 eventType, BaseObject *eventParam, void *callerData)
 {
-    if( events.empty() )
+    if(events.empty())
         return;
 
-    MakeEventsListCopy();
-    Vector<Event *>::iterator it = copyEventsList.begin();
-	for(; it != copyEventsList.end(); it++)
+    eventsCopy.clear();
+    eventsCopy.reserve(events.size());
+    std::transform(events.begin(), events.end(), std::back_inserter(eventsCopy), std::addressof<Event>);
+
+    Vector<Event *>::const_iterator it = eventsCopy.begin();
+    Vector<Event *>::const_iterator end = eventsCopy.end();
+	for(; it != end; it++)
 	{
 		if((*it)->eventType == eventType)
 		{
@@ -122,21 +116,9 @@ void EventDispatcher::CopyDataFrom(EventDispatcher *srcDispatcher)
 	}
 }
 
-int32 EventDispatcher::GetEventsCount()
+int32 EventDispatcher::GetEventsCount() const
 {
     return events.size();
-}
-
-template <class T>
-T * toAddress( T &object )
-{
-    return &object;
-}
-
-void EventDispatcher::MakeEventsListCopy()
-{
-    copyEventsList.resize( events.size() );
-    std::transform(events.begin(), events.end(), copyEventsList.begin(), toAddress<Event> );
 }
 
 }
