@@ -114,8 +114,11 @@ void FontManager::SetFontName(Font* font, const String& name)
     Map<String, Font*>::iterator findIt = fontMap.find(name);
     if(findIt != fontMap.end())
     {
-        SafeRelease(findIt->second);
-        findIt->second = SafeRetain(font);
+        if(findIt->second != font)
+        {
+            SafeRelease(findIt->second);
+            findIt->second = SafeRetain(font);
+        }
     }
     else
     {

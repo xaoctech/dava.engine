@@ -37,17 +37,33 @@
 #include "PropertiesHelper.h"
 #include "ChangePropertyCommand.h"
 
-//TODO: move EditFontDialogResult somewhere not to include editfontdialog.h
-#include "editfontdialog.h"
-
 using namespace DAVA;
+
+struct ChangeFontPropertyCommandData
+{
+    ChangeFontPropertyCommandData();
+    ~ChangeFontPropertyCommandData();
+    
+    Font *GetLocalizedFont(const String& locale);
+    void SetLocalizedFont(Font* localizedFont, const String& locale);
+    
+    ChangeFontPropertyCommandData& operator =(const ChangeFontPropertyCommandData& data);
+    
+    String fontPresetOriginalName;
+    
+    bool isApplyToAll;
+    Font *font;
+    String fontPresetName;
+    
+    Map<String, Font*> localizedFonts;
+};
 
 class ChangeFontPropertyCommand: public ChangePropertyCommand<Font *>
 {
 public:
 	ChangeFontPropertyCommand(BaseMetadata* baseMetadata,
 								const PropertyGridWidgetData& propertyGridWidgetData,
-                                const EditFontDialogResult& editFontDialogResult);
+                                const ChangeFontPropertyCommandData& editFontDialogResult);
     virtual ~ChangeFontPropertyCommand();
     
     virtual void Execute();
@@ -56,12 +72,7 @@ public:
 	
 protected:
 //	void RestoreControlRect(const COMMANDDATAVECTITER& iter);
-    bool isApplyToAll;
-    Font *font;
-    String fontPresetOriginalName;
-    String fontPresetName;
-    
-    Map<String, Font*> localizedFonts;
+    ChangeFontPropertyCommandData data;
 };
 
 class FontRenameCommand : public BaseCommand

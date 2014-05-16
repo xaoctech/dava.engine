@@ -55,46 +55,6 @@
 //static const QString LOAD_FONT_ERROR_MESSAGE = "Can't load font %1! Try again or select another one.";
 //static const QString LOAD_FONT_ERROR_INFO_TEXT = "An error occured while loading font...";
 
-EditFontDialogResult::EditFontDialogResult()
-: isApplyToAll(false)
-, font(NULL)
-{
-}
-EditFontDialogResult::~EditFontDialogResult()
-{
-    SafeRelease(font);
-    Map<String, Font*>::iterator it = localizedFonts.begin();
-    Map<String, Font*>::iterator endIt = localizedFonts.end();
-    for(; it != endIt; ++it)
-    {
-        SafeRelease(it->second);
-    }
-    localizedFonts.clear();
-}
-
-
-Font *EditFontDialogResult::GetLocalizedFont(const String& locale)
-{
-    Map<String, Font*>::const_iterator findIt = localizedFonts.find(locale);
-    Map<String, Font*>::const_iterator endIt = localizedFonts.end();
-    if(findIt != endIt)
-    {
-        return findIt->second;
-    }
-    return NULL;
-}
-
-void EditFontDialogResult::SetLocalizedFont(Font* localizedFont, const String& locale)
-{
-    Map<String, Font*>::iterator findIt = localizedFonts.find(locale);
-    Map<String, Font*>::const_iterator endIt = localizedFonts.end();
-    if(findIt != endIt)
-    {
-        Font* newFont = SafeRetain(localizedFont);
-        SafeRelease(findIt->second);
-        findIt->second = newFont;
-    }
-}
 
 EditFontDialog::EditFontDialog(const String & editFontPresetName, QDialog *parent) :
     QDialog(parent),
@@ -117,7 +77,7 @@ EditFontDialog::EditFontDialog(const String & editFontPresetName, QDialog *paren
         Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(editFontPresetName, locales[i]);
         dialogResult.localizedFonts[locales[i]] = localizedFont ? localizedFont->Clone() : dialogResult.font->Clone();
         
-        Logger::Debug("EditFontDialog::EditFontDialog dialogResult.localizedFonts[%s] = %x", locales[i].c_str(), dialogResult.localizedFonts[locales[i]]);
+        Logger::FrameworkDebug("EditFontDialog::EditFontDialog dialogResult.localizedFonts[%s] = %x", locales[i].c_str(), dialogResult.localizedFonts[locales[i]]);
         
         ui->selectLocaleComboBox->addItem(QString::fromStdString(locales[i]));
     }
@@ -258,7 +218,7 @@ void EditFontDialog::ProcessComboBoxValueChanged(QComboBox *senderWidget, const 
     {
         currentLocale = value.toStdString();
         
-        Logger::Debug("EditFontDialog::ProcessComboBoxValueChanged currentLocale=%s", currentLocale.c_str());
+        Logger::FrameworkDebug("EditFontDialog::ProcessComboBoxValueChanged currentLocale=%s", currentLocale.c_str());
         
         UpdatePushButtonWidgetWithPropertyValue(ui->localizedFontSelectButton);
         UpdateSpinBoxWidgetWithPropertyValue(ui->localizedFontSizeSpinBox);
@@ -326,8 +286,6 @@ void EditFontDialog::ProcessPushButtonClicked(QPushButton *senderWidget)
     }
     else if(senderWidget == ui->resetFontForLocalePushButton)
     {
-        //TODO: reset localized font to defaults
-        Logger::Debug("EditFontDialog::ProcessPushButtonClicked TODO: reset localized font to defaults");
         Font *defaultFontClone = dialogResult.font->Clone();
         dialogResult.SetLocalizedFont(defaultFontClone, currentLocale);
         SafeRelease(defaultFontClone);
@@ -393,12 +351,11 @@ void EditFontDialog::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushBu
         fontPropertyValue = dialogResult.GetLocalizedFont(currentLocale);
     }
     
-    Logger::Debug("EditFontDialog::UpdatePushButtonWidgetWithPropertyValue fontPropertyValue=%x fontPresetName=%s", fontPropertyValue, dialogResult.fontPresetName.c_str());
+    Logger::FrameworkDebug("EditFontDialog::UpdatePushButtonWidgetWithPropertyValue fontPropertyValue=%x fontPresetName=%s", fontPropertyValue, dialogResult.fontPresetName.c_str());
     
     if(fontPropertyValue)
     {
         //Set button text
-        WidgetSignalsBlocker blocker(pushButtonWidget);
         Font::eFontType fontType = fontPropertyValue->GetFontType();
         QString buttonText;
         
@@ -406,14 +363,14 @@ void EditFontDialog::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushBu
         {
             case Font::TYPE_FT:
             {
-                FTFont *ftFont = dynamic_cast<FTFont*>(fontPropertyValue);
+                FTFont *ftFont = static_cast<FTFont*>(fontPropertyValue);
                 //Set pushbutton widget text
 				buttonText = QString::fromStdString(ftFont->GetFontPath().GetFrameworkPath());
                 break;
             }
             case Font::TYPE_GRAPHICAL:
             {
-                GraphicsFont *gFont = dynamic_cast<GraphicsFont*>(fontPropertyValue);
+                GraphicsFont *gFont = static_cast<GraphicsFont*>(fontPropertyValue);
                 //Put into result string font definition and font sprite path
                 Sprite *fontSprite = gFont->GetFontSprite();
                 if (!fontSprite) //If no sprite available - quit
@@ -435,7 +392,7 @@ void EditFontDialog::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushBu
             }
         }
         
-        Logger::Debug("EditFontDialog::UpdatePushButtonWidgetWithPropertyValue %s", buttonText.toStdString().c_str());
+        Logger::FrameworkDebug("EditFontDialog::UpdatePushButtonWidgetWithPropertyValue %s", buttonText.toStdString().c_str());
         
         pushButtonWidget->setText(buttonText);
     }
@@ -461,5 +418,5 @@ void EditFontDialog::OnOkButtonClicked()
 {
     dialogResult.fontPresetName = ui->fontPresetNameLlineEdit->text().toStdString();
     
-    Logger::Debug("EditFontDialog::OnOkButtonClicked");
+    Logger::FrameworkDebug("EditFontDialog::OnOkButtonClicked");
 }

@@ -67,6 +67,7 @@ public:
     const Map<String, Font*> &GetLocalizedFonts(const String& locale) const;
     Font* GetLocalizedFont(const String& fontName, const String& locale) const;
     String GetLocalizedFontName(Font* font) const;
+    Font* GetLocalizedFont(Font* font) const;
     
     String SetLocalizedFont(const String& fontOriginalName, Font* font, const String& fontName, bool replaceExisting, const String& locale);
 

@@ -130,22 +130,18 @@ bool HierarchyTree::Load(const QString& projectPath)
             FilePath::AddResourcesFolder(bundleName);
         }
         
-        //TODO: read localized fonts.yaml
         const YamlNode *localizationFontsPath = font->Get(DEFAULT_FONTS_PATH_NODE);
         if(localizationFontsPath)
         {
             EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(localizationFontsPath->AsString()));
         }
-        else
-        {
-            EditorFontManager::Instance()->SetDefaultFontsPath(FilePath("~res:/UI/Fonts/fonts.yaml"));
-        }
-        
-        if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
-        {
-            EditorFontManager::Instance()->LoadLocalizedFonts();
-        }
     }
+    
+    if(EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
+    {
+        EditorFontManager::Instance()->SetDefaultFontsPath(FilePath("~res:/UI/Fonts/fonts.yaml"));
+    }
+    EditorFontManager::Instance()->LoadLocalizedFonts();
     
 	const YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
 	for (int32 i = 0; i < platforms->GetCount(); i++)
@@ -503,7 +499,6 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	
 	rootNode.SetProjectFilePath(projectFile);
     
-    //TODO: save all fonts
     if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
     {
         EditorFontManager::Instance()->SaveLocalizedFonts();
