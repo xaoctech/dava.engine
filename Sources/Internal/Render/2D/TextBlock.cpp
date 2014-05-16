@@ -332,8 +332,6 @@ void TextBlock::Prepare()
         if (isMultilineEnabled)
         {
             Vector<WideString> strings;
-//            Vector2 rectSize;
-            
             Vector2 rcSize = rectSize;
             if(requestedSize.dx > 0)
             {

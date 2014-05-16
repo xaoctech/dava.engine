@@ -341,7 +341,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 	FT_Vector * advances = new FT_Vector[strLen];
 	Prepare(advances);
 
-    const int spaceWidth = face->glyph->metrics.width >> 6;
+    const int spaceWidth = (face->glyph->metrics.width >> 6) >> 1;
     
 	int32 lastRight = 0; //charSizes helper
 	//int32 justifyOffset = 0;
@@ -394,8 +394,15 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 				{
 					if(0 == width)
 					{
-                        charSizes->push_back(spaceWidth);
-                        lastRight += spaceWidth;
+                        if(str[i] == ' ')
+                        {
+                            charSizes->push_back(spaceWidth);
+                            lastRight += spaceWidth;
+                        }
+                        else
+                        {
+                            charSizes->push_back(0);
+                        }
 					}
 					else if(charSizes->empty())
 					{
