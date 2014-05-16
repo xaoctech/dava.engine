@@ -83,9 +83,11 @@ void ChangeFontPropertyCommandData::SetLocalizedFont(Font* localizedFont, const 
     Map<String, Font*>::const_iterator endIt = localizedFonts.end();
     if(findIt != endIt)
     {
-        Font* newFont = SafeRetain(localizedFont);
-        SafeRelease(findIt->second);
-        findIt->second = newFont;
+        if(findIt->second != localizedFont)
+        {
+            SafeRelease(findIt->second);
+            findIt->second = SafeRetain(localizedFont);
+        }
     }
 }
 

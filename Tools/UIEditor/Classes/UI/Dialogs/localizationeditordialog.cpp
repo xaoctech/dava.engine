@@ -136,14 +136,7 @@ void LocalizationTableController::SetupTable(QObject *parent)
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     
     CreateTableModel(parent);
-//    //Create and set table view model
-//    tableModel = new QStandardItemModel(parent); //0 Rows and 2 Columns
-//
-//    //Setup column name
-//    tableModel->setHorizontalHeaderItem(LOCALIZATION_KEY_INDEX, new QStandardItem(QString("Key")));
-//    tableModel->setHorizontalHeaderItem(LOCALIZATION_VALUE_INDEX, new QStandardItem(QString("Localized Value")));
-//    
-//    tableView->setModel(tableModel);
+//    //TODO: Create and set table view model
 }
 
 void LocalizationTableController::ReloadTable()
@@ -163,27 +156,6 @@ void LocalizationTableController::ReloadTable()
         tableModel->removeRows(0, tableModel->rowCount());
     }
     
-//	Map<WideString, WideString> localizationTable;
-//	bool stringsFound = LocalizationSystem::Instance()->GetStringsForCurrentLocale(localizationTable);
-//	if (!stringsFound)
-//	{
-//		return;
-//	}
-//
-//	// Fill the values.
-//	for (Map<WideString, WideString>::iterator iter = localizationTable.begin(); iter != localizationTable.end(); iter ++)
-//	{
-//        // Add only strings which pass filter (or all strings if filter is not defined).
-//        QString keyValue = WideStringToQString(iter->first);
-//        if (filterValue.isEmpty() || keyValue.contains(filterValue, Qt::CaseInsensitive))
-//        {
-//            QList<QStandardItem *> itemsList;
-//            itemsList.append(new QStandardItem(keyValue));
-//            itemsList.append(new QStandardItem(WideStringToQString(iter->second)));
-//            tableModel->appendRow(itemsList);
-//        }
-//    }
-	
     if(LoadTable())
     {
         // Restore the selection if possible.
@@ -572,8 +544,6 @@ int LocalizationEditorDialog::addedStringsCount = 0;
 LocalizationEditorDialog::LocalizationEditorDialog(QWidget *parent) :
     QDialog(parent)
 ,   ui(new Ui::LocalizationEditorDialog)
-//, stringsTableModel(NULL),
-//,	sortOrder(Qt::AscendingOrder)
 {
     ui->setupUi(this);
     
@@ -763,171 +733,6 @@ void LocalizationEditorDialog::ReinitializeLocalizationSystem(const QString& loc
     HierarchyTreeController::Instance()->UpdateLocalization(true);
 }
 
-//void LocalizationEditorDialog::SetupLocalizationTable()
-//{
-//    //Setup table appearence
-//    ui->stringsTableView->verticalHeader()->hide();
-//    ui->stringsTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-//    ui->stringsTableView->setSelectionMode(QAbstractItemView::SingleSelection);
-//    ui->stringsTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-//    //Disable editing of table
-//    ui->stringsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-//
-//    //Create and set table view model
-//    this->stringsTableModel = new QStandardItemModel(this); //0 Rows and 2 Columns
-//	
-//    //Setup column name
-//    stringsTableModel->setHorizontalHeaderItem(LocalizationTableController::LOCALIZATION_KEY_INDEX, new QStandardItem(QString("Key")));
-//    stringsTableModel->setHorizontalHeaderItem(LocalizationTableController::LOCALIZATION_VALUE_INDEX, new QStandardItem(QString("Localized Value")));
-//	
-//    ui->stringsTableView->setModel(stringsTableModel);
-//}
-
-//void LocalizationEditorDialog::ReloadLocalizationTable()
-//{
-//	//Remember the selected item (if any) to restore it when the selection will be changed.
-//	QModelIndex selectedItemIndex = QModelIndex();
-//	QItemSelectionModel* selectionModel = ui->stringsTableView->selectionModel();
-//	if (selectionModel && selectionModel->hasSelection() && selectionModel->selectedIndexes().size() > 0)
-//	{
-//		selectedItemIndex = selectionModel->selectedIndexes().takeAt(0);
-//	}
-//
-//	// Do the cleanup.
-//	CleanupLocalizationUIControls();
-//    if (stringsTableModel->rowCount() > 0)
-//    {
-//        stringsTableModel->removeRows(0, stringsTableModel->rowCount());
-//    }
-//    
-//	Map<WideString, WideString> localizationTable;
-//	bool stringsFound = LocalizationSystem::Instance()->GetStringsForCurrentLocale(localizationTable);
-//	if (!stringsFound)
-//	{
-//		return;
-//	}
-//
-//	// Fill the values.
-//	for (Map<WideString, WideString>::iterator iter = localizationTable.begin(); iter != localizationTable.end(); iter ++)
-//	{
-//        // Add only strings which pass filter (or all strings if filter is not defined).
-//        QString keyValue = WideStringToQString(iter->first);
-//        if (filterValue.isEmpty() || keyValue.contains(filterValue, Qt::CaseInsensitive))
-//        {
-//            QList<QStandardItem *> itemsList;
-//            itemsList.append(new QStandardItem(keyValue));
-//            itemsList.append(new QStandardItem(WideStringToQString(iter->second)));
-//            stringsTableModel->appendRow(itemsList);
-//        }
-//    }
-//	
-//	// Restore the selection if possible.
-//	if (selectedItemIndex.isValid())
-//	{
-//		ui->stringsTableView->selectRow(selectedItemIndex.row());
-//	}
-//}
-
-//void LocalizationEditorDialog::OnLocalizationStringSelected(const QItemSelection & selected, const QItemSelection & deselected)
-//{
-//	ProcessDeselectedString(deselected);
-//	ProcessSelectedString(selected);
-//}
-
-//void LocalizationEditorDialog::CleanupLocalizationUIControls()
-//{
-//	ui->keyTextEdit->clear();
-//	ui->valueTextEdit->clear();
-//}
-
-//void LocalizationEditorDialog::ProcessDeselectedString(const QItemSelection & deselected)
-//{
-//	// Just do update.
-//	if (deselected.indexes().size() == 0)
-//	{
-//		// Nothing is selected - nothing to do more.
-//		return;
-//	}
-//	
-//	QModelIndex deselectedIndex = deselected.indexes().takeAt(0);
-//	if (!deselectedIndex.isValid())
-//	{
-//		return;
-//	}
-//
-//	UpdateLocalizationValueForCurrentKey(deselectedIndex);
-//}
-
-//void LocalizationEditorDialog::ProcessSelectedString(const QItemSelection & selected)
-//{
-//	CleanupLocalizationUIControls();
-//	if (selected.indexes().size() == 0)
-//	{
-//		// Nothing is selected - nothing to do more.
-//		return;
-//	}
-//	
-//	QModelIndex selectedIndex = selected.indexes().takeAt(0);
-//	if (!selectedIndex.isValid())
-//	{
-//		return;
-//	}
-//	
-//	QString localizationKey = stringsTableModel->data(stringsTableModel->index(selectedIndex.row(), LOCALIZATION_KEY_INDEX), Qt::DisplayRole).toString();
-//	QString localizationValue = stringsTableModel->data(stringsTableModel->index(selectedIndex.row(), LOCALIZATION_VALUE_INDEX), Qt::DisplayRole).toString();
-//
-//	ui->keyTextEdit->insertPlainText(localizationKey);
-//	ui->valueTextEdit->insertPlainText(localizationValue);
-//}
-
-//void LocalizationEditorDialog::UpdateLocalizationValueForCurrentKey()
-//{
-//	// Update the value for the item currently selected by default.
-//	QModelIndex selectedItemIndex = QModelIndex();
-//	QItemSelectionModel* selectionModel = ui->stringsTableView->selectionModel();
-//	if (!selectionModel || !selectionModel->hasSelection() ||
-//		!(selectionModel->selectedIndexes().size() > 0))
-//	{
-//		return;
-//	}
-//	
-//	selectedItemIndex = selectionModel->selectedIndexes().takeAt(0);
-//	UpdateLocalizationValueForCurrentKey(selectedItemIndex);
-//}
-
-//void LocalizationEditorDialog::UpdateLocalizationValueForCurrentKey(const QModelIndex& selectedItemIndex)
-//{
-//	if (!selectedItemIndex.isValid())
-//	{
-//		return;
-//	}
-//
-//	// Firstly verify if something was changed.
-//	QString localizationKey = ui->keyTextEdit->toPlainText();
-//	QString localizationValue = ui->valueTextEdit->toPlainText();
-//	if (localizationKey.isEmpty())
-//	{
-//		return;
-//	}
-//	
-//	QString existingLocalizationValue = stringsTableModel->data(stringsTableModel->index(selectedItemIndex.row(), 1), Qt::DisplayRole).toString();
-//	if (existingLocalizationValue == localizationValue)
-//	{
-//		return;
-//	}
-//
-//	// Change indeed happened - update the localized string.
-//	LocalizationSystem::Instance()->SetLocalizedString(QStringToWideString(localizationKey),
-//													   QStringToWideString(localizationValue));
-//	SaveLocalization();
-//
-//	// Update the current localized string in the table.
-//	stringsTableModel->setData(stringsTableModel->index(selectedItemIndex.row(), 1), localizationValue);
-//
-//	// Update the UI.
-//    HierarchyTreeController::Instance()->UpdateLocalization(true);
-//}
-
 void LocalizationEditorDialog::closeEvent(QCloseEvent* /*event*/)
 {
 	// Save the last-minute changes, if any.
@@ -942,41 +747,6 @@ void LocalizationEditorDialog::CloseDialog()
     
 	accept();
 }
-
-//void LocalizationEditorDialog::OnTableHeaderClicked(int headerIndex)
-//{
-//	// Revert the current sort order and re-apply it.
-//	if (sortOrder == Qt::DescendingOrder)
-//	{
-//		sortOrder = Qt::AscendingOrder;
-//	}
-//	else
-//	{
-//		sortOrder = Qt::DescendingOrder;
-//	}
-//	
-//	ApplySortOrder(headerIndex);
-//}
-
-//void LocalizationEditorDialog::ApplySortOrder(int headerIndex)
-//{
-//	ui->stringsTableView->horizontalHeader()->setSortIndicator(headerIndex, sortOrder);
-//	ui->stringsTableView->sortByColumn(headerIndex, sortOrder);
-//}
-
-//void LocalizationEditorDialog::OnShowCustomMenu(const QPoint& /*pos*/)
-//{
-//	QMenu menu;
-//	QAction* addStringAction = new QAction("Add string", &menu);
-//	connect(addStringAction, SIGNAL(triggered()), this, SLOT(OnAddLocalizationStringAction()));
-//	menu.addAction(addStringAction);
-//
-//	QAction* removeStringAction = new QAction("Remove selected string", &menu);
-//	connect(removeStringAction, SIGNAL(triggered()), this, SLOT(OnRemoveLocalizationStringAction()));
-//	menu.addAction(removeStringAction);
-//
-//	menu.exec(QCursor::pos());
-//}
 
 void LocalizationEditorDialog::OnAddLocalizationStringAction()
 {
@@ -1004,13 +774,6 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 		newLocalizationKey = text;
         
         stringsTable->AddNewLocalizationString(newLocalizationKey, newLocalizationValue);
-        
-//		LocalizationSystem::Instance()->SetLocalizedString(QStringToWideString(newLocalizationKey),
-//													   QStringToWideString(newLocalizationValue));
-//		stringsTable->SaveLocalization();
-//		stringsTable->ReloadTable();
-//
-//		stringsTable->SelectStringItemByKey(newLocalizationKey);
 	}
 	else
 	{
@@ -1021,20 +784,10 @@ void LocalizationEditorDialog::AddNewLocalizationString()
 
 void LocalizationEditorDialog::RemoveSelectedLocalizationString()
 {
-//	QItemSelectionModel* selectionModel = ui->stringsTableView->selectionModel();
-//	if (!selectionModel || !selectionModel->hasSelection() ||
-//		!(selectionModel->selectedIndexes().size() > 0))
-//	{
-//		return;
-//	}
-    
     if(!stringsTable->IsValidSelection())
     {
         return;
     }
-
-//	QModelIndex selectedIndex = selectionModel->selectedIndexes().takeAt(0);
-//	QString localizationKey = stringsTableModel->data(stringsTableModel->index(selectedIndex.row(), LOCALIZATION_KEY_INDEX), Qt::DisplayRole).toString();
     
     QString localizationKey = stringsTable->GetSelectedLocalizationKey();
 
@@ -1048,36 +801,7 @@ void LocalizationEditorDialog::RemoveSelectedLocalizationString()
 	}
 
     stringsTable->RemoveSelectedLocalizationString(localizationKey);
-//	LocalizationSystem::Instance()->RemoveLocalizedString(QStringToWideString(localizationKey));
-//	SaveLocalization();
-//
-//	ReloadLocalizationTable();
 }
-
-//void LocalizationEditorDialog::SelectStringItemByKey(const QString& keyToBeSelected)
-//{
-//	int rowsCount = stringsTableModel->rowCount();
-//	for (int i = 0; i < rowsCount; i ++)
-//	{
-//		QModelIndex rowIndex = stringsTableModel->index(i, LocalizationTableController::LOCALIZATION_KEY_INDEX);
-//		if (!rowIndex.isValid())
-//		{
-//			continue;
-//		}
-//
-//		QString localizationKey = stringsTableModel->data(rowIndex, Qt::DisplayRole).toString();
-//		if (localizationKey == keyToBeSelected)
-//		{
-//			ui->stringsTableView->selectRow(i);
-//			break;
-//		}
-//	}
-//}
-
-//void LocalizationEditorDialog::SaveLocalization()
-//{
-//	LocalizationSystem::Instance()->SaveLocalizedStrings();
-//}
 
 void LocalizationEditorDialog::OnAddNewLocalizationString()
 {
@@ -1088,16 +812,4 @@ void LocalizationEditorDialog::OnRemoveSelectedLocalizationString()
 {
 	RemoveSelectedLocalizationString();
 }
-
-//void LocalizationEditorDialog::OnFilterTextChanged(const QString& value)
-//{
-//    filterValue = value;
-//    stringsTable->ReloadTable();
-//}
-//
-//void LocalizationEditorDialog::OnFilterTextCleared()
-//{
-//    filterValue.clear();
-//    ui->filterTextBox->clear();
-//}
 
