@@ -77,7 +77,7 @@ EditFontDialog::EditFontDialog(const String & editFontPresetName, QDialog *paren
         Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(editFontPresetName, locales[i]);
         dialogResult.localizedFonts[locales[i]] = localizedFont ? localizedFont->Clone() : dialogResult.font->Clone();
         
-        Logger::FrameworkDebug("EditFontDialog::EditFontDialog dialogResult.localizedFonts[%s] = %x", locales[i].c_str(), dialogResult.localizedFonts[locales[i]]);
+        Logger::FrameworkDebug("EditFontDialog::EditFontDialog dialogResult.localizedFonts[%s] = %p", locales[i].c_str(), dialogResult.localizedFonts[locales[i]]);
         
         ui->selectLocaleComboBox->addItem(QString::fromStdString(locales[i]));
     }
@@ -351,7 +351,7 @@ void EditFontDialog::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushBu
         fontPropertyValue = dialogResult.GetLocalizedFont(currentLocale);
     }
     
-    Logger::FrameworkDebug("EditFontDialog::UpdatePushButtonWidgetWithPropertyValue fontPropertyValue=%x fontPresetName=%s", fontPropertyValue, dialogResult.fontPresetName.c_str());
+    Logger::FrameworkDebug("EditFontDialog::UpdatePushButtonWidgetWithPropertyValue fontPropertyValue=%p fontPresetName=%s", fontPropertyValue, dialogResult.fontPresetName.c_str());
     
     if(fontPropertyValue)
     {

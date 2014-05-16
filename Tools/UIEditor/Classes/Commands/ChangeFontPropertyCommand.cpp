@@ -104,14 +104,14 @@ ChangeFontPropertyCommand::~ChangeFontPropertyCommand()
 void ChangeFontPropertyCommand::Execute()
 {
     //TODO: save data to be able to revert changes
-    Logger::FrameworkDebug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %x %s default", data.fontPresetOriginalName.c_str(), data.font, data.fontPresetName.c_str());
+    Logger::FrameworkDebug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %p %s default", data.fontPresetOriginalName.c_str(), data.font, data.fontPresetName.c_str());
     String newFontPresetName = EditorFontManager::Instance()->SetLocalizedFont(data.fontPresetOriginalName, data.font, data.fontPresetName, data.isApplyToAll, "default");
     
     Map<String, Font*>::iterator it = data.localizedFonts.begin();
     Map<String, Font*>::const_iterator endIt = data.localizedFonts.end();
     for(; it != endIt; ++it)
     {
-        Logger::FrameworkDebug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %x %s %s", data.fontPresetOriginalName.c_str(), it->second, data.fontPresetName.c_str(), it->first.c_str());
+        Logger::FrameworkDebug("ChangeFontPropertyCommand::Execute SetLocalizedFont %s %p %s %s", data.fontPresetOriginalName.c_str(), it->second, data.fontPresetName.c_str(), it->first.c_str());
         String localizedNewFontPresetName = EditorFontManager::Instance()->SetLocalizedFont(data.fontPresetOriginalName, it->second, newFontPresetName, data.isApplyToAll, it->first);
         if(localizedNewFontPresetName != newFontPresetName)
         {

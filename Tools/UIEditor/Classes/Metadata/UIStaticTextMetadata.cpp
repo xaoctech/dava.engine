@@ -72,7 +72,7 @@ void UIStaticTextMetadata::SetFont(Font * font)
         Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(font);
         if(font != localizedFont)
         {
-            Logger::Warning("UIStaticTextMetadata::SetFont font=%x, but localizedFont=%x for locale=%s", font, localizedFont, LocalizationSystem::Instance()->GetCurrentLocale().c_str());
+            Logger::Warning("UIStaticTextMetadata::SetFont font=%p, but localizedFont=%p for locale=%s", font, localizedFont, LocalizationSystem::Instance()->GetCurrentLocale().c_str());
         }
         
         GetActiveStaticText()->SetFont(localizedFont);
