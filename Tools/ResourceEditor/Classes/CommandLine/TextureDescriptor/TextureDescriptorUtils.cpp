@@ -143,7 +143,7 @@ void TextureDescriptorUtils::CreateDescriptorsForFolder(const FilePath &folderPa
 }
 
 
-void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
+bool TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
 {
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pngPathname);
     if(false == FileSystem::Instance()->IsFile(descriptorPathname))
@@ -151,8 +151,13 @@ void TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
         TextureDescriptor *descriptor = new TextureDescriptor(true);
         descriptor->Save(descriptorPathname);
 		delete descriptor;
+
+		return true;
     }
+
+	return false;
 }
+
 
 void TextureDescriptorUtils::SetCompressionParamsForFolder( const FilePath &folderPathname, const DAVA::Map<DAVA::eGPUFamily, DAVA::TextureDescriptor::Compression> & compressionParams, bool convertionEnabled, bool force, DAVA::TextureConverter::eConvertQuality quality, bool generateMipMaps)
 {
