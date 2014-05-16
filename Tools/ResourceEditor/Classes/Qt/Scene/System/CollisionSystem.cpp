@@ -52,12 +52,12 @@
 
 ENUM_DECLARE(CollisionSystemDrawMode)
 {
-	ENUM_ADD(CS_DRAW_OBJECTS);
+	//ENUM_ADD(CS_DRAW_OBJECTS);
 	ENUM_ADD(CS_DRAW_OBJECTS_SELECTED);
 	ENUM_ADD(CS_DRAW_OBJECTS_RAYTEST);
-	ENUM_ADD(CS_DRAW_LAND);
+	//ENUM_ADD(CS_DRAW_LAND);
 	ENUM_ADD(CS_DRAW_LAND_RAYTEST);
-	ENUM_ADD(CS_DRAW_LAND_COLLISION);
+	//ENUM_ADD(CS_DRAW_LAND_COLLISION);
 }
 
 SceneCollisionSystem::SceneCollisionSystem(DAVA::Scene * scene)
@@ -123,6 +123,16 @@ SceneCollisionSystem::~SceneCollisionSystem()
 	DAVA::SafeDelete(landBroadphase);
 	DAVA::SafeDelete(landCollDisp);
 	DAVA::SafeDelete(landCollConf);
+}
+
+void SceneCollisionSystem::SetDrawMode(int mode)
+{
+	drawMode = mode;
+}
+
+int SceneCollisionSystem::GetDrawMode() const
+{
+	return drawMode;
 }
 
 const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)

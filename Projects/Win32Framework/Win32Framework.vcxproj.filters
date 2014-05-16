@@ -822,9 +822,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h">
       <Filter>Internal\Scene2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
@@ -1422,6 +1419,8 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1981,9 +1980,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp">
       <Filter>Internal\Scene2D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp">
-      <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp">
       <Filter>Internal\Scene3D</Filter>
@@ -2546,5 +2542,7 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
   </ItemGroup>
 </Project>

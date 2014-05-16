@@ -283,7 +283,7 @@ void CubemapEditorDialog::LoadCubemap(const QString& path)
 		bool cubemapLoadResult = true;
 		for(int i = 0; i < CubemapUtils::GetMaxFaces(); ++i)
 		{
-			if(texDescriptor->faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
+			if(texDescriptor->dataSettings.faceDescription & (1 << CubemapUtils::MapUIToFrameworkFace(i)))
 			{
 				FilePath faceFilePath = filePath;
 				faceFilePath.ReplaceFilename(fileNameWithoutExtension +
@@ -381,22 +381,26 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 		}
 	}
 	
-	TextureDescriptor* descriptor = new TextureDescriptor();
-    
+	TextureDescriptor* descriptor = NULL;
     bool descriptorReady = false;
     if(filePath.Exists())
     {
+        descriptor = new TextureDescriptor(false);
         descriptorReady = descriptor->Load(filePath);
+    }
+    else
+    {
+        descriptor = new TextureDescriptor(true);
     }
     
     if(!descriptorReady)
     {
         descriptor->SetDefaultValues();
-        descriptor->settings.wrapModeS = descriptor->settings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
+        descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = Texture::WRAP_CLAMP_TO_EDGE;
     }
     
-	descriptor->faceDescription = faceMask;
-    
+	descriptor->dataSettings.faceDescription = faceMask;
+
     descriptor->Save(filePath);
 	SafeDelete(descriptor);
 	
