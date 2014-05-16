@@ -83,12 +83,14 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Scene *forScene, DAVA::Map<DA
 		{
 			continue;
 		}
-				
+
+		DVASSERT(descriptor->compression);
+
 		DAVA::Vector< DAVA::eGPUFamily> markedGPUs;
 		for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_FAMILY_COUNT; ++i)
 		{
 			eGPUFamily gpu = (eGPUFamily)i;
-			if(GPUFamilyDescriptor::IsFormatSupported(gpu, (PixelFormat)descriptor->compression[gpu].format))
+			if(GPUFamilyDescriptor::IsFormatSupported(gpu, (PixelFormat)descriptor->compression[gpu]->format))
 			{
 				FilePath texPath = descriptor->GetSourceTexturePathname();
 				if(texPath.Exists() && !descriptor->IsCompressedTextureActual(gpu))
@@ -112,16 +114,21 @@ void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::Texture
     for(DAVA::uint32 t = 0; t < texCount; ++t)
     {
         DAVA::FilePath texturePath = material->GetTexturePath(material->GetTextureName(t));
-        if(!texturePath.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(texturePath))
+        if(!texturePath.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(texturePath)&&!NMaterial::IsRuntimeTexture(material->GetTextureName(t)))
         {
             if(mode == EXCLUDE_NULL)
             {
                 DAVA::Texture *texture = material->GetTexture(t);
-                if(texture)
+                if(texture && !texture->isRenderTarget)
                 {
                     const DAVA::FilePath & path = texture->texDescriptor->pathname;
 
-                    DVASSERT(path == texturePath);
+                    if(path != texturePath)
+                    {
+                        DAVA::Logger::Error("texture path: \"%s\"\n material (%s) path: \"%s\"\n", path.GetAbsolutePathname().c_str(), material->GetMaterialName().c_str(), texturePath.GetAbsolutePathname().c_str());
+                        DVASSERT(path == texturePath);
+                    }
+
                     textures[FILEPATH_MAP_KEY(path)] = texture;
                 }
             }

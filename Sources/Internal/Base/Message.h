@@ -45,6 +45,7 @@ public:
 	virtual void operator () (BaseObject *, void *, void *) const = 0;
 	virtual MessageBase * Clone() const = 0;
 	virtual bool IsEqual(const MessageBase * message) const = 0;
+    virtual BaseObject * GetBaseObject() const = 0;
 
 };
 
@@ -81,6 +82,18 @@ public:
 		}
 		return false;
 	}
+
+    virtual BaseObject * GetBaseObject() const
+    {
+        if(SUPERSUBCLASS(BaseObject, T))
+        {
+            return (BaseObject*)targetObject;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 };
 	
 class MessageBaseStaticFunctionImpl : public MessageBase
@@ -113,6 +126,11 @@ public:
 		}
 		return false;
 	}
+
+    virtual BaseObject * GetBaseObject() const
+    {
+        return 0;
+    }
 };
 
 	
@@ -205,6 +223,16 @@ public:
     bool IsEmpty() const
     {
         return (messageBase==0);
+    }
+
+    BaseObject * GetBaseObject() const
+    {
+        if(messageBase)
+        {
+            return messageBase->GetBaseObject();
+        }
+
+        return 0;
     }
 
 };

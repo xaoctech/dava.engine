@@ -149,6 +149,8 @@ eErrorCode LibJpegWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int
     
     image->width = cinfo.image_width;
     image->height = cinfo.image_height;
+    //as image->data will be rewrited, need to erase present buffer
+    SafeDeleteArray(image->data);
     image->data = new uint8 [cinfo.output_width * cinfo.output_height * cinfo.num_components];
     
     JSAMPROW output_data;

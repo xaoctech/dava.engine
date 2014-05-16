@@ -124,17 +124,17 @@
     <Filter Include="Internal\DLC">
       <UniqueIdentifier>{8b6654bd-b8b7-4415-97cd-58c934760ce1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Sound\FMOD">
+      <UniqueIdentifier>{2f943bab-8569-4d22-8819-d48cad640ada}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Internal\Scene3D\SceneFile">
       <UniqueIdentifier>{6ee8193e-ec7e-456e-a4ed-4aff6d19fa73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Scene3D\Converters">
-      <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Particles\Job">
+    <Filter Include="Internal\Job">
       <UniqueIdentifier>{94116b3a-757d-4e56-95a2-a621c48f12e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Internal\Render\Image">
-      <UniqueIdentifier>{4aeb201b-e943-4faa-9d67-cd383ea06dd8}</UniqueIdentifier>
+    <Filter Include="Internal\Scene3D\Converters">
+      <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -471,7 +471,13 @@
     <ClInclude Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h">
@@ -602,12 +608,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SpriteNode.h">
       <Filter>Internal\Scene3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\Sound.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundGroup.h">
-      <Filter>Internal\Sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h">
       <Filter>Internal\UI</Filter>
@@ -822,9 +822,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h">
       <Filter>Internal\Scene2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
@@ -903,13 +900,7 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\QtLayer.h">
       <Filter>Internal\Platform\Qt</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.h">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\WindowsSpecifics.h">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\RenderOptions.h">
@@ -924,6 +915,9 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -931,6 +925,12 @@
       <Filter>Internal\Base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
@@ -1083,6 +1083,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
@@ -1194,26 +1197,11 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DeviceInfo.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h">
       <Filter>Internal\Sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEventCategory.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.h">
-      <Filter>Internal\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
-      <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\GlobalEnum.h">
       <Filter>Internal\Base</Filter>
@@ -1281,6 +1269,15 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h">
       <Filter>Internal\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundEvent.h">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingDB.h">
       <Filter>Internal\Autotesting</Filter>
     </ClInclude>
@@ -1289,6 +1286,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\DAVAClassRegistrator.h">
       <Filter>Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h">
+      <Filter>Internal\Sound</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\RenderBatchArray.h">
       <Filter>Internal\Render\Highlevel</Filter>
@@ -1327,16 +1327,16 @@
       <Filter>Internal\Particles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobWaiter.h">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\Job.h">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobManager.h">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Job\JobQueue.h">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\IntrospectionDynamic.h">
       <Filter>Internal\Base</Filter>
@@ -1389,6 +1389,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialNames.h">
       <Filter>Internal\Render\Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.h">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.h">
       <Filter>Internal\Scene3D\Converters</Filter>
     </ClInclude>
@@ -1401,36 +1404,23 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
       <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
-      <Filter>Internal\Render</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h">
-      <Filter>Internal\Render\Image</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\Image.h">
-      <Filter>Internal\Render\Image</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CoreWin32PlatformBase.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageConvert.h">
-      <Filter>Internal\Render\Image</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.h">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.h">
-      <Filter>Internal\Render\Image</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
+      <Filter>Internal\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageSystem.h">
-      <Filter>Internal\Render\Image</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.h">
-      <Filter>Internal\Render\Image</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.h">
-      <Filter>Internal\Render\Image</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.h">
-      <Filter>Internal\Render\Image</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.h">
-      <Filter>Internal\Render\Image</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1667,6 +1657,12 @@
     <ClCompile Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
@@ -1792,12 +1788,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SkeletonNode.cpp">
       <Filter>Internal\Scene3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\Sound.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundGroup.cpp">
-      <Filter>Internal\Sound</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\UI\ScrollHelper.cpp">
       <Filter>Internal\UI</Filter>
@@ -1991,9 +1981,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp">
       <Filter>Internal\Scene2D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
@@ -2072,9 +2059,6 @@
     <ClCompile Include="..\..\Sources\Internal\Base\FixedSizePoolAllocator.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32.cpp">
-      <Filter>Internal\Platform\Qt\Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\QtLayerWin32.cpp">
       <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
@@ -2090,7 +2074,13 @@
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp">
@@ -2203,6 +2193,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
+      <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
@@ -2330,23 +2323,8 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\DeviceInfo.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEvent.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundSystem.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\SoundEventCategory.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Sound\VolumeAnimatedObject.cpp">
-      <Filter>Internal\Sound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
-      <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\GlobalEnum.cpp">
       <Filter>Internal\Base</Filter>
@@ -2420,6 +2398,12 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp">
       <Filter>Internal\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Autotesting\AutotestingDB.cpp">
       <Filter>Internal\Autotesting</Filter>
     </ClCompile>
@@ -2457,16 +2441,16 @@
       <Filter>Internal\Particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\Job.cpp">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobManager.cpp">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobQueue.cpp">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Job\JobWaiter.cpp">
-      <Filter>Internal\Particles\Job</Filter>
+      <Filter>Internal\Job</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\IntrospectionDynamic.cpp">
       <Filter>Internal\Base</Filter>
@@ -2522,6 +2506,12 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialNames.cpp">
       <Filter>Internal\Render\Material</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundSystem.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.cpp">
+      <Filter>Internal\Sound\FMOD</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.cpp">
       <Filter>Internal\Scene3D\Converters</Filter>
     </ClCompile>
@@ -2534,26 +2524,25 @@
     <ClCompile Include="..\..\Sources\Internal\Base\AtomicWin32.cpp">
       <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
-      <Filter>Internal\Render</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp">
-      <Filter>Internal\Render\Image</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageSystem.cpp">
-      <Filter>Internal\Render\Image</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CoreWin32PlatformBase.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.cpp">
-      <Filter>Internal\Render\Image</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Platform\Qt\Win32\CorePlatformWin32Qt.cpp">
+      <Filter>Internal\Platform\Qt\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.cpp">
-      <Filter>Internal\Render\Image</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Platform\DateTime.cpp">
+      <Filter>Internal\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.cpp">
-      <Filter>Internal\Render\Image</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.cpp">
-      <Filter>Internal\Render\Image</Filter>
-    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
   </ItemGroup>
 </Project>

@@ -93,12 +93,13 @@ public:
 		Caps() 
 		{
 			isHardwareCursorSupported = false;
-			isPVRTCSupported = isETCSupported = false;
+
 			isPVRTC2Supported = false;
-			isDXTSupported = isATCSupported = false;
-			isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
 			isOpenGLES3Supported = false;
 
+			isFramebufferFetchSupported = isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
+			isVertexTextureUnitsSupported = isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
+            
 #if defined(__DAVAENGINE_ANDROID__)
             isGlDepth24Stencil8Supported = isGlDepthNvNonLinearSupported = false;
 #endif
@@ -115,6 +116,8 @@ public:
         bool isFloat32Supported;
 		bool isDXTSupported;
 		bool isATCSupported;
+		bool isVertexTextureUnitsSupported;
+        bool isFramebufferFetchSupported;
         
 #if defined(__DAVAENGINE_ANDROID__)
         bool isGlDepth24Stencil8Supported;
@@ -137,6 +140,7 @@ public:
 		uint32 textureStateFullSwitches;
 		
 		uint32 attachRenderDataCount;
+        uint32 attachRenderDataSkipCount;
         uint32 dynamicParamUniformBindCount;
         uint32 materialParamUniformBindCount;
         uint32 spriteDrawCount;
@@ -414,6 +418,7 @@ public:
 	 \param[out] true if render manager sets to a render targe. false if render manager draws to the screen now
 	 */
 	bool IsRenderTarget();
+       
 	
 	/** 
         \brief Sets the effect for the rendering. 
@@ -444,11 +449,14 @@ public:
     
 	void SetDrawTranslate(const Vector3 &offset);
 
+    const Vector2& GetDrawTranslate() const;
+
 	/** 
 	 \brief 
 	 \param[in] offset
 	 */
 	void SetDrawScale(const Vector2 &scale);
+    const Vector2& GetDrawScale() const;
 
 	void IdentityDrawMatrix();
 	void IdentityMappingMatrix();
@@ -558,6 +566,8 @@ public:
     void HWglBindFBO(const int32 fbo);
     int32 lastBindedFBO;
 #endif //#if defined(__DAVAENGINE_OPENGL__)
+    
+    void DiscardDepth();
     
     void RequestGLScreenShot(ScreenShotCallbackDelegate *screenShotCallback);
     
@@ -796,6 +806,7 @@ public:
 	Shader * currentRenderEffect;
 	
     RenderDataObject * currentRenderData;
+    RenderDataObject * attachedRenderData;
 
     Rect viewport;
     
@@ -821,6 +832,18 @@ public:
 	void SetHWClip(const Rect &rect);
 	void SetHWRenderTargetSprite(Sprite *renderTarget);
 	void SetHWRenderTargetTexture(Texture * renderTarget);
+    
+    enum eDiscardAttachments
+    {
+        COLOR_ATTACHMENT = 1,
+        DEPTH_ATTACHMENT = 2,
+        STENCIL_ATTACHMENT = 4
+    };
+    /**
+     \Hints renderer that attachment is not needed anymore 
+     \param[in] attachments - bitmask of eDiscardAttachments
+    */
+    void DiscardFramebufferHW(uint32 attachments);
 	
 	bool debugEnabled;
 

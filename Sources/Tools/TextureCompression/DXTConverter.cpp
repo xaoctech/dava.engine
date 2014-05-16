@@ -51,10 +51,13 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
         
         FilePath outputName = GetDXTOutput(descriptor, gpuFamily);
         
-        if((descriptor.compression[gpuFamily].compressToWidth != 0) && (descriptor.compression[gpuFamily].compressToHeight != 0))
+		DVASSERT(descriptor.compression);
+		const TextureDescriptor::Compression * compression = descriptor.compression[gpuFamily];
+
+        if((compression->compressToWidth != 0) && (compression->compressToHeight != 0))
         {
             Logger::Warning("[DXTConverter::ConvertPngToDxt] convert to compression size");
-            image->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
+            image->ResizeImage(compression->compressToWidth, compression->compressToHeight);
         }
         
         Vector<Image*> imagesToSave;
@@ -114,13 +117,17 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
     {
         FilePath outputName = GetDXTOutput(descriptor, gpuFamily);
         
-        if((descriptor.compression[gpuFamily].compressToWidth != 0) && (descriptor.compression[gpuFamily].compressToHeight != 0))
+		DVASSERT(descriptor.compression);
+		const TextureDescriptor::Compression * compression = descriptor.compression[gpuFamily];
+
+
+        if((compression->compressToWidth != 0) && (compression->compressToHeight != 0))
         {
             Logger::Warning("[DXTConverter::ConvertPngToDxt] convert to compression size");
 			
 			for(size_t i = 0; i < inputImages.size(); ++i)
 			{
-				inputImages[i]->ResizeImage(descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight);
+				inputImages[i]->ResizeImage(compression->compressToWidth, compression->compressToHeight);
 			}
         }
 		

@@ -42,10 +42,11 @@
 #include "Scene3D/Components/LightComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
-#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/CustomPropertiesComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
+#include "Scene3D/Components/QualitySettingsComponent.h"
 #include "Base/ObjectFactory.h"
 
 namespace DAVA
@@ -92,6 +93,8 @@ Component * Component::CreateByType(uint32 componentType)
         return new StaticOcclusionComponent();
     case STATIC_OCCLUSION_DATA_COMPONENT:
         return new StaticOcclusionDataComponent();
+    case QUALITY_SETTINGS_COMPONENT:
+        return new QualitySettingsComponent();
 	case ANIMATION_COMPONENT:
 	case COLLISION_COMPONENT:
 	case SCRIPT_COMPONENT:

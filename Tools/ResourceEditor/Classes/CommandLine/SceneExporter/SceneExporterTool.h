@@ -58,6 +58,7 @@ protected:
     
     DAVA::FilePath inFolder;
     DAVA::FilePath outFolder;
+    DAVA::FilePath outSoundsFolder;
     
     DAVA::String gpu;
 	bool optimizeOnExport;

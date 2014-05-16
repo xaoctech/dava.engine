@@ -131,10 +131,8 @@ const NvttHelper::PairNvttPixelGLFormat NvttHelper::formatNamesMap[] =
 	//FORMAT_NAMES_MAP_COUNT should be inceased in case of addition to set
 #if defined(GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1,	 GL_COMPRESSED_RGB_S3TC_DXT1_EXT),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1NM,	 GL_COMPRESSED_RGB_S3TC_DXT1_EXT),
 #else
 	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
-	NvttHelper::PairNvttPixelGLFormat(nvtt::Format_DXT1,	FORMAT_DXT1NM,	 PairNvttPixelGLFormat::WRONG_GL_VALUE),
 #endif //GL_COMPRESSED_RGB_S3TC_DXT1_EXT
     
 
@@ -263,11 +261,7 @@ bool LibDdsHelper::DecompressImageToRGBA(const Image & image, Vector<Image*> &im
 
 	CompressionOptions compressionOptions;
 	compressionOptions.setFormat(innerComprFormat);
-	if(FORMAT_DXT1NM == image.format)
-	{
-		compressionOptions.setColorWeights(1, 1, 0);
-	}
-	else if (FORMAT_DXT5NM == image.format)
+	if (FORMAT_DXT5NM == image.format)
 	{
 		inputOptions.setNormalMap(true);
 	}
@@ -606,11 +600,7 @@ bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<
 
 	CompressionOptions compressionOptions;
 	compressionOptions.setFormat(innerComprFormat);
-	if(FORMAT_DXT1NM == compressionFormat)
-	{
-		compressionOptions.setColorWeights(1, 1, 0);
-	}
-	else if (FORMAT_DXT5NM == compressionFormat)
+	if (FORMAT_DXT5NM == compressionFormat)
 	{
 		inputOptions.setNormalMap(true);
 	}	

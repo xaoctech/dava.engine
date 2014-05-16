@@ -34,8 +34,6 @@
 #include "TextureProperties.h"
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
-#include "Render/RenderBase.h"
-
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
 	, curTextureDescriptor(NULL)
@@ -159,42 +157,40 @@ void TextureProperties::ReloadProperties()
 		curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
 		QModelIndex headerIndex;
-		DAVA::InspBase *object = NULL;
+		DAVA::InspBase *textureDrawSettings = &curTextureDescriptor->drawSettings;
+		DAVA::InspBase *textureDataSettings = &curTextureDescriptor->dataSettings;
 
-		object = &curTextureDescriptor->settings;
-
-		// add common texture settings
-		headerIndex = AppendHeader("Texture settings");
-		propMipMap = AddPropertyItemMember("generateMipMaps", object, headerIndex);
+		// add common texture drawSettings
+		headerIndex = AppendHeader("Texture drawSettings");
+		propMipMap = AddPropertyItem("generateMipMaps", textureDataSettings, headerIndex);
 		propMipMap->SetCheckable(true);
 		propMipMap->SetEditable(false);
 		
-		//TODO: magic to display introspection info as bool, not int
-		bool savedValue = propMipMap->GetValue().toBool();
-		propMipMap->SetValue(!savedValue);
-		propMipMap->SetValue(savedValue);
-		//END of TODO
-
-        propNormalMap = AddPropertyItemMember("asNormalMap", object, headerIndex);
+        propNormalMap = AddPropertyItem("isNormalMap", textureDataSettings, headerIndex);
         propNormalMap->SetCheckable(true);
         propNormalMap->SetEditable(false);
 
         //TODO: magic to display introspection info as bool, not int
+        bool savedValue = propMipMap->GetValue().toBool();
+        propMipMap->SetValue(!savedValue);
+        propMipMap->SetValue(savedValue);
+
         savedValue = propNormalMap->GetValue().toBool();
         propNormalMap->SetValue(!savedValue);
         propNormalMap->SetValue(savedValue);
         //END of TODO
 
-		propWrapModeS = AddPropertyItemMeta("wrapModeS", object, headerIndex);
-		propWrapModeT = AddPropertyItemMeta("wrapModeT", object, headerIndex);
-		propMinFilter = AddPropertyItemMeta("minFilter", object, headerIndex);
-		propMagFilter = AddPropertyItemMeta("magFilter", object, headerIndex);
+		propWrapModeS = AddPropertyItem("wrapModeS", textureDrawSettings, headerIndex);
+		propWrapModeT = AddPropertyItem("wrapModeT", textureDrawSettings, headerIndex);
+		propMinFilter = AddPropertyItem("minFilter", textureDrawSettings, headerIndex);
+		propMagFilter = AddPropertyItem("magFilter", textureDrawSettings, headerIndex);
 
-		object = &curTextureDescriptor->compression[curGPU];
+		DVASSERT(curTextureDescriptor->compression);
+		DAVA::InspBase *compressionSettings = curTextureDescriptor->compression[curGPU];
 
-		// add per-gpu settings
+		// add per-gpu drawSettings
 		headerIndex = AppendHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
-		propFormat = AddPropertyItemMeta("format", object, headerIndex);
+		propFormat = AddPropertyItem("format", compressionSettings, headerIndex);
 
 		propSizes = new QtPropertyDataMetaObject(&curSizeLevelObject, DAVA::MetaInfo::Instance<int>());
 		AppendProperty("Size", propSizes, headerIndex);
@@ -283,9 +279,9 @@ void TextureProperties::ReloadEnumWrap()
 	enumWpar.Register(DAVA::Texture::WRAP_CLAMP_TO_EDGE, globalFormats->ToString(DAVA::Texture::WRAP_CLAMP_TO_EDGE));
 }
 
-QtPropertyDataMetaObject* TextureProperties::AddPropertyItemMeta(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
+QtPropertyDataInspMember* TextureProperties::AddPropertyItem(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
 {
-	QtPropertyDataMetaObject* ret = NULL;
+	QtPropertyDataInspMember* ret = NULL;
 	const DAVA::InspInfo* info = object->GetTypeInfo();
 
 	if(NULL != info)
@@ -293,7 +289,7 @@ QtPropertyDataMetaObject* TextureProperties::AddPropertyItemMeta(const char *nam
 		const DAVA::InspMember *member = info->Member(name);
 		if(NULL != member)
 		{
-			ret = new QtPropertyDataMetaObject(member->Data(object), member->Type());
+			ret = new QtPropertyDataInspMember(object, member);
 			AppendProperty(member->Name(), ret, parent);
 		}
 	}
@@ -301,28 +297,27 @@ QtPropertyDataMetaObject* TextureProperties::AddPropertyItemMeta(const char *nam
 	return ret;
 }
 
-QtPropertyDataInspMember* TextureProperties::AddPropertyItemMember(const char *name, DAVA::InspBase *object, const QModelIndex &parent)
-{
-    QtPropertyDataInspMember* ret = NULL;
-    const DAVA::InspInfo* info = object->GetTypeInfo();
-
-    if(NULL != info)
-    {
-        const DAVA::InspMember *member = info->Member(name);
-        if(NULL != member)
-        {
-            ret = new QtPropertyDataInspMember(object, member);
-            AppendProperty(member->Name(), ret, parent);
-        }
-    }
-
-    return ret;
-}
-
-void TextureProperties::SetPropertyItemValidValues(QtPropertyDataMetaObject* item, EnumMap *validValues)
+void TextureProperties::SetPropertyItemValidValues(QtPropertyDataInspMember* item, EnumMap *validValues)
 {
 	if(NULL != item && NULL != validValues)
 	{
+		for(size_t i = 0; i < validValues->GetCount(); ++i)
+		{
+			int v;
+
+			if(validValues->GetValue(i, v))
+			{
+				item->AddAllowedValue(DAVA::VariantType(v), validValues->ToString(v));
+			}
+		}
+	}
+}
+
+void TextureProperties::SetPropertyItemValidValues( QtPropertyDataMetaObject* item, EnumMap *validValues )
+{
+	if(NULL != item && NULL != validValues)
+	{
+        item->ClearAllowedValues();
 		for(size_t i = 0; i < validValues->GetCount(); ++i)
 		{
 			int v;
@@ -380,7 +375,8 @@ void TextureProperties::LoadCurSizeToProp()
 	if( NULL != curTextureDescriptor && NULL != propSizes && 
 		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
-		QSize curSize(curTextureDescriptor->compression[curGPU].compressToWidth, curTextureDescriptor->compression[curGPU].compressToHeight);
+		DVASSERT(curTextureDescriptor->compression);
+		QSize curSize(curTextureDescriptor->compression[curGPU]->compressToWidth, curTextureDescriptor->compression[curGPU]->compressToHeight);
 		int level = availableSizes.key(curSize, -1); 
 
 		if(-1 != level)
@@ -402,8 +398,9 @@ void TextureProperties::SaveCurSizeFromProp()
 
 		if(availableSizes.contains(level))
 		{
-			curTextureDescriptor->compression[curGPU].compressToWidth = availableSizes[level].width();
-			curTextureDescriptor->compression[curGPU].compressToHeight = availableSizes[level].height();
+			DVASSERT(curTextureDescriptor->compression);
+			curTextureDescriptor->compression[curGPU]->compressToWidth = availableSizes[level].width();
+			curTextureDescriptor->compression[curGPU]->compressToHeight = availableSizes[level].height();
 		}
 	}
 }

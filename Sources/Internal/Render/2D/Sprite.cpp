@@ -37,7 +37,6 @@
 #include "FileSystem/FileSystem.h"
 #include "Core/Core.h"
 #include "Render/Shader.h"
-#include "Render/RenderManagerGL20.h"
 #include "Render/RenderHelper.h"
 #include "FileSystem/LocalizationSystem.h"
 #include "Render/Image/Image.h"
@@ -721,9 +720,8 @@ int32 Sprite::Release()
 {
 	if(GetRetainCount() == 1)
 	{
-		SafeRelease(spriteRenderObject);
-
         spriteMapMutex.Lock();
+		SafeRelease(spriteRenderObject);
 		spriteMap.erase(FILEPATH_MAP_KEY(relativePathname));
         spriteMapMutex.Unlock();
 	}
@@ -1831,15 +1829,14 @@ void Sprite::Reload()
 {
 	if(type == SPRITE_FROM_FILE)
 	{
-		ReloadExistingTextures();
-
 		int32 sizeIndex = resourceSizeIndex;
 
 		Clear();
 
 		resourceSizeIndex = sizeIndex;
 
-		File *fp = File::Create(relativePathname, File::READ | File::OPEN);
+        FilePath pathName = FilePath::CreateWithNewExtension(relativePathname, ".txt");
+		File *fp = File::Create(pathName, File::READ | File::OPEN);
 		if(fp)
 		{
 			InitFromFile(fp, relativePathname);
@@ -1860,25 +1857,6 @@ void Sprite::Reload()
 
 			type = SPRITE_FROM_FILE;
 			relativePathname = spriteName;
-		}
-	}
-}
-
-void Sprite::ReloadExistingTextures()
-{
-	//this function need to be sure that textures really would reload
-	for(int32 i = 0; i < textureCount; ++i)
-	{
-		if(textures[i] && !textures[i]->GetPathname().IsEmpty())
-		{
-			if(textures[i]->GetPathname().Exists())
-			{
-				textures[i]->Reload();
-			}
-		}
-		else
-		{
-			Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
 		}
 	}
 }

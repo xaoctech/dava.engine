@@ -42,6 +42,8 @@ class NotPassableTerrainProxy;
 class CustomColorsProxy;
 class VisibilityToolProxy;
 class RulerToolProxy;
+class GrassEditorProxy;
+class Command2;
 
 using namespace DAVA;
 
@@ -59,7 +61,8 @@ public:
 		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE1_TEXTURE_ABSENT,
 		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE2_TEXTURE_ABSENT,
 		LANDSCAPE_EDITOR_SYSTEM_TILE_TEXTURE3_TEXTURE_ABSENT,
-		LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT
+		LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT,
+        LANDSCAPE_EDITOR_SYSTEM_CUSTOMCOLORS_ABSENT,
 	};
 	
 	LandscapeEditorDrawSystem(Scene* scene);
@@ -70,6 +73,7 @@ public:
 	CustomColorsProxy* GetCustomColorsProxy();
 	VisibilityToolProxy* GetVisibilityToolProxy();
 	RulerToolProxy* GetRulerToolProxy();
+    GrassEditorProxy* GetGrassEditorProxy();
 
 	eErrorType EnableCustomDraw();
 	void DisableCustomDraw();
@@ -88,7 +92,9 @@ public:
 	void SetCursorPosition(const Vector2& cursorPos);
 	void UpdateCursorPosition();
 	
-	void Update(DAVA::float32 timeElapsed);
+	virtual void Process(DAVA::float32 timeElapsed);
+
+    void ProcessCommand(const Command2 *command, bool redo);
 
 	float32 GetTextureSize(Landscape::eTextureLevel level);
 	Vector3 GetLandscapeSize();
@@ -131,6 +137,7 @@ private:
 	CustomColorsProxy* customColorsProxy;
 	VisibilityToolProxy* visibilityToolProxy;
 	RulerToolProxy* rulerToolProxy;
+    GrassEditorProxy *grassEditorProxy;
 
 	uint32 customDrawRequestCount;
 	

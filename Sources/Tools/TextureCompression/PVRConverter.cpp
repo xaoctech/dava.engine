@@ -174,7 +174,7 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
 
     Image * originalImage = images[0];
     originalImage->Normalize();
-    if(descriptor.settings.GetGenerateMipMaps())
+    if(descriptor.GetGenerateMipMaps())
     {
         images = originalImage->CreateMipMapsImages(true);
         SafeRelease(originalImage);
@@ -194,7 +194,7 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
 
         TextureDescriptor desc;
         desc.Initialize(&descriptor);
-        desc.settings.SetGenerateMipmaps(false);
+        desc.SetGenerateMipmaps(false);
         desc.pathname = imgPath;
         FilePath convertedImgPath = ConvertPngToPvr(desc, gpuFamily, quality, false);
 
@@ -220,7 +220,10 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
 
 void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args)
 {
-	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
+	DVASSERT(descriptor.compression);
+	const TextureDescriptor::Compression *compression = descriptor.compression[gpuFamily];
+
+	String format = pixelFormatToPVRFormat[(PixelFormat) compression->format];
 	FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
 		
 	// input file
@@ -242,7 +245,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 
 	//quality
 	args.push_back("-q");
-	if(FORMAT_ETC1 == descriptor.compression[gpuFamily].format)
+	if(FORMAT_ETC1 == descriptor.compression[gpuFamily]->format)
 	{
 		args.push_back(ETC_QUALITY_SETTING[quality]);
 	}
@@ -252,7 +255,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	}
 
 	// mipmaps
-	if(descriptor.settings.GetGenerateMipMaps())
+	if(descriptor.GetGenerateMipMaps())
 	{
 		args.push_back("-m");
 	}
@@ -267,12 +270,11 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	args.push_back(format);
 
 	// base mipmap level (base resize)
-	if(0 != descriptor.compression[gpuFamily].compressToWidth && descriptor.compression[gpuFamily].compressToHeight != 0)
+	if(0 != compression->compressToWidth && compression->compressToHeight != 0)
 	{
-		args.push_back("-r");
-		args.push_back(Format("%d,%d", descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight));
+        args.push_back("-r");
+		args.push_back(Format("%d,%d", compression->compressToWidth, compression->compressToHeight));
 	}
-    
     
     //args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
 
