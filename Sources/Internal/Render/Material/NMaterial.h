@@ -178,6 +178,8 @@ public:
     static const FastName PARAM_FOG_END;
     static const FastName PARAM_FOG_GLOW_COLOR;
     static const FastName PARAM_FOG_GLOW_SCATTERING;
+    static const FastName PARAM_FOG_HALFSPACE_HEIGHT;
+    static const FastName PARAM_FOG_HALFSPACE_DENSITY;
 	static const FastName PARAM_FLAT_COLOR;
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
@@ -194,6 +196,7 @@ public:
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
 	static const FastName FLAG_FOG_GLOW;
+    static const FastName FLAG_FOG_HALFSPACE;
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_WAVE_ANIMATION;
