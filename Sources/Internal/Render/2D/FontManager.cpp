@@ -88,9 +88,22 @@ void FontManager::RegisterFonts(const Map<Font*, String>& _registeredFonts, cons
     
     Map<String, Font*>::const_iterator it = fonts.begin();
     Map<String, Font*>::const_iterator endIt = fonts.end();
+    Map<String, Font*>::const_iterator endMapIt = fontMap.end();
     for(; it != endIt; ++it)
     {
-        fontMap[it->first] = SafeRetain(it->second);
+        Map<String, Font*>::iterator findIt = fontMap.find(it->first);
+        if(findIt != endMapIt)
+        {
+            if(findIt->second != it->second)
+            {
+                SafeRelease(findIt->second);
+                findIt->second = SafeRetain(it->second);
+            }
+        }
+        else
+        {
+            fontMap[it->first] = SafeRetain(it->second);
+        }
     }
 }
     
