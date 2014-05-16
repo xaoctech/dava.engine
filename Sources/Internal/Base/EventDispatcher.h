@@ -107,7 +107,7 @@ public:
 	 */
 	void CopyDataFrom(EventDispatcher *srcDispatcher);
 
-    int32 GetEventsCount();
+    int32 GetEventsCount() const;
 
 protected:
 
@@ -122,9 +122,7 @@ protected:
 	};
 	
 	List<Event> events;
-
-    void MakeEventsListCopy();
-    Vector<Event *> copyEventsList;
+    Vector<Event *> eventsCopy;
 };
 	
 /**
