@@ -813,7 +813,7 @@ void UIControlSystem::NotifyListenersWillSwitched( UIScreen* screen )
     Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
     uint32 listenersCount = screenSwitchListenersCopy.size();
     for(uint32 i = 0; i < listenersCount; ++i)
-        screenSwitchListenersCopy[i]->OnScreenWillSwitched( screen );
+        screenSwitchListenersCopy[i]->OnScreenWillSwitch( screen );
 }
 
 void UIControlSystem::NotifyListenersDidSwitched( UIScreen* screen )
@@ -821,7 +821,7 @@ void UIControlSystem::NotifyListenersDidSwitched( UIScreen* screen )
     Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
     uint32 listenersCount = screenSwitchListenersCopy.size();
     for(uint32 i = 0; i < listenersCount; ++i)
-        screenSwitchListenersCopy[i]->OnScreenDidSwitched( screen );
+        screenSwitchListenersCopy[i]->OnScreenDidSwitch( screen );
 }
 
 };
