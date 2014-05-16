@@ -325,7 +325,7 @@ public:
     /**
 	 \brief Reloads the sprite.
 	 */
-	void Reload(bool needClear = true);
+	void Reload();
 
 protected:
 	Sprite();
@@ -340,6 +340,8 @@ protected:
 	void UnregisterTextureStates();
 
     static File* GetSpriteFile(const FilePath & spriteName, int32& resourceSizeIndex);
+
+    void ReloadExistingTextures();
 //private:
 
     static Mutex spriteMapMutex;

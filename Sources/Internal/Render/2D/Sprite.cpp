@@ -1793,14 +1793,12 @@ void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &pa
 }
 
 
-void Sprite::Reload(bool needClear)
+void Sprite::Reload()
 {
 	if(type == SPRITE_FROM_FILE)
 	{
-        if (needClear)
-        {
-            Clear();
-        }
+        ReloadExistingTextures();
+        Clear();
 
         File *fp = GetSpriteFile(relativePathname, resourceSizeIndex);
 		if(fp)
@@ -1873,6 +1871,25 @@ void Sprite::UnregisterTextureStates()
 			RenderManager::Instance()->ReleaseTextureState(textureHandles[i]);
 		}
 	}
+}
+
+void Sprite::ReloadExistingTextures()
+{
+    //this function need to be sure that textures really would reload
+    for(int32 i = 0; i < textureCount; ++i)
+    {
+        if(textures[i] && !textures[i]->GetPathname().IsEmpty())
+        {
+            if(textures[i]->GetPathname().Exists())
+            {
+                textures[i]->Reload();
+            }
+        }
+        else
+        {
+            Logger::Error("[Sprite::ReloadSpriteTextures] Something strange with texture_%d", i);
+        }
+    }
 }
 
 };

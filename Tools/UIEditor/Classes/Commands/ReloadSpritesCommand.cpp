@@ -66,12 +66,7 @@ void ReloadSpritesCommand::ReloadSprites()
     // one sprite).
     for (Set<Sprite*>::iterator iter = spritesToReload.begin(); iter != spritesToReload.end(); iter ++)
     {
-        (*iter)->Clear();
-    }
-
-    for (Set<Sprite*>::iterator iter = spritesToReload.begin(); iter != spritesToReload.end(); iter ++)
-    {
-        (*iter)->Reload(false);
+        (*iter)->Reload();
     }
 }
 
