@@ -301,7 +301,7 @@ void TextPropertyGridWidget::ProcessPushButtonClicked(QPushButton *senderWidget)
                                                                              false);
         String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(fontPropertyValue);
         
-        Logger::Debug("TextPropertyGridWidget::ProcessPushButtonClicked fontPropertyValue=%x fontPresetName=%s", fontPropertyValue, fontPresetName.c_str());
+        Logger::FrameworkDebug("TextPropertyGridWidget::ProcessPushButtonClicked fontPropertyValue=%p fontPresetName=%s", fontPropertyValue, fontPresetName.c_str());
         // Get sprite path from graphics font
         //QString currentGFontPath = ResourcesManageHelper::GetGraphicsFontPath(fontPropertyValue);
         
@@ -459,7 +459,7 @@ void TextPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* senderWidget
         QString newFontPresetName = senderWidget->currentText();
         Font* newFont = EditorFontManager::Instance()->GetLocalizedFont(newFontPresetName.toStdString(), LocalizationSystem::Instance()->GetCurrentLocale());
         
-        Logger::Debug("TextPropertyGridWidget::ProcessComboboxValueChanged curFont=%x (%s) newFont=%x (%s)", curFont, curFontPresetName.toStdString().c_str(), newFont, newFontPresetName.toStdString().c_str());
+        Logger::FrameworkDebug("TextPropertyGridWidget::ProcessComboboxValueChanged curFont=%p (%s) newFont=%p (%s)", curFont, curFontPresetName.toStdString().c_str(), newFont, newFontPresetName.toStdString().c_str());
         
         if(!newFont)
         {
