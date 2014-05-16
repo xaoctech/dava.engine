@@ -192,8 +192,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
 	serializationContext.SetScene(_scene);
     
     file->Write(&header, sizeof(Header));
-	WriteDescriptor(file, descriptor);
-
+    
     // save version tags
     {
         KeyedArchive * tagsArchive = new KeyedArchive();
@@ -206,6 +205,8 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
         SafeRelease( tagsArchive );
     }
     
+    WriteDescriptor(file, descriptor);
+
     // save data objects
     if(isDebugLogEnabled)
     {
@@ -300,6 +301,82 @@ uint32 SceneFileV2::GetSerializableDataNodesCount(List<DataNode*>& nodeList)
 	
 	return nodeCount;
 }
+
+bool SceneFileV2::ReadHeader(SceneFileV2::Header& _header, File * file)
+{
+    DVASSERT(file);
+    
+    file->Read( &_header, sizeof( Header ) );
+
+    if (   ( _header.signature[0] != 'S' )
+        || ( _header.signature[1] != 'F' )
+        || ( _header.signature[2] != 'V' )
+        || ( _header.signature[3] != '2' ) )
+    {
+        Logger::Error( "SceneFileV2::LoadSceneVersion header is wrong" );
+        return false;
+    }
+
+    return true;
+}
+
+bool SceneFileV2::ReadVersionTags(VersionInfo::SceneVersion& _version, File * file)
+{
+    DVASSERT(file);
+
+    bool loaded = false;
+    if ( _version.version >= 12 )
+    {
+        KeyedArchive * tagsArchive = new KeyedArchive();
+        loaded = tagsArchive->Load( file );
+
+        if (loaded)
+        {
+            typedef Map<String, VariantType*> KeyedTagsMap;
+            const KeyedTagsMap& keyedTags = tagsArchive->GetArchieveData();
+            for (KeyedTagsMap::const_iterator it = keyedTags.begin(); it != keyedTags.end(); it++)
+            {
+                const String& tag = it->first;
+                const uint32 ver = it->second->AsUInt32();
+                _version.tags.insert(VersionInfo::TagsMap::value_type(tag, ver));
+            }
+        }
+        SafeRelease(tagsArchive);
+    }
+    else
+    {
+        loaded = true;
+    }
+
+    return loaded;
+}
+
+VersionInfo::SceneVersion SceneFileV2::LoadSceneVersion(const FilePath & filename)
+{
+    File * file = File::Create( filename, File::OPEN | File::READ );
+    if ( !file )
+    {
+        Logger::Error( "SceneFileV2::LoadSceneVersion failed to open file: %s", filename.GetAbsolutePathname().c_str() );
+        return VersionInfo::SceneVersion();
+    }
+
+    VersionInfo::SceneVersion version;
+
+    Header header;
+    const bool headerValid = ReadHeader(header, file);
+    if (headerValid)
+    {
+        version.version = header.version;
+        const bool versionValid = ReadVersionTags(version, file);
+        if (!versionValid)
+        {
+            version = VersionInfo::SceneVersion();
+        }
+    }
+
+    SafeRelease(file);
+    return version;
+}
     
 SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _scene)
 {
@@ -314,17 +391,28 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     scene = _scene;
     rootNodePathName = filename;
 
-    file->Read(&header, sizeof(Header));
-    int requiredVersion = 3;
-    if (    (header.signature[0] != 'S') 
-        ||  (header.signature[1] != 'F') 
-        ||  (header.signature[2] != 'V') 
-        ||  (header.signature[3] != '2'))
+    const bool headerValid = ReadHeader(header, file);
+    const int requiredVersion = 3;
+
+    if (!headerValid)
     {
-        Logger::Error("SceneFileV2::LoadScene header version is wrong: %d, required: %d", header.version, requiredVersion);
+        Logger::Error("SceneFileV2::LoadScene header is wrong, required: %d version", requiredVersion);
         
         SafeRelease(file);
         SetError(ERROR_VERSION_IS_TOO_OLD);
+        return GetError();
+    }
+
+    // load version tags
+    VersionInfo::SceneVersion version;
+    version.version = header.version;
+    const bool versionValid = ReadVersionTags(version, file);
+    if ( !versionValid )
+    {
+        Logger::Error("SceneFileV2::LoadScene version tags are wrong");
+
+        SafeRelease(file);
+        SetError(ERROR_VERSION_TAGS_INVALID);
         return GetError();
     }
 	
@@ -332,31 +420,6 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 	{
 		ReadDescriptor(file, descriptor);
 	}
-	
-    // load version tags
-    if (header.version >= 12)
-    {
-        KeyedArchive * tagsArchive = new KeyedArchive();
-        tagsArchive->Load(file);
-
-        VersionInfo::SceneVersion version;
-        version.version = header.version;
-
-        typedef Map<String, VariantType*> KeyedTagsMap;
-        const KeyedTagsMap& keyedTags = tagsArchive->GetArchieveData();
-        for (KeyedTagsMap::const_iterator it = keyedTags.begin(); it != keyedTags.end(); it++)
-        {
-            const String& tag = it->first;
-            const uint32 ver = it->second->AsUInt32();
-            version.tags.insert(VersionInfo::TagsMap::value_type(tag, ver));
-        }
-        _scene->version = version;
-        SafeRelease(tagsArchive);
-    }
-    else
-    {
-        _scene->version.version = header.version;
-    }
 
     VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(_scene->version);
     switch (status)

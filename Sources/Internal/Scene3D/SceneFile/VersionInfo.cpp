@@ -127,49 +127,36 @@ namespace DAVA
 
         // Checking tags
         const TagsMap& tags = version.tags;
-        size_t foundedTags = 0;
-        for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++)
-        {
-            //if ( itVersion->first < version.version )
-            //    continue;
+        const TagsMap& fwAllTags = GetTags();
+        const TagsMap& fwVersionedTags = GetTags( version.version );
 
-            const TagsMap& currentTags = itVersion->second.tags;
+        const TagsMap& errTags = GetTagsDiff( tags, fwAllTags );            // List of tags that not supported by current version of framework
+        const TagsMap& warnTags = GetTagsDiff( fwVersionedTags, tags );     // List of tags that will be added to scene
 
-            // Checking for non compatible tags
-            for (TagsMap::const_iterator itTag = tags.begin(); itTag != tags.end(); itTag++)
-            {
-                const String& tagName = itTag->first;
-                const uint32 tagVer = itTag->second;
-
-                TagsMap::const_iterator itCurTag = currentTags.find(tagName);
-                const bool found = (itCurTag != currentTags.end()) && (itCurTag->second == tagVer);
-                if (found)
-                    foundedTags++;
-            }
-        }
-
-        // Map contains more tags, than are implemented in this build
-        if (foundedTags < tags.size())
+        if ( errTags.size() > 0 )
             return INVALID;
 
-        if (current.version > version.version)
-        {
-            // TODO: add extra check for usability - if no new tags in `versionMap` are found, then return VALID
+        if ( warnTags.size() > 0 )
             return COMPATIBLE;
-        }
 
-        if (current.tags == version.tags)
-            return VALID;
-
-        return COMPATIBLE;
+        return VALID;
     }
 
+    // TODO: cleanup after debug/test/review
     void VersionInfo::FillVersionHistory()
     {
         // List of all supported featues:
 
+        // V12
+        SceneVersion v12;
+        v12.version = 12;
+        v12.tags.insert( TagsMap::value_type( "water", 1 ) );
+        v12.tags.insert( TagsMap::value_type( "sky", 2 ) );
+        AddVersion( v12 );
+
+        // Current version
         SceneVersion currentVersion;
-        currentVersion.version = 12;    // Current version of scene
+        currentVersion.version = 13;    // Current version of scene
         AddVersion(currentVersion);
     }
 
@@ -180,10 +167,10 @@ namespace DAVA
         DVASSERT(!versionMap.empty());
         TagsMap& tags = versionMap.rbegin()->second.tags;
 
-        // TODO: remove after debug/test/review
-        tags.insert( TagsMap::value_type( "water", 1 ) );
+        // TODO: cleanup after debug/test/review
+        //tags.insert( TagsMap::value_type( "water", 1 ) );
         //tags.insert( TagsMap::value_type( "sky", 2 ) );
-        tags.insert( TagsMap::value_type( "grass", 1 ) );
+        //tags.insert( TagsMap::value_type( "grass", 3 ) );
     }
 
 }

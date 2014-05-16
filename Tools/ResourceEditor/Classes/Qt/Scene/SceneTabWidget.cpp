@@ -39,6 +39,7 @@
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QFileInfo>
+#include <QMessageBox>
 
 SceneTabWidget::SceneTabWidget(QWidget *parent)
 	: QWidget(parent)
@@ -170,8 +171,6 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 {
 	HideScenePreview();
 
-    DAVA::int64 openStartTime = DAVA::SystemTimer::Instance()->AbsoluteMS();
-
 	int tabIndex = FindTab(scenePapth);
 	if(tabIndex != -1)
 	{
@@ -179,7 +178,40 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 		return tabIndex;
 	}
 
-	SceneEditor2 *scene = new SceneEditor2();
+    VersionInfo::SceneVersion sceneVersion = SceneFileV2::LoadSceneVersion(scenePapth);
+
+    if (sceneVersion.IsValid())
+    {
+        VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(sceneVersion);
+
+        switch (status)
+        {
+        case VersionInfo::COMPATIBLE:
+        {
+            const String& branches = VersionInfo::Instance()->UnsupportedTagsMessage(sceneVersion);
+            const QString msg = QString("Scene was created with older version or another branch of ResourceEditor. Saving scene will broke compatibility. Next tags will be added:\n%1\n\nContinue opening?").arg(branches.c_str());
+            const QMessageBox::StandardButton result = QMessageBox::warning(this, "Compatibility warning", msg, QMessageBox::Open | QMessageBox::Cancel, QMessageBox::Open);
+            if ( result != QMessageBox::Open )
+            {
+                return -1;
+            }
+            break;
+        }
+        case VersionInfo::INVALID:
+        {
+            const String& branches = VersionInfo::Instance()->NoncompatibleTagsMessage(sceneVersion);
+            const QString msg = QString("Scene was created with incompatible branch of ResourceEditor. Next tags aren't implemented in current branch:\n%1").arg(branches.c_str());
+            QMessageBox::critical(this, "Compatibility error", msg);
+            return -1;
+        }
+        default:
+            break;
+        }
+    }
+
+    DAVA::int64 openStartTime = DAVA::SystemTimer::Instance()->AbsoluteMS();
+
+    SceneEditor2 *scene = new SceneEditor2();
 	if(scene->Load(scenePapth))
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
@@ -192,6 +224,7 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	else
 	{
         SafeRelease(scene);
+        QMessageBox::critical( this, "Open scene error.", "Unexpected opening error. See logs for more info." );
 	}
 
     DAVA::Logger::Instance()->Info("SceneEditor tab opened in %llu\n", DAVA::SystemTimer::Instance()->AbsoluteMS() - openStartTime);
@@ -207,7 +240,6 @@ bool SceneTabWidget::CloseTab(int index)
     
     if(!request.IsAccepted())
         return false;
-    
     
 	SceneEditor2 *scene = GetTabScene(index);
     if(index == tabBar->currentIndex())
