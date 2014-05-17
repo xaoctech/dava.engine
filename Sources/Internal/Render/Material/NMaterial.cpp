@@ -52,6 +52,7 @@ namespace DAVA
 
 static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
+static const FastName DEFINE_SPEED_TREE_LEAF("SPEED_TREE_LEAF");
 
 const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 const FastName NMaterial::TEXTURE_NORMAL("normalmap");
@@ -81,9 +82,6 @@ const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
@@ -1175,7 +1173,8 @@ void NMaterial::UpdateMaterialTemplate()
             const FastNameSet& defines = pass->GetUniqueDefineSet();
             materialDynamicLit = materialDynamicLit ||
                 defines.count(DEFINE_VERTEX_LIT) ||
-                defines.count(DEFINE_PIXEL_LIT);
+                defines.count(DEFINE_PIXEL_LIT) ||
+                defines.count(DEFINE_SPEED_TREE_LEAF);
         }
     }
 }

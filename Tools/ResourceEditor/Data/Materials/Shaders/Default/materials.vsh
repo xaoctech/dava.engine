@@ -98,10 +98,11 @@ uniform lowp vec2 trunkOscillationParams;
 uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
 uniform mat4 projMatrix;
+uniform vec4 lightPosition0;
 uniform float cutDistance;
-uniform lowp vec3 treeLeafColorMul;
-uniform lowp float treeLeafOcclusionOffset;
-uniform lowp float treeLeafOcclusionMul;
+uniform lowp vec4 leafColorDark;
+uniform lowp vec4 leafColorLight;
+uniform vec3 treeCameraSpaceCenter;
 #if defined(WIND_ANIMATION)
 uniform lowp vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
@@ -532,7 +533,11 @@ void main()
 #endif
     
 #if defined(SPEED_TREE_LEAF)
-    varVertexColor.rgb = varVertexColor.rgb * treeLeafColorMul * treeLeafOcclusionMul + vec3(treeLeafOcclusionOffset);
+    vec3 normal = normalize(eyeCoordsPosition - treeCameraSpaceCenter);
+    vec3 toLightDir = normalize(lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w);
+    float leafLightFactor = 0.5 + dot(toLightDir, normal) * 0.5;
+
+    varVertexColor = varVertexColor * mix(leafColorDark, leafColorLight, leafLightFactor);
 #endif
     
 	varTexCoord0 = inTexCoord0;
