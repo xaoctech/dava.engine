@@ -58,16 +58,11 @@ public:
     inline const Color & GetLeafColorDark() const;
     inline const Color & GetLeafColorLight() const;
     inline const float32 & GetLeafColorMultiplier() const;
-    inline void SetLeafColorMultiplier(const float32 & mul);
     void SetLeafColorDark(const Color & color);
     void SetLeafColorLight(const Color & color);
+    void SetLeafColorMultiplier(const float32 & mul);
 
 protected:
-    static const FastName PARAM_PROP_LEAF_COLOR_DARK;
-    static const FastName PARAM_PROP_LEAF_COLOR_LIGHT;
-    static const FastName PARAM_PROP_TREE_CAMERA_SPACE_CENTER;
-    static const FastName PARAM_PROP_TRUNK_OSCILLATION;
-    static const FastName PARAM_PROP_LEAF_OSCILLATION;
     static const FastName FLAG_WIND_ANIMATION;
 
     void SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams);
@@ -111,11 +106,6 @@ inline const Color & SpeedTreeObject::GetLeafColorLight() const
 inline const float32 & SpeedTreeObject::GetLeafColorMultiplier() const
 {
     return leafColorMultiplier;
-}
-    
-inline void SpeedTreeObject::SetLeafColorMultiplier(const float32 & mul)
-{
-    leafColorMultiplier = mul;
 }
 
 };

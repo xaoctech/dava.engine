@@ -34,11 +34,6 @@
 namespace DAVA 
 {
 
-const FastName SpeedTreeObject::PARAM_PROP_LEAF_COLOR_DARK("leafColorDark");
-const FastName SpeedTreeObject::PARAM_PROP_LEAF_COLOR_LIGHT("leafColorLight");
-const FastName SpeedTreeObject::PARAM_PROP_TREE_CAMERA_SPACE_CENTER("treeCameraSpaceCenter");
-const FastName SpeedTreeObject::PARAM_PROP_TRUNK_OSCILLATION("trunkOscillationParams");
-const FastName SpeedTreeObject::PARAM_PROP_LEAF_OSCILLATION("leafOscillationParams");
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
 SpeedTreeObject::SpeedTreeObject() :
@@ -69,7 +64,7 @@ void SpeedTreeObject::PrepareToRender(Camera *camera)
     Mesh::PrepareToRender(camera);
 
     Vector3 treeCameraSpaceCenter = bbox.GetCenter() * camera->GetMatrix();
-    SetLeafMaterialPropertyValue(PARAM_PROP_TREE_CAMERA_SPACE_CENTER, Shader::UT_FLOAT_VEC3, &treeCameraSpaceCenter);
+    SetLeafMaterialPropertyValue(NMaterial::PARAM_SPEED_TREE_CAMERA_SPACE_CENTER, Shader::UT_FLOAT_VEC3, &treeCameraSpaceCenter);
 }
 
 void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams)
@@ -78,8 +73,8 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationPar
     for(uint32 i = 0; i < matCount; ++i)
     {
         NMaterial * material = allMaterials[i];
-        material->SetPropertyValue(PARAM_PROP_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
-        material->SetPropertyValue(PARAM_PROP_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
+        material->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
+        material->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
     }
 }
 
@@ -185,14 +180,21 @@ void SpeedTreeObject::SetLeafColorDark(const Color & color)
 {
     leafColorDark = color;
     Color colorMul = leafColorDark * leafColorMultiplier;
-    SetLeafMaterialPropertyValue(PARAM_PROP_LEAF_COLOR_DARK, Shader::UT_FLOAT_VEC4, colorMul.color);
+    SetLeafMaterialPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_DARK, Shader::UT_FLOAT_VEC4, colorMul.color);
 }
 
 void SpeedTreeObject::SetLeafColorLight(const Color & color)
 {
     leafColorLight = color;
     Color colorMul = leafColorLight * leafColorMultiplier;
-    SetLeafMaterialPropertyValue(PARAM_PROP_LEAF_COLOR_LIGHT, Shader::UT_FLOAT_VEC4, colorMul.color);
+    SetLeafMaterialPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_LIGHT, Shader::UT_FLOAT_VEC4, colorMul.color);
+}
+
+void SpeedTreeObject::SetLeafColorMultiplier(const float32 & mul)
+{
+    leafColorMultiplier = mul;
+    SetLeafColorDark(leafColorDark);
+    SetLeafColorLight(leafColorLight);
 }
 
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)
