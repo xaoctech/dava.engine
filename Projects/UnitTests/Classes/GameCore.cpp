@@ -419,6 +419,7 @@ bool GameCore::ConnectToDB()
     }
     
     return (NULL != dbClient);*/
+	return false;
 }
 
 

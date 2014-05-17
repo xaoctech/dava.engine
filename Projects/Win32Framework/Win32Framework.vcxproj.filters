@@ -136,6 +136,9 @@
     <Filter Include="Internal\Scene3D\Converters">
       <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Render\Image">
+      <UniqueIdentifier>{be338955-605d-4068-ab44-bc23784e1ecb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -471,13 +474,7 @@
     <ClInclude Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h">
@@ -915,9 +912,6 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Observable.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\PVRDefines.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
@@ -925,12 +919,6 @@
       <Filter>Internal\Base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\TextureDescriptor.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h">
       <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Hash.h">
@@ -1082,9 +1070,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\LightComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h">
-      <Filter>Internal\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.h">
       <Filter>Internal\Platform\TemplateWin32</Filter>
@@ -1419,8 +1404,36 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\Image.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageConvert.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageSystem.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -1655,12 +1668,6 @@
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\DynamicVertexBuffer.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp">
@@ -2074,13 +2081,7 @@
     <ClCompile Include="..\..\Sources\Internal\Base\Observable.cpp">
       <Filter>Internal\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\TextureDescriptor.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp">
       <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Base\FastName.cpp">
@@ -2193,9 +2194,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Mesh.cpp">
       <Filter>Internal\Render\Highlevel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp">
-      <Filter>Internal\Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\CorePlatformWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
@@ -2542,7 +2540,26 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageSystem.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
