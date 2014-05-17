@@ -53,8 +53,6 @@ public:
     static bool IsTreeLeafBatch(RenderBatch * batch);
 
 protected:
-    static const FastName PARAM_PROP_TRUNK_OSCILLATION;
-    static const FastName PARAM_PROP_LEAF_OSCILLATION;
     static const FastName FLAG_WIND_ANIMATION;
 
     void SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams);

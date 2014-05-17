@@ -34,8 +34,6 @@
 namespace DAVA 
 {
 
-const FastName SpeedTreeObject::PARAM_PROP_TRUNK_OSCILLATION("trunkOscillationParams");
-const FastName SpeedTreeObject::PARAM_PROP_LEAF_OSCILLATION("leafOscillationParams");
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
 SpeedTreeObject::SpeedTreeObject() :
@@ -65,8 +63,8 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationPar
     for(uint32 i = 0; i < matCount; ++i)
     {
         NMaterial * material = materials[i];
-        material->SetPropertyValue(PARAM_PROP_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
-        material->SetPropertyValue(PARAM_PROP_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
+        material->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
+        material->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
     }
 }
 
