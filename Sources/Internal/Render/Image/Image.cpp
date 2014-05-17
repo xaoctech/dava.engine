@@ -112,13 +112,7 @@ Image * Image::CreateFromData(uint32 width, uint32 height, PixelFormat format, c
 
 Image * Image::CreatePinkPlaceholder(bool checkers)
 {
-    Image * image = new Image();
-	image->width = 16;
-	image->height = 16;
-	image->format = FORMAT_RGBA8888;
-    image->dataSize = image->width * image->height * PixelFormatDescriptor::GetPixelFormatSizeInBytes(FORMAT_RGBA8888);
-    image->data = new uint8[image->dataSize];
-
+    Image * image = Image::Create(16, 16, FORMAT_RGBA8888);
     image->MakePink(checkers);
     
     return image;
@@ -260,6 +254,7 @@ void Image::ResizeCanvas(uint32 newWidth, uint32 newHeight)
     {
         newDataSize = newWidth * newHeight * formatSize;
         newData = new uint8[newDataSize];
+        memset(newData, 0, newDataSize);
             
         uint32 currentLine = 0;
         uint32 indexOnLine = 0;

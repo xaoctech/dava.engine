@@ -62,11 +62,6 @@ public:
     
     virtual ~ImageSystem();
     
-    ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat) const
-    {
-        return wrappers[fileFormat];
-    }
-    
     eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0) const;
     
     eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0) const;
@@ -76,6 +71,8 @@ public:
     eErrorCode SaveAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_RGBA8888) const;
     
     eErrorCode Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat = FORMAT_RGBA8888) const;
+    
+    inline ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat) const;
     
 protected:
     
@@ -87,5 +84,10 @@ protected:
 };
    
 };
+
+inline DAVA::ImageFormatInterface* DAVA::ImageSystem::GetImageFormatInterface(ImageSystem::eSupportedImageFileFormats fileFormat) const
+{
+    return wrappers[fileFormat];
+}
 
 #endif // __DAVAENGINE_IMAGE_SYSTEM_H__
