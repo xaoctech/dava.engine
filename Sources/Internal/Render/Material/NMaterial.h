@@ -184,7 +184,10 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
     static const FastName PARAM_LIGHTMAP_SIZE;
-    
+
+    static const FastName PARAM_SPEED_TREE_TRUNK_OSCILLATION;
+    static const FastName PARAM_SPEED_TREE_LEAF_OSCILLATION;
+
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
     

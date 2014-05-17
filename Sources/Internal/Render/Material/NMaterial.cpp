@@ -86,6 +86,9 @@ const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
+const FastName NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION("trunkOscillationParams");
+const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION("leafOscillationParams");
+
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
 const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
 
@@ -146,7 +149,9 @@ static FastName RUNTIME_ONLY_PROPERTIES[] =
     NMaterial::PARAM_LIGHT_DIFFUSE_COLOR,
     NMaterial::PARAM_LIGHT_SPECULAR_COLOR,
     NMaterial::PARAM_RCP_SCREEN_SIZE,
-    NMaterial::PARAM_SCREEN_OFFSET
+    NMaterial::PARAM_SCREEN_OFFSET,
+    NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION,
+    NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION
 };
 
 static FastName RUNTIME_ONLY_TEXTURES[] =
