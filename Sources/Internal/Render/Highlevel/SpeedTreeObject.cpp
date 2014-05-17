@@ -34,13 +34,18 @@
 namespace DAVA 
 {
 
+const FastName SpeedTreeObject::PARAM_PROP_LEAF_COLOR_DARK("leafColorDark");
+const FastName SpeedTreeObject::PARAM_PROP_LEAF_COLOR_LIGHT("leafColorLight");
+const FastName SpeedTreeObject::PARAM_PROP_TREE_CAMERA_SPACE_CENTER("treeCameraSpaceCenter");
 const FastName SpeedTreeObject::PARAM_PROP_TRUNK_OSCILLATION("trunkOscillationParams");
 const FastName SpeedTreeObject::PARAM_PROP_LEAF_OSCILLATION("leafOscillationParams");
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
 SpeedTreeObject::SpeedTreeObject() :
-    animationFlagOn(false)
+    animationFlagOn(false),
+    leafColorMultiplier(1.f)
 {
+    AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
     
 SpeedTreeObject::~SpeedTreeObject()
@@ -58,13 +63,21 @@ void SpeedTreeObject::RecalcBoundingBox()
         bbox.AddAABBox(CalcBBoxForSpeedTreeGeometry(rb));
     }
 }
-    
+
+void SpeedTreeObject::PrepareToRender(Camera *camera)
+{
+    Mesh::PrepareToRender(camera);
+
+    Vector3 treeCameraSpaceCenter = bbox.GetCenter() * camera->GetMatrix();
+    SetLeafMaterialPropertyValue(PARAM_PROP_TREE_CAMERA_SPACE_CENTER, Shader::UT_FLOAT_VEC3, &treeCameraSpaceCenter);
+}
+
 void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams)
 {
-    uint32 matCount = materials.size();
+    uint32 matCount = allMaterials.size();
     for(uint32 i = 0; i < matCount; ++i)
     {
-        NMaterial * material = materials[i];
+        NMaterial * material = allMaterials[i];
         material->SetPropertyValue(PARAM_PROP_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
         material->SetPropertyValue(PARAM_PROP_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
     }
@@ -79,18 +92,44 @@ void SpeedTreeObject::SetAnimationFlag(bool flagOn)
 
     NMaterial::eFlagValue flagValue = flagOn ? NMaterial::FlagOn : NMaterial::FlagOff;
 
-    uint32 matCount = materials.size();
+    uint32 matCount = allMaterials.size();
     for(uint32 i = 0; i < matCount; ++i)
-        materials[i]->SetFlag(FLAG_WIND_ANIMATION, flagValue);
+        allMaterials[i]->SetFlag(FLAG_WIND_ANIMATION, flagValue);
 }
 
 void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
+    if(archive)
+    {
+        if(archive->IsKeyExists("sto.leafColorDark"))
+            leafColorDark = archive->GetVariant("sto.leafColorDark")->AsColor();
+        if(archive->IsKeyExists("sto.leafColorLight"))
+            leafColorLight = archive->GetVariant("sto.leafColorLight")->AsColor();
+        leafColorMultiplier = archive->GetFloat("sto.leafColorMul", leafColorMultiplier);
+    }
+
     Mesh::Load(archive, serializationContext);
     
     CollectMaterials();
+
+    SetLeafColorDark(leafColorDark);
+    SetLeafColorLight(leafColorLight);
+
+    AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
-    
+
+void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    Mesh::Save(archive, serializationContext);
+
+    if(archive)
+    {
+        archive->SetVariant("sto.leafColorDark", VariantType(leafColorDark));
+        archive->SetVariant("sto.leafColorLight", VariantType(leafColorLight));
+        archive->SetFloat("sto.leafColorMul", leafColorMultiplier);
+    }
+}
+
 RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
 {
     if(!newObject)
@@ -99,28 +138,63 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
         newObject = new SpeedTreeObject();
     }
 
-    Mesh::Clone(newObject);
+    SpeedTreeObject * treeObject = (SpeedTreeObject *)newObject;
+    treeObject->leafColorDark = leafColorDark;
+    treeObject->leafColorLight = leafColorLight;
+    treeObject->leafColorMultiplier = leafColorMultiplier;
+
+    Mesh::Clone(treeObject);
+    treeObject->CollectMaterials();
     
-    ((SpeedTreeObject *)newObject)->CollectMaterials();
-    
+    treeObject->SetLeafColorDark(leafColorDark);
+    treeObject->SetLeafColorLight(leafColorLight);
+
+    treeObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
+
     return newObject;
 }
     
 void SpeedTreeObject::CollectMaterials()
 {
-    materials.clear();
+    allMaterials.clear();
+    leafMaterials.clear();
 
-    Set<NMaterial *> materialSet;
+    Set<NMaterial *> allMaterialSet;
+    Set<NMaterial *> leafMaterialSet;
     uint32 size = (uint32)renderBatchArray.size();
     for (uint32 k = 0; k < size; ++k)
     {
         RenderBatch * rb = renderBatchArray[k].renderBatch;
-        materialSet.insert(rb->GetMaterial());
+        allMaterialSet.insert(rb->GetMaterial());
+        if(IsTreeLeafBatch(rb))
+            leafMaterialSet.insert(rb->GetMaterial());
     }
 
-    materials.insert(materials.begin(), materialSet.begin(), materialSet.end());
+    allMaterials.insert(allMaterials.begin(), allMaterialSet.begin(), allMaterialSet.end());
+    leafMaterials.insert(leafMaterials.begin(), leafMaterialSet.begin(), leafMaterialSet.end());
 }
-    
+
+void SpeedTreeObject::SetLeafMaterialPropertyValue(const FastName & keyName, Shader::eUniformType type, const void * data)
+{
+    uint32 matCount = leafMaterials.size();
+    for(uint32 i = 0; i < matCount; ++i)
+        leafMaterials[i]->SetPropertyValue(keyName, type, 1, data);
+}
+
+void SpeedTreeObject::SetLeafColorDark(const Color & color)
+{
+    leafColorDark = color;
+    Color colorMul = leafColorDark * leafColorMultiplier;
+    SetLeafMaterialPropertyValue(PARAM_PROP_LEAF_COLOR_DARK, Shader::UT_FLOAT_VEC4, colorMul.color);
+}
+
+void SpeedTreeObject::SetLeafColorLight(const Color & color)
+{
+    leafColorLight = color;
+    Color colorMul = leafColorLight * leafColorMultiplier;
+    SetLeafMaterialPropertyValue(PARAM_PROP_LEAF_COLOR_LIGHT, Shader::UT_FLOAT_VEC4, colorMul.color);
+}
+
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)
 {
     if(IsTreeLeafBatch(rb))

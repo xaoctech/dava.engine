@@ -49,10 +49,23 @@ public:
     virtual RenderObject * Clone(RenderObject *newObject);
 
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
+    virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+
+	virtual void PrepareToRender(Camera *camera);
 
     static bool IsTreeLeafBatch(RenderBatch * batch);
 
+    inline const Color & GetLeafColorDark() const;
+    inline const Color & GetLeafColorLight() const;
+    inline const float32 & GetLeafColorMultiplier() const;
+    inline void SetLeafColorMultiplier(const float32 & mul);
+    void SetLeafColorDark(const Color & color);
+    void SetLeafColorLight(const Color & color);
+
 protected:
+    static const FastName PARAM_PROP_LEAF_COLOR_DARK;
+    static const FastName PARAM_PROP_LEAF_COLOR_LIGHT;
+    static const FastName PARAM_PROP_TREE_CAMERA_SPACE_CENTER;
     static const FastName PARAM_PROP_TRUNK_OSCILLATION;
     static const FastName PARAM_PROP_LEAF_OSCILLATION;
     static const FastName FLAG_WIND_ANIMATION;
@@ -63,19 +76,47 @@ protected:
     AABBox3 CalcBBoxForSpeedTreeGeometry(RenderBatch * rb);
     void CollectMaterials();
 
+    void SetLeafMaterialPropertyValue(const FastName & keyName, Shader::eUniformType type, const void * data);
+
     bool animationFlagOn;
     
-    Vector<NMaterial *> materials;
+    Vector<NMaterial *> allMaterials;
+    Vector<NMaterial *> leafMaterials;
     
+    Color leafColorDark;
+    Color leafColorLight;
+    float32 leafColorMultiplier;
+
 public:
 
 	INTROSPECTION_EXTEND(SpeedTreeObject, Mesh, 
-		NULL
+		PROPERTY("leafColorDark", "leafColorDark", GetLeafColorDark, SetLeafColorDark, I_VIEW | I_SAVE | I_EDIT)
+		PROPERTY("leafColorLight", "leafColorLight", GetLeafColorLight, SetLeafColorLight, I_VIEW | I_SAVE | I_EDIT)
+		PROPERTY("leafColorMultiplier", "leafColorMultiplier", GetLeafColorMultiplier, SetLeafColorMultiplier, I_VIEW | I_SAVE | I_EDIT)
 	);
 
 friend class SpeedTreeUpdateSystem;
 };
 
+inline const Color & SpeedTreeObject::GetLeafColorDark() const
+{
+    return leafColorDark;
+}
+
+inline const Color & SpeedTreeObject::GetLeafColorLight() const
+{
+    return leafColorLight;
+}
+    
+inline const float32 & SpeedTreeObject::GetLeafColorMultiplier() const
+{
+    return leafColorMultiplier;
+}
+    
+inline void SpeedTreeObject::SetLeafColorMultiplier(const float32 & mul)
+{
+    leafColorMultiplier = mul;
+}
 
 };
 
