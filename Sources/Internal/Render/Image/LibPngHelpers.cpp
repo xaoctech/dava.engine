@@ -333,8 +333,8 @@ uint32 LibPngWrapper::GetDataSize(File * infile ) const
 
 eErrorCode LibPngWrapper::WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
-    // for png cubeMaps are not supported
-    return WriteFile(fileName, imageSet, compressionFormat);
+    Logger::Error("[LibPngWrapper::WriteFileAsCubeMap] For png cubeMaps are not supported");
+    return ERROR_WRITE_FAIL;
 }
 
 eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat format) const
