@@ -85,6 +85,14 @@ void EventDispatcher::PerformEventWithData(int32 eventType, void *callerData)
 {
 	PerformEventWithData(eventType, this, callerData);
 }
+    
+template< class T >
+T* AddressOf(T& arg)
+{
+    return reinterpret_cast<T*>(
+                &const_cast<char&>(
+                    reinterpret_cast<const volatile char&>(arg)));
+}
 	
 void EventDispatcher::PerformEventWithData(int32 eventType, BaseObject *eventParam, void *callerData)
 {
@@ -93,7 +101,7 @@ void EventDispatcher::PerformEventWithData(int32 eventType, BaseObject *eventPar
 
     eventsCopy.clear();
     eventsCopy.reserve(events.size());
-    std::transform(events.begin(), events.end(), std::back_inserter(eventsCopy), std::addressof<Event>);
+    std::transform(events.begin(), events.end(), std::back_inserter(eventsCopy), DAVA::AddressOf<Event>);
 
     Vector<Event *>::const_iterator it = eventsCopy.begin();
     Vector<Event *>::const_iterator end = eventsCopy.end();
