@@ -7,8 +7,6 @@ precision highp float;
 #define mediump
 #endif
 
-#define FOG_HALFSPACE
-
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
