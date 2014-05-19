@@ -28,6 +28,7 @@
 
 
 #include "Base/EventDispatcher.h"
+#include <iterator>
 
 namespace DAVA 
 {
@@ -72,34 +73,42 @@ bool EventDispatcher::RemoveAllEvents()
 
 void EventDispatcher::PerformEvent(int32 eventType)
 {
-	PerformEvent(eventType, this);
+	PerformEventWithData(eventType, this, NULL);
 }
 
 void EventDispatcher::PerformEvent(int32 eventType, BaseObject *eventParam)
 {
-	List<Event>::iterator it = events.begin();
-	for(; it != events.end(); it++)
-	{
-		if((*it).eventType == eventType)
-		{
-			(*it).msg(eventParam);
-		}
-	}
+    PerformEventWithData(eventType, eventParam, NULL);
 }
 
 void EventDispatcher::PerformEventWithData(int32 eventType, void *callerData)
 {
 	PerformEventWithData(eventType, this, callerData);
 }
+    
+template< class T >
+T* AddressOf(T& arg)
+{
+    return reinterpret_cast<T*>(
+                &const_cast<char&>(
+                    reinterpret_cast<const volatile char&>(arg)));
+}
 	
 void EventDispatcher::PerformEventWithData(int32 eventType, BaseObject *eventParam, void *callerData)
 {
-	List<Event>::iterator it = events.begin();
-	for(; it != events.end(); it++)
+    if(events.empty())
+        return;
+
+    Vector<Event *> eventsCopy(events.size());
+    std::transform(events.begin(), events.end(), eventsCopy.begin(), AddressOf<Event>);
+
+    Vector<Event *>::const_iterator it = eventsCopy.begin();
+    Vector<Event *>::const_iterator end = eventsCopy.end();
+	for(; it != end; it++)
 	{
-		if((*it).eventType == eventType)
+		if((*it)->eventType == eventType)
 		{
-			(*it).msg(eventParam, callerData);
+			(*it)->msg(eventParam, callerData);
 		}
 	}
 }
@@ -114,7 +123,7 @@ void EventDispatcher::CopyDataFrom(EventDispatcher *srcDispatcher)
 	}
 }
 
-int32 EventDispatcher::GetEventsCount()
+int32 EventDispatcher::GetEventsCount() const
 {
     return events.size();
 }
