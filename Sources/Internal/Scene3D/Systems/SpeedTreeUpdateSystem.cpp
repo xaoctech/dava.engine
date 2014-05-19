@@ -44,16 +44,17 @@
 namespace DAVA
 {
 
-SpeedTreeUpdateSystem::TreeInfo::TreeInfo(Entity * _treeEntity)
+SpeedTreeUpdateSystem::TreeInfo::TreeInfo(Entity * treeEntity)
 {
-    treeEntity = _treeEntity;
+    treeObject = static_cast<SpeedTreeObject *>(GetRenderObject(treeEntity));
+    treeComponent = GetSpeedTreeComponent(treeEntity);
 
     leafTime = (float32)Random::Instance()->RandFloat(1000.f);
 }
 
 void SpeedTreeUpdateSystem::TreeInfo::PositionUpdated()
 {
-    Matrix4 wtMx = GetTransformComponent(treeEntity)->GetWorldTransform();
+    Matrix4 wtMx = GetTransformComponent(treeComponent->GetEntity())->GetWorldTransform();
     wtPosition = wtMx.GetTranslationVector();
     wtMx.GetInverse(wtInvMx);
 }
@@ -84,7 +85,7 @@ void SpeedTreeUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
             for(uint32 i = 0; i < treeCount; ++i)
             {
                 TreeInfo * info = allTrees[i];
-                if(info->treeEntity == entity)
+                if(info->treeComponent->entity == entity)
                 {
                     info->PositionUpdated();
                 }
@@ -112,7 +113,7 @@ void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
     for(; it != itEnd; ++it)
     {
         TreeInfo * info = *it;
-        if(info->treeEntity == entity)
+        if(info->treeComponent->entity == entity)
         {
             SafeDelete(info);
             allTrees.erase(it);
@@ -135,8 +136,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
     {
         TreeInfo * info = allTrees[i];
         
-		SpeedTreeComponent * component = GetSpeedTreeComponent(info->treeEntity);
-		SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(info->treeEntity));
+		SpeedTreeComponent * component = info->treeComponent;
+		SpeedTreeObject * treeObject = info->treeObject;
         
         if(treeObject->GetLodIndex() > component->GetMaxAnimatedLOD())
         {
@@ -180,8 +181,7 @@ void SpeedTreeUpdateSystem::HandleEvent(Observable * observable)
             uint32 treeCount = allTrees.size();
             for(uint32 i = 0; i < treeCount; ++i)
             {
-                SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject *>(GetRenderObject(allTrees[i]->treeEntity));
-                treeObject->SetAnimationFlag(false);
+                allTrees[i]->treeObject->SetAnimationFlag(false);
             }
         }
     }
