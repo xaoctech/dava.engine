@@ -86,6 +86,18 @@
 		02FD7EEC19237DA2007762C0 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD7EE219237DA2007762C0 /* WindComponent.h */; };
 		02FD7EED19237DA2007762C0 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD7EE219237DA2007762C0 /* WindComponent.h */; };
 		02FD7EEE19237DA2007762C0 /* WindComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD7EE219237DA2007762C0 /* WindComponent.h */; };
+		02FD8264192A3859007762C0 /* WaveSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FD8262192A3859007762C0 /* WaveSystem.cpp */; };
+		02FD8265192A3859007762C0 /* WaveSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FD8262192A3859007762C0 /* WaveSystem.cpp */; };
+		02FD8266192A3859007762C0 /* WaveSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FD8262192A3859007762C0 /* WaveSystem.cpp */; };
+		02FD8267192A3859007762C0 /* WaveSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD8263192A3859007762C0 /* WaveSystem.h */; };
+		02FD8268192A3859007762C0 /* WaveSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD8263192A3859007762C0 /* WaveSystem.h */; };
+		02FD8269192A3859007762C0 /* WaveSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD8263192A3859007762C0 /* WaveSystem.h */; };
+		02FD826C192A3861007762C0 /* WaveComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FD826A192A3861007762C0 /* WaveComponent.cpp */; };
+		02FD826D192A3861007762C0 /* WaveComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FD826A192A3861007762C0 /* WaveComponent.cpp */; };
+		02FD826E192A3861007762C0 /* WaveComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02FD826A192A3861007762C0 /* WaveComponent.cpp */; };
+		02FD826F192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
+		02FD8270192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
+		02FD8271192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		17183C3D18C880A600491E66 /* MovieViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4E17DF67E500000391 /* MovieViewControlMacOS.mm */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
@@ -2315,6 +2327,10 @@
 		02FD7EE019237DA2007762C0 /* SpeedTreeComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeComponent.h; sourceTree = "<group>"; };
 		02FD7EE119237DA2007762C0 /* WindComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindComponent.cpp; sourceTree = "<group>"; };
 		02FD7EE219237DA2007762C0 /* WindComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindComponent.h; sourceTree = "<group>"; };
+		02FD8262192A3859007762C0 /* WaveSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveSystem.cpp; sourceTree = "<group>"; };
+		02FD8263192A3859007762C0 /* WaveSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveSystem.h; sourceTree = "<group>"; };
+		02FD826A192A3861007762C0 /* WaveComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveComponent.cpp; sourceTree = "<group>"; };
+		02FD826B192A3861007762C0 /* WaveComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveComponent.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -4034,6 +4050,8 @@
 		E8989CC816BD24E500732C04 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				02FD826A192A3861007762C0 /* WaveComponent.cpp */,
+				02FD826B192A3861007762C0 /* WaveComponent.h */,
 				02FD7EDF19237DA2007762C0 /* SpeedTreeComponent.cpp */,
 				02FD7EE019237DA2007762C0 /* SpeedTreeComponent.h */,
 				02FD7EE119237DA2007762C0 /* WindComponent.cpp */,
@@ -4079,6 +4097,8 @@
 		E8989D1916BD24E500732C04 /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				02FD8262192A3859007762C0 /* WaveSystem.cpp */,
+				02FD8263192A3859007762C0 /* WaveSystem.h */,
 				02FD7ECF19237D96007762C0 /* SpeedTreeUpdateSystem.cpp */,
 				02FD7ED019237D96007762C0 /* SpeedTreeUpdateSystem.h */,
 				02FD7ED119237D96007762C0 /* WindSystem.cpp */,
@@ -4587,6 +4607,7 @@
 				176DE9FF174B5561007A983B /* UILoadingTransition.h in Headers */,
 				176DEA00174B5561007A983B /* UIMoveInTransition.h in Headers */,
 				176DEA01174B5561007A983B /* UIPopup.h in Headers */,
+				02FD8271192A3861007762C0 /* WaveComponent.h in Headers */,
 				176DEA02174B5561007A983B /* UIScreen.h in Headers */,
 				176DEA03174B5561007A983B /* UIScreenManager.h in Headers */,
 				176DEA04174B5561007A983B /* UIScreenManagerMacOS.h in Headers */,
@@ -4617,6 +4638,7 @@
 				176DEA1A174B5561007A983B /* UserComponent.h in Headers */,
 				176DEA1B174B5561007A983B /* UISpinner.h in Headers */,
 				176DEA1C174B5561007A983B /* VectorSpinnerAdapter.h in Headers */,
+				02FD8269192A3859007762C0 /* WaveSystem.h in Headers */,
 				176DEA1D174B5561007A983B /* UISwitch.h in Headers */,
 				176DEA1E174B5561007A983B /* Camera.h in Headers */,
 				176DEA1F174B5561007A983B /* CullingSystem.h in Headers */,
@@ -4695,6 +4717,7 @@
 				E8989DAF16BD24E500732C04 /* Config.h in Headers */,
 				0214140A181984D600925E51 /* DAVAClassRegistrator.h in Headers */,
 				E8989DB116BD24E500732C04 /* MongodbUpdateObject.h in Headers */,
+				02FD8267192A3859007762C0 /* WaveSystem.h in Headers */,
 				E8989DB516BD24E500732C04 /* BaseMath.h in Headers */,
 				E8989DB716BD24E500732C04 /* BaseObject.h in Headers */,
 				E8989DB916BD24E500732C04 /* BaseObjectChecker.h in Headers */,
@@ -4704,6 +4727,7 @@
 				E8989DC016BD24E500732C04 /* EventDispatcher.h in Headers */,
 				E8989DC116BD24E500732C04 /* Exception.h in Headers */,
 				E8989DC316BD24E500732C04 /* FastName.h in Headers */,
+				02FD826F192A3861007762C0 /* WaveComponent.h in Headers */,
 				E8989DC416BD24E500732C04 /* FastNameMap.h in Headers */,
 				E8989DC616BD24E500732C04 /* FixedSizePoolAllocator.h in Headers */,
 				E8989DC716BD24E500732C04 /* Hash.h in Headers */,
@@ -5226,6 +5250,7 @@
 				E898A0DC16BD265400732C04 /* QtLayerMacOS.h in Headers */,
 				E898A0DD16BD265400732C04 /* QtLayer.h in Headers */,
 				E898A0DE16BD265400732C04 /* SystemTimer.h in Headers */,
+				02FD8270192A3861007762C0 /* WaveComponent.h in Headers */,
 				E898A0E416BD265400732C04 /* Thread.h in Headers */,
 				CC931B29188EC95F000375F9 /* SwitchToRenerObjectConverter.h in Headers */,
 				E898A0E516BD265400732C04 /* Font.h in Headers */,
@@ -5256,6 +5281,7 @@
 				E898A11016BD265400732C04 /* MaterialCompiler.h in Headers */,
 				E898A11116BD265400732C04 /* MaterialGraph.h in Headers */,
 				E898A11216BD265400732C04 /* MaterialGraphNode.h in Headers */,
+				02FD8268192A3859007762C0 /* WaveSystem.h in Headers */,
 				50ED334E1858B5A200A917D5 /* StaticOcclusionComponent.h in Headers */,
 				E898A11316BD265400732C04 /* NMaterial.h in Headers */,
 				E898A11416BD265400732C04 /* NMaterialConsts.h in Headers */,
@@ -5785,6 +5811,7 @@
 				176DEB02174B5561007A983B /* ParticleEffectSystem.cpp in Sources */,
 				176DEB04174B5561007A983B /* RenderUpdateSystem.cpp in Sources */,
 				176DEB05174B5561007A983B /* SwitchSystem.cpp in Sources */,
+				02FD826E192A3861007762C0 /* WaveComponent.cpp in Sources */,
 				176DEB06174B5561007A983B /* TransformSystem.cpp in Sources */,
 				02FD7EEB19237DA2007762C0 /* WindComponent.cpp in Sources */,
 				176DEB07174B5561007A983B /* UserNode.cpp in Sources */,
@@ -5821,6 +5848,7 @@
 				A6D8279A187716F30006A5DD /* Color.cpp in Sources */,
 				176DEB25174B5561007A983B /* UITextField.cpp in Sources */,
 				176DEB26174B5561007A983B /* UIYamlLoader.cpp in Sources */,
+				02FD8266192A3859007762C0 /* WaveSystem.cpp in Sources */,
 				176DEB27174B5561007A983B /* HTTPDownloader.mm in Sources */,
 				176DEB28174B5561007A983B /* MD5.cpp in Sources */,
 				176DEB29174B5561007A983B /* StringFormat.cpp in Sources */,
@@ -5922,6 +5950,7 @@
 				E8989DB016BD24E500732C04 /* MongodbUpdateObject.cpp in Sources */,
 				E8989DB416BD24E500732C04 /* BaseMath.cpp in Sources */,
 				E8989DB616BD24E500732C04 /* BaseObject.cpp in Sources */,
+				02FD826C192A3861007762C0 /* WaveComponent.cpp in Sources */,
 				E8ADAEB918CA1226000B251C /* PixelFormatDescriptor.cpp in Sources */,
 				E8989DB816BD24E500732C04 /* BaseObjectChecker.cpp in Sources */,
 				E8989DBB16BD24E500732C04 /* Data.cpp in Sources */,
@@ -6030,6 +6059,7 @@
 				E8989EEF16BD24E500732C04 /* CursorMacOS.mm in Sources */,
 				E8989EF716BD24E500732C04 /* ColorOnlyEffect.cpp in Sources */,
 				E8989EF916BD24E500732C04 /* MultiTextureEffect.cpp in Sources */,
+				02FD8264192A3859007762C0 /* WaveSystem.cpp in Sources */,
 				E8989EFB16BD24E500732C04 /* TextureMulColorAlphaTestEffect.cpp in Sources */,
 				E8989EFD16BD24E500732C04 /* TextureMulColorEffect.cpp in Sources */,
 				E8989F2516BD24E500732C04 /* Image.cpp in Sources */,
@@ -6054,7 +6084,6 @@
 				E8989F4C16BD24E500732C04 /* RenderManagerFactory.cpp in Sources */,
 				E8989F4D16BD24E500732C04 /* RenderManagerGL.cpp in Sources */,
 				02FD7EE919237DA2007762C0 /* WindComponent.cpp in Sources */,
-				E8989F4E16BD24E500732C04 /* RenderManagerGL20.cpp in Sources */,
 				E8989F5016BD24E500732C04 /* RenderOptions.cpp in Sources */,
 				E8989F5216BD24E500732C04 /* RenderResource.cpp in Sources */,
 				E8989F5716BD24E500732C04 /* Shader.cpp in Sources */,
@@ -6330,6 +6359,7 @@
 				E898A1D116BD265400732C04 /* LocalizationSystem.cpp in Sources */,
 				E8ADAEBA18CA1226000B251C /* PixelFormatDescriptor.cpp in Sources */,
 				7A169354180EE75A005F1FBC /* GameAPI.cpp in Sources */,
+				02FD826D192A3861007762C0 /* WaveComponent.cpp in Sources */,
 				E898A1D216BD265400732C04 /* Logger.cpp in Sources */,
 				E898A1D316BD265400732C04 /* LoggerMacOS.mm in Sources */,
 				E898A1D516BD265400732C04 /* ResourceArchive.cpp in Sources */,
@@ -6502,6 +6532,7 @@
 				E898A29516BD265400732C04 /* UIEvent.cpp in Sources */,
 				E898A29616BD265400732C04 /* UIFadeTransition.cpp in Sources */,
 				E898A29716BD265400732C04 /* UIFileSystemDialog.cpp in Sources */,
+				02FD8265192A3859007762C0 /* WaveSystem.cpp in Sources */,
 				E898A29816BD265400732C04 /* UIHierarchy.cpp in Sources */,
 				E898A29916BD265400732C04 /* UIHierarchyCell.cpp in Sources */,
 				E898A29A16BD265400732C04 /* UIHierarchyNode.cpp in Sources */,
