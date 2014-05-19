@@ -63,7 +63,7 @@ void SpeedTreeObject::PrepareToRender(Camera *camera)
 {
     Mesh::PrepareToRender(camera);
 
-    Vector3 treeCameraSpaceCenter = bbox.GetCenter() * camera->GetMatrix();
+    Vector3 treeCameraSpaceCenter = worldBBox.GetCenter() * camera->GetMatrix();
     SetLeafMaterialPropertyValue(NMaterial::PARAM_SPEED_TREE_CAMERA_SPACE_CENTER, Shader::UT_FLOAT_VEC3, &treeCameraSpaceCenter);
 }
 
