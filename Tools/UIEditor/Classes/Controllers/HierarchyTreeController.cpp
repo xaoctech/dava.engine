@@ -38,7 +38,9 @@
 #include "CommandsController.h"
 #include "PreviewController.h"
 #include "ControlCommands.h"
-#include "ReloadSpritesCommand.h"
+
+#include "TexturePacker/ResourcePacker2D.h"
+#include "ResourcesManageHelper.h"
 
 #include "AlignDistribute/AlignDistributeManager.h"
 
@@ -709,11 +711,20 @@ bool HierarchyTreeController::CanPerformDistribute(eDistributeControlsType /*dis
 	return activeControlNodes.size() >= 3;
 }
 
-void HierarchyTreeController::RepackAndReloadSprites()
+ Set<String> HierarchyTreeController::RepackAndReloadSprites()
 {
-    ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode());
-    CommandsController::Instance()->ExecuteCommand(cmd);
-    SafeRelease(cmd);
+    Set<String> errorsSet;
+    ResourcePacker2D *resPacker = new ResourcePacker2D();
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
+    
+    resPacker->PackResources(GPU_UNKNOWN);
+    errorsSet = resPacker->GetErrors();
+	SafeDelete(resPacker);
+
+    Sprite::ReloadSprites();
+
+    return errorsSet;
 }
 
 void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data, bool applyScale)
