@@ -1792,6 +1792,13 @@ void Sprite::DrawState::BuildStateFromParentAndLocal(const Sprite::DrawState &pa
 	frame = localState.frame;
 }
 
+void Sprite::ReloadSprites()
+{
+	for(SpriteMap::iterator it = spriteMap.begin(); it != spriteMap.end(); ++it)
+	{
+        (it->second)->Reload();
+	}
+}
 
 void Sprite::Reload()
 {

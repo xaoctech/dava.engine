@@ -327,6 +327,11 @@ public:
 	 */
 	void Reload();
 
+    /**
+	 \brief Reloads all sprites.
+	 */
+	static void ReloadSprites();
+
 protected:
 	Sprite();
 	Sprite(int32 sprWidth, int32 sprHeight, PixelFormat format);

@@ -112,7 +112,6 @@
 		171FA7FB17C4AE5E00C7F7F2 /* AlignHandlers.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 171FA7F917C4AE5D00C7F7F2 /* AlignHandlers.cpp */; };
 		173116C118ACBC9600893BA0 /* GuideCommands.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173116BF18ACBC9600893BA0 /* GuideCommands.cpp */; };
 		173339E71694472600E98820 /* UndoRedoController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173339E51694472600E98820 /* UndoRedoController.cpp */; };
-		173A4C661855C60E008A1B97 /* ReloadSpritesCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173A4C641855C60E008A1B97 /* ReloadSpritesCommand.cpp */; };
 		173AC331162FFFC300A773F5 /* PropertiesGridController.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */; };
 		173AC33A1630137400A773F5 /* controlpropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */; };
 		173AC33B1630137400A773F5 /* flagspropertygridwidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 173AC3391630137400A773F5 /* flagspropertygridwidget.cpp */; };
@@ -169,6 +168,7 @@
 		17A6305A18AA2BDD00957C77 /* GuideMimeData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A6305818AA2BDD00957C77 /* GuideMimeData.cpp */; };
 		17A6305C18AA2C7200957C77 /* GuideMimeData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A6305B18AA2C7200957C77 /* GuideMimeData_moc.cpp */; };
 		17B0617518892C1500FD8007 /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17B0617418892C1500FD8007 /* WebKit.framework */; };
+		17C1FD2018F54A6700CEA911 /* guidepropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C1FD1F18F54A6700CEA911 /* guidepropertygridwidget.ui */; };
 		17C4116118C9BE3D002BA05F /* UIJoypadMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C4115F18C9BE3D002BA05F /* UIJoypadMetadata.cpp */; };
 		17C4116818C9CE01002BA05F /* UIJoypadMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C4116718C9CE01002BA05F /* UIJoypadMetadata_moc.cpp */; };
 		17C4116A18CA0933002BA05F /* joypadpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C4116918CA0933002BA05F /* joypadpropertygridwidget.ui */; };
@@ -176,7 +176,6 @@
 		17C411B218CA0B1E002BA05F /* joypadpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C411B118CA0B1E002BA05F /* joypadpropertygridwidget_moc.cpp */; };
 		17C5A56D18C86D4E00064AFF /* UIWebViewMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C5A56B18C86D4E00064AFF /* UIWebViewMetadata.cpp */; };
 		17C5A57518C86DA600064AFF /* UIMovieViewMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C5A57318C86DA600064AFF /* UIMovieViewMetadata.cpp */; };
-		17C1FD2018F54A6700CEA911 /* guidepropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C1FD1F18F54A6700CEA911 /* guidepropertygridwidget.ui */; };
 		17C5B5D918A4DB0100415933 /* UIParticlesMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C5B5D818A4DB0100415933 /* UIParticlesMetadata_moc.cpp */; };
 		17C5CCD516F31E5300FB90B4 /* spinnerpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */; };
 		17C5CCD916F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C5CCD816F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp */; };
@@ -511,8 +510,6 @@
 		173116C018ACBC9600893BA0 /* GuideCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuideCommands.h; path = Commands/GuideCommands.h; sourceTree = "<group>"; };
 		173339E51694472600E98820 /* UndoRedoController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UndoRedoController.cpp; path = Controllers/UndoRedoController.cpp; sourceTree = "<group>"; };
 		173339E61694472600E98820 /* UndoRedoController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UndoRedoController.h; path = Controllers/UndoRedoController.h; sourceTree = "<group>"; };
-		173A4C641855C60E008A1B97 /* ReloadSpritesCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReloadSpritesCommand.cpp; path = Commands/ReloadSpritesCommand.cpp; sourceTree = "<group>"; };
-		173A4C651855C60E008A1B97 /* ReloadSpritesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReloadSpritesCommand.h; path = Commands/ReloadSpritesCommand.h; sourceTree = "<group>"; };
 		173AC32F162FFFC300A773F5 /* PropertiesGridController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertiesGridController.cpp; path = Controllers/PropertiesGridController.cpp; sourceTree = "<group>"; };
 		173AC330162FFFC300A773F5 /* PropertiesGridController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PropertiesGridController.h; path = Controllers/PropertiesGridController.h; sourceTree = "<group>"; };
 		173AC3381630137400A773F5 /* controlpropertygridwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = controlpropertygridwidget.cpp; path = PropertyGridWidgets/controlpropertygridwidget.cpp; sourceTree = "<group>"; };
@@ -617,6 +614,7 @@
 		17AB665216EDF86B00634657 /* UIListMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIListMetadata.h; path = Metadata/UIListMetadata.h; sourceTree = "<group>"; };
 		17B0617418892C1500FD8007 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		17C0678918ABC909000A1CE0 /* GuidesEnums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GuidesEnums.h; path = Guides/GuidesEnums.h; sourceTree = "<group>"; };
+		17C1FD1F18F54A6700CEA911 /* guidepropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = guidepropertygridwidget.ui; sourceTree = "<group>"; };
 		17C4115F18C9BE3D002BA05F /* UIJoypadMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIJoypadMetadata.cpp; path = Metadata/UIJoypadMetadata.cpp; sourceTree = "<group>"; };
 		17C4116018C9BE3D002BA05F /* UIJoypadMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIJoypadMetadata.h; path = Metadata/UIJoypadMetadata.h; sourceTree = "<group>"; };
 		17C4116718C9CE01002BA05F /* UIJoypadMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIJoypadMetadata_moc.cpp; sourceTree = "<group>"; };
@@ -630,7 +628,6 @@
 		17C5A56C18C86D4E00064AFF /* UIWebViewMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIWebViewMetadata.h; path = Metadata/UIWebViewMetadata.h; sourceTree = "<group>"; };
 		17C5A57318C86DA600064AFF /* UIMovieViewMetadata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIMovieViewMetadata.cpp; path = Metadata/UIMovieViewMetadata.cpp; sourceTree = "<group>"; };
 		17C5A57418C86DA600064AFF /* UIMovieViewMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIMovieViewMetadata.h; path = Metadata/UIMovieViewMetadata.h; sourceTree = "<group>"; };
-		17C1FD1F18F54A6700CEA911 /* guidepropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = guidepropertygridwidget.ui; sourceTree = "<group>"; };
 		17C5B5D818A4DB0100415933 /* UIParticlesMetadata_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIParticlesMetadata_moc.cpp; sourceTree = "<group>"; };
 		17C5CCD416F31E5300FB90B4 /* spinnerpropertygridwidget.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = spinnerpropertygridwidget.ui; sourceTree = "<group>"; };
 		17C5CCD816F323B700FB90B4 /* spinnerpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spinnerpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
@@ -1382,8 +1379,6 @@
 				C1BBE3551647DAC300EF3CA9 /* PasteCommand.h */,
 				49FD832D170B24E800F3B650 /* ImportCommands.cpp */,
 				49FD832E170B24E800F3B650 /* ImportCommands.h */,
-				173A4C641855C60E008A1B97 /* ReloadSpritesCommand.cpp */,
-				173A4C651855C60E008A1B97 /* ReloadSpritesCommand.h */,
 				1746932C18A3EFF40089EFF5 /* InvokeMethodCommand.cpp */,
 				1746932D18A3EFF40089EFF5 /* InvokeMethodCommand.h */,
 				173116BF18ACBC9600893BA0 /* GuideCommands.cpp */,
@@ -2046,7 +2041,6 @@
 				02D69CD416F08CEE00F3803F /* createplatformdlg_moc.cpp in Build Sources */,
 				1746932B18A3ED9D0089EFF5 /* UIParticlesMetadata.cpp in Build Sources */,
 				02D69CD516F08CEE00F3803F /* createscreendlg_moc.cpp in Build Sources */,
-				173A4C661855C60E008A1B97 /* ReloadSpritesCommand.cpp in Build Sources */,
 				02D69CD616F08CEE00F3803F /* davaglwidget_moc.cpp in Build Sources */,
 				02D69CD716F08CEE00F3803F /* localizationeditordialog_moc.cpp in Build Sources */,
 				02D69CD816F08CEE00F3803F /* fontmanagerdialog_moc.cpp in Build Sources */,

@@ -50,6 +50,7 @@
 #include "Dialogs/importdialog.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "Dialogs/previewsettingsdialog.h"
+#include "Dialogs/errorslistdialog.h"
 
 #include "ImportCommands.h"
 #include "AlignDistribute/AlignDistributeEnums.h"
@@ -1426,8 +1427,15 @@ void MainWindow::OnPixelizationStateChanged()
 void MainWindow::RepackAndReloadSprites()
 {
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
-    HierarchyTreeController::Instance()->RepackAndReloadSprites();
+    const Set<String>& errorsSet = HierarchyTreeController::Instance()->RepackAndReloadSprites();
     ScreenWrapper::Instance()->RestoreApplicationCursor();
+
+    if (!errorsSet.empty())
+	{
+		ErrorsListDialog errorsDialog;
+		errorsDialog.InitializeErrorsList(errorsSet);
+		errorsDialog.exec();
+	}
 }
 
 void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)
