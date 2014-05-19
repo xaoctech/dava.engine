@@ -635,6 +635,9 @@ uint32 TextureDescriptor::ReadSourceCRC() const
     
 uint32 TextureDescriptor::GetConvertedCRC(eGPUFamily forGPU) const
 {
+	if(compression && compression[forGPU]->format == FORMAT_INVALID) return 0;
+
+
 	FilePath filePath = GPUFamilyDescriptor::CreatePathnameForGPU(this, forGPU);
 	if(filePath.IsEqualToExtension(".pvr"))
 	{
