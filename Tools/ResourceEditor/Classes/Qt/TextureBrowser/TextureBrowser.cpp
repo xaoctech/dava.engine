@@ -368,6 +368,7 @@ void TextureBrowser::updateInfoConverted()
 
 		int datasize = TextureCache::Instance()->getConvertedSize(curDescriptor, curTextureView);
 		int filesize = TextureCache::Instance()->getConvertedFileSize(curDescriptor, curTextureView);
+        bool isUpToDate = curDescriptor->IsCompressedTextureActual(curTextureView);
 		QSize imgSize(0, 0);
         
 		DVASSERT(curDescriptor->compression);
@@ -395,10 +396,12 @@ void TextureBrowser::updateInfoConverted()
 			SizeInBytesToString(filesize).c_str());
 
 		ui->labelConvertedFormat->setText(tmp);
+        ui->textureAreaConverted->warningShow(!isUpToDate);
 	}
 	else
 	{
 		ui->labelConvertedFormat->setText("");
+        ui->textureAreaConverted->warningShow(false);
 	}
 }
 
@@ -449,6 +452,8 @@ void TextureBrowser::setupImagesScrollAreas()
 	// mouse wheel
 	QObject::connect(ui->textureAreaOriginal, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
 	QObject::connect(ui->textureAreaConverted, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
+
+    ui->textureAreaConverted->warningSetText("Not relevant");
 }
 
 void TextureBrowser::setupTextureToolbar()
