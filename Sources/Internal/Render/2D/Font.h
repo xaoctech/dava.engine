@@ -205,7 +205,26 @@ public:
 	virtual uint32 GetHashCode();
 
 protected:
-	// Get the raw hash string (identical for identical fonts).
+
+    struct SeparatorPositions
+    {
+        SeparatorPositions() { Reset(); }
+
+        void Reset();
+        
+        bool IsLineInitialized() const;
+        
+        int32 lastWordStart;
+        int32 lastWordEnd;
+        int32 currentLineStart;
+        int32 currentLineEnd;
+    };
+
+    
+    void AddCurrentLine(const WideString & text, const int32 pos, SeparatorPositions & separatorPosition, Vector<WideString> & resultVector) const;
+	
+    
+    // Get the raw hash string (identical for identical fonts).
 	virtual String GetRawHashString();
 
 	static int32 globalFontDPI;

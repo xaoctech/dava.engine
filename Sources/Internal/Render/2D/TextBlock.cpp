@@ -659,13 +659,6 @@ void TextBlock::Prepare()
 			for (int32 line = 0; line < (int32)multilineStrings.size(); ++line)
 			{
 				Size2i stringSize = font->GetStringSize(multilineStrings[line]);
-
-                // usually we parse text without edges, so we cut text on strings with WIDTH
-                // we use max WIDTH as text size width
-                // during next parsing of text we use WIDTH as edges for text, so we can't fit substring to WIDTH
-                
-                ++stringSize.dx;
-                
 				stringSizes.push_back(stringSize.dx);
 				if(requestedSize.dx >= 0)
 				{
