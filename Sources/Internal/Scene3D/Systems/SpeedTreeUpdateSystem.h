@@ -50,7 +50,8 @@ public:
         TreeInfo(Entity * treeEntity);
         void PositionUpdated();
 
-        Entity * treeEntity;
+        SpeedTreeObject * treeObject;
+        SpeedTreeComponent * treeComponent;
 		Matrix4 wtInvMx;
 		Vector3 wtPosition;
 
