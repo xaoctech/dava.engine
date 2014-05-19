@@ -27,29 +27,54 @@
 =====================================================================================*/
 
 
-#ifndef UITEXTFIELDPROPERTYGRIDWIDGET_H
-#define UITEXTFIELDPROPERTYGRIDWIDGET_H
+#ifndef UISTATICTEXTPROPERTYGRIDWIDGET_H
+#define UISTATICTEXTPROPERTYGRIDWIDGET_H
 
+#include <QWidget>
 #include "textpropertygridwidget.h"
 
 class QLabel;
 
-class UITextFieldPropertyGridWidget : public TextPropertyGridWidget
+class UIStaticTextPropertyGridWidget : public TextPropertyGridWidget
 {
     Q_OBJECT
     
 public:
-    explicit UITextFieldPropertyGridWidget(QWidget *parent = 0);
-    ~UITextFieldPropertyGridWidget();
+    explicit UIStaticTextPropertyGridWidget(QWidget *parent = 0);
+    ~UIStaticTextPropertyGridWidget();
     
     virtual void Initialize(BaseMetadata* activeMetadata);
     virtual void Cleanup();
     
 protected:
+    
+    //	virtual void InsertLocalizationFields();
+    
+    // Update the widget with Localization Value when the key is changed.
+    virtual void UpdateLocalizationValue();
+    
+    virtual void HandleChangePropertySucceeded(const QString& propertyName);
+    virtual void HandleChangePropertyFailed(const QString& propertyName);
+    
+    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
     virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
                                              const QString& value);
-    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
-    virtual void FillComboboxes();
+    
+	// Handle UI Control State is changed - needed for updating Localization Text.
+    virtual void HandleSelectedUIControlStatesChanged(const Vector<UIControl::eControlState>& newStates);
+    
+    // Handle dependent checkboxes.
+    virtual void UpdateCheckBoxWidgetWithPropertyValue(QCheckBox* checkBoxWidget, const QMetaProperty& curProperty);
+	virtual void OnPropertiesChangedFromExternalSource() {};
+    
+private:
+    
+    //	QLineEdit *localizationKeyNameLineEdit;
+    //	QLineEdit *localizationKeyTextLineEdit;
+    //	QLabel	*localizationKeyNameLabel;
+    //	QLabel	*localizationKeyTextLabel;
+    //	QCheckBox *multilineCheckBox;
+    //	QCheckBox *multilineBySymbolCheckBox;
 };
 
-#endif // UITEXTFIELDPROPERTYGRIDWIDGET_H
+#endif // UISTATICTEXTPROPERTYGRIDWIDGET_H
