@@ -221,8 +221,6 @@ bool TextureDescriptor::UpdateCrcForFormat(eGPUFamily forGPU) const
     
 bool TextureDescriptor::Load(const FilePath &filePathname)
 {
-	DVASSERT(compression == NULL);
-
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
@@ -236,9 +234,13 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
 	file->Read(&signature);
 
 	isCompressedFile = (COMPRESSED_FILE == signature);
-	if(isCompressedFile == false)
+	if(isCompressedFile == false && !compression)
 	{
 		AllocateCompressionData();
+	}
+	else if(isCompressedFile && compression)
+	{
+		ReleaseCompressionData();
 	}
 
     int8 version = 0;
@@ -633,6 +635,9 @@ uint32 TextureDescriptor::ReadSourceCRC() const
     
 uint32 TextureDescriptor::GetConvertedCRC(eGPUFamily forGPU) const
 {
+	if(compression && compression[forGPU]->format == FORMAT_INVALID) return 0;
+
+
 	FilePath filePath = GPUFamilyDescriptor::CreatePathnameForGPU(this, forGPU);
 	if(filePath.IsEqualToExtension(".pvr"))
 	{
@@ -757,11 +762,9 @@ void TextureDescriptor::Reload()
 {
 	if((pathname.IsEmpty() == false) && pathname.Exists())
 	{
-		if((isCompressedFile == false) && (compression))
-			ReleaseCompressionData();
-
-		FilePath savedPath = pathname;
-		Initialize(savedPath);
+		FilePath descriptorPathname = pathname;
+		SetDefaultValues();
+		Load(descriptorPathname);
 	}
 }
 

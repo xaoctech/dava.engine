@@ -107,7 +107,7 @@ public:
 	 */
 	void CopyDataFrom(EventDispatcher *srcDispatcher);
 
-    int32 GetEventsCount();
+    int32 GetEventsCount() const;
 
 protected:
 
