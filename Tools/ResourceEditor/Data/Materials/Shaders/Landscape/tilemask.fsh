@@ -42,7 +42,7 @@ uniform sampler2D cursorTexture;
 
 #if defined(VERTEX_FOG)
 uniform vec3 fogColor;
-varying float varFogFactor;
+varying float varFogAmoung;
 #if defined(FOG_GLOW)
 uniform vec3 fogGlowColor;
 varying float varFogGlowFactor;
@@ -70,9 +70,9 @@ void main()
 #if defined(VERTEX_FOG)
 	#if defined(FOG_GLOW)
 		vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-		gl_FragColor.rgb = mix(realFogColor, color, varFogFactor);
+		gl_FragColor.rgb = mix(color, realFogColor, varFogAmoung);
 	#else
-		gl_FragColor.rgb = mix(fogColor, color, varFogFactor);
+		gl_FragColor.rgb = mix(color, fogColor, varFogAmoung);
 	#endif
 #else
     gl_FragColor = vec4(color, 1.0);

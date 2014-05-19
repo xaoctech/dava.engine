@@ -7,6 +7,8 @@ precision highp float;
 #define mediump
 #endif
 
+#define FOG_HALFSPACE
+
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
@@ -66,14 +68,17 @@ uniform vec3 metalFresnelReflectance;
 
 #if defined(VERTEX_FOG)
     uniform float fogLimit;
-	varying float varFogFactor;
+	varying float varFogAmoung;
     #if !defined(FOG_LINEAR)
     uniform float fogDensity;
     #else
     uniform float fogStart;
     uniform float fogEnd;
     #endif
-
+	#if defined(FOG_HALFSPACE)
+	uniform float fogHalfspaceHeight;
+	uniform float fogHalfspaceDensity;
+	#endif
 	#if defined(FOG_GLOW)
 	uniform float fogGlowScattering;
 	varying float varFogGlowFactor;
@@ -488,32 +493,37 @@ void main()
 	
     #if !defined(FOG_LINEAR)
         const float LOG2 = 1.442695;
-        varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
-		varFogFactor = clamp(varFogFactor, 1.0 - fogLimit, 1.0);
+        varFogAmoung = 1.0 - exp2(-fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
     #else
-        varFogFactor = 1.0 - clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, fogLimit);
+        varFogAmoung = (fogFragCoord - fogStart) / (fogEnd - fogStart);
     #endif
 	
-	vec3 C = cameraPosition;
-	vec3 P = vec3(worldMatrix * inPosition);
-	vec3 V = (P - C);
+	#if defined(FOG_HALFSPACE)
+		vec3 C = cameraPosition;
+		#if defined(MATERIAL_GRASS)
+			vec3 P = vec3(worldMatrix * pos);
+		#else
+			vec3 P = vec3(worldMatrix * inPosition);
+		#endif
+		vec3 V = (P - C);
 
-	float H = 80;
-	float fogK = 0;
-	if(C.z < H ) fogK = 1;
+		float fogK = 0;
+		if(C.z < fogHalfspaceHeight ) fogK = 1;
+		
+		float FdotP = P.z - fogHalfspaceHeight;
+		float FdotC = C.z - fogHalfspaceHeight;
+		
+		vec3 aV = V * fogHalfspaceDensity;
+		float c1 = fogK * (FdotP + FdotC);
+		float c2 = (1 - 2 * fogK) * FdotP;
+		
+		float g = min(c2, 0.0);
+		g = -length(aV) * (c1 - g * g / abs(V.z));
+		
+		varFogAmoung = varFogAmoung + clamp(1.0 - exp2(-g), 0.0, 1.0);
+	#endif
 	
-	float FdotP = P.z - H;
-	float FdotC = C.z - H;
-	
-	vec3 aV = V * fogDensity;
-	float c1 = fogK * (FdotP + FdotC);
-	float c2 = (1 - 2 * fogK) * FdotP;
-	
-	float g = min(c2, 0.0);
-	g = -length(aV) * (c1 - g * g / abs(V.z));
-	
-	varFogFactor = clamp(exp2(-g), 0, 1);
-	varFogFactor = clamp(varFogFactor, 1.0 - fogLimit, 1.0);
+	varFogAmoung = clamp(varFogAmoung, 0, fogLimit);
 	
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
