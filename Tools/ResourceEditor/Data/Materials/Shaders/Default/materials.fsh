@@ -122,7 +122,7 @@ varying float varPerPixelAttenuation;
 
 #if defined(VERTEX_FOG)
 uniform vec3 fogColor;
-varying float varFogFactor;
+varying float varFogAmoung;
 #if defined(FOG_GLOW)
 uniform vec3 fogGlowColor;
 varying float varFogGlowFactor;
@@ -483,9 +483,9 @@ void main()
     #if defined(VERTEX_FOG)
 		#if defined(FOG_GLOW)
 			vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-			gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(realFogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
+			gl_FragColor.rgb = mix(mix(gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_LastFragData[0].rgb, realFogColor, varFogAmoung), gl_FragColor.a);
 		#else
-			gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
+			gl_FragColor.rgb = mix(mix(gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_LastFragData[0].rgb, fogColor, varFogAmoung), gl_FragColor.a);
 		#endif
     #else
         gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
@@ -500,9 +500,9 @@ void main()
     #if !defined(FRAMEBUFFER_FETCH)
 		#if defined(FOG_GLOW)
 			vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-			gl_FragColor.rgb = mix(realFogColor, gl_FragColor.rgb, varFogFactor);
+			gl_FragColor.rgb = mix(gl_FragColor.rgb, realFogColor, varFogAmoung);
 		#else
-			gl_FragColor.rgb = mix(fogColor, gl_FragColor.rgb, varFogFactor);
+			gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, varFogAmoung);
 		#endif
     #endif
 #endif
