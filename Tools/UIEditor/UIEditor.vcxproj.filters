@@ -657,9 +657,6 @@
     <ClCompile Include="Classes\Helpers\UIControlResizeHelper.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Commands\ReloadSpritesCommand.cpp">
-      <Filter>Sources\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Helpers\SpritesHelper.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
@@ -1207,9 +1204,6 @@
     </ClInclude>
     <ClInclude Include="Classes\Helpers\UIControlResizeHelper.h">
       <Filter>Sources\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Commands\ReloadSpritesCommand.h">
-      <Filter>Sources\Commands</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Helpers\SpritesHelper.h">
       <Filter>Sources\Helpers</Filter>
