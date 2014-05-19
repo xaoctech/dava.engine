@@ -99,9 +99,8 @@ void EventDispatcher::PerformEventWithData(int32 eventType, BaseObject *eventPar
     if(events.empty())
         return;
 
-    eventsCopy.clear();
-    eventsCopy.reserve(events.size());
-    std::transform(events.begin(), events.end(), std::back_inserter(eventsCopy), DAVA::AddressOf<Event>);
+    Vector<Event *> eventsCopy(events.size());
+    std::transform(events.begin(), events.end(), eventsCopy.begin(), AddressOf<Event>);
 
     Vector<Event *>::const_iterator it = eventsCopy.begin();
     Vector<Event *>::const_iterator end = eventsCopy.end();
