@@ -98,7 +98,7 @@ varying vec2 varTexCoord0;
 varying vec2 varTexCoord1;
 #endif
 
-#if defined(MATERIAL_GRASS_TRANSFORM)
+#if defined(MATERIAL_GRASS_BLEND)
 varying vec2 varTexCoord2;
 #endif
 
@@ -284,7 +284,9 @@ void main()
     
         pos.xy = lodScaledPos.xy;
     
+#if defined(MATERIAL_GRASS_BLEND)
         varTexCoord2.x = clusterLodScale;
+#endif
     
         if(inTangent.z < clusterDensity)
         {
@@ -308,6 +310,7 @@ void main()
         //gl_Position = worldViewProjMatrix * pos;
         //gl_Position = projMatrix * pos;
         //gl_Position = projMatrix * (worldViewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(pos.xy, 0.0, 0.0));
+    
     
         gl_Position = worldViewProjMatrix * pos;
     

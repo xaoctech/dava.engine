@@ -101,6 +101,7 @@ public:
     void DetachVertices();
     bool HasVertexAttachment() const;
 
+    inline eIndexFormat GetIndexFormat() const;
     
 private:
     Map<eVertexFormat, RenderDataStream *> streamMap;
@@ -130,6 +131,11 @@ private:
 		uint32 indexBuffer;
 	};
 };
+
+inline eIndexFormat RenderDataObject::GetIndexFormat() const
+{
+    return indexFormat;
+}
     
 };
 

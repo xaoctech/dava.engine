@@ -635,7 +635,7 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
         }
         
         RenderDataObject* indexBuffer = new RenderDataObject();
-        indexBuffer->SetIndices(EIF_16, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
+        indexBuffer->SetIndices(VEGETATION_INDEX_TYPE, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
         
         SortedBufferItem sortedBufferItem;
         sortedBufferItem.SetRenderDataObject(indexBuffer);

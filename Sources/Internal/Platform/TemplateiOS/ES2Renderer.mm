@@ -30,7 +30,15 @@ using namespace DAVA;
 {
 	if (self = [super init])
 	{
-		context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        EAGLContext* tmpContext = [EAGLContext alloc];
+		context = [tmpContext initWithAPI:kEAGLRenderingAPIOpenGLES3];
+        
+        if(nil == context)
+        {
+            [tmpContext release];
+            
+            context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        }
         
         if (!context || ![EAGLContext setCurrentContext:context])
 		{

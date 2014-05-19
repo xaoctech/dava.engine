@@ -62,7 +62,7 @@ uniform sampler2D lightmap; //[1]:ONCE
 #endif
 
 //#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_BLEND)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_BLEND) || defined(MATERIAL_GRASS_OPAQUE)
 varying highp vec2 varTexCoord1;
 #endif
 
@@ -117,15 +117,20 @@ varying lowp float varTime;
 uniform lowp vec4 flatColor;
 #endif
 
-#if defined(MATERIAL_GRASS_BLEND)
+#if defined(MATERIAL_GRASS_BLEND) || defined(MATERIAL_GRASS_OPAQUE)
 uniform sampler2D vegetationmap;
-varying vec2 varTexCoord2;
+#endif
 
 #if defined(VEGETATION_DRAW_LOD_COLOR)
 
 uniform vec3 lodColor;
 
 #endif
+
+
+#if defined(MATERIAL_GRASS_BLEND)
+
+varying vec2 varTexCoord2;
 
 #endif
 
@@ -369,6 +374,10 @@ void main()
     gl_FragColor = reflectionColor;
 #endif
 #endif
+
+#if defined(MATERIAL_GRASS_OPAQUE)
+    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+#endif
     
 #if defined(MATERIAL_GRASS_BLEND)
     
@@ -385,10 +394,14 @@ void main()
     gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
 #endif
     
+#endif
+
+#if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
+
 #if defined(VEGETATION_DRAW_LOD_COLOR)
     gl_FragColor.rgb += lodColor;
 #endif
-    
+
 #endif
     
 #if defined(VERTEX_FOG)

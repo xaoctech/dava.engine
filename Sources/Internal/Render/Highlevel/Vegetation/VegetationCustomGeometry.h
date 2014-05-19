@@ -76,11 +76,20 @@ public:
     virtual void ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray);
     
 private:
+
+    class CustomMaterialTransformer : public VegetationMaterialTransformer
+    {
+    public:
+        
+        virtual void TransformMaterialOnCreate(NMaterial* mat);
+    };
     
     struct ClusterPositionData
     {
         Vector3 pos;
         uint32 densityId;
+        uint32 matrixIndex;
+        float32 rotation;
     };
     
     struct ClusterResolutionData
@@ -88,8 +97,8 @@ private:
         ClusterPositionData position;
         
         uint32 layerId;
-        uint32 matrixIndex;
         uint32 resolutionId;
+        uint32 cellIndex;
     };
     
     struct CustomGeometryLayerData
@@ -170,6 +179,7 @@ private:
     void GenerateIndexData(Vector<VegetationIndex>& sourceIndices,
                            VegetationIndex startIndex,
                            uint32 clusterCount,
+                           uint32 clusterVertexCount,
                            Vector<VegetationVertex>& vertexData,
                            Vector<VegetationIndex>& indexData,
                            Vector<SortBufferData>& directionOffsets);
@@ -181,6 +191,10 @@ private:
     static bool PolygonByDistanceCompareFunction(const PolygonSortData& a, const PolygonSortData&  b);
     static bool ClusterByMatrixCompareFunction(const ClusterResolutionData& a, const ClusterResolutionData&  b);
     static int32 RandomShuffleFunc(int32 limit);
+    
+    void Rotate(float32 angle, Vector<Vector3>& sourcePositions, Vector<Vector3>& rotatedPositions);
+    
+    uint32 PrepareResolutionId(uint32 currentResolutionId, uint32 cellX, uint32 cellY) const;
     
 private:
     
