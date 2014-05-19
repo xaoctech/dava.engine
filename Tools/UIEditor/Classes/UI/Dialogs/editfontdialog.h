@@ -27,29 +27,62 @@
 =====================================================================================*/
 
 
-#ifndef UITEXTFIELDPROPERTYGRIDWIDGET_H
-#define UITEXTFIELDPROPERTYGRIDWIDGET_H
+#ifndef EDITFONTDIALOG_H
+#define EDITFONTDIALOG_H
 
-#include "textpropertygridwidget.h"
+#include <QDialog>
+#include <DAVAEngine.h>
 
-class QLabel;
+#include <QSpinBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QComboBox>
 
-class UITextFieldPropertyGridWidget : public TextPropertyGridWidget
+#include "ChangeFontPropertyCommand.h"
+
+using namespace DAVA;
+
+namespace Ui {
+class EditFontDialog;
+}
+
+class EditFontDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
-    explicit UITextFieldPropertyGridWidget(QWidget *parent = 0);
-    ~UITextFieldPropertyGridWidget();
+    explicit EditFontDialog(const String & editFontPresetName, QDialog *parent = 0);
+    ~EditFontDialog();
     
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
+    const ChangeFontPropertyCommandData &GetResult() {return dialogResult; }
     
-protected:
-    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
-                                             const QString& value);
-    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
-    virtual void FillComboboxes();
+private:
+    Ui::EditFontDialog *ui;
+    
+    ChangeFontPropertyCommandData dialogResult;
+    String currentLocale;
+    
+    void ConnectToSignals();
+    void DisconnectFromSignals();
+    
+    virtual void ProcessComboBoxValueChanged(QComboBox *senderWidget, const QString& value);
+    virtual void ProcessPushButtonClicked(QPushButton *senderWidget);
+    
+    void UpdateDefaultFontParams();
+    void UpdateLocalizedFontParams();
+    
+    void UpdateLineEditWidgetWithPropertyValue(QLineEdit *lineEditWidget);
+    void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);
+    void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox *spinBoxWidget);
+    void UpdateComboBoxWidgetWithPropertyValue(QComboBox *comboBoxWidget);
+    
+private slots:
+    void OnOkButtonClicked();
+    void OnRadioButtonClicked();
+    void OnPushButtonClicked();
+    void OnSpinBoxValueChanged(int newValue);
+    void OnComboBoxValueChanged(QString value);
 };
 
-#endif // UITEXTFIELDPROPERTYGRIDWIDGET_H
+#endif // EDITFONTDIALOG_H
