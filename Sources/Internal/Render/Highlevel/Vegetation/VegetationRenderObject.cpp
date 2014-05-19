@@ -49,16 +49,16 @@ static const uint32 MAX_DENSITY_LEVELS = 16;
 static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
 static const size_t MAX_RENDER_CELLS = 512;
-static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 70.0f * 70.0f; //meters * meters (square length)
-static const float32 MAX_VISIBLE_SCALING_DISTANCE = 50.0f * 50.0f;
+static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 50.0f * 50.0f; //meters * meters (square length)
+static const float32 MAX_VISIBLE_SCALING_DISTANCE = 40.0f * 40.0f;
 
 //static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 130.0f * 130.0f; //meters * meters (square length)
 //static const float32 MAX_VISIBLE_SCALING_DISTANCE = 100.0f * 100.0f;
     
 static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
-    
+  
 static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 6.0f);
-//static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 12.0f);
+//static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 6.0f);
 
 static float32 RESOLUTION_SCALE[] =
 {
@@ -106,7 +106,6 @@ static Color RESOLUTION_COLOR[] =
 
 #ifdef VEGETATION_DRAW_LOD_COLOR
 static const FastName UNIFORM_LOD_COLOR = FastName("lodColor");
-static const FastName FLAG_VEGETATION_DRAW_LOD_COLOR = FastName("VEGETATION_DRAW_LOD_COLOR");
 #endif
 
 inline uint32 MapCellSquareToResolutionIndex(uint32 cellSquare)
@@ -130,14 +129,15 @@ inline uint32 MapCellSquareToResolutionIndex(uint32 cellSquare)
 VegetationRenderObject::VegetationRenderObject() :
     vegetationMap(NULL),
     heightmap(NULL),
-    clusterLimit(0),
     halfWidth(0),
     halfHeight(0),
     maxPerturbationDistance(1000000.0f),
     layerVisibilityMask(0xFF),
     vegetationVisible(true),
     vegetationGeometry(NULL),
-    heightmapTexture(NULL)
+    heightmapTexture(NULL),
+    //cameraBias(25.0f)
+    cameraBias(0.0f)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -190,7 +190,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetHeightmap(GetHeightmap());
     vegetationRenderObject->SetVegetationMap(GetVegetationMap());
     vegetationRenderObject->SetTextureSheet(GetTextureSheetPath());
-    vegetationRenderObject->SetClusterLimit(GetClusterLimit());
+    vegetationRenderObject->SetLayerClusterLimit(GetLayerClusterLimit());
     vegetationRenderObject->SetVegetationMapPath(GetVegetationMapPath());
     vegetationRenderObject->SetHeightmapPath(GetHeightmapPath());
     vegetationRenderObject->SetLightmap(GetLightmapPath());
@@ -212,7 +212,7 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
     
     RenderObject::Save(archive, serializationContext);
     
-    archive->SetUInt32("vro.clusterLimit", GetClusterLimit());
+    archive->SetVector4("vro.clusterLayerLimit", GetLayerClusterLimit());
 
 	if(vegetationMapPath.IsEmpty() == false)
 	{
@@ -233,6 +233,11 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
 	{
 		archive->SetString("vro.lightmap", lightmapTexturePath.GetRelativePathname(serializationContext->GetScenePath()));
 	}
+    
+    if(customGeometryPath.IsEmpty() == false)
+    {
+        archive->SetString("vro.customGeometry", customGeometryPath.GetRelativePathname(serializationContext->GetScenePath()));
+    }
 }
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -256,7 +261,20 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     if(shouldLoadData)
     {
-        SetClusterLimit(archive->GetUInt32("vro.clusterLimit"));
+        String customGeometry = archive->GetString("vro.customGeometry");
+		if(customGeometry.empty() == false)
+		{
+			SetCustomGeometryPath(serializationContext->GetScenePath() + customGeometry);
+		}
+    
+        if(archive->IsKeyExists("vro.clusterLimit"))
+        {
+            SetClusterLimit(archive->GetUInt32("vro.clusterLimit"));
+        }
+        else
+        {
+            SetLayerClusterLimit(archive->GetVector4("vro.clusterLayerLimit"));
+        }
 
 		String vegmap = archive->GetString("vro.vegmap");
 		if(vegmap.empty() == false)
@@ -308,7 +326,15 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
         return;
     }
     
-    BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
+    Vector3 camPos = camera->GetPosition();
+    Vector3 camDir = camera->GetDirection();
+    camDir.z = 0.0f;
+    
+    camDir.Normalize();
+    camPos = camPos + camDir * cameraBias;
+    
+    //BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
+    BuildVisibleCellList(camPos, camera->GetFrustum(), visibleCells);
     
     std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
@@ -470,14 +496,13 @@ const FilePath& VegetationRenderObject::GetTextureSheetPath() const
 
 void VegetationRenderObject::SetClusterLimit(const uint32& maxClusters)
 {
-    clusterLimit = maxClusters;
-    
-    UpdateVegetationSetup();
+    Vector4 tmpVec(maxClusters, maxClusters, maxClusters, maxClusters);
+    SetLayerClusterLimit(tmpVec);
 }
 
 uint32 VegetationRenderObject::GetClusterLimit() const
 {
-    return clusterLimit;
+    return (clustersPerLayer.size() > 0) ? clustersPerLayer[0] : 0;
 }
 
 void VegetationRenderObject::SetHeightmap(Heightmap* _heightmap)
@@ -679,6 +704,10 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                     }
                 }
                 
+                //Vector3 center = node->data.bbox.GetCenter();
+                //center.z = 0.0f;
+                //float32 centerDistance = (cameraPoint - center).SquareLength();
+                
                 node->data.cameraDistance = refDistance;
                 
                 uint32 resolutionId = MapToResolution(node->data.cameraDistance);
@@ -800,7 +829,7 @@ bool VegetationRenderObject::IsValidGeometryData() const
              heightmap != NULL &&
              vegetationMap != NULL &&
              !textureSheetPath.IsEmpty() &&
-             clusterLimit > 0);
+             clustersPerLayer.size() > 0);
 }
     
 bool VegetationRenderObject::IsValidSpatialData() const
@@ -822,7 +851,7 @@ void VegetationRenderObject::UpdateVegetationSetup()
     
     if(IsValidGeometryData())
     {
-        CreateRenderData(clusterLimit);
+        CreateRenderData();
     }
     
     if(IsValidSpatialData())
@@ -922,10 +951,8 @@ void VegetationRenderObject::SetupHeightmapParameters(BaseObject * caller,
     tx->SetMinMagFilter(Texture::FILTER_NEAREST, Texture::FILTER_NEAREST);
 }
 
-void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
+void VegetationRenderObject::CreateRenderData()
 {
-    DVASSERT(maxClusters > 0);
-    
     InitLodRanges();
     
     if(renderData.size() > 0)
@@ -941,12 +968,18 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     if(!customGeometryPath.IsEmpty() &&
        customGeometryPath.Exists())
     {
-        InitWithCustomGeometry(maxClusters, materialFlags);
+        InitWithCustomGeometry(materialFlags);
     }
     else
     {
-        InitWithFixedGeometry(maxClusters, materialFlags);
+        InitWithFixedGeometry(materialFlags);
     }
+    
+#ifdef VEGETATION_DRAW_LOD_COLOR
+    
+    materialFlags.Insert(VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR);
+    
+#endif
     
     vegetationGeometry->Build(renderData, materialFlags);
     
@@ -972,9 +1005,9 @@ void VegetationRenderObject::CreateRenderData(uint32 maxClusters)
     }
 }
     
-void VegetationRenderObject::InitWithFixedGeometry(uint32 maxClusters, FastNameSet& materialFlags)
+void VegetationRenderObject::InitWithFixedGeometry(FastNameSet& materialFlags)
 {
-    vegetationGeometry = new VegetationFixedGeometry(maxClusters,
+    vegetationGeometry = new VegetationFixedGeometry(clustersPerLayer[0],
                                                      MAX_DENSITY_LEVELS,
                                                      MAX_CLUSTER_TYPES,
                                                      GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
@@ -991,23 +1024,11 @@ void VegetationRenderObject::InitWithFixedGeometry(uint32 maxClusters, FastNameS
     materialFlags.Insert(VegetationPropertyNames::FLAG_BILLBOARD_DRAW);
     materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
     materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_BLEND);
-    
-#ifdef VEGETATION_DRAW_LOD_COLOR
-    
-    materialFlags.Insert(VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR);
-    
-#endif
 }
 
-void VegetationRenderObject::InitWithCustomGeometry(uint32 maxClusters, FastNameSet& materialFlags)
+void VegetationRenderObject::InitWithCustomGeometry(FastNameSet& materialFlags)
 {
-    Vector<uint32> maxClustersArray;
-    for(uint32 i = 0; i < MAX_CLUSTER_TYPES; ++i)
-    {
-        maxClustersArray.push_back(maxClusters);
-    }
-    
-    vegetationGeometry = new VegetationCustomGeometry(maxClustersArray,
+    vegetationGeometry = new VegetationCustomGeometry(clustersPerLayer,
                                                       MAX_DENSITY_LEVELS,
                                                       GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
                                                       customGeometryPath,
@@ -1058,6 +1079,8 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             float32 clusterScale = 0.0f;
             float32 density = 0.0f;
             GetLayerDescription(cellLayerData, CLUSTER_SCALE_NORMALIZATION_VALUE, density, clusterScale);
+            
+            clusterScale *= distanceScale;
             
             uniforms[node->data.rdoIndex * 2 * 4 + clusterType] = density;
             uniforms[node->data.rdoIndex * 2 * 4 + 4 + clusterType] = clusterScale;
@@ -1213,8 +1236,27 @@ void VegetationRenderObject::SetCustomGeometryPath(const FilePath& path)
     
     if(IsValidGeometryData())
     {
-        CreateRenderData(clusterLimit);
+        CreateRenderData();
     }
+}
+
+void VegetationRenderObject::SetLayerClusterLimit(const Vector4& maxClusters)
+{
+    clustersPerLayer.clear();
+    clustersPerLayer.push_back((uint32)maxClusters.x);
+    clustersPerLayer.push_back((uint32)maxClusters.y);
+    clustersPerLayer.push_back((uint32)maxClusters.z);
+    clustersPerLayer.push_back((uint32)maxClusters.w);
+    
+    UpdateVegetationSetup();
+}
+    
+Vector4 VegetationRenderObject::GetLayerClusterLimit() const
+{
+    return (clustersPerLayer.size() > 0) ? Vector4(clustersPerLayer[0],
+                   clustersPerLayer[1],
+                   clustersPerLayer[2],
+                   clustersPerLayer[3]) : Vector4();
 }
 
 };

@@ -1627,11 +1627,11 @@ void NMaterial::Draw(PolygonGroup * polygonGroup)
 	// TODO: rethink this code
 	if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), 0);
 	}
 	else
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, polygonGroup->indexArray);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), polygonGroup->indexArray);
 	}
 }
 
@@ -1647,13 +1647,13 @@ void NMaterial::Draw(RenderDataObject* renderData, uint16* indices, uint16 index
 	// TODO: rethink this code
 	if(renderData->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, renderData->GetIndexFormat(), 0);
 	}
 	else
 	{
 		if(renderData->indexCount)
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, renderData->indices);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, renderData->GetIndexFormat(), renderData->indices);
 		}
 		else
 		{

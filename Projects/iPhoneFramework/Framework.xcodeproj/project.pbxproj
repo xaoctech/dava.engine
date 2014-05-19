@@ -74,10 +74,26 @@
 		6280BAA518D6F7DC007809B7 /* DateTimeApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6280BAA418D6F7DC007809B7 /* DateTimeApple.mm */; };
 		62BAA48F178EF915003DE32C /* MailComposeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 62BAA48D178EF915003DE32C /* MailComposeDelegate.h */; };
 		62BAA492178EF952003DE32C /* MailComposeDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 62BAA491178EF952003DE32C /* MailComposeDelegate.mm */; };
-		641A61FB18CE0F4D003359E7 /* VegetationRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 641A61F918CE0F4D003359E7 /* VegetationRenderObject.cpp */; };
-		641A61FC18CE0F4D003359E7 /* VegetationRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 641A61FA18CE0F4D003359E7 /* VegetationRenderObject.h */; };
 		641A61FF18CE0F61003359E7 /* FoliageSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 641A61FD18CE0F61003359E7 /* FoliageSystem.cpp */; };
 		641A620018CE0F61003359E7 /* FoliageSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 641A61FE18CE0F61003359E7 /* FoliageSystem.h */; };
+		6432418F1923A8D300F1C7BB /* RenderBatchPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6432417D1923A8D300F1C7BB /* RenderBatchPool.cpp */; };
+		643241901923A8D300F1C7BB /* RenderBatchPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 6432417E1923A8D300F1C7BB /* RenderBatchPool.h */; };
+		643241911923A8D300F1C7BB /* TextureSheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6432417F1923A8D300F1C7BB /* TextureSheet.cpp */; };
+		643241921923A8D300F1C7BB /* TextureSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 643241801923A8D300F1C7BB /* TextureSheet.h */; };
+		643241931923A8D300F1C7BB /* VegetationCustomGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643241811923A8D300F1C7BB /* VegetationCustomGeometry.cpp */; };
+		643241941923A8D300F1C7BB /* VegetationCustomGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 643241821923A8D300F1C7BB /* VegetationCustomGeometry.h */; };
+		643241951923A8D300F1C7BB /* VegetationFixedGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643241831923A8D300F1C7BB /* VegetationFixedGeometry.cpp */; };
+		643241961923A8D300F1C7BB /* VegetationFixedGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 643241841923A8D300F1C7BB /* VegetationFixedGeometry.h */; };
+		643241971923A8D300F1C7BB /* VegetationGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643241851923A8D300F1C7BB /* VegetationGeometry.cpp */; };
+		643241981923A8D300F1C7BB /* VegetationGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 643241861923A8D300F1C7BB /* VegetationGeometry.h */; };
+		643241991923A8D300F1C7BB /* VegetationMaterialTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 643241871923A8D300F1C7BB /* VegetationMaterialTransformer.h */; };
+		6432419A1923A8D300F1C7BB /* VegetationPropertyNames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 643241881923A8D300F1C7BB /* VegetationPropertyNames.cpp */; };
+		6432419B1923A8D300F1C7BB /* VegetationPropertyNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 643241891923A8D300F1C7BB /* VegetationPropertyNames.h */; };
+		6432419C1923A8D300F1C7BB /* VegetationRenderData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6432418A1923A8D300F1C7BB /* VegetationRenderData.cpp */; };
+		6432419D1923A8D300F1C7BB /* VegetationRenderData.h in Headers */ = {isa = PBXBuildFile; fileRef = 6432418B1923A8D300F1C7BB /* VegetationRenderData.h */; };
+		6432419E1923A8D300F1C7BB /* VegetationRenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6432418C1923A8D300F1C7BB /* VegetationRenderObject.cpp */; };
+		6432419F1923A8D300F1C7BB /* VegetationRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 6432418D1923A8D300F1C7BB /* VegetationRenderObject.h */; };
+		643241A01923A8D300F1C7BB /* VegetationSpatialData.h in Headers */ = {isa = PBXBuildFile; fileRef = 6432418E1923A8D300F1C7BB /* VegetationSpatialData.h */; };
 		840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
 		840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 840ED3CA16D5070400D2BA6C /* DPIHelper.h */; };
 		84E5E0FE174D02EA0001C74F /* OpenUDIDApple.h in Headers */ = {isa = PBXBuildFile; fileRef = 84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */; };
@@ -852,10 +868,26 @@
 		6280BAA418D6F7DC007809B7 /* DateTimeApple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DateTimeApple.mm; sourceTree = "<group>"; };
 		62BAA48D178EF915003DE32C /* MailComposeDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailComposeDelegate.h; sourceTree = "<group>"; };
 		62BAA491178EF952003DE32C /* MailComposeDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MailComposeDelegate.mm; sourceTree = "<group>"; };
-		641A61F918CE0F4D003359E7 /* VegetationRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationRenderObject.cpp; sourceTree = "<group>"; };
-		641A61FA18CE0F4D003359E7 /* VegetationRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationRenderObject.h; sourceTree = "<group>"; };
 		641A61FD18CE0F61003359E7 /* FoliageSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FoliageSystem.cpp; sourceTree = "<group>"; };
 		641A61FE18CE0F61003359E7 /* FoliageSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoliageSystem.h; sourceTree = "<group>"; };
+		6432417D1923A8D300F1C7BB /* RenderBatchPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderBatchPool.cpp; sourceTree = "<group>"; };
+		6432417E1923A8D300F1C7BB /* RenderBatchPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderBatchPool.h; sourceTree = "<group>"; };
+		6432417F1923A8D300F1C7BB /* TextureSheet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureSheet.cpp; sourceTree = "<group>"; };
+		643241801923A8D300F1C7BB /* TextureSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureSheet.h; sourceTree = "<group>"; };
+		643241811923A8D300F1C7BB /* VegetationCustomGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationCustomGeometry.cpp; sourceTree = "<group>"; };
+		643241821923A8D300F1C7BB /* VegetationCustomGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationCustomGeometry.h; sourceTree = "<group>"; };
+		643241831923A8D300F1C7BB /* VegetationFixedGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationFixedGeometry.cpp; sourceTree = "<group>"; };
+		643241841923A8D300F1C7BB /* VegetationFixedGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationFixedGeometry.h; sourceTree = "<group>"; };
+		643241851923A8D300F1C7BB /* VegetationGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationGeometry.cpp; sourceTree = "<group>"; };
+		643241861923A8D300F1C7BB /* VegetationGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationGeometry.h; sourceTree = "<group>"; };
+		643241871923A8D300F1C7BB /* VegetationMaterialTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationMaterialTransformer.h; sourceTree = "<group>"; };
+		643241881923A8D300F1C7BB /* VegetationPropertyNames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationPropertyNames.cpp; sourceTree = "<group>"; };
+		643241891923A8D300F1C7BB /* VegetationPropertyNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationPropertyNames.h; sourceTree = "<group>"; };
+		6432418A1923A8D300F1C7BB /* VegetationRenderData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationRenderData.cpp; sourceTree = "<group>"; };
+		6432418B1923A8D300F1C7BB /* VegetationRenderData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationRenderData.h; sourceTree = "<group>"; };
+		6432418C1923A8D300F1C7BB /* VegetationRenderObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VegetationRenderObject.cpp; sourceTree = "<group>"; };
+		6432418D1923A8D300F1C7BB /* VegetationRenderObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationRenderObject.h; sourceTree = "<group>"; };
+		6432418E1923A8D300F1C7BB /* VegetationSpatialData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VegetationSpatialData.h; sourceTree = "<group>"; };
 		840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DPIHelperiOS.mm; sourceTree = "<group>"; };
 		840ED3CA16D5070400D2BA6C /* DPIHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPIHelper.h; sourceTree = "<group>"; };
 		84E5E0FC174D02EA0001C74F /* OpenUDIDApple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenUDIDApple.h; sourceTree = "<group>"; };
@@ -1660,6 +1692,31 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
+		6432417C1923A8D300F1C7BB /* Vegetation */ = {
+			isa = PBXGroup;
+			children = (
+				6432417D1923A8D300F1C7BB /* RenderBatchPool.cpp */,
+				6432417E1923A8D300F1C7BB /* RenderBatchPool.h */,
+				6432417F1923A8D300F1C7BB /* TextureSheet.cpp */,
+				643241801923A8D300F1C7BB /* TextureSheet.h */,
+				643241811923A8D300F1C7BB /* VegetationCustomGeometry.cpp */,
+				643241821923A8D300F1C7BB /* VegetationCustomGeometry.h */,
+				643241831923A8D300F1C7BB /* VegetationFixedGeometry.cpp */,
+				643241841923A8D300F1C7BB /* VegetationFixedGeometry.h */,
+				643241851923A8D300F1C7BB /* VegetationGeometry.cpp */,
+				643241861923A8D300F1C7BB /* VegetationGeometry.h */,
+				643241871923A8D300F1C7BB /* VegetationMaterialTransformer.h */,
+				643241881923A8D300F1C7BB /* VegetationPropertyNames.cpp */,
+				643241891923A8D300F1C7BB /* VegetationPropertyNames.h */,
+				6432418A1923A8D300F1C7BB /* VegetationRenderData.cpp */,
+				6432418B1923A8D300F1C7BB /* VegetationRenderData.h */,
+				6432418C1923A8D300F1C7BB /* VegetationRenderObject.cpp */,
+				6432418D1923A8D300F1C7BB /* VegetationRenderObject.h */,
+				6432418E1923A8D300F1C7BB /* VegetationSpatialData.h */,
+			);
+			path = Vegetation;
+			sourceTree = "<group>";
+		};
 		A695E52F18113327008A0F20 /* SceneFile */ = {
 			isa = PBXGroup;
 			children = (
@@ -2239,8 +2296,7 @@
 		E8B3C92316B9326D002BD35F /* Highlevel */ = {
 			isa = PBXGroup;
 			children = (
-				641A61F918CE0F4D003359E7 /* VegetationRenderObject.cpp */,
-				641A61FA18CE0F4D003359E7 /* VegetationRenderObject.h */,
+				6432417C1923A8D300F1C7BB /* Vegetation */,
 				A6AFDEFA1871C3D1006E43A1 /* SpeedTreeObject.cpp */,
 				A6AFDEFB1871C3D1006E43A1 /* SpeedTreeObject.h */,
 				A6AFDED3187187D3006E43A1 /* RenderLayerManager.cpp */,
@@ -2710,6 +2766,7 @@
 				E8B3CA9B16B9326E002BD35F /* BaseObject.h in Headers */,
 				E8B3CA9D16B9326E002BD35F /* BaseObjectChecker.h in Headers */,
 				E8B3CA9E16B9326E002BD35F /* BaseTypes.h in Headers */,
+				643241991923A8D300F1C7BB /* VegetationMaterialTransformer.h in Headers */,
 				641A620018CE0F61003359E7 /* FoliageSystem.h in Headers */,
 				E8B3CAA016B9326E002BD35F /* Data.h in Headers */,
 				E8B3CAA216B9326E002BD35F /* DynamicObjectCache.h in Headers */,
@@ -2823,6 +2880,7 @@
 				E8B3CB6E16B9326E002BD35F /* NetworkDelegate.h in Headers */,
 				E8B3CB7016B9326E002BD35F /* NetworkPacket.h in Headers */,
 				E8B3CB7116B9326E002BD35F /* TCPServer.h in Headers */,
+				6432419B1923A8D300F1C7BB /* VegetationPropertyNames.h in Headers */,
 				A61171481860C24D00E18F8C /* StaticOcclusion.h in Headers */,
 				E8B3CB7316B9326E002BD35F /* WFNetworkConnection.h in Headers */,
 				E8B3CB7616B9326E002BD35F /* Particle.h in Headers */,
@@ -2896,7 +2954,6 @@
 				E8B3CC2816B9326E002BD35F /* RenderEffect.h in Headers */,
 				E8B3CC2A16B9326E002BD35F /* RenderGrayscaleEffect.h in Headers */,
 				E8B3CC2C16B9326E002BD35F /* RenderHelper.h in Headers */,
-				641A61FC18CE0F4D003359E7 /* VegetationRenderObject.h in Headers */,
 				E8B3CC2E16B9326E002BD35F /* RenderManager.h in Headers */,
 				E8B3CC3316B9326E002BD35F /* RenderManagerGL20.h in Headers */,
 				A6AFDEDC187187D3006E43A1 /* VisibilityArray.h in Headers */,
@@ -2910,6 +2967,7 @@
 				E8B3CC4716B9326E002BD35F /* Texture.h in Headers */,
 				A6AFDEDB187187D3006E43A1 /* RenderPassManager.h in Headers */,
 				E8B3CC4916B9326E002BD35F /* TextureDescriptor.h in Headers */,
+				643241921923A8D300F1C7BB /* TextureSheet.h in Headers */,
 				E8B3CC4C16B9326E002BD35F /* UberShader.h in Headers */,
 				E8B3CC4D16B9326E002BD35F /* VertexBuffer.h in Headers */,
 				50C7D5F9186082A600D8936D /* StaticOcclusionSystem.h in Headers */,
@@ -2957,6 +3015,7 @@
 				E8B3CCAE16B9326E002BD35F /* SceneNodeAnimationList.h in Headers */,
 				E8B3CCB016B9326E002BD35F /* ShadowVolumeNode.h in Headers */,
 				E8B3CCB216B9326E002BD35F /* SkeletonNode.h in Headers */,
+				643241961923A8D300F1C7BB /* VegetationFixedGeometry.h in Headers */,
 				E8B3CCB416B9326E002BD35F /* SpriteNode.h in Headers */,
 				E8B3CCB716B9326E002BD35F /* SwitchNode.h in Headers */,
 				E8B3CCB916B9326E002BD35F /* BaseProcessSystem.h in Headers */,
@@ -2970,6 +3029,7 @@
 				E8B3CCCB16B9326E002BD35F /* SwitchSystem.h in Headers */,
 				E8B3CCCD16B9326E002BD35F /* TransformSystem.h in Headers */,
 				E8B3CCD116B9326E002BD35F /* UserNode.h in Headers */,
+				643241A01923A8D300F1C7BB /* VegetationSpatialData.h in Headers */,
 				E8B3CCE416B9326E002BD35F /* SoundSystem.h in Headers */,
 				E8B3CCE816B9326E002BD35F /* ScrollHelper.h in Headers */,
 				E8B3CCEA16B9326E002BD35F /* TheoraPlayer.h in Headers */,
@@ -3023,6 +3083,7 @@
 				C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */,
 				17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */,
 				17F53E3116D36FF3004D5099 /* UIWebView.h in Headers */,
+				643241941923A8D300F1C7BB /* VegetationCustomGeometry.h in Headers */,
 				17F53E3416D3705E004D5099 /* WebViewControliOS.h in Headers */,
 				840ED3CB16D5070400D2BA6C /* DPIHelper.h in Headers */,
 				CC247FF216D69F1700183D40 /* DVAssertMessage.h in Headers */,
@@ -3064,11 +3125,13 @@
 				50C7D605186082D600D8936D /* StaticOcclusionRenderPass.h in Headers */,
 				17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */,
 				EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */,
+				643241901923A8D300F1C7BB /* RenderBatchPool.h in Headers */,
 				E8C0A6FB17D5D8B300F8F93C /* UIScrollView.h in Headers */,
 				E8C0A6FF17D5D8EC00F8F93C /* UIScrollViewContainer.h in Headers */,
 				CC84B04118211BCE00934482 /* JobManager.h in Headers */,
 				17DC600A17DE16D40075813E /* IMovieViewControl.h in Headers */,
 				17DC600C17DE16D40075813E /* UIMovieView.h in Headers */,
+				6432419D1923A8D300F1C7BB /* VegetationRenderData.h in Headers */,
 				17DC601017DE18460075813E /* MovieViewControliOS.h in Headers */,
 				EA84E17617FAC20100304C3C /* SpatialTree.h in Headers */,
 				02D4CFC118055E29007EC9EC /* FMODSoundEvent.h in Headers */,
@@ -3081,6 +3144,8 @@
 				A6919536183A6E9B00D598AE /* RenderStateData.h in Headers */,
 				EAADA0061892A48E001E1AA2 /* UIParticles.h in Headers */,
 				A6919538183A6E9B00D598AE /* UniqueStateSet.h in Headers */,
+				6432419F1923A8D300F1C7BB /* VegetationRenderObject.h in Headers */,
+				643241981923A8D300F1C7BB /* VegetationGeometry.h in Headers */,
 				A670F2E818479DD20030E075 /* TextureStateData.h in Headers */,
 				9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */,
 				9A011EB2802FEC4E0A4AA289 /* GamepadManager.h in Headers */,
@@ -3173,6 +3238,7 @@
 				E8B3CA9F16B9326E002BD35F /* Data.cpp in Sources */,
 				E8B3CAA116B9326E002BD35F /* DynamicObjectCache.cpp in Sources */,
 				E8B3CAA316B9326E002BD35F /* EventDispatcher.cpp in Sources */,
+				6432418F1923A8D300F1C7BB /* RenderBatchPool.cpp in Sources */,
 				E8B3CAA616B9326E002BD35F /* FastName.cpp in Sources */,
 				E8B3CAA916B9326E002BD35F /* FixedSizePoolAllocator.cpp in Sources */,
 				E8B3CAB316B9326E002BD35F /* Message.cpp in Sources */,
@@ -3197,6 +3263,7 @@
 				E8B3CAEB16B9326E002BD35F /* FileDownloader.cpp in Sources */,
 				E8B3CAEE16B9326E002BD35F /* Component.cpp in Sources */,
 				E8B3CAF016B9326E002BD35F /* SceneSystem.cpp in Sources */,
+				643241951923A8D300F1C7BB /* VegetationFixedGeometry.cpp in Sources */,
 				E8B3CB1016B9326E002BD35F /* Bitstream.cpp in Sources */,
 				E8B3CB1216B9326E002BD35F /* DynamicMemoryFile.cpp in Sources */,
 				E8B3CB1416B9326E002BD35F /* File.cpp in Sources */,
@@ -3291,6 +3358,7 @@
 				E8B3CC0916B9326E002BD35F /* Image.cpp in Sources */,
 				E8B3CC0B16B9326E002BD35F /* Image.mm in Sources */,
 				E8B3CC0D16B9326E002BD35F /* ImageLoader.cpp in Sources */,
+				643241911923A8D300F1C7BB /* TextureSheet.cpp in Sources */,
 				E8B3CC1016B9326E002BD35F /* LibDxtHelper.cpp in Sources */,
 				E8B3CC1216B9326E002BD35F /* LibPngHelpers.cpp in Sources */,
 				E8B3CC1416B9326E002BD35F /* LibPVRHelper.cpp in Sources */,
@@ -3303,9 +3371,11 @@
 				E8B3CC2316B9326E002BD35F /* RenderBase.cpp in Sources */,
 				50C7D5FC186082B100D8936D /* StaticOcclusionComponent.cpp in Sources */,
 				E8B3CC2516B9326E002BD35F /* RenderDataObject.cpp in Sources */,
+				6432419A1923A8D300F1C7BB /* VegetationPropertyNames.cpp in Sources */,
 				E8B3CC2716B9326E002BD35F /* RenderEffect.cpp in Sources */,
 				E8B3CC2916B9326E002BD35F /* RenderGrayscaleEffect.cpp in Sources */,
 				E8B3CC2B16B9326E002BD35F /* RenderHelper.cpp in Sources */,
+				6432419C1923A8D300F1C7BB /* VegetationRenderData.cpp in Sources */,
 				E8B3CC2D16B9326E002BD35F /* RenderManager.cpp in Sources */,
 				E8B3CC3016B9326E002BD35F /* RenderManagerFactory.cpp in Sources */,
 				E8B3CC3116B9326E002BD35F /* RenderManagerGL.cpp in Sources */,
@@ -3345,6 +3415,7 @@
 				E8B3CC7616B9326E002BD35F /* RenderComponent.cpp in Sources */,
 				E8B3CC7816B9326E002BD35F /* SwitchComponent.cpp in Sources */,
 				E8B3CC7A16B9326E002BD35F /* TransformComponent.cpp in Sources */,
+				643241931923A8D300F1C7BB /* VegetationCustomGeometry.cpp in Sources */,
 				E8B3CC7C16B9326E002BD35F /* UpdatableComponent.cpp in Sources */,
 				E8B3CC7E16B9326E002BD35F /* DataNode.cpp in Sources */,
 				E8B3CC8316B9326E002BD35F /* ImposterManager.cpp in Sources */,
@@ -3396,6 +3467,7 @@
 				E8B3CCF316B9326E002BD35F /* UIControlSystem.cpp in Sources */,
 				E8B3CCF516B9326E002BD35F /* UIEvent.cpp in Sources */,
 				E8B3CCF716B9326E002BD35F /* UIFadeTransition.cpp in Sources */,
+				643241971923A8D300F1C7BB /* VegetationGeometry.cpp in Sources */,
 				E8B3CCF916B9326E002BD35F /* UIFileSystemDialog.cpp in Sources */,
 				E8B3CCFB16B9326E002BD35F /* UIHierarchy.cpp in Sources */,
 				E8B3CCFD16B9326E002BD35F /* UIHierarchyCell.cpp in Sources */,
@@ -3449,7 +3521,6 @@
 				E8BD1F0C16DE4A9C00499E18 /* MailSender.cpp in Sources */,
 				0282B8B218BC8C88006F1EE4 /* FMODFileSoundEvent.cpp in Sources */,
 				E8BD1F0E16DE4A9C00499E18 /* MailSenderMacOS.mm in Sources */,
-				641A61FB18CE0F4D003359E7 /* VegetationRenderObject.cpp in Sources */,
 				E8FC1307186972C80095D8FE /* QualitySettingsSystem.cpp in Sources */,
 				E95B4C5C16DF78EE00880713 /* UISpinner.cpp in Sources */,
 				A6AFDEFC1871C3D1006E43A1 /* SpeedTreeObject.cpp in Sources */,
@@ -3503,6 +3574,7 @@
 				9A0116F3967F43C036364993 /* GamepadDevice.mm in Sources */,
 				624C87F218C6160F00E1049D /* DateTime.cpp in Sources */,
 				9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */,
+				6432419E1923A8D300F1C7BB /* VegetationRenderObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

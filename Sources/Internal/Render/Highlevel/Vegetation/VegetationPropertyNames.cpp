@@ -44,6 +44,8 @@ const FastName VegetationPropertyNames::FLAG_FRAMEBUFFER_FETCH("FRAMEBUFFER_FETC
 const FastName VegetationPropertyNames::FLAG_BILLBOARD_DRAW("MATERIAL_GRASS_BILLBOARD");
 const FastName VegetationPropertyNames::FLAG_GRASS_TRANSFORM("MATERIAL_GRASS_TRANSFORM");
 const FastName VegetationPropertyNames::FLAG_GRASS_BLEND("MATERIAL_GRASS_BLEND");
+const FastName VegetationPropertyNames::FLAG_GRASS_OPAQUE("MATERIAL_GRASS_OPAQUE");
+const FastName VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR("VEGETATION_DRAW_LOD_COLOR");
     
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH("HIGH");
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_LOW("LOW");

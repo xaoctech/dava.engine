@@ -126,6 +126,12 @@ public:
     const FilePath& GetCustomGeometryPath() const;
     void SetCustomGeometryPath(const FilePath& path);
     
+    void SetCameraBias(const float32& bias) {cameraBias = bias;}
+    float32 GetCameraBias() const {return cameraBias;}
+    
+    void SetLayerClusterLimit(const Vector4& maxClusters);
+    Vector4 GetLayerClusterLimit() const;
+    
 private:
     
     bool IsValidGeometryData() const;
@@ -164,7 +170,7 @@ private:
     
     void SetupHeightmapParameters(BaseObject * caller, void * param, void *callerData);
     
-    void CreateRenderData(uint32 maxClusters);
+    void CreateRenderData();
     
     bool ReadyToRender(bool externalRenderFlag);
     
@@ -188,14 +194,13 @@ private:
     
     void ClearRenderBatches();
     
-    void InitWithFixedGeometry(uint32 maxClusters, FastNameSet& materialFlags);
-    void InitWithCustomGeometry(uint32 maxClusters, FastNameSet& materialFlags);
+    void InitWithFixedGeometry(FastNameSet& materialFlags);
+    void InitWithCustomGeometry(FastNameSet& materialFlags);
     
 private:
     
     Heightmap* heightmap;
     VegetationMap* vegetationMap;
-    uint32 clusterLimit;
     Vector3 worldSize;
     Vector<Vector2> unitWorldSize;
     Vector2 heightmapScale;
@@ -238,10 +243,13 @@ private:
     
     Texture* heightmapTexture;
     
+    float32 cameraBias;
+    Vector<uint32> clustersPerLayer;
+    
 public:
     
     INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
-                         PROPERTY("density", "Base density", GetClusterLimit, SetClusterLimit, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("density", "Base density", GetLayerClusterLimit, SetLayerClusterLimit, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("densityMap", "Density map", GetVegetationMapPath, SetVegetationMap, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmap, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("textureSheet", "Texture sheet", GetTextureSheetPath, SetTextureSheet, I_SAVE | I_EDIT | I_VIEW)
@@ -250,6 +258,7 @@ public:
                          PROPERTY("visibilityDistance", "Visibility distances", GetVisibilityDistance, SetVisibilityDistance, I_EDIT | I_VIEW)
                          PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
                          PROPERTY("customGeometry", "Custom geometry", GetCustomGeometryPath, SetCustomGeometryPath, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("cameraBias", "Camera Bias", GetCameraBias, SetCameraBias, I_EDIT | I_VIEW)
                          );
     
 };
@@ -334,6 +343,9 @@ inline uint8* VegetationRenderObject::GetCellValue(int x, int y, const Vegetatio
     uint8* vegetationMapValuePtr = (map.data + cellDescriptionIndex * 4);
 
     return vegetationMapValuePtr;
+    
+    //static uint32 dummy = 0xFFFFFFFF;
+    //return (uint8*)&dummy;
 }
 
 inline void VegetationRenderObject::GetLayerDescription(uint8 cellLayerData,
