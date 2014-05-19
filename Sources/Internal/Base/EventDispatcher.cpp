@@ -114,7 +114,7 @@ void EventDispatcher::PerformEventWithData(int32 eventType, BaseObject *eventPar
     List<Event>::const_iterator end = events.end();
     for(; it != end; ++it)
     {
-        if( !(*it).needDelete && (*it).eventType == eventType)
+        if((*it).eventType == eventType && !(*it).needDelete)
         {
             (*it).msg(eventParam, callerData);
         }
