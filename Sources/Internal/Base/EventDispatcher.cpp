@@ -56,7 +56,7 @@ bool EventDispatcher::RemoveEvent(int32 eventType, const Message &msg)
 	for(; it != events.end(); it++)
 	{
 		//if(Event(*it).msg == msg && Event(*it).eventType == eventType)
-		if((it->msg == msg) && (it->eventType == eventType))
+		if((it->msg == msg) && (it->eventType == eventType) && !it->needDelete)
 		{
 			it->needDelete = true;
 			if( !eraseLocked )
@@ -69,9 +69,10 @@ bool EventDispatcher::RemoveEvent(int32 eventType, const Message &msg)
 	
 bool EventDispatcher::RemoveAllEvents()
 {
-	int32 size = (int32)events.size();
+    int32 removedEventsCount = 0;
     if( !eraseLocked )
     {
+        removedEventsCount = (int32)events.size();
         events.clear();
     }
     else
@@ -80,10 +81,14 @@ bool EventDispatcher::RemoveAllEvents()
         List<Event>::const_iterator end = events.end();
         for(; it != end; ++it)
         {
-            (*it).needDelete = true;
+            if(!(*it).needDelete)
+            {
+                (*it).needDelete = true;
+                ++removedEventsCount;
+            }
         }
     }
-	return (size != 0);
+    return (removedEventsCount != 0);
 }
 
 void EventDispatcher::PerformEvent(int32 eventType)
