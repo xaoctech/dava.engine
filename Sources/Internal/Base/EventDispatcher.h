@@ -122,7 +122,6 @@ protected:
 	};
 	
 	List<Event> events;
-    Vector<Event *> eventsCopy;
 };
 	
 /**
