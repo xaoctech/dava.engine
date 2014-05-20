@@ -323,7 +323,7 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                     timeTotalCulling += timeCulling;
 
                     uint64 timeRendering = SystemTimer::Instance()->GetAbsoluteNano();
-                    staticOcclusionRenderPass->Draw(camera, renderSystem);
+                    staticOcclusionRenderPass->Draw(renderSystem);
                     timeRendering = SystemTimer::Instance()->GetAbsoluteNano() - timeRendering;
                     timeTotalRendering += timeRendering;
                     

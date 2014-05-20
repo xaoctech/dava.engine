@@ -273,18 +273,8 @@ RenderSystem * RenderObject::GetRenderSystem()
 	return renderSystem;
 }
 
-void RenderObject::BakeTransform(const Matrix4 & transform)
+void RenderObject::BakeGeometry(const Matrix4 & transform)
 {
-    for(int i = 0; i < GetRenderBatchCount(); ++i)
-    {
-        DAVA::RenderBatch *rb = GetRenderBatch(i);
-        DAVA::PolygonGroup *pg = rb->GetPolygonGroup();
-
-        for(uint32 i = 0; i < pg->vertexCount; ++i)
-        {
-            pg->vertexArray[i] = pg->vertexArray[i] * transform;
-        }
-    }
 }
 
 void RenderObject::RecalculateWorldBoundingBox()
@@ -316,12 +306,12 @@ void RenderObject::SetSwitchIndex(int32 _switchIndex)
 	}
 }
 
-int32 RenderObject::GetLodIndex()
+int32 RenderObject::GetLodIndex() const
 {
     return lodIndex;
 }
 
-int32 RenderObject::GetSwitchIndex()
+int32 RenderObject::GetSwitchIndex() const
 {
     return switchIndex;
 }

@@ -123,6 +123,10 @@ void StaticOcclusionBuildSystem::Cancel()
     
 void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * messageData, void * callerData)
 {
+    if (activeIndex == -1)return; // System inactive
+    
+    SetCamera(GetScene()->GetCurrentCamera());
+
     Entity * entity = entities[activeIndex];
     StaticOcclusionComponent * occlusionComponent = (StaticOcclusionComponent*)entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT);
     TransformComponent * transformComponent = (TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT);
@@ -275,8 +279,6 @@ void StaticOcclusionBuildSystem::SceneForceLod(int32 forceLodIndex)
 
 void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
 {
-    SetCamera(GetScene()->GetClipCamera());
-
     messageQueue.DispatchMessages();
 }
     
@@ -335,7 +337,7 @@ StaticOcclusionSystem::~StaticOcclusionSystem()
 
 void StaticOcclusionSystem::Process(float32 timeElapsed)
 {
-    SetCamera(GetScene()->GetClipCamera());
+    SetCamera(GetScene()->GetCurrentCamera());
 
     // Verify that system is initialized
     if (!camera)return;

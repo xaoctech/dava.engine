@@ -93,6 +93,10 @@ public:
 		Caps() 
 		{
 			isHardwareCursorSupported = false;
+
+			isPVRTC2Supported = false;
+			isOpenGLES3Supported = false;
+
 			isFramebufferFetchSupported = isPVRTCSupported = isETCSupported = isDXTSupported = isATCSupported = false;
 			isVertexTextureUnitsSupported = isBGRA8888Supported = isFloat16Supported = isFloat32Supported = false;
             
@@ -104,7 +108,9 @@ public:
         Core::eRenderer renderer;
 		bool isHardwareCursorSupported;
         bool isPVRTCSupported;
-        bool isETCSupported;
+		bool isPVRTC2Supported;
+		bool isETCSupported;
+        bool isOpenGLES3Supported;
         bool isBGRA8888Supported;
         bool isFloat16Supported;
         bool isFloat32Supported;
@@ -134,6 +140,7 @@ public:
 		uint32 textureStateFullSwitches;
 		
 		uint32 attachRenderDataCount;
+        uint32 attachRenderDataSkipCount;
         uint32 dynamicParamUniformBindCount;
         uint32 materialParamUniformBindCount;
         uint32 spriteDrawCount;
@@ -445,11 +452,14 @@ public:
     
 	void SetDrawTranslate(const Vector3 &offset);
 
+    const Vector2& GetDrawTranslate() const;
+
 	/** 
 	 \brief 
 	 \param[in] offset
 	 */
 	void SetDrawScale(const Vector2 &scale);
+    const Vector2& GetDrawScale() const;
 
 	void IdentityDrawMatrix();
 	void IdentityMappingMatrix();
@@ -663,7 +673,7 @@ public:
     RenderState currentState;
     RenderState hardwareState;
 
-    int32 enabledAttribCount;
+    int32 cachedEnabledStreams;
 
     
     int32 renderOrientation;
@@ -676,6 +686,7 @@ public:
 	Shader * currentRenderEffect;
 	
     RenderDataObject * currentRenderData;
+    RenderDataObject * attachedRenderData;
 
     Rect viewport;
     

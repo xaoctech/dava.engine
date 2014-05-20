@@ -73,6 +73,11 @@ public:
 	bool IsDropEnable(const Vector2& pos)const;
 	
     void SetScreenControl(ScreenControl* control);
+    ScreenControl* GetScreenControl() const;
+
+    // Screen scale/position is changed.
+    void SetScreenScaleChangedFlag();
+    void SetScreenPositionChangedFlag();
 
 private:
 	enum InputState
@@ -85,6 +90,14 @@ private:
         InputStateGuideMove
 	};
 	
+    enum eKeyboardMoveDirection
+    {
+        moveUp,
+        moveDown,
+        moveLeft,
+        moveRight
+    };
+
 	void GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST& list, const Rect& rect, const HierarchyTreeNode* parent) const;
 	
 	class SmartSelection
@@ -119,8 +132,13 @@ private:
 	void ResetMoveDelta();
 	void SaveControlsPostion();
 
+    // Entry point for performing move from keyboard.
+    void DoKeyboardMove(eKeyboardMoveDirection moveDirection);
+
 	void MoveControl(const Vector2& delta);
+
     void MoveGuide(HierarchyTreeScreenNode* screenNode);
+    void MoveGuides(eKeyboardMoveDirection moveDirection, const Vector2& delta);
 
 	void DeleteSelectedControls();
     void DeleteSelectedGuides(HierarchyTreeScreenNode* screenNode);
@@ -171,7 +189,10 @@ private:
 
     // Screen currently displayed in UIEditor (might be NULL).
     ScreenControl* screenControl;
-	
+
+    bool isNeedHandleScreenScaleChanged;
+    bool isNeedHandleScreenPositionChanged;
+
     // Verify whether the point is inside control, taking its angle into account.
     bool IsPointInsideControlWithDelta(UIControl* uiControl, const Vector2& point, int32 pointDelta) const;
 
@@ -195,8 +216,9 @@ private:
 	// Get the state of the "Move Screen" key.
 	bool IsMoveScreenKeyPressed();
 
-	// Get the control move delta (coarse/fine, depending on whether Shift key is pressed).
+	// Get the control/guide move delta (coarse/fine, depending on whether Shift key is pressed).
 	int32 GetControlMoveDelta();
+    int32 GetGuideMoveDelta();
 
 	// Check control's visibility.
 	bool IsControlVisible(const UIControl* uiControl) const;
@@ -214,6 +236,9 @@ private:
     
     // Align the vector to the nearest scale value.
     Vector2 AlignToNearestScale(const Vector2& value) const;
+
+    // Handle the "screen scale/screen position" change.
+    void HandleScreenScalePositionChanged();
 
 private slots:
 	void ControlContextMenuTriggered(QAction* action);
