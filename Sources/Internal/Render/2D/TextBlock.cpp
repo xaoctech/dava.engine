@@ -422,7 +422,7 @@ void TextBlock::Prepare()
 			else if(((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (requestedSize.dy >= 0 || requestedSize.dx >= 0))
 			{
 				bool isChanged = false;
-				float prevFontSize = font->GetRenderSize();
+				float prevFontSize = GetCorrectedFontRenderSize();
 				while (true)
 				{
 					float yMul = 1.0f;
@@ -437,7 +437,7 @@ void TextBlock::Prepare()
 						h = textSize.dy;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dy > drawSize.y)
 						{
-							if (prevFontSize < font->GetRenderSize())
+							if (prevFontSize < GetCorrectedFontRenderSize())
 							{
 								font->SetRenderSize(prevFontSize);
 								textSize = font->GetStringSize(text);
@@ -467,7 +467,7 @@ void TextBlock::Prepare()
 						w = textSize.dx;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dx > drawSize.x)
 						{
-							if (prevFontSize < font->GetRenderSize())
+							if (prevFontSize < GetCorrectedFontRenderSize())
 							{
 								font->SetRenderSize(prevFontSize);
 								textSize = font->GetStringSize(text);
@@ -498,7 +498,7 @@ void TextBlock::Prepare()
 						break;
 					}
 					
-					float finalSize = font->GetRenderSize();
+					float finalSize = GetCorrectedFontRenderSize();
 					prevFontSize = finalSize;
 					isChanged = true;
 					if(xMul < yMul)
@@ -547,7 +547,7 @@ void TextBlock::Prepare()
                 //				textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 				int32 fontHeight = font->GetFontHeight() + yOffset;
 				textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
-				float lastSize = font->GetRenderSize();
+				float lastSize = GetCorrectedFontRenderSize();
 				float lastHeight = (float32)textSize.dy;
 				
 				bool isChanged = false;
@@ -564,7 +564,7 @@ void TextBlock::Prepare()
 						{
 							yBigger = true;
 							yMul = drawSize.y / textSize.dy;
-							if(lastSize < font->GetRenderSize())
+							if(lastSize < GetCorrectedFontRenderSize())
 							{
 								font->SetRenderSize(lastSize);
 								h = (int32)lastHeight;
@@ -608,7 +608,7 @@ void TextBlock::Prepare()
 					
 					lastHeight = (float32)textSize.dy;
 					
-					float finalSize = lastSize = font->GetRenderSize();
+					float finalSize = lastSize = GetCorrectedFontRenderSize();
 					isChanged = true;
 					finalSize *= yMul;
 					
@@ -937,5 +937,17 @@ const Vector<int32> & TextBlock::GetStringSizes() const
 	return stringSizes;
 }
 
+float32 TextBlock::GetCorrectedFontRenderSize()
+{
+    static const float32 minFontRenderSize = 0.1f;
+
+    float32 renderSize = font->GetRenderSize();
+    if ((fittingType & FITTING_ENLARGE) && (renderSize == 0.0f))
+    {
+        return minFontRenderSize;
+    }
+
+    return renderSize;
+}
 
 };
