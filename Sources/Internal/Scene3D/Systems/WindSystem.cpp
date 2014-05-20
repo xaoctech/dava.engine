@@ -65,7 +65,7 @@ WindSystem::WindSystem(Scene * scene) :
 
 WindSystem::~WindSystem()
 {
-
+    DVASSERT(winds.size() == 0);
 }
 
 void WindSystem::AddEntity(Entity * entity)
