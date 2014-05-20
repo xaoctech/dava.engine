@@ -109,6 +109,7 @@ namespace DAVA
         PVRFile * pvrFile = ReadFile(infile, true, true);
         if(pvrFile && LoadImages(pvrFile, imageSet, fromMipmap))
         {
+            delete pvrFile;
             return SUCCESS;
         }
         return ERROR_READ_FAIL;

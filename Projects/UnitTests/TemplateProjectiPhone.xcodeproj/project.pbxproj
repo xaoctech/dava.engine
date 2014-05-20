@@ -72,6 +72,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6216334D192B37DA00A802E3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 02FD820C1924997C007762C0;
+			remoteInfo = FrameworkTesting;
+		};
 		FE9895571163F13500500198 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
@@ -412,6 +419,7 @@
 			isa = PBXGroup;
 			children = (
 				FE9895581163F13500500198 /* libFramework.a */,
+				6216334E192B37DA00A802E3 /* libFrameworkTesting.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -446,7 +454,7 @@
 			attributes = {
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = 6V9352ME4J;
+						DevelopmentTeam = 4NYE5952JT;
 					};
 				};
 			};
@@ -476,6 +484,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		6216334E192B37DA00A802E3 /* libFrameworkTesting.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkTesting.a;
+			remoteRef = 6216334D192B37DA00A802E3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FE9895581163F13500500198 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -579,8 +594,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Victor Kleschenko (J99YFSYAJF)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Victor Kleschenko (J99YFSYAJF)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -593,7 +608,7 @@
 					"$(OTHER_CFLAGS)",
 				);
 				PRODUCT_NAME = UnitTests;
-				PROVISIONING_PROFILE = "412BD2A3-1C8B-431F-A8D7-BD0645AF119A";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -601,8 +616,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Victor Kleschenko (J99YFSYAJF)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Victor Kleschenko (J99YFSYAJF)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
@@ -613,7 +628,7 @@
 					"$(OTHER_CFLAGS)",
 				);
 				PRODUCT_NAME = UnitTests;
-				PROVISIONING_PROFILE = "412BD2A3-1C8B-431F-A8D7-BD0645AF119A";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -648,8 +663,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Victor Kleschenko (J99YFSYAJF)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Victor Kleschenko (J99YFSYAJF)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
@@ -660,7 +675,7 @@
 					"$(OTHER_CFLAGS)",
 				);
 				PRODUCT_NAME = UnitTests;
-				PROVISIONING_PROFILE = "412BD2A3-1C8B-431F-A8D7-BD0645AF119A";
+				PROVISIONING_PROFILE = "";
 			};
 			name = AdHoc;
 		};
