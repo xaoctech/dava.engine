@@ -137,11 +137,15 @@ public:
     void RepackAndReloadSprites();
     
     // Preview mode control.
-    void EnablePreview(const PreviewSettingsData& data);
+    void EnablePreview(const PreviewSettingsData& data, bool applyScale);
+    void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
 
     // Set the Stick Mode.
     void SetStickMode(int32 mode);
+
+    // Access to the hierarchy tree nodes list.
+    HierarchyTreeNode::HIERARCHYTREENODESLIST GetNodes() const;
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
@@ -188,7 +192,7 @@ protected:
 	// Whether align/distribute is possible.
 	bool CanPerformAlign(eAlignControlsType alignType);
 	bool CanPerformDistribute(eDistributeControlsType distributeType);
-
+    
     // Hierarchy Tree.
     HierarchyTree hierarchyTree;
     

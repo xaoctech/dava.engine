@@ -95,6 +95,9 @@ public:
 
 	virtual void Process(DAVA::float32 timeElapsed);
 
+    bool IsEntitySelected(DAVA::Entity *entity);
+    bool IsEntitySelectedHierarchically(DAVA::Entity *entity);
+
 protected:
     void ImmediateEvent(DAVA::Entity * entity, DAVA::uint32 event);
 
