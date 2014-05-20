@@ -119,6 +119,9 @@ void UIStaticTextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     ui->localizationKeyWidget->setVisible(!isUITextField);
     ui->localizationValueWidget->setVisible(!isUITextField);
     
+    ui->localizationKeyTextLineEdit->setEnabled(true);
+    ui->localizationKeyTextLineEdit->setReadOnly(true);
+
     UpdateLocalizationValue();
     
     RegisterGridWidgetAsStateAware();

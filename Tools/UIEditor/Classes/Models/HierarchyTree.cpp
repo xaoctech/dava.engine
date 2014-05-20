@@ -93,6 +93,18 @@ bool HierarchyTree::Load(const QString& projectPath)
 
 	bool result = true;
     
+    // add project path to res folders (to allow loading fonts before everything else)
+    FilePath bundleName(rootNode.GetProjectDir().toStdString());
+    bundleName.MakeDirectoryPathname();
+    
+    List<FilePath> resFolders = FilePath::GetResourcesFolders();
+    List<FilePath>::const_iterator searchIt = find(resFolders.begin(), resFolders.end(), bundleName);
+    
+    if(searchIt == resFolders.end())
+    {
+        FilePath::AddResourcesFolder(bundleName);
+    }
+    
     const YamlNode *font = projectRoot->Get(FONT_NODE);
     
     // Get font node
@@ -117,18 +129,6 @@ bool HierarchyTree::Load(const QString& projectPath)
 			}
 			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
 		}
-
-        // add project path to res folders (to allow loading fonts before everything else)
-        FilePath bundleName(rootNode.GetProjectDir().toStdString());
-        bundleName.MakeDirectoryPathname();
-        
-        List<FilePath> resFolders = FilePath::GetResourcesFolders();
-        List<FilePath>::const_iterator searchIt = find(resFolders.begin(), resFolders.end(), bundleName);
-        
-        if(searchIt == resFolders.end())
-        {
-            FilePath::AddResourcesFolder(bundleName);
-        }
         
         const YamlNode *localizationFontsPath = font->Get(DEFAULT_FONTS_PATH_NODE);
         if(localizationFontsPath)
