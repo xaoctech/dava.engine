@@ -83,6 +83,7 @@ private slots:
 	void OnImportScreenOrAggregator();
 
 	void OnProjectCreated();
+    void OnProjectLoaded();
 	void OnSelectedScreenChanged();
 	
 	void OnUpdateScaleRequest(float scaleDelta);
