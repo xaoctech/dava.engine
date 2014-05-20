@@ -71,6 +71,8 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
 
 SpeedTreeUpdateSystem::~SpeedTreeUpdateSystem()
 {
+    DVASSERT(allTrees.size() == 0);
+
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->RemoveObserver(this);
 }
