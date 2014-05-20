@@ -79,6 +79,11 @@ void ParseTextTest::LoadResources()
     text->SetPosition(Vector2(250, 500));
     AddControl( text );
     SafeRelease(text);
+    
+    text = CreateTextControl(Rect(10, 650, 200, 50), L"test2  test4", false);
+    AddControl( text );
+    SafeRelease(text);
+
 }
 
 void ParseTextTest::UnloadResources()
