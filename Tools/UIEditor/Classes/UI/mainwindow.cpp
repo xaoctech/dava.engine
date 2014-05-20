@@ -60,6 +60,8 @@
 
 #include "Ruler/RulerController.h"
 
+#include "EditorFontManager.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -167,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectLoaded()),
 			this,
-			SLOT(OnProjectCreated()));
+			SLOT(OnProjectLoaded()));
 	
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedScreenChanged(const HierarchyTreeScreenNode*)),
@@ -941,6 +943,13 @@ void MainWindow::OnProjectCreated()
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
+}
+
+void MainWindow::OnProjectLoaded()
+{
+    EditorFontManager::Instance()->OnProjectLoaded();
+    
+    OnProjectCreated();
 }
 
 void MainWindow::OnNewPlatform()
