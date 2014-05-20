@@ -27,29 +27,74 @@
 =====================================================================================*/
 
 
-#ifndef UITEXTFIELDPROPERTYGRIDWIDGET_H
-#define UITEXTFIELDPROPERTYGRIDWIDGET_H
 
-#include "textpropertygridwidget.h"
+#ifndef CHANGEFONTPROPERTYCOMMAND_H
+#define CHANGEFONTPROPERTYCOMMAND_H
 
-class QLabel;
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-class UITextFieldPropertyGridWidget : public TextPropertyGridWidget
+using namespace DAVA;
+
+struct ChangeFontPropertyCommandData
 {
-    Q_OBJECT
+    ChangeFontPropertyCommandData();
+    ~ChangeFontPropertyCommandData();
     
-public:
-    explicit UITextFieldPropertyGridWidget(QWidget *parent = 0);
-    ~UITextFieldPropertyGridWidget();
+    Font *GetLocalizedFont(const String& locale);
+    void SetLocalizedFont(Font* localizedFont, const String& locale);
     
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
+    ChangeFontPropertyCommandData& operator =(const ChangeFontPropertyCommandData& data);
     
-protected:
-    virtual void ProcessComboboxValueChanged(QComboBox* senderWidget, const PROPERTYGRIDWIDGETSITER& iter,
-                                             const QString& value);
-    virtual void UpdateComboBoxWidgetWithPropertyValue(QComboBox* comboBoxWidget, const QMetaProperty& curProperty);
-    virtual void FillComboboxes();
+    String fontPresetOriginalName;
+    
+    bool isApplyToAll;
+    Font *font;
+    String fontPresetName;
+    
+    Map<String, Font*> localizedFonts;
 };
 
-#endif // UITEXTFIELDPROPERTYGRIDWIDGET_H
+class ChangeFontPropertyCommand: public ChangePropertyCommand<Font *>
+{
+public:
+	ChangeFontPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                const ChangeFontPropertyCommandData& editFontDialogResult);
+    virtual ~ChangeFontPropertyCommand();
+    
+    virtual void Execute();
+    
+	virtual void Rollback();
+	
+protected:
+//	void RestoreControlRect(const COMMANDDATAVECTITER& iter);
+    ChangeFontPropertyCommandData data;
+};
+
+class FontRenameCommand : public BaseCommand
+{
+public:
+    FontRenameCommand(Font* _font, const String &_originalName, const String &newName);
+    
+public:
+	virtual void Execute();
+	virtual void Rollback();
+	
+	virtual bool IsUndoRedoSupported() {return true;};
+    
+protected:
+	// Apply the rename of control
+	void ApplyRename(const QString& prevName, const QString& updatedName);
+    
+private:
+	Font* font;
+	QString originalName;
+	QString newName;
+};
+
+
+#endif /* defined(CHANGEFONTPROPERTYCOMMAND_H) */
