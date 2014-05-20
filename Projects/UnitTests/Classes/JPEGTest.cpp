@@ -107,6 +107,9 @@ void JPEGTest::TestFunction(PerfFuncData * data)
     FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
     ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/src_number_%d.png", currentTest), firstComparer);
     ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/dst_number_%d.png", currentTest), secondComparer);
+    
+    SafeRelease(firstComparer);
+    SafeRelease(secondComparer);
     ++currentTest;
 }
 

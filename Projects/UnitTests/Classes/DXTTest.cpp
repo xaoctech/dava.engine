@@ -121,6 +121,9 @@ void DXTTest::TestFunction(PerfFuncData * data)
         
         ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/src_number_%d.png", currentTest), firstComparer);
         ImageSystem::Instance()->Save(documentsPath + Format("DXTTest/dst_number_%d.png", currentTest), secondComparer);
+        
+        SafeRelease(firstComparer);
+        SafeRelease(secondComparer);
     }
 
     ++currentTest;
@@ -130,12 +133,10 @@ bool DXTTest::IsCurrentTestAccepted()
 {
     RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
 
-#if defined (__DAVAENGINE_IPHONE__)
     if(!deviceCaps.isDXTSupported )
     {
         return false;
     }
-#endif //#if defined (__DAVAENGINE_IPHONE__)
 
         
     if((formats[currentTest] == FORMAT_RGBA16161616) && !deviceCaps.isFloat16Supported)

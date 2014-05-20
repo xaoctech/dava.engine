@@ -630,6 +630,13 @@ bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<
 
 bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
 {
+#ifdef __DAVAENGINE_IPHONE__
+    
+    DVASSERT_MSG(false, "ATC is not requried for ios devices.");
+    return false;
+
+#else
+
 	if (compressionFormat != FORMAT_ATC_RGB &&
 		compressionFormat != FORMAT_ATC_RGBA_EXPLICIT_ALPHA &&
 		compressionFormat != FORMAT_ATC_RGBA_INTERPOLATED_ALPHA)
@@ -748,6 +755,7 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
 	SafeDeleteArray(buffer);
 
 	return res;
+#endif
 }
 	
 

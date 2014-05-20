@@ -390,6 +390,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", fileName.GetAbsolutePathname().c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
         free(row_pointers);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         SafeRelease(convertedImage);
 		return ERROR_FILE_NOTFOUND;
 	}
@@ -404,6 +405,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
         
 		//abort_("[write_png_file] png_create_write_struct failed");
         free(row_pointers);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
         SafeRelease(convertedImage);
 		return ERROR_WRITE_FAIL;
@@ -416,6 +418,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 
 		//abort_("[write_png_file] png_create_info_struct failed");
         free(row_pointers);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
         SafeRelease(convertedImage);
 		return ERROR_WRITE_FAIL;
@@ -426,6 +429,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during init_io");
 		//abort_("[write_png_file] Error during init_io");
         free(row_pointers);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
         SafeRelease(convertedImage);
 		return ERROR_WRITE_FAIL;
@@ -439,6 +443,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing header");
 		//abort_("[write_png_file] Error during writing header");
         free(row_pointers);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
         SafeRelease(convertedImage);
 		return ERROR_WRITE_FAIL;
@@ -489,6 +494,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing bytes");
 		//abort_("[write_png_file] Error during writing bytes");
         free(row_pointers);
+        png_destroy_write_struct(&png_ptr, &info_ptr);
         fclose(fp);
         SafeRelease(convertedImage);
 		return ERROR_WRITE_FAIL;
@@ -503,6 +509,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during end of write");
 		//abort_("[write_png_file] Error during end of write");
         free(row_pointers);
+        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         fclose(fp);
         SafeRelease(convertedImage);
 		return ERROR_WRITE_FAIL;
@@ -511,6 +518,7 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 	png_write_end(png_ptr, NULL);
 	
 	free(row_pointers);
+    png_destroy_write_struct(&png_ptr, &info_ptr);
 	fclose(fp);
     SafeRelease(convertedImage);
     return SUCCESS;
