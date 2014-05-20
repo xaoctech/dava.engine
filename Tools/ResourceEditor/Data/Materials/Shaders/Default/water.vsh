@@ -22,7 +22,7 @@ attribute vec2 inTexCoord0;
 
 #if defined(MATERIAL_DECAL)
 attribute vec2 inTexCoord1;
-varying vec2 varTexCoord1;
+varying vec2 varTexCoordDecal;
 #endif
 
 // UNIFORMS
@@ -34,9 +34,11 @@ uniform mat4 worldViewMatrix;
 
 #if defined(PIXEL_LIT)
 uniform mat3 worldViewInvTransposeMatrix;
-uniform vec3 lightPosition0;
-uniform float lightIntensity0; 
-uniform float materialSpecularShininess;
+
+#if defined(SPECULAR)
+uniform vec4 lightPosition0;
+#endif
+
 #endif
 
 #if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
@@ -55,12 +57,14 @@ varying vec3 eyeDist;
 #endif
 
 #if defined(PIXEL_LIT)
-varying highp vec2 varTexCoord0;
-varying highp vec2 varTexCoord1;
+#if defined(SPECULAR)
 varying vec3 varLightVec;
 #endif
+#endif
 
-#if defined(PIXEL_LIT)
+#if defined(PIXEL_LIT)||defined(MATERIAL_DECAL)	
+varying highp vec2 varTexCoord0;
+varying highp vec2 varTexCoord1;
 uniform mediump vec2 normal0ShiftPerSecond;
 uniform mediump vec2 normal1ShiftPerSecond;
 uniform mediump float normal0Scale;
@@ -104,7 +108,7 @@ void main()
     vec3 normalDirectionInWorldSpace = normalize(vec3(worldInvTransposeMatrix * inNormal));
     reflectionDirectionInWorldSpace = reflect(viewDirectionInWorldSpace, normalDirectionInWorldSpace);
 	#if defined(MATERIAL_DECAL)
-		varTexCoord1 = inTexCoord1;
+		varTexCoordDecal = inTexCoord1;		
 	#endif	
 #endif    
 
@@ -120,14 +124,16 @@ void main()
 		eyeDist = eyeCoordsPosition;
 	#endif
     
-    vec3 lightDir = lightPosition0 - eyeCoordsPosition;    
-    
-	// transform light and half angle vectors by tangent basis
 	vec3 v;
-	v.x = dot (lightDir, t);
-	v.y = dot (lightDir, b);
-	v.z = dot (lightDir, n);
-	varLightVec = v;       
+	#if defined(SPECULAR)
+		vec3 lightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;    
+		
+		// transform light and half angle vectors by tangent basis		
+		v.x = dot (lightDir, t);
+		v.y = dot (lightDir, b);
+		v.z = dot (lightDir, n);
+		varLightVec = v;     
+	#endif	
 
     v.x = dot (eyeCoordsPosition, t);
 	v.y = dot (eyeCoordsPosition, b);
@@ -136,10 +142,11 @@ void main()
     
     vec3 binormTS = cross(inNormal, inTangent);
     tbnToWorldMatrix = mat3(inTangent, binormTS, inNormal);
+#endif
 	
-	
+#if defined(PIXEL_LIT)||defined(MATERIAL_DECAL)	
 	varTexCoord0 = inTexCoord0 * normal0Scale + normal0ShiftPerSecond * globalTime;
-    varTexCoord1 = inTexCoord0 * normal1Scale + normal1ShiftPerSecond * globalTime;
+    varTexCoord1 = vec2(inTexCoord0.x+inTexCoord0.y, inTexCoord0.x-inTexCoord0.y) * normal1Scale + normal1ShiftPerSecond * globalTime;
 #endif
 
 #if defined(VERTEX_FOG)
