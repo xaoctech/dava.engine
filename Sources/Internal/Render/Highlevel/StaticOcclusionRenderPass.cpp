@@ -92,6 +92,42 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
             }
         }
     }
+    
+    //glColorMask(false, false, false, false);
+    // Sort
+    Vector3 cameraPosition = camera->GetPosition();
+    
+    size = (uint32)batches.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        RenderBatch * batch = batches[k];
+        RenderObject * renderObject = batch->GetRenderObject();
+        Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
+        float realDistance = (position - cameraPosition).Length();
+        uint32 distance = ((uint32)(realDistance * 100.0f));
+        uint32 distanceBits = distance;
+        
+        batch->layerSortingKey = distanceBits;
+    }
+    std::sort(batches.begin(), batches.end(), CompareFunction);
+    
+//    size = (uint32)terrainBatches.size();
+//    for (uint32 k = 0; k < size; ++k)
+//    {
+//        RenderBatch * batch = terrainBatches[k];
+//        batch->Draw(name, camera);
+//    }
+//    
+//    size = (uint32)batches.size();
+//    for (uint32 k = 0; k < size; ++k)
+//    {
+//        RenderBatch * batch = batches[k];
+//        batch->Draw(name, camera);
+//    }
+    
+    //
+//    glDepthFunc(GL_LEQUAL);
+//    glDepthMask(GL_FALSE);
 
     OcclusionQueryManager & manager = occlusion->GetOcclusionQueryManager();
     size = (uint32)terrainBatches.size();
@@ -109,24 +145,7 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
         occlusion->RecordFrameQuery(batch, handle);
     }
     
-    
-    Vector3 cameraPosition = camera->GetPosition();
-
     size = (uint32)batches.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        RenderBatch * batch = batches[k];
-        RenderObject * renderObject = batch->GetRenderObject();
-        Vector3 position = renderObject->GetWorldBoundingBox().GetCenter();
-        float realDistance = (position - cameraPosition).Length();
-        uint32 distance = ((uint32)(realDistance * 100.0f));
-        uint32 distanceBits = distance;
-        
-        batch->layerSortingKey = distanceBits;
-    }
-
-    std::sort(batches.begin(), batches.end(), CompareFunction);
-    
     for (uint32 k = 0; k < size; ++k)
     {
         OcclusionQueryManagerHandle handle = manager.CreateQueryObject();
@@ -140,6 +159,12 @@ void StaticOcclusionRenderPass::Draw(Camera * camera, RenderSystem * renderSyste
         
         occlusion->RecordFrameQuery(batch, handle);
     }
+    
+    //
+//    glDepthMask(GL_TRUE);
+//    glDepthFunc(GL_LESS);
+//    glColorMask(true, true, true, true);
+
 }
 
 };

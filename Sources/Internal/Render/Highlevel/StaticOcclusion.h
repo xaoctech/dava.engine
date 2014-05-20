@@ -72,20 +72,31 @@ public:
 class StaticOcclusion
 {
 public:
+    enum eIndexRenew
+    {
+        RENEW_OCCLUSION_INDICES,
+        LEAVE_OLD_INDICES,
+    };
+    
     StaticOcclusion();
     ~StaticOcclusion();
     
     inline void SetScene(Scene * _scene);
     inline void SetRenderSystem(RenderSystem * _renderSystem);
-    void BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
-                                  StaticOcclusionData * currentData);
     
-    void SetEqualVisibilityVector(Map<RenderObject*, Vector<RenderObject*> > & equalVisibility);
+    void BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
+                                  StaticOcclusionData * currentData,
+                                  eIndexRenew renewIndexEnum);
+    
+    void SetEqualVisibilityVector(Map<RenderObject*,
+                                  Vector<RenderObject*> > & equalVisibility);
 
     
     inline OcclusionQueryManager & GetOcclusionQueryManager();
     //uint32 * GetCellVisibilityData(Camera * camera);
+    
     uint32 RenderFrame();
+    void RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ);
 
     void FillOcclusionDataObject(StaticOcclusionData * data);
     
