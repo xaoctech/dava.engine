@@ -95,8 +95,8 @@ Texture* Scene::stubTexture2dLightmap = NULL; //this texture should be all-pink 
     
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
 	: Entity()
-    , currentCamera(0)
-    , clipCamera(0)
+    , mainCamera(0)
+    , drawCamera(0)
 	, imposterManager(0)
     , systemsMask(_systemsMask)
     , transformSystem(0)
@@ -326,8 +326,8 @@ Scene::~Scene()
 	}
 	cameras.clear();
     
-    SafeRelease(currentCamera);
-    SafeRelease(clipCamera);
+    SafeRelease(mainCamera);
+    SafeRelease(drawCamera);
     
     for (ProxyNodeMap::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
     {
@@ -805,12 +805,7 @@ void Scene::Draw()
     //RenderManager::Instance()->SetCullMode(FACE_BACK);
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->ClearDepthBuffer();
-    
-    if (currentCamera)
-    {
-        currentCamera->SetupDynamicParameters();
-    }
+	RenderManager::Instance()->ClearDepthBuffer();       
     
     
     renderSystem->Render();
@@ -845,26 +840,26 @@ void Scene::SceneDidLoaded()
     
 void Scene::SetCurrentCamera(Camera * _camera)
 {
-    SafeRelease(currentCamera);
-    currentCamera = SafeRetain(_camera);
-    SafeRelease(clipCamera);
-    clipCamera = SafeRetain(_camera);
+    SafeRelease(mainCamera);
+    mainCamera = SafeRetain(_camera);
+    SafeRelease(drawCamera);
+    drawCamera = SafeRetain(_camera);
 }
 
 Camera * Scene::GetCurrentCamera() const
 {
-    return currentCamera;
+    return mainCamera;
 }
 
-void Scene::SetClipCamera(Camera * _camera)
+void Scene::SetCustomDrawCamera(Camera * _camera)
 {
-    SafeRelease(clipCamera);
-    clipCamera = SafeRetain(_camera);
+    SafeRelease(drawCamera);
+    drawCamera = SafeRetain(_camera);
 }
 
-Camera * Scene::GetClipCamera() const
+Camera * Scene::GetDrawCamera() const
 {
-    return clipCamera;
+    return drawCamera;
 }
  
 //void Scene::SetForceLodLayer(int32 layer)

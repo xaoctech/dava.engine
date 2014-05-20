@@ -28,6 +28,8 @@
 
 #include "SettingsManager.h"
 #include "Scene/System/EditorMaterialSystem.h"
+#include "TextureCompression/TextureConverter.h"
+
 #include "Scene/System/SelectionSystem.h"
 #include "Scene/System/CollisionSystem.h"
 
@@ -53,6 +55,7 @@ void SettingsManager::Init()
 	CreateValue(Settings::General_DesinerName, DAVA::VariantType(DAVA::String("nobody")));
     CreateValue(Settings::General_RecentFilesCount, DAVA::VariantType((DAVA::int32) 5));
 	CreateValue(Settings::General_PreviewEnabled, DAVA::VariantType(false));
+    CreateValue(Settings::General_CompressionQuality, DAVA::VariantType((DAVA::int32)DAVA::TextureConverter::ECQ_DEFAULT), DAVA::InspDesc("Compression quality", GlobalEnumMap<DAVA::TextureConverter::eConvertQuality>::Instance()));
 
     CreateValue(Settings::General_MaterialEditor_SwitchColor0, DAVA::VariantType(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f)));
     CreateValue(Settings::General_MaterialEditor_SwitchColor1, DAVA::VariantType(DAVA::Color(1.0f, 0.0f, 0.0f, 1.0f)));
@@ -103,6 +106,8 @@ void SettingsManager::SetValue(const DAVA::FastName& path, const DAVA::VariantTy
     DVASSERT(i->second.value.type == value.type && "Setting different type");
 
     i->second.value.SetVariant(value);
+
+    SettingsManager::Instance()->Save();
 }
 
 size_t SettingsManager::GetSettingsCount()
@@ -169,10 +174,15 @@ void SettingsManager::Save()
 void SettingsManager::CreateValue(const DAVA::FastName& pathName, const DAVA::VariantType &defaultValue, const DAVA::InspDesc &description)
 {
     DVASSERT(pathName.IsValid());
-    DVASSERT(0 == settingsMap.count(pathName));
     
     settingsMap[pathName].value = defaultValue;
     settingsMap[pathName].desc = description;
 
     settingsOrder.push_back(pathName);
 }
+
+void SettingsManager::ResetToDefault()
+{
+    SettingsManager::Instance()->Init();
+}
+

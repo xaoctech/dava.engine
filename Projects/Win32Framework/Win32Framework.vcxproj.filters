@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -825,9 +825,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene2D\TextGameObject.h">
       <Filter>Internal\Scene2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\RenderManagerGL20.h">
-      <Filter>Internal\Render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\UI\UIFileSystemDialog.h">
       <Filter>Internal\UI</Filter>
     </ClInclude>
@@ -1410,6 +1407,9 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
       <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1422,6 +1422,8 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.h">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClInclude>
@@ -2012,9 +2014,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene2D\TextGameObject.cpp">
       <Filter>Internal\Scene2D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\RenderManagerGL20.cpp">
-      <Filter>Internal\Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SpriteNode.cpp">
       <Filter>Internal\Scene3D</Filter>
     </ClCompile>
@@ -2573,6 +2572,8 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.cpp">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClCompile>

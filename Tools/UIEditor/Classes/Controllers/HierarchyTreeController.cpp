@@ -165,7 +165,6 @@ void HierarchyTreeController::SelectControl(HierarchyTreeControlNode* control)
 	
 	emit AddSelectedControl(control);
 	emit SelectedControlNodesChanged(activeControlNodes);
-	UpdateSelection(control);
 }
 
 void HierarchyTreeController::UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged)
@@ -599,6 +598,7 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
     // Localization System is updated; need to look through all controls
     // and cause them to update their texts according to the new Localization.
     hierarchyTree.UpdateLocalization();
+    ResetSelectedControl();
 }
 
 void HierarchyTreeController::RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
@@ -717,7 +717,7 @@ void HierarchyTreeController::RepackAndReloadSprites()
     SafeRelease(cmd);
 }
 
-void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
+void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data, bool applyScale)
 {
     if (PreviewController::Instance()->IsPreviewEnabled() || !activePlatform ||
         !activeScreen || !activeScreen->GetScreen())
@@ -727,12 +727,18 @@ void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
 
     // We are entering Preview Mode - nothing should be selected.
     ResetSelectedControl();
+    PreviewController::Instance()->EnablePreview(applyScale);
+    SetPreviewMode(data);
+}
 
+void HierarchyTreeController::SetPreviewMode(const PreviewSettingsData& data)
+{
     uint32 screenDPI = Core::Instance()->GetScreenDPI();
-    const PreviewTransformData& transformData = PreviewController::Instance()->EnablePreview(data, activePlatform->GetSize(), screenDPI);
-    activePlatform->EnablePreview(transformData.screenSize.x, transformData.screenSize.y);
-    activeScreen->GetScreen()->SetSize(transformData.screenSize);
+    const PreviewTransformData& transformData = PreviewController::Instance()->SetPreviewMode(data, activePlatform->GetSize(true), screenDPI);
 
+    activePlatform->SetPreviewMode(transformData.screenSize.x, transformData.screenSize.y);
+    activeScreen->GetScreen()->SetSize(transformData.screenSize);
+    
     emit SelectedScreenChanged(activeScreen);
 }
 
@@ -758,4 +764,9 @@ void HierarchyTreeController::SetStickMode(int32 mode)
     {
         activeScreen->SetStickMode(mode);
     }
+}
+
+HierarchyTreeNode::HIERARCHYTREENODESLIST HierarchyTreeController::GetNodes() const
+{
+    return hierarchyTree.GetNodes();
 }

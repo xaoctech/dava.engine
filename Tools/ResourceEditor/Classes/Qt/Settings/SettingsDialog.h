@@ -31,6 +31,9 @@ public:
 	explicit SettingsDialog(QWidget* parent = 0);
 	~SettingsDialog();
 
+protected slots:
+    void OnResetPressed();
+
 protected:
     QtPosSaver posSaver;
     QtPropertyEditor *editor;
