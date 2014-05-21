@@ -263,19 +263,20 @@ void main()
     vec4 tangentInCameraSpace = worldViewMatrix * vec4(inPivot, 1.0);
     if (tangentInCameraSpace.z < -cutDistance)
     {
-        gl_Position = projMatrix * vec4(worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
+        gl_Position = worldViewProjMatrix * vec4(inPivot, inPosition.w);
     }
     else
     {
 #endif        
 
+    vec3 offset = inPosition.xyz - inPivot;
+    vec3 pivot = inPivot;
+    
 #if defined(WIND_ANIMATION)
     //inAngle:        x: cos(T0);  y: sin(T0);
     //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
     vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
-    vec3 pivot = inPivot + windVectorFlex;
-    
-    vec3 offset = inPosition.xyz - inPivot;
+    pivot += windVectorFlex;
     
     vec2 SinCos = inAngle * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
     float sinT = SinCos.x + SinCos.y;     //sin(t+t0)*A = sin*cos + cos*sin
@@ -288,17 +289,14 @@ void main()
     offset.x = rotatedOffsetXY.z - rotatedOffsetXY.w; //x*cos - y*sin
     offset.y = rotatedOffsetXY.x + rotatedOffsetXY.y; //x*sin + y*cos
 
-    gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
-    
-#else // not WIND_ANIMATION and SPEED_TREE_LEAF
-    
-    gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inPivot) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
+#endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
 
+    vec4 eyeCoordsPosition4 = vec4(worldScale * offset, 0.0) + worldViewMatrix * vec4(pivot, inPosition.w);
+    gl_Position = projMatrix * eyeCoordsPosition4;
+    
 #if defined (CUT_LEAF)   
     }
 #endif // not CUT_LEAF
-
-#endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
 
 #else // not SPEED_TREE_LEAF
     
@@ -393,12 +391,14 @@ void main()
     
 #endif //end "not SPEED_TREE_LEAF
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
-#if defined(MATERIAL_GRASS)
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
-#else
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space
-#endif
+#if defined(SPEED_TREE_LEAF)
+    vec3 eyeCoordsPosition = vec3(eyeCoordsPosition4);
+#elif defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
+    #if defined(MATERIAL_GRASS)
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
+    #else
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space
+    #endif
 #endif
 
 #if defined(VERTEX_LIT)
