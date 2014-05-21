@@ -151,13 +151,10 @@ VegetationCustomGeometry::VegetationCustomGeometry(const Vector<uint32>& _maxClu
                                                    uint32 _resolutionClusterStrideCount,
                                                    const Vector3& _worldSize)
 {
-    static int32 layerDensityOverride[] = {16, 16, 10, 10};
-
     maxClusters.reserve(_maxClusters.size());
     for(size_t i = 0; i < _maxClusters.size(); ++i)
     {
-        //maxClusters.push_back(_maxClusters[i]);
-        maxClusters.push_back(layerDensityOverride[i]);
+        maxClusters.push_back(_maxClusters[i]);
     }
     
     maxDensityLevels = _maxDensityLevels;
