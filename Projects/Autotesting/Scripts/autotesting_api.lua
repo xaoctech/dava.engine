@@ -502,51 +502,81 @@ end
 -- Work with List
 function SelectHorizontal(list, item)
 	Log("Select "..tostring(item).." item in horizontal list "..list)
-	
+
 	local cell = list.."/".. tostring(item)
 	assert(WaitControl(list), "Couldn't select "..cell)
-	
+
 	if IsVisible(cell, list) then
-		return ClickControl(cell)
+		ClickControl(cell)
+		return true
 	end
-	
-	local first_visible = 0
-	local previous = 0
+
+	local last_visible = 0
+	local previous_last = 0
 	local index = 0
-	
+
 	-- find first visible element
 	for i = 0, 100 do --to avoid hanging up in empty list
-		if IsVisible(list.."/"..tostring(i), list) then
-			first_visible = i
-			--Log( "previous = "..tostring(previous)..",first_visible = "..tostring(first_visible) )
+		if IsVisible(list.."/"..tostring(i)) then
+			previous_last = i
+			last_visible = i
+			--Log( "previous_last = "..tostring(previous_last)..",last_visible = "..tostring(last_visible) )
 			break
 		end
 	end
-	
-    invert = false
-	if item < first_visible then
-		invert = true
+    
+	-- find last visible
+	index = previous_last + 1
+	while true do
+		if not IsVisible(list.."/"..tostring(index)) then
+			last_visible = index - 1
+			--Log( "last_visible = "..tostring(last_visible) )
+			break
+		end
+		index = index + 1
 	end
-	
+
 	repeat
 		if IsVisible(cell, list) then
-			ClickControl(cell)
-			return true
+			break
 		else
-			HorizontalScroll(list, invert)
-			previous = first_visible
-			
-			for i = 0, 100 do --to avoid hanging up in empty list
-				if IsVisible(list.."/"..tostring(i), list) then
-					first_visible = i
-					--Log( "previous = "..tostring(previous)..",first_visible = "..tostring(first_visible) )
+			previous_last = last_visible
+			ScrollLeft(list)
+
+			index = last_visible + 1
+			while true do
+				if not IsVisible(list.."/"..tostring(index), list) then
+					last_visible = index - 1
+					--Log( "previous_last = "..tostring(previous_last) )
 					break
 				end
+				index = index + 1
 			end
 		end
-	until previous == first_visible
-		
-	Log("Item "..item.." in "..list.." not found")
+	until previous_last == last_visible
+    
+	if IsVisible(cell, list) then
+		ClickControl(cell)
+		return true
+	else
+		Log("Item "..item.." in "..list.." not found")
+		return false
+	end
+end
+
+function SelectFirstHorizontal(list)
+	Log("Select first item in horizontal list "..list)
+
+	-- find first visible element
+	for i = 0, 100 do --to avoid hanging up in empty list
+		if IsVisible(list.."/0", list) then
+			return true
+		else
+			ScrollLeft(list, true)
+		end
+	end
+    
+	Log("First item in "..list.." not found")
 	return false
 end
 
