@@ -955,24 +955,18 @@ namespace DAVA
             return;
 
         bool onScreen = IsOnScreen();
-        if (!onScreen)
+        if (onScreen && !isVisible)
         {
-            if (isVisible) SystemWillAppear();
-        }
-        else
-        {
-            if (!isVisible) SystemWillDisappear();
+            SystemWillDisappear();
+            SystemDidDisappear();
         }
 
         recursiveVisible = isVisible;
 
-        if (!onScreen)
+        if (!onScreen && isVisible)
         {
-            if (isVisible) SystemDidAppear();
-        }
-        else
-        {
-            if(!isVisible) SystemDidDisappear();
+            SystemWillAppear();
+            SystemDidAppear();
         }
     }
 
@@ -1429,6 +1423,9 @@ namespace DAVA
 
 	void UIControl::SystemWillAppear()
 	{
+        if (!GetRecursiveVisible())
+            return;
+
 		WillAppear();
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -1463,6 +1460,9 @@ namespace DAVA
             UIControlSystem::Instance()->CancelInputs(this, false);
         }
 
+        if (!GetRecursiveVisible())
+            return;
+
 		List<UIControl*>::iterator it = childs.begin();
 		while(it != childs.end())
 		{
@@ -1484,6 +1484,9 @@ namespace DAVA
 	
 	void UIControl::SystemDidAppear()
 	{
+        if (!GetRecursiveVisible())
+            return;
+
 		DidAppear();
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -1505,6 +1508,9 @@ namespace DAVA
 	
 	void UIControl::SystemDidDisappear()
 	{
+        if (!GetRecursiveVisible())
+            return;
+
 		DidDisappear();
 
 		List<UIControl*>::iterator it = childs.begin();
