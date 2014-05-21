@@ -1234,6 +1234,8 @@ void NMaterial::BuildTextureParamsCache(RenderPassInstance* passInstance)
 			}
 		}
 	}
+
+    passInstance->texturesDirty = true;
 }
     
 void NMaterial::BuildActiveUniformsCacheParamsCache()
