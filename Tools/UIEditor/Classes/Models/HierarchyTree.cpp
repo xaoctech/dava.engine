@@ -546,6 +546,10 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	}
 
     SafeRelease(parser);
+    
+    // Can now delete appropriate platforms.
+    DeleteUnnecessaryPlatforms(projectPath);
+
 	return result;
 }
 
@@ -692,4 +696,25 @@ void HierarchyTree::UpdateModificationDate(const QString &path)
 	// 02/05/2014 - Request only for MACOS
 	utime(path.toStdString().c_str(), NULL);
 #endif
+}
+
+void HierarchyTree::DeleteUnnecessaryPlatforms(const QString& projectPath)
+{
+    QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
+
+    const Set<QString>& platformsToDelete = HierarchyTreeController::Instance()->GetPlatformsToDelete();
+    for (Set<QString>::const_iterator iter = platformsToDelete.begin(); iter != platformsToDelete.end(); iter ++)
+    {
+        DeletePlatform(projectPath, *iter);
+    }
+
+    HierarchyTreeController::Instance()->CleanupPlatformsToDelete();
+    
+}
+
+void HierarchyTree::DeletePlatform(const QString& projectPath, const QString& platform) const
+{
+    QDir platformDir = QDir::cleanPath(QDir(ResourcesManageHelper::GetPlatformRootPath(projectPath)).filePath(platform));
+    QString platformPath = platformDir.path() + QDir::separator();
+    FileSystem::Instance()->DeleteDirectory(platformPath.toStdString());
 }
