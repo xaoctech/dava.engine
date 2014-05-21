@@ -214,7 +214,7 @@ protected:
     
     void StartGlobalInvalidateTimer();
 
-	void RunBeast();
+	void RunBeast(const QString& outputPath);
 
 	bool IsAnySceneChanged();
 
