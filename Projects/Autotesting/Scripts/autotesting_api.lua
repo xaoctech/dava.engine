@@ -541,7 +541,7 @@ function SelectHorizontal(list, item)
 			break
 		else
 			previous_last = last_visible
-			ScrollLeft(list)
+			HorizontalScroll(list)
 
 			index = last_visible + 1
 			while true do
@@ -572,7 +572,7 @@ function SelectFirstHorizontal(list)
 		if IsVisible(list.."/0", list) then
 			return true
 		else
-			ScrollLeft(list, true)
+			HorizontalScroll(list, true)
 		end
 	end
     
