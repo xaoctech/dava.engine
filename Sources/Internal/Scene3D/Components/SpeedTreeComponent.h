@@ -73,6 +73,14 @@ protected:
     float32 leafsOscillationSpeed;
     int32 maxAnimatedLOD;
 
+    //runtime properties
+    Matrix4 wtInvMx;
+    Vector3 wtPosition;
+
+    Vector2 oscVelocity;
+    Vector2 oscOffset;
+    float32 leafTime;
+
 public:
     INTROSPECTION_EXTEND(SpeedTreeComponent, Component, 
         PROPERTY("trunkOscillationAmplitude", "trunkOscillationAmplitude", GetTrunkOscillationAmplitude, SetTrunkOscillationAmplitude, I_SAVE | I_VIEW | I_EDIT)
