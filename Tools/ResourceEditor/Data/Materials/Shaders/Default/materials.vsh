@@ -96,7 +96,7 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_TRANSFORM)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 varying vec2 varTexCoord1;
 #endif
 
@@ -140,6 +140,7 @@ varying lowp vec4 varVertexColor;
 varying lowp float varTime;
 #endif
 
+
 #if defined(TEXTURE0_SHIFT_ENABLED)
 uniform mediump vec2 texture0Shift;
 #endif 
@@ -173,12 +174,15 @@ uniform vec3 billboardDirection;
 uniform float clusterScaleDensityMap[128];
 
 uniform sampler2D heightmap;
+uniform sampler2D vegetationmap;
 
 uniform vec2 heightmapScale;
 
 uniform vec3 perturbationForce;
 uniform vec3 perturbationPoint;
 uniform float perturbationForceDistance;
+
+varying lowp vec3 varVegetationColor;
 #endif
 
 const float _PI = 3.141592654;
@@ -357,7 +361,11 @@ void main()
             densityFactor = 0.0;
         }
     
-        pos = mix(clusterCenter, pos, clusterScale * densityFactor);
+        lowp vec4 vegetationMask = texture2DLod(vegetationmap, hUV, 0.0);
+    
+        varVegetationColor = vegetationMask.rgb;
+    
+        pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale * densityFactor);
     
         //VI: don't calculate perturbation. Revise the code after oscillators etc have been integrated
         //vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
@@ -373,8 +381,6 @@ void main()
     
     
         gl_Position = worldViewProjMatrix * pos;
-    
-        varTexCoord1 = hUV;
 #else
 	gl_Position = worldViewProjMatrix * inPosition;
 #endif

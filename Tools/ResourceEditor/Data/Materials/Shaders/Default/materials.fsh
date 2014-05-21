@@ -79,7 +79,7 @@ uniform sampler2D lightmap;
 #endif
 
 //#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(MATERIAL_VIEW_LIGHTMAP_ONLY) || defined(FRAME_BLEND)
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_BLEND) || defined(MATERIAL_GRASS_OPAQUE)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 varying highp vec2 varTexCoord1;
 #endif
 
@@ -160,9 +160,6 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, expf));
 }
 
-#if defined(MATERIAL_GRASS_BLEND) || defined(MATERIAL_GRASS_OPAQUE)
-uniform sampler2D vegetationmap;
-#endif
 
 #if defined(VEGETATION_DRAW_LOD_COLOR)
 
@@ -174,6 +171,12 @@ uniform vec3 lodColor;
 #if defined(MATERIAL_GRASS_BLEND)
 
 varying vec2 varTexCoord2;
+
+#endif
+
+#if defined(MATERIAL_GRASS_TRANSFORM)
+
+varying lowp vec3 varVegetationColor;
 
 #endif
 
@@ -484,7 +487,7 @@ void main()
     //    gl_FragColor.r += 0.5;
     
 #if defined(MATERIAL_GRASS_OPAQUE)
-    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+    gl_FragColor.rgb = gl_FragColor.rgb * varVegetationColor * 2.0;
 #endif
     
 #if defined(MATERIAL_GRASS_BLEND)
@@ -494,12 +497,12 @@ void main()
 #if defined(FRAMEBUFFER_FETCH)
     //VI: fog is taken to account here
 #if defined(VERTEX_FOG)
-    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, varFogFactor), gl_FragColor.a);
+    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * varVegetationColor * 2.0, varFogFactor), gl_FragColor.a);
 #else
-    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0, gl_FragColor.a);
+    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * varVegetationColor * 2.0, gl_FragColor.a);
 #endif
 #else
-    gl_FragColor.rgb = gl_FragColor.rgb * texture2D(vegetationmap, varTexCoord1).rgb * 2.0;
+    gl_FragColor.rgb = gl_FragColor.rgb * varVegetationColor * 2.0;
 #endif
     
 #endif
