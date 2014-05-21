@@ -192,7 +192,70 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     
     WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart + 1);
     resultVector.push_back(currentLine);
-}    
+}
+    
+const WideString Font::BRACKETS = L")]｝〕〉》」』】〙〗〟’”｠»";
+const WideString Font::HYPHENS = L"‐゠–〜";
+const WideString Font::DELIMETERS = L"?!‼⁇⁈⁉";
+const WideString Font::PUNCTUATION_MID = L"・、:;,";
+const WideString Font::PUNCTUATION_END = L"。.";
+    
+//TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
+//const WideString Font::JAPANESE_CHARACTERS = L"ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻";
+    
+    bool Font::IsWordSeparator(wchar_t t) const
+    {
+        switch(t)
+        {
+            //TODO: add all word separators here
+            case 183:
+                Logger::FrameworkDebug("Font::IsWordSeparator found interpunkt");
+                return true;
+            case 12289:
+                Logger::FrameworkDebug("Font::IsWordSeparator found ideographic coma");
+                return true;
+        }
+        
+        if(BRACKETS.find(t) != WideString::npos)
+        {
+            Logger::FrameworkDebug("Font::IsWordSeparator found BRACKETS");
+            return true;
+        }
+        
+        if(HYPHENS.find(t) != WideString::npos)
+        {
+            Logger::FrameworkDebug("Font::IsWordSeparator found HYPHENS");
+            return true;
+        }
+        
+        if(DELIMETERS.find(t) != WideString::npos)
+        {
+            Logger::FrameworkDebug("Font::IsWordSeparator found DELIMETERS");
+            return true;
+        }
+        
+        if(PUNCTUATION_MID.find(t) != WideString::npos)
+        {
+            Logger::FrameworkDebug("Font::IsWordSeparator found PUNCTUATION_MID");
+            return true;
+        }
+        
+        if(PUNCTUATION_END.find(t) != WideString::npos)
+        {
+            Logger::FrameworkDebug("Font::IsWordSeparator found PUNCTUATION_END");
+            return true;
+        }
+        
+        //TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
+//        if(JAPANESE_CHARACTERS.find(t) != WideString::npos)
+//        {
+//            Logger::FrameworkDebug("Font::IsWordSeparator found JAPANESE_CHARACTERS");
+//            return true;
+//        }
+        
+        return false;
+    }
+    
 void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
 	int32 targetWidth = (int32)(targetRectSize.dx * Core::GetVirtualToPhysicalFactor());
@@ -235,8 +298,11 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 		{
 			case SKIP:
 				if (t == 0){ state = FINISH; break; } // if end of string process FINISH state and exit
-				else if (t == ' ')break; // if space continue with the same state
-				else if(t == '\n')
+				//else if (t == ' ')break; // if space continue with the same state
+				//else if (IsSpace(t))break; // if space continue with the same state
+				else if (IsWordSeparator(t))break; // if word separator - continue with the same state
+                //else if(t == '\n')
+                else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
 					// unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
@@ -265,9 +331,17 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				}
 				break;
 			case GOODCHAR: 
-				if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
-				{ 
-					lastWordEnd = pos;
+				//if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
+				if(IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t) || t == 0)
+                {
+                    if(IsWordSeparator(t))
+                    {
+                        lastWordEnd = pos + 1;
+                    }
+                    else
+                    {
+                        lastWordEnd = pos;
+                    }
 					
 					//					WideString currentLine = text.substr(currentLineStart, lastWordEnd - currentLineStart);
 					//					Size2i currentLineSize = GetStringSize(currentLine);
@@ -292,8 +366,11 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 						currentLineEnd = lastWordEnd;   
 					}
 				}
-				if (t == ' ')state = SKIP; // if cur char is space go to skip
-				else if(t == '\n')
+				//if (t == ' ')state = SKIP; // if cur char is space go to skip
+				//if (IsSpace(t)) state = SKIP; // if cur char is space go to skip
+                if (IsSpace(t) || IsWordSeparator(t)) state = SKIP; // if cur char is space go to skip
+                //else if(t == '\n')
+                else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
 					// unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
