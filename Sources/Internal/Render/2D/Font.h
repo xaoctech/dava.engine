@@ -114,7 +114,7 @@ public:
 	 \returns vertical spacing value in pixels
 	 */
 	virtual int32 GetVerticalSpacing() const;
-	
+    
 	/**
 		\brief Split string into substrings.
 		If one word(letters without separators) is longer than targetRectSize.dx, word will not be splitted.
@@ -207,6 +207,20 @@ public:
 protected:
 	// Get the raw hash string (identical for identical fonts).
 	virtual String GetRawHashString();
+    
+    //TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
+    //static const WideString JAPANESE_CHARACTERS;
+    // not permitted at line start
+    static const WideString BRACKETS;
+    static const WideString HYPHENS;
+    static const WideString DELIMETERS;
+    static const WideString PUNCTUATION_MID;
+    static const WideString PUNCTUATION_END;
+    
+    inline bool IsLineEnd(wchar_t t) const;
+    inline bool IsSpace(wchar_t t) const;
+    
+    bool IsWordSeparator(wchar_t t) const;
 
 	static int32 globalFontDPI;
 	
@@ -217,7 +231,17 @@ protected:
 	
 	eFontType fontType;
 };
-		
+    
+bool Font::IsLineEnd(wchar_t t) const
+{
+    return (t == '\n');
+}
+    
+inline bool Font::IsSpace(wchar_t t) const
+{
+    return (t == ' ');
+}
+
 };
 
 #endif // __DAVAENGINE_FONT_H__
