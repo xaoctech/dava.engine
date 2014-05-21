@@ -45,21 +45,6 @@ class WindComponent;
 class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
 public:
-    struct TreeInfo
-    {
-        TreeInfo(Entity * treeEntity);
-        void PositionUpdated();
-
-        SpeedTreeObject * treeObject;
-        SpeedTreeComponent * treeComponent;
-		Matrix4 wtInvMx;
-		Vector3 wtPosition;
-
-        Vector2 oscVelocity;
-        Vector2 oscOffset;
-        float32 leafTime;
-    };
-    
     SpeedTreeUpdateSystem(Scene * scene);
     virtual ~SpeedTreeUpdateSystem();
 	
@@ -71,11 +56,9 @@ public:
 	virtual void HandleEvent(Observable * observable);
 
 private:
-    Vector<TreeInfo *> allTrees;
+    Vector<SpeedTreeComponent *> allTrees;
 
     bool isAnimationEnabled;
-
-friend class ImpulseOscillatorComponent;
 };
     
 } // ns
