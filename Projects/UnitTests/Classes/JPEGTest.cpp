@@ -123,6 +123,7 @@ void JPEGTest::ReloadSprites()
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/JPEGTest/PNG/number_%d.png", currentTest)));
     Image* img = pngSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
     ImageSystem::Instance()->Save(path,img);
+    DVASSERT_MSG(path.Exists(), "Jpeg image was not saved!.");
     SafeRelease(img);
     
     Vector<Image *> imageSet;

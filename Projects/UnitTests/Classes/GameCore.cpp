@@ -96,7 +96,7 @@ void GameCore::OnAppStarted()
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
-    /*new InputTest();
+    new InputTest();
     new UIMovieTest();
     new SaveImageTest();
     
@@ -137,7 +137,7 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();*/
+     new ThreadSyncTest();
     
     errors.reserve(TestCount());
 
@@ -334,7 +334,7 @@ void GameCore::ProcessTests()
 
 void GameCore::FlushTestResults()
 {
-    /*bool connected = ConnectToDB();
+    bool connected = ConnectToDB();
     if(!connected)
     {
         LogMessage(String("Can't connect to DB"));
@@ -384,7 +384,7 @@ void GameCore::FlushTestResults()
     }
 
     dbClient->Disconnect();
-    SafeRelease(dbClient);*/
+    SafeRelease(dbClient);
 }
 
 
@@ -413,7 +413,7 @@ void GameCore::RegisterError(const String &command, const String &fileName, int3
 
 bool GameCore::ConnectToDB()
 {
-    /*DVASSERT(NULL == dbClient);
+    DVASSERT(NULL == dbClient);
     
     dbClient = MongodbClient::Create(DATABASE_IP, DATAPASE_PORT);
     if(dbClient)
@@ -422,14 +422,13 @@ bool GameCore::ConnectToDB()
         dbClient->SetCollectionName(DATABASE_COLLECTION);
     }
     
-    return (NULL != dbClient);*/
-        return NULL;
+    return (NULL != dbClient);
 }
 
 
 MongodbObject * GameCore::CreateLogObject(const String &logName, const String &runTime)
 {
-    /*MongodbObject *logObject = new MongodbObject();
+    MongodbObject *logObject = new MongodbObject();
     if(logObject)
     {
         logObject->SetObjectName(logName);
@@ -478,8 +477,7 @@ MongodbObject * GameCore::CreateLogObject(const String &logName, const String &r
         logObject->Finish();
     }
     
-    return logObject;*/
-    return NULL;
+    return logObject;
 }
 
 const String GameCore::GetErrorText(const ErrorData *error)
@@ -503,7 +501,7 @@ const String GameCore::GetErrorText(const ErrorData *error)
 
 MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObject *dbObject, bool needFinished)
 {
-    /*MongodbObject *subObject = new MongodbObject();
+    MongodbObject *subObject = new MongodbObject();
     if(dbObject)
     {
         bool ret = dbObject->GetSubObject(subObject, objectName, needFinished);
@@ -514,8 +512,7 @@ MongodbObject * GameCore::CreateSubObject(const String &objectName, MongodbObjec
     }
     
     subObject->SetObjectName(objectName);
-    return subObject;*/
-    return NULL;
+    return subObject;
 }
 
 

@@ -632,7 +632,7 @@ bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<
 {
 #ifdef __DAVAENGINE_IPHONE__
     
-    DVASSERT_MSG(false, "ATC is not requried for ios devices.");
+    DVASSERT_MSG(false, "Qualcomm doesn't provide texture converter library for ios");
     return false;
 
 #else
