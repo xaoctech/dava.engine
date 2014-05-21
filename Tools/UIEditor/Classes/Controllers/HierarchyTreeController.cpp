@@ -255,6 +255,7 @@ void HierarchyTreeController::Clear()
 
 	ResetSelectedControl();
 	CleanupNodesDeletedFromScene();
+    CleanupPlatformsToDelete();
 }
 
 HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
@@ -433,7 +434,9 @@ void HierarchyTreeController::CloseProject()
 	UpdateSelection(NULL, NULL);
 	// Need clean undo/redo stack before close project
 	CommandsController::Instance()->CleanupUndoRedoStack();
+
 	CleanupNodesDeletedFromScene();
+    CleanupPlatformsToDelete();
 	hierarchyTree.CloseProject();
 
 	EmitHierarchyTreeUpdated();
@@ -769,4 +772,24 @@ void HierarchyTreeController::SetStickMode(int32 mode)
 HierarchyTreeNode::HIERARCHYTREENODESLIST HierarchyTreeController::GetNodes() const
 {
     return hierarchyTree.GetNodes();
+}
+
+void HierarchyTreeController::AddPlatformToDelete(const QString& platformName)
+{
+    platformsToDelete.insert(platformName);
+}
+
+void HierarchyTreeController::RemovePlatformToDelete(const QString& platformName)
+{
+    platformsToDelete.erase(platformName);
+}
+
+void HierarchyTreeController::CleanupPlatformsToDelete()
+{
+    platformsToDelete.clear();
+}
+
+const Set<QString>& HierarchyTreeController::GetPlatformsToDelete() const
+{
+    return platformsToDelete;
 }
