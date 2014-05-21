@@ -207,42 +207,33 @@ const WideString Font::PUNCTUATION_END = L"。.";
     {
         switch(t)
         {
-            //TODO: add all word separators here
-            case 183:
-                Logger::FrameworkDebug("Font::IsWordSeparator found interpunkt");
-                return true;
-            case 12289:
-                Logger::FrameworkDebug("Font::IsWordSeparator found ideographic coma");
+            case 183: // interpunkt
+            case 12289: // ideographic comma
                 return true;
         }
         
         if(BRACKETS.find(t) != WideString::npos)
         {
-            Logger::FrameworkDebug("Font::IsWordSeparator found BRACKETS");
             return true;
         }
         
         if(HYPHENS.find(t) != WideString::npos)
         {
-            Logger::FrameworkDebug("Font::IsWordSeparator found HYPHENS");
             return true;
         }
         
         if(DELIMETERS.find(t) != WideString::npos)
         {
-            Logger::FrameworkDebug("Font::IsWordSeparator found DELIMETERS");
             return true;
         }
         
         if(PUNCTUATION_MID.find(t) != WideString::npos)
         {
-            Logger::FrameworkDebug("Font::IsWordSeparator found PUNCTUATION_MID");
             return true;
         }
         
         if(PUNCTUATION_END.find(t) != WideString::npos)
         {
-            Logger::FrameworkDebug("Font::IsWordSeparator found PUNCTUATION_END");
             return true;
         }
         
