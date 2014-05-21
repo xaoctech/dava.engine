@@ -76,9 +76,12 @@ private:
     void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);
     void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox *spinBoxWidget);
     void UpdateComboBoxWidgetWithPropertyValue(QComboBox *comboBoxWidget);
-    
-private slots:
+
+    void DisplayNotification();
     void OnOkButtonClicked();
+
+private slots:
+    void OnButtonBoxButtonClicked(QAbstractButton* button);
     void OnRadioButtonClicked();
     void OnPushButtonClicked();
     void OnSpinBoxValueChanged(int newValue);
