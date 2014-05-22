@@ -77,20 +77,23 @@ void WaveSystem::WaveTriggered(WaveComponent * component)
 
 void WaveSystem::Process(float32 timeElapsed)
 {
-    Vector<WaveInfo *>::iterator it = waves.begin();
-    while(it != waves.end())
+    int32 index = 0;
+    int32 size = waves.size();
+    while(index < size)
     {
-        WaveInfo * info = *it;
+        WaveInfo * info = waves[index];
         info->currentWaveRadius += info->component->GetWaveSpeed() * timeElapsed;
 
         if(info->currentWaveRadius >= info->maxRadius)
         {
             SafeDelete(info);
-            it = waves.erase(it);
+            waves[index] = waves[waves.size()-1];
+            waves.pop_back();
+            size--;
         }
         else
         {
-            ++it;
+            index++;
         }
     }
 }
