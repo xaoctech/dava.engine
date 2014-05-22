@@ -232,14 +232,14 @@ protected:
 	eFontType fontType;
 };
     
-bool Font::IsLineEnd(char16 t) const
+inline bool Font::IsLineEnd(char16 t) const
 {
-    return (t == '\n');
+    return (t == L'\n');
 }
     
 inline bool Font::IsSpace(char16 t) const
 {
-    return (t == ' ');
+    return (t == L' ');
 }
 
 };
