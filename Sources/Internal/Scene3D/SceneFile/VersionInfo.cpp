@@ -142,21 +142,11 @@ namespace DAVA
         return VALID;
     }
 
-    // TODO: cleanup after debug/test/review
     void VersionInfo::FillVersionHistory()
     {
-        // List of all supported featues:
-
-        // V12
-        SceneVersion v12;
-        v12.version = 12;
-        v12.tags.insert( TagsMap::value_type( "water", 1 ) );
-        v12.tags.insert( TagsMap::value_type( "sky", 2 ) );
-        AddVersion( v12 );
-
         // Current version
         SceneVersion currentVersion;
-        currentVersion.version = 13;    // Current version of scene
+        currentVersion.version = 12;    // Current version of scene file
         AddVersion(currentVersion);
     }
 
@@ -167,10 +157,7 @@ namespace DAVA
         DVASSERT(!versionMap.empty());
         TagsMap& tags = versionMap.rbegin()->second.tags;
 
-        // TODO: cleanup after debug/test/review
-        //tags.insert( TagsMap::value_type( "water", 1 ) );
-        //tags.insert( TagsMap::value_type( "sky", 2 ) );
-        //tags.insert( TagsMap::value_type( "grass", 3 ) );
+        // Example: tags.insert( TagsMap::value_type( "sky", 2 ) );
     }
 
 }
