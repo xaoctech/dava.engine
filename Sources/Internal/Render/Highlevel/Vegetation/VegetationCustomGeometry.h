@@ -50,6 +50,45 @@
 namespace DAVA
 {
 
+class VegetationCustomGeometrySerializationData
+{
+public:
+
+    VegetationCustomGeometrySerializationData(Vector<NMaterial*>& materialsData,
+                                            Vector<Vector<Vector<Vector3> > >& positionLods,
+                                            Vector<Vector<Vector<Vector2> > >& texCoordLods,
+                                            Vector<Vector<Vector<Vector3> > >& normalLods,
+                                            Vector<Vector<Vector<VegetationIndex> > >& indexLods);
+    VegetationCustomGeometrySerializationData(VegetationCustomGeometrySerializationData& src);
+    ~VegetationCustomGeometrySerializationData();
+    
+    uint32 GetLayerCount() const;
+    uint32 GetLodCount(uint32 layerIndex) const;
+    
+    NMaterial* GetMaterial(uint32 layerIndex);
+    
+    Vector<Vector3>& GetPositions(uint32 layerIndex, uint32 lodIndex);
+    Vector<Vector2>& GetTextureCoords(uint32 layerIndex, uint32 lodIndex);
+    Vector<Vector3>& GetNormals(uint32 layerIndex, uint32 lodIndex);
+    Vector<VegetationIndex>& GetIndices(uint32 layerIndex, uint32 lodIndex);
+    
+private:
+
+    void Load(Vector<NMaterial*>& materialsData,
+              Vector<Vector<Vector<Vector3> > >& positionLods,
+              Vector<Vector<Vector<Vector2> > >& texCoordLods,
+              Vector<Vector<Vector<Vector3> > >& normalLods,
+              Vector<Vector<Vector<VegetationIndex> > >& indexLods);
+    
+private:
+    
+    Vector<NMaterial*> materials;
+    Vector<Vector<Vector<Vector3> > > positions;
+    Vector<Vector<Vector<Vector2> > > texCoords;
+    Vector<Vector<Vector<Vector3> > > normals;
+    Vector<Vector<Vector<VegetationIndex> > > indices;
+};
+
 class VegetationCustomGeometry : public VegetationGeometry
 {
 
@@ -67,13 +106,16 @@ public:
                              uint32 _resolutionTilesPerRowCount,
                              const uint32* _resolutionClusterStride,
                              uint32 _resolutionClusterStrideCount,
-                             const Vector3& _worldSize);
+                             const Vector3& _worldSize,
+                             VegetationCustomGeometrySerializationData* geometryData);
     virtual ~VegetationCustomGeometry();
 
     virtual void Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags);
     virtual void OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props);
     
     virtual void ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray);
+    
+    static VegetationCustomGeometrySerializationData* LoadCustomData(const FilePath& path);
     
 private:
 
@@ -148,8 +190,8 @@ private:
     
 private:
 
-    void LoadCustomData(Vector<CustomGeometryEntityData>& geometryData);
-    Entity* SelectDataVariation(Entity* rootNode);
+    //void LoadCustomData(Vector<CustomGeometryEntityData>& geometryData);
+    static Entity* SelectDataVariation(Entity* rootNode);
 
     void BuildLayer(uint32 layerId,
                     CustomGeometryEntityData& sourceLayerData,
@@ -195,6 +237,7 @@ private:
     void Rotate(float32 angle, Vector<Vector3>& sourcePositions, Vector<Vector3>& rotatedPositions);
     
     uint32 PrepareResolutionId(uint32 currentResolutionId, uint32 cellX, uint32 cellY) const;
+    void InitCustomGeometry(VegetationCustomGeometrySerializationData* geometryData);
     
 private:
     
@@ -210,6 +253,8 @@ private:
     Vector<uint32> resolutionClusterStride;
     Vector3 worldSize;
     uint32 resolutionCount;
+    
+    Vector<CustomGeometryEntityData> customGeometryData;
 };
 
 };

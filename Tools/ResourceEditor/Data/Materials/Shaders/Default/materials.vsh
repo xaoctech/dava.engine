@@ -182,8 +182,15 @@ uniform vec3 perturbationForce;
 uniform vec3 perturbationPoint;
 uniform float perturbationForceDistance;
 
+#if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
+
 varying lowp vec3 varVegetationColor;
+
 #endif
+
+#endif
+
+
 
 const float _PI = 3.141592654;
 
@@ -363,7 +370,9 @@ void main()
     
         lowp vec4 vegetationMask = texture2DLod(vegetationmap, hUV, 0.0);
     
+#if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
         varVegetationColor = vegetationMask.rgb;
+#endif
     
         pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale * densityFactor);
     

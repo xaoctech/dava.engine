@@ -55,6 +55,7 @@ namespace DAVA
 typedef Image VegetationMap;
 class Heightmap;
 class VegetationGeometry;
+class VegetationCustomGeometrySerializationData;
 
 class VegetationRenderObject : public RenderObject
 {
@@ -131,7 +132,7 @@ public:
     
     void SetLayerClusterLimit(const Vector4& maxClusters);
     Vector4 GetLayerClusterLimit() const;
-    
+            
 private:
     
     bool IsValidGeometryData() const;
@@ -197,6 +198,11 @@ private:
     void InitWithFixedGeometry(FastNameSet& materialFlags);
     void InitWithCustomGeometry(FastNameSet& materialFlags);
     
+    void SetCustomGeometryPathInternal(const FilePath& path);
+    void ImportDataFromExternalScene(const FilePath& path);
+    VegetationCustomGeometrySerializationData* LoadCustomGeometryData(SerializationContext* context, KeyedArchive* srcArchive);
+    void SaveCustomGeometryData(SerializationContext* context, KeyedArchive* dstArchive, VegetationCustomGeometrySerializationData* data);
+    
 private:
     
     Heightmap* heightmap;
@@ -245,6 +251,8 @@ private:
     
     float32 cameraBias;
     Vector<uint32> clustersPerLayer;
+    
+    VegetationCustomGeometrySerializationData* customGeometryData;
     
 public:
     

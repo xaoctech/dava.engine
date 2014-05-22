@@ -160,23 +160,20 @@ vec3 FresnelShlickVec3(float NdotL, vec3 Cspec)
 	return Cspec + (1.0 - Cspec) * (pow(1.0 - NdotL, expf));
 }
 
+#if defined(MATERIAL_GRASS_TRANSFORM)
 
 #if defined(VEGETATION_DRAW_LOD_COLOR)
-
 uniform vec3 lodColor;
-
 #endif
 
 
 #if defined(MATERIAL_GRASS_BLEND)
-
 varying vec2 varTexCoord2;
-
 #endif
 
-#if defined(MATERIAL_GRASS_TRANSFORM)
-
+#if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
 varying lowp vec3 varVegetationColor;
+#endif
 
 #endif
 
@@ -485,6 +482,8 @@ void main()
 #endif
 #endif
     //    gl_FragColor.r += 0.5;
+
+#if defined(MATERIAL_GRASS_TRANSFORM)
     
 #if defined(MATERIAL_GRASS_OPAQUE)
     gl_FragColor.rgb = gl_FragColor.rgb * varVegetationColor * 2.0;
@@ -494,16 +493,16 @@ void main()
     
     gl_FragColor.a = gl_FragColor.a * varTexCoord2.x;
     
-#if defined(FRAMEBUFFER_FETCH)
-    //VI: fog is taken to account here
-#if defined(VERTEX_FOG)
-    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * varVegetationColor * 2.0, varFogFactor), gl_FragColor.a);
-#else
-    gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * varVegetationColor * 2.0, gl_FragColor.a);
-#endif
-#else
-    gl_FragColor.rgb = gl_FragColor.rgb * varVegetationColor * 2.0;
-#endif
+    #if defined(FRAMEBUFFER_FETCH)
+        //VI: fog is taken to account here
+        #if defined(VERTEX_FOG)
+            gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(fogColor, gl_FragColor.rgb * varVegetationColor * 2.0, varFogFactor), gl_FragColor.a);
+        #else
+            gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * varVegetationColor * 2.0, gl_FragColor.a);
+        #endif
+    #else
+        gl_FragColor.rgb = gl_FragColor.rgb * varVegetationColor * 2.0;
+    #endif
     
 #endif
 
@@ -511,6 +510,8 @@ void main()
 
 #if defined(VEGETATION_DRAW_LOD_COLOR)
     gl_FragColor.rgb += lodColor;
+#endif
+
 #endif
 
 #endif

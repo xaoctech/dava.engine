@@ -153,7 +153,8 @@ static FastName RUNTIME_ONLY_PROPERTIES[] =
 static FastName RUNTIME_ONLY_TEXTURES[] =
 {
     NMaterial::TEXTURE_DYNAMIC_REFLECTION,
-    NMaterial::TEXTURE_DYNAMIC_REFRACTION
+    NMaterial::TEXTURE_DYNAMIC_REFRACTION,
+    NMaterial::TEXTURE_HEIGHTMAP
 };
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");

@@ -137,7 +137,8 @@ VegetationRenderObject::VegetationRenderObject() :
     vegetationGeometry(NULL),
     heightmapTexture(NULL),
     //cameraBias(25.0f)
-    cameraBias(0.0f)
+    cameraBias(0.0f),
+    customGeometryData(NULL)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -170,6 +171,8 @@ VegetationRenderObject::~VegetationRenderObject()
     SafeRelease(vegetationMap);
     SafeRelease(heightmap);
     SafeRelease(heightmapTexture);
+    
+    SafeDelete(customGeometryData);
 }
     
 RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
@@ -187,6 +190,12 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     
     VegetationRenderObject* vegetationRenderObject = static_cast<VegetationRenderObject*>(newObject);
     
+    SafeDelete(vegetationRenderObject->customGeometryData);
+    if(customGeometryData)
+    {
+        vegetationRenderObject->customGeometryData = new VegetationCustomGeometrySerializationData(*customGeometryData);
+    }
+    
     vegetationRenderObject->SetHeightmap(GetHeightmap());
     vegetationRenderObject->SetVegetationMap(GetVegetationMap());
     vegetationRenderObject->SetTextureSheet(GetTextureSheetPath());
@@ -196,7 +205,8 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetLightmap(GetLightmapPath());
     vegetationRenderObject->SetVegetationTexture(GetVegetationTexture());
     vegetationRenderObject->SetWorldSize(GetWorldSize());
-    vegetationRenderObject->SetCustomGeometryPath(GetCustomGeometryPath());
+    vegetationRenderObject->SetCustomGeometryPathInternal(GetCustomGeometryPath());
+    vegetationRenderObject->SetCameraBias(GetCameraBias());
     
     vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
@@ -238,6 +248,17 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
     {
         archive->SetString("vro.customGeometry", customGeometryPath.GetRelativePathname(serializationContext->GetScenePath()));
     }
+    
+    archive->SetFloat("vro.cameraBias", cameraBias);
+    
+    if(customGeometryData != NULL)
+    {
+        KeyedArchive* customGeometryArchive = new KeyedArchive();
+        SaveCustomGeometryData(serializationContext, customGeometryArchive, customGeometryData);
+        archive->SetArchive("vro.geometryData", customGeometryArchive);
+        
+        SafeRelease(customGeometryArchive);
+    }
 }
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -261,10 +282,23 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     if(shouldLoadData)
     {
+        if(archive->IsKeyExists("vro.geometryData"))
+        {
+            KeyedArchive* customGeometryArchive = archive->GetArchive("vro.geometryData");
+            customGeometryData = LoadCustomGeometryData(serializationContext, customGeometryArchive);
+        }
+    
         String customGeometry = archive->GetString("vro.customGeometry");
 		if(customGeometry.empty() == false)
 		{
-			SetCustomGeometryPath(serializationContext->GetScenePath() + customGeometry);
+            if(customGeometryData != NULL)
+            {
+                SetCustomGeometryPathInternal(serializationContext->GetScenePath() + customGeometry);
+            }
+            else
+            {
+                SetCustomGeometryPath(serializationContext->GetScenePath() + customGeometry);
+            }
 		}
     
         if(archive->IsKeyExists("vro.clusterLimit"))
@@ -299,6 +333,11 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 		{
 			SetLightmap(serializationContext->GetScenePath() + lightmap);
 		}
+        
+        if(archive->IsKeyExists("vro.cameraBias"))
+        {
+            SetCameraBias(archive->GetFloat("vro.cameraBias"));
+        }
     }
     
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
@@ -828,7 +867,7 @@ bool VegetationRenderObject::IsValidGeometryData() const
      return (worldSize.Length() > 0 &&
              heightmap != NULL &&
              vegetationMap != NULL &&
-             !textureSheetPath.IsEmpty() &&
+             (!textureSheetPath.IsEmpty() || customGeometryData != NULL) &&
              clustersPerLayer.size() > 0);
 }
     
@@ -965,8 +1004,7 @@ void VegetationRenderObject::CreateRenderData()
     
     FastNameSet materialFlags;
     
-    if(!customGeometryPath.IsEmpty() &&
-       customGeometryPath.Exists())
+    if(customGeometryData)
     {
         InitWithCustomGeometry(materialFlags);
     }
@@ -1040,7 +1078,8 @@ void VegetationRenderObject::InitWithCustomGeometry(FastNameSet& materialFlags)
                                                       COUNT_OF(RESOLUTION_TILES_PER_ROW),
                                                       RESOLUTION_CLUSTER_STRIDE,
                                                       COUNT_OF(RESOLUTION_CLUSTER_STRIDE),
-                                                      worldSize);
+                                                      worldSize,
+                                                      customGeometryData);
     
     materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
 }
@@ -1232,6 +1271,12 @@ const FilePath& VegetationRenderObject::GetCustomGeometryPath() const
     
 void VegetationRenderObject::SetCustomGeometryPath(const FilePath& path)
 {
+    ImportDataFromExternalScene(path);
+    SetCustomGeometryPathInternal(path);
+}
+
+void VegetationRenderObject::SetCustomGeometryPathInternal(const FilePath& path)
+{
     customGeometryPath = path;
     
     if(IsValidGeometryData())
@@ -1257,6 +1302,165 @@ Vector4 VegetationRenderObject::GetLayerClusterLimit() const
                    clustersPerLayer[1],
                    clustersPerLayer[2],
                    clustersPerLayer[3]) : Vector4();
+}
+
+void VegetationRenderObject::ImportDataFromExternalScene(const FilePath& path)
+{
+    SafeDelete(customGeometryData);
+    
+    if(!path.IsEmpty() &&
+       path.Exists())
+    {
+        customGeometryData = VegetationCustomGeometry::LoadCustomData(path);
+    }
+}
+
+VegetationCustomGeometrySerializationData* VegetationRenderObject::LoadCustomGeometryData(SerializationContext* context, KeyedArchive* srcArchive)
+{
+    uint32 layerCount = srcArchive->GetUInt32("cgsd.layerCount");
+    
+    Vector<NMaterial*> materials;
+    Vector<Vector<Vector<Vector3> > > positions;
+    Vector<Vector<Vector<Vector2> > > texCoords;
+    Vector<Vector<Vector<Vector3> > > normals;
+    Vector<Vector<Vector<VegetationIndex> > > indices;
+    
+    for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+    {
+        KeyedArchive* layerArchive = srcArchive->GetArchive(Format("cgsd.layer.%d", layerIndex));
+        
+        uint64 materialId = layerArchive->GetUInt64("cgsd.layer.materialId");
+        NMaterial* mat = (NMaterial*)context->GetDataBlock(materialId);
+        
+        DVASSERT(mat);
+        
+        materials.push_back(mat);
+        
+        positions.push_back(Vector<Vector<Vector3> >());
+        texCoords.push_back(Vector<Vector<Vector2> >());
+        normals.push_back(Vector<Vector<Vector3> >());
+        indices.push_back(Vector<Vector<VegetationIndex> >());
+        
+        Vector<Vector<Vector3> >& layerPositions = positions[positions.size() - 1];
+        Vector<Vector<Vector2> >& layerTexCoords = texCoords[texCoords.size() - 1];
+        Vector<Vector<Vector3> >& layerNormals = normals[normals.size() - 1];
+        Vector<Vector<VegetationIndex> >& layerIndices = indices[indices.size() - 1];
+        
+        uint32 lodCount = layerArchive->GetUInt32("cgsd.layer.lodCount");
+        for(uint32 lodIndex = 0; lodIndex < lodCount; ++lodIndex)
+        {
+            layerPositions.push_back(Vector<Vector3>());
+            layerTexCoords.push_back(Vector<Vector2>());
+            layerNormals.push_back(Vector<Vector3>());
+            layerIndices.push_back(Vector<VegetationIndex>());
+            
+            Vector<Vector3>& lodPositions = layerPositions[layerPositions.size() - 1];
+            Vector<Vector2>& lodTexCoords = layerTexCoords[layerTexCoords.size() - 1];
+            Vector<Vector3>& lodNormals = layerNormals[layerNormals.size() - 1];
+            Vector<VegetationIndex>& lodIndices = layerIndices[layerIndices.size() - 1];
+            
+            KeyedArchive* lodArchive = layerArchive->GetArchive(Format("cgsd.lod.%d", lodIndex));
+            
+            uint32 posCount = lodArchive->GetUInt32("cgsd.lod.posCount");
+            for(uint32 i = 0; i < posCount; ++i)
+            {
+                Vector3 pos = lodArchive->GetVector3(Format("cgsd.lod.pos.%d", i));
+                lodPositions.push_back(pos);
+            }
+            
+            uint32 texCount = lodArchive->GetUInt32("cgsd.lod.texCount");
+            for(uint32 i = 0; i < texCount; ++i)
+            {
+                Vector2 texCoord = lodArchive->GetVector2(Format("cgsd.lod.tex.%d", i));
+                lodTexCoords.push_back(texCoord);
+            }
+            
+            uint32 normalCount = lodArchive->GetUInt32("cgsd.lod.normalCount");
+            for(uint32 i = 0; i < normalCount; ++i)
+            {
+                Vector3 normal = lodArchive->GetVector3(Format("cgsd.lod.normal.%d", i));
+                lodNormals.push_back(normal);
+            }
+
+            uint32 indexCount = lodArchive->GetUInt32("cgsd.lod.indexCount");
+            for(uint32 i = 0; i < indexCount; ++i)
+            {
+                uint32 index = lodArchive->GetInt32(Format("cgsd.lod.index.%d", i));
+                lodIndices.push_back(index);
+            }
+        }
+    }
+
+    VegetationCustomGeometrySerializationData* data = new VegetationCustomGeometrySerializationData(materials,
+                                                                                                    positions,
+                                                                                                    texCoords,
+                                                                                                    normals,
+                                                                                                    indices);
+    
+    return data;
+}
+    
+void VegetationRenderObject::SaveCustomGeometryData(SerializationContext* context,
+                                                    KeyedArchive* dstArchive,
+                                                    VegetationCustomGeometrySerializationData* data)
+{
+    uint32 layerCount = data->GetLayerCount();
+    dstArchive->SetUInt32("cgsd.layerCount", layerCount);
+    
+    for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+    {
+        uint32 lodCount = data->GetLodCount(layerIndex);
+        KeyedArchive* layerArchive = new KeyedArchive();
+        
+        layerArchive->SetUInt64("cgsd.layer.materialId", data->GetMaterial(layerIndex)->GetMaterialKey());
+        layerArchive->SetUInt32("cgsd.layer.lodCount", lodCount);
+        
+        for(uint32 lodIndex = 0; lodIndex < lodCount; ++lodIndex)
+        {
+            KeyedArchive* lodArchive = new KeyedArchive();
+        
+            Vector<Vector3>& positions = data->GetPositions(layerIndex, lodIndex);
+            Vector<Vector2>& texCoords = data->GetTextureCoords(layerIndex, lodIndex);
+            Vector<Vector3>& normals = data->GetNormals(layerIndex, lodIndex);
+            Vector<VegetationIndex>& indices = data->GetIndices(layerIndex, lodIndex);
+            
+            uint32 posCount = positions.size();
+            lodArchive->SetUInt32("cgsd.lod.posCount", posCount);
+            for(uint32 i = 0; i < posCount; ++i)
+            {
+                lodArchive->SetVector3(Format("cgsd.lod.pos.%d", i), positions[i]);
+            }
+            
+            uint32 texCount = texCoords.size();
+            lodArchive->SetUInt32("cgsd.lod.texCount", texCount);
+            for(uint32 i = 0; i < texCount; ++i)
+            {
+                lodArchive->SetVector2(Format("cgsd.lod.tex.%d", i), texCoords[i]);
+            }
+
+            uint32 normalCount = normals.size();
+            lodArchive->SetUInt32("cgsd.lod.normalCount", normalCount);
+            for(uint32 i = 0; i < normalCount; ++i)
+            {
+                lodArchive->SetVector3(Format("cgsd.lod.normal.%d", i), normals[i]);
+            }
+
+            uint32 indexCount = indices.size();
+            lodArchive->SetUInt32("cgsd.lod.indexCount", indexCount);
+            for(uint32 i = 0; i < indexCount; ++i)
+            {
+                lodArchive->SetInt32(Format("cgsd.lod.index.%d", i), indices[i]);
+            }
+            
+            layerArchive->SetArchive(Format("cgsd.lod.%d", lodIndex), lodArchive);
+            
+            SafeRelease(lodArchive);
+        }
+        
+        dstArchive->SetArchive(Format("cgsd.layer.%d", layerIndex), layerArchive);
+        
+        SafeRelease(layerArchive);
+    }
 }
 
 };
