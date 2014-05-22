@@ -71,6 +71,16 @@ bool TextureDescriptor::TextureDataSettings::GetGenerateMipMaps() const
 	return IsFlagEnabled(FLAG_GENERATE_MIPMAPS);
 }
 
+void TextureDescriptor::TextureDataSettings::SetIsNormalMap(const bool & isNormalMap)
+{
+    EnableFlag(isNormalMap, FLAG_IS_NORMAL_MAP);
+}
+
+bool TextureDescriptor::TextureDataSettings::GetIsNormalMap() const
+{
+    return IsFlagEnabled(FLAG_IS_NORMAL_MAP);
+}
+
 void TextureDescriptor::TextureDataSettings::EnableFlag( bool enable, int8 flag )
 {
 	if(enable)
@@ -211,8 +221,6 @@ bool TextureDescriptor::UpdateCrcForFormat(eGPUFamily forGPU) const
     
 bool TextureDescriptor::Load(const FilePath &filePathname)
 {
-	DVASSERT(compression == NULL);
-
     File *file = File::Create(filePathname, File::READ | File::OPEN);
     if(!file)
     {
@@ -226,9 +234,13 @@ bool TextureDescriptor::Load(const FilePath &filePathname)
 	file->Read(&signature);
 
 	isCompressedFile = (COMPRESSED_FILE == signature);
-	if(isCompressedFile == false)
+	if(isCompressedFile == false && !compression)
 	{
 		AllocateCompressionData();
+	}
+	else if(isCompressedFile && compression)
+	{
+		ReleaseCompressionData();
 	}
 
     int8 version = 0;
@@ -522,8 +534,7 @@ bool TextureDescriptor::GetGenerateMipMaps() const
 {
     return dataSettings.GetGenerateMipMaps();
 }
-    
-    
+
 FilePath TextureDescriptor::GetSourceTexturePathname() const
 {
     if(pathname.IsEmpty())
@@ -585,7 +596,7 @@ bool TextureDescriptor::IsCubeMap() const
 {
 	return (dataSettings.faceDescription != 0);
 }
-	
+
 uint32 TextureDescriptor::ReadSourceCRC() const
 {
 	uint32 crc = 0;
@@ -624,6 +635,9 @@ uint32 TextureDescriptor::ReadSourceCRC() const
     
 uint32 TextureDescriptor::GetConvertedCRC(eGPUFamily forGPU) const
 {
+	if(compression && compression[forGPU]->format == FORMAT_INVALID) return 0;
+
+
 	FilePath filePath = GPUFamilyDescriptor::CreatePathnameForGPU(this, forGPU);
 	if(filePath.IsEqualToExtension(".pvr"))
 	{
@@ -748,11 +762,9 @@ void TextureDescriptor::Reload()
 {
 	if((pathname.IsEmpty() == false) && pathname.Exists())
 	{
-		if((isCompressedFile == false) && (compression))
-			ReleaseCompressionData();
-
-		FilePath savedPath = pathname;
-		Initialize(savedPath);
+		FilePath descriptorPathname = pathname;
+		SetDefaultValues();
+		Load(descriptorPathname);
 	}
 }
 

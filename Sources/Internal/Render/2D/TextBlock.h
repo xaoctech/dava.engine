@@ -103,7 +103,10 @@ protected:
 	void DrawToBuffer(Font *font, int16 *buf);
 
 	void ProcessAlign();
-	
+    
+    // TextBlock::Prepare does not work well for some fitting options when font size is set
+    // to 0; need to correct the size for these cases.
+	float32 GetCorrectedFontRenderSize();
 
 	Vector2 rectSize;
 	Vector2 requestedSize;

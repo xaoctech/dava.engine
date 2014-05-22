@@ -27,19 +27,22 @@
 =====================================================================================*/
 
 
-//
-//  Config.h
-//  Framework
-//
-//  Created by Dmitry Shpakov on 6/8/12.
-//  Copyright (c) 2012 DAVA Consulting. All rights reserved.
-//
 
-#ifndef __DAVAENGINE_AUTOTESTING_CONFIG_H__
-#define __DAVAENGINE_AUTOTESTING_CONFIG_H__
+#ifndef __DEBUG_TOOLS__
+#define __DEBUG_TOOLS__
 
-#define __DAVAENGINE_AUTOTESTING__
-#define AUTOTESTING_LUA
+#include <QObject>
 
+class DeveloperTools: public QObject
+{
+    Q_OBJECT
 
-#endif // __DAVAENGINE_AUTOTESTING_CONFIG_H__
+public:
+	explicit DeveloperTools(QObject *parent = 0);
+
+public slots:
+    
+    void OnDebugFunctionsGridCopy();
+	
+};
+#endif /* defined(__DEBUG_TOOLS__) */
