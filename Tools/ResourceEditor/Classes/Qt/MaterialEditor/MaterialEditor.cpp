@@ -290,11 +290,16 @@ void MaterialEditor::commandExecuted(SceneEditor2 *scene, const Command2 *comman
     {
         int cmdId = command->GetId();
 
-        if(cmdId == CMDID_INSP_DYNAMIC_MODIFY ||
-            cmdId == CMDID_INSP_MEMBER_MODIFY ||
-            cmdId == CMDID_META_OBJ_MODIFY)
+        if(cmdId == CMDID_INSP_DYNAMIC_MODIFY)
         {
-            SetCurMaterial(curMaterials);
+            InspDynamicModifyCommand *inspCommand = (InspDynamicModifyCommand *) command;
+
+            // if material flag was changed we should rebuild list of all properties
+            // because their set can be changed
+            if(inspCommand->dynamicInfo->GetMember()->Name() == "materialSetFlags")
+            {
+                SetCurMaterial(curMaterials);
+            }
         }
         else if(cmdId == CMDID_MATERIAL_GLOBAL_SET)
         {
