@@ -827,6 +827,12 @@
 		74D1EAB9172E950700EDE0B7 /* UIScrollViewContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74D1EAB6172E950700EDE0B7 /* UIScrollViewContainer.cpp */; };
 		74D1EABA172E950700EDE0B7 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74D1EAB7172E950700EDE0B7 /* UIScrollViewContainer.h */; };
 		74D1EABB172E950700EDE0B7 /* UIScrollViewContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 74D1EAB7172E950700EDE0B7 /* UIScrollViewContainer.h */; };
+		76199F3A192DF73D008A47E2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 76199F38192DF73D008A47E2 /* VersionInfo.h */; };
+		76199F3B192DF73D008A47E2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 76199F38192DF73D008A47E2 /* VersionInfo.h */; };
+		76199F3C192DF73D008A47E2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 76199F38192DF73D008A47E2 /* VersionInfo.h */; };
+		76199F3D192DF73D008A47E2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76199F39192DF73D008A47E2 /* VersionInfo.cpp */; };
+		76199F3E192DF73D008A47E2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76199F39192DF73D008A47E2 /* VersionInfo.cpp */; };
+		76199F3F192DF73D008A47E2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76199F39192DF73D008A47E2 /* VersionInfo.cpp */; };
 		7A16933B180EE618005F1FBC /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56401753C2BB008966FA /* KeyedArchiveSwig.cpp */; };
 		7A16933C180EE618005F1FBC /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7FBCFA816CD1FE5006F1B3F /* AutotestingSystemLua.cpp */; };
 		7A16933D180EE618005F1FBC /* AutotestingSystemLua.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FBCFA916CD1FE5006F1B3F /* AutotestingSystemLua.h */; };
@@ -2359,6 +2365,8 @@
 		74A909AA1701FA51003FDB31 /* CRC32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRC32.h; sourceTree = "<group>"; };
 		74D1EAB6172E950700EDE0B7 /* UIScrollViewContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIScrollViewContainer.cpp; sourceTree = "<group>"; };
 		74D1EAB7172E950700EDE0B7 /* UIScrollViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIScrollViewContainer.h; sourceTree = "<group>"; };
+		76199F38192DF73D008A47E2 /* VersionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionInfo.h; sourceTree = "<group>"; };
+		76199F39192DF73D008A47E2 /* VersionInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VersionInfo.cpp; sourceTree = "<group>"; };
 		7A169349180EE75A005F1FBC /* AutotestingDB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingDB.cpp; sourceTree = "<group>"; };
 		7A16934A180EE75A005F1FBC /* AutotestingDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingDB.h; sourceTree = "<group>"; };
 		7A16934B180EE75A005F1FBC /* GameAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameAPI.cpp; sourceTree = "<group>"; };
@@ -3198,6 +3206,8 @@
 		A6B97D9917E20A5A00CBD64C /* SceneFile */ = {
 			isa = PBXGroup;
 			children = (
+				76199F38192DF73D008A47E2 /* VersionInfo.h */,
+				76199F39192DF73D008A47E2 /* VersionInfo.cpp */,
 				A6B0517F17E886D8000EED68 /* SerializationContext.h */,
 				A68290B917F5EEF9007BAFDC /* SerializationContext.cpp */,
 			);
@@ -4590,6 +4600,7 @@
 				17FB4BBC1923B9D900F3E3BC /* MovieViewControlMacOS.h in Headers */,
 				176DEA34174B5561007A983B /* SpriteRenderBatch.h in Headers */,
 				176DEA35174B5561007A983B /* RenderState.h in Headers */,
+				76199F3C192DF73D008A47E2 /* VersionInfo.h in Headers */,
 				176DEA36174B5561007A983B /* UpdateSystem.h in Headers */,
 				176DEA37174B5561007A983B /* Entity.h in Headers */,
 				176DEA38174B5561007A983B /* CRC32.h in Headers */,
@@ -4656,6 +4667,7 @@
 				E8989DC816BD24E500732C04 /* HashMap.h in Headers */,
 				E8989DC916BD24E500732C04 /* Introspection.h in Headers */,
 				E8989DCA16BD24E500732C04 /* IntrospectionBase.h in Headers */,
+				76199F3A192DF73D008A47E2 /* VersionInfo.h in Headers */,
 				E8989DCB16BD24E500732C04 /* IntrospectionCollection.h in Headers */,
 				E8989DCC16BD24E500732C04 /* IntrospectionFlags.h in Headers */,
 				E8989DCD16BD24E500732C04 /* IntrospectionProperty.h in Headers */,
@@ -5022,6 +5034,7 @@
 				E898A05516BD265400732C04 /* AnimatedObject.h in Headers */,
 				E898A05616BD265400732C04 /* Animation.h in Headers */,
 				E898A05716BD265400732C04 /* AnimationManager.h in Headers */,
+				76199F3B192DF73D008A47E2 /* VersionInfo.h in Headers */,
 				E898A05816BD265400732C04 /* BezierSplineAnimation.h in Headers */,
 				E898A05916BD265400732C04 /* Interpolation.h in Headers */,
 				E898A05A16BD265400732C04 /* KeyframeAnimation.h in Headers */,
@@ -5787,6 +5800,7 @@
 				176DEB47174B5561007A983B /* RenderObject.cpp in Sources */,
 				176DEB48174B5561007A983B /* RenderPass.cpp in Sources */,
 				176DEB49174B5561007A983B /* RenderSystem.cpp in Sources */,
+				76199F3F192DF73D008A47E2 /* VersionInfo.cpp in Sources */,
 				176DEB4A174B5561007A983B /* ShadowRect.cpp in Sources */,
 				176DEB4B174B5561007A983B /* ShadowVolume.cpp in Sources */,
 				176DEB4C174B5561007A983B /* ShadowVolumeRenderPass.cpp in Sources */,
@@ -5982,6 +5996,7 @@
 				E8989F4916BD24E500732C04 /* RenderManager.cpp in Sources */,
 				E8989F4C16BD24E500732C04 /* RenderManagerFactory.cpp in Sources */,
 				E8989F4D16BD24E500732C04 /* RenderManagerGL.cpp in Sources */,
+				76199F3D192DF73D008A47E2 /* VersionInfo.cpp in Sources */,
 				E8989F5016BD24E500732C04 /* RenderOptions.cpp in Sources */,
 				E8989F5216BD24E500732C04 /* RenderResource.cpp in Sources */,
 				E8989F5716BD24E500732C04 /* Shader.cpp in Sources */,
@@ -6318,6 +6333,7 @@
 				E898A22816BD265400732C04 /* Image.cpp in Sources */,
 				E898A22916BD265400732C04 /* ImageLoader.cpp in Sources */,
 				E898A22A16BD265400732C04 /* LibDxtHelper.cpp in Sources */,
+				76199F3E192DF73D008A47E2 /* VersionInfo.cpp in Sources */,
 				E898A22B16BD265400732C04 /* LibPngHelpers.cpp in Sources */,
 				7A16933B180EE618005F1FBC /* KeyedArchiveSwig.cpp in Sources */,
 				E898A22C16BD265400732C04 /* LibPVRHelper.cpp in Sources */,
