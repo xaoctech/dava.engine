@@ -26,20 +26,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __OPENGLES30_FORMAT_TEST__
+#define __OPENGLES30_FORMAT_TEST__
 
-//
-//  Config.h
-//  Framework
-//
-//  Created by Dmitry Shpakov on 6/8/12.
-//  Copyright (c) 2012 DAVA Consulting. All rights reserved.
-//
+#include "DAVAEngine.h"
+#include "TestTemplate.h"
 
-#ifndef __DAVAENGINE_AUTOTESTING_CONFIG_H__
-#define __DAVAENGINE_AUTOTESTING_CONFIG_H__
+using namespace DAVA;
 
-//#define __DAVAENGINE_AUTOTESTING__
-//#define AUTOTESTING_LUA
+class OpenGLES30FormatTest: public TestTemplate<OpenGLES30FormatTest>
+{
+protected:
+    ~OpenGLES30FormatTest(){}
 
+public:
+    OpenGLES30FormatTest();
 
-#endif // __DAVAENGINE_AUTOTESTING_CONFIG_H__
+    virtual void LoadResources();
+    virtual void UnloadResources();
+    virtual bool RunTest(int32 testNum);
+
+    void TestFunction(PerfFuncData * data);
+
+	virtual void DidAppear();
+	virtual void Update(float32 timeElapsed);
+
+private:
+    
+    void LoadFormat(const String & format);
+
+    UIControl *source;
+    UIControl *decodedSource;
+    UIControl *encodedSource;
+    
+    UIStaticText *formatName;
+    
+    bool testFinished;
+	float32 onScreenTime;
+    
+    String currentFormatName;
+    uint32 currentFormatIndex;
+
+    void ButtonPressed(BaseObject *obj, void *data, void *callerData);
+};
+
+#endif //__OPENGLES30_FORMAT_TEST__

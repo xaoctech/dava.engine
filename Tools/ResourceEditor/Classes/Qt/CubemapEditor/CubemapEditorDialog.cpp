@@ -381,12 +381,16 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
 		}
 	}
 	
-	TextureDescriptor* descriptor = new TextureDescriptor();
-    
+	TextureDescriptor* descriptor = NULL;
     bool descriptorReady = false;
     if(filePath.Exists())
     {
+        descriptor = new TextureDescriptor(false);
         descriptorReady = descriptor->Load(filePath);
+    }
+    else
+    {
+        descriptor = new TextureDescriptor(true);
     }
     
     if(!descriptorReady)
@@ -396,7 +400,7 @@ void CubemapEditorDialog::SaveCubemap(const QString& path)
     }
     
 	descriptor->dataSettings.faceDescription = faceMask;
-    
+
     descriptor->Save(filePath);
 	SafeDelete(descriptor);
 	

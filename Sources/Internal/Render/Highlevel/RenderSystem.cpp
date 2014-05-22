@@ -302,11 +302,7 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     for (uint32 k = 0; k < renderBatchCount; ++k)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
-        NMaterial * material = batch->GetMaterial();
-        if (material)
-        {
-            material->SetLight(0, nearestLight, forceUpdateLights);
-        }
+        batch->SetLight(0, nearestLight);
     }
 }
 
@@ -327,7 +323,7 @@ void RenderSystem::AddLight(Light * light)
     
 void RenderSystem::RemoveLight(Light * light)
 {
-    lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
+    FindAndRemoveExchangingWithLast(lights, light);
     FindNearestLights();
     
     SafeRelease(light);
@@ -382,9 +378,7 @@ void RenderSystem::Update(float32 timeElapsed)
 	for(uint32 i = 0; i < size; ++i)
 	{
         objectsForUpdate[i]->RenderUpdate(mainCamera, timeElapsed);
-    }
-	
-    ShaderCache::Instance()->ClearAllLastBindedCaches();
+    }	    
 }
 
 void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
@@ -403,19 +397,6 @@ void RenderSystem::Render()
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
 }
-
-//RenderLayer * RenderSystem::AddRenderLayer(const FastName & layerName, uint32 sortingFlags, const FastName & passName, const FastName & afterLayer)
-//{
-//	DVASSERT(false == renderLayersMap.count(layerName));
-//
-//	RenderLayer * newLayer = new RenderLayer(layerName, sortingFlags);
-//	renderLayersMap.Insert(layerName, newLayer);
-//
-//	RenderPass * inPass = renderPassesMap[passName];
-//	inPass->AddRenderLayer(newLayer, afterLayer);
-//
-//	return newLayer;
-//}
     
 void RenderSystem::SetShadowRectColor(const Color &color)
 {

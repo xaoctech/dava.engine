@@ -342,7 +342,7 @@ void TextureBrowser::updateInfoOriginal(const QList<QImage> &images)
 	{
 		char tmp[1024];
 
-		const char *formatStr = DAVA::Texture::GetPixelFormatString(DAVA::FORMAT_RGBA8888);
+		const char *formatStr = DAVA::PixelFormatDescriptor::GetPixelFormatString(DAVA::FORMAT_RGBA8888);
 
 		int datasize = TextureCache::Instance()->getOriginalSize(curDescriptor);
 		int filesize = TextureCache::Instance()->getOriginalFileSize(curDescriptor);
@@ -368,6 +368,7 @@ void TextureBrowser::updateInfoConverted()
 
 		int datasize = TextureCache::Instance()->getConvertedSize(curDescriptor, curTextureView);
 		int filesize = TextureCache::Instance()->getConvertedFileSize(curDescriptor, curTextureView);
+        bool isUpToDate = curDescriptor->IsCompressedTextureActual(curTextureView);
 		QSize imgSize(0, 0);
         
 		DVASSERT(curDescriptor->compression);
@@ -395,10 +396,12 @@ void TextureBrowser::updateInfoConverted()
 			SizeInBytesToString(filesize).c_str());
 
 		ui->labelConvertedFormat->setText(tmp);
+        ui->textureAreaConverted->warningShow(!isUpToDate);
 	}
 	else
 	{
 		ui->labelConvertedFormat->setText("");
+        ui->textureAreaConverted->warningShow(false);
 	}
 }
 
@@ -449,6 +452,8 @@ void TextureBrowser::setupImagesScrollAreas()
 	// mouse wheel
 	QObject::connect(ui->textureAreaOriginal, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
 	QObject::connect(ui->textureAreaConverted, SIGNAL(mouseWheel(int)), this, SLOT(textureAreaWheel(int)));
+
+    ui->textureAreaConverted->warningSetText("Not relevant");
 }
 
 void TextureBrowser::setupTextureToolbar()
@@ -690,6 +695,7 @@ void TextureBrowser::texturePropertyChanged(int type)
 	// settings that need texture to reconvert
 	if( type == TextureProperties::PROP_FORMAT ||
 		type == TextureProperties::PROP_MIPMAP ||
+        type == TextureProperties::PROP_NORMALMAP||
 		type == TextureProperties::PROP_SIZE)
 	{
 		// set current Texture view and force texture convertion

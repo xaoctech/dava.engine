@@ -38,6 +38,7 @@
 #include "HierarchyTreeController.h"
 #include "WidgetSignalsBlocker.h"
 #include "SubcontrolsHelper.h"
+#include "ResourcesManageHelper.h"
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
@@ -106,7 +107,7 @@ BasePropertyGridWidget::PROPERTIESMAP BasePropertyGridWidget::BuildMetadataPrope
     for (int32 i = 0; i < count; i ++)
     {
         const QMetaProperty& curProperty = activeMetadata->metaObject()->property(i);
-        //Logger::Debug("Property name %s", curProperty.name());
+        //Logger::FrameworkDebug("Property name %s", curProperty.name());
         propertiesMap.insert(std::make_pair(curProperty.name(), curProperty));
     }
     
@@ -1034,4 +1035,9 @@ bool BasePropertyGridWidget::ActiveControlIsSubcontrol()
 	}
 
 	return false;
+}
+
+QString BasePropertyGridWidget::PreprocessSpriteName(const QString& rawSpriteName)
+{
+    return ResourcesManageHelper::GetResourceRelativePath(rawSpriteName);
 }

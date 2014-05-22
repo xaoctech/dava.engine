@@ -10,6 +10,7 @@
 		02B3D3DF159C8D360082111B /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02B3D3DD159C8D360082111B /* SoundTest.cpp */; };
 		02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02BC3C0515E6399C0047F67F /* SplitTest.cpp */; };
 		02F8B01C17CF996C00D5A334 /* ThreadSyncTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F8B01A17CF996C00D5A334 /* ThreadSyncTest.cpp */; };
+		02FD825A192A10B6007762C0 /* libFrameworkTesting.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FD8257192A10A5007762C0 /* libFrameworkTesting.a */; };
 		15CBB0B018D300310038ABA3 /* StringFormatTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15CBB0AE18D300310038ABA3 /* StringFormatTest.cpp */; };
 		1770DF4517DF446600000391 /* UIMovieTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4317DF446600000391 /* UIMovieTest.cpp */; };
 		1770DF4717DF497600000391 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1770DF4617DF497600000391 /* MediaPlayer.framework */; };
@@ -22,7 +23,6 @@
 		4998996B18B238F7007A8DF2 /* RectSpriteTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4998996918B238F7007A8DF2 /* RectSpriteTest.cpp */; };
 		49A0DB291796F8050000970C /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49A0DB281796F8050000970C /* MessageUI.framework */; };
 		49C4331F1675F1A6000EA877 /* DXTTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C4331D1675F1A6000EA877 /* DXTTest.cpp */; };
-		5C6EF11415751B5F001E45AD /* libFramework.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE9895581163F13500500198 /* libFramework.a */; };
 		5C8B42A61589D866001B2597 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8B42A41589D866001B2597 /* SampleTest.cpp */; };
 		5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8D42421580E4D700441032 /* BaseScreen.cpp */; };
 		5CA2462E158F472100465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2462C158F472100465879 /* EntityTest.cpp */; };
@@ -50,6 +50,7 @@
 		E832BD95170D5610004D88A0 /* FileListTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E832BD93170D5610004D88A0 /* FileListTest.cpp */; };
 		E832BDA0170D823C004D88A0 /* FileSystemTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E832BD9E170D823C004D88A0 /* FileSystemTest.cpp */; };
 		E8679179175F607700C5A6A2 /* FormatsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8679177175F607700C5A6A2 /* FormatsTest.cpp */; };
+		E8983CC118C89733002FB974 /* OpenGLES30FormatTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8983CBF18C89733002FB974 /* OpenGLES30FormatTest.cpp */; };
 		E8B6B3CA1705DED5004F665E /* LocalizationTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */; };
 		E8BD1F0816DE4A7800499E18 /* eMailTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8BD1F0616DE4A7800499E18 /* eMailTest.cpp */; };
 		E8C6B12216692E87001EBE09 /* CloneTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8C6B12016692E87001EBE09 /* CloneTest.cpp */; };
@@ -71,18 +72,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		02FD8256192A10A5007762C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 02FD820C1924997C007762C0;
+			remoteInfo = FrameworkTesting;
+		};
+		02FD8258192A10AD007762C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 02FD7F061924997C007762C0;
+			remoteInfo = FrameworkTesting;
+		};
 		FE9895571163F13500500198 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
-			remoteInfo = Framework;
-		};
-		FE9895591163F14500500198 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = Framework;
 		};
 /* End PBXContainerItemProxy section */
@@ -166,6 +174,8 @@
 		E832BD9F170D823C004D88A0 /* FileSystemTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystemTest.h; sourceTree = "<group>"; };
 		E8679177175F607700C5A6A2 /* FormatsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FormatsTest.cpp; sourceTree = "<group>"; };
 		E8679178175F607700C5A6A2 /* FormatsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FormatsTest.h; sourceTree = "<group>"; };
+		E8983CBF18C89733002FB974 /* OpenGLES30FormatTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGLES30FormatTest.cpp; sourceTree = "<group>"; };
+		E8983CC018C89733002FB974 /* OpenGLES30FormatTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenGLES30FormatTest.h; sourceTree = "<group>"; };
 		E8B6B3C81705DED5004F665E /* LocalizationTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalizationTest.cpp; sourceTree = "<group>"; };
 		E8B6B3C91705DED5004F665E /* LocalizationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizationTest.h; sourceTree = "<group>"; };
 		E8BD1F0616DE4A7800499E18 /* eMailTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eMailTest.cpp; sourceTree = "<group>"; };
@@ -202,13 +212,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FD825A192A10B6007762C0 /* libFrameworkTesting.a in Frameworks */,
 				C12DE7A218E322B2002EEBB4 /* AssetsLibrary.framework in Frameworks */,
 				74AF633D18852FE100070C35 /* Security.framework in Frameworks */,
 				74BF981A1876B3A8001D4CFE /* GameController.framework in Frameworks */,
 				1770DF4717DF497600000391 /* MediaPlayer.framework in Frameworks */,
 				496ABE8D179E6FEB00BCA6E9 /* AdSupport.framework in Frameworks */,
 				49A0DB291796F8050000970C /* MessageUI.framework in Frameworks */,
-				5C6EF11415751B5F001E45AD /* libFramework.a in Frameworks */,
 				5CDC2533156CE21000742348 /* libz.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -312,6 +322,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E8983CBF18C89733002FB974 /* OpenGLES30FormatTest.cpp */,
+				E8983CC018C89733002FB974 /* OpenGLES30FormatTest.h */,
 				627C796B18ED9DA900C05154 /* JPEGTest.cpp */,
 				627C796C18ED9DA900C05154 /* JPEGTest.h */,
 				15CBB0AE18D300310038ABA3 /* StringFormatTest.cpp */,
@@ -407,6 +419,7 @@
 			isa = PBXGroup;
 			children = (
 				FE9895581163F13500500198 /* libFramework.a */,
+				02FD8257192A10A5007762C0 /* libFrameworkTesting.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -426,7 +439,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				FE98955A1163F14500500198 /* PBXTargetDependency */,
+				02FD8259192A10AD007762C0 /* PBXTargetDependency */,
 			);
 			name = UnitTests;
 			productName = TemplateProjectiPhone;
@@ -439,6 +452,11 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				TargetAttributes = {
+					1D6058900D05DD3D006BFB54 = {
+						DevelopmentTeam = UHLFQ5A79Q;
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TemplateProjectiPhone" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -466,6 +484,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		02FD8257192A10A5007762C0 /* libFrameworkTesting.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFrameworkTesting.a;
+			remoteRef = 02FD8256192A10A5007762C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FE9895581163F13500500198 /* libFramework.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -524,6 +549,7 @@
 				627C796D18ED9DA900C05154 /* JPEGTest.cpp in Sources */,
 				FEC95C7115B409E500588BBF /* MemoryAllocatorsTest.cpp in Sources */,
 				02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */,
+				E8983CC118C89733002FB974 /* OpenGLES30FormatTest.cpp in Sources */,
 				E8F98C48161AE9B900B50BDA /* PVRTest.cpp in Sources */,
 				E801A588183FAB8E00D5B770 /* ComponentsTest.cpp in Sources */,
 				E80842BA1639147A002A6A77 /* TextureUtils.cpp in Sources */,
@@ -556,10 +582,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FE98955A1163F14500500198 /* PBXTargetDependency */ = {
+		02FD8259192A10AD007762C0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = Framework;
-			targetProxy = FE9895591163F14500500198 /* PBXContainerItemProxy */;
+			name = FrameworkTesting;
+			targetProxy = 02FD8258192A10AD007762C0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -568,6 +594,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -580,6 +608,8 @@
 					"$(OTHER_CFLAGS)",
 				);
 				PRODUCT_NAME = UnitTests;
+				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -587,6 +617,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
@@ -597,6 +629,8 @@
 					"$(OTHER_CFLAGS)",
 				);
 				PRODUCT_NAME = UnitTests;
+				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -631,6 +665,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
@@ -641,6 +677,8 @@
 					"$(OTHER_CFLAGS)",
 				);
 				PRODUCT_NAME = UnitTests;
+				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = AdHoc;
 		};

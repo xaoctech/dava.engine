@@ -27,46 +27,56 @@
 =====================================================================================*/
 
 
-#include "Render/RenderBase.h"
-#include "Render/RenderManagerGL20.h"
-#include "Render/Shader.h"
-#include "Render/OGLHelpers.h"
 
-#if defined(__DAVAENGINE_OPENGL__)
+#include "DeveloperTools.h"
+#include "Main/mainwindow.h"
+#include "Scene/System/SelectionSystem.h"
 
-namespace DAVA
+#include "DAVAEngine.h"
+using namespace DAVA;
+
+DeveloperTools::DeveloperTools(QObject *parent /* = 0 */)
+    : QObject(parent)
 {
-	
-RenderVertexAttributesState::RenderVertexAttributesState()
-{
-    activeVertexAttributes = 0;
+
 }
 
-void RenderVertexAttributesState::EnableVertexAttributes(uint32 attributesToEnable)
+void DeveloperTools::OnDebugFunctionsGridCopy()
 {
-    uint32 diff = attributesToEnable ^ activeVertexAttributes;
-    for (uint32 attribIndex = 0; attribIndex < 4; ++attribIndex)
-        if ((diff >> attribIndex) & 1)
+    SceneEditor2 * currentScene = QtMainWindow::Instance()->GetCurrentScene();
+    float32 x = 0;
+    float32 y = 0;
+    float32 z = 0;
+    const float32 xshift = 10.0;
+    const float32 yshift = 10.0;
+    const float32 zshift = 0.0;
+
+    if (currentScene->selectionSystem->GetSelectionCount() == 1)
+    {
+        Entity * entity = currentScene->selectionSystem->GetSelectionEntity(0);
+
+        const Matrix4 & matrix = entity->GetLocalTransform();
+
+        for (uint32 x = 0; x < 10; ++x)
         {
-            if ((attributesToEnable >> attribIndex) & 1)
+            for (uint32 y = 0; y < 10; ++y)
             {
-                RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
-            }
-            else 
-            {
-                RENDER_VERIFY(glDisableVertexAttribArray(attribIndex));
+                Matrix4 translation;
+                translation.CreateTranslation(Vector3(x * xshift, y * yshift, z * zshift));
+
+                Matrix4 newMatrix = matrix * translation;
+                Entity * clonedEntity = entity->Clone();
+                clonedEntity->SetLocalTransform(newMatrix);
+
+                RenderObject * renderObject = GetRenderObject(clonedEntity);
+                NMaterial * material = renderObject->GetRenderBatch(0)->GetMaterial();
+                float32 inGlossiness = (float32)x / 9.0;
+                float32 inSpecularity = (float32)y / 9.0;
+                material->SetPropertyValue(FastName("inGlossiness"), Shader::UT_FLOAT, 1, &inGlossiness);
+                material->SetPropertyValue(FastName("inSpecularity"), Shader::UT_FLOAT, 1, &inSpecularity);
+
+                currentScene->AddNode(clonedEntity);
             }
         }
-    activeVertexAttributes = attributesToEnable;
+    }
 }
-
-    
-RenderManagerGL20::RenderManagerGL20(Core::eRenderer renderer)
-    : RenderManager(renderer)
-{
-}
-
-    
-};
-
-#endif // __DAVAENGINE_OPENGL__
