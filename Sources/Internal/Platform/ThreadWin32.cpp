@@ -112,6 +112,11 @@ void Thread::Join()
         DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");
 }
 
+void Thread::Kill()
+{
+    TerminateThread(threadHandle, 0);
+    state = STATE_ENDED;
+}
 
 #endif 
 
