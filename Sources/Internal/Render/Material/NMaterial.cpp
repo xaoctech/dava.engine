@@ -52,7 +52,6 @@ namespace DAVA
 
 static const FastName DEFINE_VERTEX_LIT("VERTEX_LIT");
 static const FastName DEFINE_PIXEL_LIT("PIXEL_LIT");
-static const FastName DEFINE_SPEED_TREE_LEAF("SPEED_TREE_LEAF");
 
 const FastName NMaterial::TEXTURE_ALBEDO("albedo");
 const FastName NMaterial::TEXTURE_NORMAL("normalmap");
@@ -88,7 +87,6 @@ const FastName NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION("trunkOscillationPa
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION("leafOscillationParams");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_DARK("leafColorDark");
 const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_LIGHT("leafColorLight");
-const FastName NMaterial::PARAM_SPEED_TREE_CAMERA_SPACE_CENTER("treeCameraSpaceCenter");
 
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
 const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
@@ -105,6 +103,8 @@ const FastName NMaterial::FLAG_FAST_NORMALIZATION = FastName("FAST_NORMALIZATION
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterial::FLAG_SPECULAR = FastName("SPECULAR");
+
+const FastName NMaterial::FLAG_SPHERIC_LIT = FastName("SPHERIC_LIT");
 
 const FastName NMaterial::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
 
@@ -152,8 +152,7 @@ static FastName RUNTIME_ONLY_PROPERTIES[] =
     NMaterial::PARAM_RCP_SCREEN_SIZE,
     NMaterial::PARAM_SCREEN_OFFSET,
     NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION,
-    NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION,
-    NMaterial::PARAM_SPEED_TREE_CAMERA_SPACE_CENTER
+    NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION
 };
 
 static FastName RUNTIME_ONLY_TEXTURES[] =
@@ -221,7 +220,7 @@ activePassInstance(NULL),
 activeRenderPass(NULL),
 instancePasses(4),
 textures(8),
-materialDynamicLit(false),
+parameterGroupsFlags(0),
 materialTemplate(NULL),
 materialProperties(16),
 instancePassRenderStates(4),
@@ -1171,20 +1170,14 @@ void NMaterial::UpdateMaterialTemplate()
 	SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 
     //{VI: temporray code should be removed once lighting system is up
-    materialDynamicLit = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0);
 
-    if(!materialDynamicLit)
+    parameterGroupsFlags = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0) ? PARAM_GROUP_DYNAMIC_LIT : 0;
+    for(uint32 i = 0; i < passCount; ++i)
     {
-        uint32 passCount = baseTechnique->GetPassCount();
-        for(uint32 i = 0; i < passCount; ++i)
-        {
-            RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
-            const FastNameSet& defines = pass->GetUniqueDefineSet();
-            materialDynamicLit = materialDynamicLit ||
-                defines.count(DEFINE_VERTEX_LIT) ||
-                defines.count(DEFINE_PIXEL_LIT) ||
-                defines.count(DEFINE_SPEED_TREE_LEAF);
-        }
+        RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
+        const FastNameSet& defines = pass->GetUniqueDefineSet();
+        parameterGroupsFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT)) ? PARAM_GROUP_DYNAMIC_LIT : 0;
+        parameterGroupsFlags |= defines.count(FLAG_SPHERIC_LIT) ? PARAM_GROUP_SPHERIC_LIT : 0;
     }
 }
 
@@ -2335,7 +2328,6 @@ const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMa
 						 shaderSemantic == PARAM_PROJ ||
 						 shaderSemantic == PARAM_WORLD_VIEW_INV_TRANSPOSE ||
 						 shaderSemantic == PARAM_GLOBAL_TIME ||
-						 shaderSemantic == PARAM_WORLD_VIEW_TRANSLATE ||
 						 shaderSemantic == PARAM_WORLD_SCALE)
 					   // <--
 					   &&

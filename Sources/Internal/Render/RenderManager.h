@@ -939,7 +939,8 @@ inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const
                                                  |  (1 << PARAM_INV_WORLD_VIEW_PROJ)
                                                  |  (1 << PARAM_VIEW_PROJ)
                                                  |  (1 << PARAM_INV_VIEW_PROJ)
-                                                 |  (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) );
+                                                 |  (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) 
+                                                 |  (1 << PARAM_WORLD_VIEW_OBJECT_CENTER));
             break;
             case PARAM_PROJ:
                 dynamicParamersRequireUpdate |= ((1 << PARAM_INV_PROJ) | (1 << PARAM_VIEW_PROJ) | (1 << PARAM_INV_VIEW_PROJ) |

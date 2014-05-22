@@ -39,7 +39,6 @@ const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 SpeedTreeObject::SpeedTreeObject() :
     animationFlagOn(false)
 {
-    AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
     
 SpeedTreeObject::~SpeedTreeObject()
@@ -56,14 +55,6 @@ void SpeedTreeObject::RecalcBoundingBox()
         RenderBatch * rb = renderBatchArray[k].renderBatch;
         bbox.AddAABBox(CalcBBoxForSpeedTreeGeometry(rb));
     }
-}
-
-void SpeedTreeObject::PrepareToRender(Camera *camera)
-{
-    Mesh::PrepareToRender(camera);
-
-    Vector3 treeCameraSpaceCenter = worldBBox.GetCenter() * camera->GetMatrix();
-    SetLeafMaterialPropertyValue(NMaterial::PARAM_SPEED_TREE_CAMERA_SPACE_CENTER, Shader::UT_FLOAT_VEC3, &treeCameraSpaceCenter);
 }
 
 void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams)
@@ -96,8 +87,6 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
     Mesh::Load(archive, serializationContext);
     
     CollectMaterials();
-
-    AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
 
 RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
@@ -112,15 +101,12 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
     Mesh::Clone(treeObject);
     treeObject->CollectMaterials();
 
-    treeObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
-
     return newObject;
 }
     
 void SpeedTreeObject::CollectMaterials()
 {
     allMaterials.clear();
-    leafMaterials.clear();
 
     Set<NMaterial *> allMaterialSet;
     Set<NMaterial *> leafMaterialSet;
@@ -129,19 +115,9 @@ void SpeedTreeObject::CollectMaterials()
     {
         RenderBatch * rb = renderBatchArray[k].renderBatch;
         allMaterialSet.insert(rb->GetMaterial());
-        if(IsTreeLeafBatch(rb))
-            leafMaterialSet.insert(rb->GetMaterial());
     }
 
     allMaterials.insert(allMaterials.begin(), allMaterialSet.begin(), allMaterialSet.end());
-    leafMaterials.insert(leafMaterials.begin(), leafMaterialSet.begin(), leafMaterialSet.end());
-}
-
-void SpeedTreeObject::SetLeafMaterialPropertyValue(const FastName & keyName, Shader::eUniformType type, const void * data)
-{
-    uint32 matCount = leafMaterials.size();
-    for(uint32 i = 0; i < matCount; ++i)
-        leafMaterials[i]->SetPropertyValue(keyName, type, 1, data);
 }
 
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)

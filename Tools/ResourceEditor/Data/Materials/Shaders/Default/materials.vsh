@@ -57,7 +57,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF) || defined(SPHERIC_LIT)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -98,14 +98,17 @@ uniform lowp vec2 trunkOscillationParams;
 uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
 uniform mat4 projMatrix;
-uniform vec4 lightPosition0;
 uniform float cutDistance;
-uniform lowp vec4 leafColorDark;
-uniform lowp vec4 leafColorLight;
-uniform vec3 treeCameraSpaceCenter;
 #if defined(WIND_ANIMATION)
 uniform lowp vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
+#endif
+
+#if defined(SPHERIC_LIT)
+uniform lowp vec4 leafColorDark;
+uniform lowp vec4 leafColorLight;
+uniform vec3 worldViewObjectCenter;
+uniform vec4 lightPosition0;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -151,7 +154,7 @@ uniform float lightmapSize;
 varying lowp float varLightmapSize;
 #endif
 
-#if defined(VERTEX_COLOR)
+#if defined(VERTEX_COLOR) || defined(SPHERIC_LIT)
 varying lowp vec4 varVertexColor;
 #endif
 
@@ -392,8 +395,8 @@ void main()
 #endif //end "not SPEED_TREE_LEAF
 
 #if defined(SPEED_TREE_LEAF)
-    vec3 eyeCoordsPosition = vec3(eyeCoordsPosition4);
-#elif defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
+	vec3 eyeCoordsPosition = vec3(eyeCoordsPosition4);
+#elif defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPHERIC_LIT)
     #if defined(MATERIAL_GRASS)
         vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
     #else
@@ -532,12 +535,15 @@ void main()
 	varVertexColor = inColor;
 #endif
     
-#if defined(SPEED_TREE_LEAF)
-    vec3 normal = normalize(eyeCoordsPosition - treeCameraSpaceCenter);
+#if defined(SPHERIC_LIT)
+    vec3 normal = normalize(eyeCoordsPosition - worldViewObjectCenter);
     vec3 toLightDir = normalize(lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w);
     float leafLightFactor = 0.5 + dot(toLightDir, normal) * 0.5;
-
-    varVertexColor = varVertexColor * mix(leafColorDark, leafColorLight, leafLightFactor);
+	#if defined(VERTEX_COLOR)
+		varVertexColor *= mix(leafColorDark, leafColorLight, leafLightFactor);
+	#else 
+		varVertexColor = mix(leafColorDark, leafColorLight, leafLightFactor);
+	#endif
 #endif
     
 	varTexCoord0 = inTexCoord0;

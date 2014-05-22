@@ -1057,19 +1057,6 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
-            case PARAM_WORLD_VIEW_TRANSLATE:
-            {
-                RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
-                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
-                if (_updateSemantic != currentUniform->updateSemantic)
-                {
-                    RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
-                    Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
-                    SetUniformValueByUniform(currentUniform, world->GetTranslationVector());
-                    currentUniform->updateSemantic = _updateSemantic;
-                }
-                break;
-            }
             case PARAM_WORLD_SCALE:
             {
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
@@ -1199,6 +1186,19 @@ void Shader::BindDynamicParameters()
                     RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
                     Vector4 * param = (Vector4*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
                     SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_WORLD_VIEW_OBJECT_CENTER:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    Matrix4 * worldView = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
+                    Vector3 param = objectBox->GetCenter() * (*worldView);
+                    SetUniformValueByUniform(currentUniform, param);
                     currentUniform->updateSemantic = _updateSemantic;
                 }
                 break;

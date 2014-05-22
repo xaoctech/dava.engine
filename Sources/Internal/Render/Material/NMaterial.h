@@ -186,7 +186,6 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_OSCILLATION;
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_DARK;
     static const FastName PARAM_SPEED_TREE_LEAF_COLOR_LIGHT;
-    static const FastName PARAM_SPEED_TREE_CAMERA_SPACE_CENTER;
 
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
@@ -202,6 +201,8 @@ public:
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
+
+    static const FastName FLAG_SPHERIC_LIT;
 
     static const FastName FLAG_TANGENT_SPACE_WATER_REFLECTIONS;
     
@@ -234,6 +235,12 @@ public:
         FlagInherited = 2 //VI: this bit is set for flags inherited from the parent
 	};
 	
+    enum eParametersGroupFlag
+    {
+        PARAM_GROUP_DYNAMIC_LIT = 1 << 0,
+        PARAM_GROUP_SPHERIC_LIT = 1 << 1
+    };
+
 public:
 	
 	NMaterial();
@@ -259,7 +266,7 @@ public:
 //    uint32 GetLightCount() { return lightCount; };
 //    void SetLight(uint32 index, Light * light, bool forceUpdate);
 //    Light * GetLight(uint32 index) { return lights[index]; };
-	inline bool IsDynamicLit() {return materialDynamicLit;}
+	inline const uint8 & GetParameterGroupsFlags() const {return parameterGroupsFlags;}
 	//}END TODO
 	
     void Draw(PolygonGroup * polygonGroup);
@@ -497,8 +504,9 @@ protected:
 	//setting properties via special setters
     uint32 lightCount;
     Light * lights[8];
-	bool materialDynamicLit;
 	//}END TODO
+    
+    uint8 parameterGroupsFlags;
 
 	uint16 materialSortKey; //VI: depends on baseTechnique
 	RenderTechnique* baseTechnique;

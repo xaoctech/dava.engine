@@ -50,8 +50,6 @@ public:
 
 	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
-	virtual void PrepareToRender(Camera *camera);
-
     static bool IsTreeLeafBatch(RenderBatch * batch);
 
 protected:
@@ -63,12 +61,9 @@ protected:
     AABBox3 CalcBBoxForSpeedTreeGeometry(RenderBatch * rb);
     void CollectMaterials();
 
-    void SetLeafMaterialPropertyValue(const FastName & keyName, Shader::eUniformType type, const void * data);
-
     bool animationFlagOn;
     
     Vector<NMaterial *> allMaterials;
-    Vector<NMaterial *> leafMaterials;
 
 public:
 
