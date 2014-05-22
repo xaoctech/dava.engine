@@ -232,9 +232,15 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
     
     const Vector3 & min = bbox.min;
     const Vector3 & max = bbox.max;
+    Vector3 mid = min + (max - min) / 2;
+    Vector3 qua = (max - min) / 4;
     bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
 
-    int32 vxCount = 8, indCount = 12;
+    int32 vxCount = 17, indCount = 54;
+
+    //int32 gridSize = 2;
+    //int32 vxCount = 17;
+    //int32 indCount = gridSize * gridSize * 4 * 2; //4 triangles per cell, for 2 planes
 
     PolygonGroup * planePG = new PolygonGroup();
     planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
@@ -253,18 +259,80 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
     planePG->SetIndex(5, 2);
     
     //2nd plane
-    planePG->SetCoord(4, Vector3(min.x, 0.f, max.z));
-    planePG->SetCoord(5, Vector3(max.x, 0.f, max.z));
-    planePG->SetCoord(6, Vector3(max.x, 0.f, min.z));
-    planePG->SetCoord(7, Vector3(min.x, 0.f, min.z));
+    planePG->SetCoord(4,  Vector3(min.x, 0.f, max.z));
+    planePG->SetCoord(5,  Vector3(mid.x, 0.f, max.z));
+    planePG->SetCoord(6,  Vector3(max.x, 0.f, max.z));
+
+    planePG->SetCoord(7,  Vector3(min.x + qua.x, 0.f, mid.z + qua.z));
+    planePG->SetCoord(8,  Vector3(mid.x + qua.x, 0.f, mid.z + qua.z));
+
+    planePG->SetCoord(9,  Vector3(min.x, 0.f, mid.z));
+    planePG->SetCoord(10, Vector3(mid.x, 0.f, mid.z));
+    planePG->SetCoord(11, Vector3(max.x, 0.f, mid.z));
+
+    planePG->SetCoord(12, Vector3(min.x + qua.x, 0.f, min.z + qua.z));
+    planePG->SetCoord(13, Vector3(mid.x + qua.x, 0.f, min.z + qua.z));
+
+    planePG->SetCoord(14, Vector3(min.x, 0.f, min.z));
+    planePG->SetCoord(15, Vector3(mid.x, 0.f, min.z));
+    planePG->SetCoord(16, Vector3(max.x, 0.f, min.z));
     
-    planePG->SetIndex(6,  5);
-    planePG->SetIndex(7,  4);
-    planePG->SetIndex(8,  7);
-    planePG->SetIndex(9,  5);
-    planePG->SetIndex(10, 7);
-    planePG->SetIndex(11, 6);
-    
+    planePG->SetIndex(6,   5);
+    planePG->SetIndex(7,   4);
+    planePG->SetIndex(8,   7);
+    planePG->SetIndex(9,   4);
+    planePG->SetIndex(10,  9);
+    planePG->SetIndex(11,  7);
+
+    planePG->SetIndex(12,  9);
+    planePG->SetIndex(13, 10);
+    planePG->SetIndex(14,  7);
+    planePG->SetIndex(15, 10);
+    planePG->SetIndex(16,  5);
+    planePG->SetIndex(17,  7);
+
+    planePG->SetIndex(18,  5);
+    planePG->SetIndex(19, 10);
+    planePG->SetIndex(20,  8);
+    planePG->SetIndex(21, 10);
+    planePG->SetIndex(22, 11);
+    planePG->SetIndex(23,  8);
+
+    planePG->SetIndex(24, 11);
+    planePG->SetIndex(25,  6);
+    planePG->SetIndex(26,  8);
+    planePG->SetIndex(27,  6);
+    planePG->SetIndex(28,  5);
+    planePG->SetIndex(29,  8);
+
+    planePG->SetIndex(30,  9);
+    planePG->SetIndex(31, 14);
+    planePG->SetIndex(32, 12);
+    planePG->SetIndex(33, 14);
+    planePG->SetIndex(34, 15);
+    planePG->SetIndex(35, 12);
+
+    planePG->SetIndex(36, 15);
+    planePG->SetIndex(37, 10);
+    planePG->SetIndex(38, 12);
+    planePG->SetIndex(39, 10);
+    planePG->SetIndex(40,  9);
+    planePG->SetIndex(41, 12);
+
+    planePG->SetIndex(42, 10);
+    planePG->SetIndex(43, 15);
+    planePG->SetIndex(44, 13);
+    planePG->SetIndex(45, 15);
+    planePG->SetIndex(46, 16);
+    planePG->SetIndex(47, 13);
+
+    planePG->SetIndex(48, 16);
+    planePG->SetIndex(49, 11);
+    planePG->SetIndex(50, 13);
+    planePG->SetIndex(51, 11);
+    planePG->SetIndex(52, 10);
+    planePG->SetIndex(53, 13);
+
     if(isMeshHorizontal)
     {
         //1st plane
@@ -278,6 +346,11 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
         planePG->SetTexcoord(0, 5, Vector2(1.f, 0.f));
         planePG->SetTexcoord(0, 6, Vector2(1.f, .5f));
         planePG->SetTexcoord(0, 7, Vector2(.0f, .5f));
+        planePG->SetTexcoord(0, 8, Vector2(.0f, 0.f));
+        planePG->SetTexcoord(0, 9, Vector2(1.f, 0.f));
+        planePG->SetTexcoord(0,10, Vector2(1.f, .5f));
+        planePG->SetTexcoord(0,11, Vector2(.0f, .5f));
+        planePG->SetTexcoord(0,12, Vector2(.0f, .5f));
     }
     else
     {
@@ -288,10 +361,23 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
         planePG->SetTexcoord(0, 3, Vector2(.5f, 1.f));
         
         //2nd plane
-        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
-        planePG->SetTexcoord(0, 5, Vector2(.5f, 0.f));
-        planePG->SetTexcoord(0, 6, Vector2(.5f, 1.f));
-        planePG->SetTexcoord(0, 7, Vector2(.0f, 1.f));
+        planePG->SetTexcoord(0, 4, Vector2(.0f,  0.f));
+        planePG->SetTexcoord(0, 5, Vector2(.25f, 0.f));
+        planePG->SetTexcoord(0, 6, Vector2(.5f,  0.f));
+
+        planePG->SetTexcoord(0, 7, Vector2(.125f, .25f));
+        planePG->SetTexcoord(0, 8, Vector2(.375f, .25f));
+
+        planePG->SetTexcoord(0, 9, Vector2(.0f,  .5f));
+        planePG->SetTexcoord(0,10, Vector2(.25f, .5f));
+        planePG->SetTexcoord(0,11, Vector2(.5f,  .5f));
+
+        planePG->SetTexcoord(0,12, Vector2(.125f, .75f));
+        planePG->SetTexcoord(0,13, Vector2(.375f, .75f));
+
+        planePG->SetTexcoord(0,14, Vector2(.0f,  1.f));
+        planePG->SetTexcoord(0,15, Vector2(.25f, 1.f));
+        planePG->SetTexcoord(0,16, Vector2(.5f,  1.f));
     }
     
     planeBatch = new RenderBatch();

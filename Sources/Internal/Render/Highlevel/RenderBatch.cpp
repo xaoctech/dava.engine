@@ -108,12 +108,27 @@ void RenderBatch::SetMaterial(NMaterial * _material)
     
 void RenderBatch::BindDynamicParameters(Camera * camera)
 {
-	if(camera && material->IsDynamicLit() && lights[0])
-	{
-		const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
-        RenderManager::SetDynamicParam(PARAM_LIGHT0_POSITION, &lightPositionDirection0InCameraSpace, (pointer_size)&lightPositionDirection0InCameraSpace);
-        RenderManager::SetDynamicParam(PARAM_LIGHT0_COLOR, &lights[0]->GetDiffuseColor(), (pointer_size)&lights[0]->GetDiffuseColor());
-        RenderManager::SetDynamicParam(PARAM_LIGHT0_AMBIENT_COLOR, &lights[0]->GetAmbientColor(), (pointer_size)&lights[0]->GetAmbientColor());
+    if(camera)
+    {
+        const uint8 & groupflags = material->GetParameterGroupsFlags();
+        if(lights[0])
+        {
+            if((groupflags & NMaterial::PARAM_GROUP_DYNAMIC_LIT) || (groupflags & NMaterial::PARAM_GROUP_SPHERIC_LIT))
+            {
+                const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
+                RenderManager::SetDynamicParam(PARAM_LIGHT0_POSITION, &lightPositionDirection0InCameraSpace, (pointer_size)&lightPositionDirection0InCameraSpace);
+            }
+            if(groupflags & NMaterial::PARAM_GROUP_DYNAMIC_LIT)
+            {
+                RenderManager::SetDynamicParam(PARAM_LIGHT0_COLOR, &lights[0]->GetDiffuseColor(), (pointer_size)&lights[0]->GetDiffuseColor());
+                RenderManager::SetDynamicParam(PARAM_LIGHT0_AMBIENT_COLOR, &lights[0]->GetAmbientColor(), (pointer_size)&lights[0]->GetAmbientColor());
+            }
+        }
+        if(groupflags & NMaterial::PARAM_GROUP_SPHERIC_LIT)
+        {
+            const AABBox3 & objectBox = renderObject->GetBoundingBox();
+            RenderManager::SetDynamicParam(PARAM_WORLD_VIEW_OBJECT_CENTER, &objectBox, (pointer_size)&objectBox);
+        }
     }
 }
 

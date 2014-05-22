@@ -258,7 +258,8 @@ void RenderSystem::FindNearestLights(RenderObject * renderObject)
     {
         RenderBatch * batch = renderObject->GetRenderBatch(k);
         NMaterial * material = batch->GetMaterial();
-        if (material && material->IsDynamicLit())
+        const uint8 & groupFlags = material->GetParameterGroupsFlags();
+        if (material && ((groupFlags & NMaterial::PARAM_GROUP_DYNAMIC_LIT) || (groupFlags & NMaterial::PARAM_GROUP_SPHERIC_LIT)))
         {
 			needUpdate = true;
 			break;
