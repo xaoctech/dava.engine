@@ -217,10 +217,10 @@ protected:
     static const WideString PUNCTUATION_MID;
     static const WideString PUNCTUATION_END;
     
-    inline bool IsLineEnd(wchar_t t) const;
-    inline bool IsSpace(wchar_t t) const;
+    inline bool IsLineEnd(char16 t) const;
+    inline bool IsSpace(char16 t) const;
     
-    bool IsWordSeparator(wchar_t t) const;
+    bool IsWordSeparator(char16 t) const;
 
 	static int32 globalFontDPI;
 	
@@ -232,12 +232,12 @@ protected:
 	eFontType fontType;
 };
     
-bool Font::IsLineEnd(wchar_t t) const
+bool Font::IsLineEnd(char16 t) const
 {
     return (t == '\n');
 }
     
-inline bool Font::IsSpace(wchar_t t) const
+inline bool Font::IsSpace(char16 t) const
 {
     return (t == ' ');
 }
