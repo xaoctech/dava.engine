@@ -147,8 +147,8 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
 
     for(int pos = 0; pos < totalSize; pos++)
     {
-        wchar_t t = text[pos];
-        wchar_t tNext = 0;
+        char16 t = text[pos];
+        char16 tNext = 0;
         if(pos+1 < totalSize)
             tNext = text[pos+1];
         
@@ -203,49 +203,49 @@ const WideString Font::PUNCTUATION_END = L"。.";
 //TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
 //const WideString Font::JAPANESE_CHARACTERS = L"ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻";
     
-    bool Font::IsWordSeparator(wchar_t t) const
+bool Font::IsWordSeparator(char16 t) const
+{
+    switch(t)
     {
-        switch(t)
-        {
-            case 183: // interpunkt
-            case 12289: // ideographic comma
-                return true;
-        }
-        
-        if(BRACKETS.find(t) != WideString::npos)
-        {
+        case 183: // interpunkt
+        case 12289: // ideographic comma
             return true;
-        }
-        
-        if(HYPHENS.find(t) != WideString::npos)
-        {
-            return true;
-        }
-        
-        if(DELIMETERS.find(t) != WideString::npos)
-        {
-            return true;
-        }
-        
-        if(PUNCTUATION_MID.find(t) != WideString::npos)
-        {
-            return true;
-        }
-        
-        if(PUNCTUATION_END.find(t) != WideString::npos)
-        {
-            return true;
-        }
-        
-        //TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
+    }
+    
+    if(BRACKETS.find(t) != WideString::npos)
+    {
+        return true;
+    }
+    
+    if(HYPHENS.find(t) != WideString::npos)
+    {
+        return true;
+    }
+    
+    if(DELIMETERS.find(t) != WideString::npos)
+    {
+        return true;
+    }
+    
+    if(PUNCTUATION_MID.find(t) != WideString::npos)
+    {
+        return true;
+    }
+    
+    if(PUNCTUATION_END.find(t) != WideString::npos)
+    {
+        return true;
+    }
+    
+    //TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
 //        if(JAPANESE_CHARACTERS.find(t) != WideString::npos)
 //        {
 //            Logger::FrameworkDebug("Font::IsWordSeparator found JAPANESE_CHARACTERS");
 //            return true;
 //        }
-        
-        return false;
-    }
+    
+    return false;
+}
     
 void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
@@ -280,7 +280,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
-		wchar_t t = 0;
+		char16 t = 0;
 		if(pos < totalSize)
 		{
 			t = text[pos];
