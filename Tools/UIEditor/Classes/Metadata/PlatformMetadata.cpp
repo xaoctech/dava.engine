@@ -98,3 +98,11 @@ HierarchyTreePlatformNode* PlatformMetadata::GetPlatformNode() const
     // Platform Node is one and only.
     return dynamic_cast<HierarchyTreePlatformNode*>(GetTreeNode(0));
 }
+
+void PlatformMetadata::ApplyRename(const QString& originalName, const QString& newName)
+{
+    HierarchyTreeController::Instance()->AddPlatformToDelete(originalName);
+    HierarchyTreeController::Instance()->RemovePlatformToDelete(newName);
+
+    BaseMetadata::ApplyRename(originalName, newName);
+}

@@ -1,5 +1,5 @@
 TIMEOUT = 30.0 -- Big time out for waiting
-TIMECLICK = 0.2 -- time for simple action
+TIMECLICK = 0.5 -- time for simple action
 DELAY = 0.5 -- time for simulation of human reaction
 
 MULTIPLAYER_TIMEOUT = 300 -- Multiplayer timeout
@@ -502,19 +502,19 @@ end
 -- Work with List
 function SelectHorizontal(list, item)
 	Log("Select "..tostring(item).." item in horizontal list "..list)
-	
+
 	local cell = list.."/".. tostring(item)
 	assert(WaitControl(list), "Couldn't select "..cell)
-	
+
 	if IsVisible(cell, list) then
 		ClickControl(cell)
 		return true
 	end
-	
+
 	local last_visible = 0
 	local previous_last = 0
 	local index = 0
-	
+
 	-- find first visible element
 	for i = 0, 100 do --to avoid hanging up in empty list
 		if IsVisible(list.."/"..tostring(i)) then
@@ -535,14 +535,14 @@ function SelectHorizontal(list, item)
 		end
 		index = index + 1
 	end
-	
+
 	repeat
 		if IsVisible(cell, list) then
 			break
 		else
 			previous_last = last_visible
-			ScrollLeft(list)
-			
+			HorizontalScroll(list)
+
 			index = last_visible + 1
 			while true do
 				if not IsVisible(list.."/"..tostring(index), list) then
@@ -566,13 +566,13 @@ end
 
 function SelectFirstHorizontal(list)
 	Log("Select first item in horizontal list "..list)
-	
+
 	-- find first visible element
 	for i = 0, 100 do --to avoid hanging up in empty list
 		if IsVisible(list.."/0", list) then
 			return true
 		else
-			ScrollLeft(list, true)
+			HorizontalScroll(list, true)
 		end
 	end
     
@@ -620,7 +620,7 @@ function SelectVertical(list, item)
 			break
 		else
 			previous_last = last_visible
-			ScrollDown(list)
+			VerticalScroll(list)
 
 			index = last_visible + 1
 			while true do
@@ -651,7 +651,7 @@ function SelectFirstVertical(list)
 		if IsVisible(list.."/0", list) then
 			return true
 		else
-			ScrollDown(list, true)
+			VerticalScroll(list, true)
 		end
 	end
     
@@ -659,7 +659,7 @@ function SelectFirstVertical(list)
 	return false
 end
 
-function ScrollDown(list, invert)
+function VerticalScroll(list, invert)
 	Log("Make horizontal scroll for "..list)
 	local control = GetControl(list)
 
@@ -673,17 +673,17 @@ function ScrollDown(list, invert)
     position.y = rect.y + rect.dy/2
 		
 	if invert then
-		new_position.y = position.y + rect.dy/3
+		new_position.y = position.y + rect.dy/2
 		new_position.x = position.x
 	else
-       	new_position.y = position.y - rect.dy/3
+       	new_position.y = position.y - rect.dy/2
 		new_position.x = position.x
     end
 	
 	TouchMove(position, new_position)
 end
 
-function ScrollLeft(list, invert)
+function HorizontalScroll(list, invert)
 	Log("Make horizontal scroll for "..list)
 	local control = GetControl(list)	
     
@@ -697,10 +697,10 @@ function ScrollLeft(list, invert)
     position.y = rect.y + rect.dy/2
 	
 	if invert then
-		new_position.x = position.x + rect.dx/3
+		new_position.x = position.x + rect.dx/2
 		new_position.y = position.y
 	else
-      	new_position.x = position.x - rect.dx/3
+      	new_position.x = position.x - rect.dx/2
 		new_position.y = position.y
     end	
 	
@@ -789,6 +789,7 @@ function TouchMove(position, new_position, time, touchId)
     TouchDownPosition(position, touchId)
     Wait(waitTime)
 	TouchMovePosition(new_position, touchId)
+	Wait(waitTime)
 	Wait(waitTime)
 	TouchUp(touchId)
 	Wait(waitTime)

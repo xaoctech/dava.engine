@@ -147,6 +147,13 @@ public:
     // Access to the hierarchy tree nodes list.
     HierarchyTreeNode::HIERARCHYTREENODESLIST GetNodes() const;
 
+    // Access to the list of platforms to be deleted.
+    void AddPlatformToDelete(const QString& platformName);
+    void RemovePlatformToDelete(const QString& platformName);
+    void CleanupPlatformsToDelete();
+
+    const Set<QString>& GetPlatformsToDelete() const;
+
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	String GetNewControlName(const String& baseName);
@@ -211,6 +218,9 @@ protected:
 
     // Stick mode set from MainWindow.
     int32 stickMode;
+    
+    // List of platform names to be deleted.
+    Set<QString> platformsToDelete;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeController__) */

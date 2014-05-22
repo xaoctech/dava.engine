@@ -468,6 +468,7 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
                         {
                             QtPropertyToolButton* btn = dynamicMember->AddButton();
                             btn->setIcon(QIcon(":/QtIcons/cminus.png"));
+                            btn->setToolTip( "Remove property" );
                             btn->setIconSize(QSize(14, 14));
                             QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnRemProperty()));
 
@@ -489,6 +490,7 @@ void MaterialEditor::FillMaterialProperties(const QList<DAVA::NMaterial *>& mate
 
                             QtPropertyToolButton* btn = dynamicMember->AddButton();
                             btn->setIcon(QIcon(":/QtIcons/cplus.png"));
+                            btn->setToolTip( "Add property" );
                             btn->setIconSize(QSize(14, 14));
                             QObject::connect(btn, SIGNAL(clicked()), this, SLOT(OnAddProperty()));
 
