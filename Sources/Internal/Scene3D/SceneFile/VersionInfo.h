@@ -50,9 +50,9 @@ namespace DAVA
             uint32 version;
             TagsMap tags;
 
-            inline SceneVersion()
+            SceneVersion()
                 : version(0){}
-            inline bool IsValid() const{ return version > 0; }
+            bool IsValid() const{ return version > 0; }
         };
         typedef Map<uint32, SceneVersion> VersionMap;
 
