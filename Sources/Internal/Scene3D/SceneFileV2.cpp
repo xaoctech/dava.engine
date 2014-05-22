@@ -404,9 +404,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     }
 
     // load version tags
-    VersionInfo::SceneVersion version;
-    version.version = header.version;
-    const bool versionValid = ReadVersionTags(version, file);
+    _scene->version.version = header.version;
+    const bool versionValid = ReadVersionTags(_scene->version, file);
     if ( !versionValid )
     {
         Logger::Error("SceneFileV2::LoadScene version tags are wrong");
@@ -428,8 +427,10 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         Logger::Warning("SceneFileV2::LoadScene scene was saved with older version of framework. Saving scene will broke compatibility.");
         break;
     case VersionInfo::INVALID:
-        Logger::Error("SceneFileV2::LoadScene scene is incompatible with current version");
-        break;
+        Logger::Error( "SceneFileV2::LoadScene scene is incompatible with current version" );
+        SafeRelease( file );
+        SetError( ERROR_VERSION_TAGS_INVALID );
+        return GetError();
     default:
         break;
     }
