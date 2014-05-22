@@ -39,6 +39,7 @@ const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 SpeedTreeObject::SpeedTreeObject() :
     animationFlagOn(false)
 {
+    type = TYPE_SPEED_TREE;
 }
     
 SpeedTreeObject::~SpeedTreeObject()
@@ -59,13 +60,14 @@ void SpeedTreeObject::RecalcBoundingBox()
     
 void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams)
 {
-    uint32 matCount = materials.size();
-    for(uint32 i = 0; i < matCount; ++i)
-    {
-        NMaterial * material = materials[i];
-        material->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_TRUNK_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &trunkOscillationParams);
-        material->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OSCILLATION, Shader::UT_FLOAT_VEC2, 1, &leafOscillationParams);
-    }
+    trunkOscillation = trunkOscillationParams;
+    leafOscillation = leafOscillationParams;
+}
+
+void SpeedTreeObject::BindDynamicParams()
+{
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, (pointer_size)&trunkOscillation);
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, (pointer_size)&leafOscillation);
 }
 
 void SpeedTreeObject::SetAnimationFlag(bool flagOn)
@@ -85,6 +87,8 @@ void SpeedTreeObject::SetAnimationFlag(bool flagOn)
 void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
     Mesh::Load(archive, serializationContext);
+
+    type = TYPE_SPEED_TREE;
     
     CollectMaterials();
 }
