@@ -289,10 +289,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 		{
 			case SKIP:
 				if (t == 0){ state = FINISH; break; } // if end of string process FINISH state and exit
-				//else if (t == ' ')break; // if space continue with the same state
-				//else if (IsSpace(t))break; // if space continue with the same state
+				else if (IsSpace(t))break; // if space continue with the same state
 				else if (IsWordSeparator(t))break; // if word separator - continue with the same state
-                //else if(t == '\n')
                 else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
@@ -321,9 +319,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart == -1)currentLineStart = pos;
 				}
 				break;
-			case GOODCHAR: 
-				//if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
-				if(IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t) || t == 0)
+			case GOODCHAR:
+				if(IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t) || t == 0) // if we've found any possible separator process current line
                 {
                     if(IsWordSeparator(t))
                     {
@@ -357,10 +354,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 						currentLineEnd = lastWordEnd;   
 					}
 				}
-				//if (t == ' ')state = SKIP; // if cur char is space go to skip
-				//if (IsSpace(t)) state = SKIP; // if cur char is space go to skip
-                if (IsSpace(t) || IsWordSeparator(t)) state = SKIP; // if cur char is space go to skip
-                //else if(t == '\n')
+				if (IsSpace(t)) state = SKIP; // if cur char is space go to skip
+                else if (IsWordSeparator(t)) state = SKIP; // if cur char is word separator go to skip
                 else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
