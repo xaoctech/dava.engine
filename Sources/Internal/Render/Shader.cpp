@@ -120,7 +120,7 @@ FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
     FastName("inTime"),
     FastName("inPivot"),
     FastName("inFlexibility"),
-    FastName("inAngle")
+    FastName("inAngleSinCos")
 };
 
 eShaderSemantic Shader::GetShaderSemanticByName(const FastName & name)
@@ -1203,7 +1203,18 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
-
+            case PARAM_SPEED_TREE_LEAFS_OSCILLATION:
+            case PARAM_SPEED_TREE_TRUNK_OSCILLATION:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    Vector2 * param = (Vector2*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
             case PARAM_COLOR:
             {
                 const Color & c = RenderManager::Instance()->GetColor();

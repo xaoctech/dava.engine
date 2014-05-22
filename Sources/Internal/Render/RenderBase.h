@@ -365,13 +365,13 @@ enum eVertexFormat
     EVF_TIME            = 1 << 10,
     EVF_PIVOT           = 1 << 11,
     EVF_FLEXIBILITY     = 1 << 12,
-    EVF_ANGLE           = 1 << 13,
+    EVF_ANGLE_SIN_COS           = 1 << 13,
     EVF_CUBETEXCOORD0   = 1 << 14,
     EVF_CUBETEXCOORD1   = 1 << 15,
     EVF_CUBETEXCOORD2   = 1 << 16,
     EVF_CUBETEXCOORD3   = 1 << 17,	
     EVF_LOWER_BIT       = EVF_VERTEX,
-    EVF_HIGHER_BIT      = EVF_ANGLE, 
+    EVF_HIGHER_BIT      = EVF_ANGLE_SIN_COS, 
     EVF_NEXT_AFTER_HIGHER_BIT
     = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD     = 0x7fffffff,
@@ -435,7 +435,7 @@ inline int32 GetVertexSize(int32 flags)
 	
     if (flags & EVF_PIVOT) size += 3 * sizeof(float32);
     if (flags & EVF_FLEXIBILITY) size += sizeof(float32);
-    if (flags & EVF_ANGLE) size += 2 * sizeof(float32);
+    if (flags & EVF_ANGLE_SIN_COS) size += 2 * sizeof(float32);
 
     return size;
 }
@@ -483,6 +483,8 @@ enum eShaderSemantic
     PARAM_LIGHT0_AMBIENT_COLOR,
 
     PARAM_WORLD_VIEW_OBJECT_CENTER,
+    PARAM_SPEED_TREE_TRUNK_OSCILLATION,
+    PARAM_SPEED_TREE_LEAFS_OSCILLATION,
 
     PARAM_RT_SIZE,
     PARAM_RT_PIXEL_SIZE,

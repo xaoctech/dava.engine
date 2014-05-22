@@ -291,7 +291,9 @@ const FastName DYNAMIC_PARAM_NAMES[] =
         FastName("lightAmbientColor0"),
 
         FastName("worldViewObjectCenter"),
-        
+        FastName("trunkOscillationParams"),
+        FastName("leafOscillationParams"),
+
         FastName("rtSize"),
         FastName("rtPixelSize"),
         FastName("rtHalfPixelSize"),

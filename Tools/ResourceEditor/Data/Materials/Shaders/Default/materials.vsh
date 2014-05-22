@@ -42,7 +42,7 @@ attribute vec3 inTangent;
 #if defined(SPEED_TREE_LEAF)
 attribute vec3 inPivot;
 #if defined(WIND_ANIMATION)
-attribute vec2 inAngle;
+attribute vec2 inAngleSinCos;
 #endif
 #endif
 
@@ -276,12 +276,12 @@ void main()
     vec3 pivot = inPivot;
     
 #if defined(WIND_ANIMATION)
-    //inAngle:        x: cos(T0);  y: sin(T0);
+    //inAngleSinCos:        x: cos(T0);  y: sin(T0);
     //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
     vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
     pivot += windVectorFlex;
     
-    vec2 SinCos = inAngle * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
+    vec2 SinCos = inAngleSinCos * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
     float sinT = SinCos.x + SinCos.y;     //sin(t+t0)*A = sin*cos + cos*sin
     float cosT = 1.0 - 0.5 * sinT * sinT; //cos(t+t0)*A = 1 - 0.5*sin^2
     

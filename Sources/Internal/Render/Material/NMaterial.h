@@ -182,11 +182,6 @@ public:
 	static const FastName PARAM_UV_SCALE;
     static const FastName PARAM_LIGHTMAP_SIZE;
 
-    static const FastName PARAM_SPEED_TREE_TRUNK_OSCILLATION;
-    static const FastName PARAM_SPEED_TREE_LEAF_OSCILLATION;
-    static const FastName PARAM_SPEED_TREE_LEAF_COLOR_DARK;
-    static const FastName PARAM_SPEED_TREE_LEAF_COLOR_LIGHT;
-
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
     

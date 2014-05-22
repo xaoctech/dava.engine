@@ -35,6 +35,7 @@
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/WaveComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 
 namespace DAVA
@@ -415,7 +416,7 @@ namespace DAVA
 
         if(target != NULL)
         {
-            WaveComponent* component = static_cast<WaveComponent*>(target->GetComponent(Component::WAVE_COMPONENT));
+            WaveComponent* component = GetWaveComponent(target);
             if(component)
             {
                 component->Trigger();

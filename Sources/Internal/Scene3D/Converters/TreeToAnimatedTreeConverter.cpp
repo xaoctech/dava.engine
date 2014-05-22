@@ -168,7 +168,7 @@ void TreeToAnimatedTreeConverter::ConvertLeafPGForAnimations(PolygonGroup * pg)
     Memcpy(pgCopy->indexArray, pg->indexArray, indCount*sizeof(int16));
 
     pg->ReleaseData();
-    pg->AllocateData(EVF_VERTEX | EVF_COLOR | EVF_TEXCOORD0 | EVF_PIVOT | EVF_FLEXIBILITY | EVF_ANGLE, vxCount, indCount);
+    pg->AllocateData(EVF_VERTEX | EVF_COLOR | EVF_TEXCOORD0 | EVF_PIVOT | EVF_FLEXIBILITY | EVF_ANGLE_SIN_COS, vxCount, indCount);
 
     //copy indices
     for(int32 i = 0; i < indCount; ++i)

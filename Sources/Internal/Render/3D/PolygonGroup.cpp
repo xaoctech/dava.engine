@@ -192,12 +192,12 @@ void PolygonGroup::UpdateDataPointersAndStreams()
 
         renderDataObject->SetStream(EVF_FLEXIBILITY, TYPE_FLOAT, 1, vertexStride, flexArray);
     }
-    if (vertexFormat & EVF_ANGLE)
+    if (vertexFormat & EVF_ANGLE_SIN_COS)
     {
         angleArray = reinterpret_cast<Vector2*>(meshData + baseShift);
-        baseShift += GetVertexSize(EVF_ANGLE);
+        baseShift += GetVertexSize(EVF_ANGLE_SIN_COS);
 
-        renderDataObject->SetStream(EVF_ANGLE, TYPE_FLOAT, 2, vertexStride, angleArray);
+        renderDataObject->SetStream(EVF_ANGLE_SIN_COS, TYPE_FLOAT, 2, vertexStride, angleArray);
     }
 }
 

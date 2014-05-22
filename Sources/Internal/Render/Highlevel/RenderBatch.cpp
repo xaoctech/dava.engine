@@ -35,6 +35,7 @@
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/RenderLayer.h"
 #include "Render/Highlevel/RenderFastNames.h"
+#include "Render/Highlevel/SpeedTreeObject.h"
 #include "Scene3D/SceneFileV2.h"
 #include "Debug/DVAssert.h"
 #include "Scene3D/Systems/MaterialSystem.h"
@@ -129,6 +130,10 @@ void RenderBatch::BindDynamicParameters(Camera * camera)
             const AABBox3 & objectBox = renderObject->GetBoundingBox();
             RenderManager::SetDynamicParam(PARAM_WORLD_VIEW_OBJECT_CENTER, &objectBox, (pointer_size)&objectBox);
         }
+    }
+    if(renderObject->GetType() == RenderObject::TYPE_SPEED_TREE)
+    {
+        (static_cast<SpeedTreeObject*>(renderObject))->BindDynamicParams();
     }
 }
 

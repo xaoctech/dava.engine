@@ -52,6 +52,8 @@ public:
 
     static bool IsTreeLeafBatch(RenderBatch * batch);
 
+    void BindDynamicParams();
+
 protected:
     static const FastName FLAG_WIND_ANIMATION;
 
@@ -63,7 +65,9 @@ protected:
 
     bool animationFlagOn;
     
-    Vector<NMaterial *> allMaterials;
+    Vector2 trunkOscillation;
+    Vector2 leafOscillation;
+    Vector<NMaterial *> materials;
 
 public:
 
