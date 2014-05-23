@@ -371,15 +371,13 @@ void TextureBrowser::updateInfoConverted()
         bool isUpToDate = curDescriptor->IsCompressedTextureActual(curTextureView);
 		QSize imgSize(0, 0);
         
-		DVASSERT(curDescriptor->compression);
-
-        bool isFormatValid = curDescriptor->compression[curTextureView]->format != DAVA::FORMAT_INVALID;
+        bool isFormatValid = curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID;
 		if(isFormatValid)
 		{
-			formatStr = GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(curDescriptor->compression[curTextureView]->format);
+			formatStr = GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(curDescriptor->compression[curTextureView].format);
 			
-			int w = curDescriptor->compression[curTextureView]->compressToWidth;
-			int h = curDescriptor->compression[curTextureView]->compressToHeight;
+			int w = curDescriptor->compression[curTextureView].compressToWidth;
+			int h = curDescriptor->compression[curTextureView].compressToHeight;
 			if(0 != w && 0 != h)
 			{
 				imgSize = QSize(w, h);
