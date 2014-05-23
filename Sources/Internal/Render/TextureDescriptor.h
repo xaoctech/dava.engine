@@ -173,7 +173,7 @@ public:
     
     PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU) const;
     
-	void Reload();
+	bool Reload();
 
 protected:
 

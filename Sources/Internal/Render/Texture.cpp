@@ -792,17 +792,15 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
     DVASSERT(isRenderTarget == false);
     
-    FilePath savedPath = texDescriptor->pathname;
-    
     ReleaseTextureData();
 
-	texDescriptor->Reload();
+	bool descriptorReloaded = texDescriptor->Reload();
     
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
     bool loaded = false;
-    if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+    if(descriptorReloaded && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
     {
 	    loaded = LoadImages(gpuForLoading, images);
     }
@@ -818,7 +816,7 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
     {
         SafeDelete(images);
         
-        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", savedPath.GetAbsolutePathname().c_str());
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", texDescriptor->pathname.GetAbsolutePathname().c_str());
         MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
     }
 }

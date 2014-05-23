@@ -703,14 +703,16 @@ void TextureDescriptor::SetGenerateMipmaps( bool generateMipmaps )
 	dataSettings.SetGenerateMipmaps(generateMipmaps);
 }
 
-void TextureDescriptor::Reload()
+bool TextureDescriptor::Reload()
 {
 	if((pathname.IsEmpty() == false) && pathname.Exists())
 	{
 		FilePath descriptorPathname = pathname;
 		SetDefaultValues();
-		Load(descriptorPathname);
+		return Load(descriptorPathname);
 	}
+
+	return false;
 }
 
 uint32 TextureDescriptor::GenerateDescriptorCRC() const
