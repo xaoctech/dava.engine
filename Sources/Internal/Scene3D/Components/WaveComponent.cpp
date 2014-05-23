@@ -33,6 +33,8 @@
 #include "Scene3D/Entity.h"
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/WaveSystem.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 #include "FileSystem/KeyedArchive.h"
 
 namespace DAVA 
@@ -105,11 +107,7 @@ void WaveComponent::Deserialize(KeyedArchive *archive, SerializationContext *ser
 
 void WaveComponent::Trigger()
 {
-    Scene * scene = entity->GetScene();
-    DVASSERT(scene);
-    DVASSERT(scene->waveSystem);
-
-    scene->waveSystem->WaveTriggered(this);
+    GlobalEventSystem::Instance()->Event(entity, EventSystem::WAVE_TRIGGERED);
 }
 
 };
