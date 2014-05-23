@@ -833,8 +833,7 @@ bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily) const
     
     DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
     
-	DVASSERT(texDescriptor->compression);
-    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily]->format == FORMAT_INVALID)
+    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily].format == FORMAT_INVALID)
     {
         return false;
     }
