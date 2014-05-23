@@ -38,9 +38,7 @@
 namespace DAVA
 {
 class Entity;
-class SpeedTreeObject;
 class SpeedTreeComponent;
-class WindComponent;
     
 class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
@@ -55,10 +53,15 @@ public:
     
 	virtual void HandleEvent(Observable * observable);
 
+protected:
+    void UpdateAnimationFlag(Entity * entity);
+
 private:
     Vector<SpeedTreeComponent *> allTrees;
 
     bool isAnimationEnabled;
+
+    friend class SpeedTreeComponent;
 };
     
 } // ns
