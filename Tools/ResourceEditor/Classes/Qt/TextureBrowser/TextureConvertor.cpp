@@ -473,6 +473,12 @@ TextureInfo TextureConvertor::GetOriginalThread(JobItem *item)
 
 		result.dataSize = ImageTools::GetTexturePhysicalSize(descriptor, DAVA::GPU_UNKNOWN);
 		result.fileSize = fileSize;
+
+		if(result.images.size())
+		{
+			result.imageSize.setWidth(result.images[0].width());
+			result.imageSize.setHeight(result.images[0].height());
+		}
 	}
 
     DAVA::QtLayer::Instance()->ReleaseAutoreleasePool(pool);
@@ -498,6 +504,8 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 			gpu > DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT && 
 			descriptor->compression[gpu].format > DAVA::FORMAT_INVALID && descriptor->compression[gpu].format < DAVA::FORMAT_COUNT)
 		{
+			DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
+
 			const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpu, (DAVA::PixelFormat) descriptor->compression[gpu].format);
 			if(outExtension == ".pvr")
 			{
@@ -521,8 +529,13 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 
 			result.dataSize = ImageTools::GetTexturePhysicalSize(descriptor, gpu);
 
-			DAVA::FilePath compressedTexturePath = DAVA::GPUFamilyDescriptor::CreatePathnameForGPU(descriptor, gpu);
 			result.fileSize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
+
+			if(convertedImages.size())
+			{
+				result.imageSize.setWidth(convertedImages[0]->GetWidth());
+				result.imageSize.setHeight(convertedImages[0]->GetHeight());
+			}
 		}
 		else
 		{
