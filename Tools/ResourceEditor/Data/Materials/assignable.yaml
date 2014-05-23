@@ -44,6 +44,9 @@
  name: "SphericLit Textured Alphatest"
  path: SphericLit.Textured.Alphatest.material
 -
+ name: "SphericLit Textured Opaque"
+ path: SphericLit.Textured.Opaque.material
+-
  name: "Textured Alphablend"
  path: Textured.Alphablend.material
 -

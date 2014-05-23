@@ -52,6 +52,9 @@ namespace DAVA
     const FastName NMaterialName::VERTEXCOLOR_FRAMEBLEND_OPAQUE = FastName("~res:/Materials/VertexColor.FrameBlend.Opaque.material");
     const FastName NMaterialName::PIXELLIT_ALPHATEST = FastName("~res:/Materials/PixelLit.Alphatest.material");
     const FastName NMaterialName::SPEEDTREE_LEAF = FastName("~res:/Materials/SpeedTreeLeaf.material");
+    const FastName NMaterialName::SPHERICLIT_SPEEDTREE_LEAF = FastName("~res:/Materials/SphericLit.SpeedTreeLeaf.material");
+    const FastName NMaterialName::SPHERICLIT_TEXTURED_ALPHATEST = FastName("~res:/Materials/SphericLit.Textured.Alphatest.material");
+    const FastName NMaterialName::SPHERICLIT_TEXTURED_OPAQUE = FastName("~res:/Materials/SphericLit.Textured.Opaque.material");
     const FastName NMaterialName::VERTEXCOLOR_OPAQUE = FastName("~res:/Materials/VertexColor.Opaque.material");
     const FastName NMaterialName::PIXELLIT_OPAQUE = FastName("~res:/Materials/PixelLit.Opaque.material");
     const FastName NMaterialName::TEXTURE_LIGHTMAP_ALPHABLEND = FastName("~res:/Materials/TextureLightmap.Alphablend.material");

@@ -79,13 +79,6 @@ void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)
     }
 }
 
-void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-    Mesh::Load(archive, serializationContext);
-
-    type = TYPE_SPEED_TREE;
-}
-
 RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
 {
     if(!newObject)
@@ -140,7 +133,12 @@ AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)
 
 bool SpeedTreeObject::IsTreeLeafBatch(RenderBatch * batch)
 {
-    return (batch && batch->GetMaterial() && batch->GetMaterial()->GetMaterialTemplate()->name == NMaterialName::SPEEDTREE_LEAF);
+    if(batch && batch->GetMaterial())
+    {
+        const NMaterialTemplate * material = batch->GetMaterial()->GetMaterialTemplate();
+        return (material->name == NMaterialName::SPEEDTREE_LEAF) || (material->name == NMaterialName::SPHERICLIT_SPEEDTREE_LEAF);
+    }
+    return false;
 }
 
 };
