@@ -17,6 +17,8 @@
 		02F640801745372B0053F038 /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40E1739612300C501BC /* libfmodevent.dylib */; };
 		02F640811745372B0053F038 /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40F1739612300C501BC /* libfmodex.dylib */; };
 		0C6D4628EE0B0D1479A20551 /* AGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = C6766F86E49E9C8701C8E637 /* AGL.framework */; };
+		17FB4BD11924B86800F3E3BC /* AVFoundation.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17FB4BD01924B86800F3E3BC /* AVFoundation.framework */; };
+		17FB4BDC1924B9AD00F3E3BC /* CoreMedia.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17FB4BDB1924B9AD00F3E3BC /* CoreMedia.framework */; };
 		491BC46C18A393A4001CE353 /* TexturePathValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 491BC46A18A393A4001CE353 /* TexturePathValidator.cpp */; };
 		4FA419631886E3D400395C70 /* TextureInfo_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FA419621886E3D400395C70 /* TextureInfo_moc.cpp */; };
 		4FA4198A188EA4C500395C70 /* RunGuard.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 4FA41988188EA4C500395C70 /* RunGuard.cpp */; };
@@ -68,9 +70,9 @@
 		B08AE0866171E2B79EF2D621 /* QtOpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */; };
 		BCEF71E1EDFB18DA77DC750B /* OpenGL.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = DA18A6831232F53228631AD1 /* OpenGL.framework */; };
 		E8064AC3189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */; };
+		E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */; };
 		E86F97BD18DB2978007330E1 /* DeveloperTools.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97BB18DB2978007330E1 /* DeveloperTools.cpp */; };
 		E86F97C718DB2990007330E1 /* DeveloperTools_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97C618DB2990007330E1 /* DeveloperTools_moc.cpp */; };
-		E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */; };
 		E86F97CF18DB38F1007330E1 /* CloneLastBatchCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */; };
 		E879F45D189802680008E0B1 /* DeleteLODCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */; };
 		E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E881534F18883A630028AFD3 /* InspDynamicModifyCommand.cpp */; };
@@ -656,6 +658,9 @@
 		0282B87E18BC745C006F1EE4 /* SoundComponentEditor_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundComponentEditor_moc.cpp; sourceTree = "<group>"; };
 		02E9E40E1739612300C501BC /* libfmodevent.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodevent.dylib; path = ../../Libs/fmod/lib/macos/libfmodevent.dylib; sourceTree = "<group>"; };
 		02E9E40F1739612300C501BC /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../Libs/fmod/lib/macos/libfmodex.dylib; sourceTree = "<group>"; };
+		17FB4BD01924B86800F3E3BC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		17FB4BD91924B9A400F3E3BC /* CoreMediaIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMediaIO.framework; path = System/Library/Frameworks/CoreMediaIO.framework; sourceTree = SDKROOT; };
+		17FB4BDB1924B9AD00F3E3BC /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		29FF4FD1BCB9408020402F99 /* theora_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = theora_macos; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		2A689518AF9C22C7AA97C9EF /* ogg_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = ogg_macos; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
 		336CB11D929F5E35FA69020F /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -751,11 +756,11 @@
 		DA18A6831232F53228631AD1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E8064AC1189A95FA00EE7164 /* DeleteRenderBatchCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteRenderBatchCommand.cpp; sourceTree = "<group>"; };
 		E8064AC2189A95FA00EE7164 /* DeleteRenderBatchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeleteRenderBatchCommand.h; sourceTree = "<group>"; };
+		E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGlobalCommand.cpp; sourceTree = "<group>"; };
+		E8185C2A190950E500AAD457 /* MaterialGlobalCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialGlobalCommand.h; sourceTree = "<group>"; };
 		E86F97BB18DB2978007330E1 /* DeveloperTools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeveloperTools.cpp; sourceTree = "<group>"; };
 		E86F97BC18DB2978007330E1 /* DeveloperTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeveloperTools.h; sourceTree = "<group>"; };
 		E86F97C618DB2990007330E1 /* DeveloperTools_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeveloperTools_moc.cpp; sourceTree = "<group>"; };
-		E8185C29190950E500AAD457 /* MaterialGlobalCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialGlobalCommand.cpp; sourceTree = "<group>"; };
-		E8185C2A190950E500AAD457 /* MaterialGlobalCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialGlobalCommand.h; sourceTree = "<group>"; };
 		E86F97CD18DB38F1007330E1 /* CloneLastBatchCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloneLastBatchCommand.cpp; sourceTree = "<group>"; };
 		E86F97CE18DB38F1007330E1 /* CloneLastBatchCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloneLastBatchCommand.h; sourceTree = "<group>"; };
 		E879F45B189802680008E0B1 /* DeleteLODCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeleteLODCommand.cpp; sourceTree = "<group>"; };
@@ -1718,6 +1723,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17FB4BDC1924B9AD00F3E3BC /* CoreMedia.framework in Frameworks & Libraries */,
+				17FB4BD11924B86800F3E3BC /* AVFoundation.framework in Frameworks & Libraries */,
 				A69D4043188940CF0093F7AA /* WebKit.framework in Frameworks & Libraries */,
 				A6A617DD17CF4CF500375E11 /* libFrameworkToolsQt.a in Frameworks & Libraries */,
 				02E9E4101739612300C501BC /* libfmodevent.dylib in Frameworks & Libraries */,
@@ -1764,6 +1771,9 @@
 		05596AB53D8D521C69802C27 /* ResourceEditorQt */ = {
 			isa = PBXGroup;
 			children = (
+				17FB4BDB1924B9AD00F3E3BC /* CoreMedia.framework */,
+				17FB4BD91924B9A400F3E3BC /* CoreMediaIO.framework */,
+				17FB4BD01924B86800F3E3BC /* AVFoundation.framework */,
 				A69D4042188940CF0093F7AA /* WebKit.framework */,
 				A6A617CD17CF4CD500375E11 /* FrameworkTools.xcodeproj */,
 				02E9E40E1739612300C501BC /* libfmodevent.dylib */,

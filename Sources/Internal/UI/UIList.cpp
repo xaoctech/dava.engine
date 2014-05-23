@@ -469,6 +469,13 @@ void UIList::Draw(const UIGeometricData &geometricData)
 
 void UIList::Input(UIEvent *currentInput)
 {
+    if (lockTouch && currentInput->tid != mainTouch)
+    {
+        // Ignore any other touches when the input is locked.
+        currentInput->SetInputHandledType(UIEvent::INPUT_HANDLED_HARD);
+        return;
+    }
+
 	if(orientation == ORIENTATION_HORIZONTAL)
 	{
 		newPos = currentInput->point.x;
@@ -725,9 +732,6 @@ YamlNode * UIList::SaveToYamlNode(UIYamlLoader * loader)
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
 	//Temp variables
 	String stringValue;
-    
-	//Control Type
-	SetPreferredNodeType(node, "UIList");
 
 	//Orientation
 	eListOrientation orient = this->GetOrientation();

@@ -175,9 +175,9 @@ enum PixelFormat
     
 enum eGPUFamily
 {
-    GPU_UNKNOWN = 0,//-1,
+    GPU_UNKNOWN = -1,
     
-    GPU_POWERVR_IOS,// = 0,
+    GPU_POWERVR_IOS = 0,
     GPU_POWERVR_ANDROID,
     GPU_TEGRA,
     GPU_MALI,

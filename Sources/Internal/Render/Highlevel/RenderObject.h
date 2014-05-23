@@ -125,6 +125,15 @@ public:
     inline RenderBatch * GetRenderBatch(uint32 batchIndex) const;
 	inline RenderBatch * GetRenderBatch(uint32 batchIndex, int32 & lodIndex, int32 & switchIndex) const;
 
+    /**
+		\brief fill render batches vector from request lods/switches
+		\param[in] requestLodIndex - request lod index. if -1 considering all lods
+        \param[in] requestSwitchIndex - request switch index. if -1 considering all switches
+        \param[in, out] batches vector of RenderBatch'es
+        \param[in] includeShareLods - if true considering request lod and lods with INVALID_INDEX(-1)
+	 */
+    void GetRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*> & batches, bool includeShareLods = false) const;
+
 	inline uint32 GetActiveRenderBatchCount() const;
 	inline RenderBatch * GetActiveRenderBatch(uint32 batchIndex) const;
     
