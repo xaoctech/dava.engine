@@ -332,7 +332,7 @@ function IsVisible(element, background)
 		result = true
 	end
 	
-	Log("Element " ..  element .. " is visible on " .. tostring(background) .. "= " .. tostring(result))
+	--Log("Element " ..  element .. " is visible on " .. tostring(background) .. "= " .. tostring(result))
 	return result
 end
 
@@ -403,7 +403,7 @@ end
 
 function WaitControl(name, time)
     local waitTime = time or TIMEOUT
-    Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
+    --Log("WaitControl name="..name.." waitTime="..waitTime,"DEBUG")
     
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
@@ -441,7 +441,7 @@ end
 
 function WaitControlBecomeVisible(name, time)
     local waitTime = time or TIMEOUT
-    Log("WaitControlBecomeVisible name="..name.." waitTime="..waitTime,"DEBUG")
+    --Log("WaitControlBecomeVisible name="..name.." waitTime="..waitTime,"DEBUG")
 
     local elapsedTime = 0.0
     while elapsedTime < waitTime do
@@ -449,7 +449,7 @@ function WaitControlBecomeVisible(name, time)
 		coroutine.yield()
 		
 		local control = autotestingSystem:FindControl(name)
-        if control and control:GetVisible() and control:IsOnScreen() and IsOnScreen(control, background) then
+        if IsVisible(name) then
             --Log("WaitControl found "..name, "DEBUG")
             return true
         end
@@ -458,6 +458,7 @@ function WaitControlBecomeVisible(name, time)
     Log("WaitControl not found "..name, "DEBUG")
     return false
 end
+
 -- Work with Text field and labels 
 function SetText(path, text, time)
 	local waitTime = time or DELAY
@@ -660,7 +661,7 @@ function SelectFirstVertical(list)
 end
 
 function VerticalScroll(list, invert)
-	Log("Make horizontal scroll for "..list)
+	--Log("Make horizontal scroll for "..list)
 	local control = GetControl(list)
 
 	local position = Vector.Vector2()
@@ -684,7 +685,7 @@ function VerticalScroll(list, invert)
 end
 
 function HorizontalScroll(list, invert)
-	Log("Make horizontal scroll for "..list)
+	--Log("Make horizontal scroll for "..list)
 	local control = GetControl(list)	
     
     local position = Vector.Vector2()
@@ -785,7 +786,7 @@ end
 function TouchMove(position, new_position, time, touchId)
 	waitTime =  time or TIMECLICK
     local touchId = touchId or 1
-    Log("TouchMove from x="..position.x.." y="..position.y.."  to x="..new_position.x.." y="..new_position.y.." touchId="..touchId)
+    --Log("TouchMove from x="..position.x.." y="..position.y.."  to x="..new_position.x.." y="..new_position.y.." touchId="..touchId)
     TouchDownPosition(position, touchId)
     Wait(waitTime)
 	TouchMovePosition(new_position, touchId)
