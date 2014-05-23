@@ -132,8 +132,11 @@ void Thread::Join()
 #ifndef __DAVAENGINE_WIN32__
 void Thread::Kill()
 {
-    pthread_kill(GetThreadId().internalTid, SIGKILL);
-    state = STATE_ENDED;
+    if(state != STATE_ENDED && state != STATE_KILLED)
+    {
+        pthread_kill(GetThreadId().internalTid, SIGKILL);
+        state = STATE_ENDED;
+    }
 }
 #endif
 
