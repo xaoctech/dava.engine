@@ -52,7 +52,7 @@ protected:
     virtual void InitializeControl(const String& controlName, const Vector2& position);
     virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
     
-    virtual QString GetUIControlClassName() { return "UIButton"; };
+    virtual QString GetUIControlClassName() const { return "UIButton"; };
 
     // Set the text of the button.
     virtual void SetLocalizedTextKey(const QString& value);
@@ -61,7 +61,7 @@ protected:
     UIButton* GetActiveUIButton() const;
  
     virtual float GetFontSize() const;
-    virtual void SetFontSize(float fontSize);
+    //virtual void SetFontSize(float fontSize);
     
     // Color getter/setter. Also virtual.
     virtual Font * GetFont();
@@ -130,7 +130,7 @@ protected:
 
     // Font Size.
     float GetFontSizeForState(UIControl::eControlState state) const;
-    void UpdatePropertyDirtyFlagForFontSize();
+    //void UpdatePropertyDirtyFlagForFontSize();
 
     // Font Color.
     QColor GetFontColorForState(UIControl::eControlState state) const;

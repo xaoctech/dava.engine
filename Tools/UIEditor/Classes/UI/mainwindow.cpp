@@ -60,6 +60,8 @@
 
 #include "Ruler/RulerController.h"
 
+#include "EditorFontManager.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -167,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectLoaded()),
 			this,
-			SLOT(OnProjectCreated()));
+			SLOT(OnProjectLoaded()));
 	
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedScreenChanged(const HierarchyTreeScreenNode*)),
@@ -672,6 +674,7 @@ void MainWindow::UpdateScreenPosition()
         frameRect.SetSize(Vector2(glWidgetRect.width(), glWidgetRect.height()));
 
         ScreenWrapper::Instance()->SetBackgroundFrameRect(frameRect);
+        currentScreen->SetScreenPositionChangedFlag();
     }
 }
 
@@ -940,6 +943,13 @@ void MainWindow::OnProjectCreated()
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
+}
+
+void MainWindow::OnProjectLoaded()
+{
+    EditorFontManager::Instance()->OnProjectLoaded();
+    
+    OnProjectCreated();
 }
 
 void MainWindow::OnNewPlatform()
@@ -1404,6 +1414,12 @@ void MainWindow::NotifyScaleUpdated(float32 newScale)
     GridVisualizer::Instance()->SetScale(newScale);
 
     RulerController::Instance()->SetScale(newScale);
+    
+    DefaultScreen* currentScreen = ScreenWrapper::Instance()->GetActiveScreen();
+    if (currentScreen)
+    {
+        currentScreen->SetScreenPositionChangedFlag();
+    }
 }
 
 void MainWindow::OnPixelizationStateChanged()

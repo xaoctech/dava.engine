@@ -503,6 +503,10 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
 {
     DVASSERT(rdoObject);
 	if (!spr)return;
+    if (!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+    {
+        return;
+    }
 	UniqueHandle textureHandle = spr->GetTextureHandle(frame);
 	Texture* texture = spr->GetTexture(frame);
 	
@@ -686,6 +690,10 @@ void UIControlBackground::DrawTiled(const UIGeometricData &gd, UniqueHandle rend
 {
     DVASSERT(rdoObject);
 	if (!spr)return;
+    if (!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::SPRITE_DRAW))
+    {
+        return;
+    }
 
 	const Vector2 &size = gd.size;
 

@@ -248,7 +248,7 @@ void Texture::ReleaseTextureData()
 #if defined(__DAVAENGINE_ANDROID__)
     container->stencilRboID = stencilRboID;
 #endif
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container), 0);
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container), Job::NO_FLAGS);
     
     id = 0;
 	fboID = -1;
@@ -797,8 +797,6 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
     ReleaseTextureData();
 
 	texDescriptor->Reload();
-    
-	DVASSERT(NULL != texDescriptor);
     
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
