@@ -494,6 +494,7 @@ void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
     {
         editEnabled = true;
         addRemoveButton->setIcon(QIcon(":/QtIcons/cminus.png"));
+        addRemoveButton->setToolTip("Remove property");
     }
     // inherited from parent property - should be add button
     else if(memberFlags & DAVA::I_VIEW)
@@ -501,6 +502,7 @@ void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
         editEnabled = false;
         bgColor = QBrush(QColor(0, 0, 0, 10));
         addRemoveButton->setIcon(QIcon(":/QtIcons/cplus.png"));
+        addRemoveButton->setToolTip( "Add property" );
     }
 
     // don't allow editing for members that are inherited
