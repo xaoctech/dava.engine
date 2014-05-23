@@ -110,10 +110,6 @@ private:
 	// Update file/folder last modified date
 	void UpdateModificationDate(const QString &path);
 
-    // Delete the unnecessary platforms.
-    void DeleteUnnecessaryPlatforms(const QString& projectPath);
-    void DeletePlatform(const QString& projectPath, const QString& platform) const;
-
 private:
 	HierarchyTreeNode* FindNode(const HierarchyTreeNode* parent, HierarchyTreeNode::HIERARCHYTREENODEID id) const;
 	HierarchyTreeNode* FindNode(const HierarchyTreeNode* parent, const UIControl* control) const;
