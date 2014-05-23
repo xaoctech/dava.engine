@@ -64,7 +64,7 @@ public:
     inline void SetTrunkOscillationSpringSqrt(const float32 & spring);
     inline void SetLeafsOscillationApmlitude(const float32 & amplitude);
     inline void SetLeafsOscillationSpeed(const float32 & speed);
-    inline void SetMaxAnimatedLOD(const int32 & lodIndex);
+    void SetMaxAnimatedLOD(const int32 & lodIndex);
     
 protected:
     float32 trunkOscillationAmplitude;
@@ -136,11 +136,6 @@ inline void SpeedTreeComponent::SetLeafsOscillationApmlitude(const float32 & amp
 inline void SpeedTreeComponent::SetLeafsOscillationSpeed(const float32 & speed)
 {
     leafsOscillationSpeed = speed;
-}
-
-inline void SpeedTreeComponent::SetMaxAnimatedLOD(const int32 & lodIndex)
-{
-    maxAnimatedLOD = lodIndex;
 }
 
 };

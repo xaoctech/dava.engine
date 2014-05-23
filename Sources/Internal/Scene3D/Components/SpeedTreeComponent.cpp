@@ -60,8 +60,8 @@ Component * SpeedTreeComponent::Clone(Entity * toEntity)
     component->trunkOscillationSpringSqrt = trunkOscillationSpringSqrt;
     component->leafsOscillationAmplitude = leafsOscillationAmplitude;
     component->leafsOscillationSpeed = leafsOscillationSpeed;
-    component->maxAnimatedLOD = maxAnimatedLOD;
-    
+    component->SetMaxAnimatedLOD(GetMaxAnimatedLOD());
+
     return component;
 }
 
@@ -86,11 +86,18 @@ void SpeedTreeComponent::Deserialize(KeyedArchive *archive, SerializationContext
         trunkOscillationAmplitude = archive->GetFloat("stc.trunkOscillationAmplitude", trunkOscillationAmplitude);
         trunkOscillationSpringSqrt = archive->GetFloat("stc.trunkOscillationSpringSqrt", trunkOscillationSpringSqrt);
 		leafsOscillationAmplitude = archive->GetFloat("stc.leafsOscillationAmplitude", leafsOscillationAmplitude);
-		leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
-        maxAnimatedLOD = archive->GetInt32("stc.maxAnimatedLOD", maxAnimatedLOD);
+        leafsOscillationSpeed = archive->GetFloat("stc.leafsOscillationSpeed", leafsOscillationSpeed);
+        SetMaxAnimatedLOD(archive->GetInt32("stc.maxAnimatedLOD", maxAnimatedLOD));
 	}
 
 	Component::Deserialize(archive, serializationContext);
+
+}
+
+void SpeedTreeComponent::SetMaxAnimatedLOD(const int32 & lodIndex)
+{
+    maxAnimatedLOD = lodIndex;
+    GlobalEventSystem::Instance()->Event(entity, EventSystem::SPEED_TREE_MAX_ANIMATED_LOD_CHANGED);
 }
 
 };

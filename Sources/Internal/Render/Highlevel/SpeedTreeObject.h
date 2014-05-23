@@ -57,17 +57,13 @@ public:
 protected:
     static const FastName FLAG_WIND_ANIMATION;
 
-    void SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams);
-    void SetAnimationFlag(bool flagOn);
-    
     AABBox3 CalcBBoxForSpeedTreeGeometry(RenderBatch * rb);
-    void CollectMaterials();
 
-    bool animationFlagOn;
-    
+    void SetTreeAnimationParams(const Vector2 & trunkOscillationParams, const Vector2 & leafOscillationParams);
+    void UpdateAnimationFlag(int32 maxAnimatedLod);
+
     Vector2 trunkOscillation;
     Vector2 leafOscillation;
-    Vector<NMaterial *> materials;
 
 public:
 

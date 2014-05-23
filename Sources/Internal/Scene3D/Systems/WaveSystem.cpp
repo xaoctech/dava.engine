@@ -60,6 +60,8 @@ WaveSystem::WaveSystem(Scene * scene) :
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     HandleEvent(options);
+
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WAVE_TRIGGERED);
 }
 
 WaveSystem::~WaveSystem()
@@ -67,12 +69,15 @@ WaveSystem::~WaveSystem()
     ClearWaves();
 }
 
-void WaveSystem::WaveTriggered(WaveComponent * component)
+void WaveSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
-    if(!isWavesEnabled)
-        return;
+    if(event == EventSystem::WAVE_TRIGGERED)
+    {
+        if(!isWavesEnabled)
+            return;
 
-    waves.push_back(new WaveInfo(component));
+        waves.push_back(new WaveInfo(GetWaveComponent(entity)));
+    }
 }
 
 void WaveSystem::Process(float32 timeElapsed)
