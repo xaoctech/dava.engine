@@ -73,7 +73,8 @@ public:
 	{
 		STATE_CREATED = 0,
 		STATE_RUNNING,
-		STATE_ENDED
+		STATE_ENDED,
+        STATE_KILLED
 	};
 
 	class ThreadId
