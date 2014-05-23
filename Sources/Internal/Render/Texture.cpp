@@ -1141,19 +1141,26 @@ Texture * Texture::CreatePink(TextureType requestedType, bool checkers)
 	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
 	//pink textures at game is invalid situation
 	Texture *tex = new Texture();
-	tex->MakePink(requestedType, checkers);
+	if(Texture::TEXTURE_CUBE == requestedType)
+	{
+		tex->texDescriptor->Initialize(WRAP_REPEAT, true);
+		tex->texDescriptor->dataSettings.faceDescription = 0x000000FF;
+	}
+	else
+	{
+		tex->texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
+	}
+
+	tex->MakePink(checkers);
 
 	return tex;
 }
 
-void Texture::MakePink(TextureType requestedType, bool checkers)
+void Texture::MakePink(bool checkers)
 {
-	FilePath savePath = texDescriptor->pathname;
-
     Vector<Image *> *images = new Vector<Image *> ();
-	if(Texture::TEXTURE_CUBE == requestedType)
+	if(texDescriptor->IsCubeMap())
 	{
-		texDescriptor->Initialize(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
             Image *img = Image::CreatePinkPlaceholder(checkers);
@@ -1162,16 +1169,11 @@ void Texture::MakePink(TextureType requestedType, bool checkers)
 
 			images->push_back(img);
 		}
-		
-		texDescriptor->dataSettings.faceDescription = 0x000000FF;
 	}
 	else
 	{
-		texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
 		images->push_back(Image::CreatePinkPlaceholder(checkers));
 	}
-
-	texDescriptor->pathname = savePath;
 
 	SetParamsFromImages(images);
     FlushDataToRenderer(images);
