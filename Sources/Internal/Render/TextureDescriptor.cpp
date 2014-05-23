@@ -161,12 +161,9 @@ void TextureDescriptor::SetDefaultValues()
 
 	drawSettings.SetDefaultValues();
 	dataSettings.SetDefaultValues();
-	if(compression)
+	for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
 	{
-		for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
-		{
-			compression[i].Clear();
-		}
+		compression[i].Clear();
 	}
 
 	exportedAsGpuFamily = GPU_UNKNOWN;
@@ -267,7 +264,7 @@ void TextureDescriptor::Save() const
     
 void TextureDescriptor::Save(const FilePath &filePathname) const
 {
-    File *file = File::Create(filePathname, File::WRITE | File::OPEN | File::CREATE);
+    File *file = File::Create(filePathname, File::WRITE | File::CREATE);
     if(!file)
     {
         Logger::Error("[TextureDescriptor::Save] Can't open file: %s", filePathname.GetAbsolutePathname().c_str());
@@ -283,7 +280,6 @@ void TextureDescriptor::Save(const FilePath &filePathname) const
     WriteGeneralSettings(file);
     
     //Compression
-	DVASSERT(compression);
 	for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
 	{
 		WriteCompression(file, &compression[i]);
