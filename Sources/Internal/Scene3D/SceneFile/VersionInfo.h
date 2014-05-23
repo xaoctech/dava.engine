@@ -40,49 +40,49 @@
 namespace DAVA
 {
 
-    class VersionInfo
-        : public Singleton<VersionInfo>
+class VersionInfo
+    : public Singleton<VersionInfo>
+{
+public:
+    typedef Map<String, uint32> TagsMap;
+    struct SceneVersion
     {
-    public:
-        typedef Map<String, uint32> TagsMap;
-        struct SceneVersion
-        {
-            uint32 version;
-            TagsMap tags;
+        uint32 version;
+        TagsMap tags;
 
-            SceneVersion()
-                : version(0){}
-            bool IsValid() const{ return version > 0; }
-        };
-        typedef Map<uint32, SceneVersion> VersionMap;
-
-        enum eStatus
-        {
-            VALID,
-            COMPATIBLE,
-            INVALID,
-        };
-
-    public:
-        VersionInfo();
-        ~VersionInfo();
-
-        const SceneVersion& GetCurrentVersion() const;
-        eStatus TestVersion(const SceneVersion& version) const;
-        String UnsupportedTagsMessage(const SceneVersion& version) const;
-        String NoncompatibleTagsMessage(const SceneVersion& version) const;
-
-    private:
-        void AddVersion(const SceneVersion& version);
-        void FillVersionHistory();
-        void SetCurrentBranch();
-        TagsMap GetTags(uint32 minVersion = 0) const;
-
-        VersionMap versionMap;
-
-        static TagsMap GetTagsDiff(const TagsMap& from, const TagsMap& what);
-        static String FormatTagsString(const TagsMap& tags);
+        SceneVersion()
+            : version(0){}
+        bool IsValid() const{ return version > 0; }
     };
+    typedef Map<uint32, SceneVersion> VersionMap;
+
+    enum eStatus
+    {
+        VALID,
+        COMPATIBLE,
+        INVALID,
+    };
+
+public:
+    VersionInfo();
+    ~VersionInfo();
+
+    const SceneVersion& GetCurrentVersion() const;
+    eStatus TestVersion(const SceneVersion& version) const;
+    String UnsupportedTagsMessage(const SceneVersion& version) const;
+    String NoncompatibleTagsMessage(const SceneVersion& version) const;
+
+private:
+    void AddVersion(const SceneVersion& version);
+    void FillVersionHistory();
+    void SetCurrentBranch();
+    TagsMap GetTags(uint32 minVersion = 0) const;
+
+    VersionMap versionMap;
+
+    static TagsMap GetTagsDiff(const TagsMap& from, const TagsMap& what);
+    static String FormatTagsString(const TagsMap& tags);
+};
 
 };
 
