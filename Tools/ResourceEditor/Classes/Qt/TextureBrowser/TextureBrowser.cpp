@@ -368,24 +368,14 @@ void TextureBrowser::updateInfoConverted()
 
 		int datasize = TextureCache::Instance()->getConvertedSize(curDescriptor, curTextureView);
 		int filesize = TextureCache::Instance()->getConvertedFileSize(curDescriptor, curTextureView);
+		QSize imgSize = TextureCache::Instance()->getConvertedImageSize(curDescriptor, curTextureView);
+
         bool isUpToDate = curDescriptor->IsCompressedTextureActual(curTextureView);
-		QSize imgSize(0, 0);
         
         bool isFormatValid = curDescriptor->compression[curTextureView].format != DAVA::FORMAT_INVALID;
 		if(isFormatValid)
 		{
 			formatStr = GlobalEnumMap<DAVA::PixelFormat>::Instance()->ToString(curDescriptor->compression[curTextureView].format);
-			
-			int w = curDescriptor->compression[curTextureView].compressToWidth;
-			int h = curDescriptor->compression[curTextureView].compressToHeight;
-			if(0 != w && 0 != h)
-			{
-				imgSize = QSize(w, h);
-			}
-			else
-			{
-				imgSize = QSize(curTexture->width, curTexture->height);
-			}
 		}
         ui->convertToolButton->setEnabled(isFormatValid);
         
