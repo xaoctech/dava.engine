@@ -35,129 +35,129 @@
 namespace DAVA
 {
 
-    VersionInfo::VersionInfo()
+VersionInfo::VersionInfo()
+{
+    FillVersionHistory();
+    SetCurrentBranch();
+}
+
+VersionInfo::~VersionInfo()
+{
+}
+
+void VersionInfo::AddVersion(const VersionInfo::SceneVersion& version)
+{
+    DVASSERT(versionMap.find(version.version) == versionMap.end());
+    versionMap.insert(VersionMap::value_type(version.version, version));
+}
+
+const VersionInfo::SceneVersion& VersionInfo::GetCurrentVersion() const
+{
+    DVASSERT(!versionMap.empty());
+    return versionMap.rbegin()->second;
+}
+
+String VersionInfo::UnsupportedTagsMessage(const SceneVersion& version) const
+{
+    const TagsMap& allTags = GetTags();
+    const TagsMap& errTags = GetTagsDiff(allTags, version.tags);    // List of tags that not supported by current version of framework
+    const String& msg = FormatTagsString(errTags);
+
+    return msg;
+}
+
+String VersionInfo::NoncompatibleTagsMessage(const SceneVersion& version) const
+{
+    const TagsMap& allTags = GetTags(version.version);
+    const TagsMap& warnTags = GetTagsDiff(version.tags, allTags);   // List of tags that will be added to scene
+    const String& msg = FormatTagsString(warnTags);
+
+    return msg;
+}
+
+VersionInfo::TagsMap VersionInfo::GetTagsDiff(const VersionInfo::TagsMap& from, const VersionInfo::TagsMap& what)
+{
+    TagsMap result;
+
+    for (TagsMap::const_iterator it = from.begin(); it != from.end(); it++)
     {
-        FillVersionHistory();
-        SetCurrentBranch();
-    }
-
-    VersionInfo::~VersionInfo()
-    {
-    }
-
-    void VersionInfo::AddVersion(const VersionInfo::SceneVersion& version)
-    {
-        DVASSERT(versionMap.find(version.version) == versionMap.end());
-        versionMap.insert(VersionMap::value_type(version.version, version));
-    }
-
-    const VersionInfo::SceneVersion& VersionInfo::GetCurrentVersion() const
-    {
-        DVASSERT(!versionMap.empty());
-        return versionMap.rbegin()->second;
-    }
-
-    String VersionInfo::UnsupportedTagsMessage(const SceneVersion& version) const
-    {
-        const TagsMap& allTags = GetTags();
-        const TagsMap& errTags = GetTagsDiff(allTags, version.tags);    // List of tags that not supported by current version of framework
-        const String& msg = FormatTagsString(errTags);
-
-        return msg;
-    }
-
-    String VersionInfo::NoncompatibleTagsMessage(const SceneVersion& version) const
-    {
-        const TagsMap& allTags = GetTags(version.version);
-        const TagsMap& warnTags = GetTagsDiff(version.tags, allTags);   // List of tags that will be added to scene
-        const String& msg = FormatTagsString(warnTags);
-
-        return msg;
-    }
-
-    VersionInfo::TagsMap VersionInfo::GetTagsDiff(const VersionInfo::TagsMap& from, const VersionInfo::TagsMap& what)
-    {
-        TagsMap result;
-
-        for (TagsMap::const_iterator it = from.begin(); it != from.end(); it++)
+        if (what.find( it->first ) == what.end())
         {
-            if (what.find( it->first ) == what.end())
-            {
-                result.insert(TagsMap::value_type(it->first,it->second));
-            }
+            result.insert(TagsMap::value_type(it->first,it->second));
         }
-
-        return result;
     }
 
-    String VersionInfo::FormatTagsString(const VersionInfo::TagsMap& tags)
+    return result;
+}
+
+String VersionInfo::FormatTagsString(const VersionInfo::TagsMap& tags)
+{
+    std::stringstream ss;
+    for (TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++)
     {
-        std::stringstream ss;
-        for (TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++)
-        {
-            ss << it->first << '_' << it->second << std::endl;
-        }
-
-        return ss.str();
+        ss << it->first << '_' << it->second << std::endl;
     }
 
-    VersionInfo::TagsMap VersionInfo::GetTags(uint32 minVersion) const
+    return ss.str();
+}
+
+VersionInfo::TagsMap VersionInfo::GetTags(uint32 minVersion) const
+{
+    TagsMap tags;
+
+    for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++)
     {
-        TagsMap tags;
+        if (itVersion->first < minVersion)
+            continue;
 
-        for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++)
-        {
-            if (itVersion->first < minVersion)
-                continue;
-
-            const SceneVersion& version = itVersion->second;
-            tags.insert(version.tags.begin(), version.tags.end());
-        }
-
-        return tags;
+        const SceneVersion& version = itVersion->second;
+        tags.insert(version.tags.begin(), version.tags.end());
     }
 
-    VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
-    {
-        const SceneVersion& current = GetCurrentVersion();
+    return tags;
+}
 
-        // Checking version
-        if (current.version < version.version)
-            return INVALID;
+VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
+{
+    const SceneVersion& current = GetCurrentVersion();
 
-        // Checking tags
-        const TagsMap& tags = version.tags;
-        const TagsMap& fwAllTags = GetTags();
-        const TagsMap& fwVersionedTags = GetTags( version.version );
+    // Checking version
+    if (current.version < version.version)
+        return INVALID;
 
-        const TagsMap& errTags = GetTagsDiff( tags, fwAllTags );            // List of tags that not supported by current version of framework
-        const TagsMap& warnTags = GetTagsDiff( fwVersionedTags, tags );     // List of tags that will be added to scene
+    // Checking tags
+    const TagsMap& tags = version.tags;
+    const TagsMap& fwAllTags = GetTags();
+    const TagsMap& fwVersionedTags = GetTags( version.version );
 
-        if ( errTags.size() > 0 )
-            return INVALID;
+    const TagsMap& errTags = GetTagsDiff( tags, fwAllTags );            // List of tags that not supported by current version of framework
+    const TagsMap& warnTags = GetTagsDiff( fwVersionedTags, tags );     // List of tags that will be added to scene
 
-        if ( warnTags.size() > 0 )
-            return COMPATIBLE;
+    if ( errTags.size() > 0 )
+        return INVALID;
 
-        return VALID;
-    }
+    if ( warnTags.size() > 0 )
+        return COMPATIBLE;
 
-    void VersionInfo::FillVersionHistory()
-    {
-        // Current version
-        SceneVersion currentVersion;
-        currentVersion.version = 12;    // Current version of scene file
-        AddVersion(currentVersion);
-    }
+    return VALID;
+}
 
-    void VersionInfo::SetCurrentBranch()
-    {
-        // List of featues, that are under development in current branch
+void VersionInfo::FillVersionHistory()
+{
+    // Current version
+    SceneVersion currentVersion;
+    currentVersion.version = 12;    // Current version of scene file
+    AddVersion(currentVersion);
+}
 
-        DVASSERT(!versionMap.empty());
-        TagsMap& tags = versionMap.rbegin()->second.tags;
+void VersionInfo::SetCurrentBranch()
+{
+    // List of featues, that are under development in current branch
 
-        // Example: tags.insert( TagsMap::value_type( "sky", 2 ) );
-    }
+    DVASSERT(!versionMap.empty());
+    TagsMap& tags = versionMap.rbegin()->second.tags;
+
+    // Example: tags.insert( TagsMap::value_type( "sky", 2 ) );
+}
 
 }
