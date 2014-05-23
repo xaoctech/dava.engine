@@ -166,7 +166,18 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     if(vegetation)
     {
         sceneUtils.AddFile(vegetation->GetVegetationMapPath());
-        sceneUtils.AddFile(vegetation->GetTextureSheetPath());
+        
+        const FilePath& textureSheetPath = vegetation->GetTextureSheetPath();
+        if(!textureSheetPath.IsEmpty())
+        {
+            sceneUtils.AddFile(vegetation->GetTextureSheetPath());
+        }
+        
+        const FilePath vegetationCustomGeometry = vegetation->GetCustomGeometryPath();
+        if(!vegetationCustomGeometry.IsEmpty())
+        {
+            sceneUtils.AddFile(vegetationCustomGeometry);
+        }
     }
 
 	CopyReferencedObject(scene);
