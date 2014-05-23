@@ -33,11 +33,10 @@
 
 namespace DAVA 
 {
-
+    
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
-SpeedTreeObject::SpeedTreeObject() :
-    animationFlagOn(false)
+SpeedTreeObject::SpeedTreeObject()
 {
     type = TYPE_SPEED_TREE;
 }
@@ -66,22 +65,18 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationPar
 
 void SpeedTreeObject::BindDynamicParams()
 {
-    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, (pointer_size)&trunkOscillation);
-    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, (pointer_size)&leafOscillation);
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, 0);
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, 0);
 }
 
-void SpeedTreeObject::SetAnimationFlag(bool flagOn)
+void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)
 {
-    if(animationFlagOn == flagOn)
-        return;
-
-    animationFlagOn = flagOn;
-
-    NMaterial::eFlagValue flagValue = flagOn ? NMaterial::FlagOn : NMaterial::FlagOff;
-
-    uint32 matCount = materials.size();
-    for(uint32 i = 0; i < matCount; ++i)
-        materials[i]->SetFlag(FLAG_WIND_ANIMATION, flagValue);
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        NMaterial::eFlagValue flagValue = (renderBatchArray[k].lodIndex > maxAnimatedLod) ? NMaterial::FlagOff : NMaterial::FlagOn;
+        renderBatchArray[k].renderBatch->GetMaterial()->SetFlag(FLAG_WIND_ANIMATION, flagValue);
+    }
 }
 
 void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -89,8 +84,6 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
     Mesh::Load(archive, serializationContext);
 
     type = TYPE_SPEED_TREE;
-    
-    CollectMaterials();
 }
 
 RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
@@ -101,27 +94,9 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
         newObject = new SpeedTreeObject();
     }
 
-    SpeedTreeObject * treeObject = (SpeedTreeObject *)newObject;
-    Mesh::Clone(treeObject);
-    treeObject->CollectMaterials();
-
-    return newObject;
-}
+    Mesh::Clone(newObject);
     
-void SpeedTreeObject::CollectMaterials()
-{
-    materials.clear();
-
-    Set<NMaterial *> allMaterialSet;
-    Set<NMaterial *> leafMaterialSet;
-    uint32 size = (uint32)renderBatchArray.size();
-    for (uint32 k = 0; k < size; ++k)
-    {
-        RenderBatch * rb = renderBatchArray[k].renderBatch;
-        allMaterialSet.insert(rb->GetMaterial());
-    }
-
-    materials.insert(materials.begin(), allMaterialSet.begin(), allMaterialSet.end());
+    return newObject;
 }
 
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)

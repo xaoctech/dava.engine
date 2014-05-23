@@ -57,10 +57,10 @@ class WaveSystem : public SceneSystem, public Observer
 public:
     WaveSystem(Scene * scene);
     virtual ~WaveSystem();
-	
+
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
     virtual void Process(float32 timeElapsed);
 
-    void WaveTriggered(WaveComponent * component);
     Vector3 GetWaveDisturbance(const Vector3 & inPosition) const;
 
     virtual void HandleEvent(Observable * observable);
