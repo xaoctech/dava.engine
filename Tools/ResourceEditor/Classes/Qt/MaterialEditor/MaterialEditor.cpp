@@ -1100,6 +1100,7 @@ void MaterialEditor::OnMaterialLoad(bool checked)
                 material->Load(materialArchive, &materialContext);
             }
 
+            curScene->SetChanged(true);
             materialArchive->Release();
         }
     }
