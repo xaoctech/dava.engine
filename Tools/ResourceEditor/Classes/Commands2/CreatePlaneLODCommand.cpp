@@ -204,13 +204,13 @@ void CreatePlaneLODCommand::CreatePlaneImage()
     float32 depth = 0.f;
     //draw 1st side
     depth = max.y - min.y;
- 	camera->Setup(min.x, max.x, min.z, max.z, -depth, depth * 2);
+ 	camera->Setup(min.x, max.x, max.z, min.z, -depth, depth * 2);
     camera->SetPosition(Vector3(0.f, min.y, 0.f));
     DrawToTexture(fromEntity, camera, fboTexture, fromLodLayer, firstSideViewport, true);
     
     //draw 2nd side
     depth = max.x - min.x;
-	camera->Setup(min.y, max.y, min.z, max.z, -depth, depth * 2);
+	camera->Setup(min.y, max.y, max.z, min.z, -depth, depth * 2);
     camera->SetPosition(Vector3(max.x, 0.f, 0.f));
     DrawToTexture(fromEntity, camera, fboTexture, fromLodLayer, secondSideViewport, false);
     
@@ -232,152 +232,126 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
     
     const Vector3 & min = bbox.min;
     const Vector3 & max = bbox.max;
-    Vector3 mid = min + (max - min) / 2;
-    Vector3 qua = (max - min) / 4;
+    Vector3 size = bbox.GetSize();
     bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
 
-    int32 vxCount = 17, indCount = 54;
+    //
+    // Textures:
+    //  Vertical for tree:   Horizontal for bush:
+    //  +---------------+     +---------------+ 
+    //  |       |       |     |      ***      |
+    //  |   *   |   *   |     |     *****     |
+    //  |  ***  |  ***  |     |---------------|
+    //  | ***** | ***** |     |      ***      |
+    //  |   *   |   *   |     |     ******    |
+    //  +---------------+     +---------------+
+    //
+    // Mesh Grid: 
+    //
+    // z
+    // ^  6      7      8
+    // |   *-----*-----*
+    // |   | \ / | \ / |
+    // |   |11*  |12*  |
+    // |   | / \ | / \ |
+    // |  3*-----*-----*5
+    // |   | \ / | \ / |
+    // |   | 9*  |10*  |
+    // |   | / \ | / \ |
+    // |   *-----*-----*
+    // |  0      1      2
+    // |
+    // +--------------------> x(y)
+    //
 
-    //int32 gridSize = 2;
-    //int32 vxCount = 17;
-    //int32 indCount = gridSize * gridSize * 4 * 2; //4 triangles per cell, for 2 planes
+    int32 gridSize = 2;
+    int32 vxCount = ((gridSize + 1)*(gridSize + 1) + gridSize*gridSize) * 2; // (s+1)^2 for cell corner vertices; s^2 for cell center vertices; for 2 planes
+    int32 indCount = gridSize * gridSize * 4 * 2 * 3; //4 triangles per cell; for 2 planes
 
-    PolygonGroup * planePG = new PolygonGroup();
-    planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
-    
-    //1st plane
-    planePG->SetCoord(0, Vector3(0.f, min.y, max.z));
-    planePG->SetCoord(1, Vector3(0.f, max.y, max.z));
-    planePG->SetCoord(2, Vector3(0.f, max.y, min.z));
-    planePG->SetCoord(3, Vector3(0.f, min.y, min.z));
-    
-    planePG->SetIndex(0, 1);
-    planePG->SetIndex(1, 0);
-    planePG->SetIndex(2, 3);
-    planePG->SetIndex(3, 1);
-    planePG->SetIndex(4, 3);
-    planePG->SetIndex(5, 2);
-    
-    //2nd plane
-    planePG->SetCoord(4,  Vector3(min.x, 0.f, max.z));
-    planePG->SetCoord(5,  Vector3(mid.x, 0.f, max.z));
-    planePG->SetCoord(6,  Vector3(max.x, 0.f, max.z));
-
-    planePG->SetCoord(7,  Vector3(min.x + qua.x, 0.f, mid.z + qua.z));
-    planePG->SetCoord(8,  Vector3(mid.x + qua.x, 0.f, mid.z + qua.z));
-
-    planePG->SetCoord(9,  Vector3(min.x, 0.f, mid.z));
-    planePG->SetCoord(10, Vector3(mid.x, 0.f, mid.z));
-    planePG->SetCoord(11, Vector3(max.x, 0.f, mid.z));
-
-    planePG->SetCoord(12, Vector3(min.x + qua.x, 0.f, min.z + qua.z));
-    planePG->SetCoord(13, Vector3(mid.x + qua.x, 0.f, min.z + qua.z));
-
-    planePG->SetCoord(14, Vector3(min.x, 0.f, min.z));
-    planePG->SetCoord(15, Vector3(mid.x, 0.f, min.z));
-    planePG->SetCoord(16, Vector3(max.x, 0.f, min.z));
-    
-    planePG->SetIndex(6,   5);
-    planePG->SetIndex(7,   4);
-    planePG->SetIndex(8,   7);
-    planePG->SetIndex(9,   4);
-    planePG->SetIndex(10,  9);
-    planePG->SetIndex(11,  7);
-
-    planePG->SetIndex(12,  9);
-    planePG->SetIndex(13, 10);
-    planePG->SetIndex(14,  7);
-    planePG->SetIndex(15, 10);
-    planePG->SetIndex(16,  5);
-    planePG->SetIndex(17,  7);
-
-    planePG->SetIndex(18,  5);
-    planePG->SetIndex(19, 10);
-    planePG->SetIndex(20,  8);
-    planePG->SetIndex(21, 10);
-    planePG->SetIndex(22, 11);
-    planePG->SetIndex(23,  8);
-
-    planePG->SetIndex(24, 11);
-    planePG->SetIndex(25,  6);
-    planePG->SetIndex(26,  8);
-    planePG->SetIndex(27,  6);
-    planePG->SetIndex(28,  5);
-    planePG->SetIndex(29,  8);
-
-    planePG->SetIndex(30,  9);
-    planePG->SetIndex(31, 14);
-    planePG->SetIndex(32, 12);
-    planePG->SetIndex(33, 14);
-    planePG->SetIndex(34, 15);
-    planePG->SetIndex(35, 12);
-
-    planePG->SetIndex(36, 15);
-    planePG->SetIndex(37, 10);
-    planePG->SetIndex(38, 12);
-    planePG->SetIndex(39, 10);
-    planePG->SetIndex(40,  9);
-    planePG->SetIndex(41, 12);
-
-    planePG->SetIndex(42, 10);
-    planePG->SetIndex(43, 15);
-    planePG->SetIndex(44, 13);
-    planePG->SetIndex(45, 15);
-    planePG->SetIndex(46, 16);
-    planePG->SetIndex(47, 13);
-
-    planePG->SetIndex(48, 16);
-    planePG->SetIndex(49, 11);
-    planePG->SetIndex(50, 13);
-    planePG->SetIndex(51, 11);
-    planePG->SetIndex(52, 10);
-    planePG->SetIndex(53, 13);
-
+    Vector2 txCoordPlane2Offset;
+    Vector2 txCoordPlaneScale;
     if(isMeshHorizontal)
     {
-        //1st plane
-        planePG->SetTexcoord(0, 0, Vector2(.0f, .5f));
-        planePG->SetTexcoord(0, 1, Vector2(1.f, .5f));
-        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
-        planePG->SetTexcoord(0, 3, Vector2(.0f, 1.f));
-        
-        //2nd plane
-        planePG->SetTexcoord(0, 4, Vector2(.0f, 0.f));
-        planePG->SetTexcoord(0, 5, Vector2(1.f, 0.f));
-        planePG->SetTexcoord(0, 6, Vector2(1.f, .5f));
-        planePG->SetTexcoord(0, 7, Vector2(.0f, .5f));
-        planePG->SetTexcoord(0, 8, Vector2(.0f, 0.f));
-        planePG->SetTexcoord(0, 9, Vector2(1.f, 0.f));
-        planePG->SetTexcoord(0,10, Vector2(1.f, .5f));
-        planePG->SetTexcoord(0,11, Vector2(.0f, .5f));
-        planePG->SetTexcoord(0,12, Vector2(.0f, .5f));
+        txCoordPlane2Offset = Vector2(0.f, .5f);
+        txCoordPlaneScale = Vector2(1.f, .5f);
     }
     else
     {
-        //1st plane
-        planePG->SetTexcoord(0, 0, Vector2(.5f, 0.f));
-        planePG->SetTexcoord(0, 1, Vector2(1.f, 0.f));
-        planePG->SetTexcoord(0, 2, Vector2(1.f, 1.f));
-        planePG->SetTexcoord(0, 3, Vector2(.5f, 1.f));
-        
-        //2nd plane
-        planePG->SetTexcoord(0, 4, Vector2(.0f,  0.f));
-        planePG->SetTexcoord(0, 5, Vector2(.25f, 0.f));
-        planePG->SetTexcoord(0, 6, Vector2(.5f,  0.f));
+        txCoordPlane2Offset = Vector2(.5f, 0.f);
+        txCoordPlaneScale = Vector2(.5f, 1.f);
+    }
 
-        planePG->SetTexcoord(0, 7, Vector2(.125f, .25f));
-        planePG->SetTexcoord(0, 8, Vector2(.375f, .25f));
+    int32 plane2VxIndexOffset = vxCount / 2;
 
-        planePG->SetTexcoord(0, 9, Vector2(.0f,  .5f));
-        planePG->SetTexcoord(0,10, Vector2(.25f, .5f));
-        planePG->SetTexcoord(0,11, Vector2(.5f,  .5f));
+    Vector2 cellCenterTxCoordOffset = Vector2(.5f, .5f) / gridSize * txCoordPlaneScale;
 
-        planePG->SetTexcoord(0,12, Vector2(.125f, .75f));
-        planePG->SetTexcoord(0,13, Vector2(.375f, .75f));
+    PolygonGroup * planePG = new PolygonGroup();
+    planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
 
-        planePG->SetTexcoord(0,14, Vector2(.0f,  1.f));
-        planePG->SetTexcoord(0,15, Vector2(.25f, 1.f));
-        planePG->SetTexcoord(0,16, Vector2(.5f,  1.f));
+    int32 currentIndex = 0;
+    for(int32 z = 0; z <= gridSize; ++z)
+    {
+        float32 rowCoord = min.z + (size.z * z) / gridSize;
+        float32 rowTxCoord = z / (float32)gridSize;
+        int32 rowVxIndexOffset = (gridSize + 1) * z;
+        int32 nextRowVxIndexOffset = rowVxIndexOffset + (gridSize + 1);
+
+        int32 cellCenterVxIndexOffset = (gridSize + 1)*(gridSize + 1) - z;
+        float32 rowCenterZCoord = rowCoord + size.z / gridSize / 2.f;
+
+        for(int32 xy = 0; xy <= gridSize; ++xy) // xy and z - it's grid 'coords'. Variable 'xy' - shared variable for two planes.
+        {
+            //cell corner vertices
+            int32 vxIndex1 = xy + rowVxIndexOffset;
+            int32 vxIndex2 = vxIndex1 + plane2VxIndexOffset;
+            float32 xCoord = min.x + size.x * xy / (float32)gridSize; //first plane in Oxz
+            float32 yCoord = min.y + size.y * xy / (float32)gridSize; //second plane in Oyz
+
+            Vector3 coord1(xCoord, 0.f, rowCoord); //1st plane
+            Vector3 coord2(0.f, yCoord, rowCoord); //2nd plane
+
+            Vector2 txCoord1 = Vector2(xy / (float32)gridSize, rowTxCoord) * txCoordPlaneScale;
+            Vector2 txCoord2 = txCoord1 + txCoordPlane2Offset;
+
+            planePG->SetCoord(vxIndex1, coord1);
+            planePG->SetTexcoord(0, vxIndex1, txCoord1);
+
+            planePG->SetCoord(vxIndex2, coord2);
+            planePG->SetTexcoord(0, vxIndex2, txCoord2);
+
+            //cell center vertices
+            if(z != gridSize && xy != gridSize)
+            {
+                int32 centerVxIndex1 = vxIndex1 + cellCenterVxIndexOffset;
+                int32 centerVxIndex2 = centerVxIndex1 + plane2VxIndexOffset;
+
+                float32 centerXCoord = xCoord + size.x / gridSize / 2.f;
+                float32 centerYCoord = yCoord + size.y / gridSize / 2.f;
+                planePG->SetCoord(centerVxIndex1, Vector3(centerXCoord, 0.f, rowCenterZCoord));
+                planePG->SetCoord(centerVxIndex2, Vector3(0.f, centerYCoord, rowCenterZCoord));
+                planePG->SetTexcoord(0, centerVxIndex1, txCoord1 + cellCenterTxCoordOffset);
+                planePG->SetTexcoord(0, centerVxIndex2, txCoord2 + cellCenterTxCoordOffset);
+
+#define BIND_TRIANGLE_INDECIES(vi1, vi2, vi3) \
+{\
+    /*triangle for first plane */ \
+    planePG->SetIndex(currentIndex, vi1); ++currentIndex;\
+    planePG->SetIndex(currentIndex, vi2); ++currentIndex;\
+    planePG->SetIndex(currentIndex, vi3); ++currentIndex;\
+    /*triangle for second plane */ \
+    planePG->SetIndex(currentIndex, vi1 + plane2VxIndexOffset); ++currentIndex;\
+    planePG->SetIndex(currentIndex, vi2 + plane2VxIndexOffset); ++currentIndex;\
+    planePG->SetIndex(currentIndex, vi3 + plane2VxIndexOffset); ++currentIndex;\
+}\
+
+                BIND_TRIANGLE_INDECIES( xy +  rowVxIndexOffset,        xy + nextRowVxIndexOffset,     centerVxIndex1);
+                BIND_TRIANGLE_INDECIES( xy + nextRowVxIndexOffset,    (xy+1) + nextRowVxIndexOffset,  centerVxIndex1);
+                BIND_TRIANGLE_INDECIES((xy+1) + nextRowVxIndexOffset, (xy+1) + rowVxIndexOffset,      centerVxIndex1);
+                BIND_TRIANGLE_INDECIES((xy+1) + rowVxIndexOffset,      xy + rowVxIndexOffset,         centerVxIndex1);
+
+#undef BIND_TRIANGLE_INDECIES
+            }
+        }
     }
     
     planeBatch = new RenderBatch();
@@ -387,7 +361,7 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
 	NMaterial* material = NMaterial::CreateMaterialInstance(FastName(Format("%s_planes", fromEntity->GetName().c_str())),
 															NMaterialName::TEXTURED_ALPHATEST,
 															NMaterial::DEFAULT_QUALITY_NAME);
-	material->SetFlag(NMaterial::FLAG_VERTEXFOG, NMaterial::FlagOn);
+	
 	NMaterialHelper::DisableStateFlags(PASS_FORWARD, material, RenderStateData::STATE_CULL);
 	material->SetTexture(NMaterial::TEXTURE_ALBEDO, TextureDescriptor::GetDescriptorPathname(textureSavePath));
 	
