@@ -793,7 +793,7 @@ public:
     RenderState hardwareState;
 
     int32 cachedEnabledStreams;
-
+    uint32 cachedAttributeMask;
     
     
     int32 renderOrientation;

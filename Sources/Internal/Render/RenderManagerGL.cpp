@@ -762,7 +762,10 @@ void RenderManager::AttachRenderData()
     if (!currentRenderData)return;
     RENDERER_UPDATE_STATS(attachRenderDataCount++);
     
-    if (attachedRenderData == currentRenderData)
+	Shader * shader = hardwareState.shader;
+    uint32 currentAttributeMask = shader->GetAttributeMask();
+    
+    if (attachedRenderData == currentRenderData && cachedAttributeMask == currentAttributeMask)
     {
         if ((attachedRenderData->vboBuffer != 0) && (attachedRenderData->indexBuffer != 0))
         {
@@ -774,8 +777,6 @@ void RenderManager::AttachRenderData()
     attachedRenderData = currentRenderData;
 
     const int DEBUG = 0;
-	Shader * shader = hardwareState.shader;
-	
     
     {
         int32 currentEnabledStreams = 0;
@@ -839,6 +840,8 @@ void RenderManager::AttachRenderData()
 
             cachedEnabledStreams = currentEnabledStreams;
         }
+        
+        cachedAttributeMask = currentAttributeMask;
     }
 }
 
