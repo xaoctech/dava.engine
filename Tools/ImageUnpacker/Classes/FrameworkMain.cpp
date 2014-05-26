@@ -75,8 +75,8 @@ void UnpackFile(const FilePath & sourceImagePath)
         {
 			Image *savedImage = Image::Create(image->width, image->height, FORMAT_RGBA8888);
 
-			ImageConvert::ConvertImageDirect(image->format, savedImage->format, image->data, image->width, image->height, image->width * Texture::GetPixelFormatSizeInBytes(image->format), 
-					savedImage->data, savedImage->width, savedImage->height, savedImage->width * Texture::GetPixelFormatSizeInBytes(savedImage->format));
+			ImageConvert::ConvertImageDirect(image->format, savedImage->format, image->data, image->width, image->height, image->width * PixelFormatDescriptor::GetPixelFormatSizeInBytes(image->format), 
+					savedImage->data, savedImage->width, savedImage->height, savedImage->width * PixelFormatDescriptor::GetPixelFormatSizeInBytes(savedImage->format));
 
 			ImageLoader::Save(savedImage, FilePath::CreateWithNewExtension(sourceImagePath,".png"));
 			savedImage->Release();
