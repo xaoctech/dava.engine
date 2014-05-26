@@ -117,7 +117,7 @@ void Thread::Kill()
     if(state != STATE_ENDED && state != STATE_KILLED)
     {
         TerminateThread(threadHandle, 0);
-        state = STATE_ENDED;
+        state = STATE_KILLED;
     }
 }
 
