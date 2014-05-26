@@ -116,7 +116,8 @@ void UnpackFolder(const FilePath & folderPath)
 void ProcessImageUnpacker()
 {
     RenderManager::Create(Core::RENDERER_OPENGL);
-
+    PixelFormatDescriptor::InitializePixelFormatDescriptors();
+    
     FilePath sourceFolderPath = CommandLineParser::GetCommandParam(String("-folder"));
     FilePath sourceFilePath = CommandLineParser::GetCommandParam(String("-file"));
     
