@@ -101,8 +101,7 @@ HierarchyTreePlatformNode* PlatformMetadata::GetPlatformNode() const
 
 void PlatformMetadata::ApplyRename(const QString& originalName, const QString& newName)
 {
-    HierarchyTreeController::Instance()->AddPlatformToDelete(originalName);
-    HierarchyTreeController::Instance()->RemovePlatformToDelete(newName);
+    HierarchyTreeController::Instance()->AddUnusedItem(new HierarchyTreeController::PlatformUnusedItem(originalName));
 
     BaseMetadata::ApplyRename(originalName, newName);
 }
