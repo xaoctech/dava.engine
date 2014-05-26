@@ -28,46 +28,73 @@
 
 
 
+#ifndef CHANGEFONTPROPERTYCOMMAND_H
+#define CHANGEFONTPROPERTYCOMMAND_H
 
-#ifndef __UIEditor__PlatformMetadata__
-#define __UIEditor__PlatformMetadata__
+#include "BaseCommand.h"
+#include "HierarchyTreeNode.h"
+#include "PropertyGridWidgetData.h"
+#include "PropertiesHelper.h"
+#include "ChangePropertyCommand.h"
 
-#include "BaseMetadata.h"
-#include "HierarchyTreePlatformNode.h"
-#include "HierarchyTreeScreenNode.h"
+using namespace DAVA;
 
-namespace DAVA {
-
-// Metadata class for Platform Node.
-class PlatformMetadata : public BaseMetadata
+struct ChangeFontPropertyCommandData
 {
-    Q_OBJECT
+    ChangeFontPropertyCommandData();
+    ~ChangeFontPropertyCommandData();
     
-    // Properties which are specific for Platform Node..
-    // Width and height.
-    Q_PROPERTY(float Width READ GetWidth WRITE SetWidth);
-    Q_PROPERTY(float Height READ GetHeight WRITE SetHeight);
+    Font *GetLocalizedFont(const String& locale);
+    void SetLocalizedFont(Font* localizedFont, const String& locale);
+    
+    ChangeFontPropertyCommandData& operator =(const ChangeFontPropertyCommandData& data);
+    
+    String fontPresetOriginalName;
+    
+    bool isApplyToAll;
+    Font *font;
+    String fontPresetName;
+    
+    Map<String, Font*> localizedFonts;
+};
+
+class ChangeFontPropertyCommand: public ChangePropertyCommand<Font *>
+{
+public:
+	ChangeFontPropertyCommand(BaseMetadata* baseMetadata,
+								const PropertyGridWidgetData& propertyGridWidgetData,
+                                const ChangeFontPropertyCommandData& editFontDialogResult);
+    virtual ~ChangeFontPropertyCommand();
+    
+    virtual void Execute();
+    
+	virtual void Rollback();
+	
+protected:
+//	void RestoreControlRect(const COMMANDDATAVECTITER& iter);
+    ChangeFontPropertyCommandData data;
+};
+
+class FontRenameCommand : public BaseCommand
+{
+public:
+    FontRenameCommand(Font* _font, const String &_originalName, const String &newName);
+    
+public:
+	virtual void Execute();
+	virtual void Rollback();
+	
+	virtual bool IsUndoRedoSupported() {return true;};
     
 protected:
-    // Default Flags.
-    virtual bool GetInitialInputEnabled() const {return true;};
-
-    // Rename the platform.
-    virtual void ApplyRename(const QString& originalName, const QString& newName);
-
-    // Accessors to the Tree Node.
-    HierarchyTreePlatformNode* GetPlatformNode() const;
-
-    // Getters/setters.
-    virtual QString GetName() const;
-    virtual void SetName(const QString& name);
+	// Apply the rename of control
+	void ApplyRename(const QString& prevName, const QString& updatedName);
     
-    float GetHeight() const;
-    void SetHeight(float value);
-    float GetWidth() const;
-    void SetWidth(float value);
-};
-    
+private:
+	Font* font;
+	QString originalName;
+	QString newName;
 };
 
-#endif /* defined(__UIEditor__PlatformMetadata__) */
+
+#endif /* defined(CHANGEFONTPROPERTYCOMMAND_H) */

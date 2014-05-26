@@ -593,7 +593,6 @@ public:
 		Vector<FastName> MembersList(void *object) const;
 		InspDesc MemberDesc(void *object, const FastName &member) const;
 		int MemberFlags(void *object, const FastName &member) const;
-		VariantType MemberAliasGet(void *object, const FastName &member) const;
 		VariantType MemberValueGet(void *object, const FastName &member) const;
 		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 
@@ -634,7 +633,6 @@ public:
 		Vector<FastName> MembersList(void *object) const;
 		InspDesc MemberDesc(void *object, const FastName &member) const;
 		int MemberFlags(void *object, const FastName &member) const;
-		VariantType MemberAliasGet(void *object, const FastName &member) const;
 		VariantType MemberValueGet(void *object, const FastName &member) const;
 		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 		
