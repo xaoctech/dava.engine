@@ -60,6 +60,8 @@
 
 #include "Ruler/RulerController.h"
 
+#include "EditorFontManager.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -167,7 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectLoaded()),
 			this,
-			SLOT(OnProjectCreated()));
+			SLOT(OnProjectLoaded()));
 	
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedScreenChanged(const HierarchyTreeScreenNode*)),
@@ -865,8 +867,8 @@ void MainWindow::UpdateMenu()
     bool projectCreated = HierarchyTreeController::Instance()->GetTree().IsProjectCreated();
     bool projectNotEmpty = (HierarchyTreeController::Instance()->GetTree().GetPlatforms().size() > 0);
 
-	ui->actionSave_project->setEnabled(projectCreated);
-	ui->actionSave_All->setEnabled(projectCreated);
+    UpdateSaveButtons();
+
 	ui->actionClose_project->setEnabled(projectCreated);
 	ui->menuProject->setEnabled(projectCreated);
 	ui->actionNew_platform->setEnabled(projectCreated);
@@ -941,6 +943,13 @@ void MainWindow::OnProjectCreated()
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
+}
+
+void MainWindow::OnProjectLoaded()
+{
+    EditorFontManager::Instance()->OnProjectLoaded();
+    
+    OnProjectCreated();
 }
 
 void MainWindow::OnNewPlatform()
@@ -1263,6 +1272,9 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 	{
 		projectTitle += " *";
 	}
+    
+    UpdateSaveButtons();
+
 	setWindowTitle(projectTitle);
 }
 
@@ -1723,3 +1735,12 @@ void MainWindow::OnLockGuidesChanged()
         activeScreen->LockGuides(ui->actionLock_Guides->isChecked());
     }
 }
+
+void MainWindow::UpdateSaveButtons()
+{
+    bool hasUnsavedChanges = HierarchyTreeController::Instance()->HasUnsavedChanges();
+    
+    ui->actionSave_project->setEnabled(hasUnsavedChanges);
+    ui->actionSave_All->setEnabled(hasUnsavedChanges);
+}
+
