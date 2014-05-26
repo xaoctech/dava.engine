@@ -135,7 +135,7 @@ void Thread::Kill()
     if(state != STATE_ENDED && state != STATE_KILLED)
     {
         pthread_kill(GetThreadId().internalTid, SIGKILL);
-        state = STATE_ENDED;
+        state = STATE_KILLED;
     }
 }
 #endif
