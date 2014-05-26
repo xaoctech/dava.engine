@@ -144,7 +144,7 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         float32 leafsOscillationAmplitude = component->GetLeafsOscillationApmlitude();
         Vector2 leafOscillationParams(leafsOscillationAmplitude * sine, leafsOscillationAmplitude * cosine);
         
-		Vector2 localOffset = MultiplyVectorMat2x2XY(component->oscOffset * component->GetTrunkOscillationAmplitude(), component->wtInvMx);
+		Vector2 localOffset = MultiplyVectorMat2x2(component->oscOffset * component->GetTrunkOscillationAmplitude(), component->wtInvMx);
         treeObject->SetTreeAnimationParams(localOffset, leafOscillationParams);
     }
 }
