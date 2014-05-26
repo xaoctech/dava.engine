@@ -27,47 +27,62 @@
 =====================================================================================*/
 
 
+#ifndef EDITFONTDIALOG_H
+#define EDITFONTDIALOG_H
 
+#include <QDialog>
+#include <DAVAEngine.h>
 
-#ifndef __UIEditor__PlatformMetadata__
-#define __UIEditor__PlatformMetadata__
+#include <QSpinBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QComboBox>
 
-#include "BaseMetadata.h"
-#include "HierarchyTreePlatformNode.h"
-#include "HierarchyTreeScreenNode.h"
+#include "ChangeFontPropertyCommand.h"
 
-namespace DAVA {
+using namespace DAVA;
 
-// Metadata class for Platform Node.
-class PlatformMetadata : public BaseMetadata
+namespace Ui {
+class EditFontDialog;
+}
+
+class EditFontDialog : public QDialog
 {
     Q_OBJECT
-    
-    // Properties which are specific for Platform Node..
-    // Width and height.
-    Q_PROPERTY(float Width READ GetWidth WRITE SetWidth);
-    Q_PROPERTY(float Height READ GetHeight WRITE SetHeight);
-    
-protected:
-    // Default Flags.
-    virtual bool GetInitialInputEnabled() const {return true;};
 
-    // Rename the platform.
-    virtual void ApplyRename(const QString& originalName, const QString& newName);
-
-    // Accessors to the Tree Node.
-    HierarchyTreePlatformNode* GetPlatformNode() const;
-
-    // Getters/setters.
-    virtual QString GetName() const;
-    virtual void SetName(const QString& name);
+public:
+    explicit EditFontDialog(const String & editFontPresetName, QDialog *parent = 0);
+    ~EditFontDialog();
     
-    float GetHeight() const;
-    void SetHeight(float value);
-    float GetWidth() const;
-    void SetWidth(float value);
+    const ChangeFontPropertyCommandData &GetResult() {return dialogResult; }
+    
+private:
+    Ui::EditFontDialog *ui;
+    
+    ChangeFontPropertyCommandData dialogResult;
+    String currentLocale;
+    
+    void ConnectToSignals();
+    void DisconnectFromSignals();
+    
+    virtual void ProcessComboBoxValueChanged(QComboBox *senderWidget, const QString& value);
+    virtual void ProcessPushButtonClicked(QPushButton *senderWidget);
+    
+    void UpdateDefaultFontParams();
+    void UpdateLocalizedFontParams();
+    
+    void UpdateLineEditWidgetWithPropertyValue(QLineEdit *lineEditWidget);
+    void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);
+    void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox *spinBoxWidget);
+    void UpdateComboBoxWidgetWithPropertyValue(QComboBox *comboBoxWidget);
+
+private slots:
+    void OnOkButtonClicked();
+    void OnRadioButtonClicked();
+    void OnPushButtonClicked();
+    void OnSpinBoxValueChanged(int newValue);
+    void OnComboBoxValueChanged(QString value);
 };
-    
-};
 
-#endif /* defined(__UIEditor__PlatformMetadata__) */
+#endif // EDITFONTDIALOG_H
