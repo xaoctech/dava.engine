@@ -95,21 +95,27 @@ void main()
 		vec3 C = cameraPosition;
 		vec3 P = vec3(worldMatrix * inPosition);
 		vec3 V = (P - C);
-
-		float fogK = 0;
-		if(C.z < fogHalfspaceHeight ) fogK = 1;
 		
-		float FdotP = P.z - fogHalfspaceHeight;
-		float FdotC = C.z - fogHalfspaceHeight;
-		
-		vec3 aV = V * fogHalfspaceDensity;
-		float c1 = fogK * (FdotP + FdotC);
-		float c2 = (1 - 2 * fogK) * FdotP;
-		
-		float g = min(c2, 0.0);
-		g = -length(aV) * (c1 - g * g / abs(V.z));
-		
-		varFogAmoung = varFogAmoung + clamp(1.0 - exp2(-g), 0.0, 1.0);
+		#if 0
+			float fogK = 0;
+			if(C.z < fogHalfspaceHeight ) fogK = 1;
+			
+			float FdotP = P.z - fogHalfspaceHeight;
+			float FdotC = C.z - fogHalfspaceHeight;
+			
+			vec3 aV = V * fogHalfspaceDensity;
+			float c1 = fogK * (FdotP + FdotC);
+			float c2 = (1 - 2 * fogK) * FdotP;
+			
+			float g = min(c2, 0.0);
+			g = -length(aV) * (c1 - g * g / abs(V.z));
+			
+			varFogAmoung = varFogAmoung + clamp(1.0 - exp2(-g), 0.0, 1.0);
+		#else
+			float fogK = (P.z - C.z) / fogFragCoord;
+			float fogB = C.z;
+			varFogAmoung = fogHalfspaceHeight * exp(-fogHalfspaceDensity * fogB) * (1.0 - exp(-fogHalfspaceDensity * fogFragCoord * fogK)) / fogK;
+		#endif
 	#endif
 	
 	varFogAmoung = clamp(varFogAmoung, 0, fogLimit);
