@@ -213,6 +213,14 @@ void EditorFontManager::SaveLocalizedFonts()
 {
     Logger::FrameworkDebug("EditorFontManager::SaveLocalizedFonts");
     
+    const FilePath &defaultFontsPath = EditorFontManager::Instance()->GetDefaultFontsPath();
+    Logger::FrameworkDebug("EditorFontManager::SaveLocalizedFonts defaultFontsPath=%s", defaultFontsPath.GetAbsolutePathname().c_str());
+    
+    if(!FileSystem::Instance()->IsDirectory(defaultFontsPath.GetDirectory()))
+    {
+        FileSystem::Instance()->CreateDirectory(defaultFontsPath.GetDirectory());
+    }
+    
     int32 localesCount = locales.size();
     for(int32 i = 0; i < localesCount; ++i)
     {
@@ -233,7 +241,14 @@ void EditorFontManager::SaveLocalizedFonts()
 
         FontManager::Instance()->PrepareToSaveFonts(true);
         
-        UIYamlLoader::SaveFonts(EditorFontManager::Instance()->GetLocalizedFontsPath(locale));
+        const FilePath &localizedFontsPath = EditorFontManager::Instance()->GetLocalizedFontsPath(locale);
+        Logger::FrameworkDebug("EditorFontManager::SaveLocalizedFonts locale=%s defaultFontsPath=%s", locale.c_str(), localizedFontsPath.GetAbsolutePathname().c_str());
+        
+        if(!FileSystem::Instance()->IsDirectory(localizedFontsPath.GetDirectory()))
+        {
+            FileSystem::Instance()->CreateDirectory(localizedFontsPath.GetDirectory());
+        }
+        UIYamlLoader::SaveFonts(localizedFontsPath);
     }
     
     //load default fonts into FontManager
@@ -246,7 +261,7 @@ void EditorFontManager::SaveLocalizedFonts()
     
     FontManager::Instance()->PrepareToSaveFonts(true);
     
-    UIYamlLoader::SaveFonts(EditorFontManager::Instance()->GetDefaultFontsPath());
+    UIYamlLoader::SaveFonts(defaultFontsPath);
 }
 
 void EditorFontManager::ClearLocalizedFonts()
@@ -329,7 +344,7 @@ void EditorFontManager::ResetDefaultFont()
 
 void EditorFontManager::SetDefaultFontsPath(const FilePath& path)
 {
-    //TODO: use current locale
+    Logger::FrameworkDebug("EditorFontManager::SetDefaultFontsPath %s", path.GetAbsolutePathname().c_str());
     defaultFontsPath = path;
 }
 

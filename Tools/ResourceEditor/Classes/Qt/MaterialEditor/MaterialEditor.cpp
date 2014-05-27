@@ -458,66 +458,68 @@ void MaterialEditor::FillDynamicMembers(QtPropertyData *root, DAVA::InspInfoDyna
 
 void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
 {
-    bool needButton = false;
-    bool needAddButton = false;
-
-    // extract member flags from dynamic info
-    int memberFlags = data->dynamicInfo->MemberFlags(data->object, data->name);
+    // don't create/update buttons for global material
+    SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+    if(NULL != curScene && data->object != curScene->GetGlobalMaterial())
+    {
+        // extract member flags from dynamic info
+        int memberFlags = data->dynamicInfo->MemberFlags(data->object, data->name);
     
-    QtPropertyToolButton *addRemoveButton = NULL;
+        QtPropertyToolButton *addRemoveButton = NULL;
 
-    // check if there is already our button
-    for(int i = 0; i < data->GetButtonsCount(); ++i)
-    {
-        QtPropertyToolButton *btn = data->GetButton(i);
-        if(btn->objectName() == "dynamicAddRemoveButton")
+        // check if there is already our button
+        for(int i = 0; i < data->GetButtonsCount(); ++i)
         {
-            addRemoveButton = btn;
-            break;
+            QtPropertyToolButton *btn = data->GetButton(i);
+            if(btn->objectName() == "dynamicAddRemoveButton")
+            {
+                addRemoveButton = btn;
+                break;
+            }
         }
-    }
 
-    // there is no our add/remove button - so create is
-    if(NULL == addRemoveButton)
-    {
-        addRemoveButton = data->AddButton();
-        addRemoveButton->setObjectName("dynamicAddRemoveButton");
-        addRemoveButton->setIconSize(QSize(14, 14));
-        QObject::connect(addRemoveButton, SIGNAL(clicked()), this, SLOT(OnAddRemoveButton()));
-    }
+        // there is no our add/remove button - so create is
+        if(NULL == addRemoveButton)
+        {
+            addRemoveButton = data->AddButton();
+            addRemoveButton->setObjectName("dynamicAddRemoveButton");
+            addRemoveButton->setIconSize(QSize(14, 14));
+            QObject::connect(addRemoveButton, SIGNAL(clicked()), this, SLOT(OnAddRemoveButton()));
+        }
 
-    QBrush bgColor;
-    bool editEnabled = false;
+        QBrush bgColor;
+        bool editEnabled = false;
 
-    // self property - should be remove button
-    if(memberFlags & DAVA::I_EDIT)
-    {
-        editEnabled = true;
-        addRemoveButton->setIcon(QIcon(":/QtIcons/cminus.png"));
-        addRemoveButton->setToolTip("Remove property");
+        // self property - should be remove button
+        if(memberFlags & DAVA::I_EDIT)
+        {
+            editEnabled = true;
+            addRemoveButton->setIcon(QIcon(":/QtIcons/cminus.png"));
+            addRemoveButton->setToolTip("Remove property");
 
         // isn't set in parent or shader
         if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
         {
             bgColor = QBrush(QColor(255, 0, 0, 25));
         }
-    }
-    // inherited from parent property - should be add button
+        }
+        // inherited from parent property - should be add button
     else
-    {
-        editEnabled = false;
+        {
+            editEnabled = false;
         bgColor = QBrush(QColor(0, 0, 0, 25));
-        addRemoveButton->setIcon(QIcon(":/QtIcons/cplus.png"));
-        addRemoveButton->setToolTip( "Add property" );
-    }
+            addRemoveButton->setIcon(QIcon(":/QtIcons/cplus.png"));
+            addRemoveButton->setToolTip( "Add property" );
+        }
 
-    // don't allow editing for members that are inherited
-    data->SetEnabled(editEnabled);
-    data->SetBackground(bgColor);
-    for(int m = 0; m < data->ChildCount(); ++m)
-    {
-        data->ChildGet(m)->SetEnabled(editEnabled);
-        data->ChildGet(m)->SetBackground(bgColor);
+        // don't allow editing for members that are inherited
+        data->SetEnabled(editEnabled);
+        data->SetBackground(bgColor);
+        for(int m = 0; m < data->ChildCount(); ++m)
+        {
+            data->ChildGet(m)->SetEnabled(editEnabled);
+            data->ChildGet(m)->SetBackground(bgColor);
+        }
     }
 }
 
