@@ -138,7 +138,7 @@ void EditFontDialog::DisconnectFromSignals()
     disconnect(ui->localizedFontSelectButton, SIGNAL(clicked()), this, SLOT(OnPushButtonClicked()));
     disconnect(ui->localizedFontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(OnSpinBoxValueChanged(int)));
     
-    disconnect(ui->buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(OnOkButtonClicked()));
+    disconnect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(OnButtonBoxButtonClicked(QAbstractButton*)));
 }
 
 void EditFontDialog::OnRadioButtonClicked()
