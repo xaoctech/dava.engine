@@ -497,7 +497,7 @@ void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
         addRemoveButton->setToolTip("Remove property");
     }
     // inherited from parent property - should be add button
-    else if(memberFlags & DAVA::I_VIEW)
+    else
     {
         editEnabled = false;
         bgColor = QBrush(QColor(0, 0, 0, 10));
@@ -648,7 +648,7 @@ void MaterialEditor::OnAddRemoveButton()
                 data->SetValue(QVariant(), QtPropertyData::VALUE_SOURCE_CHANGED);
             }
             // pressed add button
-            else if(memberFlags & I_VIEW)
+            else
             {
                 data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
             }
