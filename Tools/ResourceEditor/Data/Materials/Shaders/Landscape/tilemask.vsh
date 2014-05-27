@@ -37,6 +37,7 @@ uniform mat4 worldMatrix;
 	#endif
 	#if defined(FOG_GLOW)
 	uniform float fogGlowScattering;
+	uniform float fogGlowDistance;
 	varying float varFogGlowFactor;
 	#endif
 #endif
@@ -115,7 +116,8 @@ void main()
 
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
-		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering);
+		float fogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
+		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering) * fogGlowDistanceAttenuation;
 	#endif
 #endif
 	
