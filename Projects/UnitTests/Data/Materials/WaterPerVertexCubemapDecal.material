@@ -1,9 +1,9 @@
 RenderTechnique:
-    Layers: ["AfterTransclucentRenderLayer"]
+    Layers: ["OpaqueRenderLayer"]
     RenderPass:
         Name: "ForwardPass"
-        Shader: "~res:/Materials/Shaders/Silhouette/silhouette"
-        UniqueDefines: ["FLATCOLOR"]
+        Shader: "~res:/Materials/Shaders/Default/water"
+        UniqueDefines: ["VERTEX_LIT", "MATERIAL_DECAL"]
         RenderState:
             alphaFunc: "CMP_ALWAYS"
             alphaFuncCmpValue: 0.0000
@@ -12,15 +12,15 @@ RenderTechnique:
             cullMode: "FACE_BACK"
             depthFunc: "CMP_LESS"
             fillMode: "FILLMODE_SOLID"
-            state: "STATE_DEPTH_WRITE | STATE_STENCIL_TEST | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
+            state: "STATE_DEPTH_TEST | STATE_DEPTH_WRITE | STATE_CULL | STATE_COLORMASK_RED | STATE_COLORMASK_GREEN | STATE_COLORMASK_BLUE | STATE_COLORMASK_ALPHA"
             stencil:
                 failBack: "STENCILOP_KEEP"
-                failFront: "STENCILOP_KEEP"
-                funcBack: "CMP_NOTEQUAL"
-                funcFront: "CMP_NOTEQUAL"
+                failFront: "STENCILOP_REPLACE"
+                funcBack: "CMP_ALWAYS"
+                funcFront: "CMP_ALWAYS"
                 mask: 240
                 passBack: "STENCILOP_KEEP"
-                passFront: "STENCILOP_KEEP"
+                passFront: "STENCILOP_REPLACE"
                 ref: 64
                 zFailBack: "STENCILOP_KEEP"
-                zFailFront: "STENCILOP_KEEP"
+                zFailFront: "STENCILOP_REPLACE"
