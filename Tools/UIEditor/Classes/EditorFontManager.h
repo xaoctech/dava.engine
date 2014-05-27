@@ -92,7 +92,6 @@ public:
     void SetDefaultFontsPath(const FilePath& path);
     FilePath GetLocalizedFontsPath(const String &locale);
     const FilePath& GetDefaultFontsPath();
-    void ResetLocalizedFontsPath();
     
 signals:
     void FontLoaded();
@@ -101,8 +100,11 @@ private:
 	void Init();
     
 	Font* CreateDefaultFont(const String& fontPath, const String& fontName);
+    void RegisterDefaultFont(Font* font);
     
     void ClearFonts(Map<String, Font*>& fonts);
+    
+    void ResetLocalizedFontsPath();
 	
 private:
 	Font* defaultFont;

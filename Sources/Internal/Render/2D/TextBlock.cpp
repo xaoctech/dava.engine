@@ -937,5 +937,4 @@ const Vector<int32> & TextBlock::GetStringSizes() const
 	return stringSizes;
 }
 
-
 };

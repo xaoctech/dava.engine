@@ -1236,6 +1236,8 @@ void NMaterial::BuildTextureParamsCache(RenderPassInstance* passInstance)
 			}
 		}
 	}
+
+    SetTexturesDirty();
 }
     
 void NMaterial::BuildActiveUniformsCacheParamsCache()
@@ -2157,7 +2159,7 @@ InspDesc NMaterial::NMaterialStateDynamicTexturesInsp::MemberDesc(void *object, 
 	return InspDesc(texture.c_str());
 }
 
-VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberAliasGet(void *object, const FastName &texture) const
+VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, const FastName &texture) const
 {
 	VariantType ret;
 	
@@ -2168,25 +2170,6 @@ VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberAliasGet(void *o
 	if(textures->count(texture))
 	{
 		ret.SetFilePath(textures->at(texture).path);
-	}
-	
-	return ret;
-}
-
-VariantType NMaterial::NMaterialStateDynamicTexturesInsp::MemberValueGet(void *object, const FastName &texture) const
-{
-	VariantType ret;
-	
-	NMaterial *state = (NMaterial*) object;
-	DVASSERT(state);
-	
-	const FastNameMap<NMaterial::NMaterialStateDynamicTexturesInsp::PropData>* textures = FindMaterialTextures(state, false);
-	if(textures->count(texture))
-	{
-		if(textures->at(texture).source & PropData::SOURCE_SELF)
-		{
-			ret.SetFilePath(textures->at(texture).path);
-		}
 	}
 	
 	return ret;
@@ -2425,23 +2408,6 @@ int NMaterial::NMaterialStateDynamicPropertiesInsp::MemberFlags(void *object, co
 	return flags;
 }
 
-VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberAliasGet(void *object, const FastName &member) const
-{
-    VariantType ret;
-
-    NMaterial *state = (NMaterial*) object;
-    DVASSERT(state);
-
-    const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, true);
-    if(members->count(member))
-    {
-        const PropData &prop = members->at(member);
-        ret = getVariant(member, prop);
-    }
-
-    return ret;
-}
-
 VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void *object, const FastName &member) const
 {
 	VariantType ret;
@@ -2449,14 +2415,11 @@ VariantType NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueGet(void 
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, false);
+	const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* members = FindMaterialProperties(state, true);
 	if(members->count(member))
 	{
 		const PropData &prop = members->at(member);
-        if(prop.source & PropData::SOURCE_SELF)
-        {
-            ret = getVariant(member, prop);
-        }
+        ret = getVariant(member, prop);
 	}
 	
 	return ret;

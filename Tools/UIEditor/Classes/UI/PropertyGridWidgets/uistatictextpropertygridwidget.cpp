@@ -119,7 +119,7 @@ void UIStaticTextPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
     ui->localizationKeyWidget->setVisible(!isUITextField);
     ui->localizationValueWidget->setVisible(!isUITextField);
     
-    ui->localizationKeyTextLineEdit->setEnabled(false);
+    ui->localizationKeyTextLineEdit->setEnabled(true);
     ui->localizationKeyTextLineEdit->setReadOnly(true);
 
     UpdateLocalizationValue();
@@ -131,7 +131,8 @@ void UIStaticTextPropertyGridWidget::Cleanup()
 {
     UnregisterGridWidgetAsStateAware();
     UnregisterLineEditWidget(ui->localizationKeyNameLineEdit);
-    
+    UnregisterColorWidget(ui->textColorWidget);
+
     // DF-3280 multiline should be enabled for UIStaticText and UIButton - unregister checkbox
     //if (dynamic_cast<UIStaticTextMetadata*>(this->activeMetadata) != NULL)
     {
