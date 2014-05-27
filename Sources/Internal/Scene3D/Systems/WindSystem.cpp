@@ -66,6 +66,8 @@ WindSystem::WindSystem(Scene * scene) :
 WindSystem::~WindSystem()
 {
     DVASSERT(winds.size() == 0);
+
+    RenderManager::Instance()->GetOptions()->RemoveObserver(this);
 }
 
 void WindSystem::AddEntity(Entity * entity)
