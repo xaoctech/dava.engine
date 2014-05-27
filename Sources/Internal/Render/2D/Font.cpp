@@ -279,7 +279,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				{
                     //calculate current line width
 					int currentLineWidth = 0;
-					for (int i = separator.currentLineStart; i < pos ; i++)
+
+					int32 startPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
+					for (int i = startPos; i < pos ; i++)
 					{
 						currentLineWidth += sizes[i];
 					}
@@ -319,7 +321,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                             }
                             else
                             {
-                                for (int i = pos-1; i >= separator.currentLineStart; --i)
+								int32 endPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
+                                for (int i = pos-1; i >= endPos; --i)
                                 {
                                     currentLineWidth -= sizes[i];
                                     if(currentLineWidth <= targetWidth)
@@ -339,16 +342,20 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                                     DVASSERT(i);
                                 }
                             }
+
+							state = SKIP;
+							break;
                         }
                         else
                         {
                             DVASSERT(0);
                         }
                     }
+
+
+					if (t == ' ' || t == '\n') state = SKIP; // if cur char is space go to skip
+					else if (t == 0) state = FINISH;
 				}
-                
-				if (t == ' ' || t == '\n') state = SKIP; // if cur char is space go to skip
-				else if (t == 0) state = FINISH;
 				
 				break;
 			case FINISH:

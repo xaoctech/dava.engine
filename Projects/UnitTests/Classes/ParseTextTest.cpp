@@ -53,7 +53,8 @@ void ParseTextTest::LoadResources()
     UITestTemplate<ParseTextTest>::LoadResources();
     
     static WideString textShort = L"The_Very_Long_Phrase_Without_Spaces Short_Word";
-    static WideString textLong = L"This is test of multistring text with very long phrase The_Very_Long_Phrase_Without_Spaces. We use this phrase for test of wrapping";
+	static WideString textLong = L"This is test of multistring text with very long phrase The_Very_Long_Phrase_Without_Spaces. We use this phrase for test of wrapping";
+//	static WideString textLong = L"ThisistestofmultistringtextwithverylongphraseTheVeryLongPhraseWithoutSpacesWeusethisphrasefortestofwrapping";
 
     UIStaticText * text = NULL;
     
