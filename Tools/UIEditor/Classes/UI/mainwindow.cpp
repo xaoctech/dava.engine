@@ -867,8 +867,8 @@ void MainWindow::UpdateMenu()
     bool projectCreated = HierarchyTreeController::Instance()->GetTree().IsProjectCreated();
     bool projectNotEmpty = (HierarchyTreeController::Instance()->GetTree().GetPlatforms().size() > 0);
 
-	ui->actionSave_project->setEnabled(projectCreated);
-	ui->actionSave_All->setEnabled(projectCreated);
+    UpdateSaveButtons();
+
 	ui->actionClose_project->setEnabled(projectCreated);
 	ui->menuProject->setEnabled(projectCreated);
 	ui->actionNew_platform->setEnabled(projectCreated);
@@ -947,9 +947,8 @@ void MainWindow::OnProjectCreated()
 
 void MainWindow::OnProjectLoaded()
 {
-    EditorFontManager::Instance()->OnProjectLoaded();
-    
     OnProjectCreated();
+    EditorFontManager::Instance()->OnProjectLoaded();
 }
 
 void MainWindow::OnNewPlatform()
@@ -1272,6 +1271,9 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 	{
 		projectTitle += " *";
 	}
+    
+    UpdateSaveButtons();
+
 	setWindowTitle(projectTitle);
 }
 
@@ -1732,3 +1734,12 @@ void MainWindow::OnLockGuidesChanged()
         activeScreen->LockGuides(ui->actionLock_Guides->isChecked());
     }
 }
+
+void MainWindow::UpdateSaveButtons()
+{
+    bool hasUnsavedChanges = HierarchyTreeController::Instance()->HasUnsavedChanges();
+    
+    ui->actionSave_project->setEnabled(hasUnsavedChanges);
+    ui->actionSave_All->setEnabled(hasUnsavedChanges);
+}
+
