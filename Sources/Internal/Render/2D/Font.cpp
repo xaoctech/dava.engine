@@ -312,6 +312,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
                             
                             pos = separator.currentLineEnd;
                             AddCurrentLine(text, pos, separator, resultVector);
+							state = SKIP;
+							break;
                         }
                         else if(pos)
                         {   // truncate text by symbol for very long word
