@@ -496,12 +496,18 @@ void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
             editEnabled = true;
             addRemoveButton->setIcon(QIcon(":/QtIcons/cminus.png"));
             addRemoveButton->setToolTip("Remove property");
+
+        // isn't set in parent or shader
+        if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+        {
+            bgColor = QBrush(QColor(255, 0, 0, 25));
+        }
         }
         // inherited from parent property - should be add button
-        else if(memberFlags & DAVA::I_VIEW)
+    else
         {
             editEnabled = false;
-            bgColor = QBrush(QColor(0, 0, 0, 10));
+        bgColor = QBrush(QColor(0, 0, 0, 25));
             addRemoveButton->setIcon(QIcon(":/QtIcons/cplus.png"));
             addRemoveButton->setToolTip( "Add property" );
         }
@@ -650,7 +656,7 @@ void MaterialEditor::OnAddRemoveButton()
                 data->SetValue(QVariant(), QtPropertyData::VALUE_SOURCE_CHANGED);
             }
             // pressed add button
-            else if(memberFlags & I_VIEW)
+            else
             {
                 data->SetValue(data->GetValue(), QtPropertyData::VALUE_EDITED);
             }
