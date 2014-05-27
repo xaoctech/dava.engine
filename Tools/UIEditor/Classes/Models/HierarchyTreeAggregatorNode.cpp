@@ -152,6 +152,13 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		{
 			UIControl* control = (*iter);
 			UIControl* newControl = control->Clone();
+            
+            UIList* controlIsList = dynamic_cast<UIList*>(control);
+            if (controlIsList)
+            {
+                static_cast<UIList*>(newControl)->SetDelegate(controlIsList->GetDelegate());
+            }
+
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
 			aggregatorControl->AddAggregatorChild(newControl);
             newControl->Release();
