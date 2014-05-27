@@ -126,6 +126,7 @@ varying float varFogAmoung;
 #if defined(FOG_GLOW)
 uniform vec3 fogGlowColor;
 varying float varFogGlowFactor;
+varying float varFogGlowDistanceAttenuation;
 #endif
 #endif
 

@@ -178,6 +178,7 @@ public:
     static const FastName PARAM_FOG_END;
     static const FastName PARAM_FOG_GLOW_COLOR;
     static const FastName PARAM_FOG_GLOW_SCATTERING;
+    static const FastName PARAM_FOG_GLOW_DISTANCE;
     static const FastName PARAM_FOG_HALFSPACE_HEIGHT;
     static const FastName PARAM_FOG_HALFSPACE_DENSITY;
 	static const FastName PARAM_FLAT_COLOR;
