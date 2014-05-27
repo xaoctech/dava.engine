@@ -745,7 +745,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &gro
  	if(!texture)
 	{
 		texture = CreatePink(typeHint);
-        texture->texDescriptor->pathname = TextureDescriptor::GetDescriptorPathname(pathName);
+        texture->texDescriptor->pathname = (!pathName.IsEmpty()) ? TextureDescriptor::GetDescriptorPathname(pathName) : FilePath();
         
         AddToMap(texture);
 	}
