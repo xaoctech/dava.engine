@@ -55,6 +55,7 @@ UIControlBackground::UIControlBackground()
 ,   rdoObject(NULL)
 ,   vertexStream(NULL)
 ,   texCoordStream(NULL)
+,	shader(SafeRetain(RenderManager::TEXTURE_MUL_FLAT_COLOR))
 {
 }
 	
@@ -81,6 +82,9 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 	perPixelAccuracyType = srcBackground->perPixelAccuracyType;
 	leftStretchCap = srcBackground->leftStretchCap;
 	topStretchCap = srcBackground->topStretchCap;
+
+	SafeRelease(shader);
+	shader = SafeRetain(srcBackground->shader);
 }
 
 
@@ -88,6 +92,7 @@ UIControlBackground::~UIControlBackground()
 {
 	SafeRelease(rdoObject);
 	SafeRelease(spr);
+	SafeRelease(shader);
 	ReleaseDrawData();
 }
 	
@@ -251,8 +256,6 @@ void UIControlBackground::SetParentColor(const Color &parentColor)
 
 void UIControlBackground::Draw(const UIGeometricData &geometricData)
 {
-	
-
 	Rect drawRect = geometricData.GetUnrotatedRect();
 //	if(drawRect.x > RenderManager::Instance()->GetScreenWidth() || drawRect.y > RenderManager::Instance()->GetScreenHeight() || drawRect.x + drawRect.dx < 0 || drawRect.y + drawRect.dy < 0)
 //	{//TODO: change to screen size from control system and sizes from sprite
@@ -265,6 +268,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
     drawState.SetRenderState(RenderState::RENDERSTATE_2D_BLEND); // set state explicitly
 	if (spr)
 	{
+		drawState.SetShader(shader);
 		drawState.frame = frame;
 		if (spriteModification) 
 		{
@@ -906,5 +910,15 @@ void UIControlBackground::TiledDrawData::GenerateTransformData()
 		transformedVertices[index] = vertices[index] * transformMatr;
 	}
 }
+
+void UIControlBackground::SetShader(Shader *_shader)
+{
+	if(shader != _shader)
+	{
+		SafeRelease(shader);
+		shader = SafeRetain(_shader);
+	}
+}
+
 
 };
