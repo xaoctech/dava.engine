@@ -182,7 +182,6 @@ public slots:
 	void OnNotPassableTerrain();
     void OnGrasEditor();
 	
-	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
 
