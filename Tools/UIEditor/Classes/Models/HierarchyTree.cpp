@@ -130,16 +130,24 @@ bool HierarchyTree::Load(const QString& projectPath)
 			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
 		}
         
-        const YamlNode *localizationFontsPath = font->Get(DEFAULT_FONTS_PATH_NODE);
-        if(localizationFontsPath)
+        const YamlNode *localizationFontsPathNode = font->Get(DEFAULT_FONTS_PATH_NODE);
+        if(localizationFontsPathNode)
         {
-            EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(localizationFontsPath->AsString()));
+            FilePath localizationFontsPath(localizationFontsPathNode->AsString());
+            if(localizationFontsPath.Exists())
+            {
+                EditorFontManager::Instance()->SetDefaultFontsPath(localizationFontsPath.GetAbsolutePathname());
+            }
+            else
+            {
+                EditorFontManager::Instance()->SetDefaultFontsPath(bundleName.GetAbsolutePathname() + "Data" + localizationFontsPath.GetAbsolutePathname().substr(5));
+            }
         }
     }
     
     if(EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
     {
-        EditorFontManager::Instance()->SetDefaultFontsPath(FilePath("~res:/UI/Fonts/fonts.yaml"));
+        EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(bundleName.GetAbsolutePathname() + "Data/UI/Fonts/fonts.yaml"));
     }
     EditorFontManager::Instance()->LoadLocalizedFonts();
     
@@ -231,7 +239,7 @@ void HierarchyTree::CloseProject()
 	// Reset default font
 	EditorFontManager::Instance()->ResetDefaultFont();
     // TODO: reset localized fonts path (unload localized fonts)
-    EditorFontManager::Instance()->ResetLocalizedFontsPath();
+    EditorFontManager::Instance()->Reset();
 	Clear();
 }
 
@@ -504,6 +512,10 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
         EditorFontManager::Instance()->SaveLocalizedFonts();
     }
 
+    // Delete unused items from disk before saving.
+    HierarchyTreeController::Instance()->DeleteUnusedItemsFromDisk(projectPath);
+
+    // Do the save itself.
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode.GetChildNodes().begin();
 		 iter != rootNode.GetChildNodes().end();
 		 ++iter)
@@ -546,9 +558,6 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	}
 
     SafeRelease(parser);
-    
-    // Can now delete appropriate platforms.
-    DeleteUnnecessaryPlatforms(projectPath);
 
 	return result;
 }
@@ -696,25 +705,4 @@ void HierarchyTree::UpdateModificationDate(const QString &path)
 	// 02/05/2014 - Request only for MACOS
 	utime(path.toStdString().c_str(), NULL);
 #endif
-}
-
-void HierarchyTree::DeleteUnnecessaryPlatforms(const QString& projectPath)
-{
-    QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
-
-    const Set<QString>& platformsToDelete = HierarchyTreeController::Instance()->GetPlatformsToDelete();
-    for (Set<QString>::const_iterator iter = platformsToDelete.begin(); iter != platformsToDelete.end(); iter ++)
-    {
-        DeletePlatform(projectPath, *iter);
-    }
-
-    HierarchyTreeController::Instance()->CleanupPlatformsToDelete();
-    
-}
-
-void HierarchyTree::DeletePlatform(const QString& projectPath, const QString& platform) const
-{
-    QDir platformDir = QDir::cleanPath(QDir(ResourcesManageHelper::GetPlatformRootPath(projectPath)).filePath(platform));
-    QString platformPath = platformDir.path() + QDir::separator();
-    FileSystem::Instance()->DeleteDirectory(platformPath.toStdString());
 }
