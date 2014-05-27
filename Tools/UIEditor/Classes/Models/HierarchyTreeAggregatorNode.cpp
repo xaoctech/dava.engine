@@ -156,7 +156,9 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
             UIList* controlIsList = dynamic_cast<UIList*>(control);
             if (controlIsList)
             {
-                static_cast<UIList*>(newControl)->SetDelegate(controlIsList->GetDelegate());
+                EditorListDelegate* delegate = dynamic_cast<EditorListDelegate*>(controlIsList->GetDelegate());
+                SafeRetain(delegate);
+                static_cast<UIList*>(newControl)->SetDelegate(delegate);
             }
 
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
