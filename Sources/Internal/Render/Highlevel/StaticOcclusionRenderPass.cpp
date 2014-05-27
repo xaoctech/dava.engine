@@ -31,6 +31,8 @@
 #include "Render/Highlevel/RenderBatchArray.h"
 #include "Render/Highlevel/StaticOcclusion.h"
 #include "Utils/StringFormat.h"
+#include "Render/Image.h"
+#include "Render/ImageLoader.h"
 
 namespace DAVA
 {
@@ -65,8 +67,8 @@ bool StaticOcclusionRenderPass::CompareFunction(const RenderBatch * a, const Ren
     
 void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
 {
-    Camera *mainCamera = renderSystem->GetMainCamera();        
-    Camera *drawCamera = renderSystem->GetDrawCamera();   
+    Camera *mainCamera = occlusionCamera;
+    Camera *drawCamera = occlusionCamera;
 
     DVASSERT(drawCamera);
     DVASSERT(mainCamera);
@@ -166,6 +168,46 @@ void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
         batch->Draw(name, mainCamera);
         query.EndQuery();
         
+        //glFlush();
+        
+        
+        
+//        if ((debugK) && (debugI == 0) && (debugJ == 0))
+//        {
+//            //RenderManager::Instance()->SetRenderTarget((Sprite*)0);
+//            Image * image = occlusion->GetRTTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
+//            ImageLoader::Save(image, Format("~doc:/renderobj_%d_%d.png", debugSide, k));
+//            SafeRelease(image);
+//            //RenderManager::Instance()->RestoreRenderTarget();
+//        }
+//
+//        if ((debugK) && (debugI == 1) && (debugJ == 0))
+//        {
+//            RenderManager::Instance()->SetRenderTarget((Sprite*)0);
+//            Image * image = occlusion->GetRTTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
+//            ImageLoader::Save(image, Format("~doc:/renderobj2_%d_%d.png", debugSide, k));
+//            SafeRelease(image);
+//            RenderManager::Instance()->RestoreRenderTarget();
+//        }
+//        
+//        if ((debugK) && (debugI == 1) && (debugJ == 1))
+//        {
+//            RenderManager::Instance()->SetRenderTarget((Sprite*)0);
+//            Image * image = occlusion->GetRTTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
+//            ImageLoader::Save(image, Format("~doc:/renderobj3_%d_%d.png", debugSide, k));
+//            SafeRelease(image);
+//            RenderManager::Instance()->RestoreRenderTarget();
+//        }
+//        
+//        if ((debugK) && (debugI == 5) && (debugJ == 5))
+//        {
+//            RenderManager::Instance()->SetRenderTarget((Sprite*)0);
+//            Image * image = occlusion->GetRTTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
+//            ImageLoader::Save(image, Format("~doc:/renderobj4_%d_%d.png", debugSide, k));
+//            SafeRelease(image);
+//            RenderManager::Instance()->RestoreRenderTarget();
+//        }
+        
         occlusion->RecordFrameQuery(batch, handle);
     }
     
@@ -173,7 +215,7 @@ void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
 //    glDepthMask(GL_TRUE);
 //    glDepthFunc(GL_LESS);
 //    glColorMask(true, true, true, true);
-
+    int32 x = 0;
 }
 
 };
