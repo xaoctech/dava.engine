@@ -100,6 +100,7 @@ private:
 	void Init();
     
 	Font* CreateDefaultFont(const String& fontPath, const String& fontName);
+    void RegisterDefaultFont(Font* font);
     
     void ClearFonts(Map<String, Font*>& fonts);
     
