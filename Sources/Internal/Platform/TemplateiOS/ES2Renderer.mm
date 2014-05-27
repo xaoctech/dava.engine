@@ -39,6 +39,10 @@ using namespace DAVA;
             
             context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         }
+        else
+        {
+            context.multiThreaded = YES;
+        }
         
         if (!context || ![EAGLContext setCurrentContext:context])
 		{

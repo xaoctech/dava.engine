@@ -392,11 +392,20 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
         Vector<VegetationVertex>& vertexData = renderData->GetVertices();
         Vector<VegetationIndex>& indexData = renderData->GetIndices();
         
+        RenderDataObject* vertexRDO = new RenderDataObject();
+        vertexRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].coord));
+        vertexRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].normal));
+        vertexRDO->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
+        vertexRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
+        vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
+        vertexRDO->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
+        vertexRDO->BuildVertexBuffer(vertexData.size(), true);
+        
         Vector<Vector<Vector<SortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
         
         for(size_t resolutionIndex = 0; resolutionIndex < resolutionCount; ++resolutionIndex)
         {
-            Vector<VertexRangeData>& vertexBuffers = markedRenderData[layerIndex].vertexOffset[resolutionIndex];
+            //Vector<VertexRangeData>& vertexBuffers = markedRenderData[layerIndex].vertexOffset[resolutionIndex];
             Vector<Vector<SortBufferData> >& sortedIndexBuffers = markedRenderData[layerIndex].indexOffset[resolutionIndex];
             
             indexBuffers.push_back(Vector<Vector<SortedBufferItem> >());
@@ -405,16 +414,16 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
             size_t cellCount = sortedIndexBuffers.size();
             for(size_t cellIndex = 0; cellIndex < cellCount; ++cellIndex)
             {
-                VertexRangeData& rangeData = vertexBuffers[cellIndex];
+                //VertexRangeData& rangeData = vertexBuffers[cellIndex];
                 
-                RenderDataObject* vertexRDO = new RenderDataObject();
-                vertexRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].coord));
-                vertexRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].normal));
-                vertexRDO->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].binormal));
-                vertexRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].tangent));
-                vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[rangeData.index].texCoord0));
-                vertexRDO->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[rangeData.index].texCoord1));
-                vertexRDO->BuildVertexBuffer(rangeData.size, true);
+                //RenderDataObject* vertexRDO = new RenderDataObject();
+                //vertexRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].coord));
+                //vertexRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].normal));
+                //vertexRDO->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].binormal));
+                //vertexRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].tangent));
+                //vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[rangeData.index].texCoord0));
+                //vertexRDO->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[rangeData.index].texCoord1));
+                //vertexRDO->BuildVertexBuffer(rangeData.size, true);
             
                 currentResolutionIndexBuffers.push_back(Vector<SortedBufferItem>());
                 Vector<SortedBufferItem>& sortedIndexBufferItems = currentResolutionIndexBuffers[currentResolutionIndexBuffers.size() - 1];
@@ -441,10 +450,10 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
                     
                     SafeRelease(indexBuffer);
                 }
-                
-                SafeRelease(vertexRDO);
             }
         }
+        
+        SafeRelease(vertexRDO);
     }
 }
     
@@ -736,9 +745,13 @@ void VegetationCustomGeometry::GenerateIndexData(Vector<VegetationIndex>& source
         {
             PolygonSortData& sortData = sortDataArray[sortItemIndex];
             
-            indexData.push_back(sortData.indices[0] - startIndex);
-            indexData.push_back(sortData.indices[1] - startIndex);
-            indexData.push_back(sortData.indices[2] - startIndex);
+            //indexData.push_back(sortData.indices[0] - startIndex);
+            //indexData.push_back(sortData.indices[1] - startIndex);
+            //indexData.push_back(sortData.indices[2] - startIndex);
+            
+            indexData.push_back(sortData.indices[0]);
+            indexData.push_back(sortData.indices[1]);
+            indexData.push_back(sortData.indices[2]);
         }
     }
 }
