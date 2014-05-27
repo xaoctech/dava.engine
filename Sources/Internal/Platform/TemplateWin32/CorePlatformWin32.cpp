@@ -444,10 +444,10 @@ namespace DAVA
 			ZeroMemory (&dmi, sizeof(dmi)) ;
 			availableDisplayModes.push_back(mode);
 
-			Logger::FrameworkDebug(L"[RenderManagerDX9::GetAvailableDisplayModes] mode found: %d x %d x %d",
-				mode.width,
-				mode.height,
-				mode.bpp);
+// 			Logger::FrameworkDebug(L"[RenderManagerDX9::GetAvailableDisplayModes] mode found: %d x %d x %d",
+// 				mode.width,
+// 				mode.height,
+// 				mode.bpp);
 		}
 	}
 
