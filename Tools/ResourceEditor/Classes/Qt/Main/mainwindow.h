@@ -166,6 +166,7 @@ public slots:
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
+    void OnRebuildCurrentOcclusionCell();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
