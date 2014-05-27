@@ -295,8 +295,7 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                     //renderPositions.push_back(renderPosition);
                     camera->SetPosition(renderPosition);
                     camera->SetDirection(directions[effectiveSides[side][realSideIndex]]);
-                    if (    effectiveSides[side][realSideIndex] == 4
-                        ||  effectiveSides[side][realSideIndex] == 5)
+                    if ( effectiveSides[side][realSideIndex] == 4 || effectiveSides[side][realSideIndex] == 5)
                     {
                         camera->SetUp(Vector3(0.0f, 1.0f, 0.0f));
                         camera->SetLeft(Vector3(1.0f, 0.0f, 0.0f));
@@ -305,7 +304,7 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                         camera->SetUp(Vector3(0.0f, 0.0f, 1.0f));
                         camera->SetLeft(Vector3(1.0f, 0.0f, 0.0f));
                     }
-                    camera->SetupDynamicParameters();
+                    //camera->SetupDynamicParameters();
                     // Do Render
                     
                     RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
@@ -315,7 +314,7 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                     RenderManager::Instance()->FlushState();
                     RenderManager::Instance()->Clear(Color(0.5f, 0.5f, 0.5f, 1.0f), 1.0f, 0);
                     
-                    camera->SetupDynamicParameters();
+                    //camera->SetupDynamicParameters();
                     
                     uint64 timeCulling = SystemTimer::Instance()->GetAbsoluteNano();                  
 
@@ -323,6 +322,9 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                     timeTotalCulling += timeCulling;
 
                     uint64 timeRendering = SystemTimer::Instance()->GetAbsoluteNano();
+                    staticOcclusionRenderPass->SetOcclusionCamera(camera);
+                    staticOcclusionRenderPass->SetIndex(side, stepX, stepY, effectiveSides[side][realSideIndex] == side);
+                    
                     staticOcclusionRenderPass->Draw(renderSystem);
                     timeRendering = SystemTimer::Instance()->GetAbsoluteNano() - timeRendering;
                     timeTotalRendering += timeRendering;
@@ -361,10 +363,10 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                         recordedBatches.clear();
                     }
 
-//                    if ((stepX == 0) && (stepY == 0) && effectiveSides[side][realSideIndex] == side)
+                    //if ((stepX == 0) && (stepY == 0) && effectiveSides[side][realSideIndex] == side)
 //                    {
 //                        Image * image = renderTargetTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
-//                        ImageLoader::Save(image, Format("~doc:/renderimage_%d_%d_%d_%d.png", blockIndex, side, stepX, stepY));
+//                        ImageLoader::Save(image, Format("~doc:/renderimage_b%d_s_%d_es_%d_%d_%d.png", blockIndex, side, effectiveSides[side][realSideIndex] ,stepX, stepY));
 //                        SafeRelease(image);
 //                    }
                 }

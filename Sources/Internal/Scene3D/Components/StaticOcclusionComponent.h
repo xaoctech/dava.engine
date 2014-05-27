@@ -53,7 +53,7 @@ public:
   
     inline StaticOcclusionData & GetData();
     
-    inline uint32 GetDataSize();
+    inline uint32 GetDataSize() const;
     inline void SetDataSize(uint32 bytes);
 protected:
     StaticOcclusionData data;
@@ -110,7 +110,7 @@ public:
   
 //
     
-inline uint32 StaticOcclusionDataComponent::GetDataSize()
+inline uint32 StaticOcclusionDataComponent::GetDataSize() const
 {
     return (data.blockCount * data.objectCount / 32 * 4) / 1024;
 };
