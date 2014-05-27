@@ -46,8 +46,6 @@ void FrameworkDidLaunched()
 	DAVA::Core::Instance()->SetOptions(appOptions);
     DAVA::Core::Instance()->EnableReloadResourceOnResize(false);
 
-    DAVA::FilePath::SetBundleName("/Users/binaryzebra/Sources/dava.framework/Tools/ResourceEditor/");
-
 	SafeRelease(appOptions);
 }
 
