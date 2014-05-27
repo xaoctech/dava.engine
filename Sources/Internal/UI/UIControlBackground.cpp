@@ -83,8 +83,7 @@ void UIControlBackground::CopyDataFrom(UIControlBackground *srcBackground)
 	leftStretchCap = srcBackground->leftStretchCap;
 	topStretchCap = srcBackground->topStretchCap;
 
-	SafeRelease(shader);
-	shader = SafeRetain(srcBackground->shader);
+    SetShader(srcBackground->shader);
 }
 
 
