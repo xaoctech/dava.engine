@@ -297,7 +297,7 @@ void EditorFontManager::ClearFonts(Map<String, Font*>& fonts)
 
 void EditorFontManager::Reset()
 {
-	defaultFont = NULL;
+	SafeRelease(defaultFont);
 
     FontManager::Instance()->UnregisterFonts();
     
@@ -350,6 +350,7 @@ Font* EditorFontManager::GetDefaultFont() const
 
 void EditorFontManager::SetDefaultFont(Font *font)
 {
+    SafeRelease(defaultFont);
     Font* localizedDefaultFont = GetLocalizedFont(font);
     if(localizedDefaultFont)
     {
@@ -364,7 +365,7 @@ void EditorFontManager::SetDefaultFont(Font *font)
 
 void EditorFontManager::ResetDefaultFont()
 {
-	defaultFont = NULL;
+	SafeRelease(defaultFont);
 }
 
 void EditorFontManager::SetDefaultFontsPath(const FilePath& path)
@@ -688,10 +689,7 @@ void EditorFontManager::InitDefaultFontFromPath(const EditorFontManager::Default
 	if (loadedFont)
 	{
 		// Reset default font
-		if (defaultFont)
-		{
-			defaultFont = NULL;
-		}
+		SafeRelease(defaultFont);
 		defaultFont = loadedFont;
 	}	
 }
