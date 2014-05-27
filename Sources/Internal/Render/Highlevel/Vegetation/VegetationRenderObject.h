@@ -70,6 +70,7 @@ public:
     void PrepareRenderData();
     
     virtual void PrepareToRender(Camera *camera);
+    virtual void RecalcBoundingBox();
     
     void SetHeightmap(Heightmap* _heightmap);
     Heightmap* GetHeightmap() const;
@@ -154,7 +155,8 @@ private:
                               Frustum* frustum,
                               uint8 planeMask,
                               AbstractQuadTreeNode<SpatialData>* node,
-                              Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
+                              Vector<AbstractQuadTreeNode<SpatialData>*>& cellList,
+                              bool evaluateVisibility);
     inline void AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                float32 refDistance,
                                uint32 cellValue,

@@ -104,6 +104,8 @@ static Color RESOLUTION_COLOR[] =
     Color(0.0f, 0.0f, 0.5f, 1.0f),
 };
 
+static const uint32 PER_TILE_DATA_OFFSET = 4;
+
 #ifdef VEGETATION_DRAW_LOD_COLOR
 static const FastName UNIFORM_LOD_COLOR = FastName("lodColor");
 #endif
@@ -151,7 +153,7 @@ VegetationRenderObject::VegetationRenderObject() :
     resolutionRanges.resize(COUNT_OF(RESOLUTION_INDEX));
     
     uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
-    shaderScaleDensityUniforms.resize(maxParams);
+    shaderScaleDensityUniforms.resize(maxParams + PER_TILE_DATA_OFFSET);
     
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
@@ -377,11 +379,9 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     
     std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
-    Vector4 posScale(0.0f,
-                     0.0f,
-                     worldSize.x,
-                     worldSize.y);
-    Vector2 switchLodScale;
+    //Vector2 posScale(0.0f,
+    //                 0.0f);
+    //Vector2 switchLodScale;
     
     //Vector3 billboardDirection = -1.0f * camera->GetLeft();
     //billboardDirection.Normalize();
@@ -422,22 +422,28 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             
             SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
             
-            posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
-            posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            //posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            //posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
             
-            switchLodScale.x = resolutionIndex;
-            switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
+            //switchLodScale.x = resolutionIndex;
+            //switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
             
-            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
-                                  Shader::UT_FLOAT_VEC2,
-                                  1,
-                                  switchLodScale.data);
+            shaderScaleDensityUniforms[0] = resolutionIndex;
+            shaderScaleDensityUniforms[1] = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
-            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_TILEPOS,
-                                  Shader::UT_FLOAT_VEC4,
-                                  1,
-                                  posScale.data);
+            shaderScaleDensityUniforms[2] = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);;
+            shaderScaleDensityUniforms[3] = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            
+            //mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
+            //                      Shader::UT_FLOAT_VEC2,
+            //                      1,
+            //                      switchLodScale.data);
+            
+            //mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_TILEPOS,
+            //                      Shader::UT_FLOAT_VEC4,
+            //                      1,
+            //                      posScale.data);
             
             mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
                                   Shader::UT_FLOAT,
@@ -714,21 +720,30 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
     uint8 planeMask = 0x3F;
     Vector3 cameraPosXY = cameraPoint;
     cameraPosXY.z = 0.0f;
-    BuildVisibleCellList(cameraPosXY, frustum, planeMask, quadTree.GetRoot(), cellList);
+    BuildVisibleCellList(cameraPosXY, frustum, planeMask, quadTree.GetRoot(), cellList, true);
 }
     
 void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                                                   Frustum* frustum,
                                                   uint8 planeMask,
                                                   AbstractQuadTreeNode<SpatialData>* node,
-                                                  Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
+                                                  Vector<AbstractQuadTreeNode<SpatialData>*>& cellList,
+                                                  bool evaluateVisibility)
 {
     static Vector3 corners[8];
     if(node)
     {
-        Frustum::eFrustumResult result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
+        Frustum::eFrustumResult result = Frustum::EFR_INSIDE;
+        
+        if(evaluateVisibility)
+        {
+            result = frustum->Classify(node->data.bbox, planeMask, node->data.clippingPlane);
+        }
+        
         if(Frustum::EFR_OUTSIDE != result)
         {
+            bool needEvalClipping = (Frustum::EFR_INTERSECT == result);
+            
             if(node->data.IsRenderable())
             {
                 node->data.bbox.GetCorners(corners);
@@ -763,18 +778,19 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                 }
                 else if(!node->IsTerminalLeaf())
                 {
-                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[0], cellList);
-                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[1], cellList);
-                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[2], cellList);
-                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[3], cellList);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[0], cellList, needEvalClipping);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[1], cellList, needEvalClipping);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[2], cellList, needEvalClipping);
+                    BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[3], cellList, needEvalClipping);
                 }
             }
             else
             {
-                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[0], cellList);
-                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[1], cellList);
-                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[2], cellList);
-                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[3], cellList);
+                
+                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[0], cellList, needEvalClipping);
+                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[1], cellList, needEvalClipping);
+                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[2], cellList, needEvalClipping);
+                BuildVisibleCellList(cameraPoint, frustum, planeMask, node->children[3], cellList, needEvalClipping);
             }
         }
     }
@@ -1096,7 +1112,7 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
 {
     if(node->IsTerminalLeaf())
     {
-        DVASSERT(node->data.rdoIndex >= 0 && node->data.rdoIndex < uniforms.size());
+        DVASSERT(node->data.rdoIndex >= 0 && node->data.rdoIndex < (int32)uniforms.size());
         
         //int32 mapX = node->data.x + halfWidth;
         //int32 mapY = node->data.y + halfHeight;
@@ -1121,8 +1137,8 @@ void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>
             
             clusterScale *= distanceScale;
             
-            uniforms[node->data.rdoIndex * 2 * 4 + clusterType] = density;
-            uniforms[node->data.rdoIndex * 2 * 4 + 4 + clusterType] = clusterScale;
+            uniforms[PER_TILE_DATA_OFFSET + node->data.rdoIndex * 2 * 4 + clusterType] = density;
+            uniforms[PER_TILE_DATA_OFFSET + node->data.rdoIndex * 2 * 4 + 4 + clusterType] = clusterScale;
         }
 
     }
@@ -1461,6 +1477,10 @@ void VegetationRenderObject::SaveCustomGeometryData(SerializationContext* contex
         
         SafeRelease(layerArchive);
     }
+}
+
+void VegetationRenderObject::RecalcBoundingBox()
+{
 }
 
 };

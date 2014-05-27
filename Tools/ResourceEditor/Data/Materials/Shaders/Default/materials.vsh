@@ -164,14 +164,14 @@ uniform vec2 tex0ShiftPerSecond;
 #endif
 
 #if defined(MATERIAL_GRASS_TRANSFORM)
-uniform vec4 tilePos;
+//uniform vec4 tilePos;
 uniform vec3 worldSize;
-uniform vec2 lodSwitchScale;
+//uniform vec2 lodSwitchScale;
 
 uniform vec3 cameraPosition;
 uniform vec3 billboardDirection;
 
-uniform float clusterScaleDensityMap[128];
+uniform float clusterScaleDensityMap[132];
 
 uniform sampler2D heightmap;
 uniform sampler2D vegetationmap;
@@ -299,13 +299,13 @@ void main()
         //clusterScaleDensityMap[0] - density
         //clusterScaleDensityMap[1] - scale
     
-        vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
-                                  inBinormal.y + tilePos.y,
+        vec4 clusterCenter = vec4(inBinormal.x + clusterScaleDensityMap[2],
+                                  inBinormal.y + clusterScaleDensityMap[3],
                                   inBinormal.z,
                                   inPosition.w);
     
-        vec4 pos = vec4(inPosition.x + tilePos.x,
-                        inPosition.y + tilePos.y,
+        vec4 pos = vec4(inPosition.x + clusterScaleDensityMap[2],
+                        inPosition.y + clusterScaleDensityMap[3],
                         inPosition.z,
                         inPosition.w);
     
@@ -340,13 +340,13 @@ void main()
     
         lowp float densityFactor;
     
-        lowp float clusterDensity = clusterScaleDensityMap[vertexTileIndex + clusterType];;
-        lowp float clusterScale = clusterScaleDensityMap[vertexTileIndex + 4 + clusterType];
+        lowp float clusterDensity = clusterScaleDensityMap[4 + vertexTileIndex + clusterType];;
+        lowp float clusterScale = clusterScaleDensityMap[4 + vertexTileIndex + 4 + clusterType];
         lowp float clusterLodScale = 1.0;
     
-        if(int(inTexCoord1.x) == int(lodSwitchScale.x))
+        if(int(inTexCoord1.x) == int(clusterScaleDensityMap[0]))
         {
-            clusterLodScale = lodSwitchScale.y;
+            clusterLodScale = clusterScaleDensityMap[1];
         }
     
         vec4 lodScaledPos = pos;
