@@ -149,8 +149,8 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
 
     for(int pos = 0; pos < totalSize; pos++)
     {
-        wchar_t t = text[pos];
-        wchar_t tNext = 0;
+        char16 t = text[pos];
+        char16 tNext = 0;
         if(pos+1 < totalSize)
             tNext = text[pos+1];
         
@@ -194,7 +194,103 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     
     WideString currentLine = text.substr(currentLineStart, currentLineEnd - currentLineStart + 1);
     resultVector.push_back(currentLine);
-}    
+}
+    
+bool Font::IsWordSeparator(char16 t) const
+{
+    switch(t)
+    {
+        case 183: // interpunkt
+        // japanese characters that cannot start line ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻
+        case 12541:
+        case 12542:
+        case 12540:
+        case 12449:
+        case 12451:
+        case 12453:
+        case 12455:
+        case 12457:
+        case 12483:
+        case 12515:
+        case 12517:
+        case 12519:
+        case 12526:
+        case 12533:
+        case 12534:
+        case 12353:
+        case 12355:
+        case 12357:
+        case 12359:
+        case 12361:
+        case 12387:
+        case 12419:
+        case 12421:
+        case 12423:
+        case 12430:
+        case 12437:
+        case 12438:
+        case 12784:
+        case 12785:
+        case 12786:
+        case 12787:
+        case 12788:
+        case 12789:
+        case 12790:
+        case 12791:
+        case 12792:
+        case 12793:
+        case 12794:
+        case 12795:
+        case 12796:
+        case 12797:
+        case 12798:
+        case 12799:
+        case 12293:
+        case 12347:
+        // brackets )]｝〕〉》」』】〙〗〟’”｠»
+        case 41:
+        case 93:
+        case 65373:
+        case 12309:
+        case 12297:
+        case 12299:
+        case 12301:
+        case 12303:
+        case 12305:
+        case 12313:
+        case 12311:
+        case 12319:
+        case 8217:
+        case 8221:
+        case 65376:
+        case 187:
+        // hyphens ‐゠–〜
+        case 8208:
+        case 12448:
+        case 8211:
+        case 12316:
+        // delimeters ?!‼⁇⁈⁉
+        case 63:
+        case 33:
+        case 8252:
+        case 8263:
+        case 8264:
+        case 8265:
+        // punctuation mid ・、:;,
+        case 12539:
+        case 12289: // ideographic comma
+        case 58:
+        case 59:
+        case 44:
+        // punctuation end 。.
+        case 12290:
+        case 46:
+            return true;
+    }
+    
+    return false;
+}
+    
 void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRectSize, Vector<WideString> & resultVector)
 {
 	int32 targetWidth = (int32)(targetRectSize.dx * Core::GetVirtualToPhysicalFactor());
@@ -228,7 +324,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
-		wchar_t t = 0;
+		char16 t = 0;
 		if(pos < totalSize)
 		{
 			t = text[pos];
@@ -237,8 +333,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 		{
 			case SKIP:
 				if (t == 0){ state = FINISH; break; } // if end of string process FINISH state and exit
-				else if (t == ' ')break; // if space continue with the same state
-				else if(t == '\n')
+				else if (IsSpace(t))break; // if space continue with the same state
+				else if (IsWordSeparator(t))break; // if word separator - continue with the same state
+                else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
 					// unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
@@ -266,10 +363,17 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 					if (currentLineStart == -1)currentLineStart = pos;
 				}
 				break;
-			case GOODCHAR: 
-				if ((t == ' ') || (t == '\n') || t == 0) // if we've found any possible separator process current line
-				{ 
-					lastWordEnd = pos;
+			case GOODCHAR:
+				if(IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t) || t == 0) // if we've found any possible separator process current line
+                {
+                    if(IsWordSeparator(t))
+                    {
+                        lastWordEnd = pos + 1;
+                    }
+                    else
+                    {
+                        lastWordEnd = pos;
+                    }
 					
 					//					WideString currentLine = text.substr(currentLineStart, lastWordEnd - currentLineStart);
 					//					Size2i currentLineSize = GetStringSize(currentLine);
@@ -294,8 +398,9 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 						currentLineEnd = lastWordEnd;   
 					}
 				}
-				if (t == ' ')state = SKIP; // if cur char is space go to skip
-				else if(t == '\n')
+				if (IsSpace(t)) state = SKIP; // if cur char is space go to skip
+                else if (IsWordSeparator(t)) state = SKIP; // if cur char is word separator go to skip
+                else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
 					// unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
