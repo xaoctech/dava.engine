@@ -2746,8 +2746,7 @@ VariantType NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueGet(void *obje
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	ret.SetBool(state->IsFlagEffective(member));
-	
+    ret.SetBool(state->IsFlagEffective(member));
 	return ret;
 }
 
@@ -2756,19 +2755,31 @@ void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, con
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-    if(value.GetType() == VariantType::TYPE_NONE && state->GetMaterialType() != MATERIALTYPE_GLOBAL)
+	NMaterial::eFlagValue newValue = NMaterial::FlagOff;
+	if(value.GetType() == VariantType::TYPE_BOOLEAN && value.AsBool())
+	{
+		newValue = NMaterial::FlagOn;
+	}
+
+    if(state->GetMaterialType() == MATERIALTYPE_GLOBAL)
     {
-        state->ResetFlag(member);
+        // global material accepts only valid values 
+        if(value.GetType() == VariantType::TYPE_BOOLEAN)
+        {
+    	    state->SetFlag(member, newValue);
+        }
     }
     else
     {
-	    NMaterial::eFlagValue newValue = NMaterial::FlagOff;
-	    if(value.AsBool())
-	    {
-		    newValue = NMaterial::FlagOn;
-	    }
-	
-	    state->SetFlag(member, newValue);
+        // empty value is thread as flag remove
+        if(value.GetType() == VariantType::TYPE_NONE)
+        {
+            state->ResetFlag(member);
+        }
+        else
+        {
+	        state->SetFlag(member, newValue);
+        }
     }
 }
 
