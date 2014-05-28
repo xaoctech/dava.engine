@@ -194,55 +194,97 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     resultVector.push_back(currentLine);
 }
     
-const WideString Font::BRACKETS = L")]｝〕〉》」』】〙〗〟’”｠»";
-const WideString Font::HYPHENS = L"‐゠–〜";
-const WideString Font::DELIMETERS = L"?!‼⁇⁈⁉";
-const WideString Font::PUNCTUATION_MID = L"・、:;,";
-const WideString Font::PUNCTUATION_END = L"。.";
-    
-//TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
-//const WideString Font::JAPANESE_CHARACTERS = L"ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻";
-    
 bool Font::IsWordSeparator(char16 t) const
 {
     switch(t)
     {
         case 183: // interpunkt
+        // japanese characters that cannot start line ヽヾーァィゥェォッャュョヮヵヶぁぃぅぇぉっゃゅょゎゕゖㇰㇱㇲㇳㇴㇵㇶㇷㇸㇹㇺㇻㇼㇽㇾㇿ々〻
+        case 12541:
+        case 12542:
+        case 12540:
+        case 12449:
+        case 12451:
+        case 12453:
+        case 12455:
+        case 12457:
+        case 12483:
+        case 12515:
+        case 12517:
+        case 12519:
+        case 12526:
+        case 12533:
+        case 12534:
+        case 12353:
+        case 12355:
+        case 12357:
+        case 12359:
+        case 12361:
+        case 12387:
+        case 12419:
+        case 12421:
+        case 12423:
+        case 12430:
+        case 12437:
+        case 12438:
+        case 12784:
+        case 12785:
+        case 12786:
+        case 12787:
+        case 12788:
+        case 12789:
+        case 12790:
+        case 12791:
+        case 12792:
+        case 12793:
+        case 12794:
+        case 12795:
+        case 12796:
+        case 12797:
+        case 12798:
+        case 12799:
+        case 12293:
+        case 12347:
+        // brackets )]｝〕〉》」』】〙〗〟’”｠»
+        case 41:
+        case 93:
+        case 65373:
+        case 12309:
+        case 12297:
+        case 12299:
+        case 12301:
+        case 12303:
+        case 12305:
+        case 12313:
+        case 12311:
+        case 12319:
+        case 8217:
+        case 8221:
+        case 65376:
+        case 187:
+        // hyphens ‐゠–〜
+        case 8208:
+        case 12448:
+        case 8211:
+        case 12316:
+        // delimeters ?!‼⁇⁈⁉
+        case 63:
+        case 33:
+        case 8252:
+        case 8263:
+        case 8264:
+        case 8265:
+        // punctuation mid ・、:;,
+        case 12539:
         case 12289: // ideographic comma
+        case 58:
+        case 59:
+        case 44:
+        // punctuation end 。.
+        case 12290:
+        case 46:
             return true;
     }
-    
-    if(BRACKETS.find(t) != WideString::npos)
-    {
-        return true;
-    }
-    
-    if(HYPHENS.find(t) != WideString::npos)
-    {
-        return true;
-    }
-    
-    if(DELIMETERS.find(t) != WideString::npos)
-    {
-        return true;
-    }
-    
-    if(PUNCTUATION_MID.find(t) != WideString::npos)
-    {
-        return true;
-    }
-    
-    if(PUNCTUATION_END.find(t) != WideString::npos)
-    {
-        return true;
-    }
-    
-    //TODO: implement text processing that abides by the rules of current locale, possibly use lib specially designed for it
-//        if(JAPANESE_CHARACTERS.find(t) != WideString::npos)
-//        {
-//            Logger::FrameworkDebug("Font::IsWordSeparator found JAPANESE_CHARACTERS");
-//            return true;
-//        }
     
     return false;
 }
