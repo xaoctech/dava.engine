@@ -25,9 +25,8 @@ uniform mat4 worldMatrix;
 #if defined(VERTEX_FOG)
     uniform float fogLimit;
 	varying float varFogAmoung;
-    #if !defined(FOG_LINEAR)
     uniform float fogDensity;
-    #else
+    #if defined(FOG_LINEAR)
     uniform float fogStart;
     uniform float fogEnd;
     #endif
@@ -91,12 +90,14 @@ void main()
         varFogAmoung = (fogFragCoord - fogStart) / (fogEnd - fogStart);
     #endif
 	
+	varFogAmoung = clamp(varFogAmoung, 0, fogLimit);
+	
 	#if defined(FOG_HALFSPACE)
 		vec3 C = cameraPosition;
 		vec3 P = vec3(worldMatrix * inPosition);
 		vec3 V = (P - C);
 		
-		#if 0
+		#if 1
 			float fogK = 0;
 			if(C.z < fogHalfspaceHeight ) fogK = 1;
 			
@@ -110,16 +111,14 @@ void main()
 			float g = min(c2, 0.0);
 			g = -length(aV) * (c1 - g * g / abs(V.z));
 			
-			varFogAmoung = varFogAmoung + clamp(1.0 - exp2(-g), 0.0, 1.0);
+			varFogAmoung = max(varFogAmoung, clamp(1.0 - exp2(-g), 0.0, 0.85));
 		#else
 			float fogK = (P.z - C.z) / fogFragCoord;
-			float fogB = C.z;
-			varFogAmoung = fogHalfspaceHeight * exp(-fogHalfspaceDensity * fogB) * (1.0 - exp(-fogHalfspaceDensity * fogFragCoord * fogK)) / fogK;
+			float fogB = C.z - fogHalfspaceHeight;
+			varFogAmoung = varFogAmoung + fogDensity * exp2(-fogHalfspaceDensity * fogB) * (1.0 - exp2(-fogHalfspaceDensity * fogFragCoord * fogK)) / fogK;
 		#endif
 	#endif
 	
-	varFogAmoung = clamp(varFogAmoung, 0, fogLimit);
-
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
 		float fogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
