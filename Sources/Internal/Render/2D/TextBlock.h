@@ -113,7 +113,8 @@ protected:
 	void ProcessAlign();
 	
 
-    bool needRedraw;
+	Vector2 rectSize;
+        bool needRedraw;
 	Vector2 requestedSize;
 
     Vector2 cacheFinalSize;
@@ -137,7 +138,7 @@ protected:
 	Vector<int32> stringSizes;
     
     Mutex mutex;
-    
+
 	bool isMultilineEnabled:1;
     bool isMultilineBySymbolEnabled:1;
 	bool isPredrawed:1;

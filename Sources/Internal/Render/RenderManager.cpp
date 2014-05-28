@@ -36,6 +36,7 @@
 #include "Render/RenderDataObject.h"
 #include "Render/ShaderCache.h"
 #include "Render/GPUFamilyDescriptor.h"
+#include "Render/PixelFormatDescriptor.h"
 
 namespace DAVA
 {
@@ -69,7 +70,6 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     
 //	Logger::FrameworkDebug("[RenderManager] created");
 
-    Texture::InitializePixelFormatDescriptors();
     GPUFamilyDescriptor::SetupGPUParameters();
     
 	renderOrientation = 0;
@@ -122,7 +122,9 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     
 	cursor = 0;
     currentRenderData = 0;
-    enabledAttribCount = 0;
+    cachedEnabledStreams = 0;
+
+    attachedRenderData = 0;
     
     statsFrameCountToShowDebug = 0;
     frameToShowDebugStats = -1;
@@ -541,12 +543,22 @@ void RenderManager::SetDrawTranslate(const Vector3 &offset)
     userDrawOffset.x += offset.x * userDrawScale.x;
     userDrawOffset.y += offset.y * userDrawScale.y;
 }
-    
+
+const Vector2& RenderManager::GetDrawTranslate() const
+{
+    return userDrawOffset;
+}
+
 void RenderManager::SetDrawScale(const Vector2 &scale)
 {
     mappingMatrixChanged = true;
 	userDrawScale.x *= scale.x;
 	userDrawScale.y *= scale.y;
+}
+
+const Vector2& RenderManager::GetDrawScale() const
+{
+    return userDrawScale;
 }
 	
 void RenderManager::IdentityDrawMatrix()
@@ -726,11 +738,15 @@ void RenderManager::Stats::Clear()
 	renderStateFullSwitches = 0;
 	textureStateFullSwitches = 0;
 	attachRenderDataCount = 0;
+    attachRenderDataSkipCount = 0;
     for (int32 k = 0; k < PRIMITIVETYPE_COUNT; ++k)
         primitiveCount[k] = 0;
     dynamicParamUniformBindCount = 0;
     materialParamUniformBindCount = 0;
     spriteDrawCount = 0;
+    
+    visibleRenderObjectCount = 0;
+    occludedRenderObjectCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)

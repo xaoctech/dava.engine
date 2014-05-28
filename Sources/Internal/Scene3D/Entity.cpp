@@ -53,13 +53,13 @@
 #define CUSTOM_PROPERTIES_COMPONENT_SAVE_SCENE_VERSION 8
 #define USE_VECTOR(x) (((1 << x) & vectorComponentsMask) != 0)
 
-const int COMPONENT_COUNT_V6 = 18;
-const int COMPONENTS_IN_MAP_COUNT = 4;
-const int COMPONENTS_IN_VECTOR_COUNT = 3;
-const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 10;
 
 namespace DAVA
 {
+
+const int COMPONENT_COUNT_V6 = 18;
+const int COMPONENTS_IN_VECTOR_COUNT = 3;
+const int COMPONENTS_BY_NAME_SAVE_SCENE_VERSION = 10;
     
 uint32 vectorComponentsMask = (1 << Component::TRANSFORM_COMPONENT) | (1 << Component::RENDER_COMPONENT) | (1 << Component::LOD_COMPONENT);
 
@@ -169,7 +169,7 @@ void Entity::RemoveAllComponents()
 		if(components[i])
 		{
 			CleanupComponent(components[i], 0);
-			components[i] = NULL;
+            SafeDelete(components[i]);
 		}
 	}
 
@@ -188,7 +188,8 @@ void Entity::RemoveAllComponents()
 			{
 				componentCount--;
 				CleanupComponent(*compIt, componentCount);
-			}
+                SafeDelete(*compIt);
+            }
 		}
 
 		SafeDelete(componentsVector);
@@ -199,60 +200,83 @@ void Entity::RemoveAllComponents()
 	
 void Entity::RemoveComponent(Component * component)
 {
-	if (scene)
-		scene->RemoveComponent(this, component);
-
 	int componentCount = 0;
 	uint32 componentType = component->GetType();
-		
-	if(USE_VECTOR(componentType))
+    
+    DetachComponent(component);
+
+	if (!USE_VECTOR(componentType))
 	{
-		components[componentType] = 0;
-	}
-	else
-	{
+        Vector<Component*>* componentsVector = NULL;
+
 #if defined(COMPONENT_STORAGE_STDMAP)
-			
-		ComponentsMap::iterator it = componentsMap.find(componentType);
-		if(componentsMap.end() != it)
-		{
-			for(Vector<Component*>::iterator i = it->second->begin();
-				i != it->second->end(); ++i)
-			{
-				if((*i) == component)
-				{
-					it->second->erase(i);
-					break;
-				}
-			}
-				
-			componentCount = it->second->size();
-		}
-			
+        ComponentsMap::iterator it = componentsMap.find( componentType );
+        componentsVector = (it != componentsMap.end()) ? it->second : NULL;
 #else
-			
-		Vector<Component*>* componentsVector = componentsMap[componentType];
-		if(NULL != componentsVector)
-		{
-			for(Vector<Component*>::iterator i = componentsVector->begin();
-				i != componentsVector->end(); ++i)
-			{
-				if((*i) == component)
-				{
-					componentsVector->erase(i);
-					break;
-				}
-			}
-				
-			componentCount = componentsVector->size();
-				
-		}
-			
+        componentsVector = componentsMap[componentType];
 #endif
 
-	}
-		
+        if ( componentsVector != NULL )
+        {
+            componentCount = componentsVector->size();
+        }
+    }
+
 	CleanupComponent(component, componentCount);
+    SafeDelete(component);
+}
+
+void Entity::DetachComponent( Component * component )
+{
+    if ( scene )
+        scene->RemoveComponent( this, component );
+
+    uint32 componentType = component->GetType();
+    uint32 componentCount = 0;
+
+    if (USE_VECTOR(componentType))
+    {
+        components[componentType] = 0;
+    }
+    else
+    {
+#if defined(COMPONENT_STORAGE_STDMAP)
+
+        ComponentsMap::iterator it = componentsMap.find( componentType );
+        if (componentsMap.end() != it)
+        {
+            for (Vector<Component*>::iterator i = it->second->begin();
+                i != it->second->end(); ++i )
+            {
+                if ((*i) == component)
+                {
+                    it->second->erase(i);
+                    break;
+                }
+            }
+        }
+
+#else
+
+        Vector<Component*>* componentsVector = componentsMap[componentType];
+        if (NULL != componentsVector)
+        {
+            for (Vector<Component*>::iterator i = componentsVector->begin();
+                i != componentsVector->end(); ++i)
+            {
+                if ((*i) == component)
+                {
+                    componentsVector->erase(i);
+                    break;
+                }
+            }
+            componentCount = componentsVector->size();
+        }
+
+#endif
+    }
+
+    CleanupComponent(component, componentCount);
 }
     
 void Entity::RemoveComponent(uint32 componentType, uint32 index)
@@ -303,6 +327,7 @@ void Entity::RemoveComponent(uint32 componentType, uint32 index)
 	if(NULL != component)
 	{
 		CleanupComponent(component, componentCount);
+        SafeDelete(component);
 	}
 }
     
@@ -314,8 +339,6 @@ inline void Entity::CleanupComponent(Component* component, uint32 componentCount
 	{
 		componentFlags &= ~(1 << component->GetType());
 	}
-		
-	SafeDelete(component);
 }
     
 Component * Entity::GetComponent(uint32 componentType, uint32 index) const

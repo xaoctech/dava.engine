@@ -124,7 +124,27 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 {
 	KeyedArchive * customProperties = entity->GetCustomProperties();
-	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
+    bool drawBox = false;
+
+    if ( customProperties )
+    {
+        if ( customProperties->IsKeyExists( "CollisionType" ) )
+        {
+            drawBox = customProperties->GetInt32( "CollisionType", 0 ) == objectType;
+        }
+        else if ( objectType == ResourceEditor::ESOT_UNDEFINED_COLLISION && entity->GetParent() == GetScene() )
+        {
+            const bool skip =
+                GetLight( entity ) == NULL &&
+                GetCamera( entity ) == NULL &&
+                GetLandscape( entity ) == NULL &&
+                GetSkybox( entity ) == NULL;
+
+            drawBox = skip;
+        }
+    }
+
+    if ( drawBox )
 	{
 		DrawEntityBox(entity, objectTypeColor);
 	}
@@ -160,7 +180,7 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
     StaticOcclusionComponent * staticOcclusionComponent = 0;
 	if((staticOcclusionComponent = (StaticOcclusionComponent*)entity->GetComponent(DAVA::Component::STATIC_OCCLUSION_COMPONENT)) != 0)
 	{
-        Camera * camera = GetScene()->GetClipCamera();
+        Camera * camera = GetScene()->GetCurrentCamera();
        
 		RenderManager::SetDynamicParam(PARAM_WORLD, &entity->GetWorldTransform(), (pointer_size)&entity->GetWorldTransform());
         

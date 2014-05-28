@@ -100,7 +100,9 @@ public:
 
 	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION;
 	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | VISIBLE_STATIC_OCCLUSION;
-    static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION | ALWAYS_CLIPPING_VISIBLE;protected:
+    static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION | ALWAYS_CLIPPING_VISIBLE;
+
+protected:
     virtual ~RenderObject();
 public:
     RenderObject();
@@ -124,6 +126,15 @@ public:
 	inline uint32 GetRenderBatchCount() const;
     inline RenderBatch * GetRenderBatch(uint32 batchIndex) const;
 	inline RenderBatch * GetRenderBatch(uint32 batchIndex, int32 & lodIndex, int32 & switchIndex) const;
+
+    /**
+		\brief collect render batches and append it to vector by request lods/switches
+		\param[in] requestLodIndex - request lod index. if -1 considering all lods
+        \param[in] requestSwitchIndex - request switch index. if -1 considering all switches
+        \param[in, out] batches vector of RenderBatch'es
+        \param[in] includeShareLods - if true considering request lod and lods with INVALID_INDEX(-1)
+	 */
+    void CollectRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*> & batches, bool includeShareLods = false) const;
 
 	inline uint32 GetActiveRenderBatchCount() const;
 	inline RenderBatch * GetActiveRenderBatch(uint32 batchIndex) const;
@@ -164,17 +175,17 @@ public:
 
 	void SetLodIndex(const int32 lodIndex);
 	void SetSwitchIndex(const int32 switchIndex);
-    int32 GetLodIndex();
-    int32 GetSwitchIndex();
+    int32 GetLodIndex() const;
+    int32 GetSwitchIndex() const;
     int32 GetMaxLodIndex() const;
     int32 GetMaxLodIndexForSwitchIndex(int32 forSwitchIndex) const;
     int32 GetMaxSwitchIndex() const;
 
 	uint8 startClippingPlane;
 
-	inline bool GetReflectionVisible();
+	inline bool GetReflectionVisible() const;
 	inline void SetReflectionVisible(bool visible);
-    inline bool GetRefractionVisible();
+    inline bool GetRefractionVisible() const;
     inline void SetRefractionVisible(bool visible);
     
     virtual void GetDataNodes(Set<DataNode*> & dataNodes);
@@ -336,7 +347,7 @@ inline void RenderObject::SetStaticOcclusionIndex(uint16 _index)
     staticOcclusionIndex = _index;
 }
 
-inline bool RenderObject::GetReflectionVisible(){return (flags&VISIBLE_REFLECTION) == VISIBLE_REFLECTION;}
+inline bool RenderObject::GetReflectionVisible() const {return (flags&VISIBLE_REFLECTION) == VISIBLE_REFLECTION;}
 inline void RenderObject::SetReflectionVisible(bool visible)
 {
 	if (visible)
@@ -345,7 +356,7 @@ inline void RenderObject::SetReflectionVisible(bool visible)
 		flags&= ~VISIBLE_REFLECTION;
 }
 
-inline bool RenderObject::GetRefractionVisible(){return (flags&VISIBLE_REFRACTION) == VISIBLE_REFRACTION;}
+inline bool RenderObject::GetRefractionVisible() const {return (flags&VISIBLE_REFRACTION) == VISIBLE_REFRACTION;}
 inline void RenderObject::SetRefractionVisible(bool visible)
 {
     if (visible)

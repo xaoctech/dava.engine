@@ -55,7 +55,7 @@ protected:
     virtual void InitializeControl(const String& controlName, const Vector2& position);
     virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
 
-    virtual QString GetUIControlClassName() { return "UIStaticText"; };
+    virtual QString GetUIControlClassName() const { return "UIStaticText"; };
     
     // Set the localized text key.
     virtual void SetLocalizedTextKey(const QString& value);
@@ -74,7 +74,7 @@ protected:
     virtual void SetFont(Font* font);
     
     virtual float GetFontSize() const;
-    virtual void SetFontSize(float fontSize);
+    //virtual void SetFontSize(float fontSize);
     
     virtual QColor GetFontColor() const;
     virtual void SetFontColor(const QColor& value);

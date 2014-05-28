@@ -71,6 +71,7 @@ PropertyEditor::PropertyEditor(QWidget *parent /* = 0 */, bool connectToSceneSig
 	, viewMode(VIEW_NORMAL)
 	, treeStateHelper(this, curModel)
 	, favoriteGroup(NULL)
+    , resetRequests(0)
 {
 	if(connectToSceneSignals)
 	{
@@ -162,6 +163,14 @@ void PropertyEditor::ClearCurrentNodes()
 
 void PropertyEditor::ResetProperties()
 {
+    if (resetRequests > 1)
+    {
+        resetRequests--;
+        return;
+    }
+
+    resetRequests = 0;
+
     // Store the current Property Editor Tree state before switching to the new node.
 	// Do not clear the current states map - we are using one storage to share opened
 	// Property Editor nodes between the different Scene Nodes.
@@ -353,16 +362,14 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
 			if(DAVA::MetaInfo::Instance<DAVA::ActionComponent>() == meta)
 			{
 				// Add optional button to edit action component
-				QtPropertyToolButton * editActions = CreateButton(data, QIcon(":/QtIcons/settings.png"), "");
+				QtPropertyToolButton * editActions = CreateButton(data, QIcon(":/QtIcons/settings.png"), "Edit action component");
                 editActions->setEnabled(isSingleSelection);
 				QObject::connect(editActions, SIGNAL(pressed()), this, SLOT(ActionEditComponent()));
 			}
             else if(DAVA::MetaInfo::Instance<DAVA::SoundComponent>() == meta)
             {
-                QtPropertyToolButton *editSound = data->AddButton();
-                editSound->setIcon(QIcon(":/QtIcons/settings.png"));
+                QtPropertyToolButton * editSound = CreateButton(data, QIcon( ":/QtIcons/settings.png" ), "Edit sound component");
                 editSound->setAutoRaise(true);
-
                 QObject::connect(editSound, SIGNAL(pressed()), this, SLOT(ActionEditSoundComponent()));
             }
 			else if(DAVA::MetaInfo::Instance<DAVA::RenderObject>() == meta)
@@ -404,6 +411,12 @@ void PropertyEditor::ApplyCustomExtensions(QtPropertyData *data)
                 deleteButton->setEnabled(isSingleSelection);
 				QObject::connect(deleteButton, SIGNAL(pressed()), this, SLOT(DeleteRenderBatch()));
 			}
+            else if(DAVA::MetaInfo::Instance<DAVA::PolygonGroup>() == meta)
+            {
+                QtPropertyToolButton * rebuildTangentButton = CreateButton(data, QIcon(":/QtIcons/external.png"), "Rebuild tangent space");
+                rebuildTangentButton->setEnabled(isSingleSelection);
+                QObject::connect(rebuildTangentButton, SIGNAL(pressed()), this, SLOT(RebuildTangentSpace()));
+            }
 			else if(DAVA::MetaInfo::Instance<DAVA::NMaterial>() == meta)
 			{
 				QtPropertyToolButton * goToMaterialButton = CreateButton(data, QIcon(":/QtIcons/3d.png"), "Edit material");
@@ -683,6 +696,12 @@ void PropertyEditor::sceneSelectionChanged(SceneEditor2 *scene, const EntityGrou
     SetEntities(selected);
 }
 
+void PropertyEditor::QueueResetProperties()
+{
+    resetRequests++;
+    QTimer::singleShot(0, this, SLOT(ResetProperties()));
+}
+
 void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo)
 {
 	int cmdId = command->GetId();
@@ -708,7 +727,7 @@ void PropertyEditor::CommandExecuted(SceneEditor2 *scene, const Command2* comman
             }
             if (doReset)
             {
-                ResetProperties();
+                QueueResetProperties();
             }
             break;
         }
@@ -870,6 +889,21 @@ void PropertyEditor::ConvertToShadow()
             }
 		}
 	}
+}
+
+void PropertyEditor::RebuildTangentSpace()
+{
+    QtPropertyToolButton *btn = dynamic_cast<QtPropertyToolButton *>(QObject::sender());
+
+    if(NULL != btn)
+    {
+        QtPropertyDataIntrospection *data = dynamic_cast<QtPropertyDataIntrospection *>(btn->GetPropertyData());
+        if(NULL != data)
+        {
+            PolygonGroup *group = (PolygonGroup *)data->object;
+            MeshConverter::RebuildMeshTangentSpace(group, true, false);
+        }
+    }
 }
 
 void PropertyEditor::DeleteRenderBatch()
