@@ -489,6 +489,14 @@ void VegetationCustomGeometry::OnVegetationPropertiesChanged(Vector<VegetationRe
                                       1,
                                       heightmapScale.data);
             }
+            
+            String densityMapPathKey = VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP.c_str();
+            if(props->IsKeyExists(densityMapPathKey))
+            {
+                FilePath densityMapPath = props->GetString(densityMapPathKey);
+                densityMapPath.ReplaceExtension(".tex");
+                mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP, densityMapPath);
+            }
         }
     }
 }

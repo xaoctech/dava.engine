@@ -32,7 +32,7 @@ namespace DAVA
 {
 const FastName VegetationPropertyNames::UNIFORM_TILEPOS("tilePos");
 const FastName VegetationPropertyNames::UNIFORM_WORLD_SIZE("worldSize");
-const FastName VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP("clusterScaleDensityMap[0]");
+//const FastName VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP("clusterScaleDensityMap[0]");
 const FastName VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE("heightmapScale");
 const FastName VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE("lodSwitchScale");
 const FastName VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE("perturbationForce");
@@ -52,4 +52,5 @@ const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_LOW("LOW");
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME("Vegetation");
     
 const FastName VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP("vegetationmap");
+const FastName VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP("densitymap");
 };
