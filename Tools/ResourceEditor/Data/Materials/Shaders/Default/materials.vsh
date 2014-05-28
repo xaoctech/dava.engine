@@ -67,8 +67,9 @@ uniform vec3 metalFresnelReflectance;
 #if defined(VERTEX_FOG)
     uniform float fogLimit;
 	varying float varFogAmoung;
+    #if !defined(FOG_LINEAR)
     uniform float fogDensity;
-    #if defined(FOG_LINEAR)
+    #else
     uniform float fogStart;
     uniform float fogEnd;
     #endif
@@ -495,8 +496,6 @@ void main()
     #else
         varFogAmoung = (fogFragCoord - fogStart) / (fogEnd - fogStart);
     #endif
-
-	varFogAmoung = clamp(varFogAmoung, 0, fogLimit);
 	
 	#if defined(FOG_HALFSPACE)
 		vec3 C = cameraPosition;
@@ -507,8 +506,9 @@ void main()
 		#endif
 		vec3 V = (P - C);
 		
-		#if 1
-			float fogK = (C.z < fogHalfspaceHeight ) ? 1 : 0;
+		#if 0
+			float fogK = 0;
+			if(C.z < fogHalfspaceHeight ) fogK = 1;
 			
 			float FdotP = P.z - fogHalfspaceHeight;
 			float FdotC = C.z - fogHalfspaceHeight;
@@ -520,19 +520,15 @@ void main()
 			float g = min(c2, 0.0);
 			g = -length(aV) * (c1 - g * g / abs(V.z));
 			
-			varFogAmoung = max(varFogAmoung, clamp(1.0 - exp2(-g), 0.0, 0.85));
+			varFogAmoung = varFogAmoung + clamp(1.0 - exp2(-g), 0.0, 1.0);
 		#else
-			//float ExponentialFogParametersX = fogDensity * exp2(-fogHalfspaceDensity * (C.z - fogHalfspaceHeight));
-			//float EffectiveZ = (abs(V.z) > 0.001) ? V.z : 0.001;
-			//float Falloff = max( -127.0f, fogHalfspaceDensity * EffectiveZ );	// if it's lower than -127.0, then exp2() goes crazy in OpenGL's GLSL.
-			//float ExponentialHeightLineIntegralShared = ExponentialFogParametersX * (1.0f - exp2(-Falloff) ) / Falloff;
-			//varFogAmoung = 1.0 - exp2(-ExponentialHeightLineIntegralShared);
-			
 			float fogK = (P.z - C.z) / fogFragCoord;
-			float fogB = C.z - fogHalfspaceHeight;
-			varFogAmoung = varFogAmoung + fogDensity * exp2(-fogHalfspaceDensity * fogB) * (1.0 - exp2(-fogHalfspaceDensity * fogFragCoord * fogK)) / fogK;
+			float fogB = C.z;
+			varFogAmoung = fogHalfspaceHeight * exp(-fogHalfspaceDensity * fogB) * (1.0 - exp(-fogHalfspaceDensity * fogFragCoord * fogK)) / fogK;
 		#endif
 	#endif
+	
+	varFogAmoung = clamp(varFogAmoung, 0, fogLimit);
 	
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
