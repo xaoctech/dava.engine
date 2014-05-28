@@ -83,8 +83,8 @@ const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 const FastName NMaterial::PARAM_UV_SCALE("uvScale");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_DARK("leafColorDark");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_LIGHT("leafColorLight");
+const FastName NMaterial::PARAM_SPHERICAL_COLOR_DARK("sphericalColorDark");
+const FastName NMaterial::PARAM_SPHERICAL_COLOR_LIGHT("sphericalColorLight");
 
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
 const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
@@ -102,7 +102,7 @@ const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterial::FLAG_SPECULAR = FastName("SPECULAR");
 
-const FastName NMaterial::FLAG_SPHERIC_LIT = FastName("SPHERIC_LIT");
+const FastName NMaterial::FLAG_SPHERICAL_LIT = FastName("SPHERICAL_LIT");
 
 const FastName NMaterial::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
 
@@ -216,7 +216,7 @@ activePassInstance(NULL),
 activeRenderPass(NULL),
 instancePasses(4),
 textures(8),
-parameterGroupsFlags(0),
+dynamicBindFlags(0),
 materialTemplate(NULL),
 materialProperties(16),
 instancePassRenderStates(4),
@@ -1167,13 +1167,13 @@ void NMaterial::UpdateMaterialTemplate()
 
     //{VI: temporray code should be removed once lighting system is up
 
-    parameterGroupsFlags = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0) ? PARAM_GROUP_DYNAMIC_LIT : 0;
+    dynamicBindFlags = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0) ? DYNAMIC_BIND_LIGHT : 0;
     for(uint32 i = 0; i < passCount; ++i)
     {
         RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
         const FastNameSet& defines = pass->GetUniqueDefineSet();
-        parameterGroupsFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT)) ? PARAM_GROUP_DYNAMIC_LIT : 0;
-        parameterGroupsFlags |= defines.count(FLAG_SPHERIC_LIT) ? PARAM_GROUP_SPHERIC_LIT : 0;
+        dynamicBindFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT) || defines.count(FLAG_SPHERICAL_LIT)) ? DYNAMIC_BIND_LIGHT : 0;
+        dynamicBindFlags |= defines.count(FLAG_SPHERICAL_LIT) ? DYNAMIC_BIND_OBJECT_CENTER : 0;
     }
 }
 

@@ -290,7 +290,9 @@ const FastName DYNAMIC_PARAM_NAMES[] =
         FastName("lightColor0"),
         FastName("lightAmbientColor0"),
 
+        FastName("localBoundingBox"),
         FastName("worldViewObjectCenter"),
+
         FastName("trunkOscillationParams"),
         FastName("leafOscillationParams"),
 
