@@ -13,6 +13,14 @@
 		0224B7341598AC2800CDEF9E /* libtheora_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7321598AC2800CDEF9E /* libtheora_macos.a */; };
 		0224B74A1598B40100CDEF9E /* libogg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7481598B40100CDEF9E /* libogg_ios.a */; };
 		0224B74B1598B40100CDEF9E /* libogg_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0224B7491598B40100CDEF9E /* libogg_macos.a */; };
+		022AA8DE1934CECD009A4B84 /* WaveComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022AA8DC1934CECD009A4B84 /* WaveComponent.cpp */; };
+		022AA8DF1934CECD009A4B84 /* WaveComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022AA8DC1934CECD009A4B84 /* WaveComponent.cpp */; };
+		022AA8E01934CECD009A4B84 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 022AA8DD1934CECD009A4B84 /* WaveComponent.h */; };
+		022AA8E11934CECD009A4B84 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 022AA8DD1934CECD009A4B84 /* WaveComponent.h */; };
+		022AA8E41934CED9009A4B84 /* WaveSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022AA8E21934CED9009A4B84 /* WaveSystem.cpp */; };
+		022AA8E51934CED9009A4B84 /* WaveSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 022AA8E21934CED9009A4B84 /* WaveSystem.cpp */; };
+		022AA8E61934CED9009A4B84 /* WaveSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 022AA8E31934CED9009A4B84 /* WaveSystem.h */; };
+		022AA8E71934CED9009A4B84 /* WaveSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 022AA8E31934CED9009A4B84 /* WaveSystem.h */; };
 		0282B8B218BC8C88006F1EE4 /* FMODFileSoundEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0282B8B018BC8C88006F1EE4 /* FMODFileSoundEvent.cpp */; };
 		0282B8B318BC8C88006F1EE4 /* FMODFileSoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0282B8B118BC8C88006F1EE4 /* FMODFileSoundEvent.h */; };
 		029BAE551859B81700478671 /* musicios.h in Headers */ = {isa = PBXBuildFile; fileRef = 029BAE511859B81700478671 /* musicios.h */; };
@@ -1571,6 +1579,10 @@
 		0224B7321598AC2800CDEF9E /* libtheora_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtheora_macos.a; path = ../../Libs/libs/libtheora_macos.a; sourceTree = "<group>"; };
 		0224B7481598B40100CDEF9E /* libogg_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_ios.a; path = ../../Libs/libs/libogg_ios.a; sourceTree = "<group>"; };
 		0224B7491598B40100CDEF9E /* libogg_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libogg_macos.a; path = ../../Libs/libs/libogg_macos.a; sourceTree = "<group>"; };
+		022AA8DC1934CECD009A4B84 /* WaveComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveComponent.cpp; sourceTree = "<group>"; };
+		022AA8DD1934CECD009A4B84 /* WaveComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveComponent.h; sourceTree = "<group>"; };
+		022AA8E21934CED9009A4B84 /* WaveSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveSystem.cpp; sourceTree = "<group>"; };
+		022AA8E31934CED9009A4B84 /* WaveSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveSystem.h; sourceTree = "<group>"; };
 		0282B8B018BC8C88006F1EE4 /* FMODFileSoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODFileSoundEvent.cpp; sourceTree = "<group>"; };
 		0282B8B118BC8C88006F1EE4 /* FMODFileSoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODFileSoundEvent.h; sourceTree = "<group>"; };
 		029BAE511859B81700478671 /* musicios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = musicios.h; sourceTree = "<group>"; };
@@ -3261,6 +3273,8 @@
 		E8B3C9AC16B9326E002BD35F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				022AA8DC1934CECD009A4B84 /* WaveComponent.cpp */,
+				022AA8DD1934CECD009A4B84 /* WaveComponent.h */,
 				02FD7EB719237D33007762C0 /* SpeedTreeComponent.cpp */,
 				02FD7EB819237D33007762C0 /* SpeedTreeComponent.h */,
 				02FD7EB919237D33007762C0 /* WindComponent.cpp */,
@@ -3306,6 +3320,8 @@
 		E8B3C9FD16B9326E002BD35F /* Systems */ = {
 			isa = PBXGroup;
 			children = (
+				022AA8E21934CED9009A4B84 /* WaveSystem.cpp */,
+				022AA8E31934CED9009A4B84 /* WaveSystem.h */,
 				02FD7EBF19237D43007762C0 /* SpeedTreeUpdateSystem.cpp */,
 				02FD7EC019237D43007762C0 /* SpeedTreeUpdateSystem.h */,
 				02FD7EC119237D43007762C0 /* WindSystem.cpp */,
@@ -3598,6 +3614,7 @@
 				02FD7F491924997C007762C0 /* Replay.h in Headers */,
 				02FD7F4A1924997C007762C0 /* Stats.h in Headers */,
 				02FD7F4B1924997C007762C0 /* DLCSystem.h in Headers */,
+				022AA8E71934CED9009A4B84 /* WaveSystem.h in Headers */,
 				02FD7F4C1924997C007762C0 /* ParticleRenderObject.h in Headers */,
 				02FD7F4D1924997C007762C0 /* DLCUnpacker.h in Headers */,
 				02FD7F4E1924997C007762C0 /* FileDownloader.h in Headers */,
@@ -3629,6 +3646,7 @@
 				02FD7F681924997C007762C0 /* KeyboardDevice.h in Headers */,
 				02FD7F691924997C007762C0 /* AABBox2.h in Headers */,
 				02FD7F6A1924997C007762C0 /* AABBox3.h in Headers */,
+				022AA8E11934CECD009A4B84 /* WaveComponent.h in Headers */,
 				02FD7F6B1924997C007762C0 /* BezierSpline.h in Headers */,
 				02FD7F6C1924997C007762C0 /* Circle.h in Headers */,
 				02FD7F6D1924997C007762C0 /* Color.h in Headers */,
@@ -4062,6 +4080,7 @@
 				E8B3CB6516B9326E002BD35F /* BaseNetworkConnection.h in Headers */,
 				E8B3CB6716B9326E002BD35F /* BTNetworkConnection.h in Headers */,
 				E8B3CB6A16B9326E002BD35F /* NetworkConnection.h in Headers */,
+				022AA8E61934CED9009A4B84 /* WaveSystem.h in Headers */,
 				E8B3CB6B16B9326E002BD35F /* NetworkConnectionIPhone.h in Headers */,
 				E8B3CB6E16B9326E002BD35F /* NetworkDelegate.h in Headers */,
 				E8B3CB7016B9326E002BD35F /* NetworkPacket.h in Headers */,
@@ -4264,6 +4283,7 @@
 				E89CE92B16C54A36006BEFF4 /* SpriteObject.h in Headers */,
 				E89CE92D16C54A36006BEFF4 /* SpriteRenderBatch.h in Headers */,
 				CCB4C44716CBC65D00F2B085 /* ComponentHelpers.h in Headers */,
+				022AA8E01934CECD009A4B84 /* WaveComponent.h in Headers */,
 				1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */,
 				C7E76D3216DF69370041ED9A /* AutotestingSystemLua.h in Headers */,
 				17F53E2F16D36FF3004D5099 /* IWebViewControl.h in Headers */,
@@ -4467,6 +4487,7 @@
 				02FD80BF1924997C007762C0 /* DynamicMemoryFile.cpp in Sources */,
 				02FD80C01924997C007762C0 /* File.cpp in Sources */,
 				02FD80C11924997C007762C0 /* FileList.cpp in Sources */,
+				022AA8E51934CED9009A4B84 /* WaveSystem.cpp in Sources */,
 				02FD80C21924997C007762C0 /* FilePath.cpp in Sources */,
 				02FD80C31924997C007762C0 /* FileSystem.cpp in Sources */,
 				02FD80C41924997C007762C0 /* FileSystemObjective.mm in Sources */,
@@ -4644,6 +4665,7 @@
 				02FD81701924997C007762C0 /* DebugRenderSystem.cpp in Sources */,
 				02FD81711924997C007762C0 /* QualitySettingsComponent.cpp in Sources */,
 				02FD81721924997C007762C0 /* EventSystem.cpp in Sources */,
+				022AA8DF1934CECD009A4B84 /* WaveComponent.cpp in Sources */,
 				02FD81731924997C007762C0 /* ParticleRenderObject.cpp in Sources */,
 				02FD81741924997C007762C0 /* LibJpegHelper.cpp in Sources */,
 				02FD81751924997C007762C0 /* LightUpdateSystem.cpp in Sources */,
@@ -4879,6 +4901,7 @@
 				E8B3CBC116B9326E002BD35F /* FTFont.cpp in Sources */,
 				E8B3CBC316B9326E002BD35F /* GraphicsFont.cpp in Sources */,
 				E8B3CBC616B9326E002BD35F /* Sprite.cpp in Sources */,
+				022AA8E41934CED9009A4B84 /* WaveSystem.cpp in Sources */,
 				E8B3CBC816B9326E002BD35F /* TextBlock.cpp in Sources */,
 				E8B3CBCA16B9326E002BD35F /* AnimatedMesh.cpp in Sources */,
 				E8B3CBCC16B9326E002BD35F /* EdgeAdjacency.cpp in Sources */,
@@ -5009,6 +5032,7 @@
 				E8B3CCC416B9326E002BD35F /* ParticleEffectSystem.cpp in Sources */,
 				E8B3CCC816B9326E002BD35F /* RenderUpdateSystem.cpp in Sources */,
 				E8B3CCCA16B9326E002BD35F /* SwitchSystem.cpp in Sources */,
+				022AA8DE1934CECD009A4B84 /* WaveComponent.cpp in Sources */,
 				E8B3CCCC16B9326E002BD35F /* TransformSystem.cpp in Sources */,
 				E8B3CCD016B9326E002BD35F /* UserNode.cpp in Sources */,
 				E8B3CCE716B9326E002BD35F /* ScrollHelper.cpp in Sources */,
