@@ -83,6 +83,7 @@ private slots:
 	void OnImportScreenOrAggregator();
 
 	void OnProjectCreated();
+    void OnProjectLoaded();
 	void OnSelectedScreenChanged();
 	
 	void OnUpdateScaleRequest(float scaleDelta);
@@ -136,7 +137,12 @@ private slots:
 
     // Editing mode (Edit/Preview)
     void OnPreviewTriggered();
-    
+    void OnPreviewModeChanged(int previewSettingsID);
+
+    // Screenshot.
+    void OnScreenshot();
+    void OnSetScreenshotFolder();
+
     // Edit Preview Settings..
     void OnEditPreviewSettings();
     
@@ -199,12 +205,20 @@ private:
     void SetDistributeEnabled(bool value);
 
     // Preview handling.
-    void EnablePreview(const PreviewSettingsData& data);
+    void EnablePreview(const PreviewSettingsData& data, bool applyScale);
+    void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
+
     void UpdatePreviewButton();
+    void UpdatePreviewScale();
 
     // Enable/disable editing controls for Preview mode.
     void EnableEditing(bool value);
+
+    // Set the screenshot folder.
+    void SetScreenshotFolder();
+    
+    void UpdateSaveButtons();
 
 private:
     Ui::MainWindow *ui;
@@ -216,6 +230,7 @@ private:
     QAction* backgroundFrameSelectCustomColorAction;
 
 	bool screenChangeUpdate;
+    QString screenShotFolder;
 };
 
 #endif // MAINWINDOW_H

@@ -45,6 +45,8 @@ namespace Ui {
 	class MaterialEditor;
 }
 
+class QtPropertyDataInspDynamic;
+
 class MaterialEditor : public QDialog, public DAVA::Singleton<MaterialEditor>
 {
 	Q_OBJECT
@@ -66,14 +68,10 @@ public slots:
 	void materialSelected(const QItemSelection & selected, const QItemSelection & deselected);
 
 protected slots:
-    void OnAddFlag();
-    void OnRemFlag();
-    void OnAddProperty();
-	void OnRemProperty();
-	void OnAddTexture();
-	void OnRemTexture();
 	void OnTemplateChanged(int index);
 	void OnPropertyEdited(const QModelIndex &);
+    void OnAddRemoveButton();
+
     void OnMaterialAddGlobal(bool checked);
     void OnMaterialRemoveGlobal(bool checked);
     void OnMaterialSave(bool checked);
@@ -83,10 +81,16 @@ protected:
 	virtual void showEvent(QShowEvent * event);
 
 	void SetCurMaterial(const QList< DAVA::NMaterial *>& materials);
-	void FillMaterialProperties(const QList<DAVA::NMaterial *>& materials);
-    void FillMaterialTemplates(const QList<DAVA::NMaterial *>& materials);
 
-    QVariant CheckForTextureDescriptor(const QVariant& value);
+    void FillBase();
+    void FillDynamic(QtPropertyData *root, const char* dynamicName);
+    void FillDynamicMembers(QtPropertyData *root, DAVA::InspInfoDynamic *dynamic, DAVA::NMaterial *material);
+    void FillTemplates(const QList<DAVA::NMaterial *>& materials);
+
+    void UpdateAllAddRemoveButtons(QtPropertyData *root);
+    void UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data);
+
+    void ClearDynamicMembers(DAVA::NMaterial *material, const DAVA::InspMemberDynamic *dynamicInsp);
 
 private slots:
     void onFilterChanged();
@@ -100,12 +104,9 @@ private:
         CHECKED_NOTHING = 0x0,
 
         CHECKED_TEMPLATE = 0x1,
-        CHECKED_NAME = 0x2,
-        CHECKED_GROUP = 0x4,
-        CHECKED_PROPERTIES = 0x8,
-        CHECKED_TEXTURES = 0x10,
-
-        CHECKED_CLEAR_MATERIAL = 0x20,
+        CHECKED_GROUP = 0x2,
+        CHECKED_PROPERTIES = 0x4,
+        CHECKED_TEXTURES = 0x8,
 
         CHECKED_ALL = 0xff
     };
@@ -114,12 +115,18 @@ private:
     void initTemplates();
     void setTemplatePlaceholder( const QString& text );
     QString GetTemplatePath(int index) const;
-    DAVA::uint32 ExecMaterialLoadingDialog(DAVA::uint32 initialState);
+    DAVA::uint32 ExecMaterialLoadingDialog(DAVA::uint32 initialState, const QString &inputFile);
 
 	Ui::MaterialEditor *ui;
 	QtPosSaver posSaver;
 
 	QList< DAVA::NMaterial *> curMaterials;
+
+    QtPropertyData *baseRoot;
+    QtPropertyData *flagsRoot;
+    QtPropertyData *propertiesRoot;
+    QtPropertyData *illuminationRoot;
+    QtPropertyData *texturesRoot;
 
 	PropertyEditorStateHelper *treeStateHelper;
     ExpandMap expandMap;

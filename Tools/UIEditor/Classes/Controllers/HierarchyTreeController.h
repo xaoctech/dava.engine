@@ -38,6 +38,8 @@
 #include <QObject>
 #include <QString>
 #include <QPoint>
+#include <QDir>
+
 #include "HierarchyTreeScreenNode.h"
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreePlatformNode.h"
@@ -55,6 +57,45 @@ class HierarchyTreeController: public QObject, public Singleton<HierarchyTreeCon
 	Q_OBJECT
 	
 public:
+    // Unused hierarchy items - needed to delete them after save.
+    class BaseUnusedItem
+    {
+        public:
+            BaseUnusedItem() {};
+            virtual ~BaseUnusedItem() {};
+
+            // Delete the appropriate item data from disk.
+            virtual void DeleteFromDisk(const QString& /*baseDir*/) const  = 0;
+
+        protected:
+            // Get the full path to the item based on the base directory.
+            QDir GetFullPath(const QString& baseDir, const QString& dirName) const;
+    };
+
+    class PlatformUnusedItem : public BaseUnusedItem
+    {
+        public:
+            PlatformUnusedItem(const QString& platform) :
+                BaseUnusedItem(), platformName(platform) {};
+        
+            virtual void DeleteFromDisk(const QString& baseDir) const;
+        
+        protected:
+            QString platformName;
+    };
+
+    class ScreenUnusedItem : public PlatformUnusedItem
+    {
+        public:
+            ScreenUnusedItem(const QString& platform, const QString& screen) :
+                PlatformUnusedItem(platform), screenName(screen)  {};
+
+            virtual void DeleteFromDisk(const QString& baseDir) const;
+        
+        protected:
+            QString screenName;
+    };
+
 	typedef List<HierarchyTreeControlNode*> SELECTEDCONTROLNODES;
 	
 	explicit HierarchyTreeController(QObject* parent = NULL);
@@ -137,11 +178,21 @@ public:
     void RepackAndReloadSprites();
     
     // Preview mode control.
-    void EnablePreview(const PreviewSettingsData& data);
+    void EnablePreview(const PreviewSettingsData& data, bool applyScale);
+    void SetPreviewMode(const PreviewSettingsData& data);
     void DisablePreview();
 
     // Set the Stick Mode.
     void SetStickMode(int32 mode);
+
+    // Access to the hierarchy tree nodes list.
+    HierarchyTreeNode::HIERARCHYTREENODESLIST GetNodes() const;
+
+    // Add the unused items.
+    void AddUnusedItem(BaseUnusedItem* item);
+
+    // Perform the physical deletion from the disk of the unused items.
+    void DeleteUnusedItemsFromDisk(const QString& projectPath);
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
@@ -172,7 +223,8 @@ protected slots:
 
 protected:
 	void Clear();
-	
+    void CleanupUnusedItems();
+
 	// Register/unregister nodes removed from scene.
 	void RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	void RegisterNodeDeletedFromScene(HierarchyTreeNode* node);
@@ -188,7 +240,7 @@ protected:
 	// Whether align/distribute is possible.
 	bool CanPerformAlign(eAlignControlsType alignType);
 	bool CanPerformDistribute(eDistributeControlsType distributeType);
-
+    
     // Hierarchy Tree.
     HierarchyTree hierarchyTree;
     
@@ -207,6 +259,9 @@ protected:
 
     // Stick mode set from MainWindow.
     int32 stickMode;
+    
+    // List of unused items to be deleted.
+    List<BaseUnusedItem*> unusedItems;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeController__) */

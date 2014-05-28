@@ -138,6 +138,8 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 
 void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog)
 {
+    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+    
     DVASSERT(0 == texturesForSave.size())
     
     String relativeFilename = fileName.GetRelativePathname(sceneUtils.dataSourceFolder);
@@ -188,6 +190,9 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
 	}
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);
+    
+    uint64 saveTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
+    Logger::Info("Save of %s to folder was done for %ldms", fileName.GetStringValue().c_str(), saveTime);
 }
 
 
@@ -325,7 +330,14 @@ void SceneSaver::CopyEffects(Entity *node)
 
 void SceneSaver::CopyEmitter( ParticleEmitter *emitter)
 {
-	sceneUtils.AddFile(emitter->configPath);
+    if(emitter->configPath.IsEmpty() == false)
+    {
+        sceneUtils.AddFile(emitter->configPath);
+    }
+    else
+    {
+        Logger::Warning("[SceneSaver::CopyEmitter] empty config path for emitter %s", emitter->name.c_str());
+    }
 
 	const Vector<ParticleLayer*> &layers = emitter->layers;
 

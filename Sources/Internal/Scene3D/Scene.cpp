@@ -95,28 +95,32 @@ Texture* Scene::stubTexture2dLightmap = NULL; //this texture should be all-pink 
     
 Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
 	: Entity()
-    , currentCamera(0)
-    , clipCamera(0)
+    , mainCamera(0)
+    , drawCamera(0)
 	, imposterManager(0)
-    ,   systemsMask(_systemsMask)
-    ,   transformSystem(0)
-    ,   renderUpdateSystem(0)
-    ,   lodSystem(0)
-    ,   debugRenderSystem(0)
-    ,   particleEffectSystem(0)
-    ,   updatableSystem(0)
-    ,   lightUpdateSystem(0)
-    ,   switchSystem(0)
-    ,   soundSystem(0)
-    ,   actionSystem(0)
-    ,   skyboxSystem(0)
-    ,   staticOcclusionSystem(0)
-	,   materialSystem(0)
-    ,   foliageSystem(0)
-	,   sceneGlobalMaterial(0)
+    , systemsMask(_systemsMask)
+    , transformSystem(0)
+    , renderUpdateSystem(0)
+    , lodSystem(0)
+    , debugRenderSystem(0)
+    , particleEffectSystem(0)
+    , updatableSystem(0)
+    , lightUpdateSystem(0)
+    , switchSystem(0)
+    , soundSystem(0)
+    , actionSystem(0)
+    , skyboxSystem(0)
+    , staticOcclusionSystem(0)
+	, materialSystem(0)
+    , foliageSystem(0)
+	, sceneGlobalMaterial(0)
+    , isDefaultGlobalMaterial(true)
 {   
 	CreateComponents();
 	CreateSystems();
+
+    // this will force scene to create hidden global material
+    SetGlobalMaterial(NULL);
 }
 
 void Scene::CreateComponents()
@@ -124,7 +128,16 @@ void Scene::CreateComponents()
 
 NMaterial* Scene::GetGlobalMaterial() const
 {
-    return sceneGlobalMaterial;
+    NMaterial *ret = NULL;
+
+    // default global material is for internal use only
+    // so all external object should assume, that scene hasn't any global material
+    if(!isDefaultGlobalMaterial)
+    {
+        ret = sceneGlobalMaterial;
+    }
+
+    return ret;
 }
 
 void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
@@ -134,19 +147,20 @@ void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
     if(NULL != globalMaterial)
     {
         DVASSERT(globalMaterial->GetMaterialType() == NMaterial::MATERIALTYPE_GLOBAL);
+
+        isDefaultGlobalMaterial = false;
         sceneGlobalMaterial = SafeRetain(globalMaterial);
-        InitGlobalMaterial();
     }
+    else
+    {
+        isDefaultGlobalMaterial = true;
+        sceneGlobalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
+    }
+
+    InitGlobalMaterial();
 
     renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
     particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
-}
-
-void Scene::CreateGlobalMaterial()
-{
-    NMaterial *globalMaterial = NMaterial::CreateGlobalMaterial(FastName("Scene_Global_Material"));
-    SetGlobalMaterial(globalMaterial);
-    SafeRelease(globalMaterial);
 }
 
 void Scene::InitGlobalMaterial()
@@ -312,8 +326,8 @@ Scene::~Scene()
 	}
 	cameras.clear();
     
-    SafeRelease(currentCamera);
-    SafeRelease(clipCamera);
+    SafeRelease(mainCamera);
+    SafeRelease(drawCamera);
     
     for (ProxyNodeMap::iterator it = rootNodes.begin(); it != rootNodes.end(); ++it)
     {
@@ -791,12 +805,7 @@ void Scene::Draw()
     //RenderManager::Instance()->SetCullMode(FACE_BACK);
     //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
     RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->ClearDepthBuffer();
-    
-    if (currentCamera)
-    {
-        currentCamera->SetupDynamicParameters();
-    }
+	RenderManager::Instance()->ClearDepthBuffer();       
     
     
     renderSystem->Render();
@@ -830,26 +839,26 @@ void Scene::SceneDidLoaded()
     
 void Scene::SetCurrentCamera(Camera * _camera)
 {
-    SafeRelease(currentCamera);
-    currentCamera = SafeRetain(_camera);
-    SafeRelease(clipCamera);
-    clipCamera = SafeRetain(_camera);
+    SafeRelease(mainCamera);
+    mainCamera = SafeRetain(_camera);
+    SafeRelease(drawCamera);
+    drawCamera = SafeRetain(_camera);
 }
 
 Camera * Scene::GetCurrentCamera() const
 {
-    return currentCamera;
+    return mainCamera;
 }
 
-void Scene::SetClipCamera(Camera * _camera)
+void Scene::SetCustomDrawCamera(Camera * _camera)
 {
-    SafeRelease(clipCamera);
-    clipCamera = SafeRetain(_camera);
+    SafeRelease(drawCamera);
+    drawCamera = SafeRetain(_camera);
 }
 
-Camera * Scene::GetClipCamera() const
+Camera * Scene::GetDrawCamera() const
 {
-    return clipCamera;
+    return drawCamera;
 }
  
 //void Scene::SetForceLodLayer(int32 layer)

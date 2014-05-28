@@ -64,8 +64,10 @@
 #include "DFFontTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
+#include "OpenGLES30FormatTest.h"
 #include "StringFormatTest.h"
 #include "SaveImageTest.h"
+#include "JPEGTest.h"
 #include "DateTimeTest.h"
 
 using namespace DAVA;
@@ -93,7 +95,9 @@ void GameCore::OnAppStarted()
     CreateDocumentsFolder();
 
     new DFFontTest();
-
+    
+    new OpenGLES30FormatTest();
+    new JPEGTest();
     new SaveImageTest();
     
     new StringFormatTest();

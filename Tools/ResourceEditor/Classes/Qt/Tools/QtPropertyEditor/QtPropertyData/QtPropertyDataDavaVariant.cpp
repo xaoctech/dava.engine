@@ -45,9 +45,9 @@
 #include <QKeyEvent>
 
 #define FLOAT_PRINTF_FORMAT1 "% .7f"
-#define FLOAT_PRINTF_FORMAT2 "% .7f, % .7f"
-#define FLOAT_PRINTF_FORMAT3 "% .7f, % .7f, % .7f"
-#define FLOAT_PRINTF_FORMAT4 "% .7f, % .7f, % .7f, % .7f"
+#define FLOAT_PRINTF_FORMAT2 "% .7f; % .7f"
+#define FLOAT_PRINTF_FORMAT3 "% .7f; % .7f; % .7f"
+#define FLOAT_PRINTF_FORMAT4 "% .7f; % .7f; % .7f; % .7f"
 
 QtPropertyDataDavaVariant::QtPropertyDataDavaVariant(const DAVA::VariantType &value)
 	: curVariantValue(value)
@@ -152,7 +152,7 @@ void QtPropertyDataDavaVariant::AddAllowedValue(const DAVA::VariantType& realVal
 
 	if(NULL == allowedButton)
 	{
-		allowedButton = AddButton();
+		allowedButton = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
 		allowedButton->setArrowType(Qt::DownArrow);
 		allowedButton->setAutoRaise(true);
 		//allowedButton->setEnabled(false);
@@ -189,6 +189,56 @@ QtPropertyDataDavaVariant::AllowedValueType QtPropertyDataDavaVariant::GetAllowe
     return allowedValueType;
 }
 
+void QtPropertyDataDavaVariant::SetInspDescription(const DAVA::InspDesc &desc)
+{
+    ClearAllowedValues();
+
+	if(NULL != desc.enumMap)
+	{
+		for(size_t i = 0; i < desc.enumMap->GetCount(); ++i)
+		{
+			int v;
+			if(desc.enumMap->GetValue(i, v))
+			{
+				AddAllowedValue(DAVA::VariantType(v), desc.enumMap->ToString(v));
+			}
+		}
+	}
+
+    const bool isFlags = (desc.type == DAVA::InspDesc::T_FLAGS);
+    if(isFlags)
+    {
+        SetAllowedValueType(QtPropertyDataDavaVariant::TypeFlags);
+    }
+}
+
+QStringList QtPropertyDataDavaVariant::GetFlagsList() const
+{
+    QStringList values;
+
+    switch (allowedValueType)
+    {
+    case TypeFlags:
+        {
+            const int flags = FromDavaVariant(curVariantValue).toInt();
+            for (int i = 0; i < allowedValues.size(); ++i)
+            {
+                const int flag = FromDavaVariant(allowedValues[i].realValue).toInt();
+                if ((flag & flags) == flag)
+                {
+                    const QString visible = allowedValues[i].visibleValue.toString( );
+                    const QString real = QString::number(FromDavaVariant(allowedValues[i].realValue).toInt());
+                    values << (allowedValues[i].visibleValue.isValid()?visible : real);
+                }
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    return values;
+}
 
 QVariant QtPropertyDataDavaVariant::GetToolTip() const
 {
@@ -202,38 +252,22 @@ QVariant QtPropertyDataDavaVariant::GetToolTip() const
             {
                 const int flags = FromDavaVariant( curVariantValue ).toInt();
                 QStringList values;
-                for ( int i = 0; i < allowedValues.size(); ++i )
-                {
-                    const int flag = FromDavaVariant( allowedValues[i].realValue ).toInt();
-                    if ( ( flag & flags ) == flag )
-                    {
-                        const QString visible = allowedValues[i].visibleValue.toString();
-                        const QString real = QString::number( FromDavaVariant( allowedValues[i].realValue ).toInt() );
-                        values << ( allowedValues[i].visibleValue.isValid() ? visible : real );
-                    }
-                }
+                values << QString("Flags: %1").arg(flags);
+                values << GetFlagsList();
                 ret = values.join( "\n" );
             }
             break;
         default:
-            {
-                ret = GetValueAlias();
-            }
             break;
         } // end switch
     }
-    else
+    if (!ret.isValid())
     {
-        switch (curVariantValue.type)
-        {
-        case DAVA::VariantType::TYPE_STRING:
-        case DAVA::VariantType::TYPE_FASTNAME:
-        case DAVA::VariantType::TYPE_FILEPATH:
-            ret = GetValueAlias();
-            break;
-        default:
-            break;
-        }
+        ret = GetValueAlias();
+    }
+    if (!ret.isValid())
+    {
+        ret = GetValue();
     }
 
     return ret;
@@ -253,7 +287,7 @@ QVariant QtPropertyDataDavaVariant::GetValueAlias() const
         if (allowedValueType == TypeFlags)
         {
             const quint64 val = FromDavaVariant(curVariantValue).toULongLong();
-            const QString alias = QString("Flags: %1").arg(val);
+            const QString alias = GetFlagsList().join(" | ");
             ret = alias;
         }
         else
@@ -406,7 +440,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 		break;
 	case DAVA::VariantType::TYPE_COLOR:
 		{
-			QToolButton *colorBtn = AddButton();
+			QToolButton *colorBtn = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
 			colorBtn->setIcon(QIcon(":/QtIcons/color.png"));
 			colorBtn->setIconSize(QSize(12, 12));
 			colorBtn->setAutoRaise(true);
@@ -433,7 +467,7 @@ void QtPropertyDataDavaVariant::ChildsCreate()
 		break;
 	case DAVA::VariantType::TYPE_FILEPATH:
 		{
-			QToolButton *filePathBtn = AddButton();
+			QToolButton *filePathBtn = AddButton(QtPropertyToolButton::ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED);
 			filePathBtn->setIcon(QIcon(":/QtIcons/openscene.png"));
 			filePathBtn->setIconSize(QSize(14, 14));
 			filePathBtn->setAutoRaise(true);
@@ -828,7 +862,7 @@ int QtPropertyDataDavaVariant::ParseFloatList(const QString &str, int maxCount, 
 	if(!str.isEmpty() && maxCount > 0 && NULL != dest)
 	{
 		int pos = 0;
-		QRegExp rx("(-?\\d+([\\.,]\\d+){0,1})");
+		QRegExp rx("(-?(\\d*)([,\\.])(\\d+){0,1})");
 
 		while(index < maxCount && 
 			  (pos = rx.indexIn(str, pos)) != -1)
@@ -937,7 +971,7 @@ QWidget* QtPropertyDataDavaVariant::CreateEditorInternal(QWidget *parent, const 
             case DAVA::VariantType::TYPE_FLOAT:
                 {
                     QLineEdit *sb = new QLineEdit(parent);
-                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d+[,\\.]?\\d*\\s*")));
+                    sb->setValidator(new QRegExpValidator(QRegExp("\\s*-?\\d*[,\\.]?\\d*\\s*")));
                     ret = sb;
                 }
                 break;

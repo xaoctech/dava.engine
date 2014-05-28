@@ -46,6 +46,7 @@ class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
+class DeveloperTools;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -146,9 +147,8 @@ public slots:
     void On2DSpriteDialog();
 	void OnAddEntityFromSceneTree();
 	
-	void OnShowGeneralSettings();
+	void OnShowSettings();
 	void OnOpenHelp();
-	void OnShowCurrentSceneSettings();
 
 	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();
@@ -165,6 +165,7 @@ public slots:
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
+    void OnRebuildCurrentOcclusionCell();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
@@ -183,7 +184,6 @@ public slots:
 	
     void OnAddSoundComponent();
     void OnRemoveSoundComponent();
-	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
 
@@ -280,6 +280,9 @@ private:
 	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
 	// <--
+
+    //Need for any debug functionality
+    DeveloperTools *developerTools;
 };
 
 
