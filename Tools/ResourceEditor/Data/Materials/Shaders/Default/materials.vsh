@@ -91,7 +91,7 @@ uniform mediump vec2 uvScale;
 #endif
 
 #if defined(WIND_ANIMATION)
-uniform lowp vec2 trunkOscillationParams;
+uniform mediump vec2 trunkOscillationParams;
 #endif
 
 #if defined(SPEED_TREE_LEAF)
@@ -103,7 +103,7 @@ uniform lowp vec3 treeLeafColorMul;
 uniform lowp float treeLeafOcclusionOffset;
 uniform lowp float treeLeafOcclusionMul;
 #if defined(WIND_ANIMATION)
-uniform lowp vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
+uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
 #endif
 
