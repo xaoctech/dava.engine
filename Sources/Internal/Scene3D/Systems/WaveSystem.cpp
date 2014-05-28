@@ -33,6 +33,7 @@
 #include "Scene3D/Components/WaveComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene3D/Scene.h"
 #include "Utils/Random.h"
 #include "Math/Math2D.h"
@@ -61,6 +62,8 @@ WaveSystem::WaveSystem(Scene * scene) :
     options->AddObserver(this);
     HandleEvent(options);
 
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
+
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WAVE_TRIGGERED);
 }
 
@@ -75,7 +78,7 @@ void WaveSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
     if(event == EventSystem::WAVE_TRIGGERED)
     {
-        if(!isWavesEnabled)
+        if(!isWavesEnabled || !isVegetationAnimationEnabled)
             return;
 
         waves.push_back(new WaveInfo(GetWaveComponent(entity)));

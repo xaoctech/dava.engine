@@ -69,6 +69,7 @@ protected:
     void ClearWaves();
 
     bool isWavesEnabled;
+    bool isVegetationAnimationEnabled;
 
     Vector<WaveInfo *> waves;
 
