@@ -441,7 +441,10 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));
 #else //defined (__DAVAENGINE_WIN32__)
 #if defined(__DAVAENGINE_ANDROID__)
-	const String& path = pathToCheck.GetAbsolutePathname();
+	String path = pathToCheck.GetAbsolutePathname();
+	if (path.length() &&
+		path.at(path.length() - 1) == '/')
+		path.erase(path.begin() + path.length() - 1);
 	if (IsAPKPath(path))
 		return (dirSet.find(path) != dirSet.end());
 #endif //#if defined(__DAVAENGINE_ANDROID__)
