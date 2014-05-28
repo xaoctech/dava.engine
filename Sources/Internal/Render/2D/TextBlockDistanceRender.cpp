@@ -173,7 +173,6 @@ Size2i TextBlockDistanceRender::InternalDrawText(const WideString& drawText, int
 		return drawRect;
 	
 	renderRect = renderRect.Combine(Rect(0, 0, drawRect.dx, drawRect.dy));
-	
 	this->charDrawed += lastDrawed;
 	return drawRect;
 }
