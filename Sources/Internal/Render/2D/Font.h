@@ -114,7 +114,7 @@ public:
 	 \returns vertical spacing value in pixels
 	 */
 	virtual int32 GetVerticalSpacing() const;
-	
+    
 	/**
 		\brief Split string into substrings.
 		If one word(letters without separators) is longer than targetRectSize.dx, word will not be splitted.
@@ -207,6 +207,11 @@ public:
 protected:
 	// Get the raw hash string (identical for identical fonts).
 	virtual String GetRawHashString();
+    
+    inline bool IsLineEnd(char16 t) const;
+    inline bool IsSpace(char16 t) const;
+    
+    bool IsWordSeparator(char16 t) const;
 
 	static int32 globalFontDPI;
 	
@@ -217,7 +222,17 @@ protected:
 	
 	eFontType fontType;
 };
-		
+    
+inline bool Font::IsLineEnd(char16 t) const
+{
+    return (t == L'\n');
+}
+    
+inline bool Font::IsSpace(char16 t) const
+{
+    return (t == L' ');
+}
+
 };
 
 #endif // __DAVAENGINE_FONT_H__
