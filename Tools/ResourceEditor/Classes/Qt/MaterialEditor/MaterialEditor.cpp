@@ -539,10 +539,10 @@ void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
         }
         }
         // inherited from parent property - should be add button
-        else
+    else
         {
             editEnabled = false;
-            bgColor = QBrush(QColor(0, 0, 0, 25));
+        bgColor = QBrush(QColor(0, 0, 0, 25));
             addRemoveButton->setIcon(QIcon(":/QtIcons/cplus.png"));
             addRemoveButton->setToolTip( "Add property" );
         }
