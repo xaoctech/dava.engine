@@ -36,6 +36,7 @@
 #include "Scene3D/Systems/WindSystem.h"
 #include "Scene3D/Systems/WaveSystem.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 #include "Utils/Random.h"
@@ -50,6 +51,8 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
 
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SPEED_TREE_MAX_ANIMATED_LOD_CHANGED);
@@ -107,13 +110,13 @@ void SpeedTreeUpdateSystem::UpdateAnimationFlag(Entity * entity)
     SpeedTreeObject * treeObject = DynamicTypeCheck<SpeedTreeObject*>(GetRenderObject(entity));
     SpeedTreeComponent * component = GetSpeedTreeComponent(entity);
 
-    int32 lodIndex = isAnimationEnabled ? component->GetMaxAnimatedLOD() : -1;
+    int32 lodIndex = (isAnimationEnabled && isVegetationAnimationEnabled) ? component->GetMaxAnimatedLOD() : -1;
     treeObject->UpdateAnimationFlag(lodIndex);
 }
 
 void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
 {
-    if(!isAnimationEnabled)
+    if(!isAnimationEnabled || !isVegetationAnimationEnabled)
         return;
     
     WindSystem * windSystem = GetScene()->windSystem;

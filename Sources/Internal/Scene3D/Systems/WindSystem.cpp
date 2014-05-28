@@ -34,6 +34,7 @@
 #include "Scene3D/Components/WindComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene3D/Scene.h"
 #include "Utils/Random.h"
 #include "Math/Math2D.h"
@@ -55,6 +56,8 @@ WindSystem::WindSystem(Scene * scene) :
     RenderOptions * options = RenderManager::Instance()->GetOptions();
     options->AddObserver(this);
     HandleEvent(options);
+
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
 
     for(int32 i = 0; i < WIND_TABLE_SIZE; i++)
     {
@@ -95,7 +98,7 @@ void WindSystem::RemoveEntity(Entity * entity)
 
 void WindSystem::Process(float32 timeElapsed)
 {
-    if(!isWindUsed)
+    if(!isAnimationEnabled || !isVegetationAnimationEnabled)
         return;
 
     int32 windCount = winds.size();
@@ -137,7 +140,7 @@ float32 WindSystem::GetWindValueFromTable(const Vector3 & inPosition, const Wind
 void WindSystem::HandleEvent(Observable * observable)
 {
     RenderOptions * options = static_cast<RenderOptions *>(observable);
-    isWindUsed = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+    isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 }
 
 };

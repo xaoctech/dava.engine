@@ -79,13 +79,6 @@ void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)
     }
 }
 
-void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
-{
-    Mesh::Load(archive, serializationContext);
-
-    type = TYPE_SPEED_TREE;
-}
-    
 RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
 {
     if(!newObject)

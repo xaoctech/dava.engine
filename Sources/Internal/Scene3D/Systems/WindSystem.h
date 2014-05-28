@@ -67,7 +67,8 @@ protected:
     float32 GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const;
 
     Vector<WindInfo *> winds;
-    bool isWindUsed;
+    bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
 
     float32 windValuesTable[WIND_TABLE_SIZE];
 };

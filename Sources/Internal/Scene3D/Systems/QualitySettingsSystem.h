@@ -38,6 +38,8 @@
 namespace DAVA
 {
 
+static const FastName QUALITY_OPTION_VEGETATION_ANIMATION("VEGETATION_ANIMATION");
+
 struct TextureQuality
 {
     size_t albedoBaseMipMapLevel;

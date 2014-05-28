@@ -48,8 +48,6 @@ public:
     virtual void RecalcBoundingBox();
     virtual RenderObject * Clone(RenderObject *newObject);
 
-	virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
-
     static bool IsTreeLeafBatch(RenderBatch * batch);
 
     void BindDynamicParams();
