@@ -266,7 +266,7 @@ void main()
     }
     else
     {
-#endif        
+#endif
 
 #if defined(WIND_ANIMATION)
     //inAngleSinCos:        x: cos(T0);  y: sin(T0);
@@ -293,11 +293,12 @@ void main()
     
     gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inPivot) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
 
-#if defined (CUT_LEAF)   
+#endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
+
+#if defined (CUT_LEAF)
     }
 #endif // not CUT_LEAF
 
-#endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
 
 #else // not SPEED_TREE_LEAF
     
