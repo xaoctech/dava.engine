@@ -95,6 +95,8 @@ Font * DFFont::Clone() const
     dfFont->configPath = configPath;
     dfFont->fontTexture = SafeRetain(fontTexture);
     dfFont->fontTextureHandler = fontTextureHandler;
+    dfFont->size = size;
+    dfFont->renderSize = renderSize;
     RenderManager::Instance()->RetainTextureState(fontTextureHandler);
 
     return dfFont;
@@ -195,7 +197,6 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
                 nextKerning = iter->second;
             }
         }
-            
         float32 charWidth = (charDescription.xAdvance + nextKerning) * sizeScale;
         if (charSizes)
             charSizes->push_back(charWidth);
@@ -215,7 +216,8 @@ float32 DFFont::GetSpread() const
 
 float32 DFFont::GetSizeScale() const
 {
-    return size / baseSize;
+    //return size / baseSize;
+    return renderSize / baseSize;
 }
 
 bool DFFont::LoadTexture(const FilePath& path)

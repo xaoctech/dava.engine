@@ -611,7 +611,7 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
                 font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
             }
             
-			fontMap[t->first] = font;
+			//fontMap[t->first] = font;
 			FontManager::Instance()->SetFontName(font, t->first);
 		}
 	}

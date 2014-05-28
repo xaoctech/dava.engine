@@ -126,7 +126,6 @@ protected:
 	int32 cacheW;
 
     int32 fittingType;
-    Vector2 rectSize;
 	Vector2 position;
 	Vector2 pivotPoint;
 	int32 align;
