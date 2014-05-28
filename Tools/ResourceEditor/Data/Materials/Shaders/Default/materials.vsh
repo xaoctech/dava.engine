@@ -164,17 +164,18 @@ uniform vec2 tex0ShiftPerSecond;
 #endif
 
 #if defined(MATERIAL_GRASS_TRANSFORM)
-//uniform vec4 tilePos;
+uniform vec3 tilePos;
 uniform vec3 worldSize;
-//uniform vec2 lodSwitchScale;
+uniform vec2 lodSwitchScale;
 
 uniform vec3 cameraPosition;
 uniform vec3 billboardDirection;
 
-uniform float clusterScaleDensityMap[132];
+//uniform float clusterScaleDensityMap[132];
 
 uniform sampler2D heightmap;
 uniform sampler2D vegetationmap;
+uniform sampler2D densitymap;
 
 uniform vec2 heightmapScale;
 
@@ -299,13 +300,13 @@ void main()
         //clusterScaleDensityMap[0] - density
         //clusterScaleDensityMap[1] - scale
     
-        vec4 clusterCenter = vec4(inBinormal.x + clusterScaleDensityMap[2],
-                                  inBinormal.y + clusterScaleDensityMap[3],
+        vec4 clusterCenter = vec4(inBinormal.x + tilePos.x,
+                                  inBinormal.y + tilePos.y,
                                   inBinormal.z,
                                   inPosition.w);
     
-        vec4 pos = vec4(inPosition.x + clusterScaleDensityMap[2],
-                        inPosition.y + clusterScaleDensityMap[3],
+        vec4 pos = vec4(inPosition.x + tilePos.x,
+                        inPosition.y + tilePos.y,
                         inPosition.z,
                         inPosition.w);
     
@@ -335,25 +336,21 @@ void main()
         pos.z += height;
         clusterCenter.z += height;
     
+        highp vec4 densityMapVec = texture2DLod(densitymap, hUV, 0.0);
+    
         int clusterType = int(inTangent.y);
         int vertexTileIndex = int(inTangent.x);
     
-        lowp float densityFactor;
+        float clusterChannelDesc = densityMapVec[clusterType] * 255.0;
+        float clusterDensity = 1.0 + clusterChannelDesc - (floor(clusterChannelDesc / 16.0) * 16.0);
+        float clusterScale = tilePos.z * ((clusterChannelDesc - clusterDensity) / 240.0);
+
+        float densityFactor;
     
-        lowp float clusterDensity = clusterScaleDensityMap[4 + vertexTileIndex + clusterType];;
-        lowp float clusterScale = clusterScaleDensityMap[4 + vertexTileIndex + 4 + clusterType];
-        lowp float clusterLodScale = 1.0;
-    
-        if(int(inTexCoord1.x) == int(clusterScaleDensityMap[0]))
+        if(int(inTexCoord1.x) == int(lodSwitchScale.x))
         {
-            clusterLodScale = clusterScaleDensityMap[1];
+            clusterScale *= lodSwitchScale.y;
         }
-    
-        vec4 lodScaledPos = pos;
-        lodScaledPos.z = 0.0;
-        lodScaledPos = mix(clusterCenter, lodScaledPos, clusterLodScale);
-    
-        pos.xy = lodScaledPos.xy;
     
 #if defined(MATERIAL_GRASS_BLEND)
         varTexCoord2.x = clusterLodScale;
@@ -368,26 +365,13 @@ void main()
             densityFactor = 0.0;
         }
     
-        lowp vec4 vegetationMask = texture2DLod(vegetationmap, hUV, 0.0);
+        vec4 vegetationMask = texture2DLod(vegetationmap, hUV, 0.0);
     
 #if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
         varVegetationColor = vegetationMask.rgb;
 #endif
     
         pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale * densityFactor);
-    
-        //VI: don't calculate perturbation. Revise the code after oscillators etc have been integrated
-        //vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
-    
-        //if(pos.z > (clusterCenter.z + 0.1))
-        //{
-        //    pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
-        //}
-
-        //gl_Position = worldViewProjMatrix * pos;
-        //gl_Position = projMatrix * pos;
-        //gl_Position = projMatrix * (worldViewMatrix * vec4(0.0, 0.0, 0.0, 1.0) + vec4(pos.xy, 0.0, 0.0));
-    
     
         gl_Position = worldViewProjMatrix * pos;
 #else

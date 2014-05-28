@@ -7,6 +7,7 @@ uniform sampler2D vegetationmap = 2
 uniform sampler2D normalmap = 2;
 uniform sampler2D cubemap = 3;
 uniform sampler2D heightmap = 4;
+uniform sampler2D densitymap = 5;
 
 uniform float inGlossiness = 0.5;
 uniform float inSpecularity = 1.0;

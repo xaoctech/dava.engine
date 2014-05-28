@@ -152,8 +152,8 @@ VegetationRenderObject::VegetationRenderObject() :
     unitWorldSize.resize(COUNT_OF(RESOLUTION_SCALE));
     resolutionRanges.resize(COUNT_OF(RESOLUTION_INDEX));
     
-    uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
-    shaderScaleDensityUniforms.resize(maxParams + PER_TILE_DATA_OFFSET);
+    //uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
+    //shaderScaleDensityUniforms.resize(maxParams + PER_TILE_DATA_OFFSET);
     
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
@@ -310,6 +310,8 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         else
         {
             SetLayerClusterLimit(archive->GetVector4("vro.clusterLayerLimit"));
+            //Vector4 fakeClusterLimit(24, 1, 1, 1);
+            //SetLayerClusterLimit(fakeClusterLimit);
         }
 
 		String vegmap = archive->GetString("vro.vegmap");
@@ -379,9 +381,11 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     
     std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
-    //Vector2 posScale(0.0f,
-    //                 0.0f);
-    //Vector2 switchLodScale;
+    Vector3 posScale(0.0f,
+                    0.0f,
+                    0.0f);
+    
+    Vector2 switchLodScale;
     
     //Vector3 billboardDirection = -1.0f * camera->GetLeft();
     //billboardDirection.Normalize();
@@ -420,35 +424,43 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             size_t directionIndex = SelectDirectionIndex(camera, rdoVector[indexBufferIndex]);
             rb->SetRenderDataObject(rdoVector[indexBufferIndex][directionIndex].rdo);
             
-            SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
+            //SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
             
-            //posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
-            //posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            float32 distanceScale = 1.0f;
             
-            //switchLodScale.x = resolutionIndex;
-            //switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
+            if(treeNode->data.cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
+            {
+                distanceScale = Clamp(1.0f - ((treeNode->data.cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
+            }
+            
+            posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            posScale.z = distanceScale;
+            
+            switchLodScale.x = resolutionIndex;
+            switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
             
-            shaderScaleDensityUniforms[0] = resolutionIndex;
-            shaderScaleDensityUniforms[1] = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
+            //shaderScaleDensityUniforms[0] = resolutionIndex;
+            //shaderScaleDensityUniforms[1] = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
-            shaderScaleDensityUniforms[2] = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);;
-            shaderScaleDensityUniforms[3] = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+            //shaderScaleDensityUniforms[2] = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);;
+            //shaderScaleDensityUniforms[3] = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
             
-            //mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
-            //                      Shader::UT_FLOAT_VEC2,
-            //                      1,
-            //                      switchLodScale.data);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
+                                  Shader::UT_FLOAT_VEC2,
+                                  1,
+                                  switchLodScale.data);
             
-            //mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_TILEPOS,
-            //                      Shader::UT_FLOAT_VEC4,
-            //                      1,
-            //                      posScale.data);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_TILEPOS,
+                                  Shader::UT_FLOAT_VEC3,
+                                  1,
+                                  posScale.data);
             
-            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
-                                  Shader::UT_FLOAT,
-                                  shaderScaleDensityUniforms.size(),
-                                  &shaderScaleDensityUniforms[0]);
+            //mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
+            //                      Shader::UT_FLOAT,
+            //                      shaderScaleDensityUniforms.size(),
+            //                      &shaderScaleDensityUniforms[0]);
             
 #ifdef VEGETATION_DRAW_LOD_COLOR
             mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
@@ -1045,6 +1057,7 @@ void VegetationRenderObject::CreateRenderData()
     props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
     props->SetString(NMaterial::TEXTURE_ALBEDO.c_str(), albedoTexturePath.GetAbsolutePathname());
     props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str(), lightmapTexturePath.GetAbsolutePathname());
+    props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP.c_str(), vegetationMapPath.GetAbsolutePathname());
     
     vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
     

@@ -218,7 +218,7 @@ private:
     
     RenderBatchPool renderBatchPool;
     
-    Vector<float32> shaderScaleDensityUniforms;
+    //Vector<float32> shaderScaleDensityUniforms;
     
     Vector<VegetationRenderData*> renderData;
     
