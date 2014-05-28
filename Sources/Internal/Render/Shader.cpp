@@ -1192,10 +1192,11 @@ void Shader::BindDynamicParameters()
             }
             case PARAM_WORLD_VIEW_OBJECT_CENTER:
             {
+                RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
                 if (_updateSemantic != currentUniform->updateSemantic)
                 {
-                    AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(PARAM_LOCAL_BOUNDING_BOX);
                     Matrix4 * worldView = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
                     Vector3 param = objectBox->GetCenter() * (*worldView);
                     SetUniformValueByUniform(currentUniform, param);
