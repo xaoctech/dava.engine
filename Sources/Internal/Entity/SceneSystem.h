@@ -48,10 +48,34 @@ public:
     inline void SetRequiredComponents(uint32 requiredComponents);
     inline uint32 GetRequiredComponents() const;
     
+    /**
+        \brief  This function is called when any entity added to scene.
+                It sorts out is entity has all necessary components and we need to call AddEntity.
+        \param[in] entity entity we've just added
+     */
+    virtual void AddEntityIfRequired(Entity * entity);
+    /**
+        \brief  This function is called when any entity removed from scene.
+                It sorts out is entity has all necessary components and we need to call RemoveEntity.
+        \param[in] entity entity we've just removed
+     */
+    virtual void RemoveEntityIfNotRequired(Entity * entity);
+    
+    /**
+        \brief This function is called only when entity has all required components
+        \param[in] entity entity we've just added
+     */
     virtual void AddEntity(Entity * entity);
+    
+    /**
+        \brief This function is called only when entity had all required components, and dont have them anymore. 
+        \param[in] entity entity we've just removed
+     */
     virtual void RemoveEntity(Entity * entity);
-	virtual void AddComponent(Entity * entity, Component * component);
+	
+    virtual void AddComponent(Entity * entity, Component * component);
 	virtual void RemoveComponent(Entity * entity, Component * component);
+    
     virtual void SceneDidLoaded();
 
     virtual void ImmediateEvent(Entity * entity, uint32 event);

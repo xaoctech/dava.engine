@@ -471,12 +471,12 @@ void Entity::SetScene(Scene * _scene)
 	// РЎheck
 	if (scene)
 	{
-		scene->UnregisterNode(this);
+		scene->UnregisterEntity(this);
 	}
 	scene = _scene;
 	if (scene)
 	{
-		scene->RegisterNode(this);
+		scene->RegisterEntity(this);
 		GlobalEventSystem::Instance()->PerformAllEventsFromCache(this);
 	}
 		

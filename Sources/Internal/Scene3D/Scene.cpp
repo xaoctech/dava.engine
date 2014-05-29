@@ -368,86 +368,44 @@ Scene::~Scene()
 	SafeDelete(renderSystem);
 }
 
-void Scene::RegisterNode(Entity * node)
+void Scene::RegisterEntity(Entity * entity)
 {
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-        bool needAdd = ((requiredComponents & node->componentFlags) == requiredComponents);
-        
-        if (needAdd)
-            systems[k]->AddEntity(node);
+        systems[k]->AddEntityIfRequired(entity);
     }
 }
 
-void Scene::UnregisterNode(Entity * node)
+void Scene::UnregisterEntity(Entity * entity)
 {
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-        bool needRemove = ((requiredComponents & node->componentFlags) == requiredComponents);
-        
-        if (needRemove)
-            systems[k]->RemoveEntity(node);
+        systems[k]->RemoveEntityIfNotRequired(entity);
     }
 }
     
 void Scene::AddComponent(Entity * entity, Component * component)
 {
 	DVASSERT(entity && component);
-
-    uint32 componentFlags = entity->componentFlags;
-	uint32 componentType = 1 << component->GetType();
-
 	uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-		bool entityForSystem = ((componentFlags & requiredComponents) == requiredComponents);
-		bool componentForSystem = ((requiredComponents & componentType) == componentType);
-		if(entityForSystem && componentForSystem) 
-		{
-			if (entity->GetComponentCount(component->GetType()) == 1)
-			{
-				systems[k]->AddEntity(entity);
-			}
-			else
-			{
-				systems[k]->AddComponent(entity, component);
-			}
-		}
+        systems[k]->AddEntityIfRequired(entity);
     }
 }
     
 void Scene::RemoveComponent(Entity * entity, Component * component)
 {
 	DVASSERT(entity && component);
-
-	uint32 componentFlags = entity->componentFlags;
-	uint32 componentType = 1 << component->GetType();
-
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-		uint32 requiredComponents = systems[k]->GetRequiredComponents();
-		bool entityForSystem = ((componentFlags & requiredComponents) == requiredComponents);
-		bool componentForSystem = ((requiredComponents & componentType) == componentType);
-		if(entityForSystem && componentForSystem) 
-		{
-			if (entity->GetComponentCount(component->GetType()) == 1) 
-			{
-				systems[k]->RemoveEntity(entity);
-			}
-			else
-			{
-				systems[k]->RemoveComponent(entity, component);
-			}
-		}
+        systems[k]->RemoveEntityIfNotRequired(entity);
     }
 }
-    
+
 #if 0 // Removed temporarly if everything will work with events can be removed fully.
 void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
 {

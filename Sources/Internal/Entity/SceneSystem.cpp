@@ -28,6 +28,7 @@
 
 
 #include "Entity/SceneSystem.h"
+#include "Scene3D/Entity.h"
 
 namespace DAVA 
 {
@@ -42,6 +43,24 @@ SceneSystem::SceneSystem(Scene * _scene)
 SceneSystem::~SceneSystem()
 {
     
+}
+    
+void SceneSystem::AddEntityIfRequired(Entity * entity)
+{
+    uint32 requiredComponents = this->GetRequiredComponents();
+    bool needAdd = ((requiredComponents & entity->GetAvailableComponentFlags()) == requiredComponents);
+
+    if (needAdd)
+        this->AddEntity(entity);
+}
+    
+void SceneSystem::RemoveEntityIfNotRequired(Entity * entity)
+{
+    uint32 requiredComponents = this->GetRequiredComponents();
+    bool needRemove = ((requiredComponents & entity->GetAvailableComponentFlags()) == requiredComponents);
+
+    if (needRemove)
+        this->RemoveEntity(entity);
 }
 
 void SceneSystem::AddEntity(Entity * entity)

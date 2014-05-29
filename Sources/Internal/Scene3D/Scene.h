@@ -119,8 +119,8 @@ public:
     /**
         \brief Function to register node in scene. This function is called when you add node to the node that already in the scene. 
      */
-    virtual void    RegisterNode(Entity * entity);
-    virtual void    UnregisterNode(Entity * entity);
+    virtual void    RegisterEntity(Entity * entity);
+    virtual void    UnregisterEntity(Entity * entity);
     
     virtual void    AddComponent(Entity * entity, Component * component);
     virtual void    RemoveComponent(Entity * entity, Component * component);
