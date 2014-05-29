@@ -97,8 +97,7 @@ void WaveSystem::Process(float32 timeElapsed)
         if(info->currentWaveRadius >= info->maxRadius)
         {
             SafeDelete(info);
-            waves[index] = waves[waves.size()-1];
-            waves.pop_back();
+            RemoveExchangingWithLast(waves, index);
             size--;
         }
         else
