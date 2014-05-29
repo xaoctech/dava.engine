@@ -407,7 +407,6 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
         
         for(size_t resolutionIndex = 0; resolutionIndex < resolutionCount; ++resolutionIndex)
         {
-            //Vector<VertexRangeData>& vertexBuffers = markedRenderData[layerIndex].vertexOffset[resolutionIndex];
             Vector<Vector<SortBufferData> >& sortedIndexBuffers = markedRenderData[layerIndex].indexOffset[resolutionIndex];
             
             indexBuffers.push_back(Vector<Vector<SortedBufferItem> >());
@@ -416,17 +415,6 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
             size_t cellCount = sortedIndexBuffers.size();
             for(size_t cellIndex = 0; cellIndex < cellCount; ++cellIndex)
             {
-                //VertexRangeData& rangeData = vertexBuffers[cellIndex];
-                
-                //RenderDataObject* vertexRDO = new RenderDataObject();
-                //vertexRDO->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].coord));
-                //vertexRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].normal));
-                //vertexRDO->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].binormal));
-                //vertexRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[rangeData.index].tangent));
-                //vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[rangeData.index].texCoord0));
-                //vertexRDO->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[rangeData.index].texCoord1));
-                //vertexRDO->BuildVertexBuffer(rangeData.size, true);
-            
                 currentResolutionIndexBuffers.push_back(Vector<SortedBufferItem>());
                 Vector<SortedBufferItem>& sortedIndexBufferItems = currentResolutionIndexBuffers[currentResolutionIndexBuffers.size() - 1];
                 

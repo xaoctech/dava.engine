@@ -225,9 +225,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(RenderSystem * r
 
 void MainForwardRenderPass::Draw(RenderSystem * renderSystem)
 {
-    needWaterPrepass = true;
-    
-    Camera *mainCamera = renderSystem->GetMainCamera();        
+    Camera *mainCamera = renderSystem->GetMainCamera();
     Camera *drawCamera = renderSystem->GetDrawCamera();   
     DVASSERT(mainCamera);
     DVASSERT(drawCamera);
