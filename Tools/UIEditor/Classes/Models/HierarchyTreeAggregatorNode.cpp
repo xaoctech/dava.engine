@@ -49,7 +49,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	this->rect = rect;
 	screen->SetRect(rect);
 	
-	LibraryController::Instance()->AddControl(this);
+	if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
 }
 
 HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
@@ -60,7 +63,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	this->rect = base->GetRect();
 	screen->SetRect(rect);
 
-	LibraryController::Instance()->AddControl(this);
+	if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
 }
 
 HierarchyTreeAggregatorNode::~HierarchyTreeAggregatorNode()
@@ -152,6 +158,15 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		{
 			UIControl* control = (*iter);
 			UIControl* newControl = control->Clone();
+            
+            UIList* controlIsList = dynamic_cast<UIList*>(control);
+            if (controlIsList)
+            {
+                EditorListDelegate* delegate = dynamic_cast<EditorListDelegate*>(controlIsList->GetDelegate());
+                SafeRetain(delegate);
+                static_cast<UIList*>(newControl)->SetDelegate(delegate);
+            }
+
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
 			aggregatorControl->AddAggregatorChild(newControl);
             newControl->Release();
