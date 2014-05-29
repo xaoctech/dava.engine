@@ -124,6 +124,8 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	{
 		yOffset += Max(0.f, (textBlock->rectSize.dy - renderRect.dy) * 0.5f);
 	}
+    RenderManager::Instance()->ClipPush();
+    RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->rectSize.dx, textBlock->rectSize.dy));
     
     RenderManager::Instance()->PushDrawMatrix();
     RenderManager::Instance()->SetDrawTranslate(Vector2(xOffset, yOffset));
@@ -146,6 +148,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, charDrawed * 6, EIF_16, this->indexBuffer);
     
     RenderManager::Instance()->PopDrawMatrix();
+    RenderManager::Instance()->ClipPop();
 }
 	
 Size2i TextBlockDistanceRender::DrawTextSL(const WideString& drawText, int32 x, int32 y, int32 w)
