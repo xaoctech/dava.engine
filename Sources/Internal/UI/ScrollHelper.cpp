@@ -127,8 +127,11 @@ namespace DAVA
 	
 	float ScrollHelper::GetPosition(float positionDelta, float timeDelta, bool isPositionLocked)
 	{
-        DVASSERT(virtualViewSize != 0.0f);
-
+        if (virtualViewSize == 0.0f)
+        {
+            return 0.0f;
+        }
+        
 		if(isPositionLocked)
 		{
 			if(position + positionDelta > 0)
