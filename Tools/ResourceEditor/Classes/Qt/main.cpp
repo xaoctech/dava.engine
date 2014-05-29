@@ -44,6 +44,7 @@
 #include "CommandLine/TextureDescriptor/TextureDescriptorUtils.h"
 #include "FileSystem/ResourceArchive.h"
 #include "TextureBrowser/TextureCache.h"
+#include "LicenceDialog/LicenceDialog.h"
 
 #include "Qt/Settings/SettingsManager.h"
 #include "Qt/Tools/RunGuard/RunGuard.h"
@@ -52,19 +53,17 @@
 #include "Deprecated/SceneValidator.h"
 #include "Deprecated/ControlsFactory.h"
 
-#include "Scene/FogSettingsChangedReceiver.h"
-
 #if defined (__DAVAENGINE_MACOS__)
 	#include "Platform/Qt/MacOS/QtLayerMacOS.h"
 #elif defined (__DAVAENGINE_WIN32__)
 	#include "Platform/Qt/Win32/QtLayerWin32.h"
-	#include "Platform/Qt/Win32/CorePlatformWin32.h"
+	#include "Platform/Qt/Win32/CorePlatformWin32Qt.h"
 #endif
 
 #ifdef __DAVAENGINE_BEAST__
 #include "BeastProxyImpl.h"
 #else
-#include "BeastProxy.h"
+#include "Beast/BeastProxy.h"
 #endif //__DAVAENGINE_BEAST__
 
 void UnpackHelpDoc();
@@ -111,10 +110,13 @@ int main(int argc, char *argv[])
 
 	if(cmdLine.IsEnabled())
 	{
+		Core::Instance()->EnableConsoleMode();
+
         DAVA::Logger::Instance()->SetLogLevel(DAVA::Logger::LEVEL_WARNING);
         
 		new SceneValidator();
 		DavaGLWidget* davaGL = new DavaGLWidget();
+        RenderManager::Instance()->DetectRenderingCapabilities();
 
 		//DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
 		//DAVA::Logger::AddCustomOutput(out);
@@ -139,35 +141,37 @@ int main(int argc, char *argv[])
 	}
 	else if ( runGuard.tryToRun() )
 	{
-		new SceneValidator();
-        new TextureCache();
-		new FogSettingsChangedReceiver();
+        LicenceDialog licenceDlg;
+        if ( licenceDlg.process() )
+        {
+            new SceneValidator();
+            new TextureCache();
 
-		LocalizationSystem::Instance()->SetCurrentLocale("en");
-		LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
+		    LocalizationSystem::Instance()->SetCurrentLocale("en");
+		    LocalizationSystem::Instance()->InitWithDirectory("~res:/Strings/");
 
-		DAVA::Texture::SetDefaultGPU((eGPUFamily)SettingsManager::Instance()->GetValue("TextureViewGPU", SettingsManager::INTERNAL).AsInt32());
+		    DAVA::Texture::SetDefaultGPU((eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
 
-		// check and unpack help documents
-		UnpackHelpDoc();
+		    // check and unpack help documents
+		    UnpackHelpDoc();
 
-		// create and init UI
-		new QtMainWindow();
-		QtMainWindow::Instance()->EnableGlobalTimeout(true);
-		QtMainWindow::Instance()->show();
-		ProjectManager::Instance()->ProjectOpenLast();
-        if(ProjectManager::Instance()->IsOpened())
-            QtMainWindow::Instance()->OnSceneNew();
+		    // create and init UI
+		    new QtMainWindow();
+		    QtMainWindow::Instance()->EnableGlobalTimeout(true);
+		    QtMainWindow::Instance()->show();
+		    ProjectManager::Instance()->ProjectOpenLast();
+            if(ProjectManager::Instance()->IsOpened())
+                QtMainWindow::Instance()->OnSceneNew();
 
-		// start app
-		ret = a.exec();
+		    // start app
+		    ret = a.exec();
 
-		QtMainWindow::Instance()->Release();
-		ControlsFactory::ReleaseFonts();
+		    QtMainWindow::Instance()->Release();
+		    ControlsFactory::ReleaseFonts();
 
-		SceneValidator::Instance()->Release();
-        TextureCache::Instance()->Release();
-		FogSettingsChangedReceiver::Instance()->Release();
+		    SceneValidator::Instance()->Release();
+            TextureCache::Instance()->Release();
+        }
 	}
 
 	EditorConfig::Instance()->Release();
@@ -182,7 +186,7 @@ int main(int argc, char *argv[])
 
 void UnpackHelpDoc()
 {
-	DAVA::String editorVer =SettingsManager::Instance()->GetValue("editor.version", SettingsManager::INTERNAL).AsString();
+	DAVA::String editorVer =SettingsManager::GetValue(Settings::Internal_EditorVersion).AsString();
 	DAVA::FilePath docsPath = FilePath(ResourceEditor::DOCUMENTATION_PATH);
 	if(editorVer != RESOURCE_EDITOR_VERSION || !docsPath.Exists())
 	{
@@ -196,5 +200,5 @@ void UnpackHelpDoc()
 		}
 		DAVA::SafeRelease(helpRA);
 	}
-	SettingsManager::Instance()->SetValue("editor.version", VariantType(String(RESOURCE_EDITOR_VERSION)), SettingsManager::INTERNAL);
+	SettingsManager::SetValue(Settings::Internal_EditorVersion, VariantType(String(RESOURCE_EDITOR_VERSION)));
 }

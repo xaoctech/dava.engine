@@ -93,7 +93,8 @@ void HierarchyTreeAggregatorNode::SetRect(const Rect& rect)
 
 Rect HierarchyTreeAggregatorNode::GetRect() const
 {
-	return this->rect;
+    // Need to override because GetRect() implementation of HierarchyTreeScreenNode does additional processing.
+    return this->rect;
 }
 
 void HierarchyTreeAggregatorNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
@@ -151,6 +152,15 @@ void HierarchyTreeAggregatorNode::UpdateChilds()
 		{
 			UIControl* control = (*iter);
 			UIControl* newControl = control->Clone();
+            
+            UIList* controlIsList = dynamic_cast<UIList*>(control);
+            if (controlIsList)
+            {
+                EditorListDelegate* delegate = dynamic_cast<EditorListDelegate*>(controlIsList->GetDelegate());
+                SafeRetain(delegate);
+                static_cast<UIList*>(newControl)->SetDelegate(delegate);
+            }
+
 			aggregatorControl->InsertChildBelow(newControl, belowControl);
 			aggregatorControl->AddAggregatorChild(newControl);
             newControl->Release();

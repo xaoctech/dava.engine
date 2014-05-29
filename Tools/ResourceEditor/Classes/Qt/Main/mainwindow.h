@@ -46,6 +46,7 @@ class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
+class DeveloperTools;
 class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
@@ -119,6 +120,11 @@ public slots:
 	void OnPlaceOnLandscape();
 	void OnSnapToLandscape();
 	void OnResetTransform();
+    void OnLockTransform();
+    void OnUnlockTransform();
+
+    void OnCenterPivotPoint();
+    void OnZeroPivotPoint();
 
 	void OnMaterialEditor();
 	void OnTextureBrowser();
@@ -129,6 +135,7 @@ public slots:
 	
 	void OnAddLandscape();
     void OnAddSkybox();
+    void OnAddVegetation();
 	void OnLightDialog();
 	void OnCameraDialog();
 	void OnEmptyEntity();
@@ -136,13 +143,12 @@ public slots:
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
 	void OnParticleEffectDialog();
-    void OnEditor2DCameraDialog();
-    void OnEditorSpriteDialog();
+    void On2DCameraDialog();
+    void On2DSpriteDialog();
 	void OnAddEntityFromSceneTree();
 	
-	void OnShowGeneralSettings();
+	void OnShowSettings();
 	void OnOpenHelp();
-	void OnShowCurrentSceneSettings();
 
 	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();
@@ -159,6 +165,7 @@ public slots:
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
+    void OnRebuildCurrentOcclusionCell();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
@@ -173,12 +180,10 @@ public slots:
 	void OnTilemaskEditor();
 	void OnVisibilityTool();
 	void OnNotPassableTerrain();
+    void OnGrasEditor();
 	
-	void OnAddActionComponent();
-    void OnAddStaticOcclusionComponent();
-    void OnAddModelTypeComponent();
-
-	void OnObjectsTypeMenuWillShow();
+    void OnAddSoundComponent();
+    void OnRemoveSoundComponent();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
 
@@ -187,11 +192,10 @@ public slots:
 
     void OnMaterialLightViewChanged(bool);
     void OnCustomQuality();
-    
-    // Perform grid copy
-    void OnDebugFunctionsGridCopy();
 
     void OnReloadShaders();
+
+    void OnSwitchWithDifferentLODs(bool checked);
     
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
@@ -225,6 +229,7 @@ protected slots:
 	void SceneCommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 	void SceneActivated(SceneEditor2 *scene);
 	void SceneDeactivated(SceneEditor2 *scene);
+	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     void OnGlobalInvalidateTimeout();
 
@@ -233,6 +238,7 @@ protected slots:
 	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
 
 	void UnmodalDialogFinished(int);
+
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
@@ -253,6 +259,7 @@ private:
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
 	void UpdateConflictingActionsState(bool enable);
+    void UpdateModificationActionsState();
 
 	void LoadViewState(SceneEditor2 *scene);
 	void LoadUndoRedoState(SceneEditor2 *scene);
@@ -273,6 +280,9 @@ private:
 	bool LoadAppropriateTextureFormat();
 	bool IsSavingAllowed();
 	// <--
+
+    //Need for any debug functionality
+    DeveloperTools *developerTools;
 };
 
 

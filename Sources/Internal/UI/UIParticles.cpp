@@ -57,6 +57,10 @@ UIParticles::UIParticles(const Rect &rect, bool rectInAbsoluteCoordinates)
     , system(new ParticleEffectSystem(NULL, true))
     , updateTime(0)
     , isAutostart(false)
+    , startDelay(0.0f)
+    , delayedActionType(UIParticles::actionNone)
+    , delayedActionTime(0.0f)
+    , delayedDeleteAllParticles(false)
 {
     matrix.Identity();    
 }
@@ -69,12 +73,36 @@ UIParticles::~UIParticles()
     SafeDelete(effect);
 }
 
+void UIParticles::WillAppear()
+{
+    updateTime = 0.0f;
+}
 
 void UIParticles::Start()
 {
+    if (FLOAT_EQUAL(startDelay, 0.0f))
+    {
+        DoStart();
+    }
+    else
+    {
+        delayedActionType = actionStart;
+        delayedActionTime = 0.0f;
+    }
+}
+    
+void UIParticles::DoStart()
+{
     DVASSERT(effect);
     updateTime = 0;
-    effect->isPaused = false;    
+
+    if (effect->state == ParticleEffectComponent::STATE_STARTING ||
+        effect->state == ParticleEffectComponent::STATE_PLAYING)
+    {
+        return;
+    }
+
+    effect->isPaused = false;
     system->AddToActive(effect);
     effect->effectRenderObject->SetEffectMatrix(&matrix);
     system->RunEffect(effect);
@@ -84,7 +112,9 @@ void UIParticles::Stop(bool isDeleteAllParticles)
 {
     DVASSERT(effect);
     updateTime = 0;
+    
     if (effect->state == ParticleEffectComponent::STATE_STOPPED) return;
+    
     if (isDeleteAllParticles)
     {
         effect->ClearCurrentGroups();		
@@ -118,14 +148,30 @@ bool UIParticles::IsPaused()
 
 void UIParticles::Restart(bool isDeleteAllParticles)
 {
+    delayedDeleteAllParticles = isDeleteAllParticles;
+    if (FLOAT_EQUAL(startDelay, 0.0f))
+    {
+        DoRestart();
+    }
+    else
+    {
+        delayedActionType = actionRestart;
+        delayedActionTime = 0.0f;
+    }
+}
+    
+void UIParticles::DoRestart()
+    {
     DVASSERT(effect);
     effect->isPaused = false;
-    if (isDeleteAllParticles)
+    if (delayedDeleteAllParticles)
+    {
         effect->ClearCurrentGroups();
+    }
+
     effect->currRepeatsCont = 0;
     system->RunEffect(effect);
 }
-
 
 void UIParticles::AddControl(UIControl *control)
 {
@@ -135,7 +181,11 @@ void UIParticles::AddControl(UIControl *control)
     
 void UIParticles::Update(float32 timeElapsed)
 {
-    updateTime += timeElapsed;        
+    updateTime = timeElapsed;        
+    if (delayedActionType != UIParticles::actionNone)
+    {
+        HandleDelayedAction(timeElapsed);
+    }
 }
 
 void UIParticles::Draw(const UIGeometricData & geometricData)
@@ -223,7 +273,6 @@ YamlNode * UIParticles::SaveToYamlNode(UIYamlLoader * loader)
     UIParticles* baseControl = new UIParticles();
 
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-    SetPreferredNodeType(node, "UIParticles");
     
     if (baseControl->GetEffectPath() != effectPath)
     {
@@ -234,8 +283,34 @@ YamlNode * UIParticles::SaveToYamlNode(UIYamlLoader * loader)
     {
         node->Set("autoStart", isAutostart);
     }
+    
+    if (baseControl->GetStartDelay() != startDelay)
+    {
+        node->Set("startDelay", startDelay);
+    }
 
     return node;
+}
+
+UIControl* UIParticles::Clone()
+{
+    UIParticles *particles = new UIParticles(GetRect());
+    particles->CopyDataFrom(this);
+    return particles;
+}
+    
+void UIParticles::CopyDataFrom(UIControl *srcControl)
+{
+    UIControl::CopyDataFrom(srcControl);
+    UIParticles* particles = (UIParticles*) srcControl;
+
+    SetStartDelay(particles->GetStartDelay());
+    SetAutostart(particles->IsAutostart());
+
+    if (!particles->effectPath.IsEmpty())
+    {
+        Load(particles->effectPath);
+    }
 }
 
 void UIParticles::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
@@ -244,10 +319,16 @@ void UIParticles::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 
     const YamlNode * effectPathNode = node->Get("effectPath");
 	const YamlNode * autoStartNode = node->Get("autoStart");
+    const YamlNode * startDelayNode = node->Get("startDelay");
 
     if (effectPathNode)
     {
         Load(effectPathNode->AsString());
+    }
+
+    if (startDelayNode)
+    {
+        SetStartDelay(startDelayNode->AsFloat());
     }
     
     if (autoStartNode)
@@ -261,6 +342,46 @@ void UIParticles::HandleAutostart()
     if (isAutostart && effect)
     {
         Start();
+    }
+}
+
+float32 UIParticles::GetStartDelay() const
+{
+    return startDelay;
+}
+
+void UIParticles::SetStartDelay(float32 value)
+{
+    startDelay = value;
+}
+    
+void UIParticles::HandleDelayedAction(float32 timeElapsed)
+{
+    delayedActionTime += timeElapsed;
+    if (delayedActionTime >= startDelay)
+    {
+        switch (delayedActionType)
+        {
+            case UIParticles::actionStart:
+            {
+                DoStart();
+                break;
+            }
+
+            case UIParticles::actionRestart:
+            {
+                DoRestart();
+                break;
+            }
+
+            default:
+            {
+                break;
+            }
+        }
+
+        delayedActionType = UIParticles::actionNone;
+        delayedActionTime = 0.0f;
     }
 }
 

@@ -165,6 +165,8 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isFloat16Supported = IsGLExtensionSupported("GL_OES_texture_half_float");
     caps.isFloat32Supported = IsGLExtensionSupported("GL_OES_texture_float");
 	caps.isATCSupported = IsGLExtensionSupported("GL_AMD_compressed_ATC_texture");
+    caps.isGlDepth24Stencil8Supported = IsGLExtensionSupported("GL_DEPTH24_STENCIL8");
+    caps.isGlDepthNvNonLinearSupported = IsGLExtensionSupported("GL_DEPTH_COMPONENT16_NONLINEAR_NV");
     
 #   if (__ANDROID_API__ < 18)
     InitFakeOcclusion();
@@ -200,6 +202,11 @@ void RenderManager::DetectRenderingCapabilities()
     caps.isOpenGLES3Supported = (renderer == Core::RENDERER_OPENGL_ES_3_0);
 
 	PixelFormatDescriptor::InitializePixelFormatDescriptors();
+
+    int maxVertexTextureUnits = 0;
+    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxVertexTextureUnits);
+    caps.isVertexTextureUnitsSupported = (maxVertexTextureUnits > 0);
+    caps.isFramebufferFetchSupported = IsGLExtensionSupported("GL_EXT_shader_framebuffer_fetch");
 }
 
 bool RenderManager::IsDeviceLost()
@@ -678,47 +685,31 @@ void RenderManager::SetHWRenderTargetSprite(Sprite *renderTarget)
 
 void RenderManager::SetHWRenderTargetTexture(Texture * renderTarget)
 {
-	//renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
+    //currentRenderTarget = renderTarget;
+	renderOrientation = Core::SCREEN_ORIENTATION_TEXTURE;
 	//IdentityModelMatrix();
 	//IdentityMappingMatrix();
 	HWglBindFBO(renderTarget->fboID);
-	RemoveClip();
+	//RemoveClip();
 }
-#if 0
-void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
+
+
+void RenderManager::DiscardFramebufferHW(uint32 attachments)
 {
-    SetMatrix(type, matrix, 0);
+#ifdef __DAVAENGINE_IPHONE__
+    if (!attachments) 
+      return;
+    GLenum discards[3];
+    int32 discardsCount=0;
+    if (attachments&COLOR_ATTACHMENT)
+        discards[discardsCount++]=GL_COLOR_ATTACHMENT0;
+    if (attachments&DEPTH_ATTACHMENT)
+        discards[discardsCount++]=GL_DEPTH_ATTACHMENT;
+    if (attachments&STENCIL_ATTACHMENT)
+        discards[discardsCount++]=GL_STENCIL_ATTACHMENT;
+    RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards));
+#endif
 }
-    
-void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue)
-{
-    GLint matrixMode[2] = {GL_MODELVIEW, GL_PROJECTION};
-    if (type == MATRIX_PROJECTION)
-    {
-        matrices[type] = matrix;
-        uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
-        uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
-        projectionMatrixCache++;
-    }
-    else if (type == MATRIX_MODELVIEW)
-    {
-        if (cacheValue == 0 ||
-            modelViewMatrixCache != cacheValue)
-        {
-            matrices[type] = matrix;
-            uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
-            uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
-            modelViewMatrixCache = cacheValue;
-        }
-    }
-    
-    if ((renderer != Core::RENDERER_OPENGL_ES_2_0) && (renderer != Core::RENDERER_OPENGL_ES_3_0))
-    {
-        RENDER_VERIFY(glMatrixMode(matrixMode[type]));
-        RENDER_VERIFY(glLoadMatrixf(matrix.data));
-    }
-}
-#endif 
     
 void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
 {
@@ -733,11 +724,22 @@ void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
 void RenderManager::AttachRenderData()
 {
     if (!currentRenderData)return;
+    RENDERER_UPDATE_STATS(attachRenderDataCount++);
+    
+    if (attachedRenderData == currentRenderData)
+    {
+        if ((attachedRenderData->vboBuffer != 0) && (attachedRenderData->indexBuffer != 0))
+        {
+            RENDERER_UPDATE_STATS(attachRenderDataSkipCount++);
+            return;
+        }
+    }
+    
+    attachedRenderData = currentRenderData;
 
     const int DEBUG = 0;
 	Shader * shader = hardwareState.shader;
 	
-	GetStats().attachRenderDataCount++;
     
     {
         int32 currentEnabledStreams = 0;
@@ -745,6 +747,7 @@ void RenderManager::AttachRenderData()
         HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
         HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
         
+
         
         int32 size = (int32)currentRenderData->streamArray.size();
         
@@ -910,6 +913,14 @@ void RenderManager::HWglBindFBO(const int32 fbo)
         lastBindedFBO = fbo;
     }
 }
+    
+void RenderManager::DiscardDepth()
+{
+#ifdef __DAVAENGINE_IPHONE__
+    static const GLenum discards[]  = {GL_DEPTH_ATTACHMENT, GL_STENCIL_ATTACHMENT};
+    RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER,2,discards));
+#endif
+}
 
 #if defined(__DAVAENGINE_ANDROID__)
 void RenderManager::Lost()
@@ -917,7 +928,7 @@ void RenderManager::Lost()
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 0;
 
-	enabledAttribCount = 0;
+	//enabledAttribCount = 0;
 	for(int32 i = 0; i < Texture::TEXTURE_TYPE_COUNT; ++i)
 	{
 		lastBindedTexture[i] = 0;

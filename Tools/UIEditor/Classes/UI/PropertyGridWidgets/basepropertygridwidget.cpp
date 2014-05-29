@@ -29,6 +29,7 @@
 
 #include <QLayout>
 #include <QColorDialog>
+#include <QMessageBox>
 
 #include "basepropertygridwidget.h"
 #include "ui_basepropertygridwidget.h"
@@ -37,6 +38,7 @@
 #include "HierarchyTreeController.h"
 #include "WidgetSignalsBlocker.h"
 #include "SubcontrolsHelper.h"
+#include "ResourcesManageHelper.h"
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
@@ -71,7 +73,7 @@ void BasePropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
             this, SLOT(OnChangePropertySucceeded(const QString&)));
     connect(CommandsController::Instance(), SIGNAL(ChangePropertyFailed(const QString&)),
             this, SLOT(OnChangePropertyFailed(const QString&)));
-            
+    
     this->activeMetadata = activeMetadata;
 }
 
@@ -105,7 +107,7 @@ BasePropertyGridWidget::PROPERTIESMAP BasePropertyGridWidget::BuildMetadataPrope
     for (int32 i = 0; i < count; i ++)
     {
         const QMetaProperty& curProperty = activeMetadata->metaObject()->property(i);
-        //Logger::Debug("Property name %s", curProperty.name());
+        //Logger::FrameworkDebug("Property name %s", curProperty.name());
         propertiesMap.insert(std::make_pair(curProperty.name(), curProperty));
     }
     
@@ -364,9 +366,8 @@ void BasePropertyGridWidget::HandleLineEditEditingFinished(QLineEdit* senderWidg
 	{
 		return;
 	}
-
-	// The property was indeed changed, call the command.
-    BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
+	
+	BaseCommand* command = new ChangePropertyCommand<QString>(activeMetadata, iter->second, senderWidget->text());
     CommandsController::Instance()->ExecuteCommand(command);
 	SafeRelease(command);
 }
@@ -738,7 +739,7 @@ void BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *, 
 																const double)
 {
     // In case Base handler is called, particular handler for the Combobox is missed - this is treated as error.
-    Logger::Error("BasePropertyGridWidget::ProcessComboboxValueChanged is called - you've forgot to create custom handler for some combo!!!");
+    Logger::Error("BasePropertyGridWidget::ProcessDoubleSpinBoxValueChanged is called - you've forgot to create custom handler for some combo!!!");
 }
 
 void BasePropertyGridWidget::UpdateColorWidgetWithPropertyValue(QColorWidget *colorWidget, const QMetaProperty &curProperty)
@@ -932,7 +933,7 @@ void BasePropertyGridWidget::UpdateWidgetPalette(QWidget* widget, const QString&
 void BasePropertyGridWidget::PreparePalettes()
 {
     dirtyPropertyPalette.setColor(QPalette::Text, Qt::red);
-    clearPropertyPalette.setColor(QPalette::Text, Qt::black);
+    clearPropertyPalette.setColor(QPalette::Text, QApplication::palette().text().color());
 }
 
 const QPalette& BasePropertyGridWidget::GetWidgetPaletteForDirtyProperty() const
@@ -970,6 +971,12 @@ void BasePropertyGridWidget::InstallEventFiltersForWidgets(QWidget *widget)
 	{
         sliderWidget->installEventFilter( this );
         sliderWidget->setFocusPolicy( Qt::StrongFocus );
+    }
+
+	Q_FOREACH( QLineEdit *lineWidget, widget->findChildren<QLineEdit*>() )
+	{
+        lineWidget->installEventFilter( this );
+        lineWidget->setFocusPolicy( Qt::StrongFocus );
     }
 }
 
@@ -1028,4 +1035,9 @@ bool BasePropertyGridWidget::ActiveControlIsSubcontrol()
 	}
 
 	return false;
+}
+
+QString BasePropertyGridWidget::PreprocessSpriteName(const QString& rawSpriteName)
+{
+    return ResourcesManageHelper::GetResourceRelativePath(rawSpriteName);
 }

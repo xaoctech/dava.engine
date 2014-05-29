@@ -163,10 +163,12 @@
 #include "UI/UIFileSystemDialog.h"
 #include "UI/UIWebView.h"
 #include "UI/UIScrollView.h"
+#include "UI/UI3DView.h"
 #include "UI/UISpinner.h"
 #include "UI/VectorSpinnerAdapter.h"
 #include "UI/UISwitch.h"
 #include "UI/UIParticles.h"
+#include "UI/UIMovieView.h"
 
 #include "UI/UIYamlLoader.h"
 
@@ -192,12 +194,8 @@
 #include "Scene2D/Box2DHelper.h"
 
 // Sound & Music
-#include "Sound/Sound.h"
 #include "Sound/SoundEvent.h"
-#include "Sound/SoundEventCategory.h"
 #include "Sound/SoundSystem.h"
-#include "Sound/SoundGroup.h"
-#include "Sound/VolumeAnimatedObject.h"
 
 // Particle System
 #include "Particles/ParticleEmitter.h"
@@ -235,6 +233,7 @@
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
+#include "Render/Highlevel/VegetationRenderObject.h"
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
@@ -250,6 +249,8 @@
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
 
 //Components
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -264,6 +265,7 @@
 #include "Scene3D/Components/UpdatableComponent.h"
 #include "Scene3D/Components/SwitchComponent.h"
 #include "Scene3D/Components/UserComponent.h"
+#include "Scene3D/Components/SoundComponent.h"
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"

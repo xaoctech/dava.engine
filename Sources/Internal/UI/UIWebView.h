@@ -42,6 +42,17 @@ class UIWebView : public UIControl
 protected:
 	virtual ~UIWebView();
 public:
+    // Data detector types. May be a combination of several flags.
+    enum eDataDetectorType
+    {
+        DATA_DETECTOR_NONE              = 0x00,
+        DATA_DETECTOR_PHONE_NUMBERS     = 0x01,
+        DATA_DETECTOR_LINKS             = 0x02,
+        DATA_DETECTOR_ADDRESSES         = 0x04,
+        DATA_DETECTOR_CALENDAR_EVENTS   = 0x08,
+        DATA_DETECTOR_ALL               = 0xFF
+    };
+
 	UIWebView(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 		
 	// Open the URL.
@@ -57,6 +68,15 @@ public:
 	virtual void SetSize(const Vector2 &newSize);
 	virtual void SetVisible(bool isVisible, bool hierarchic = true);
 
+    virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
+	virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
+
+    virtual UIControl* Clone();
+    virtual void CopyDataFrom(UIControl *srcControl);
+
+    void SetNativeControlVisible(bool isVisible);
+    bool GetNativeControlVisible() const;
+
 	void SetDelegate(IUIWebViewDelegate* delegate);
 	void SetBackgroundTransparency(bool enabled);
 
@@ -64,11 +84,25 @@ public:
 	void SetBounces(bool value);
 	bool GetBounces() const;
 	void SetGestures(bool value);
+    
+    // Set the data detector types.
+    void SetDataDetectorTypes(int32 value);
+    int32 GetDataDetectorTypes() const;
 
 protected:
 
+    // Set the visibility of native control.
+    void UpdateNativeControlVisible(bool value, bool hierarchic);
+
+    // Update the rect of the web view control.
+    void UpdateControlRect();
+
 	// Platform-specific implementation of the Web View Control.
 	IWebViewControl* webViewControl;
+    
+private:
+    bool isNativeControlVisible;
+    int32 dataDetectorTypes;
 };
 };
 

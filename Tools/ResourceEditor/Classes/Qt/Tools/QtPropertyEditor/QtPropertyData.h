@@ -36,12 +36,47 @@
 #include <QIcon>
 #include <QEvent>
 #include <QToolButton>
+#include <QList>
+
 #include "QtPropertyModel.h"
 
 // model class
 class QtPropertyModel;
-class QtPropertyToolButton;
+class QtPropertyData;
 class QtPropertyDataValidator;
+
+class QtPropertyToolButton : public QToolButton
+{
+	friend class QtPropertyData;
+
+public:
+    enum StateVariant
+    {
+        ACTIVE_ALWAYS,
+        ACTIVE_WHEN_ITEM_IS_ENABLED,
+        ACTIVE_WHEN_ITEM_IS_EDITABLE,
+        ACTIVE_WHEN_ITEM_IS_EDITABLE_OR_ENABLED,
+        ACTIVE_WHEN_ITEM_IS_EDITABLE_AND_ENABLED
+    };
+
+	QtPropertyToolButton(QtPropertyData* data, QWidget * parent = 0);
+	~QtPropertyToolButton();
+
+	QtPropertyData* GetPropertyData() const;
+	virtual bool event(QEvent * event);
+
+    void SetStateVariant(StateVariant state);
+    StateVariant GetStateVariant() const;
+
+	bool eventsPassThrought;
+	bool overlayed;
+
+protected:
+	QtPropertyData* propertyData;
+    StateVariant stateVariant;
+
+    void UpdateState(bool itemIsEnabled, bool itemIsEditable);
+};
 
 // PropertyData class
 class QtPropertyData : public QObject
@@ -99,6 +134,8 @@ public:
 	virtual UserData* GetUserData() const;
 	virtual void SetUserData(UserData* userdata);
 
+    virtual QVariant GetToolTip() const;
+
 	virtual const DAVA::MetaInfo* MetaInfo() const;
 
 	// reset background/foreground/font settings
@@ -144,7 +181,7 @@ public:
 	// Optional widgets
 	int GetButtonsCount() const;
 	QtPropertyToolButton* GetButton(int index = 0);
-	QtPropertyToolButton* AddButton();
+	QtPropertyToolButton* AddButton(QtPropertyToolButton::StateVariant stateVariant = QtPropertyToolButton::ACTIVE_ALWAYS);
 	void RemButton(int index);
 	void RemButton(QtPropertyToolButton *button);
 
@@ -153,8 +190,17 @@ public:
 	// edit command
 	virtual void* CreateLastCommand() const;
 
+    // Merging
+    bool IsMergedDataEqual() const;
+    QtPropertyData * GetMergedData(int idx) const;
+    int GetMergedCount() const;
+    void Merge(QtPropertyData *data);
+    void MergeChild(QtPropertyData *data, const QString& key = QString());
+    virtual bool IsMergable() const;
+
 protected:
 	mutable QVariant curValue;
+    mutable bool isValuesMerged;
 
 	QString curName;
 	Qt::ItemFlags curFlags;
@@ -168,13 +214,15 @@ protected:
 
 	QList<QString> childrenNames;
 	QList<QtPropertyData*> childrenData;
+    QList<QtPropertyData*> mergedData;
 	
 	QWidget *optionalButtonsViewport;
-	QVector<QtPropertyToolButton*> optionalButtons;
+	QVector<QtPropertyToolButton *> optionalButtons;
     
     QtPropertyDataValidator* validator;
 
 	void SetModel(QtPropertyModel *model);
+    void BuildCurrentValue();
 
 	virtual void UpdateUp();
 	virtual void UpdateDown();
@@ -192,36 +240,10 @@ protected:
 	QWidget* GetOWViewport() const;
 	void SetOWViewport(QWidget *viewport);
 
+    // optional widgets state update
+    void UpdateOWState();
+
 	void ChildRemoveInternal(int i, bool del);
-};
-
-class QtPropertyToolButton : public QToolButton
-{
-	friend class QtPropertyData;
-
-public:
-	QtPropertyToolButton(QtPropertyData* data, QWidget * parent = 0) 
-		: QToolButton(parent)
-		, propertyData(data)
-		, eventsPassThrought(false) 
-		, overlayed(false)
-	{}
-
-	~QtPropertyToolButton() 
-	{}
-
-	QtPropertyData* GetPropertyData() const
-	{
-		return propertyData;
-	}
-
-	virtual bool event(QEvent * event);
-
-	bool eventsPassThrought;
-	bool overlayed;
-
-protected:
-	QtPropertyData* propertyData;
 };
 
 #endif // __QT_PROPERTY_DATA_H__

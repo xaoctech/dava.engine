@@ -92,7 +92,6 @@ void GPUFamilyDescriptor::SetupGPUFormats()
     gpuData[GPU_TEGRA].availableFormats[FORMAT_RGBA8888] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT1] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT1A] = ".dds";
-    gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT1NM] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT3] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT5] = ".dds";
     gpuData[GPU_TEGRA].availableFormats[FORMAT_DXT5NM] = ".dds";
@@ -159,15 +158,22 @@ eGPUFamily GPUFamilyDescriptor::GetGPUForPathname(const FilePath &pathname)
 FilePath GPUFamilyDescriptor::CreatePathnameForGPU(const TextureDescriptor *descriptor, const eGPUFamily gpuFamily)
 {
     DVASSERT(descriptor);
-    
-    eGPUFamily requestedGPU = gpuFamily;
-    PixelFormat requestedFormat = (PixelFormat) descriptor->compression[gpuFamily].format;
-    
+
+	if(GPU_UNKNOWN == gpuFamily)
+		return CreatePathnameForGPU(descriptor->pathname, GPU_UNKNOWN, FORMAT_INVALID);
+
+	eGPUFamily requestedGPU = gpuFamily;
+	
+	PixelFormat requestedFormat = FORMAT_INVALID;
     if(descriptor->IsCompressedFile())
     {
         requestedGPU = (eGPUFamily)descriptor->exportedAsGpuFamily;
-        requestedFormat = (PixelFormat)descriptor->exportedAsPixelFormat;
+        requestedFormat = (PixelFormat)descriptor->format;
     }
+	else
+	{
+		requestedFormat = (PixelFormat) descriptor->compression[gpuFamily].format;
+	}
     
     return CreatePathnameForGPU(descriptor->pathname, requestedGPU, requestedFormat);
 }

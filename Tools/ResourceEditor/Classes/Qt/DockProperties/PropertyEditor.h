@@ -44,16 +44,18 @@ struct PropEditorUserData : public QtPropertyData::UserData
 		COPY
 	};
 
-	PropEditorUserData(PropertyType _type, QtPropertyData *_associatedData = NULL, bool _isFavorite = false) : 
-		type(_type),
-		associatedData(_associatedData) ,
-		isFavorite(_isFavorite)
+	PropEditorUserData(PropertyType _type, QtPropertyData *_associatedData = NULL, bool _isFavorite = false, DAVA::Entity *_entity = NULL)
+		: type(_type)
+		, associatedData(_associatedData)
+		, isFavorite(_isFavorite)
+        , entity(_entity)
 	{}
 
 	PropertyType type;
 	QtPropertyData *associatedData;
 	QString realPath;
 	bool isFavorite;
+    DAVA::Entity *entity;
 };
 
 class PropertyEditor : public QtPropertyEditor
@@ -92,13 +94,20 @@ public slots:
 	void CommandExecuted(SceneEditor2 *scene, const Command2* command, bool redo);
 
 	void ActionEditComponent();
-	void ActionBakeTransform();
 	void ActionEditMaterial();
-
+    void ActionEditSoundComponent();
+	void OnAddActionComponent();
+    void OnAddStaticOcclusionComponent();
+    void OnAddModelTypeComponent();
+    void OnRemoveComponent();
 	
 	void ConvertToShadow();
+
 	void DeleteRenderBatch();
 
+    void RebuildTangentSpace();
+
+    void CloneRenderBatchesToFixSwitchLODs();
 
 protected:
 	eViewMode viewMode;
@@ -110,7 +119,7 @@ protected:
 	QtPropertyData *favoriteGroup;
 	QList<QtPropertyData *> favoriteList;
 
-	DAVA::Entity *curNode;
+	QList<DAVA::Entity *> curNodes;
 	PropertyEditorStateHelper treeStateHelper;
 
 	QtPropertyData* CreateInsp(void *object, const DAVA::InspInfo *info);
@@ -118,7 +127,9 @@ protected:
 	QtPropertyData* CreateInspCollection(void *object, const DAVA::InspColl *collection);
 	QtPropertyData* CreateClone(QtPropertyData *original);
 
-	void ResetProperties();
+    void QueueResetProperties();
+
+    void ClearCurrentNodes();
 	void ApplyModeFilter(QtPropertyData *parent);
 	void ApplyFavorite(QtPropertyData *data);
 	void ApplyCustomExtensions(QtPropertyData *data);
@@ -132,11 +143,19 @@ protected:
 	virtual void drawRow(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 
-	void FindAndCheckFavorite(QtPropertyData *data);
+	//void FindAndCheckFavorite(QtPropertyData *data);
 	bool IsParentFavorite(QtPropertyData *data) const;
 	PropEditorUserData* GetUserData(QtPropertyData *data) const;
 
 	QtPropertyToolButton * CreateButton(QtPropertyData *data, const QIcon & icon, const QString & tooltip);
+
+	QString GetDefaultFilePath(); 
+
+private slots:
+    void ResetProperties();
+
+private:
+    int resetRequests;
 };
 
 #endif // __QT_PROPERTY_WIDGET_H__

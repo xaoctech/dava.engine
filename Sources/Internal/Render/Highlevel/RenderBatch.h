@@ -121,7 +121,7 @@ public:
      */
    
     void SetSortingKey(uint32 key);
-    inline uint32 GetSortingKey();
+    inline uint32 GetSortingKey() const;
 
     /*sorting offset allowed in 0..31 range, 15 default, more - closer to camera*/
     void SetSortingOffset(uint32 offset);
@@ -159,7 +159,7 @@ protected:
     uint32 visiblityCriteria;
 
     static const uint32 MAX_LIGHT_COUNT = 2;
-    Light * lights[2];
+    Light * lights[MAX_LIGHT_COUNT];
     
     
 	AABBox3 aabbox;
@@ -231,7 +231,7 @@ inline void RenderBatch::SetIndexCount(uint32 _indexCount)
     indexCount = _indexCount;
 }
     
-inline uint32 RenderBatch::GetSortingKey()
+inline uint32 RenderBatch::GetSortingKey() const
 {
     return sortingKey&0x0f;
 }
@@ -249,6 +249,7 @@ inline void RenderBatch::SetLight(uint32 index, Light * light)
 
 inline Light * RenderBatch::GetLight(uint32 index)
 {
+    DVASSERT(index < MAX_LIGHT_COUNT)
     return lights[index];
 }
 

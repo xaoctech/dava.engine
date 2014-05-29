@@ -58,6 +58,7 @@ QtPropertyDataDavaKeyedArcive::QtPropertyDataDavaKeyedArcive(DAVA::KeyedArchive 
 	// add optional widget (button) to add new key
 	QToolButton *addButton = AddButton();
 	addButton->setIcon(QIcon(":/QtIcons/keyplus.png"));
+    addButton->setToolTip("Add keyed archive member");
 	addButton->setIconSize(QSize(12, 12));
 	//addButton->setAutoRaise(true);
 	QObject::connect(addButton, SIGNAL(released()), this, SLOT(AddKeyedArchiveField()));
@@ -162,30 +163,6 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	else
 	{
 		childData = new QtPropertyKeyedArchiveMember(archive, key.toStdString());
-
-		int presetValueType = EditorConfig::Instance()->GetPropertyValueType(key.toStdString());
-		if(presetValueType != DAVA::VariantType::TYPE_NONE)
-		{
-			if(value->type == presetValueType)
-			{
-				const DAVA::Vector<DAVA::String>& allowedValues = EditorConfig::Instance()->GetComboPropertyValues(key.toStdString());
-				if(allowedValues.size() > 0)
-				{
-					for(size_t i = 0; i < allowedValues.size(); ++i)
-					{
-						((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), allowedValues[i].c_str());
-					}
-				}
-				else
-				{
-					const DAVA::Vector<Color> & allowedColors = EditorConfig::Instance()->GetColorPropertyValues(key.toStdString());
-					for(size_t i = 0; i < allowedColors.size(); ++i)
-					{
-						((QtPropertyKeyedArchiveMember *) childData)->AddAllowedValue(DAVA::VariantType((int) i), ColorToQColor(allowedColors[i]));
-					}
-				}
-			}
-		}
 	}
 
 	ChildAdd(key, childData);
@@ -193,6 +170,7 @@ void QtPropertyDataDavaKeyedArcive::ChildCreate(const QString &key, DAVA::Varian
 	// add optional widget (button) to remove this key
 	QToolButton *remButton = childData->AddButton();
 	remButton->setIcon(QIcon(":/QtIcons/keyminus.png"));
+    remButton->setToolTip("Remove keyed archive member");
 	remButton->setIconSize(QSize(12, 12));
 	//remButton->setAutoRaise(true);
 

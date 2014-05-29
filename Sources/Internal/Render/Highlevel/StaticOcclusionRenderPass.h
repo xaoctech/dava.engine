@@ -39,28 +39,41 @@ namespace DAVA
 {
 
 class StaticOcclusion;
-class StaticOcclusionRenderLayer : public RenderLayer
-{
-public:
-    StaticOcclusionRenderLayer(const FastName & name, uint32 sortingFlags, StaticOcclusion * occlusion, RenderLayerID id);
-    ~StaticOcclusionRenderLayer();
-    
-    virtual void Draw(const FastName & ownerRenderPass, Camera * camera, RenderLayerBatchArray * renderLayerBatchArray);
-
-    StaticOcclusion * occlusion;
-};
-
 class StaticOcclusionRenderPass : public RenderPass
 {
 public:
-    StaticOcclusionRenderPass(RenderSystem * rs, const FastName & name, StaticOcclusion * occlusion, RenderPassID id);
+    StaticOcclusionRenderPass(const FastName & name, StaticOcclusion * occlusion, RenderPassID id);
     ~StaticOcclusionRenderPass();
 
-    void Draw(Camera * camera, RenderPassBatchArray * renderPassBatchArray);
-
+    inline void SetIndex(int32 side, int32 i, int32 j, int32 k);
+    inline void SetOcclusionCamera(Camera * camera);
+    void Draw(RenderSystem * renderSystem);
+    static bool CompareFunction(const RenderBatch * a, const RenderBatch *  b);
+    
+private:
+    int32 debugSide;
+    int32 debugI;
+    int32 debugJ;
+    int32 debugK;
+    
+    Camera * occlusionCamera;
     StaticOcclusion * occlusion;
     Set<RenderObject*> visibleObjectSet;
 };
+    
+inline void StaticOcclusionRenderPass::SetOcclusionCamera(Camera * _camera)
+{
+    occlusionCamera = _camera;
+}
+
+inline void StaticOcclusionRenderPass::SetIndex(int32 side, int32 i, int32 j, int32 k)
+{
+    debugSide = side;
+    debugI = i;
+    debugJ = j;
+    debugK = k;
+}
+
 
 };
 

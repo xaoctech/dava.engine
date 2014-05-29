@@ -118,7 +118,6 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
-	uint8 *image_data = NULL;
 	char sig[8];
 	
 	int bit_depth;
@@ -204,6 +203,14 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 		png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
 	}
     
+	if(bit_depth > 8 && image->format != FORMAT_A16)
+	{
+		Logger::Error("Wrong image: must be 8bits on channel: %s", infile->GetFilename().GetAbsolutePathname().c_str());
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		return 0;
+	}
+
+
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 	{
 		png_set_tRNS_to_alpha(png_ptr);
@@ -213,10 +220,9 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFo
 	
 	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 	
-	image_data = new uint8 [rowbytes * height];
+    uint8 *image_data = new uint8 [rowbytes * height];
 	if (image_data == 0)
 	{
-		memset(image_data, 0, rowbytes * height);
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return 4;
     }
@@ -340,7 +346,7 @@ uint32 LibPngWrapper::GetDataSize(const FilePath &filePathname)
 
 
 
-void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
+bool LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 height, uint8 * data, PixelFormat format)
 {
 //	printf("* Writing PNG file (%d x %d): %s\n", width, height, file_name);
 	png_color_8 sig_bit;
@@ -382,7 +388,7 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", file_name.GetAbsolutePathname().c_str());
 		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
         free(row_pointers);
-		return;
+		return false;
 	}
 	
 	
@@ -390,7 +396,14 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	
 	if (!png_ptr)
-		abort_("[write_png_file] png_create_write_struct failed");
+    {
+		Logger::Error("[LibPngWrapper::WritePngFile] png_create_write_struct failed");
+        
+		//abort_("[write_png_file] png_create_write_struct failed");
+        free(row_pointers);
+        fclose(fp);
+		return false;
+	}
 	
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
@@ -400,7 +413,7 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 		//abort_("[write_png_file] png_create_info_struct failed");
         free(row_pointers);
         fclose(fp);
-		return;
+		return false;
 	}
 	
 	if (setjmp(png_jmpbuf(png_ptr)))
@@ -409,7 +422,7 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 		//abort_("[write_png_file] Error during init_io");
         free(row_pointers);
         fclose(fp);
-		return;
+		return false;
 	}
 	
 	png_init_io(png_ptr, fp);
@@ -422,7 +435,7 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 		//abort_("[write_png_file] Error during writing header");
         free(row_pointers);
         fclose(fp);
-		return;
+		return false;
 	}
     
 	
@@ -471,7 +484,7 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 		//abort_("[write_png_file] Error during writing bytes");
         free(row_pointers);
         fclose(fp);
-		return;
+		return false;
 	}
 	
 	png_write_image(png_ptr, row_pointers);
@@ -484,13 +497,14 @@ void LibPngWrapper::WritePngFile(const FilePath & file_name, int32 width, int32 
 		//abort_("[write_png_file] Error during end of write");
         free(row_pointers);
         fclose(fp);
-		return;
+		return false;
 	}
 	
 	png_write_end(png_ptr, NULL);
 	
 	free(row_pointers);
 	fclose(fp);
+    return true;
 }
 
 PngImage::PngImage()

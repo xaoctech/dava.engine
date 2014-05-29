@@ -1578,7 +1578,6 @@ const PixelFormat LibPVRHelper::GetCompressedFormat(const uint64 pixelFormat)
         {
             return FORMAT_ETC1;
         }
-
 		case ePVRTPF_EAC_R11:
 		{
 			return FORMAT_EAC_R11_UNSIGNED;
@@ -1612,45 +1611,25 @@ const PixelFormat LibPVRHelper::GetFloatTypeFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',16,16,16,16):
-        {
             return FORMAT_RGBA16161616;
-        }
         case PVRTGENPIXELID3('r','g','b',16,16,16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID2('l','a',16,16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',16):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('a',16):
-        {
             return FORMAT_A16;
-        }
         case PVRTGENPIXELID4('r','g','b','a',32,32,32,32):
-        {
             return FORMAT_RGBA32323232;
-        }
         case PVRTGENPIXELID3('r','g','b',32,32,32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID2('l','a',32,32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('l',32):
-        {
             return FORMAT_INVALID;
-        }
         case PVRTGENPIXELID1('a',32):
-        {
             return FORMAT_INVALID;
-        }
     }
     
     return FORMAT_INVALID;
@@ -1661,41 +1640,23 @@ const PixelFormat LibPVRHelper::GetUnsignedByteFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',8,8,8,8):
-        {
             return FORMAT_RGBA8888;
-        }
-        case PVRTGENPIXELID3('r','g','b',8,8,8):
-        {
-            return FORMAT_RGB888;
-        }
-        case PVRTGENPIXELID2('l','a',8,8):
-        {
-            return FORMAT_INVALID;
-        }
-        case PVRTGENPIXELID1('l',8):
-        {
-            return FORMAT_A8;
-        }
-        case PVRTGENPIXELID1('a',8):
-        {
-            return FORMAT_A8;
-        }
-        case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
-        {
-            return FORMAT_INVALID;
-        }
-        case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
-        {
-            return FORMAT_RGBA4444;
-        }
+		case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
+			return FORMAT_INVALID;
+		case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
+			return FORMAT_RGBA4444;
 		case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
-		{
 			return FORMAT_RGBA5551;
-		}
+        case PVRTGENPIXELID3('r','g','b',8,8,8):
+            return FORMAT_RGB888;
 		case PVRTGENPIXELID3('r','g','b',5,6,5):
-		{
 			return FORMAT_RGB565;
-		}
+        case PVRTGENPIXELID2('l','a',8,8):
+            return FORMAT_INVALID;
+        case PVRTGENPIXELID1('l',8):
+            return FORMAT_A8;
+        case PVRTGENPIXELID1('a',8):
+            return FORMAT_A8;
     }
 
     return FORMAT_INVALID;
@@ -1706,17 +1667,11 @@ const PixelFormat LibPVRHelper::GetUnsignedShortFormat(const uint64 pixelFormat)
     switch (pixelFormat)
     {
         case PVRTGENPIXELID4('r','g','b','a',4,4,4,4):
-        {
             return FORMAT_RGBA4444;
-        }
         case PVRTGENPIXELID4('r','g','b','a',5,5,5,1):
-        {
             return FORMAT_RGBA5551;
-        }
         case PVRTGENPIXELID3('r','g','b',5,6,5):
-        {
             return FORMAT_RGB565;
-        }
     }
     
     return FORMAT_INVALID;
@@ -1741,17 +1696,11 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
         switch (ChannelType)
         {
             case ePVRTVarTypeFloat:
-            {
                 return GetFloatTypeFormat(pixelFormat);
-            }
             case ePVRTVarTypeUnsignedByteNorm:
-            {
                 return GetUnsignedByteFormat(pixelFormat);
-            }
             case ePVRTVarTypeUnsignedShortNorm:
-            {
                 return GetUnsignedShortFormat(pixelFormat);
-            }
             default:
                 break;
         }
@@ -1760,7 +1709,6 @@ const PixelFormat LibPVRHelper::GetTextureFormat(const PVRHeaderV3& textureHeade
     return FORMAT_INVALID;
 }
 	
-
 bool LibPVRHelper::CopyToImage(Image *image, uint32 mipMapLevel, uint32 faceIndex, const PVRHeaderV3 &header, const uint8 *pvrData)
 {
     if(AllocateImageData(image, mipMapLevel, header))
@@ -1874,7 +1822,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 
 	bool written = false;
 
-	File *file = File::Create(filePathname, File::OPEN | File::WRITE);
+	File *file = File::Create(filePathname, File::CREATE | File::WRITE);
 	if(file) 
 	{
 		file->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
@@ -1889,7 +1837,7 @@ bool LibPVRHelper::AddCRCIntoMetaData(const FilePath &filePathname)
 	}
 	else
 	{
-		Logger::Error("[LibPVRHelper::ReadFile]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
+		Logger::Error("[LibPVRHelper::AddCRCIntoMetaData]: cannot open file: %s", filePathname.GetAbsolutePathname().c_str());
 	}
 
 	delete pvrFile;
@@ -2143,6 +2091,7 @@ bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet,
     if(pvrFile == NULL || pvrFile->compressedData == NULL) return false;
     
     const uint32 & mipmapLevelCount = pvrFile->header.u32MIPMapCount;
+
     DVASSERT(fromMipMap < mipmapLevelCount);
     
     bool loadAllPvrData = true;
@@ -2153,8 +2102,91 @@ bool LibPVRHelper::LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet,
 
     return loadAllPvrData;
 }
+
+bool LibPVRHelper::WriteFile(const PVRFile * pvrFile, File *outFile)
+{
+    if(!pvrFile || !outFile) return false;
+
+    uint32 writeSize = outFile->Write(&pvrFile->header, PVRTEX3_HEADERSIZE);
+    if(writeSize != PVRTEX3_HEADERSIZE)
+        return false;
+
+    writeSize = outFile->Write(pvrFile->metaData, pvrFile->header.u32MetaDataSize);
+    if(writeSize != pvrFile->header.u32MetaDataSize)
+        return false;
+
+    writeSize = outFile->Write(pvrFile->compressedData, pvrFile->compressedDataSize);
+    if(writeSize != pvrFile->compressedDataSize)
+        return false;
+
+    return true;
+}
+
+bool LibPVRHelper::WriteFileFromMipMapFiles(const FilePath & outputFilePath, const Vector<FilePath> & imgPaths)
+{
+    DVASSERT(imgPaths.size());
+
+    int32 levelsCount = imgPaths.size();
+
+    Vector<PVRFile *> pvrFiles;
+    pvrFiles.reserve(levelsCount);
+
+    uint32 allCompressedDataSize = 0;
+    for(int32 i = 0; i < levelsCount; ++i)
+    {
+        PVRFile * leveli = ReadFile(imgPaths[i], true, true);
+        if(leveli)
+        {
+            pvrFiles.push_back(leveli);
+            allCompressedDataSize += leveli->compressedDataSize;
+        }
+    }
     
-bool LibPVRHelper::DetectIfNeedSwapBytes(PVRHeaderV3 *header)
+    DVASSERT(allCompressedDataSize);
+
+    uint8 * allCompressedData = new uint8[allCompressedDataSize];
+    Memset(allCompressedData, 0, allCompressedDataSize);
+
+    uint8 * dataPtr = allCompressedData;
+
+    int32 pvrFilesCount = pvrFiles.size();
+    for(int32 i = 0; i < pvrFilesCount; ++i)
+    {
+        PVRFile * leveli = pvrFiles[i];
+        Memcpy(dataPtr, leveli->compressedData, leveli->compressedDataSize);
+        dataPtr += leveli->compressedDataSize;
+    }
+
+    PVRFile * outPvr = pvrFiles[0];
+    outPvr->header.u32MIPMapCount = pvrFilesCount;
+    outPvr->compressedDataSize = allCompressedDataSize;
+    SafeDeleteArray(outPvr->compressedData);
+    outPvr->compressedData = allCompressedData;
+
+    File * outFile = File::Create(outputFilePath, File::CREATE | File::WRITE);
+    if(outFile)
+    {
+        if(!WriteFile(outPvr, outFile))
+        {
+            Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname().c_str());
+        }
+    }
+    else
+    {
+        Logger::Error("[LibPVRHelper] Error to write file: %s", outputFilePath.GetAbsolutePathname().c_str());
+    }
+
+    SafeRelease(outFile);
+
+    for(int32 i = 0; i < pvrFilesCount; ++i)
+    {
+        SafeDelete(pvrFiles[i]);
+    }
+
+    return true;
+}
+
+bool LibPVRHelper::DetectIfNeedSwapBytes(const PVRHeaderV3 *header)
 {
 	if((PVRTEX_CURR_IDENT != header->u32Version) && (PVRTEX_CURR_IDENT_REV != header->u32Version))
     {
@@ -2253,7 +2285,6 @@ void LibPVRHelper::ReadMetaData(File *file, PVRFile *pvrFile, const bool swapByt
     }
 }
 
-    
 void LibPVRHelper::SwapDataBytes(const PVRHeaderV3 &header, uint8 *data, const uint32 dataSize)
 {
     uint32 ui32VariableSize=0;

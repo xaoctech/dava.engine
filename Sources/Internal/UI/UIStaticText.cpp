@@ -261,11 +261,6 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
         SetFittingOption(loader->GetFittingOptionFromYamlNode(fittingNode));
     }
     
-	if (textNode)
-	{
-		SetText(LocalizedString(textNode->AsWString()));
-	}
-
 	if(textColorNode)
 	{
 		SetTextColor(textColorNode->AsColor());
@@ -285,6 +280,11 @@ void UIStaticText::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader
     {
         SetTextAlign(loader->GetAlignFromYamlNode(textAlignNode));
     }
+
+	if (textNode)
+	{
+		SetText(LocalizedString(textNode->AsWString()));
+	}
 }
 
 YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
@@ -295,9 +295,6 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 
     //Temp variable
     VariantType *nodeValue = new VariantType();
-    
-    //Control Type
-	SetPreferredNodeType(node, "UIStaticText");
 
     //Font
     //Get font name and put it here
@@ -380,6 +377,26 @@ Animation * UIStaticText::ShadowColorAnimation(const Color & finalColor, float32
 const Vector<int32> & UIStaticText::GetStringSizes() const
 {
 	return textBlock->GetStringSizes();
+}
+    
+void UIStaticText::PrepareSprite()
+{
+    ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &UIStaticText::PrepareSpriteInternal));
+}
+    
+void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, void *callerData)
+{
+    if (textBlock->IsSpriteReady())
+    {
+        Sprite *sprite = textBlock->GetSprite();
+        shadowBg->SetSprite(sprite, 0);
+        textBg->SetSprite(sprite, 0);
+    }
+    else
+    {
+        shadowBg->SetSprite(NULL, 0);
+        textBg->SetSprite(NULL, 0);
+    }
 }
 
 };

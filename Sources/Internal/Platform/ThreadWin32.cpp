@@ -83,6 +83,8 @@ void Thread::StartWin32()
 		this,
 		CREATE_SUSPENDED,
 		0);
+
+    threadHandle = handle;
 	
 	if(!SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL))
 	{
@@ -102,6 +104,21 @@ Thread::ThreadId Thread::GetCurrentThreadId()
 	ret.internalTid = ::GetCurrentThreadId();
 
 	return ret;
+}
+
+void Thread::Join()
+{
+    if (WaitForSingleObject(threadHandle, INFINITE) != WAIT_OBJECT_0)
+        DAVA::Logger::Error("Thread::Join() failed in WaitForSingleObject");
+}
+
+void Thread::Kill()
+{
+    if(state != STATE_ENDED && state != STATE_KILLED)
+    {
+        TerminateThread(threadHandle, 0);
+        state = STATE_KILLED;
+    }
 }
 
 #endif 

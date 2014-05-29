@@ -103,8 +103,7 @@ protected:
 	void DrawToBuffer(Font *font, int16 *buf);
 
 	void ProcessAlign();
-	
-
+    
 	Vector2 rectSize;
 	Vector2 requestedSize;
 
@@ -135,6 +134,7 @@ protected:
     bool isMultilineBySymbolEnabled:1;
 	bool isPredrawed:1;
 	bool cacheUseJustify:1;
+    bool treatMultilineAsSingleLine:1;
 };
 
 }; //end of namespace

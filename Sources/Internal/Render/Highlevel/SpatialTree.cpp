@@ -445,26 +445,39 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 	{
 		for (int32 i = 0; i<objectsSize; ++i)
 		{
+            RenderObject * obj = currNode.objects[i];
+            uint32 flags = obj->GetFlags();
+			if ((flags & currVisibilityCriteria) == currVisibilityCriteria)
+            {
+				visibilityArray->Add(obj);
+                RENDERER_UPDATE_STATS(visibleRenderObjectCount++);
 
-			currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-			if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-				visibilityArray->Add(currNode.objects[i]);
+            }else
+            {
+                if (!(flags & RenderObject::VISIBLE_STATIC_OCCLUSION))
+                    RENDERER_UPDATE_STATS(occludedRenderObjectCount++);
+            }
 		}
 	}
 	else
 	{		
-		for (int32 i = 0; i<objectsSize; ++i)
-		{			
-			uint32 flags = currNode.objects[i]->GetFlags();
-			if ((flags&RenderObject::CLIPPING_VISIBILITY_CRITERIA)==RenderObject::CLIPPING_VISIBILITY_CRITERIA)
+		for (int32 i = 0; i < objectsSize; ++i)
+		{
+            RenderObject * obj = currNode.objects[i];
+			uint32 flags = obj->GetFlags();
+			if ((flags & currVisibilityCriteria) == currVisibilityCriteria)
 			{				
-				if ((flags&RenderObject::ALWAYS_CLIPPING_VISIBLE)||currFrustum->IsInside(currNode.objects[i]->GetWorldBoundingBox(), clippingFlags, currNode.objects[i]->startClippingPlane))
-				{
-					currNode.objects[i]->AddFlag(RenderObject::VISIBLE_AFTER_CLIPPING_THIS_FRAME);
-					if ((currNode.objects[i]->GetFlags()&RenderObject::VISIBILITY_CRITERIA) == RenderObject::VISIBILITY_CRITERIA)
-						visibilityArray->Add(currNode.objects[i]);
-				}
-			}				
+				if (    (flags & RenderObject::ALWAYS_CLIPPING_VISIBLE)
+                    ||   currFrustum->IsInside(obj->GetWorldBoundingBox(), clippingFlags, obj->startClippingPlane))
+                {
+					visibilityArray->Add(obj);
+                    RENDERER_UPDATE_STATS(visibleRenderObjectCount++);
+                }
+			}else
+            {
+                if (!(flags & RenderObject::VISIBLE_STATIC_OCCLUSION))
+                    RENDERER_UPDATE_STATS(occludedRenderObjectCount++);
+            }
 		}
 	}
 	
@@ -479,10 +492,11 @@ void QuadTree::ProcessNodeClipping(uint16 nodeId, uint8 clippingFlags)
 	}		
 }
 
-void QuadTree::Clip(Camera * camera, VisibilityArray * _visibilityArray)
+void QuadTree::Clip(Camera * camera, VisibilityArray * _visibilityArray, uint32 visibilityCriteria)
 {
 	DVASSERT(worldInitialized);
 	currCamera = camera;
+	currVisibilityCriteria = visibilityCriteria;
 	currFrustum = camera->GetFrustum();	
 	visibilityArray = _visibilityArray;
 	ProcessNodeClipping(0, 0x3f); 

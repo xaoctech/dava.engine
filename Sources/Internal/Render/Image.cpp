@@ -30,6 +30,7 @@
 #include "Render/Image.h"
 #include "Render/Texture.h"
 #include "Render/ImageConvert.h"
+#include "Render/ImageLoader.h"
 #include "Render/PixelFormatDescriptor.h"
 
 namespace DAVA 
@@ -143,9 +144,18 @@ void Image::MakePink(bool checkers)
         }
     }
 }
+
+void Image::Normalize()
+{
+    int32 formatSize = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
+    uint8 * newImage0Data = new uint8[width * height * formatSize];
+    memset(newImage0Data, 0, width * height * formatSize);
+    ImageConvert::Normalize(format, data, width, height, width * formatSize, newImage0Data);
+    SafeDeleteArray(data);
+    data = newImage0Data;
+}
     
-    
-Vector<Image *> Image::CreateMipMapsImages()
+Vector<Image *> Image::CreateMipMapsImages(bool isNormalMap /* = false */)
 {
     Vector<Image *> imageSet;
 
@@ -159,6 +169,9 @@ Vector<Image *> Image::CreateMipMapsImages()
     uint32 curMipMapLevel = 0;
     image0->mipmapLevel = curMipMapLevel;
 
+    if(isNormalMap)
+        image0->Normalize();
+
     imageSet.push_back(image0);
     while(imageHeight > 1 || imageWidth > 1)
     {
@@ -171,7 +184,7 @@ Vector<Image *> Image::CreateMipMapsImages()
 
         ImageConvert::DownscaleTwiceBillinear(format, format,
             image0->data, imageWidth, imageHeight, imageWidth * formatSize,
-            newData, newWidth, newHeight, newWidth * formatSize);
+            newData, newWidth, newHeight, newWidth * formatSize, isNormalMap);
 
         curMipMapLevel++;
 
@@ -386,6 +399,11 @@ void Image::InsertImage(const Image* image, const Vector2& dstPos, const Rect& s
 	InsertImage(image, (uint32)dstPos.x, (uint32)dstPos.y,
 				(uint32)srcRect.x, (uint32)srcRect.y, (uint32)srcRect.dx, (uint32)srcRect.dy);
 }
-    
+
+
+bool Image::Save(const FilePath &path) const
+{
+    return ImageLoader::Save(this, path);
+}
     
 };

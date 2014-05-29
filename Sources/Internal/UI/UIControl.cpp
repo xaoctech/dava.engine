@@ -127,10 +127,6 @@ namespace DAVA
         {
             parent->UnregisterInputProcessors(inputProcessorsCount);
         }
-		if (!newParent && parent)
-		{
-            UIControlSystem::Instance()->CancelInputs(this);
-		}
 		parent = newParent;
 		if(parent && needToRecalcFromAbsoluteCoordinates)
 		{
@@ -955,12 +951,23 @@ namespace DAVA
 
     void UIControl::SetRecursiveVisible(bool isVisible)
     {
-        if (!isVisible && recursiveVisible)
+        if (recursiveVisible == isVisible)
+            return;
+
+        bool onScreen = IsOnScreen();
+        if (onScreen && !isVisible)
         {
-            UIControlSystem::Instance()->CancelInputs(this);
+            SystemWillDisappear();
+            SystemDidDisappear();
         }
 
         recursiveVisible = isVisible;
+
+        if (!onScreen && isVisible)
+        {
+            SystemWillAppear();
+            SystemDidAppear();
+        }
     }
 
 	void UIControl::SetVisibleForUIEditor(bool value, bool hierarchic/* = true*/)
@@ -1109,7 +1116,6 @@ namespace DAVA
 			control->SystemWillAppear();
 		}
 		control->isUpdated = false;
-//		control->WillAppear();
 		control->SetParent(this);
 		childs.push_back(control);
 		if(onScreen)
@@ -1402,21 +1408,24 @@ namespace DAVA
 	
     bool UIControl::IsOnScreen() const
     {
-		if(parent)
-		{
-			return parent->IsOnScreen();
-		}
-		
-		if(UIControlSystem::Instance()->GetScreen() == this || UIControlSystem::Instance()->GetPopupContainer() == this)
-		{
-			return true;
-		}
-		return false;
+        if(UIControlSystem::Instance()->GetScreen() == this ||
+           UIControlSystem::Instance()->GetPopupContainer() == this)
+        {
+            return GetRecursiveVisible();
+        }
+
+        if( !GetRecursiveVisible() || !parent )
+            return false;
+
+		return parent->IsOnScreen();
 	}
 
 
 	void UIControl::SystemWillAppear()
 	{
+        if (!GetRecursiveVisible())
+            return;
+
 		WillAppear();
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -1446,6 +1455,13 @@ namespace DAVA
         {
             UIControlSystem::Instance()->SetFocusedControl(NULL, true);
         }
+        if (GetInputEnabled())
+        {
+            UIControlSystem::Instance()->CancelInputs(this, false);
+        }
+
+        if (!GetRecursiveVisible())
+            return;
 
 		List<UIControl*>::iterator it = childs.begin();
 		while(it != childs.end())
@@ -1468,6 +1484,9 @@ namespace DAVA
 	
 	void UIControl::SystemDidAppear()
 	{
+        if (!GetRecursiveVisible())
+            return;
+
 		DidAppear();
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -1489,6 +1508,9 @@ namespace DAVA
 	
 	void UIControl::SystemDidDisappear()
 	{
+        if (!GetRecursiveVisible())
+            return;
+
 		DidDisappear();
 
 		List<UIControl*>::iterator it = childs.begin();
@@ -2113,9 +2135,6 @@ namespace DAVA
 		YamlNode *node = new YamlNode(YamlNode::TYPE_MAP);
 		// Model UIControl to be used in comparing
 		UIControl *baseControl = new UIControl();		
-        
-		// Control Type
-		SetPreferredNodeType(node, "UIControl");
 
 		// Control name
 		//node->Set("name", this->GetName());
@@ -2261,6 +2280,7 @@ namespace DAVA
 		// Release model variable
 		SafeRelease(baseControl);
 
+        SetPreferredNodeType(node, GetClassName());
 		return node;
 	}
 
@@ -2570,7 +2590,13 @@ namespace DAVA
 		SetVisible(params[0], params[1]);
 		delete[]params;
 	}
-	
+
+    void UIControl::RecursiveVisibleAnimationCallback( BaseObject * caller, void * param, void *callerData )
+    {
+        bool visible = ( pointer_size(param) > 0 );
+        SetRecursiveVisible(visible);
+    }
+
 	Animation * UIControl::VisibleAnimation(bool visible, bool hierarhic/* = true*/, int32 track/* = 0*/)
 	{
 		//TODO: change to bool animation - Dizz
@@ -2582,6 +2608,14 @@ namespace DAVA
 		animation->Start(track);
 		return animation;
 	}
+
+    Animation * UIControl::RecursiveVisibleAnimation(bool visible, int32 track/* = 0*/)
+    {
+        Animation * animation = new Animation(this, 0.01f, Interpolation::LINEAR);
+        animation->AddEvent(Animation::EVENT_ANIMATION_START, Message(this, &UIControl::RecursiveVisibleAnimationCallback, (void*)(pointer_size)visible));
+        animation->Start(track);
+        return animation;
+    }
 	
 	void UIControl::RemoveControlAnimationCallback(BaseObject * caller, void * param, void *callerData)
 	{
@@ -2983,5 +3017,4 @@ namespace DAVA
             (*it)->DumpInputs(depthLevel + 1);
         }
     }
-
 }

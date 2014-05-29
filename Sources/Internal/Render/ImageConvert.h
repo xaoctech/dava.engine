@@ -34,6 +34,50 @@
 namespace DAVA
 {
 
+struct RGB888
+    {
+        uint8 r;
+        uint8 g;
+        uint8 b;
+    };
+
+struct ConvertRGBA8888toRGB888
+{
+    inline void operator()(const uint32 * input, RGB888 *output)
+    {
+		uint32 pixel = *input;
+        output->b = ((pixel >> 16) & 0xFF);
+        output->g = ((pixel >> 8) & 0xFF);
+        output->r = (pixel & 0xFF);
+    }
+};
+    
+struct ConvertRGB888toRGBA8888
+{
+    inline void operator()(const RGB888 *input, uint32 * output)
+    {
+        *output = ((0xFF) << 24) | (input->b << 16) | (input->g << 8) | input->r;
+    }
+};
+    
+struct ConvertA16toA8
+{
+    inline void operator()(const uint16 * input, uint8 *output)
+    {
+        uint16 pixel = *input;
+        *output = pixel;
+    }
+};
+
+struct ConvertA8toA16
+{
+    inline void operator()(const uint8 * input, uint16 *output)
+    {
+        uint8 pixel = *input;
+        *output = pixel;
+    }
+};
+    
 struct ConvertRGBA8888toRGBA4444
 {
 	inline void operator()(const uint32 * input, uint16 *output)
@@ -44,6 +88,49 @@ struct ConvertRGBA8888toRGBA4444
 		uint32 g = ((pixel >> 8) & 0xFF) >> 4;
 		uint32 b = (pixel & 0xFF) >> 4;
 		*output = ((b) << 12) | (g << 8) | (r << 4) | a;
+	}
+};
+
+struct ConvertRGBA5551toRGBA8888
+{
+	inline void operator()(const uint16 * input, uint32 *output)
+	{
+		uint16 pixel = *input;
+
+		uint32 r = (((pixel >> 11) & 0x01F) << 3);
+		uint32 g = (((pixel >> 6) & 0x01F) << 3);
+		uint32 b = (((pixel >> 1) & 0x01F) << 3);
+		uint32 a = ((pixel) & 0x0001) ? 0x00FF : 0;
+		*output = (r) | (g << 8) | (b << 16) | (a << 24);
+	}
+};
+
+struct ConvertRGBA4444toRGBA888
+{
+	inline void operator()(const uint16 * input, uint32 *output)
+	{
+		uint16 pixel = *input;
+		uint32 r = (((pixel >> 12) & 0x0F) << 4);
+		uint32 g = (((pixel >> 8) & 0x0F) << 4);
+		uint32 b = (((pixel >> 4) & 0x0F) << 4);
+		uint32 a = (((pixel >> 0) & 0x0F) << 4);
+        
+        *output = (r) | (g << 8) | (b << 16) | (a << 24);
+	}
+    
+};
+
+struct ConvertRGB565toRGBA8888
+{
+	inline void operator()(const uint16 * input, uint32 *output)
+	{
+		uint16 pixel = *input;
+		uint32 r = (((pixel >> 11) & 0x01F) << 3);
+		uint32 g = (((pixel >> 5) & 0x03F) << 2);
+		uint32 b = (((pixel >> 0) & 0x01F) << 3);
+		uint32 a = 0xFF;
+
+ 		*output = (r) | (g << 8) | (b << 16) | (a << 24);
 	}
 };
 
@@ -87,17 +174,46 @@ struct PackRGBA4444
 	}
 };
 
+struct PackNormalizedRGBA8888
+{
+    void operator()(uint32 r, uint32 g, uint32 b, uint32 a, uint32 * output)
+    {
+        Vector3 v(r / 255.f, g / 255.f, b / 255.f);
+        v *= 2.f;
+        v -= Vector3(1.f, 1.f, 1.f);
+        v.Normalize();
+        v /= 2.f;
+        v += Vector3(.5f, .5f, .5f);
+
+        PackRGBA8888 packFunc;
+        packFunc((uint32)(0xFF * v.x), (uint32)(0xFF * v.y), (uint32)(0xFF * v.z), a, output);
+    }
+};
+
+struct NormalizeRGBA8888
+{
+    inline void operator()(const uint32 * input, uint32 *output)
+    {
+        UnpackRGBA8888 unpack;
+        PackNormalizedRGBA8888 pack;
+        uint32 r, g, b, a;
+
+        unpack(input, r, g, b, a);
+        pack(r, g, b, a, output);
+    }
+};
+
 template<class TYPE_IN, class TYPE_OUT, typename CONVERT_FUNC>
 class ConvertDirect
 {
 public:
     void operator()(const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch,
-                    void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
+        void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
     {
-		CONVERT_FUNC func;
+        CONVERT_FUNC func;
         const uint8 * readPtr = reinterpret_cast<const uint8*>(inData);
         uint8 * writePtr = reinterpret_cast<uint8*>(outData);
-        
+
         for (uint32 y = 0; y < inHeight; ++y)
         {
             const TYPE_IN * readPtrLine = reinterpret_cast<const TYPE_IN*>(readPtr);
@@ -108,12 +224,13 @@ public:
                 readPtrLine++;
                 writePtrLine++;
             }
-            readPtr += inPitch; 
+            readPtr += inPitch;
             writePtr += outPitch;
         }
     };
 };
 
+    
 template<class TYPE_IN, class TYPE_OUT, typename UNPACK_FUNC, typename PACK_FUNC>
 class ConvertDownscaleTwiceBillinear
 {
@@ -164,24 +281,72 @@ class ImageConvert
 {
 public:
 
+    static void Normalize(PixelFormat format, const void * inData, uint32 width, uint32 height, uint32 pitch, void * outData)
+    {
+        if(format == FORMAT_RGBA8888)
+        {
+            ConvertDirect<uint32, uint32, NormalizeRGBA8888> convert;
+            convert(inData, width, height, pitch, outData, width, height, pitch);
+        }
+        else
+        {
+            Logger::Debug("Normalize function not implemented for %s", PixelFormatDescriptor::GetPixelFormatString(format));
+        }
+    }
+
+	static void ConvertImageDirect(PixelFormat inFormat, PixelFormat outFormat, const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch, void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
+	{
+		if(inFormat == FORMAT_RGBA5551 && outFormat == FORMAT_RGBA8888)
+		{
+			ConvertDirect<uint16, uint32, ConvertRGBA5551toRGBA8888> convert;
+			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+		}
+		else if(inFormat == FORMAT_RGBA4444 && outFormat == FORMAT_RGBA8888)
+		{
+			ConvertDirect<uint16, uint32, ConvertRGBA4444toRGBA888> convert;
+			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+		}
+		else if(inFormat == FORMAT_RGB888 && outFormat == FORMAT_RGBA8888)
+		{
+ 			ConvertDirect<RGB888, uint32, ConvertRGB888toRGBA8888> convert;
+ 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+		}
+		else if(inFormat == FORMAT_RGB565 && outFormat == FORMAT_RGBA8888)
+		{
+			ConvertDirect<uint16, uint32, ConvertRGB565toRGBA8888> convert;
+			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+		}
+	}
+
 	static void DownscaleTwiceBillinear(	PixelFormat inFormat,
 												PixelFormat outFormat,
 												const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch,
-												void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
+												void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch, bool normalize)
 	{
 		if ((inFormat == FORMAT_RGBA8888) && (outFormat == FORMAT_RGBA8888))
 		{
-			ConvertDownscaleTwiceBillinear<uint32, uint32, UnpackRGBA8888, PackRGBA8888> convert;
-			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
-		}else if ((inFormat == FORMAT_RGBA8888) && (outFormat == FORMAT_RGBA4444))
+            if(normalize)
+            {
+			    ConvertDownscaleTwiceBillinear<uint32, uint32, UnpackRGBA8888, PackNormalizedRGBA8888> convert;
+			    convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+            }
+            else
+            {
+                ConvertDownscaleTwiceBillinear<uint32, uint32, UnpackRGBA8888, PackRGBA8888> convert;
+                convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+            }
+		}
+        else if ((inFormat == FORMAT_RGBA8888) && (outFormat == FORMAT_RGBA4444))
 		{
 			ConvertDownscaleTwiceBillinear<uint32, uint16, UnpackRGBA8888, PackRGBA4444> convert;
 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
-		}else if ((inFormat == FORMAT_RGBA4444) && (outFormat == FORMAT_RGBA8888))
+		}
+        else if ((inFormat == FORMAT_RGBA4444) && (outFormat == FORMAT_RGBA8888))
 		{
 			ConvertDownscaleTwiceBillinear<uint16, uint32, UnpackRGBA4444, PackRGBA8888> convert;
 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
-		}else
+		}
+        else
 		{
             Logger::Debug("Convert function not implemented for %s or %s", PixelFormatDescriptor::GetPixelFormatString(inFormat), PixelFormatDescriptor::GetPixelFormatString(outFormat));
 		}

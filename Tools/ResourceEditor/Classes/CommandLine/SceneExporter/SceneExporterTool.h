@@ -49,7 +49,8 @@ public:
     virtual bool InitializeFromCommandLine();
     virtual void Process();
     virtual void PrintUsage();
-    
+    virtual void DumpParams();
+
 protected:
 
     eAction commandAction;
@@ -58,6 +59,7 @@ protected:
     
     DAVA::FilePath inFolder;
     DAVA::FilePath outFolder;
+    DAVA::FilePath outSoundsFolder;
     
     DAVA::String gpu;
 	bool optimizeOnExport;

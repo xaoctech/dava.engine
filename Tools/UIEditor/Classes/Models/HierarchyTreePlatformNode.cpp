@@ -123,19 +123,19 @@ void HierarchyTreePlatformNode::SetSize(int width, int height)
 	}
 }
 	
-int HierarchyTreePlatformNode::GetWidth() const
+int HierarchyTreePlatformNode::GetWidth(bool forceOriginal) const
 {
-    return isPreview ? previewWidth : width;
+    return forceOriginal || !isPreview ? width : previewWidth;
 }
 
-int HierarchyTreePlatformNode::GetHeight() const
+int HierarchyTreePlatformNode::GetHeight(bool forceOriginal) const
 {
-    return isPreview ? previewHeight : height;
+    return forceOriginal || !isPreview ? height : previewHeight;
 }
 
-Vector2 HierarchyTreePlatformNode::GetSize() const
+Vector2 HierarchyTreePlatformNode::GetSize(bool forceOriginal) const
 {
-    return Vector2(GetWidth(), GetHeight());
+    return Vector2(GetWidth(forceOriginal), GetHeight(forceOriginal));
 }
 
 HierarchyTreeNode* HierarchyTreePlatformNode::GetParent()
@@ -214,6 +214,7 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
 		}
 	}
 	
+    List<HierarchyTreeAggregatorNode*> aggregatorNodes;
 	const YamlNode* aggregators = platform->Get(AGGREGATORS_NODE);
 	if (aggregators)
 	{
@@ -237,12 +238,20 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
 			{
 				Rect r = Rect(0, 0, aggregatorWidth->AsInt(), aggregatorHeight->AsInt());
 				result &= aggregatorNode->Load(r, aggregatorPath);
+                aggregatorNodes.push_back(aggregatorNode);
 			}
 
 			AddTreeNode(aggregatorNode);			
 		}
 	}
-	
+
+    // When all screens and aggregators are loaded, re-sync the aggregator nodes content.
+    for (List<HierarchyTreeAggregatorNode*>::iterator iter = aggregatorNodes.begin(); iter != aggregatorNodes.end();
+         iter ++)
+    {
+        (*iter)->UpdateChilds();
+    }
+
 	return result;
 }
 
@@ -400,7 +409,7 @@ bool HierarchyTreePlatformNode::IsAggregatorOrScreenNamePresent(const QString& c
 		{
 			continue;
 		}
-		if(node->GetName().compare(candidatName) == 0)
+		if(node->GetName().compare(candidatName, Qt::CaseInsensitive) == 0)
 		{
 			return true;
 		}
@@ -408,7 +417,7 @@ bool HierarchyTreePlatformNode::IsAggregatorOrScreenNamePresent(const QString& c
 	return false;
 }
 
-void HierarchyTreePlatformNode::EnablePreview(int width, int height)
+void HierarchyTreePlatformNode::SetPreviewMode(int width, int height)
 {
     previewWidth = width;
     previewHeight = height;

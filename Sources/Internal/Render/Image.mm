@@ -64,7 +64,26 @@ void Image::SaveToSystemPhotos(SaveToSystemPhotoCallbackReceiver* callback)
     [library release];
 }
 
+void *Image::GetUIImage()
+{
+    size_t bitsPerComponent = 8;
+    size_t bitsPerPixel = PixelFormatDescriptor::GetPixelFormatSizeInBits(format);
+    size_t bytesPerPixel = PixelFormatDescriptor::GetPixelFormatSizeInBytes(format);
+    size_t bytesPerRow = width * bytesPerPixel;
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
 
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, data, width * height * bytesPerPixel, NULL);
+    CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+
+    UIImage* image = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    CGDataProviderRelease(provider);
+
+    return image;
+}
+  
 }
 
 #endif //__DAVAENGINE_IPHONE_

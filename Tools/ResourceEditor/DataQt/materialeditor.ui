@@ -32,17 +32,14 @@
        <height>16</height>
       </size>
      </property>
-     <addaction name="actionNewMaterial"/>
-     <addaction name="actionCloneMaterial"/>
+     <addaction name="actionAddGlobalMaterial"/>
+     <addaction name="actionRemoveGlobalMaterial"/>
      <addaction name="separator"/>
      <addaction name="actionShowAll"/>
      <addaction name="actionMaterialsInstances"/>
      <addaction name="actionInstances"/>
      <addaction name="separator"/>
      <addaction name="actionAutoExpand"/>
-     <addaction name="actionSwitchQuality"/>
-     <addaction name="actionMaterialReload"/>
-     <addaction name="actionSetFog"/>
     </widget>
    </item>
    <item>
@@ -72,16 +69,13 @@
          <property name="dragDropMode">
           <enum>QAbstractItemView::DragDrop</enum>
          </property>
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
          <property name="selectionMode">
-          <enum>QAbstractItemView::SingleSelection</enum>
-         </property>
-         <property name="uniformRowHeights">
-          <bool>false</bool>
+          <enum>QAbstractItemView::ExtendedSelection</enum>
          </property>
          <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="animated">
           <bool>true</bool>
          </property>
         </widget>
@@ -111,17 +105,20 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>3</number>
+           <number>1</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>3</number>
+           <number>1</number>
           </property>
           <item>
            <widget class="QLabel" name="label">
@@ -138,6 +135,12 @@
           </item>
           <item>
            <widget class="QComboBox" name="templateBox">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>22</height>
+             </size>
+            </property>
             <property name="maxVisibleItems">
              <number>20</number>
             </property>
@@ -147,37 +150,17 @@
         </widget>
        </item>
        <item>
-        <widget class="QtPropertyEditor" name="materialProperty"/>
+        <widget class="QtPropertyEditor" name="materialProperty">
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOn</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
     </widget>
    </item>
   </layout>
-  <action name="actionNewMaterial">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/sphere_add.png</normaloff>:/QtIcons/sphere_add.png</iconset>
-   </property>
-   <property name="text">
-    <string>New Material</string>
-   </property>
-  </action>
-  <action name="actionCloneMaterial">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/sphere-clone.png</normaloff>:/QtIcons/sphere-clone.png</iconset>
-   </property>
-   <property name="text">
-    <string>Clone Material</string>
-   </property>
-  </action>
   <action name="actionAutoExpand">
    <property name="checkable">
     <bool>true</bool>
@@ -193,19 +176,49 @@
     <string>Turn on/off automatin node expanding</string>
    </property>
   </action>
-  <action name="actionSwitchQuality">
+  <action name="actionAddGlobalMaterial">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/global_add.png</normaloff>:/QtIcons/global_add.png</iconset>
+   </property>
    <property name="text">
-    <string>switchQuality</string>
+    <string>AddGlobalMaterial</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Global Material</string>
    </property>
   </action>
-  <action name="actionMaterialReload">
+  <action name="actionRemoveGlobalMaterial">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/global_delete.png</normaloff>:/QtIcons/global_delete.png</iconset>
+   </property>
    <property name="text">
-    <string>MaterialReload</string>
+    <string>RemoveGlobalMaterial</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Global Material</string>
    </property>
   </action>
-  <action name="actionSetFog">
+  <action name="actionLoadMaterialPreset">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/openscene.png</normaloff>:/QtIcons/openscene.png</iconset>
+   </property>
    <property name="text">
-    <string>Set Fog</string>
+    <string>Load Materia Preset...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Materia Preset</string>
+   </property>
+  </action>
+  <action name="actionSaveMaterialPreset">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/save_as.png</normaloff>:/QtIcons/save_as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Material Preset As...</string>
    </property>
   </action>
   <actiongroup name="filterType">
@@ -215,7 +228,7 @@
     </property>
     <property name="icon">
      <iconset resource="QtIcons.qrc">
-      <normaloff>:/QtIconsTextureDialog/opacity.png</normaloff>:/QtIconsTextureDialog/opacity.png</iconset>
+      <normaloff>:/QtIcons/tree_view_all.png</normaloff>:/QtIcons/tree_view_all.png</iconset>
     </property>
     <property name="text">
      <string>Show all</string>
@@ -230,7 +243,7 @@
     </property>
     <property name="icon">
      <iconset resource="QtIcons.qrc">
-      <normaloff>:/QtIconsTextureDialog/green.png</normaloff>:/QtIconsTextureDialog/green.png</iconset>
+      <normaloff>:/QtIcons/tree_view_sel_childs.png</normaloff>:/QtIcons/tree_view_sel_childs.png</iconset>
     </property>
     <property name="text">
      <string>Show Materials and Instances</string>
@@ -245,7 +258,7 @@
     </property>
     <property name="icon">
      <iconset resource="QtIcons.qrc">
-      <normaloff>:/QtIconsTextureDialog/blue.png</normaloff>:/QtIconsTextureDialog/blue.png</iconset>
+      <normaloff>:/QtIcons/tree_view_sel.png</normaloff>:/QtIcons/tree_view_sel.png</iconset>
     </property>
     <property name="text">
      <string>Show Instances</string>
