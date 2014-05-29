@@ -131,23 +131,22 @@ void UIList::ScrollTo(float delta)
 
 void UIList::SetRect(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 {
-	if(delegate)
-	{
-		if(orientation == ORIENTATION_HORIZONTAL)
-		{
-			scroll->SetViewSize(rect.dx);
-		}
-		else 
-		{
-			scroll->SetViewSize(rect.dy);
-		}
-	}
+    if(orientation == ORIENTATION_HORIZONTAL)
+    {
+        scroll->SetViewSize(rect.dx);
+    }
+    else
+    {
+        scroll->SetViewSize(rect.dy);
+    }
+
 	UIControl::SetRect(rect, rectInAbsoluteCoordinates);
 }
 
 void UIList::SetDelegate(UIListDelegate *newDelegate)
 {
 	delegate = newDelegate;
+    Refresh();
 }
 
 UIListDelegate * UIList::GetDelegate()
@@ -306,6 +305,12 @@ void UIList::Update(float32 timeElapsed)
 		FullRefresh();
 	}
 	
+    if (scroll->GetVirtualViewSize() == 0.0f)
+    {
+        // Cannot calculate position until the scroll virtual view size is set.
+        return;
+    }
+
 	float d = newPos - oldPos;
 	oldPos = newPos;
 	Rect r = scrollContainer->GetRect();
