@@ -76,9 +76,14 @@ protected:
 	// Cleanup the particular stack.
 	void CleanupStack(Deque<BaseCommand*>& stackToCleanup);
 
-	// Stacks.
-	Deque<BaseCommand*> undoStack;
-	Deque<BaseCommand*> redoStack;
+    HierarchyTreeNode::HIERARCHYTREENODEID  GetCurrentScreenId();
+	//Deque<BaseCommand*> undoStack;
+	//Deque<BaseCommand*> redoStack;
+    
+    // Stacks.
+    Map<HierarchyTreeNode::HIERARCHYTREENODEID,Deque<BaseCommand*> > undoStacks;
+    Map<HierarchyTreeNode::HIERARCHYTREENODEID,Deque<BaseCommand*> > redoStacks;
+    
 };
 
 };
