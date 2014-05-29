@@ -90,11 +90,6 @@ namespace DAVA
         return viewSize;
     }
 
-    float32 ScrollHelper::GetVirtualViewSize() const
-    {
-        return virtualViewSize;
-    }
-
     float32 ScrollHelper::GetElementSize() const
     {
         return elementSize;
