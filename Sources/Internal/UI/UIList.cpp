@@ -304,12 +304,6 @@ void UIList::Update(float32 timeElapsed)
 	{
 		FullRefresh();
 	}
-	
-    if (scroll->GetVirtualViewSize() == 0.0f)
-    {
-        // Cannot calculate position until the scroll virtual view size is set.
-        return;
-    }
 
 	float d = newPos - oldPos;
 	oldPos = newPos;
