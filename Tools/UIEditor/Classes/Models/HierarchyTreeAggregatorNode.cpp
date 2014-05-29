@@ -49,7 +49,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	this->rect = rect;
 	screen->SetRect(rect);
 	
-	LibraryController::Instance()->AddControl(this);
+	if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
 }
 
 HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
@@ -60,7 +63,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	this->rect = base->GetRect();
 	screen->SetRect(rect);
 
-	LibraryController::Instance()->AddControl(this);
+	if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
 }
 
 HierarchyTreeAggregatorNode::~HierarchyTreeAggregatorNode()

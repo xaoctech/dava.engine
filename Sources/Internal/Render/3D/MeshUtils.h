@@ -27,50 +27,40 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_MESH_UTILS_H__
+#define __DAVAENGINE_MESH_UTILS_H__
 
-#ifndef __UIEditor__CopyPasteController__
-#define __UIEditor__CopyPasteController__
-
-#include "DAVAEngine.h"
+#include "Render/3D/PolygonGroup.h"
 
 
-#include "HierarchyTreeController.h"
+namespace DAVA
+{
 
-namespace DAVA {
-	class CopyPasteController: public Singleton<CopyPasteController>
-	{
-	public:
-		enum CopyType
-		{
-			CopyTypeNone,
-			CopyTypeControl,
-			CopyTypeScreen,
-			CopyTypeAggregator,
-			CopyTypePlatform,
-		};
-		
-	public:
-		CopyPasteController();
-		~CopyPasteController();
-		
-		CopyType GetCopyType() const;
-		
-		void CopyControls(const HierarchyTreeController::SELECTEDCONTROLNODES& items);
-		void Copy(const HierarchyTreeNode::HIERARCHYTREENODESLIST& items);
-		bool ControlIsChild(const HierarchyTreeController::SELECTEDCONTROLNODES& items, const HierarchyTreeControlNode* control) const;
-		
-		void Paste(HierarchyTreeNode* parentNode);
-		
-        // Determine whether at least one subcontrol is selected.
-        bool SubcontrolsSelected(const HierarchyTreeController::SELECTEDCONTROLNODES& items);
+class MeshUtils
+{
+public:
+    static void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=false);
+    static void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
+    static void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 
-	//private:
-		void Clear();
-				
-	private:
-		HierarchyTreeNode::HIERARCHYTREENODESLIST items;
-		CopyType copyType;
-	};
-}
+private:
+    struct FaceWork
+    {
+        int32 indexOrigin[3];
+        Vector3 tangent, binormal;
+    };
 
-#endif /* defined(__UIEditor__CopyPasteController__) */
+    struct VertexWork
+    {
+        Vector<int32> refIndices;
+        Vector3 tangent, binormal;
+        int32 tbRatio;
+        int32 refIndex;
+        int32 resultGroup;
+    };
+};
+
+};
+
+#endif
+

@@ -270,7 +270,7 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 			copy = new HierarchyTreeScreenNode(parent, screen);
 		}
 		copy->SetMarked(true);
-        UpdateControlName(parent, copy, true);
+        UpdateControlName(parent, copy, parent->IsAggregatorOrScreenNamePresent(copy->GetName()));
 		//copy->SetName(FormatCopyName(screen->GetName(), parent));
 		
 		count++;
