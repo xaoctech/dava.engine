@@ -125,11 +125,18 @@ public:
     bool IsPathCorrectForProject(const FilePath &pathname);
     
     
+    DAVA_DEPRECATED(static void FindSwitchesWithDifferentLODs(DAVA::Entity *entity, Set<FastName> & names));
+    DAVA_DEPRECATED(static bool IsEntityHasDifferentLODsCount(DAVA::Entity *entity));
+    DAVA_DEPRECATED(static bool IsObjectHasDifferentLODsCount(DAVA::RenderObject *renderObject));
+
+
 protected:
 
     void ValidateRenderComponent(Entity *ownerNode, Set<String> &errorsLog);
-    void ValidateParticleEffectComponent(Entity *ownerNode, Set<String> &errorsLog);
     void ValidateRenderBatch(Entity *ownerNode, RenderBatch *renderBatch, Set<String> &errorsLog);
+
+    void ValidateParticleEffectComponent(Entity *ownerNode, Set<String> &errorsLog) const;
+    void ValidateParticleEmitter(ParticleEmitter *emitter, Set<String> &errorsLog) const;
 
     
 	void ValidateLandscapeTexture(Landscape *landscape, Landscape::eTextureLevel texLevel, Set<String> &errorsLog);

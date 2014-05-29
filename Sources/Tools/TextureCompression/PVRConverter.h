@@ -47,7 +47,8 @@ public:
 	PVRConverter();
 	virtual ~PVRConverter();
 
-	FilePath ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality);
+    FilePath ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC = true);
+    FilePath ConvertNormalMapPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality);
 
 	void SetPVRTexTool(const FilePath &textToolPathname);
 

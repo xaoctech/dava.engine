@@ -54,6 +54,10 @@
 #define COARSE_CONTROL_MOVE_DELTA 10
 #define FINE_CONTROL_MOVE_DELTA 1
 
+// Coarse/Fine Guides Move delta.
+#define COARSE_GUIDE_MOVE_DELTA 10
+#define FINE_GUIDE_MOVE_DELTA 1
+
 #define MOVE_SCREEN_KEY DVKEY_SPACE
 
 const char* MENU_PROPERTY_ID = "id";
@@ -88,6 +92,9 @@ DefaultScreen::DefaultScreen()
     
     isStickedToX = false;
     isStickedToY = false;
+    
+    isNeedHandleScreenScaleChanged = false;
+    isNeedHandleScreenPositionChanged = false;
 }
 
 DefaultScreen::~DefaultScreen()
@@ -102,6 +109,9 @@ void DefaultScreen::Update(float32 /*timeElapsed*/)
 	//update view port
 	RenderManager::Instance()->SetDrawScale(scale);
 	RenderManager::Instance()->SetDrawTranslate(pos);
+    
+    // Handle the "screen scale changed"/"screen position changed" after the scale/translate is set.
+    HandleScreenScalePositionChanged();
 }
 
 void DefaultScreen::Draw(const UIGeometricData &geometricData)
@@ -125,7 +135,7 @@ void DefaultScreen::SystemDraw(const UIGeometricData &geometricData)
         
         Rect previewClipRect;
         previewClipRect.SetSize(PreviewController::Instance()->GetTransformData().screenSize);
-        RenderManager::Instance()->ClipRect(previewClipRect);
+        RenderManager::Instance()->SetClip(previewClipRect);
     }
 
 	UIScreen::SystemDraw(geometricData);
@@ -224,38 +234,6 @@ bool DefaultScreen::SystemInput(UIEvent *currentInput)
 	return true;
 }
 
-HierarchyTreeControlNode* DefaultScreen::GetSelectedControl(const Vector2& point, const HierarchyTreeNode* parent) const
-{
-	if (!parent)
-		return NULL;
-	
-	HierarchyTreeControlNode* selectedNode = NULL;
-	
-	const HierarchyTreeNode::HIERARCHYTREENODESLIST& items = parent->GetChildNodes();
-	for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = items.begin();
-		 iter != items.end();
-		 ++iter)
-	{
-		HierarchyTreeNode* node = (*iter);
-		HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(node);
-		if (controlNode)
-		{
-			UIControl* control = controlNode->GetUIObject();
-			if (control &&  control->IsPointInside(point))
-				selectedNode = controlNode;
-		}
-		
-		HierarchyTreeControlNode* childSelectNode = GetSelectedControl(point, node);
-		if (childSelectNode)
-			selectedNode = childSelectNode;
-		
-		if (selectedNode)
-			return selectedNode;
-	}
-	
-	return NULL;
-}
-
 DefaultScreen::SmartSelection::childsSet::~childsSet()
 {
 	for (std::vector<SmartSelection *>::iterator iter = begin();
@@ -309,23 +287,18 @@ bool DefaultScreen::SmartSelection::IsEqual(const SmartSelection* item) const
 
 HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetFirst() const
 {
-	if (childs.size())
-		return (*childs.begin())->GetFirst();
+	if (!childs.empty())
+		return childs.front()->GetFirst();
 
-	return this->id;
+	return id;
 }
 
 HierarchyTreeNode::HIERARCHYTREENODEID DefaultScreen::SmartSelection::GetLast() const
 {
-	SelectionVector selection;
-	FormatSelectionVector(selection);
-	// The last element in selection array is on the top - so we should get it
-	if (selection.size() > 0)
-	{
-		return selection[selection.size() - 1];
-	}
+    if (!childs.empty())
+        return childs.back()->GetLast();
 
-	return this->id;
+    return id;
 }
 
 DefaultScreen::SmartSelection::SelectionVector DefaultScreen::SmartSelection::GetAll() const
@@ -388,27 +361,23 @@ void DefaultScreen::SmartGetSelectedControl(SmartSelection* list, const Hierarch
 		if (!control)
 			continue;
 
-		// Control can be selected if at least its subcontrol is visible (see pls DF-2420).
-		if (!IsControlVisible(control))
-		{
+		if (!control->GetRecursiveVisible())
 			continue;
-		}
 
-		if (!control->GetVisibleForUIEditor())
-		{
-			continue;
-		}
+        SmartSelection* currList = list;
+        bool controlVisible = IsControlVisible(control);
 
-		if (control->IsPointInside(point))
-		{
-			SmartSelection* newList = new SmartSelection(node->GetId());
-			list->childs.push_back(newList);
-			SmartGetSelectedControl(newList, node, point);
-		}
-		else
-		{
-			SmartGetSelectedControl(list, node, point);
-		}
+        if (controlVisible && control->IsPointInside(point))
+        {
+            SmartSelection* newList = new SmartSelection(node->GetId());
+            list->childs.push_back(newList);
+            currList = newList;
+        }
+
+        if (controlVisible || IsControlContentVisible(control))
+        {
+            SmartGetSelectedControl(currList, node, point);
+        }
 	}
 }
 
@@ -457,17 +426,25 @@ void DefaultScreen::GetSelectedControl(HierarchyTreeNode::HIERARCHYTREENODESLIST
 			continue;
 		
 		UIControl* control = controlNode->GetUIObject();
-		if (!control->GetVisible())
-			continue;
-        
-        if (!control->GetVisibleForUIEditor())
-			continue;
-		
-		Rect controlRect = GetControlRect(controlNode);
-		if (controlRect.RectIntersects(rect))
-			list.push_back(node);
-		
-		GetSelectedControl(list, rect, node);
+        if (!control)
+            continue;
+
+        if (!control->GetRecursiveVisible())
+            continue;
+
+        bool controlVisible = IsControlVisible(control);
+
+        if (controlVisible)
+        {
+            Rect controlRect = GetControlRect(controlNode);
+            if (controlRect.RectIntersects(rect))
+                list.push_back(node);
+        }
+
+        if (controlVisible || IsControlContentVisible(control))
+        {
+            GetSelectedControl(list, rect, node);
+        }
 	}
 }
 
@@ -543,6 +520,136 @@ void DefaultScreen::SaveControlsPostion()
 	}
 }
 
+void DefaultScreen::DoKeyboardMove(eKeyboardMoveDirection moveDirection)
+{
+    // In case guides are selected - move guides, otherwise control.
+    HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (!screenNode)
+    {
+        return;
+    }
+
+    bool moveGuides = screenNode && screenNode->AreGuidesSelected();
+    
+    int32 treshold = moveGuides ? GetGuideMoveDelta() : GetControlMoveDelta();
+    Vector2 delta;
+    
+    switch (moveDirection)
+    {
+        case moveUp:
+        {
+            delta = Vector2 (0, -treshold);
+            break;
+        }
+            
+        case moveDown:
+        {
+            delta = Vector2(0, treshold);
+            break;
+        }
+            
+        case moveLeft:
+        {
+            delta = Vector2(-treshold, 0);
+            break;
+        }
+        
+        case moveRight:
+        {
+            delta = Vector2(treshold, 0);
+            break;
+        }
+            
+        default:
+        {
+            DVASSERT(false);
+            break;
+        }
+    }
+    
+    if (moveGuides)
+    {
+        MoveGuides(moveDirection, delta);
+    }
+    else
+    {
+        MoveControl(delta);
+    }
+}
+
+void DefaultScreen::MoveGuides(eKeyboardMoveDirection moveDirection, const Vector2& delta)
+{
+    HierarchyTreeScreenNode* screenNode = HierarchyTreeController::Instance()->GetActiveScreen();
+    DVASSERT(screenNode);
+
+    Vector2 minGuidePos = Vector2(FLT_MAX, FLT_MAX);
+    Vector2 maxGuidePos = Vector2(FLT_MIN, FLT_MIN);
+    bool horzGuidesSelected = false;
+    bool vertGuidesSelected = false;
+
+    // Check whether move is possible.
+    const List<GuideData*>& selectedGuides = screenNode->GetSelectedGuides();
+    for (List<GuideData*>::const_iterator iter = selectedGuides.begin(); iter != selectedGuides.end(); iter ++)
+    {
+        GuideData* curGuideData =  *iter;
+        const Vector2& curPos = curGuideData->GetPosition();
+        if (curGuideData->GetType() == GuideData::Horizontal)
+        {
+            horzGuidesSelected = true;
+        }
+        if (curGuideData->GetType() == GuideData::Vertical)
+        {
+            vertGuidesSelected = true;
+        }
+
+        if (curPos.x < minGuidePos.x)
+        {
+            minGuidePos.x = curPos.x;
+        }
+        if (curPos.y < minGuidePos.y)
+        {
+            minGuidePos.y = curPos.y;
+        }
+        if (curPos.x > maxGuidePos.x)
+        {
+            maxGuidePos.x = curPos.x;
+        }
+        if (curPos.y > maxGuidePos.y)
+        {
+            maxGuidePos.y = curPos.y;
+        }
+    }
+    
+    // No way to move vertically if no horz guides selected.
+    if ((moveDirection == moveUp || moveDirection == moveDown) && !horzGuidesSelected)
+    {
+        return;
+    }
+
+    // No way to move horisontally if no vert guides selected.
+    if ((moveDirection == moveLeft || moveDirection == moveRight) && !vertGuidesSelected)
+    {
+        return;
+    }
+
+    // Check whether guides remain in the screen bounds after move.
+    Rect screenRect = ScreenWrapper::Instance()->GetBackgroundFrameRect();
+    if (((minGuidePos.x + delta.x) <= screenRect.x) || ((minGuidePos.y + delta.y) <= screenRect.y))
+    {
+        return;
+    }
+    
+    if (((maxGuidePos.x + delta.x) >= (screenRect.x + screenRect.dx)) || ((maxGuidePos.y + delta.y) >= (screenRect.y + screenRect.dy)))
+    {
+        return;
+    }
+
+    // All is OK - can move.
+    MoveGuideCommand* cmd = new MoveGuideCommand(screenNode, delta);
+    CommandsController::Instance()->ExecuteCommand(cmd);
+    SafeRelease(cmd);
+}
+
 void DefaultScreen::MoveControl(const Vector2& delta)
 {
 	ControlsMoveCommand* cmd = new ControlsMoveCommand(GetActiveMoveControls(), delta);
@@ -590,7 +697,7 @@ void DefaultScreen::DeleteSelectedControls()
 
 void DefaultScreen::MoveGuide(HierarchyTreeScreenNode* screenNode)
 {
-    MoveGuideCommand* command = new MoveGuideCommand(screenNode);
+    MoveGuideByMouseCommand* command = new MoveGuideByMouseCommand(screenNode);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
 }
@@ -856,6 +963,7 @@ void DefaultScreen::MouseInputBegin(const DAVA::UIEvent* event)
 	if (screenNode && event->tid == UIEvent::BUTTON_1 && screenNode->AreGuidesEnabled() && screenNode->StartMoveGuide(point))
 	{
 		inputState = InputStateGuideMove;
+        HierarchyTreeController::Instance()->ResetSelectedControl();
         return;
 	}
 
@@ -1185,19 +1293,19 @@ void DefaultScreen::KeyboardInput(const DAVA::UIEvent* event)
 		}break;
 		case DVKEY_UP:
 		{
-			MoveControl(Vector2(0, -GetControlMoveDelta()));
+			DoKeyboardMove(moveUp);
 		}break;
 		case DVKEY_DOWN:
 		{
-			MoveControl(Vector2(0, GetControlMoveDelta()));
+			DoKeyboardMove(moveDown);
 		}break;
 		case DVKEY_LEFT:
 		{
-			MoveControl(Vector2(-GetControlMoveDelta(), 0));
+			DoKeyboardMove(moveLeft);
 		}break;
 		case DVKEY_RIGHT:
 		{
-			MoveControl(Vector2(GetControlMoveDelta(), 0));
+			DoKeyboardMove(moveRight);
 		}break;
 		case DVKEY_DELETE:
 		case DVKEY_BACKSPACE:
@@ -1450,6 +1558,12 @@ int32 DefaultScreen::GetControlMoveDelta()
 	return (modifiers & Qt::ShiftModifier) ? COARSE_CONTROL_MOVE_DELTA : FINE_CONTROL_MOVE_DELTA;
 }
 
+int32 DefaultScreen::GetGuideMoveDelta()
+{
+	Qt::KeyboardModifiers modifiers = QApplication::queryKeyboardModifiers();
+	return (modifiers & Qt::ShiftModifier) ? COARSE_GUIDE_MOVE_DELTA : FINE_GUIDE_MOVE_DELTA;
+}
+
 void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
 {
 	if (inputState == InputStateScreenMove)
@@ -1467,34 +1581,44 @@ void DefaultScreen::HandleScreenMove(const DAVA::UIEvent* event)
 	}
 }
 
-bool DefaultScreen::IsControlVisible(UIControl* uiControl) const
+bool DefaultScreen::IsControlVisible(const UIControl* uiControl) const
 {
-	bool isVisible = false;
-	IsControlVisibleRecursive(uiControl, isVisible);
-
-	return isVisible;
+    return (uiControl->GetVisibleForUIEditor() && uiControl->GetVisible());
 }
 
-void DefaultScreen::IsControlVisibleRecursive(const UIControl* uiControl, bool& isVisible) const
+bool DefaultScreen::IsControlContentVisible( const UIControl *control ) const
 {
-	if (!uiControl)
-	{
-		isVisible = false;
-		return;
-	}
+    const List<UIControl*>& children = control->GetChildren();
+    if( children.empty() )
+        return false;
 
-	isVisible |= uiControl->GetVisible();
+    List<UIControl*>::const_iterator iter = children.begin();
+    List<UIControl*>::const_iterator end = children.end();
+    for(; iter != end; ++iter)
+    {
+        if (!control->GetRecursiveVisible())
+        {
+            continue;
+        }
 
-	const List<UIControl*>& children = uiControl->GetChildren();
-	for(List<UIControl*>::const_iterator iter = children.begin(); iter != children.end(); iter ++)
-	{
-		IsControlVisibleRecursive(*iter, isVisible);
-	}
+        if (IsControlVisible(*iter))
+            return true;
+
+        if (IsControlContentVisible(*iter))
+            return true;
+    }
+
+    return false;
 }
 
 void DefaultScreen::SetScreenControl(ScreenControl* control)
 {
     screenControl = control;
+}
+
+ScreenControl* DefaultScreen::GetScreenControl() const
+{
+    return screenControl;
 }
 
 UIEvent* DefaultScreen::PreprocessEventForPreview(UIEvent* event)
@@ -1534,7 +1658,7 @@ void DefaultScreen::DrawGuides()
     Vector<float32> unselectedGuides;
     Rect rect = ScreenWrapper::Instance()->GetBackgroundFrameRect();
     
-    const List<GuideData*> guides = activeScreen->GetGuides(true);
+    const List<GuideData*>& guides = activeScreen->GetGuides(true);
     for (List<GuideData*>::const_iterator iter = guides.begin(); iter != guides.end(); iter ++)
     {
         GuideData* curData = *iter;
@@ -1600,4 +1724,41 @@ Vector2 DefaultScreen::AlignToNearestScale(const Vector2& value) const
     result.y = Round(value.y / scale.y) * scale.y;
     
     return result;
+}
+
+// Screen scale/position is changed.
+void DefaultScreen::SetScreenScaleChangedFlag()
+{
+    isNeedHandleScreenScaleChanged = true;
+}
+
+void DefaultScreen::SetScreenPositionChangedFlag()
+{
+    isNeedHandleScreenPositionChanged = true;
+}
+
+void DefaultScreen::HandleScreenScalePositionChanged()
+{
+    if (!(isNeedHandleScreenScaleChanged || isNeedHandleScreenPositionChanged))
+    {
+        return;
+    }
+    
+    HierarchyTreeNode::HIERARCHYTREENODESLIST nodesList = HierarchyTreeController::Instance()->GetNodes();
+    
+    for (HierarchyTreeNode::HIERARCHYTREENODESITER iter = nodesList.begin(); iter != nodesList.end(); iter ++)
+    {
+        if (isNeedHandleScreenScaleChanged)
+        {
+            (*iter)->OnScreenScaleChanged();
+        }
+        
+        if (isNeedHandleScreenPositionChanged)
+        {
+            (*iter)->OnScreenPositionChanged();
+        }
+    }
+    
+    isNeedHandleScreenScaleChanged = false;
+    isNeedHandleScreenPositionChanged = false;
 }

@@ -119,11 +119,23 @@ public:
     // UI Partice effect properties and invokable methods.
     static const char* UIPARTICLES_AUTOSTART_PROPERTY;
     static const char* UIPARTICLES_EFFECT_PATH_PROPERTY;
+    static const char* UIPARTICLES_START_DELAY_PROPERTY;
 
 	static const char* UIPARTICLES_START_METHOD_NAME;
     static const char* UIPARTICLES_STOP_METHOD_NAME;
+    static const char* UIPARTICLES_PAUSE_METHOD_NAME;
+    static const char* UIPARTICLES_RESTART_METHOD_NAME;
     static const char* UIPARTICLES_RELOAD_METHOD_NAME;
     
+    // UI Joypad properties.
+    static const char* JOYPAD_STICK_SPRITE_PROPERTY_NAME;
+    static const char* JOYPAD_STICK_SPRITE_FRAME_PROPERTY_NAME;
+    static const char* JOYPAD_DEAD_AREA_PROPERTY_NAME;
+    static const char* JOYPAD_DIGITAL_SENSE_PROPERTY_NAME;
+    
+    // UI Web View properties.
+    static const char* WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME;
+
 	// Custom Control properties.
 	static const char* CUSTOM_CONTROL_NAME;
 };

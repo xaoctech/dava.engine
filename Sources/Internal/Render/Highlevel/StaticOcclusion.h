@@ -72,21 +72,31 @@ public:
 class StaticOcclusion
 {
 public:
+    enum eIndexRenew
+    {
+        RENEW_OCCLUSION_INDICES,
+        LEAVE_OLD_INDICES,
+    };
+    
     StaticOcclusion();
     ~StaticOcclusion();
     
-    void SetScene(Scene * _scene) { scene = _scene; };
-    void SetRenderSystem(RenderSystem * _renderSystem) {renderSystem = _renderSystem; };
+    inline void SetScene(Scene * _scene);
+    inline void SetRenderSystem(RenderSystem * _renderSystem);
+    
     void BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
                                   StaticOcclusionData * currentData,
-                                  RenderHierarchy * renderHierarchy);
+                                  eIndexRenew renewIndexEnum);
     
-    void SetEqualVisibilityVector(Map<RenderObject*, Vector<RenderObject*> > & equalVisibility);
+    void SetEqualVisibilityVector(Map<RenderObject*,
+                                  Vector<RenderObject*> > & equalVisibility);
 
     
     inline OcclusionQueryManager & GetOcclusionQueryManager();
     //uint32 * GetCellVisibilityData(Camera * camera);
+    
     uint32 RenderFrame();
+    void RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ);
 
     void FillOcclusionDataObject(StaticOcclusionData * data);
     
@@ -94,13 +104,13 @@ public:
     
     //Vector<Vector3> renderPositions;
     //Vector<Vector3> renderDirections;
+    
+    inline Texture * GetRTTexture() const;
+    
 private:
     void ProcessRecordedBatches();
     AABBox3 GetCellBox(uint32 x, uint32 y, uint32 z);
-    
-    RenderHierarchy * renderHierarchy;
-    RenderPassBatchArray * renderPassBatchArray;
-    VisibilityArray visibilityArray;
+        
     OcclusionQueryManager manager;
     Vector<std::pair<RenderBatch*, OcclusionQueryManagerHandle> > recordedBatches;
     Set<RenderObject*> frameGlobalVisibleInfo;
@@ -131,7 +141,11 @@ inline OcclusionQueryManager & StaticOcclusion::GetOcclusionQueryManager()
 {
     return manager;
 }
-    
+
+inline void StaticOcclusion::SetScene(Scene * _scene) { scene = _scene; };
+inline void StaticOcclusion::SetRenderSystem(RenderSystem * _renderSystem) {renderSystem = _renderSystem; };
+inline Texture * StaticOcclusion::GetRTTexture() const { return renderTargetTexture; };
+
 };
 
 #endif //__DAVAENGINE_STATIC_OCCLUSION__

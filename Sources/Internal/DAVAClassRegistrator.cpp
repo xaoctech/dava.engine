@@ -28,6 +28,7 @@
 
 #include "DAVAEngine.h"
 #include "DAVAClassRegistrator.h"
+#include "Render/Highlevel/SpriteRenderBatch.h"
 
 using namespace DAVA;
 
@@ -90,4 +91,10 @@ REGISTER_CLASS(StaticOcclusionComponent);
 REGISTER_CLASS(StaticOcclusionDataComponent);
 REGISTER_CLASS_WITH_ALIAS(PartilceEmitterLoadProxy, "ParticleEmitter3D");
 REGISTER_CLASS(UIWebView);
+REGISTER_CLASS(UIMovieView);
 REGISTER_CLASS(UIParticles);
+REGISTER_CLASS(UIJoypad);
+REGISTER_CLASS(VegetationRenderObject);
+REGISTER_CLASS(SpriteObject);
+REGISTER_CLASS(SpriteRenderBatch);
+REGISTER_CLASS(UI3DView);

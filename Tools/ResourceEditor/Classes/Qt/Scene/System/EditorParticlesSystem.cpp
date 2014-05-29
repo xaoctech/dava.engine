@@ -70,7 +70,7 @@ EditorParticlesSystem::~EditorParticlesSystem()
 
 }
 
-void EditorParticlesSystem::Update(DAVA::float32 timeElapsed)
+void EditorParticlesSystem::Process(DAVA::float32 timeElapsed)
 {
 
 }
@@ -121,7 +121,7 @@ void EditorParticlesSystem::Draw()
         ParticleEffectComponent * effect = GetEffectComponent(selectedEffectEntity);
         DAVA::Vector3 center =effect->GetSpawnPosition(effect->GetEmitterId(selectedEmitter));
         TransformPerserveLength(center, effectMatrix);
-        center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();		
+        center+=selectedEffectEntity->GetWorldTransform().GetTranslationVector();
         
         DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.7f, 0.0f, 0.0f, 0.25f));
 		DAVA::RenderHelper::Instance()->FillDodecahedron(center, 0.1f, renderState);
@@ -162,7 +162,9 @@ void EditorParticlesSystem::DrawSizeCircleShockWave(DAVA::Entity *effectEntity, 
 	//float32 time = emitter->GetTime();
 	float32 time = GetEffectComponent(effectEntity)->GetCurrTime();
 	float32 emitterRadius = (emitter->radius) ? emitter->radius->GetValue(time) : 0.0f;
-	DAVA::RenderHelper::Instance()->DrawCircle3D(center, DAVA::Vector3(0.0f, 0.0f, 1.0f), emitterRadius, true, renderState);
+
+    RenderManager::Instance()->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
+	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitter->emissionVector->GetValue(time), emitterRadius, true, renderState);
 }
 
 void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::ParticleEmitter *emitter, DAVA::Vector3 center)
@@ -184,7 +186,8 @@ void EditorParticlesSystem::DrawSizeCircle(DAVA::Entity *effectEntity, DAVA::Par
 		emitterVector = emitter->emissionVector->GetValue(time);
 		emitterVector = emitterVector * wMat;
 	}
-							
+
+    RenderManager::Instance()->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
 	DAVA::RenderHelper::Instance()->DrawCircle3D(center, emitterVector, emitterRadius, true, renderState);
 }
 
@@ -206,15 +209,15 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *effectEntity, DAVA::Partic
 	float halfSizeZ = emitterSize.z / 2;
 	
 	// Calculate box min and max values
-	p[0] = DAVA::Vector3(center.x + halfSizeX, center.y + halfSizeY, center.z - halfSizeZ);
-	p[1] = DAVA::Vector3(center.x + halfSizeX, center.y + halfSizeY, center.z + halfSizeZ);
-	p[2] = DAVA::Vector3(center.x - halfSizeX, center.y + halfSizeY, center.z + halfSizeZ);
-	p[3] = DAVA::Vector3(center.x - halfSizeX, center.y + halfSizeY, center.z - halfSizeZ);
+	p[0] = DAVA::Vector3(halfSizeX, halfSizeY, -halfSizeZ);
+	p[1] = DAVA::Vector3(halfSizeX, halfSizeY, halfSizeZ);
+	p[2] = DAVA::Vector3(-halfSizeX, halfSizeY, halfSizeZ);
+	p[3] = DAVA::Vector3(-halfSizeX, halfSizeY, -halfSizeZ);
 
-	p[4] = DAVA::Vector3(center.x + halfSizeX, center.y - halfSizeY, center.z - halfSizeZ);
-	p[5] = DAVA::Vector3(center.x + halfSizeX, center.y - halfSizeY, center.z + halfSizeZ);
-	p[6] = DAVA::Vector3(center.x - halfSizeX, center.y - halfSizeY, center.z + halfSizeZ);
-	p[7] = DAVA::Vector3(center.x - halfSizeX, center.y - halfSizeY, center.z - halfSizeZ);
+	p[4] = DAVA::Vector3(halfSizeX, -halfSizeY, -halfSizeZ);
+	p[5] = DAVA::Vector3(halfSizeX, -halfSizeY, halfSizeZ);
+	p[6] = DAVA::Vector3(-halfSizeX, -halfSizeY, halfSizeZ);
+	p[7] = DAVA::Vector3(-halfSizeX, -halfSizeY, -halfSizeZ);
 
 	DAVA::Matrix4 wMat = effectEntity->GetWorldTransform();
 	wMat.SetTranslationVector(DAVA::Vector3(0, 0, 0));
@@ -222,7 +225,10 @@ void EditorParticlesSystem::DrawSizeBox(DAVA::Entity *effectEntity, DAVA::Partic
 	for(int i = 0; i < 8; ++i)
 	{
 		p[i] = p[i] * wMat;
+        p[i] += center;
 	}
+
+    RenderManager::Instance()->SetDynamicParam(DAVA::PARAM_WORLD, &DAVA::Matrix4::IDENTITY, (DAVA::pointer_size)&DAVA::Matrix4::IDENTITY);
 
 	DAVA::Polygon3 poly;
 	poly.AddPoint(p[0]);

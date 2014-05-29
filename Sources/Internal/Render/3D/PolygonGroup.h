@@ -201,18 +201,43 @@ private:
 public:
     
     INTROSPECTION_EXTEND(PolygonGroup, DataNode,
-        MEMBER(vertexCount, "Vertex Count", I_SAVE)
-        MEMBER(indexCount, "Index Count", I_SAVE)
-        MEMBER(textureCoordCount, "Texture Coord Count", I_SAVE)
-        MEMBER(vertexStride, "Vertex Stride", I_SAVE)
-        MEMBER(vertexFormat, "Vertex Format", I_SAVE)
-        MEMBER(indexFormat, "Index Format", I_SAVE)
-        MEMBER(triangleCount, "Triangle Count", I_SAVE)
+        MEMBER(vertexCount, "Vertex Count", I_VIEW | I_SAVE)
+        MEMBER(indexCount, "Index Count", I_VIEW | I_SAVE)
+        MEMBER(textureCoordCount, "Texture Coord Count", I_VIEW | I_SAVE)
+        MEMBER(vertexStride, "Vertex Stride", I_VIEW | I_SAVE)
+        MEMBER(vertexFormat, "Vertex Format", I_VIEW | I_SAVE)
+        MEMBER(indexFormat, "Index Format", I_VIEW | I_SAVE)
+        MEMBER(triangleCount, "Triangle Count", I_VIEW | I_SAVE)
 //        MEMBER(primitiveType, "Primitive Type", INTROSPECTION_SERIALIZABLE)
 
 //        MEMBER(vertices, "Vertices", INTROSPECTION_SERIALIZABLE)
 //        MEMBER(indices, "Indices", INTROSPECTION_SERIALIZABLE)
     );
+};
+
+class MeshConverter
+{
+public:
+    static void RebuildMeshTangentSpace(PolygonGroup *group, bool normalizeTangentSpace=true, bool computeBinormal=false);
+    static void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
+    
+private:
+    struct FaceWork
+    {
+        int32 indexOrigin[3];
+        Vector3 tangent, binormal;
+    };
+
+    struct VertexWork
+    {
+        Vector<int32> refIndices;
+        Vector3 tangent, binormal;
+        int32 tbRatio;
+        int32 refIndex;
+        int32 resultGroup;
+    };
+
+    
 };
 
 // Static Mesh Implementation

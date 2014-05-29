@@ -140,9 +140,12 @@ public:
 	static PVRFile * ReadFile(File *file, bool readMetaData = false, bool readData = false);
     static bool LoadImages(const PVRFile *pvrFile, Vector<Image *> &imageSet, uint32 fromMipMap);
     
+    static bool WriteFile(const PVRFile * pvrFile, File * outFile);
+    static bool WriteFileFromMipMapFiles(const FilePath & outputFile, const Vector<FilePath> & imgPaths);
+
 protected:
 
-    static bool DetectIfNeedSwapBytes(PVRHeaderV3 *header);
+    static bool DetectIfNeedSwapBytes(const PVRHeaderV3 *header);
 	static void PrepareHeader(PVRHeaderV3 *header, const bool swapBytes);
 	static void SwapDataBytes(const PVRHeaderV3 &header, uint8 *data, const uint32 dataSize);
 

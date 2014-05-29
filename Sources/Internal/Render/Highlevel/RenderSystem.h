@@ -106,11 +106,13 @@ public:
     /**
         \brief Set main camera
      */
-    inline void SetCamera(Camera * camera);
-	inline Camera * GetCamera() const;
-    inline void SetClipCamera(Camera * camera);
-	inline Camera * GetClipCamera() const;
+    inline void SetMainCamera(Camera * camera);
+	inline Camera * GetMainCamera() const;
+    inline void SetDrawCamera(Camera * camera);
+	inline Camera * GetDrawCamera() const;
     
+    void SetGlobalMaterial(NMaterial *material);
+    NMaterial *GetGlobalMaterial() const;
     
     void Update(float32 timeElapsed);
     void Render();
@@ -141,6 +143,10 @@ public:
 	ShadowPassBlendMode::eBlend GetShadowBlendMode();
 	
 	void DebugDrawHierarchy(const Matrix4& cameraMatrix);
+
+    RenderHierarchy * GetRenderHierarchy(){return renderHierarchy;}
+
+    inline bool IsRenderHierarchyInitialized() const {return hierarchyInitialized;}
     
 private:
 	void CreateSpatialTree();
@@ -155,7 +161,7 @@ private:
     Vector<RenderObject*> objectsForPermanentUpdate;
     Vector<RenderObject*> markedObjects;
     Vector<Light*> movedLights;
-    Vector<RenderPass*> renderPassOrder;
+    RenderPass* mainRenderPass;
     
     RenderPassManager renderPassManager;
     
@@ -165,13 +171,12 @@ private:
     bool forceUpdateLights;
     
     RenderHierarchy * renderHierarchy;
-	bool hierarchyInitialized;
-
-    RenderPassBatchArray * globalBatchArray;
-    VisibilityArray visibilityArray;
+	bool hierarchyInitialized;    
     
-    Camera * camera;
-    Camera * clipCamera;
+    Camera * mainCamera;
+    Camera * drawCamera;
+
+    NMaterial *globalMaterial;
 
     friend class RenderPass;
 };
@@ -187,26 +192,26 @@ inline RenderHierarchy * RenderSystem::GetRenderHierarchy() const
 }
 
     
-inline void RenderSystem::SetCamera(Camera * _camera)
+inline void RenderSystem::SetMainCamera(Camera * _camera)
 {
-    SafeRelease(camera);
-    camera = SafeRetain(_camera);
+    SafeRelease(mainCamera);
+    mainCamera = SafeRetain(_camera);
 }
 
-inline void RenderSystem::SetClipCamera(Camera * _camera)
+inline void RenderSystem::SetDrawCamera(Camera * _camera)
 {
-    SafeRelease(clipCamera);
-    clipCamera = SafeRetain(_camera);
+    SafeRelease(drawCamera);
+    drawCamera = SafeRetain(_camera);
 }
 
-inline Camera * RenderSystem::GetCamera() const
+inline Camera * RenderSystem::GetMainCamera() const
 {
-    return camera;
+    return mainCamera;
 }
 
-inline Camera * RenderSystem::GetClipCamera() const
+inline Camera * RenderSystem::GetDrawCamera() const
 {
-    return clipCamera;
+    return drawCamera;
 }
     
 } // ns

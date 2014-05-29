@@ -53,7 +53,7 @@ int32 Font::GetDPI()
 	
 Font::Font()
 :	size(14.0f)
-,   originalSize(14.0f)
+,   renderSize(14.0f)
 ,	verticalSpacing(0)
 {
 	FontManager::Instance()->RegisterFont(this);
@@ -95,18 +95,10 @@ String Font::GetRawHashString()
 	return Format("%i_%.0f_%i", fontType, size, verticalSpacing);
 }
 
-void Font::SetSize(float32 _size, bool setOriginalSize)
+void Font::SetSize(float32 _size)
 {
 	size = _size;
-    if (setOriginalSize)
-    {
-        SetOriginalSize(_size);
-    }
-}
-
-void Font::SetOriginalSize(float32 _originalSize)
-{
-    originalSize = _originalSize;
+    renderSize = _size;
 }
 
 float32	Font::GetSize() const
@@ -114,9 +106,16 @@ float32	Font::GetSize() const
 	return size;
 }
 
-float32	Font::GetOriginalSize() const
+void Font::SetRenderSize(float32 _originalSize)
 {
-    return originalSize;
+    // Fots with zero render size are incorrectly handled by
+    // TextBlock::Prepare(), so define the minimum size.
+    renderSize = Max(_originalSize, 0.1f);
+}
+
+float32	Font::GetRenderSize() const
+{
+    return renderSize;
 }
 
 void Font::SetVerticalSpacing(int32 _verticalSpacing)
@@ -143,7 +142,11 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
     
     Vector<int32> sizes;
 	GetStringSize(text, &sizes);
-    
+	if(sizes.size() == 0)
+	{
+		return;
+	}
+
     for(int pos = 0; pos < totalSize; pos++)
     {
         wchar_t t = text[pos];
@@ -218,6 +221,10 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 	
 	Vector<int32> sizes;
 	GetStringSize(text, &sizes);
+    if(sizes.size() == 0)
+    {
+        return;
+    }
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
@@ -339,7 +346,7 @@ YamlNode * Font::SaveToYamlNode() const
     //Type
     node->Set("type", "Font");
     //Font size
-    node->Set("size", this->GetOriginalSize());
+    node->Set("size", this->GetSize());
     //Vertical Spacing
     node->Set("verticalSpacing", this->GetVerticalSpacing());
 

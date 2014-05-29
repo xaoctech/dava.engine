@@ -35,6 +35,8 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/LibPVRHelper.h"
+#include "Render/ImageLoader.h"
+#include "Render/Image.h"
 
 #include "Base/GlobalEnum.h"
 
@@ -120,7 +122,7 @@ PVRConverter::~PVRConverter()
 
 }
 
-FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality)
+FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, bool addCRC /* = true */)
 {
 	FilePath outputName = (descriptor.IsCubeMap()) ? PrepareCubeMapForPvrConvert(descriptor) : FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 
@@ -150,14 +152,76 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 		CleanupCubemapAfterConversion(descriptor);
 	}
 		
-	LibPVRHelper::AddCRCIntoMetaData(outputName);
+    if(addCRC)
+    {
+	    LibPVRHelper::AddCRCIntoMetaData(outputName);
+    }
 	return outputName;
 }
 
+FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality)
+{
+    FilePath filePath = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
+
+    Vector<Image *> images;
+    ImageLoader::CreateFromFileByExtension(filePath, images);
+
+    if(!images.size())
+        return FilePath();
+
+    DVASSERT(images.size() == 1);
+
+    Image * originalImage = images[0];
+    originalImage->Normalize();
+    if(descriptor.GetGenerateMipMaps())
+    {
+        images = originalImage->CreateMipMapsImages(true);
+        SafeRelease(originalImage);
+    }
+
+    FilePath dirPath = filePath + "_mips";
+    dirPath.MakeDirectoryPathname();
+    FileSystem::Instance()->CreateDirectory(dirPath);
+
+    Vector<FilePath> convertedPVRs;
+
+    int32 imgCount = images.size();
+    for(int32 i = 0; i < imgCount; ++i)
+    {
+        FilePath imgPath = dirPath + Format("mip%d.png", i);
+        ImageLoader::Save(images[i], imgPath);
+
+        TextureDescriptor desc;
+        desc.Initialize(&descriptor);
+        desc.SetGenerateMipmaps(false);
+        desc.pathname = imgPath;
+        FilePath convertedImgPath = ConvertPngToPvr(desc, gpuFamily, quality, false);
+
+        convertedPVRs.push_back(convertedImgPath);
+    }
+
+    FilePath outputName = GetPVRToolOutput(descriptor, gpuFamily);
+    bool ret = LibPVRHelper::WriteFileFromMipMapFiles(outputName, convertedPVRs);
+
+    FileSystem::Instance()->DeleteDirectory(dirPath, true);
+
+    if(ret)
+    {
+        LibPVRHelper::AddCRCIntoMetaData(outputName);
+        return outputName;
+    }
+    else
+    {
+        return FilePath();
+    }
+}
 
 void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args)
 {
-	String format = pixelFormatToPVRFormat[(PixelFormat) descriptor.compression[gpuFamily].format];
+	DVASSERT(descriptor.compression);
+	const TextureDescriptor::Compression *compression = &descriptor.compression[gpuFamily];
+
+	String format = pixelFormatToPVRFormat[(PixelFormat) compression->format];
 	FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
 		
 	// input file
@@ -189,7 +253,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	}
 
 	// mipmaps
-	if(descriptor.settings.generateMipMaps)
+	if(descriptor.GetGenerateMipMaps())
 	{
 		args.push_back("-m");
 	}
@@ -204,14 +268,13 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	args.push_back(format);
 
 	// base mipmap level (base resize)
-	if(0 != descriptor.compression[gpuFamily].compressToWidth && descriptor.compression[gpuFamily].compressToHeight != 0)
+	if(0 != compression->compressToWidth && compression->compressToHeight != 0)
 	{
-		args.push_back("-r");
-		args.push_back(Format("%d,%d", descriptor.compression[gpuFamily].compressToWidth, descriptor.compression[gpuFamily].compressToHeight));
+        args.push_back("-r");
+		args.push_back(Format("%d,%d", compression->compressToWidth, compression->compressToHeight));
 	}
     
-    
-    args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
+    //args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
 
 }
 

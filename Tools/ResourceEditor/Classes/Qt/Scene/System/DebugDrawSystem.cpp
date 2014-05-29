@@ -34,6 +34,8 @@
 #include "Deprecated/EditorConfig.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 
+#include "Deprecated/SceneValidator.h"
+
 using namespace DAVA;
 
 float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.2f;
@@ -43,6 +45,7 @@ DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	, objectType(ResourceEditor::ESOT_NONE)
     , objectTypeColor(Color::White)
 	, hangingObjectsModeEnabled(false)
+    , switchesWithDifferentLodsEnabled(false)
 {
 	SceneEditor2 *sc = (SceneEditor2 *)GetScene();
 
@@ -97,12 +100,19 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 {
 	if(NULL != entity)
 	{
+        bool isSelected = selSystem->GetSelection().HasEntity(entity);
+
 		DrawObjectBoxesByType(entity);
 		DrawUserNode(entity);
 		DrawLightNode(entity);
-		DrawSoundNode(entity);
 		DrawHangingObjects(entity);
-        DrawStaticOcclusionComponent(entity);
+        DrawSwitchesWithDifferentLods(entity);
+
+        if(isSelected)
+        {
+            DrawSoundNode(entity);
+            DrawStaticOcclusionComponent(entity);
+        }
 
 		for(int32 i = 0; i < entity->GetChildrenCount(); ++i)
 		{
@@ -114,7 +124,27 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 {
 	KeyedArchive * customProperties = entity->GetCustomProperties();
-	if(customProperties && customProperties->IsKeyExists("CollisionType") && (customProperties->GetInt32("CollisionType", 0) == objectType))
+    bool drawBox = false;
+
+    if ( customProperties )
+    {
+        if ( customProperties->IsKeyExists( "CollisionType" ) )
+        {
+            drawBox = customProperties->GetInt32( "CollisionType", 0 ) == objectType;
+        }
+        else if ( objectType == ResourceEditor::ESOT_UNDEFINED_COLLISION && entity->GetParent() == GetScene() )
+        {
+            const bool skip =
+                GetLight( entity ) == NULL &&
+                GetCamera( entity ) == NULL &&
+                GetLandscape( entity ) == NULL &&
+                GetSkybox( entity ) == NULL;
+
+            drawBox = skip;
+        }
+    }
+
+    if ( drawBox )
 	{
 		DrawEntityBox(entity, objectTypeColor);
 	}
@@ -150,7 +180,7 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
     StaticOcclusionComponent * staticOcclusionComponent = 0;
 	if((staticOcclusionComponent = (StaticOcclusionComponent*)entity->GetComponent(DAVA::Component::STATIC_OCCLUSION_COMPONENT)) != 0)
 	{
-        Camera * camera = GetScene()->GetClipCamera();
+        Camera * camera = GetScene()->GetCurrentCamera();
        
 		RenderManager::SetDynamicParam(PARAM_WORLD, &entity->GetWorldTransform(), (pointer_size)&entity->GetWorldTransform());
         
@@ -253,16 +283,43 @@ void DebugDrawSystem::DrawLightNode(DAVA::Entity *entity)
 
 void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
 {
-	if(NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT))
+    DAVA::SoundComponent * sc = GetSoundComponent(entity);
+	if(sc)
 	{
         RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
+        const Matrix4 & worldMx = entity->GetWorldTransform();
+        Vector3 worldPosition = worldMx.GetTranslationVector();
 
-        AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+        bool hasDirectionSound = false;
+        uint32 eventsCount = sc->GetEventsCount();
+        for(uint32 i = 0; i < eventsCount; ++i)
+        {
+            float32 distance = 0.f;
+            SoundEvent * sEvent = sc->GetSoundEvent(i);
+            DAVA::Vector<DAVA::SoundEvent::SoundEventParameterInfo> params;
+            sEvent->GetEventParametersInfo(params);
+            DAVA::int32 paramsCount = params.size();
+            for(DAVA::int32 p = 0; p < paramsCount; p++)
+            {
+                DAVA::SoundEvent::SoundEventParameterInfo & param = params[p];
+                if(param.name == "(distance)")
+                {
+                    distance = param.maxValue;
+                    break;
+                }
+            }
 
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.3f));
-		DAVA::RenderHelper::Instance()->FillBox(worldBox, debugDrawState);
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawBox(worldBox, 1.0f, debugDrawState);
+            DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.2f));
+            DAVA::RenderHelper::Instance()->FillSphere(worldPosition, distance, debugDrawState);
+
+            hasDirectionSound |= sEvent->IsDirectional();
+        }
+
+        if(hasDirectionSound)
+        {
+            DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.0f, 1.0f));
+            DAVA::RenderHelper::Instance()->DrawArrow(worldPosition, sc->GetLocalDirection() * worldMx, 10.f, 1.f, debugDrawState);
+        }
 	}
 }
 
@@ -276,15 +333,6 @@ void DebugDrawSystem::DrawEntityBox( DAVA::Entity *entity, const DAVA::Color &co
 	DAVA::RenderHelper::Instance()->DrawBox(worldBox, 1.0f, debugDrawState);
 }
 
-void DebugDrawSystem::EnableHangingObjectsMode( bool enabled )
-{
-	hangingObjectsModeEnabled = enabled;
-}
-
-bool DebugDrawSystem::HangingObjectsModeEnabled() const
-{
-	return hangingObjectsModeEnabled;
-}
 
 void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
 {
@@ -340,4 +388,19 @@ Vector3 DebugDrawSystem::GetLandscapePointAtCoordinates(const Vector2 & centerXY
 	}
 
 	return Vector3();
+}
+
+void DebugDrawSystem::DrawSwitchesWithDifferentLods( DAVA::Entity *entity )
+{
+    if(!switchesWithDifferentLodsEnabled) return;
+
+    if(SceneValidator::IsEntityHasDifferentLODsCount(entity))
+    {
+        RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
+
+        AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
+
+        DAVA::RenderManager::Instance()->SetColor(Color(1.0f, 0.f, 0.f, 1.f));
+        DAVA::RenderHelper::Instance()->DrawBox(worldBox, 1.0f, debugDrawState);
+    }
 }

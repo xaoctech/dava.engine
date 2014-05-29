@@ -40,7 +40,7 @@
 namespace DAVA
 {
 
-class JobQueue;
+class MainThreadJobQueue;
 class ThreadIdJobWaiter;
 class JobInstanceWaiter;
 
@@ -62,7 +62,7 @@ public:
 	JobManager();
 	virtual ~JobManager();
 
-	ScopedPtr<Job> CreateJob(eThreadType threadType, const Message & message);
+	ScopedPtr<Job> CreateJob(eThreadType threadType, const Message & message, uint32 flags = Job::DEFAULT_FLAGS);
 
 	void Update();
 	
@@ -77,7 +77,7 @@ public:
 
 protected:
 	Mutex jobsDoneMutex;
-	JobQueue * mainQueue;
+	MainThreadJobQueue * mainQueue;
 	void UpdateMainQueue();
 
 	Map<Thread::ThreadId, uint32> jobsPerCreatorThread;

@@ -33,14 +33,10 @@ UIParticlesMetadata::UIParticlesMetadata(QObject* parent) :
 {
 }
 
-void UIParticlesMetadata::InitializeControl(const String& controlName, const Vector2& position)
-{
-	UIControlMetadata::InitializeControl(controlName, position);
-}
 
 UIParticles* UIParticlesMetadata::GetActiveUIParticles() const
 {
-    return dynamic_cast<UIParticles*>(GetActiveUIControl());
+    return static_cast<UIParticles*>(GetActiveUIControl());
 }
 
 void UIParticlesMetadata::Start()
@@ -61,6 +57,26 @@ void UIParticlesMetadata::Stop()
     }
     
     GetActiveUIParticles()->Stop();
+}
+
+void UIParticlesMetadata::Pause()
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIParticles()->Pause();
+}
+
+void UIParticlesMetadata::Restart()
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIParticles()->Restart();
 }
 
 void UIParticlesMetadata::Reload()
@@ -111,5 +127,25 @@ void UIParticlesMetadata::SetAutostart(bool value)
     }
     
     GetActiveUIParticles()->SetAutostart(value);
+}
+
+float UIParticlesMetadata::GetStartDelay() const
+{
+    if (!VerifyActiveParamID())
+    {
+        return 0.0f;
+    }
+    
+    return GetActiveUIParticles()->GetStartDelay();
+}
+
+void UIParticlesMetadata::SetStartDelay(float value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIParticles()->SetStartDelay(value);
 }
 

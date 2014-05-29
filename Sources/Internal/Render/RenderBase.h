@@ -148,8 +148,7 @@ enum PixelFormat
     FORMAT_RGBA32323232,
 
     FORMAT_DXT1,
-    FORMAT_DXT1NM,
-    FORMAT_DXT1A,
+    FORMAT_DXT1A = 14, //back compatibility
     FORMAT_DXT3,
     FORMAT_DXT5,
     FORMAT_DXT5NM,
@@ -171,7 +170,7 @@ enum PixelFormat
 	FORMAT_ETC2_RGB_A1,
 
     FORMAT_COUNT,
-    FORMAT_CLOSEST = 256
+    FORMAT_CLOSEST = 255 // fit PixelFormat at 8bits (PixelFormat format:8;)
 };
     
 enum eGPUFamily

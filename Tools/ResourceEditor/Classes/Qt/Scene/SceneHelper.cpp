@@ -33,12 +33,12 @@
 
 #include "Scene3D/Systems/MaterialSystem.h"
 
-void SceneHelper::EnumerateSceneTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection)
+void SceneHelper::EnumerateSceneTextures(DAVA::Scene *forScene, DAVA::TexturesMap &textureCollection, TexturesEnumerateMode mode)
 {
-    EnumerateEntityTextures(forScene, forScene, textureCollection);
+    EnumerateEntityTextures(forScene, forScene, textureCollection, mode);
 }
 
-void SceneHelper::EnumerateEntityTextures(DAVA::Scene *forScene, DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection)
+void SceneHelper::EnumerateEntityTextures(DAVA::Scene *forScene, DAVA::Entity *forNode, DAVA::TexturesMap &textureCollection, TexturesEnumerateMode mode)
 {
     if(!forNode || !forScene) return;
     
@@ -60,7 +60,7 @@ void SceneHelper::EnumerateEntityTextures(DAVA::Scene *forScene, DAVA::Entity *f
             continue;
         }
         
-        CollectTextures(*it, textureCollection);
+        CollectTextures(*it, textureCollection, mode);
     }
 }
 
@@ -69,7 +69,7 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Scene *forScene, DAVA::Map<DA
 	int32 retValue = 0;
 	textures.clear();
 	TexturesMap allTextures;
-	EnumerateSceneTextures(forScene, allTextures);
+	EnumerateSceneTextures(forScene, allTextures, EXCLUDE_NULL);
 	for(TexturesMap::iterator it = allTextures.begin(); it != allTextures.end(); ++it)
 	{
 		DAVA::Texture * texture = it->second;
@@ -83,7 +83,9 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Scene *forScene, DAVA::Map<DA
 		{
 			continue;
 		}
-				
+
+		DVASSERT(descriptor->compression);
+
 		DAVA::Vector< DAVA::eGPUFamily> markedGPUs;
 		for(int i = DAVA::GPU_UNKNOWN + 1; i < DAVA::GPU_FAMILY_COUNT; ++i)
 		{
@@ -106,19 +108,37 @@ int32 SceneHelper::EnumerateModifiedTextures(DAVA::Scene *forScene, DAVA::Map<DA
 	return retValue;
 }
 
-
-void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures)
+void SceneHelper::CollectTextures(const DAVA::NMaterial *material, DAVA::TexturesMap &textures, TexturesEnumerateMode mode)
 {
     DAVA::uint32 texCount = material->GetTextureCount();
     for(DAVA::uint32 t = 0; t < texCount; ++t)
     {
-        DAVA::Texture *texture = material->GetTexture(t);
-        if(texture)
+        DAVA::FilePath texturePath = material->GetTexturePath(material->GetTextureName(t));
+        if(!texturePath.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(texturePath)&&!NMaterial::IsRuntimeTexture(material->GetTextureName(t)))
         {
-            const DAVA::FilePath & path = texture->texDescriptor->pathname;
-            if(!path.IsEmpty() && SceneValidator::Instance()->IsPathCorrectForProject(path))
+            if(mode == EXCLUDE_NULL)
             {
-                textures[FILEPATH_MAP_KEY(path)] = texture;
+                DAVA::Texture *texture = material->GetTexture(t);
+                if(texture && !texture->isRenderTarget)
+                {
+                    const DAVA::FilePath & path = texture->texDescriptor->pathname;
+
+                    if(path != texturePath)
+                    {
+                        DAVA::Logger::Error("texture path: \"%s\"\n material (%s) path: \"%s\"\n", path.GetAbsolutePathname().c_str(), material->GetMaterialName().c_str(), texturePath.GetAbsolutePathname().c_str());
+                        DVASSERT(path == texturePath);
+                    }
+
+                    textures[FILEPATH_MAP_KEY(path)] = texture;
+                }
+            }
+            else if(mode == INCLUDE_NULL)
+            {
+                textures[FILEPATH_MAP_KEY(texturePath)] = material->GetTexture(t);
+            }
+            else
+            {
+                DVASSERT(0 && "Unknown enumeration mode");
             }
         }
     }

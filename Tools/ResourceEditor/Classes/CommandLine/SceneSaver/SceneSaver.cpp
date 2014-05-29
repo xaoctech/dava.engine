@@ -38,6 +38,8 @@
 
 #include "Scene3D/Components/CustomPropertiesComponent.h"
 
+#include "Qt/SoundComponentEditor/FMODSoundBrowser.h"
+
 using namespace DAVA;
 
 SceneSaver::SceneSaver()
@@ -123,7 +125,7 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 			scene->AddNode(tempV[i]);
 		}
 
-		scene->Update(0.f);
+		//scene->Update(0.f);
         scene->Save(sc2Filename);
 	}
 	else
@@ -136,6 +138,8 @@ void SceneSaver::ResaveFile(const String &fileName, Set<String> &errorLog)
 
 void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog)
 {
+    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+    
     DVASSERT(0 == texturesForSave.size())
     
     String relativeFilename = fileName.GetRelativePathname(sceneUtils.dataSourceFolder);
@@ -143,13 +147,13 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     
     FileSystem::Instance()->CreateDirectory(sceneUtils.dataFolder + sceneUtils.workingFolder, true);
 
-    scene->Update(0.1f);
+    //scene->Update(0.1f);
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 
     texturesForSave.clear();
-    SceneHelper::EnumerateSceneTextures(scene, texturesForSave);
+    SceneHelper::EnumerateSceneTextures(scene, texturesForSave, SceneHelper::INCLUDE_NULL);
 
     CopyTextures(scene);
 	ReleaseTextures();
@@ -159,10 +163,18 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     {
         sceneUtils.AddFile(landscape->GetHeightmapPathname());
     }
+    
+    VegetationRenderObject* vegetation = FindVegetation(scene);
+    if(vegetation)
+    {
+        sceneUtils.AddFile(vegetation->GetVegetationMapPath());
+        sceneUtils.AddFile(vegetation->GetTextureSheetPath());
+    }
 
 	CopyReferencedObject(scene);
 	CopyEffects(scene);
 	CopyCustomColorTexture(scene, fileName.GetDirectory(), errorLog);
+    CopySounds(fileName);
 
     //save scene to new place
     FilePath tempSceneName = sceneUtils.dataSourceFolder + relativeFilename;
@@ -178,6 +190,9 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
 	}
     
     SceneValidator::Instance()->SetPathForChecking(oldPath);
+    
+    uint64 saveTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
+    Logger::Info("Save of %s to folder was done for %ldms", fileName.GetStringValue().c_str(), saveTime);
 }
 
 
@@ -189,6 +204,38 @@ void SceneSaver::CopyTextures(DAVA::Scene *scene)
     {
         CopyTexture(it->first);
     }
+}
+
+void SceneSaver::CopySounds(const FilePath & scenePath)
+{
+#ifdef DAVA_FMOD
+    FilePath sfxDir = FMODSoundBrowser::MakeFEVPathFromScenePath(scenePath).GetDirectory();
+    if(sfxDir.IsEmpty())
+        return;
+
+    String pathStr = sfxDir.GetAbsolutePathname();
+    pathStr = pathStr.substr(0, pathStr.length() - 4); // remove "iOS/"
+    sfxDir = FilePath(pathStr);
+
+    FileList * fileList = new FileList(sfxDir);
+    for(int32 i = 0; i < fileList->GetCount(); ++i)
+    {
+        if(fileList->IsDirectory(i) && !fileList->IsNavigationDirectory(i))
+        {
+            FilePath path = fileList->GetPathname(i);
+            FileList * list = new FileList(path);
+            for(int32 j = 0; j < list->GetCount(); ++j)
+            {
+                if(!list->IsDirectory(j))
+                {
+                    sceneUtils.AddFile(list->GetPathname(j));
+                }
+            }
+            SafeRelease(list);
+        }
+    }
+    SafeRelease(fileList);
+#endif //DAVA_FMOD
 }
 
 void SceneSaver::ReleaseTextures()
@@ -283,7 +330,14 @@ void SceneSaver::CopyEffects(Entity *node)
 
 void SceneSaver::CopyEmitter( ParticleEmitter *emitter)
 {
-	sceneUtils.AddFile(emitter->configPath);
+    if(emitter->configPath.IsEmpty() == false)
+    {
+        sceneUtils.AddFile(emitter->configPath);
+    }
+    else
+    {
+        Logger::Warning("[SceneSaver::CopyEmitter] empty config path for emitter %s", emitter->name.c_str());
+    }
 
 	const Vector<ParticleLayer*> &layers = emitter->layers;
 

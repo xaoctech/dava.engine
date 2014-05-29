@@ -148,7 +148,11 @@ bool PixelFormatDescriptor::IsFormatCompressed(const PixelFormat formatID)
 
 void PixelFormatDescriptor::InitializePixelFormatDescriptors()
 {
-	const RenderManager::Caps & caps = RenderManager::Instance()->GetCaps();
+	RenderManager::Caps caps;
+    if(RenderManager::Instance())
+    {
+        caps = RenderManager::Instance()->GetCaps();
+    }
 
 	SetPixelDescription(FORMAT_INVALID, FastName("WRONG FORMAT"), 0);
 	SetPixelDescription(FORMAT_RGBA8888, FastName("RGBA8888"), 32, GL_UNSIGNED_BYTE, GL_RGBA, GL_RGBA, true, false);
@@ -157,7 +161,12 @@ void PixelFormatDescriptor::InitializePixelFormatDescriptors()
 	SetPixelDescription(FORMAT_RGB888, FastName("RGB888"), 24, GL_UNSIGNED_BYTE, GL_RGB, GL_RGB, true, false);
 	SetPixelDescription(FORMAT_RGB565, FastName("RGB565"), 16, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, GL_RGB, true, false);
 	SetPixelDescription(FORMAT_A8, FastName("A8"), 8, GL_UNSIGNED_BYTE, GL_ALPHA, GL_ALPHA, true, false);
-	SetPixelDescription(FORMAT_A16, FastName("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA, true, false);
+
+#if defined (__DAVAENGINE_ANDROID__) || defined(__DAVAENGINE_IPHONE__)
+    SetPixelDescription(FORMAT_A16, FastName("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA, false, false);
+#else 
+    SetPixelDescription(FORMAT_A16, FastName("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA, true, false);
+#endif
 	SetPixelDescription(FORMAT_RGBA16161616, FastName("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA, caps.isFloat16Supported);
 	SetPixelDescription(FORMAT_RGBA32323232, FastName("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA, caps.isFloat32Supported);
 
@@ -165,7 +174,6 @@ void PixelFormatDescriptor::InitializePixelFormatDescriptors()
 	SetPixelDescription(FORMAT_PVR2, FastName("PVR2"), 2, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, caps.isPVRTCSupported, true);
 
 	SetPixelDescription(FORMAT_DXT1, FastName("DXT1"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, caps.isDXTSupported, true);
-	SetPixelDescription(FORMAT_DXT1NM, FastName("DXT1nm"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, GL_COMPRESSED_RGB_S3TC_DXT1_EXT, caps.isDXTSupported, true);
 	SetPixelDescription(FORMAT_DXT1A, FastName("DXT1a"), 4, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, GL_COMPRESSED_RGBA_S3TC_DXT1_EXT, caps.isDXTSupported, true);
 	SetPixelDescription(FORMAT_DXT3, FastName("DXT3"), 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, caps.isDXTSupported, true);
 	SetPixelDescription(FORMAT_DXT5, FastName("DXT5"), 8, GL_UNSIGNED_BYTE, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, GL_COMPRESSED_RGBA_S3TC_DXT5_EXT, caps.isDXTSupported, true);
