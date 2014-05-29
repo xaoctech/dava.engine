@@ -395,31 +395,54 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
     
 }
     
+void StaticOcclusionSystem::AddEntityIfRequired(Entity *entity)
+{
+    SceneSystem::AddEntityIfRequired(entity);
+    
+    RenderObject * renderObject = GetRenderObject(entity);
+    if (renderObject)
+    {
+        AddRenderObjectToOcclusion(renderObject);
+    }
+}
+
+void StaticOcclusionSystem::RemoveEntityIfRequired(Entity *entity)
+{
+    RenderObject * renderObject = GetRenderObject(entity);
+    if (renderObject)
+    {
+        RemoveRenderObjectFromOcclusion(renderObject);
+    }
+    
+    SceneSystem::RemoveEntityIfNotRequired(entity);
+}
+    
 void StaticOcclusionSystem::AddEntity(Entity * entity)
 {
     staticOcclusionComponents.push_back((StaticOcclusionDataComponent*)entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT));
     SceneDidLoaded();
 }
     
-void StaticOcclusionSystem::SceneDidLoaded()
+void StaticOcclusionSystem::AddRenderObjectToOcclusion(RenderObject * renderObject)
 {
-    // Recalc indices
-    Vector<Entity*> entities;
-    Vector<RenderObject*> renderObjectsArray;
-    GetScene()->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
-    
-    uint32 size = (uint32)entities.size();
-    renderObjectsArray.resize(size);
-    for(uint32 k = 0; k < size; ++k)
-        renderObjectsArray[k] = GetRenderObject(entities[k]);
-    
-    indexedRenderObjects.resize(size);
-    for (uint32 k = 0; k < size; ++k)
+    /*
+        registed all render objects in occlusion array, when they added to scene
+     */
+    if (renderObject->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX)
     {
-        if (renderObjectsArray[k]->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX)
-        {
-            indexedRenderObjects[renderObjectsArray[k]->GetStaticOcclusionIndex()] = renderObjectsArray[k];
-        }
+        indexedRenderObjects.resize(Max((uint32)indexedRenderObjects.size(), (uint32)(renderObject->GetStaticOcclusionIndex() + 1)));
+        indexedRenderObjects[renderObject->GetStaticOcclusionIndex()] = renderObject;
+    }
+}
+    
+void StaticOcclusionSystem::RemoveRenderObjectFromOcclusion(RenderObject * renderObject)
+{
+    /*
+        If object removed from scene, remove it from occlusion array, for safety.
+     */
+    if (renderObject->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX)
+    {
+        indexedRenderObjects[renderObject->GetStaticOcclusionIndex()] = 0;
     }
 }
     
