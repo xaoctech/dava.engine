@@ -171,23 +171,23 @@ void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
         //glFlush();
         
         
-        while (!query.IsResultAvailable())
-        {
-        }
-        uint32 result;
-        query.GetQuery(&result);
-        
-        if ((debugK) && (debugI == 0) && (debugJ == 0))
-        {
-            //RenderManager::Instance()->SetRenderTarget((Sprite*)0);
-            const Matrix4 * oldProj = (const Matrix4*)RenderManager::Instance()->GetDynamicParam(PARAM_PROJ);
-            Image * image = occlusion->GetRTTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_3D_BLEND);
-            ImageLoader::Save(image, Format("~doc:/renderobj_%d_%d_%d.png", debugSide, k, result));
-            SafeRelease(image);
-            RenderManager::Instance()->SetDynamicParam(PARAM_PROJ, oldProj, UPDATE_SEMANTIC_ALWAYS);
- 
-            //RenderManager::Instance()->RestoreRenderTarget();
-        }
+//        while (!query.IsResultAvailable())
+//        {
+//        }
+//        uint32 result;
+//        query.GetQuery(&result);
+//        
+//        if ((debugK) && (debugI == 0) && (debugJ == 0))
+//        {
+//            //RenderManager::Instance()->SetRenderTarget((Sprite*)0);
+//            const Matrix4 * oldProj = (const Matrix4*)RenderManager::Instance()->GetDynamicParam(PARAM_PROJ);
+//            Image * image = occlusion->GetRTTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_3D_BLEND);
+//            ImageLoader::Save(image, Format("~doc:/renderobj_%d_%d_%d.png", debugSide, k, result));
+//            SafeRelease(image);
+//            RenderManager::Instance()->SetDynamicParam(PARAM_PROJ, oldProj, UPDATE_SEMANTIC_ALWAYS);
+// 
+//            //RenderManager::Instance()->RestoreRenderTarget();
+//        }
 //
 //        if ((debugK) && (debugI == 1) && (debugJ == 0))
 //        {
