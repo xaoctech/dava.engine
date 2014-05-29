@@ -91,7 +91,6 @@ public:
 	float32 GetPosition() const;
     
     float32 GetViewSize() const;
-    float32 GetVirtualViewSize() const;
     float32 GetElementSize() const;
 	
 	float32 GetCurrentSpeed() const;
