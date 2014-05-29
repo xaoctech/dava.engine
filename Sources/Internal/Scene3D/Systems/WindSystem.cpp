@@ -81,19 +81,17 @@ void WindSystem::AddEntity(Entity * entity)
 
 void WindSystem::RemoveEntity(Entity * entity)
 {
-    Vector<WindInfo *>::iterator it = winds.begin();
-    while(it != winds.end())
+    int32 windsCount = winds.size();
+    for(int32 i = 0; i < windsCount; ++i)
     {
-        WindInfo * info = *it;
+        WindInfo * info = winds[i];
         if(info->component->GetEntity() == entity)
         {
             SafeDelete(info);
-            winds.erase(it);
+            RemoveExchangingWithLast(winds, i);
             break;
         }
-        ++it;
     }
-
 }
 
 void WindSystem::Process(float32 timeElapsed)

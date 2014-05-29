@@ -98,8 +98,7 @@ void SpeedTreeUpdateSystem::RemoveEntity(Entity * entity)
     {
         if(allTrees[i]->entity == entity)
         {
-            allTrees[i] = allTrees[treeCount-1];
-            allTrees.pop_back();
+            RemoveExchangingWithLast(allTrees, i);
             break;
         }
     }
