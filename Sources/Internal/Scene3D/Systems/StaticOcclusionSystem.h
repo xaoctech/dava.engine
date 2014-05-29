@@ -98,10 +98,16 @@ public:
     virtual ~StaticOcclusionSystem();
     
     inline void SetCamera(Camera * camera);
+    
+    virtual void AddEntityIfRequired(Entity *entity);
+    virtual void RemoveEntityIfRequired(Entity *entity);
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
-    virtual void SceneDidLoaded();
+    
+    void AddRenderObjectToOcclusion(RenderObject * renderObject);
+    void RemoveRenderObjectFromOcclusion(RenderObject * renderObject);
+
 
 private:
     Camera * camera;

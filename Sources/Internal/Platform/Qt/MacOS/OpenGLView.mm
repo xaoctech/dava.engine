@@ -70,7 +70,7 @@
 	[self enableTrackingArea];
 	isFirstDraw = true;
     
-    [self setWantsBestResolutionOpenGLSurface:YES];
+    //[self setWantsBestResolutionOpenGLSurface:YES];
 
 	// enable vsync
 	GLint swapInt = 1;
