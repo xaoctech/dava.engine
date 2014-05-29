@@ -379,7 +379,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     //BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
     BuildVisibleCellList(camPos, camera->GetFrustum(), visibleCells);
     
-    std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
+    //std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
     
     Vector3 posScale(0.0f,
                     0.0f,

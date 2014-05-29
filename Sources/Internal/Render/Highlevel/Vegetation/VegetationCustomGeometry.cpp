@@ -200,6 +200,7 @@ Vector<VegetationIndex>& VegetationCustomGeometrySerializationData::GetIndices(u
 void VegetationCustomGeometry::CustomMaterialTransformer::TransformMaterialOnCreate(NMaterial* mat)
 {
     mat->AddNodeFlags(DataNode::NodeRuntimeFlag);
+    mat->SetRenderLayers(1 << RENDER_LAYER_VEGETATION_ID);
 }
 
 VegetationCustomGeometry::CustomGeometryLayerData::CustomGeometryLayerData()
@@ -360,6 +361,7 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
         renderData->SetMaterial(layerGeometryData.material);
         
         layerGeometryData.material->SetFlag(VegetationPropertyNames::FLAG_GRASS_OPAQUE, NMaterial::FlagOn);
+        layerGeometryData.material->SetRenderLayers(1 << RENDER_LAYER_VEGETATION_ID);
         
         FastNameSet::iterator end = materialFlags.end();
         for(FastNameSet::iterator it = materialFlags.begin(); it != end; ++it)
