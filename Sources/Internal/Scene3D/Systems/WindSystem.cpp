@@ -34,6 +34,7 @@
 #include "Scene3D/Components/WindComponent.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene3D/Scene.h"
 #include "Utils/Random.h"
 #include "Math/Math2D.h"
@@ -56,6 +57,8 @@ WindSystem::WindSystem(Scene * scene) :
     options->AddObserver(this);
     HandleEvent(options);
 
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
+
     for(int32 i = 0; i < WIND_TABLE_SIZE; i++)
     {
         float32 t = WIND_PERIOD * i / (float32)WIND_TABLE_SIZE;
@@ -66,6 +69,8 @@ WindSystem::WindSystem(Scene * scene) :
 WindSystem::~WindSystem()
 {
     DVASSERT(winds.size() == 0);
+
+    RenderManager::Instance()->GetOptions()->RemoveObserver(this);
 }
 
 void WindSystem::AddEntity(Entity * entity)
@@ -76,24 +81,22 @@ void WindSystem::AddEntity(Entity * entity)
 
 void WindSystem::RemoveEntity(Entity * entity)
 {
-    Vector<WindInfo *>::iterator it = winds.begin();
-    while(it != winds.end())
+    int32 windsCount = winds.size();
+    for(int32 i = 0; i < windsCount; ++i)
     {
-        WindInfo * info = *it;
+        WindInfo * info = winds[i];
         if(info->component->GetEntity() == entity)
         {
             SafeDelete(info);
-            winds.erase(it);
+            RemoveExchangingWithLast(winds, i);
             break;
         }
-        ++it;
     }
-
 }
 
 void WindSystem::Process(float32 timeElapsed)
 {
-    if(!isWindUsed)
+    if(!isAnimationEnabled || !isVegetationAnimationEnabled)
         return;
 
     int32 windCount = winds.size();
@@ -135,7 +138,7 @@ float32 WindSystem::GetWindValueFromTable(const Vector3 & inPosition, const Wind
 void WindSystem::HandleEvent(Observable * observable)
 {
     RenderOptions * options = static_cast<RenderOptions *>(observable);
-    isWindUsed = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
+    isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 }
 
 };

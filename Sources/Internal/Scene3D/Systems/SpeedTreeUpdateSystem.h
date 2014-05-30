@@ -60,6 +60,7 @@ private:
     Vector<SpeedTreeComponent *> allTrees;
 
     bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
 
     friend class SpeedTreeComponent;
 };
