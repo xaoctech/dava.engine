@@ -319,6 +319,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
     {
         return;
     }
+
+    bool wasSeparator = false;
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
@@ -332,7 +334,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 			case SKIP:
 				if (t == 0){ state = FINISH; break; } // if end of string process FINISH state and exit
 				else if (IsSpace(t))break; // if space continue with the same state
-				else if (IsWordSeparator(t))break; // if word separator - continue with the same state
+                //else if (IsWordSeparator(t)) { state = SEPARATOR; break; } // if word separator - continue with the same state
                 else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
@@ -362,65 +364,67 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				}
 				break;
 			case GOODCHAR:
-				if(IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t) || t == 0) // if we've found any possible separator process current line
                 {
-                    if(IsWordSeparator(t))
-                    {
-                        lastWordEnd = pos + 1;
-                    }
-                    else
+                    bool isSeparator = IsWordSeparator(t);
+				    if(IsSpace(t) || IsLineEnd(t) || t == 0 || (wasSeparator && !isSeparator)) // if we've found any possible separator process current line
                     {
                         lastWordEnd = pos;
-                    }
 					
-					//					WideString currentLine = text.substr(currentLineStart, lastWordEnd - currentLineStart);
-					//					Size2i currentLineSize = GetStringSize(currentLine);
-					int currentLineDx = 0;
-					for (int i = currentLineStart; i < lastWordEnd ; i++)
-					{
-						currentLineDx += sizes[i];
-					}
-					if ((currentLineDx < targetWidth) || (currentLineEnd <= currentLineStart)) // if current line size < rect size set line end to current word end
-					{
-						currentLineEnd = lastWordEnd;
-					}else // here we add current line to results because current word is too big for current line
-					{
-						//Logger::FrameworkDebug("before=%d %d", currentLineStart, currentLineEnd);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineEnd - currentLineStart);
-						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
-						resultVector.push_back(currentLineWithoutLastWord);
-						currentLineStart = lastWordStart;
-						//fix: 
-						// there can be case when last word on current line with one more word (lastWordEnd = pos;) will be wider than targetRect.dx
-						// in this case currentLineEnd could have been less than currentLineStart
-						currentLineEnd = lastWordEnd;   
-					}
-				}
-				if (IsSpace(t)) state = SKIP; // if cur char is space go to skip
-                else if (IsWordSeparator(t)) state = SKIP; // if cur char is word separator go to skip
-                else if(IsLineEnd(t))
-				{
-					// this block is copied from case NEXTLINE: if(t == 'n')
-					// unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
-					// so last position is pos instead of (pos-1)
-					if (currentLineStart != -1) // if we already have something in current line we add to result
-					{
-						//Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
-						WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
-						//Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
-						resultVector.push_back(currentLineWithoutLastWord);
-						
-						currentLineStart = -1;	// start search of characters for the new line
-					}else
-					{
-						resultVector.push_back(L""); // here we add empty line if there was no characters in current line
-					}
-					state = SKIP; //always switch to SKIP because we do not know here what will be next
-					break;
-				}
+					    //					WideString currentLine = text.substr(currentLineStart, lastWordEnd - currentLineStart);
+					    //					Size2i currentLineSize = GetStringSize(currentLine);
+					    int currentLineDx = 0;
+					    for (int i = currentLineStart; i < lastWordEnd ; i++)
+					    {
+						    currentLineDx += sizes[i];
+					    }
+					    if ((currentLineDx < targetWidth) || (currentLineEnd <= currentLineStart)) // if current line size < rect size set line end to current word end
+					    {
+						    currentLineEnd = lastWordEnd;
+					    }else // here we add current line to results because current word is too big for current line
+					    {
+						    //Logger::FrameworkDebug("before=%d %d", currentLineStart, currentLineEnd);
+						    WideString currentLineWithoutLastWord = text.substr(currentLineStart, currentLineEnd - currentLineStart);
+						    //Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
+						    resultVector.push_back(currentLineWithoutLastWord);
+						    currentLineStart = lastWordStart;
+						    //fix: 
+						    // there can be case when last word on current line with one more word (lastWordEnd = pos;) will be wider than targetRect.dx
+						    // in this case currentLineEnd could have been less than currentLineStart
+						    currentLineEnd = lastWordEnd;   
+					    }
+				    }
 
-				else if (t == 0) state = FINISH; 
-				
+				    if (IsSpace(t)) state = SKIP; // if cur char is space go to skip
+                    else if(IsLineEnd(t))
+				    {
+					    // this block is copied from case NEXTLINE: if(t == 'n')
+					    // unlike in NEXTLINE where we ignore 2 symbols, here we ignore only one
+					    // so last position is pos instead of (pos-1)
+					    if (currentLineStart != -1) // if we already have something in current line we add to result
+					    {
+						    //Logger::FrameworkDebug("before=%d %d", currentLineStart, pos - 1);
+						    WideString currentLineWithoutLastWord = text.substr(currentLineStart, pos - currentLineStart);
+						    //Logger::FrameworkDebug(L"after=%S", currentLineWithoutLastWord.c_str());
+						    resultVector.push_back(currentLineWithoutLastWord);
+						
+						    currentLineStart = -1;	// start search of characters for the new line
+					    }else
+					    {
+						    resultVector.push_back(L""); // here we add empty line if there was no characters in current line
+					    }
+					    state = SKIP; //always switch to SKIP because we do not know here what will be next
+					    break;
+				    }
+				    else if (t == 0) state = FINISH; 
+                    else if(wasSeparator && !isSeparator)
+                    {
+                        // good char after separator
+					    lastWordStart = pos;
+					    lastWordEnd = pos;
+					    if (currentLineStart == -1)currentLineStart = pos;
+                    }
+                    wasSeparator = isSeparator;
+                }
 				break;
 			case FINISH:
 				if (currentLineStart != -1) // we check if we have something left in currentline and add this line to results
