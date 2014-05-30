@@ -32,6 +32,7 @@
 #define __UIEditor__HierarchyTreePlatformNode__
 
 #include "HierarchyTreeNode.h"
+#include "HierarchyTreeAggregatorNode.h"
 #include "HierarchyTreeRootNode.h"
 
 using namespace DAVA;
@@ -80,6 +81,7 @@ public:
 	virtual void SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter);
 
 	bool IsAggregatorOrScreenNamePresent(const QString& candidatName);
+    HierarchyTreeAggregatorNode* GetAggregatorNodeByName(const QString& aggregatorName);
 
     // Enable/disable Preview Mode. In Preview Mode different (preview) platform size is returned.
     void SetPreviewMode(int width, int height);
