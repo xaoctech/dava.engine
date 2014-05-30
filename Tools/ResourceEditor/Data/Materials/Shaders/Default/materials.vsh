@@ -91,7 +91,7 @@ uniform mediump vec2 uvScale;
 #endif
 
 #if defined(WIND_ANIMATION)
-uniform lowp vec2 trunkOscillationParams;
+uniform mediump vec2 trunkOscillationParams;
 #endif
 
 #if defined(SPEED_TREE_LEAF)
@@ -100,7 +100,7 @@ uniform vec3 worldScale;
 uniform mat4 projMatrix;
 uniform float cutDistance;
 #if defined(WIND_ANIMATION)
-uniform lowp vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
+uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
 #endif
 
@@ -270,7 +270,7 @@ void main()
     }
     else
     {
-#endif        
+#endif
 
     vec3 offset = inPosition.xyz - inPivot;
     vec3 pivot = inPivot;
