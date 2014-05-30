@@ -216,7 +216,6 @@ float32 DFFont::GetSpread() const
 
 float32 DFFont::GetSizeScale() const
 {
-    //return size / baseSize;
     return renderSize / baseSize;
 }
 
