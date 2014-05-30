@@ -168,7 +168,6 @@
 		17A6305A18AA2BDD00957C77 /* GuideMimeData.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A6305818AA2BDD00957C77 /* GuideMimeData.cpp */; };
 		17A6305C18AA2C7200957C77 /* GuideMimeData_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17A6305B18AA2C7200957C77 /* GuideMimeData_moc.cpp */; };
 		17B0617518892C1500FD8007 /* WebKit.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 17B0617418892C1500FD8007 /* WebKit.framework */; };
-		17C1FD2018F54A6700CEA911 /* guidepropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C1FD1F18F54A6700CEA911 /* guidepropertygridwidget.ui */; };
 		17C4116118C9BE3D002BA05F /* UIJoypadMetadata.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C4115F18C9BE3D002BA05F /* UIJoypadMetadata.cpp */; };
 		17C4116818C9CE01002BA05F /* UIJoypadMetadata_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 17C4116718C9CE01002BA05F /* UIJoypadMetadata_moc.cpp */; };
 		17C4116A18CA0933002BA05F /* joypadpropertygridwidget.ui in Bundle Resources */ = {isa = PBXBuildFile; fileRef = 17C4116918CA0933002BA05F /* joypadpropertygridwidget.ui */; };
@@ -764,8 +763,6 @@
 		74AD4BD01727DBA50082EFB3 /* scrollviewpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scrollviewpropertygridwidget.h; path = PropertyGridWidgets/scrollviewpropertygridwidget.h; sourceTree = "<group>"; };
 		74AD4BD21727DD940082EFB3 /* ui_scrollviewpropertygridwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ui_scrollviewpropertygridwidget.h; sourceTree = "<group>"; };
 		74AD4BD31727DDB90082EFB3 /* scrollviewpropertygridwidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scrollviewpropertygridwidget_moc.cpp; sourceTree = "<group>"; };
-		74BC31ED1937716200963BB7 /* CopyPasteHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CopyPasteHelper.cpp; path = Helpers/CopyPasteHelper.cpp; sourceTree = "<group>"; };
-		74BC31EE1937716200963BB7 /* CopyPasteHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CopyPasteHelper.h; path = Helpers/CopyPasteHelper.h; sourceTree = "<group>"; };
 		74BCC56C18D05F3600C98406 /* errorslistdialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = errorslistdialog.cpp; path = Dialogs/errorslistdialog.cpp; sourceTree = "<group>"; };
 		74BCC56D18D05F3600C98406 /* errorslistdialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = errorslistdialog.h; path = Dialogs/errorslistdialog.h; sourceTree = "<group>"; };
 		74BCC57418D0671E00C98406 /* errorslistdialog.ui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = errorslistdialog.ui; sourceTree = "<group>"; };
@@ -1144,8 +1141,6 @@
 		17112B5616392E880017E713 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				74BC31ED1937716200963BB7 /* CopyPasteHelper.cpp */,
-				74BC31EE1937716200963BB7 /* CopyPasteHelper.h */,
 				1707BA0F1709C90D00D69DC0 /* SubcontrolsHelper.cpp */,
 				1707BA101709C90D00D69DC0 /* SubcontrolsHelper.h */,
 				74893AD2165A8E8F006B2762 /* ResourcesManageHelper.cpp */,
@@ -1991,7 +1986,6 @@
 				17660BBF186B221200CF7A14 /* RulerWidget_moc.cpp in Build Sources */,
 				C10740FF163A960D0069A640 /* BaseMetadataParams.cpp in Build Sources */,
 				17CED76C163ABD3B00F9B02D /* propertygridcontainerwidget.cpp in Build Sources */,
-				74BC31EF1937716200963BB7 /* CopyPasteHelper.cpp in Build Sources */,
 				C1074160163E7B740069A640 /* ItemsCommand.cpp in Build Sources */,
 				17FBCE46163A7ED100FD96C0 /* UIControlStateHelper.cpp in Build Sources */,
 				C746392D18DCED0C0045C57B /* editfontdialog_moc.cpp in Build Sources */,
