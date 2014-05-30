@@ -61,6 +61,7 @@
 #include "Ruler/RulerController.h"
 
 #include "EditorFontManager.h"
+#include "CopyPasteController.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -947,9 +948,8 @@ void MainWindow::OnProjectCreated()
 
 void MainWindow::OnProjectLoaded()
 {
-    EditorFontManager::Instance()->OnProjectLoaded();
-    
     OnProjectCreated();
+    EditorFontManager::Instance()->OnProjectLoaded();
 }
 
 void MainWindow::OnNewPlatform()
@@ -1210,6 +1210,7 @@ bool MainWindow::CloseProject()
 			OnSaveProject();
 	}
 	
+	CopyPasteController::Instance()->Clear();
 	HierarchyTreeController::Instance()->CloseProject();
 	// Update project title
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());

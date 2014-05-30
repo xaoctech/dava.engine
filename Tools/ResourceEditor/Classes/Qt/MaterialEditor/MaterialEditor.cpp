@@ -447,6 +447,12 @@ void MaterialEditor::FillDynamicMembers(QtPropertyData *root, DAVA::InspInfoDyna
     {
         QtPropertyDataInspDynamic *dynamicData = new QtPropertyDataInspDynamic(material, dynamic, membersList[i]);
 
+        // for all textures we should add texture path validator
+        if(root == texturesRoot)
+        {
+            ApplyTextureValidator(dynamicData);
+        }
+
         // update buttons state and enabled/disable state of this data
         if(material->GetMaterialType() != DAVA::NMaterial::MATERIALTYPE_GLOBAL)
         {
@@ -456,6 +462,35 @@ void MaterialEditor::FillDynamicMembers(QtPropertyData *root, DAVA::InspInfoDyna
         // merge created dynamic data into specified root
         root->MergeChild(dynamicData, membersList[i].c_str());
     }
+}
+
+void MaterialEditor::ApplyTextureValidator(QtPropertyDataInspDynamic *data)
+{
+    QString defaultPath = ProjectManager::Instance()->CurProjectPath().GetAbsolutePathname().c_str();
+    FilePath dataSourcePath = ProjectManager::Instance()->CurProjectDataSourcePath();
+
+    // calculate appropriate default path
+    if (dataSourcePath.Exists())
+    {
+        defaultPath = dataSourcePath.GetAbsolutePathname().c_str();
+    }
+
+    SceneEditor2* editor = QtMainWindow::Instance()->GetCurrentScene();
+    if (NULL != editor && editor->GetScenePath().Exists())
+    {
+        DAVA::String scenePath = editor->GetScenePath().GetDirectory().GetAbsolutePathname();
+        if (String::npos != scenePath.find(dataSourcePath.GetAbsolutePathname()))
+        {
+            defaultPath = scenePath.c_str();
+        }
+    }
+
+    // create validator
+    data->SetDefaultOpenDialogPath(defaultPath);
+    data->SetOpenDialogFilter("All (*.tex *.png);;PNG (*.png);;TEX (*.tex)");
+    QStringList path;
+    path.append(dataSourcePath.GetAbsolutePathname().c_str());
+    data->SetValidator(new TexturePathValidator(path));
 }
 
 void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
@@ -498,12 +533,18 @@ void MaterialEditor::UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data)
             editEnabled = true;
             addRemoveButton->setIcon(QIcon(":/QtIcons/cminus.png"));
             addRemoveButton->setToolTip("Remove property");
+
+            // isn't set in parent or shader
+            if(!(memberFlags & DAVA::I_VIEW) && !(memberFlags & DAVA::I_SAVE))
+            {
+                bgColor = QBrush(QColor(255, 0, 0, 25));
+            }
         }
         // inherited from parent property - should be add button
         else
         {
             editEnabled = false;
-            bgColor = QBrush(QColor(0, 0, 0, 10));
+            bgColor = QBrush(QColor(0, 0, 0, 25));
             addRemoveButton->setIcon(QIcon(":/QtIcons/cplus.png"));
             addRemoveButton->setToolTip( "Add property" );
         }
