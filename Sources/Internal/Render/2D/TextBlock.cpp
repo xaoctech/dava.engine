@@ -331,23 +331,16 @@ void TextBlock::Prepare()
         // which can't be broken to the separate lines.
         if (isMultilineEnabled)
         {
-            Vector2 rectSz = rectSize;
-            if(requestedSize.dx > 0)
-            {
-                rectSz.dx = requestedSize.dx;
-            }
-            
-            Vector<WideString> strings;
             if(isMultilineBySymbolEnabled)
             {
-                font->SplitTextBySymbolsToStrings(text, rectSz, strings);
+                font->SplitTextBySymbolsToStrings(text, drawSize, multilineStrings);
             }
             else
             {
-                font->SplitTextToStrings(text, rectSz, strings);
+                font->SplitTextToStrings(text, drawSize, multilineStrings);
             }
             
-            treatMultilineAsSingleLine = strings.size() == 1;
+            treatMultilineAsSingleLine = multilineStrings.size() == 1;
         }
 
 		if(!isMultilineEnabled || treatMultilineAsSingleLine)
@@ -422,7 +415,7 @@ void TextBlock::Prepare()
 			else if(((fittingType & FITTING_REDUCE) || (fittingType & FITTING_ENLARGE)) && (requestedSize.dy >= 0 || requestedSize.dx >= 0))
 			{
 				bool isChanged = false;
-				float prevFontSize = GetCorrectedFontRenderSize();
+				float prevFontSize = font->GetRenderSize();
 				while (true)
 				{
 					float yMul = 1.0f;
@@ -437,7 +430,7 @@ void TextBlock::Prepare()
 						h = textSize.dy;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dy > drawSize.y)
 						{
-							if (prevFontSize < GetCorrectedFontRenderSize())
+							if (prevFontSize < font->GetRenderSize())
 							{
 								font->SetRenderSize(prevFontSize);
 								textSize = font->GetStringSize(text);
@@ -467,7 +460,7 @@ void TextBlock::Prepare()
 						w = textSize.dx;
 						if((isChanged || fittingType & FITTING_REDUCE) && textSize.dx > drawSize.x)
 						{
-							if (prevFontSize < GetCorrectedFontRenderSize())
+							if (prevFontSize < font->GetRenderSize())
 							{
 								font->SetRenderSize(prevFontSize);
 								textSize = font->GetStringSize(text);
@@ -498,7 +491,7 @@ void TextBlock::Prepare()
 						break;
 					}
 					
-					float finalSize = GetCorrectedFontRenderSize();
+					float finalSize = font->GetRenderSize();
 					prevFontSize = finalSize;
 					isChanged = true;
 					if(xMul < yMul)
@@ -547,7 +540,7 @@ void TextBlock::Prepare()
                 //				textSize.dy = yOffset*2 + fontHeight * (int32)multilineStrings.size();
 				int32 fontHeight = font->GetFontHeight() + yOffset;
 				textSize.dy = fontHeight * (int32)multilineStrings.size() - yOffset;
-				float lastSize = GetCorrectedFontRenderSize();
+				float lastSize = font->GetRenderSize();
 				float lastHeight = (float32)textSize.dy;
 				
 				bool isChanged = false;
@@ -564,7 +557,7 @@ void TextBlock::Prepare()
 						{
 							yBigger = true;
 							yMul = drawSize.y / textSize.dy;
-							if(lastSize < GetCorrectedFontRenderSize())
+							if(lastSize < font->GetRenderSize())
 							{
 								font->SetRenderSize(lastSize);
 								h = (int32)lastHeight;
@@ -608,7 +601,7 @@ void TextBlock::Prepare()
 					
 					lastHeight = (float32)textSize.dy;
 					
-					float finalSize = lastSize = GetCorrectedFontRenderSize();
+					float finalSize = lastSize = font->GetRenderSize();
 					isChanged = true;
 					finalSize *= yMul;
 					
@@ -668,7 +661,6 @@ void TextBlock::Prepare()
 				{
 					textSize.dx = Max(textSize.dx, stringSize.dx);
 				}
-				
 			}
 		}
 		
@@ -935,19 +927,6 @@ const Vector2 & TextBlock::GetTextSize()
 const Vector<int32> & TextBlock::GetStringSizes() const
 {
 	return stringSizes;
-}
-
-float32 TextBlock::GetCorrectedFontRenderSize()
-{
-    static const float32 minFontRenderSize = 0.1f;
-
-    float32 renderSize = font->GetRenderSize();
-    if ((fittingType & FITTING_ENLARGE) && (renderSize == 0.0f))
-    {
-        return minFontRenderSize;
-    }
-
-    return renderSize;
 }
 
 };
