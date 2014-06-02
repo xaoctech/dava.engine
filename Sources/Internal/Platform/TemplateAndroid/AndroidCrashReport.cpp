@@ -101,7 +101,6 @@ void JniCrashReporter::ThrowJavaExpetion(const Vector<CrashStep>& chashSteps)
 	}
 }
 
-
 //libcorkscrew definition
 typedef struct map_info_t map_info_t;
 
