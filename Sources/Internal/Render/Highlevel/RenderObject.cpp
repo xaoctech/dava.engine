@@ -176,7 +176,6 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 		newObject = new RenderObject();
 	}
 
-	newObject->type = type;
 	newObject->flags = flags;
 	newObject->RemoveFlag(MARKED_FOR_UPDATE);
 	newObject->debugFlags = debugFlags;
@@ -207,7 +206,6 @@ void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializat
 
 	if(NULL != archive)
 	{
-		archive->SetUInt32("ro.type", type);
 		archive->SetUInt32("ro.debugflags", debugFlags);
 		archive->SetUInt32("ro.batchCount", GetRenderBatchCount());
         archive->SetUInt32("ro.sOclIndex", staticOcclusionIndex);
@@ -243,7 +241,6 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 {
 	if(NULL != archive)
 	{
-		type = archive->GetUInt32("ro.type", TYPE_RENDEROBJECT);
 		debugFlags = archive->GetUInt32("ro.debugflags", 0);
         staticOcclusionIndex = (uint16)archive->GetUInt32("ro.sOclIndex", INVALID_STATIC_OCCLUSION_INDEX);
         
