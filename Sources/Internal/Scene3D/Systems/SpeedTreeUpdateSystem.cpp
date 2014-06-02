@@ -142,6 +142,8 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         Vector2 dVelocity = (component->GetTrunkOscillationDamping() * sqrtf(velocityLengthSq) * component->oscVelocity) * timeElapsed;
         if(velocityLengthSq >= dVelocity.SquareLength())
             component->oscVelocity -= dVelocity;
+        else
+            component->oscVelocity = Vector2();
 
         component->oscOffset += component->oscVelocity * timeElapsed;
         
