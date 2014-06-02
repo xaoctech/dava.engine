@@ -1421,6 +1421,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h">
+      <Filter>Internal\Render\3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.h">
       <Filter>Internal\Scene3D\SceneFile</Filter>
     </ClInclude>
@@ -2547,6 +2550,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp">
+      <Filter>Internal\Render\3D</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.cpp">
       <Filter>Internal\Scene3D\SceneFile</Filter>
     </ClCompile>
