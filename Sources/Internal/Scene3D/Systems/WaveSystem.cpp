@@ -62,7 +62,7 @@ WaveSystem::WaveSystem(Scene * scene) :
     options->AddObserver(this);
     HandleEvent(options);
 
-    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION);
 
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WAVE_TRIGGERED);
 }
@@ -124,7 +124,8 @@ Vector3 WaveSystem::GetWaveDisturbance(const Vector3 & inPosition) const
 
             DVASSERT(damping >= 0.f);
 
-            float32 distance = direction.Normalize();
+            float32 distance = sqrtf(distanceSq);
+            direction /= distance;
             float32 dt = abs(info->currentWaveRadius - distance);
             float32 value = Max(1 - dt / component->GetWaveLenght(), 0.f) * component->GetWaveAmplitude() * component->GetWaveSpeed() * damping; // wave function: A = (1 - x/L) * A0
 

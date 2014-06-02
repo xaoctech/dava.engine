@@ -65,8 +65,8 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationPar
 
 void SpeedTreeObject::BindDynamicParams()
 {
-    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, 0);
-    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, 0);
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, UPDATE_SEMANTIC_ALWAYS);
 }
 
 void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)
@@ -87,7 +87,7 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
         newObject = new SpeedTreeObject();
     }
 
-    Mesh::Clone(newObject);
+    RenderObject::Clone(newObject);
     
     return newObject;
 }
