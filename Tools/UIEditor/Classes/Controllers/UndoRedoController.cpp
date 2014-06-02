@@ -50,7 +50,7 @@ void UndoRedoController::Cleanup()
         CleanupStack(iter->second);
     }
     undoStacks.clear();
-    for (Map<HierarchyTreeNode::HIERARCHYTREENODEID,Deque<BaseCommand*> >::iterator iter = undoStacks.begin(); iter!=undoStacks.end(); ++iter)
+    for (Map<HierarchyTreeNode::HIERARCHYTREENODEID,Deque<BaseCommand*> >::iterator iter = redoStacks.begin(); iter!=redoStacks.end(); ++iter)
     {
         CleanupStack(iter->second);
     }
@@ -215,7 +215,7 @@ HierarchyTreeNode::HIERARCHYTREENODEID  UndoRedoController::GetCurrentScreenId()
     HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
     if (NULL != activeScreen)
     {
-        idScreen = HierarchyTreeController::Instance()->GetActiveScreen()->GetId();
+        idScreen = activeScreen->GetId();
     }
     return idScreen;
 }
