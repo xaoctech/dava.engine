@@ -252,6 +252,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	// (example: we are trying to set 10, but accepted range is 0-5
 	//   value is 10
 	//   curValue becomes 0-5)
+    UpdateValue();
 	curValue = GetValueInternal();
 
 	if(curValue != oldValue)
@@ -417,6 +418,8 @@ void QtPropertyData::SetEditable(bool editable)
 {
 	(editable) ? (curFlags |= Qt::ItemIsEditable) : (curFlags &= ~Qt::ItemIsEditable);
     UpdateOWState();
+
+    EmitDataChanged(STATE_CHANGED);
 }
 
 bool QtPropertyData::IsEditable() const
@@ -428,6 +431,8 @@ void QtPropertyData::SetEnabled(bool enabled)
 {
 	(enabled) ? (curFlags |= Qt::ItemIsEnabled) : (curFlags &= ~Qt::ItemIsEnabled);
     UpdateOWState();
+
+    EmitDataChanged(STATE_CHANGED);
 }
 
 void QtPropertyData::UpdateOWState()
