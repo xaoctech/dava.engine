@@ -49,11 +49,10 @@ BeastCommandLineTool::BeastCommandLineTool()
 void BeastCommandLineTool::PrintUsage()
 {
     printf("\n");
-    printf("-beast [-file [file] -output[output_path]]\n");
+    printf("-beast -file <file> -output <output_path>\n");
     printf("\twill beast scene file and place output to output_path\n");
-    printf("\t-file - full pathname of scene for beasting \n");
-    printf("\t-output - full pathname for output of beasting \n");
-
+    printf("\t-file - full pathname of scene for beasting\n");
+    printf("\t-output - full path for output of beasting\n");
     printf("\n");
     printf("Samples:\n");
     printf("-beast -file /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/karelia.sc2 -output /Projects/WOT/wot.blitz/DataSource/3d/Maps/karelia/lightmap\n");
