@@ -76,6 +76,7 @@ protected slots:
     void OnMaterialRemoveGlobal(bool checked);
     void OnMaterialSave(bool checked);
     void OnMaterialLoad(bool checked);
+    void OnMaterialPropertyEditorContextMenuRequest(const QPoint & pos);
 
 protected:
 	virtual void showEvent(QShowEvent * event);
@@ -86,6 +87,7 @@ protected:
     void FillDynamic(QtPropertyData *root, const char* dynamicName);
     void FillDynamicMembers(QtPropertyData *root, DAVA::InspInfoDynamic *dynamic, DAVA::NMaterial *material);
     void FillTemplates(const QList<DAVA::NMaterial *>& materials);
+    void ApplyTextureValidator(QtPropertyDataInspDynamic *data);
 
     void UpdateAllAddRemoveButtons(QtPropertyData *root);
     void UpdateAddRemoveButtonState(QtPropertyDataInspDynamic *data);

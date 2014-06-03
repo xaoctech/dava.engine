@@ -27,38 +27,40 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_MESH_UTILS_H__
+#define __DAVAENGINE_MESH_UTILS_H__
 
-#ifndef __UIEditor__HierarchyTreeAggregatorControlNode__
-#define __UIEditor__HierarchyTreeAggregatorControlNode__
+#include "Render/3D/PolygonGroup.h"
 
-#include "HierarchyTreeControlNode.h"
 
 namespace DAVA
 {
-	class HierarchyTreeAggregatorNode;
-	
-	class HierarchyTreeAggregatorControlNode: public HierarchyTreeControlNode
-	{
-	public:
-		HierarchyTreeAggregatorControlNode(HierarchyTreeAggregatorNode* parentAggregator,
-										   HierarchyTreeNode* parent,
-										   UIControl* uiObject,
-										   const QString& name);
-		HierarchyTreeAggregatorControlNode(HierarchyTreeNode* parent, const HierarchyTreeAggregatorControlNode* node);
-		
-		~HierarchyTreeAggregatorControlNode();
-		
-		void SetAggregatorNode(HierarchyTreeAggregatorNode* parentAggregator);
-		const HierarchyTreeAggregatorNode* GetAggregatorNode() const {return parentAggregator;}
-		virtual void RemoveTreeNodeFromScene();
-		virtual void ReturnTreeNodeToScene();
-		virtual HierarchyTreeControlNode* CreateControlCopy(HierarchyTreeNode* parent) const;
 
-		FilePath GetAggregatorPath() const;
-	private:
-		HierarchyTreeAggregatorNode* parentAggregator;
-		HierarchyTreeAggregatorNode* parentAggregatorSave;
-	};
-}
+class MeshUtils
+{
+public:
+    static void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=false);
+    static void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
+    static void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 
-#endif /* defined(__UIEditor__HierarchyTreeAggregatorControlNode__) */
+private:
+    struct FaceWork
+    {
+        int32 indexOrigin[3];
+        Vector3 tangent, binormal;
+    };
+
+    struct VertexWork
+    {
+        Vector<int32> refIndices;
+        Vector3 tangent, binormal;
+        int32 tbRatio;
+        int32 refIndex;
+        int32 resultGroup;
+    };
+};
+
+};
+
+#endif
+
