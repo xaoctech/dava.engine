@@ -57,7 +57,7 @@ WindSystem::WindSystem(Scene * scene) :
     options->AddObserver(this);
     HandleEvent(options);
 
-    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION);
 
     for(int32 i = 0; i < WIND_TABLE_SIZE; i++)
     {

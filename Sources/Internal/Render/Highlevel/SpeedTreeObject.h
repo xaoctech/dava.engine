@@ -38,7 +38,7 @@ namespace DAVA
 {
 
 class SpeedTreeUpdateSystem;
-class SpeedTreeObject: public Mesh
+class SpeedTreeObject: public RenderObject
 {
 public:
 

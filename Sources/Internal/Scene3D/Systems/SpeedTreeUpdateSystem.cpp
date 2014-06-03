@@ -52,7 +52,7 @@ SpeedTreeUpdateSystem::SpeedTreeUpdateSystem(Scene * scene)
     options->AddObserver(this);
     isAnimationEnabled = options->IsOptionEnabled(RenderOptions::SPEEDTREE_ANIMATIONS);
 
-    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QUALITY_OPTION_VEGETATION_ANIMATION);
+    isVegetationAnimationEnabled = QualitySettingsSystem::Instance()->IsOptionEnabled(QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION);
 
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SPEED_TREE_MAX_ANIMATED_LOD_CHANGED);
@@ -136,9 +136,15 @@ void SpeedTreeUpdateSystem::Process(float32 timeElapsed)
         float32 leafForce = wind3D.Length();
         Vector2 windVec(wind3D.x, wind3D.y);
 
-        float32 trunkAmplitude = component->GetTrunkOscillationAmplitude();
-        float32 trunkSpring = component->GetTrunkOscillationSpringSqrt();
-        component->oscVelocity += (windVec - component->oscOffset * trunkSpring * trunkSpring - trunkSpring * component->oscVelocity.Length() * component->oscVelocity) * timeElapsed;
+        component->oscVelocity += (windVec - component->oscOffset * component->GetTrunkOscillationSpring()) * timeElapsed;
+
+        float32 velocityLengthSq = component->oscVelocity.SquareLength();
+        Vector2 dVelocity = (component->GetTrunkOscillationDamping() * sqrtf(velocityLengthSq) * component->oscVelocity) * timeElapsed;
+        if(velocityLengthSq >= dVelocity.SquareLength())
+            component->oscVelocity -= dVelocity;
+        else
+            component->oscVelocity = Vector2();
+
         component->oscOffset += component->oscVelocity * timeElapsed;
         
         component->leafTime += timeElapsed * sqrtf(leafForce) * component->GetLeafsOscillationSpeed();

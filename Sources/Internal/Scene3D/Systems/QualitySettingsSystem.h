@@ -38,8 +38,6 @@
 namespace DAVA
 {
 
-static const FastName QUALITY_OPTION_VEGETATION_ANIMATION("VEGETATION_ANIMATION");
-
 struct TextureQuality
 {
     size_t albedoBaseMipMapLevel;
@@ -58,6 +56,8 @@ class QualitySettingsComponent;
 class QualitySettingsSystem: public StaticSingleton<QualitySettingsSystem>
 {
 public:
+    static const FastName QUALITY_OPTION_VEGETATION_ANIMATION;
+
     QualitySettingsSystem();
 
     void Load(const FilePath &path);
