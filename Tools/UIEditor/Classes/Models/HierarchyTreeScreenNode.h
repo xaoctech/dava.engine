@@ -140,6 +140,8 @@ public:
     // Access to the list of control rects for this node.
     List<Rect> GetControlRectsList(bool includeScreenBounds) const;
     void GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<Rect>& rectsList) const;
+    
+    bool IsLoaded() const {return loaded;}
 
 protected:
 	void CombineRectWithChild(Rect& rect) const;
@@ -159,6 +161,7 @@ protected:
 	float scale;
 	int posX;
 	int posY;
+    bool loaded;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeScreenNode__) */
