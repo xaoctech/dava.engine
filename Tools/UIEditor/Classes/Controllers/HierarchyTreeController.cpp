@@ -131,6 +131,16 @@ List<HierarchyTreeScreenNode*> HierarchyTreeController::GetUnsavedScreens()
 void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
 											  const HierarchyTreeScreenNode* activeScreen)
 {
+    bool updateHierarchyTree = false;
+    if(activeScreen && !activeScreen->IsLoaded())
+    {
+        // Screen was selected, load it now
+        QString screenPath = ((HierarchyTreePlatformNode*)const_cast<HierarchyTreeScreenNode*>(activeScreen)->GetParent())->GetScreenPath(activeScreen->GetName());
+        const_cast<HierarchyTreeScreenNode*>(activeScreen)->Load(screenPath);
+        updateHierarchyTree = true;
+        UpdateControlsData();
+    }
+    
 	bool updateLibrary = false;
 	if (this->activePlatform != activePlatform)
 	{
@@ -162,6 +172,11 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 	}
 	if (updateLibrary)
 		LibraryController::Instance()->UpdateLibrary();
+    
+    if(updateHierarchyTree)
+    {
+        HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+    }
 }
 
 void HierarchyTreeController::UpdateSelection(const HierarchyTreeNode* activeItem)
