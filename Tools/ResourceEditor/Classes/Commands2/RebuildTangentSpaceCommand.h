@@ -27,38 +27,31 @@
 =====================================================================================*/
 
 
+#ifndef __REBUILD_TANGENT_SPACE_COMMAND_H__
+#define __REBUILD_TANGENT_SPACE_COMMAND_H__
 
-#ifndef __UIEditor__HierarchyTreeAggregatorControlNode__
-#define __UIEditor__HierarchyTreeAggregatorControlNode__
+#include "Command2.h"
 
-#include "HierarchyTreeControlNode.h"
+#include "Render/Highlevel/RenderBatch.h"
 
-namespace DAVA
+
+class RebuildTangentSpaceCommand: public Command2
 {
-	class HierarchyTreeAggregatorNode;
-	
-	class HierarchyTreeAggregatorControlNode: public HierarchyTreeControlNode
-	{
-	public:
-		HierarchyTreeAggregatorControlNode(HierarchyTreeAggregatorNode* parentAggregator,
-										   HierarchyTreeNode* parent,
-										   UIControl* uiObject,
-										   const QString& name);
-		HierarchyTreeAggregatorControlNode(HierarchyTreeNode* parent, const HierarchyTreeAggregatorControlNode* node);
-		
-		~HierarchyTreeAggregatorControlNode();
-		
-		void SetAggregatorNode(HierarchyTreeAggregatorNode* parentAggregator);
-		const HierarchyTreeAggregatorNode* GetAggregatorNode() const {return parentAggregator;}
-		virtual void RemoveTreeNodeFromScene();
-		virtual void ReturnTreeNodeToScene();
-		virtual HierarchyTreeControlNode* CreateControlCopy(HierarchyTreeNode* parent) const;
+public:
+    RebuildTangentSpaceCommand(DAVA::RenderBatch *renderBatch, bool computeBinormal);
+    virtual ~RebuildTangentSpaceCommand();
 
-		FilePath GetAggregatorPath() const;
-	private:
-		HierarchyTreeAggregatorNode* parentAggregator;
-		HierarchyTreeAggregatorNode* parentAggregatorSave;
-	};
-}
+    virtual void Undo();
+    virtual void Redo();
 
-#endif /* defined(__UIEditor__HierarchyTreeAggregatorControlNode__) */
+    virtual DAVA::Entity* GetEntity() const {return NULL;}    
+
+protected:    
+    DAVA::RenderBatch *renderBatch;       
+    bool computeBinormal;
+    DAVA::PolygonGroup* originalGroup;    
+    DAVA::int32 materialBinormalFlagState;
+};
+
+
+#endif 
