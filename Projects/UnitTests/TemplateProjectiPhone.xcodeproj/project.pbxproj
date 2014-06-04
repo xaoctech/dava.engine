@@ -13,6 +13,8 @@
 		15CBB0B018D300310038ABA3 /* StringFormatTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15CBB0AE18D300310038ABA3 /* StringFormatTest.cpp */; };
 		1770DF4517DF446600000391 /* UIMovieTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4317DF446600000391 /* UIMovieTest.cpp */; };
 		1770DF4717DF497600000391 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1770DF4617DF497600000391 /* MediaPlayer.framework */; };
+		17FFF90A193F05F8003D51DA /* libmongodb_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17FFF909193F05F8003D51DA /* libmongodb_ios.a */; };
+		17FFF90D193F07E2003D51DA /* ParseTextTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17FFF90B193F07E2003D51DA /* ParseTextTest.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -26,7 +28,6 @@
 		5C8B42A61589D866001B2597 /* SampleTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8B42A41589D866001B2597 /* SampleTest.cpp */; };
 		5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8D42421580E4D700441032 /* BaseScreen.cpp */; };
 		5CA2462E158F472100465879 /* EntityTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2462C158F472100465879 /* EntityTest.cpp */; };
-		5CDC2521156CD48700742348 /* TestTemplate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDC251E156CD48700742348 /* TestTemplate.cpp */; };
 		5CDC2530156CDED900742348 /* MainWindow-iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5CDC252F156CDED900742348 /* MainWindow-iPad.xib */; };
 		5CDC2533156CE21000742348 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CDC2532156CE20F00742348 /* libz.dylib */; };
 		627C796D18ED9DA900C05154 /* JPEGTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 627C796B18ED9DA900C05154 /* JPEGTest.cpp */; };
@@ -72,7 +73,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6216334D192B37DA00A802E3 /* PBXContainerItemProxy */ = {
+		17FFF901193E2969003D51DA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
 			proxyType = 2;
@@ -84,13 +85,6 @@
 			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
-			remoteInfo = Framework;
-		};
-		FE9895591163F14500500198 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FE9895531163F13500500198 /* Framework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = Framework;
 		};
 /* End PBXContainerItemProxy section */
@@ -107,6 +101,10 @@
 		1770DF4317DF446600000391 /* UIMovieTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIMovieTest.cpp; sourceTree = "<group>"; };
 		1770DF4417DF446600000391 /* UIMovieTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMovieTest.h; sourceTree = "<group>"; };
 		1770DF4617DF497600000391 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		17FFF907193F0467003D51DA /* libmongodb_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_macos.a; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
+		17FFF909193F05F8003D51DA /* libmongodb_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmongodb_ios.a; path = ../../Libs/libs/libmongodb_ios.a; sourceTree = "<group>"; };
+		17FFF90B193F07E2003D51DA /* ParseTextTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParseTextTest.cpp; sourceTree = "<group>"; };
+		17FFF90C193F07E2003D51DA /* ParseTextTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseTextTest.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* UnitTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnitTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -129,7 +127,6 @@
 		5C8D42451580E4ED00441032 /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		5CA2462C158F472100465879 /* EntityTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EntityTest.cpp; sourceTree = "<group>"; };
 		5CA2462D158F472100465879 /* EntityTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EntityTest.h; sourceTree = "<group>"; };
-		5CDC251E156CD48700742348 /* TestTemplate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestTemplate.cpp; sourceTree = "<group>"; };
 		5CDC251F156CD48700742348 /* TestTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestTemplate.h; sourceTree = "<group>"; };
 		5CDC252F156CDED900742348 /* MainWindow-iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow-iPad.xib"; path = "iOSSpecific/iPad/MainWindow-iPad.xib"; sourceTree = "<group>"; };
 		5CDC2532156CE20F00742348 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -212,6 +209,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17FFF90A193F05F8003D51DA /* libmongodb_ios.a in Frameworks */,
 				C12DE7A218E322B2002EEBB4 /* AssetsLibrary.framework in Frameworks */,
 				74AF633D18852FE100070C35 /* Security.framework in Frameworks */,
 				74BF981A1876B3A8001D4CFE /* GameController.framework in Frameworks */,
@@ -300,6 +298,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				17FFF909193F05F8003D51DA /* libmongodb_ios.a */,
+				17FFF907193F0467003D51DA /* libmongodb_macos.a */,
 				C12DE7A118E322B2002EEBB4 /* AssetsLibrary.framework */,
 				74AF633C18852FE100070C35 /* Security.framework */,
 				74BF98191876B3A7001D4CFE /* GameController.framework */,
@@ -322,6 +322,8 @@
 		5C7BE30F156E0EF400F9F538 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				17FFF90B193F07E2003D51DA /* ParseTextTest.cpp */,
+				17FFF90C193F07E2003D51DA /* ParseTextTest.h */,
 				E8983CBF18C89733002FB974 /* OpenGLES30FormatTest.cpp */,
 				E8983CC018C89733002FB974 /* OpenGLES30FormatTest.h */,
 				627C796B18ED9DA900C05154 /* JPEGTest.cpp */,
@@ -399,7 +401,6 @@
 		5C8D42411580E4C300441032 /* TestSuite */ = {
 			isa = PBXGroup;
 			children = (
-				5CDC251E156CD48700742348 /* TestTemplate.cpp */,
 				5CDC251F156CD48700742348 /* TestTemplate.h */,
 				5C8D42421580E4D700441032 /* BaseScreen.cpp */,
 				5C8D42431580E4D700441032 /* BaseScreen.h */,
@@ -419,7 +420,7 @@
 			isa = PBXGroup;
 			children = (
 				FE9895581163F13500500198 /* libFramework.a */,
-				6216334E192B37DA00A802E3 /* libFrameworkTesting.a */,
+				17FFF902193E2969003D51DA /* libFrameworkTesting.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -439,7 +440,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				FE98955A1163F14500500198 /* PBXTargetDependency */,
+				02FD8259192A10AD007762C0 /* PBXTargetDependency */,
 			);
 			name = UnitTests;
 			productName = TemplateProjectiPhone;
@@ -484,11 +485,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		6216334E192B37DA00A802E3 /* libFrameworkTesting.a */ = {
+		17FFF902193E2969003D51DA /* libFrameworkTesting.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libFrameworkTesting.a;
-			remoteRef = 6216334D192B37DA00A802E3 /* PBXContainerItemProxy */;
+			remoteRef = 17FFF901193E2969003D51DA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		FE9895581163F13500500198 /* libFramework.a */ = {
@@ -540,7 +541,7 @@
 				15CBB0B018D300310038ABA3 /* StringFormatTest.cpp in Sources */,
 				FEC9201013BA2D7D006F347F /* main.mm in Sources */,
 				8475938D18DA3FAC00C464CB /* DateTimeTest.cpp in Sources */,
-				5CDC2521156CD48700742348 /* TestTemplate.cpp in Sources */,
+				17FFF90D193F07E2003D51DA /* ParseTextTest.cpp in Sources */,
 				5C8D42441580E4D700441032 /* BaseScreen.cpp in Sources */,
 				5C8B42A61589D866001B2597 /* SampleTest.cpp in Sources */,
 				5CA2462E158F472100465879 /* EntityTest.cpp in Sources */,
@@ -582,10 +583,9 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FE98955A1163F14500500198 /* PBXTargetDependency */ = {
+		02FD8259192A10AD007762C0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = Framework;
-			targetProxy = FE9895591163F14500500198 /* PBXContainerItemProxy */;
+			name = FrameworkTesting;
 		};
 /* End PBXTargetDependency section */
 
@@ -602,6 +602,10 @@
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/yuricoder/Work/dava.framework/Libs/libs,
+				);
 				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-mno-thumb",
@@ -609,6 +613,7 @@
 				);
 				PRODUCT_NAME = UnitTests;
 				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -622,6 +627,10 @@
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/yuricoder/Work/dava.framework/Libs/libs,
+				);
 				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-mno-thumb",
@@ -629,6 +638,7 @@
 				);
 				PRODUCT_NAME = UnitTests;
 				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -669,6 +679,10 @@
 				GCC_PREFIX_HEADER = TemplateProjectiPhone_Prefix.pch;
 				INFOPLIST_FILE = "TemplateProjectiPhone-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/yuricoder/Work/dava.framework/Libs/libs,
+				);
 				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-mno-thumb",
@@ -676,6 +690,7 @@
 				);
 				PRODUCT_NAME = UnitTests;
 				PROVISIONING_PROFILE = "";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = AdHoc;
 		};
