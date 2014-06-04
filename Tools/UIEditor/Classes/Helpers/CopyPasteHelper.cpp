@@ -129,22 +129,16 @@ void CopyPasteHelper::UpdateAggregatorControls(HierarchyTreeControlNode* control
         {
         	HierarchyTreeAggregatorNode *aggregatorNode = NULL;
             QString aggregatorName = parentAggregator->GetName();
-        	if (activePlatform->IsAggregatorOrScreenNamePresent(aggregatorName))
-            {
-            	aggregatorNode = activePlatform->GetAggregatorNodeByName(aggregatorName);
-            }
-            else
-            {
-            
+        	if (!activePlatform->IsAggregatorOrScreenNamePresent(aggregatorName))
+			{
                 CreateAggregatorCommand* cmd = new CreateAggregatorCommand(aggregatorName, activePlatform->GetId(), Rect());
 				CommandsController::Instance()->ExecuteCommand(cmd);
 				SafeRelease(cmd);
-            
-            	aggregatorNode = activePlatform->GetAggregatorNodeByName(aggregatorName);
-               // aggregatorNode = new HierarchyTreeAggregatorNode(activePlatform, aggregatorName, Rect());
-               // activePlatform->AddTreeNode(aggregatorNode);
             }
- 
+
+ 			aggregatorNode = activePlatform->GetAggregatorNodeByName(aggregatorName);
+            if (!aggregatorNode) return;
+            
             aggregator->SetAggregatorNode(aggregatorNode);
             aggregatorNode->UpdateChilds();
         }
