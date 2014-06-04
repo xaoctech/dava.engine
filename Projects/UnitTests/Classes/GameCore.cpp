@@ -68,6 +68,7 @@
 #include "SaveImageTest.h"
 #include "JPEGTest.h"
 #include "DateTimeTest.h"
+#include "ParseTextTest.h"
 
 using namespace DAVA;
 
@@ -96,8 +97,9 @@ void GameCore::OnAppStarted()
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
-    new InputTest();
-    new UIMovieTest();
+
+    new ParseTextTest();
+    new OpenGLES30FormatTest();
     new SaveImageTest();
     
     new OpenGLES30FormatTest();
@@ -109,8 +111,8 @@ void GameCore::OnAppStarted()
     new FileListTest();
     new FileSystemTest();
     
-
- 	
+ 	new UIMovieTest();
+ 	new InputTest();
      new FormatsTest();
  	new DeviceInfoTest();
  	new DateTimeTest();

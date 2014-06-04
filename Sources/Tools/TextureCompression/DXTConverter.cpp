@@ -52,7 +52,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
         FilePath outputName = GetDXTOutput(descriptor, gpuFamily);
         
 		DVASSERT(descriptor.compression);
-		const TextureDescriptor::Compression * compression = descriptor.compression[gpuFamily];
+		const TextureDescriptor::Compression * compression = &descriptor.compression[gpuFamily];
 
         if((compression->compressToWidth != 0) && (compression->compressToHeight != 0))
         {
@@ -69,7 +69,7 @@ FilePath DXTConverter::ConvertPngToDxt(const TextureDescriptor &descriptor, eGPU
         {
             imagesToSave.push_back(SafeRetain(image));
         }
-        eErrorCode retCode = ImageSystem::Instance()->Save(outputName, imagesToSave, (PixelFormat) descriptor.compression[gpuFamily]->format);
+        eErrorCode retCode = ImageSystem::Instance()->Save(outputName, imagesToSave, (PixelFormat) descriptor.compression[gpuFamily].format);
         for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);
         for_each(imagesToSave.begin(), imagesToSave.end(), SafeRelease<Image>);
         if(SUCCESS == retCode)
@@ -118,7 +118,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
         FilePath outputName = GetDXTOutput(descriptor, gpuFamily);
         
 		DVASSERT(descriptor.compression);
-		const TextureDescriptor::Compression * compression = descriptor.compression[gpuFamily];
+		const TextureDescriptor::Compression * compression = &descriptor.compression[gpuFamily];
 
 
         if((compression->compressToWidth != 0) && (compression->compressToHeight != 0))
@@ -131,7 +131,7 @@ FilePath DXTConverter::ConvertCubemapPngToDxt(const TextureDescriptor &descripto
 			}
         }
 		
-        eErrorCode retCode = ImageSystem::Instance()->SaveAsCubeMap(outputName, inputImages, (PixelFormat) descriptor.compression[gpuFamily]->format);
+        eErrorCode retCode = ImageSystem::Instance()->SaveAsCubeMap(outputName, inputImages, (PixelFormat) descriptor.compression[gpuFamily].format);
         if(SUCCESS == retCode)
         {
             for_each(inputImages.begin(), inputImages.end(), SafeRelease<Image>);

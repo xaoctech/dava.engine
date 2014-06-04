@@ -710,42 +710,6 @@ void RenderManager::DiscardFramebufferHW(uint32 attachments)
     RENDER_VERIFY(glDiscardFramebufferEXT(GL_FRAMEBUFFER, discardsCount, discards));
 #endif
 }
-
-#if 0
-void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix)
-{
-    SetMatrix(type, matrix, 0);
-}
-    
-void RenderManager::SetMatrix(eMatrixType type, const Matrix4 & matrix, uint32 cacheValue)
-{
-    GLint matrixMode[2] = {GL_MODELVIEW, GL_PROJECTION};
-    if (type == MATRIX_PROJECTION)
-    {
-        matrices[type] = matrix;
-        uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
-        uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
-        projectionMatrixCache++;
-    }
-    else if (type == MATRIX_MODELVIEW)
-    {
-        if (cacheValue == 0 ||
-            modelViewMatrixCache != cacheValue)
-        {
-            matrices[type] = matrix;
-            uniformMatrixFlags[UNIFORM_MATRIX_MODELVIEWPROJECTION] = 0; // require update
-            uniformMatrixFlags[UNIFORM_MATRIX_NORMAL] = 0; // require update
-            modelViewMatrixCache = cacheValue;
-        }
-    }
-    
-    if ((renderer != Core::RENDERER_OPENGL_ES_2_0) && (renderer != Core::RENDERER_OPENGL_ES_3_0))
-    {
-        RENDER_VERIFY(glMatrixMode(matrixMode[type]));
-        RENDER_VERIFY(glLoadMatrixf(matrix.data));
-    }
-}
-#endif 
     
 void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
 {
@@ -762,7 +726,10 @@ void RenderManager::AttachRenderData()
     if (!currentRenderData)return;
     RENDERER_UPDATE_STATS(attachRenderDataCount++);
     
-    if (attachedRenderData == currentRenderData)
+	Shader * shader = hardwareState.shader;
+    uint32 currentAttributeMask = shader->GetAttributeMask();
+    
+    if (attachedRenderData == currentRenderData && cachedAttributeMask == currentAttributeMask)
     {
         if ((attachedRenderData->vboBuffer != 0) && (attachedRenderData->indexBuffer != 0))
         {
@@ -774,8 +741,6 @@ void RenderManager::AttachRenderData()
     attachedRenderData = currentRenderData;
 
     const int DEBUG = 0;
-	Shader * shader = hardwareState.shader;
-	
     
     {
         int32 currentEnabledStreams = 0;
@@ -839,6 +804,8 @@ void RenderManager::AttachRenderData()
 
             cachedEnabledStreams = currentEnabledStreams;
         }
+        
+        cachedAttributeMask = currentAttributeMask;
     }
 }
 
