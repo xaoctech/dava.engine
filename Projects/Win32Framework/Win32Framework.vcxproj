@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugQt|Win32">
@@ -463,6 +463,8 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\TextureSheet.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometry.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometrySerializationData.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomSLGeometry.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationFixedGeometry.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationGeometry.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationMaterialTransformer.h" />
@@ -875,6 +877,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\TextureSheet.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometry.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometrySerializationData.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomSLGeometry.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationFixedGeometry.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationGeometry.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationPropertyNames.cpp" />
