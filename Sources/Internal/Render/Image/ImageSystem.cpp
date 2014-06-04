@@ -76,36 +76,41 @@ eErrorCode ImageSystem::Load(const FilePath & pathname, Vector<Image *> & imageS
 
 eErrorCode ImageSystem::Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap) const
 {
-    ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
+    ImageFormatInterface* properWrapper = DetectImageFormatInterfaceByExtension(file->GetFilename());
+    if (!properWrapper)
+    {
+        // Retry by content.
+        properWrapper = DetectImageFormatInterfaceByContent(file);
+    }
     
-    if (NULL == propperWrapper || !propperWrapper->IsImage(file))
+    if (NULL == properWrapper || !properWrapper->IsImage(file))
     {
         return ERROR_FILE_FORMAT_INCORRECT;
     }
 
-    return propperWrapper->ReadFile(file, imageSet, baseMipmap);
+    return properWrapper->ReadFile(file, imageSet, baseMipmap);
 }
 
 eErrorCode ImageSystem::SaveAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
-    ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
-    if(!propperWrapper)
+    ImageFormatInterface* properWrapper = DetectImageFormatInterfaceByExtension(fileName);
+    if(!properWrapper)
     {
         return ERROR_FILE_FORMAT_INCORRECT;
     }
     
-    return propperWrapper->WriteFileAsCubeMap(fileName, imageSet, compressionFormat);
+    return properWrapper->WriteFileAsCubeMap(fileName, imageSet, compressionFormat);
 }
     
 eErrorCode ImageSystem::Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const
 {
-    ImageFormatInterface* propperWrapper = DetectImageFormatInterfaceByExtension(fileName);
-    if(!propperWrapper)
+    ImageFormatInterface* properWrapper = DetectImageFormatInterfaceByExtension(fileName);
+    if(!properWrapper)
     {
         return ERROR_FILE_FORMAT_INCORRECT;
     }
     
-    return propperWrapper->WriteFile(fileName, imageSet, compressionFormat);
+    return properWrapper->WriteFile(fileName, imageSet, compressionFormat);
 }
 
 eErrorCode ImageSystem::Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat) const
@@ -129,7 +134,6 @@ ImageFormatInterface* ImageSystem::DetectImageFormatInterfaceByExtension(const F
             return wrappers[i];
         }
     }
-    DVASSERT(0);
     
     return NULL;
 }
