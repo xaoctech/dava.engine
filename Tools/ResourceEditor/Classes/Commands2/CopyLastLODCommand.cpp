@@ -33,7 +33,7 @@
 using namespace DAVA;
 
 CopyLastLODToLod0Command::CopyLastLODToLod0Command(DAVA::LodComponent *component) 
-    : Command2(CMDID_LOD_COPY_LAST_LOD, "Make last LOD to lod0")
+    : Command2(CMDID_LOD_COPY_LAST_LOD, "Copy last LOD to lod0")
     , lodComponent(component)
 {
     RenderObject * ro = GetRenderObject(GetEntity());
