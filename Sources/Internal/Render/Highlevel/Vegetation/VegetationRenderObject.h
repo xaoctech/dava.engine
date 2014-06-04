@@ -48,6 +48,7 @@
 #include "Render/Highlevel/Vegetation/RenderBatchPool.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderData.h"
 #include "Render/Highlevel/Vegetation/VegetationSpatialData.h"
+#include "Render/Highlevel/Vegetation/VegetationCustomGeometrySerializationData.h"
 
 namespace DAVA
 {

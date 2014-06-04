@@ -39,7 +39,9 @@
 
 #include "Render/Highlevel/Vegetation/VegetationPropertyNames.h"
 #include "Render/Highlevel/Vegetation/VegetationFixedGeometry.h"
-#include "Render/Highlevel/Vegetation/VegetationCustomGeometry.h"
+#include "Render/Highlevel/Vegetation/VegetationCustomSLGeometry.h"
+
+//#include "Render/Highlevel/Vegetation/VegetationCustomGeometry.h"
 
 namespace DAVA
 {
@@ -1095,7 +1097,7 @@ void VegetationRenderObject::InitWithFixedGeometry(FastNameSet& materialFlags)
 
 void VegetationRenderObject::InitWithCustomGeometry(FastNameSet& materialFlags)
 {
-    vegetationGeometry = new VegetationCustomGeometry(clustersPerLayer,
+    vegetationGeometry = new VegetationCustomSLGeometry(clustersPerLayer,
                                                       MAX_DENSITY_LEVELS,
                                                       GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
                                                       customGeometryPath,
@@ -1340,7 +1342,8 @@ void VegetationRenderObject::ImportDataFromExternalScene(const FilePath& path)
     if(!path.IsEmpty() &&
        path.Exists())
     {
-        customGeometryData = VegetationCustomGeometry::LoadCustomData(path);
+        VegetationCustomGeometrySerializationDataReader reader;
+        customGeometryData = reader.ReadScene(path);
     }
 }
 

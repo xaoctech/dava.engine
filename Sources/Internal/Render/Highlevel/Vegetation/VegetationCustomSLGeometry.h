@@ -26,8 +26,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef __DAVAENGINE_VEGETATIONCUSTOMGEOMETRYGENERATOR_H__
-#define __DAVAENGINE_VEGETATIONCUSTOMGEOMETRYGENERATOR_H__
+#ifndef __DAVAENGINE_VEGETATIONCUSTOMSLGEOMETRYGENERATOR_H__
+#define __DAVAENGINE_VEGETATIONCUSTOMSLGEOMETRYGENERATOR_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
@@ -51,12 +51,12 @@
 namespace DAVA
 {
 
-class VegetationCustomGeometry : public VegetationGeometry
+class VegetationCustomSLGeometry : public VegetationGeometry
 {
-
+    
 public:
     
-    VegetationCustomGeometry(const Vector<uint32>& _maxClusters,
+    VegetationCustomSLGeometry(const Vector<uint32>& _maxClusters,
                              uint32 _maxDensityLevels,
                              const Vector2& _unitSize,
                              const FilePath& _dataPath,
@@ -70,15 +70,13 @@ public:
                              uint32 _resolutionClusterStrideCount,
                              const Vector3& _worldSize,
                              VegetationCustomGeometrySerializationData* geometryData);
-    virtual ~VegetationCustomGeometry();
-
+    virtual ~VegetationCustomSLGeometry();
+    
     virtual void Build(Vector<VegetationRenderData*>& renderDataArray, const FastNameSet& materialFlags);
     virtual void OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props);
     
-    virtual void ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray);
-    
 private:
-
+    
     class CustomMaterialTransformer : public VegetationMaterialTransformer
     {
     public:
@@ -90,16 +88,16 @@ private:
     {
         Vector3 pos;
         uint32 densityId;
-        uint32 matrixIndex;
         float32 rotation;
+        uint32 layerId;
     };
     
     struct ClusterResolutionData
     {
         ClusterPositionData position;
-        
-        uint32 layerId;
+
         uint32 resolutionId;
+        uint32 effectiveResolutionId;
         uint32 cellIndex;
     };
     
@@ -137,48 +135,39 @@ private:
     {
         uint32 index;
         uint32 size;
+        uint32 rowSize;
     };
     
-    struct MarkedBufferInfo
+    struct BufferCellData
     {
-        VegetationRenderData* renderData;
-        Vector<Vector<VertexRangeData> > vertexOffset;   //[resolution][cell] Offset identifies offset for the geometry
-                                                         //in order to have single data buffer for multiple VBO
-        Vector<Vector<Vector<SortBufferData> > > indexOffset;    //[resolution][cell][sort direction] Offset identifies offset for the indices
-                                                                 //in order to have single data buffer for multiple VBO
+        uint32 vertexStartIndex;
+        uint32 vertexCount;
+        uint32 clusterStartIndex;
+        uint32 clusterCount;
     };
     
 private:
-
-    void BuildLayer(uint32 layerId,
-                    CustomGeometryEntityData& sourceLayerData,
-                    Vector<VegetationVertex>& vertexData,
-                    Vector<VegetationIndex>& indexData,
-                    Vector<Vector<VertexRangeData> >& vertexOffsets,
-                    Vector<Vector<Vector<SortBufferData> > >& directionOffsets);
     
-    void GenerateClusterPositionData(uint32 layerMaxClusters, Vector<ClusterPositionData>& clusters);
+    void GenerateClusterPositionData(const Vector<uint32>& layerClusterCount,
+                                     Vector<ClusterPositionData>& clusters,
+                                     Vector<VertexRangeData>& layerRanges);
     
-    void GenerateClusterResolutionData(uint32 layerId,
-                                       uint32 layerMaxClusters,
-                                       uint32 resolutionId,
-                                       Vector<ClusterPositionData>& clusterPosition,
+    void GenerateClusterResolutionData(uint32 resolutionId,
+                                       const Vector<uint32>& layerClusterCount,
+                                       const Vector<ClusterPositionData>& clusterPosition,
+                                       const Vector<VertexRangeData>& layerRanges,
                                        Vector<ClusterResolutionData>& clusterResolution);
     
-    void GenerateVertexData(Vector<Vector3>& sourcePositions,
-                            Vector<Vector2>& sourceTextureCoords,
-                            Vector<Vector3>& sourceNormals,
-                            Vector<ClusterResolutionData>& clusterResolution,
-                            uint32& startIndex,
-                            uint32& endIndex,
+    void GenerateVertexData(const Vector<CustomGeometryEntityData>& sourceGeomData,
+                            const Vector<ClusterResolutionData>& clusterResolution,
+                            
                             Vector<VegetationVertex>& vertexData,
-                            Vector<VertexRangeData>& perCellOffsets,
-                            Vector<uint32>& perCellClusterCount);
+                            Vector<BufferCellData>& cellOffsets);
     
-    void GenerateIndexData(Vector<VegetationIndex>& sourceIndices,
-                           VegetationIndex startIndex,
-                           uint32 clusterCount,
-                           uint32 clusterVertexCount,
+    void GenerateIndexData(const Vector<CustomGeometryEntityData>& sourceGeomData,
+                           const Vector<ClusterResolutionData>& clusterResolution,
+                           const BufferCellData& rangeData,
+                           
                            Vector<VegetationVertex>& vertexData,
                            Vector<VegetationIndex>& indexData,
                            Vector<SortBufferData>& directionOffsets);
@@ -191,15 +180,17 @@ private:
     static bool ClusterByMatrixCompareFunction(const ClusterResolutionData& a, const ClusterResolutionData&  b);
     static int32 RandomShuffleFunc(int32 limit);
     
-    void Rotate(float32 angle, Vector<Vector3>& sourcePositions, Vector<Vector3>& rotatedPositions);
+    void Rotate(float32 angle,
+                const Vector<Vector3>& sourcePositions,
+                const Vector<Vector3>& sourceNormals,
+                Vector<Vector3>& rotatedPositions,
+                Vector<Vector3>& rotatedNormals);
     
     uint32 PrepareResolutionId(uint32 currentResolutionId, uint32 cellX, uint32 cellY) const;
     void InitCustomGeometry(VegetationCustomGeometrySerializationData* geometryData);
     
 private:
     
-    Vector<MarkedBufferInfo> markedRenderData;
-
     Vector<uint32> maxClusters;
     uint32 maxDensityLevels;
     Vector2 unitSize;
@@ -216,4 +207,4 @@ private:
 
 };
 
-#endif /* defined(__DAVAENGINE_VEGETATIONCUSTOMGEOMETRYGENERATOR_H__) */
+#endif /* defined(__DAVAENGINE_VEGETATIONCUSTOMSLGEOMETRYGENERATOR_H__) */
