@@ -27,46 +27,62 @@
 =====================================================================================*/
 
 
-#include "Render/RenderBase.h"
-#include "Render/RenderManagerGL20.h"
-#include "Render/Shader.h"
-#include "Render/OGLHelpers.h"
+#ifndef EDITFONTDIALOG_H
+#define EDITFONTDIALOG_H
 
-#if defined(__DAVAENGINE_OPENGL__)
+#include <QDialog>
+#include <DAVAEngine.h>
 
-namespace DAVA
-{
-	
-RenderVertexAttributesState::RenderVertexAttributesState()
-{
-    activeVertexAttributes = 0;
+#include <QSpinBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QComboBox>
+
+#include "ChangeFontPropertyCommand.h"
+
+using namespace DAVA;
+
+namespace Ui {
+class EditFontDialog;
 }
 
-void RenderVertexAttributesState::EnableVertexAttributes(uint32 attributesToEnable)
+class EditFontDialog : public QDialog
 {
-    uint32 diff = attributesToEnable ^ activeVertexAttributes;
-    for (uint32 attribIndex = 0; attribIndex < 4; ++attribIndex)
-        if ((diff >> attribIndex) & 1)
-        {
-            if ((attributesToEnable >> attribIndex) & 1)
-            {
-                RENDER_VERIFY(glEnableVertexAttribArray(attribIndex));
-            }
-            else 
-            {
-                RENDER_VERIFY(glDisableVertexAttribArray(attribIndex));
-            }
-        }
-    activeVertexAttributes = attributesToEnable;
-}
+    Q_OBJECT
 
+public:
+    explicit EditFontDialog(const String & editFontPresetName, QDialog *parent = 0);
+    ~EditFontDialog();
     
-RenderManagerGL20::RenderManagerGL20(Core::eRenderer renderer)
-    : RenderManager(renderer)
-{
-}
-
+    const ChangeFontPropertyCommandData &GetResult() {return dialogResult; }
     
+private:
+    Ui::EditFontDialog *ui;
+    
+    ChangeFontPropertyCommandData dialogResult;
+    String currentLocale;
+    
+    void ConnectToSignals();
+    void DisconnectFromSignals();
+    
+    virtual void ProcessComboBoxValueChanged(QComboBox *senderWidget, const QString& value);
+    virtual void ProcessPushButtonClicked(QPushButton *senderWidget);
+    
+    void UpdateDefaultFontParams();
+    void UpdateLocalizedFontParams();
+    
+    void UpdateLineEditWidgetWithPropertyValue(QLineEdit *lineEditWidget);
+    void UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushButtonWidget);
+    void UpdateSpinBoxWidgetWithPropertyValue(QSpinBox *spinBoxWidget);
+    void UpdateComboBoxWidgetWithPropertyValue(QComboBox *comboBoxWidget);
+
+private slots:
+    void OnOkButtonClicked();
+    void OnRadioButtonClicked();
+    void OnPushButtonClicked();
+    void OnSpinBoxValueChanged(int newValue);
+    void OnComboBoxValueChanged(QString value);
 };
 
-#endif // __DAVAENGINE_OPENGL__
+#endif // EDITFONTDIALOG_H
