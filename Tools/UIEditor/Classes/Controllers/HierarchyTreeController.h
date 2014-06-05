@@ -136,8 +136,8 @@ public:
 
     const HierarchyTree& GetTree() const {return hierarchyTree;};
     
-	void UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
-						 const HierarchyTreeScreenNode* activeScreen);
+	void UpdateSelection(HierarchyTreePlatformNode* activePlatform,
+                         HierarchyTreeScreenNode* activeScreen);
 
 	void UpdateSelection(const HierarchyTreeNode* activeItem);
 	
