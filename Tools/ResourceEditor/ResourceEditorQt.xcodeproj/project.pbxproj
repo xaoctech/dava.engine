@@ -198,7 +198,6 @@
 		E8BAD71C1859F50300C98C8D /* TextureProperties_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD65D1859F50300C98C8D /* TextureProperties_moc.cpp */; };
 		E8BAD71D1859F50300C98C8D /* TextureScrollArea_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD65E1859F50300C98C8D /* TextureScrollArea_moc.cpp */; };
 		E8BAD71E1859F50300C98C8D /* AddParticleEmitterDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6611859F50300C98C8D /* AddParticleEmitterDialog_moc.cpp */; };
-		E8BAD71F1859F50300C98C8D /* AddSkyboxDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6631859F50300C98C8D /* AddSkyboxDialog_moc.cpp */; };
 		E8BAD7201859F50300C98C8D /* AddSwitchEntityDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6651859F50300C98C8D /* AddSwitchEntityDialog_moc.cpp */; };
 		E8BAD7211859F50300C98C8D /* BaseAddEntityDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6671859F50300C98C8D /* BaseAddEntityDialog_moc.cpp */; };
 		E8BAD7221859F50300C98C8D /* EventFilterDoubleSpinBox_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8BAD6691859F50300C98C8D /* EventFilterDoubleSpinBox_moc.cpp */; };
@@ -541,7 +540,6 @@
 		E8C99325184CD0EC00AFBF3F /* TextureProperties.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9917B184CD0EB00AFBF3F /* TextureProperties.cpp */; };
 		E8C99326184CD0EC00AFBF3F /* TextureScrollArea.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9917D184CD0EB00AFBF3F /* TextureScrollArea.cpp */; };
 		E8C99327184CD0EC00AFBF3F /* AddParticleEmitterDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99181184CD0EB00AFBF3F /* AddParticleEmitterDialog.cpp */; };
-		E8C99328184CD0EC00AFBF3F /* AddSkyboxDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99184184CD0EB00AFBF3F /* AddSkyboxDialog.cpp */; };
 		E8C99329184CD0EC00AFBF3F /* AddSwitchEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C99187184CD0EB00AFBF3F /* AddSwitchEntityDialog.cpp */; };
 		E8C9932A184CD0EC00AFBF3F /* BaseAddEntityDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9918A184CD0EB00AFBF3F /* BaseAddEntityDialog.cpp */; };
 		E8C9932B184CD0EC00AFBF3F /* EventFilterDoubleSpinBox.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = E8C9918D184CD0EB00AFBF3F /* EventFilterDoubleSpinBox.cpp */; };
@@ -900,7 +898,6 @@
 		E8BAD65D1859F50300C98C8D /* TextureProperties_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureProperties_moc.cpp; sourceTree = "<group>"; };
 		E8BAD65E1859F50300C98C8D /* TextureScrollArea_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureScrollArea_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6611859F50300C98C8D /* AddParticleEmitterDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddParticleEmitterDialog_moc.cpp; sourceTree = "<group>"; };
-		E8BAD6631859F50300C98C8D /* AddSkyboxDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSkyboxDialog_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6651859F50300C98C8D /* AddSwitchEntityDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityDialog_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6671859F50300C98C8D /* BaseAddEntityDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseAddEntityDialog_moc.cpp; sourceTree = "<group>"; };
 		E8BAD6691859F50300C98C8D /* EventFilterDoubleSpinBox_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EventFilterDoubleSpinBox_moc.cpp; sourceTree = "<group>"; };
@@ -1640,8 +1637,6 @@
 		E8C9917E184CD0EB00AFBF3F /* TextureScrollArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureScrollArea.h; sourceTree = "<group>"; };
 		E8C99181184CD0EB00AFBF3F /* AddParticleEmitterDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddParticleEmitterDialog.cpp; sourceTree = "<group>"; };
 		E8C99182184CD0EB00AFBF3F /* AddParticleEmitterDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddParticleEmitterDialog.h; sourceTree = "<group>"; };
-		E8C99184184CD0EB00AFBF3F /* AddSkyboxDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSkyboxDialog.cpp; sourceTree = "<group>"; };
-		E8C99185184CD0EB00AFBF3F /* AddSkyboxDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSkyboxDialog.h; sourceTree = "<group>"; };
 		E8C99187184CD0EB00AFBF3F /* AddSwitchEntityDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddSwitchEntityDialog.cpp; sourceTree = "<group>"; };
 		E8C99188184CD0EB00AFBF3F /* AddSwitchEntityDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSwitchEntityDialog.h; sourceTree = "<group>"; };
 		E8C9918A184CD0EB00AFBF3F /* BaseAddEntityDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BaseAddEntityDialog.cpp; sourceTree = "<group>"; };
@@ -2322,7 +2317,6 @@
 			children = (
 				E86F97C518DB2990007330E1 /* DeveloperTools */,
 				E8BAD6601859F50300C98C8D /* AddParticleEmitterDialog */,
-				E8BAD6621859F50300C98C8D /* AddSkyboxDialog */,
 				E8BAD6641859F50300C98C8D /* AddSwitchEntityDialog */,
 				E8BAD6661859F50300C98C8D /* BaseAddEntityDialog */,
 				E8BAD6681859F50300C98C8D /* EventFilterDoubleSpinBox */,
@@ -2352,14 +2346,6 @@
 				E8BAD6611859F50300C98C8D /* AddParticleEmitterDialog_moc.cpp */,
 			);
 			path = AddParticleEmitterDialog;
-			sourceTree = "<group>";
-		};
-		E8BAD6621859F50300C98C8D /* AddSkyboxDialog */ = {
-			isa = PBXGroup;
-			children = (
-				E8BAD6631859F50300C98C8D /* AddSkyboxDialog_moc.cpp */,
-			);
-			path = AddSkyboxDialog;
 			sourceTree = "<group>";
 		};
 		E8BAD6641859F50300C98C8D /* AddSwitchEntityDialog */ = {
@@ -3710,7 +3696,6 @@
 				E86F97BA18DB2978007330E1 /* DeveloperTools */,
 				4FA41987188EA4C500395C70 /* RunGuard */,
 				E8C99180184CD0EB00AFBF3F /* AddParticleEmitterDialog */,
-				E8C99183184CD0EB00AFBF3F /* AddSkyboxDialog */,
 				E8C99186184CD0EB00AFBF3F /* AddSwitchEntityDialog */,
 				E8C99189184CD0EB00AFBF3F /* BaseAddEntityDialog */,
 				E8C9918C184CD0EB00AFBF3F /* EventFilterDoubleSpinBox */,
@@ -3740,15 +3725,6 @@
 				E8C99182184CD0EB00AFBF3F /* AddParticleEmitterDialog.h */,
 			);
 			path = AddParticleEmitterDialog;
-			sourceTree = "<group>";
-		};
-		E8C99183184CD0EB00AFBF3F /* AddSkyboxDialog */ = {
-			isa = PBXGroup;
-			children = (
-				E8C99184184CD0EB00AFBF3F /* AddSkyboxDialog.cpp */,
-				E8C99185184CD0EB00AFBF3F /* AddSkyboxDialog.h */,
-			);
-			path = AddSkyboxDialog;
 			sourceTree = "<group>";
 		};
 		E8C99186184CD0EB00AFBF3F /* AddSwitchEntityDialog */ = {
@@ -4564,7 +4540,6 @@
 				E8C99204184CD0EC00AFBF3F /* btGhostObject.cpp in Build Sources */,
 				64533A9F18E0344800941529 /* MaterialTemplateModel_moc.cpp in Build Sources */,
 				E8BAD6F31859F50300C98C8D /* CollisionSystem_moc.cpp in Build Sources */,
-				E8C99328184CD0EC00AFBF3F /* AddSkyboxDialog.cpp in Build Sources */,
 				E8C99265184CD0EC00AFBF3F /* ColladaConverter.cpp in Build Sources */,
 				E8C9927E184CD0EC00AFBF3F /* AddComponentCommand.cpp in Build Sources */,
 				E8C9920F184CD0EC00AFBF3F /* btBvhTriangleMeshShape.cpp in Build Sources */,
@@ -4577,7 +4552,6 @@
 				E8C992F6184CD0EC00AFBF3F /* BeastSystem.cpp in Build Sources */,
 				E8C99339184CD0EC00AFBF3F /* QtPropertyDataIntrospection.cpp in Build Sources */,
 				E8BAD6CE1859F50300C98C8D /* DockProperties_moc.cpp in Build Sources */,
-				E8BAD71F1859F50300C98C8D /* AddSkyboxDialog_moc.cpp in Build Sources */,
 				E8BAD6D61859F50300C98C8D /* SceneTreeItemForce_moc.cpp in Build Sources */,
 				E8C9921F184CD0EC00AFBF3F /* btMinkowskiSumShape.cpp in Build Sources */,
 				E8BAD7331859F50300C98C8D /* QtPropertyDataKeyedArchiveMember_moc.cpp in Build Sources */,
