@@ -74,43 +74,6 @@ namespace DAVA
 		return (skyboxEntity != NULL);
 	}
 	
-	Entity* SkyboxSystem::AddSkybox()
-	{
-		Entity* result = skyboxEntity;
-		
-		if(NULL == skyboxEntity)
-		{
-			SkyboxRenderObject* skyboxRenderObject = new SkyboxRenderObject();
-						
-			RenderComponent* renderComponent = new RenderComponent();
-			renderComponent->SetRenderObject(skyboxRenderObject);
-			
-			result = new Entity();
-			result->SetName("Skybox");
-
-			result->AddComponent(renderComponent);
-			AABBox3 box = AABBox3(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
-			skyboxRenderObject->Initialize(box); //first time initialization
-
-			GetScene()->AddNode(result);			
-			
-			Matrix4 * worldTransformPointer = ((TransformComponent*)result->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
-			skyboxRenderObject->SetWorldTransformPtr(worldTransformPointer);
-			result->GetScene()->renderSystem->MarkForUpdate(skyboxRenderObject);
-			SafeRelease(skyboxRenderObject);
-			
-			DVASSERT(skyboxEntity);
-			result->Release();
-		}
-		
-		return result;
-	}
-	
-	Entity* SkyboxSystem::GetSkyboxEntity() const
-	{
-		return skyboxEntity;
-	}
-	
 	void SkyboxSystem::Reload()
 	{
 		if(skyboxEntity)
