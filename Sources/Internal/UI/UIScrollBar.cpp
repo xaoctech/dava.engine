@@ -56,6 +56,16 @@ void UIScrollBar::SetDelegate(UIScrollBarDelegate *newDelegate)
 {
     delegate = newDelegate;
 }
+    
+String UIScrollBar::GetDelegateName()
+{
+    return delegateName;
+}
+    
+void UIScrollBar::SetDelegateName(String name)
+{
+    delegateName = name;
+}
 
 UIControl *UIScrollBar::GetSlider()
 {
@@ -142,6 +152,11 @@ void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 			DVASSERT(0 && "Orientation constant is wrong");
 		}
 	}
+    const YamlNode * delegateNode = node->Get("UIScrollBarDelegate");
+    if (delegateNode)
+    {
+        delegateName = delegateNode->AsString();
+    }
 }
 
 YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
@@ -168,6 +183,8 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 	}
 	node->Set("orientation", stringValue);
 
+    node->Set("UIScrollBarDelegate", delegateName);
+    
 	return node;
 }
     

@@ -72,5 +72,25 @@ void UIScrollBarMetadata::SetScrollOrientation(int value)
     
 	GetActiveUIScrollBar()->SetOrientation((UIScrollBar::eScrollOrientation)value);
 }
+    
+QString UIScrollBarMetadata::GetUIScrollBarDelegateName()
+{
+    if (!VerifyActiveParamID())
+    {
+        return "None";
+    }
+    
+    return QString::fromStdString(GetActiveUIScrollBar()->GetDelegateName());
+}
+
+void UIScrollBarMetadata::SetUIScrollBarDelegateName(QString value)
+{
+    if (!VerifyActiveParamID())
+    {
+        return;
+    }
+    
+    GetActiveUIScrollBar()->SetDelegateName(value.toStdString());
+}
 
 };

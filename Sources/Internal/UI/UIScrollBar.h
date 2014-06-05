@@ -67,6 +67,8 @@ public:
 				bool rectInAbsoluteCoordinates = false);
 
     void SetDelegate(UIScrollBarDelegate *newDelegate);
+    String GetDelegateName();
+    void SetDelegateName(String name);
     UIControl *GetSlider();
     
     virtual void Draw(const UIGeometricData &geometricData);
@@ -93,6 +95,8 @@ protected:
 private:
     int32 orientation;
     UIScrollBarDelegate *delegate;
+    
+    String delegateName;
     
     UIControl *slider;
     
