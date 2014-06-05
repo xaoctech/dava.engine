@@ -294,49 +294,60 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
     
     SafeRelease(vertexRDO);
     
-    renderData->SetMaterial(customGeometryData[0].material);
+    NMaterial* material = customGeometryData[0].material;
+    renderData->SetMaterial(material);
+    
+    material->SetFlag(VegetationPropertyNames::FLAG_GRASS_OPAQUE, NMaterial::FlagOn);
+    material->SetRenderLayers(1 << RENDER_LAYER_VEGETATION_ID);
+    
+    FastNameSet::iterator end = materialFlags.end();
+    for(FastNameSet::iterator it = materialFlags.begin(); it != end; ++it)
+    {
+        material->SetFlag(it->first, NMaterial::FlagOn);
+    }
+    
+    material->SetPropertyValue(VegetationPropertyNames::UNIFORM_WORLD_SIZE,
+                                                 Shader::UT_FLOAT_VEC3,
+                                                 1,
+                                                 &worldSize);
 }
 
 void VegetationCustomSLGeometry::OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props)
 {
-    size_t markedArraySize = renderDataArray.size();
-    for(size_t renderDataIndex = 0; renderDataIndex < markedArraySize; ++renderDataIndex)
+    NMaterial* mat = renderDataArray[0]->GetMaterial();
+    
+    if(mat)
     {
-        NMaterial* mat = renderDataArray[renderDataIndex]->GetMaterial();
-        
-        if(mat)
+        String lightmapKeyName = VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str();
+        if(props->IsKeyExists(lightmapKeyName))
         {
-            String lightmapKeyName = VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str();
-            if(props->IsKeyExists(lightmapKeyName))
-            {
-                FilePath lightmapPath = props->GetString(lightmapKeyName);
-                mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP, lightmapPath);
-            }
-            
-            String heightmapKeyName = NMaterial::TEXTURE_HEIGHTMAP.c_str();
-            if(props->IsKeyExists(heightmapKeyName))
-            {
-                Texture* heightmap = (Texture*)props->GetUInt64(heightmapKeyName);
-                mat->SetTexture(NMaterial::TEXTURE_HEIGHTMAP, heightmap);
-            }
-            
-            String heightmapScaleKeyName = VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str();
-            if(props->IsKeyExists(heightmapScaleKeyName))
-            {
-                Vector2 heightmapScale = props->GetVector2(heightmapScaleKeyName);
-                mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE,
-                                      Shader::UT_FLOAT_VEC2,
-                                      1,
-                                      heightmapScale.data);
-            }
-            
-            String densityMapPathKey = VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP.c_str();
-            if(props->IsKeyExists(densityMapPathKey))
-            {
-                FilePath densityMapPath = props->GetString(densityMapPathKey);
-                densityMapPath.ReplaceExtension(".tex");
-                mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP, densityMapPath);
-            }
+            FilePath lightmapPath = props->GetString(lightmapKeyName);
+            mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP, lightmapPath);
+        }
+        
+        String heightmapKeyName = NMaterial::TEXTURE_HEIGHTMAP.c_str();
+        if(props->IsKeyExists(heightmapKeyName))
+        {
+            Texture* heightmap = (Texture*)props->GetUInt64(heightmapKeyName);
+            mat->SetTexture(NMaterial::TEXTURE_HEIGHTMAP, heightmap);
+        }
+        
+        String heightmapScaleKeyName = VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str();
+        if(props->IsKeyExists(heightmapScaleKeyName))
+        {
+            Vector2 heightmapScale = props->GetVector2(heightmapScaleKeyName);
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE,
+                                  Shader::UT_FLOAT_VEC2,
+                                  1,
+                                  heightmapScale.data);
+        }
+        
+        String densityMapPathKey = VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP.c_str();
+        if(props->IsKeyExists(densityMapPathKey))
+        {
+            FilePath densityMapPath = props->GetString(densityMapPathKey);
+            densityMapPath.ReplaceExtension(".tex");
+            mat->SetTexture(VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP, densityMapPath);
         }
     }
 }
