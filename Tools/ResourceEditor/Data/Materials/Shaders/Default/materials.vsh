@@ -20,7 +20,7 @@ attribute vec3 inTexCoord0;
 attribute vec2 inTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS_TRANSFORM)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 attribute vec2 inTexCoord1;
 #endif
 
@@ -170,8 +170,6 @@ uniform vec2 lodSwitchScale;
 
 uniform vec3 cameraPosition;
 uniform vec3 billboardDirection;
-
-//uniform float clusterScaleDensityMap[132];
 
 uniform sampler2D heightmap;
 uniform sampler2D vegetationmap;
@@ -347,7 +345,7 @@ void main()
 
         float densityFactor;
     
-        if(int(inTexCoord1.x) == int(lodSwitchScale.x))
+        if(int(inTangent.x) == int(lodSwitchScale.x))
         {
             clusterScale *= lodSwitchScale.y;
         }

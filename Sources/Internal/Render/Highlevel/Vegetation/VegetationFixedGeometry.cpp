@@ -449,7 +449,6 @@ void VegetationFixedGeometry::GenerateVertices(uint32 maxClusters,
                 
                 vertex.binormal = clusterCenter;
                 
-                vertex.tangent.x = matrixIndex * 2.0f * 4.0f; //each cluster is described by 2 vectors
                 vertex.tangent.y = layerIndex;
                 vertex.tangent.z = densityId;
                 
@@ -557,7 +556,7 @@ void VegetationFixedGeometry::PrepareIndexBufferData(uint32 indexBufferIndex,
                     DVASSERT(vertexIndex >= 0 && vertexIndex < vertexData.size());
                     
                     VegetationVertex& vertex = vertexData[vertexIndex];
-                    vertex.texCoord1.x = resolutionIndex;
+                    vertex.tangent.x = resolutionIndex;
                     
                     indexBufferBBox.AddPoint(vertex.coord);
                     
@@ -661,7 +660,6 @@ void VegetationFixedGeometry::GenerateRenderDataObjects(VegetationRenderData& re
     vertexRenderDataObject->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
     vertexRenderDataObject->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
     vertexRenderDataObject->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
-    vertexRenderDataObject->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
     vertexRenderDataObject->BuildVertexBuffer(vertexData.size(), true);
     
     size_t totalIndexObjectArrayCount = indexRenderDataObject.size();

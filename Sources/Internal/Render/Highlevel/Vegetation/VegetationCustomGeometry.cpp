@@ -246,7 +246,6 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
         vertexRDO->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
         vertexRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
         vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
-        vertexRDO->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
         vertexRDO->BuildVertexBuffer(vertexData.size(), true);
         
         Vector<Vector<Vector<SortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
@@ -477,12 +476,11 @@ void VegetationCustomGeometry::GenerateVertexData(Vector<Vector3>& sourcePositio
             
             vertex.binormal = clusterData.position.pos;
             
-            vertex.tangent.x = clusterData.position.matrixIndex * 2.0f * 4.0f; //each cluster is described by 2 vectors
+            vertex.tangent.x = clusterData.resolutionId;
             vertex.tangent.y = clusterData.layerId;
             vertex.tangent.z = clusterData.position.densityId;
             
             vertex.texCoord0 = sourceTextureCoords[vertexIndex];
-            vertex.texCoord1.x = clusterData.resolutionId;
             
             if(currentMatrix != clusterData.cellIndex)
             {

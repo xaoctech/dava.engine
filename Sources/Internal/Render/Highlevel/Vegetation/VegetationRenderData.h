@@ -50,7 +50,6 @@ struct VegetationVertex
     Vector3 binormal;
     Vector3 tangent;
     Vector2 texCoord0;
-    Vector2 texCoord1;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
