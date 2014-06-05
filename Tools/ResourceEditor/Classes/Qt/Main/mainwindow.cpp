@@ -48,7 +48,6 @@
 
 #include "../CubemapEditor/CubemapUtils.h"
 #include "../CubemapEditor/CubemapTextureBrowser.h"
-#include "../Tools/AddSkyboxDialog/AddSkyboxDialog.h"
 #include "../ImageSplitterDialog/ImageSplitterDialog.h"
 
 #include "Tools/BaseAddEntityDialog/BaseAddEntityDialog.h"
@@ -667,7 +666,6 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionExpandSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(expandAll()));
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
-    QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
@@ -1514,21 +1512,6 @@ void QtMainWindow::OnAddLandscape()
         sceneEditor->selectionSystem->SetSelection(entityToProcess);
     }
     SafeRelease(entityToProcess);
-}
-
-void QtMainWindow::OnAddSkybox()
-{
-    SceneEditor2* sceneEditor = GetCurrentScene();
-    if(!sceneEditor)
-    {
-        return;
-    }
-    Entity* skyboxEntity = sceneEditor->skyboxSystem->AddSkybox();
-    skyboxEntity->Retain();
-    
-    skyboxEntity->GetParent()->RemoveNode(skyboxEntity);
-    sceneEditor->Exec(new EntityAddCommand(skyboxEntity, sceneEditor));
-    skyboxEntity->Release();
 }
 
 void QtMainWindow::OnAddVegetation()
