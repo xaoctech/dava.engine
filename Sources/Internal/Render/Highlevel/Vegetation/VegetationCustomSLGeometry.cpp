@@ -249,7 +249,6 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
     vertexRDO->SetStream(EVF_BINORMAL, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].binormal));
     vertexRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].tangent));
     vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
-    vertexRDO->SetStream(EVF_TEXCOORD1, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord1));
     vertexRDO->BuildVertexBuffer(vertexData.size(), true);
     
     Vector<Vector<Vector<SortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
@@ -538,11 +537,11 @@ void VegetationCustomSLGeometry::GenerateVertexData(const Vector<CustomGeometryE
             
             vertex.binormal = clusterData.position.pos;
             
+            vertex.tangent.x = clusterData.resolutionId;
             vertex.tangent.y = clusterData.position.layerId;
             vertex.tangent.z = clusterData.position.densityId;
             
             vertex.texCoord0 = clusterGeometry.sourceTextureCoords[vertexIndex];
-            vertex.texCoord1.x = clusterData.resolutionId;
             
             vertexData.push_back(vertex);
         }

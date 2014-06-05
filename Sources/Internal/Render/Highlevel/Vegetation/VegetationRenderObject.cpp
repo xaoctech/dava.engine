@@ -97,7 +97,7 @@ static uint32 RESOLUTION_CLUSTER_STRIDE[] =
     4
 };
 
-//#define VEGETATION_DRAW_LOD_COLOR
+#define VEGETATION_DRAW_LOD_COLOR
 
 static Color RESOLUTION_COLOR[] =
 {
