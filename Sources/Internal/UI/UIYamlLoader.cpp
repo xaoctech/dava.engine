@@ -31,6 +31,7 @@
 #include "Base/ObjectFactory.h"
 #include "Platform/SystemTimer.h"
 #include "UI/UIControl.h"
+#include "UI/UIScrollBar.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/2D/GraphicsFont.h"
@@ -458,8 +459,27 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
     
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
 	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
+    PostLoad(rootControl);
 }
-	
+void UIYamlLoader::PostLoad(UIControl * rootControl)
+{
+    //Find ScrollBars and set delegates
+    SetScrollBarDelegates(rootControl, rootControl->GetChildren());
+}
+
+void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*> controls)
+{
+    List<UIControl*>::const_iterator it = controls.begin();
+    for (; it!=controls.end(); ++it)
+    {
+        UIScrollBar * scrollBar = dynamic_cast<UIScrollBar*>(*it);
+        if (scrollBar)
+        {
+            scrollBar->SetDelegate( reinterpret_cast<UIScrollBarDelegate*>(rootControl->FindByName( scrollBar->GetDelegateName() )));
+        }
+        SetScrollBarDelegates(rootControl,(*it)->GetChildren() );
+    }
+}
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
     uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
