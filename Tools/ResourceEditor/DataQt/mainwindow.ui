@@ -237,7 +237,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1821,6 +1821,9 @@
    </property>
    <property name="toolTip">
     <string>Add skybox</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionCustomQuality">
