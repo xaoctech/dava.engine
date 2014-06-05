@@ -362,8 +362,9 @@ bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 	if(worldBox.IsEmpty() && worldBox.min.x == worldBox.max.x && worldBox.min.y == worldBox.max.y && worldBox.min.z == worldBox.max.z)
 		return false;
 
-    const float32 minZ = worldBox.min.z;
     const Matrix4 & wt = entity->GetWorldTransform();
+    const float32 minZ = GetMinimalZ(ro, wt);   //get lowest z for all vertexes
+    
     
     Vector<Vector3> lowestVertexes;
     uint32 count = ro->GetRenderBatchCount();
@@ -382,7 +383,8 @@ bool DebugDrawSystem::IsObjectHanging(Entity * entity)
                 pg->GetCoord(v, pos);
                 pos = pos * wt;
 
-                if((pos.z - minZ) < DAVA::EPSILON)
+//                if((pos.z - minZ) < DAVA::EPSILON)
+                if((pos.z - minZ) < 0.1f)   //accuracy of finding of lowest vertexes
                 {
                     lowestVertexes.push_back(pos);
                 }
@@ -391,20 +393,55 @@ bool DebugDrawSystem::IsObjectHanging(Entity * entity)
     }
 
     count = lowestVertexes.size();
-    for(uint32 i = 0; i < count; ++i)
+    DVASSERT(count && "Must be one+ lowest vertexes");
+    
+    bool isAllVertextesUnderLandscape = true;
+    for(uint32 i = 0; i < count && isAllVertextesUnderLandscape; ++i)
     {
         const Vector3 & pos = lowestVertexes[i];
+        const Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(pos.x, pos.y));
         
-        Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(pos.x, pos.y));
-        if(((pos.z - landscapePoint.z) - HANGING_OBJECTS_HEIGHT ) < DAVA::EPSILON)
-        {
-            return false;
-        }
+        bool isVertexUnderLandscape = (((pos.z - landscapePoint.z) - HANGING_OBJECTS_HEIGHT ) < DAVA::EPSILON);
+        isAllVertextesUnderLandscape &= isVertexUnderLandscape;
     }
 
 
-	return true;
+	return !isAllVertextesUnderLandscape;
 }
+
+float32 DebugDrawSystem::GetMinimalZ(DAVA::RenderObject *ro, const Matrix4 & transform)
+{
+    const AABBox3 & worldBox = ro->GetWorldBoundingBox();
+    
+    float32 minZ = worldBox.max.z;
+
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *batch = ro->GetRenderBatch(i);
+        DVASSERT(batch);
+        
+        PolygonGroup *pg = batch->GetPolygonGroup();
+        if(pg)
+        {
+            uint32 vertexCount = pg->GetVertexCount();
+            for(uint32 v = 0; v < vertexCount; ++v)
+            {
+                Vector3 pos;
+                pg->GetCoord(v, pos);
+                pos = pos * transform;
+                
+                if(pos.z < minZ)
+                {
+                    minZ = pos.z;
+                }
+            }
+        }
+    }
+
+    return minZ;
+}
+
 
 
 Vector3 DebugDrawSystem::GetLandscapePointAtCoordinates(const Vector2 & centerXY)
