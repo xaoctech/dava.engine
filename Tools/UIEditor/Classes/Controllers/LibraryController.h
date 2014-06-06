@@ -58,10 +58,14 @@ namespace DAVA
 		
 	private:
 		typedef Map<HierarchyTreeNode*, QTreeWidgetItem*> CONTROLS;
+        typedef Map<HierarchyTreeAggregatorNode*, QTreeWidgetItem*> AGGREGATORS;
+        typedef Map<HierarchyTreePlatformNode*,  AGGREGATORS> PLATFORMS;
 		CONTROLS controls;
+        PLATFORMS platforms;
 		LibraryWidget* widget;
 		
-		UIAggregatorControl* aggregatorTemp;
+        AGGREGATORS GetPlatformAggregators(HierarchyTreePlatformNode* platform);
+		//UIAggregatorControl* aggregatorTemp;
 	};
 }
 

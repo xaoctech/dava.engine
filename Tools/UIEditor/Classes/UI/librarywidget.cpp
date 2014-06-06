@@ -76,6 +76,7 @@ void LibraryWidget::UpdateControl(QTreeWidgetItem* item, const QString& name)
 void LibraryWidget::SetItemVisible(QTreeWidgetItem* item, bool visible)
 {
 	item->setHidden(!visible);
+    item->setDisabled(!visible);
 }
 
 void LibraryWidget::ResetSelection()
