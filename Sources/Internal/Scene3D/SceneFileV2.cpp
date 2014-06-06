@@ -361,7 +361,12 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         scene->SetGlobalMaterial(globalMaterial);
     }
 		    
-    OptimizeScene(rootNode);	
+    OptimizeScene(rootNode);	    
+
+    ThreadIdJobWaiter waiter;
+    waiter.Wait();
+    UpdatePolygonGroupRequestedFormatRecursivly(rootNode);
+    serializationContext.LoadPolygonGroupData(file);
     
 	rootNode->SceneDidLoaded();
     
@@ -466,6 +471,7 @@ bool SceneFileV2::SaveDataNode(DataNode * node, File * file)
     
 void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
 {
+    uint32 currFilePos = file->GetPos();
     KeyedArchive * archive = new KeyedArchive();
     archive->Load(file);
     
@@ -489,6 +495,11 @@ void SceneFileV2::LoadDataNode(DataNode * parent, File * file)
         }
         node->Load(archive, &serializationContext);
         AddToNodeMap(node);
+
+        if (name == "PolygonGroup")
+        {
+            serializationContext.AddLoadedPolygonGroup(static_cast<PolygonGroup*>(node), currFilePos);
+        }
         
         int32 childrenCount = archive->GetInt32("#childrenCount", 0);
         DVASSERT(0 == childrenCount && "We don't support hierarchical dataNodes load.");
@@ -1202,6 +1213,25 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 //    }
     int32 nowCount = rootNode->GetChildrenCountRecursive();
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
+}
+
+void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursivly(Entity *entity)
+{
+    RenderObject *ro = GetRenderObject(entity);
+
+    if (ro)
+    {
+        for (int32 i=0, sz=ro->GetRenderBatchCount(); i<sz; ++i)
+        {
+            RenderBatch *renderBatch = ro->GetRenderBatch(i);
+            PolygonGroup *group = renderBatch->GetPolygonGroup();
+            if (group)
+                serializationContext.AddRequestedPolygonGroupFormat(group, renderBatch->GetMaterial()->GetRequiredVertexFormat());
+        }
+    }
+
+    for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
+        UpdatePolygonGroupRequestedFormatRecursivly(entity->GetChild(i));
 }
 
 void SceneFileV2::SetVersion( int32 version )

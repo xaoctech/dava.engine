@@ -356,7 +356,11 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 			SafeRetain(newMaterial); //VI: material refCount should be >1 at this point
 		}
 
-		SetPolygonGroup(pg);
+        if (pg!=dataSource)
+        {
+            SafeRelease(dataSource);
+            dataSource = SafeRetain(pg);
+        }		
         
 		if(GetMaterial() == NULL)
 			DVASSERT(newMaterial);
@@ -368,6 +372,8 @@ void RenderBatch::Load(KeyedArchive * archive, SerializationContext *serializati
 
 			SafeRelease(newMaterial);
 		}
+
+        
 	}
 
 	BaseObject::Load(archive);
