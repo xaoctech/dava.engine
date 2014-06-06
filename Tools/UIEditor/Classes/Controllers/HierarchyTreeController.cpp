@@ -133,6 +133,9 @@ void HierarchyTreeController::UpdateSelection(HierarchyTreePlatformNode* activeP
     bool updateHierarchyTree = false;
     if(activeScreen && !activeScreen->IsLoaded())
     {
+        static const uint32 maxLoadedScreenListSize = 10;
+        loadedScreenList.push_back(activeScreen);
+        
         // Screen was selected, load it now
         QString screenPath = ((HierarchyTreePlatformNode*)(activeScreen)->GetParent())->GetScreenPath(activeScreen->GetName());
         
@@ -142,6 +145,33 @@ void HierarchyTreeController::UpdateSelection(HierarchyTreePlatformNode* activeP
 
         hierarchyTree.UpdateControlsData(activeScreen);
         UpdateLocalization(false);
+        // This is done to load fonts from old style ui yaml files.
+        EditorFontManager::Instance()->OnProjectLoaded();
+        
+        if(loadedScreenList.size() > maxLoadedScreenListSize)
+        {
+            // Unload unused screens from queue
+            uint32 screensToUnload = loadedScreenList.size() - maxLoadedScreenListSize;
+            uint32 actualUnloaded = 0;
+            List<HierarchyTreeScreenNode*>::iterator startIt = loadedScreenList.begin();
+            List<HierarchyTreeScreenNode*>::iterator endIt = loadedScreenList.end();
+            for(; startIt != endIt; ++startIt)
+            {
+                HierarchyTreeScreenNode* unloadedScreen = *(startIt);
+                if(unloadedScreen != activeScreen)
+                {
+                    if(unloadedScreen->Unload())
+                    {
+                        loadedScreenList.erase(startIt);
+                        ++actualUnloaded;
+                    }
+                }
+                if(actualUnloaded >= screensToUnload)
+                {
+                    break;
+                }
+            }
+        }
     }
 
 	bool updateLibrary = false;
@@ -477,6 +507,7 @@ HierarchyTreeAggregatorNode* HierarchyTreeController::AddAggregator(const QStrin
 
 void HierarchyTreeController::CloseProject()
 {
+    loadedScreenList.clear();
 	activeControlNodes.clear();
 	ResetSelectedControl();
 	UpdateSelection(NULL, NULL);

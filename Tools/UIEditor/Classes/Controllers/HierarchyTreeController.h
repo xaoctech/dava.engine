@@ -262,6 +262,9 @@ protected:
     
     // List of unused items to be deleted.
     List<BaseUnusedItem*> unusedItems;
+    
+    // List of loaded screens
+    List<HierarchyTreeScreenNode*> loadedScreenList;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeController__) */

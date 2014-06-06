@@ -339,7 +339,11 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 			continue;
 		
 		QString screenPath = GetScreenPath(screenNode->GetName());
-		result &= screenNode->Save(screenPath, saveAll);
+        if(screenNode->IsLoaded())
+        {
+            // Save only loaded (and thus may be changed) screens.
+            result &= screenNode->Save(screenPath, saveAll);
+        }
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
 	}
