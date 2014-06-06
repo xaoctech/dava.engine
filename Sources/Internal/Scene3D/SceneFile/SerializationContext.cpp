@@ -32,6 +32,7 @@
 #include "Scene3D/Scene.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Scene3D/Systems/MaterialSystem.h"
+#include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/Material/NMaterial.h"
 #include "Render/Material.h"
 
@@ -505,12 +506,13 @@ void SerializationContext::AddRequestedPolygonGroupFormat(PolygonGroup *group, i
 
 void SerializationContext::LoadPolygonGroupData(File *file)
 {
+    int32 prerequiredVertexFormat = QualitySettingsSystem::Instance()->GetPrerequiredVertexFormat();
     for (Map<PolygonGroup*, PolygonGroupLoadInfo>::iterator it = loadedPolygonGroups.begin(), e = loadedPolygonGroups.end(); it!=e; ++it)
     {
         file->Seek(it->second.filePos, File::SEEK_FROM_START);
         KeyedArchive * archive = new KeyedArchive();
         archive->Load(file);        
-        it->first->LoadPolygonData(archive, this, it->second.requestedFormat);
+        it->first->LoadPolygonData(archive, this, it->second.requestedFormat | prerequiredVertexFormat);
         SafeRelease(archive);        
     }
 }
