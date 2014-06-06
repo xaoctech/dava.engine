@@ -309,6 +309,28 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
                                                  Shader::UT_FLOAT_VEC3,
                                                  1,
                                                  &worldSize);
+    
+    //fill in metrics data
+    size_t layerCount = customGeometryData.size();
+    for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+    {
+        renderData->instanceCount.push_back(Vector<uint32>());
+        renderData->vertexCountPerInstance.push_back(Vector<uint32>());
+        renderData->polyCountPerInstance.push_back(Vector<uint32>());
+        
+        Vector<uint32>& layerInstanceCount = renderData->instanceCount[renderData->instanceCount.size() - 1];
+        Vector<uint32>& layerVertexCount = renderData->vertexCountPerInstance[renderData->vertexCountPerInstance.size() - 1];
+        Vector<uint32>& polyVertexCount = renderData->polyCountPerInstance[renderData->polyCountPerInstance.size() - 1];
+    
+        CustomGeometryEntityData& layerGeometryInfo = customGeometryData[layerIndex];
+        size_t lodCount = layerGeometryInfo.lods.size();
+        for(size_t lodIndex = 0; lodIndex < lodCount; ++lodIndex)
+        {
+            layerInstanceCount.push_back(maxClusters[layerIndex] * maxClusters[layerIndex]);
+            layerVertexCount.push_back(layerGeometryInfo.lods[lodIndex].sourcePositions.size());
+            polyVertexCount.push_back(layerGeometryInfo.lods[lodIndex].sourceIndices.size() / 3);
+        }
+    }
 }
 
 void VegetationCustomSLGeometry::OnVegetationPropertiesChanged(Vector<VegetationRenderData*>& renderDataArray, KeyedArchive* props)

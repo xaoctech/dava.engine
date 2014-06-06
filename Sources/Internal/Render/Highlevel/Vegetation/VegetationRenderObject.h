@@ -58,6 +58,24 @@ class Heightmap;
 class VegetationGeometry;
 class VegetationCustomGeometrySerializationData;
 
+struct VegetationMetrics
+{
+    Vector<uint32> visibleInstanceCountPerLayer;
+    Vector<uint32> visibleInstanceCountPerLOD;
+    Vector<uint32> instanceCountPerLOD;
+    Vector<uint32> instanceCountPerLayer;
+    
+    Vector<uint32> visiblePolyCountPerLayer;
+    Vector<uint32> visiblePolyCountPerLOD;
+    Vector<uint32> polyCountPerLOD;
+    Vector<uint32> polyCountPerLayer;
+
+    uint32 totalQuadTreeLeafCount;
+    Vector<uint32> quadTreeLeafCountPerLOD;
+    
+    uint32 renderBatchCount;
+};
+
 class VegetationRenderObject : public RenderObject
 {
 public:
@@ -134,7 +152,9 @@ public:
     
     void SetLayerClusterLimit(const Vector4& maxClusters);
     Vector4 GetLayerClusterLimit() const;
-            
+    
+    void CollectMetrics(VegetationMetrics& metrics);
+    
 private:
     
     bool IsValidGeometryData() const;

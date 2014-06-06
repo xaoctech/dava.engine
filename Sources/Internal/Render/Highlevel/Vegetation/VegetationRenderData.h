@@ -85,6 +85,10 @@ public:
     
     void CreateRenderData();
     void ReleaseRenderData();
+    
+    Vector<Vector<uint32> > instanceCount; //layer - lod
+    Vector<Vector<uint32> > vertexCountPerInstance; //layer - lod
+    Vector<Vector<uint32> > polyCountPerInstance; //layer - lod
 
 private:
     

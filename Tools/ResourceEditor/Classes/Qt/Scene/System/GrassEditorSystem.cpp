@@ -43,6 +43,8 @@
 
 #include <QApplication>
 
+static const float32 DENSITY_THRESHOLD = 0.1f;
+
 GrassEditorSystem::GrassEditorSystem(Scene* scene)
 : SceneSystem(scene)
 , isEnabled(false)
@@ -185,6 +187,8 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                 if(NULL != curVegetation)
                 {
                     curVegetation->SetLayerVisibilityMask(0xFF);
+                    
+                    PatchDensityMapFromTransparencyMask(curVegetation);
                 }
 
                 SafeRelease(vegetationMap);
@@ -457,4 +461,124 @@ DAVA::Rect2i GrassEditorSystem::GetAffectedImageRect(DAVA::AABBox2 &area)
     }
 
     return ret;
+}
+
+void GrassEditorSystem::PatchDensityMapFromTransparencyMask(DAVA::VegetationRenderObject* sourceObj)
+{
+    DVASSERT(sourceObj);
+    
+    if(sourceObj != NULL)
+    {
+        FilePath lightmapPath = sourceObj->GetLightmapPath(); //transparency mask is baked to alpha channel
+        FilePath densityMapPath = sourceObj->GetVegetationMapPath();
+        
+        lightmapPath.ReplaceExtension(".png");
+        densityMapPath.ReplaceExtension(".png");
+        
+        if(!lightmapPath.IsEmpty() &&
+           lightmapPath.Exists() &&
+           !densityMapPath.IsEmpty() &&
+           densityMapPath.Exists())
+        {
+            Image* lightmapImage = LoadSingleImage(lightmapPath);
+            Image* densityImage = LoadSingleImage(densityMapPath);
+            
+            if(lightmapImage != NULL &&
+               densityImage != NULL)
+            {
+                uint32 ratio = lightmapImage->width / densityImage->width;
+                
+                DVASSERT(lightmapImage->GetPixelFormat() == FORMAT_RGBA8888);
+                DVASSERT(densityImage->GetPixelFormat() == FORMAT_RGBA8888);
+                DVASSERT(ratio > 0);
+                
+                if(ratio > 0 &&
+                   lightmapImage->GetPixelFormat() == FORMAT_RGBA8888 &&
+                   densityImage->GetPixelFormat() == FORMAT_RGBA8888)
+                {
+                    uint32 stride = sizeof(uint32);
+                    for(uint32 y = 0; y < densityImage->height; ++y)
+                    {
+                        for(uint32 x = 0; x < densityImage->width; ++x)
+                        {
+                            float32 medianAlpha = GetMedianAlpha(x, y,
+                                                                 ratio, stride,
+                                                                 lightmapImage);
+                            
+                            
+                            if(medianAlpha < DENSITY_THRESHOLD)
+                            {
+                                uint32 fragmentIndex = x + y * densityImage->width;
+                                uint32 fragmentOffset = fragmentIndex * stride;
+                                
+                                uint8* fragmentData = densityImage->GetData() + fragmentOffset;
+                                
+                                fragmentData[0] = 0;
+                                fragmentData[1] = 0;
+                                fragmentData[2] = 0;
+                                fragmentData[3] = 0;
+                            }
+                        }
+                    }
+                    
+                    FilePath targetPath = densityMapPath;
+                    targetPath.ReplaceBasename(targetPath.GetBasename() + "_patched");
+                    
+                    densityImage->Save(targetPath);
+                }
+            }
+            
+            SafeRelease(lightmapImage);
+            SafeRelease(densityImage);
+        }
+    }
+}
+
+Image* GrassEditorSystem::LoadSingleImage(const FilePath& path) const
+{
+    Vector<Image*> images;
+    
+    ImageLoader::CreateFromFileByExtension(path, images);
+    
+    Image* image = NULL;
+    if(images.size() > 0)
+    {
+        image = SafeRetain(images[0]);
+        size_t imageCount = images.size();
+        for(size_t i = 0; i < imageCount; ++i)
+        {
+            SafeRelease(images[i]);
+        }
+    }
+    
+    return image;
+}
+
+float32 GrassEditorSystem::GetMedianAlpha(uint32 x, uint32 y,
+                                          uint32 ratio,
+                                          uint32 stride,
+                                          Image* src) const
+{
+    uint32 actualStartX = x * ratio;
+    uint32 actualStartY = y * ratio;
+    uint32 actualEndX = actualStartX + ratio;
+    uint32 actualEndY = actualStartY + ratio;
+    
+    float32 medianAlpha = 0.0f;
+    uint32 fragmentCount = 0;
+    for(uint32 yy = actualStartY; yy < actualEndY; ++yy)
+    {
+        for(uint32 xx = actualStartX; xx < actualEndX; ++xx)
+        {
+            uint32 fragmentIndex = xx + yy * src->width;
+            uint32 fragmentOffset = fragmentIndex * stride;
+            
+            uint8* fragmentData = src->GetData() + fragmentOffset;
+            
+            medianAlpha += (((float32)fragmentData[3]) / 255.0f);
+            fragmentCount++;
+        }
+    }
+    
+    return (medianAlpha / fragmentCount);
 }

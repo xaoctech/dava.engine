@@ -97,7 +97,7 @@ static uint32 RESOLUTION_CLUSTER_STRIDE[] =
     4
 };
 
-#define VEGETATION_DRAW_LOD_COLOR
+//#define VEGETATION_DRAW_LOD_COLOR
 
 static Color RESOLUTION_COLOR[] =
 {
@@ -378,7 +378,6 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     camDir.Normalize();
     camPos = camPos + camDir * cameraBias;
     
-    //BuildVisibleCellList(camera->GetPosition(), camera->GetFrustum(), visibleCells);
     BuildVisibleCellList(camPos, camera->GetFrustum(), visibleCells);
     
     //std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
@@ -389,17 +388,13 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     
     Vector2 switchLodScale;
     
-    //Vector3 billboardDirection = -1.0f * camera->GetLeft();
-    //billboardDirection.Normalize();
-    //vegetationMaterial->SetPropertyValue(UNIFORM_BILLBOARD_DIRECTION,
-    //                                     Shader::UT_FLOAT_VEC3,
-    //                                     1,
-    //                                     billboardDirection.data);
-    
     size_t renderDataCount = renderData.size();
     size_t visibleCellCount = visibleCells.size();
     
     VegetationMaterialTransformer* materialTransform = vegetationGeometry->GetMaterialTransform();
+    
+    //VegetationMetrics metrics;
+    //CollectMetrics(metrics);
     
     for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
@@ -442,13 +437,6 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             switchLodScale.x = resolutionIndex;
             switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
-            
-            //shaderScaleDensityUniforms[0] = resolutionIndex;
-            //shaderScaleDensityUniforms[1] = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
-            
-            //shaderScaleDensityUniforms[2] = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);;
-            //shaderScaleDensityUniforms[3] = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
-            
             mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
                                   Shader::UT_FLOAT_VEC2,
                                   1,
@@ -458,11 +446,6 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                                   Shader::UT_FLOAT_VEC3,
                                   1,
                                   posScale.data);
-            
-            //mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_CLUSTER_SCALE_DENSITY_MAP,
-            //                      Shader::UT_FLOAT,
-            //                      shaderScaleDensityUniforms.size(),
-            //                      &shaderScaleDensityUniforms[0]);
             
 #ifdef VEGETATION_DRAW_LOD_COLOR
             mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
@@ -1497,6 +1480,93 @@ void VegetationRenderObject::SaveCustomGeometryData(SerializationContext* contex
 
 void VegetationRenderObject::RecalcBoundingBox()
 {
+}
+
+void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
+{
+    metrics.renderBatchCount = 0;
+    metrics.totalQuadTreeLeafCount = 0;
+    
+    metrics.quadTreeLeafCountPerLOD.clear();
+    
+    metrics.instanceCountPerLOD.clear();
+    metrics.polyCountPerLOD.clear();
+    metrics.instanceCountPerLayer.clear();
+    metrics.polyCountPerLayer.clear();
+    
+    metrics.visibleInstanceCountPerLayer.clear();
+    metrics.visibleInstanceCountPerLOD.clear();
+    metrics.visiblePolyCountPerLayer.clear();
+    metrics.visiblePolyCountPerLOD.clear();
+    
+    size_t renderDataCount = renderData.size();
+    if(renderDataCount > 0)
+    {
+        size_t visibleCellCount = visibleCells.size();
+        
+        metrics.renderBatchCount = visibleCells.size() * renderDataCount;
+        metrics.totalQuadTreeLeafCount = visibleCellCount;
+        
+        uint32 maxLodCount = COUNT_OF(RESOLUTION_INDEX);
+        metrics.quadTreeLeafCountPerLOD.resize(maxLodCount, 0);
+        metrics.instanceCountPerLOD.resize(maxLodCount, 0);
+        metrics.polyCountPerLOD.resize(maxLodCount, 0);
+        metrics.visibleInstanceCountPerLOD.resize(maxLodCount, 0);
+        metrics.visiblePolyCountPerLOD.resize(maxLodCount, 0);
+        
+        uint32 maxLayerCount = 0;
+        for(size_t renderDataIndex = 0; renderDataIndex < renderDataCount; ++renderDataIndex)
+        {
+            VegetationRenderData* renderDataObj = renderData[renderDataIndex];
+            maxLayerCount = Max(maxLayerCount, (uint32)renderDataObj->instanceCount.size());
+        }
+        
+        metrics.visibleInstanceCountPerLayer.resize(maxLayerCount, 0);
+        metrics.visiblePolyCountPerLayer.resize(maxLayerCount, 0);
+        metrics.instanceCountPerLayer.resize(maxLayerCount, 0);
+        metrics.polyCountPerLayer.resize(maxLayerCount, 0);
+        
+        for(size_t i = 0; i < visibleCellCount; ++i)
+        {
+            AbstractQuadTreeNode<SpatialData>* spatialData = visibleCells[i];
+            uint32 lodIndex = MapCellSquareToResolutionIndex(spatialData->data.width * spatialData->data.height);
+            
+            metrics.quadTreeLeafCountPerLOD[lodIndex] += 1;
+        }
+        
+        for(size_t renderDataIndex = 0; renderDataIndex < renderDataCount; ++renderDataIndex)
+        {
+            VegetationRenderData* renderDataObj = renderData[renderDataIndex];
+            size_t layerCount = renderDataObj->instanceCount.size();
+            
+            for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+            {
+                for(size_t lodIndex = 0; lodIndex < maxLayerCount; ++lodIndex)
+                {
+                    metrics.instanceCountPerLOD[lodIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
+                    metrics.polyCountPerLOD[lodIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
+                    
+                    metrics.instanceCountPerLayer[layerIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
+                    metrics.polyCountPerLayer[layerIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
+                }
+            }
+        
+            for(size_t i = 0; i < visibleCellCount; ++i)
+            {
+                AbstractQuadTreeNode<SpatialData>* spatialData = visibleCells[i];
+                uint32 lodIndex = MapCellSquareToResolutionIndex(spatialData->data.width * spatialData->data.height);
+                
+                for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+                {
+                    metrics.visibleInstanceCountPerLOD[lodIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
+                    metrics.visiblePolyCountPerLOD[lodIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
+                    
+                    metrics.visibleInstanceCountPerLayer[layerIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
+                    metrics.visiblePolyCountPerLayer[layerIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
+                }
+            }
+        }
+    }
 }
 
 };
