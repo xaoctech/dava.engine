@@ -1086,6 +1086,9 @@
     <ClCompile Include="Classes\Commands2\ChangeLODDistanceCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.cpp">
+      <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Qt\Main\Request.cpp">
       <Filter>Classes\Qt\Main</Filter>
     </ClCompile>
@@ -1651,6 +1654,9 @@
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\AddParticleEmitterDialog\AddParticleEmitterDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\Tools\AddSkyboxDialog\AddSkyboxDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
     <ClCompile Include="_GeneratedQt\Tools\AddSwitchEntityDialog\AddSwitchEntityDialog_moc.cpp">
@@ -3061,6 +3067,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Commands2\ChangeLODDistanceCommand.h">
       <Filter>Classes\Commands2</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\AddSkyboxDialog\AddSkyboxDialog.h">
+      <Filter>Classes\Qt\Tools\AddSkyboxDialog</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Qt\Main\Request.h">
       <Filter>Classes\Qt\Main</Filter>
