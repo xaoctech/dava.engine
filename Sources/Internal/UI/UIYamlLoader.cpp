@@ -475,7 +475,7 @@ void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl, const List<UIC
         UIScrollBar * scrollBar = dynamic_cast<UIScrollBar*>(*it);
         if (scrollBar)
         {
-            scrollBar->SetDelegate( reinterpret_cast<UIScrollBarDelegate*>(rootControl->FindByName( scrollBar->GetDelegateName() )));
+            scrollBar->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(rootControl->FindByName( scrollBar->GetDelegateName() )));
         }
         SetScrollBarDelegates(rootControl,(*it)->GetChildren() );
     }
