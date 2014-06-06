@@ -292,6 +292,7 @@
      <addaction name="actionSwitchNode"/>
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
+     <addaction name="actionAddSkybox"/>
      <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
@@ -1808,6 +1809,21 @@
    </property>
    <property name="toolTip">
     <string>Add landscape</string>
+   </property>
+  </action>
+  <action name="actionAddSkybox">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/cloud.png</normaloff>:/QtIcons/cloud.png</iconset>
+   </property>
+   <property name="text">
+    <string>Skybox</string>
+   </property>
+   <property name="toolTip">
+    <string>Add skybox</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionCustomQuality">
