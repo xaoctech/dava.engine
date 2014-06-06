@@ -72,6 +72,7 @@ public:
 	
 	bool Load(const QString& path);
 	bool Save(const QString& path, bool saveAll);
+    bool Unload();
 	
 	virtual void ReturnTreeNodeToScene();
 	virtual Rect GetRect() const;

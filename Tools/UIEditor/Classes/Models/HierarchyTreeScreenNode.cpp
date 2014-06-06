@@ -174,6 +174,23 @@ bool HierarchyTreeScreenNode::IsNameExist(const QString &name, const HierarchyTr
 	return false;
 }
 
+bool HierarchyTreeScreenNode::Unload()
+{
+    if(loaded && !IsNeedSave())
+    {
+        Cleanup();
+        SafeRelease(screen);
+        this->screen = new ScreenControl();
+        if (parent)
+        {
+            screen->SetRect(Rect(0, 0, parent->GetWidth(), parent->GetHeight()));
+        }
+        loaded = false;
+        return true;
+    }
+    return false;
+}
+
 bool HierarchyTreeScreenNode::Load(const QString& path)
 {
     if(!loaded)
