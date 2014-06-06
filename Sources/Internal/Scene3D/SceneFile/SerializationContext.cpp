@@ -488,4 +488,30 @@ namespace DAVA
 		return Texture::CreatePink((Texture::TextureType)textureTypeHint);
 //		return (tx) ? tx : Texture::CreatePink((Texture::TextureType)textureTypeHint);
 	}
+
+
+void SerializationContext::AddLoadedPolygonGroup(PolygonGroup *group, uint32 dataFilePos)
+{
+    DVASSERT(loadedPolygonGroups.find(group)==loadedPolygonGroups.end());
+    PolygonGroupLoadInfo loadInfo;
+    loadInfo.filePos = dataFilePos;
+    loadedPolygonGroups[group] = loadInfo;
+}
+void SerializationContext::AddRequestedPolygonGroupFormat(PolygonGroup *group, int32 format)
+{
+    DVASSERT(loadedPolygonGroups.find(group)!=loadedPolygonGroups.end());
+    loadedPolygonGroups[group].requestedFormat|=format;
+}
+
+void SerializationContext::LoadPolygonGroupData(File *file)
+{
+    for (Map<PolygonGroup*, PolygonGroupLoadInfo>::iterator it = loadedPolygonGroups.begin(), e = loadedPolygonGroups.end(); it!=e; ++it)
+    {
+        file->Seek(it->second.filePos, File::SEEK_FROM_START);
+        KeyedArchive * archive = new KeyedArchive();
+        archive->Load(file);        
+        it->first->LoadPolygonData(archive, this, it->second.requestedFormat);
+        SafeRelease(archive);        
+    }
+}
 }

@@ -282,6 +282,7 @@ public:
     /**
         This function return vertex format required by shader
      */
+    uint32 GetRequiredVertexFormat(){return requiredVertexFormat;}
 
 #if defined(__DAVAENGINE_ANDROID__)
 	virtual void Lost();
@@ -292,6 +293,9 @@ private:
     
     void ReleaseShaderData();
     
+
+    uint32 requiredVertexFormat;
+
 #if defined(__DAVAENGINE_DIRECTX9__)
 #elif defined(__DAVAENGINE_OPENGL__)
     String shaderDefines;

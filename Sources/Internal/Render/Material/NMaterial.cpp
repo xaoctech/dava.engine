@@ -206,7 +206,7 @@ NMaterial::NMaterial() :
 materialType(NMaterial::MATERIALTYPE_NONE),
 materialKey(0),
 parent(NULL),
-requiredVertexFormat(EVF_FORCE_DWORD),
+requiredVertexFormat(0),
 lightCount(0),
 illuminationParams(NULL),
 materialSetFlags(8),
@@ -1153,6 +1153,7 @@ void NMaterial::UpdateMaterialTemplate()
         DVASSERT(baseTechnique);
     }
 	
+    requiredVertexFormat = 0;
 	uint32 passCount = baseTechnique->GetPassCount();
 	for(uint32 i = 0; i < passCount; ++i)
 	{
@@ -1204,6 +1205,7 @@ void NMaterial::UpdateRenderPass(const FastName& passName,
 	
 	Shader* shader = pass->CompileShader(instanceDefines);
 	passInstance->SetShader(shader);
+    requiredVertexFormat |= shader->GetRequiredVertexFormat();
 	SafeRelease(shader);
 	
 	passInstance->SetRenderer(parentRenderState->renderer);
@@ -1757,6 +1759,7 @@ void NMaterial::SubclassRenderState(RenderStateData& newState)
 
 void NMaterial::UpdateShaderWithFlags()
 {
+    requiredVertexFormat = 0;
 	if(baseTechnique)
 	{
 		FastNameSet effectiveFlags(16);
@@ -1771,10 +1774,11 @@ void NMaterial::UpdateShaderWithFlags()
 			
 			Shader* shader = techniquePass->CompileShader(effectiveFlags);
 			pass->SetShader(shader);
+            requiredVertexFormat |= shader->GetRequiredVertexFormat();
 			SafeRelease(shader);
 			
             BuildTextureParamsCache(pass);
-			BuildActiveUniformsCacheParamsCache(pass);
+			BuildActiveUniformsCacheParamsCache(pass);                            
 		}
 	}
 
