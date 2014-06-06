@@ -92,6 +92,8 @@ public:
     DAVA::VegetationRenderObject *GetCurrentVegetationObject() const;
 
     static DAVA::Rect2i GetAffectedImageRect(DAVA::AABBox2 &area);
+    
+    void PatchDensityMapFromTransparencyMask(DAVA::VegetationRenderObject* sourceObj);
 
 protected:
 	bool isEnabled;
@@ -125,6 +127,8 @@ protected:
     void BuildGrassCopy(DAVA::AABBox2 area = DAVA::AABBox2());
 
     DAVA::VegetationRenderObject* SearchVegetation(DAVA::Entity *entity) const;
+    Image* LoadSingleImage(const FilePath& path) const;
+    float32 GetMedianAlpha(uint32 x, uint32 y, uint32 ratio, uint32 stride, Image* src) const;
 };
 
 #endif /* defined(__RESOURCEEDITORQT__GRASSEDITORSYSTEM__) */
