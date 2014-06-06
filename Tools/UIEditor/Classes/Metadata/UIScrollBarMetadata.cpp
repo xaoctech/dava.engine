@@ -27,6 +27,7 @@
 =====================================================================================*/
 
 #include "UIScrollBarMetadata.h"
+#include "HierarchyTreeController.h"
 
 namespace DAVA {
 
@@ -89,8 +90,30 @@ void UIScrollBarMetadata::SetUIScrollBarDelegateName(QString value)
     {
         return;
     }
-    
-    GetActiveUIScrollBar()->SetDelegateName(value.toStdString());
+    String name = value.toStdString();
+    UIScrollBar* activeScrollBar = GetActiveUIScrollBar();
+    activeScrollBar->SetDelegateName(name);
+    if (value.toStdString()== "")
+    {
+        activeScrollBar->SetDelegate(NULL);
+        return;
+    }
+    const HierarchyTreeNode::HIERARCHYTREENODESLIST childs = HierarchyTreeController::Instance()->GetActiveScreen()->GetChildNodes();
+    HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it = childs.begin();
+    for (;it!=childs.end();++it)
+    {
+        const HierarchyTreeControlNode * controlNode = static_cast<HierarchyTreeControlNode *>(*it);
+        UIControl * control = controlNode->GetUIObject()->FindByName(name);
+        if (control)
+        {
+            UIScrollBarDelegate * delegate = dynamic_cast<UIScrollBarDelegate*>(control);
+            if (delegate)
+            {
+                activeScrollBar->SetDelegate(delegate);
+                return;
+            }
+        }
+    }
 }
 
 };
