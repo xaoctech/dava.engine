@@ -184,6 +184,7 @@ public:
 
     static const FastName PARAM_SPHERICAL_COLOR_DARK;
     static const FastName PARAM_SPHERICAL_COLOR_LIGHT;
+    static const FastName PARAM_SPHERICAL_HARMONICS;
 
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
