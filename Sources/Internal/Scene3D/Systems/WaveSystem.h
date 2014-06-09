@@ -27,44 +27,56 @@
 =====================================================================================*/
 
 
-
-#ifndef __DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
+#ifndef __DAVAENGINE_SCENE3D_WAVESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WAVESYSTEM_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
+#include "Scene3D/Components/WindComponent.h"
 
 namespace DAVA
 {
 
-class SceneSystem;
 class Entity;
-class EventSystem
+class WaveComponent;
+class WaveSystem : public SceneSystem, public Observer
 {
+    struct WaveInfo
+    {
+        WaveInfo(WaveComponent * component);
+
+        WaveComponent * component;
+        float32 maxRadius;
+        float32 maxRadiusSq;
+        Vector3 center;
+        float32 currentWaveRadius;
+    };
+
 public:
-	enum eEventType
-	{
-		LOCAL_TRANSFORM_CHANGED = 0,
-		TRANSFORM_PARENT_CHANGED,
-		WORLD_TRANSFORM_CHANGED,
-		SWITCH_CHANGED,
-		START_PARTICLE_EFFECT,
-		STOP_PARTICLE_EFFECT,
-        SPEED_TREE_MAX_ANIMATED_LOD_CHANGED,
-        WAVE_TRIGGERED,
+    WaveSystem(Scene * scene);
+    virtual ~WaveSystem();
 
-		EVENTS_COUNT
-	};
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
 
-	void RegisterSystemForEvent(SceneSystem * system, uint32 event);
-	void UnregisterSystemForEvent(SceneSystem * system, uint32 event);
-	void NotifySystem(SceneSystem * system, Entity * entity, uint32 event);
-    void NotifyAllSystems(Entity * entity, uint32 event);
-    void GroupNotifyAllSystems(Vector<Entity *> & entity, uint32 event);
+    Vector3 GetWaveDisturbance(const Vector3 & inPosition) const;
 
-private:
-	Vector<SceneSystem*> registeredSystems[EVENTS_COUNT];
+    virtual void HandleEvent(Observable * observable);
+
+protected:
+    void ClearWaves();
+
+    bool isWavesEnabled;
+    bool isVegetationAnimationEnabled;
+
+    Vector<WaveInfo *> waves;
+
+    friend class WaveComponent;
 };
+    
+} // ns
 
-}
+#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
 
-#endif //__DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
