@@ -123,7 +123,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	cursor = 0;
     currentRenderData = 0;
     cachedEnabledStreams = 0;
-
+    cachedAttributeMask = 0;
     attachedRenderData = 0;
     
     statsFrameCountToShowDebug = 0;
@@ -744,6 +744,9 @@ void RenderManager::Stats::Clear()
     dynamicParamUniformBindCount = 0;
     materialParamUniformBindCount = 0;
     spriteDrawCount = 0;
+    
+    visibleRenderObjectCount = 0;
+    occludedRenderObjectCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)
