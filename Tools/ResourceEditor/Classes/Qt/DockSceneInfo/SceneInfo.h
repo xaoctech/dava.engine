@@ -107,12 +107,16 @@ protected:
 
     void InitializeSpeedTreeInfoSelection();
 
+    void InitializeVegetationInfoSection();
+
     void RefreshSceneGeneralInfo();
     void Refresh3DDrawInfo();
     void RefreshLODInfoInFrame();
     void RefreshLODInfoForSelection();
 
     void RefreshSpeedTreeInfoSelection();
+    
+    void RefreshVegetationInfoSection();
     
 	void RefreshAllData(SceneEditor2 *scene);
 

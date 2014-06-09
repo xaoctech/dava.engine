@@ -69,6 +69,8 @@ struct VegetationMetrics
     Vector<uint32> visiblePolyCountPerLOD;
     Vector<uint32> polyCountPerLOD;
     Vector<uint32> polyCountPerLayer;
+    
+    Vector<Vector<uint32> > polyCountPerLayerPerLod; //layer-lod
 
     uint32 totalQuadTreeLeafCount;
     Vector<uint32> quadTreeLeafCountPerLOD;
@@ -198,10 +200,6 @@ private:
     
     bool ReadyToRender(bool externalRenderFlag);
     
-    void SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
-                           AbstractQuadTreeNode<SpatialData>* node,
-                           float32 cameraDistance,
-                           Vector<float32>& uniforms);
     size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
     
     inline uint32 MapToResolution(float32 squareDistance);

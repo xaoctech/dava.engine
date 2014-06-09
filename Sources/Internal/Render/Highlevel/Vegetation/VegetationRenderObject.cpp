@@ -421,8 +421,6 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             size_t directionIndex = SelectDirectionIndex(camera, rdoVector[indexBufferIndex]);
             rb->SetRenderDataObject(rdoVector[indexBufferIndex][directionIndex].rdo);
             
-            //SetupNodeUniforms(treeNode, treeNode, treeNode->data.cameraDistance, shaderScaleDensityUniforms);
-            
             float32 distanceScale = 1.0f;
             
             if(treeNode->data.cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
@@ -1103,52 +1101,6 @@ bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
     return externalRenderFlag && vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
 }
 
-void VegetationRenderObject::SetupNodeUniforms(AbstractQuadTreeNode<SpatialData>* sourceNode,
-                                               AbstractQuadTreeNode<SpatialData>* node,
-                                               float32 cameraDistance,
-                                               Vector<float32>& uniforms)
-{
-    if(node->IsTerminalLeaf())
-    {
-        DVASSERT(node->data.rdoIndex >= 0 && node->data.rdoIndex < (int32)uniforms.size());
-        
-        //int32 mapX = node->data.x + halfWidth;
-        //int32 mapY = node->data.y + halfHeight;
-        //uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
-        
-        float32 distanceScale = 1.0f;
-        
-        if(cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
-        {
-            distanceScale = Clamp(1.0f - ((cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
-        }
-        
-        uint8 *vegetationMapValuePtr = GetCellValue(node->data.x, node->data.y, *vegetationMap);//(vegetationMap->data + cellDescriptionIndex * 4);
-        
-        for(uint32 clusterType = 0; clusterType < MAX_CLUSTER_TYPES; ++clusterType)
-        {
-            uint8 cellLayerData = vegetationMapValuePtr[clusterType];
-            
-            float32 clusterScale = 0.0f;
-            float32 density = 0.0f;
-            GetLayerDescription(cellLayerData, CLUSTER_SCALE_NORMALIZATION_VALUE, density, clusterScale);
-            
-            clusterScale *= distanceScale;
-            
-            uniforms[PER_TILE_DATA_OFFSET + node->data.rdoIndex * 2 * 4 + clusterType] = density;
-            uniforms[PER_TILE_DATA_OFFSET + node->data.rdoIndex * 2 * 4 + 4 + clusterType] = clusterScale;
-        }
-
-    }
-    else
-    {
-        SetupNodeUniforms(sourceNode, node->children[0], cameraDistance, uniforms);
-        SetupNodeUniforms(sourceNode, node->children[1], cameraDistance, uniforms);
-        SetupNodeUniforms(sourceNode, node->children[2], cameraDistance, uniforms);
-        SetupNodeUniforms(sourceNode, node->children[3], cameraDistance, uniforms);
-    }
-}
-
 void VegetationRenderObject::SetPerturbation(const Vector3& point,
                                             const Vector3& force,
                                             float32 distance)
@@ -1499,6 +1451,8 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
     metrics.visiblePolyCountPerLayer.clear();
     metrics.visiblePolyCountPerLOD.clear();
     
+    metrics.polyCountPerLayerPerLod.clear();
+    
     size_t renderDataCount = renderData.size();
     if(renderDataCount > 0)
     {
@@ -1539,8 +1493,18 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
             VegetationRenderData* renderDataObj = renderData[renderDataIndex];
             size_t layerCount = renderDataObj->instanceCount.size();
             
+            if(metrics.polyCountPerLayerPerLod.size() < layerCount)
+            {
+                metrics.polyCountPerLayerPerLod.resize(layerCount);
+            }
+            
             for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
             {
+                if(metrics.polyCountPerLayerPerLod[layerIndex].size() < renderDataObj->polyCountPerInstance[layerIndex].size())
+                {
+                    metrics.polyCountPerLayerPerLod[layerIndex].resize(renderDataObj->polyCountPerInstance[layerIndex].size());
+                }
+                
                 for(size_t lodIndex = 0; lodIndex < maxLayerCount; ++lodIndex)
                 {
                     metrics.instanceCountPerLOD[lodIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
@@ -1548,6 +1512,8 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
                     
                     metrics.instanceCountPerLayer[layerIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
                     metrics.polyCountPerLayer[layerIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
+                    
+                    metrics.polyCountPerLayerPerLod[layerIndex][lodIndex] += renderDataObj->polyCountPerInstance[layerIndex][lodIndex];
                 }
             }
         
@@ -1565,6 +1531,8 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
                     metrics.visiblePolyCountPerLayer[layerIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
                 }
             }
+            
+            
         }
     }
 }
