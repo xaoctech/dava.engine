@@ -106,6 +106,9 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 		DrawUserNode(entity);
 		DrawLightNode(entity);
 		DrawHangingObjects(entity);
+        DrawStaticOcclusionComponent(entity);
+		DrawSwitchesWithDifferentLods(entity);
+		DrawWindNode(entity);
         DrawSwitchesWithDifferentLods(entity);
 
         if(isSelected)
@@ -320,6 +323,20 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
             DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.0f, 1.0f));
             DAVA::RenderHelper::Instance()->DrawArrow(worldPosition, sc->GetLocalDirection() * worldMx, 10.f, 1.f, debugDrawState);
         }
+	}
+}
+
+void DebugDrawSystem::DrawWindNode(DAVA::Entity *entity)
+{
+	WindComponent * wind = GetWindComponent(entity);
+	if(wind)
+	{
+		RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size) &Matrix4::IDENTITY);
+		const Matrix4 & worldMx = entity->GetWorldTransform();
+		Vector3 worldPosition = worldMx.GetTranslationVector();
+
+		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.5f, 0.2f, 1.0f));
+		DAVA::RenderHelper::Instance()->DrawArrow(worldPosition, worldPosition + wind->GetDirection() * 3.f, 10.f, 1.f, debugDrawState);
 	}
 }
 
