@@ -26,45 +26,28 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
+#define __DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
 
+#include "DAVAEngine.h"
+using namespace DAVA;
 
-#ifndef __DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
-#define __DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
-
-#include "Base/BaseTypes.h"
-
-namespace DAVA
-{
-
-class SceneSystem;
-class Entity;
-class EventSystem
+class TreeToAnimatedTreeConverter
 {
 public:
-	enum eEventType
-	{
-		LOCAL_TRANSFORM_CHANGED = 0,
-		TRANSFORM_PARENT_CHANGED,
-		WORLD_TRANSFORM_CHANGED,
-		SWITCH_CHANGED,
-		START_PARTICLE_EFFECT,
-		STOP_PARTICLE_EFFECT,
-        SPEED_TREE_MAX_ANIMATED_LOD_CHANGED,
-        WAVE_TRIGGERED,
+    static void CalculateAnimationParams(SpeedTreeObject * object);
 
-		EVENTS_COUNT
-	};
-
-	void RegisterSystemForEvent(SceneSystem * system, uint32 event);
-	void UnregisterSystemForEvent(SceneSystem * system, uint32 event);
-	void NotifySystem(SceneSystem * system, Entity * entity, uint32 event);
-    void NotifyAllSystems(Entity * entity, uint32 event);
-    void GroupNotifyAllSystems(Vector<Entity *> & entity, uint32 event);
+    void ConvertTrees(Entity *scene);
 
 private:
-	Vector<SceneSystem*> registeredSystems[EVENTS_COUNT];
+    void ConvertingPathRecursive(Entity *scene);
+    void ConvertLeafPGForAnimations(PolygonGroup * geometry);
+    void ConvertTrunkForAnimations(PolygonGroup * geometry);
+
+    Set<PolygonGroup *> uniqLeafPGs;
+    Set<PolygonGroup *> uniqTrunkPGs;
+    Set<SpeedTreeObject *> uniqTreeObjects;
 };
 
-}
+#endif //__DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
 
-#endif //__DAVAENGINE_SCENE3D_EVENTSYSTEM_H__
