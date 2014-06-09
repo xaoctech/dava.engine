@@ -238,7 +238,7 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
 	}
 	else
 	{
-		FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_UNKNOWN, FORMAT_RGBA8888);
+		FilePath pngPathname = GPUFamilyDescriptor::CreatePathnameForGPU(texturePathname, GPU_PNG, FORMAT_RGBA8888);
 		sceneUtils.AddFile(pngPathname);
 	}
 	
@@ -246,7 +246,7 @@ void SceneSaver::CopyTexture(const FilePath &texturePathname)
 	//copy converted textures (*.pvr and *.dds)
     if(copyConverted)
     {
-        for(int32 i = 0; i < GPU_FAMILY_COUNT; ++i)
+        for(int32 i = 0; i < GPU_DEVICE_COUNT; ++i)
         {
             eGPUFamily gpu = (eGPUFamily)i;
             

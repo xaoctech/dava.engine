@@ -281,7 +281,7 @@ bool QtMainWindow::SaveSceneAs(SceneEditor2 *scene)
 
 DAVA::eGPUFamily QtMainWindow::GetGPUFormat()
 {
-	return (eGPUFamily) SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32();
+    return GPUFamilyDescriptor::ConvertValueToGPU(SettingsManager::GetValue(Settings::Internal_TextureViewGPU).AsInt32());
 }
 
 void QtMainWindow::SetGPUFormat(DAVA::eGPUFamily gpu)
@@ -589,7 +589,7 @@ void QtMainWindow::SetupActions()
 	ui->actionExportTegra->setData(GPU_TEGRA);
 	ui->actionExportMali->setData(GPU_MALI);
 	ui->actionExportAdreno->setData(GPU_ADRENO);
-	ui->actionExportPNG->setData(GPU_UNKNOWN);
+	ui->actionExportPNG->setData(GPU_PNG);
 	
 	// import
 #ifdef __DAVAENGINE_SPEEDTREE__
@@ -602,7 +602,7 @@ void QtMainWindow::SetupActions()
 	ui->actionReloadTegra->setData(GPU_TEGRA);
 	ui->actionReloadMali->setData(GPU_MALI);
 	ui->actionReloadAdreno->setData(GPU_ADRENO);
-	ui->actionReloadPNG->setData(GPU_UNKNOWN);
+	ui->actionReloadPNG->setData(GPU_PNG);
 	QObject::connect(ui->menuTexturesForGPU, SIGNAL(triggered(QAction *)), this, SLOT(OnReloadTexturesTriggered(QAction *)));
 	QObject::connect(ui->actionReloadTextures, SIGNAL(triggered()), this, SLOT(OnReloadTextures()));
 	QObject::connect(ui->actionReloadSprites, SIGNAL(triggered()), this, SLOT(OnReloadSprites()));
@@ -1241,7 +1241,7 @@ void QtMainWindow::OnReloadTextures()
 void QtMainWindow::OnReloadTexturesTriggered(QAction *reloadAction)
 {
 	DAVA::eGPUFamily gpu = (DAVA::eGPUFamily) reloadAction->data().toInt();
-	if(gpu >= DAVA::GPU_UNKNOWN && gpu < DAVA::GPU_FAMILY_COUNT)
+	if(gpu >= 0 && gpu < DAVA::GPU_FAMILY_COUNT)
 	{
 		SetGPUFormat(gpu);
 	}
@@ -2717,7 +2717,7 @@ void QtMainWindow::OnEmptyEntity()
 
 bool QtMainWindow::LoadAppropriateTextureFormat()
 {
-	if (GetGPUFormat() != GPU_UNKNOWN)
+	if (GetGPUFormat() != GPU_PNG)
 	{
 		int answer = ShowQuestion("Inappropriate texture format",
 								  "Landscape editing is only allowed in PNG texture format.\nDo you want to reload textures in PNG format?",
@@ -2730,7 +2730,7 @@ bool QtMainWindow::LoadAppropriateTextureFormat()
 		OnReloadTexturesTriggered(ui->actionReloadPNG);
 	}
 
-	return (GetGPUFormat() == GPU_UNKNOWN);
+	return (GetGPUFormat() == GPU_PNG);
 }
 
 bool QtMainWindow::IsTilemaskModificationCommand(const Command2* cmd)
