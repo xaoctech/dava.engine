@@ -27,61 +27,40 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_MESH_UTILS_H__
+#define __DAVAENGINE_MESH_UTILS_H__
 
-#ifndef __SCENE_EXPORTER_H__
-#define __SCENE_EXPORTER_H__
+#include "Render/3D/PolygonGroup.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-#include "TextureCompression/TextureConverter.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
-class SceneExporter
+class MeshUtils
 {
 public:
+    static void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=false);
+    static void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
+    static void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 
-	SceneExporter();
-	virtual ~SceneExporter();
-    
-    void SetGPUForExporting(const String &newGPU);
-    void SetGPUForExporting(const eGPUFamily newGPU);
-    
-	void SetCompressionQuality(TextureConverter::eConvertQuality quality);
+private:
+    struct FaceWork
+    {
+        int32 indexOrigin[3];
+        Vector3 tangent, binormal;
+    };
 
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-	void EnableOptimizations( bool enable );
-
-    void ExportFile(const String &fileName, Set<String> &errorLog);
-    void ExportFolder(const String &folderName, Set<String> &errorLog);
-    
-    void ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-protected:
-    
-    void RemoveEditorNodes(Entity *rootNode);
-    void RemoveEditorCustomProperties(Entity *rootNode);
-    
-    bool ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
-    bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
-    bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
-    void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
-
-    bool ExportLandscape(Scene *scene, Set<String> &errorLog);
-    bool ExportVegetation(Scene *scene, Set<String> &errorLog);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-
-    eGPUFamily exportForGPU;
-	bool optimizeOnExport;
-
-	TextureConverter::eConvertQuality quality;
+    struct VertexWork
+    {
+        Vector<int32> refIndices;
+        Vector3 tangent, binormal;
+        int32 tbRatio;
+        int32 refIndex;
+        int32 resultGroup;
+    };
 };
 
+};
 
+#endif
 
-#endif // __SCENE_EXPORTER_H__

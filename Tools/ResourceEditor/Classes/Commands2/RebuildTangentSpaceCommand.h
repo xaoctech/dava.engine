@@ -27,61 +27,31 @@
 =====================================================================================*/
 
 
+#ifndef __REBUILD_TANGENT_SPACE_COMMAND_H__
+#define __REBUILD_TANGENT_SPACE_COMMAND_H__
 
-#ifndef __SCENE_EXPORTER_H__
-#define __SCENE_EXPORTER_H__
+#include "Command2.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-#include "TextureCompression/TextureConverter.h"
+#include "Render/Highlevel/RenderBatch.h"
 
-using namespace DAVA;
 
-class SceneExporter
+class RebuildTangentSpaceCommand: public Command2
 {
 public:
+    RebuildTangentSpaceCommand(DAVA::RenderBatch *renderBatch, bool computeBinormal);
+    virtual ~RebuildTangentSpaceCommand();
 
-	SceneExporter();
-	virtual ~SceneExporter();
-    
-    void SetGPUForExporting(const String &newGPU);
-    void SetGPUForExporting(const eGPUFamily newGPU);
-    
-	void SetCompressionQuality(TextureConverter::eConvertQuality quality);
+    virtual void Undo();
+    virtual void Redo();
 
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-	void EnableOptimizations( bool enable );
+    virtual DAVA::Entity* GetEntity() const {return NULL;}    
 
-    void ExportFile(const String &fileName, Set<String> &errorLog);
-    void ExportFolder(const String &folderName, Set<String> &errorLog);
-    
-    void ExportScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-protected:
-    
-    void RemoveEditorNodes(Entity *rootNode);
-    void RemoveEditorCustomProperties(Entity *rootNode);
-    
-    bool ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
-    bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
-    bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
-    void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
-
-    bool ExportLandscape(Scene *scene, Set<String> &errorLog);
-    bool ExportVegetation(Scene *scene, Set<String> &errorLog);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-
-    eGPUFamily exportForGPU;
-	bool optimizeOnExport;
-
-	TextureConverter::eConvertQuality quality;
+protected:    
+    DAVA::RenderBatch *renderBatch;       
+    bool computeBinormal;
+    DAVA::PolygonGroup* originalGroup;    
+    DAVA::int32 materialBinormalFlagState;
 };
 
 
-
-#endif // __SCENE_EXPORTER_H__
+#endif 
