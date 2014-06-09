@@ -854,8 +854,6 @@ void QtMainWindow::EnableProjectActions(bool enable)
 {
 	ui->actionNewScene->setEnabled(enable);
 	ui->actionOpenScene->setEnabled(enable);
-	ui->actionSaveScene->setEnabled(enable);
-	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
     ui->actionImageSplitter->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
