@@ -109,6 +109,12 @@ uniform lowp vec4 sphericalColorDark;
 uniform lowp vec4 sphericalColorLight;
 uniform vec3 worldViewObjectCenter;
 uniform vec4 lightPosition0;
+uniform mat3 sphericalHarmonics;
+uniform mat3 sphericalHarmonics2;
+uniform mat3 sphericalHarmonics3;
+uniform mat4 invWorldViewMatrix;
+uniform mat3 worldViewInvTransposeMatrix;
+uniform mat4 invViewMatrix;
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -536,13 +542,42 @@ void main()
 #endif
     
 #if defined(SPHERICAL_LIT)
-    vec3 normal = normalize(eyeCoordsPosition - worldViewObjectCenter);
-    vec3 toLightDir = normalize(lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w);
-    float sphericalLightFactor = 0.5 + dot(toLightDir, normal) * 0.5;
+
+//old fake
+//	vec3 normal = normalize(eyeCoordsPosition - worldViewObjectCenter);
+//	vec3 toLightDir = normalize(lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w);
+//	float sphericalLightFactor = 0.5 + dot(toLightDir, normal) * 0.5;
+//	#if defined(VERTEX_COLOR)
+//		varVertexColor *= mix(sphericalColorDark, sphericalColorLight, sphericalLightFactor);
+//	#else 
+//		varVertexColor = mix(sphericalColorDark, sphericalColorLight, sphericalLightFactor);
+//	#endif
+	
+//new fake
+#define PI 3.14159265358979
+
+#define Y00(n) (1.0 / 2.0) * sqrt(1.0 / PI) * PI
+#define Y1_1(n) (1.0 / 2.0) * sqrt(3.0 / PI) * (n.y) * 2.094395
+#define Y10(n) (1.0 / 2.0) * sqrt(3.0 / PI) * (n.z) * 2.094395
+#define Y11(n) (1.0 / 2.0) * sqrt(3.0 / PI) * (n.x) * 2.094395
+#define Y2_2(n) (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398
+#define Y2_1(n) (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398
+#define Y20(n) (1.0 / 4.0) * sqrt(5.0 / PI) * ((2.0 * n.z * n.z - n.x * n.x - n.y * n.y)) * 0.785398
+#define Y21(n) (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398
+#define Y22(n) (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398
+
+	vec3 normal = vec3(invViewMatrix * vec4((eyeCoordsPosition - worldViewObjectCenter), 0.0));
+	//normal.z /= 1.5;
+	vec3 n = normalize(normal);
+	
+	vec3 sphericalLightFactor = Y00(n) * sphericalHarmonics[0] + Y1_1(n) * sphericalHarmonics[1] + Y10(n) * sphericalHarmonics[2];
+	sphericalLightFactor += Y11(n) * sphericalHarmonics2[0];// + Y2_2(n) * sphericalHarmonics2[1] + Y2_1(n) * sphericalHarmonics2[2];
+	//sphericalLightFactor += Y20(n) * sphericalHarmonics3[0] + Y21(n) * sphericalHarmonics3[1] + Y22(n) * sphericalHarmonics3[2];
+	
 	#if defined(VERTEX_COLOR)
-		varVertexColor *= mix(sphericalColorDark, sphericalColorLight, sphericalLightFactor);
+		varVertexColor *= vec4(sphericalLightFactor, 1.0);
 	#else 
-		varVertexColor = mix(sphericalColorDark, sphericalColorLight, sphericalLightFactor);
+		varVertexColor = vec4(sphericalLightFactor, 1.0);
 	#endif
 #endif
     

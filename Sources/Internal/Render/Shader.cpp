@@ -1094,6 +1094,19 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
+            case PARAM_INV_WORLD_VIEW:
+            {
+                RenderManager::Instance()->ComputeInvWorldViewMatrixIfRequired();
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_WORLD_VIEW);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                    Matrix4 * proj = (Matrix4*)RenderManager::GetDynamicParam(PARAM_INV_WORLD_VIEW);
+                    SetUniformValueByUniform(currentUniform, *proj);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
             case PARAM_WORLD_VIEW_INV_TRANSPOSE:
             {
                 RenderManager::Instance()->ComputeWorldViewInvTransposeMatrixIfRequired();
@@ -1204,7 +1217,7 @@ void Shader::BindDynamicParameters()
             case PARAM_WORLD_VIEW_OBJECT_CENTER:
             {
                 RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
-                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
                 if (_updateSemantic != currentUniform->updateSemantic)
                 {
                     AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(PARAM_LOCAL_BOUNDING_BOX);

@@ -85,6 +85,7 @@ const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
 const FastName NMaterial::PARAM_SPHERICAL_COLOR_DARK("sphericalColorDark");
 const FastName NMaterial::PARAM_SPHERICAL_COLOR_LIGHT("sphericalColorLight");
+const FastName NMaterial::PARAM_SPHERICAL_HARMONICS("sphericalHarmonics");
 
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
 const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
@@ -2683,7 +2684,7 @@ void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object
 					
 				case Shader::UT_FLOAT_MAT4:
 				{
-					const Matrix3& val = value.AsMatrix3();
+					const Matrix4& val = value.AsMatrix4();
 					state->SetPropertyValue(member, propType, propSize, &val);
 				}
 					break;

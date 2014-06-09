@@ -808,7 +808,7 @@ inline void RenderManager::SetDynamicParam(eShaderSemantic shaderSemantic, const
         switch(shaderSemantic)
         {
             case PARAM_WORLD:
-                dynamicParamersRequireUpdate |= ((1 << PARAM_INV_WORLD) | ( 1 << PARAM_WORLD_VIEW) | (1 << PARAM_INV_WORLD_VIEW)
+                dynamicParamersRequireUpdate |= ((1 << PARAM_INV_WORLD) | ( 1 << PARAM_WORLD_VIEW) | (1 << PARAM_INV_WORLD_VIEW) |  (1 << PARAM_WORLD_VIEW_OBJECT_CENTER)
                                                  | ( 1 << PARAM_WORLD_VIEW_PROJ) | (1 << PARAM_INV_WORLD_VIEW_PROJ) | (1 << PARAM_WORLD_VIEW_INV_TRANSPOSE) | (1 << PARAM_WORLD_INV_TRANSPOSE));
             break;
             case PARAM_VIEW:
