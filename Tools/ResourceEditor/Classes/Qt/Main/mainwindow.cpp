@@ -668,6 +668,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
+	QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
@@ -705,9 +706,6 @@ void QtMainWindow::SetupActions()
 
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
-
-    QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
-    QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
 
     // Debug functions
 	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
@@ -2397,47 +2395,6 @@ void QtMainWindow::OnGrasEditor()
     }
 }
 
-void QtMainWindow::OnAddSoundComponent()
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
-    SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        scene->BeginBatch("Add Action Component");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::SOUND_COMPONENT)));
-        }
-
-        scene->EndBatch();
-    }
-}
-
-void QtMainWindow::OnRemoveSoundComponent()
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
-    SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        scene->BeginBatch("Add Action Component");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            SoundComponent * sc = GetSoundComponent(ss->GetSelectionEntity(i));
-            if(sc)
-            {
-                scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), sc));
-            }
-        }
-
-        scene->EndBatch();
-    }
-}
 void QtMainWindow::OnBuildStaticOcclusion()
 {
     SceneEditor2* scene = GetCurrentScene();
@@ -2711,6 +2668,26 @@ void QtMainWindow::OnEmptyEntity()
 	scene->selectionSystem->SetSelection(newEntity);
 
 	newEntity->Release();
+}
+
+void QtMainWindow::OnAddWindEntity()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	Entity * windEntity = new Entity();
+	windEntity->SetName(ResourceEditor::WIND_NODE_NAME);
+
+	Matrix4 ltMx = Matrix4::MakeTranslation(Vector3(0.f, 0.f, 20.f));
+	GetTransformComponent(windEntity)->SetLocalTransform(&ltMx);
+
+	WindComponent * wind = new WindComponent();
+	windEntity->AddComponent(wind);
+
+	scene->Exec(new EntityAddCommand(windEntity, scene));
+	scene->selectionSystem->SetSelection(windEntity);
+
+	windEntity->Release();
 }
 
 bool QtMainWindow::LoadAppropriateTextureFormat()
