@@ -27,53 +27,40 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_MESH_UTILS_H__
+#define __DAVAENGINE_MESH_UTILS_H__
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#include "Render/3D/PolygonGroup.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
 
-using namespace DAVA;
+namespace DAVA
+{
 
-class SceneSaver
+class MeshUtils
 {
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
+    static void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=false);
+    static void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
+    static void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+private:
+    struct FaceWork
+    {
+        int32 indexOrigin[3];
+        Vector3 tangent, binormal;
+    };
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
+    struct VertexWork
+    {
+        Vector<int32> refIndices;
+        Vector3 tangent, binormal;
+        int32 tbRatio;
+        int32 refIndex;
+        int32 resultGroup;
+    };
 };
 
+};
 
+#endif
 
-#endif // __SCENE_SAVER_H__

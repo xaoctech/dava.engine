@@ -28,52 +28,26 @@
 
 
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#ifndef __COPY_LAST_LOD_COMMAND_H__
+#define __COPY_LAST_LOD_COMMAND_H__
 
+#include "Commands2/Command2.h"
 #include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
 
-using namespace DAVA;
-
-class SceneSaver
+class CopyLastLODToLod0Command: public Command2
 {
-public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
+    public:
+    //TODO: remove after lod editing implementation
+    DAVA_DEPRECATED(CopyLastLODToLod0Command(DAVA::LodComponent *lod));
+    ~CopyLastLODToLod0Command();
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+    virtual void Undo();
+    virtual void Redo();
+    virtual DAVA::Entity* GetEntity() const;
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
+    DAVA::LodComponent *lodComponent;
+    DAVA::Vector<DAVA::RenderBatch *> newBatches;
+    DAVA::Vector<DAVA::int32> switchIndices;
 };
 
-
-
-#endif // __SCENE_SAVER_H__
+#endif // __COPY_LAST_LOD_COMMAND_H__

@@ -874,7 +874,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
-            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            if (group->GetMaterial() && (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP))
             {
                 if (oldMeshInstanceNode->GetLightmapCount() == 0)
                 {
@@ -901,6 +901,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             PolygonGroupWithMaterial * group = polygroups[k];
             
 			Material* oldMaterial = group->GetMaterial();
+            if(!oldMaterial) continue;
+            
             NMaterial* nMaterial = serializationContext.ConvertOldMaterialToNewMaterial(oldMaterial, 0, (uint64)oldMaterial);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             

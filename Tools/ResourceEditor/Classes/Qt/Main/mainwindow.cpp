@@ -498,8 +498,8 @@ void QtMainWindow::SetupToolBars()
 	// outline by object type
 	{
 		objectTypesWidget = new QComboBox();
-		objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-		objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+		//objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+		//objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
 
 		const QList<QAction *> actions = ui->menuObjectTypes->actions();
         QActionGroup *group = new QActionGroup(ui->menuObjectTypes);
@@ -854,8 +854,6 @@ void QtMainWindow::EnableProjectActions(bool enable)
 {
 	ui->actionNewScene->setEnabled(enable);
 	ui->actionOpenScene->setEnabled(enable);
-	ui->actionSaveScene->setEnabled(enable);
-	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
     ui->actionImageSplitter->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
