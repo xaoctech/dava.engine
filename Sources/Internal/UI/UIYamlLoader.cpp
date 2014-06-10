@@ -467,7 +467,7 @@ void UIYamlLoader::PostLoad(UIControl * rootControl)
     SetScrollBarDelegates(rootControl, rootControl->GetChildren());
 }
 
-void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*> controls)
+void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*>& controls)
 {
     List<UIControl*>::const_iterator it = controls.begin();
     for (; it!=controls.end(); ++it)

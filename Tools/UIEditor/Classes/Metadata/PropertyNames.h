@@ -111,6 +111,10 @@ public:
 	static const char* VERTICAL_SCROLL_POSITION;
 	static const char* SCROLL_CONTENT_SIZE_X;
 	static const char* SCROLL_CONTENT_SIZE_Y;
+    
+    //UI Scroll Bar properties
+    static const char* SCROLL_ORIENTATION;
+	static const char* SCROLL_BAR_DELEGATE_NAME;
 
 	// UI Spinner properties.
 	static const char* UISPINNER_PREV_BUTTON_TEXT;

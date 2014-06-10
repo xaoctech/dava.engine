@@ -57,12 +57,12 @@ void UIScrollBar::SetDelegate(UIScrollBarDelegate *newDelegate)
     delegate = newDelegate;
 }
     
-String UIScrollBar::GetDelegateName()
+const String UIScrollBar::GetDelegateName()
 {
     return delegateName;
 }
     
-void UIScrollBar::SetDelegateName(String name)
+void UIScrollBar::SetDelegateName(const String& name)
 {
     delegateName = name;
 }

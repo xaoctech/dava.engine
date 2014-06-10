@@ -129,7 +129,7 @@ protected:
 	UIControl* CreateControl(const String& type, const String& baseType);
     //Called after loading
     void PostLoad(UIControl * rootControl);
-    void SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*> controls);
+    void SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*>& controls);
 
 	// ASSERTion flag for "Custom Control not found" state.
 	bool assertIfCustomControlNotFound;
