@@ -45,6 +45,7 @@ namespace ResourceEditor
 	static const DAVA::FastName USER_NODE_NAME = DAVA::FastName("UserNode");
 	static const DAVA::FastName SWITCH_NODE_NAME = DAVA::FastName("SwitchNode");
 	static const DAVA::FastName PARTICLE_EFFECT_NODE_NAME = DAVA::FastName("Particle Effect");
+	static const DAVA::FastName WIND_NODE_NAME = DAVA::FastName("Wind");
 	static const String LAYER_NODE_NAME = "Layer";
 	static const DAVA::FastName ENTITY_NAME = DAVA::FastName("Entity");
 

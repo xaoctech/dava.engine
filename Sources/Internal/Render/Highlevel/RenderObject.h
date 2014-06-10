@@ -78,7 +78,8 @@ public:
 		TYPE_SPRITE,			// Sprite Node
 		TYPE_PARTICLE_EMTITTER,  // Particle Emitter
 		TYPE_SKYBOX,
-        TYPE_VEGETATION
+        TYPE_VEGETATION,
+        TYPE_SPEED_TREE
     };
     
 	enum eFlags
