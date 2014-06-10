@@ -28,33 +28,37 @@
 
 
 
-#ifndef __DAVAENGINE_JPEG_HELPER_H__
-#define __DAVAENGINE_JPEG_HELPER_H__
+#ifndef __PARSE_TEXT_TEST_H__
+#define __PARSE_TEXT_TEST_H__
 
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
-#include "FileSystem/FilePath.h"
+#include "DAVAEngine.h"
 
-namespace DAVA 
+using namespace DAVA;
+
+#include "UITestTemplate.h"
+#include "Render/RenderManager.h"
+
+class ParseTextTest : public UITestTemplate<ParseTextTest>
 {
-
-class Image;
-class File;
-
-class LibJpegWrapper
-{
+protected:
+    ~ParseTextTest();
 public:
+	ParseTextTest();
     
-    static bool IsJpegFile(const FilePath & fileName);
-    static bool IsJpegFile(File *file);
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+private:
     
-    static bool ReadJpegFile(const FilePath & fileName, Image * image);
-    static bool ReadJpegFile(File *infile, Image * image);
+    void ParseTestFunction(PerfFuncData * testData);
     
-    //only RGB888 or A8
-    static bool WriteJpegFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+    UIStaticText *CreateTextControl(const Rect &rect, const WideString & text, bool wrapBySymbol, const Vector2 &requestedSize = Vector2(0, 0));
+
+    UIStaticText *wrapBySymbolShort;
+    UIStaticText *wrapByWordShort;
+
+    UIStaticText *wrapBySymbolLong;
+    UIStaticText *wrapByWordLong;
 };
 
-};
-
-#endif // __DAVAENGINE_JPEG_HELPER_H__
+#endif /* defined(__PARSE_TEXT_TEST_H__) */

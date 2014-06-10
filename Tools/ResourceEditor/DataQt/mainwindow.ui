@@ -36,7 +36,16 @@
     <property name="spacing">
      <number>3</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
      <number>1</number>
     </property>
     <item>
@@ -69,7 +78,16 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -96,7 +114,16 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -135,7 +162,16 @@
         <property name="spacing">
          <number>1</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -257,6 +293,7 @@
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="actionAddWind"/>
      <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
@@ -379,6 +416,7 @@
      <addaction name="actionBuilding"/>
      <addaction name="actionInvisibleWall"/>
      <addaction name="actionSpeedTree"/>
+     <addaction name="actionUndefinedCollision"/>
     </widget>
     <addaction name="actionEnableCameraLight"/>
     <addaction name="actionReloadSprites"/>
@@ -398,6 +436,7 @@
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionBuildStaticOcclusion"/>
+    <addaction name="actionRebuildCurrentOcclusionCell"/>
     <addaction name="actionBeastAndSave"/>
     <addaction name="separator"/>
     <addaction name="menuObjectTypes"/>
@@ -523,7 +562,16 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
       <number>0</number>
      </property>
      <item>
@@ -569,7 +617,16 @@
      <property name="spacing">
       <number>2</number>
      </property>
-     <property name="margin">
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
       <number>1</number>
      </property>
      <item>
@@ -601,7 +658,16 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -1757,6 +1823,9 @@
    <property name="toolTip">
     <string>Add skybox</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionCustomQuality">
    <property name="text">
@@ -1823,6 +1892,18 @@
     <string>ImageSplitter</string>
    </property>
   </action>
+  <action name="actionAddWind">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/wind.png</normaloff>:/QtIcons/wind.png</iconset>
+   </property>
+   <property name="text">
+    <string>Wind</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Wind</string>
+   </property>
+  </action>
   <action name="actionAddVegetation">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1887,6 +1968,27 @@
    </property>
    <property name="text">
     <string>Unlock Transform</string>
+   </property>
+  </action>
+  <action name="actionAddWaveComponent">
+   <property name="text">
+    <string>Add Wave Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Wave Component</string>
+   </property>
+  </action>
+  <action name="actionRebuildCurrentOcclusionCell">
+   <property name="text">
+    <string>Rebuild Current Occlusion Cell</string>
+   </property>
+  </action>
+  <action name="actionUndefinedCollision">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Undefined Collision</string>
    </property>
   </action>
  </widget>

@@ -498,10 +498,11 @@ void QtMainWindow::SetupToolBars()
 	// outline by object type
 	{
 		objectTypesWidget = new QComboBox();
-		objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-		objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+		//objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+		//objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
 
 		const QList<QAction *> actions = ui->menuObjectTypes->actions();
+        QActionGroup *group = new QActionGroup(ui->menuObjectTypes);
 
 		auto endIt = actions.end();
 		for(auto it = actions.begin(); it != endIt; ++it)
@@ -509,6 +510,7 @@ void QtMainWindow::SetupToolBars()
 			if((*it)->isSeparator()) continue;
 
 			objectTypesWidget->addItem((*it)->icon(), (*it)->text());
+            group->addAction(*it);
 		}
 
 		objectTypesWidget->setCurrentIndex(ResourceEditor::ESOT_NONE + 1);
@@ -666,6 +668,7 @@ void QtMainWindow::SetupActions()
 	QObject::connect(ui->actionCollapseSceneTree, SIGNAL(triggered()), ui->sceneTree, SLOT(CollapseAll()));
     QObject::connect(ui->actionAddLandscape, SIGNAL(triggered()), this, SLOT(OnAddLandscape()));
     QObject::connect(ui->actionAddSkybox, SIGNAL(triggered()), this, SLOT(OnAddSkybox()));
+	QObject::connect(ui->actionAddWind, SIGNAL(triggered()), this, SLOT(OnAddWindEntity()));
     QObject::connect(ui->actionAddVegetation, SIGNAL(triggered()), this, SLOT(OnAddVegetation()));
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
@@ -686,10 +689,9 @@ void QtMainWindow::SetupActions()
 #else
 	//ui->menuScene->removeAction(ui->menuBeast->menuAction());
 #endif //#if defined(__DAVAENGINE_BEAST__)
-
     
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
-
+    QObject::connect(ui->actionRebuildCurrentOcclusionCell, SIGNAL(triggered()), this, SLOT(OnRebuildCurrentOcclusionCell()));
     
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -705,13 +707,8 @@ void QtMainWindow::SetupActions()
 	QObject::connect(SceneSignals::Instance(), SIGNAL(SnapToLandscapeChanged(SceneEditor2*, bool)),
 					 this, SLOT(OnSnapToLandscapeChanged(SceneEditor2*, bool)));
 
-    QObject::connect(ui->actionAddSoundComponent, SIGNAL(triggered()), this, SLOT(OnAddSoundComponent()));
-    QObject::connect(ui->actionRemoveSoundComponent, SIGNAL(triggered()), this, SLOT(OnRemoveSoundComponent()));
-
     // Debug functions
 	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
-    
-    
     
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -730,13 +727,10 @@ void QtMainWindow::SetupActions()
 	ui->actionBuilding->setData(ResourceEditor::ESOT_BUILDING);
 	ui->actionInvisibleWall->setData(ResourceEditor::ESOT_INVISIBLE_WALL);
     ui->actionSpeedTree->setData(ResourceEditor::ESOT_SPEED_TREE);
-	QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction *)), this, SLOT(OnObjectsTypeChanged(QAction *)));
-	QObject::connect(ui->menuObjectTypes, SIGNAL(aboutToShow()), this, SLOT(OnObjectsTypeMenuWillShow()));
-
+	
+    QObject::connect(ui->menuObjectTypes, SIGNAL(triggered(QAction *)), this, SLOT(OnObjectsTypeChanged(QAction *)));
 	QObject::connect(ui->actionHangingObjects, SIGNAL(triggered()), this, SLOT(OnHangingObjects()));
-
 	QObject::connect(ui->actionReloadShader, SIGNAL(triggered()), this, SLOT(OnReloadShaders()));
-
     QObject::connect(ui->actionSwitchesWithDifferentLODs, SIGNAL(triggered(bool)), this, SLOT(OnSwitchWithDifferentLODs(bool)));
 }
 
@@ -860,8 +854,6 @@ void QtMainWindow::EnableProjectActions(bool enable)
 {
 	ui->actionNewScene->setEnabled(enable);
 	ui->actionOpenScene->setEnabled(enable);
-	ui->actionSaveScene->setEnabled(enable);
-	ui->actionSaveToFolder->setEnabled(enable);
 	ui->actionCubemapEditor->setEnabled(enable);
     ui->actionImageSplitter->setEnabled(enable);
 	ui->dockLibrary->setEnabled(enable);
@@ -1961,7 +1953,7 @@ void QtMainWindow::OnSaveTiledTexture()
 		Image *image = landscapeTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
 		if(image)
 		{
-			ImageLoader::Save(image, pathToSave);
+            ImageSystem::Instance()->Save(pathToSave, image);
 			SafeRelease(image);
 		}
 
@@ -2403,47 +2395,6 @@ void QtMainWindow::OnGrasEditor()
     }
 }
 
-void QtMainWindow::OnAddSoundComponent()
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
-    SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        scene->BeginBatch("Add Action Component");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            scene->Exec(new AddComponentCommand(ss->GetSelectionEntity(i), Component::CreateByType(Component::SOUND_COMPONENT)));
-        }
-
-        scene->EndBatch();
-    }
-}
-
-void QtMainWindow::OnRemoveSoundComponent()
-{
-    SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-
-    SceneSelectionSystem *ss = scene->selectionSystem;
-    if(ss->GetSelectionCount() > 0)
-    {
-        scene->BeginBatch("Add Action Component");
-
-        for(size_t i = 0; i < ss->GetSelectionCount(); ++i)
-        {
-            SoundComponent * sc = GetSoundComponent(ss->GetSelectionEntity(i));
-            if(sc)
-            {
-                scene->Exec(new RemoveComponentCommand(ss->GetSelectionEntity(i), sc));
-            }
-        }
-
-        scene->EndBatch();
-    }
-}
 void QtMainWindow::OnBuildStaticOcclusion()
 {
     SceneEditor2* scene = GetCurrentScene();
@@ -2466,6 +2417,14 @@ void QtMainWindow::OnBuildStaticOcclusion()
     }
 
     delete waitOcclusionDlg;
+}
+
+void QtMainWindow::OnRebuildCurrentOcclusionCell()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+
+    scene->staticOcclusionBuildSystem->RebuildCurrentCell();
 }
 
 bool QtMainWindow::IsSavingAllowed()
@@ -2507,26 +2466,6 @@ void QtMainWindow::OnObjectsTypeChanged(int type)
 	{
 		scene->debugDrawSystem->SetRequestedObjectType(objectType);
 	}
-}
-
-
-void QtMainWindow::OnObjectsTypeMenuWillShow()
-{
-	SceneEditor2* scene = GetCurrentScene();
-	if(!scene) return;
-
-	ResourceEditor::eSceneObjectType objectType = scene->debugDrawSystem->GetRequestedObjectType();
-
-	ui->actionObjectTypesOff->setChecked(ResourceEditor::ESOT_NONE == objectType);
-	ui->actionNoObject->setChecked(ResourceEditor::ESOT_NO_COLISION == objectType);
-	ui->actionTree->setChecked(ResourceEditor::ESOT_TREE == objectType);
-	ui->actionBush->setChecked(ResourceEditor::ESOT_BUSH == objectType);
-	ui->actionFragileProj->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ == objectType);
-	ui->actionFragileProjInv->setChecked(ResourceEditor::ESOT_FRAGILE_PROJ_INV == objectType);
-	ui->actionFalling->setChecked(ResourceEditor::ESOT_FALLING == objectType);
-	ui->actionBuilding->setChecked(ResourceEditor::ESOT_BUILDING == objectType);
-	ui->actionInvisibleWall->setChecked(ResourceEditor::ESOT_INVISIBLE_WALL == objectType);
-	ui->actionSpeedTree->setChecked(ResourceEditor::ESOT_SPEED_TREE == objectType);
 }
 
 void QtMainWindow::LoadObjectTypes( SceneEditor2 *scene )
@@ -2729,6 +2668,26 @@ void QtMainWindow::OnEmptyEntity()
 	scene->selectionSystem->SetSelection(newEntity);
 
 	newEntity->Release();
+}
+
+void QtMainWindow::OnAddWindEntity()
+{
+	SceneEditor2* scene = GetCurrentScene();
+	if(!scene) return;
+
+	Entity * windEntity = new Entity();
+	windEntity->SetName(ResourceEditor::WIND_NODE_NAME);
+
+	Matrix4 ltMx = Matrix4::MakeTranslation(Vector3(0.f, 0.f, 20.f));
+	GetTransformComponent(windEntity)->SetLocalTransform(&ltMx);
+
+	WindComponent * wind = new WindComponent();
+	windEntity->AddComponent(wind);
+
+	scene->Exec(new EntityAddCommand(windEntity, scene));
+	scene->selectionSystem->SetSelection(windEntity);
+
+	windEntity->Release();
 }
 
 bool QtMainWindow::LoadAppropriateTextureFormat()

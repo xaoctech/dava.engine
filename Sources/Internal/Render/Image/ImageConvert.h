@@ -207,13 +207,34 @@ template<class TYPE_IN, class TYPE_OUT, typename CONVERT_FUNC>
 class ConvertDirect
 {
 public:
-    void operator()(const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch,
-        void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
+    void operator()(const void * inData, uint32 width, uint32 height, uint32 pitch, void * outData)
     {
-        CONVERT_FUNC func;
+		CONVERT_FUNC func;
         const uint8 * readPtr = reinterpret_cast<const uint8*>(inData);
         uint8 * writePtr = reinterpret_cast<uint8*>(outData);
-
+        
+        for (uint32 y = 0; y < height; ++y)
+        {
+            const TYPE_IN * readPtrLine = reinterpret_cast<const TYPE_IN*>(readPtr);
+            TYPE_OUT * writePtrLine = reinterpret_cast<TYPE_OUT*>(writePtr);
+            for (uint32 x = 0; x < width; ++x)
+            {
+                func(readPtrLine, writePtrLine);
+                readPtrLine++;
+                writePtrLine++;
+            }
+            readPtr += pitch; 
+            writePtr += pitch;
+        }
+    };
+    
+    void operator()(const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch,
+                    void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
+    {
+		CONVERT_FUNC func;
+        const uint8 * readPtr = reinterpret_cast<const uint8*>(inData);
+        uint8 * writePtr = reinterpret_cast<uint8*>(outData);
+        
         for (uint32 y = 0; y < inHeight; ++y)
         {
             const TYPE_IN * readPtrLine = reinterpret_cast<const TYPE_IN*>(readPtr);
