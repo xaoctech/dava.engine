@@ -375,7 +375,7 @@ void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
 bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 {
 	RenderObject *ro = GetRenderObject(entity);
-	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT))
+	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT && ro->GetType() != RenderObject::TYPE_SPEED_TREE))
 		return false;
 
 	const AABBox3 & worldBox = ro->GetWorldBoundingBox();
@@ -435,6 +435,8 @@ void DebugDrawSystem::GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vect
 
 float32 DebugDrawSystem::GetMinimalZ(const DAVA::RenderObject *ro, const DAVA::Matrix4 & transform)
 {
+	//we cannot return worldBox.min.z because object may be rotated
+
 	float32 minZ = AABBOX_INFINITY;
 
 	const uint32 count = ro->GetRenderBatchCount();
@@ -468,7 +470,7 @@ float32 DebugDrawSystem::GetMinimalZ(const DAVA::RenderObject *ro, const DAVA::M
 bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 {
 	RenderObject *ro = GetRenderObject(entity);
-	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT))
+	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT && ro->GetType() != RenderObject::TYPE_SPEED_TREE))
 		return false;
 
 	const AABBox3 & worldBox = ro->GetWorldBoundingBox();
@@ -483,9 +485,9 @@ bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 	GetLowestVertexes(ro, lowestVertexes, scale);
 
 	const uint32 count = lowestVertexes.size();
-	DVASSERT(count && "Must be one+ lowest vertexes");
+//	DVASSERT(count && "Must be one+ lowest vertexes");
 
-	bool isAllVertextesUnderLandscape = true;
+	bool isAllVertextesUnderLandscape = (count > 0);
 	for(uint32 i = 0; i < count && isAllVertextesUnderLandscape; ++i)
 	{
 		Vector3 pos = lowestVertexes[i];
