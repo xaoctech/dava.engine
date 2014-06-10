@@ -45,10 +45,9 @@ public:
 	virtual DAVA::Entity* GetEntity() const;
 
 private:
-
-	DAVA::Entity* entityToAdd;
-	DAVA::Component *savedComponent;
-	DAVA::Component *currentComponent;
+	DAVA::Entity* entity;
+    DAVA::Component* component;
+    DAVA::Component* backup;
 };
 
 #endif // __ADD_COMPONENT_COMMAND_H__

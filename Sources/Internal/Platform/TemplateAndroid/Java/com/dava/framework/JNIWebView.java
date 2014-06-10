@@ -38,19 +38,23 @@ public class JNIWebView {
 			});
 		};
 		
+		
+		@Override
+		public void onLoadResource(WebView view, String url) {
+			String[] urlParts = url.split("/");
+			if (urlParts.length > 0)
+			{
+				String urlPart = urlParts[urlParts.length - 1];
+				if (urlPart.charAt(0) == '?' && !urlPart.contains("."))
+					PostOnUrlChangeTask(url);
+			}
+			
+			super.onLoadResource(view, url);
+		}
+		
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, final String url) {
-			Callable<Integer> urlChanged = new Callable<Integer>() {
-				
-				@Override
-				public Integer call() throws Exception {
-					return OnUrlChange(id, url);
-				}
-			};
-			
-			FutureTask<Integer> task = new FutureTask<Integer>(urlChanged);
-			
-			JNIActivity.GetActivity().PostEventToGL(task);
+			FutureTask<Integer> task = PostOnUrlChangeTask(url);
 			
 			while (!task.isDone()) {
 				Thread.yield();
@@ -82,6 +86,25 @@ public class JNIWebView {
 				return true;
 			}
 			return true;
+		}
+		
+		FutureTask<Integer> PostOnUrlChangeTask(final String url) {
+			Callable<Integer> urlChanged = new Callable<Integer>() {
+				
+				@Override
+				public Integer call() throws Exception {
+					return OnUrlChange(id, url);
+				}
+			};
+			
+			if (url.contains("code"))
+				Log.d("shouldOverrideUrlLoading", url);
+			
+			FutureTask<Integer> task = new FutureTask<Integer>(urlChanged);
+			
+			JNIActivity.GetActivity().PostEventToGL(task);
+			
+			return task;
 		}
 	}
 	
@@ -147,6 +170,24 @@ public class JNIWebView {
 				}
 				WebView webView = views.get(id);
 				webView.loadUrl(url);
+			}
+		});
+	}
+	
+	public static void OpenFromBuffer(final int id, final String data, final String baseUrl)
+	{
+		final JNIActivity activity = JNIActivity.GetActivity();
+		activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				if (!views.containsKey(id))
+				{
+					Log.d(TAG, String.format("Unknown view id %d", id));
+					return;
+				}
+				WebView webView = views.get(id);
+				webView.loadDataWithBaseURL(baseUrl, data, "text/html", "utf-8", null);
 			}
 		});
 	}

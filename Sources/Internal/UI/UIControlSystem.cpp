@@ -77,7 +77,11 @@ void UIControlSystem::SetScreen(UIScreen *_nextScreen, UIScreenTransition * _tra
 {
 	if (_nextScreen == currentScreen)
 	{
-		Logger::Warning("Tried to switch to current screen again.");
+		if (nextScreen != 0)
+		{
+			SafeRelease(nextScreenTransition);
+			SafeRelease(nextScreen);
+		}
 		return;
 	}
 
@@ -105,6 +109,7 @@ void UIControlSystem::ReplaceScreen(UIScreen *newMainControl)
 {
 	prevScreen = currentScreen;
 	currentScreen = newMainControl;
+    NotifyListenersDidSwitch(currentScreen);
 }
 
 	
@@ -171,9 +176,7 @@ void UIControlSystem::ProcessScreenLogic()
 		
 		CancelAllInputs();
 		
-		uint32 listenersCount = screenSwitchListeners.size();
-		for(uint32 i = 0; i < listenersCount; ++i)
-			screenSwitchListeners[i]->OnScreenSwitched(nextScreenProcessed);
+        NotifyListenersWillSwitch(nextScreenProcessed);
 
 		// If we have transition set
 		if (transitionProcessed)
@@ -239,6 +242,7 @@ void UIControlSystem::ProcessScreenLogic()
 				nextScreenProcessed->SystemWillAppear();
 			}
 			currentScreen = nextScreenProcessed;
+            NotifyListenersDidSwitch(currentScreen);
             if (nextScreenProcessed)
             {
 				nextScreenProcessed->SystemDidAppear();
@@ -802,6 +806,22 @@ void UIControlSystem::RemoveScreenSwitchListener(ScreenSwitchListener * listener
 	Vector<ScreenSwitchListener *>::iterator it = std::find(screenSwitchListeners.begin(), screenSwitchListeners.end(), listener);
 	if(it != screenSwitchListeners.end())
 		screenSwitchListeners.erase(it);
+}
+
+void UIControlSystem::NotifyListenersWillSwitch( UIScreen* screen )
+{
+    Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
+    uint32 listenersCount = screenSwitchListenersCopy.size();
+    for(uint32 i = 0; i < listenersCount; ++i)
+        screenSwitchListenersCopy[i]->OnScreenWillSwitch( screen );
+}
+
+void UIControlSystem::NotifyListenersDidSwitch( UIScreen* screen )
+{
+    Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
+    uint32 listenersCount = screenSwitchListenersCopy.size();
+    for(uint32 i = 0; i < listenersCount; ++i)
+        screenSwitchListenersCopy[i]->OnScreenDidSwitch( screen );
 }
 
 };

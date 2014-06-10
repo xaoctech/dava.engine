@@ -54,7 +54,12 @@
 #include "statepropertygridwidget.h"
 #include "textpropertygridwidget.h"
 #include "uitextfieldpropertygridwidget.h"
+#include "uistatictextpropertygridwidget.h"
 #include "particleeffectpropertygridwidget.h"
+#include "joypadpropertygridwidget.h"
+#include "webviewpropertygridwidget.h"
+
+#include "Custom/guidepropertygridwidget.h"
 
 namespace DAVA {
     
@@ -95,7 +100,10 @@ private:
 	ScrollControlPropertyGridWidget* scrollWidget;
 	ScrollViewPropertyGridWidget* scrollViewWidget;
     ParticleEffectPropertyGridWidget* particleWidget;
-	
+    JoypadPropertyGridWidget* joypadWidget;
+    WebViewPropertyGridWidget* webViewWidget;    
+    GuidePropertyGridWidget* guideWidget;
+
     // The same widgets in the list manner - for easier handling of group operations.
     PROPERTYGRIDWIDGETSLIST registeredWidgets;
 };
