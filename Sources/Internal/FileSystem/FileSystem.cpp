@@ -435,7 +435,6 @@ bool FileSystem::IsFile(const FilePath & pathToCheck)
 
 bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 {
-
 #if defined (__DAVAENGINE_WIN32__)
 	DWORD stats = GetFileAttributesA(pathToCheck.GetAbsolutePathname().c_str());
 	return (stats != -1) && (0 != (stats & FILE_ATTRIBUTE_DIRECTORY));

@@ -142,6 +142,27 @@ void RenderObject::RemoveRenderBatch(uint32 batchIndex)
     RecalcBoundingBox();
 }
 
+void RenderObject::SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex)
+{
+    uint32 size = (uint32)renderBatchArray.size();
+    DVASSERT(batchIndex < size && batchIndex >= 0);
+
+    IndexedRenderBatch & iBatch = renderBatchArray[batchIndex];
+    iBatch.lodIndex = newLodIndex;
+
+    UpdateActiveRenderBatches();
+}
+
+void RenderObject::SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex)
+{
+    uint32 size = (uint32)renderBatchArray.size();
+    DVASSERT(batchIndex < size && batchIndex >= 0);
+
+    IndexedRenderBatch & iBatch = renderBatchArray[batchIndex];
+    iBatch.switchIndex = newSwitchIndex;
+
+    UpdateActiveRenderBatches();
+}
     
 void RenderObject::RecalcBoundingBox()
 {
@@ -154,12 +175,10 @@ void RenderObject::RecalcBoundingBox()
     }
 }
 
-void RenderObject::GetRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*> & batches, bool includeShareLods /* = false */) const
+void RenderObject::CollectRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*> & batches, bool includeShareLods /* = false */) const
 {
-    batches.clear();
-
-    int32 batchesCount = renderBatchArray.size();
-    for(int32 i = 0; i < batchesCount; ++i)
+    uint32 batchesCount = renderBatchArray.size();
+    for(uint32 i = 0; i < batchesCount; ++i)
     {
         const IndexedRenderBatch & irb = renderBatchArray[i];
         if( (requestLodIndex == -1 || requestLodIndex == irb.lodIndex || (includeShareLods && irb.lodIndex == -1)) &&
@@ -178,7 +197,6 @@ RenderObject * RenderObject::Clone(RenderObject *newObject)
 		newObject = new RenderObject();
 	}
 
-	newObject->type = type;
 	newObject->flags = flags;
 	newObject->RemoveFlag(MARKED_FOR_UPDATE);
 	newObject->debugFlags = debugFlags;
@@ -209,7 +227,6 @@ void RenderObject::Save(KeyedArchive * archive, SerializationContext* serializat
 
 	if(NULL != archive)
 	{
-		archive->SetUInt32("ro.type", type);
 		archive->SetUInt32("ro.debugflags", debugFlags);
 		archive->SetUInt32("ro.batchCount", GetRenderBatchCount());
         archive->SetUInt32("ro.sOclIndex", staticOcclusionIndex);
@@ -245,7 +262,6 @@ void RenderObject::Load(KeyedArchive * archive, SerializationContext *serializat
 {
 	if(NULL != archive)
 	{
-		type = archive->GetUInt32("ro.type", TYPE_RENDEROBJECT);
 		debugFlags = archive->GetUInt32("ro.debugflags", 0);
         staticOcclusionIndex = (uint16)archive->GetUInt32("ro.sOclIndex", INVALID_STATIC_OCCLUSION_INDEX);
         

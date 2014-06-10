@@ -75,6 +75,7 @@ LOCAL_SRC_FILES := \
                      $(wildcard $(LOCAL_PATH)/UI/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Utils/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/Job/*.cpp) \
+                     $(wildcard $(LOCAL_PATH)/Render/Image/*.cpp) \
                      $(wildcard $(LOCAL_PATH)/DLC/*.cpp))
 
 ifneq ($(filter $(TARGET_ARCH_ABI), armeabi-v7a armeabi-v7a-hard),)
