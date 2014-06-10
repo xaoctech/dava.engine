@@ -148,6 +148,8 @@ public:
 
     inline bool IsRenderHierarchyInitialized() const {return hierarchyInitialized;}
     
+    inline RenderPass* GetMainForwardRenderPass() const;
+    
 private:
 	void CreateSpatialTree();
     void ProcessClipping();
@@ -212,6 +214,11 @@ inline Camera * RenderSystem::GetMainCamera() const
 inline Camera * RenderSystem::GetDrawCamera() const
 {
     return drawCamera;
+}
+
+inline RenderPass* RenderSystem::GetMainForwardRenderPass() const
+{
+    return mainRenderPass;
 }
     
 } // ns

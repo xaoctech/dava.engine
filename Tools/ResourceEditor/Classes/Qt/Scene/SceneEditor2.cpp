@@ -46,6 +46,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Scene3D/Systems/RenderUpdateSystem.h"
+#include "Render/Highlevel/RenderBatchArray.h"
 
 const FastName MATERIAL_FOR_REBIND = FastName("Global");
 
@@ -131,6 +132,8 @@ SceneEditor2::SceneEditor2()
 	SceneSignals::Instance()->EmitOpened(this);
 
 	wasChanged = false;
+    
+    RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::LAYER_OCCLUSION_STATS, true);
     
     //RenderTechnique * technique1 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/PixelLit.Opaque.material"));
     //FastNameSet set;
