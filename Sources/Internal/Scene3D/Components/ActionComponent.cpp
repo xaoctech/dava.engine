@@ -360,17 +360,24 @@ namespace DAVA
 		
 	void ActionComponent::EvaluateAction(const Action& action)
 	{
-		if(Action::TYPE_PARTICLE_EFFECT == action.type)
-		{
-			OnActionParticleEffect(action);
-		}
-		else if(Action::TYPE_SOUND == action.type)
-		{
-			OnActionSound(action);
-		}
+        switch ( action.type )
+        {
+        case Action::TYPE_PARTICLE_EFFECT_START:
+            OnActionParticleEffectStart( action );
+            break;
+        case Action::TYPE_PARTICLE_EFFECT_STOP:
+            OnActionParticleEffectStop( action );
+            break;
+        case Action::TYPE_SOUND:
+            OnActionSound( action );
+            break;
+        default:
+            DVASSERT( false );
+            return;
+        }
 	}
 	
-	void ActionComponent::OnActionParticleEffect(const Action& action)
+    void ActionComponent::OnActionParticleEffectStart( const Action& action )
 	{
 		Entity* target = GetTargetEntity(action.entityName, entity);
 		
@@ -386,6 +393,22 @@ namespace DAVA
 			}
 		}
 	}
+
+    void ActionComponent::OnActionParticleEffectStop( const Action& action )
+    {
+        Entity* target = GetTargetEntity( action.entityName, entity );
+
+        if ( target != NULL )
+        {
+            ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>( target->GetComponent( Component::PARTICLE_EFFECT_COMPONENT ) );
+            if ( component )
+            {
+                component->StopAfterNRepeats( action.stopAfterNRepeats );
+                component->StopWhenEmpty( action.stopWhenEmpty );
+                component->Stop();
+            }
+        }
+    }
 	
 	void ActionComponent::OnActionSound(const Action& action)
 	{
