@@ -184,7 +184,7 @@ enum eGPUFamily
     GPU_FAMILY_COUNT,
     
     GPU_DEVICE_COUNT = GPU_PNG,
-    GPU_INVALID = 0x0F
+    GPU_INVALID = 0x07
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
