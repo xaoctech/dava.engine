@@ -97,7 +97,6 @@ const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED")
 const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 const FastName NMaterial::FLAG_WAVE_ANIMATION = FastName("WAVE_ANIMATION");
 const FastName NMaterial::FLAG_FAST_NORMALIZATION = FastName("FAST_NORMALIZATION");
-const FastName NMaterial::FLAG_PRECOMPUTED_BINORMAL = FastName("PRECOMPUTED_BINORMAL");
 
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
@@ -2731,9 +2730,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
 
 		ret.push_back(FLAG_WAVE_ANIMATION);
-		ret.push_back(FLAG_FAST_NORMALIZATION);
-
-        ret.push_back(FLAG_PRECOMPUTED_BINORMAL);
+		ret.push_back(FLAG_FAST_NORMALIZATION);        
 
 		ret.push_back(FLAG_SPECULAR);
 		ret.push_back(FLAG_TANGENT_SPACE_WATER_REFLECTIONS);
