@@ -27,52 +27,53 @@
 =====================================================================================*/
 
 
-#include "HangingObjectsHeight.h"
+#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
 
-#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+#include "Base/BaseTypes.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
 
-#include "DAVAEngine.h"
-
-#include <QObject>
-#include <QHBoxLayout>
-#include <QLabel>
-
-using namespace DAVA;
-
-HangingObjectsHeight::HangingObjectsHeight(QWidget *parent /*= 0*/)
-	: QWidget(parent)
+namespace DAVA
 {
-	heightValue = new EventFilterDoubleSpinBox(this);
-	heightValue->setToolTip("Min height for hanging objects");
-	heightValue->setMinimum(-100);
-	heightValue->setMaximum(100);	
-	heightValue->setSingleStep(0.01);
-	heightValue->setDecimals(4);
 
-	QLabel *caption = new QLabel("Min height:", this);
+#define WIND_TABLE_SIZE 63
 
-	QHBoxLayout *layout = new QHBoxLayout(this);
-	layout->setMargin(0);
-	layout->setContentsMargins(0, 0, 0, 0);
-
-	setLayout(layout);
-
-	layout->addWidget(caption);
-	layout->addWidget(heightValue);
-
-
-	QObject::connect(heightValue, SIGNAL(valueChanged(double)), this, SLOT(ValueChanged(double)));
-}
-
-void HangingObjectsHeight::SetHeight( DAVA::float32 value )
+class Entity;
+class WindComponent;
+class WindSystem : public SceneSystem, public Observer
 {
-	heightValue->setValue(value);
-}
+    struct WindInfo
+    {
+        WindInfo(WindComponent * c);
 
-void HangingObjectsHeight::ValueChanged( double value )
-{
-	emit HeightChanged(value);
-}
+        WindComponent * component;
+        float32 timeValue;
+    };
 
+public:
+    WindSystem(Scene * scene);
+    virtual ~WindSystem();
+	
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void Process(float32 timeElapsed);
 
+    Vector3 GetWind(const Vector3 & inPosition) const;
+
+    virtual void HandleEvent(Observable * observable);
+
+protected:
+    float32 GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const;
+
+    Vector<WindInfo *> winds;
+    bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
+
+    float32 windValuesTable[WIND_TABLE_SIZE];
+};
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
 

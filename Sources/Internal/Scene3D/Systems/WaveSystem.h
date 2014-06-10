@@ -27,52 +27,56 @@
 =====================================================================================*/
 
 
-#include "HangingObjectsHeight.h"
+#ifndef __DAVAENGINE_SCENE3D_WAVESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WAVESYSTEM_H__
 
-#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
+#include "Scene3D/Components/WindComponent.h"
 
-#include "DAVAEngine.h"
-
-#include <QObject>
-#include <QHBoxLayout>
-#include <QLabel>
-
-using namespace DAVA;
-
-HangingObjectsHeight::HangingObjectsHeight(QWidget *parent /*= 0*/)
-	: QWidget(parent)
+namespace DAVA
 {
-	heightValue = new EventFilterDoubleSpinBox(this);
-	heightValue->setToolTip("Min height for hanging objects");
-	heightValue->setMinimum(-100);
-	heightValue->setMaximum(100);	
-	heightValue->setSingleStep(0.01);
-	heightValue->setDecimals(4);
 
-	QLabel *caption = new QLabel("Min height:", this);
-
-	QHBoxLayout *layout = new QHBoxLayout(this);
-	layout->setMargin(0);
-	layout->setContentsMargins(0, 0, 0, 0);
-
-	setLayout(layout);
-
-	layout->addWidget(caption);
-	layout->addWidget(heightValue);
-
-
-	QObject::connect(heightValue, SIGNAL(valueChanged(double)), this, SLOT(ValueChanged(double)));
-}
-
-void HangingObjectsHeight::SetHeight( DAVA::float32 value )
+class Entity;
+class WaveComponent;
+class WaveSystem : public SceneSystem, public Observer
 {
-	heightValue->setValue(value);
-}
+    struct WaveInfo
+    {
+        WaveInfo(WaveComponent * component);
 
-void HangingObjectsHeight::ValueChanged( double value )
-{
-	emit HeightChanged(value);
-}
+        WaveComponent * component;
+        float32 maxRadius;
+        float32 maxRadiusSq;
+        Vector3 center;
+        float32 currentWaveRadius;
+    };
 
+public:
+    WaveSystem(Scene * scene);
+    virtual ~WaveSystem();
 
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
+
+    Vector3 GetWaveDisturbance(const Vector3 & inPosition) const;
+
+    virtual void HandleEvent(Observable * observable);
+
+protected:
+    void ClearWaves();
+
+    bool isWavesEnabled;
+    bool isVegetationAnimationEnabled;
+
+    Vector<WaveInfo *> waves;
+
+    friend class WaveComponent;
+};
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
 

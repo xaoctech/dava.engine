@@ -50,11 +50,14 @@ class SoundEvent;
 class SkyboxRenderObject;
 class SwitchComponent;
 class QualitySettingsComponent;
-class RenderComponent;
 class TransformComponent;
+class RenderComponent;
 class VegetationRenderObject;
 class CustomPropertiesComponent;
 class KeyedArchive;
+class SpeedTreeComponent;
+class WindComponent;
+class WaveComponent;
 
 ParticleEffectComponent * GetEffectComponent(Entity * fromEntity);
 TransformComponent * GetTransformComponent(Entity * fromEntity);
@@ -85,6 +88,10 @@ Entity * FindLandscapeEntity(Entity * rootEntity);
 Landscape * FindLandscape(Entity * rootEntity);
 Entity * FindVegetationEntity(Entity * rootEntity);
 VegetationRenderObject* FindVegetation(Entity * rootEntity);
+
+SpeedTreeComponent * GetSpeedTreeComponent(Entity * fromEntity);
+WindComponent * GetWindComponent(Entity * fromEntity);
+WaveComponent * GetWaveComponent(Entity * fromEntity);
 
 QualitySettingsComponent * GetQualitySettingsComponent(const Entity *fromEntity);
     
