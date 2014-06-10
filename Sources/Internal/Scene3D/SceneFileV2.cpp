@@ -39,6 +39,7 @@
 #include "Scene3D/SwitchNode.h"
 #include "Render/Highlevel/Camera.h"
 #include "Render/Highlevel/Mesh.h"
+#include "Render/3D/MeshUtils.h"
 
 #include "Scene3D/SceneNodeAnimationList.h"
 #include "Scene3D/LodNode.h"
@@ -174,7 +175,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 11;
+    header.version = 12;
     header.nodeCount = _scene->GetChildrenCount();
 
     if(NULL != scene->GetGlobalMaterial())
@@ -367,6 +368,11 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     waiter.Wait();
     UpdatePolygonGroupRequestedFormatRecursivly(rootNode);
     serializationContext.LoadPolygonGroupData(file);
+
+    if (GetVersion() < 12)   //rebuild binormals
+    {     
+        RebuildTangentSpace(rootNode);
+    }
     
 	rootNode->SceneDidLoaded();
     
@@ -1183,6 +1189,29 @@ void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 	}
 }
 
+void SceneFileV2::RebuildTangentSpace(Entity *entity)
+{
+    RenderObject *ro = GetRenderObject(entity);
+
+    if (ro)
+    {
+        for (int32 i=0, sz=ro->GetRenderBatchCount(); i<sz; ++i)
+        {
+            RenderBatch *renderBatch = ro->GetRenderBatch(i);
+            PolygonGroup *group = renderBatch->GetPolygonGroup();
+            if (group)
+            {
+                int32 format = group->GetFormat();
+                if ((format&EVF_TANGENT)&&!(format&EVF_BINORMAL))
+                    MeshUtils::RebuildMeshTangentSpace(group, true);
+            }
+        }
+    }
+
+    for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
+        RebuildTangentSpace(entity->GetChild(i));
+}
+
     
 void SceneFileV2::OptimizeScene(Entity * rootNode)
 {
@@ -1201,7 +1230,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	    lodConverter.ConvertLodToV2(rootNode);
 	    SwitchToRenerObjectConverter switchConverter;
 	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
-    }
+    }    
 	
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
