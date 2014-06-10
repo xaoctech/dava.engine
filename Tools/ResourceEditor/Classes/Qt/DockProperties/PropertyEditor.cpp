@@ -910,7 +910,7 @@ void PropertyEditor::RebuildTangentSpace()
             dlg->setLayout(dlgLayout);                                
 
             QCheckBox *exportBinormalCheckBox = new QCheckBox("Export binormal");
-            exportBinormalCheckBox->setChecked(false);
+            exportBinormalCheckBox->setChecked(true);
             dlgLayout->addWidget(exportBinormalCheckBox);                
 
             QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
