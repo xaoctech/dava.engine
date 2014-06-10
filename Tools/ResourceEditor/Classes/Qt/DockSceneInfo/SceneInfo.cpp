@@ -107,6 +107,7 @@ void SceneInfo::InitializeInfo()
     InitializeLODSectionInFrame();
     InitializeLODSectionForSelection();
     InitializeSpeedTreeInfoSelection();
+    InitializeLayersSection();
     
     InitializeVegetationInfoSection();
 }
@@ -548,6 +549,18 @@ void SceneInfo::SetChild(const QString & key, const QVariant &value, QtPropertyD
 	}
 }
 
+bool SceneInfo::HasChild(const QString & key, QtPropertyData *parent)
+{
+    bool hasChild = false;
+    if(NULL != parent)
+	{
+		QtPropertyData *propData = parent->ChildGet(key);
+		hasChild = (propData != NULL);
+	}
+    
+    return hasChild;
+}
+
 void SceneInfo::SaveTreeState()
 {
     // Store the current Property Editor Tree state before switching to the new node.
@@ -592,6 +605,8 @@ void SceneInfo::UpdateInfoByTimer()
     RefreshLODInfoForSelection();
     
     RefreshVegetationInfoSection();
+    
+    RefreshLayersSection();
 }
 
 void SceneInfo::RefreshAllData(SceneEditor2 *scene)
@@ -607,6 +622,8 @@ void SceneInfo::RefreshAllData(SceneEditor2 *scene)
     RefreshSpeedTreeInfoSelection();
     
     RefreshVegetationInfoSection();
+    
+    RefreshLayersSection();
 
 	RestoreTreeState();
 }
@@ -615,6 +632,8 @@ void SceneInfo::SceneActivated(SceneEditor2 *scene)
 {
     activeScene = scene;
     landscape = FindLandscape(activeScene);
+    
+    UpdateLayersSectionStructure(activeScene);
 	
 	isUpToDate = isVisible();
 	if(isUpToDate)
@@ -915,6 +934,44 @@ void SceneInfo::RefreshVegetationInfoSection()
                     SetChild(POLY_PER_LOD_PER_LAYER_HEADER[layerIndex], str.c_str(), header);
                 }
             }
+        }
+    }
+}
+
+void SceneInfo::InitializeLayersSection()
+{
+    CreateInfoHeader("Fragments Info");
+}
+
+void SceneInfo::UpdateLayersSectionStructure(SceneEditor2 *scene)
+{
+    QtPropertyData* header = GetInfoHeader("Fragments Info");
+    header->ChildRemoveAll();
+    
+    if(scene)
+    {
+        RenderPass* renderPass = scene->renderSystem->GetMainForwardRenderPass();
+        uint32 layerCount = renderPass->GetRenderLayerCount();
+        for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+        {
+            RenderLayer* layer = renderPass->GetRenderLayer(layerIndex);
+            AddChild(layer->GetName().c_str(), header);
+        }
+    }
+}
+
+void SceneInfo::RefreshLayersSection()
+{
+    if(activeScene)
+    {
+        QtPropertyData* header = GetInfoHeader("Fragments Info");
+    
+        RenderPass* renderPass = activeScene->renderSystem->GetMainForwardRenderPass();
+        uint32 layerCount = renderPass->GetRenderLayerCount();
+        for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
+        {
+            RenderLayer* layer = renderPass->GetRenderLayer(layerIndex);
+            SetChild(layer->GetName().c_str(), layer->GetFragmentStats(), header);
         }
     }
 }
