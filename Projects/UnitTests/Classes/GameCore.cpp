@@ -63,8 +63,10 @@
 #include "UIMovieTest.h"
 #include "ComponentsTest.h"
 #include "RectSpriteTest.h"
+#include "OpenGLES30FormatTest.h"
 #include "StringFormatTest.h"
 #include "SaveImageTest.h"
+#include "JPEGTest.h"
 #include "DateTimeTest.h"
 
 using namespace DAVA;
@@ -91,8 +93,9 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+    new OpenGLES30FormatTest();
+	new JPEGTest();
     new SaveImageTest();
-    
     new StringFormatTest();
     new RectSpriteTest();
 
@@ -113,7 +116,7 @@ void GameCore::OnAppStarted()
  	new EntityTest(); 
  	new MemoryAllocatorsTest();
  	new HashMapTest();
- //	new SoundTest();
+ 	new SoundTest();
  	new SplitTest();
  	new AlignTest();
  	new EMailTest();

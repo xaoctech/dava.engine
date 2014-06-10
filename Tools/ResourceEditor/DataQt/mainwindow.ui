@@ -85,7 +85,6 @@
        </property>
        <addaction name="actionFavoritesEdit"/>
        <addaction name="actionAddNewComponent"/>
-       <addaction name="actionRemoveComponent"/>
       </widget>
      </item>
      <item>
@@ -330,24 +329,16 @@
     <addaction name="actionModifyRotate"/>
     <addaction name="actionModifyScale"/>
     <addaction name="separator"/>
+    <addaction name="actionLockTransform"/>
+    <addaction name="actionUnlockTransform"/>
+    <addaction name="separator"/>
+    <addaction name="actionZeroPivotPoint"/>
+    <addaction name="actionCenterPivotPoint"/>
+    <addaction name="separator"/>
     <addaction name="actionModifyPlaceOnLandscape"/>
     <addaction name="actionModifySnapToLandscape"/>
     <addaction name="separator"/>
     <addaction name="actionOnSceneSelection"/>
-   </widget>
-   <widget class="QMenu" name="menuComponent">
-    <property name="title">
-     <string>Component</string>
-    </property>
-    <addaction name="actionAddNewComponent"/>
-    <addaction name="actionRemoveComponent"/>
-    <addaction name="separator"/>
-    <addaction name="actionAddActionComponent"/>
-    <addaction name="actionAddQualitySettingsComponent"/>
-    <addaction name="actionAddStaticOcclusionComponent"/>
-    <addaction name="separator"/>
-    <addaction name="actionAddSoundComponent"/>
-    <addaction name="actionRemoveSoundComponent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -412,9 +403,6 @@
     <addaction name="menuObjectTypes"/>
     <addaction name="actionHangingObjects"/>
     <addaction name="actionSwitchesWithDifferentLODs"/>
-    <addaction name="separator"/>
-    <addaction name="actionCurrentSceneSettings"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuQuality">
     <property name="title">
@@ -423,15 +411,21 @@
     <addaction name="separator"/>
     <addaction name="actionCustomQuality"/>
    </widget>
+   <widget class="QMenu" name="menuDebug_Functions">
+    <property name="title">
+     <string>Debug Functions</string>
+    </property>
+    <addaction name="actionGridCopy"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuQuality"/>
    <addaction name="menuCreateNode"/>
-   <addaction name="menuComponent"/>
    <addaction name="menuScene"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuDebug_Functions"/>
   </widget>
   <widget class="QDockWidget" name="dockParticleEditor">
    <property name="sizePolicy">
@@ -480,6 +474,9 @@
    <addaction name="separator"/>
    <addaction name="actionPivotCommon"/>
    <addaction name="actionPivotCenter"/>
+   <addaction name="separator"/>
+   <addaction name="actionZeroPivotPoint"/>
+   <addaction name="actionCenterPivotPoint"/>
    <addaction name="separator"/>
    <addaction name="actionModifyPlaceOnLandscape"/>
    <addaction name="actionModifySnapToLandscape"/>
@@ -725,7 +722,6 @@
    <addaction name="actionReloadShader"/>
    <addaction name="actionSetShadowColor"/>
    <addaction name="actionConvertModifiedTextures"/>
-   <addaction name="actionCurrentSceneSettings"/>
   </widget>
   <widget class="QDockWidget" name="dockLibrary">
    <property name="windowTitle">
@@ -1226,18 +1222,6 @@
     <string>Remove entity</string>
    </property>
   </action>
-  <action name="actionRemoveComponent">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/removecomponent.png</normaloff>:/QtIcons/removecomponent.png</iconset>
-   </property>
-   <property name="text">
-    <string>Remove Component</string>
-   </property>
-   <property name="toolTip">
-    <string>Remove component</string>
-   </property>
-  </action>
   <action name="actionConvertToShadow">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1688,15 +1672,6 @@
     <string>Convert Modified texture's PNGs</string>
    </property>
   </action>
-  <action name="actionCurrentSceneSettings">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/settings.png</normaloff>:/QtIcons/settings.png</iconset>
-   </property>
-   <property name="text">
-    <string>Current scene settings...</string>
-   </property>
-  </action>
   <action name="actionAlbedo">
    <property name="checkable">
     <bool>true</bool>
@@ -1791,6 +1766,11 @@
     <string>Custom Quality Settings</string>
    </property>
   </action>
+  <action name="actionGridCopy">
+   <property name="text">
+    <string>Grid Copy</string>
+   </property>
+  </action>
   <action name="actionSetLightViewMode">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
@@ -1871,6 +1851,42 @@
    </property>
    <property name="text">
     <string>Switches with Different LODs</string>
+   </property>
+  </action>
+  <action name="actionCenterPivotPoint">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/pivot_mote_to_center.png</normaloff>:/QtIcons/pivot_mote_to_center.png</iconset>
+   </property>
+   <property name="text">
+    <string>Center Pivot Point</string>
+   </property>
+  </action>
+  <action name="actionZeroPivotPoint">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/pivot_move_to_zero.png</normaloff>:/QtIcons/pivot_move_to_zero.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zero Pivot Point</string>
+   </property>
+  </action>
+  <action name="actionLockTransform">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/lock_add.png</normaloff>:/QtIcons/lock_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Lock Transform</string>
+   </property>
+  </action>
+  <action name="actionUnlockTransform">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/lock_delete.png</normaloff>:/QtIcons/lock_delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Unlock Transform</string>
    </property>
   </action>
  </widget>

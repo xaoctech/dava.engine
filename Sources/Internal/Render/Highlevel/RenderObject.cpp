@@ -153,7 +153,23 @@ void RenderObject::RecalcBoundingBox()
         bbox.AddAABBox(renderBatchArray[k].renderBatch->GetBoundingBox());
     }
 }
-    
+
+void RenderObject::GetRenderBatches(int32 requestLodIndex, int32 requestSwitchIndex, Vector<RenderBatch*> & batches, bool includeShareLods /* = false */) const
+{
+    batches.clear();
+
+    int32 batchesCount = renderBatchArray.size();
+    for(int32 i = 0; i < batchesCount; ++i)
+    {
+        const IndexedRenderBatch & irb = renderBatchArray[i];
+        if( (requestLodIndex == -1 || requestLodIndex == irb.lodIndex || (includeShareLods && irb.lodIndex == -1)) &&
+            (requestSwitchIndex == -1 || requestSwitchIndex == irb.switchIndex) )
+        {
+            batches.push_back(irb.renderBatch);
+        }
+    }
+}
+
 RenderObject * RenderObject::Clone(RenderObject *newObject)
 {
 	if(!newObject)
@@ -273,7 +289,7 @@ RenderSystem * RenderObject::GetRenderSystem()
 	return renderSystem;
 }
 
-void RenderObject::BakeTransform(const Matrix4 & /*transform*/)
+void RenderObject::BakeGeometry(const Matrix4 & transform)
 {
 }
 
@@ -306,12 +322,12 @@ void RenderObject::SetSwitchIndex(int32 _switchIndex)
 	}
 }
 
-int32 RenderObject::GetLodIndex()
+int32 RenderObject::GetLodIndex() const
 {
     return lodIndex;
 }
 
-int32 RenderObject::GetSwitchIndex()
+int32 RenderObject::GetSwitchIndex() const
 {
     return switchIndex;
 }

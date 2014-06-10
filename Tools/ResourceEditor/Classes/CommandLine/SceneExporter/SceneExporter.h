@@ -33,6 +33,7 @@
 
 #include "DAVAEngine.h"
 #include "CommandLine/SceneUtils/SceneUtils.h"
+#include "TextureCompression/TextureConverter.h"
 
 using namespace DAVA;
 
@@ -46,6 +47,8 @@ public:
     void SetGPUForExporting(const String &newGPU);
     void SetGPUForExporting(const eGPUFamily newGPU);
     
+	void SetCompressionQuality(TextureConverter::eConvertQuality quality);
+
     void SetInFolder(const FilePath &folderPathname);
     void SetOutFolder(const FilePath &folderPathname);
     void SetOutSoundsFolder(const FilePath &folderPathname);
@@ -62,13 +65,13 @@ protected:
     void RemoveEditorNodes(Entity *rootNode);
     void RemoveEditorCustomProperties(Entity *rootNode);
     
-    void ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
+    bool ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog);
     bool ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog);
     bool ExportTexture(const TextureDescriptor * descriptor, Set<String> &errorLog);
     void CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog);
 
-    void ExportLandscape(Scene *scene, Set<String> &errorLog);
-    void ExportVegetation(Scene *scene, Set<String> &errorLog);
+    bool ExportLandscape(Scene *scene, Set<String> &errorLog);
+    bool ExportVegetation(Scene *scene, Set<String> &errorLog);
     
     void ExportSounds(const FilePath &scenePath);
     
@@ -80,6 +83,8 @@ protected:
 
     eGPUFamily exportForGPU;
 	bool optimizeOnExport;
+
+	TextureConverter::eConvertQuality quality;
 };
 
 

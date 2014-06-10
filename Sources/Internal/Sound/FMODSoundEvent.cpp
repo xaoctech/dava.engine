@@ -231,7 +231,13 @@ void FMODSoundEvent::ApplyParamsToEvent(FMOD::Event *event)
         FMOD::EventParameter * param = 0;
         FMOD_VERIFY(event->getParameter(it->first.c_str(), &param));
         if(param)
+        {
             FMOD_VERIFY(param->setValue(it->second));
+        }
+        else
+        {
+            Logger::Error("Event: %s, Param: %s", eventName.c_str(), it->first.c_str());
+        }
     }
 }
 

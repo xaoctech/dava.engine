@@ -48,6 +48,7 @@ using namespace DAVA;
 SceneExporter::SceneExporter()
 {
     exportForGPU = GPU_UNKNOWN;
+	quality = TextureConverter::ECQ_DEFAULT;
 	optimizeOnExport = true;
 }
 
@@ -131,14 +132,14 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
         RemoveEditorCustomProperties(scene);
     }
 
-    ExportDescriptors(scene, errorLog);
+    bool sceneWasExportedCorrectly = ExportDescriptors(scene, errorLog);
 
     FilePath oldPath = SceneValidator::Instance()->SetPathForChecking(sceneUtils.dataSourceFolder);
     SceneValidator::Instance()->ValidateScene(scene, fileName, errorLog);
 	//SceneValidator::Instance()->ValidateScales(scene, errorLog);
 
-    ExportLandscape(scene, errorLog);
-    ExportVegetation(scene, errorLog);
+    sceneWasExportedCorrectly &= ExportLandscape(scene, errorLog);
+    sceneWasExportedCorrectly &= ExportVegetation(scene, errorLog);
 
     //save scene to new place
     FilePath tempSceneName = FilePath::CreateWithNewExtension(sceneUtils.dataSourceFolder + relativeFilename, ".exported.sc2");
@@ -148,11 +149,19 @@ void SceneExporter::ExportScene(Scene *scene, const FilePath &fileName, Set<Stri
 	if(!moved)
 	{
 		errorLog.insert(Format("Can't move file %s", fileName.GetAbsolutePathname().c_str()));
+        sceneWasExportedCorrectly = false;
 	}
     
     ExportSounds(fileName);
 
     SceneValidator::Instance()->SetPathForChecking(oldPath);
+    
+    if(!sceneWasExportedCorrectly)
+    {   // *** to highlight this message from other error messages
+        Logger::Error("***  Scene %s was exported with errors!", fileName.GetAbsolutePathname().c_str());
+    }
+    
+    return;
 }
 
 void SceneExporter::RemoveEditorNodes(DAVA::Entity *rootNode)
@@ -226,24 +235,28 @@ void SceneExporter::RemoveEditorCustomProperties(Entity *rootNode)
 }
 
 
-void SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
+bool SceneExporter::ExportDescriptors(DAVA::Scene *scene, Set<String> &errorLog)
 {
-     DAVA::TexturesMap textures;
-     SceneHelper::EnumerateSceneTextures(scene, textures, SceneHelper::INCLUDE_NULL);
- 
-     auto endIt = textures.end();
-     for(auto it = textures.begin(); it != endIt; ++it)
-     {
-         DAVA::FilePath pathname = it->first;
-         if((pathname.GetType() == DAVA::FilePath::PATH_IN_MEMORY) || pathname.IsEmpty())
-         {
-             continue;
-         }
-         
-         ExportTextureDescriptor(it->first, errorLog);
-     }
- 
-     textures.clear();
+    bool allDescriptorsWereExported = true;
+    
+    DAVA::TexturesMap textures;
+    SceneHelper::EnumerateSceneTextures(scene, textures, SceneHelper::INCLUDE_NULL);
+
+    auto endIt = textures.end();
+    for(auto it = textures.begin(); it != endIt; ++it)
+    {
+        DAVA::FilePath pathname = it->first;
+        if((pathname.GetType() == DAVA::FilePath::PATH_IN_MEMORY) || pathname.IsEmpty())
+        {
+            continue;
+        }
+
+        allDescriptorsWereExported &= ExportTextureDescriptor(it->first, errorLog);
+    }
+
+    textures.clear();
+    
+    return allDescriptorsWereExported;
 }
 
 bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String> &errorLog)
@@ -256,9 +269,9 @@ bool SceneExporter::ExportTextureDescriptor(const FilePath &pathname, Set<String
     }
     
     descriptor->exportedAsGpuFamily = exportForGPU;
-    descriptor->exportedAsPixelFormat = descriptor->GetPixelFormatForCompression(exportForGPU);
+    descriptor->format = descriptor->GetPixelFormatForCompression(exportForGPU);
 
-    if((descriptor->exportedAsGpuFamily != GPU_UNKNOWN) && (descriptor->exportedAsPixelFormat == FORMAT_INVALID))
+    if((descriptor->exportedAsGpuFamily != GPU_UNKNOWN) && (descriptor->format == FORMAT_INVALID))
     {
         errorLog.insert(Format("Not selected export format for pathname %s", pathname.GetAbsolutePathname().c_str()));
         
@@ -376,27 +389,33 @@ void SceneExporter::ExportSounds(const FilePath &scenePath)
 #endif
 }
 
-void SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
+bool SceneExporter::ExportLandscape(Scene *scene, Set<String> &errorLog)
 {
     DVASSERT(scene);
 
     Landscape *landscape = FindLandscape(scene);
     if (landscape)
     {
-        sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
+        return sceneUtils.CopyFile(landscape->GetHeightmapPathname(), errorLog);
     }
+    
+    return true;
 }
 
-void SceneExporter::ExportVegetation(Scene *scene, Set<String> &errorLog)
+bool SceneExporter::ExportVegetation(Scene *scene, Set<String> &errorLog)
 {
     DVASSERT(scene);
+    
+    bool wasExported = true;
     
     VegetationRenderObject *vegetation = FindVegetation(scene);
     if (vegetation)
     {
-        sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
-        sceneUtils.CopyFile(vegetation->GetVegetationMapPath(), errorLog);
+        wasExported |= sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
+        wasExported |= sceneUtils.CopyFile(vegetation->GetVegetationMapPath(), errorLog);
     }
+    
+    return wasExported;
 }
 
 void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, Set<String> &errorLog)
@@ -417,17 +436,28 @@ void SceneExporter::CompressTextureIfNeed(const TextureDescriptor * descriptor, 
         //TODO: do we need to convert to pvr if needToConvert is false, but *.pvr file isn't at filesystem
         
 		eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
-		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, (PixelFormat)descriptor->exportedAsPixelFormat);
-		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true);
+
+		TextureConverter::CleanupOldTextures(descriptor, gpuFamily, descriptor->format);
+		TextureConverter::ConvertTexture(*descriptor, gpuFamily, true, quality);
         
         DAVA::TexturesMap texturesMap = Texture::GetTextureMap();
-        DAVA::Texture *tex = texturesMap[FILEPATH_MAP_KEY(descriptor->pathname)];
-        tex->Reload();
+        
+        DAVA::TexturesMap::iterator found = texturesMap.find(FILEPATH_MAP_KEY(descriptor->pathname));
+        if(found != texturesMap.end())
+        {
+            DAVA::Texture *tex = found->second;
+            tex->Reload();
+        }
     }
 }
 
 void SceneExporter::EnableOptimizations( bool enable )
 {
 	optimizeOnExport = enable;
+}
+
+void SceneExporter::SetCompressionQuality( TextureConverter::eConvertQuality _quality )
+{
+	quality = _quality;
 }
 

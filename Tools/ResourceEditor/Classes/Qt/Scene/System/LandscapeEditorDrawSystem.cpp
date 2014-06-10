@@ -205,7 +205,7 @@ LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::EnableNotPassab
 	
 	landscapeProxy->SetNotPassableTexture(notPassableTerrainProxy->GetTexture());
 	landscapeProxy->SetNotPassableTextureEnabled(true);
-
+    
 	return LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS;
 }
 
@@ -219,7 +219,7 @@ void LandscapeEditorDrawSystem::DisableNotPassableTerrain()
 	notPassableTerrainProxy->Disable();
 	landscapeProxy->SetNotPassableTexture(NULL);
 	landscapeProxy->SetNotPassableTextureEnabled(false);
-	
+    
 	DisableCustomDraw();
 }
 
@@ -709,6 +709,9 @@ String LandscapeEditorDrawSystem::GetDescriptionByError(eErrorType error)
 		case LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT:
 			ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_HEIGHTMAP_ABSENT;
 			break;
+        case LANDSCAPE_EDITOR_SYSTEM_CUSTOMCOLORS_ABSENT:
+            ret = ResourceEditor::LANDSCAPE_EDITOR_SYSTEM_CUSTOMCOLORS_ABSENT;
+            break;
 			
 		default:
 			break;
