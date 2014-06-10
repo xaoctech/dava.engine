@@ -26,53 +26,28 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#include "HangingObjectsHeight.h"
-
-#include "Tools/EventFilterDoubleSpinBox/EventFilterDoubleSpinBox.h"
+#ifndef __DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
+#define __DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
 
 #include "DAVAEngine.h"
-
-#include <QObject>
-#include <QHBoxLayout>
-#include <QLabel>
-
 using namespace DAVA;
 
-HangingObjectsHeight::HangingObjectsHeight(QWidget *parent /*= 0*/)
-	: QWidget(parent)
+class TreeToAnimatedTreeConverter
 {
-	heightValue = new EventFilterDoubleSpinBox(this);
-	heightValue->setToolTip("Min height for hanging objects");
-	heightValue->setMinimum(-100);
-	heightValue->setMaximum(100);	
-	heightValue->setSingleStep(0.01);
-	heightValue->setDecimals(4);
+public:
+    static void CalculateAnimationParams(SpeedTreeObject * object);
 
-	QLabel *caption = new QLabel("Min height:", this);
+    void ConvertTrees(Entity *scene);
 
-	QHBoxLayout *layout = new QHBoxLayout(this);
-	layout->setMargin(0);
-	layout->setContentsMargins(0, 0, 0, 0);
+private:
+    void ConvertingPathRecursive(Entity *scene);
+    void ConvertLeafPGForAnimations(PolygonGroup * geometry);
+    void ConvertTrunkForAnimations(PolygonGroup * geometry);
 
-	setLayout(layout);
+    Set<PolygonGroup *> uniqLeafPGs;
+    Set<PolygonGroup *> uniqTrunkPGs;
+    Set<SpeedTreeObject *> uniqTreeObjects;
+};
 
-	layout->addWidget(caption);
-	layout->addWidget(heightValue);
-
-
-	QObject::connect(heightValue, SIGNAL(valueChanged(double)), this, SLOT(ValueChanged(double)));
-}
-
-void HangingObjectsHeight::SetHeight( DAVA::float32 value )
-{
-	heightValue->setValue(value);
-}
-
-void HangingObjectsHeight::ValueChanged( double value )
-{
-	emit HeightChanged(value);
-}
-
-
+#endif //__DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
 
