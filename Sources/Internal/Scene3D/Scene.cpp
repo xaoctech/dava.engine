@@ -33,7 +33,7 @@
 #include "Render/Material.h"
 #include "Render/3D/StaticMesh.h"
 #include "Render/3D/AnimatedMesh.h"
-#include "Render/Image.h"
+#include "Render/Image/Image.h"
 #include "Render/Highlevel/RenderSystem.h"
 
 
