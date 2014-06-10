@@ -35,6 +35,7 @@
 #include "WidgetSignalsBlocker.h"
 #include "ChangePropertyCommand.h"
 #include "CommandsController.h"
+#include "PropertyNames.h"
 
 static const QString SCROLL_PROPERTY_BLOCK_NAME = "Scroll";
 
@@ -59,8 +60,8 @@ void ScrollControlPropertyGridWidget::Initialize(BaseMetadata* activeMetadata)
 	// Build the properties map to make the properties search faster.
 	PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-	RegisterComboBoxWidgetForProperty(propertiesMap, "ScrollOrientation", ui->orientationComboBox, false, true);
-    RegisterComboBoxWidgetForProperty(propertiesMap, "UIScrollBarDelegateName", ui->scrollViewsComboBox, false, true);
+	RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SCROLL_ORIENTATION, ui->orientationComboBox, false, true);
+    RegisterComboBoxWidgetForProperty(propertiesMap, PropertyNames::SCROLL_BAR_DELEGATE_NAME, ui->scrollViewsComboBox, false, true);
 }
 
 void ScrollControlPropertyGridWidget::Cleanup()

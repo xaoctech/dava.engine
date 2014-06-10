@@ -105,6 +105,10 @@ const char* PropertyNames::HORIZONTAL_SCROLL_POSITION = "HorizontalScrollPositio
 const char* PropertyNames::VERTICAL_SCROLL_POSITION = "VerticalScrollPosition";
 const char* PropertyNames::SCROLL_CONTENT_SIZE_X = "ContentSizeX";
 const char* PropertyNames::SCROLL_CONTENT_SIZE_Y = "ContentSizeY";
+    
+//UI Scroll Bar properties
+const char* PropertyNames::SCROLL_ORIENTATION ="ScrollOrientation";
+const char* PropertyNames::SCROLL_BAR_DELEGATE_NAME="UIScrollBarDelegateName";
 
 // UI Spinner properties.
 const char* PropertyNames::UISPINNER_PREV_BUTTON_TEXT = "PrevButtonText";
