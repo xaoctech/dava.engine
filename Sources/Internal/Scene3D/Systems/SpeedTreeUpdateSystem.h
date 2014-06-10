@@ -27,53 +27,45 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
-using namespace DAVA;
-
-class SceneSaver
+namespace DAVA
+{
+class Entity;
+class SpeedTreeComponent;
+    
+class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
+    SpeedTreeUpdateSystem(Scene * scene);
+    virtual ~SpeedTreeUpdateSystem();
+	
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
     
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
+	virtual void HandleEvent(Observable * observable);
+
 protected:
-    
-    void ReleaseTextures();
+    void UpdateAnimationFlag(Entity * entity);
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+private:
+    Vector<SpeedTreeComponent *> allTrees;
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
+    bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
 
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
+    friend class SpeedTreeComponent;
 };
+    
+} // ns
 
+#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
 
-
-#endif // __SCENE_SAVER_H__

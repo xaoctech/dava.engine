@@ -26,54 +26,28 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#ifndef __DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
+#define __DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
 
 #include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
 using namespace DAVA;
 
-class SceneSaver
+class TreeToAnimatedTreeConverter
 {
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
-protected:
-    
-    void ReleaseTextures();
+    static void CalculateAnimationParams(SpeedTreeObject * object);
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+    void ConvertTrees(Entity *scene);
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
+private:
+    void ConvertingPathRecursive(Entity *scene);
+    void ConvertLeafPGForAnimations(PolygonGroup * geometry);
+    void ConvertTrunkForAnimations(PolygonGroup * geometry);
 
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
+    Set<PolygonGroup *> uniqLeafPGs;
+    Set<PolygonGroup *> uniqTrunkPGs;
+    Set<SpeedTreeObject *> uniqTreeObjects;
 };
 
+#endif //__DAVAENGINE_ANIMATEDTREE_CONVERTER_H__
 
-
-#endif // __SCENE_SAVER_H__

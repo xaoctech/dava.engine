@@ -27,53 +27,56 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_SCENE3D_WAVESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WAVESYSTEM_H__
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
+#include "Scene3D/Components/WindComponent.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
-using namespace DAVA;
-
-class SceneSaver
+namespace DAVA
 {
+
+class Entity;
+class WaveComponent;
+class WaveSystem : public SceneSystem, public Observer
+{
+    struct WaveInfo
+    {
+        WaveInfo(WaveComponent * component);
+
+        WaveComponent * component;
+        float32 maxRadius;
+        float32 maxRadiusSq;
+        Vector3 center;
+        float32 currentWaveRadius;
+    };
+
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
+    WaveSystem(Scene * scene);
+    virtual ~WaveSystem();
+
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
+
+    Vector3 GetWaveDisturbance(const Vector3 & inPosition) const;
+
+    virtual void HandleEvent(Observable * observable);
+
 protected:
-    
-    void ReleaseTextures();
+    void ClearWaves();
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+    bool isWavesEnabled;
+    bool isVegetationAnimationEnabled;
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
+    Vector<WaveInfo *> waves;
 
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
+    friend class WaveComponent;
 };
+    
+} // ns
 
+#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
 
-
-#endif // __SCENE_SAVER_H__

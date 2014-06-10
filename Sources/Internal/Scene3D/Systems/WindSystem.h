@@ -27,53 +27,53 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_SCENE3D_WINDSYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_WINDSYSTEM_H__
 
-#ifndef __SCENE_SAVER_H__
-#define __SCENE_SAVER_H__
+#include "Base/BaseTypes.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
 
-#include "DAVAEngine.h"
-#include "CommandLine/SceneUtils/SceneUtils.h"
-
-using namespace DAVA;
-
-class SceneSaver
+namespace DAVA
 {
+
+#define WIND_TABLE_SIZE 63
+
+class Entity;
+class WindComponent;
+class WindSystem : public SceneSystem, public Observer
+{
+    struct WindInfo
+    {
+        WindInfo(WindComponent * c);
+
+        WindComponent * component;
+        float32 timeValue;
+    };
+
 public:
-	SceneSaver();
-	virtual ~SceneSaver();
-    
-    void SetInFolder(const FilePath &folderPathname);
-    void SetOutFolder(const FilePath &folderPathname);
-    
-    void SaveFile(const String &fileName, Set<String> &errorLog);
-	void ResaveFile(const String &fileName, Set<String> &errorLog);
-    void SaveScene(Scene *scene, const FilePath &fileName, Set<String> &errorLog);
-    
-    void EnableCopyConverted(bool enabled);
-    
+    WindSystem(Scene * scene);
+    virtual ~WindSystem();
+	
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void Process(float32 timeElapsed);
+
+    Vector3 GetWind(const Vector3 & inPosition) const;
+
+    virtual void HandleEvent(Observable * observable);
+
 protected:
-    
-    void ReleaseTextures();
+    float32 GetWindValueFromTable(const Vector3 & inPosition, const WindInfo * info) const;
 
-    void CopyTextures(Scene *scene);
-    void CopyTexture(const FilePath &texturePathname);
+    Vector<WindInfo *> winds;
+    bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
 
-	void CopyReferencedObject(Entity *node);
-	void CopyEffects(Entity *node);
-	void CopyEmitter(ParticleEmitter *emitter);
-
-	void CopyCustomColorTexture(Scene *scene, const FilePath & sceneFolder, Set<String> &errorLog);
-
-    static FilePath CreateProjectPathFromPath(const FilePath & pathname);
-    
-protected:
-    
-    SceneUtils sceneUtils;
-    
-    TexturesMap texturesForSave;
-    bool copyConverted;
+    float32 windValuesTable[WIND_TABLE_SIZE];
 };
+    
+} // ns
 
+#endif	/* __DAVAENGINE_SCENE3D_WINDSYSTEM_H__ */
 
-
-#endif // __SCENE_SAVER_H__
