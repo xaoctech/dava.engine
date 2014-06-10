@@ -47,18 +47,19 @@ const int COLUMN_STOPWHENEMPTY_INDEX = 6;
 const int COMBO_YES_INDEX = 0;
 const int COMBO_NO_INDEX = 1;
 
-const int ACTION_NAME_COUNT = 3;
-static QString ACTION_TYPE_NAME[] =
+const int ACTION_NAME_COUNT = 4;
+static QString ACTION_TYPE_NAME[ACTION_NAME_COUNT] =
 {
 	"None",
-	"Particle",
-	"Sound"
+	"Particle start",
+	"Sound",
+    "Particle stop",
 };
 const int EVENT_NAME_COUNT = 2;
-static QString EVENT_TYPE_NAME[] =
+static QString EVENT_TYPE_NAME[EVENT_NAME_COUNT] =
 {	
 	"Switch",
-	"Added"
+	"Added",
 };
 
 ActionComponentEditor::ActionComponentEditor(QWidget *parent) :
@@ -178,7 +179,7 @@ DAVA::ActionComponent::Action ActionComponentEditor::GetDefaultAction()
 {
 	DAVA::ActionComponent::Action action;
 	action.eventType = DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED;
-	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT;	
+	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT_START;	
 	action.entityName = DAVA::ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME;
 	action.delay = 0.0f;
 	action.switchIndex = -1;
