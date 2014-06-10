@@ -160,6 +160,7 @@ public:
     bool RemoveEmptySceneNodes(Entity * rootNode);
     bool RemoveEmptyHierarchy(Entity * currentNode);
 	void ConvertShadows(Entity * rootNode);
+    void RebuildTangentSpace(Entity *entity);
     int32 removedNodeCount;
     	    
     void UpdatePolygonGroupRequestedFormatRecursivly(Entity *entity);
