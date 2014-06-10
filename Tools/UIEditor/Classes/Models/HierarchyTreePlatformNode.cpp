@@ -211,7 +211,6 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
 			HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(this, QString::fromStdString(screenName));
 			
             // Do not load screen now,it will be done on selecting it (see DF-2314).
-            //result &= screenNode->Load(screenPath);
 			AddTreeNode(screenNode);
 		}
 	}
