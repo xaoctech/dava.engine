@@ -42,7 +42,7 @@ ControlMimeData::~ControlMimeData()
 
 bool ControlMimeData::hasFormat( const QString & mimeType ) const
 {
-    // We need this to drop controls from Library to Hierarchy tree as native. See DF-2339.
+    // We need this to drop controls from Library to Hierarchy tree as native.
     if(mimeType == "application/x-qabstractitemmodeldatalist")
     {
         return true;
