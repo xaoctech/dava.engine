@@ -48,7 +48,8 @@ public:
 	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath);
 	void RemoveControl(QTreeWidgetItem* item);
 	void UpdateControl(QTreeWidgetItem* item, const QString& name);
-	void SetItemVisible(QTreeWidgetItem* item, bool visible);
+    void SetItemEnabled(QTreeWidgetItem* item, bool enabled);
+    void ClearAllItems();
 	void ResetSelection();
 	
 private:

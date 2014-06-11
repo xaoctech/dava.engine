@@ -73,10 +73,14 @@ void LibraryWidget::UpdateControl(QTreeWidgetItem* item, const QString& name)
 	item->setText(TEXT_ID, name);
 }
 
-void LibraryWidget::SetItemVisible(QTreeWidgetItem* item, bool visible)
+void LibraryWidget::SetItemEnabled(QTreeWidgetItem* item, bool visible)
 {
-	item->setHidden(!visible);
-    item->setDisabled(!visible);
+	item->setDisabled(!visible);
+}
+
+void LibraryWidget::ClearAllItems()
+{
+	ui->treeWidget->clear();
 }
 
 void LibraryWidget::ResetSelection()
