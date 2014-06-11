@@ -501,8 +501,8 @@ void QtMainWindow::SetupToolBars()
 	// outline by object type
 	{
 		objectTypesWidget = new QComboBox();
-		objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
-		objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+		//objectTypesWidget->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
+		//objectTypesWidget->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_TEXT);
 
 		const QList<QAction *> actions = ui->menuObjectTypes->actions();
         QActionGroup *group = new QActionGroup(ui->menuObjectTypes);

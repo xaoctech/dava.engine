@@ -80,6 +80,8 @@ protected:
 	//hanging objects 
 	bool IsObjectHanging(DAVA::Entity * entity);
     DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
+    
+    static DAVA::float32 GetMinimalZ(DAVA::RenderObject *ro, const DAVA::Matrix4 & transform);
 
 private:
 	SceneCollisionSystem *collSystem;
