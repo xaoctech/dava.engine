@@ -38,7 +38,7 @@
 
 using namespace DAVA;
 
-float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.2f;
+float32 DebugDrawSystem::HANGING_OBJECTS_HEIGHT = 0.0f;
 
 DebugDrawSystem::DebugDrawSystem(DAVA::Scene * scene)
 	: DAVA::SceneSystem(scene)
@@ -354,27 +354,94 @@ void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
 
 bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 {
-	AABBox3 worldBox = selSystem->GetSelectionAABox(entity, entity->GetWorldTransform());
-	if(worldBox.IsEmpty() && worldBox.min.x == worldBox.max.x && worldBox.min.y == worldBox.max.y && worldBox.min.z == worldBox.max.z) 
+    RenderObject *ro = GetRenderObject(entity);
+    if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT))
+       return false;
+    
+    const AABBox3 & worldBox = ro->GetWorldBoundingBox();
+	if(worldBox.IsEmpty() && worldBox.min.x == worldBox.max.x && worldBox.min.y == worldBox.max.y && worldBox.min.z == worldBox.max.z)
 		return false;
 
-	float32 xStep = Max((worldBox.max.x - worldBox.min.x) / 10.f, 1.f);
-	float32 yStep = Max((worldBox.max.y - worldBox.min.y) / 10.f, 1.f);
+    const Matrix4 & wt = entity->GetWorldTransform();
+    const float32 minZ = GetMinimalZ(ro, wt);   //get lowest z for all vertexes
+    
+    
+    Vector<Vector3> lowestVertexes;
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *batch = ro->GetRenderBatch(i);
+        DVASSERT(batch);
+        
+        PolygonGroup *pg = batch->GetPolygonGroup();
+        if(pg)
+        {
+            uint32 vertexCount = pg->GetVertexCount();
+            for(uint32 v = 0; v < vertexCount; ++v)
+            {
+                Vector3 pos;
+                pg->GetCoord(v, pos);
+                pos = pos * wt;
 
-	for(float32 y = worldBox.min.y; y <= worldBox.max.y; y += yStep)
-	{
-		for(float32 x = worldBox.min.x; x <= worldBox.max.x; x += xStep)
-		{
-			Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(x, y));
-			if((worldBox.min.z - landscapePoint.z) > HANGING_OBJECTS_HEIGHT)
-			{
-				return true;
-			}
-		}
-	}
+//                if((pos.z - minZ) < DAVA::EPSILON)
+                if((pos.z - minZ) < 0.1f)   //accuracy of finding of lowest vertexes
+                {
+                    lowestVertexes.push_back(pos);
+                }
+            }
+        }
+    }
 
-	return false;
+    count = lowestVertexes.size();
+    DVASSERT(count && "Must be one+ lowest vertexes");
+    
+    bool isAllVertextesUnderLandscape = true;
+    for(uint32 i = 0; i < count && isAllVertextesUnderLandscape; ++i)
+    {
+        const Vector3 & pos = lowestVertexes[i];
+        const Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(pos.x, pos.y));
+        
+        bool isVertexUnderLandscape = (((pos.z - landscapePoint.z) - HANGING_OBJECTS_HEIGHT ) < DAVA::EPSILON);
+        isAllVertextesUnderLandscape &= isVertexUnderLandscape;
+    }
+
+
+	return !isAllVertextesUnderLandscape;
 }
+
+float32 DebugDrawSystem::GetMinimalZ(DAVA::RenderObject *ro, const Matrix4 & transform)
+{
+    const AABBox3 & worldBox = ro->GetWorldBoundingBox();
+    
+    float32 minZ = worldBox.max.z;
+
+    uint32 count = ro->GetRenderBatchCount();
+    for(uint32 i = 0; i < count; ++i)
+    {
+        RenderBatch *batch = ro->GetRenderBatch(i);
+        DVASSERT(batch);
+        
+        PolygonGroup *pg = batch->GetPolygonGroup();
+        if(pg)
+        {
+            uint32 vertexCount = pg->GetVertexCount();
+            for(uint32 v = 0; v < vertexCount; ++v)
+            {
+                Vector3 pos;
+                pg->GetCoord(v, pos);
+                pos = pos * transform;
+                
+                if(pos.z < minZ)
+                {
+                    minZ = pos.z;
+                }
+            }
+        }
+    }
+
+    return minZ;
+}
+
 
 
 Vector3 DebugDrawSystem::GetLandscapePointAtCoordinates(const Vector2 & centerXY)
