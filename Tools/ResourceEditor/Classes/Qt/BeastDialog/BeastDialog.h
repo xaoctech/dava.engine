@@ -4,11 +4,13 @@
 
 #include <QWidget>
 #include <QScopedPointer>
+#include <QPointer>
 
 #include "ui_BeastDialog.h"
 
 
 class SceneEditor2;
+class QEventLoop;
 
 
 class BeastDialog
@@ -36,6 +38,7 @@ private:
     void SetPath( const QString& path );
 
     QScopedPointer<Ui::BeastDialog> ui;
+    QPointer< QEventLoop > loop;
     SceneEditor2 *scene;
     bool result;
 };
