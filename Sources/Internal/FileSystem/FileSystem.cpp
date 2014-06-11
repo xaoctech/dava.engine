@@ -458,6 +458,55 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 	return false;
 }
 
+bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
+{
+    if (IsFileLocked(filePath) == isLock)
+    {
+        return true;
+    }
+
+    String path = filePath.GetAbsolutePathname();
+#if defined (__DAVAENGINE_WIN32__)
+#elif defined(__DAVAENGINE_MACOS__)
+    if (isLock)
+    {
+        return (chflags(path.c_str(), UF_IMMUTABLE) == 0);
+    }
+    else
+    {
+        struct stat s;
+        if(stat(path.c_str(), &s) == 0)
+        {
+            s.st_flags &= ~UF_IMMUTABLE;
+            return (chflags(path.c_str(), s.st_flags) == 0);
+        }
+
+        return false;
+    }
+#else
+    // Not implemented for all other platforms yet.
+    return false;
+#endif
+}
+
+bool FileSystem::IsFileLocked(const FilePath & filePath)
+{
+    String path = filePath.GetAbsolutePathname();
+#if defined (__DAVAENGINE_WIN32__)
+#elif defined(__DAVAENGINE_MACOS__)
+	struct stat s;
+	if(stat(path.c_str(), &s) == 0)
+	{
+		return (0 != (s.st_flags & UF_IMMUTABLE));
+	}
+    
+    return false;
+#else
+    // Not implemented for all other platforms yet.
+    return false;
+#endif
+}
+
 const FilePath & FileSystem::GetCurrentDocumentsDirectory()
 {
     return currentDocDirectory; 
