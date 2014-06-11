@@ -272,7 +272,7 @@ private:
 #endif //#if defined(__DAVAENGINE_ANDROID__)
     
 #if defined (__DAVAENGINE_WIN32__)
-    static Map<String, int32> lockedFileHandles;
+    static Map<String, HANDLE> lockedFileHandles;
 #endif //#if defined (__DAVAENGINE_WIN32__)
 };
 	
