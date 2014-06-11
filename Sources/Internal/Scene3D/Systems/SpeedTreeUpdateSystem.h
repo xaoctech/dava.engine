@@ -27,61 +27,45 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
+#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "Render/Image.h"
-#include "FileSystem/FilePath.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
 
-namespace DAVA 
+namespace DAVA
 {
-
-class Texture;
-class Sprite;
-class Image;
-
-class LibPngWrapper
+class Entity;
+class SpeedTreeComponent;
+    
+class SpeedTreeUpdateSystem : public SceneSystem, public Observer
 {
 public:
+    SpeedTreeUpdateSystem(Scene * scene);
+    virtual ~SpeedTreeUpdateSystem();
+	
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
     
-    static bool IsPngFile(File *file);
-    
-	static int ReadPngFile(const FilePath & file, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static bool WritePngFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+	virtual void HandleEvent(Observable * observable);
 
-    static uint32 GetDataSize(const FilePath &filePathname);
-
-};
-
-class PngImage : public BaseObject
-{
 protected:
-	~PngImage();
-public:
-	PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-	
-	bool Load(const FilePath & filename);
-	bool Save(const FilePath & filename);
-	
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
+    void UpdateAnimationFlag(Entity * entity);
 
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
-};
+private:
+    Vector<SpeedTreeComponent *> allTrees;
 
-#endif // __PNG_IMAGE_H__
+    bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
+
+    friend class SpeedTreeComponent;
+};
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
+
