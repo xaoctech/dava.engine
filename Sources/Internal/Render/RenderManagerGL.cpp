@@ -738,8 +738,8 @@ void RenderManager::AttachRenderData()
         }
     }
     
-    bool vboChanged = ((NULL == attachedRenderData) || (NULL == currentRenderData) || (attachedRenderData->vboBuffer != currentRenderData->vboBuffer) || (0 == currentRenderData->vboBuffer));
-    bool iboChanged = ((NULL == attachedRenderData) || (NULL == currentRenderData) || (attachedRenderData->indexBuffer != currentRenderData->indexBuffer) || (0 == currentRenderData->indexBuffer));
+    bool vboChanged = ((NULL == attachedRenderData) || (NULL == currentRenderData) || (!currentRenderData->HasVertexAttachment()) || (attachedRenderData->vboBuffer != currentRenderData->vboBuffer) || (0 == currentRenderData->vboBuffer));
+    bool iboChanged = ((NULL == attachedRenderData) || (NULL == currentRenderData) || (!currentRenderData->HasVertexAttachment()) || (attachedRenderData->indexBuffer != currentRenderData->indexBuffer) || (0 == currentRenderData->indexBuffer));
     
     attachedRenderData = currentRenderData;
     
@@ -752,7 +752,7 @@ void RenderManager::AttachRenderData()
         }
     
     
-        //if(vboChanged)
+        if(vboChanged)
         {
             int32 currentEnabledStreams = 0;
             
@@ -812,9 +812,9 @@ void RenderManager::AttachRenderData()
                 
                 cachedEnabledStreams = currentEnabledStreams;
             }
-            
-            cachedAttributeMask = currentAttributeMask;
         }
+        
+        cachedAttributeMask = currentAttributeMask;
     }
 }
 
