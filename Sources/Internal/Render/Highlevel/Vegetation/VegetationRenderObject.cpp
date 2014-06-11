@@ -33,7 +33,7 @@
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Material/NMaterial.h"
 #include "Utils/Random.h"
-#include "Render/ImageLoader.h"
+#include "Render/Image/ImageSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/RenderHelper.h"
 
@@ -468,7 +468,7 @@ void VegetationRenderObject::SetVegetationMap(const FilePath& path)
     if(path.Exists())
     {
         Vector<Image*> images;
-        ImageLoader::CreateFromFileByExtension(path, images);
+        ImageSystem::Instance()->Load(path, images);
             
         DVASSERT(images.size());
             
@@ -1453,9 +1453,13 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
     
     metrics.polyCountPerLayerPerLod.clear();
     
+    metrics.isValid = false;
+    
     size_t renderDataCount = renderData.size();
     if(renderDataCount > 0)
     {
+        metrics.isValid = true;
+        
         size_t visibleCellCount = visibleCells.size();
         
         metrics.renderBatchCount = visibleCells.size() * renderDataCount;

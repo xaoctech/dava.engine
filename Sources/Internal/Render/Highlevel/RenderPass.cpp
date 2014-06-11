@@ -34,7 +34,7 @@
 #include "Render/Highlevel/Camera.h"
 #include "Render/ShaderCache.h"
 
-#include "Render/ImageLoader.h"
+#include "Render/Image/ImageSystem.h"
 
 namespace DAVA
 {
@@ -131,15 +131,14 @@ MainForwardRenderPass::MainForwardRenderPass(const FastName & name, RenderPassID
     needWaterPrepass(false)
 {
     const RenderLayerManager * renderLayerManager = RenderLayerManager::Instance();
-    
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_OPAQUE), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_OPAQUE), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_VEGETATION), LAST_LAYER);
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_WATER), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_ALPHA_TEST_LAYER), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_WATER), LAST_LAYER);
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_TRANSLUCENT), LAST_LAYER);
-    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);
+    AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_AFTER_TRANSLUCENT), LAST_LAYER);    
 }
 
 
@@ -225,7 +224,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(RenderSystem * r
 
 void MainForwardRenderPass::Draw(RenderSystem * renderSystem)
 {
-    Camera *mainCamera = renderSystem->GetMainCamera();
+    Camera *mainCamera = renderSystem->GetMainCamera();        
     Camera *drawCamera = renderSystem->GetDrawCamera();   
     DVASSERT(mainCamera);
     DVASSERT(drawCamera);

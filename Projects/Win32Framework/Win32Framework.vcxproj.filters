@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="External">
@@ -135,9 +135,6 @@
     </Filter>
     <Filter Include="Internal\Scene3D\Converters">
       <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Internal\Render\Highlevel\Vegetation">
-      <UniqueIdentifier>{a25a3fe6-faae-4583-88a0-15ba3b1d9acd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1407,6 +1404,9 @@
     <ClInclude Include="..\..\Sources\Internal\Base\Atomic.h">
       <Filter>Internal\Base\Radix</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.h">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
@@ -1419,43 +1419,40 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\DateTime.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.h">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\WindComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.h">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeUpdateSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\WaveComponent.h">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.h">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\TextureSheet.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometry.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationFixedGeometry.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationGeometry.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationMaterialTransformer.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationPropertyNames.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderData.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationSpatialData.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometrySerializationData.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomSLGeometry.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h">
+      <Filter>Internal\Render\3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2560,6 +2557,9 @@
     <ClCompile Include="..\..\Sources\Internal\Base\AtomicWin32.cpp">
       <Filter>Internal\Base\Radix</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.cpp">
+      <Filter>Internal\Render\Highlevel</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\FoliageSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
@@ -2575,37 +2575,40 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\DateTimeWin32.cpp">
       <Filter>Internal\Platform\TemplateWin32</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Platform\TemplateWin32\WebViewControlWin32.cpp">
+      <Filter>Internal\Platform\TemplateWin32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\WindComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.cpp">
+      <Filter>Internal\Scene3D\Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeUpdateSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\WaveComponent.cpp">
+      <Filter>Internal\Scene3D\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.cpp">
+      <Filter>Internal\Scene3D\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\TextureSheet.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometry.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationFixedGeometry.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationGeometry.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationPropertyNames.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderData.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometrySerializationData.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomSLGeometry.cpp">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp">
+      <Filter>Internal\Render\3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

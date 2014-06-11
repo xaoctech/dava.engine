@@ -27,61 +27,38 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "Render/Image.h"
-#include "FileSystem/FilePath.h"
+#ifndef __PARSE_TEXT_TEST_H__
+#define __PARSE_TEXT_TEST_H__
 
-namespace DAVA 
-{
+#include "DAVAEngine.h"
 
-class Texture;
-class Sprite;
-class Image;
+using namespace DAVA;
 
-class LibPngWrapper
-{
-public:
-    
-    static bool IsPngFile(File *file);
-    
-	static int ReadPngFile(const FilePath & file, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static bool WritePngFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+#include "UITestTemplate.h"
+#include "Render/RenderManager.h"
 
-    static uint32 GetDataSize(const FilePath &filePathname);
-
-};
-
-class PngImage : public BaseObject
+class ParseTextTest : public UITestTemplate<ParseTextTest>
 {
 protected:
-	~PngImage();
+    ~ParseTextTest();
 public:
-	PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-	
-	bool Load(const FilePath & filename);
-	bool Save(const FilePath & filename);
-	
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
+	ParseTextTest();
+    
+	virtual void LoadResources();
+	virtual void UnloadResources();
 
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
+private:
+    
+    void ParseTestFunction(PerfFuncData * testData);
+    
+    UIStaticText *CreateTextControl(const Rect &rect, const WideString & text, bool wrapBySymbol, const Vector2 &requestedSize = Vector2(0, 0));
+
+    UIStaticText *wrapBySymbolShort;
+    UIStaticText *wrapByWordShort;
+
+    UIStaticText *wrapBySymbolLong;
+    UIStaticText *wrapByWordLong;
 };
 
-#endif // __PNG_IMAGE_H__
+#endif /* defined(__PARSE_TEXT_TEST_H__) */

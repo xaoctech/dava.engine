@@ -29,8 +29,8 @@
 
 #include "TexturePacker/PngImage.h"
 #include "TexturePacker/CommandLineParser.h"
-#include "Render/LibPngHelpers.h"
-#include "Render/ImageLoader.h"
+#include "Render/Image/LibPngHelpers.h"
+#include "Render/Image/ImageSystem.h"
 #include "Render/Texture.h"
 #include "Render/PixelFormatDescriptor.h"
 
@@ -53,22 +53,24 @@ bool PngImageExt::Read(const FilePath & filename)
 {
     SafeRelease(internalData);
     
-    internalData = new Image();
-    
-    int32 retCode = LibPngWrapper::ReadPngFile(filename, internalData, FORMAT_RGBA8888);
-    if(1 != retCode)
+    Vector<Image*> imageSet;
+    eErrorCode retCode = ImageSystem::Instance()->Load(filename, imageSet);
+    if(SUCCESS != retCode)
     {
         Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.GetAbsolutePathname().c_str());
-        SafeRelease(internalData);
     }
-    
+    else
+    {
+        internalData = SafeRetain(imageSet[0]);
+    }
+    for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 	return (internalData != NULL);
 }
 
 void PngImageExt::Write(const FilePath & filename)
 {
     DVASSERT(internalData);
-    ImageLoader::Save(internalData, filename);
+    ImageSystem::Instance()->Save(filename, internalData, internalData->format);
 }
 
 bool PngImageExt::Create(uint32 width, uint32 height)

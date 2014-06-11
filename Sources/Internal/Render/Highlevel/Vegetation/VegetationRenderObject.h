@@ -35,7 +35,7 @@
 #include "Render/RenderBase.h"
 #include "Base/BaseMath.h"
 #include "Base/AbstractQuadTree.h"
-#include "Render/Image.h"
+#include "Render/Image/Image.h"
 
 #include "Render/3D/PolygonGroup.h"
 #include "Render/RenderDataObject.h"
@@ -76,6 +76,8 @@ struct VegetationMetrics
     Vector<uint32> quadTreeLeafCountPerLOD;
     
     uint32 renderBatchCount;
+    
+    bool isValid;
 };
 
 class VegetationRenderObject : public RenderObject
