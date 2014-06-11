@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDebug>
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
@@ -53,11 +54,12 @@ bool BeastDialog::Exec(QWidget *parent)
 
 void BeastDialog::OnStart()
 {
-    const QString path = GetPath();
-    if ( path.isEmpty() )
+    const QDir dir( ui->scenePath->text() );
+    dir.mkpath( ui->output->text() );
+    if ( !dir.exists( ui->output->text() ) )
     {
         result = false;
-        QMessageBox::warning( this, QString(), "Specified path is invalid" );
+        QMessageBox::warning( this, QString(), "Specified path is invalid. Couldn't create output directory." );
         return;
     }
 
