@@ -20,7 +20,7 @@ void main()
 #endif
 
 #ifdef IMAGE_A8
-    gl_FragColor = vec4(varColor.rbg, texColor.a * varColor.a);
+    gl_FragColor = vec4(varColor.rgb, texColor.a * varColor.a);
 #else
     gl_FragColor = texColor * varColor;
 #endif
