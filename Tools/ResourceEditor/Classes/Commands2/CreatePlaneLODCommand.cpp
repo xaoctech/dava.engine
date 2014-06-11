@@ -318,8 +318,7 @@ void CreatePlaneLODCommand::CreateTextureFiles()
     
     FilePath folder = textureSavePath.GetDirectory();
     FileSystem::Instance()->CreateDirectory(folder, true);
-    
-    ImageLoader::Save(planeImage, textureSavePath);
+    ImageSystem::Instance()->Save(textureSavePath, planeImage);
     TextureDescriptorUtils::CreateDescriptorIfNeed(textureSavePath);
 }
 
