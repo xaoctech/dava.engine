@@ -382,12 +382,12 @@ void TextureDescriptor::LoadVersion7(int32 signature, DAVA::File *file)
         {
             int8 format;
             file->Read(&format);
-            compression->format = (PixelFormat)format;
+            compression[i].format = (PixelFormat)format;
             
-            file->Read(&compression->compressToWidth);
-            file->Read(&compression->compressToHeight);
-            file->Read(&compression->sourceFileCrc);
-            file->Read(&compression->convertedFileCrc);
+            file->Read(&compression[i].compressToWidth);
+            file->Read(&compression[i].compressToHeight);
+            file->Read(&compression[i].sourceFileCrc);
+            file->Read(&compression[i].convertedFileCrc);
         }
     }
 }
