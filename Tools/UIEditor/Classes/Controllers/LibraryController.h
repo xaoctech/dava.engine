@@ -45,7 +45,7 @@ namespace DAVA
 		
 		void Init(LibraryWidget* widget);
 		
-		void UpdateLibrary();
+		void UpdateLibrary(bool needFullUpdate = false);
 		
 		void AddControl(HierarchyTreeAggregatorNode* node);
 		void RemoveControl(HierarchyTreeAggregatorNode* node);
@@ -57,15 +57,15 @@ namespace DAVA
 		void AddControl(const QString& name, DAVA::UIControl* control);
 		
 	private:
+    	typedef List<HierarchyTreeAggregatorNode*> AGGREGATORS;
 		typedef Map<HierarchyTreeNode*, QTreeWidgetItem*> CONTROLS;
-        typedef Map<HierarchyTreeAggregatorNode*, QTreeWidgetItem*> AGGREGATORS;
-        typedef Map<HierarchyTreePlatformNode*,  AGGREGATORS> PLATFORMS;
+		typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID,  AGGREGATORS> PLATFORMS;
 		CONTROLS controls;
         PLATFORMS platforms;
 		LibraryWidget* widget;
 		
-        AGGREGATORS GetPlatformAggregators(HierarchyTreePlatformNode* platform);
-		//UIAggregatorControl* aggregatorTemp;
+        AGGREGATORS GetPlatformAggregators(HierarchyTreeNode::HIERARCHYTREENODEID platformId);
+        void AddStandardControls();
 	};
 }
 

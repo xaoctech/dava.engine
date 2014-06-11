@@ -90,6 +90,15 @@ void HierarchyTreeAggregatorNode::RemoveChild(HierarchyTreeControlNode* node)
 		childs.erase(node);
 }
 
+void HierarchyTreeAggregatorNode::ReturnTreeNodeToScene()
+{
+	HierarchyTreeScreenNode::ReturnTreeNodeToScene();
+    if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
+}
+
 void HierarchyTreeAggregatorNode::SetRect(const Rect& rect)
 {
 	this->rect = rect;

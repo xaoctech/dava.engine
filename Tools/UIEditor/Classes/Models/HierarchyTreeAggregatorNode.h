@@ -63,7 +63,8 @@ public:
 	
 	bool Load(const Rect& rect, const QString& path);
 	bool Save(YamlNode* node, const QString& path, bool saveAll);
-	
+    
+    virtual void ReturnTreeNodeToScene();	
 	virtual void SetName(const QString& name);
 	
 	const FilePath& GetPath();
