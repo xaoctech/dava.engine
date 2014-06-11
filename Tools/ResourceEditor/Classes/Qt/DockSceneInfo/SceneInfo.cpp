@@ -968,6 +968,8 @@ void SceneInfo::RefreshLayersSection()
 {
     if(activeScene)
     {
+        float32 viewportSize = RenderManager::Instance()->frameBufferWidth * RenderManager::Instance()->frameBufferHeight;
+        
         QtPropertyData* header = GetInfoHeader("Fragments Info");
     
         RenderPass* renderPass = activeScene->renderSystem->GetMainForwardRenderPass();
@@ -975,7 +977,11 @@ void SceneInfo::RefreshLayersSection()
         for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
         {
             RenderLayer* layer = renderPass->GetRenderLayer(layerIndex);
-            SetChild(layer->GetName().c_str(), layer->GetFragmentStats(), header);
+            uint32 fragmentStats = layer->GetFragmentStats();
+            
+            String str = Format("%d / %.2f%%", fragmentStats, (fragmentStats * 100.0f) / viewportSize);
+            
+            SetChild(layer->GetName().c_str(), str.c_str(), header);
         }
     }
 }
