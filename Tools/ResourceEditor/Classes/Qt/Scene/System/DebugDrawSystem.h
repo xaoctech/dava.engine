@@ -48,7 +48,6 @@ class DebugDrawSystem : public DAVA::SceneSystem
 public:
 
 	static DAVA::float32 HANGING_OBJECTS_HEIGHT;
-	static const DAVA::float32 LOWES_VERTEXES_DELTA;
 
 public:
 	DebugDrawSystem(DAVA::Scene * scene);
@@ -76,14 +75,15 @@ protected:
 	void DrawHangingObjects(DAVA::Entity *entity);
 	void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
 	void DrawStaticOcclusionComponent(DAVA::Entity *entity);
-    void DrawSwitchesWithDifferentLods(DAVA::Entity *entity);
+	void DrawSwitchesWithDifferentLods(DAVA::Entity *entity);
+	void DrawWindNode(DAVA::Entity *entity);
 
 	//hanging objects 
 	bool IsObjectHanging(DAVA::Entity * entity);
     DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
 
-    static void GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vector<DAVA::Vector3> &vertexes);
-    static DAVA::float32 GetMinimalZ(const DAVA::RenderObject *ro);
+	static void GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vector<DAVA::Vector3> &vertexes, const DAVA::Vector3 & scale);
+	static DAVA::float32 GetMinimalZ(const DAVA::RenderObject *ro);
 
 private:
 	SceneCollisionSystem *collSystem;
