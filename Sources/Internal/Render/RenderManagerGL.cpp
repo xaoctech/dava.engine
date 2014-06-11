@@ -738,18 +738,24 @@ void RenderManager::AttachRenderData()
         }
     }
     
-    bool vboChanged = ((NULL == attachedRenderData) || (attachedRenderData->vboBuffer != currentRenderData->vboBuffer) || (0 == currentRenderData->vboBuffer));
-    bool iboChanged = ((NULL == attachedRenderData) || (attachedRenderData->indexBuffer != currentRenderData->indexBuffer));
+    bool vboChanged = ((NULL == attachedRenderData) || (NULL == currentRenderData) || (attachedRenderData->vboBuffer != currentRenderData->vboBuffer) || (0 == currentRenderData->vboBuffer));
+    bool iboChanged = ((NULL == attachedRenderData) || (NULL == currentRenderData) || (attachedRenderData->indexBuffer != currentRenderData->indexBuffer) || (0 == currentRenderData->indexBuffer));
     
     attachedRenderData = currentRenderData;
-
+    
     const int DEBUG = 0;
     
     {
-        int32 currentEnabledStreams = 0;
-        
-        if(vboChanged)
+        if(iboChanged)
         {
+            HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
+        }
+    
+    
+        //if(vboChanged)
+        {
+            int32 currentEnabledStreams = 0;
+            
             HWglBindBuffer(GL_ARRAY_BUFFER, currentRenderData->vboBuffer);
             
             int32 size = (int32)currentRenderData->streamArray.size();
@@ -785,7 +791,7 @@ void RenderManager::AttachRenderData()
                     
                     currentEnabledStreams |= attribIndexBitPos;
                 }
-            };
+            }
             
             if(cachedEnabledStreams != currentEnabledStreams)
             {
@@ -806,14 +812,9 @@ void RenderManager::AttachRenderData()
                 
                 cachedEnabledStreams = currentEnabledStreams;
             }
+            
+            cachedAttributeMask = currentAttributeMask;
         }
-        
-        if(iboChanged)
-        {
-            HWglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, currentRenderData->indexBuffer);
-        }
-        
-        cachedAttributeMask = currentAttributeMask;
     }
 }
 
