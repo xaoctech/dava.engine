@@ -370,105 +370,10 @@ void DebugDrawSystem::DrawHangingObjects( DAVA::Entity *entity )
 }
 
 
-#if defined (USE_WORLD_VERTEXES)
-
 bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 {
 	RenderObject *ro = GetRenderObject(entity);
-	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT))
-		return false;
-
-	const AABBox3 & worldBox = ro->GetWorldBoundingBox();
-	if(worldBox.IsEmpty() && worldBox.min.x == worldBox.max.x && worldBox.min.y == worldBox.max.y && worldBox.min.z == worldBox.max.z)
-		return false;
-
-	const Matrix4 & wt = entity->GetWorldTransform();
-
-	Vector<Vector3> lowestVertexes;
-	GetLowestVertexes(ro, lowestVertexes, wt);
-
-	const uint32 count = lowestVertexes.size();
-	DVASSERT(count && "Must be one+ lowest vertexes");
-
-	bool isAllVertextesUnderLandscape = true;
-	for(uint32 i = 0; i < count && isAllVertextesUnderLandscape; ++i)
-	{
-		const Vector3 & pos = lowestVertexes[i];
-
-		const Vector3 landscapePoint = GetLandscapePointAtCoordinates(Vector2(pos.x, pos.y));
-
-		bool isVertexUnderLandscape = ((pos.z - landscapePoint.z) < DAVA::EPSILON);
-		isAllVertextesUnderLandscape &= isVertexUnderLandscape;
-	}
-
-	return !isAllVertextesUnderLandscape;
-}
-
-void DebugDrawSystem::GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vector<DAVA::Vector3> &vertexes, const DAVA::Matrix4 & transform)
-{
-	const float32 minZ = GetMinimalZ(ro, transform);
-
-	uint32 count = ro->GetRenderBatchCount();
-	for(uint32 i = 0; i < count; ++i)
-	{
-		RenderBatch *batch = ro->GetRenderBatch(i);
-		DVASSERT(batch);
-
-		PolygonGroup *pg = batch->GetPolygonGroup();
-		if(pg)
-		{
-			uint32 vertexCount = pg->GetVertexCount();
-			for(uint32 v = 0; v < vertexCount; ++v)
-			{
-				Vector3 pos;
-				pg->GetCoord(v, pos);
-				pos = pos * transform;
-
-				if((pos.z - minZ) <= HANGING_OBJECTS_HEIGHT)   //accuracy of finding of lowest vertexes
-				{
-					vertexes.push_back(pos);
-				}
-			}
-		}
-	}
-}
-
-float32 DebugDrawSystem::GetMinimalZ(const DAVA::RenderObject *ro, const DAVA::Matrix4 & transform)
-{
-	float32 minZ = AABBOX_INFINITY;
-
-	const uint32 count = ro->GetRenderBatchCount();
-	for(uint32 i = 0; i < count; ++i)
-	{
-		RenderBatch *batch = ro->GetRenderBatch(i);
-		DVASSERT(batch);
-
-		PolygonGroup *pg = batch->GetPolygonGroup();
-		if(pg)
-		{
-			const uint32 vertexCount = pg->GetVertexCount();
-			for(uint32 v = 0; v < vertexCount; ++v)
-			{
-				Vector3 pos;
-				pg->GetCoord(v, pos);
-				pos = pos * transform;
-
-				if(pos.z < minZ)
-				{
-					minZ = pos.z;
-				}
-			}
-		}
-	}
-
-	return minZ;
-}
-
-#else //#if defined (USE_WORLD_VERTEXES)
-bool DebugDrawSystem::IsObjectHanging(Entity * entity)
-{
-	RenderObject *ro = GetRenderObject(entity);
-	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT))
+	if(!ro || (ro->GetType() != RenderObject::TYPE_MESH && ro->GetType() != RenderObject::TYPE_RENDEROBJECT && ro->GetType() != RenderObject::TYPE_SPEED_TREE))
 		return false;
 
 	const AABBox3 & worldBox = ro->GetWorldBoundingBox();
@@ -483,7 +388,7 @@ bool DebugDrawSystem::IsObjectHanging(Entity * entity)
 	GetLowestVertexes(ro, lowestVertexes, scale);
 
 	const uint32 count = lowestVertexes.size();
-	DVASSERT(count && "Must be one+ lowest vertexes");
+	if(count == 0) return false; // we can be in state when selected lod had been set less than lodLayerNumber
 
 	bool isAllVertextesUnderLandscape = true;
 	for(uint32 i = 0; i < count && isAllVertextesUnderLandscape; ++i)
@@ -505,10 +410,10 @@ void DebugDrawSystem::GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vect
 	const float32 minZ = GetMinimalZ(ro);
 	const float32 vertexDelta = HANGING_OBJECTS_HEIGHT / scale.z;
 
-	uint32 count = ro->GetRenderBatchCount();
+	uint32 count = ro->GetActiveRenderBatchCount();
 	for(uint32 i = 0; i < count; ++i)
 	{
-		RenderBatch *batch = ro->GetRenderBatch(i);
+		RenderBatch *batch = ro->GetActiveRenderBatch(i);
 		DVASSERT(batch);
 
 		PolygonGroup *pg = batch->GetPolygonGroup();
@@ -531,10 +436,34 @@ void DebugDrawSystem::GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vect
 
 float32 DebugDrawSystem::GetMinimalZ(const DAVA::RenderObject *ro)
 {
-	return ro->GetBoundingBox().min.z;
+	float32 minZ = AABBOX_INFINITY;
+	
+	uint32 count = ro->GetActiveRenderBatchCount();
+	for(uint32 i = 0; i < count; ++i)
+	{
+		RenderBatch *batch = ro->GetActiveRenderBatch(i);
+		DVASSERT(batch);
+
+		PolygonGroup *pg = batch->GetPolygonGroup();
+		if(pg)
+		{
+			uint32 vertexCount = pg->GetVertexCount();
+			for(uint32 v = 0; v < vertexCount; ++v)
+			{
+				Vector3 pos;
+				pg->GetCoord(v, pos);
+
+				if(pos.z < minZ)
+				{
+					minZ = pos.z;
+				}
+			}
+		}
+	}
+
+	return minZ;
 }
 
-#endif //#if defined (USE_WORLD_VERTEXES)	
 
 
 

@@ -27,46 +27,27 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_IMAGELOADER_H__
-#define __DAVAENGINE_IMAGELOADER_H__
+
+#ifndef __DAVAENGINE_CRC_ADDITION_INTERFACE_H__
+#define __DAVAENGINE_CRC_ADDITION_INTERFACE_H__
 
 #include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
+#include "Render/RenderBase.h"
 #include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
 
-class File;
-class Image;
-class ImageLoader
+class CRCAdditionInterface
 {
 public:
-
-    static bool CreateFromFileByExtension(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
     
-	static bool CreateFromFileByContent(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromFileByContent(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-
-    static bool Save(const Image *image, const FilePath & pathname);
+    virtual bool AddCRCIntoMetaData(const FilePath &filePathname) const = 0;
     
-protected:
-
-    static bool CreateFromPNGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-    static bool CreateFromJPEGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-	static bool CreateFromPVRFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDSFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromPNG(File *file, Vector<Image *> & imageSet);
-    static bool CreateFromJPEG(File *file, Vector<Image *> & imageSet);
-	static bool CreateFromPVR(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDS(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
+    virtual uint32 GetCRCFromFile(const FilePath &filePathname) const = 0;
     
-    static bool IsPVRFile(File *file);
-    static bool IsPNGFile(File *file);
-	static bool IsDDSFile(File *file);
-    static bool IsJPEGFile(File *file);
 };
-	
+    
 };
 
-#endif // __DAVAENGINE_IMAGELOADER_H__
+#endif // __DAVAENGINE_CRC_ADDITION_INTERFACE_H__
