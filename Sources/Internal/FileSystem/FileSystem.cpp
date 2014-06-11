@@ -467,6 +467,7 @@ bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
 
     String path = filePath.GetAbsolutePathname();
 #if defined (__DAVAENGINE_WIN32__)
+    return false;
 #elif defined(__DAVAENGINE_MACOS__)
     if (isLock)
     {
@@ -493,13 +494,14 @@ bool FileSystem::IsFileLocked(const FilePath & filePath)
 {
     String path = filePath.GetAbsolutePathname();
 #if defined (__DAVAENGINE_WIN32__)
+    return false;
 #elif defined(__DAVAENGINE_MACOS__)
 	struct stat s;
 	if(stat(path.c_str(), &s) == 0)
 	{
 		return (0 != (s.st_flags & UF_IMMUTABLE));
 	}
-    
+
     return false;
 #else
     // Not implemented for all other platforms yet.
