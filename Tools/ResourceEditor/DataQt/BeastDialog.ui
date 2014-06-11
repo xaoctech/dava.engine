@@ -80,7 +80,8 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The operation will take a lot of time. After lightmaps are generated, scene will be saved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Output folder name must be valid.
+The operation will take a lot of time. After lightmaps are generated, scene will be saved.</string>
      </property>
     </widget>
    </item>

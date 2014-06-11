@@ -3,6 +3,7 @@
 #include <QEventLoop>
 #include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
@@ -39,13 +40,11 @@ bool BeastDialog::Exec(QWidget *parent)
     ui->scenePath->setText( QDir::toNativeSeparators( GetDefaultPath() ) );
     ui->output->setText( "lightmaps" );
 
-    QEventLoop *loop = new QEventLoop(this);
-
-    connect( ui->start, SIGNAL( clicked() ), loop, SLOT( quit() ) );
-    connect( ui->cancel, SIGNAL( clicked() ), loop, SLOT( quit() ) );
-
     show();
+
+    loop = new QEventLoop( this );
     loop->exec();
+
     hide();
     loop->deleteLater();
 
@@ -54,12 +53,22 @@ bool BeastDialog::Exec(QWidget *parent)
 
 void BeastDialog::OnStart()
 {
+    const QString path = GetPath();
+    if ( path.isEmpty() )
+    {
+        result = false;
+        QMessageBox::warning( this, QString(), "Specified path is invalid" );
+        return;
+    }
+
     result = true;
+    loop->quit();
 }
 
 void BeastDialog::OnCancel()
 {
     result = false;
+    loop->quit();
 }
 
 void BeastDialog::OnBrowse()
@@ -73,7 +82,7 @@ void BeastDialog::OnBrowse()
 
 void BeastDialog::OnTextChanged()
 {
-    const QString text = QString( "Output path: %1" ).arg( QDir::toNativeSeparators( GetPath() ) );
+    const QString text = QString("Output path: %1").arg( QDir::toNativeSeparators( GetPath() ) );
     ui->output->setToolTip( text );
 }
 
@@ -87,12 +96,10 @@ QString BeastDialog::GetPath() const
 {
     const QString root = ui->scenePath->text();
     const QString output = ui->output->text();
-    QString path = QString( "%1/" ).arg( root );
-    if ( !output.isEmpty() )
-    {
-        path += QString( "%1/" ).arg( output );
-    }
+    if (output.isEmpty())
+        return QString();
 
+    QString path = QString("%1/%2/").arg(root).arg(output);
     return path;
 }
 
