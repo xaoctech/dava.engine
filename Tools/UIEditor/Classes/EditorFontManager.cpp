@@ -538,7 +538,6 @@ String EditorFontManager::SetLocalizedFont(const String& fontOriginalName, Font*
     Map<String, Font*>::const_iterator endIt = fonts->end();
     
     Map<String, Font*>::iterator findIt = fonts->find(newFontName);
-    Font* newFont = SafeRetain(font);
     
     if(replaceExisting)
     {
@@ -549,21 +548,27 @@ String EditorFontManager::SetLocalizedFont(const String& fontOriginalName, Font*
             {
                 Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) erase fonts[%s] = %p", locale.c_str(), findOriginalIt->first.c_str(), findOriginalIt->second);
             }
-            SafeRelease(findOriginalIt->second);
+            
+            
             if(isSameFontName)
             {
-                findOriginalIt->second = SafeRetain(newFont);
+                if(findOriginalIt->second != font)
+                {
+                    SafeRelease(findOriginalIt->second);
+                    findOriginalIt->second = SafeRetain(font);
+                }
             }
             else
             {
+                SafeRelease(findOriginalIt->second);
                 fonts->erase(findOriginalIt);
             }
         }
         else if(isSameFontName)
         {
             // need to replace existing, but it does not exist (this can happen on default font) - add new font
-            Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) fonts[%s] = %p", locale.c_str(), newFontName.c_str(), newFont);
-            (*fonts)[newFontName] = newFont;
+            Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) fonts[%s] = %p", locale.c_str(), newFontName.c_str(), font);
+            (*fonts)[newFontName] = SafeRetain(font);
         }
         
         if(!isSameFontName)
@@ -582,16 +587,18 @@ String EditorFontManager::SetLocalizedFont(const String& fontOriginalName, Font*
             // rename existing font
             if(findIt != fonts->end())
             {
-                Logger::Warning("EditorFontManager::SetLocalizedFont (locale=%s) name %s is already used by font %p (will be replaced by %p)",  locale.c_str(), findIt->first.c_str(), findIt->second, newFont);
-                
-                SafeRelease(findIt->second);
-                findIt->second = newFont;
+                Logger::Warning("EditorFontManager::SetLocalizedFont (locale=%s) name %s is already used by font %p (will be replaced by %p)",  locale.c_str(), findIt->first.c_str(), findIt->second, font);
+                if(findIt->second != font)
+                {
+                    SafeRelease(findIt->second);
+                    findIt->second = SafeRetain(font);
+                }
             }
             else
             {
                 // add new font
-                Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) fonts[%s] = %p", locale.c_str(), newFontName.c_str(), newFont);
-                (*fonts)[newFontName] = newFont;
+                Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) fonts[%s] = %p", locale.c_str(), newFontName.c_str(), font);
+                (*fonts)[newFontName] = SafeRetain(font);
             }
         }
     }
@@ -607,19 +614,19 @@ String EditorFontManager::SetLocalizedFont(const String& fontOriginalName, Font*
             }
         }
         // add new font
-        Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) fonts[%s] = %p", locale.c_str(), newFontName.c_str(), newFont);
-        (*fonts)[newFontName] = newFont;
+        Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) fonts[%s] = %p", locale.c_str(), newFontName.c_str(), font);
+        (*fonts)[newFontName] = SafeRetain(font);
     }
     
-    (*registeredFonts)[newFont] = newFontName;
+    (*registeredFonts)[font] = newFontName;
     
     //TODO: check if it is really needed to register fonts for all locales or only current or default locale can be used
     //if(locale == "default")
     {
-        FontManager::Instance()->RegisterFont(newFont);
-        FontManager::Instance()->SetFontName(newFont, newFontName);
+        FontManager::Instance()->RegisterFont(font);
+        FontManager::Instance()->SetFontName(font, newFontName);
     }
-    Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) registered font %p with name %s", locale.c_str(), newFont, newFontName.c_str());
+    Logger::FrameworkDebug("EditorFontManager::SetLocalizedFont (locale=%s) registered font %p with name %s", locale.c_str(), font, newFontName.c_str());
     
     return newFontName;
 }

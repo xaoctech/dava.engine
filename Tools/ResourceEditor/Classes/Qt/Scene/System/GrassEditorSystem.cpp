@@ -538,7 +538,7 @@ Image* GrassEditorSystem::LoadSingleImage(const FilePath& path) const
 {
     Vector<Image*> images;
     
-    ImageLoader::CreateFromFileByExtension(path, images);
+    ImageSystem::Instance()->Load(path, images);
     
     Image* image = NULL;
     if(images.size() > 0)

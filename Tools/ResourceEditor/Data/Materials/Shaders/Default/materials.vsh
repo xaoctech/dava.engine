@@ -35,8 +35,22 @@ attribute vec3 inBinormal;
 #if defined(VERTEX_LIT)
 #endif
 
-#if defined(PIXEL_LIT) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS_TRANSFORM)
+#if defined(PIXEL_LIT) || defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec3 inTangent;
+#if defined (PRECOMPUTED_BINORMAL)
+attribute vec3 inBinormal;
+#endif
+#endif
+
+#if defined(SPEED_TREE_LEAF)
+attribute vec3 inPivot;
+#if defined(WIND_ANIMATION)
+attribute vec2 inAngleSinCos;
+#endif
+#endif
+
+#if defined(WIND_ANIMATION)
+attribute float inFlexibility;
 #endif
 
 #if defined(FRAME_BLEND)
@@ -46,7 +60,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF) || defined(MATERIAL_GRASS_TRANSFORM)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -79,6 +93,10 @@ uniform mediump vec2 uvOffset;
 uniform mediump vec2 uvScale;
 #endif
 
+#if defined(WIND_ANIMATION)
+uniform mediump vec2 trunkOscillationParams;
+#endif
+
 #if defined(SPEED_TREE_LEAF)
 uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
@@ -87,6 +105,9 @@ uniform float cutDistance;
 uniform lowp vec3 treeLeafColorMul;
 uniform lowp float treeLeafOcclusionOffset;
 uniform lowp float treeLeafOcclusionMul;
+#if defined(WIND_ANIMATION)
+uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
+#endif
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -96,11 +117,11 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
 varying vec2 varTexCoord1;
 #endif
 
-#if defined(MATERIAL_GRASS_BLEND)
+#if defined(MATERIAL_GRASS)
 varying vec2 varTexCoord2;
 #endif
 
@@ -139,7 +160,6 @@ varying lowp vec4 varVertexColor;
 #if defined(FRAME_BLEND)
 varying lowp float varTime;
 #endif
-
 
 #if defined(TEXTURE0_SHIFT_ENABLED)
 uniform mediump vec2 texture0Shift;
@@ -188,8 +208,6 @@ varying lowp vec3 varVegetationColor;
 #endif
 
 #endif
-
-
 
 const float _PI = 3.141592654;
 
@@ -254,43 +272,59 @@ void main()
 #elif defined(SPEED_TREE_LEAF)
 
 #if defined (CUT_LEAF)
-    vec3 position;
-    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inTangent, 1);
+    vec4 tangentInCameraSpace = worldViewMatrix * vec4(inPivot, 1.0);
     if (tangentInCameraSpace.z < -cutDistance)
     {
-        position = /*worldScale * vec3(0,0,0) +*/ worldViewTranslate;
+        gl_Position = projMatrix * vec4(worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
     }
     else
     {
-        position = worldScale * (inPosition.xyz - inTangent) + worldViewTranslate;
-    }
-    gl_Position = projMatrix * vec4(position, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
-#else
-    //mat4 mvp = worldMatrix * viewMatrix * projMatrix;
-    //mat4 mvp = projMatrix * worldViewMatrix;
-    //gl_Position = mvp * inPosition;
-    
-//    vec3 position;
-//    vec3 tangentInCameraSpace = (worldScale * inTangent + worldViewTranslate);
-//    float distance = length(tangentInCameraSpace);
-//    if (distance > 40.0)
-//    {
-//        position = worldScale * ((inPosition.xyz - inTangent) * (40.0 / distance)) + worldViewTranslate;
-//    }
-//    else
-//    {
-//        position = worldScale * (inPosition.xyz - inTangent) + worldViewTranslate;
-//    }
-//    
-//    //    vec4 position = vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w);
-//    gl_Position = projMatrix * vec4(position, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
-    
-	gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inTangent) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inTangent, 0.0);
 #endif
 
-#elif defined(WAVE_ANIMATION)
-	gl_Position = worldViewProjMatrix * Wave(globalTime, inPosition, inTexCoord0);
-#elif defined(MATERIAL_GRASS_TRANSFORM)
+#if defined(WIND_ANIMATION)
+    //inAngleSinCos:        x: cos(T0);  y: sin(T0);
+    //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
+    vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
+    vec3 pivot = inPivot + windVectorFlex;
+    
+    vec3 offset = inPosition.xyz - inPivot;
+    
+    vec2 SinCos = inAngleSinCos * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
+    float sinT = SinCos.x + SinCos.y;     //sin(t+t0)*A = sin*cos + cos*sin
+    float cosT = 1.0 - 0.5 * sinT * sinT; //cos(t+t0)*A = 1 - 0.5*sin^2
+    
+    vec4 SinCosT = vec4(sinT, cosT, cosT, sinT); //temp vec for mul
+    vec4 offsetXY = vec4(offset.x, offset.y, offset.x, offset.y); //temp vec for mul
+    vec4 rotatedOffsetXY = offsetXY * SinCosT; //vec4(x*sin, y*cos, x*cos, y*sin)
+    
+    offset.x = rotatedOffsetXY.z - rotatedOffsetXY.w; //x*cos - y*sin
+    offset.y = rotatedOffsetXY.x + rotatedOffsetXY.y; //x*sin + y*cos
+
+    gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
+    
+#else // not WIND_ANIMATION and SPEED_TREE_LEAF
+    
+    gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inPivot) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
+
+#endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
+
+#if defined (CUT_LEAF)
+    }
+#endif // not CUT_LEAF
+
+
+#else // not SPEED_TREE_LEAF
+    
+#if defined(WIND_ANIMATION)
+
+    vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
+    gl_Position = worldViewProjMatrix * vec4(inPosition.xyz + windVectorFlex, inPosition.w);
+	
+#else //!defined(WIND_ANIMATION)
+
+	#if defined(WAVE_ANIMATION)
+		gl_Position = worldViewProjMatrix * Wave(globalTime, inPosition, inTexCoord0);
+	#elif defined(MATERIAL_GRASS_TRANSFORM)
     
         //inTangent.y - cluster type (0...3)
         //inTangent.z - cluster's reference density (0...15)
@@ -330,6 +364,7 @@ void main()
     
         highp vec4 heightVec = texture2DLod(heightmap, hUV, 0.0);
         float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
+    
     
         pos.z += height;
         clusterCenter.z += height;
@@ -372,10 +407,15 @@ void main()
         pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale * densityFactor);
     
         gl_Position = worldViewProjMatrix * pos;
-#else
-	gl_Position = worldViewProjMatrix * inPosition;
-#endif
     
+    #else
+        gl_Position = worldViewProjMatrix * inPosition;
+    #endif
+
+#endif //defined(WIND_ANIMATION)
+    
+#endif //end "not SPEED_TREE_LEAF
+
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
 #if defined(MATERIAL_GRASS_TRANSFORM)
     vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
@@ -438,7 +478,12 @@ void main()
 #if defined(PIXEL_LIT)
 	vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
 	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
-	vec3 b = cross (n, t);
+	
+	#if defined (PRECOMPUTED_BINORMAL)
+		vec3 b = normalize (worldViewInvTransposeMatrix * inBinormal);
+	#else
+		vec3 b = cross (n, t);
+	#endif
     
     vec3 toLightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;
 #if defined(DISTANCE_ATTENUATION)
@@ -514,7 +559,11 @@ void main()
 #if defined(VERTEX_COLOR)
 	varVertexColor = inColor;
 #endif
-
+    
+#if defined(SPEED_TREE_LEAF)
+    varVertexColor.rgb = varVertexColor.rgb * treeLeafColorMul * treeLeafOcclusionMul + vec3(treeLeafOcclusionOffset);
+#endif
+    
 	varTexCoord0 = inTexCoord0;
 	
 #if defined(TEXTURE0_SHIFT_ENABLED)
