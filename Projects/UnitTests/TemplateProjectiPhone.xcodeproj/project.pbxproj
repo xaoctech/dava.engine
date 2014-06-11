@@ -10,8 +10,8 @@
 		02B3D3DF159C8D360082111B /* SoundTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02B3D3DD159C8D360082111B /* SoundTest.cpp */; };
 		02BC3C0715E6399C0047F67F /* SplitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02BC3C0515E6399C0047F67F /* SplitTest.cpp */; };
 		02F8B01C17CF996C00D5A334 /* ThreadSyncTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02F8B01A17CF996C00D5A334 /* ThreadSyncTest.cpp */; };
-		02FD825A192A10B6007762C0 /* libFrameworkTesting.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FD8257192A10A5007762C0 /* libFrameworkTesting.a */; };
 		15CBB0B018D300310038ABA3 /* StringFormatTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15CBB0AE18D300310038ABA3 /* StringFormatTest.cpp */; };
+		17675C1919472AFB00054F8F /* libFrameworkTesting.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FD8257192A10A5007762C0 /* libFrameworkTesting.a */; };
 		1770DF4517DF446600000391 /* UIMovieTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4317DF446600000391 /* UIMovieTest.cpp */; };
 		1770DF4717DF497600000391 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1770DF4617DF497600000391 /* MediaPlayer.framework */; };
 		17DD1616193F506500B73BEE /* ParseTextTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DD1614193F506500B73BEE /* ParseTextTest.cpp */; };
@@ -215,8 +215,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17675C1919472AFB00054F8F /* libFrameworkTesting.a in Frameworks */,
 				17DD1618193F512600B73BEE /* liblua_ios.a in Frameworks */,
-				02FD825A192A10B6007762C0 /* libFrameworkTesting.a in Frameworks */,
 				C12DE7A218E322B2002EEBB4 /* AssetsLibrary.framework in Frameworks */,
 				74AF633D18852FE100070C35 /* Security.framework in Frameworks */,
 				74BF981A1876B3A8001D4CFE /* GameController.framework in Frameworks */,

@@ -77,10 +77,11 @@
 
 #include "Scene3D/Converters/LodToLod2Converter.h"
 #include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
+#include "Scene3D/Converters/TreeToAnimatedTreeConverter.h"
 
 namespace DAVA
 {
-    
+
 SceneFileV2::SceneFileV2()
 {
     isDebugLogEnabled = false;
@@ -174,7 +175,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 11;
+    header.version = SCENE_FILE_CURRENT_VERSION;
     header.nodeCount = _scene->GetChildrenCount();
 
     if(NULL != scene->GetGlobalMaterial())
@@ -772,7 +773,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-				if(GetVersion() < 11 && GetLodComponent(parent))
+				if(GetVersion() < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -821,7 +822,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
             if (parent)
             {
-				if(GetVersion() < 11 && GetLodComponent(parent))
+				if(GetVersion() < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -1174,7 +1175,6 @@ void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 	}
 }
 
-    
 void SceneFileV2::OptimizeScene(Entity * rootNode)
 {
     int32 beforeCount = rootNode->GetChildrenCountRecursive();
@@ -1186,7 +1186,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 
-    if(GetVersion() < 11)
+    if(GetVersion() < OLD_LODS_SCENE_VERSION)
     {
 	    LodToLod2Converter lodConverter;
 	    lodConverter.ConvertLodToV2(rootNode);
@@ -1194,6 +1194,12 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
     }
 	
+    if(GetVersion() < TREE_ANIMATION_SCENE_VERSION)
+    {
+        TreeToAnimatedTreeConverter treeConverter;
+        treeConverter.ConvertTrees(rootNode);
+    }
+
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
