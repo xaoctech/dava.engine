@@ -458,6 +458,87 @@ bool FileSystem::IsDirectory(const FilePath & pathToCheck)
 	return false;
 }
 
+bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
+{
+    if (IsFileLocked(filePath) == isLock)
+    {
+        return true;
+    }
+
+    String path = filePath.GetAbsolutePathname();
+#if defined (__DAVAENGINE_WIN32__)
+    if (isLock)
+    {
+        HANDLE hFile = CreateFileA(path.c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hFile != INVALID_HANDLE_VALUE)
+        {
+            lockedFileHandles[path] = hFile;
+            return true;
+        }
+
+        return false;
+    }
+    else
+    {
+        Map<String, HANDLE>::iterator lockedFileIter = lockedFileHandles.find(path);
+        if (lockedFileIter != lockedFileHandles.end())
+        {
+            CloseHandle(lockedFileIter->second);
+            lockedFileHandles.erase(lockedFileIter);
+            return true;
+        }
+
+        return false;
+    }
+    return false;
+#elif defined(__DAVAENGINE_MACOS__)
+    if (isLock)
+    {
+        return (chflags(path.c_str(), UF_IMMUTABLE) == 0);
+    }
+    else
+    {
+        struct stat s;
+        if(stat(path.c_str(), &s) == 0)
+        {
+            s.st_flags &= ~UF_IMMUTABLE;
+            return (chflags(path.c_str(), s.st_flags) == 0);
+        }
+
+        return false;
+    }
+#else
+    // Not implemented for all other platforms yet.
+    return false;
+#endif
+}
+
+bool FileSystem::IsFileLocked(const FilePath & filePath)
+{
+    String path = filePath.GetAbsolutePathname();
+#if defined (__DAVAENGINE_WIN32__)
+	HANDLE hFile = CreateFileA(path.c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE || GetLastError() == ERROR_SHARING_VIOLATION)
+	{
+		return true;
+	}
+
+	CloseHandle(hFile);
+	return false;
+#elif defined(__DAVAENGINE_MACOS__)
+	struct stat s;
+	if(stat(path.c_str(), &s) == 0)
+	{
+		return (0 != (s.st_flags & UF_IMMUTABLE));
+	}
+
+	return false;
+#else
+	// Not implemented for all other platforms yet.
+	return false;
+#endif
+}
+
 const FilePath & FileSystem::GetCurrentDocumentsDirectory()
 {
     return currentDocDirectory; 
@@ -655,6 +736,10 @@ void FileSystem::Init()
 	}
 	SafeRelease(parser);
 }
+#endif
+
+#if defined (__DAVAENGINE_WIN32__)
+	Map<String, HANDLE> FileSystem::lockedFileHandles;
 #endif
 
 }
