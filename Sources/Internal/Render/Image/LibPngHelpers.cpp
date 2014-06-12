@@ -51,6 +51,25 @@ using namespace DAVA;
 
 #define PNG_DEBUG 3
 
+
+namespace
+{
+    
+    void ReleaseWriteData(png_struct *& png_ptr, png_info *& info_ptr, unsigned char**& row_pointers, FILE *& fp, Image*& convertedImage)
+    {
+        free(row_pointers);
+        row_pointers = 0;
+        png_destroy_write_struct(&png_ptr, &info_ptr);
+        png_ptr = 0;
+        info_ptr = 0;
+        fclose(fp);
+        fp = NULL;
+        SafeRelease(convertedImage);
+    }
+
+}
+
+
 void abort_(const char * s, ...)
 {
 	va_list args;
@@ -365,8 +384,8 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
     
 	png_color_8 sig_bit;
 	
-	png_structp png_ptr;
-	png_infop info_ptr;
+	png_structp png_ptr = 0;
+	png_infop info_ptr = 0;
     
 	png_byte color_type = PNG_COLOR_TYPE_RGBA;
 	png_byte bit_depth = 8;
@@ -392,19 +411,14 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 		row_pointers[y] = (png_byte*) &imageData[y * width * bytes_for_color];
 	}
 	
-	
 	//create file
 	FILE *fp = fopen(fileName.GetAbsolutePathname().c_str(), "wb");
 	if (!fp)
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] File %s could not be opened for writing", fileName.GetAbsolutePathname().c_str());
-		//abort_("[write_png_file] File %s could not be opened for writing", file_name);
-        free(row_pointers);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        SafeRelease(convertedImage);
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
 		return ERROR_FILE_NOTFOUND;
 	}
-	
 	
 	// initialize stuff
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -412,37 +426,23 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 	if (!png_ptr)
     {
 		Logger::Error("[LibPngWrapper::WritePngFile] png_create_write_struct failed");
-        
-		//abort_("[write_png_file] png_create_write_struct failed");
-        free(row_pointers);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        fclose(fp);
-        SafeRelease(convertedImage);
-		return ERROR_WRITE_FAIL;
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+        return ERROR_WRITE_FAIL;
 	}
 	
 	info_ptr = png_create_info_struct(png_ptr);
 	if (!info_ptr)
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] png_create_info_struct failed");
-
-		//abort_("[write_png_file] png_create_info_struct failed");
-        free(row_pointers);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        fclose(fp);
-        SafeRelease(convertedImage);
-		return ERROR_WRITE_FAIL;
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+        return ERROR_WRITE_FAIL;
 	}
 	
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during init_io");
-		//abort_("[write_png_file] Error during init_io");
-        free(row_pointers);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        fclose(fp);
-        SafeRelease(convertedImage);
-		return ERROR_WRITE_FAIL;
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+        return ERROR_WRITE_FAIL;
 	}
 	
 	png_init_io(png_ptr, fp);
@@ -451,12 +451,8 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing header");
-		//abort_("[write_png_file] Error during writing header");
-        free(row_pointers);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        fclose(fp);
-        SafeRelease(convertedImage);
-		return ERROR_WRITE_FAIL;
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+        return ERROR_WRITE_FAIL;
 	}
     
 	
@@ -502,12 +498,8 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during writing bytes");
-		//abort_("[write_png_file] Error during writing bytes");
-        free(row_pointers);
-        png_destroy_write_struct(&png_ptr, &info_ptr);
-        fclose(fp);
-        SafeRelease(convertedImage);
-		return ERROR_WRITE_FAIL;
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+        return ERROR_WRITE_FAIL;
 	}
 	
 	png_write_image(png_ptr, row_pointers);
@@ -517,20 +509,13 @@ eErrorCode LibPngWrapper::WriteFile(const FilePath & fileName, const Vector<Imag
 	if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		Logger::Error("[LibPngWrapper::WritePngFile] Error during end of write");
-		//abort_("[write_png_file] Error during end of write");
-        free(row_pointers);
-        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        fclose(fp);
-        SafeRelease(convertedImage);
-		return ERROR_WRITE_FAIL;
+        ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
+        return ERROR_WRITE_FAIL;
 	}
 	
 	png_write_end(png_ptr, NULL);
 	
-	free(row_pointers);
-    png_destroy_write_struct(&png_ptr, &info_ptr);
-	fclose(fp);
-    SafeRelease(convertedImage);
+    ReleaseWriteData(png_ptr, info_ptr, row_pointers, fp, convertedImage);
     return SUCCESS;
 }
 
