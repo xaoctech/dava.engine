@@ -61,6 +61,7 @@ Shader::Shader()
     attributeNames = 0;
     activeAttributes = 0;
     activeUniforms = 0;
+    activeAttributesMask = 0;
     
     //uniforms = 0;
     uniformData = NULL;
@@ -117,7 +118,10 @@ FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
     FastName("inTangent"),
     FastName("inBinormal"),
     FastName("inJointWeight"),
-    FastName("inTime")
+    FastName("inTime"),
+    FastName("inPivot"),
+    FastName("inFlexibility"),
+    FastName("inAngleSinCos")
 };
 
 eShaderSemantic Shader::GetShaderSemanticByName(const FastName & name)
@@ -347,6 +351,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
     char attributeName[512];
     DVASSERT(attributeNames == NULL);
     attributeNames = new FastName[activeAttributes];
+    activeAttributesMask = 0;
     for (int32 k = 0; k < activeAttributes; ++k)
     {
         GLint size;
@@ -355,7 +360,16 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
         attributeNames[k] = FastName(attributeName);
         
         int32 flagIndex = GetAttributeIndexByName(attributeNames[k]);
-        vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
+        if(flagIndex != -1)
+        {
+            int32 attributeLocationIndex = glGetAttribLocation(program, attributeName);
+            vertexFormatAttribIndeces[flagIndex] = attributeLocationIndex;
+            
+            if(attributeLocationIndex != -1)
+            {
+                activeAttributesMask |= (1 << flagIndex);
+            }
+        }
     }
     
     RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms));
@@ -1200,7 +1214,18 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
-
+            case PARAM_SPEED_TREE_TRUNK_OSCILLATION:
+            case PARAM_SPEED_TREE_LEAFS_OSCILLATION:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    Vector2 * param = (Vector2*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
             case PARAM_COLOR:
             {
                 const Color & c = RenderManager::Instance()->GetColor();
