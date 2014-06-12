@@ -263,7 +263,7 @@ private:
 	};
 
 	List<ResourceArchiveItem> resourceArchiveList;
-    Map<String, uint32> lockedFileHandles;
+    Map<String, void*> lockedFileHandles;
 
 	friend class File;
 #if defined(__DAVAENGINE_ANDROID__)
