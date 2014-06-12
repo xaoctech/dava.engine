@@ -68,11 +68,6 @@
 namespace DAVA
 {
 
-#if defined(__DAVAENGINE_ANDROID__)
-    Set<String> FileSystem::dirSet;
-    Set<String> FileSystem::fileSet;
-#endif
-
 FileSystem::FileSystem()
 {
 }
@@ -478,13 +473,13 @@ bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
         HANDLE hFile = CreateFileA(path.c_str(), GENERIC_READ, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         if (hFile != INVALID_HANDLE_VALUE)
         {
-            lockedFileHandles[path] = (uint32)hFile;
+            lockedFileHandles[path] = hFile;
             return true;
         }
     }
     else
     {
-        Map<String, HANDLE>::iterator lockedFileIter = lockedFileHandles.find(path);
+        Map<String, void*>::iterator lockedFileIter = lockedFileHandles.find(path);
         if (lockedFileIter != lockedFileHandles.end())
         {
             CloseHandle((HANDLE)lockedFileIter->second);
@@ -499,7 +494,7 @@ bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
     {
         if (chflags(path.c_str(), UF_IMMUTABLE) == 0)
         {
-            lockedFileHandles[path] = 0; // handle is not needed in case of MacOS.
+            lockedFileHandles[path] = NULL; // handle is not needed in case of MacOS.
             return true;
         }
     }
@@ -508,7 +503,7 @@ bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
         struct stat s;
         if(stat(path.c_str(), &s) == 0)
         {
-            Map<String, uint32>::iterator lockedFileIter = lockedFileHandles.find(path);
+            Map<String, void*>::iterator lockedFileIter = lockedFileHandles.find(path);
             if (lockedFileIter != lockedFileHandles.end())
             {
                 lockedFileHandles.erase(lockedFileIter);
