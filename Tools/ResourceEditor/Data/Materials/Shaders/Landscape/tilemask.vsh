@@ -15,7 +15,7 @@ uniform mediump vec2 texture0Tiling;
 varying mediump vec2 varTexCoordOrig;
 varying mediump vec2 varTexCoord0;
 
-#if defined(VERTEX_FOG) || defined(SPECULAR_LAND)
+#if defined(VERTEX_FOG) || defined(SPECULAR)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -37,7 +37,7 @@ varying float varFogFactor;
 varying vec2 varTexCoordCursor;
 #endif
 
-#ifdef SPECULAR_LAND
+#ifdef SPECULAR
 uniform mat3 worldViewInvTransposeMatrix;
 attribute vec3 inNormal;
 attribute vec3 inTangent;
@@ -78,11 +78,11 @@ void main()
 
 	varTexCoord0 = inTexCoord0 * texture0Tiling;
 	
-#if defined(SPECULAR_LAND) || defined(VERTEX_FOG)
+#if defined(SPECULAR) || defined(VERTEX_FOG)
 	vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
 #endif
 	
-#if defined(SPECULAR_LAND)
+#if defined(SPECULAR)
     vec3 normal = normalize(worldViewInvTransposeMatrix * inNormal); // normal in eye coordinates
     vec3 toLightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;
     toLightDir = normalize(toLightDir);

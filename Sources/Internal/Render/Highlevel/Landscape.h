@@ -423,7 +423,7 @@ protected:
 
 public:
    
-	    INTROSPECTION_EXTEND(Landscape, RenderObject,
+    INTROSPECTION_EXTEND(Landscape, RenderObject,
         PROPERTY("heightmapPath", "Height Map Path", GetHeightmapPathname, SetHeightmapPathname, I_VIEW | I_EDIT)
         PROPERTY("size", "Size", GetLandscapeSize, SetLandscapeSize, I_VIEW | I_EDIT)
         PROPERTY("height", "Height", GetLandscapeHeight, SetLandscapeHeight, I_VIEW | I_EDIT)
