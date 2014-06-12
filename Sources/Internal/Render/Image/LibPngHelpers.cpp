@@ -62,8 +62,11 @@ namespace
         png_destroy_write_struct(&png_ptr, &info_ptr);
         png_ptr = 0;
         info_ptr = 0;
-        fclose(fp);
-        fp = NULL;
+        if ( fp )
+        {
+            fclose( fp );
+            fp = NULL;
+        }
         SafeRelease(convertedImage);
     }
 
