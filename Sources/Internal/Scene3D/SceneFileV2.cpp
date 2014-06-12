@@ -1191,6 +1191,7 @@ void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 
 void SceneFileV2::RebuildTangentSpace(Entity *entity)
 {
+    static int32 prerequiredFormat = EVF_TANGENT|EVF_NORMAL;
     RenderObject *ro = GetRenderObject(entity);
 
     if (ro)
@@ -1202,7 +1203,7 @@ void SceneFileV2::RebuildTangentSpace(Entity *entity)
             if (group)
             {
                 int32 format = group->GetFormat();
-                if ((format&EVF_TANGENT)&&!(format&EVF_BINORMAL))
+                if (((format&prerequiredFormat)==prerequiredFormat)&&!(format&EVF_BINORMAL))
                     MeshUtils::RebuildMeshTangentSpace(group, true);
             }
         }
