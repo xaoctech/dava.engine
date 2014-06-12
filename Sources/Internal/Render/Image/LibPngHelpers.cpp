@@ -147,8 +147,10 @@ eErrorCode LibPngWrapper::ReadFile(File *infile, Vector<Image *> &imageSet, int3
     }
 }
 
-int LibPngWrapper::ReadPngFile(File *infile, Image * image)
+int LibPngWrapper::ReadPngFile(File *infile, Image * image, PixelFormat targetFormat/* = FORMAT_INVALID*/)
 {
+	DVASSERT(targetFormat == FORMAT_INVALID || targetFormat == FORMAT_RGBA8888);
+
 	png_structp png_ptr;
 	png_infop info_ptr;
 	
@@ -213,11 +215,19 @@ int LibPngWrapper::ReadPngFile(File *infile, Image * image)
 	if (color_type == PNG_COLOR_TYPE_GRAY ||
 		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
     {
-        image->format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
-        if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-        {
-            png_set_strip_alpha(png_ptr);
-        }
+		if(targetFormat == FORMAT_RGBA8888)
+		{
+			png_set_gray_to_rgb(png_ptr);
+			png_set_filler(png_ptr, 0xFFFF, PNG_FILLER_AFTER);
+		}
+		else
+		{
+			image->format = (bit_depth == 16) ? FORMAT_A16 : FORMAT_A8;
+			if(color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+			{
+				png_set_strip_alpha(png_ptr);
+			}
+		}
 	}
 	else if(color_type == PNG_COLOR_TYPE_PALETTE)
 	{
