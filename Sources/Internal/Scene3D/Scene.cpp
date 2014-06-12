@@ -393,6 +393,15 @@ Scene::~Scene()
 	SafeDelete(eventSystem);
 	SafeDelete(renderSystem);
 }
+    
+void Scene::RegisterEntity(Entity * entity)
+{
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        systems[k]->RegisterEntity(entity);
+    }
+}
 
 void Scene::UnregisterEntity(Entity * entity)
 {
