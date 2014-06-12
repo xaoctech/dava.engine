@@ -373,7 +373,7 @@ void Scene::RegisterEntity(Entity * entity)
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        systems[k]->AddEntityIfRequired(entity);
+        systems[k]->RegisterEntity(entity);
     }
 }
 
@@ -382,27 +382,27 @@ void Scene::UnregisterEntity(Entity * entity)
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        systems[k]->RemoveEntityIfNotRequired(entity);
+        systems[k]->UnregisterEntity(entity);
     }
 }
     
-void Scene::AddComponent(Entity * entity, Component * component)
+void Scene::RegisterComponent(Entity * entity, Component * component)
 {
 	DVASSERT(entity && component);
 	uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        systems[k]->AddEntityIfRequired(entity);
+        systems[k]->RegisterComponent(entity, component);
     }
 }
     
-void Scene::RemoveComponent(Entity * entity, Component * component)
+void Scene::UnregisterComponent(Entity * entity, Component * component)
 {
 	DVASSERT(entity && component);
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        systems[k]->RemoveEntityIfNotRequired(entity);
+        systems[k]->UnregisterComponent(entity, component);
     }
 }
 
