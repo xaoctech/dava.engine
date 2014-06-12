@@ -634,9 +634,8 @@ bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<
 
 bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
 {
-#ifdef __DAVAENGINE_IPHONE__
-
-	DVASSERT_MSG(false, "Qualcomm doesn't provide texture converter library for ios");
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_ANDROID__)
+	DVASSERT_MSG(false, "Qualcomm doesn't provide texture converter library for ios/android");
 	return false;
 
 #else
