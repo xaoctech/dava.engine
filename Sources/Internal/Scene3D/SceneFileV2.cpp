@@ -363,9 +363,10 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
 		    
     OptimizeScene(rootNode);	    
 
+    //as we are going to take information about required attribute streams from shader - we are to wait for shader compilation
     ThreadIdJobWaiter waiter;
     waiter.Wait();
-    UpdatePolygonGroupRequestedFormatRecursivly(rootNode);
+    UpdatePolygonGroupRequestedFormatRecursively(rootNode);
     serializationContext.LoadPolygonGroupData(file);
     
 	rootNode->SceneDidLoaded();
@@ -1215,7 +1216,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     Logger::FrameworkDebug("nodes removed: %d before: %d, now: %d, diff: %d", removedNodeCount, beforeCount, nowCount, beforeCount - nowCount);
 }
 
-void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursivly(Entity *entity)
+void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursively(Entity *entity)
 {
     RenderObject *ro = GetRenderObject(entity);
 
@@ -1225,13 +1226,14 @@ void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursivly(Entity *entity)
         {
             RenderBatch *renderBatch = ro->GetRenderBatch(i);
             PolygonGroup *group = renderBatch->GetPolygonGroup();
-            if (group)
-                serializationContext.AddRequestedPolygonGroupFormat(group, renderBatch->GetMaterial()->GetRequiredVertexFormat());
+            NMaterial *material = renderBatch->GetMaterial();
+            if (group && material)
+                serializationContext.AddRequestedPolygonGroupFormat(group, material->GetRequiredVertexFormat());            
         }
     }
 
     for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
-        UpdatePolygonGroupRequestedFormatRecursivly(entity->GetChild(i));
+        UpdatePolygonGroupRequestedFormatRecursively(entity->GetChild(i));
 }
 
 void SceneFileV2::SetVersion( int32 version )
