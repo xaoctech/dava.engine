@@ -163,7 +163,7 @@ public:
     void RebuildTangentSpace(Entity *entity);
     int32 removedNodeCount;
     	    
-    void UpdatePolygonGroupRequestedFormatRecursivly(Entity *entity);
+    void UpdatePolygonGroupRequestedFormatRecursively(Entity *entity);
 
 	Scene* GetScene() {return scene;}
 
