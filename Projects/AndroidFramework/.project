@@ -1807,69 +1807,14 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
-			<name>Internal/Render/Image.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/Image.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/Image.mm</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image.mm</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/ImageConvert.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/ImageConvert.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/ImageLoader.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/ImageLoader.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/ImageLoader.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/ImageLoader.h</locationURI>
+			<name>Internal/Render/Image</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
 			<name>Internal/Render/IndexBuffer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/IndexBuffer.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/LibDxtHelper.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/LibDxtHelper.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/LibDxtHelper.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/LibDxtHelper.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/LibPVRHelper.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/LibPVRHelper.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/LibPVRHelper.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/LibPVRHelper.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/LibPngHelpers.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/LibPngHelpers.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/Render/LibPngHelpers.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/LibPngHelpers.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Render/Material</name>
@@ -3810,6 +3755,86 @@
 			<name>Internal/Render/Highlevel/SpriteRenderBatch.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Highlevel/SpriteRenderBatch.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/CRCAdditionInterface.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/CRCAdditionInterface.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/Image.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/Image.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/Image.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/Image.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/Image.mm</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/Image.mm</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/ImageConvert.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/ImageConvert.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/ImageFormatInterface.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/ImageFormatInterface.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/ImageSystem.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/ImageSystem.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/ImageSystem.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/ImageSystem.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibDdsHelper.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibDdsHelper.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibDdsHelper.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibDdsHelper.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibJpegHelper.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibJpegHelper.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibJpegHelper.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibJpegHelper.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibPVRHelper.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibPVRHelper.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibPVRHelper.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibPVRHelper.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibPngHelpers.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibPngHelpers.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Render/Image/LibPngHelpers.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Render/Image/LibPngHelpers.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Render/Material/MaterialCompiler.cpp</name>
