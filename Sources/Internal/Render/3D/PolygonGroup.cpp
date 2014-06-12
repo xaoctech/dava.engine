@@ -484,15 +484,10 @@ void PolygonGroup::LoadPolygonData(KeyedArchive * keyedArchive, SerializationCon
         if (vertexFormat&~requiredFlags) //not all streams in data are required - smart copy
         {
             int32 newFormat = vertexFormat&requiredFlags;
-            int32 newVertexStrid = GetVertexSize(newFormat);
+            DVASSERT(newFormat);
+            int32 newVertexStride = GetVertexSize(newFormat);
             SafeDeleteArray(meshData);        
-            meshData = new uint8[vertexCount * newVertexStrid];
-
-            /*static int32 memorySaved = 0;
-            int32 economy = vertexCount*(vertexStride-newVertexStrid);
-            memorySaved+=economy;
-            Logger::FrameworkDebug("Saved %d bytes, total economy %d bytes (as duplicates in VBOS - x2)", economy, memorySaved);*/
-            
+            meshData = new uint8[vertexCount * newVertexStride];                        
             uint8 *dst = meshData;
             const uint8 *src = &archiveData[0];
             for (int32 i = 0; i < vertexCount; ++i)
@@ -503,7 +498,7 @@ void PolygonGroup::LoadPolygonData(KeyedArchive * keyedArchive, SerializationCon
                 }
             }
             vertexFormat = newFormat;
-            vertexStride = newVertexStrid;
+            vertexStride = newVertexStride;
 
         }
         else
