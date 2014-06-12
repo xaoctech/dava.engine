@@ -68,8 +68,6 @@
 namespace DAVA
 {
 
-	
-
 FileSystem::FileSystem()
 {
 }
@@ -83,6 +81,9 @@ FileSystem::~FileSystem()
 		SafeRelease(item.archive);
 	}
 	resourceArchiveList.clear();
+
+    // All locked files should be explicitely unlocked before closing the app.
+    DVASSERT(lockedFileHandles.empty());
 }
 
 FileSystem::eCreateDirectoryResult FileSystem::CreateDirectory(const FilePath & filePath, bool isRecursive)
@@ -475,45 +476,53 @@ bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
             lockedFileHandles[path] = hFile;
             return true;
         }
-
-        return false;
     }
     else
     {
-        Map<String, HANDLE>::iterator lockedFileIter = lockedFileHandles.find(path);
+        Map<String, void*>::iterator lockedFileIter = lockedFileHandles.find(path);
         if (lockedFileIter != lockedFileHandles.end())
         {
-            CloseHandle(lockedFileIter->second);
+            CloseHandle((HANDLE)lockedFileIter->second);
             lockedFileHandles.erase(lockedFileIter);
             return true;
         }
-
-        return false;
     }
+
     return false;
 #elif defined(__DAVAENGINE_MACOS__)
     if (isLock)
     {
-        return (chflags(path.c_str(), UF_IMMUTABLE) == 0);
+        if (chflags(path.c_str(), UF_IMMUTABLE) == 0)
+        {
+            lockedFileHandles[path] = NULL; // handle is not needed in case of MacOS.
+            return true;
+        }
     }
     else
     {
         struct stat s;
         if(stat(path.c_str(), &s) == 0)
         {
+            Map<String, void*>::iterator lockedFileIter = lockedFileHandles.find(path);
+            if (lockedFileIter != lockedFileHandles.end())
+            {
+                lockedFileHandles.erase(lockedFileIter);
+            }
+
             s.st_flags &= ~UF_IMMUTABLE;
             return (chflags(path.c_str(), s.st_flags) == 0);
         }
-
-        return false;
     }
+
+    return false;
 #else
     // Not implemented for all other platforms yet.
+    DVASSERT(false);
     return false;
 #endif
 }
 
-bool FileSystem::IsFileLocked(const FilePath & filePath)
+bool FileSystem::IsFileLocked(const FilePath & filePath) const
 {
     String path = filePath.GetAbsolutePathname();
 #if defined (__DAVAENGINE_WIN32__)
@@ -703,9 +712,6 @@ int32 FileSystem::Spawn(const String& command)
 
 #if defined(__DAVAENGINE_ANDROID__)
 
-Set<String> FileSystem::dirSet;
-Set<String> FileSystem::fileSet;
-
 bool FileSystem::IsAPKPath(const String& path) const
 {
 	if (!path.empty() && path.c_str()[0] == '/')
@@ -736,10 +742,6 @@ void FileSystem::Init()
 	}
 	SafeRelease(parser);
 }
-#endif
-
-#if defined (__DAVAENGINE_WIN32__)
-	Map<String, HANDLE> FileSystem::lockedFileHandles;
 #endif
 
 }

@@ -31,6 +31,7 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "Render/Image/LibPngHelpers.h"
 #include "Render/Image/ImageSystem.h"
+#include "Render/Image/ImageConvert.h"
 #include "Render/Texture.h"
 #include "Render/PixelFormatDescriptor.h"
 
@@ -61,7 +62,18 @@ bool PngImageExt::Read(const FilePath & filename)
     }
     else
     {
-        internalData = SafeRetain(imageSet[0]);
+		Image *image = imageSet[0];
+
+		if(image->GetPixelFormat() == FORMAT_RGBA8888)
+		{
+			internalData = image;
+			internalData->Retain();
+		}
+		else
+		{
+			internalData = Image::Create(image->width, image->height, FORMAT_RGBA8888);
+			ImageConvert::ConvertImageDirect(image, internalData);
+		}
     }
     for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
 	return (internalData != NULL);
