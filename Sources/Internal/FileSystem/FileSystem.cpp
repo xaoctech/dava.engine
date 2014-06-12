@@ -68,11 +68,6 @@
 namespace DAVA
 {
 
-#if defined(__DAVAENGINE_ANDROID__)
-    Set<String> FileSystem::dirSet;
-    Set<String> FileSystem::fileSet;
-#endif
-
 FileSystem::FileSystem()
 {
 }
