@@ -172,6 +172,16 @@ public:
 	 */
 	virtual bool IsDirectory(const FilePath & pathToCheck);
 	
+	/**
+     \brief Function sets/removes exclusive lock to/from file.
+	 */
+	virtual bool LockFile(const FilePath & filePath, bool isLock);
+
+    /**
+     \brief Function checks whether the file is locked.
+	 */
+    virtual bool IsFileLocked(const FilePath & filePath);
+
 	File *CreateFileForFrameworkPath(const FilePath & frameworkPath, uint32 attributes);
 
 	/**
@@ -257,9 +267,13 @@ public:
 
 private:
 	bool IsAPKPath(const String& path) const;
-	static Set<String> dirSet;
 	static Set<String> fileSet;
+
 #endif //#if defined(__DAVAENGINE_ANDROID__)
+    
+#if defined (__DAVAENGINE_WIN32__)
+    static Map<String, HANDLE> lockedFileHandles;
+#endif //#if defined (__DAVAENGINE_WIN32__)
 };
 	
 };
