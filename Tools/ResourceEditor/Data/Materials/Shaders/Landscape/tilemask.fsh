@@ -12,7 +12,7 @@ precision highp float;
 #define mediump
 #endif
 
-#ifdef SPECULAR_LAND
+#ifdef SPECULAR
 uniform sampler2D specularMap;
 uniform float inGlossiness;
 
@@ -56,7 +56,7 @@ void main()
 	color += colorCursor.rgb*colorCursor.a;
 #endif
 	
-#ifdef SPECULAR_LAND
+#ifdef SPECULAR
 	float glossiness = pow(5000.0, inGlossiness * color0.a);
     float specularNorm = (glossiness + 2.0) / 8.0;
     color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
