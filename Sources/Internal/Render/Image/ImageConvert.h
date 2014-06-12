@@ -65,7 +65,7 @@ struct ConvertA16toA8
     inline void operator()(const uint16 * input, uint8 *output)
     {
         uint16 pixel = *input;
-        *output = pixel;
+        *output = (uint8)pixel;
     }
 };
 
@@ -131,6 +131,16 @@ struct ConvertRGB565toRGBA8888
 		uint32 a = 0xFF;
 
  		*output = (r) | (g << 8) | (b << 16) | (a << 24);
+	}
+};
+
+struct ConvertA8toRGBA8888
+{
+	inline void operator()(const uint8 * input, uint32 *output)
+	{
+		uint8 pixel = *input;
+
+		*output = ((pixel) << 24) | (pixel << 16) | (pixel << 8) | pixel;
 	}
 };
 
@@ -315,6 +325,13 @@ public:
         }
     }
 
+	static void ConvertImageDirect(Image *scrImage, Image *dstImage)
+	{
+		ConvertImageDirect(scrImage->format, dstImage->format, scrImage->data, scrImage->width, scrImage->height, scrImage->width * PixelFormatDescriptor::GetPixelFormatSizeInBytes(scrImage->format), 
+			dstImage->data, dstImage->width, dstImage->height, dstImage->width * PixelFormatDescriptor::GetPixelFormatSizeInBytes(dstImage->format));
+	}
+
+
 	static void ConvertImageDirect(PixelFormat inFormat, PixelFormat outFormat, const void * inData, uint32 inWidth, uint32 inHeight, uint32 inPitch, void * outData, uint32 outWidth, uint32 outHeight, uint32 outPitch)
 	{
 		if(inFormat == FORMAT_RGBA5551 && outFormat == FORMAT_RGBA8888)
@@ -335,6 +352,11 @@ public:
 		else if(inFormat == FORMAT_RGB565 && outFormat == FORMAT_RGBA8888)
 		{
 			ConvertDirect<uint16, uint32, ConvertRGB565toRGBA8888> convert;
+			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
+		}
+		else if(inFormat == FORMAT_A8 && outFormat == FORMAT_RGBA8888)
+		{
+			ConvertDirect<uint8, uint32, ConvertA8toRGBA8888> convert;
 			convert(inData, inWidth, inHeight, inPitch, outData, outWidth, outHeight, outPitch);
 		}
 	}
