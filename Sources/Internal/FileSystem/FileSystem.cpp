@@ -508,7 +508,7 @@ bool FileSystem::LockFile(const FilePath & filePath, bool isLock)
         struct stat s;
         if(stat(path.c_str(), &s) == 0)
         {
-            Map<String, uint32>::iterator lockedFileIter = lockedFileHandles.find(path);
+            Map<String, void*>::iterator lockedFileIter = lockedFileHandles.find(path);
             if (lockedFileIter != lockedFileHandles.end())
             {
                 lockedFileHandles.erase(lockedFileIter);
