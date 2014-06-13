@@ -597,7 +597,7 @@ CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitt
 	CommandAction(CMDID_PARTICLE_EMITTER_SAVE_TO_YAML)
 {
 	this->selectedEmitter = emitter;
-	this->filePath = path;
+	this->filePath = path;    
 }
 
 void CommandSaveParticleEmitterToYaml::Redo()
