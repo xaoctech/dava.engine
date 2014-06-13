@@ -237,27 +237,20 @@ void ControlPropertyGridWidget::UpdatePropertiesForSubcontrol()
 
 bool ControlPropertyGridWidget::eventFilter(QObject *object, QEvent *event)
 {
-    if (event->type() == QEvent::FocusOut)
+    if ((event->type() == QEvent::FocusOut) && (object == ui->objectNameLineEdit))
     {
-        if (object == ui->objectNameLineEdit)
+        if (ui->objectNameLineEdit->text() != BasePropertyGridWidget::MULTIPLE_VALUE)
         {
-            
-            if (ui->objectNameLineEdit->text() != BasePropertyGridWidget::MULTIPLE_VALUE)
-            {
-                ui->objectNameLineEdit->setStyleSheet("font:normal;");
-            }
-            
+            ui->objectNameLineEdit->setStyleSheet("font:normal;");
         }
     }
-    if (event->type() == QEvent::FocusIn)
+
+    if ((event->type() == QEvent::FocusIn) && (object == ui->objectNameLineEdit))
     {
-        if (object == ui->objectNameLineEdit)
+        if (ui->objectNameLineEdit->text() == BasePropertyGridWidget::MULTIPLE_VALUE)
         {
-            if (ui->objectNameLineEdit->text() == BasePropertyGridWidget::MULTIPLE_VALUE)
-            {
-                ui->objectNameLineEdit->setStyleSheet("font:normal;");
-                ui->objectNameLineEdit->setText("");
-            }
+            ui->objectNameLineEdit->setStyleSheet("font:normal;");
+            ui->objectNameLineEdit->setText("");
         }
     }
     return  QObject::eventFilter(object, event);;
