@@ -964,7 +964,7 @@ void SceneTree::SaveEffectEmitters()
     
 
     for (int32 i=0, sz = effect->GetEmittersCount(); i!=sz; ++i)
-        PerformSaveEmitter(effect->GetEmitter(i), false, false);
+        PerformSaveEmitter(effect->GetEmitter(i), false);
 }
 
 void SceneTree::StartEffect()
@@ -1089,12 +1089,12 @@ void SceneTree::LoadEmitterFromYaml()
 
 void SceneTree::SaveEmitterToYaml()
 {
-	PerformSaveEmitter(selectedEmitter, false, true);
+	PerformSaveEmitter(selectedEmitter, false);
 }
 
 void SceneTree::SaveEmitterToYamlAs()
 {
-	PerformSaveEmitter(selectedEmitter, true, true);
+	PerformSaveEmitter(selectedEmitter, true);
 }
 
 
@@ -1165,7 +1165,7 @@ void SceneTree::PerformSaveInnerEmitter(bool forceAskFileName)
 		curEmitterFilePath = selectedEmitter->configPath.IsEmpty() ? yamlPath : selectedEmitter->configPath;
 	}
 	selectedLayer->innerEmitterPath = curEmitterFilePath;
-	CommandSaveParticleEmitterToYaml* command = new CommandSaveParticleEmitterToYaml(selectedEmitter, curEmitterFilePath, true);
+	CommandSaveParticleEmitterToYaml* command = new CommandSaveParticleEmitterToYaml(selectedEmitter, curEmitterFilePath);
 	sceneEditor->Exec(command);	
 }
 
@@ -1250,7 +1250,7 @@ void SceneTree::RemoveForce()
 	treeModel->ResyncStructure(treeModel->invisibleRootItem(), sceneEditor);
 }
 
-void SceneTree::PerformSaveEmitter(ParticleEmitter *emitter, bool forceAskFileName, bool updateEmitterWidget)
+void SceneTree::PerformSaveEmitter(ParticleEmitter *emitter, bool forceAskFileName)
 {
 	SceneEditor2 *sceneEditor = treeModel->GetScene();
 	if(!sceneEditor)
@@ -1288,7 +1288,7 @@ void SceneTree::PerformSaveEmitter(ParticleEmitter *emitter, bool forceAskFileNa
 		curEmitterFilePath = emitter->configPath.IsEmpty() ? yamlPath : emitter->configPath;
 		}
 
-	CommandSaveParticleEmitterToYaml* command = new CommandSaveParticleEmitterToYaml(emitter, curEmitterFilePath, updateEmitterWidget);
+	CommandSaveParticleEmitterToYaml* command = new CommandSaveParticleEmitterToYaml(emitter, curEmitterFilePath);
 		sceneEditor->Exec(command);
 	}
 
