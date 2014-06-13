@@ -34,6 +34,8 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/ParticleEffectComponent.h"
 #include "Scene3D/Components/SoundComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
+#include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 
 namespace DAVA
@@ -163,7 +165,7 @@ namespace DAVA
 	
 	void ActionComponent::StopSwitch(int32 switchIndex)
 	{
-		uint32 activeCount = 0;
+		uint32 markedCount = 0;
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
@@ -174,14 +176,14 @@ namespace DAVA
 				actions[i].markedForUpdate = false;
 			}
 			
-			if(actions[i].active)
+			if(actions[i].markedForUpdate)
 			{
-				activeCount++;
+				markedCount++;
 			}
 		}
 
 		if(started &&
-		   0 == activeCount)
+		   0 == markedCount)
 		{			
 			started = false;
 			allActionsActive = false;
@@ -360,24 +362,21 @@ namespace DAVA
 		
 	void ActionComponent::EvaluateAction(const Action& action)
 	{
-        switch ( action.type )
+		if(Action::TYPE_PARTICLE_EFFECT == action.type)
+		{
+			OnActionParticleEffect(action);
+		}
+		else if(Action::TYPE_SOUND == action.type)
+		{
+			OnActionSound(action);
+		}
+        else if(Action::TYPE_WAVE == action.type)
         {
-        case Action::TYPE_PARTICLE_EFFECT_START:
-            OnActionParticleEffectStart( action );
-            break;
-        case Action::TYPE_PARTICLE_EFFECT_STOP:
-            OnActionParticleEffectStop( action );
-            break;
-        case Action::TYPE_SOUND:
-            OnActionSound( action );
-            break;
-        default:
-            DVASSERT( false );
-            return;
+            OnActionWave(action);
         }
 	}
 	
-    void ActionComponent::OnActionParticleEffectStart( const Action& action )
+	void ActionComponent::OnActionParticleEffect(const Action& action)
 	{
 		Entity* target = GetTargetEntity(action.entityName, entity);
 		
@@ -393,22 +392,6 @@ namespace DAVA
 			}
 		}
 	}
-
-    void ActionComponent::OnActionParticleEffectStop( const Action& action )
-    {
-        Entity* target = GetTargetEntity( action.entityName, entity );
-
-        if ( target != NULL )
-        {
-            ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>( target->GetComponent( Component::PARTICLE_EFFECT_COMPONENT ) );
-            if ( component )
-            {
-                component->StopAfterNRepeats( action.stopAfterNRepeats );
-                component->StopWhenEmpty( action.stopWhenEmpty );
-                component->Stop();
-            }
-        }
-    }
 	
 	void ActionComponent::OnActionSound(const Action& action)
 	{
@@ -427,6 +410,21 @@ namespace DAVA
 		}
 	}
 	
+    void ActionComponent::OnActionWave(const Action& action)
+    {
+        Entity* target = GetTargetEntity(action.entityName, entity);
+
+        if(target != NULL)
+        {
+            WaveComponent* component = GetWaveComponent(target);
+            if(component)
+            {
+                component->Trigger();
+            }
+
+        }
+    }
+
 	Entity* ActionComponent::GetTargetEntity(const FastName& name, Entity* parent)
 	{
         if(name == ACTION_COMPONENT_SELF_ENTITY_NAME)
