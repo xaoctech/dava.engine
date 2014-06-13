@@ -593,12 +593,11 @@ void CommandLoadParticleEmitterFromYaml::Redo()
     selectedEmitter->LoadFromYaml(filePath);	
 }
 
-CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitter* emitter, const FilePath& path, bool updateEmitterWidget) :
+CommandSaveParticleEmitterToYaml::CommandSaveParticleEmitterToYaml(ParticleEmitter* emitter, const FilePath& path) :
 	CommandAction(CMDID_PARTICLE_EMITTER_SAVE_TO_YAML)
 {
 	this->selectedEmitter = emitter;
-	this->filePath = path;
-    this->updateEmitterWidget = updateEmitterWidget;
+	this->filePath = path;    
 }
 
 void CommandSaveParticleEmitterToYaml::Redo()
