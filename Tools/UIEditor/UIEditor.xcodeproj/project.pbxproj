@@ -1600,7 +1600,6 @@
 				02D69C9916F08CEE00F3803F /* ui_sliderpropertygridwidget.h */,
 				02D69C9A16F08CEE00F3803F /* ui_statepropertygridwidget.h */,
 				C737D1F518D9C283005B4C8F /* ui_textpropertygridwidget.h */,
-				02D69C9C16F08CEE00F3803F /* ui_uitextfieldpropertygridwidget.h */,
 				17C411E018CA0B55002BA05F /* ui_joypadpropertygridwidget.h */,
 				17C411E118CA0B55002BA05F /* ui_previewsettingswidget.h */,
 			);

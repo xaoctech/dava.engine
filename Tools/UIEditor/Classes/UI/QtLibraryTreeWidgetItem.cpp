@@ -26,36 +26,20 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#ifndef LIBRARYWIDGET_H
-#define LIBRARYWIDGET_H
-
-#include <QWidget>
-#include <QTreeWidgetItem>
 #include "QtLibraryTreeWidgetItem.h"
 
-namespace Ui {
-class LibraryWidget;
+QtLibraryTreeWidgetItem::QtLibraryTreeWidgetItem(QTreeWidgetItem *parent) :
+    QTreeWidgetItem(parent),
+    itemId(0)
+{
 }
 
-class LibraryWidget : public QWidget
+HierarchyTreeNode::HIERARCHYTREENODEID QtLibraryTreeWidgetItem::GetItemId()
 {
-    Q_OBJECT
-    
-public:
-    explicit LibraryWidget(QWidget *parent = 0);
-    ~LibraryWidget();
-	
-	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath);
-	void RemoveControl(QTreeWidgetItem* item);
-	void UpdateControl(QTreeWidgetItem* item, const QString& name);
-    void SetItemEnabled(QTreeWidgetItem* item, bool enabled);
-    void ClearAllItems();
-	void ResetSelection();
-	
-private:
-    Ui::LibraryWidget *ui;
+	return itemId;
+}
 
-};
-
-#endif // LIBRARYWIDGET_H
+void QtLibraryTreeWidgetItem::SetItemId(HierarchyTreeNode::HIERARCHYTREENODEID ID)
+{
+	itemId = ID;
+}

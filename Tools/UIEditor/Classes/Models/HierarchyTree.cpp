@@ -435,7 +435,7 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
 		if (aggregatorNode)
 		{
-			LibraryController::Instance()->RemoveControl(aggregatorNode);
+			LibraryController::Instance()->UpdateLibrary();
 		}
 		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);

@@ -163,7 +163,7 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 		emit SelectedScreenChanged(this->activeScreen);
 	}
 	if (updateLibrary)
-		LibraryController::Instance()->UpdateLibrary(fullLibraryUpdate);
+		LibraryController::Instance()->UpdateLibrary();
 }
 
 void HierarchyTreeController::UpdateSelection(const HierarchyTreeNode* activeItem)
