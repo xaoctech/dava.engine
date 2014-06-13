@@ -49,9 +49,6 @@
 using namespace DAVA;
 
 
-#define PNG_DEBUG 3
-
-
 namespace
 {
     
@@ -62,56 +59,27 @@ namespace
         png_destroy_write_struct(&png_ptr, &info_ptr);
         png_ptr = 0;
         info_ptr = 0;
-        fclose(fp);
-        fp = NULL;
+        if (fp)
+        {
+            fclose( fp );
+            fp = NULL;
+        }
         SafeRelease(convertedImage);
+    }
+
+    struct	PngImageRawData
+    {
+        File * file;
+    };
+
+    void PngImageRead( png_structp pngPtr, png_bytep data, png_size_t size )
+    {
+        PngImageRawData * self = (PngImageRawData*)png_get_io_ptr( pngPtr );
+        self->file->Read( data, (uint32)size );
     }
 
 }
 
-
-void abort_(const char * s, ...)
-{
-	va_list args;
-	va_start(args, s);
-	vfprintf(stderr, s, args);
-	fprintf(stderr, "\n");
-	va_end(args);
-	abort();
-}
-
-//int x, y;
-
-void convert_rawpp_to_bytestream(int32 width, int32 height, png_bytepp row_pointers, uint8 * data)
-{
-	for (int y = 0; y < height; y++) 
-	{
-		png_byte* row = row_pointers[y];
-		memcpy(data, row, width * 4);
-		data += width * 4;
-	}
-}
-
-void convert_bytestream_to_rawpp(int32 width, int32 height, uint8 * data, png_bytepp row_pointers)
-{
-	for (int y = 0; y < height; y++)
-	{
-		png_byte* row = row_pointers[y];
-		memcpy(row, data, width * 4);
-		data += width * 4;
-	}
-}
-
-struct	PngImageRawData
-{
-	File * file;
-};
-
-static void	PngImageRead(png_structp pngPtr, png_bytep data, png_size_t size)
-{
-	PngImageRawData * self = (PngImageRawData*)png_get_io_ptr(pngPtr);
-	self->file->Read(data, (uint32)size);
-}
 
 LibPngWrapper::LibPngWrapper()
 {
