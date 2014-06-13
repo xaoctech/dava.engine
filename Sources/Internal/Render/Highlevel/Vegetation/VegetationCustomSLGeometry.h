@@ -90,6 +90,7 @@ private:
         uint32 densityId;
         float32 rotation;
         uint32 layerId;
+        float32 scale;
     };
     
     struct ClusterResolutionData
@@ -108,8 +109,13 @@ private:
         Vector<Vector3> sourceNormals;
         Vector<VegetationIndex> sourceIndices;
         
+        AABBox3 bbox;
+        Vector3 pivot;
+        
         CustomGeometryLayerData();
         CustomGeometryLayerData(const CustomGeometryLayerData& src);
+        
+        void BuildBBox();
     };
     
     struct CustomGeometryEntityData
@@ -185,6 +191,15 @@ private:
                 const Vector<Vector3>& sourceNormals,
                 Vector<Vector3>& rotatedPositions,
                 Vector<Vector3>& rotatedNormals);
+    
+    void Scale(const Vector3& clusterPivot,
+               float32 scale,
+               const Vector<Vector3>& sourcePositions,
+               const Vector<Vector3>& sourceNormals,
+               Vector<Vector3>& scaledPositions,
+               Vector<Vector3>& scaledNormals);
+    
+    void Lerp(float32 t, const Vector3& src, const Vector3& dst, Vector3& result);
     
     uint32 PrepareResolutionId(uint32 currentResolutionId, uint32 cellX, uint32 cellY) const;
     void InitCustomGeometry(VegetationCustomGeometrySerializationData* geometryData);

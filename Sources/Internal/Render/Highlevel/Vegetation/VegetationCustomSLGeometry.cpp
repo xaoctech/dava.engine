@@ -41,6 +41,7 @@
 namespace DAVA
 {
 static const float32 MAX_ROTATION_ANGLE = 180.0f;
+static const float32 HEIGHT_VARIATION = 0.3f;
 
 void VegetationCustomSLGeometry::CustomMaterialTransformer::TransformMaterialOnCreate(NMaterial* mat)
 {
@@ -74,6 +75,23 @@ VegetationCustomSLGeometry::CustomGeometryLayerData::CustomGeometryLayerData(con
     {
         sourceIndices.push_back(src.sourceIndices[i]);
     }
+    
+    BuildBBox();
+}
+
+void VegetationCustomSLGeometry::CustomGeometryLayerData::BuildBBox()
+{
+    bbox.Empty();
+    
+    size_t sourcePositionsCount = sourcePositions.size();
+    for(size_t i = 0; i < sourcePositionsCount; ++i)
+    {
+        bbox.AddPoint(sourcePositions[i]);
+    }
+    
+    pivot.x = 0.5f * (bbox.max.x - bbox.min.x);
+    pivot.y = 0.5f * (bbox.max.y - bbox.min.y);
+    pivot.z = bbox.min.z;
 }
 
 VegetationCustomSLGeometry::CustomGeometryEntityData::CustomGeometryEntityData() : material(NULL)
@@ -432,6 +450,7 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<uint32
                                   (matrixCellY * unitSize.y) + randomY,
                                   0.0f);
             cluster.rotation = MAX_ROTATION_ANGLE * (Random::Instance()->RandFloat() - 0.5f);
+            cluster.scale = 1.0f - HEIGHT_VARIATION * Random::Instance()->RandFloat();
             cluster.densityId = densityId[clusterIndex];
             cluster.layerId = layerIndex;
             
@@ -518,6 +537,10 @@ void VegetationCustomSLGeometry::GenerateVertexData(const Vector<CustomGeometryE
 
     Vector<Vector3> transformedVertices;
     Vector<Vector3> transformedNormals;
+    
+    Vector<Vector3> scaledVertices;
+    Vector<Vector3> scaledNormals;
+    
     size_t clusterCount = clusterResolution.size();
     for(size_t clusterIndex = 0; clusterIndex < clusterCount; ++clusterIndex)
     {
@@ -540,11 +563,26 @@ void VegetationCustomSLGeometry::GenerateVertexData(const Vector<CustomGeometryE
         
         const CustomGeometryLayerData& clusterGeometry = sourceGeomData[clusterData.position.layerId].lods[clusterData.effectiveResolutionId];
         
+        Scale(clusterGeometry.pivot,
+              clusterData.position.scale,
+              clusterGeometry.sourcePositions,
+              clusterGeometry.sourceNormals,
+              scaledVertices,
+              scaledNormals);
+        
+        
         Rotate(clusterData.position.rotation,
-               clusterGeometry.sourcePositions,
-               clusterGeometry.sourceNormals,
+               scaledVertices,
+               scaledNormals,
                transformedVertices,
                transformedNormals);
+
+        
+        //Rotate(clusterData.position.rotation,
+        //       clusterGeometry.sourcePositions,
+        //       clusterGeometry.sourceNormals,
+        //       transformedVertices,
+        //       transformedNormals);
         
         size_t vertexCount = clusterGeometry.sourcePositions.size();
         for(size_t vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex)
@@ -604,6 +642,41 @@ void VegetationCustomSLGeometry::Rotate(float32 angle,
         
         rotatedNormals.push_back(transformedNormal);
     }
+}
+
+void VegetationCustomSLGeometry::Scale(const Vector3& clusterPivot,
+                                       float32 scale,
+                                       const Vector<Vector3>& sourcePositions,
+                                       const Vector<Vector3>& sourceNormals,
+                                       Vector<Vector3>& scaledPositions,
+                                       Vector<Vector3>& scaledNormals)
+{
+    scaledPositions.clear();
+    scaledNormals.clear();
+    
+    size_t sourceVertexCount = sourcePositions.size();
+    for(size_t vertexIndex = 0; vertexIndex < sourceVertexCount; ++vertexIndex)
+    {
+        Vector3 transformedVertex;
+        Lerp(scale, clusterPivot, sourcePositions[vertexIndex], transformedVertex);
+        scaledPositions.push_back(transformedVertex);
+        
+        Vector3 normalEndPoint = sourcePositions[vertexIndex] + sourceNormals[vertexIndex];
+        Lerp(scale, clusterPivot, normalEndPoint, normalEndPoint);
+        
+        Vector3 transformedNormal = normalEndPoint - transformedVertex;
+        transformedNormal.Normalize();
+        
+        scaledNormals.push_back(transformedNormal);
+    }
+    
+}
+
+void VegetationCustomSLGeometry::Lerp(float32 t, const Vector3& src, const Vector3& dst, Vector3& result)
+{
+    result.x = src.x + t * (dst.x - src.x);
+    result.y = src.y + t * (dst.y - src.y);
+    result.z = src.z + t * (dst.z - src.z);
 }
 
 void VegetationCustomSLGeometry::GenerateIndexData(const Vector<CustomGeometryEntityData>& sourceGeomData,
