@@ -165,7 +165,7 @@ namespace DAVA
 	
 	void ActionComponent::StopSwitch(int32 switchIndex)
 	{
-		uint32 activeCount = 0;
+		uint32 markedCount = 0;
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
@@ -176,14 +176,14 @@ namespace DAVA
 				actions[i].markedForUpdate = false;
 			}
 			
-			if(actions[i].active)
+			if(actions[i].markedForUpdate)
 			{
-				activeCount++;
+				markedCount++;
 			}
 		}
 
 		if(started &&
-		   0 == activeCount)
+		   0 == markedCount)
 		{			
 			started = false;
 			allActionsActive = false;

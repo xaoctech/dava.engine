@@ -391,6 +391,18 @@ void UIStaticText::PrepareSpriteInternal(DAVA::BaseObject *caller, void *param, 
         Sprite *sprite = textBlock->GetSprite();
         shadowBg->SetSprite(sprite, 0);
         textBg->SetSprite(sprite, 0);
+
+		Texture *tex = sprite->GetTexture();
+		if(tex && tex->GetFormat() == FORMAT_A8)
+		{
+			textBg->SetShader(RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8);
+			shadowBg->SetShader(RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8);
+		}
+		else
+		{
+			textBg->SetShader(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+			shadowBg->SetShader(RenderManager::TEXTURE_MUL_FLAT_COLOR);
+		}
     }
     else
     {
