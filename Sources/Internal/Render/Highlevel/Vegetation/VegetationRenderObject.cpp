@@ -312,7 +312,7 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         else
         {
             SetLayerClusterLimit(archive->GetVector4("vro.clusterLayerLimit"));
-            //Vector4 fakeClusterLimit(24, 1, 1, 1);
+            //Vector4 fakeClusterLimit(6, 16, 16, 1);
             //SetLayerClusterLimit(fakeClusterLimit);
         }
 
