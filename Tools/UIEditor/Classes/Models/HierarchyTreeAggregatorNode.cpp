@@ -51,7 +51,7 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	
 	if (parent)
 	{
-		LibraryController::Instance()->AddControl(this);
+		LibraryController::Instance()->UpdateLibrary();
 	}
 }
 
@@ -65,13 +65,13 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 
 	if (parent)
 	{
-		LibraryController::Instance()->AddControl(this);
+		LibraryController::Instance()->UpdateLibrary();
 	}
 }
 
 HierarchyTreeAggregatorNode::~HierarchyTreeAggregatorNode()
 {
-	LibraryController::Instance()->RemoveControl(this);
+	LibraryController::Instance()->UpdateLibrary();
 	DVASSERT(childs.size() == 0);
     
     SafeRelease(listDelegate);
@@ -95,7 +95,7 @@ void HierarchyTreeAggregatorNode::ReturnTreeNodeToScene()
 	HierarchyTreeScreenNode::ReturnTreeNodeToScene();
     if (parent)
 	{
-		LibraryController::Instance()->AddControl(this);
+		LibraryController::Instance()->UpdateLibrary();
 	}
 }
 
@@ -315,7 +315,7 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 void HierarchyTreeAggregatorNode::SetName(const QString& name)
 {
 	HierarchyTreeScreenNode::SetName(name);
-	LibraryController::Instance()->UpdateControl(this);
+	LibraryController::Instance()->UpdateLibrary();
 }
 
 const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChilds() const

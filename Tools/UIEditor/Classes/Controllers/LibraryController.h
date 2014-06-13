@@ -45,27 +45,28 @@ namespace DAVA
 		
 		void Init(LibraryWidget* widget);
 		
-		void UpdateLibrary(bool needFullUpdate = false);
+		void UpdateLibrary();
 		
-		void AddControl(HierarchyTreeAggregatorNode* node);
-		void RemoveControl(HierarchyTreeAggregatorNode* node);
-		void UpdateControl(HierarchyTreeAggregatorNode* node);
+		//void AddControl(HierarchyTreeAggregatorNode* node);
+		//void RemoveControl(HierarchyTreeAggregatorNode* node);
+		//void UpdateControl(HierarchyTreeAggregatorNode* node);
 		
 		HierarchyTreeControlNode* CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position);
 		
 	private:
-		void AddControl(const QString& name, DAVA::UIControl* control);
+		void AddControl(const QString& name, DAVA::UIControl* control, int itemId);
 		
 	private:
-    	typedef List<HierarchyTreeAggregatorNode*> AGGREGATORS;
-		typedef Map<HierarchyTreeNode*, QTreeWidgetItem*> CONTROLS;
-		typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID,  AGGREGATORS> PLATFORMS;
+    	//typedef List<HierarchyTreeAggregatorNode*> AGGREGATORS;
+		typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID, QTreeWidgetItem*> CONTROLS;
+		//typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID,  AGGREGATORS> PLATFORMS;
 		CONTROLS controls;
-        PLATFORMS platforms;
+        //PLATFORMS platforms;
 		LibraryWidget* widget;
 		
-        AGGREGATORS GetPlatformAggregators(HierarchyTreeNode::HIERARCHYTREENODEID platformId);
+        List<HierarchyTreeAggregatorNode*> GetPlatformAggregators(HierarchyTreePlatformNode* activePlatform);
         void AddStandardControls();
+        void RemoveAggregatorItems();
 	};
 }
 

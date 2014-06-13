@@ -26,36 +26,26 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __QT_LIBRARY_TREE_WIDGET_ITEM_H__
+#define __QT_LIBRARY_TREE_WIDGET_ITEM_H__
 
-#ifndef LIBRARYWIDGET_H
-#define LIBRARYWIDGET_H
-
-#include <QWidget>
 #include <QTreeWidgetItem>
-#include "QtLibraryTreeWidgetItem.h"
+#include "HierarchyTreeNode.h"
 
-namespace Ui {
-class LibraryWidget;
-}
-
-class LibraryWidget : public QWidget
+class QtLibraryTreeWidgetItem : public QTreeWidgetItem
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit LibraryWidget(QWidget *parent = 0);
-    ~LibraryWidget();
-	
-	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath);
-	void RemoveControl(QTreeWidgetItem* item);
-	void UpdateControl(QTreeWidgetItem* item, const QString& name);
-    void SetItemEnabled(QTreeWidgetItem* item, bool enabled);
-    void ClearAllItems();
-	void ResetSelection();
-	
-private:
-    Ui::LibraryWidget *ui;
+	QtLibraryTreeWidgetItem(QTreeWidgetItem * parent);
+    
+	HierarchyTreeNode::HIERARCHYTREENODEID GetItemId();
+    void SetItemId(HierarchyTreeNode::HIERARCHYTREENODEID ID);
+    
+protected:
+	HierarchyTreeNode::HIERARCHYTREENODEID itemId;
+
 
 };
 
-#endif // LIBRARYWIDGET_H
+#endif /* defined(__QT_LIBRARY_TREE_WIDGET_ITEM_H__) */
