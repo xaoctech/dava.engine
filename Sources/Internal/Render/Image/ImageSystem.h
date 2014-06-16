@@ -27,46 +27,67 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_IMAGELOADER_H__
-#define __DAVAENGINE_IMAGELOADER_H__
+#ifndef __DAVAENGINE_IMAGE_SYSTEM_H__
+#define __DAVAENGINE_IMAGE_SYSTEM_H__
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
 #include "FileSystem/FilePath.h"
+#include "Render/Image/ImageFormatInterface.h"
+#include "Render/Image/LibJpegHelper.h"
+#include "Render/Image/LibDdsHelper.h"
+#include "Render/Image/LibPngHelpers.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "FileSystem/File.h"
+
 
 namespace DAVA 
 {
-
-class File;
 class Image;
-class ImageLoader
+
+    
+class ImageSystem: public Singleton<ImageSystem>
 {
 public:
+    enum eSupportedImageFileFormats
+    {
+        FILE_FORMAT_PNG = 0,
+        FILE_FORMAT_DDS,
+        FILE_FORMAT_PVR,
+        FILE_FORMAT_JPEG,
+        FILE_FORMAT_COUNT
+    };
 
-    static bool CreateFromFileByExtension(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
+    ImageSystem();
     
-	static bool CreateFromFileByContent(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromFileByContent(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-
-    static bool Save(const Image *image, const FilePath & pathname);
+    virtual ~ImageSystem();
+    
+    eErrorCode Load(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0) const;
+    
+    eErrorCode Load(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0) const;
+    
+    eErrorCode Save(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_RGBA8888) const;
+    
+    eErrorCode SaveAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat = FORMAT_RGBA8888) const;
+    
+    eErrorCode Save(const FilePath & fileName, Image *image, PixelFormat compressionFormat = FORMAT_RGBA8888) const;
+    
+    inline ImageFormatInterface* GetImageFormatInterface(eSupportedImageFileFormats fileFormat) const;
     
 protected:
-
-    static bool CreateFromPNGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-    static bool CreateFromJPEGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-	static bool CreateFromPVRFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDSFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromPNG(File *file, Vector<Image *> & imageSet);
-    static bool CreateFromJPEG(File *file, Vector<Image *> & imageSet);
-	static bool CreateFromPVR(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDS(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
     
-    static bool IsPVRFile(File *file);
-    static bool IsPNGFile(File *file);
-	static bool IsDDSFile(File *file);
-    static bool IsJPEGFile(File *file);
+    ImageFormatInterface* DetectImageFormatInterfaceByExtension(const FilePath & pathname) const;
+    
+    ImageFormatInterface* DetectImageFormatInterfaceByContent(File *file) const;
+       
+    ImageFormatInterface* wrappers[FILE_FORMAT_COUNT];
 };
-	
+   
 };
 
-#endif // __DAVAENGINE_IMAGELOADER_H__
+inline DAVA::ImageFormatInterface* DAVA::ImageSystem::GetImageFormatInterface(ImageSystem::eSupportedImageFileFormats fileFormat) const
+{
+    return wrappers[fileFormat];
+}
+
+#endif // __DAVAENGINE_IMAGE_SYSTEM_H__

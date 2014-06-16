@@ -239,6 +239,7 @@ public:
 
     inline int32 GetAttributeIndex(eVertexFormat vertexFormat);
     inline int32 GetAttributeCount();
+    inline uint32 GetAttributeMask();
     
     inline int32 GetUniformCount();
     inline Uniform * GetUniform(int32 index);
@@ -290,7 +291,7 @@ public:
 
 private:
     
-    void ReleaseShaderData();
+    void ReleaseShaderData(bool deleteShader = true);
     
 #if defined(__DAVAENGINE_DIRECTX9__)
 #elif defined(__DAVAENGINE_OPENGL__)
@@ -302,6 +303,7 @@ private:
     FastName *attributeNames;
     GLint activeAttributes;
     GLint activeUniforms;
+    uint32 activeAttributesMask;
 	
 	uint16* uniformOffsets;
 	uint8* uniformData;
@@ -349,6 +351,11 @@ inline int32 Shader::GetAttributeCount()
 inline int32 Shader::GetAttributeIndex(eVertexFormat vertexFormat)
 {
     return vertexFormatAttribIndeces[FastLog2(vertexFormat)];
+}
+    
+inline uint32 Shader::GetAttributeMask()
+{
+    return activeAttributesMask;
 }
     
 inline int32 Shader::GetUniformCount()
