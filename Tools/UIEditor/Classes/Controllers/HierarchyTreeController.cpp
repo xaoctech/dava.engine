@@ -284,7 +284,9 @@ void HierarchyTreeController::Clear()
     CleanupUnusedItems();
 }
 
-HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType,
+																				HierarchyTreeNode::HIERARCHYTREENODEID typeId,
+                                                                                const QPoint& position)
 {
 	if (!activeScreen)
 	{
@@ -308,18 +310,20 @@ HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl
 	point -= parentDelta;
 	
 	// Can create.
-	return CreateNewControl(strType, point, parentNode);
+	return CreateNewControl(strType, typeId, point, parentNode);
 }
 
-HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const Vector2& position,
-																				 HierarchyTreeNode* parentNode)
+HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType,
+																				HierarchyTreeNode::HIERARCHYTREENODEID typeId,
+                                                                                const Vector2& position,
+                                                                                HierarchyTreeNode* parentNode)
 {
 	// Create the control itself.
 	String type = strType.toStdString();
 	String newName = activeScreen->GetNewControlName(type);
 
     // Add the tree node - we need it before initializing control.
-	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, strType,
+	HierarchyTreeControlNode* controlNode = LibraryController::Instance()->CreateNewControl(parentNode, typeId, strType,
 																							QString::fromStdString(newName),
 																							position);
 	if (!controlNode)

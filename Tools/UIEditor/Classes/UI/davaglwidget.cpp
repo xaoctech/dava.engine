@@ -223,7 +223,7 @@ void DavaGLWidget::dropEvent(QDropEvent *event)
 	if (!controlData)
 		return;
 
-	CreateControlCommand* cmd = new CreateControlCommand(controlData->GetControlName(), event->pos());
+	CreateControlCommand* cmd = new CreateControlCommand(controlData->GetControlName(), controlData->GetControlId(), event->pos());
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
 }

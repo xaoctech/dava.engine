@@ -47,18 +47,14 @@ namespace DAVA
 		
 		void UpdateLibrary();
 		
-		//void AddControl(HierarchyTreeAggregatorNode* node);
-		//void RemoveControl(HierarchyTreeAggregatorNode* node);
-		//void UpdateControl(HierarchyTreeAggregatorNode* node);
-		
-		HierarchyTreeControlNode* CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position);
+		HierarchyTreeControlNode* CreateNewControl(HierarchyTreeNode* parentNode, HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QString& strType, const QString& name, const Vector2& position);
 		
 	private:
-		void AddControl(const QString& name, DAVA::UIControl* control, int itemId);
+		void AddControl(const QString& name, DAVA::UIControl* control);
 		
 	private:
     	//typedef List<HierarchyTreeAggregatorNode*> AGGREGATORS;
-		typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID, QTreeWidgetItem*> CONTROLS;
+		typedef Map<HierarchyTreeNode*, QTreeWidgetItem*> CONTROLS;
 		//typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID,  AGGREGATORS> PLATFORMS;
 		CONTROLS controls;
         //PLATFORMS platforms;

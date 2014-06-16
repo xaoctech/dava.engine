@@ -58,6 +58,10 @@ HierarchyTreeNode::HierarchyTreeNode(const HierarchyTreeNode* node)
 
 HierarchyTreeNode::~HierarchyTreeNode()
 {
+	if (this->id == 1)
+    {
+    	int a = 5;
+    }
     Cleanup();
 }
 
