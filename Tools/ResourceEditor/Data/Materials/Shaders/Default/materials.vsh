@@ -197,9 +197,11 @@ uniform sampler2D densitymap;
 
 uniform vec2 heightmapScale;
 
-uniform vec3 perturbationForce;
-uniform vec3 perturbationPoint;
-uniform float perturbationForceDistance;
+#if defined(MATERIAL_GRASS_TRANSFORM_WAVE)
+
+uniform float vegWaveOffset[8]; //2 floats (xy) per layer
+
+#endif
 
 #if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
 
@@ -369,17 +371,7 @@ void main()
         pos.z += height;
         clusterCenter.z += height;
     
-        highp vec4 densityMapVec = texture2DLod(densitymap, hUV, 0.0);
-    
-        int clusterType = int(inTangent.y);
-        int vertexTileIndex = int(inTangent.x);
-    
-        float clusterChannelDesc = densityMapVec[clusterType] * 255.0;
-        float clusterDensity = 1.0 + clusterChannelDesc - (floor(clusterChannelDesc / 16.0) * 16.0);
-        float clusterScale = tilePos.z * ((clusterChannelDesc - clusterDensity) / 240.0);
-
-        float densityFactor;
-    
+        float clusterScale = 1.0;
         if(int(inTangent.x) == int(lodSwitchScale.x))
         {
             clusterScale *= lodSwitchScale.y;
@@ -389,22 +381,23 @@ void main()
         varTexCoord2.x = clusterLodScale;
 #endif
     
-        if(inTangent.z < clusterDensity)
-        {
-            densityFactor = 1.0;
-        }
-        else
-        {
-            densityFactor = 0.0;
-        }
-    
         vec4 vegetationMask = texture2DLod(vegetationmap, hUV, 0.0);
     
 #if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
         varVegetationColor = vegetationMask.rgb;
 #endif
     
-        pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale * densityFactor);
+        pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale);
+    
+#if defined(MATERIAL_GRASS_TRANSFORM_WAVE)
+    
+    int clusterType = int(inTangent.y);
+    int waveIndex = clusterType * 2;
+    
+    pos.x += inTangent.z * vegWaveOffset[waveIndex];
+    pos.y += inTangent.z * vegWaveOffset[waveIndex + 1];
+    
+#endif
     
         gl_Position = worldViewProjMatrix * pos;
     
