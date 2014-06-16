@@ -114,6 +114,7 @@ bool HierarchyTree::Load(const QString& projectPath)
     {
         FilePath::AddResourcesFolder(bundleName);
     }
+    EditorFontManager::Instance()->SetProjectDataPath(bundleName.GetAbsolutePathname() + "Data/");
     
     const YamlNode *font = projectRoot->Get(FONT_NODE);
     
@@ -498,7 +499,8 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
         
         if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
         {
-            fontNode->Add(DEFAULT_FONTS_PATH_NODE, EditorFontManager::Instance()->GetDefaultFontsPath().GetFrameworkPath());
+
+            fontNode->Add(DEFAULT_FONTS_PATH_NODE, EditorFontManager::Instance()->GetDefaultFontsFrameworkPath());
         }
     }
     

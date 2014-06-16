@@ -126,9 +126,9 @@ void DebugDrawSystem::Draw(DAVA::Entity *entity)
 
 void DebugDrawSystem::DrawObjectBoxesByType(DAVA::Entity *entity)
 {
-	KeyedArchive * customProperties = entity->GetCustomProperties();
-    bool drawBox = false;
+	bool drawBox = false;
 
+	KeyedArchive * customProperties = GetCustomPropertiesArchieve(entity);
     if ( customProperties )
     {
         if ( customProperties->IsKeyExists( "CollisionType" ) )

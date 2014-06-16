@@ -291,7 +291,7 @@ public:
 
 private:
     
-    void ReleaseShaderData();
+    void ReleaseShaderData(bool deleteShader = true);
     
 #if defined(__DAVAENGINE_DIRECTX9__)
 #elif defined(__DAVAENGINE_OPENGL__)
