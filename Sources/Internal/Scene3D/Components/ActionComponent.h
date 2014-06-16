@@ -146,7 +146,7 @@ namespace DAVA
 			{
 			}
 			
-			ActionContainer(const Action& srcAction) : timer(0.0f), active(false)
+			ActionContainer(const Action& srcAction) : timer(0.0f), active(false), markedForUpdate(false)
 			{
 				action = srcAction;
 			}
