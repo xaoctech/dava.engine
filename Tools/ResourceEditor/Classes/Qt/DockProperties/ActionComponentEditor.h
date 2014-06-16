@@ -34,6 +34,8 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include <QDialog>
 #include <QStyledItemDelegate>
+#include <QStandardItemModel>
+
 
 namespace Ui {
 class ActionComponentEditor;
@@ -65,6 +67,8 @@ private:
 	
 	DAVA::ActionComponent* targetComponent;
 	ActionComponentEditor* componentEditor;
+    QMap< QString, int > actionTypes;
+    QMap< QString, int > eventTypes;
 };
 
 
@@ -96,6 +100,7 @@ private:
 	
 	DAVA::ActionComponent* targetComponent;
 	ActionItemEditDelegate editDelegate;
+    QStandardItemModel completerModel;
 };
 
 #endif // ACTIONCOMPONENTEDITOR_H
