@@ -179,7 +179,7 @@ DAVA::ActionComponent::Action ActionComponentEditor::GetDefaultAction()
 {
 	DAVA::ActionComponent::Action action;
 	action.eventType = DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED;
-	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT_START;	
+	action.type = DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT;	
 	action.entityName = DAVA::ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME;
 	action.delay = 0.0f;
 	action.switchIndex = -1;
