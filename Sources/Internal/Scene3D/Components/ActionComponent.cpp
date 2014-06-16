@@ -44,9 +44,10 @@ namespace DAVA
 
     const FastName ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME("*** Self ***");
 
-	ActionComponent::ActionComponent() : started(false), allActionsActive(false)
+	ActionComponent::ActionComponent()
+        : started(false)
+        , allActionsActive(false)
 	{
-		
 	}
 	
 	ActionComponent::~ActionComponent()
@@ -92,7 +93,8 @@ namespace DAVA
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
+            Action& action = actions.at(i).action;
+			if((action.eventType == Action::EVENT_SWITCH_CHANGED) && (action.switchIndex == switchIndex))
 			{
 				actions[i].markedForUpdate = true;
 				markedCount++;
@@ -118,7 +120,8 @@ namespace DAVA
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if(actions[i].action.eventType == Action::EVENT_ADDED_TO_SCENE)
+            Action& action = actions.at(i).action;
+			if(action.eventType == Action::EVENT_ADDED_TO_SCENE)
 			{
 				actions[i].markedForUpdate = true;
 				markedCount++;
@@ -169,7 +172,8 @@ namespace DAVA
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-			if((actions[i].action.eventType == Action::EVENT_SWITCH_CHANGED) && (actions[i].action.switchIndex == switchIndex))
+            Action& action = actions.at(i).action;
+			if((action.eventType == Action::EVENT_SWITCH_CHANGED) && (action.switchIndex == switchIndex))
 			{
 				actions[i].active = false;
 				actions[i].timer = 0.0f;
@@ -192,7 +196,7 @@ namespace DAVA
 		}
 	}
 	
-	void ActionComponent::Add(ActionComponent::Action action)
+	void ActionComponent::Add(const ActionComponent::Action& action)
 	{
 		actions.push_back(ActionContainer(action));
 		allActionsActive = false;
@@ -328,14 +332,16 @@ namespace DAVA
 			for(uint32 i = 0; i < count; ++i)
 			{
 				KeyedArchive* actionArchive = new KeyedArchive();
-				
-				actionArchive->SetUInt32("act.event", actions[i].action.eventType);
-				actionArchive->SetFloat("act.delay", actions[i].action.delay);
-				actionArchive->SetUInt32("act.type", actions[i].action.type);
-				actionArchive->SetString("act.entityName", String(actions[i].action.entityName.c_str() ? actions[i].action.entityName.c_str() : ""));
-				actionArchive->SetInt32("act.switchIndex", actions[i].action.switchIndex);
-				actionArchive->SetInt32("act.stopAfterNRepeats", actions[i].action.stopAfterNRepeats);
-				actionArchive->SetBool("act.stopWhenEmpty", actions[i].action.stopWhenEmpty);
+                const Action& action = action;
+
+				actionArchive->SetUInt32("act.event", action.eventType);
+				actionArchive->SetFloat("act.delay", action.delay);
+				actionArchive->SetUInt32("act.type", action.type);
+                actionArchive->SetFastName("act.customEventId", action.customEventId);
+				actionArchive->SetString("act.entityName", String(action.entityName.c_str() ? action.entityName.c_str() : ""));
+				actionArchive->SetInt32("act.switchIndex", action.switchIndex);
+				actionArchive->SetInt32("act.stopAfterNRepeats", action.stopAfterNRepeats);
+				actionArchive->SetBool("act.stopWhenEmpty", action.stopWhenEmpty);
 			
 				archive->SetArchive(KeyedArchive::GenKeyFromIndex(i), actionArchive);
 				SafeRelease(actionArchive);
@@ -357,6 +363,7 @@ namespace DAVA
 				Action action;
 				action.eventType = (Action::eEvent)actionArchive->GetUInt32("act.event");
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
+                action.customEventId = actionArchive->GetFastName("act.customEventId");
 				action.delay = actionArchive->GetFloat("act.delay");
 				action.entityName = FastName(actionArchive->GetString("act.entityName").c_str());
 				action.switchIndex = actionArchive->GetInt32("act.switchIndex", -1);
@@ -372,7 +379,7 @@ namespace DAVA
 		
 	void ActionComponent::EvaluateAction(const Action& action)
 	{
-		if(Action::TYPE_PARTICLE_EFFECT == action.type)
+		if(Action::TYPE_PARTICLE_EFFECT_START == action.type)
 		{
 			OnActionParticleEffect(action);
 		}

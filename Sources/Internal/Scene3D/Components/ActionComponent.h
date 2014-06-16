@@ -50,45 +50,42 @@ namespace DAVA
 			enum eType
 			{
                 TYPE_NONE = 0,
-                TYPE_PARTICLE_EFFECT,
+                TYPE_PARTICLE_EFFECT_START,
                 TYPE_SOUND,
-                TYPE_WAVE
+                TYPE_WAVE,
+                TYPE_PARTICLE_EFFECT_STOP,
 			};
 
 			enum eEvent
 			{
 				EVENT_SWITCH_CHANGED = 0,
 				EVENT_ADDED_TO_SCENE,
+                EVENT_CUSTOM,
 
-				EVENTS_COUNT
+				EVENTS_COUNT,
 			};
 			
 			eType type;
 			eEvent eventType;
+            FastName customEventId;
 			int32 switchIndex;
 			float32 delay;
+            float32 delayVariation;
 			FastName entityName;
 			//VI: properties needed to control particle effect
 			int32 stopAfterNRepeats;
 			bool stopWhenEmpty;
 
 			
-			Action() : type(TYPE_NONE), eventType(EVENT_SWITCH_CHANGED), delay(0.0f), switchIndex(-1),
-						stopAfterNRepeats(-1), stopWhenEmpty(false)
+			Action()
+                : type(TYPE_NONE)
+                , eventType(EVENT_SWITCH_CHANGED)
+                , delay(0.0f)
+                , delayVariation(0.0f)
+                , switchIndex(-1)
+                , stopAfterNRepeats(-1)
+                , stopWhenEmpty(false)
 			{				
-			}
-			
-			const Action& operator=(const Action& action)
-			{
-				type = action.type;
-				eventType = action.eventType;
-				delay = action.delay;
-				entityName = action.entityName;
-				switchIndex = action.switchIndex;
-				stopAfterNRepeats = action.stopAfterNRepeats;
-				stopWhenEmpty = action.stopWhenEmpty;
-				
-				return *this;
 			}
 			
 			INTROSPECTION(Action,
@@ -106,7 +103,7 @@ namespace DAVA
 		void StopAll();
 		void StopSwitch(int32 switchIndex = -1);
 		
-		void Add(ActionComponent::Action action);
+		void Add(const ActionComponent::Action& action);
 		void Remove(const ActionComponent::Action& action);
 		void Remove(const ActionComponent::Action::eType type, const FastName& entityName, const int switchIndex);
 		uint32 GetCount();
