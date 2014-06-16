@@ -36,6 +36,7 @@
 #include "Render/Image/ImageSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Render/RenderHelper.h"
+#include "Platform/SystemTimer.h"
 
 #include "Render/Highlevel/Vegetation/VegetationPropertyNames.h"
 #include "Render/Highlevel/Vegetation/VegetationFixedGeometry.h"
@@ -160,6 +161,8 @@ VegetationRenderObject::VegetationRenderObject() :
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
+    
+    layerWaveDirection.resize(MAX_CLUSTER_TYPES);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -211,6 +214,9 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetWorldSize(GetWorldSize());
     vegetationRenderObject->SetCustomGeometryPathInternal(GetCustomGeometryPath());
     vegetationRenderObject->SetCameraBias(GetCameraBias());
+    vegetationRenderObject->SetWaveSpeed(GetWaveSpeed());
+    vegetationRenderObject->SetLayerWaveDirection(GetLayerWaveDirection());
+    
     
     vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
@@ -262,6 +268,15 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
         archive->SetArchive("vro.geometryData", customGeometryArchive);
         
         SafeRelease(customGeometryArchive);
+    }
+    
+    archive->SetVector4("vro.layerWaveSpeed", layerWaveSpeed);
+    
+    uint32 dirCount = (uint32)layerWaveDirection.size();
+    archive->SetUInt32("vro.layerWaveDirectionCount", dirCount);
+    for(uint32 i = 0; i < dirCount; ++i)
+    {
+        archive->SetVector2(Format("vro.layerWaveDirection.%d", i), layerWaveDirection[i]);
     }
 }
     
@@ -344,6 +359,23 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         {
             SetCameraBias(archive->GetFloat("vro.cameraBias"));
         }
+        
+        if(archive->IsKeyExists("vro.layerWaveSpeed"))
+        {
+            Vector4 speed = archive->GetVector4("vro.layerWaveSpeed");
+            SetWaveSpeed(speed);
+        }
+        
+        if(archive->IsKeyExists("vro.layerWaveDirectionCount"))
+        {
+            uint32 dirCount = archive->GetUInt32("vro.layerWaveDirectionCount");
+            layerWaveDirection.resize(dirCount);
+            
+            for(uint32 i = 0; i < dirCount; ++i)
+            {
+                layerWaveDirection[i] = archive->GetVector2(Format("vro.layerWaveDirection.%d", i));
+            }
+        }
     }
     
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
@@ -370,6 +402,33 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
     {
         return;
     }
+    
+    waveValue.x += layerWaveSpeed.x;
+    waveValue.y += layerWaveSpeed.y;
+    waveValue.z += layerWaveSpeed.z;
+    waveValue.w += layerWaveSpeed.w;
+    
+    float32 cosA = 0.0f;
+    
+    float32 layerWaveSin[MAX_CLUSTER_TYPES];
+    float32 vegetationWave[MAX_CLUSTER_TYPES * 2];
+    
+    SinCosFast(DegToRad(waveValue.x), layerWaveSin[0], cosA);
+    SinCosFast(DegToRad(waveValue.y), layerWaveSin[1], cosA);
+    SinCosFast(DegToRad(waveValue.z), layerWaveSin[2], cosA);
+    SinCosFast(DegToRad(waveValue.w), layerWaveSin[3], cosA);
+    
+    vegetationWave[0] = layerWaveDirection[0].x * layerWaveSin[0];
+    vegetationWave[1] = layerWaveDirection[0].y * layerWaveSin[0];
+    
+    vegetationWave[2] = layerWaveDirection[1].x * layerWaveSin[1];
+    vegetationWave[3] = layerWaveDirection[1].y * layerWaveSin[1];
+
+    vegetationWave[4] = layerWaveDirection[2].x * layerWaveSin[2];
+    vegetationWave[5] = layerWaveDirection[2].y * layerWaveSin[2];
+
+    vegetationWave[6] = layerWaveDirection[3].x * layerWaveSin[3];
+    vegetationWave[7] = layerWaveDirection[3].y * layerWaveSin[3];
     
     Vector3 camPos = camera->GetPosition();
     Vector3 camDir = camera->GetDirection();
@@ -444,6 +503,11 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
                                   Shader::UT_FLOAT_VEC3,
                                   1,
                                   posScale.data);
+            
+            mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_VEGWAVEOFFSET,
+                                  Shader::UT_FLOAT,
+                                  8,
+                                  vegetationWave);
             
 #ifdef VEGETATION_DRAW_LOD_COLOR
             mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
@@ -1535,10 +1599,34 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
                     metrics.visiblePolyCountPerLayer[layerIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
                 }
             }
-            
-            
         }
     }
+}
+
+void VegetationRenderObject::SetWaveSpeed(const Vector4& speed)
+{
+    layerWaveSpeed = speed;
+}
+    
+Vector4 VegetationRenderObject::GetWaveSpeed() const
+{
+    return layerWaveSpeed;
+}
+
+void VegetationRenderObject::SetLayerWaveDirection(const Vector<Vector2>& dir)
+{
+    size_t dirCount = dir.size();
+    layerWaveDirection.resize(dirCount);
+    
+    for(size_t i = 0; i < dirCount; ++i)
+    {
+        layerWaveDirection[i] = dir[i];
+    }
+}
+    
+const Vector<Vector2>& VegetationRenderObject::GetLayerWaveDirection() const
+{
+    return layerWaveDirection;
 }
 
 };

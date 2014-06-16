@@ -46,6 +46,7 @@ const FastName VegetationPropertyNames::FLAG_GRASS_TRANSFORM("MATERIAL_GRASS_TRA
 const FastName VegetationPropertyNames::FLAG_GRASS_BLEND("MATERIAL_GRASS_BLEND");
 const FastName VegetationPropertyNames::FLAG_GRASS_OPAQUE("MATERIAL_GRASS_OPAQUE");
 const FastName VegetationPropertyNames::FLAG_VEGETATION_DRAW_LOD_COLOR("VEGETATION_DRAW_LOD_COLOR");
+const FastName VegetationPropertyNames::FLAG_GRASS_TRANSFORM_WAVE("MATERIAL_GRASS_TRANSFORM_WAVE");
     
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH("HIGH");
 const FastName VegetationPropertyNames::VEGETATION_QUALITY_NAME_LOW("LOW");
@@ -53,4 +54,6 @@ const FastName VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME("Vegetatio
     
 const FastName VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP("vegetationmap");
 const FastName VegetationPropertyNames::UNIFORM_SAMPLER_DENSITYMAP("densitymap");
+
+const FastName VegetationPropertyNames::UNIFORM_VEGWAVEOFFSET("vegWaveOffset[0]");
 };

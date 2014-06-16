@@ -89,8 +89,37 @@ void VegetationCustomSLGeometry::CustomGeometryLayerData::BuildBBox()
         bbox.AddPoint(sourcePositions[i]);
     }
     
-    pivot.x = 0.5f * (bbox.max.x - bbox.min.x);
-    pivot.y = 0.5f * (bbox.max.y - bbox.min.y);
+    Vector2 xLimits(bbox.max.x, bbox.min.x);
+    Vector2 yLimits(bbox.max.y, bbox.min.y);;
+    for(size_t i = 0; i < sourcePositionsCount; ++i)
+    {
+        const Vector3& sourcePos = sourcePositions[i];
+        if(sourcePos.z == bbox.min.z)
+        {
+            if(xLimits.x < sourcePos.x)
+            {
+                xLimits.x = sourcePos.x;
+            }
+            
+            if(xLimits.y > sourcePos.x)
+            {
+                xLimits.y = sourcePos.x;
+            }
+            
+            if(yLimits.x < sourcePos.y)
+            {
+                yLimits.x = sourcePos.y;
+            }
+            
+            if(yLimits.y > sourcePos.y)
+            {
+                yLimits.y = sourcePos.y;
+            }
+        }
+    }
+    
+    pivot.x = 0.5f * (xLimits.y - xLimits.x);
+    pivot.y = 0.5f * (yLimits.y - yLimits.x);
     pivot.z = bbox.min.z;
 }
 
@@ -315,6 +344,7 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
     renderData->SetMaterial(material);
     
     material->SetFlag(VegetationPropertyNames::FLAG_GRASS_OPAQUE, NMaterial::FlagOn);
+    material->SetFlag(VegetationPropertyNames::FLAG_GRASS_TRANSFORM_WAVE, NMaterial::FlagOn);
     material->SetRenderLayers(1 << RENDER_LAYER_VEGETATION_ID);
     
     FastNameSet::iterator end = materialFlags.end();
@@ -577,13 +607,6 @@ void VegetationCustomSLGeometry::GenerateVertexData(const Vector<CustomGeometryE
                transformedVertices,
                transformedNormals);
 
-        
-        //Rotate(clusterData.position.rotation,
-        //       clusterGeometry.sourcePositions,
-        //       clusterGeometry.sourceNormals,
-        //       transformedVertices,
-        //       transformedNormals);
-        
         size_t vertexCount = clusterGeometry.sourcePositions.size();
         for(size_t vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex)
         {
@@ -595,11 +618,13 @@ void VegetationCustomSLGeometry::GenerateVertexData(const Vector<CustomGeometryE
             
             vertex.normal = transformedNormals[vertexIndex];
             
-            vertex.binormal = clusterData.position.pos;
+            vertex.binormal.x = clusterData.position.pos.x + clusterGeometry.pivot.x;
+            vertex.binormal.y = clusterData.position.pos.y + clusterGeometry.pivot.y;
+            vertex.binormal.z = clusterData.position.pos.z + clusterGeometry.pivot.z;
             
             vertex.tangent.x = clusterData.resolutionId;
             vertex.tangent.y = clusterData.position.layerId;
-            vertex.tangent.z = clusterData.position.densityId;
+            vertex.tangent.z = Max(0.0f, (vertex.coord.z / (clusterGeometry.bbox.max.z - clusterGeometry.bbox.min.z)));
             
             vertex.texCoord0 = clusterGeometry.sourceTextureCoords[vertexIndex];
             

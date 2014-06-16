@@ -157,6 +157,12 @@ public:
     void SetLayerClusterLimit(const Vector4& maxClusters);
     Vector4 GetLayerClusterLimit() const;
     
+    void SetWaveSpeed(const Vector4& speed);
+    Vector4 GetWaveSpeed() const;
+    
+    void SetLayerWaveDirection(const Vector<Vector2>& dir);
+    const Vector<Vector2>& GetLayerWaveDirection() const;
+    
     void CollectMetrics(VegetationMetrics& metrics);
     
 private:
@@ -277,6 +283,11 @@ private:
     
     VegetationCustomGeometrySerializationData* customGeometryData;
     
+    Vector4 layerWaveSpeed;
+    Vector<Vector2> layerWaveDirection;
+    
+    Vector4 waveValue;
+    
 public:
     
     INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
@@ -290,6 +301,8 @@ public:
                          PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
                          PROPERTY("customGeometry", "Custom geometry", GetCustomGeometryPath, SetCustomGeometryPath, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("cameraBias", "Camera Bias", GetCameraBias, SetCameraBias, I_EDIT | I_VIEW)
+                         PROPERTY("waveSpeed", "Wave speed", GetWaveSpeed, SetWaveSpeed, I_SAVE | I_EDIT | I_VIEW)
+                         COLLECTION(layerWaveDirection, "Wave direction",  I_VIEW | I_EDIT | I_SAVE)
                          );
     
 };
