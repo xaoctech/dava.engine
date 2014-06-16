@@ -279,7 +279,7 @@ Shader::~Shader()
     ReleaseShaderData();
 }
 
-void Shader::ReleaseShaderData()
+void Shader::ReleaseShaderData(bool deleteShader/* = true*/)
 {
     SafeDeleteArray(attributeNames);
     //SafeDeleteArray(uniforms);
@@ -289,7 +289,8 @@ void Shader::ReleaseShaderData()
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
     
-    DeleteShaders();
+    if (deleteShader)
+        DeleteShaders();
 
     activeAttributes = 0;
     activeUniforms = 0;
@@ -1348,6 +1349,8 @@ void Shader::Lost()
     program = 0;
     activeAttributes = 0;
     activeUniforms = 0;
+    
+    ReleaseShaderData(false);
 }
 
 void Shader::Invalidate()
