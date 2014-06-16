@@ -30,9 +30,12 @@
 #include "Classes/UI/controllist.h"
 #include "HierarchyTreeController.h"
 
-ControlMimeData::ControlMimeData(const QString& controlName)
+#define ITEM_ID 0, Qt::UserRole
+
+ControlMimeData::ControlMimeData(const QString& controlName, HierarchyTreeNode::HIERARCHYTREENODEID itemId)
 {
 	this->controlName = controlName;
+    this->controlId = itemId;
 }
 
 ControlMimeData::~ControlMimeData()
@@ -62,7 +65,9 @@ QMimeData* ControlList::mimeData(const QList<QTreeWidgetItem*> items) const
 		return NULL;
 	
 	QTreeWidgetItem* item = items[0];
-	ControlMimeData* data = new ControlMimeData(item->text(0));
+	QVariant itemData = item->data(ITEM_ID);
+	HierarchyTreeNode::HIERARCHYTREENODEID id = itemData.toInt();
+	ControlMimeData* data = new ControlMimeData(item->text(0), id);
 	
 	HierarchyTreeController::Instance()->ResetSelectedControl();
 	

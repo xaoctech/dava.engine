@@ -35,6 +35,8 @@
 #include "DefaultScreen.h"
 #include "IconHelper.h"
 
+#include <QDebug>
+
 using namespace DAVA;
 
 static const QString AGGREGATOR_CONTROL_NAME = "UIAggregatorControl";
@@ -46,11 +48,11 @@ LibraryController::LibraryController()
 
 LibraryController::~LibraryController()
 {
-/*	for (CONTROLS::iterator iter = controls.begin(); iter != controls.end(); ++iter)
+	for (CONTROLS::iterator iter = controls.begin(); iter != controls.end(); ++iter)
 	{
 		HierarchyTreeNode* node = iter->first;
 		SafeDelete(node);
-	}*/
+	}
 }
 
 void LibraryController::Init(LibraryWidget* widget)
@@ -61,21 +63,21 @@ void LibraryController::Init(LibraryWidget* widget)
 
 void LibraryController::AddStandardControls()
 {
-    AddControl("UIControl", new UIControl(), -10);
-	AddControl("UIButton", new UIButton(), -11);
-	AddControl("UIStaticText", new UIStaticText(), -12);
-	AddControl("UITextField", new UITextField(), -13);
-	AddControl("UISlider", new UISlider(), -14);
-	AddControl("UIList", new UIList(), -15);
-	AddControl("UIScrollBar", new UIScrollBar(), -16);
-	AddControl("UIScrollView", new UIScrollView(), -17);
-	AddControl("UISpinner", new UISpinner(), -18);
-	AddControl("UISwitch", new UISwitch(), -19);
-   	AddControl("UIParticles", new UIParticles(), -20);
-    AddControl("UIWebView", new UIWebView(), -21);
-    AddControl("UIMovieView", new UIMovieView(), -22);
-    AddControl("UIJoypad", new UIJoypad(), -23);
-    AddControl("UI3DView", new UI3DView(), -24);
+    AddControl("UIControl", new UIControl());
+	AddControl("UIButton", new UIButton());
+	AddControl("UIStaticText", new UIStaticText());
+	AddControl("UITextField", new UITextField());
+	AddControl("UISlider", new UISlider());
+	AddControl("UIList", new UIList());
+	AddControl("UIScrollBar", new UIScrollBar());
+	AddControl("UIScrollView", new UIScrollView());
+	AddControl("UISpinner", new UISpinner());
+	AddControl("UISwitch", new UISwitch());
+   	AddControl("UIParticles", new UIParticles());
+    AddControl("UIWebView", new UIWebView());
+    AddControl("UIMovieView", new UIMovieView());
+    AddControl("UIJoypad", new UIJoypad());
+    AddControl("UI3DView", new UI3DView());
 }
 /*
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
@@ -131,13 +133,18 @@ void LibraryController::UpdateControl(HierarchyTreeAggregatorNode* node)
 	widget->UpdateControl(iter->second, node->GetName());
 }*/
 
-void LibraryController::AddControl(const QString& name, UIControl* control, int itemId)
+void LibraryController::AddControl(const QString& name, UIControl* control)
 {
 	QString iconPath = IconHelper::GetIconPathForUIControl(control);
-	controls[itemId] = widget->AddControl(name, iconPath);
+    HierarchyTreeControlNode *node = new HierarchyTreeControlNode(NULL, control, name);
+	controls[node] = widget->AddControl(name, iconPath, node->GetId());
 }
 
-HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position)
+HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode* parentNode,
+																HierarchyTreeNode::HIERARCHYTREENODEID typeId,
+																const QString& strType,
+                                                                const QString& name,
+                                                                const Vector2& position)
 {
 	String type = strType.toStdString();
 
@@ -145,7 +152,7 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 	UIControl* control = NULL;
 	CONTROLS::iterator iter;
 	
-	for (iter = controls.begin(); iter != controls.end(); ++iter)
+	/*for (iter = controls.begin(); iter != controls.end(); ++iter)
 	{
         HierarchyTreeNode::HIERARCHYTREENODEID nodeId = iter->first;
         HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(nodeId);
@@ -161,9 +168,22 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
                 break;
             }
         }
-	}
+	}*/
+    
+    HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(typeId);
+        
+    // Create aggregator
+    if (node)
+    {
+        HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+        if (aggregator)
+		{
+        	controlNode = aggregator->CreateChild(parentNode, name);
+			control = controlNode->GetUIObject();
+        }
+    }
 	
-	if (iter == controls.end() || !control)
+	if (!control)
 	{
 		//create standart control
 		BaseObject* object = ObjectFactory::Instance()->New<BaseObject>(type);
@@ -228,14 +248,15 @@ void LibraryController::UpdateLibrary()
     // Remove aggregators
     for (CONTROLS::iterator iter = aggregatorControls.begin(); iter != aggregatorControls.end(); ++iter)
     {
-		HierarchyTreeNode::HIERARCHYTREENODEID nodeId = iter->first;
-        HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(nodeId));
+	//	HierarchyTreeNode* node = iter->first;
+      //  HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(nodeId));
+        HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
         
         if (!node)
         	continue;
         
         widget->RemoveControl(iter->second);
-        controls.erase(nodeId);
+        controls.erase(node);
     }
     
     
@@ -245,7 +266,9 @@ void LibraryController::UpdateLibrary()
     	HierarchyTreeAggregatorNode* aggregatorNode = (*it);
         
         const QString& name = aggregatorNode->GetName();
-        controls[aggregatorNode->GetId()] =  widget->AddControl(name, IconHelper::GetIconPathForClassName(AGGREGATOR_CONTROL_NAME));
+        controls[aggregatorNode] =  widget->AddControl(name,
+                                                    	IconHelper::GetIconPathForClassName(AGGREGATOR_CONTROL_NAME),
+                                                        aggregatorNode->GetId());
 	}
     
     /*bool visible = activePlatform && (node->GetPlatform()->GetId() == activePlatform->GetId());
@@ -305,13 +328,13 @@ void LibraryController::RemoveAggregatorItems()
 {
 	for (CONTROLS::iterator iter = controls.begin(); iter != controls.end(); ++iter)
     {
-    	HierarchyTreeNode::HIERARCHYTREENODEID nodeId = iter->first;
-        HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(nodeId);
-        // Delete from library only existing nodes (all standard controls should remain)
-		if (!node)
-			continue;
+        HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
         
-        controls.erase(nodeId);
+        if (!node)
+        	continue;
+        
+        widget->RemoveControl(iter->second);
+        controls.erase(node);
     }
 }
 

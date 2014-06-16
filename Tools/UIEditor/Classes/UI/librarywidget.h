@@ -33,6 +33,7 @@
 #include <QWidget>
 #include <QTreeWidgetItem>
 #include "QtLibraryTreeWidgetItem.h"
+#include "HierarchyTreeNode.h"
 
 namespace Ui {
 class LibraryWidget;
@@ -46,11 +47,10 @@ public:
     explicit LibraryWidget(QWidget *parent = 0);
     ~LibraryWidget();
 	
-	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath);
+	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath, HierarchyTreeNode::HIERARCHYTREENODEID itemId);
 	void RemoveControl(QTreeWidgetItem* item);
 	void UpdateControl(QTreeWidgetItem* item, const QString& name);
     void SetItemEnabled(QTreeWidgetItem* item, bool enabled);
-    void ClearAllItems();
 	void ResetSelection();
 	
 private:
