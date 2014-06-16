@@ -39,7 +39,7 @@ namespace DAVA
 class MeshUtils
 {
 public:
-    static void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=false);
+    static void RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal=true);
     static void CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos);
     static void CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup);
 

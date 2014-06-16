@@ -71,10 +71,11 @@ void MeshUtils::CopyGroupData(PolygonGroup *srcGroup, PolygonGroup *dstGroup)
     dstGroup->BuildBuffers();
 }
 
-void MeshUtils::RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal/*=false*/)
+void MeshUtils::RebuildMeshTangentSpace(PolygonGroup *group, bool precomputeBinormal/*=true*/)
 {
     DVASSERT(group->GetPrimitiveType() == PRIMITIVETYPE_TRIANGLELIST); //only triangle lists for now    
     DVASSERT(group->GetFormat()&EVF_TEXCOORD0);
+    DVASSERT(group->GetFormat()&EVF_NORMAL);
 
     Vector<FaceWork> faces;
     uint32 faceCount = group->GetIndexCount()/3;
