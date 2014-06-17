@@ -31,6 +31,8 @@
 #ifndef __DAVAENGINE_ACTION_COMPONENT_H__
 #define __DAVAENGINE_ACTION_COMPONENT_H__
 
+#include <functional>
+
 #include "Entity/Component.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 
@@ -42,7 +44,6 @@ namespace DAVA
 	class ActionComponent : public Component
 	{
 	public:
-		
         const static DAVA::FastName ACTION_COMPONENT_SELF_ENTITY_NAME;
 
 		struct Action
@@ -67,7 +68,7 @@ namespace DAVA
 			
 			eType type;
 			eEvent eventType;
-            FastName customEventId;
+            FastName userEventId;
 			int32 switchIndex;
 			float32 delay;
             float32 delayVariation;
@@ -75,10 +76,10 @@ namespace DAVA
 			//VI: properties needed to control particle effect
 			int32 stopAfterNRepeats;
 			bool stopWhenEmpty;
-
 			
 			Action()
                 : type(TYPE_NONE)
+                , userEventId("")
                 , eventType(EVENT_SWITCH_CHANGED)
                 , delay(0.0f)
                 , delayVariation(0.0f)
@@ -92,14 +93,17 @@ namespace DAVA
 						  NULL);
 
 		};
+
 	protected:
 		virtual ~ActionComponent();
+
 	public:
 		ActionComponent();
 		
 		void StartSwitch(int32 switchIndex = -1);
 		void StartAdd();
-		bool IsStarted();
+        void StartUser(const FastName& name);
+        bool IsStarted();
 		void StopAll();
 		void StopSwitch(int32 switchIndex = -1);
 		
@@ -121,7 +125,6 @@ namespace DAVA
 		IMPLEMENT_COMPONENT_TYPE(ACTION_COMPONENT);
 		
 	private:
-		
 		void EvaluateAction(const Action& action);
 		
 		void OnActionParticleEffect(const Action& action);
@@ -129,9 +132,8 @@ namespace DAVA
         void OnActionWave(const Action& action);
 		
 		Entity* GetTargetEntity(const FastName& name, Entity* parent);
-		
-	private:
-		
+        void StartAction(const std::function<bool (const Action&)>& accept);
+
 		struct ActionContainer
 		{
 			Action action;
