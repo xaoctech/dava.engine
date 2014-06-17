@@ -165,8 +165,6 @@ void SceneSaver::SaveScene(Scene *scene, const FilePath &fileName, Set<String> &
     VegetationRenderObject* vegetation = FindVegetation(scene);
     if(vegetation)
     {
-        sceneUtils.AddFile(vegetation->GetVegetationMapPath());
-        
         const FilePath& textureSheetPath = vegetation->GetTextureSheetPath();
         if(!textureSheetPath.IsEmpty())
         {
