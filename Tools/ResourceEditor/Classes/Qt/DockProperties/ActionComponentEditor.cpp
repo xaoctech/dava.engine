@@ -76,7 +76,6 @@ namespace
         "User",
     };
     const size_t EVENT_NAME_COUNT = sizeof( EVENT_TYPE_NAME ) / sizeof( *EVENT_TYPE_NAME );
-
     
 }
 
@@ -99,6 +98,14 @@ ActionComponentEditor::ActionComponentEditor(QWidget *parent) :
 	editDelegate.setParent(ui->tableActions);
 	editDelegate.SetComponentEditor(this);
 	ui->tableActions->setItemDelegate(&editDelegate);
+
+    actionTypes[DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT_START] = "Particle start";
+    actionTypes[DAVA::ActionComponent::Action::TYPE_PARTICLE_EFFECT_STOP] = "Particle stop";
+    actionTypes[DAVA::ActionComponent::Action::TYPE_SOUND] = "Sound";
+
+    eventTypes[DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED] = "Switch";
+    eventTypes[DAVA::ActionComponent::Action::EVENT_ADDED_TO_SCENE] = "Added";
+    eventTypes[DAVA::ActionComponent::Action::EVENT_CUSTOM] = "User";
 }
 
 ActionComponentEditor::~ActionComponentEditor()
@@ -128,9 +135,9 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 		{
 			DAVA::ActionComponent::Action& action = component->Get(i);
 			
-            QTableWidgetItem* eventTypeTableItem = new QTableWidgetItem( EVENT_TYPE_NAME[action.eventType], COLUMN_ACTION_TYPE );
+            QTableWidgetItem* eventTypeTableItem = new QTableWidgetItem( eventTypes[action.eventType], COLUMN_ACTION_TYPE );
             QTableWidgetItem* eventNameTableItem = new QTableWidgetItem( action.userEventId.c_str(), COLUMN_EVENT_NAME );
-            QTableWidgetItem* actionTypeTableItem = new QTableWidgetItem( ACTION_TYPE_NAME[action.type], COLUMN_ACTION_TYPE );
+            QTableWidgetItem* actionTypeTableItem = new QTableWidgetItem( actionTypes[action.type], COLUMN_ACTION_TYPE );
             QTableWidgetItem* entityNameTableItem = new QTableWidgetItem( action.entityName.c_str(), COLUMN_ENTITY_NAME );
             QTableWidgetItem* delayTableItem = new QTableWidgetItem( QString( "%1" ).arg( action.delay, 16, 'f', 2 ), COLUMN_DELAY );
             QTableWidgetItem* delayVariationTableItem = new QTableWidgetItem( QString( "%1" ).arg( action.delayVariation, 16, 'f', 2 ), COLUMN_DELAY_VARIATION );
@@ -452,7 +459,15 @@ void ActionItemEditDelegate::setEditorData(QWidget *editor, const QModelIndex &i
 			
 			break;
 		}
-			
+
+        case COLUMN_DELAY_VARIATION:
+        {
+            QDoubleSpinBox* spinBox = static_cast<QDoubleSpinBox*>( editor );
+            spinBox->setValue( currentAction.delayVariation );
+
+            break;
+        }
+
 		case COLUMN_SWITCH_INDEX:
 		{
 			QSpinBox* spinBox = static_cast<QSpinBox*>(editor);
@@ -531,7 +546,16 @@ void ActionItemEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
 			break;
 		}
 			
-		case COLUMN_SWITCH_INDEX:
+        case COLUMN_DELAY_VARIATION:
+        {
+            QDoubleSpinBox* spinBox = static_cast<QDoubleSpinBox*>( editor );
+            currentAction.delayVariation = ( DAVA::float32 )spinBox->value();
+            model->setData( index, QString( "%1" ).arg( currentAction.delayVariation, 16, 'f', 2 ), Qt::EditRole );
+
+            break;
+        }
+
+        case COLUMN_SWITCH_INDEX:
 		{
 			QSpinBox* spinBox = static_cast<QSpinBox*>(editor);
 			currentAction.switchIndex = spinBox->value();

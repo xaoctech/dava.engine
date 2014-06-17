@@ -99,6 +99,10 @@ private:
 	
 	DAVA::ActionComponent* targetComponent;
 	ActionItemEditDelegate editDelegate;
+
+    QMap< int, QString > actionTypes;
+    QMap< int, QString > eventTypes;
+
 };
 
 #endif // ACTIONCOMPONENTEDITOR_H
