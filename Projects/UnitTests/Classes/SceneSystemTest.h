@@ -27,61 +27,58 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "Render/Image.h"
-#include "FileSystem/FilePath.h"
+#ifndef __SCENE_SYSTEM_TEST_H__
+#define __SCENE_SYSTEM_TEST_H__
 
-namespace DAVA 
-{
+#include "DAVAEngine.h"
+using namespace DAVA;
 
-class Texture;
-class Sprite;
-class Image;
+#include "TestTemplate.h"
 
-class LibPngWrapper
+class TestSceneSystem : public SceneSystem
 {
 public:
+    TestSceneSystem(Scene * scene);
+    ~TestSceneSystem();
     
-    static bool IsPngFile(File *file);
+    virtual void RegisterEntity(Entity * entity);
+    virtual void UnregisterEntity(Entity * entity);
+    virtual void RegisterComponent(Entity * entity, Component * component);
+    virtual void UnregisterComponent(Entity * entity, Component * component);
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
     
-	static int ReadPngFile(const FilePath & file, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-	static bool WritePngFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
+    /*uint32 registeredEntityCount;
+    uint32 unregisteredEntityCount;
+    uint32 addedComponentCount;
+    uint32 removedComponentCount;
+    uint32 filteredAddedEntityCount;
+    uint32 filteredRemovedEntityCount;*/
 
-    static uint32 GetDataSize(const FilePath &filePathname);
-
+    Set<Entity*> unfilteredEntities;
+    Set<Entity*> filteredEntities;
 };
 
-class PngImage : public BaseObject
+class SceneSystemTest : public TestTemplate<SceneSystemTest>
 {
 protected:
-	~PngImage();
+    ~SceneSystemTest(){}
 public:
-	PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-	
-	bool Load(const FilePath & filename);
-	bool Save(const FilePath & filename);
-	
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
-
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
+	SceneSystemTest();
+    
+	virtual void LoadResources();
+	virtual void UnloadResources();
+    
+    void RegisterUnregisterAddRemoveTest(PerfFuncData * data);
+    
+    Scene * scene;
+    TestSceneSystem * testSceneSystemAction;
+    TestSceneSystem * testSceneSystemActionSound;
+    TestSceneSystem * testSceneSystemSound;
+    
+private:
 };
 
-#endif // __PNG_IMAGE_H__
+
+#endif //#ifndef __SCENE_SYSTEM_TEST_H__

@@ -27,6 +27,45 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
+#define	__DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__
 
-#include "TestTemplate.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseMath.h"
+#include "Base/Observer.h"
+#include "Entity/SceneSystem.h"
+
+namespace DAVA
+{
+class Entity;
+class SpeedTreeComponent;
+    
+class SpeedTreeUpdateSystem : public SceneSystem, public Observer
+{
+public:
+    SpeedTreeUpdateSystem(Scene * scene);
+    virtual ~SpeedTreeUpdateSystem();
+	
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    virtual void Process(float32 timeElapsed);
+    
+	virtual void HandleEvent(Observable * observable);
+
+protected:
+    void UpdateAnimationFlag(Entity * entity);
+
+private:
+    Vector<SpeedTreeComponent *> allTrees;
+
+    bool isAnimationEnabled;
+    bool isVegetationAnimationEnabled;
+
+    friend class SpeedTreeComponent;
+};
+    
+} // ns
+
+#endif	/* __DAVAENGINE_SCENE3D_SPEEDTREEUPDATESYSTEM_H__ */
 

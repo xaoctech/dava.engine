@@ -27,46 +27,38 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_IMAGELOADER_H__
-#define __DAVAENGINE_IMAGELOADER_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
+#ifndef __PARSE_TEXT_TEST_H__
+#define __PARSE_TEXT_TEST_H__
 
-namespace DAVA 
+#include "DAVAEngine.h"
+
+using namespace DAVA;
+
+#include "UITestTemplate.h"
+#include "Render/RenderManager.h"
+
+class ParseTextTest : public UITestTemplate<ParseTextTest>
 {
-
-class File;
-class Image;
-class ImageLoader
-{
-public:
-
-    static bool CreateFromFileByExtension(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-    
-	static bool CreateFromFileByContent(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromFileByContent(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-
-    static bool Save(const Image *image, const FilePath & pathname);
-    
 protected:
-
-    static bool CreateFromPNGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-    static bool CreateFromJPEGFile(const FilePath & pathname, Vector<Image *> & imageSet);
-	static bool CreateFromPVRFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDSFile(const FilePath & pathname, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromPNG(File *file, Vector<Image *> & imageSet);
-    static bool CreateFromJPEG(File *file, Vector<Image *> & imageSet);
-	static bool CreateFromPVR(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
-	static bool CreateFromDDS(File *file, Vector<Image *> & imageSet, int32 baseMipmap = 0);
+    ~ParseTextTest();
+public:
+	ParseTextTest();
     
-    static bool IsPVRFile(File *file);
-    static bool IsPNGFile(File *file);
-	static bool IsDDSFile(File *file);
-    static bool IsJPEGFile(File *file);
-};
-	
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+private:
+    
+    void ParseTestFunction(PerfFuncData * testData);
+    
+    UIStaticText *CreateTextControl(const Rect &rect, const WideString & text, bool wrapBySymbol, const Vector2 &requestedSize = Vector2(0, 0));
+
+    UIStaticText *wrapBySymbolShort;
+    UIStaticText *wrapByWordShort;
+
+    UIStaticText *wrapBySymbolLong;
+    UIStaticText *wrapByWordLong;
 };
 
-#endif // __DAVAENGINE_IMAGELOADER_H__
+#endif /* defined(__PARSE_TEXT_TEST_H__) */
