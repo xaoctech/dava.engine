@@ -99,14 +99,9 @@ public:
     Heightmap* GetHeightmap() const;
     const FilePath& GetHeightmapPath() const;
     void SetHeightmapPath(const FilePath& path);
-
-    void SetVegetationMap(VegetationMap* map);
-    void SetVegetationMap(const FilePath& path);
-    VegetationMap* GetVegetationMap() const;
-    void SetVegetationMapPath(const FilePath& path);
-    const FilePath& GetVegetationMapPath() const;
     
     void SetLightmap(const FilePath& filePath);
+    void SetLightmapAndGenerateDensityMap(const FilePath& filePath);
     const FilePath& GetLightmapPath() const;
     
     void SetTextureSheet(const FilePath& path);
@@ -172,7 +167,7 @@ private:
     
     Vector2 GetVegetationUnitWorldSize(float32 resolution) const;
     
-    void BuildSpatialStructure(VegetationMap* vegMap);
+    void BuildSpatialStructure();
     void BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
                           AbstractQuadTreeNode<SpatialData>* firstRenderableParent,
                           int16 x, int16 y,
@@ -190,7 +185,6 @@ private:
                               bool evaluateVisibility);
     inline void AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                float32 refDistance,
-                               uint32 cellValue,
                                Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
     
     static bool CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a, const AbstractQuadTreeNode<SpatialData>*  b);
@@ -213,14 +207,7 @@ private:
     inline uint32 MapToResolution(float32 squareDistance);
     
     inline bool IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
-                            uint32 maxClusterTypes,
-                            float32 clusterScaleNormalizationValue,
-                            const VegetationMap& map) const;
-    inline uint8* GetCellValue(int x, int y, const VegetationMap& map) const;
-    inline void GetLayerDescription(uint8 cellLayerData,
-                                    float32 clusterScaleNormalizationValue,
-                                    float32& density,
-                                    float32& scale) const;
+                            const Vector<bool>& map) const;
     
     void ClearRenderBatches();
     
@@ -232,10 +219,19 @@ private:
     VegetationCustomGeometrySerializationData* LoadCustomGeometryData(SerializationContext* context, KeyedArchive* srcArchive);
     void SaveCustomGeometryData(SerializationContext* context, KeyedArchive* dstArchive, VegetationCustomGeometrySerializationData* data);
     
+    void GenerateDensityMapFromTransparencyMask(FilePath lightmapPath,
+                                           Vector<bool>& densityMapBits);
+    Image* LoadSingleImage(const FilePath& path) const;
+    float32 GetMedianAlpha(uint32 x, uint32 y,
+                        uint32 ratio,
+                        uint32 stride,
+                        Image* src) const;
+    
+    void SetDensityMap(const Vector<bool>& densityBits);
+    
 private:
     
     Heightmap* heightmap;
-    VegetationMap* vegetationMap;
     Vector3 worldSize;
     Vector<Vector2> unitWorldSize;
     Vector2 heightmapScale;
@@ -253,7 +249,6 @@ private:
     Vector<AbstractQuadTreeNode<SpatialData>*> visibleCells;
     
     FilePath heightmapPath;
-    FilePath vegetationMapPath;
     FilePath textureSheetPath;
     FilePath albedoTexturePath;
     FilePath lightmapTexturePath;
@@ -288,12 +283,13 @@ private:
     
     Vector4 waveValue;
     
+    Vector<bool> densityMap;
+    
 public:
     
     INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
                          PROPERTY("density", "Base density", GetLayerClusterLimit, SetLayerClusterLimit, I_SAVE | I_EDIT | I_VIEW)
-                         PROPERTY("densityMap", "Density map", GetVegetationMapPath, SetVegetationMap, I_SAVE | I_EDIT | I_VIEW)
-                         PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmap, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmapAndGenerateDensityMap, I_SAVE | I_EDIT | I_VIEW)
                          //PROPERTY("textureSheet", "Texture sheet", GetTextureSheetPath, SetTextureSheet, I_SAVE | I_EDIT | I_VIEW)
                          //PROPERTY("vegetationTexture", "Vegetation texture", GetVegetationTexture, SetVegetationTexture, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("lodRanges", "Lod ranges", GetLodRange, SetLodRange, I_EDIT | I_VIEW)
@@ -309,7 +305,6 @@ public:
     
 inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
                                                    float32 refDistance,
-                                                   uint32 cellValue,
                                                    Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
 {
     if(node->data.isVisible && node->data.cameraDistance <= refDistance)
@@ -337,68 +332,32 @@ inline uint32 VegetationRenderObject::MapToResolution(float32 squareDistance)
 }
 
 inline bool VegetationRenderObject::IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
-                                                uint32 maxClusterTypes,
-                                                float32 clusterScaleNormalizationValue,
-                                                const VegetationMap& map) const
+                                                const Vector<bool>& map) const
 {
-    if(node->data.x == -1)
-    {
-        int ddd = 0;
-        ddd++;
-    }
-    
     bool nodeEmpty = true;
     
     int32 maxX = node->data.x + node->data.width;
     int32 maxY = node->data.y + node->data.height;
     
+    uint32 fullWidth = (halfWidth << 1);
+    
     for(int32 y = node->data.y; y < maxY; ++y)
     {
         for(int32 x = node->data.x; x < maxX; ++x)
         {
-            uint8* vegetationMapValuePtr = GetCellValue(x, y, *vegetationMap);
-            for(uint32 clusterType = 0; clusterType < maxClusterTypes; ++clusterType)
+            int32 mapX = x + halfWidth;
+            int32 mapY = y + halfHeight;
+            uint32 cellDescriptionIndex = (mapY * fullWidth) + mapX;
+            
+            if(map[cellDescriptionIndex])
             {
-                uint8 cellLayerData = vegetationMapValuePtr[clusterType];
-                
-                float32 clusterScale = 0.0f;
-                float32 density = 0.0f;
-                GetLayerDescription(cellLayerData, clusterScaleNormalizationValue, density, clusterScale);
-                
-                if(clusterScale > 0.0f &&
-                   density > 1.0f)
-                {
-                    nodeEmpty = false;
-                    break;
-                }
+                nodeEmpty = false;
+                break;
             }
         }
     }
     
     return nodeEmpty;
-}
-
-inline uint8* VegetationRenderObject::GetCellValue(int x, int y, const VegetationMap& map) const
-{
-    int32 mapX = x + halfWidth;
-    int32 mapY = y + halfHeight;
-    uint32 cellDescriptionIndex = (mapY * (halfWidth << 1)) + mapX;
-    
-    uint8* vegetationMapValuePtr = (map.data + cellDescriptionIndex * 4);
-
-    return vegetationMapValuePtr;
-    
-    //static uint32 dummy = 0xFFFFFFFF;
-    //return (uint8*)&dummy;
-}
-
-inline void VegetationRenderObject::GetLayerDescription(uint8 cellLayerData,
-                                                        float32 clusterScaleNormalizationValue,
-                                                        float32& density,
-                                                        float32& scale) const
-{
-    scale = (1.0f * ((cellLayerData >> 4) & 0xF)) / clusterScaleNormalizationValue;
-    density = (1.0f * (cellLayerData & 0xF)) + 1.0f; //step function uses "<" so we need to emulate "<="
 }
 
 };
