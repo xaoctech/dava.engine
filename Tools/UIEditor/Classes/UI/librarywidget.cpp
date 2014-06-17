@@ -32,9 +32,6 @@
 #include "LibraryController.h"
 #include "IconHelper.h"
 
-#include <QDropEvent>
-#include <QDebug>
-
 using namespace DAVA;
 
 #define TEXT_ID 0
@@ -47,9 +44,6 @@ LibraryWidget::LibraryWidget(QWidget *parent) :
     ui->setupUi(this);
 	ui->treeWidget->clear();
 	LibraryController::Instance()->Init(this);
-    	// acept drops
-	this->setAcceptDrops(true);
-
 }
 
 LibraryWidget::~LibraryWidget()
@@ -67,24 +61,6 @@ QTreeWidgetItem* LibraryWidget::AddControl(const QString& name, const QString& i
 	return control;
 }
 
-void LibraryWidget::RemoveControl(QTreeWidgetItem* item)
-{
-	int index = ui->treeWidget->indexOfTopLevelItem(item);
-	if (index != -1)
-	{
-		delete item;
-	}
-}
-
-void LibraryWidget::UpdateControl(QTreeWidgetItem* item, const QString& name)
-{
-	item->setText(TEXT_ID, name);
-}
-
-void LibraryWidget::SetItemEnabled(QTreeWidgetItem* item, bool visible)
-{
-	item->setDisabled(!visible);
-}
 
 void LibraryWidget::ResetSelection()
 {

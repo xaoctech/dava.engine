@@ -313,8 +313,9 @@ HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, H
 		return NULL;
 	}
 	
-	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect);
+	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect, false);
 	platformNode->AddTreeNode(aggregatorNode);
+    LibraryController::Instance()->UpdateLibrary();
 	
 	return aggregatorNode;
 }
@@ -432,16 +433,17 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 			continue;
 		}
 		
-		HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
-		if (aggregatorNode)
-		{
-			LibraryController::Instance()->UpdateLibrary();
-		}
-		
 		HierarchyTreeScreenNode* screenNode = dynamic_cast<HierarchyTreeScreenNode*>(node);
 		if (screenNode)
 		{
 			screenNode->GetPlatform()->RemoveTreeNode(screenNode, deleteNodeFromMemory, deleteNodeFromScene);
+            
+            HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+			if (aggregatorNode)
+			{
+				LibraryController::Instance()->UpdateLibrary();
+			}
+            
 			continue;
 		}
 		

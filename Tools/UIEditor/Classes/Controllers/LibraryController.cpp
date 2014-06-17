@@ -50,19 +50,17 @@ LibraryController::~LibraryController()
 {
 	for (CONTROLS::iterator iter = controls.begin(); iter != controls.end(); ++iter)
 	{
-		HierarchyTreeNode* node = iter->first;
-		SafeDelete(node);
+		HierarchyTreeControlNode* node = dynamic_cast<HierarchyTreeControlNode*>(iter->first);
+        if(node)
+        {
+			SafeDelete(node);
+        }
 	}
 }
 
 void LibraryController::Init(LibraryWidget* widget)
 {
 	this->widget = widget;
-	AddStandardControls();
-}
-
-void LibraryController::AddStandardControls()
-{
     AddControl("UIControl", new UIControl());
 	AddControl("UIButton", new UIButton());
 	AddControl("UIStaticText", new UIStaticText());
@@ -79,59 +77,6 @@ void LibraryController::AddStandardControls()
     AddControl("UIJoypad", new UIJoypad());
     AddControl("UI3DView", new UI3DView());
 }
-/*
-void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
-{
-	HierarchyTreePlatformNode* nodePlatform = node->GetPlatform();
-    if (!nodePlatform)
-		return;
-    
-	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
-	bool needFullUpdate = activePlatform && (node->GetPlatform()->GetId() != activePlatform->GetId());
-    if (!needFullUpdate)
-	{
-		const QString& name = node->GetName();
-		DVASSERT(controls.find(node) == controls.end());
-		controls[node] = widget->AddControl(name, IconHelper::GetIconPathForClassName(AGGREGATOR_CONTROL_NAME));
-	}
-
-    HierarchyTreeNode::HIERARCHYTREENODEID platformId = nodePlatform->GetId();
-    AGGREGATORS aggregatorsList = GetPlatformAggregators(platformId);
-    aggregatorsList.push_back(node);
-    platforms[platformId] = aggregatorsList;
-    UpdateLibrary(needFullUpdate);
-    
-}
-
-void LibraryController::RemoveControl(HierarchyTreeAggregatorNode* node)
-{
-	HierarchyTreePlatformNode* nodePlatform = node->GetPlatform();
-    if (!nodePlatform)
-    	return;
-    
-    HierarchyTreeNode::HIERARCHYTREENODEID platformId = nodePlatform->GetId();
-    AGGREGATORS aggregatorsList = GetPlatformAggregators(platformId);
-    if (!aggregatorsList.empty())
-    {
-   	 	aggregatorsList.remove(node);
-    	platforms[platformId] = aggregatorsList;
-	}
-	CONTROLS::iterator iter = controls.find(node);
-	if (iter == controls.end())
-		return;
-	
-	widget->RemoveControl(iter->second);
-	controls.erase(node);
-}
-
-void LibraryController::UpdateControl(HierarchyTreeAggregatorNode* node)
-{
-	CONTROLS::iterator iter = controls.find(node);
-	if (iter == controls.end())
-		return;
-
-	widget->UpdateControl(iter->second, node->GetName());
-}*/
 
 void LibraryController::AddControl(const QString& name, UIControl* control)
 {
@@ -151,24 +96,6 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 	HierarchyTreeControlNode* controlNode = NULL;
 	UIControl* control = NULL;
 	CONTROLS::iterator iter;
-	
-	/*for (iter = controls.begin(); iter != controls.end(); ++iter)
-	{
-        HierarchyTreeNode::HIERARCHYTREENODEID nodeId = iter->first;
-        HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(nodeId);
-        
-        // Create aggregator
-        if (node && strType == node->GetName())
-        {
-			HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
-			if (aggregator)
-			{
-				controlNode = aggregator->CreateChild(parentNode, name);
-				control = controlNode->GetUIObject();
-                break;
-            }
-        }
-	}*/
     
     HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(typeId);
         
@@ -211,9 +138,8 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 				continue;
 			}
 
-			HierarchyTreeControlNode* subControlNode =
-				new HierarchyTreeControlNode(controlNode, subControl,
-											 QString::fromStdString(subControl->GetName()));
+			HierarchyTreeControlNode* subControlNode = new HierarchyTreeControlNode(controlNode, subControl,
+																					 QString::fromStdString(subControl->GetName()));
 			controlNode->AddTreeNode(subControlNode);
 		}
 	}
@@ -236,20 +162,11 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 
 void LibraryController::UpdateLibrary()
 {
-	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
-    
-    if (!activePlatform)
-    	return;
-    
-    List<HierarchyTreeAggregatorNode*> aggregatorsList = GetPlatformAggregators(activePlatform);
-    
     CONTROLS aggregatorControls(controls);
     
-    // Remove aggregators
+    // Remove current aggregators from widget
     for (CONTROLS::iterator iter = aggregatorControls.begin(); iter != aggregatorControls.end(); ++iter)
     {
-	//	HierarchyTreeNode* node = iter->first;
-      //  HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(HierarchyTreeController::Instance()->GetTree().GetNode(nodeId));
         HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
         
         if (!node)
@@ -258,7 +175,9 @@ void LibraryController::UpdateLibrary()
         widget->RemoveControl(iter->second);
         controls.erase(node);
     }
-    
+
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    List<HierarchyTreeAggregatorNode*> aggregatorsList = GetPlatformAggregators();
     
     // Add aggregators
     for (List<HierarchyTreeAggregatorNode*>::iterator it = aggregatorsList.begin(); it != aggregatorsList.end(); ++it)
@@ -266,81 +185,27 @@ void LibraryController::UpdateLibrary()
     	HierarchyTreeAggregatorNode* aggregatorNode = (*it);
         
         const QString& name = aggregatorNode->GetName();
-        controls[aggregatorNode] =  widget->AddControl(name,
+        DVASSERT(controls.find(aggregatorNode) == controls.end());
+        QTreeWidgetItem* item = widget->AddControl(name,
                                                     	IconHelper::GetIconPathForClassName(AGGREGATOR_CONTROL_NAME),
                                                         aggregatorNode->GetId());
+        
+    	bool enabled = dynamic_cast<HierarchyTreeAggregatorNode*>(activeScreen);
+        item->setDisabled(enabled);
+        controls[aggregatorNode] = item;
 	}
     
-    /*bool visible = activePlatform && (node->GetPlatform()->GetId() == activePlatform->GetId());
-	if (dynamic_cast<HierarchyTreeAggregatorNode*>(activeScreen))
-	{
-		visible = false;
-	}*/
-    
-    //widget->SetItemEnabled(iter->second, visible);
-    
-    // Remove aggregator items
-    
-	//HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
-    
-    
-    //widget->ClearAllItems();
-    
-    
-/*
-    if (needFullUpdate)
-    {
-    	controls.clear();
-    	widget->ClearAllItems();
-        AddStandardControls();
-
-    	if (activePlatform)
-   		{
-     	    AGGREGATORS aggregatorsList = GetPlatformAggregators(activePlatform->GetId());
-       		for (AGGREGATORS::iterator iter = aggregatorsList.begin(); iter != aggregatorsList.end(); ++iter)
-        	{
-        		HierarchyTreeAggregatorNode *aggregatorNode = (*iter);
-        		controls[aggregatorNode] = widget->AddControl(aggregatorNode->GetName(), IconHelper::GetIconPathForClassName(AGGREGATOR_CONTROL_NAME));
-        	}
-   		}
-	}
-    else
-    {
-    	for (CONTROLS::iterator iter = controls.begin(); iter != controls.end(); ++iter)
-		{
-			HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
-			if (!node)
-				continue;
-		
-			bool visible = activePlatform && (node->GetPlatform()->GetId() == activePlatform->GetId());
-			if (dynamic_cast<HierarchyTreeAggregatorNode*>(activeScreen))
-			{
-				visible = false;
-			}
-			widget->SetItemEnabled(iter->second, visible);
-		}
-    }*/
-	// DF-1488 - Reset treeview widget state, including selection
+   	// DF-1488 - Reset treeview widget state, including selection
 	widget->ResetSelection();
 }
 
-void LibraryController::RemoveAggregatorItems()
+List<HierarchyTreeAggregatorNode*> LibraryController::GetPlatformAggregators()
 {
-	for (CONTROLS::iterator iter = controls.begin(); iter != controls.end(); ++iter)
-    {
-        HierarchyTreeAggregatorNode* node = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
-        
-        if (!node)
-        	continue;
-        
-        widget->RemoveControl(iter->second);
-        controls.erase(node);
-    }
-}
-
-List<HierarchyTreeAggregatorNode*> LibraryController::GetPlatformAggregators(HierarchyTreePlatformNode* activePlatform)
-{
+	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
 	List<HierarchyTreeAggregatorNode*> aggregatorsList;
+    
+    if (!activePlatform)
+    	return aggregatorsList;
 
 	const HierarchyTreeNode::HIERARCHYTREENODESLIST& child = activePlatform->GetChildNodes();
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = child.begin();

@@ -42,28 +42,29 @@
 
 using namespace DAVA;
 
-HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect) :
+HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect, bool updateLibrary) :
 	HierarchyTreeScreenNode(parent, name),
     listDelegate(NULL)
 {
 	this->rect = rect;
 	screen->SetRect(rect);
 	
-	if (parent)
+	if (parent && updateLibrary)
 	{
 		LibraryController::Instance()->UpdateLibrary();
 	}
 }
 
 HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
-														 const HierarchyTreeAggregatorNode* base)
+														 const HierarchyTreeAggregatorNode* base,
+                                                         bool updateLibrary)
 :	HierarchyTreeScreenNode(parent, base),
     listDelegate(NULL)
 {
 	this->rect = base->GetRect();
 	screen->SetRect(rect);
 
-	if (parent)
+	if (parent && updateLibrary)
 	{
 		LibraryController::Instance()->UpdateLibrary();
 	}

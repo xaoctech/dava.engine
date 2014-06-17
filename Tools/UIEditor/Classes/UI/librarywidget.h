@@ -49,8 +49,6 @@ public:
 	
 	QTreeWidgetItem* AddControl(const QString& name, const QString& iconPath, HierarchyTreeNode::HIERARCHYTREENODEID itemId);
 	void RemoveControl(QTreeWidgetItem* item);
-	void UpdateControl(QTreeWidgetItem* item, const QString& name);
-    void SetItemEnabled(QTreeWidgetItem* item, bool enabled);
 	void ResetSelection();
 	
 private:

@@ -30,6 +30,7 @@
 #include "PasteCommand.h"
 #include "HierarchyTreeAggregatorControlNode.h"
 #include "SubcontrolsHelper.h"
+#include "LibraryController.h"
 
 #define COPY_DELTA Vector2(5, 5)
 
@@ -114,6 +115,7 @@ void PasteCommand::Execute()
 						continue;
 					
 					parentPlatform->AddTreeNode(screenNode);
+                    LibraryController::Instance()->UpdateLibrary();
 				}
 			}
 		}break;
@@ -263,7 +265,7 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 		HierarchyTreeNode* copy;
 		if (aggregator)
 		{
-			copy = new HierarchyTreeAggregatorNode(parent, aggregator);
+			copy = new HierarchyTreeAggregatorNode(parent, aggregator, false);
 		}
 		else
 		{
