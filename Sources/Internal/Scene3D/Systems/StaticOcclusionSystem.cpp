@@ -182,8 +182,6 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
     
 void StaticOcclusionBuildSystem::OcclusionBuildStep(BaseObject * bo, void * messageData, void * callerData)
 {
-    StaticOcclusionDataComponent * componentInProgress = (StaticOcclusionDataComponent *)messageData;
-
     if (StaticOcclusion::LEAVE_OLD_INDICES == renewIndex)
     {
         const Vector3 & position = camera->GetPosition();
@@ -458,6 +456,7 @@ void StaticOcclusionSystem::AddRenderObjectToOcclusion(RenderObject * renderObje
     if (renderObject->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX)
     {
         indexedRenderObjects.resize(Max((uint32)indexedRenderObjects.size(), (uint32)(renderObject->GetStaticOcclusionIndex() + 1)));
+        DVASSERT(indexedRenderObjects[renderObject->GetStaticOcclusionIndex()] == 0);
         indexedRenderObjects[renderObject->GetStaticOcclusionIndex()] = renderObject;
     }
 }
@@ -469,6 +468,7 @@ void StaticOcclusionSystem::RemoveRenderObjectFromOcclusion(RenderObject * rende
      */
     if (renderObject->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX)
     {
+        DVASSERT(renderObject->GetStaticOcclusionIndex() < indexedRenderObjects.size());
         indexedRenderObjects[renderObject->GetStaticOcclusionIndex()] = 0;
     }
 }
