@@ -1007,11 +1007,13 @@ const uint32& VegetationRenderObject::GetMaxVisibleQuads() const
 
 void VegetationRenderObject::GetDataNodes(Set<DataNode*> & dataNodes)
 {
-    size_t layerCount = renderData.size();
-    for(size_t i = 0; i < layerCount; ++i)
+    if(customGeometryData != NULL)
     {
-        VegetationRenderData* renderDataObj = renderData[i];
-        dataNodes.insert(renderDataObj->GetMaterial());
+        size_t layerCount = customGeometryData->GetLayerCount();
+        for(size_t i = 0; i < layerCount; ++i)
+        {
+            dataNodes.insert(customGeometryData->GetMaterial(i));
+        }
     }
 }
 
