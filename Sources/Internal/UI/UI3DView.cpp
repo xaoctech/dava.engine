@@ -98,8 +98,6 @@ void UI3DView::Draw(const UIGeometricData & geometricData)
     
     Rect viewportSave = RenderManager::Instance()->GetViewport();
     RenderManager::Instance()->SetViewport(viewportRect, false);
-    RenderManager::Instance()->ClearDepthBuffer();
-	RenderManager::Instance()->ClearStencilBuffer(0);
     
     
     if (scene)
