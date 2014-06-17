@@ -395,9 +395,9 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
     
 }
     
-void StaticOcclusionSystem::AddEntityIfRequired(Entity *entity)
+void StaticOcclusionSystem::RegisterEntity(Entity *entity)
 {
-    SceneSystem::AddEntityIfRequired(entity);
+    SceneSystem::RegisterEntity(entity);
     
     RenderObject * renderObject = GetRenderObject(entity);
     if (renderObject)
@@ -405,17 +405,44 @@ void StaticOcclusionSystem::AddEntityIfRequired(Entity *entity)
         AddRenderObjectToOcclusion(renderObject);
     }
 }
-
-void StaticOcclusionSystem::RemoveEntityIfRequired(Entity *entity)
+    
+void StaticOcclusionSystem::UnregisterEntity(Entity *entity)
 {
     RenderObject * renderObject = GetRenderObject(entity);
     if (renderObject)
     {
         RemoveRenderObjectFromOcclusion(renderObject);
     }
-    
-    SceneSystem::RemoveEntityIfNotRequired(entity);
+    SceneSystem::UnregisterEntity(entity);
 }
+    
+void StaticOcclusionSystem::RegisterComponent(Entity *entity, Component * component)
+{
+    SceneSystem::RegisterComponent(entity, component);
+    
+    if (component->GetType() == Component::RENDER_COMPONENT)
+    {
+        RenderObject * ro = GetRenderObject(entity);
+        if (ro)
+        {
+            AddRenderObjectToOcclusion(ro);
+        }
+    }
+}
+    
+void StaticOcclusionSystem::UnregisterEntity(Entity *entity, Component * component)
+{
+    if (component->GetType() == Component::RENDER_COMPONENT)
+    {
+        RenderObject * ro = GetRenderObject(entity);
+        if (ro)
+        {
+            RemoveRenderObjectFromOcclusion(ro);
+        }
+    }
+    SceneSystem::UnregisterComponent(entity, component);
+}
+
     
 void StaticOcclusionSystem::AddEntity(Entity * entity)
 {

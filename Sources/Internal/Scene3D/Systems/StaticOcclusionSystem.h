@@ -99,8 +99,11 @@ public:
     
     inline void SetCamera(Camera * camera);
     
-    virtual void AddEntityIfRequired(Entity *entity);
-    virtual void RemoveEntityIfRequired(Entity *entity);
+    virtual void RegisterEntity(Entity *entity);
+    virtual void UnregisterEntity(Entity *entity);
+    virtual void RegisterComponent(Entity *entity, Component * component);
+    virtual void UnregisterEntity(Entity *entity, Component * component);
+    
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
