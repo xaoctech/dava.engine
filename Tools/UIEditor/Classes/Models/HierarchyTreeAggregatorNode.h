@@ -44,9 +44,10 @@ class HierarchyTreeAggregatorNode: public HierarchyTreeScreenNode
 public:
 	typedef Set<HierarchyTreeControlNode*> CHILDS;
 
-	HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect);
+	HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect, bool updateLibrary = true);
 	HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
-								const HierarchyTreeAggregatorNode* base);
+								const HierarchyTreeAggregatorNode* base,
+                                bool updateLibrary = true);
 	~HierarchyTreeAggregatorNode();
 
 	void AddChild(HierarchyTreeControlNode* node);

@@ -53,16 +53,11 @@ namespace DAVA
 		void AddControl(const QString& name, DAVA::UIControl* control);
 		
 	private:
-    	//typedef List<HierarchyTreeAggregatorNode*> AGGREGATORS;
 		typedef Map<HierarchyTreeNode*, QTreeWidgetItem*> CONTROLS;
-		//typedef Map<HierarchyTreeNode::HIERARCHYTREENODEID,  AGGREGATORS> PLATFORMS;
 		CONTROLS controls;
-        //PLATFORMS platforms;
 		LibraryWidget* widget;
 		
-        List<HierarchyTreeAggregatorNode*> GetPlatformAggregators(HierarchyTreePlatformNode* activePlatform);
-        void AddStandardControls();
-        void RemoveAggregatorItems();
+        List<HierarchyTreeAggregatorNode*> GetPlatformAggregators();
 	};
 }
 

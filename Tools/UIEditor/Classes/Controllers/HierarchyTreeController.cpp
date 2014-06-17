@@ -132,11 +132,9 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 											  const HierarchyTreeScreenNode* activeScreen)
 {
 	bool updateLibrary = false;
-    bool fullLibraryUpdate = false;
 	if (this->activePlatform != activePlatform)
 	{
 		updateLibrary = true;
-        fullLibraryUpdate = true;
 		ResetSelectedControl();
 		this->activePlatform = (HierarchyTreePlatformNode*)activePlatform;
 		if (this->activePlatform)
