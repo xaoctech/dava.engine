@@ -839,6 +839,21 @@ namespace DAVA
 	{
 		return angle;
 	}
+    
+    float32 UIControl::GetParentsTotalAngle(bool bIncludeOwn)
+	{
+        float32 angle = 0;
+        if(bIncludeOwn)
+        {
+            angle += this->angle;
+        }
+        if(this->GetParent())
+        {
+            angle += parent->GetParentsTotalAngle(true);
+        }
+        return angle;
+	}
+
 	void UIControl::SetAngle(float32 angleInRad)
 	{
 		angle = angleInRad;

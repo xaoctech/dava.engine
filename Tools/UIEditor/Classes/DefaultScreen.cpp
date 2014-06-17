@@ -493,8 +493,14 @@ void DefaultScreen::ApplyMoveDelta(const Vector2& delta)
 		UIControl* control = controlNode->GetUIObject();
 		if (control)
 		{
-			
-			control->SetPosition(startControlPos[control] + delta);
+            float32 parentsTotalAngle = control->GetParentsTotalAngle(false);
+            if(parentsTotalAngle != 0)
+            {
+                Matrix3 tmp;
+                tmp.BuildRotation(-parentsTotalAngle);
+                const_cast<Vector2&>(delta) = delta * tmp;
+            }
+            control->SetPosition(startControlPos[control] + delta);
 		}
 	}
 }

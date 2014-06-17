@@ -414,6 +414,14 @@ void UIControlMetadata::ApplyMove(const Vector2& moveDelta)
     {
         return;
     }
+    
+    float32 parentsTotalAngle = GetActiveUIControl()->GetParentsTotalAngle(false);
+    if(parentsTotalAngle != 0)
+    {
+        Matrix3 tmp;
+        tmp.BuildRotation(-parentsTotalAngle);
+        const_cast<Vector2&>(moveDelta) = moveDelta * tmp;
+    }
 
     Vector2 controlPosition = GetActiveUIControl()->GetPosition();
     controlPosition += moveDelta;
