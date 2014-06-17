@@ -61,6 +61,14 @@ QTreeWidgetItem* LibraryWidget::AddControl(const QString& name, const QString& i
 	return control;
 }
 
+void LibraryWidget::RemoveControl(QTreeWidgetItem* item)
+{
+	int index = ui->treeWidget->indexOfTopLevelItem(item);
+	if (index != -1)
+	{
+		delete item;
+	}
+}
 
 void LibraryWidget::ResetSelection()
 {
