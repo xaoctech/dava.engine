@@ -38,8 +38,18 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Systems/ActionUpdateSystem.h"
 
+#include "Utils/Random.h"
+
+
 namespace DAVA
 {
+
+    void ActionComponent::Action::actualizeDelay()
+    {
+        actualDelay = static_cast<float32>( delay + Random::Instance()->RandFloat(delayVariation) );
+    }
+
+
 	REGISTER_CLASS(ActionComponent)
 
     const FastName ActionComponent::ACTION_COMPONENT_SELF_ENTITY_NAME("*** Self ***");
@@ -87,61 +97,73 @@ namespace DAVA
 		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
 			return;
 
-        struct SwitchFuctor
+        uint32 markedCount = 0;
+        uint32 count = actions.size();
+        for ( uint32 i = 0; i < count; ++i )
         {
-            const int switchIndex;
-            SwitchFuctor( const int _switchIndex ) : switchIndex( _switchIndex ){}
-            bool operator()( const Action& action ) const
+            Action& action = actions.at( i ).action;
+            action.actualizeDelay();
+            if ( ( action.eventType == Action::EVENT_SWITCH_CHANGED ) && ( action.switchIndex == switchIndex ) )
             {
-                return ( ( action.eventType == Action::EVENT_SWITCH_CHANGED ) && ( action.switchIndex == switchIndex ) );
+                actions[i].markedForUpdate = true;
+                markedCount++;
             }
-        };
+        }
 
-        StartAction( SwitchFuctor( switchIndex ) );
+        if ( markedCount > 0 )
+        {
+            if ( !started )
+            {
+                entity->GetScene()->actionSystem->Watch( this );
+            }
+
+            started = true;
+            allActionsActive = false;
+        }
 	}
 
 	void ActionComponent::StartAdd()
 	{		
-		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
-			return;
+        if ( entity->GetScene()->actionSystem->IsBlockEvent( Action::EVENT_CUSTOM ) )
+            return;
 
-        struct AddFuctor
+        uint32 markedCount = 0;
+        uint32 count = actions.size();
+        for ( uint32 i = 0; i < count; ++i )
         {
-            bool operator()( const Action& action ) const
+            Action& action = actions.at( i ).action;
+            action.actualizeDelay();
+            if ( action.eventType == Action::EVENT_ADDED_TO_SCENE )
             {
-                return (action.eventType == Action::EVENT_ADDED_TO_SCENE);
+                actions[i].markedForUpdate = true;
+                markedCount++;
             }
-        };
+        }
 
-        StartAction( AddFuctor() );
-	}
+        if ( markedCount > 0 )
+        {
+            if ( !started )
+            {
+                entity->GetScene()->actionSystem->Watch( this );
+            }
+
+            started = true;
+            allActionsActive = false;
+        }
+    }
 
     void ActionComponent::StartUser(const FastName & name)
     {
         if ( entity->GetScene()->actionSystem->IsBlockEvent( Action::EVENT_CUSTOM ) )
             return;
 
-        struct UserFuctor
-        {
-            const FastName & name;
-            UserFuctor(const FastName & _name) : name(_name){}
-            bool operator()( const Action& action ) const
-            {
-                return ( ( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ) );
-            }
-        };
-
-        StartAction( UserFuctor(name) );
-    }
-
-    void ActionComponent::StartAction(const std::function<bool( const Action& )>& accept)
-    {
         uint32 markedCount = 0;
         uint32 count = actions.size();
         for ( uint32 i = 0; i < count; ++i )
         {
-            const Action& action = actions.at( i ).action;
-            if ( accept( action ) )
+            Action& action = actions.at( i ).action;
+            action.actualizeDelay();
+            if ( ( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ) )
             {
                 actions[i].markedForUpdate = true;
                 markedCount++;
@@ -295,7 +317,7 @@ namespace DAVA
 				{
 					container.timer += timeElapsed;
 					
-					if(container.timer >= container.action.delay)
+                    if ( container.timer >= container.action.actualDelay )
 					{
 						container.active = true;
 						EvaluateAction(container.action);
@@ -354,6 +376,7 @@ namespace DAVA
 
 				actionArchive->SetUInt32("act.event", action.eventType);
 				actionArchive->SetFloat("act.delay", action.delay);
+                actionArchive->SetFloat( "act.delayVariation", action.delayVariation );
 				actionArchive->SetUInt32("act.type", action.type);
                 actionArchive->SetFastName("act.userEventId", action.userEventId);
 				actionArchive->SetString("act.entityName", String(action.entityName.c_str() ? action.entityName.c_str() : ""));
@@ -383,6 +406,7 @@ namespace DAVA
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
                 action.userEventId = actionArchive->GetFastName("act.userEventId");
 				action.delay = actionArchive->GetFloat("act.delay");
+                action.delayVariation = actionArchive->GetFloat( "act.delayVariation" );
 				action.entityName = FastName(actionArchive->GetString("act.entityName").c_str());
 				action.switchIndex = actionArchive->GetInt32("act.switchIndex", -1);
 				action.stopAfterNRepeats = actionArchive->GetInt32("act.stopAfterNRepeats", -1);
@@ -397,21 +421,27 @@ namespace DAVA
 
     void ActionComponent::EvaluateAction(const Action& action)
 	{
-		if(Action::TYPE_PARTICLE_EFFECT_START == action.type)
-		{
-			OnActionParticleEffect(action);
-		}
-		else if(Action::TYPE_SOUND == action.type)
-		{
-			OnActionSound(action);
-		}
-        else if(Action::TYPE_WAVE == action.type)
+        switch ( action.type )
         {
-            OnActionWave(action);
+        case Action::TYPE_PARTICLE_EFFECT_START:
+            OnActionParticleEffectStart( action );
+            break;
+        case Action::TYPE_PARTICLE_EFFECT_STOP:
+            OnActionParticleEffectStop( action );
+            break;
+        case Action::TYPE_SOUND:
+            OnActionSound( action );
+            break;
+        case Action::TYPE_WAVE:
+            OnActionWave( action );
+            break;
+        default:
+            DVASSERT( false );
+            break;
         }
 	}
 	
-	void ActionComponent::OnActionParticleEffect(const Action& action)
+	void ActionComponent::OnActionParticleEffectStart(const Action& action)
 	{
 		Entity* target = GetTargetEntity(action.entityName, entity);
 		
@@ -427,6 +457,20 @@ namespace DAVA
 			}
 		}
 	}
+
+    void ActionComponent::OnActionParticleEffectStop( const Action& action )
+    {
+        Entity* target = GetTargetEntity( action.entityName, entity );
+
+        if ( target != NULL )
+        {
+            ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>( target->GetComponent( Component::PARTICLE_EFFECT_COMPONENT ) );
+            if ( component )
+            {
+                component->Stop();
+            }
+        }
+    }
 	
 	void ActionComponent::OnActionSound(const Action& action)
 	{
