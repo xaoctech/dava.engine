@@ -88,9 +88,10 @@ ActionComponentEditor::ActionComponentEditor(QWidget *parent) :
     ui->setupUi(this);
 	
 	targetComponent = NULL;
-	QObject::connect(ui->buttonAddItem, SIGNAL(pressed()), this, SLOT(OnAddAction()));
-	QObject::connect(ui->buttonRemoveItem, SIGNAL(pressed()), this, SLOT(OnRemoveAction()));
-	QObject::connect(ui->tableActions, SIGNAL(itemSelectionChanged()), this, SLOT(OnSelectedItemChanged()));
+	connect(ui->buttonAddItem, SIGNAL(clicked()), SLOT(OnAddAction()));
+    connect(ui->buttonRemoveItem, SIGNAL(clicked()), SLOT(OnRemoveAction()));
+    connect( ui->invokeEvent, SIGNAL( clicked() ), SLOT( OnStartAction() ) );
+	connect(ui->tableActions, SIGNAL(itemSelectionChanged()), SLOT(OnSelectedItemChanged()));
 	
 	ui->tableActions->resizeColumnsToContents();
 	ui->buttonRemoveItem->setEnabled(false);
@@ -121,8 +122,6 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 	int actionCount = component->GetCount();
 	ui->tableActions->setRowCount(actionCount);
 	
-    completerModel.clear();
-
 	if(actionCount > 0)
 	{
 		for(int i = 0; i < actionCount; ++i)
@@ -130,7 +129,7 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 			DAVA::ActionComponent::Action& action = component->Get(i);
 			
             QTableWidgetItem* eventTypeTableItem = new QTableWidgetItem( EVENT_TYPE_NAME[action.eventType], COLUMN_ACTION_TYPE );
-            QTableWidgetItem* eventNameTableItem = new QTableWidgetItem( action.customEventId.c_str(), COLUMN_EVENT_NAME );
+            QTableWidgetItem* eventNameTableItem = new QTableWidgetItem( action.userEventId.c_str(), COLUMN_EVENT_NAME );
             QTableWidgetItem* actionTypeTableItem = new QTableWidgetItem( ACTION_TYPE_NAME[action.type], COLUMN_ACTION_TYPE );
             QTableWidgetItem* entityNameTableItem = new QTableWidgetItem( action.entityName.c_str(), COLUMN_ENTITY_NAME );
             QTableWidgetItem* delayTableItem = new QTableWidgetItem( QString( "%1" ).arg( action.delay, 16, 'f', 2 ), COLUMN_DELAY );
@@ -148,10 +147,6 @@ void ActionComponentEditor::UpdateTableFromComponent(DAVA::ActionComponent* comp
 			ui->tableActions->setItem(i, COLUMN_SWITCH_INDEX, switchIndexTableItem);
 			ui->tableActions->setItem(i, COLUMN_STOPAFTERNREPEATS_INDEX, stopAfterNRepeatsTableItem);
 			ui->tableActions->setItem(i, COLUMN_STOPWHENEMPTY_INDEX, stopWhenEmptyTableItem);
-
-            QStandardItem *item = new QStandardItem();
-            item->setText( action.customEventId.c_str() );
-            completerModel.appendRow( item );
 		}
 		
 		ui->tableActions->resizeColumnsToContents();
@@ -196,6 +191,12 @@ void ActionComponentEditor::OnRemoveAction()
 		
 		ui->buttonAddItem->setEnabled(!IsActionPresent(GetDefaultAction()));
 	}
+}
+
+void ActionComponentEditor::OnStartAction()
+{
+    const DAVA::FastName eventName( ui->eventName->text().toStdString().c_str() );
+    targetComponent->StartUser(eventName);
 }
 
 void ActionComponentEditor::OnSelectedItemChanged()
@@ -409,7 +410,7 @@ void ActionItemEditDelegate::setEditorData(QWidget *editor, const QModelIndex &i
         case COLUMN_EVENT_NAME:
         {
             QLineEdit* edit = static_cast<QLineEdit*>( editor );
-            edit->setText( currentAction.customEventId.c_str() );
+            edit->setText( currentAction.userEventId.c_str() );
             break;
         }
 
@@ -497,6 +498,7 @@ void ActionItemEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *m
         case COLUMN_EVENT_NAME:
         {
             QLineEdit* edit = static_cast<QLineEdit*>( editor );
+            currentAction.userEventId = DAVA::FastName( edit->text().toStdString().c_str() );
             model->setData( index, edit->text(), Qt::EditRole );
             break;
         }

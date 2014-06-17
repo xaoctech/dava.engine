@@ -34,7 +34,6 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include <QDialog>
 #include <QStyledItemDelegate>
-#include <QStandardItemModel>
 
 
 namespace Ui {
@@ -90,9 +89,9 @@ private:
 	bool IsActionPresent(const DAVA::ActionComponent::Action action);
 	
 private slots:
-
 	void OnAddAction();
 	void OnRemoveAction();
+    void OnStartAction();
 	void OnSelectedItemChanged();
     
 private:
@@ -100,7 +99,6 @@ private:
 	
 	DAVA::ActionComponent* targetComponent;
 	ActionItemEditDelegate editDelegate;
-    QStandardItemModel completerModel;
 };
 
 #endif // ACTIONCOMPONENTEDITOR_H

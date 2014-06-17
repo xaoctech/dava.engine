@@ -81,66 +81,84 @@ namespace DAVA
 		
 		return action;
 	}
-
 	
 	void ActionComponent::StartSwitch(int32 switchIndex)
 	{
 		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
 			return;
 
-		StopSwitch(switchIndex);		
-		uint32 markedCount = 0;
-		uint32 count = actions.size();
-		for(uint32 i = 0; i < count; ++i)
-		{
-            Action& action = actions.at(i).action;
-			if((action.eventType == Action::EVENT_SWITCH_CHANGED) && (action.switchIndex == switchIndex))
-			{
-				actions[i].markedForUpdate = true;
-				markedCount++;
-			}
-		}
-		
-		if(markedCount > 0)
-		{
-			if(!started)
-			{
-				entity->GetScene()->actionSystem->Watch(this);
-			}
-			
-			started = true;
-			allActionsActive = false;
-		}
+        struct SwitchFuctor
+        {
+            const int switchIndex;
+            SwitchFuctor( const int _switchIndex ) : switchIndex( _switchIndex ){}
+            bool operator()( const Action& action ) const
+            {
+                return ( ( action.eventType == Action::EVENT_SWITCH_CHANGED ) && ( action.switchIndex == switchIndex ) );
+            }
+        };
+
+        StartAction( SwitchFuctor( switchIndex ) );
 	}
+
 	void ActionComponent::StartAdd()
 	{		
 		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
 			return;
-		uint32 markedCount = 0;
-		uint32 count = actions.size();
-		for(uint32 i = 0; i < count; ++i)
-		{
-            Action& action = actions.at(i).action;
-			if(action.eventType == Action::EVENT_ADDED_TO_SCENE)
-			{
-				actions[i].markedForUpdate = true;
-				markedCount++;
-			}
-		}
 
-		if(markedCount > 0)
-		{
-			if(!started)
-			{
-				entity->GetScene()->actionSystem->Watch(this);
-			}
+        struct AddFuctor
+        {
+            bool operator()( const Action& action ) const
+            {
+                return (action.eventType == Action::EVENT_ADDED_TO_SCENE);
+            }
+        };
 
-			started = true;
-			allActionsActive = false;
-		}
+        StartAction( AddFuctor() );
 	}
 
+    void ActionComponent::StartUser(const FastName & name)
+    {
+        if ( entity->GetScene()->actionSystem->IsBlockEvent( Action::EVENT_CUSTOM ) )
+            return;
 
+        struct UserFuctor
+        {
+            const FastName & name;
+            UserFuctor(const FastName & _name) : name(_name){}
+            bool operator()( const Action& action ) const
+            {
+                return ( ( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ) );
+            }
+        };
+
+        StartAction( UserFuctor(name) );
+    }
+
+    void ActionComponent::StartAction(const std::function<bool( const Action& )>& accept)
+    {
+        uint32 markedCount = 0;
+        uint32 count = actions.size();
+        for ( uint32 i = 0; i < count; ++i )
+        {
+            const Action& action = actions.at( i ).action;
+            if ( accept( action ) )
+            {
+                actions[i].markedForUpdate = true;
+                markedCount++;
+            }
+        }
+
+        if ( markedCount > 0 )
+        {
+            if ( !started )
+            {
+                entity->GetScene()->actionSystem->Watch( this );
+            }
+
+            started = true;
+            allActionsActive = false;
+        }
+    }
 	
 	bool ActionComponent::IsStarted()
 	{
@@ -332,12 +350,12 @@ namespace DAVA
 			for(uint32 i = 0; i < count; ++i)
 			{
 				KeyedArchive* actionArchive = new KeyedArchive();
-                const Action& action = action;
+                const Action& action = actions.at(i).action;
 
 				actionArchive->SetUInt32("act.event", action.eventType);
 				actionArchive->SetFloat("act.delay", action.delay);
 				actionArchive->SetUInt32("act.type", action.type);
-                actionArchive->SetFastName("act.customEventId", action.customEventId);
+                actionArchive->SetFastName("act.userEventId", action.userEventId);
 				actionArchive->SetString("act.entityName", String(action.entityName.c_str() ? action.entityName.c_str() : ""));
 				actionArchive->SetInt32("act.switchIndex", action.switchIndex);
 				actionArchive->SetInt32("act.stopAfterNRepeats", action.stopAfterNRepeats);
@@ -363,7 +381,7 @@ namespace DAVA
 				Action action;
 				action.eventType = (Action::eEvent)actionArchive->GetUInt32("act.event");
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
-                action.customEventId = actionArchive->GetFastName("act.customEventId");
+                action.userEventId = actionArchive->GetFastName("act.userEventId");
 				action.delay = actionArchive->GetFloat("act.delay");
 				action.entityName = FastName(actionArchive->GetString("act.entityName").c_str());
 				action.switchIndex = actionArchive->GetInt32("act.switchIndex", -1);
@@ -376,8 +394,8 @@ namespace DAVA
 		
 		Component::Deserialize(archive, serializationContext);
 	}
-		
-	void ActionComponent::EvaluateAction(const Action& action)
+
+    void ActionComponent::EvaluateAction(const Action& action)
 	{
 		if(Action::TYPE_PARTICLE_EFFECT_START == action.type)
 		{
