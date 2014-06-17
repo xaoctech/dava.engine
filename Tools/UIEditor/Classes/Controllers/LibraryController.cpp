@@ -163,7 +163,6 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 void LibraryController::UpdateLibrary()
 {
     CONTROLS aggregatorControls(controls);
-    
     // Remove current aggregators from widget
     for (CONTROLS::iterator iter = aggregatorControls.begin(); iter != aggregatorControls.end(); ++iter)
     {
@@ -175,10 +174,12 @@ void LibraryController::UpdateLibrary()
         widget->RemoveControl(iter->second);
         controls.erase(node);
     }
-
-    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
-    List<HierarchyTreeAggregatorNode*> aggregatorsList = GetPlatformAggregators();
     
+	// No need to add aggregators into library if another aggregator is selected in tree
+    if (dynamic_cast<HierarchyTreeAggregatorNode*>(HierarchyTreeController::Instance()->GetActiveScreen()))
+    	return;
+    
+    List<HierarchyTreeAggregatorNode*> aggregatorsList = GetPlatformAggregators();
     // Add aggregators
     for (List<HierarchyTreeAggregatorNode*>::iterator it = aggregatorsList.begin(); it != aggregatorsList.end(); ++it)
     {
@@ -190,8 +191,6 @@ void LibraryController::UpdateLibrary()
                                                     	IconHelper::GetIconPathForClassName(AGGREGATOR_CONTROL_NAME),
                                                         aggregatorNode->GetId());
         
-    	bool enabled = dynamic_cast<HierarchyTreeAggregatorNode*>(activeScreen);
-        item->setDisabled(enabled);
         controls[aggregatorNode] = item;
 	}
     
