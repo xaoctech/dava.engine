@@ -49,7 +49,7 @@ namespace DAVA
 
 static const uint32 MAX_CLUSTER_TYPES = 4;
 static const uint32 MAX_DENSITY_LEVELS = 16;
-static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
+//static const float32 CLUSTER_SCALE_NORMALIZATION_VALUE = 15.0f;
     
 static const size_t MAX_RENDER_CELLS = 512;
 static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 50.0f * 50.0f; //meters * meters (square length)
@@ -61,7 +61,7 @@ static const float32 DENSITY_THRESHOLD = 0.0f;
 //static const float32 MAX_VISIBLE_CLIPPING_DISTANCE = 130.0f * 130.0f; //meters * meters (square length)
 //static const float32 MAX_VISIBLE_SCALING_DISTANCE = 100.0f * 100.0f;
     
-static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
+//static const uint32 FULL_BRUSH_VALUE = 0xFFFFFFFF;
   
 static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 6.0f);
 //static Vector3 LOD_RANGES_SCALE = Vector3(0.0f, 2.0f, 6.0f);
