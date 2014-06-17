@@ -40,7 +40,7 @@
 #include "TextureBrowser/TextureConvertor.h"
 #include "TextureCompression/TextureConverter.h"
 #include "Deprecated/SceneValidator.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/Image/LibDdsHelper.h"
 
 #include "FileSystem/FileSystem.h"
 
@@ -531,7 +531,7 @@ TextureInfo TextureConvertor::GetConvertedThread(JobItem *item)
 
 			result.fileSize = QFileInfo(compressedTexturePath.GetAbsolutePathname().c_str()).size();
 
-			if(convertedImages.size())
+			if(convertedImages.size() && convertedImages[0])
 			{
 				result.imageSize.setWidth(convertedImages[0]->GetWidth());
 				result.imageSize.setHeight(convertedImages[0]->GetHeight());
@@ -624,7 +624,7 @@ DAVA::Vector<DAVA::Image*> TextureConvertor::ConvertFormat(DAVA::TextureDescript
         }
 		
         Vector<DAVA::Image *> davaImages;
-		DAVA::ImageLoader::CreateFromFileByContent(outputPath, davaImages);
+        DAVA::ImageSystem::Instance()->Load(outputPath, davaImages);
 		
 		if(davaImages.size() > 0)
 		{
@@ -690,7 +690,7 @@ QImage TextureConvertor::FromDavaImage(DAVA::Image *image)
 		case DAVA::FORMAT_DXT5NM:
 		{
 			Vector<Image* > vec;
-			LibDxtHelper::DecompressImageToRGBA(*image, vec, true);
+			LibDdsHelper::DecompressImageToRGBA(*image, vec, true);
 			if(vec.size() == 1)
 			{
 				qtImage = TextureConvertor::FromDavaImage(vec.front());
