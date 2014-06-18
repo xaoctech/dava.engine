@@ -104,7 +104,7 @@ namespace DAVA
         {
             Action& action = actions.at( i ).action;
             action.actualizeDelay();
-            if ( ( action.eventType == Action::EVENT_SWITCH_CHANGED ) && ( action.switchIndex == switchIndex ) )
+            if (( action.eventType == Action::EVENT_SWITCH_CHANGED ) && ( action.switchIndex == switchIndex ))
             {
                 actions[i].markedForUpdate = true;
                 markedCount++;
@@ -125,7 +125,7 @@ namespace DAVA
 
 	void ActionComponent::StartAdd()
 	{		
-        if ( entity->GetScene()->actionSystem->IsBlockEvent( Action::EVENT_CUSTOM ) )
+        if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_CUSTOM))
             return;
 
         uint32 markedCount = 0;
@@ -134,18 +134,18 @@ namespace DAVA
         {
             Action& action = actions.at( i ).action;
             action.actualizeDelay();
-            if ( action.eventType == Action::EVENT_ADDED_TO_SCENE )
+            if (action.eventType == Action::EVENT_ADDED_TO_SCENE)
             {
                 actions[i].markedForUpdate = true;
                 markedCount++;
             }
         }
 
-        if ( markedCount > 0 )
+        if (markedCount > 0)
         {
-            if ( !started )
+            if (!started)
             {
-                entity->GetScene()->actionSystem->Watch( this );
+                entity->GetScene()->actionSystem->Watch(this);
             }
 
             started = true;
@@ -155,28 +155,28 @@ namespace DAVA
 
     void ActionComponent::StartUser(const FastName& name)
     {
-        if ( entity->GetScene()->actionSystem->IsBlockEvent( Action::EVENT_CUSTOM ) )
+        if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_CUSTOM))
             return;
 
         StopUser(name);
         uint32 markedCount = 0;
         uint32 count = actions.size();
-        for ( uint32 i = 0; i < count; ++i )
+        for (uint32 i = 0; i < count; ++i)
         {
-            Action& action = actions.at( i ).action;
+            Action& action = actions.at(i).action;
             action.actualizeDelay();
-            if ( ( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ) )
+            if (( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ))
             {
                 actions[i].markedForUpdate = true;
                 markedCount++;
             }
         }
 
-        if ( markedCount > 0 )
+        if (markedCount > 0)
         {
-            if ( !started )
+            if (!started)
             {
-                entity->GetScene()->actionSystem->Watch( this );
+                entity->GetScene()->actionSystem->Watch(this);
             }
 
             started = true;
@@ -245,14 +245,14 @@ namespace DAVA
         for ( uint32 i = 0; i < count; ++i )
         {
             Action& action = actions.at( i ).action;
-            if ( ( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ) )
+            if (( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ))
             {
                 actions[i].active = false;
                 actions[i].timer = 0.0f;
                 actions[i].markedForUpdate = false;
             }
 
-            if ( actions[i].markedForUpdate )
+            if (actions[i].markedForUpdate)
             {
                 markedCount++;
             }
@@ -264,7 +264,7 @@ namespace DAVA
             started = false;
             allActionsActive = false;
 
-            entity->GetScene()->actionSystem->UnWatch( this );
+            entity->GetScene()->actionSystem->UnWatch(this);
         }
     }
 	
