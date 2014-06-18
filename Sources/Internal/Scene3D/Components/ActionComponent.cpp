@@ -499,7 +499,7 @@ namespace DAVA
             ParticleEffectComponent* component = static_cast<ParticleEffectComponent*>( target->GetComponent( Component::PARTICLE_EFFECT_COMPONENT ) );
             if ( component )
             {
-                component->Stop();
+                component->Stop(!action.stopWhenEmpty);
             }
         }
     }
