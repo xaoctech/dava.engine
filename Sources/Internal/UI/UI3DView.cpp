@@ -33,6 +33,8 @@
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Core/Core.h"
+#include "UI/UIControlSystem.h"
+
 
 namespace DAVA 
 {
@@ -142,6 +144,15 @@ UIControl* UI3DView::Clone()
     UI3DView* ui3DView = new UI3DView(GetRect());
     ui3DView->CopyDataFrom(this);
     return ui3DView;
+}
+
+void UI3DView::DidAppear()
+{
+    UIControlSystem::Instance()->UI3DViewAdded();
+}
+void UI3DView::DidDisappear()
+{
+    UIControlSystem::Instance()->UI3DViewRemoved();
 }
 
 }

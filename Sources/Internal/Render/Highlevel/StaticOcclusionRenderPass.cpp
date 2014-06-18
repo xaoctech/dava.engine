@@ -63,7 +63,7 @@ bool StaticOcclusionRenderPass::CompareFunction(const RenderBatch * a, const Ren
     return a->layerSortingKey < b->layerSortingKey;
 }
     
-void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
+void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuffer)
 {
     Camera *mainCamera = occlusionCamera;
     Camera *drawCamera = occlusionCamera;
@@ -75,6 +75,8 @@ void StaticOcclusionRenderPass::Draw(RenderSystem * renderSystem)
         mainCamera->PrepareDynamicParameters();
 
     PrepareVisibilityArrays(mainCamera, renderSystem);
+
+    ClearBuffers(clearColorBuffer);
 	
     Vector<RenderBatch*> terrainBatches;
     Vector<RenderBatch*> batches;
