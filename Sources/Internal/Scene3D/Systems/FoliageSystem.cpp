@@ -31,9 +31,13 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Scene3D/Components/ComponentHelpers.h"
+#include "Scene3D/Systems/WindSystem.h"
 
 namespace DAVA
 {
+    
+static const int16 MAX_ANIMATED_CELL_WIDTH = 2;
+    
 FoliageSystem::FoliageSystem(Scene* scene) : SceneSystem(scene),
         landscapeEntity(NULL),
         foliageEntity(NULL)
@@ -83,7 +87,51 @@ void FoliageSystem::RemoveEntity(Entity * entity)
         SafeRelease(landscapeEntity);
     }
 }
-
+    
+void FoliageSystem::Process(float32 timeElapsed)
+{
+    VegetationRenderObject* vegetationRO = GetVegetation(foliageEntity);
+    if(vegetationRO && vegetationRO->ReadyToRender())
+    {
+        WindSystem * windSystem = GetScene()->windSystem;
+        
+        Camera * camera = GetScene()->GetRenderSystem()->GetMainCamera();
+        Vector<AbstractQuadTreeNode<SpatialData>*> & visibleCells = vegetationRO->BuildVisibleCellList(camera);
+        uint32 cellsCount = visibleCells.size();
+        for(uint32 i = 0; i < cellsCount; ++i)
+        {
+            AbstractQuadTreeNode<SpatialData>* cell = visibleCells[i];
+            
+            if(cell->data.width > MAX_ANIMATED_CELL_WIDTH)
+                continue;
+            
+            const Vector3 & min = cell->data.bbox.min;
+            const Vector3 & max = cell->data.bbox.max;
+            
+            Vector3 cellPos[4] = {
+                Vector3(min.x, min.y, max.z),
+                Vector3(min.x, max.y, max.z),
+                Vector3(max.x, min.y, max.z),
+                Vector3(max.x, max.y, max.z)
+            };
+            
+            Vector4 layersAnimationSpring = vegetationRO->GetLayersAnimationSpring();
+            
+            for(uint32 layerIndex = 0; layerIndex < 4; ++layerIndex)
+            {
+                Vector3 windVec = windSystem->GetWind(cellPos[layerIndex]);
+                Vector2 windVec2D(windVec.x, windVec.y);
+                
+                Vector2 & offset = cell->data.animationOffset[layerIndex];
+                Vector2 & velocity = cell->data.animationVelocity[layerIndex];
+                
+                velocity += (windVec2D - layersAnimationSpring.data[layerIndex] * offset - 1.4f * velocity * velocity.Length()) * timeElapsed;
+                offset += velocity * timeElapsed;
+            }
+        }
+    }
+}
+    
 void FoliageSystem::SyncFoliageWithLandscape()
 {
     if(landscapeEntity && foliageEntity)
