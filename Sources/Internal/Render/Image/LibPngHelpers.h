@@ -27,34 +27,68 @@
 =====================================================================================*/
 
 
-
-#ifndef __DAVAENGINE_JPEG_HELPER_H__
-#define __DAVAENGINE_JPEG_HELPER_H__
+#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
+#define __DAVAENGINE_LIBPNG_HELPERS_H__
 
 #include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
+#include "Base/BaseObject.h"
 #include "FileSystem/FilePath.h"
+
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageFormatInterface.h"
 
 namespace DAVA 
 {
 
+class Texture;
+class Sprite;
 class Image;
-class File;
 
-class LibJpegWrapper
+class LibPngWrapper: public ImageFormatInterface
 {
 public:
     
-    static bool IsJpegFile(const FilePath & fileName);
-    static bool IsJpegFile(File *file);
+    LibPngWrapper();
     
-    static bool ReadJpegFile(const FilePath & fileName, Image * image);
-    static bool ReadJpegFile(File *infile, Image * image);
+    virtual bool IsImage(File *file) const;
     
-    //only RGB888 or A8
-    static bool WriteJpegFile(const FilePath & fileName, int32 width, int32 height, uint8 * data, PixelFormat format);
-};
+    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) const;
+    
+    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
+    
+    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
+
+    virtual uint32 GetDataSize(File *infile) const;
+
+
+	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
+
 
 };
 
-#endif // __DAVAENGINE_JPEG_HELPER_H__
+class PngImage : public BaseObject
+{
+protected:
+	~PngImage();
+public:
+	PngImage();
+	
+	bool Create(int32 _width, int32 _height);
+	bool CreateFromFBOSprite(Sprite * fboSprite);
+		
+	void DrawImage(int sx, int sy, PngImage * image);
+	void DrawRect(const Rect2i & rect, uint32 color);
+
+	uint8 * GetData() { return data; };
+	int32 GetWidth() { return width; };
+	int32 GetHeight() { return height; }; 
+private:	
+	int32		width;
+	int32		height;
+	uint8  *	data;
+    PixelFormat format;
+};
+};
+
+#endif // __PNG_IMAGE_H__
