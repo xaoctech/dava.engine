@@ -1802,7 +1802,7 @@ void MainWindow::OnSearchPressed()
         HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
         if (activePlatform)
         {
-            SearchScreenByName(foundNodes,activePlatform->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
+            foundNodes = SearchScreenByName(activePlatform->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
         }
     }
     else
@@ -1833,8 +1833,9 @@ void MainWindow::SearchControlsByName(QList<HierarchyTreeControlNode*>& foundNod
     }
 }
 
-void MainWindow::SearchScreenByName(QList<HierarchyTreeControlNode*>& foundNodes,const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
+QList<HierarchyTreeControlNode*> MainWindow::SearchScreenByName(const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
 {
+    QList<HierarchyTreeControlNode*> foundNodes;
     HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it = nodes.begin();
     for (; it!=nodes.end(); ++it)
     {
@@ -1846,4 +1847,5 @@ void MainWindow::SearchScreenByName(QList<HierarchyTreeControlNode*>& foundNodes
             foundNodes.push_back(static_cast<HierarchyTreeControlNode *>(*it));
         }
     }
+    return foundNodes;
 }
