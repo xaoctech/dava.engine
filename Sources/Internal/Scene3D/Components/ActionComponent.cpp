@@ -436,7 +436,7 @@ namespace DAVA
 				Action action;
 				action.eventType = (Action::eEvent)actionArchive->GetUInt32("act.event");
 				action.type = (Action::eType)actionArchive->GetUInt32("act.type");
-                action.userEventId = actionArchive->GetFastName("act.userEventId");
+                action.userEventId = actionArchive->GetFastName("act.userEventId", FastName(""));
 				action.delay = actionArchive->GetFloat("act.delay");
                 action.delayVariation = actionArchive->GetFloat( "act.delayVariation" );
 				action.entityName = FastName(actionArchive->GetString("act.entityName").c_str());
