@@ -136,8 +136,11 @@
     <Filter Include="Internal\Scene3D\Converters">
       <UniqueIdentifier>{7b177406-71fe-404c-ae98-7e1b4697d436}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Render\Image">
+      <UniqueIdentifier>{914f6632-0ccb-4e03-a362-22418143f0f2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Internal\Render\Highlevel\Vegetation">
-      <UniqueIdentifier>{949be527-9be7-47df-896f-681cd71fcb34}</UniqueIdentifier>
+      <UniqueIdentifier>{e44970a1-4a1f-4e97-aaf5-44659db3a9de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1428,20 +1431,40 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h">
       <Filter>Internal\Render\3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\Image.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageConvert.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageSystem.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\Image.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageConvert.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageSystem.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.h">
+      <Filter>Internal\Render\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationSpatialData.h">
+      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.h">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClInclude>
@@ -1473,9 +1496,6 @@
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.h">
-      <Filter>Internal\Render\Highlevel\Vegetation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationSpatialData.h">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2608,17 +2628,28 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp">
       <Filter>Internal\Render\3D</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageSystem.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageSystem.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.cpp">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClCompile>

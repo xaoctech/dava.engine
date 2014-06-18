@@ -121,7 +121,7 @@ void PropertyEditor::SetEntities(const EntityGroup *selected)
             curNodes << node;
             // ensure that custom properties exist
             // this call will create them if they are not created yet
-            node->GetCustomProperties();
+            GetOrCreateCustomProperties(node);
         }
     }
 
