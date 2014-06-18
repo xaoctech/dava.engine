@@ -78,10 +78,11 @@
 
 #include "Scene3D/Converters/LodToLod2Converter.h"
 #include "Scene3D/Converters/SwitchToRenerObjectConverter.h"
+#include "Scene3D/Converters/TreeToAnimatedTreeConverter.h"
 
 namespace DAVA
 {
-    
+
 SceneFileV2::SceneFileV2()
 {
     isDebugLogEnabled = false;
@@ -175,7 +176,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-    header.version = 12;
+    header.version = SCENE_FILE_CURRENT_VERSION;
     header.nodeCount = _scene->GetChildrenCount();
 
     if(NULL != scene->GetGlobalMaterial())
@@ -720,7 +721,12 @@ Entity * SceneFileV2::LoadLight(Scene * scene, KeyedArchive * archive)
 {
     Entity * lightEntity = LoadEntity(scene, archive);
     
-    bool isDynamic = lightEntity->GetCustomProperties()->GetBool("editor.dynamiclight.enable", true);
+    bool isDynamic = true;
+    KeyedArchive *props = GetCustomPropertiesArchieve(lightEntity);
+    if(props)
+    {
+        isDynamic = props->GetBool("editor.dynamiclight.enable", true);
+    }
     
     Light * light = new Light();
     light->Load(archive, &serializationContext);
@@ -767,7 +773,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
     }
     if ((currentNode->GetChildrenCount() == 0) && (typeid(*currentNode) == typeid(Entity)))
     {
-        KeyedArchive *customProperties = currentNode->GetCustomProperties();
+        KeyedArchive *customProperties = GetCustomPropertiesArchieve(currentNode);
         bool doNotRemove = customProperties && customProperties->IsKeyExists("editor.donotremove");
         
         uint32 componentCount = currentNode->GetComponentCount();
@@ -790,7 +796,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-				if(GetVersion() < 11 && GetLodComponent(parent))
+				if(GetVersion() < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -839,15 +845,16 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
             if (parent)
             {
-				if(GetVersion() < 11 && GetLodComponent(parent))
+				if(GetVersion() < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
 
 
                 Entity * childNode = SafeRetain(currentNode->GetChild(0));
-                FastName currentName = currentNode->GetName();
-				KeyedArchive * currentProperties = currentNode->GetCustomProperties();
+
+				FastName currentName = currentNode->GetName();
+				KeyedArchive * currentProperties = GetCustomPropertiesArchieve(currentNode);
                 
                 //Logger::FrameworkDebug("remove node: %s %p", currentNode->GetName().c_str(), currentNode);
 				parent->InsertBeforeNode(childNode, currentNode);
@@ -858,13 +865,17 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
                     childNode->SetName(currentName);
                 }
 				//merge custom properties
-				KeyedArchive * newProperties = childNode->GetCustomProperties();
-				const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
-				Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
-				for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
-				{
-					newProperties->SetVariant(it->first, *it->second);
-				}
+                
+                if(currentProperties)
+                {
+                    KeyedArchive * newProperties = GetOrCreateCustomProperties(childNode)->GetArchive();
+                    const Map<String, VariantType*> & oldMap = currentProperties->GetArchieveData();
+                    Map<String, VariantType*>::const_iterator itEnd = oldMap.end();
+                    for(Map<String, VariantType*>::const_iterator it = oldMap.begin(); it != itEnd; ++it)
+                    {
+                        newProperties->SetVariant(it->first, *it->second);
+                    }
+                }
 				
 				//VI: remove node after copying its properties since properties become invalid after node removal
 				parent->RemoveNode(currentNode);
@@ -891,7 +902,7 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
         for (uint32 k = 0; k < (uint32)polygroups.size(); ++k)
         {
             PolygonGroupWithMaterial * group = polygroups[k];
-            if (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP)
+            if (group->GetMaterial() && (group->GetMaterial()->type == Material::MATERIAL_UNLIT_TEXTURE_LIGHTMAP))
             {
                 if (oldMeshInstanceNode->GetLightmapCount() == 0)
                 {
@@ -918,6 +929,8 @@ bool SceneFileV2::ReplaceNodeAfterLoad(Entity * node)
             PolygonGroupWithMaterial * group = polygroups[k];
             
 			Material* oldMaterial = group->GetMaterial();
+            if(!oldMaterial) continue;
+            
             NMaterial* nMaterial = serializationContext.ConvertOldMaterialToNewMaterial(oldMaterial, 0, (uint64)oldMaterial);
             mesh->AddPolygonGroup(group->GetPolygonGroup(), nMaterial);
             
@@ -1190,6 +1203,7 @@ void SceneFileV2::ReplaceOldNodes(Entity * currentNode)
 	}
 }
 
+
 void SceneFileV2::RebuildTangentSpace(Entity *entity)
 {
     static int32 prerequiredFormat = EVF_TANGENT|EVF_NORMAL;
@@ -1214,7 +1228,7 @@ void SceneFileV2::RebuildTangentSpace(Entity *entity)
         RebuildTangentSpace(entity->GetChild(i));
 }
 
-    
+ 
 void SceneFileV2::OptimizeScene(Entity * rootNode)
 {
     int32 beforeCount = rootNode->GetChildrenCountRecursive();
@@ -1226,7 +1240,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 
-    if(GetVersion() < 11)
+    if(GetVersion() < OLD_LODS_SCENE_VERSION)
     {
 	    LodToLod2Converter lodConverter;
 	    lodConverter.ConvertLodToV2(rootNode);
@@ -1234,6 +1248,12 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
     }    
 	
+    if(GetVersion() < TREE_ANIMATION_SCENE_VERSION)
+    {
+        TreeToAnimatedTreeConverter treeConverter;
+        treeConverter.ConvertTrees(rootNode);
+    }
+
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
     
 //    for (int32 k = 0; k < rootNode->GetChildrenCount(); ++k)
