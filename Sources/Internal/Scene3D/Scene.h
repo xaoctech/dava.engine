@@ -261,8 +261,8 @@ public:
     DAVA::NMaterial* GetGlobalMaterial() const;
     void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
 
-    void SetClearColorBuffer(bool clear);
-    bool GetClearColorBuffer() const;
+    void SetClearBuffers(uint32 buffers);
+    uint32 GetClearBuffers() const;
 
 protected:
     void UpdateLights();
@@ -274,7 +274,7 @@ protected:
 
     uint32 systemsMask;
 
-    bool clearColorBuffer;
+    uint32 clearBuffers;
 
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
