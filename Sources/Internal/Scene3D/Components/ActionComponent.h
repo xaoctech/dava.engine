@@ -108,6 +108,7 @@ namespace DAVA
         bool IsStarted();
 		void StopAll();
 		void StopSwitch(int32 switchIndex = -1);
+        void StopUser(const FastName& name);
 		
 		void Add(const ActionComponent::Action& action);
 		void Remove(const ActionComponent::Action& action);

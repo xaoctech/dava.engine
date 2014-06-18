@@ -97,6 +97,7 @@ namespace DAVA
 		if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_SWITCH_CHANGED))
 			return;
 
+        StopSwitch(switchIndex);
         uint32 markedCount = 0;
         uint32 count = actions.size();
         for ( uint32 i = 0; i < count; ++i )
@@ -152,11 +153,12 @@ namespace DAVA
         }
     }
 
-    void ActionComponent::StartUser(const FastName & name)
+    void ActionComponent::StartUser(const FastName& name)
     {
         if ( entity->GetScene()->actionSystem->IsBlockEvent( Action::EVENT_CUSTOM ) )
             return;
 
+        StopUser(name);
         uint32 markedCount = 0;
         uint32 count = actions.size();
         for ( uint32 i = 0; i < count; ++i )
@@ -235,6 +237,36 @@ namespace DAVA
 			entity->GetScene()->actionSystem->UnWatch(this);
 		}
 	}
+
+    void ActionComponent::StopUser(const FastName& name)
+    {
+        uint32 markedCount = 0;
+        uint32 count = actions.size();
+        for ( uint32 i = 0; i < count; ++i )
+        {
+            Action& action = actions.at( i ).action;
+            if ( ( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ) )
+            {
+                actions[i].active = false;
+                actions[i].timer = 0.0f;
+                actions[i].markedForUpdate = false;
+            }
+
+            if ( actions[i].markedForUpdate )
+            {
+                markedCount++;
+            }
+        }
+
+        if ( started &&
+            0 == markedCount )
+        {
+            started = false;
+            allActionsActive = false;
+
+            entity->GetScene()->actionSystem->UnWatch( this );
+        }
+    }
 	
 	void ActionComponent::Add(const ActionComponent::Action& action)
 	{
