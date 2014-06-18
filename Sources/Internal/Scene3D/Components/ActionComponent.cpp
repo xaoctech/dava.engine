@@ -102,10 +102,10 @@ namespace DAVA
         uint32 count = actions.size();
         for ( uint32 i = 0; i < count; ++i )
         {
-            Action& action = actions.at( i ).action;
-            action.actualizeDelay();
+            Action& action = actions[i].action;
             if (( action.eventType == Action::EVENT_SWITCH_CHANGED ) && ( action.switchIndex == switchIndex ))
             {
+                action.actualizeDelay();
                 actions[i].markedForUpdate = true;
                 markedCount++;
             }
@@ -125,17 +125,17 @@ namespace DAVA
 
 	void ActionComponent::StartAdd()
 	{		
-        if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_CUSTOM))
+        if (entity->GetScene()->actionSystem->IsBlockEvent(Action::EVENT_ADDED_TO_SCENE))
             return;
 
         uint32 markedCount = 0;
         uint32 count = actions.size();
         for ( uint32 i = 0; i < count; ++i )
         {
-            Action& action = actions.at( i ).action;
-            action.actualizeDelay();
+            Action& action = actions[i].action;
             if (action.eventType == Action::EVENT_ADDED_TO_SCENE)
             {
+                action.actualizeDelay();
                 actions[i].markedForUpdate = true;
                 markedCount++;
             }
@@ -163,10 +163,10 @@ namespace DAVA
         uint32 count = actions.size();
         for (uint32 i = 0; i < count; ++i)
         {
-            Action& action = actions.at(i).action;
-            action.actualizeDelay();
+            Action& action = actions[i].action;
             if (( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ))
             {
+                action.actualizeDelay();
                 actions[i].markedForUpdate = true;
                 markedCount++;
             }
@@ -214,7 +214,7 @@ namespace DAVA
 		uint32 count = actions.size();
 		for(uint32 i = 0; i < count; ++i)
 		{
-            Action& action = actions.at(i).action;
+            Action& action = actions[i].action;
 			if((action.eventType == Action::EVENT_SWITCH_CHANGED) && (action.switchIndex == switchIndex))
 			{
 				actions[i].active = false;
@@ -244,7 +244,7 @@ namespace DAVA
         uint32 count = actions.size();
         for ( uint32 i = 0; i < count; ++i )
         {
-            Action& action = actions.at( i ).action;
+            Action& action = actions[i].action;
             if (( action.eventType == Action::EVENT_CUSTOM ) && ( action.userEventId == name ))
             {
                 actions[i].active = false;
@@ -404,7 +404,7 @@ namespace DAVA
 			for(uint32 i = 0; i < count; ++i)
 			{
 				KeyedArchive* actionArchive = new KeyedArchive();
-                const Action& action = actions.at(i).action;
+                const Action& action = actions[i].action;
 
 				actionArchive->SetUInt32("act.event", action.eventType);
 				actionArchive->SetFloat("act.delay", action.delay);
