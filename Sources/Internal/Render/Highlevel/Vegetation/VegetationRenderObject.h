@@ -57,6 +57,7 @@ typedef Image VegetationMap;
 class Heightmap;
 class VegetationGeometry;
 class VegetationCustomGeometrySerializationData;
+class FoliageSystem;
 
 struct VegetationMetrics
 {
@@ -157,11 +158,11 @@ public:
     void SetLayerClusterLimit(const Vector4& maxClusters);
     Vector4 GetLayerClusterLimit() const;
     
-    void SetWaveSpeed(const Vector4& speed);
-    Vector4 GetWaveSpeed() const;
+    void SetLayersAnimationAmplitude(const Vector4 & ampitudes);
+    Vector4 GetLayersAnimationAmplitude() const;
     
-    void SetLayerWaveDirection(const Vector<Vector2>& dir);
-    const Vector<Vector2>& GetLayerWaveDirection() const;
+    void SetLayersAnimationSpring(const Vector4 & spring);
+    Vector4 GetLayersAnimationSpring() const;
     
     void CollectMetrics(VegetationMetrics& metrics);
     
@@ -179,9 +180,8 @@ private:
                           uint16 width, uint16 height,
                           AABBox3& parentBox);
     
-    void BuildVisibleCellList(const Vector3& cameraPoint,
-                              Frustum* frustum,
-                              Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
+    Vector<AbstractQuadTreeNode<SpatialData>*> & BuildVisibleCellList(Camera * forCamera);
+    
     void BuildVisibleCellList(const Vector3& cameraPoint,
                               Frustum* frustum,
                               uint8 planeMask,
@@ -206,7 +206,7 @@ private:
     
     void CreateRenderData();
     
-    bool ReadyToRender(bool externalRenderFlag);
+    bool ReadyToRender();
     
     size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
     
@@ -283,10 +283,8 @@ private:
     
     VegetationCustomGeometrySerializationData* customGeometryData;
     
-    Vector4 layerWaveSpeed;
-    Vector<Vector2> layerWaveDirection;
-    
-    Vector4 waveValue;
+    Vector4 layersAnimationAmplitude;
+    Vector4 layersAnimationSpring;
     
 public:
     
@@ -301,10 +299,11 @@ public:
                          PROPERTY("maxVisibleQuads", "Max visible quads", GetMaxVisibleQuads, SetMaxVisibleQuads, I_EDIT | I_VIEW)
                          PROPERTY("customGeometry", "Custom geometry", GetCustomGeometryPath, SetCustomGeometryPath, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("cameraBias", "Camera Bias", GetCameraBias, SetCameraBias, I_EDIT | I_VIEW)
-                         PROPERTY("waveSpeed", "Wave speed", GetWaveSpeed, SetWaveSpeed, I_SAVE | I_EDIT | I_VIEW)
-                         COLLECTION(layerWaveDirection, "Wave direction",  I_VIEW | I_EDIT | I_SAVE)
+                         PROPERTY("animationAmplitude", "Animation Amplitude", GetLayersAnimationAmplitude, SetLayersAnimationAmplitude, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("animationSpring", "Animation Spring", GetLayersAnimationSpring, SetLayersAnimationSpring, I_SAVE | I_EDIT | I_VIEW)
                          );
     
+    friend class FoliageSystem;
 };
     
 inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,

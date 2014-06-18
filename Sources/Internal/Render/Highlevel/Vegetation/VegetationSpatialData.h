@@ -41,6 +41,9 @@ struct SpatialData
     int8 rdoIndex;
     bool isVisible;
     
+    Vector2 animationOffset[4];
+    Vector2 animationVelocity[4];
+    
     AABBox3 bbox;
     float32 cameraDistance;
     uint8 clippingPlane;

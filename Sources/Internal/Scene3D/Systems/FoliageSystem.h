@@ -53,6 +53,9 @@ public:
     
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
+    
+    virtual void Process(float32 timeElapsed);
+    
     void SyncFoliageWithLandscape();
     
     void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);

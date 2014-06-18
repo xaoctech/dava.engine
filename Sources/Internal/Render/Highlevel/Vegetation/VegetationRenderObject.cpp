@@ -35,6 +35,7 @@
 #include "Utils/Random.h"
 #include "Render/Image/ImageSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
+#include "Scene3D/Systems/FoliageSystem.h"
 #include "Render/RenderHelper.h"
 #include "Platform/SystemTimer.h"
 
@@ -143,7 +144,8 @@ VegetationRenderObject::VegetationRenderObject() :
     heightmapTexture(NULL),
     //cameraBias(25.0f)
     cameraBias(0.0f),
-    customGeometryData(NULL)
+    customGeometryData(NULL),
+    layersAnimationSpring(2.f, 2.f, 2.f, 2.f)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -161,8 +163,6 @@ VegetationRenderObject::VegetationRenderObject() :
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
     ResetVisibilityDistance();
-    
-    layerWaveDirection.resize(MAX_CLUSTER_TYPES);
 }
 
 VegetationRenderObject::~VegetationRenderObject()
@@ -214,9 +214,8 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetWorldSize(GetWorldSize());
     vegetationRenderObject->SetCustomGeometryPathInternal(GetCustomGeometryPath());
     vegetationRenderObject->SetCameraBias(GetCameraBias());
-    vegetationRenderObject->SetWaveSpeed(GetWaveSpeed());
-    vegetationRenderObject->SetLayerWaveDirection(GetLayerWaveDirection());
-    
+    vegetationRenderObject->SetLayersAnimationAmplitude(GetLayersAnimationAmplitude());
+    vegetationRenderObject->SetLayersAnimationSpring(GetLayersAnimationSpring());
     
     vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
@@ -270,14 +269,8 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
         SafeRelease(customGeometryArchive);
     }
     
-    archive->SetVector4("vro.layerWaveSpeed", layerWaveSpeed);
-    
-    uint32 dirCount = (uint32)layerWaveDirection.size();
-    archive->SetUInt32("vro.layerWaveDirectionCount", dirCount);
-    for(uint32 i = 0; i < dirCount; ++i)
-    {
-        archive->SetVector2(Format("vro.layerWaveDirection.%d", i), layerWaveDirection[i]);
-    }
+    archive->SetVector4("vro.layerAnimationAmplitude", GetLayersAnimationAmplitude());
+    archive->SetVector4("vro.layersAnimationSpring", GetLayersAnimationSpring());
 }
     
 void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -360,86 +353,23 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
             SetCameraBias(archive->GetFloat("vro.cameraBias"));
         }
         
-        if(archive->IsKeyExists("vro.layerWaveSpeed"))
-        {
-            Vector4 speed = archive->GetVector4("vro.layerWaveSpeed");
-            SetWaveSpeed(speed);
-        }
+        SetLayersAnimationAmplitude(archive->GetVector4("vro.layerAnimationAmplitude", GetLayersAnimationAmplitude()));
         
-        if(archive->IsKeyExists("vro.layerWaveDirectionCount"))
-        {
-            uint32 dirCount = archive->GetUInt32("vro.layerWaveDirectionCount");
-            layerWaveDirection.resize(dirCount);
-            
-            for(uint32 i = 0; i < dirCount; ++i)
-            {
-                layerWaveDirection[i] = archive->GetVector2(Format("vro.layerWaveDirection.%d", i));
-            }
-        }
+        SetLayersAnimationSpring(archive->GetVector4("vro.layersAnimationSpring", GetLayersAnimationSpring()));
     }
     
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
 }
-
-void VegetationRenderObject::PrepareToRender(Camera *camera)
+    
+void VegetationRenderObject::PrepareToRender(Camera * camera)
 {
-    bool renderFlag = RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW);
-    
-#if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
-//VI: case when vegetation was turned off and then qualit changed from low t high is not a real-world scenario
-//VI: real-world scenario is in resource editor when quality has been changed.
-    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
-    bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
-    
-    renderFlag = (renderFlag && qualityAllowsVegetation);
-#endif
-
-    visibleCells.clear();
-    ClearRenderBatches();
-    
-    if(!ReadyToRender(renderFlag))
+    if(!ReadyToRender())
     {
         return;
     }
     
-    waveValue.x += layerWaveSpeed.x;
-    waveValue.y += layerWaveSpeed.y;
-    waveValue.z += layerWaveSpeed.z;
-    waveValue.w += layerWaveSpeed.w;
-    
-    float32 cosA = 0.0f;
-    
-    float32 layerWaveSin[MAX_CLUSTER_TYPES];
-    float32 vegetationWave[MAX_CLUSTER_TYPES * 2];
-    
-    SinCosFast(DegToRad(waveValue.x), layerWaveSin[0], cosA);
-    SinCosFast(DegToRad(waveValue.y), layerWaveSin[1], cosA);
-    SinCosFast(DegToRad(waveValue.z), layerWaveSin[2], cosA);
-    SinCosFast(DegToRad(waveValue.w), layerWaveSin[3], cosA);
-    
-    vegetationWave[0] = layerWaveDirection[0].x * layerWaveSin[0];
-    vegetationWave[1] = layerWaveDirection[0].y * layerWaveSin[0];
-    
-    vegetationWave[2] = layerWaveDirection[1].x * layerWaveSin[1];
-    vegetationWave[3] = layerWaveDirection[1].y * layerWaveSin[1];
-
-    vegetationWave[4] = layerWaveDirection[2].x * layerWaveSin[2];
-    vegetationWave[5] = layerWaveDirection[2].y * layerWaveSin[2];
-
-    vegetationWave[6] = layerWaveDirection[3].x * layerWaveSin[3];
-    vegetationWave[7] = layerWaveDirection[3].y * layerWaveSin[3];
-    
-    Vector3 camPos = camera->GetPosition();
-    Vector3 camDir = camera->GetDirection();
-    camDir.z = 0.0f;
-    
-    camDir.Normalize();
-    camPos = camPos + camDir * cameraBias;
-    
-    BuildVisibleCellList(camPos, camera->GetFrustum(), visibleCells);
-    
-    //std::sort(visibleCells.begin(), visibleCells.end(), CellByDistanceCompareFunction);
+    ClearRenderBatches();
     
     Vector3 posScale(0.0f,
                     0.0f,
@@ -494,6 +424,12 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             switchLodScale.x = resolutionIndex;
             switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
+            Vector2 vegetationAnimationOffset[4];
+            for(uint32 i = 0; i < 4; ++i)
+            {
+                vegetationAnimationOffset[i] = treeNode->data.animationOffset[i] * layersAnimationAmplitude.data[i];
+            }
+            
             mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
                                   Shader::UT_FLOAT_VEC2,
                                   1,
@@ -507,7 +443,7 @@ void VegetationRenderObject::PrepareToRender(Camera *camera)
             mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_VEGWAVEOFFSET,
                                   Shader::UT_FLOAT,
                                   8,
-                                  vegetationWave);
+                                  vegetationAnimationOffset);
             
 #ifdef VEGETATION_DRAW_LOD_COLOR
             mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
@@ -772,14 +708,24 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     }
 }
     
-void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
-                                                  Frustum* frustum,
-                                                  Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
+Vector<AbstractQuadTreeNode<SpatialData>*> & VegetationRenderObject::BuildVisibleCellList(Camera * forCamera)
 {
+    Vector3 camPos = forCamera->GetPosition();
+    Vector3 camDir = forCamera->GetDirection();
+    camDir.z = 0.0f;
+    
+    camDir.Normalize();
+    camPos = camPos + camDir * cameraBias;
+    
     uint8 planeMask = 0x3F;
-    Vector3 cameraPosXY = cameraPoint;
+    Vector3 cameraPosXY = camPos;
     cameraPosXY.z = 0.0f;
-    BuildVisibleCellList(cameraPosXY, frustum, planeMask, quadTree.GetRoot(), cellList, true);
+    
+    visibleCells.clear();
+    
+    BuildVisibleCellList(cameraPosXY, forCamera->GetFrustum(), planeMask, quadTree.GetRoot(), visibleCells, true);
+    
+    return visibleCells;
 }
     
 void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
@@ -1160,9 +1106,20 @@ void VegetationRenderObject::InitWithCustomGeometry(FastNameSet& materialFlags)
     materialFlags.Insert(VegetationPropertyNames::FLAG_GRASS_TRANSFORM);
 }
 
-bool VegetationRenderObject::ReadyToRender(bool externalRenderFlag)
+bool VegetationRenderObject::ReadyToRender()
 {
-    return externalRenderFlag && vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
+    bool renderFlag = RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW);
+    
+#if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
+    //VI: case when vegetation was turned off and then qualit changed from low t high is not a real-world scenario
+    //VI: real-world scenario is in resource editor when quality has been changed.
+    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
+    bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
+    
+    renderFlag = (renderFlag && qualityAllowsVegetation);
+#endif
+    
+    return renderFlag && vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
 }
 
 void VegetationRenderObject::SetPerturbation(const Vector3& point,
@@ -1315,6 +1272,27 @@ void VegetationRenderObject::SetCustomGeometryPathInternal(const FilePath& path)
     }
 }
 
+void VegetationRenderObject::SetLayersAnimationAmplitude(const Vector4 & ampitudes)
+{
+    layersAnimationAmplitude = ampitudes;
+}
+    
+Vector4 VegetationRenderObject::GetLayersAnimationAmplitude() const
+{
+    return layersAnimationAmplitude;
+}
+ 
+void VegetationRenderObject::SetLayersAnimationSpring(const Vector4 &spring)
+{
+    layersAnimationSpring = spring;
+    layersAnimationSpring.Clamp(.5f, 20.f);
+}
+    
+Vector4 VegetationRenderObject::GetLayersAnimationSpring() const
+{
+    return layersAnimationSpring;
+}
+    
 void VegetationRenderObject::SetLayerClusterLimit(const Vector4& maxClusters)
 {
     clustersPerLayer.clear();
@@ -1601,32 +1579,6 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
             }
         }
     }
-}
-
-void VegetationRenderObject::SetWaveSpeed(const Vector4& speed)
-{
-    layerWaveSpeed = speed;
-}
-    
-Vector4 VegetationRenderObject::GetWaveSpeed() const
-{
-    return layerWaveSpeed;
-}
-
-void VegetationRenderObject::SetLayerWaveDirection(const Vector<Vector2>& dir)
-{
-    size_t dirCount = dir.size();
-    layerWaveDirection.resize(dirCount);
-    
-    for(size_t i = 0; i < dirCount; ++i)
-    {
-        layerWaveDirection[i] = dir[i];
-    }
-}
-    
-const Vector<Vector2>& VegetationRenderObject::GetLayerWaveDirection() const
-{
-    return layerWaveDirection;
 }
 
 };

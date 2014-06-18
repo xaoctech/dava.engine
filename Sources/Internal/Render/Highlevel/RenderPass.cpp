@@ -239,7 +239,8 @@ void MainForwardRenderPass::Draw(RenderSystem * renderSystem)
         /* if there was no water on previous frame, and it appears on this frame - reflection and refractions textures are still to be rendered*/
         PrepareReflectionRefractionTextures(renderSystem);
     }
-	
+    
+	//important: FoliageSystem also using main camera for cliping vegetation cells
     PrepareVisibilityArrays(mainCamera, renderSystem);
 	
 	RenderLayerBatchArray *waterLayer = renderPassBatchArray->Get(RenderLayerManager::Instance()->GetLayerIDByName(LAYER_WATER));
