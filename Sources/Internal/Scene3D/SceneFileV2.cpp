@@ -371,7 +371,7 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     UpdatePolygonGroupRequestedFormatRecursively(rootNode);
     serializationContext.LoadPolygonGroupData(file);
 
-    if (GetVersion() < 12)   //rebuild binormals
+    if (GetVersion() < 13)   //rebuild binormals
     {     
         RebuildTangentSpace(rootNode);
     }
