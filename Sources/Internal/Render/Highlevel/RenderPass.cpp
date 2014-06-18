@@ -82,7 +82,7 @@ void RenderPass::RemoveRenderLayer(RenderLayer * layer)
 	renderLayers.erase(it);
 }
 
-void RenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuffer)
+void RenderPass::Draw(RenderSystem * renderSystem, uint32 clearBuffers)
 {   
     Camera *mainCamera = renderSystem->GetMainCamera();        
     Camera *drawCamera = renderSystem->GetDrawCamera();   
@@ -95,7 +95,7 @@ void RenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuffer)
     
     PrepareVisibilityArrays(mainCamera, renderSystem);
     
-    ClearBuffers(clearColorBuffer);
+    ClearBuffers(clearBuffers);
 
     DrawLayers(mainCamera);
 }
@@ -125,14 +125,21 @@ void RenderPass::DrawLayers(Camera *camera)
     }
 }
 
-void RenderPass::ClearBuffers(bool clearColorBuffer)
+void RenderPass::ClearBuffers(uint32 clearBuffers)
 {
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
     RenderManager::Instance()->FlushState();    
-    if (clearColorBuffer)
+    if (clearBuffers == RenderManager::ALL_BUFFERS)
         RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);
     else
-        RenderManager::Instance()->ClearDepthBuffer();
+    {
+        if (clearBuffers&RenderManager::COLOR_BUFFER)
+            RenderManager::Instance()->ClearWithColor(0,0,0,0);
+        if (clearBuffers&RenderManager::DEPTH_BUFFER)
+            RenderManager::Instance()->ClearDepthBuffer();
+        if (clearBuffers&RenderManager::STENCIL_BUFFER)
+            RenderManager::Instance()->ClearStencilBuffer();
+    }
 }
 
 
@@ -222,7 +229,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(RenderSystem * r
 	}    
 }
 
-void MainForwardRenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuffer)
+void MainForwardRenderPass::Draw(RenderSystem * renderSystem, uint32 clearBuffers)
 {
     Camera *mainCamera = renderSystem->GetMainCamera();        
     Camera *drawCamera = renderSystem->GetDrawCamera();   
@@ -269,7 +276,7 @@ void MainForwardRenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuf
 	}	
     needWaterPrepass = (waterBatchesCount!=0); //for next frame;
 
-    ClearBuffers(clearColorBuffer);
+    ClearBuffers(clearBuffers);
 
 	DrawLayers(mainCamera);   
 }
@@ -313,7 +320,7 @@ void WaterReflectionRenderPass::UpdateCamera(Camera *camera)
     camera->SetTarget(v);        
 }
 
-void WaterReflectionRenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuffer)
+void WaterReflectionRenderPass::Draw(RenderSystem * renderSystem, uint32 clearBuffers)
 {    
     Camera *mainCamera = renderSystem->GetMainCamera();        
     Camera *drawCamera = renderSystem->GetDrawCamera();    
@@ -355,7 +362,7 @@ void WaterReflectionRenderPass::Draw(RenderSystem * renderSystem, bool clearColo
 	renderPassBatchArray->Clear();
 	renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currMainCamera); 
 
-    ClearBuffers(clearColorBuffer);
+    ClearBuffers(clearBuffers);
 
     DrawLayers(currMainCamera);
 }
@@ -367,7 +374,7 @@ WaterRefractionRenderPass::WaterRefractionRenderPass(const FastName & name, Rend
     AddRenderLayer(renderLayerManager->GetRenderLayer(LAYER_SHADOW_VOLUME), LAST_LAYER);*/
 }
 
-void WaterRefractionRenderPass::Draw(RenderSystem * renderSystem, bool clearColorBuffer)
+void WaterRefractionRenderPass::Draw(RenderSystem * renderSystem, uint32 clearBuffers)
 {
     Camera *mainCamera = renderSystem->GetMainCamera();        
     Camera *drawCamera = renderSystem->GetDrawCamera();    
@@ -407,7 +414,7 @@ void WaterRefractionRenderPass::Draw(RenderSystem * renderSystem, bool clearColo
     renderPassBatchArray->Clear();
     renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, currMainCamera); 
 
-    ClearBuffers(clearColorBuffer);
+    ClearBuffers(clearBuffers);
 
     DrawLayers(currMainCamera);       
     

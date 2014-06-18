@@ -120,7 +120,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , windSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
-    , clearColorBuffer(true)
+    , clearBuffers(RenderManager::ALL_BUFFERS)
 {   
 	CreateComponents();
 	CreateSystems();
@@ -785,7 +785,7 @@ void Scene::Draw()
 	}
     
     
-    renderSystem->Render(clearColorBuffer);
+    renderSystem->Render(clearBuffers);
     
     //foliageSystem->DebugDrawVegetation();
     
@@ -1032,13 +1032,13 @@ void Scene::OptimizeBeforeExport()
     Entity::OptimizeBeforeExport();
 }
 
-void  Scene::SetClearColorBuffer(bool clear) 
+void Scene::SetClearBuffers(uint32 buffers) 
 {
-    clearColorBuffer = clear;
+    clearBuffers = buffers;
 }
-bool  Scene::GetClearColorBuffer() const 
+uint32 Scene::GetClearBuffers() const 
 {
-    return clearColorBuffer;
+    return clearBuffers;
 }
 
 };
