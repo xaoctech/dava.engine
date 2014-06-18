@@ -115,7 +115,7 @@ public:
     NMaterial *GetGlobalMaterial() const;
     
     void Update(float32 timeElapsed);
-    void Render();
+    void Render(bool clearColorBuffer);
     
     void MarkForUpdate(RenderObject * renderObject);
     void MarkForUpdate(Light * lightNode);

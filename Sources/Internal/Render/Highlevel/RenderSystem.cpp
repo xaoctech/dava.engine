@@ -388,12 +388,12 @@ void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 		renderHierarchy->DebugDraw(cameraMatrix);
 }
 
-void RenderSystem::Render()
+void RenderSystem::Render(bool clearColorBuffer)
 {
     TIME_PROFILE("RenderSystem::Render");
 
     
-    mainRenderPass->Draw(this);
+    mainRenderPass->Draw(this, clearColorBuffer);
     
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);
