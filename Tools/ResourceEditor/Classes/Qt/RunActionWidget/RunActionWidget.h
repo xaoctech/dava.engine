@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QScopedPointer>
 
+#include "Interfaces/ISceneWatcher.h"
+
 
 namespace Ui {
     class RunActionWidget;
@@ -17,7 +19,7 @@ class RunActionWidget
     Q_OBJECT
 
 public:
-    RunActionWidget( QWidget *parent = NULL );
+    explicit RunActionWidget( QWidget *parent = NULL );
     ~RunActionWidget();
 
 private:
