@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="QtData">
@@ -219,6 +219,9 @@
     </Filter>
     <Filter Include="Classes\Qt\BeastDialog">
       <UniqueIdentifier>{2dc3cc91-3dd3-49c3-b36a-f67af31c019c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Qt\RunActionWidget">
+      <UniqueIdentifier>{84eb1c40-df98-44a4-9c68-5526489097da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1971,6 +1974,15 @@
     <ClCompile Include="Classes\Commands2\CopyLastLODCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
+    <ClCompile Include="_GeneratedQt\BeastDialog\BeastDialog_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Qt\RunActionWidget\RunActionWidget.cpp">
+      <Filter>Classes\Qt\RunActionWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="_GeneratedQt\RunActionWidget\RunActionWidget_moc.cpp">
+      <Filter>QtGenerated</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3476,6 +3488,12 @@
     <ClInclude Include="Classes\Commands2\CopyLastLODCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Qt\RunActionWidget\RunActionWidget.h">
+      <Filter>Classes\Qt\RunActionWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="_GeneratedQt\ui_RunActionWidget.h">
+      <Filter>QtGenerated</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="DataQt\mainwindow.ui">
@@ -3536,6 +3554,9 @@
       <Filter>QtData</Filter>
     </None>
     <None Include="DataQt\BeastDialog.ui">
+      <Filter>QtData</Filter>
+    </None>
+    <None Include="DataQt\RunActionWidget.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
