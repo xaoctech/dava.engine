@@ -127,8 +127,8 @@ private:
 class CreateControlCommand: public BaseCommand
 {
 public:
-	CreateControlCommand(const QString& type, HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos);
-	CreateControlCommand(const QString& type, HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent);
+	CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos);
+	CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent);
 
 	virtual void Execute();
 	void Rollback();

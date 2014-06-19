@@ -212,9 +212,8 @@ void CreateAggregatorCommand::DecrementUnsavedChanges()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos)
+CreateControlCommand::CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos)
 {
-	this->type = type;
     this->typeId = typeId;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
@@ -224,9 +223,8 @@ CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNod
 	this->redoNode = NULL;
 }
 
-CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent)
+CreateControlCommand::CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent)
 {
-	this->type = type;
     this->typeId = typeId;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
@@ -253,7 +251,7 @@ void CreateControlCommand::Execute()
 		case CREATE_FROM_POINT:
 		{
 			// Use the point passed.
-			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, typeId, pos);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(typeId, pos);
 			break;
 		}
 
@@ -261,7 +259,7 @@ void CreateControlCommand::Execute()
 		{
 			static const Vector2 NEW_CONTROL_OFFSET = Vector2(10, 10);
 			DVASSERT(parentNode);
-			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, typeId, NEW_CONTROL_OFFSET, this->parentNode);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(typeId, NEW_CONTROL_OFFSET, this->parentNode);
 			break;
 		}
 
