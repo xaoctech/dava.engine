@@ -89,7 +89,7 @@ NMaterial *ParticleEffectSystem::GetMaterial(Texture *texture, bool enableFog, b
 }
 
 
-ParticleEffectSystem::ParticleEffectSystem(Scene * scene, bool _forceDisableDepthTest) :	SceneSystem(scene), forceDisableDepthTest(_forceDisableDepthTest)	
+ParticleEffectSystem::ParticleEffectSystem(Scene * scene, bool _forceDisableDepthTest) :	SceneSystem(scene), forceDisableDepthTest(_forceDisableDepthTest), allowLodDegrade(false)	
 {	
     if (scene) //for 2d particles there would be no scene
     {
@@ -302,7 +302,7 @@ void ParticleEffectSystem::UpdateActiveLod(ParticleEffectComponent *effect)
             group.visibleLod = group.layer->IsLodActive(effect->activeLodLevel);
     }    
 
-    if (effect->activeLodLevel == 0) //degrade existing groups if needed
+    if (allowLodDegrade && (effect->activeLodLevel == 0)) //degrade existing groups if needed
     {
         for (List<ParticleGroup>::iterator it = effect->effectData.groups.begin(), e=effect->effectData.groups.end(); it!=e;++it)
         {
