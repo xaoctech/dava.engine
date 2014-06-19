@@ -108,7 +108,7 @@ static Color RESOLUTION_COLOR[] =
 {
     Color(0.5f, 0.0f, 0.0f, 1.0f),
     Color(0.0f, 0.5f, 0.0f, 1.0f),
-    Color(0.0f, 0.0f, 0.5f, 1.0f),
+    Color(1.0f, 0.0f, 1.0f, 1.0f),
 };
 
 #ifdef VEGETATION_DRAW_LOD_COLOR
@@ -404,6 +404,8 @@ void VegetationRenderObject::PrepareToRender(Camera * camera)
     //VegetationMetrics metrics;
     //CollectMetrics(metrics);
     
+    Vector2 vegetationAnimationOffset[4];
+    
     for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
         AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[cellIndex];
@@ -443,7 +445,6 @@ void VegetationRenderObject::PrepareToRender(Camera * camera)
             switchLodScale.x = resolutionIndex;
             switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
             
-            Vector2 vegetationAnimationOffset[4];
             for(uint32 i = 0; i < 4; ++i)
             {
                 vegetationAnimationOffset[i] = treeNode->data.animationOffset[i] * layersAnimationAmplitude.data[i];

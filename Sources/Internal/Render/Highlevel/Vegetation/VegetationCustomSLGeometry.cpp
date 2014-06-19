@@ -41,7 +41,8 @@
 namespace DAVA
 {
 static const float32 MAX_ROTATION_ANGLE = 180.0f;
-static const float32 HEIGHT_VARIATION = 0.3f;
+static const float32 HEIGHT_VARIATION = 0.2f;
+
 
 void VegetationCustomSLGeometry::CustomMaterialTransformer::TransformMaterialOnCreate(NMaterial* mat)
 {
@@ -76,7 +77,12 @@ VegetationCustomSLGeometry::CustomGeometryLayerData::CustomGeometryLayerData(con
         sourceIndices.push_back(src.sourceIndices[i]);
     }
     
-    BuildBBox();
+    if(!src.bbox.IsEmpty())
+    {
+        bbox = src.bbox;
+    }
+    
+    pivot = src.pivot;
 }
 
 void VegetationCustomSLGeometry::CustomGeometryLayerData::BuildBBox()
@@ -88,39 +94,6 @@ void VegetationCustomSLGeometry::CustomGeometryLayerData::BuildBBox()
     {
         bbox.AddPoint(sourcePositions[i]);
     }
-    
-    Vector2 xLimits(bbox.max.x, bbox.min.x);
-    Vector2 yLimits(bbox.max.y, bbox.min.y);;
-    for(size_t i = 0; i < sourcePositionsCount; ++i)
-    {
-        const Vector3& sourcePos = sourcePositions[i];
-        if(sourcePos.z == bbox.min.z)
-        {
-            if(xLimits.x < sourcePos.x)
-            {
-                xLimits.x = sourcePos.x;
-            }
-            
-            if(xLimits.y > sourcePos.x)
-            {
-                xLimits.y = sourcePos.x;
-            }
-            
-            if(yLimits.x < sourcePos.y)
-            {
-                yLimits.x = sourcePos.y;
-            }
-            
-            if(yLimits.y > sourcePos.y)
-            {
-                yLimits.y = sourcePos.y;
-            }
-        }
-    }
-    
-    pivot.x = 0.5f * (xLimits.y - xLimits.x);
-    pivot.y = 0.5f * (yLimits.y - yLimits.x);
-    pivot.z = bbox.min.z;
 }
 
 VegetationCustomSLGeometry::CustomGeometryEntityData::CustomGeometryEntityData() : material(NULL)
@@ -235,10 +208,13 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
 {
     renderDataArray.clear();
     
-    if(customGeometryData.size() == 0)
+    size_t customGeometryDataCount = customGeometryData.size();
+    if(customGeometryDataCount == 0)
     {
         return;
     }
+    
+    PrepareBoundingBoxes();
     
     VegetationRenderData* renderData = new VegetationRenderData();
     renderDataArray.push_back(renderData);
@@ -624,7 +600,7 @@ void VegetationCustomSLGeometry::GenerateVertexData(const Vector<CustomGeometryE
             
             vertex.tangent.x = clusterData.resolutionId;
             vertex.tangent.y = clusterData.position.layerId;
-            vertex.tangent.z = Max(0.0f, (vertex.coord.z / (clusterGeometry.bbox.max.z - clusterGeometry.bbox.min.z)));
+            vertex.tangent.z = Max(0.0f, ((vertex.coord.z - clusterGeometry.pivot.z) / (clusterGeometry.bbox.max.z - clusterGeometry.pivot.z)));
             
             vertex.texCoord0 = clusterGeometry.sourceTextureCoords[vertexIndex];
             
@@ -802,68 +778,6 @@ void VegetationCustomSLGeometry::GenerateSortedClusterIndexData(Vector3& cameraP
     std::stable_sort(sourceIndices.begin(), sourceIndices.end(), PolygonByDistanceCompareFunction);
 }
 
-/*void VegetationCustomSLGeometry::BuildLayer(uint32 layerId,
-                                          CustomGeometryEntityData& sourceLayerData,
-                                          Vector<VegetationVertex>& vertexData,
-                                          Vector<VegetationIndex>& indexData,
-                                          Vector<Vector<VertexRangeData> >& vertexOffsets, //resolution-cell
-                                          Vector<Vector<Vector<SortBufferData> > >& indexOffsets) //resolution-cell-direction
-{
-    DVASSERT(layerId >= 0 && layerId < maxClusters.size());
-    
-    uint32 layerMaxClusters = maxClusters[layerId];
-    Vector<ClusterPositionData> clusters;
-    GenerateClusterPositionData(layerMaxClusters, clusters);
-    
-    for(uint32 resolutionIndex = 0;
-        resolutionIndex < resolutionCount;
-        ++resolutionIndex)
-    {
-        indexOffsets.push_back(Vector<Vector<SortBufferData> >());
-        vertexOffsets.push_back(Vector<VertexRangeData>());
-        
-        Vector<Vector<SortBufferData> >& resolutionOffsets = indexOffsets[indexOffsets.size() - 1];
-        Vector<VertexRangeData>& resolutionVertexOffsets = vertexOffsets[vertexOffsets.size() - 1];
-        
-        Vector<ClusterResolutionData> clusterResolution;
-        
-        GenerateClusterResolutionData(layerId,
-                                      layerMaxClusters,
-                                      resolutionIndex,
-                                      clusters,
-                                      clusterResolution);
-        std::stable_sort(clusterResolution.begin(), clusterResolution.end(), ClusterByMatrixCompareFunction);
-        
-        uint32 vertexStartIndex = 0;
-        uint32 vertexEndIndex = 0;
-        Vector<uint32> perCellClusterCount;
-        GenerateVertexData(sourceLayerData.lods[resolutionIndex].sourcePositions,
-                           sourceLayerData.lods[resolutionIndex].sourceTextureCoords,
-                           sourceLayerData.lods[resolutionIndex].sourceNormals,
-                           clusterResolution,
-                           vertexStartIndex,
-                           vertexEndIndex,
-                           vertexData,
-                           vertexOffsets[resolutionIndex],
-                           perCellClusterCount);
-        
-        uint32 cellCount = resolutionVertexOffsets.size();
-        for(uint32 cellIndex = 0; cellIndex < cellCount; cellIndex++)
-        {
-            resolutionOffsets.push_back(Vector<SortBufferData>());
-            Vector<SortBufferData>& currentIndexOffsets = resolutionOffsets[resolutionOffsets.size() - 1];
-            
-            GenerateIndexData(sourceLayerData.lods[resolutionIndex].sourceIndices,
-                              vertexOffsets[resolutionIndex][cellIndex].index,
-                              perCellClusterCount[cellIndex],
-                              sourceLayerData.lods[resolutionIndex].sourcePositions.size(),
-                              vertexData,
-                              indexData,
-                              currentIndexOffsets);
-        }
-    }
-}*/
-
 void VegetationCustomSLGeometry::InitCustomGeometry(VegetationCustomGeometrySerializationData* geometryData)
 {
     uint32 layerCount = geometryData->GetLayerCount();
@@ -913,6 +827,44 @@ void VegetationCustomSLGeometry::InitCustomGeometry(VegetationCustomGeometrySeri
             {
                 indices.push_back(srcIndices[indexIndex]);
             }
+        }
+    }
+}
+
+void VegetationCustomSLGeometry::PrepareBoundingBoxes()
+{
+    size_t customGeometryDataCount = customGeometryData.size();
+    for(size_t geometryIndex = 0; geometryIndex < customGeometryDataCount; ++geometryIndex)
+    {
+        CustomGeometryEntityData& geometryEntityData = customGeometryData[geometryIndex];
+        
+        AABBox3 bbox;
+        Vector3 pivot(0.0f, 0.0f, FLT_MAX);
+        
+        size_t lodCount = geometryEntityData.lods.size();
+        for(size_t lodIndex = 0; lodIndex < lodCount; ++lodIndex)
+        {
+            CustomGeometryLayerData& lodData = geometryEntityData.lods[lodIndex];
+            
+            size_t vertexCount = lodData.sourcePositions.size();
+            for(size_t vertexIndex = 0; vertexIndex < vertexCount; ++vertexIndex)
+            {
+                Vector3& pt = lodData.sourcePositions[vertexIndex];
+                bbox.AddPoint(pt);
+                
+                if(pt.z < pivot.z)
+                {
+                    pivot = pt;
+                }
+            }
+        }
+        
+        for(size_t lodIndex = 0; lodIndex < lodCount; ++lodIndex)
+        {
+            CustomGeometryLayerData& lodData = geometryEntityData.lods[lodIndex];
+            
+            lodData.bbox = bbox;
+            lodData.pivot = pivot;
         }
     }
 }

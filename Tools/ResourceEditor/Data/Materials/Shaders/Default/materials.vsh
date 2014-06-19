@@ -371,7 +371,7 @@ void main()
         pos.z += height;
         clusterCenter.z += height;
     
-        float clusterScale = 1.0;
+        float clusterScale = tilePos.z;
         if(int(inTangent.x) == int(lodSwitchScale.x))
         {
             clusterScale *= lodSwitchScale.y;
@@ -385,9 +385,24 @@ void main()
     
 #if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
         varVegetationColor = vegetationMask.rgb;
-#endif
     
-        pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale);
+        /*if(int(inTangent.y) == 0)
+        {
+           varVegetationColor.r += 0.5;
+        }
+        else if(int(inTangent.y) == 1)
+        {
+           varVegetationColor.g += 0.5;
+        }
+        else if(int(inTangent.y) == 2)
+        {
+            varVegetationColor.rb += vec2(0.75, 0.75);
+        }
+        else
+        {
+            varVegetationColor.rgb += vec3(0.5, 0.5, 0.5);
+        }*/
+#endif
     
 #if defined(MATERIAL_GRASS_TRANSFORM_WAVE)
     
@@ -398,6 +413,8 @@ void main()
     pos.y += inTangent.z * vegWaveOffset[waveIndex + 1];
     
 #endif
+
+        pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale);
     
         gl_Position = worldViewProjMatrix * pos;
     
