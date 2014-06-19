@@ -152,10 +152,11 @@ void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
 			DVASSERT(0 && "Orientation constant is wrong");
 		}
 	}
-    const YamlNode * delegateNode = node->Get("UIScrollBarDelegate");
+    const YamlNode * delegateNode = node->Get("linkedScrollBar");
     if (delegateNode)
     {
         delegateName = delegateNode->AsString();
+        loader->AddScrollBarToLink(this);
     }
 }
 
@@ -183,7 +184,7 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 	}
 	node->Set("orientation", stringValue);
 
-    node->Set("UIScrollBarDelegate", delegateName);
+    node->Set("linkedScrollBar", delegateName);
     
 	return node;
 }

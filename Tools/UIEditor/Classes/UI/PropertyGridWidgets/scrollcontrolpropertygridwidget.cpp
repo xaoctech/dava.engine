@@ -96,10 +96,23 @@ void ScrollControlPropertyGridWidget::FillScrollViewsComboBox(const HierarchyTre
     for (; it!=nodes.end(); ++it)
     {
         const HierarchyTreeControlNode * controlNode = static_cast<HierarchyTreeControlNode *>(*it);
-        UIScrollBarDelegate* scroll = dynamic_cast<UIScrollBarDelegate*>(controlNode->GetUIObject());
+        UIControl* control = controlNode->GetUIObject();
+        UIScrollBarDelegate* scroll = dynamic_cast<UIScrollBarDelegate*>(control);
         if (NULL != scroll)
         {
-            ui->scrollViewsComboBox->addItem(QString::fromStdString(controlNode->GetUIObject()->GetName()));
+            QString delegatePath = QString::fromStdString(control->GetName());
+            UIControl * parent = control->GetParent();
+            while (parent)
+            {
+                QString parentName = QString::fromStdString(parent->GetName());
+                if (!parentName.isEmpty())
+                {
+                    parentName += "/";
+                    delegatePath = parentName += delegatePath;
+                }
+                parent = parent->GetParent();
+            }
+            ui->scrollViewsComboBox->addItem(delegatePath);
         }
         FillScrollViewsComboBox((*it)->GetChildNodes());
     }
