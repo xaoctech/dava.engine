@@ -35,7 +35,6 @@
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreeNode.h"
 #include "HierarchyTreeController.h"
-#include "LibraryController.h"
 
 #include "MetadataFactory.h"
 #include "ResourcesManageHelper.h"
@@ -316,7 +315,6 @@ HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, H
 	
 	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect, false);
 	platformNode->AddTreeNode(aggregatorNode);
-    LibraryController::Instance()->UpdateLibrary();
 	
 	return aggregatorNode;
 }
@@ -438,13 +436,6 @@ void HierarchyTree::DeleteNodes(const HierarchyTreeNode::HIERARCHYTREENODESLIST&
 		if (screenNode)
 		{
 			screenNode->GetPlatform()->RemoveTreeNode(screenNode, deleteNodeFromMemory, deleteNodeFromScene);
-            
-            HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
-			if (aggregatorNode)
-			{
-				LibraryController::Instance()->UpdateLibrary();
-			}
-            
 			continue;
 		}
 		

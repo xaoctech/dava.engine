@@ -247,7 +247,7 @@ void HierarchyTreeControl::HandleDropControlMimeData(QDropEvent *event, const Co
 		return;
 	}
 
-	CreateControlCommand* cmd = new CreateControlCommand(mimeData->GetControlName(), mimeData->GetControlId(), parentNode);
+	CreateControlCommand* cmd = new CreateControlCommand(mimeData->GetControlId(), parentNode);
 	CommandsController::Instance()->ExecuteCommand(cmd);
 	SafeRelease(cmd);
 }

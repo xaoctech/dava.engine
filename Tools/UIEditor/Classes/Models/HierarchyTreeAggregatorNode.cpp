@@ -30,7 +30,6 @@
 
 
 #include "HierarchyTreeAggregatorNode.h"
-#include "LibraryController.h"
 #include "ResourcesManageHelper.h"
 #include "HierarchyTreePlatformNode.h"
 #include "HierarchyTreeAggregatorControlNode.h"
@@ -48,11 +47,6 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 {
 	this->rect = rect;
 	screen->SetRect(rect);
-	
-	if (parent && updateLibrary)
-	{
-		LibraryController::Instance()->UpdateLibrary();
-	}
 }
 
 HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
@@ -63,16 +57,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 {
 	this->rect = base->GetRect();
 	screen->SetRect(rect);
-
-	if (parent && updateLibrary)
-	{
-		LibraryController::Instance()->UpdateLibrary();
-	}
 }
 
 HierarchyTreeAggregatorNode::~HierarchyTreeAggregatorNode()
 {
-	LibraryController::Instance()->UpdateLibrary();
 	DVASSERT(childs.size() == 0);
     
     SafeRelease(listDelegate);
@@ -94,10 +82,6 @@ void HierarchyTreeAggregatorNode::RemoveChild(HierarchyTreeControlNode* node)
 void HierarchyTreeAggregatorNode::ReturnTreeNodeToScene()
 {
 	HierarchyTreeScreenNode::ReturnTreeNodeToScene();
-    if (parent)
-	{
-		LibraryController::Instance()->UpdateLibrary();
-	}
 }
 
 void HierarchyTreeAggregatorNode::SetRect(const Rect& rect)
@@ -316,7 +300,7 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 void HierarchyTreeAggregatorNode::SetName(const QString& name)
 {
 	HierarchyTreeScreenNode::SetName(name);
-	LibraryController::Instance()->UpdateLibrary();
+	//LibraryController::Instance()->UpdateLibrary();
 }
 
 const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChilds() const

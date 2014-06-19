@@ -35,8 +35,6 @@
 #include "DefaultScreen.h"
 #include "IconHelper.h"
 
-#include <QDebug>
-
 using namespace DAVA;
 
 static const QString AGGREGATOR_CONTROL_NAME = "UIAggregatorControl";
@@ -87,30 +85,36 @@ void LibraryController::AddControl(const QString& name, UIControl* control)
 
 HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode* parentNode,
 																HierarchyTreeNode::HIERARCHYTREENODEID typeId,
-																const QString& strType,
-                                                                const QString& name,
                                                                 const Vector2& position)
 {
-	String type = strType.toStdString();
-
 	HierarchyTreeControlNode* controlNode = NULL;
 	UIControl* control = NULL;
 	CONTROLS::iterator iter;
     
-    HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(typeId);
-        
-    // Create aggregator
-    if (node)
+    for (iter = controls.begin(); iter != controls.end(); ++iter)
     {
-        HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
-        if (aggregator)
-		{
-        	controlNode = aggregator->CreateChild(parentNode, name);
-			control = controlNode->GetUIObject();
-        }
+    	HierarchyTreeNode* node = iter->first;
+        if (node->GetId() == typeId)
+        	break;
     }
-	
-	if (!control)
+    
+    HierarchyTreeScreenNode *activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (iter == controls.end() || !activeScreen)
+    	return NULL;
+    
+    // Get control name from library widget item
+    QTreeWidgetItem *item = iter->second;
+    String type = item->text(0).toStdString();
+    String name = activeScreen->GetNewControlName(type);
+    
+    // Create aggregator
+    HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
+    if (aggregator)
+	{
+       	controlNode = aggregator->CreateChild(parentNode, QString::fromStdString(name));
+		control = controlNode->GetUIObject();
+    }
+	else
 	{
 		//create standart control
 		BaseObject* object = ObjectFactory::Instance()->New<BaseObject>(type);
@@ -121,7 +125,7 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 			return NULL;
 		}
 		 
-		controlNode = new HierarchyTreeControlNode(parentNode, control, name);
+		controlNode = new HierarchyTreeControlNode(parentNode, control, QString::fromStdString(name));
 	}
 	
 	parentNode->AddTreeNode(controlNode);
@@ -152,7 +156,7 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 	newControlMetadata->SetupParams(params);
 
 	// Ready to do initialization!
-	newControlMetadata->InitializeControl(name.toStdString(), position);
+	newControlMetadata->InitializeControl(name, position);
 
 	SAFE_DELETE(newControlMetadata);
 
@@ -198,7 +202,7 @@ void LibraryController::UpdateLibrary()
 	widget->ResetSelection();
 }
 
-List<HierarchyTreeAggregatorNode*> LibraryController::GetPlatformAggregators()
+List<HierarchyTreeAggregatorNode*> LibraryController::GetPlatformAggregators() const
 {
 	HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
 	List<HierarchyTreeAggregatorNode*> aggregatorsList;
