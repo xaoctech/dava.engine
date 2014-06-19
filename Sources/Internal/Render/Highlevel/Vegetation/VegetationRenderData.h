@@ -68,6 +68,15 @@ struct SortedBufferItem
 };
 
 /////////////////////////////////////////////////////////////////////////////////
+
+struct LayerParams
+{
+    uint32 maxClusterCount;
+    float32 instanceRotationVariation; //in angles
+    float32 instanceScaleVariation; //0...1. "0" means no variation, "1" means variation from 0 to full scale
+};
+
+/////////////////////////////////////////////////////////////////////////////////
     
 class VegetationRenderData
 {

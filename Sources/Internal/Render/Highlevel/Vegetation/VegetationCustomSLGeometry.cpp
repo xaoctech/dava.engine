@@ -40,8 +40,8 @@
 
 namespace DAVA
 {
-static const float32 MAX_ROTATION_ANGLE = 180.0f;
-static const float32 HEIGHT_VARIATION = 0.2f;
+//static const float32 MAX_ROTATION_ANGLE = 180.0f;
+//static const float32 HEIGHT_VARIATION = 0.2f;
 
 
 void VegetationCustomSLGeometry::CustomMaterialTransformer::TransformMaterialOnCreate(NMaterial* mat)
@@ -142,7 +142,7 @@ bool VegetationCustomSLGeometry::ClusterByMatrixCompareFunction(const ClusterRes
     return a.cellIndex < b.cellIndex;
 }
 
-VegetationCustomSLGeometry::VegetationCustomSLGeometry(const Vector<uint32>& _maxClusters,
+VegetationCustomSLGeometry::VegetationCustomSLGeometry(const Vector<LayerParams>& _maxClusters,
                                                    uint32 _maxDensityLevels,
                                                    const Vector2& _unitSize,
                                                    const FilePath& _dataPath,
@@ -157,10 +157,12 @@ VegetationCustomSLGeometry::VegetationCustomSLGeometry(const Vector<uint32>& _ma
                                                    const Vector3& _worldSize,
                                                    VegetationCustomGeometrySerializationData* geometryData)
 {
-    maxClusters.reserve(_maxClusters.size());
+    maxClusters.resize(_maxClusters.size());
     for(size_t i = 0; i < _maxClusters.size(); ++i)
     {
-        maxClusters.push_back(_maxClusters[i]);
+        maxClusters[i].maxClusterCount = _maxClusters[i].maxClusterCount;
+        maxClusters[i].instanceRotationVariation = _maxClusters[i].instanceRotationVariation;
+        maxClusters[i].instanceScaleVariation = _maxClusters[i].instanceScaleVariation;
     }
     
     maxDensityLevels = _maxDensityLevels;
@@ -350,7 +352,7 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
         size_t lodCount = layerGeometryInfo.lods.size();
         for(size_t lodIndex = 0; lodIndex < lodCount; ++lodIndex)
         {
-            layerInstanceCount.push_back(maxClusters[layerIndex] * maxClusters[layerIndex]);
+            layerInstanceCount.push_back(maxClusters[layerIndex].maxClusterCount * maxClusters[layerIndex].maxClusterCount);
             layerVertexCount.push_back(layerGeometryInfo.lods[lodIndex].sourcePositions.size());
             polyVertexCount.push_back(layerGeometryInfo.lods[lodIndex].sourceIndices.size() / 3);
         }
@@ -397,7 +399,7 @@ void VegetationCustomSLGeometry::OnVegetationPropertiesChanged(Vector<Vegetation
     }
 }
 
-void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<uint32>& layerClusterCount,
+void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<LayerParams>& layerClusterCount,
                                  Vector<ClusterPositionData>& clusters,
                                  Vector<VertexRangeData>& layerRanges)
 {
@@ -407,7 +409,7 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<uint32
     uint32 clustersSize = 0;
     for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
-        uint32 clusterRowSize = resolutionTilesPerRow[0] * layerClusterCount[layerIndex];
+        uint32 clusterRowSize = resolutionTilesPerRow[0] * layerClusterCount[layerIndex].maxClusterCount;
         clustersSize += clusterRowSize * clusterRowSize;
     }
     
@@ -417,7 +419,9 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<uint32
     uint32 currentIndex = 0;
     for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
-        uint32 layerMaxClusters = layerClusterCount[layerIndex];
+        const LayerParams& layerParamsData = layerClusterCount[layerIndex];
+        
+        uint32 layerMaxClusters = layerParamsData.maxClusterCount;
         
         uint32 clusterRowSize = resolutionTilesPerRow[0] * layerMaxClusters;
         uint32 totalClusterCount = clusterRowSize * clusterRowSize;
@@ -455,8 +459,8 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<uint32
             cluster.pos = Vector3((matrixCellX * unitSize.x) + randomX,
                                   (matrixCellY * unitSize.y) + randomY,
                                   0.0f);
-            cluster.rotation = MAX_ROTATION_ANGLE * (Random::Instance()->RandFloat() - 0.5f);
-            cluster.scale = 1.0f - HEIGHT_VARIATION * Random::Instance()->RandFloat();
+            cluster.rotation = layerParamsData.instanceRotationVariation * (Random::Instance()->RandFloat() - 0.5f);
+            cluster.scale = 1.0f - layerParamsData.instanceScaleVariation * Random::Instance()->RandFloat();
             cluster.densityId = densityId[clusterIndex];
             cluster.layerId = layerIndex;
             
@@ -466,7 +470,7 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<uint32
 }
 
 void VegetationCustomSLGeometry::GenerateClusterResolutionData(uint32 resolutionId,
-                                                               const Vector<uint32>& layerClusterCount,
+                                                               const Vector<LayerParams>& layerClusterCount,
                                                                const Vector<ClusterPositionData>& clusterPosition,
                                                                const Vector<VertexRangeData>& layerRanges,
                                                                Vector<ClusterResolutionData>& clusterResolution)
@@ -491,7 +495,7 @@ void VegetationCustomSLGeometry::GenerateClusterResolutionData(uint32 resolution
         const VertexRangeData& layerRangeData = layerRanges[layerIndex];
         
         uint32 clusterRowCount = layerRangeData.size / layerRangeData.rowSize;
-        uint32 resolutionRowSize = (resolutionTilesPerRow[0] / currentTilesPerRowCount) * layerClusterCount[layerIndex];
+        uint32 resolutionRowSize = (resolutionTilesPerRow[0] / currentTilesPerRowCount) * layerClusterCount[layerIndex].maxClusterCount;
         
         DVASSERT(layerRangeData.rowSize == clusterRowCount);
         

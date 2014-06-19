@@ -150,15 +150,20 @@ VegetationRenderObject::VegetationRenderObject() :
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
     
+    layerParams.resize(MAX_CLUSTER_TYPES);
+    for(size_t i = 0; i < MAX_CLUSTER_TYPES; ++i)
+    {
+        layerParams[i].maxClusterCount = 1;
+        layerParams[i].instanceScaleVariation = 0.0f;
+        layerParams[i].instanceRotationVariation = 0.0f;
+    }
+    
     type = RenderObject::TYPE_VEGETATION;
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
     
     unitWorldSize.resize(COUNT_OF(RESOLUTION_SCALE));
     resolutionRanges.resize(COUNT_OF(RESOLUTION_INDEX));
-    
-    //uint32 maxParams = 4 * 2 * RESOLUTION_CELL_SQUARE[COUNT_OF(RESOLUTION_CELL_SQUARE) - 1];
-    //shaderScaleDensityUniforms.resize(maxParams + PER_TILE_DATA_OFFSET);
     
     maxVisibleQuads = MAX_RENDER_CELLS;
     lodRanges = LOD_RANGES_SCALE;
@@ -207,6 +212,8 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetHeightmap(GetHeightmap());
     vegetationRenderObject->SetTextureSheet(GetTextureSheetPath());
     vegetationRenderObject->SetLayerClusterLimit(GetLayerClusterLimit());
+    vegetationRenderObject->SetScaleVariation(GetScaleVariation());
+    vegetationRenderObject->SetRotationVariation(GetRotationVariation());
     vegetationRenderObject->SetHeightmapPath(GetHeightmapPath());
     vegetationRenderObject->SetLightmap(GetLightmapPath());
     vegetationRenderObject->SetVegetationTexture(GetVegetationTexture());
@@ -232,6 +239,8 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
     RenderObject::Save(archive, serializationContext);
     
     archive->SetVector4("vro.clusterLayerLimit", GetLayerClusterLimit());
+    archive->SetVector4("vro.scaleVariation", GetScaleVariation());
+    archive->SetVector4("vro.rotationVariation", GetRotationVariation());
 
 	if(textureSheetPath.IsEmpty() == false)
 	{
@@ -324,6 +333,24 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
             SetLayerClusterLimit(archive->GetVector4("vro.clusterLayerLimit"));
             //Vector4 fakeClusterLimit(6, 16, 16, 1);
             //SetLayerClusterLimit(fakeClusterLimit);
+        }
+        
+        if(archive->IsKeyExists("vro.scaleVariation"))
+        {
+            SetScaleVariation(archive->GetVector4("vro.scaleVariation"));
+        }
+        else
+        {
+            SetScaleVariation(Vector4(0.2f, 0.2f, 0.2f, 0.2f));
+        }
+        
+        if(archive->IsKeyExists("vro.rotationVariation"))
+        {
+            SetRotationVariation(archive->GetVector4("vro.rotationVariation"));
+        }
+        else
+        {
+            SetRotationVariation(Vector4(180.0f, 180.0f, 180.0f, 180.0f));
         }
 
 		String texturesheet = archive->GetString("vro.texturesheet");
@@ -512,7 +539,7 @@ void VegetationRenderObject::SetClusterLimit(const uint32& maxClusters)
 
 uint32 VegetationRenderObject::GetClusterLimit() const
 {
-    return (clustersPerLayer.size() > 0) ? clustersPerLayer[0] : 0;
+    return layerParams[0].maxClusterCount;
 }
 
 void VegetationRenderObject::SetHeightmap(Heightmap* _heightmap)
@@ -846,8 +873,7 @@ bool VegetationRenderObject::IsValidGeometryData() const
      return (worldSize.Length() > 0 &&
              heightmap != NULL &&
              densityMap.size() > 0 &&
-             (!textureSheetPath.IsEmpty() || customGeometryData != NULL) &&
-             clustersPerLayer.size() > 0);
+             (!textureSheetPath.IsEmpty() || customGeometryData != NULL));
 }
     
 bool VegetationRenderObject::IsValidSpatialData() const
@@ -1026,7 +1052,7 @@ void VegetationRenderObject::CreateRenderData()
     
 void VegetationRenderObject::InitWithFixedGeometry(FastNameSet& materialFlags)
 {
-    vegetationGeometry = new VegetationFixedGeometry(clustersPerLayer[0],
+    vegetationGeometry = new VegetationFixedGeometry(layerParams[0].maxClusterCount,
                                                      MAX_DENSITY_LEVELS,
                                                      MAX_CLUSTER_TYPES,
                                                      GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
@@ -1047,7 +1073,7 @@ void VegetationRenderObject::InitWithFixedGeometry(FastNameSet& materialFlags)
 
 void VegetationRenderObject::InitWithCustomGeometry(FastNameSet& materialFlags)
 {
-    vegetationGeometry = new VegetationCustomSLGeometry(clustersPerLayer,
+    vegetationGeometry = new VegetationCustomSLGeometry(layerParams,
                                                       MAX_DENSITY_LEVELS,
                                                       GetVegetationUnitWorldSize(RESOLUTION_SCALE[0]),
                                                       customGeometryPath,
@@ -1254,22 +1280,61 @@ Vector4 VegetationRenderObject::GetLayersAnimationSpring() const
     
 void VegetationRenderObject::SetLayerClusterLimit(const Vector4& maxClusters)
 {
-    clustersPerLayer.clear();
-    clustersPerLayer.push_back((uint32)maxClusters.x);
-    clustersPerLayer.push_back((uint32)maxClusters.y);
-    clustersPerLayer.push_back((uint32)maxClusters.z);
-    clustersPerLayer.push_back((uint32)maxClusters.w);
+    size_t layerCount = layerParams.size();
+    for(size_t i = 0; i < layerCount; ++i)
+    {
+        layerParams[i].maxClusterCount = Clamp((uint32)Abs(maxClusters.data[i]), (uint32)1, (uint32)0x00000FFF);
+    }
     
     UpdateVegetationSetup();
 }
     
 Vector4 VegetationRenderObject::GetLayerClusterLimit() const
 {
-    return (clustersPerLayer.size() > 0) ? Vector4(clustersPerLayer[0],
-                   clustersPerLayer[1],
-                   clustersPerLayer[2],
-                   clustersPerLayer[3]) : Vector4();
+    return Vector4(layerParams[0].maxClusterCount,
+                   layerParams[1].maxClusterCount,
+                   layerParams[2].maxClusterCount,
+                   layerParams[3].maxClusterCount);
 }
+
+void VegetationRenderObject::SetScaleVariation(const Vector4& scaleVariation)
+{
+    size_t layerCount = layerParams.size();
+    for(size_t i = 0; i < layerCount; ++i)
+    {
+        layerParams[i].instanceScaleVariation = Clamp(scaleVariation.data[i], 0.0f, 1.0f);
+    }
+    
+    UpdateVegetationSetup();
+}
+    
+Vector4 VegetationRenderObject::GetScaleVariation() const
+{
+    return Vector4(layerParams[0].instanceScaleVariation,
+                   layerParams[1].instanceScaleVariation,
+                   layerParams[2].instanceScaleVariation,
+                   layerParams[3].instanceScaleVariation);
+}
+    
+void VegetationRenderObject::SetRotationVariation(const Vector4& rotationVariation)
+{
+    size_t layerCount = layerParams.size();
+    for(size_t i = 0; i < layerCount; ++i)
+    {
+        layerParams[i].instanceRotationVariation = Clamp(rotationVariation.data[i], 0.0f, 360.0f);
+    }
+    
+    UpdateVegetationSetup();
+}
+
+Vector4 VegetationRenderObject::GetRotationVariation() const
+{
+    return Vector4(layerParams[0].instanceRotationVariation,
+                   layerParams[1].instanceRotationVariation,
+                   layerParams[2].instanceRotationVariation,
+                   layerParams[3].instanceRotationVariation);
+}
+
 
 void VegetationRenderObject::ImportDataFromExternalScene(const FilePath& path)
 {

@@ -152,7 +152,14 @@ public:
     
     void SetLayerClusterLimit(const Vector4& maxClusters);
     Vector4 GetLayerClusterLimit() const;
+
+    void SetScaleVariation(const Vector4& scaleVariation);
+    Vector4 GetScaleVariation() const;
     
+    void SetRotationVariation(const Vector4& rotationVariation);
+    Vector4 GetRotationVariation() const;
+
+
     void SetLayersAnimationAmplitude(const Vector4 & ampitudes);
     Vector4 GetLayersAnimationAmplitude() const;
     
@@ -274,7 +281,6 @@ private:
     Texture* heightmapTexture;
     
     float32 cameraBias;
-    Vector<uint32> clustersPerLayer;
     
     VegetationCustomGeometrySerializationData* customGeometryData;
     
@@ -283,10 +289,14 @@ private:
     
     Vector<bool> densityMap;
     
+    Vector<LayerParams> layerParams;
+    
 public:
     
     INTROSPECTION_EXTEND(VegetationRenderObject, RenderObject,
                          PROPERTY("density", "Base density", GetLayerClusterLimit, SetLayerClusterLimit, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("scaleVariation", "Scale variation", GetScaleVariation, SetScaleVariation, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("rotationVariation", "Rotation variation", GetRotationVariation, SetRotationVariation, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("lightmap", "Lightmap", GetLightmapPath, SetLightmapAndGenerateDensityMap, I_SAVE | I_EDIT | I_VIEW)
                          //PROPERTY("textureSheet", "Texture sheet", GetTextureSheetPath, SetTextureSheet, I_SAVE | I_EDIT | I_VIEW)
                          //PROPERTY("vegetationTexture", "Vegetation texture", GetVegetationTexture, SetVegetationTexture, I_SAVE | I_EDIT | I_VIEW)
