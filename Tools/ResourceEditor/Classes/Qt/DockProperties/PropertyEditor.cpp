@@ -849,7 +849,7 @@ void PropertyEditor::ActionEditComponent()
 	if(curNodes.size() == 1)
 	{
         Entity *node = curNodes.at(0);
-		ActionComponentEditor editor(this);
+		ActionComponentEditor editor;
 
 		editor.SetComponent((DAVA::ActionComponent*)node->GetComponent(DAVA::Component::ACTION_COMPONENT));
 		editor.exec();

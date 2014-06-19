@@ -219,7 +219,6 @@ void ParticleEffectSystem::ImmediateEvent(Entity * entity, uint32 event)
 		if (effect->state == ParticleEffectComponent::STATE_STOPPED)
             AddToActive(effect);            
         effect->state = ParticleEffectComponent::STATE_STARTING;                    
-        effect->currRepeatsCont = 0;
     }
 	else if (event == EventSystem::STOP_PARTICLE_EFFECT)
 		RemoveFromActive(effect);
@@ -243,10 +242,8 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 		ParticleEffectComponent * effect = activeComponents[i];
         if (effect->activeLodLevel!=effect->desiredLodLevel)
             UpdateActiveLod(effect);
-        if (effect->state == ParticleEffectComponent::STATE_STARTING)  
-        {            
+        if (effect->state == ParticleEffectComponent::STATE_STARTING)        
             RunEffect(effect);
-        }
         
 		if (effect->isPaused) 
 			continue;
@@ -256,7 +253,7 @@ void ParticleEffectSystem::Process(float32 timeElapsed)
 		if (effectEnded)
 		{
 			effect->currRepeatsCont++;
-			if (((effect->repeatsCount==0)||(effect->currRepeatsCont<effect->repeatsCount))&&(effect->state != ParticleEffectComponent::STATE_STOPPING)) //0 means infinite repeats
+			if ((effect->repeatsCount==0)||(effect->currRepeatsCont<effect->repeatsCount)) //0 means infinite repeats
 			{
 				if (effect->clearOnRestart)
 					effect->ClearCurrentGroups();
