@@ -363,18 +363,13 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         scene->SetGlobalMaterial(globalMaterial);
     }
 		    
-    OptimizeScene(rootNode);	    
-
     //as we are going to take information about required attribute streams from shader - we are to wait for shader compilation
     ThreadIdJobWaiter waiter;
     waiter.Wait();
     UpdatePolygonGroupRequestedFormatRecursively(rootNode);
     serializationContext.LoadPolygonGroupData(file);
 
-    if (GetVersion() < 13)   //rebuild binormals
-    {     
-        RebuildTangentSpace(rootNode);
-    }
+    OptimizeScene(rootNode);	            
     
 	rootNode->SceneDidLoaded();
     
@@ -1252,6 +1247,11 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
     {
         TreeToAnimatedTreeConverter treeConverter;
         treeConverter.ConvertTrees(rootNode);
+    }
+
+    if (GetVersion() < PREREQUIRED_BINORMAL_SCENE_VERSION)
+    {     
+        RebuildTangentSpace(rootNode);
     }
 
     QualitySettingsSystem::Instance()->UpdateEntityAfterLoad(rootNode);
