@@ -98,22 +98,19 @@ void UIScrollBarMetadata::SetUIScrollBarDelegateName(QString value)
         activeScrollBar->SetDelegate(NULL);
         return;
     }
-    const HierarchyTreeNode::HIERARCHYTREENODESLIST childs = HierarchyTreeController::Instance()->GetActiveScreen()->GetChildNodes();
-    HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it = childs.begin();
-    for (;it!=childs.end();++it)
+    UIControl * control = HierarchyTreeController::Instance()->GetActiveScreen()->GetScreen();
+    Vector<String> controlsPath;
+    Split(name, "/", controlsPath);
+    Vector<String>::iterator it_name = controlsPath.begin();
+    for (; it_name!=controlsPath.end(); ++it_name)
     {
-        const HierarchyTreeControlNode * controlNode = static_cast<HierarchyTreeControlNode *>(*it);
-        UIControl * control = controlNode->GetUIObject()->FindByName(name);
-        if (control)
+        control = control->FindByName(*it_name,false);
+        if (NULL == control)
         {
-            UIScrollBarDelegate * delegate = dynamic_cast<UIScrollBarDelegate*>(control);
-            if (delegate)
-            {
-                activeScrollBar->SetDelegate(delegate);
-                return;
-            }
+            break;
         }
     }
+    activeScrollBar->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
 }
 
 };

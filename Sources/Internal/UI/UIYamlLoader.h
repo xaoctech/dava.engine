@@ -47,6 +47,7 @@ namespace DAVA
 */ 
 
 class UIControl;
+class UIScrollBar;
 class YamlNode;
 class UIYamlLoader : public BaseObject
 {
@@ -123,18 +124,21 @@ public:
 	void SetAssertIfCustomControlNotFound(bool value);
 
 	const FilePath & GetCurrentPath() const;
-
+    void AddScrollBarToLink(UIScrollBar* scroll);
 protected:
 	// Create the control by its type or base type.
 	UIControl* CreateControl(const String& type, const String& baseType);
     //Called after loading
     void PostLoad(UIControl * rootControl);
-    void SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*>& controls);
+    void SetScrollBarDelegates(UIControl * rootControl);
 
 	// ASSERTion flag for "Custom Control not found" state.
 	bool assertIfCustomControlNotFound;
 
 	FilePath currentPath;
+    
+    List<UIScrollBar*> scrollsToLink;
+    
 };
 };
 

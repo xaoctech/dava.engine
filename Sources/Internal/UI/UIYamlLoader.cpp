@@ -37,6 +37,7 @@
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
 #include "Render/2D/TextBlock.h"
+#include "Utils/Utils.h"
 
 namespace DAVA 
 {
@@ -456,29 +457,38 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 //	}
 //	fontMap.clear();
     
+    PostLoad(rootControl);
     
 	uint64 t2 = SystemTimer::Instance()->AbsoluteMS();
 	Logger::FrameworkDebug("Load of %s time: %lld", yamlPathname.GetAbsolutePathname().c_str(), t2 - t1);
-    PostLoad(rootControl);
+    
 }
 void UIYamlLoader::PostLoad(UIControl * rootControl)
 {
     //Find ScrollBars and set delegates
-    SetScrollBarDelegates(rootControl, rootControl->GetChildren());
+    SetScrollBarDelegates(rootControl);
 }
 
-void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl, const List<UIControl*>& controls)
+void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl)
 {
-    List<UIControl*>::const_iterator it = controls.begin();
-    for (; it!=controls.end(); ++it)
+    List<UIScrollBar*>::iterator it = scrollsToLink.begin();
+    for (; it!=scrollsToLink.end(); ++it)
     {
-        UIScrollBar * scrollBar = dynamic_cast<UIScrollBar*>(*it);
-        if (scrollBar)
+        Vector<String> controlsPath;
+        Split((*it)->GetDelegateName(), "/", controlsPath);
+        Vector<String>::iterator it_name = controlsPath.begin();
+        UIControl * control = rootControl;
+        for (; it_name!=controlsPath.end(); ++it_name)
         {
-            scrollBar->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(rootControl->FindByName( scrollBar->GetDelegateName() )));
+            control = control->FindByName(*it_name,false);
+            if (NULL == control)
+            {
+                break;
+            }
         }
-        SetScrollBarDelegates(rootControl,(*it)->GetChildren() );
+        (*it)->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
     }
+    scrollsToLink.clear();
 }
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
@@ -728,6 +738,11 @@ void UIYamlLoader::SetAssertIfCustomControlNotFound(bool value)
 const FilePath & UIYamlLoader::GetCurrentPath() const
 {
 	return currentPath;
+}
+
+void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll)
+{
+    scrollsToLink.push_back(scroll);
 }
 	
 }
