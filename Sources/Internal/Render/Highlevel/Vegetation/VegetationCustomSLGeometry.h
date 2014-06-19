@@ -204,6 +204,8 @@ private:
     uint32 PrepareResolutionId(uint32 currentResolutionId, uint32 cellX, uint32 cellY) const;
     void InitCustomGeometry(VegetationCustomGeometrySerializationData* geometryData);
     
+    void PrepareBoundingBoxes();
+    
 private:
     
     Vector<uint32> maxClusters;
