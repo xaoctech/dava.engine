@@ -639,7 +639,15 @@ void ParticleEffectSystem::PrepareEmitterParameters(Particle * particle, Particl
 		float32 curRadius = 1.0f;
 		if (group.emitter->radius)		
 			curRadius = group.emitter->radius->GetValue(group.time);		
-		float32 curAngle = PI_2 * (float32)Random::Instance()->RandFloat();
+
+        float32 angleBase = 0;
+        float32 angleVariation = PI_2;
+        if (group.emitter->emissionAngle)
+            angleBase = DegToRad(group.emitter->emissionAngle->GetValue(group.time));
+        if (group.emitter->emissionAngleVariation)
+            angleVariation = DegToRad(group.emitter->emissionAngleVariation->GetValue(group.time));
+
+		float32 curAngle = angleBase + angleVariation * (float32)Random::Instance()->RandFloat();
 		if (group.emitter->emitterType == ParticleEmitter::EMITTER_ONCIRCLE_VOLUME)		
 			curRadius *= (float32)Random::Instance()->RandFloat();		
 		float sinAngle = 0.0f;
