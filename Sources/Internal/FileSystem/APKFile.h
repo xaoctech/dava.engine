@@ -38,8 +38,7 @@
 
 namespace DAVA
 {
-
-class Mutex;
+    
 
 class APKFile: public DynamicMemoryFile
 {
@@ -54,7 +53,6 @@ private:
 
     static APKFile * CreateFromData(const FilePath &filePath, const uint8 * data, int32 dataSize, uint32 attributes);
 
-    static Mutex mutex;
 };
 
 

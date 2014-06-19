@@ -553,12 +553,6 @@ bool NvttHelper::DecompressAtc(const nvtt::Decompressor & dec, DDSInfo info, Pix
 
 bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
 {
-#ifdef __DAVAENGINE_IPHONE__
-    
-    DVASSERT_MSG(false, "No necessary write compressed files on mobile");
-    return false;
-    
-#else
 	if(!((compressionFormat >= FORMAT_DXT1 && compressionFormat <= FORMAT_DXT5NM)||(compressionFormat == FORMAT_RGBA8888)))
 	{
 		Logger::Error("[LibDdsHelper::WriteDxtFile] Wrong copression format (%d).", compressionFormat);
@@ -632,7 +626,6 @@ bool LibDdsHelper::WriteDxtFile(const FilePath & fileNameOriginal, const Vector<
     }
     
 	return ret;
-#endif //__DAVAENGINE_IPHONE__
 }
 
 bool LibDdsHelper::WriteAtcFile(const FilePath & fileNameOriginal, const Vector<Image *> &imageSet, PixelFormat compressionFormat, bool isCubeMap)
