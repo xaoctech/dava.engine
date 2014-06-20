@@ -139,10 +139,10 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	qApp->installEventFilter(this);
 
+	SetupDocks();
 	SetupMainMenu();
 	SetupToolBars();
 	SetupStatusBar();
-	SetupDocks();
 	SetupActions();
 	SetupShortCuts();
 
@@ -434,7 +434,7 @@ void QtMainWindow::SetupMainMenu()
 	ui->menuDockWindows->addAction(ui->dockLODEditor->toggleViewAction());
 	ui->menuDockWindows->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
 
-    registerDockWidgetClass("RunActionEventWidget", "Run Events");
+    ui->menuDockWindows->addAction(dockActionEvent->toggleViewAction());
 
 	InitRecent();
 }
@@ -572,6 +572,13 @@ void QtMainWindow::SetupDocks()
 	QObject::connect(this, SIGNAL(SpritesReloaded()), ui->sceneInfo , SLOT(SpritesReloaded()));
     
     ui->libraryWidget->SetupSignals();
+
+    // Run Action Event dock
+    {
+        dockActionEvent = new QDockWidget("Run Action Event", this);
+        dockActionEvent->setWidget(new RunActionEventWidget());
+        addDockWidget(Qt::RightDockWidgetArea, dockActionEvent);
+    }
     
 	ui->dockProperties->Init();
 }
@@ -2904,85 +2911,4 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
             ++it;
         }
     }
-}
-
-
-void QtMainWindow::registerDockWidgetClass(const QString& key, const QString& title)
-{
-    DVASSERT(!key.isEmpty());
-    DVASSERT(!title.isEmpty());
-
-    QAction *dockAction = ui->menuDockWindows->addAction(title);
-    dockAction->setCheckable(true);
-    dockActions[dockAction] = key;
-
-    connect( dockAction, SIGNAL( toggled( bool ) ), SLOT( OnDockShowHide( bool ) ) );
-}
-
-void QtMainWindow::OnDockShowHide(bool ckecked)
-{
-    QAction *dockAction = qobject_cast<QAction *>( sender() );
-    ActionMap::const_iterator it = dockActions.constFind(dockAction);
-    if (it == dockActions.constEnd())
-        return ;
-
-    const QString key = it.value();
-    
-    if (ckecked)
-    {
-        DockWidgetMap::const_iterator it = dockWidgets.constFind(key);
-        if ( it != dockWidgets.constEnd() && it.value() != NULL )
-        {
-            it.value()->show();
-            return ;
-        }
-
-        const int metaTypeId = QMetaType::type(key.toStdString().c_str());
-        DVASSERT(metaTypeId);
-        QObject *p = static_cast<QObject *>(QMetaType::construct(metaTypeId));
-        QWidget *w = qobject_cast<QWidget *>(p);
-        DVASSERT(p && w);
-        createDockWidget(key, w);
-    }
-    else
-    {
-        destroyDockWidget(key);
-    }
-}
-
-void QtMainWindow::createDockWidget(const QString& key, QWidget *w)
-{
-    DVASSERT(!key.isEmpty());
-
-    DockWidgetMap::iterator it = dockWidgets.find(key);
-    if (it != dockWidgets.end())
-    {
-        delete it.value();
-    }
-    QDockWidget *dock = createDockWidgetProxy(w);
-    dockWidgets[key] = dock;
-    addDockWidget(Qt::AllDockWidgetAreas, dock);
-}
-
-void QtMainWindow::destroyDockWidget(const QString& key)
-{
-    DVASSERT(!key.isEmpty());
-
-    DockWidgetMap::iterator it = dockWidgets.find(key);
-    if (it != dockWidgets.end())
-    {
-        it.value()->deleteLater();
-        dockWidgets.erase(it);
-    }
-}
-
-QDockWidget *QtMainWindow::createDockWidgetProxy(QWidget *w)
-{
-    DVASSERT(w);
-
-    QDockWidget *dock = new QDockWidget( w->windowTitle(), this );
-    dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
-    dock->setWidget(w);
-
-    return dock;
 }
