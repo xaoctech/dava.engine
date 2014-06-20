@@ -46,6 +46,7 @@
 
 namespace DAVA
 {
+
 #if defined(__DAVAENGINE_OPENGL__)
 GLuint Shader::activeProgram = 0;
 
@@ -1228,6 +1229,18 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
+            case PARAM_BOUNDING_BOX_SIZE:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_LOCAL_BOUNDING_BOX);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(PARAM_LOCAL_BOUNDING_BOX);
+                    Vector3 param = objectBox->GetSize();
+                    SetUniformValueByUniform(currentUniform, param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
             case PARAM_SPEED_TREE_LEAFS_OSCILLATION:
             case PARAM_SPEED_TREE_TRUNK_OSCILLATION:
             {
@@ -1236,6 +1249,17 @@ void Shader::BindDynamicParameters()
                 {
                     Vector2 * param = (Vector2*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
                     SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_SPHERICAL_HARMONICS:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_SPHERICAL_HARMONICS);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    float32 * param = (float32*)RenderManager::GetDynamicParam(PARAM_SPHERICAL_HARMONICS);
+                    SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT, currentUniform->size * 3, param);
                     currentUniform->updateSemantic = _updateSemantic;
                 }
                 break;

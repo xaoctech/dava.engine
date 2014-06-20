@@ -34,11 +34,15 @@
 namespace DAVA 
 {
     
+#define SPHERICAL_HARMONICS_BASIS_MAX_SIZE 9
+
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
 SpeedTreeObject::SpeedTreeObject()
 {
     type = TYPE_SPEED_TREE;
+
+    sphericalHarmonics.assign(SPHERICAL_HARMONICS_BASIS_MAX_SIZE, Vector3());
 }
     
 SpeedTreeObject::~SpeedTreeObject()
@@ -63,10 +67,24 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationPar
     leafOscillation = leafOscillationParams;
 }
 
+void SpeedTreeObject::SetSphericalHarmonics(const Vector<Vector3> & coeffs)
+{
+    DVASSERT(coeffs.size() >= SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
+    sphericalHarmonics = coeffs;
+}
+
+const Vector<Vector3> & SpeedTreeObject::GetSphericalHarmonics() const
+{
+    return sphericalHarmonics;
+}
+
 void SpeedTreeObject::BindDynamicParams()
 {
     RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, UPDATE_SEMANTIC_ALWAYS);
     RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, UPDATE_SEMANTIC_ALWAYS);
+
+    DVASSERT(sphericalHarmonics.size() >= SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
+    RenderManager::SetDynamicParam(PARAM_SPHERICAL_HARMONICS, &sphericalHarmonics[0], UPDATE_SEMANTIC_ALWAYS);
 }
 
 void SpeedTreeObject::UpdateAnimationFlag(int32 maxAnimatedLod)
@@ -89,7 +107,31 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
 
     RenderObject::Clone(newObject);
     
+    ((SpeedTreeObject *)newObject)->SetSphericalHarmonics(GetSphericalHarmonics());
+
     return newObject;
+}
+
+void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    RenderObject::Save(archive, serializationContext);
+
+    int32 shCount = sphericalHarmonics.size();
+    if(shCount)
+    {
+        archive->SetInt32("sto.SHBasisCount", shCount);
+        archive->SetByteArray("sto.SHCoeff", (uint8 *)&sphericalHarmonics[0], sizeof(Vector3) * shCount);
+    }
+}
+
+void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+    RenderObject::Load(archive, serializationContext);
+
+    int32 shCount = archive->GetInt32("sto.SHBasisCount");
+    Vector3 * sphericalArray = (Vector3 *)archive->GetByteArray("sto.SHCoeff");
+    if(sphericalArray && shCount)
+        sphericalHarmonics.assign(sphericalArray, sphericalArray + shCount);
 }
 
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)

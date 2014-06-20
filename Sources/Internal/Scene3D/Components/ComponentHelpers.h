@@ -55,6 +55,7 @@ class RenderComponent;
 class SpeedTreeComponent;
 class WindComponent;
 class WaveComponent;
+class SpeedTreeObject;
 
 class VegetationRenderObject;
 
@@ -65,6 +66,7 @@ RenderComponent * GetRenderComponent(const Entity *fromEntity);
 RenderObject * GetRenderObject(const Entity * fromEntity);
 SkyboxRenderObject * GetSkybox(const Entity * fromEntity);
 VegetationRenderObject * GetVegetation(const Entity * fromEntity);
+SpeedTreeObject * GetSpeedTreeObject(const Entity * fromEntity);
 
 Light *GetLight(Entity * fromEntity);
 LightComponent *GetLightComponent(Entity * fromEntity);

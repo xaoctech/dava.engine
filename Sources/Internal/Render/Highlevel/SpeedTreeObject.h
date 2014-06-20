@@ -47,10 +47,15 @@ public:
 
     virtual void RecalcBoundingBox();
     virtual RenderObject * Clone(RenderObject *newObject);
+    virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
+    virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
 
     static bool IsTreeLeafBatch(RenderBatch * batch);
 
     void BindDynamicParams();
+
+    void SetSphericalHarmonics(const Vector<Vector3> & coeffs);
+    const Vector<Vector3> & GetSphericalHarmonics() const;
 
 protected:
     static const FastName FLAG_WIND_ANIMATION;
@@ -62,6 +67,8 @@ protected:
 
     Vector2 trunkOscillation;
     Vector2 leafOscillation;
+
+    Vector<Vector3> sphericalHarmonics;
 
 public:
 
