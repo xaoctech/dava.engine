@@ -65,7 +65,7 @@ UIStaticText::~UIStaticText()
 }
 
 
-UIControl *UIStaticText::Clone()
+UIStaticText *UIStaticText::Clone()
 {
     UIStaticText *t = new UIStaticText(GetRect());
     t->CopyDataFrom(this);
@@ -88,11 +88,6 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
     SafeRelease(textBg);
     shadowBg = t->shadowBg->Clone();
     textBg = t->textBg->Clone();
-}
-
-UIStaticText *UIStaticText::CloneStaticText()
-{
-    return (UIStaticText *)Clone();
 }
 
 void UIStaticText::SetText(const WideString& _string, const Vector2 &requestedTextRectSize/* = Vector2(0,0)*/)
@@ -221,12 +216,12 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 }
 
 
-const Vector<WideString> & UIStaticText::GetMultilineStrings()
+const Vector<WideString> & UIStaticText::GetMultilineStrings() const
 {
     return textBlock->GetMultilineStrings();
 }
 
-const WideString & UIStaticText::GetText()
+const WideString & UIStaticText::GetText() const
 {
     return textBlock->GetText();
 }
@@ -350,8 +345,11 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     }
 
     //Text
-    nodeValue->SetWideString(GetText());
-    node->Set("text", nodeValue);
+    const WideString &text = GetText();
+    if (baseControl->GetText() != text)
+    {
+        node->Set("text", text);
+    }
     //Multiline
     if (baseControl->textBlock->GetMultiline() != this->textBlock->GetMultiline())
     {

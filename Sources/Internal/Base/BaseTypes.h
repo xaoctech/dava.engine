@@ -344,6 +344,15 @@ enum eAlign
 #pragma message("WARNING: You need to implement DAVA_DEPRECATED for this compiler")
 #define DAVA_DEPRECATED(func) func
 #endif
+
+#ifdef __GNUC__
+#define DAVA_DEPRECATED_MSG(func, msg) func __attribute__ ((deprecated))
+#elif defined(_MSC_VER)
+#define DAVA_DEPRECATED_MSG(func, msg) __declspec(deprecated(msg)) func
+#else
+#pragma message("WARNING: You need to implement DAVA_DEPRECATED_MSG for this compiler")
+#define DAVA_DEPRECATED_MSG(func) func
+#endif
     
 enum eErrorCode
 {

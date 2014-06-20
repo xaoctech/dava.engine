@@ -77,14 +77,13 @@ public:
     void PrepareSprite();
 
 
-    const WideString & GetText();
-    const Vector<WideString> & GetMultilineStrings();
+    const WideString & GetText() const;
+    const Vector<WideString> & GetMultilineStrings() const;
 
-    Font * GetFont() { return textBlock->GetFont(); }
+    Font * GetFont() const { return textBlock->GetFont(); }
 
-    virtual UIControl *Clone();
+    virtual UIStaticText *Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
-    UIStaticText *CloneStaticText();
     TextBlock * GetTextBlock() { return textBlock; }
     const Color &GetTextColor() const;
     const Color &GetShadowColor() const;

@@ -79,13 +79,8 @@ namespace DAVA
     {
         return currentIndex;	
     }
-    
-    UIListCell *UIListCell::CloneListCell()
-	{
-		return (UIListCell *)Clone();
-	}
-    
-	UIControl *UIListCell::Clone()
+
+	UIListCell *UIListCell::Clone()
 	{
 		UIListCell *c = new UIListCell(GetRect(),identifier);
 		c->CopyDataFrom(this);
