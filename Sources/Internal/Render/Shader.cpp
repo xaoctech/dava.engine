@@ -62,7 +62,7 @@ Shader::Shader()
     attributeNames = 0;
     activeAttributes = 0;
     activeUniforms = 0;
-    activeAttributesMask = 0;
+    requiredVertexFormat = 0;
     
     //uniforms = 0;
     uniformData = NULL;
@@ -280,7 +280,7 @@ Shader::~Shader()
     ReleaseShaderData();
 }
 
-void Shader::ReleaseShaderData()
+void Shader::ReleaseShaderData(bool deleteShader/* = true*/)
 {
     SafeDeleteArray(attributeNames);
     //SafeDeleteArray(uniforms);
@@ -290,7 +290,8 @@ void Shader::ReleaseShaderData()
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
     
-    DeleteShaders();
+    if (deleteShader)
+        DeleteShaders();
 
     activeAttributes = 0;
     activeUniforms = 0;
@@ -352,7 +353,9 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
     char attributeName[512];
     DVASSERT(attributeNames == NULL);
     attributeNames = new FastName[activeAttributes];
-    activeAttributesMask = 0;
+
+    requiredVertexFormat = 0;
+
     for (int32 k = 0; k < activeAttributes; ++k)
     {
         GLint size;
@@ -365,11 +368,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
         {
             int32 attributeLocationIndex = glGetAttribLocation(program, attributeName);
             vertexFormatAttribIndeces[flagIndex] = attributeLocationIndex;
-            
-            if(attributeLocationIndex != -1)
-            {
-                activeAttributesMask |= (1 << flagIndex);
-            }
+            requiredVertexFormat |= 1<<flagIndex;
         }
     }
     
@@ -1386,6 +1385,8 @@ void Shader::Lost()
     program = 0;
     activeAttributes = 0;
     activeUniforms = 0;
+    
+    ReleaseShaderData(false);
 }
 
 void Shader::Invalidate()
