@@ -2062,7 +2062,7 @@ void QtMainWindow::OnBeastAndSave()
 		return;
 	}
 
-    RunBeast(dlg.GetPath());
+    RunBeast(dlg.GetPath(), dlg.GetMode());
 	SaveScene(scene);
 
     scene->ClearAllCommands();
@@ -2114,7 +2114,7 @@ void QtMainWindow::OnCameraLookFromTop()
 	}
 }
 
-void QtMainWindow::RunBeast(const QString& outputPath)
+void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode)
 {
 #if defined (__DAVAENGINE_BEAST__)
 
@@ -2122,7 +2122,7 @@ void QtMainWindow::RunBeast(const QString& outputPath)
 	if(!scene) return;
 
     const DAVA::FilePath path = outputPath.toStdString();
-    scene->Exec(new BeastAction(scene, path, beastWaitDialog));
+    scene->Exec(new BeastAction(scene, path, mode, beastWaitDialog));
 
 	OnReloadTextures();
 
