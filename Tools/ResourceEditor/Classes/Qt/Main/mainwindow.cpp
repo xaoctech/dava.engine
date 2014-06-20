@@ -30,6 +30,15 @@
 
 #include "DAVAEngine.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QColorDialog>
+#include <QShortcut>
+#include <QKeySequence>
+#include <QMetaObject>
+#include <QMetaType>
+
 #include "mainwindow.h"
 #include "QtUtils.h"
 #include "Project/ProjectManager.h"
@@ -92,13 +101,6 @@
 #include "Tools/HangingObjectsHeight/HangingObjectsHeight.h"
 #include "Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
 
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDesktopServices>
-#include <QColorDialog>
-#include <QShortcut>
-#include <QKeySequence>
-
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/MaterialSystem.h"
@@ -113,6 +115,7 @@
 #include "Render/Highlevel/VegetationRenderObject.h"
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
+#include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -421,15 +424,17 @@ void QtMainWindow::SetupTitle()
 
 void QtMainWindow::SetupMainMenu()
 {
-	ui->menuView->addAction(ui->dockSceneInfo->toggleViewAction());
-	ui->menuView->addAction(ui->dockLibrary->toggleViewAction());
-	ui->menuView->addAction(ui->dockProperties->toggleViewAction());
-	ui->menuView->addAction(ui->dockParticleEditor->toggleViewAction());
-	ui->menuView->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
-	ui->menuView->addAction(ui->dockSceneTree->toggleViewAction());
-	ui->menuView->addAction(ui->dockConsole->toggleViewAction());
-	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
-	ui->menuView->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
+ 	ui->menuDockWindows->addAction(ui->dockSceneInfo->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockLibrary->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockProperties->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockParticleEditor->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockSceneTree->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockConsole->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockLODEditor->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
+
+    registerDockWidgetClass("RunActionEventWidget", "Run Events");
 
 	InitRecent();
 }
@@ -566,7 +571,6 @@ void QtMainWindow::SetupDocks()
 	QObject::connect(this, SIGNAL(TexturesReloaded()), ui->sceneInfo , SLOT(TexturesReloaded()));
 	QObject::connect(this, SIGNAL(SpritesReloaded()), ui->sceneInfo , SLOT(SpritesReloaded()));
     
-
     ui->libraryWidget->SetupSignals();
     
 	ui->dockProperties->Init();
@@ -2902,3 +2906,83 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
     }
 }
 
+
+void QtMainWindow::registerDockWidgetClass(const QString& key, const QString& title)
+{
+    DVASSERT(!key.isEmpty());
+    DVASSERT(!title.isEmpty());
+
+    QAction *dockAction = ui->menuDockWindows->addAction(title);
+    dockAction->setCheckable(true);
+    dockActions[dockAction] = key;
+
+    connect( dockAction, SIGNAL( toggled( bool ) ), SLOT( OnDockShowHide( bool ) ) );
+}
+
+void QtMainWindow::OnDockShowHide(bool ckecked)
+{
+    QAction *dockAction = qobject_cast<QAction *>( sender() );
+    ActionMap::const_iterator it = dockActions.constFind(dockAction);
+    if (it == dockActions.constEnd())
+        return ;
+
+    const QString key = it.value();
+    
+    if (ckecked)
+    {
+        DockWidgetMap::const_iterator it = dockWidgets.constFind(key);
+        if ( it != dockWidgets.constEnd() && it.value() != NULL )
+        {
+            it.value()->show();
+            return ;
+        }
+
+        const int metaTypeId = QMetaType::type(key.toStdString().c_str());
+        DVASSERT(metaTypeId);
+        QObject *p = static_cast<QObject *>(QMetaType::construct(metaTypeId));
+        QWidget *w = qobject_cast<QWidget *>(p);
+        DVASSERT(p && w);
+        createDockWidget(key, w);
+    }
+    else
+    {
+        destroyDockWidget(key);
+    }
+}
+
+void QtMainWindow::createDockWidget(const QString& key, QWidget *w)
+{
+    DVASSERT(!key.isEmpty());
+
+    DockWidgetMap::iterator it = dockWidgets.find(key);
+    if (it != dockWidgets.end())
+    {
+        delete it.value();
+    }
+    QDockWidget *dock = createDockWidgetProxy(w);
+    dockWidgets[key] = dock;
+    addDockWidget(Qt::AllDockWidgetAreas, dock);
+}
+
+void QtMainWindow::destroyDockWidget(const QString& key)
+{
+    DVASSERT(!key.isEmpty());
+
+    DockWidgetMap::iterator it = dockWidgets.find(key);
+    if (it != dockWidgets.end())
+    {
+        it.value()->deleteLater();
+        dockWidgets.erase(it);
+    }
+}
+
+QDockWidget *QtMainWindow::createDockWidgetProxy(QWidget *w)
+{
+    DVASSERT(w);
+
+    QDockWidget *dock = new QDockWidget( w->windowTitle(), this );
+    dock->setFeatures( QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable );
+    dock->setWidget(w);
+
+    return dock;
+}
