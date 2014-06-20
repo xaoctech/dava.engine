@@ -307,7 +307,7 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                     // Do Render
                     
                     RenderManager::Instance()->SetRenderTarget(renderTargetSprite);
-                    RenderManager::Instance()->SetViewport(Rect(0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT), false);
+                    RenderManager::Instance()->SetViewport(Rect(0, 0, RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT), true);
                     
                     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
                     RenderManager::Instance()->FlushState();
