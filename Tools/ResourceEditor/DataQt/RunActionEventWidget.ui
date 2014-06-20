@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RunActionWidget</class>
- <widget class="QWidget" name="RunActionWidget">
+ <class>RunActionEventWidget</class>
+ <widget class="QWidget" name="RunActionEventWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

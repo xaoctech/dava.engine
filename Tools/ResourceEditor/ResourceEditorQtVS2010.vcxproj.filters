@@ -220,11 +220,8 @@
     <Filter Include="Classes\Qt\BeastDialog">
       <UniqueIdentifier>{2dc3cc91-3dd3-49c3-b36a-f67af31c019c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\RunActionWidget">
+    <Filter Include="Classes\Qt\RunActionEventWidget">
       <UniqueIdentifier>{71777903-26d3-481e-8719-e21e1510ee2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Classes\Qt\Interfaces">
-      <UniqueIdentifier>{a848d1a3-ff65-4280-ac61-f9da216e99fa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1980,10 +1977,10 @@
     <ClCompile Include="_GeneratedQt\BeastDialog\BeastDialog_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\RunActionWidget\RunActionWidget.cpp">
-      <Filter>Classes\Qt\RunActionWidget</Filter>
+    <ClCompile Include="Classes\Qt\RunActionEventWidget\RunActionEventWidget.cpp">
+      <Filter>Classes\Qt\RunActionEventWidget</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\RunActionWidget\RunActionWidget_moc.cpp">
+    <ClCompile Include="_GeneratedQt\RunActionEventWidget\RunActionEventWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3491,14 +3488,11 @@
     <ClInclude Include="Classes\Commands2\CopyLastLODCommand.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\RunActionWidget\RunActionWidget.h">
-      <Filter>Classes\Qt\RunActionWidget</Filter>
+    <ClInclude Include="Classes\Qt\RunActionEventWidget\RunActionEventWidget.h">
+      <Filter>Classes\Qt\RunActionEventWidget</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Interfaces\IBase.h">
-      <Filter>Classes\Qt\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Qt\Interfaces\ISceneWatcher.h">
-      <Filter>Classes\Qt\Interfaces</Filter>
+    <ClInclude Include="_GeneratedQt\ui_RunActionEventWidget.h">
+      <Filter>QtGenerated</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3562,7 +3556,7 @@
     <None Include="DataQt\BeastDialog.ui">
       <Filter>QtData</Filter>
     </None>
-    <None Include="DataQt\RunActionWidget.ui">
+    <None Include="DataQt\RunActionEventWidget.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>

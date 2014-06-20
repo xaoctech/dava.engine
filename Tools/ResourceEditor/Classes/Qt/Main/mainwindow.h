@@ -32,6 +32,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDockWidget>
+#include <QPointer>
+#include <QMap>
+
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
@@ -47,12 +51,21 @@ class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
-class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
+
+class QtMainWindow
+    : public QMainWindow
+    , public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
 
 protected:
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
+
+signals:
+    void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
 
 public:
 	explicit QtMainWindow(QWidget *parent = 0);
@@ -78,12 +91,6 @@ public:
 	bool BeastWaitCanceled();
 
 	void EnableGlobalTimeout(bool enable);
-
-signals:
-    void GlobalInvalidateTimeout();
-
-    void TexturesReloaded();
-    void SpritesReloaded();
     
 // qt actions slots
 public slots:
@@ -282,7 +289,38 @@ private:
 
     //Need for any debug functionality
     DeveloperTools *developerTools;
+
+// Dock widgets managment
+public:
+    template< typename T >
+    T *getDockWidget(const QString& key) const;
+
+private:
+    typedef QMap< QString, QPointer< QDockWidget > > DockWidgetMap;
+    DockWidgetMap dockWidgets;
+    typedef QMap< QAction *, QString > ActionMap;
+    ActionMap dockActions;
+
+    void registerDockWidgetClass(const QString& key, const QString& title);
+    void createDockWidget(const QString& key, QWidget *w);
+    void destroyDockWidget(const QString& key);
+    QDockWidget *createDockWidgetProxy(QWidget *w);
+
+private slots:
+    void OnDockShowHide(bool ckecked);
 };
+
+
+template< typename T >
+T *QtMainWindow::getDockWidget(const QString& key) const
+{
+    DockWidgetMap::const_iterator it = dockWidgets.find(key);
+    if (it == dockWidgets.end())
+        return NULL;
+
+    return qobject_cast<T *>(it.value());
+}
+
 
 
 #endif // MAINWINDOW_H
