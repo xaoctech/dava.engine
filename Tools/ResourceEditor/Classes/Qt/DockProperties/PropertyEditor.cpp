@@ -854,7 +854,9 @@ void PropertyEditor::ActionEditComponent()
 		editor.SetComponent((DAVA::ActionComponent*)node->GetComponent(DAVA::Component::ACTION_COMPONENT));
 		editor.exec();
 
-		ResetProperties();
+        SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+        curScene->selectionSystem->SetSelection(node);
+		//ResetProperties();
 	}	
 }
 

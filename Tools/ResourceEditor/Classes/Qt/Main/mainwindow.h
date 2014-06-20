@@ -34,7 +34,6 @@
 #include <QMainWindow>
 #include <QDockWidget>
 #include <QPointer>
-#include <QMap>
 
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
@@ -249,6 +248,7 @@ private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
 	QtWaitDialog *beastWaitDialog;
+    QPointer<QDockWidget> dockActionEvent;
 
 	QtPosSaver posSaver;
 	bool globalInvalidate;
@@ -289,38 +289,7 @@ private:
 
     //Need for any debug functionality
     DeveloperTools *developerTools;
-
-// Dock widgets managment
-public:
-    template< typename T >
-    T *getDockWidget(const QString& key) const;
-
-private:
-    typedef QMap< QString, QPointer< QDockWidget > > DockWidgetMap;
-    DockWidgetMap dockWidgets;
-    typedef QMap< QAction *, QString > ActionMap;
-    ActionMap dockActions;
-
-    void registerDockWidgetClass(const QString& key, const QString& title);
-    void createDockWidget(const QString& key, QWidget *w);
-    void destroyDockWidget(const QString& key);
-    QDockWidget *createDockWidgetProxy(QWidget *w);
-
-private slots:
-    void OnDockShowHide(bool ckecked);
 };
-
-
-template< typename T >
-T *QtMainWindow::getDockWidget(const QString& key) const
-{
-    DockWidgetMap::const_iterator it = dockWidgets.find(key);
-    if (it == dockWidgets.end())
-        return NULL;
-
-    return qobject_cast<T *>(it.value());
-}
-
 
 
 #endif // MAINWINDOW_H
