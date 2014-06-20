@@ -276,16 +276,10 @@ public:
 
     virtual void Input(UIEvent *currentInput);
 
-    virtual void SystemDraw(const UIGeometricData &geometricData);
+    virtual void Draw(const UIGeometricData &geometricData);
 
-    virtual UIControl *Clone();
+    virtual UIButton *Clone();
     virtual void CopyDataFrom(UIControl *srcControl);
-    /**
-     \brief Creates the absoulutely identic copy of the button.
-     \returns copy of the control
-     */
-    UIButton *CloneButton();
-
 
     virtual void SystemUpdate(float32 timeElapsed);// Internal method used by ControlSystem
 
@@ -321,19 +315,24 @@ protected:
 
     int32 oldState;
     UIControlBackground *selectedBackground;
-    UIStaticText	*selectedText;
+    UIStaticText    *selectedTextBlock;
 
     virtual ~UIButton();
-    eButtonDrawState GetDrawStateForControlState(int32 state);
+    static eButtonDrawState DrawStateToControlState(int32 state);
+    static eControlState ControlStateToDrawState(eButtonDrawState state);
+    static const String &DrawStatePostfix(eButtonDrawState state);
 private:
+    friend class UIButtonMetadata;
+    eButtonDrawState BackgroundIndexForState(eButtonDrawState buttonState) const;
+    UIControlBackground *GetBackground(int32 state) const;
+    UIControlBackground *GetActualBackground(int32 state) const;
+    UIControlBackground *GetOrCreateBackgroundForState(eButtonDrawState buttonState);
 
-    int32 BackgroundIndexForState(eButtonDrawState buttonState);
-    UIControlBackground *GetActualBackground(int32 state);
-    UIControlBackground *CreateBackForState(eButtonDrawState buttonState);
+    eButtonDrawState TextIndexForState(eButtonDrawState buttonState) const;
+    UIStaticText *GetTextBlock(int32 state) const;
+    UIStaticText *GetActualTextBlock(int32 state) const;
+    UIStaticText *GetOrCreateTextBlockForState(eButtonDrawState buttonState);
 
-    virtual UIStaticText *CreateTextForState(eButtonDrawState buttonState);
-    UIStaticText *GetActualText(int32 state);
-    int32 TextIndexForState(eButtonDrawState buttonState);
     void UpdateStateTextControlSize();
 };
 };

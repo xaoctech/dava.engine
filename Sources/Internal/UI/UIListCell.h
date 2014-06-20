@@ -65,13 +65,8 @@ namespace DAVA
 		 */
 		int32 GetIndex();
         
-        virtual UIControl *Clone();
+        virtual UIListCell *Clone();
         void CopyDataFrom(UIControl *srcControl);
-        /**
-         \brief Creates the absoulutely identic copy of the list cell.
-         \returns copy of the control
-         */
-        UIListCell* CloneListCell();
         
         virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
         virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
