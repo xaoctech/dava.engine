@@ -292,9 +292,12 @@ const FastName DYNAMIC_PARAM_NAMES[] =
 
         FastName("localBoundingBox"),
         FastName("worldViewObjectCenter"),
+        FastName("boundingBoxSize"),
 
         FastName("trunkOscillationParams"),
         FastName("leafOscillationParams"),
+
+        FastName("sphericalHarmonics[0]"),
 
         FastName("rtSize"),
         FastName("rtPixelSize"),

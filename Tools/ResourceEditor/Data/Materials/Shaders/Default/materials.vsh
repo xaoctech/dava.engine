@@ -108,16 +108,18 @@ uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
 
 #if defined(SPHERICAL_LIT)
-uniform lowp vec4 sphericalColorDark;
-uniform lowp vec4 sphericalColorLight;
 uniform vec3 worldViewObjectCenter;
-uniform vec4 lightPosition0;
-uniform mat3 sphericalHarmonics;
-uniform mat3 sphericalHarmonics2;
-uniform mat3 sphericalHarmonics3;
-uniform mat4 invWorldViewMatrix;
-uniform mat3 worldViewInvTransposeMatrix;
 uniform mat4 invViewMatrix;
+uniform vec3 boundingBoxSize;
+
+	#if defined(SPHERICAL_HARMONICS_9)
+		uniform float sphericalHarmonics[27];
+	#elif defined(SPHERICAL_HARMONICS_4)
+		uniform float sphericalHarmonics[12];
+	#else
+		uniform float sphericalHarmonics[3];
+	#endif
+	
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -271,6 +273,8 @@ void main()
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
 
+    vec4 eyeCoordsPosition4;
+    
 #if defined (CUT_LEAF)
     vec4 tangentInCameraSpace = worldViewMatrix * vec4(inPivot, 1.0);
     if (tangentInCameraSpace.z < -cutDistance)
@@ -303,7 +307,7 @@ void main()
 
 #endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
 
-    vec4 eyeCoordsPosition4 = vec4(worldScale * offset, 0.0) + worldViewMatrix * vec4(pivot, inPosition.w);
+    eyeCoordsPosition4 = vec4(worldScale * offset, 0.0) + worldViewMatrix * vec4(pivot, inPosition.w);
     gl_Position = projMatrix * eyeCoordsPosition4;
     
 #if defined (CUT_LEAF)   
@@ -551,41 +555,40 @@ void main()
     
 #if defined(SPHERICAL_LIT)
 
-//old fake
-//	vec3 normal = normalize(eyeCoordsPosition - worldViewObjectCenter);
-//	vec3 toLightDir = normalize(lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w);
-//	float sphericalLightFactor = 0.5 + dot(toLightDir, normal) * 0.5;
-//	#if defined(VERTEX_COLOR)
-//		varVertexColor *= mix(sphericalColorDark, sphericalColorLight, sphericalLightFactor);
-//	#else 
-//		varVertexColor = mix(sphericalColorDark, sphericalColorLight, sphericalLightFactor);
-//	#endif
+#define Y00	    (0.282094)                                              // (1.0 / 2.0) * sqrt(1.0 / PI) * PI / PI
+#define Y1_1(n) (0.325734 * (n.y))                                      // (1.0 / 2.0) * sqrt(3.0 / PI) * (n.y) * 2.094395 / PI
+#define Y10(n)  (0.325734 * (n.z))                                      // (1.0 / 2.0) * sqrt(3.0 / PI) * (n.z) * 2.094395 / PI
+#define Y11(n)  (0.325734 * (n.x))                                      // (1.0 / 2.0) * sqrt(3.0 / PI) * (n.x) * 2.094395 / PI
+#define Y2_2(n) (0.273136 * (n.y * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398 / PI
+#define Y2_1(n) (0.273136 * (n.y * n.z))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398 / PI
+#define Y20(n)  (0.078847 * (2.0 * n.z * n.z - n.x * n.x - n.y * n.y))  // (1.0 / 4.0) * sqrt(5.0 / PI) * ((2.0 * n.z * n.z - n.x * n.x - n.y * n.y)) * 0.785398 / PI
+#define Y21(n)  (0.273136 * (n.z * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398 / PI
+#define Y22(n)  (0.136568 * (n.x * n.x - n.y * n.y))                    // (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398 / PI
+
+	vec3 sphericalLightFactor = Y00 * vec3(sphericalHarmonics[0], sphericalHarmonics[1], sphericalHarmonics[2]);
 	
-//new fake
-#define PI 3.14159265358979
-
-#define Y00(n) (1.0 / 2.0) * sqrt(1.0 / PI) * PI
-#define Y1_1(n) (1.0 / 2.0) * sqrt(3.0 / PI) * (n.y) * 2.094395
-#define Y10(n) (1.0 / 2.0) * sqrt(3.0 / PI) * (n.z) * 2.094395
-#define Y11(n) (1.0 / 2.0) * sqrt(3.0 / PI) * (n.x) * 2.094395
-#define Y2_2(n) (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398
-#define Y2_1(n) (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398
-#define Y20(n) (1.0 / 4.0) * sqrt(5.0 / PI) * ((2.0 * n.z * n.z - n.x * n.x - n.y * n.y)) * 0.785398
-#define Y21(n) (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398
-#define Y22(n) (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398
-
+#if defined(SPHERICAL_HARMONICS_4) || defined(SPHERICAL_HARMONICS_9)
 	vec3 normal = vec3(invViewMatrix * vec4((eyeCoordsPosition - worldViewObjectCenter), 0.0));
-	//normal.z /= 1.5;
+	normal /= boundingBoxSize;
 	vec3 n = normalize(normal);
-	
-	vec3 sphericalLightFactor = Y00(n) * sphericalHarmonics[0] + Y1_1(n) * sphericalHarmonics[1] + Y10(n) * sphericalHarmonics[2];
-	sphericalLightFactor += Y11(n) * sphericalHarmonics2[0];// + Y2_2(n) * sphericalHarmonics2[1] + Y2_1(n) * sphericalHarmonics2[2];
-	//sphericalLightFactor += Y20(n) * sphericalHarmonics3[0] + Y21(n) * sphericalHarmonics3[1] + Y22(n) * sphericalHarmonics3[2];
+
+	sphericalLightFactor += Y1_1(n) * vec3(sphericalHarmonics[3], sphericalHarmonics[4], sphericalHarmonics[5]);
+	sphericalLightFactor += Y10(n) * vec3(sphericalHarmonics[6], sphericalHarmonics[7], sphericalHarmonics[8]);
+	sphericalLightFactor += Y11(n) * vec3(sphericalHarmonics[9], sphericalHarmonics[10], sphericalHarmonics[11]);
+#endif
+
+#if defined(SPHERICAL_HARMONICS_9)
+	sphericalLightFactor += Y2_2(n) * vec3(sphericalHarmonics[12], sphericalHarmonics[13], sphericalHarmonics[14]);
+	sphericalLightFactor += Y2_1(n) * vec3(sphericalHarmonics[15], sphericalHarmonics[16], sphericalHarmonics[17]);
+	sphericalLightFactor += Y20(n) * vec3(sphericalHarmonics[18], sphericalHarmonics[19], sphericalHarmonics[20]);
+	sphericalLightFactor += Y21(n) * vec3(sphericalHarmonics[21], sphericalHarmonics[22], sphericalHarmonics[23]);
+	sphericalLightFactor += Y22(n) * vec3(sphericalHarmonics[24], sphericalHarmonics[25], sphericalHarmonics[26]);
+#endif
 	
 	#if defined(VERTEX_COLOR)
-		varVertexColor *= vec4(sphericalLightFactor, 1.0);
-	#else 
-		varVertexColor = vec4(sphericalLightFactor, 1.0);
+		varVertexColor *= vec4(sphericalLightFactor * 2.0, 1.0);
+	#else
+		varVertexColor = vec4(sphericalLightFactor * 2.0, 1.0);
 	#endif
 #endif
     

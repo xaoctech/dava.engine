@@ -38,14 +38,14 @@
  name: "SpeedTreeLeaf"
  path: SpeedTreeLeaf.material
 -
- name: "SphericalLit SpeedTreeLeaf"
- path: SphericalLit.SpeedTreeLeaf.material
+ name: "SphericalLit AllQualities SpeedTreeLeaf"
+ path: SphericalLitAllQualities.SpeedTreeLeaf.material
 -
- name: "SphericalLit Textured Alphatest"
- path: SphericalLit.Textured.Alphatest.material
+ name: "SphericalLit AllQualities Textured Alphatest"
+ path: SphericalLitAllQualities.Textured.Alphatest.material
 -
- name: "SphericalLit Textured Opaque"
- path: SphericalLit.Textured.Opaque.material
+ name: "SphericalLit AllQualities Textured Opaque"
+ path: SphericalLitAllQualities.Textured.Opaque.material
 -
  name: "Textured Alphablend"
  path: Textured.Alphablend.material
