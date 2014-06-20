@@ -155,7 +155,18 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
     }
     
     // Prepare occlusion
-    componentInProgress = (StaticOcclusionDataComponent*)entity->GetOrCreateComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT);
+    componentInProgress = (StaticOcclusionDataComponent*)entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT);
+    if (componentInProgress)
+    {
+        /*
+            We detach component from system, to let system know that this data is not valid right now.
+            Entity will be removed from system that apply occlusion information.
+         */
+        entity->DetachComponent(componentInProgress);
+    }else
+    {
+        componentInProgress = new StaticOcclusionDataComponent();
+    }
     
     StaticOcclusionData & data = componentInProgress->GetData();
     
@@ -223,12 +234,11 @@ void StaticOcclusionBuildSystem::OcclusionBuildStep(BaseObject * bo, void * mess
 void StaticOcclusionBuildSystem::FinishBuildOcclusion(DAVA::BaseObject *bo, void *messageData, void *callerData)
 {
     Component * prevComponent = entities[activeIndex]->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT);
-    if (prevComponent != componentInProgress)
-    {
-        // Replace component, only if it's new
-        entities[activeIndex]->RemoveComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT);
-        entities[activeIndex]->AddComponent(componentInProgress);
-    }
+
+    // We've detached component so we verify that here we still do not have this component.
+    DVASSERT(prevComponent == 0);
+
+    entities[activeIndex]->AddComponent(componentInProgress);
     componentInProgress = 0;
     
     activeIndex++;
@@ -294,7 +304,9 @@ void StaticOcclusionSystem::UndoOcclusionVisibility()
         if (!ro)continue;
         ro->SetFlags(ro->GetFlags() | RenderObject::VISIBLE_STATIC_OCCLUSION);
     }
-
+    
+    activePVSSet = 0;
+    activeBlockIndex = 0;
 }
 
 void StaticOcclusionSystem::ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data)
@@ -380,17 +392,12 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
     if (notInPVS)
     {
         UndoOcclusionVisibility();
-        activePVSSet = 0;
-        activeBlockIndex = 0;
     }
     
     if (needUpdatePVS)
     {
         ProcessStaticOcclusionForOneDataSet(activeBlockIndex, activePVSSet);
     }
-    
-    
-    
 }
     
 void StaticOcclusionSystem::RegisterEntity(Entity *entity)
@@ -445,7 +452,6 @@ void StaticOcclusionSystem::UnregisterEntity(Entity *entity, Component * compone
 void StaticOcclusionSystem::AddEntity(Entity * entity)
 {
     staticOcclusionComponents.push_back((StaticOcclusionDataComponent*)entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT));
-    SceneDidLoaded();
 }
     
 void StaticOcclusionSystem::AddRenderObjectToOcclusion(RenderObject * renderObject)
@@ -480,6 +486,8 @@ void StaticOcclusionSystem::RemoveEntity(Entity * entity)
         StaticOcclusionDataComponent * component = staticOcclusionComponents[k];
         if (component == entity->GetComponent(Component::STATIC_OCCLUSION_DATA_COMPONENT))
         {
+            UndoOcclusionVisibility();
+            
             staticOcclusionComponents[k] = staticOcclusionComponents[(uint32)staticOcclusionComponents.size() - 1];
             staticOcclusionComponents.pop_back();
             break;
