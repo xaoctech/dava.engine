@@ -36,8 +36,8 @@
 #include "Render/OGLHelpers.h"
 #include "Render/Shader.h"
 
-#include "Render/Image.h"
-#include "Render/ImageLoader.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "FileSystem/FileSystem.h"
 #include "Utils/StringFormat.h"
 #include "Render/PixelFormatDescriptor.h"
@@ -727,7 +727,7 @@ void RenderManager::AttachRenderData()
     RENDERER_UPDATE_STATS(attachRenderDataCount++);
     
 	Shader * shader = hardwareState.shader;
-    uint32 currentAttributeMask = shader->GetAttributeMask();
+    uint32 currentAttributeMask = shader->GetRequiredVertexFormat();
     
     if (attachedRenderData == currentRenderData && cachedAttributeMask == currentAttributeMask)
     {
