@@ -1257,8 +1257,8 @@ void Shader::BindDynamicParameters()
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_SPHERICAL_HARMONICS);
                 if (_updateSemantic != currentUniform->updateSemantic)
                 {
-                    float32 * param = (float32*)RenderManager::GetDynamicParam(PARAM_SPHERICAL_HARMONICS);
-                    SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT, currentUniform->size * 3, param);
+                    Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(PARAM_SPHERICAL_HARMONICS);
+                    SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT_VEC3, currentUniform->size, param);
                     currentUniform->updateSemantic = _updateSemantic;
                 }
                 break;

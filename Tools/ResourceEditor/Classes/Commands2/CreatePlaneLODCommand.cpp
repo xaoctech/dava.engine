@@ -142,6 +142,14 @@ void CreatePlaneLODCommand::DrawToTexture(DAVA::Entity * fromEntity, DAVA::Camer
     Entity * entity = SceneHelper::CloneEntityWithMaterials(fromEntity);
 	entity->SetLocalTransform(DAVA::Matrix4::IDENTITY);
 
+    SpeedTreeObject * treeObejct = GetSpeedTreeObject(entity);
+    if(treeObejct)
+    {
+        Vector<Vector3> fakeSH(9, Vector3());
+        fakeSH[0].x = fakeSH[0].y = fakeSH[0].z = 1.f/0.564188; //fake SH value to make original object color
+        treeObejct->SetSphericalHarmonics(fakeSH);
+    }
+
     tempScene->AddNode(entity);
     tempScene->AddCamera(camera);
     tempScene->SetCurrentCamera(camera);
@@ -175,13 +183,11 @@ void CreatePlaneLODCommand::CreatePlaneImage()
     
     DAVA::Entity *fromEntity = GetEntity();
     
-    AABBox3 bbox; Matrix4 wtMx;
-    fromEntity->GetWorldTransform().GetInverse(wtMx);
-    fromEntity->GetWTMaximumBoundingBoxSlow().GetTransformedBox(wtMx, bbox);
+    AABBox3 bbox = GetRenderObject(fromEntity)->GetBoundingBox();
+    bool isMeshHorizontal = IsHorisontalMesh(bbox);
     
     const Vector3 & min = bbox.min;
     const Vector3 & max = bbox.max;
-    bool isMeshHorizontal = ((max.x - min.x) / (max.z - min.z) > 1.f) || ((max.y - min.y) / (max.z - min.z) > 1.f);
     
     Camera * camera = new Camera();
     camera->SetTarget(Vector3(0, 0, 0));
@@ -229,15 +235,13 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
     DVASSERT(planeBatch == NULL);
     
     DAVA::Entity *fromEntity = GetEntity();
-    
-    AABBox3 bbox; Matrix4 wtMx;
-    fromEntity->GetWorldTransform().GetInverse(wtMx);
-    fromEntity->GetWTMaximumBoundingBoxSlow().GetTransformedBox(wtMx, bbox);
+
+    AABBox3 bbox = GetRenderObject(fromEntity)->GetBoundingBox();
+    bool isMeshHorizontal = IsHorisontalMesh(bbox);
     
     const Vector3 & min = bbox.min;
     const Vector3 & max = bbox.max;
     Vector3 size = bbox.GetSize();
-    bool isMeshHorizontal = (max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f;
 
     //
     // Textures:
@@ -394,4 +398,12 @@ void CreatePlaneLODCommand::DeleteTextureFiles()
 DAVA::RenderBatch * CreatePlaneLODCommand::GetRenderBatch() const
 {
     return planeBatch;
+}
+
+bool CreatePlaneLODCommand::IsHorisontalMesh(const AABBox3 & bbox)
+{
+    const Vector3 & min = bbox.min;
+    const Vector3 & max = bbox.max;
+
+    return ((max.x - min.x) / (max.z - min.z) > 1.f || (max.y - min.y) / (max.z - min.z) > 1.f);
 }
