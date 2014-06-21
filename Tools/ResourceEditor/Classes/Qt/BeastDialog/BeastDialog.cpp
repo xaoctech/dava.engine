@@ -26,6 +26,7 @@ BeastDialog::BeastDialog( QWidget *parent )
     connect( ui->output, SIGNAL( textChanged( const QString& ) ), SLOT( OnTextChanged() ) );
     connect( ui->lightmapBeastModeButton, SIGNAL( clicked( bool ) ), SLOT( OnLightmapMode( bool ) ) );
     connect( ui->shBeastModeButton, SIGNAL( clicked( bool ) ), SLOT( OnSHMode( bool ) ) );
+    connect( ui->previewButton, SIGNAL( clicked( bool ) ), SLOT( OnPreviewMode( bool ) ) );
 }
 
 BeastDialog::~BeastDialog()
@@ -106,6 +107,15 @@ void BeastDialog::OnSHMode(bool checked)
     {
         ui->foldersWidget->setDisabled(true);
         beastMode = BeastProxy::MODE_SPHERICAL_HARMONICS;
+    }
+}
+
+void BeastDialog::OnPreviewMode(bool checked)
+{
+    if(checked)
+    {
+        ui->foldersWidget->setDisabled(true);
+        beastMode = BeastProxy::MODE_PREVIEW;
     }
 }
 

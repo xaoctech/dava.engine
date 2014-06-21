@@ -37,10 +37,17 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QRadioButton" name="previewButton">
+        <property name="text">
+         <string>Run Preview</string>
+        </property>
+       </widget>
+      </item>
      </layout>
      <zorder>shBeastModeButton</zorder>
-     <zorder>shBeastModeButton</zorder>
      <zorder>lightmapBeastModeButton</zorder>
+     <zorder>previewButton</zorder>
     </widget>
    </item>
    <item>

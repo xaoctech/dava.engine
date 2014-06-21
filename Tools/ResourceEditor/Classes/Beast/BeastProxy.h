@@ -41,7 +41,8 @@ public:
     enum eBeastMode
     {
         MODE_LIGHTMAPS = 0,
-        MODE_SPHERICAL_HARMONICS
+        MODE_SPHERICAL_HARMONICS,
+        MODE_PREVIEW
     };
 
 	virtual BeastManager * CreateManager();
