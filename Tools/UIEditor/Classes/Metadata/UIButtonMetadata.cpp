@@ -91,7 +91,7 @@ QString DAVA::UIButtonMetadata::GetLocalizedTextKeyForState( UIControl::eControl
     HierarchyTreeNode *node = this->GetActiveTreeNode();
     if (node)
     {
-        controlState = UIButton::ControlStateToDrawState(GetActiveUIButton()->TextIndexForState(UIButton::DrawStateToControlState(controlState)));
+        controlState = UIButton::DrawStateToControlState(GetActiveUIButton()->GetActualTextBlockState(UIButton::ControlStateToDrawState(controlState)));
         return WideString2QStrint(node->GetExtraData().GetLocalizationKey(controlState));
     }
     return QString();
@@ -804,7 +804,7 @@ void UIButtonMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eE
     for (int stateID = 0; stateID < statesCount; stateID ++)
     {
         UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
-        UIStaticText* textControl = button->GetTextBlock(state);
+        UIStaticText* textControl = button->GetTextBlock(UIButton::ControlStateToDrawState(state));
         if (!textControl)
         {
             continue;
