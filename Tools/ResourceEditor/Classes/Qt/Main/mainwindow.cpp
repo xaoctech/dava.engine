@@ -2124,7 +2124,10 @@ void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mo
     const DAVA::FilePath path = outputPath.toStdString();
     scene->Exec(new BeastAction(scene, path, mode, beastWaitDialog));
 
-	OnReloadTextures();
+    if(mode == BeastProxy::MODE_LIGHTMAPS)
+    {
+	    OnReloadTextures();
+    }
 
 #endif //#if defined (__DAVAENGINE_BEAST__)
 }
