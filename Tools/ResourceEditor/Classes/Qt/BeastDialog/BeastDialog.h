@@ -36,6 +36,7 @@ private slots:
     void OnTextChanged();
     void OnLightmapMode(bool checked);
     void OnSHMode(bool checked);
+    void OnPreviewMode(bool checked);
 
 private:
     void closeEvent( QCloseEvent * event );
