@@ -111,8 +111,11 @@ void BeastAction::Start()
 	startTime = SystemTimer::Instance()->AbsoluteMS();
 
 	FilePath path = GetLightmapDirectoryPath();
-	FileSystem::Instance()->CreateDirectory(path, false);
-    FileSystem::Instance()->CreateDirectory(outputPath, true);
+    if(beastMode == BeastProxy::MODE_LIGHTMAPS)
+    {
+	    FileSystem::Instance()->CreateDirectory(path, false);
+        FileSystem::Instance()->CreateDirectory(outputPath, true);
+    }
 
 	BeastProxy::Instance()->SetLightmapsDirectory(beastManager, path);
 	BeastProxy::Instance()->Run(beastManager, workingScene);
@@ -140,13 +143,12 @@ void BeastAction::Finish()
 		FileSystem::Instance()->DeleteFile(textureName);
 	}
 
+    FileSystem::Instance()->DeleteDirectory(FileSystem::Instance()->GetCurrentWorkingDirectory() + "temp_beast/");
     if(beastMode == BeastProxy::MODE_LIGHTMAPS)
     {
         FileSystem::Instance()->DeleteDirectory(GetLightmapDirectoryPath());
-        FileSystem::Instance()->DeleteDirectory(FileSystem::Instance()->GetCurrentWorkingDirectory() + "temp_beast/");
     }
 }
-
 
 void BeastAction::PackLightmaps()
 {
