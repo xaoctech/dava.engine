@@ -483,106 +483,37 @@ namespace DAVA
         return statePostfix[state];
     }
 
-    UIButton::eButtonDrawState UIButton::GetActualBackgroundState(eButtonDrawState buttonState) const
+    UIButton::eButtonDrawState UIButton::GetStateReplacer(eButtonDrawState drawState)
     {
-        if(stateBacks[buttonState])
-        {//return current state if dada for state is present
-            return buttonState;
+        eButtonDrawState stateReplacer = DRAW_STATE_UNPRESSED;
+        switch(drawState)
+        {
+        case DRAW_STATE_PRESSED_INSIDE: stateReplacer = DRAW_STATE_PRESSED_OUTSIDE; break;
+        case DRAW_STATE_SELECTED: stateReplacer = DRAW_STATE_PRESSED_INSIDE; break;
+        default: break;
         }
-        switch (buttonState)
-        {//find other state if data for the requested state is absent
-            case DRAW_STATE_PRESSED_INSIDE:
-            {
-                if(stateBacks[DRAW_STATE_PRESSED_OUTSIDE])
-                {
-                    return DRAW_STATE_PRESSED_OUTSIDE;
-                }
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_PRESSED_OUTSIDE:
-            {
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_SELECTED:
-            {
-                if(stateBacks[DRAW_STATE_PRESSED_INSIDE])
-                {
-                    return DRAW_STATE_PRESSED_INSIDE;
-                }
-                if(stateBacks[DRAW_STATE_PRESSED_OUTSIDE])
-                {
-                    return DRAW_STATE_PRESSED_OUTSIDE;
-                }
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_DISABLED:
-            {
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_HOVERED:
-            {
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            default:
-                break;
-        }
-        return DRAW_STATE_UNPRESSED;
+
+        return stateReplacer;
     }
 
-    UIButton::eButtonDrawState UIButton::GetActualTextBlockState(eButtonDrawState buttonState) const
+    UIButton::eButtonDrawState UIButton::GetActualBackgroundState(eButtonDrawState drawState) const
     {
-        if(stateTexts[buttonState])
+        while(!GetBackground(drawState) && drawState != DRAW_STATE_UNPRESSED)
         {
-            return buttonState;
+            drawState = GetStateReplacer(drawState);
         }
-        switch (buttonState)
-        {//find other state if data for the requested state is absent
-            case DRAW_STATE_PRESSED_INSIDE:
-            {
-                if(stateTexts[DRAW_STATE_PRESSED_OUTSIDE])
-                {
-                    return DRAW_STATE_PRESSED_OUTSIDE;
-                }
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_PRESSED_OUTSIDE:
-            {
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_SELECTED:
-            {
-                if(stateTexts[DRAW_STATE_PRESSED_INSIDE])
-                {
-                    return DRAW_STATE_PRESSED_INSIDE;
-                }
-                if(stateTexts[DRAW_STATE_PRESSED_OUTSIDE])
-                {
-                    return DRAW_STATE_PRESSED_OUTSIDE;
-                }
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_DISABLED:
-            {
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            case DRAW_STATE_HOVERED:
-            {
-                return DRAW_STATE_UNPRESSED;
-            }
-                break;
-            default:
-                break;
+
+        return drawState;
+    }
+
+    UIButton::eButtonDrawState UIButton::GetActualTextBlockState(eButtonDrawState drawState) const
+    {
+        while(!GetTextBlock(drawState) && drawState != DRAW_STATE_UNPRESSED)
+        {
+            drawState = GetStateReplacer(drawState);
         }
-        return DRAW_STATE_UNPRESSED;
+
+        return drawState;
     }
 
     void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
@@ -744,17 +675,17 @@ namespace DAVA
         node->RemoveNodeFromMap("topBottomStretchCap");
         node->RemoveNodeFromMap("spriteModification");
 
+        ScopedPtr<UIButton> baseControl( new UIButton() );
         //States cycle for values
         for (int32 i = 0; i < STATE_COUNT; ++i)
         {
             eButtonDrawState drawState = (eButtonDrawState)i;
             const String &statePostfix = DrawStatePostfix(drawState);
+            const UIControlBackground *baseStateBackground = baseControl->GetActualBackground(drawState);
 
             UIControlBackground *stateBackground = GetBackground(drawState);
             if (stateBackground)
             {
-                ScopedPtr<UIButton> baseControl( new UIButton() );
-                const UIControlBackground *baseStateBackground = baseControl->GetActualBackground(drawState);
                 //Get sprite and frame for state
                 Sprite *stateSprite = stateBackground->GetSprite();
                 if (stateSprite)

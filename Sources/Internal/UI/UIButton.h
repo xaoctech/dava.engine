@@ -279,6 +279,7 @@ protected:
     static eButtonDrawState ControlStateToDrawState(int32 state);
     static eControlState DrawStateToControlState(eButtonDrawState state);
     static const String &DrawStatePostfix(eButtonDrawState state);
+    static eButtonDrawState GetStateReplacer(eButtonDrawState drawState);
 private:
     friend class UIButtonMetadata;
 
