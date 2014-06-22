@@ -1622,14 +1622,9 @@ namespace DAVA
         drawData.angle = angle;
         drawData.AddToGeometricData(geometricData);
 
-        if(parent)
-        {
-            GetBackground()->SetParentColor(parent->GetBackground()->GetDrawColor());
-        }
-        else
-        {
-            GetBackground()->SetParentColor(Color(1.0f, 1.0f, 1.0f, 1.0f));
-        }
+        Color parentColor = parent ? parent->GetBackground()->GetDrawColor() : Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+        SetParentColor(parentColor);
 
         const Rect& unrotatedRect = drawData.GetUnrotatedRect();
 
@@ -1682,6 +1677,11 @@ namespace DAVA
             DrawDebugRect(drawData, true);
             RenderManager::Instance()->ClipPop();
         }
+    }
+
+    void UIControl::SetParentColor( const Color &parentColor )
+    {
+        GetBackground()->SetParentColor(parentColor);
     }
 
     void UIControl::DrawDebugRect(const UIGeometricData &gd, bool useAlpha)

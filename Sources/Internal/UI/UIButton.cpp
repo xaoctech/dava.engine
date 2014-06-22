@@ -391,7 +391,14 @@ namespace DAVA
         if (selectedBackground)
             selectedBackground->Draw(geometricData);
         if (selectedTextBlock)
-            selectedTextBlock->SystemDraw(geometricData);
+            selectedTextBlock->Draw(geometricData);
+    }
+
+    void UIButton::SetParentColor( const Color &parentColor )
+    {
+        UIControl::SetParentColor(parentColor);
+        if (selectedTextBlock)
+            selectedTextBlock->SetParentColor(parentColor);
     }
 
     UIControlBackground *UIButton::GetActualBackgroundForState(int32 state) const
@@ -729,6 +736,7 @@ namespace DAVA
         //UIButton has state specific properties
         node->RemoveNodeFromMap("color");
         node->RemoveNodeFromMap("sprite");
+        node->RemoveNodeFromMap("frame");
         node->RemoveNodeFromMap("drawType");
         node->RemoveNodeFromMap("colorInherit");
         node->RemoveNodeFromMap("align");
