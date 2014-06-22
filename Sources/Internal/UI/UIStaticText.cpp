@@ -206,15 +206,21 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
         shadowBg->SetAlign(textBg->GetAlign());
         shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-        shadowBg->SetDrawColor(shadowColor);
+        shadowBg->SetColor(shadowColor);
         shadowBg->Draw(shadowGeomData);
     }
 
     textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-    textBg->SetDrawColor(textColor);
+    textBg->SetColor(textColor);
     textBg->Draw(geometricData);
 }
 
+void UIStaticText::SetParentColor(const Color &parentColor)
+{
+    UIControl::SetParentColor(parentColor);
+    shadowBg->SetParentColor(parentColor);
+    textBg->SetParentColor(parentColor);
+}
 
 const Vector<WideString> & UIStaticText::GetMultilineStrings() const
 {

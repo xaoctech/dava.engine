@@ -48,6 +48,8 @@ public:
 
     UIStaticText(const Rect &rect = Rect(), bool rectInAbsoluteCoordinates = false);
 
+    virtual void Draw(const UIGeometricData &geometricData);
+    virtual void SetParentColor(const Color &parentColor);
     //if requested size is 0 - text creates in the rect with size of the drawRect on draw phase
     //if requested size is >0 - text creates int the rect with the requested size
     //if requested size in <0 - rect creates for the all text size
@@ -109,8 +111,6 @@ protected:
     Color shadowColor;
     UIControlBackground *shadowBg;
     UIControlBackground *textBg;
-
-    virtual void Draw(const UIGeometricData &geometricData);
 
 public:
     void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
