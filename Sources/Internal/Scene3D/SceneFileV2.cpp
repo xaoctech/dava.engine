@@ -177,11 +177,7 @@ SceneFileV2::eError SceneFileV2::SaveScene(const FilePath & filename, DAVA::Scen
     header.signature[2] = 'V';
     header.signature[3] = '2';
     
-<<<<<<< HEAD
     header.version = VersionInfo::Instance()->GetCurrentVersion().version;
-=======
-    header.version = SCENE_FILE_CURRENT_VERSION;
->>>>>>> development
     header.nodeCount = _scene->GetChildrenCount();
 
     if(NULL != scene->GetGlobalMaterial())
@@ -907,11 +903,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-<<<<<<< HEAD
-				if(GetVersion().version < 11 && GetLodComponent(parent))
-=======
-				if(GetVersion() < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
->>>>>>> development
+				if(GetVersion().version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -960,11 +952,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
             if (parent)
             {
-<<<<<<< HEAD
-				if(GetVersion().version < 11 && GetLodComponent(parent))
-=======
-				if(GetVersion() < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
->>>>>>> development
+				if(GetVersion().version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}

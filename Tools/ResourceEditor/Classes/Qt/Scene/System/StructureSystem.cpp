@@ -518,11 +518,7 @@ DAVA::Entity* StructureSystem::LoadInternal(const DAVA::FilePath& sc2path, bool 
 			if(optimize)
 			{
 				ScopedPtr<SceneFileV2> sceneFile(new SceneFileV2());
-<<<<<<< HEAD
-                sceneFile->SetVersion(VersionInfo::Instance()->GetCurrentVersion());
-=======
-				sceneFile->SetVersion(SCENE_FILE_CURRENT_VERSION);
->>>>>>> development
+				sceneFile->SetVersion(VersionInfo::Instance()->GetCurrentVersion());
 				sceneFile->OptimizeScene(parentForOptimize);
 			}
 
