@@ -57,6 +57,8 @@ void ParticleEffectPropertyGridWidget::Cleanup()
     UnregisterPushButtonWidgetForInvokeMethod(ui->startButton);
     UnregisterPushButtonWidgetForInvokeMethod(ui->stopButton);
     UnregisterPushButtonWidgetForInvokeMethod(ui->reloadButton);
+    UnregisterPushButtonWidgetForInvokeMethod(ui->pauseButton);
+    UnregisterPushButtonWidgetForInvokeMethod(ui->restartButton);
 
     disconnect(ui->selectEffectPathButton, SIGNAL(clicked()), this, SLOT(OnSelectEffectPathButtonClicked()));
     BasePropertyGridWidget::Cleanup();
