@@ -89,6 +89,8 @@ void ParticleEffectPropertyGridWidget::UpdateButtons()
     ui->startButton->setEnabled(enableButtons);
     ui->stopButton->setEnabled(enableButtons);
     ui->reloadButton->setEnabled(enableButtons);
+    ui->pauseButton->setEnabled(enableButtons);
+    ui->restartButton->setEnabled(enableButtons);
 }
 
 void ParticleEffectPropertyGridWidget::ProcessDoubleSpinBoxValueChanged(QDoubleSpinBox *doubleSpinBoxWidget,
