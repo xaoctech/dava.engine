@@ -832,6 +832,15 @@ void VegetationCustomSLGeometry::InitCustomGeometry(VegetationCustomGeometrySeri
                 indices.push_back(srcIndices[indexIndex]);
             }
         }
+        
+        if(lodCount < resolutionCount)
+        {
+            uint32 stubGeometryCount = resolutionCount - lodCount;
+            for(uint32 stubIndex = 0; stubIndex < stubGeometryCount; ++stubIndex)
+            {
+                customGeometryDataItem.lods.push_back(customGeometryDataItem.lods[customGeometryDataItem.lods.size() - 1]);
+            }
+        }
     }
 }
 
