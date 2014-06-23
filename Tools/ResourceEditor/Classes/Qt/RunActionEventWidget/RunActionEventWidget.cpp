@@ -19,6 +19,7 @@ RunActionEventWidget::RunActionEventWidget(QWidget *parent)
     , scene(NULL)
 {
     ui->setupUi(this);
+    setObjectName("RunActionEventWidget");
 
     connect( ui->eventType, SIGNAL( currentIndexChanged( int ) ), SLOT( OnTypeChanged() ) );
     connect( ui->run, SIGNAL( clicked() ), SLOT( OnInvoke() ) );
@@ -27,15 +28,17 @@ RunActionEventWidget::RunActionEventWidget(QWidget *parent)
     ui->eventType->addItem( "Added", ActionComponent::Action::EVENT_ADDED_TO_SCENE );
     ui->eventType->addItem( "User", ActionComponent::Action::EVENT_CUSTOM );
 
-    editorIdMap[DAVA::ActionComponent::Action::EVENT_SWITCH_CHANGED] = 0;
-    editorIdMap[DAVA::ActionComponent::Action::EVENT_ADDED_TO_SCENE] = 1;
-    editorIdMap[DAVA::ActionComponent::Action::EVENT_CUSTOM] = 2;
+    editorIdMap[ActionComponent::Action::EVENT_SWITCH_CHANGED] = 0;
+    editorIdMap[ActionComponent::Action::EVENT_ADDED_TO_SCENE] = 1;
+    editorIdMap[ActionComponent::Action::EVENT_CUSTOM] = 2;
 
     autocompleteModel = new QStringListModel(this);
     QCompleter *completer = new QCompleter(this);
     completer->setModel(autocompleteModel);
     completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    //completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     ui->name->setCompleter(completer);
+    ui->name->installEventFilter(this); // For auto-popup on focus
 
     connect(SceneSignals::Instance(), SIGNAL(SelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)), this, SLOT(sceneSelectionChanged(SceneEditor2 *, const EntityGroup *, const EntityGroup *)));
     QObject::connect(SceneSignals::Instance(), SIGNAL(Activated(SceneEditor2 *)), this, SLOT(sceneActivated(SceneEditor2 *)));
@@ -43,6 +46,31 @@ RunActionEventWidget::RunActionEventWidget(QWidget *parent)
 
 RunActionEventWidget::~RunActionEventWidget()
 {
+}
+
+bool RunActionEventWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->name)
+    {
+        switch(event->type())
+        {
+        case QEvent::FocusIn:
+            {
+                QAbstractItemView *popup = ui->name->completer()->popup();
+                if (!popup->isVisible())
+                {
+                    ui->name->completer()->complete();
+                    popup->show();
+                }
+            }
+            break;
+        default:
+            break;
+        }
+        return false;
+    }
+
+    return QWidget::eventFilter(obj, event);
 }
 
 void RunActionEventWidget::OnTypeChanged()
@@ -62,7 +90,7 @@ void RunActionEventWidget::OnInvoke()
         return ;
 
     const uint32 switchIndex = ui->switchIndex->value();
-    const FastName name( ui->name->text().toStdString().c_str() );
+    const FastName name(ui->name->text().toStdString().c_str());
 
     const EntityGroup& selection = editor->selectionSystem->GetSelection();
     for (size_t i = 0; i < selection.Size(); i++)
@@ -140,7 +168,7 @@ void RunActionEventWidget::sceneSelectionChanged(SceneEditor2 *_scene, const Ent
             ActionComponent::Action& act = component->Get(componentIdx);
             if (act.eventType == ActionComponent::Action::EVENT_CUSTOM)
             {
-                nameSet.insert( QString( act.userEventId.c_str() ) );
+                nameSet.insert(QString(act.userEventId.c_str()));
             }
         }
     }
