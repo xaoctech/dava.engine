@@ -519,7 +519,7 @@ public:
         But this methods calls for their children.
      \returns control visibility.
      */
-    DAVA_DEPRECATED_MSG(virtual bool GetVisible() const, "was deprecated, use GetRecursiveVisible instead");
+    DAVA_DEPRECATED(virtual bool GetVisible() const);// use GetRecursiveVisible instead
 
     /**
      \brief Sets contol visibility.
@@ -531,7 +531,7 @@ public:
      \param[in] isVisible new control visibility.
      \param[in] hierarchic use true if you want to all control children change visiblity.
      */
-    DAVA_DEPRECATED_MSG(virtual void SetVisible(bool isVisible, bool hierarchic = true), "was deprecated, use SetRecursiveVisible instead");
+    DAVA_DEPRECATED(virtual void SetVisible(bool isVisible, bool hierarchic = true));// use SetRecursiveVisible instead;
 
     /**
      \brief Returns control visibility.
