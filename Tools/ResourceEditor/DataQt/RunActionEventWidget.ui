@@ -66,21 +66,24 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>Action name:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="name">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>0</height>
-          </size>
+        <widget class="QComboBox" name="name">
+         <property name="editable">
+          <bool>true</bool>
          </property>
-         <property name="placeholderText">
-          <string>Enter custom action name</string>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAlphabetically</enum>
          </property>
         </widget>
        </item>

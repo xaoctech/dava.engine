@@ -24,12 +24,10 @@ class RunActionEventWidget
     Q_OBJECT
 
 public:
-    explicit RunActionEventWidget( QWidget *parent = NULL );
+    explicit RunActionEventWidget(QWidget *parent = NULL);
     ~RunActionEventWidget();
 
 private:
-    bool eventFilter(QObject *obj, QEvent *event);
-
     QScopedPointer<Ui::RunActionEventWidget> ui;
     QMap< int, int > editorIdMap;
     QPointer<QStringListModel> autocompleteModel;
