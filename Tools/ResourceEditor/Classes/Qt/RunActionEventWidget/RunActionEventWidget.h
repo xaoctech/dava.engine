@@ -28,6 +28,8 @@ public:
     ~RunActionEventWidget();
 
 private:
+    bool eventFilter(QObject *obj, QEvent *event);
+
     QScopedPointer<Ui::RunActionEventWidget> ui;
     QMap< int, int > editorIdMap;
     QPointer<QStringListModel> autocompleteModel;

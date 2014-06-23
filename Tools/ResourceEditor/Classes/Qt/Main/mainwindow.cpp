@@ -577,6 +577,7 @@ void QtMainWindow::SetupDocks()
     {
         dockActionEvent = new QDockWidget("Run Action Event", this);
         dockActionEvent->setWidget(new RunActionEventWidget());
+        dockActionEvent->setObjectName(QString( "dock_%1" ).arg(dockActionEvent->widget()->objectName()));
         addDockWidget(Qt::RightDockWidgetArea, dockActionEvent);
     }
     
