@@ -70,7 +70,7 @@ void BeastDialog::OnStart()
         return;
     }
 
-    SettingsManager::Instance()->SetValue(settingsDefaultPath,VariantType(QDir::fromNativeSeparators(ui->output->text()).toStdString()));
+    SettingsManager::Instance()->SetValue(settingsDefaultPath,VariantType(QDir::toNativeSeparators(ui->output->text()).toStdString()));
 
     result = true;
     loop->quit();
