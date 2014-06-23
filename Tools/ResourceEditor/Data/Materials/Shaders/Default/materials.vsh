@@ -100,6 +100,13 @@ uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
 uniform mat4 projMatrix;
 uniform float cutDistance;
+
+	#if !defined(SPHERICAL_LIT) //legacy for old tree lighting
+		uniform lowp vec3 treeLeafColorMul;
+		uniform lowp float treeLeafOcclusionOffset;
+		uniform lowp float treeLeafOcclusionMul;
+	#endif
+	
 #if defined(WIND_ANIMATION)
 uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
 #endif
@@ -545,7 +552,7 @@ void main()
 #if defined(VERTEX_COLOR)
 	varVertexColor = inColor;
 #endif
-    
+
 #if defined(SPHERICAL_LIT)
 
 #define Y00	    (0.282094)                                              // (1.0 / 2.0) * sqrt(1.0 / PI) * PI / PI
@@ -583,6 +590,9 @@ void main()
 	#else
 		varVertexColor = vec4(sphericalLightFactor * 2.0, 1.0);
 	#endif
+	
+#elif defined(SPEED_TREE_LEAF) //legacy for old tree lighting
+    varVertexColor.rgb = varVertexColor.rgb * treeLeafColorMul * treeLeafOcclusionMul + vec3(treeLeafOcclusionOffset);
 #endif
     
 	varTexCoord0 = inTexCoord0;
