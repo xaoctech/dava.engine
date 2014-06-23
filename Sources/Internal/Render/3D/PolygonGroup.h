@@ -386,7 +386,7 @@ inline void PolygonGroup::GetAngle(int32 i, Vector2 & _v)
 	
 inline void	PolygonGroup::GetIndex(int32 i, int32 &index)
 {
-	index = indexArray[i];
+	index = (uint16)indexArray[i];
 }
 	
 inline int32 PolygonGroup::GetVertexCount()
