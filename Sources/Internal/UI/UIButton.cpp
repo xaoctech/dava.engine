@@ -54,10 +54,12 @@ namespace DAVA
             stateTexts[i] = NULL;
         }
 
-        SetBackground(DRAW_STATE_UNPRESSED, new UIControlBackground());
+        stateBacks[DRAW_STATE_UNPRESSED] = SafeRetain(background);
 
         SetExclusiveInput(true, false);
         SetInputEnabled(true, false);
+
+        selectedBackground = GetActualBackgroundForState(controlState);
     }
 
 
@@ -800,8 +802,14 @@ namespace DAVA
         return node;
     }
 
-    void UIButton::SetBackground( eButtonDrawState drawState, UIControlBackground * newBackground )
+    void UIButton::SetBackground(eButtonDrawState drawState, UIControlBackground * newBackground)
     {
+        if (drawState == DRAW_STATE_UNPRESSED)
+        {
+            SafeRelease(background);
+            background = SafeRetain(newBackground);
+        }
+
         SafeRelease(stateBacks[drawState]);
         stateBacks[drawState] = newBackground;
         selectedBackground = GetActualBackgroundForState(controlState);

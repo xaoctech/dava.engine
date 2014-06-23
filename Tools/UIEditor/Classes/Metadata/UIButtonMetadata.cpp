@@ -779,14 +779,14 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
         HierarchyTreeNode* activeNode = GetTreeNode(i);
     
         // Define some properties for the reference state.
-
-        button->SetStateFont(GetReferenceState(), EditorFontManager::Instance()->GetDefaultFont());
-        button->SetStateText(GetReferenceState(), controlText);
-        button->SetStateTextAlign(GetReferenceState(), ALIGN_HCENTER | ALIGN_VCENTER);
-        button->SetStateDrawType(GetReferenceState(), UIControlBackground::DRAW_SCALE_TO_RECT);
+        UIControl::eControlState refState = GetReferenceState();
+        button->SetStateFont(refState, EditorFontManager::Instance()->GetDefaultFont());
+        button->SetStateText(refState, controlText);
+        button->SetStateTextAlign(refState, ALIGN_HCENTER | ALIGN_VCENTER);
+        button->SetStateDrawType(refState, UIControlBackground::DRAW_SCALE_TO_RECT);
 
         // Button is state-aware.
-        activeNode->GetExtraData().SetLocalizationKey(controlText, GetReferenceState());
+        activeNode->GetExtraData().SetLocalizationKey(controlText, refState);
     }
 }
 
