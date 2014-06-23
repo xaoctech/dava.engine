@@ -358,8 +358,8 @@ void main()
         pos = clusterCenter + vec4(planeDirection.x, planeDirection.y, inPosition.z, 0.0);
     #endif
     
-        highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
-                        clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
+        highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - clusterCenter.x) / worldSize.x, 0.0, 1.0),
+                        clamp(1.0 - (0.5 * worldSize.y - clusterCenter.y) / worldSize.y, 0.0, 1.0));
     
         hUV = vec2(clamp(hUV.x * heightmapScale.x, 0.0, 1.0),
                    clamp(hUV.y * heightmapScale.y, 0.0, 1.0));
