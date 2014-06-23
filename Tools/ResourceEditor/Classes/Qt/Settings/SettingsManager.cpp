@@ -92,6 +92,8 @@ void SettingsManager::Init()
     CreateValue(Settings::Internal_MaterialsShowLightmapCanvas, DAVA::VariantType((bool) false));
     CreateValue(Settings::Internal_LicenceAccepted, DAVA::VariantType((bool) false));
 	CreateValue(Settings::Internal_LODEditorMode, DAVA::VariantType((bool) false));
+
+    CreateValue(DAVA::FastName("Internal/RunActionEventWidget/CurrentType"), DAVA::VariantType((DAVA::uint32)0));
 }
 
 DAVA::VariantType SettingsManager::GetValue(const DAVA::FastName& path)
