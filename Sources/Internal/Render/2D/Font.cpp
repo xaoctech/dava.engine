@@ -300,6 +300,75 @@ bool Font::IsWordSeparator(char16 t) const
         case 12290:
         case 46:
             return true;
+        // chinese simplified and traditional
+        case 37:
+        case 62:
+        case 125: 
+        case 162: 
+        case 168: 
+        case 176:
+        case 711: 
+        case 713: 
+        case 8213: 
+        case 8214:
+        case 8222: 
+        case 8223: 
+        case 8224: 
+        case 8225: 
+        case 8250: 
+        case 8451: 
+        case 8758:
+        case 12291: 
+        case 12294: 
+        case 12296: 
+        case 12298:
+        case 12300:
+        case 12302:
+        case 12318:
+        case 65077:
+        case 65081:
+        case 65085:
+        case 65087:
+        case 65091:
+        case 65112:
+        case 65114:
+        case 65116:
+        case 65281:
+        case 65282:
+        case 65285:
+        case 65287:
+        case 65289:
+        case 65292:
+        case 65294:
+        case 65306:
+        case 65307:
+        case 65311:
+        case 65341:
+        case 65344:
+        case 65372:
+        case 65374:
+        case 8212:
+        case 8226:
+        case 8229:
+        case 8231:
+        case 9588:
+        case 65072:
+        case 65073:
+        case 65074:
+        case 65075:
+        case 65079:
+        case 65083:
+        case 65089:
+        case 65103:
+        case 65104:
+        case 65105:
+        case 65106:
+        case 65107:
+        case 65108:
+        case 65109:
+        case 65110:
+        case 65380:
+            return true;
     }
     
     return false;
@@ -333,6 +402,8 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
     {
         return;
     }
+
+    bool wasSeparator = false;
 	
 	for(int pos = 0; state != EXIT; pos++)
 	{
@@ -346,7 +417,6 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 			case SKIP:
 				if (t == 0){ state = FINISH; break; } // if end of string process FINISH state and exit
 				else if (IsSpace(t))break; // if space continue with the same state
-				else if (IsWordSeparator(t))break; // if word separator - continue with the same state
                 else if(IsLineEnd(t))
 				{
 					// this block is copied from case NEXTLINE: if(t == 'n')
@@ -371,95 +441,100 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				}
 				break;
 			case GOODCHAR:
-                if(IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t) || t == 0) // if we've found any possible separator process current line
-				{
-                    if(IsWordSeparator(t))
-                    {
-                        ++pos;
-                    }
+                {
+                    bool isSeparator = IsWordSeparator(t);
+                    if(IsSpace(t) || IsLineEnd(t) || t == 0 || (wasSeparator && !isSeparator)) // if we've found any possible separator process current line
+				    {
                     
-                    //calculate current line width
-					int currentLineWidth = 0;
+                        //calculate current line width
+					    int currentLineWidth = 0;
 
-					int32 startPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
-					for (int i = startPos; i < pos ; i++)
-					{
-						currentLineWidth += sizes[i];
-					}
+					    int32 startPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
+					    for (int i = startPos; i < pos ; i++)
+					    {
+						    currentLineWidth += sizes[i];
+					    }
                     
-                    if((currentLineWidth < targetWidth) || ((IsSpace(t) || IsWordSeparator(t)) && 0 == targetWidth))
-                    {   // pos could be the end of line. We need to save it
-                        if(IsLineEnd(t) || t == 0)
-                        {
-                            AddCurrentLine(text, pos, separator, resultVector);
-                        }
-                        else
-                        {
-                            separator.currentLineEnd = pos;
-                            separator.lastWordEnd = pos;
-                        }
-                    }
-                    else if(currentLineWidth == targetWidth)
-                    {   // line fit all available space
-                        DVASSERT(pos > separator.currentLineStart);
-                        
-                        AddCurrentLine(text, pos, separator, resultVector);
-                    }
-                    else
-                    {   //currentLineWidth > targetWidth
-                        int32 currentLineLength = separator.currentLineEnd - separator.currentLineStart;
-                        if((currentLineLength > 0))
-                        {   // use previous position of separator to split text
-                            
-                            pos = separator.currentLineEnd;
-                            AddCurrentLine(text, pos, separator, resultVector);
-							state = SKIP;
-							break;
-                        }
-                        else if(pos)
-                        {   // truncate text by symbol for very long word
-                            if(0 == targetWidth)
+                        if((currentLineWidth < targetWidth) || ((IsSpace(t) || isSeparator) && 0 == targetWidth))
+                        {   // pos could be the end of line. We need to save it
+                            if(IsLineEnd(t) || t == 0)
                             {
                                 AddCurrentLine(text, pos, separator, resultVector);
                             }
                             else
                             {
-								int32 endPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
-                                for (int i = pos-1; i >= endPos; --i)
-                                {
-                                    currentLineWidth -= sizes[i];
-                                    if(currentLineWidth <= targetWidth)
-                                    {
-                                        separator.currentLineEnd = i;
-                                        int32 currentLineLength = separator.currentLineEnd - separator.currentLineStart;
-                                        if((currentLineLength > 0)) // use previous position of separator to split text
-                                        {
-                                            pos = separator.currentLineEnd-1;
-                                            
-                                            AddCurrentLine(text, separator.currentLineEnd, separator, resultVector);
-                                        }
-                                        
-                                        break;
-                                    }
-                                    
-                                    DVASSERT(i);
-                                }
+                                separator.currentLineEnd = pos;
+                                separator.lastWordEnd = pos;
                             }
-
-							state = SKIP;
-							break;
+                        }
+                        else if(currentLineWidth == targetWidth)
+                        {   // line fit all available space
+                            DVASSERT(pos > separator.currentLineStart);
+                        
+                            AddCurrentLine(text, pos, separator, resultVector);
                         }
                         else
-                        {
-                            DVASSERT(0);
+                        {   //currentLineWidth > targetWidth
+                            int32 currentLineLength = separator.currentLineEnd - separator.currentLineStart;
+                            if((currentLineLength > 0))
+                            {   // use previous position of separator to split text
+                            
+                                pos = separator.currentLineEnd;
+                                AddCurrentLine(text, pos, separator, resultVector);
+							    state = SKIP;
+							    break;
+                            }
+                            else if(pos)
+                            {   // truncate text by symbol for very long word
+                                if(0 == targetWidth)
+                                {
+                                    AddCurrentLine(text, pos, separator, resultVector);
+                                }
+                                else
+                                {
+								    int32 endPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
+                                    for (int i = pos-1; i >= endPos; --i)
+                                    {
+                                        currentLineWidth -= sizes[i];
+                                        if(currentLineWidth <= targetWidth)
+                                        {
+                                            separator.currentLineEnd = i;
+                                            int32 currentLineLength = separator.currentLineEnd - separator.currentLineStart;
+                                            if((currentLineLength > 0)) // use previous position of separator to split text
+                                            {
+                                                pos = separator.currentLineEnd-1;
+                                            
+                                                AddCurrentLine(text, separator.currentLineEnd, separator, resultVector);
+                                            }
+                                        
+                                            break;
+                                        }
+                                    
+                                        DVASSERT(i);
+                                    }
+                                }
+
+							    state = SKIP;
+							    break;
+                            }
+                            else
+                            {
+                                DVASSERT(0);
+                            }
                         }
-                    }
 
-
-					if (IsSpace(t) || IsLineEnd(t) || IsWordSeparator(t)) state = SKIP; // if cur char is space go to skip
-					else if (t == 0) state = FINISH;
-				}
-				
+					    if (IsSpace(t) || IsLineEnd(t)) state = SKIP; // if cur char is space go to skip
+					    else if (t == 0) state = FINISH;
+                        else if(wasSeparator && !isSeparator)
+                        {
+                            // good char after separator
+					        separator.lastWordStart = pos;
+					        separator.lastWordEnd = pos;
+					        if (!separator.IsLineInitialized()) separator.currentLineStart = pos;
+                        }
+                        wasSeparator = isSeparator;
+				    }
+                }
 				break;
 			case FINISH:
 				if (separator.IsLineInitialized()) // we check if we have something left in currentline and add this line to results
