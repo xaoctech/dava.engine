@@ -118,6 +118,8 @@ void FoliageSystem::Process(float32 timeElapsed)
             }
         }
         
+        Vector4 layersAnimationSpring = vegetationRO->GetLayersAnimationSpring();
+        
         Set<AbstractQuadTreeNode<SpatialData>* >::iterator endIt = updatableCells.end();
         for(Set<AbstractQuadTreeNode<SpatialData>* >::iterator it = updatableCells.begin();
             it != endIt;
@@ -136,8 +138,6 @@ void FoliageSystem::Process(float32 timeElapsed)
                 Vector3(max.x, min.y, max.z),
                 Vector3(max.x, max.y, max.z)
             };
-            
-            Vector4 layersAnimationSpring = vegetationRO->GetLayersAnimationSpring();
             
             for(uint32 layerIndex = 0; layerIndex < 4; ++layerIndex)
             {

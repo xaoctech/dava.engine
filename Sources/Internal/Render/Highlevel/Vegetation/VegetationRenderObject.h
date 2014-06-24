@@ -209,7 +209,7 @@ private:
     
     bool ReadyToRender();
     
-    size_t SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers);
+    size_t SelectDirectionIndex(const Vector3& cameraDirection, Vector<SortedBufferItem>& buffers);
     
     inline uint32 MapToResolution(float32 squareDistance);
     
@@ -235,6 +235,9 @@ private:
                         Image* src) const;
     
     void SetDensityMap(const Vector<bool>& densityBits);
+    
+    void PrepareToRenderMultipleMaterials(Camera *camera);
+    void PrepareToRenderSingleMaterial(Camera *camera);
     
 private:
     

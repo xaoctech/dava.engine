@@ -412,14 +412,28 @@ void VegetationRenderObject::PrepareToRender(Camera * camera)
 {
     if(!ReadyToRender())
     {
+        ClearRenderBatches();
+        
         return;
     }
     
+    if(renderData.size() > 1)
+    {
+        PrepareToRenderMultipleMaterials(camera);
+    }
+    else
+    {
+        PrepareToRenderSingleMaterial(camera);
+    }
+}
+
+void VegetationRenderObject::PrepareToRenderMultipleMaterials(Camera *camera)
+{
     ClearRenderBatches();
     
     Vector3 posScale(0.0f,
-                    0.0f,
-                    0.0f);
+                     0.0f,
+                     0.0f);
     
     Vector2 switchLodScale;
     
@@ -428,10 +442,10 @@ void VegetationRenderObject::PrepareToRender(Camera * camera)
     
     VegetationMaterialTransformer* materialTransform = vegetationGeometry->GetMaterialTransform();
     
-    //VegetationMetrics metrics;
-    //CollectMetrics(metrics);
-    
     Vector2 vegetationAnimationOffset[4];
+    
+    Vector3 cameraDirection = camera->GetDirection();
+    cameraDirection.Normalize();
     
     for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
@@ -452,11 +466,12 @@ void VegetationRenderObject::PrepareToRender(Camera * camera)
             Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
             
             uint32 indexBufferIndex = treeNode->data.rdoIndex;
+            Vector<SortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
             
             DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
             
-            size_t directionIndex = SelectDirectionIndex(camera, rdoVector[indexBufferIndex]);
-            rb->SetRenderDataObject(rdoVector[indexBufferIndex][directionIndex].rdo);
+            size_t directionIndex = SelectDirectionIndex(cameraDirection, indexBufferVector);
+            rb->SetRenderDataObject(indexBufferVector[directionIndex].rdo);
             
             float32 distanceScale = 1.0f;
             
@@ -497,7 +512,112 @@ void VegetationRenderObject::PrepareToRender(Camera * camera)
 #endif
         }
     }
+   
 }
+    
+void VegetationRenderObject::PrepareToRenderSingleMaterial(Camera *camera)
+{
+    size_t visibleCellCount = visibleCells.size();
+    size_t renderBatchCount = GetRenderBatchCount();
+    
+    VegetationRenderData* renderDataObj = renderData[0];
+    Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
+    
+    if(visibleCellCount > renderBatchCount)
+    {
+        VegetationMaterialTransformer* materialTransform = vegetationGeometry->GetMaterialTransform();
+        NMaterial* rootMaterial = renderDataObj->GetMaterial();
+        
+        size_t batchDelta = visibleCellCount - renderBatchCount;
+        for(size_t i = 0; i < batchDelta; ++i)
+        {
+            RenderBatch* rb = renderBatchPool.Get(rootMaterial, materialTransform);
+            AddRenderBatch(rb);
+        }
+    }
+    else if(visibleCellCount < renderBatchCount)
+    {
+        size_t batchDelta = renderBatchCount - visibleCellCount;
+        renderBatchPool.Return(renderDataObj->GetMaterial(), batchDelta);
+        
+        while(batchDelta > 0)
+        {
+            RemoveRenderBatch(GetRenderBatchCount() - 1);
+            batchDelta--;
+        }
+    }
+    
+    Vector3 posScale(0.0f,
+                     0.0f,
+                     0.0f);
+    
+    Vector2 switchLodScale;
+    
+    Vector2 vegetationAnimationOffset[4];
+    
+    Vector3 cameraDirection = camera->GetDirection();
+    cameraDirection.Normalize();
+
+    for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
+    {
+        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[cellIndex];
+        
+        RenderBatch* rb = GetRenderBatch(cellIndex);
+        NMaterial* mat = rb->GetMaterial();
+        
+        uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
+        
+        Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
+        
+        uint32 indexBufferIndex = treeNode->data.rdoIndex;
+        Vector<SortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
+        
+        DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
+        
+        size_t directionIndex = SelectDirectionIndex(cameraDirection, indexBufferVector);
+        rb->SetRenderDataObject(indexBufferVector[directionIndex].rdo);
+        
+        float32 distanceScale = 1.0f;
+        
+        if(treeNode->data.cameraDistance > MAX_VISIBLE_SCALING_DISTANCE)
+        {
+            distanceScale = Clamp(1.0f - ((treeNode->data.cameraDistance - MAX_VISIBLE_SCALING_DISTANCE) / (MAX_VISIBLE_CLIPPING_DISTANCE - MAX_VISIBLE_SCALING_DISTANCE)), 0.0f, 1.0f);
+        }
+        
+        posScale.x = treeNode->data.bbox.min.x - unitWorldSize[resolutionIndex].x * (indexBufferIndex % RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+        posScale.y = treeNode->data.bbox.min.y - unitWorldSize[resolutionIndex].y * (indexBufferIndex / RESOLUTION_TILES_PER_ROW[resolutionIndex]);
+        posScale.z = distanceScale;
+        
+        switchLodScale.x = resolutionIndex;
+        switchLodScale.y = Clamp(1.0f - (treeNode->data.cameraDistance / resolutionRanges[resolutionIndex].y), 0.0f, 1.0f);
+        
+        for(uint32 i = 0; i < 4; ++i)
+        {
+            vegetationAnimationOffset[i] = treeNode->data.animationOffset[i] * layersAnimationAmplitude.data[i];
+        }
+        
+        mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_SWITCH_LOD_SCALE,
+                              Shader::UT_FLOAT_VEC2,
+                              1,
+                              switchLodScale.data);
+        
+        mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_TILEPOS,
+                              Shader::UT_FLOAT_VEC3,
+                              1,
+                              posScale.data);
+        
+        mat->SetPropertyValue(VegetationPropertyNames::UNIFORM_VEGWAVEOFFSET,
+                              Shader::UT_FLOAT,
+                              8,
+                              vegetationAnimationOffset);
+        
+#ifdef VEGETATION_DRAW_LOD_COLOR
+        mat->SetPropertyValue(UNIFORM_LOD_COLOR, Shader::UT_FLOAT_VEC3, 1, &RESOLUTION_COLOR[resolutionIndex]);
+#endif
+
+    }
+}
+
     
 void VegetationRenderObject::SetTextureSheet(const FilePath& path)
 {
@@ -725,7 +845,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                                                   Vector<AbstractQuadTreeNode<SpatialData>*>& cellList,
                                                   bool evaluateVisibility)
 {
-    static Vector3 corners[8];
+    static Vector3 corners[4];
     if(node)
     {
         Frustum::eFrustumResult result = Frustum::EFR_INSIDE;
@@ -741,11 +861,23 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
             
             if(node->data.IsRenderable())
             {
-                node->data.bbox.GetCorners(corners);
-                float32 refDistance = FLT_MAX;
+                corners[0].x = node->data.bbox.min.x;
+                corners[0].y = node->data.bbox.min.y;
+                
+                corners[1].x = node->data.bbox.max.x;
+                corners[1].y = node->data.bbox.max.y;
+                
+                corners[2].x = node->data.bbox.max.x;
+                corners[2].y = node->data.bbox.min.y;
+                
+                corners[3].x = node->data.bbox.min.x;
+                corners[3].y = node->data.bbox.max.y;
+                
+                float32& refDistance = node->data.cameraDistance;
+                
+                refDistance = FLT_MAX;
                 for(uint32 cornerIndex = 0; cornerIndex < COUNT_OF(corners); ++cornerIndex)
                 {
-                    corners[cornerIndex].z = 0.0f;
                     float32 cornerDistance = (cameraPoint - corners[cornerIndex]).SquareLength();
                     if(cornerDistance < refDistance)
                     {
@@ -753,13 +885,7 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                     }
                 }
                 
-                //Vector3 center = node->data.bbox.GetCenter();
-                //center.z = 0.0f;
-                //float32 centerDistance = (cameraPoint - center).SquareLength();
-                
-                node->data.cameraDistance = refDistance;
-                
-                uint32 resolutionId = MapToResolution(node->data.cameraDistance);
+                uint32 resolutionId = MapToResolution(refDistance);
                 if(node->IsTerminalLeaf() ||
                    RESOLUTION_CELL_SQUARE[resolutionId] >= node->data.GetResolutionId())
                 {
@@ -1178,11 +1304,8 @@ bool VegetationRenderObject::GetVegetationVisible() const
     return vegetationVisible;
 }
 
-size_t VegetationRenderObject::SelectDirectionIndex(Camera* cam, Vector<SortedBufferItem>& buffers)
+size_t VegetationRenderObject::SelectDirectionIndex(const Vector3& cameraDirection, Vector<SortedBufferItem>& buffers)
 {
-    Vector3 cameraDirection = cam->GetDirection();
-    cameraDirection.Normalize();
-    
     size_t index = 0;
     float32 currentCosA = 0.0f;
     size_t directionCount = buffers.size();
