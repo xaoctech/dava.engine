@@ -41,7 +41,10 @@ using namespace DAVA;
         }
         else
         {
-            context.multiThreaded = YES;
+            if([context respondsToSelector:NSSelectorFromString(@"setMultiThreaded:")])
+            {
+                context.multiThreaded = YES;
+            }
         }
         
         if (!context || ![EAGLContext setCurrentContext:context])
