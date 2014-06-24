@@ -42,9 +42,7 @@ namespace DAVA
 
 UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = FALSE*/)
 :	UIControl(rect, rectInAbsoluteCoordinates)
-    , textColor(1.0f, 1.0f, 1.0f, 1.0f)
     , shadowOffset(0, 0)
-    , shadowColor(0, 0, 0, 1)
 {
     SetInputEnabled(false, false);
     textBlock = TextBlock::Create(Vector2(rect.dx, rect.dy));
@@ -54,6 +52,9 @@ UIStaticText::UIStaticText(const Rect &rect, bool rectInAbsoluteCoordinates/* = 
     shadowBg = new UIControlBackground();
     textBg = new UIControlBackground();
     textBg->SetDrawType(UIControlBackground::DRAW_ALIGNED);
+
+    SetTextColor(Color::White);
+    SetShadowColor(Color::Black);
     SetTextAlign(ALIGN_HCENTER | ALIGN_VCENTER);
 }
 
@@ -80,8 +81,6 @@ void UIStaticText::CopyDataFrom(UIControl *srcControl)
     SafeRelease(textBlock);
     textBlock = t->textBlock->Clone();
 
-    textColor = t->textColor;
-    shadowColor = t->shadowColor;
     shadowOffset = t->shadowOffset;
 
     SafeRelease(shadowBg);
@@ -118,7 +117,7 @@ void UIStaticText::SetFont(Font * _font)
 
 void UIStaticText::SetTextColor(const Color& color)
 {
-    textColor = color;
+    textBg->SetColor(color);
 }
 
 void UIStaticText::SetShadowOffset(const Vector2 &offset)
@@ -128,7 +127,7 @@ void UIStaticText::SetShadowOffset(const Vector2 &offset)
 
 void UIStaticText::SetShadowColor(const Color &color)
 {
-    shadowColor = color;
+    shadowBg->SetColor(color);
 }
 
 void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
@@ -176,12 +175,12 @@ const Vector2 & UIStaticText::GetTextSize()
 
 const Color &UIStaticText::GetTextColor() const
 {
-    return textColor;
+    return textBg->GetColor();
 }
 
 const Color &UIStaticText::GetShadowColor() const
 {
-    return shadowColor;
+    return shadowBg->GetColor();
 }
 
 const Vector2 &UIStaticText::GetShadowOffset() const
@@ -197,7 +196,7 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
     UIControl::Draw(geometricData);
 
-    if(0 != shadowColor.a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
+    if(0 != shadowBg->GetDrawColor().a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
     {
         UIGeometricData shadowGeomData = geometricData;
 
@@ -206,12 +205,10 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
         shadowBg->SetAlign(textBg->GetAlign());
         shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-        shadowBg->SetColor(shadowColor);
         shadowBg->Draw(shadowGeomData);
     }
 
     textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-    textBg->SetColor(textColor);
     textBg->Draw(geometricData);
 }
 
@@ -315,6 +312,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     node->Set("font", nodeValue);
 
     //TextColor
+    const Color &textColor = GetTextColor();
     if (baseControl->GetTextColor() != textColor)
     {
         nodeValue->SetColor(textColor);
@@ -329,6 +327,7 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
     }
 
     // ShadowColor
+    const Color &shadowColor = GetShadowColor();
     if (baseControl->GetShadowColor() != shadowColor)
     {
         nodeValue->SetColor(shadowColor);
@@ -392,14 +391,14 @@ YamlNode * UIStaticText::SaveToYamlNode(UIYamlLoader * loader)
 
 Animation * UIStaticText::TextColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 0*/)
 {
-    LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &textColor, finalColor, time, interpolationFunc);
+    LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &textBg->color, finalColor, time, interpolationFunc);
     animation->Start(track);
     return animation;
 }
 
 Animation * UIStaticText::ShadowColorAnimation(const Color & finalColor, float32 time, Interpolation::FuncType interpolationFunc /*= Interpolation::LINEAR*/, int32 track /*= 1*/)
 {
-    LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &shadowColor, finalColor, time, interpolationFunc);
+    LinearAnimation<Color> * animation = new LinearAnimation<Color>(this, &shadowBg->color, finalColor, time, interpolationFunc);
     animation->Start(track);
     return animation;
 }

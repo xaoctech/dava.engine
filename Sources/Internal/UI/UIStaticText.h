@@ -105,10 +105,8 @@ protected:
 
 
 protected:
-    Color textColor;
     TextBlock *textBlock;
     Vector2 shadowOffset;
-    Color shadowColor;
     UIControlBackground *shadowBg;
     UIControlBackground *textBg;
 
