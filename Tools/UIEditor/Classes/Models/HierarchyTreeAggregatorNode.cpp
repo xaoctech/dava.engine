@@ -41,7 +41,7 @@
 
 using namespace DAVA;
 
-HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect, bool updateLibrary) :
+HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent, const QString& name, const Rect& rect) :
 	HierarchyTreeScreenNode(parent, name),
     listDelegate(NULL)
 {
@@ -50,8 +50,7 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 }
 
 HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
-														 const HierarchyTreeAggregatorNode* base,
-                                                         bool updateLibrary)
+														 const HierarchyTreeAggregatorNode* base)
 :	HierarchyTreeScreenNode(parent, base),
     listDelegate(NULL)
 {
@@ -300,7 +299,6 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 void HierarchyTreeAggregatorNode::SetName(const QString& name)
 {
 	HierarchyTreeScreenNode::SetName(name);
-	//LibraryController::Instance()->UpdateLibrary();
 }
 
 const HierarchyTreeAggregatorNode::CHILDS& HierarchyTreeAggregatorNode::GetChilds() const
