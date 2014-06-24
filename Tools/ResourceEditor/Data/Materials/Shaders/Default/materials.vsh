@@ -555,34 +555,32 @@ void main()
 
 #if defined(SPHERICAL_LIT)
 
-#define Y00	    (0.282094)                                              // (1.0 / 2.0) * sqrt(1.0 / PI) * PI / PI
-#define Y1_1(n) (0.325734 * (n.y))                                      // (1.0 / 2.0) * sqrt(3.0 / PI) * (n.y) * 2.094395 / PI
-#define Y10(n)  (0.325734 * (n.z))                                      // (1.0 / 2.0) * sqrt(3.0 / PI) * (n.z) * 2.094395 / PI
-#define Y11(n)  (0.325734 * (n.x))                                      // (1.0 / 2.0) * sqrt(3.0 / PI) * (n.x) * 2.094395 / PI
+#define A0		(0.282094)
+#define A1 		(0.325734)
+
 #define Y2_2(n) (0.273136 * (n.y * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398 / PI
 #define Y2_1(n) (0.273136 * (n.y * n.z))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398 / PI
 #define Y20(n)  (0.078847 * (3.0 * n.z * n.z - 1.0))  					// (1.0 / 4.0) * sqrt(5.0 / PI) * ((3.0 * n.z * n.z - 1.0)) * 0.785398 / PI
 #define Y21(n)  (0.273136 * (n.z * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398 / PI
 #define Y22(n)  (0.136568 * (n.x * n.x - n.y * n.y))                    // (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398 / PI
 
-	vec3 sphericalLightFactor = Y00 * sphericalHarmonics[0];
+	vec3 sphericalLightFactor = A0 * sphericalHarmonics[0];
 	
 #if defined(SPHERICAL_HARMONICS_4) || defined(SPHERICAL_HARMONICS_9)
 	vec3 normal = vec3(invViewMatrix * vec4((eyeCoordsPosition - worldViewObjectCenter), 0.0));
 	normal /= boundingBoxSize;
 	vec3 n = normalize(normal);
 
-	sphericalLightFactor += Y1_1(n) * sphericalHarmonics[1];
-	sphericalLightFactor += Y10(n) * sphericalHarmonics[2];
-	sphericalLightFactor += Y11(n) * sphericalHarmonics[3];
+	mat3 shMatrix = mat3(sphericalHarmonics[1], sphericalHarmonics[2], sphericalHarmonics[3]);
+	sphericalLightFactor += A1 * shMatrix * vec3(n.y, n.z, n.x);
 #endif
 
 #if defined(SPHERICAL_HARMONICS_9)
-	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4];
-	sphericalLightFactor += Y2_1(n) * sphericalHarmonics[5];
-	sphericalLightFactor += Y20(n) * sphericalHarmonics[6];
-	sphericalLightFactor += Y21(n) * sphericalHarmonics[7];
-	sphericalLightFactor += Y22(n) * sphericalHarmonics[8];
+	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4] * 1.256637;
+	sphericalLightFactor += Y2_1(n) * sphericalHarmonics[5] * 1.256637;
+	sphericalLightFactor += Y20(n) * sphericalHarmonics[6] * 1.256637;
+	sphericalLightFactor += Y21(n) * sphericalHarmonics[7] * 1.256637;
+	sphericalLightFactor += Y22(n) * sphericalHarmonics[8] * 1.256637;
 #endif
 	
 	#if defined(VERTEX_COLOR)
