@@ -30,27 +30,22 @@ using namespace DAVA;
 {
 	if (self = [super init])
 	{
-        EAGLContext* tmpContext = [EAGLContext alloc];
-		context = [tmpContext initWithAPI:kEAGLRenderingAPIOpenGLES3];
+        context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
         
         if(nil == context)
         {
-            [tmpContext release];
-            
             context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-        }
-        else
-        {
-            if([context respondsToSelector:NSSelectorFromString(@"setMultiThreaded:")])
-            {
-                context.multiThreaded = YES;
-            }
         }
         
         if (!context || ![EAGLContext setCurrentContext:context])
 		{
             [self release];
             return nil;
+        }
+        
+        if([context respondsToSelector:NSSelectorFromString(@"setMultiThreaded:")])
+        {
+            context.multiThreaded = YES;
         }
 
 		// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer

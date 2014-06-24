@@ -1230,7 +1230,7 @@ bool VegetationRenderObject::ReadyToRender()
     renderFlag = (renderFlag && qualityAllowsVegetation);
 #endif
     
-    return renderFlag && vegetationVisible && (RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW)) && (renderData.size() > 0);
+    return renderFlag && vegetationVisible && (renderData.size() > 0);
 }
 
 void VegetationRenderObject::SetPerturbation(const Vector3& point,
