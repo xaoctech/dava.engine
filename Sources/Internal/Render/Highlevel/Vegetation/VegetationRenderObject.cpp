@@ -1698,7 +1698,7 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
                     metrics.polyCountPerLayerPerLod[layerIndex].resize(renderDataObj->polyCountPerInstance[layerIndex].size());
                 }
                 
-                for(size_t lodIndex = 0; lodIndex < maxLayerCount; ++lodIndex)
+                for(size_t lodIndex = 0; lodIndex < maxLodCount; ++lodIndex)
                 {
                     metrics.instanceCountPerLOD[lodIndex] += renderDataObj->instanceCount[layerIndex][lodIndex];
                     metrics.polyCountPerLOD[lodIndex] += (renderDataObj->polyCountPerInstance[layerIndex][lodIndex] * renderDataObj->instanceCount[layerIndex][lodIndex]);
