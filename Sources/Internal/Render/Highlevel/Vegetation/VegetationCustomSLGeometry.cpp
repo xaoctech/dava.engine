@@ -633,16 +633,19 @@ void VegetationCustomSLGeometry::Rotate(float32 angle,
     Matrix4 rotMat;
     rotMat.CreateRotation(Vector3(0.0f, 0.0f, 1.0f), DegToRad(angle));
     
+    Matrix4 normalMatrix4;
+    rotMat.GetInverse(normalMatrix4);
+    normalMatrix4.Transpose();
+    Matrix3 normalMatrix3;
+    normalMatrix3 = normalMatrix4;
+
     size_t sourceVertexCount = sourcePositions.size();
     for(size_t vertexIndex = 0; vertexIndex < sourceVertexCount; ++vertexIndex)
     {
         Vector3 transformedVertex = sourcePositions[vertexIndex] * rotMat;
         rotatedPositions.push_back(transformedVertex);
         
-        Vector3 normalEndPoint = sourcePositions[vertexIndex] + sourceNormals[vertexIndex];
-        normalEndPoint = normalEndPoint * rotMat;
-        
-        Vector3 transformedNormal = normalEndPoint - transformedVertex;
+        Vector3 transformedNormal = sourceNormals[vertexIndex] * normalMatrix3;
         transformedNormal.Normalize();
         
         rotatedNormals.push_back(transformedNormal);
@@ -663,25 +666,12 @@ void VegetationCustomSLGeometry::Scale(const Vector3& clusterPivot,
     for(size_t vertexIndex = 0; vertexIndex < sourceVertexCount; ++vertexIndex)
     {
         Vector3 transformedVertex;
-        Lerp(scale, clusterPivot, sourcePositions[vertexIndex], transformedVertex);
+        transformedVertex.Lerp(clusterPivot, sourcePositions[vertexIndex], scale);
+        
         scaledPositions.push_back(transformedVertex);
-        
-        Vector3 normalEndPoint = sourcePositions[vertexIndex] + sourceNormals[vertexIndex];
-        Lerp(scale, clusterPivot, normalEndPoint, normalEndPoint);
-        
-        Vector3 transformedNormal = normalEndPoint - transformedVertex;
-        transformedNormal.Normalize();
-        
-        scaledNormals.push_back(transformedNormal);
+        scaledNormals.push_back(sourceNormals[vertexIndex]);
     }
     
-}
-
-void VegetationCustomSLGeometry::Lerp(float32 t, const Vector3& src, const Vector3& dst, Vector3& result)
-{
-    result.x = src.x + t * (dst.x - src.x);
-    result.y = src.y + t * (dst.y - src.y);
-    result.z = src.z + t * (dst.z - src.z);
 }
 
 void VegetationCustomSLGeometry::GenerateIndexData(const Vector<CustomGeometryEntityData>& sourceGeomData,

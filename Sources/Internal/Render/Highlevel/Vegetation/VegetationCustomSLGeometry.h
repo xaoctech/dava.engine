@@ -199,8 +199,6 @@ private:
                Vector<Vector3>& scaledPositions,
                Vector<Vector3>& scaledNormals);
     
-    void Lerp(float32 t, const Vector3& src, const Vector3& dst, Vector3& result);
-    
     uint32 PrepareResolutionId(uint32 currentResolutionId, uint32 cellX, uint32 cellY) const;
     void InitCustomGeometry(VegetationCustomGeometrySerializationData* geometryData);
     
