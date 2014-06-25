@@ -42,7 +42,9 @@ SpeedTreeObject::SpeedTreeObject()
 {
     type = TYPE_SPEED_TREE;
 
-    sphericalHarmonics.assign(SPHERICAL_HARMONICS_BASIS_MAX_SIZE, Vector3());
+    Vector<Vector3> fakeSH(9, Vector3());
+    fakeSH[0].x = fakeSH[0].y = fakeSH[0].z = 1.f/0.564188; //fake SH value to make original object color
+    SetSphericalHarmonics(fakeSH);
 }
     
 SpeedTreeObject::~SpeedTreeObject()
