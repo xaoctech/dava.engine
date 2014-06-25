@@ -36,6 +36,7 @@
 #include "Sound/SoundSystem.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/StaticOcclusion.h"
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Components/LodComponent.h"
@@ -138,6 +139,7 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
     // Prepare render objects
     Vector<Entity*> entities;
     Vector<RenderObject*> renderObjectsArray;
+    Landscape * landscape = 0;
     GetScene()->GetChildEntitiesWithComponent(entities, Component::RENDER_COMPONENT);
     
     uint32 size = (uint32)entities.size();
@@ -151,6 +153,10 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
         {
             renderObjectsArray.push_back(renderObject);
             renderObject->SetFlags(renderObject->GetFlags() | RenderObject::VISIBLE_STATIC_OCCLUSION);
+        }
+        if (RenderObject::TYPE_LANDSCAPE == renderObject->GetType())
+        {
+            landscape = DynamicTypeCheck<Landscape*>(renderObject);
         }
     }
     
@@ -181,7 +187,7 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
     
     staticOcclusion->SetScene(GetScene());
     staticOcclusion->SetRenderSystem(GetScene()->GetRenderSystem());
-    staticOcclusion->BuildOcclusionInParallel(renderObjectsArray, &data, (StaticOcclusion::eIndexRenew)renewIndex);
+    staticOcclusion->BuildOcclusionInParallel(renderObjectsArray, landscape, &data, (StaticOcclusion::eIndexRenew)renewIndex);
     
     SceneForceLod(0);
     

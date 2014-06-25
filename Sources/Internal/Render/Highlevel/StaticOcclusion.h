@@ -48,6 +48,7 @@ class RenderBatch;
 class RenderSystem;
 class Scene;
 class Sprite;
+class Landscape;
     
 class StaticOcclusionData
 {
@@ -87,6 +88,7 @@ public:
     inline void SetRenderSystem(RenderSystem * _renderSystem);
     
     void BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
+                                  Landscape * landscape,
                                   StaticOcclusionData * currentData,
                                   eIndexRenew renewIndexEnum);
     
@@ -136,6 +138,7 @@ private:
     RenderSystem * renderSystem;
     Scene * scene;
     Vector<RenderObject*> renderObjectsArray;
+    Landscape * landscape;
     Map<RenderObject*, Vector<RenderObject*> > equalVisibilityArray;
 };
     
