@@ -192,7 +192,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(RenderSystem * r
     RenderManager::Instance()->SetViewport(Rect(0, 0, (float32)REFLECTION_TEX_SIZE, (float32)REFLECTION_TEX_SIZE), true);            
 
     reflectionPass->SetWaterLevel(waterBox.max.z);
-    reflectionPass->Draw(renderSystem, true);
+    reflectionPass->Draw(renderSystem, RenderManager::ALL_BUFFERS);
 
         
     //discrad depth(everything?) here
@@ -204,7 +204,7 @@ void MainForwardRenderPass::PrepareReflectionRefractionTextures(RenderSystem * r
     RenderManager::Instance()->SetViewport(Rect(0, 0, (float32)REFLECTION_TEX_SIZE, (float32)REFLECTION_TEX_SIZE), true);            
 
     refractionPass->SetWaterLevel(waterBox.min.z);
-    refractionPass->Draw(renderSystem, true);
+    refractionPass->Draw(renderSystem, RenderManager::ALL_BUFFERS);
 
     //discrad depth(everything?) here
     RenderManager::Instance()->DiscardFramebufferHW(RenderManager::DEPTH_ATTACHMENT|RenderManager::STENCIL_ATTACHMENT);
