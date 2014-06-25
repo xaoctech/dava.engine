@@ -91,7 +91,6 @@ public:
     RenderObject * Clone(RenderObject *newObject);
     virtual void Save(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Load(KeyedArchive *archive, SerializationContext *serializationContext);
-    void PrepareRenderData();
     
     virtual void PrepareToRender(Camera *camera);
     virtual void RecalcBoundingBox();
