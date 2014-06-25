@@ -537,6 +537,14 @@ void SceneInfo::AddChild(const QString & key, QtPropertyData *parent)
     parent->ChildAdd(key, propData);
 }
 
+void SceneInfo::AddChild(const QString & key, const QString& toolTip, QtPropertyData *parent)
+{
+    QtPropertyData *propData = new QtPropertyData(0);
+	propData->SetEditable(false);
+    propData->SetToolTip(toolTip);
+    parent->ChildAdd(key, propData);
+}
+
 void SceneInfo::SetChild(const QString & key, const QVariant &value, QtPropertyData *parent)
 {
 	if(NULL != parent)
@@ -779,39 +787,39 @@ void SceneInfo::InitializeVegetationInfoSection()
 {
     QtPropertyData* header = CreateInfoHeader("Vegetation Info");
     
-    AddChild("Poly count", header);
-    AddChild("Instance count", header);
+    AddChild("Poly count", "Visible triangles count", header);
+    AddChild("Instance count", "Visible vegetation instance count", header);
     
-    AddChild("Poly count in LOD #0", header);
-    AddChild("Poly count in LOD #1", header);
-    AddChild("Poly count in LOD #2", header);
+    AddChild("Poly count in LOD #0", "Visible triangles count in LOD #0", header);
+    AddChild("Poly count in LOD #1", "Visible triangles count in LOD #1", header);
+    AddChild("Poly count in LOD #2", "Visible triangles count in LOD #2", header);
     
-    AddChild("Instance count in LOD #0", header);
-    AddChild("Instance count in LOD #1", header);
-    AddChild("Instance count in LOD #2", header);
+    AddChild("Instance count in LOD #0", "Visible vegetation instance count in LOD #0", header);
+    AddChild("Instance count in LOD #1", "Visible vegetation instance count in LOD #1", header);
+    AddChild("Instance count in LOD #2", "Visible vegetation instance count in LOD #2", header);
     
-    AddChild("Poly count in layer #0", header);
-    AddChild("Poly count in layer #1", header);
-    AddChild("Poly count in layer #2", header);
-    AddChild("Poly count in layer #3", header);
+    AddChild("Poly count in layer #0", "Visible triangles count in layer #0", header);
+    AddChild("Poly count in layer #1", "Visible triangles count in layer #1", header);
+    AddChild("Poly count in layer #2", "Visible triangles count in layer #2", header);
+    AddChild("Poly count in layer #3", "Visible triangles count in layer #3", header);
     
-    AddChild("Instance count in layer #0", header);
-    AddChild("Instance count in layer #1", header);
-    AddChild("Instance count in layer #2", header);
-    AddChild("Instance count in layer #3", header);
+    AddChild("Instance count in layer #0", "Visible vegetation instance count in layer #0", header);
+    AddChild("Instance count in layer #1", "Visible vegetation instance count in layer #1", header);
+    AddChild("Instance count in layer #2", "Visible vegetation instance count in layer #2", header);
+    AddChild("Instance count in layer #3", "Visible vegetation instance count in layer #3", header);
     
-    AddChild("Poly count in LODs in layer #0", header);
-    AddChild("Poly count in LODs in layer #1", header);
-    AddChild("Poly count in LODs in layer #2", header);
-    AddChild("Poly count in LODs in layer #3", header);
+    AddChild("Poly count in LODs in layer #0", "Vegetation model info for layer_0 entity. LOD 0 / LOD 1 / LOD 2", header);
+    AddChild("Poly count in LODs in layer #1", "Vegetation model info for layer_1 entity. LOD 0 / LOD 1 / LOD 2", header);
+    AddChild("Poly count in LODs in layer #2", "Vegetation model info for layer_2 entity. LOD 0 / LOD 1 / LOD 2", header);
+    AddChild("Poly count in LODs in layer #3", "Vegetation model info for layer_3 entity. LOD 0 / LOD 1 / LOD 2", header);
     
-    AddChild("Quadtree leaf count", header);
+    AddChild("Quadtree leaf count", "Number of quad tree leafs covering visible vegetation surface", header);
     
-    AddChild("Quadtree leaf count in LOD #0", header);
-    AddChild("Quadtree leaf count in LOD #1", header);
-    AddChild("Quadtree leaf count in LOD #2", header);
+    AddChild("Quadtree leaf count in LOD #0", "Number of quad tree leafs covering visible vegetation surface for LOD #0", header);
+    AddChild("Quadtree leaf count in LOD #1", "Number of quad tree leafs covering visible vegetation surface for LOD #1", header);
+    AddChild("Quadtree leaf count in LOD #2", "Number of quad tree leafs covering visible vegetation surface for LOD #2", header);
     
-    AddChild("RenderBatch count", header);
+    AddChild("RenderBatch count", "Number of renderbatches used to render visible vegetation", header);
 }
 
 void SceneInfo::RefreshVegetationInfoSection()
