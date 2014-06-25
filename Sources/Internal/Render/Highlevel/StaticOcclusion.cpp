@@ -35,6 +35,8 @@
 #include "Render/Image/Image.h"
 #include "Utils/StringFormat.h"
 #include "Platform/SystemTimer.h"
+#include "Render/Highlevel/Landscape.h"
+#include "Render/Image/ImageSystem.h"
 
 namespace DAVA
 {
@@ -50,6 +52,7 @@ StaticOcclusion::StaticOcclusion()
     renderTargetSprite = 0;
     renderTargetTexture = 0;
     currentData = 0;
+    landscape = 0;
 }
 
 StaticOcclusion::~StaticOcclusion()
@@ -65,6 +68,7 @@ StaticOcclusion::~StaticOcclusion()
 
     
 void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObjects,
+                                               Landscape * _landscape,
                                                StaticOcclusionData * _currentData,
                                                eIndexRenew renewIndexEnum)
 {
@@ -109,6 +113,7 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
     }
     
     renderObjectsArray = renderObjects;
+    landscape = _landscape;
     recordedBatches.reserve(10000);
 }
     
@@ -291,6 +296,16 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                 {
                     Vector3 renderPosition = startPosition + directionX * stepX * stepSize + directionY * stepY * stepSize;
                     
+                    if (landscape)
+                    {
+                        Vector3 pointOnLandscape;
+                        if (landscape->PlacePoint(renderPosition, pointOnLandscape))
+                        {
+                            if (renderPosition.z < pointOnLandscape.z)
+                                renderPosition.z = pointOnLandscape.z + 0.5f;
+                        }
+                    }
+                    
                     //renderPositions.push_back(renderPosition);
                     camera->SetPosition(renderPosition);
                     camera->SetDirection(directions[effectiveSides[side][realSideIndex]]);
@@ -362,10 +377,11 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                         recordedBatches.clear();
                     }
 
-                    //if ((stepX == 0) && (stepY == 0) && effectiveSides[side][realSideIndex] == side)
+//                    if (/*(stepX == 0) && (stepY == 0) &&*/ effectiveSides[side][realSideIndex] == side)
 //                    {
 //                        Image * image = renderTargetTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_OPAQUE);
-//                        ImageLoader::Save(image, Format("~doc:/renderimage_b%d_s_%d_es_%d_%d_%d.png", blockIndex, side, effectiveSides[side][realSideIndex] ,stepX, stepY));
+//                        ImageSystem::Instance()->Save(FilePath(Format("~doc:/renderimage_b%d_s_%d_es_%d_%d_%d.png", blockIndex, side, effectiveSides[side][realSideIndex] ,stepX, stepY)),
+//                                                      image);
 //                        SafeRelease(image);
 //                    }
                 }
