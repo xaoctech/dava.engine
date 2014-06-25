@@ -962,7 +962,7 @@ void SceneInfo::UpdateLayersSectionStructure(SceneEditor2 *scene)
     
     if(scene)
     {
-        RenderPass* renderPass = scene->renderSystem->GetMainForwardRenderPass();
+        RenderPass* renderPass = scene->renderSystem->GetMainRenderPass();
         uint32 layerCount = renderPass->GetRenderLayerCount();
         for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
         {
@@ -980,7 +980,7 @@ void SceneInfo::RefreshLayersSection()
         
         QtPropertyData* header = GetInfoHeader("Fragments Info");
     
-        RenderPass* renderPass = activeScene->renderSystem->GetMainForwardRenderPass();
+        RenderPass* renderPass = activeScene->renderSystem->GetMainRenderPass();
         uint32 layerCount = renderPass->GetRenderLayerCount();
         for(uint32 layerIndex = 0; layerIndex < layerCount; ++layerIndex)
         {
