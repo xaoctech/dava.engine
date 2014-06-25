@@ -337,7 +337,7 @@ Font * UIYamlLoader::GetFontByName(const String & fontName)
     
 void UIYamlLoader::LoadFonts(const FilePath & yamlPathname)
 {
-	UIYamlLoader * loader = new UIYamlLoader();
+    ScopedPtr<UIYamlLoader> loader( new UIYamlLoader() );
     YamlNode * rootNode = loader->CreateRootNode(yamlPathname);
     if (!rootNode)
     {
@@ -347,7 +347,6 @@ void UIYamlLoader::LoadFonts(const FilePath & yamlPathname)
     }
     loader->LoadFontsFromNode(rootNode);
     SafeRelease(rootNode);
-	loader->Release();
 }
     
 bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
@@ -549,6 +548,7 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
             
 			//fontMap[t->first] = font;
 			FontManager::Instance()->SetFontName(font, t->first);
+            SafeRelease(font);
 		}
 		else if(type == "GraphicsFont")
 		{

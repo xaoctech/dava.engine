@@ -34,8 +34,8 @@
 #include "FileSystem/DynamicMemoryFile.h"
 #include "Render/Texture.h"
 #include "Utils/Utils.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/LibDxtHelper.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "Render/Image/LibDdsHelper.h"
 
 #include "Render/GPUFamilyDescriptor.h"
 
@@ -115,8 +115,7 @@ const String TextureDescriptor::DESCRIPTOR_EXTENSION = ".tex";
 const String TextureDescriptor::SOURCEFILE_EXTENSION = ".png";
 
 
-TextureDescriptor::TextureDescriptor(bool needCompressionSettings /*= true*/)
-	: isCompressedFile(!needCompressionSettings)
+TextureDescriptor::TextureDescriptor()
 {
 	SetDefaultValues();
 }
@@ -157,7 +156,7 @@ void TextureDescriptor::SetDefaultValues()
 	pathname = FilePath();
 	format = FORMAT_INVALID;
 
-//	isCompressedFile = false; not need reset this flag
+//	isCompressedFile = false;
 
 	drawSettings.SetDefaultValues();
 	dataSettings.SetDefaultValues();
@@ -617,16 +616,19 @@ uint32 TextureDescriptor::GetConvertedCRC(eGPUFamily forGPU) const
 {
 	if(compression[forGPU].format == FORMAT_INVALID) return 0;
 
-
 	FilePath filePath = GPUFamilyDescriptor::CreatePathnameForGPU(this, forGPU);
 	if(filePath.IsEqualToExtension(".pvr"))
 	{
-		return LibPVRHelper::GetCRCFromFile(filePath) + GenerateDescriptorCRC();
+        LibPVRHelper helper;
+		return helper.GetCRCFromFile(filePath) + GenerateDescriptorCRC();
 	}
 	else if(filePath.IsEqualToExtension(".dds"))
 	{
-		return LibDxtHelper::GetCRCFromFile(filePath) + GenerateDescriptorCRC();
+        LibDdsHelper helper;
+		return helper.GetCRCFromFile(filePath) + GenerateDescriptorCRC();
 	}
+    
+    Logger::Error("[TextureDescriptor::GetConvertedCRC] can't get converted crc for file %s", filePath.GetStringValue().c_str());
     DVASSERT(0);//converted means only pvr or dds
     return 0;
 }

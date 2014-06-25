@@ -56,6 +56,8 @@ namespace Settings
 	static const DAVA::FastName Scene_CameraSpeed2("Scene/CameraSpeed2");
 	static const DAVA::FastName Scene_CameraSpeed3("Scene/CameraSpeed3");
 	static const DAVA::FastName Scene_CameraFOV("Scene/CameraFOV");
+	static const DAVA::FastName Scene_CameraNear("Scene/CameraNear");
+	static const DAVA::FastName Scene_CameraFar("Scene/CameraFar");
     static const DAVA::FastName Scene_SelectionSequent("Scene/SelectionSequent");
     static const DAVA::FastName Scene_SelectionDrawMode("Scene/SelectionDrawMode");
     static const DAVA::FastName Scene_CollisionDrawMode("Scene/CollisionDrawMode");
@@ -76,6 +78,7 @@ namespace Settings
     static const DAVA::FastName Internal_MaterialsLightViewMode("Internal/MaterialsLightViewMode");
     static const DAVA::FastName Internal_MaterialsShowLightmapCanvas("Internal/MaterialsShowLightmapCanvas");
     static const DAVA::FastName Internal_LicenceAccepted("Internal/LicenceAccepted");
+	static const DAVA::FastName Internal_LODEditorMode("Internal/LODEditorMode");
 };
 
 struct SettingsNode

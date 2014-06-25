@@ -205,7 +205,7 @@ NMaterial::NMaterial() :
 materialType(NMaterial::MATERIALTYPE_NONE),
 materialKey(0),
 parent(NULL),
-requiredVertexFormat(EVF_FORCE_DWORD),
+requiredVertexFormat(0),
 lightCount(0),
 illuminationParams(NULL),
 materialSetFlags(8),
@@ -668,6 +668,10 @@ NMaterial* NMaterial::Clone()
 	{
 		clonedMaterial = NMaterial::CreateMaterialInstance();
 	}
+    else if(NMaterial::MATERIALTYPE_GLOBAL == materialType)
+    {
+        clonedMaterial = NMaterial::CreateGlobalMaterial(materialName);
+    }
 	else
 	{
 		DVASSERT(false && "Material is not initialized properly!");
@@ -1152,6 +1156,7 @@ void NMaterial::UpdateMaterialTemplate()
         DVASSERT(baseTechnique);
     }
 	
+    requiredVertexFormat = 0;
 	uint32 passCount = baseTechnique->GetPassCount();
 	for(uint32 i = 0; i < passCount; ++i)
 	{
@@ -1203,6 +1208,7 @@ void NMaterial::UpdateRenderPass(const FastName& passName,
 	
 	Shader* shader = pass->CompileShader(instanceDefines);
 	passInstance->SetShader(shader);
+    requiredVertexFormat |= shader->GetRequiredVertexFormat();
 	SafeRelease(shader);
 	
 	passInstance->SetRenderer(parentRenderState->renderer);
@@ -1756,6 +1762,7 @@ void NMaterial::SubclassRenderState(RenderStateData& newState)
 
 void NMaterial::UpdateShaderWithFlags()
 {
+    requiredVertexFormat = 0;
 	if(baseTechnique)
 	{
 		FastNameSet effectiveFlags(16);
@@ -1770,10 +1777,11 @@ void NMaterial::UpdateShaderWithFlags()
 			
 			Shader* shader = techniquePass->CompileShader(effectiveFlags);
 			pass->SetShader(shader);
+            requiredVertexFormat |= shader->GetRequiredVertexFormat();
 			SafeRelease(shader);
 			
             BuildTextureParamsCache(pass);
-			BuildActiveUniformsCacheParamsCache(pass);
+			BuildActiveUniformsCacheParamsCache(pass);                            
 		}
 	}
 
@@ -2726,7 +2734,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
 
 		ret.push_back(FLAG_WAVE_ANIMATION);
-		ret.push_back(FLAG_FAST_NORMALIZATION);
+		ret.push_back(FLAG_FAST_NORMALIZATION);        
 
 		ret.push_back(FLAG_SPECULAR);
 		ret.push_back(FLAG_TANGENT_SPACE_WATER_REFLECTIONS);
@@ -2746,8 +2754,7 @@ VariantType NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueGet(void *obje
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-	ret.SetBool(state->IsFlagEffective(member));
-	
+    ret.SetBool(state->IsFlagEffective(member));
 	return ret;
 }
 
@@ -2756,19 +2763,31 @@ void NMaterial::NMaterialStateDynamicFlagsInsp::MemberValueSet(void *object, con
 	NMaterial *state = (NMaterial*) object;
 	DVASSERT(state);
 	
-    if(value.GetType() == VariantType::TYPE_NONE && state->GetMaterialType() != MATERIALTYPE_GLOBAL)
+	NMaterial::eFlagValue newValue = NMaterial::FlagOff;
+	if(value.GetType() == VariantType::TYPE_BOOLEAN && value.AsBool())
+	{
+		newValue = NMaterial::FlagOn;
+	}
+
+    if(state->GetMaterialType() == MATERIALTYPE_GLOBAL)
     {
-        state->ResetFlag(member);
+        // global material accepts only valid values 
+        if(value.GetType() == VariantType::TYPE_BOOLEAN)
+        {
+    	    state->SetFlag(member, newValue);
+        }
     }
     else
     {
-	    NMaterial::eFlagValue newValue = NMaterial::FlagOff;
-	    if(value.AsBool())
-	    {
-		    newValue = NMaterial::FlagOn;
-	    }
-	
-	    state->SetFlag(member, newValue);
+        // empty value is thread as flag remove
+        if(value.GetType() == VariantType::TYPE_NONE)
+        {
+            state->ResetFlag(member);
+        }
+        else
+        {
+	        state->SetFlag(member, newValue);
+        }
     }
 }
 
