@@ -547,7 +547,4 @@ public:
 #define RENDER_GUARD
 #endif
 
-
-
-
 #endif // __DAVAENGINE_RENDER_BASE_H__

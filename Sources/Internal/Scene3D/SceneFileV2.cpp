@@ -1270,7 +1270,7 @@ void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursively(Entity *entity)
 {
     RenderObject *ro = GetRenderObject(entity);
 
-    if (ro)
+    if (ro && ro->GetType()!=RenderObject::TYPE_SKYBOX)
     {
         for (int32 i=0, sz=ro->GetRenderBatchCount(); i<sz; ++i)
         {
