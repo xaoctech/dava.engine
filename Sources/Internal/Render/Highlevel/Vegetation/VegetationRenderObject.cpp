@@ -145,7 +145,8 @@ VegetationRenderObject::VegetationRenderObject() :
     //cameraBias(25.0f)
     cameraBias(0.0f),
     customGeometryData(NULL),
-    layersAnimationSpring(2.f, 2.f, 2.f, 2.f)
+    layersAnimationSpring(2.f, 2.f, 2.f, 2.f),
+    layersAnimationDrag(1.4f, 1.4, 1.4f, 1.4f)
 {
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
@@ -223,6 +224,7 @@ RenderObject* VegetationRenderObject::Clone(RenderObject *newObject)
     vegetationRenderObject->SetLayersAnimationAmplitude(GetLayersAnimationAmplitude());
     vegetationRenderObject->SetLayersAnimationSpring(GetLayersAnimationSpring());
     vegetationRenderObject->SetDensityMap(densityMap);
+    vegetationRenderObject->SetLayerAnimationDragCoefficient(GetLayerAnimationDragCoefficient());
     
     vegetationRenderObject->AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     vegetationRenderObject->AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
@@ -275,6 +277,7 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
 
     archive->SetVector4("vro.layerAnimationAmplitude", GetLayersAnimationAmplitude());
     archive->SetVector4("vro.layersAnimationSpring", GetLayersAnimationSpring());
+    archive->SetVector4("vro.layersAnimationDrug", GetLayerAnimationDragCoefficient());
     
     uint32 bitCount = densityMap.size();
     archive->SetUInt32("vro.densityBitCount", bitCount);
@@ -401,6 +404,11 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         if(densityBits.size() > 0)
         {
             SetDensityMap(densityBits);
+        }
+        
+        if(archive->IsKeyExists("vro.layersAnimationDrug"))
+        {
+            SetLayerAnimationDragCoefficient(archive->GetVector4("vro.layersAnimationDrug"));
         }
     }
     
@@ -1399,6 +1407,16 @@ void VegetationRenderObject::SetLayersAnimationSpring(const Vector4 &spring)
 Vector4 VegetationRenderObject::GetLayersAnimationSpring() const
 {
     return layersAnimationSpring;
+}
+
+void VegetationRenderObject::SetLayerAnimationDragCoefficient(const Vector4& drag)
+{
+    layersAnimationDrag = drag;
+}
+    
+const Vector4& VegetationRenderObject::GetLayerAnimationDragCoefficient() const
+{
+    return layersAnimationDrag;
 }
     
 void VegetationRenderObject::SetLayerClusterLimit(const Vector4& maxClusters)

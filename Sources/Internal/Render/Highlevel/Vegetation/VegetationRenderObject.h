@@ -166,6 +166,9 @@ public:
     void SetLayersAnimationSpring(const Vector4 & spring);
     Vector4 GetLayersAnimationSpring() const;
     
+    void SetLayerAnimationDragCoefficient(const Vector4& drag);
+    const Vector4& GetLayerAnimationDragCoefficient() const;
+    
     void CollectMetrics(VegetationMetrics& metrics);
     
 private:
@@ -289,10 +292,12 @@ private:
     
     Vector4 layersAnimationAmplitude;
     Vector4 layersAnimationSpring;
+    Vector4 layersAnimationDrag;
     
     Vector<bool> densityMap;
     
     Vector<LayerParams> layerParams;
+    
     
 public:
     
@@ -310,6 +315,7 @@ public:
                          PROPERTY("cameraBias", "Camera Bias", GetCameraBias, SetCameraBias, I_EDIT | I_VIEW)
                          PROPERTY("animationAmplitude", "Animation Amplitude", GetLayersAnimationAmplitude, SetLayersAnimationAmplitude, I_SAVE | I_EDIT | I_VIEW)
                          PROPERTY("animationSpring", "Animation Spring", GetLayersAnimationSpring, SetLayersAnimationSpring, I_SAVE | I_EDIT | I_VIEW)
+                         PROPERTY("animationDrag", "Animation Drag", GetLayerAnimationDragCoefficient, SetLayerAnimationDragCoefficient, I_SAVE | I_EDIT | I_VIEW)
                          );
     
     friend class FoliageSystem;
