@@ -311,6 +311,12 @@ void StaticOcclusionSystem::UndoOcclusionVisibility()
 
 void StaticOcclusionSystem::ProcessStaticOcclusionForOneDataSet(uint32 blockIndex, StaticOcclusionData * data)
 {
+//#define LOG_DEBUG_OCCLUSION_APPLY
+#if defined(LOG_DEBUG_OCCLUSION_APPLY)
+    uint32 visCount = 0;
+    uint32 invisCount = 0;
+#endif
+    
     uint32 * bitdata = data->GetBlockVisibilityData(blockIndex);
     uint32 size = (uint32)indexedRenderObjects.size();
     for (uint32 k = 0; k < size; ++k)
@@ -322,11 +328,20 @@ void StaticOcclusionSystem::ProcessStaticOcclusionForOneDataSet(uint32 blockInde
         if (bitdata[index] & (1 << shift))
         {
             ro->SetFlags(ro->GetFlags() | RenderObject::VISIBLE_STATIC_OCCLUSION);
+#if defined(LOG_DEBUG_OCCLUSION_APPLY)
+            visCount++;
+#endif
         }else
         {
             ro->SetFlags(ro->GetFlags() & ~RenderObject::VISIBLE_STATIC_OCCLUSION);
+#if defined(LOG_DEBUG_OCCLUSION_APPLY)
+            invisCount++;
+#endif
         }
     }
+#if defined(LOG_DEBUG_OCCLUSION_APPLY)
+    Logger::Debug("apply cell: %d vis:%d invis:%d", blockIndex, visCount, invisCount);
+#endif
 }
 
     

@@ -406,14 +406,21 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
 //    }
     
     //uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
+    for (uint32 k = 0; k < renderObjectsArray.size(); ++k)
+    {
+        currentData->DisableVisibilityForObject(blockIndex, k);
+    }
     
     for (Set<RenderObject*>::iterator it = frameGlobalVisibleInfo.begin(), end = frameGlobalVisibleInfo.end(); it != end; ++it)
     {
         RenderObject * obj = *it;
         ///DVASSERT(obj->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
-        if (obj->GetStaticOcclusionIndex() == INVALID_STATIC_OCCLUSION_INDEX)continue;
-
-        currentData->SetVisibilityForObject(blockIndex, obj->GetStaticOcclusionIndex(), 1);
+        if (obj->GetStaticOcclusionIndex() == INVALID_STATIC_OCCLUSION_INDEX)
+        {
+            continue;
+        }
+        
+        currentData->EnableVisibilityForObject(blockIndex, obj->GetStaticOcclusionIndex());
         
         Map<RenderObject*, Vector<RenderObject*> >::iterator findIt = equalVisibilityArray.find(obj);
         if (findIt != equalVisibilityArray.end())
@@ -423,17 +430,37 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
             for (uint32 k = 0; k < size; ++k)
             {
                 DVASSERT(equalObjects[k]->GetStaticOcclusionIndex() != INVALID_STATIC_OCCLUSION_INDEX);
-                currentData->SetVisibilityForObject(blockIndex, equalObjects[k]->GetStaticOcclusionIndex(), 1);
+                currentData->EnableVisibilityForObject(blockIndex, equalObjects[k]->GetStaticOcclusionIndex());
                 invisibleObjectCount --;
                 visibleCount++;
             }
         }
     }
     
+    // VERIFY
+    uint32 checkVisCount = 0;
+    uint32 checkInvisCount = 0;
+    uint32 * bitdata = currentData->GetBlockVisibilityData(blockIndex);
+    uint32 size = (uint32)renderObjectsArray.size();
+    for (uint32 k = 0; k < size; ++k)
+    {
+        uint32 index = k / 32; // number of bits in uint32
+        uint32 shift = k & 31; // bitmask for uint32
+        if (bitdata[index] & (1 << shift))
+        {
+            checkVisCount++;
+        }else
+        {
+            checkInvisCount++;
+        }
+    }
+
+    
     t1 = SystemTimer::Instance()->GetAbsoluteNano() - t1;
 
-    Logger::FrameworkDebug(Format("Object count:%d Vis Count: %d Invisible Object Count:%d time: %0.9llf waitTime: %0.9llf cullTime: %0.9llf renderTime: %0.9llf",
-                                  renderObjectsArray.size(), visibleCount, invisibleObjectCount,
+    Logger::FrameworkDebug(Format("Block:%d Object count:%d Vis Count: %d(%d) Invisible Object Count:%d(%d) time: %0.9llf waitTime: %0.9llf cullTime: %0.9llf renderTime: %0.9llf",
+                                  blockIndex,
+                                  renderObjectsArray.size(), visibleCount, checkVisCount, invisibleObjectCount, checkInvisCount,
                                   (double)t1 / 1e+9,
                                   (double)timeTotalWaiting / 1e+9,
                                   (double)timeTotalCulling / 1e+9,
@@ -496,13 +523,19 @@ void StaticOcclusionData::Init(uint32 _sizeX, uint32 _sizeY, uint32 _sizeZ, uint
     objectCount += (32 - objectCount & 31);
     
     data = new uint32[(blockCount * objectCount / 32)];
-    memset(data, 0, (blockCount * objectCount / 32));
+    memset(data, 0, (blockCount * objectCount / 32) * 4);
 }
 
-void StaticOcclusionData::SetVisibilityForObject(uint32 blockIndex, uint32 objectIndex, uint32 visible)
+void StaticOcclusionData::EnableVisibilityForObject(uint32 blockIndex, uint32 objectIndex)
 {
-    data[(blockIndex * objectCount / 32) + (objectIndex / 32)] |= visible << (objectIndex & 31);
+    data[(blockIndex * objectCount / 32) + (objectIndex / 32)] |= 1 << (objectIndex & 31);
 }
+
+void StaticOcclusionData::DisableVisibilityForObject(uint32 blockIndex, uint32 objectIndex)
+{
+    data[(blockIndex * objectCount / 32) + (objectIndex / 32)] &= ~(1 << (objectIndex & 31));
+}
+
     
 uint32 * StaticOcclusionData::GetBlockVisibilityData(uint32 blockIndex)
 {
