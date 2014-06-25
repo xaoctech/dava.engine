@@ -32,7 +32,7 @@
 namespace DAVA
 {
 
-struct SpatialData
+struct VegetationSpatialData
 {
     int16 x;
     int16 y;
@@ -48,8 +48,8 @@ struct SpatialData
     float32 cameraDistance;
     uint8 clippingPlane;
     
-    inline SpatialData();
-    inline SpatialData& operator=(const SpatialData& src);
+    inline VegetationSpatialData();
+    inline VegetationSpatialData& operator=(const VegetationSpatialData& src);
     inline static bool IsEmpty(uint32 cellValue);
     inline bool IsRenderable() const;
     inline int16 GetResolutionId() const;
@@ -57,7 +57,7 @@ struct SpatialData
     inline bool IsElementaryCell() const;
 };
 
-inline SpatialData::SpatialData() : x(-1),
+inline VegetationSpatialData::VegetationSpatialData() : x(-1),
                                     y(-1),
                                     cameraDistance(0.0f),
                                     clippingPlane(0),
@@ -66,7 +66,7 @@ inline SpatialData::SpatialData() : x(-1),
 {
 }
 
-inline SpatialData& SpatialData::operator=(const SpatialData& src)
+inline VegetationSpatialData& VegetationSpatialData::operator=(const VegetationSpatialData& src)
 {
     x = src.x;
     y = src.y;
@@ -80,28 +80,28 @@ inline SpatialData& SpatialData::operator=(const SpatialData& src)
     return *this;
 }
 
-inline bool SpatialData::IsEmpty(uint32 cellValue)
+inline bool VegetationSpatialData::IsEmpty(uint32 cellValue)
 {
     return (0 == (cellValue & 0x0F0F0F0F));
 }
 
-inline bool SpatialData::IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const
+inline bool VegetationSpatialData::IsVisibleInResolution(uint32 resolutionId, uint32 maxResolutions) const
 {
     uint32 refResolution = ((x * y) % maxResolutions);
     return (refResolution >= resolutionId);
 }
 
-inline bool SpatialData::IsRenderable() const
+inline bool VegetationSpatialData::IsRenderable() const
 {
     return (width > 0 && height > 0);
 }
 
-inline int16 SpatialData::GetResolutionId() const
+inline int16 VegetationSpatialData::GetResolutionId() const
 {
     return (width * height);
 }
 
-bool SpatialData::IsElementaryCell() const
+bool VegetationSpatialData::IsElementaryCell() const
 {
     return (1 == width);
 }

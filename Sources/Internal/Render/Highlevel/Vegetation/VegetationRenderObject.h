@@ -179,25 +179,25 @@ private:
     Vector2 GetVegetationUnitWorldSize(float32 resolution) const;
     
     void BuildSpatialStructure();
-    void BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
-                          AbstractQuadTreeNode<SpatialData>* firstRenderableParent,
+    void BuildSpatialQuad(AbstractQuadTreeNode<VegetationSpatialData>* node,
+                          AbstractQuadTreeNode<VegetationSpatialData>* firstRenderableParent,
                           int16 x, int16 y,
                           uint16 width, uint16 height,
                           AABBox3& parentBox);
     
-    Vector<AbstractQuadTreeNode<SpatialData>*> & BuildVisibleCellList(Camera * forCamera);
+    Vector<AbstractQuadTreeNode<VegetationSpatialData>*> & BuildVisibleCellList(Camera * forCamera);
     
     void BuildVisibleCellList(const Vector3& cameraPoint,
                               Frustum* frustum,
                               uint8 planeMask,
-                              AbstractQuadTreeNode<SpatialData>* node,
-                              Vector<AbstractQuadTreeNode<SpatialData>*>& cellList,
+                              AbstractQuadTreeNode<VegetationSpatialData>* node,
+                              Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList,
                               bool evaluateVisibility);
-    inline void AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
+    inline void AddVisibleCell(AbstractQuadTreeNode<VegetationSpatialData>* node,
                                float32 refDistance,
-                               Vector<AbstractQuadTreeNode<SpatialData>*>& cellList);
+                               Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList);
     
-    static bool CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a, const AbstractQuadTreeNode<SpatialData>*  b);
+    static bool CellByDistanceCompareFunction(const AbstractQuadTreeNode<VegetationSpatialData>* a, const AbstractQuadTreeNode<VegetationSpatialData>*  b);
     
     void InitHeightTextureFromHeightmap(Heightmap* heightMap);
     
@@ -216,7 +216,7 @@ private:
     
     inline uint32 MapToResolution(float32 squareDistance);
     
-    inline bool IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
+    inline bool IsNodeEmpty(AbstractQuadTreeNode<VegetationSpatialData>* node,
                             const Vector<bool>& map) const;
     
     void ClearRenderBatches();
@@ -258,8 +258,8 @@ private:
     
     Vector<VegetationRenderData*> renderData;
     
-    AbstractQuadTree<SpatialData> quadTree;
-    Vector<AbstractQuadTreeNode<SpatialData>*> visibleCells;
+    AbstractQuadTree<VegetationSpatialData> quadTree;
+    Vector<AbstractQuadTreeNode<VegetationSpatialData>*> visibleCells;
     
     FilePath heightmapPath;
     FilePath textureSheetPath;
@@ -321,9 +321,9 @@ public:
     friend class FoliageSystem;
 };
     
-inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<SpatialData>* node,
+inline void VegetationRenderObject::AddVisibleCell(AbstractQuadTreeNode<VegetationSpatialData>* node,
                                                    float32 refDistance,
-                                                   Vector<AbstractQuadTreeNode<SpatialData>*>& cellList)
+                                                   Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList)
 {
     if(node->data.isVisible && node->data.cameraDistance <= refDistance)
     {
@@ -349,7 +349,7 @@ inline uint32 VegetationRenderObject::MapToResolution(float32 squareDistance)
     return resolutionId;
 }
 
-inline bool VegetationRenderObject::IsNodeEmpty(AbstractQuadTreeNode<SpatialData>* node,
+inline bool VegetationRenderObject::IsNodeEmpty(AbstractQuadTreeNode<VegetationSpatialData>* node,
                                                 const Vector<bool>& map) const
 {
     bool nodeEmpty = true;

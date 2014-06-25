@@ -456,7 +456,7 @@ void VegetationRenderObject::PrepareToRenderMultipleMaterials(Camera *camera)
     
     for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
-        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[cellIndex];
+        AbstractQuadTreeNode<VegetationSpatialData>* treeNode = visibleCells[cellIndex];
         
         for(size_t layerIndex = 0; layerIndex < renderDataCount; ++layerIndex)
         {
@@ -567,7 +567,7 @@ void VegetationRenderObject::PrepareToRenderSingleMaterial(Camera *camera)
 
     for(size_t cellIndex = 0; cellIndex < visibleCellCount; ++cellIndex)
     {
-        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[cellIndex];
+        AbstractQuadTreeNode<VegetationSpatialData>* treeNode = visibleCells[cellIndex];
         
         RenderBatch* rb = GetRenderBatch(cellIndex);
         NMaterial* mat = rb->GetMaterial();
@@ -754,14 +754,14 @@ void VegetationRenderObject::BuildSpatialStructure()
     uint32 treeDepth = FastLog2(mapSize);
     
     quadTree.Init(treeDepth);
-    AbstractQuadTreeNode<SpatialData>* node = quadTree.GetRoot();
+    AbstractQuadTreeNode<VegetationSpatialData>* node = quadTree.GetRoot();
     
     uint32 halfSize = mapSize >> 1;
     BuildSpatialQuad(node, NULL, -1 * halfSize, -1 * halfSize, mapSize, mapSize, node->data.bbox);
 }
     
-void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>* node,
-                          AbstractQuadTreeNode<SpatialData>* firstRenderableParent,
+void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<VegetationSpatialData>* node,
+                          AbstractQuadTreeNode<VegetationSpatialData>* firstRenderableParent,
                           int16 x, int16 y,
                           uint16 width, uint16 height,
                           AABBox3& parentBox)
@@ -825,7 +825,7 @@ void VegetationRenderObject::BuildSpatialQuad(AbstractQuadTreeNode<SpatialData>*
     }
 }
     
-Vector<AbstractQuadTreeNode<SpatialData>*> & VegetationRenderObject::BuildVisibleCellList(Camera * forCamera)
+Vector<AbstractQuadTreeNode<VegetationSpatialData>*> & VegetationRenderObject::BuildVisibleCellList(Camera * forCamera)
 {
     Vector3 camPos = forCamera->GetPosition();
     Vector3 camDir = forCamera->GetDirection();
@@ -848,8 +848,8 @@ Vector<AbstractQuadTreeNode<SpatialData>*> & VegetationRenderObject::BuildVisibl
 void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
                                                   Frustum* frustum,
                                                   uint8 planeMask,
-                                                  AbstractQuadTreeNode<SpatialData>* node,
-                                                  Vector<AbstractQuadTreeNode<SpatialData>*>& cellList,
+                                                  AbstractQuadTreeNode<VegetationSpatialData>* node,
+                                                  Vector<AbstractQuadTreeNode<VegetationSpatialData>*>& cellList,
                                                   bool evaluateVisibility)
 {
     static Vector3 corners[4];
@@ -919,8 +919,8 @@ void VegetationRenderObject::BuildVisibleCellList(const Vector3& cameraPoint,
     }
 }
         
-bool VegetationRenderObject::CellByDistanceCompareFunction(const AbstractQuadTreeNode<SpatialData>* a,
-                                                           const AbstractQuadTreeNode<SpatialData>*  b)
+bool VegetationRenderObject::CellByDistanceCompareFunction(const AbstractQuadTreeNode<VegetationSpatialData>* a,
+                                                           const AbstractQuadTreeNode<VegetationSpatialData>*  b)
 {
     return (a->data.cameraDistance > b->data.cameraDistance);
 }
@@ -1346,7 +1346,7 @@ void VegetationRenderObject::DebugDrawVisibleNodes()
     uint32 requestedBatchCount = Min(visibleCells.size(), (size_t)maxVisibleQuads);
     for(uint32 i = 0; i < requestedBatchCount; ++i)
     {
-        AbstractQuadTreeNode<SpatialData>* treeNode = visibleCells[i];
+        AbstractQuadTreeNode<VegetationSpatialData>* treeNode = visibleCells[i];
         uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
         
         RenderManager::Instance()->SetColor(RESOLUTION_COLOR[resolutionIndex]);
@@ -1692,7 +1692,7 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
         
         for(size_t i = 0; i < visibleCellCount; ++i)
         {
-            AbstractQuadTreeNode<SpatialData>* spatialData = visibleCells[i];
+            AbstractQuadTreeNode<VegetationSpatialData>* spatialData = visibleCells[i];
             uint32 lodIndex = MapCellSquareToResolutionIndex(spatialData->data.width * spatialData->data.height);
             
             metrics.quadTreeLeafCountPerLOD[lodIndex] += 1;
@@ -1729,7 +1729,7 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
         
             for(size_t i = 0; i < visibleCellCount; ++i)
             {
-                AbstractQuadTreeNode<SpatialData>* spatialData = visibleCells[i];
+                AbstractQuadTreeNode<VegetationSpatialData>* spatialData = visibleCells[i];
                 uint32 lodIndex = MapCellSquareToResolutionIndex(spatialData->data.width * spatialData->data.height);
                 
                 for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
