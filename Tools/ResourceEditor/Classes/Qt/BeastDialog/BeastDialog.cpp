@@ -9,8 +9,13 @@
 #include "Classes/Qt/Scene/SceneEditor2.h"
 
 
-BeastDialog::BeastDialog( QWidget *parent )
-    : QWidget( parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint )
+namespace
+{
+    const FastName settingsDefaultPath("Internal/Beast/LightmapsDefaultDir");
+}
+
+BeastDialog::BeastDialog(QWidget *parent)
+    : QWidget(parent, Qt::Window | Qt::CustomizeWindowHint | Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
     , ui(new Ui::BeastDialog())
     , scene(NULL)
     , result(false)
@@ -18,15 +23,15 @@ BeastDialog::BeastDialog( QWidget *parent )
 {
     ui->setupUi(this);
 
-    setWindowModality( Qt::WindowModal );
+    setWindowModality(Qt::WindowModal);
 
-    connect( ui->start, SIGNAL( clicked() ), SLOT( OnStart() ) );
-    connect( ui->cancel, SIGNAL( clicked() ), SLOT( OnCancel() ) );
-    connect( ui->browse, SIGNAL( clicked() ), SLOT( OnBrowse() ) );
-    connect( ui->output, SIGNAL( textChanged( const QString& ) ), SLOT( OnTextChanged() ) );
-    connect( ui->lightmapBeastModeButton, SIGNAL( clicked( bool ) ), SLOT( OnLightmapMode( bool ) ) );
-    connect( ui->shBeastModeButton, SIGNAL( clicked( bool ) ), SLOT( OnSHMode( bool ) ) );
-    connect( ui->previewButton, SIGNAL( clicked( bool ) ), SLOT( OnPreviewMode( bool ) ) );
+    connect(ui->start, SIGNAL( clicked() ), SLOT( OnStart() ));
+    connect(ui->cancel, SIGNAL( clicked() ), SLOT( OnCancel() ));
+    connect(ui->browse, SIGNAL( clicked() ), SLOT( OnBrowse() ));
+    connect(ui->output, SIGNAL( textChanged(const QString&) ), SLOT( OnTextChanged() ));
+    connect(ui->lightmapBeastModeButton, SIGNAL( clicked( bool ) ), SLOT( OnLightmapMode( bool ) ));
+    connect(ui->shBeastModeButton, SIGNAL( clicked( bool ) ), SLOT( OnSHMode( bool ) ));
+    connect(ui->previewButton, SIGNAL( clicked( bool ) ), SLOT( OnPreviewMode( bool ) ));
 }
 
 BeastDialog::~BeastDialog()
@@ -42,8 +47,10 @@ bool BeastDialog::Exec(QWidget *parent)
 {
     DVASSERT(scene);
 
-    ui->scenePath->setText( QDir::toNativeSeparators( GetDefaultPath() ) );
-    ui->output->setText( "lightmaps" );
+    ui->scenePath->setText(QDir::toNativeSeparators( GetDefaultPath() ));
+    
+    const String defaultPath = SettingsManager::Instance()->GetValue(settingsDefaultPath).AsString();
+    ui->output->setText(QDir::toNativeSeparators(QString("%1").arg(defaultPath.c_str())));
 
     show();
 
@@ -67,6 +74,8 @@ void BeastDialog::OnStart()
         return;
     }
 
+    SettingsManager::Instance()->SetValue(settingsDefaultPath,VariantType(QDir::toNativeSeparators(ui->output->text()).toStdString()));
+
     result = true;
     loop->quit();
 }
@@ -88,7 +97,7 @@ void BeastDialog::OnBrowse()
 
 void BeastDialog::OnTextChanged()
 {
-    const QString text = QString("Output path: %1").arg( QDir::toNativeSeparators( GetPath() ) );
+    const QString text = QString("Output path: %1").arg(QDir::toNativeSeparators(GetPath()));
     ui->output->setToolTip( text );
 }
 
@@ -132,7 +141,7 @@ QString BeastDialog::GetPath() const
     if (output.isEmpty())
         return QString();
 
-    QString path = QString("%1/%2/").arg(root).arg(output);
+    const QString path = QDir::toNativeSeparators(QString("%1/%2/").arg(root).arg(output));
     return path;
 }
 
@@ -147,8 +156,8 @@ QString BeastDialog::GetDefaultPath() const
         return QString();
 
     const QString absoluteFilePath = scene->GetScenePath().GetAbsolutePathname().c_str();
-    const QFileInfo fileInfo( absoluteFilePath );
-    const QString dir = fileInfo.absolutePath();
+    const QFileInfo fileInfo(absoluteFilePath);
+    const QString dir = QDir::toNativeSeparators(fileInfo.absolutePath());
 
     return dir;
 }
@@ -157,12 +166,12 @@ void BeastDialog::SetPath( const QString& path )
 {
     const QString mandatory = QDir::fromNativeSeparators( GetDefaultPath() );
     const QString pathRoot = path.left(mandatory.length());
-    if ( QDir( mandatory + '/' ) != QDir( pathRoot + '/' ) )
+    if (QDir( mandatory + '/' ) != QDir( pathRoot + '/' ))
     {
         ui->output->setText( QString() );
         return;
     }
 
     const QString relative = path.mid(mandatory.length() + 1);
-    ui->output->setText( QDir::toNativeSeparators( relative ) );
+    ui->output->setText(QDir::toNativeSeparators( relative ));
 }
