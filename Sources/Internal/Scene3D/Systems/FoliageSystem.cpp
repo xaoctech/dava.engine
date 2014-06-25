@@ -119,6 +119,7 @@ void FoliageSystem::Process(float32 timeElapsed)
         }
         
         Vector4 layersAnimationSpring = vegetationRO->GetLayersAnimationSpring();
+        const Vector4& layerAnimationDrag = vegetationRO->GetLayerAnimationDragCoefficient();
         
         Set<AbstractQuadTreeNode<SpatialData>* >::iterator endIt = updatableCells.end();
         for(Set<AbstractQuadTreeNode<SpatialData>* >::iterator it = updatableCells.begin();
@@ -147,7 +148,7 @@ void FoliageSystem::Process(float32 timeElapsed)
                 Vector2 & offset = cellData.animationOffset[layerIndex];
                 Vector2 & velocity = cellData.animationVelocity[layerIndex];
                 
-                velocity += (windVec2D - layersAnimationSpring.data[layerIndex] * offset - 1.4f * velocity * velocity.Length()) * timeElapsed;
+                velocity += (windVec2D - layersAnimationSpring.data[layerIndex] * offset - layerAnimationDrag.data[layerIndex] * velocity * velocity.Length()) * timeElapsed;
                 offset += velocity * timeElapsed;
             }
             
