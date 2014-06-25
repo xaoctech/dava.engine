@@ -133,8 +133,6 @@ SceneEditor2::SceneEditor2()
 
 	wasChanged = false;
     
-    RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::LAYER_OCCLUSION_STATS, true);
-    
     //RenderTechnique * technique1 = RenderTechniqueSingleton::Instance()->RetainRenderTechniqueByName(FastName("~res:/Materials/Legacy/PixelLit.Opaque.material"));
     //FastNameSet set;
     //technique1->GetPassByIndex(technique1->GetIndexByName(FastName("ForwardPass")))->RecompileShader(set);
