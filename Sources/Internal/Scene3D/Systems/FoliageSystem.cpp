@@ -97,13 +97,13 @@ void FoliageSystem::Process(float32 timeElapsed)
         WindSystem * windSystem = GetScene()->windSystem;
         
         Camera * camera = GetScene()->GetRenderSystem()->GetMainCamera();
-        Vector<AbstractQuadTreeNode<SpatialData>*> & visibleCells = vegetationRO->BuildVisibleCellList(camera);
+        Vector<AbstractQuadTreeNode<VegetationSpatialData>*> & visibleCells = vegetationRO->BuildVisibleCellList(camera);
         uint32 cellsCount = visibleCells.size();
         
-        Set<AbstractQuadTreeNode<SpatialData>* > updatableCells;
+        Set<AbstractQuadTreeNode<VegetationSpatialData>* > updatableCells;
         for(uint32 i = 0; i < cellsCount; ++i)
         {
-            AbstractQuadTreeNode<SpatialData>* cell = visibleCells[i];
+            AbstractQuadTreeNode<VegetationSpatialData>* cell = visibleCells[i];
             if(cell->data.width <= MAX_ANIMATED_CELL_WIDTH)
             {
                 bool isMinAnimatedLod = (MIN_ANIMATED_CELL_WIDTH == cell->data.width);
@@ -121,14 +121,14 @@ void FoliageSystem::Process(float32 timeElapsed)
         Vector4 layersAnimationSpring = vegetationRO->GetLayersAnimationSpring();
         const Vector4& layerAnimationDrag = vegetationRO->GetLayerAnimationDragCoefficient();
         
-        Set<AbstractQuadTreeNode<SpatialData>* >::iterator endIt = updatableCells.end();
-        for(Set<AbstractQuadTreeNode<SpatialData>* >::iterator it = updatableCells.begin();
+        Set<AbstractQuadTreeNode<VegetationSpatialData>* >::iterator endIt = updatableCells.end();
+        for(Set<AbstractQuadTreeNode<VegetationSpatialData>* >::iterator it = updatableCells.begin();
             it != endIt;
             ++it)
         {
-            AbstractQuadTreeNode<SpatialData>* cell = *it;
+            AbstractQuadTreeNode<VegetationSpatialData>* cell = *it;
             
-            SpatialData& cellData = cell->data;
+            VegetationSpatialData& cellData = cell->data;
             
             const Vector3 & min = cellData.bbox.min;
             const Vector3 & max = cellData.bbox.max;
