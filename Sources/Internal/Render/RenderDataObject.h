@@ -99,7 +99,7 @@ public:
     
     void AttachVertices(RenderDataObject* vertexSource);
     void DetachVertices();
-    bool HasVertexAttachment() const;
+    inline bool HasVertexAttachment() const;
 
     inline eIndexFormat GetIndexFormat() const;
     
@@ -136,6 +136,12 @@ inline eIndexFormat RenderDataObject::GetIndexFormat() const
 {
     return indexFormat;
 }
+
+inline bool RenderDataObject::HasVertexAttachment() const
+{
+    return vertexAttachmentActive;
+}
+
     
 };
 
