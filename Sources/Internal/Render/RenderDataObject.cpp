@@ -344,11 +344,6 @@ void RenderDataObject::DetachVertices()
     vertexAttachmentActive = false;
 }
 
-bool RenderDataObject::HasVertexAttachment() const
-{
-    return vertexAttachmentActive;
-}
-
 //#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 //void RenderDataObject::SaveToSystemMemory()
 //{
