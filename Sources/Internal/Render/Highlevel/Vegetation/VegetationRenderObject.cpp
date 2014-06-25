@@ -394,8 +394,7 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
         }
         else
         {
-            if(!lightmapTexturePath.IsEmpty() &&
-               lightmapTexturePath.Exists())
+            if(lightmapTexturePath.Exists())
             {
                 GenerateDensityMapFromTransparencyMask(lightmapTexturePath, densityBits);
             }
@@ -1759,8 +1758,7 @@ void VegetationRenderObject::GenerateDensityMapFromTransparencyMask(FilePath lig
 {
     lightmapPath.ReplaceExtension(".png");
     
-    if(!lightmapPath.IsEmpty() &&
-       lightmapPath.Exists())
+    if(lightmapPath.Exists())
     {
         Image* lightmapImage = LoadSingleImage(lightmapPath);
         
@@ -1780,13 +1778,13 @@ void VegetationRenderObject::GenerateDensityMapFromTransparencyMask(FilePath lig
                 {
                     for(uint32 x = 0; x < DENSITY_MAP_SIZE; ++x)
                     {
-                        float32 medianAlpha = GetMedianAlpha(x, y,
+                        float32 meanAlpha = GetMeanAlpha(x, y,
                                                              ratio, stride,
                                                              lightmapImage);
                         
                         
                         uint32 bitIndex = x + y * DENSITY_MAP_SIZE;
-                        densityMapBits[bitIndex] = (medianAlpha > DENSITY_THRESHOLD);
+                        densityMapBits[bitIndex] = (meanAlpha > DENSITY_THRESHOLD);
                     }
                 }
                 
@@ -1842,7 +1840,7 @@ Image* VegetationRenderObject::LoadSingleImage(const FilePath& path) const
     return image;
 }
 
-float32 VegetationRenderObject::GetMedianAlpha(uint32 x, uint32 y,
+float32 VegetationRenderObject::GetMeanAlpha(uint32 x, uint32 y,
                                           uint32 ratio,
                                           uint32 stride,
                                           Image* src) const

@@ -232,7 +232,7 @@ private:
     void GenerateDensityMapFromTransparencyMask(FilePath lightmapPath,
                                            Vector<bool>& densityMapBits);
     Image* LoadSingleImage(const FilePath& path) const;
-    float32 GetMedianAlpha(uint32 x, uint32 y,
+    float32 GetMeanAlpha(uint32 x, uint32 y,
                         uint32 ratio,
                         uint32 stride,
                         Image* src) const;
