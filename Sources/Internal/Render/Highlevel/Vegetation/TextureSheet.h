@@ -79,19 +79,6 @@ inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src
         
     return *this;
 }
-    
-inline TextureSheet& TextureSheet::operator=(const TextureSheet& src)
-{
-    cells.resize(src.cells.size());
-        
-    size_t size = cells.size();
-    for(size_t i = 0; i < size; ++i)
-    {
-        cells[i] = src.cells[i];
-    }
-        
-    return *this;
-}
 
 };
 
