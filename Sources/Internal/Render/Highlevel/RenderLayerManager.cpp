@@ -105,7 +105,7 @@ RenderLayerManager::RenderLayerManager()
     InsertLayer(renderLayerShadowVolume);
     
     RenderLayer * renderLayerVegetation = new RenderLayer(LAYER_VEGETATION,
-                                                          RenderLayerBatchArray::SORT_ENABLED | RenderLayerBatchArray::SORT_BY_MATERIAL,
+                                                          0,
                                                           RENDER_LAYER_VEGETATION_ID);
     InsertLayer(renderLayerVegetation);
     
