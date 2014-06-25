@@ -136,6 +136,7 @@ protected:
     QtPropertyData * GetInfoHeader(const QString &key);
     
     void AddChild(const QString & key, QtPropertyData *parent);
+    void AddChild(const QString & key, const QString& toolTip, QtPropertyData *parent);
     void SetChild(const QString & key, const QVariant &value, QtPropertyData *parent);
     bool HasChild(const QString & key, QtPropertyData *parent);
     
