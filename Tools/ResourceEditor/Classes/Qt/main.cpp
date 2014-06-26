@@ -36,7 +36,7 @@
 #include "Main/mainwindow.h"
 #include "Main/davaglwidget.h"
 #include "Project/ProjectManager.h"
-#include "Utils/TeamcityOutput.h"
+#include "TeamcityOutput/TeamcityOutput.h"
 #include "TexturePacker/CommandLineParser.h"
 #include "TexturePacker/ResourcePacker2D.h"
 #include "TextureCompression/PVRConverter.h"
