@@ -32,3 +32,4 @@ ddd
 fmod.log
 
 /Tools/ResourceEditor/*.opensdf
+/Projects/UnitTests/*.opensdf
