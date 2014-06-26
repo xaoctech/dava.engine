@@ -459,7 +459,7 @@ void VegetationRenderObject::PrepareToRenderMultipleMaterials(Camera *camera)
         for(size_t layerIndex = 0; layerIndex < renderDataCount; ++layerIndex)
         {
             VegetationRenderData* renderDataObj = renderData[layerIndex];
-            Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
+            Vector<Vector<Vector<VegetationSortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
             
             RenderBatch* rb = renderBatchPool.Get(renderDataObj->GetMaterial(), materialTransform);
             NMaterial* mat = rb->GetMaterial();
@@ -468,10 +468,10 @@ void VegetationRenderObject::PrepareToRenderMultipleMaterials(Camera *camera)
             
             uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
             
-            Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
+            Vector<Vector<VegetationSortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
             
             uint32 indexBufferIndex = treeNode->data.rdoIndex;
-            Vector<SortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
+            Vector<VegetationSortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
             
             DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
             
@@ -526,7 +526,7 @@ void VegetationRenderObject::PrepareToRenderSingleMaterial(Camera *camera)
     size_t renderBatchCount = GetRenderBatchCount();
     
     VegetationRenderData* renderDataObj = renderData[0];
-    Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
+    Vector<Vector<Vector<VegetationSortedBufferItem> > >& indexRenderDataObject = renderDataObj->GetIndexBuffers();
     
     if(visibleCellCount > renderBatchCount)
     {
@@ -572,10 +572,10 @@ void VegetationRenderObject::PrepareToRenderSingleMaterial(Camera *camera)
         
         uint32 resolutionIndex = MapCellSquareToResolutionIndex(treeNode->data.width * treeNode->data.height);
         
-        Vector<Vector<SortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
+        Vector<Vector<VegetationSortedBufferItem> >& rdoVector = indexRenderDataObject[resolutionIndex];
         
         uint32 indexBufferIndex = treeNode->data.rdoIndex;
-        Vector<SortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
+        Vector<VegetationSortedBufferItem>& indexBufferVector = rdoVector[indexBufferIndex];
         
         DVASSERT(indexBufferIndex >= 0 && indexBufferIndex < rdoVector.size());
         
@@ -1096,14 +1096,14 @@ bool VegetationRenderObject::ReadyToRender()
     return renderFlag && vegetationVisible && (renderData.size() > 0);
 }
 
-size_t VegetationRenderObject::SelectDirectionIndex(const Vector3& cameraDirection, Vector<SortedBufferItem>& buffers)
+size_t VegetationRenderObject::SelectDirectionIndex(const Vector3& cameraDirection, Vector<VegetationSortedBufferItem>& buffers)
 {
     size_t index = 0;
     float32 currentCosA = 0.0f;
     size_t directionCount = buffers.size();
     for(size_t i = 0; i < directionCount; ++i)
     {
-        SortedBufferItem& item = buffers[i];
+        VegetationSortedBufferItem& item = buffers[i];
         //cos (angle) = dotAB / (length A * lengthB)
         //no need to calculate (length A * lengthB) since vectors are normalized
         

@@ -54,11 +54,11 @@ void VegetationRenderData::ReleaseRenderData()
     size_t indexBufferResolutionCount = indexRenderDataObject.size();
     for(size_t indexBufferIndex = 0; indexBufferIndex < indexBufferResolutionCount; ++indexBufferIndex)
     {
-        Vector<Vector<SortedBufferItem> >& indexBufferArray = indexRenderDataObject[indexBufferIndex];
+        Vector<Vector<VegetationSortedBufferItem> >& indexBufferArray = indexRenderDataObject[indexBufferIndex];
         size_t indexObjectCount = indexBufferArray.size();
         for(size_t i = 0; i < indexObjectCount; ++i)
         {
-            Vector<SortedBufferItem>& directionArray = indexBufferArray[i];
+            Vector<VegetationSortedBufferItem>& directionArray = indexBufferArray[i];
                 
             size_t directionBufferCount = directionArray.size();
             for(size_t directionIndex = 0; directionIndex < directionBufferCount; ++directionIndex)

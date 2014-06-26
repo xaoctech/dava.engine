@@ -248,20 +248,20 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
         vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
         vertexRDO->BuildVertexBuffer(vertexData.size(), true);
         
-        Vector<Vector<Vector<SortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
+        Vector<Vector<Vector<VegetationSortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
         
         for(size_t resolutionIndex = 0; resolutionIndex < resolutionCount; ++resolutionIndex)
         {
             Vector<Vector<SortBufferData> >& sortedIndexBuffers = markedRenderData[layerIndex].indexOffset[resolutionIndex];
             
-            indexBuffers.push_back(Vector<Vector<SortedBufferItem> >());
-            Vector<Vector<SortedBufferItem> >& currentResolutionIndexBuffers = indexBuffers[indexBuffers.size() - 1];
+            indexBuffers.push_back(Vector<Vector<VegetationSortedBufferItem> >());
+            Vector<Vector<VegetationSortedBufferItem> >& currentResolutionIndexBuffers = indexBuffers[indexBuffers.size() - 1];
             
             size_t cellCount = sortedIndexBuffers.size();
             for(size_t cellIndex = 0; cellIndex < cellCount; ++cellIndex)
             {
-                currentResolutionIndexBuffers.push_back(Vector<SortedBufferItem>());
-                Vector<SortedBufferItem>& sortedIndexBufferItems = currentResolutionIndexBuffers[currentResolutionIndexBuffers.size() - 1];
+                currentResolutionIndexBuffers.push_back(Vector<VegetationSortedBufferItem>());
+                Vector<VegetationSortedBufferItem>& sortedIndexBufferItems = currentResolutionIndexBuffers[currentResolutionIndexBuffers.size() - 1];
                 
                 Vector<SortBufferData>& directionIndexBuffers = sortedIndexBuffers[cellIndex];
                 
@@ -270,8 +270,8 @@ void VegetationCustomGeometry::Build(Vector<VegetationRenderData*>& renderDataAr
                 {
                     SortBufferData& sortData = directionIndexBuffers[directionIndex];
                 
-                    sortedIndexBufferItems.push_back(SortedBufferItem());
-                    SortedBufferItem& sortBufferItem = sortedIndexBufferItems[directionIndex];
+                    sortedIndexBufferItems.push_back(VegetationSortedBufferItem());
+                    VegetationSortedBufferItem& sortBufferItem = sortedIndexBufferItems[directionIndex];
                     
                     RenderDataObject* indexBuffer = new RenderDataObject();
                     indexBuffer->SetIndices(VEGETATION_INDEX_TYPE, (uint8*)(&indexData[sortData.indexOffset]), sortData.size);

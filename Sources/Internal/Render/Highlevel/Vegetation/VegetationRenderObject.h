@@ -208,7 +208,7 @@ private:
     
     bool ReadyToRender();
     
-    size_t SelectDirectionIndex(const Vector3& cameraDirection, Vector<SortedBufferItem>& buffers);
+    size_t SelectDirectionIndex(const Vector3& cameraDirection, Vector<VegetationSortedBufferItem>& buffers);
     
     inline uint32 MapToResolution(float32 squareDistance);
     
@@ -292,7 +292,7 @@ private:
     
     Vector<bool> densityMap;
     
-    Vector<LayerParams> layerParams;
+    Vector<VegetationLayerParams> layerParams;
     
     
 public:

@@ -56,7 +56,7 @@ class VegetationCustomSLGeometry : public VegetationGeometry
     
 public:
     
-    VegetationCustomSLGeometry(const Vector<LayerParams>& _maxClusters,
+    VegetationCustomSLGeometry(const Vector<VegetationLayerParams>& _maxClusters,
                              uint32 _maxDensityLevels,
                              const Vector2& _unitSize,
                              const FilePath& _dataPath,
@@ -154,12 +154,12 @@ private:
     
 private:
     
-    void GenerateClusterPositionData(const Vector<LayerParams>& layerClusterCount,
+    void GenerateClusterPositionData(const Vector<VegetationLayerParams>& layerClusterCount,
                                      Vector<ClusterPositionData>& clusters,
                                      Vector<VertexRangeData>& layerRanges);
     
     void GenerateClusterResolutionData(uint32 resolutionId,
-                                       const Vector<LayerParams>& layerClusterCount,
+                                       const Vector<VegetationLayerParams>& layerClusterCount,
                                        const Vector<ClusterPositionData>& clusterPosition,
                                        const Vector<VertexRangeData>& layerRanges,
                                        Vector<ClusterResolutionData>& clusterResolution);
@@ -206,7 +206,7 @@ private:
     
 private:
     
-    Vector<LayerParams> maxClusters;
+    Vector<VegetationLayerParams> maxClusters;
     uint32 maxDensityLevels;
     Vector2 unitSize;
     FilePath sourceDataPath;
