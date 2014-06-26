@@ -34,12 +34,12 @@
 namespace DAVA
 {
 
-static const FastName VEGETATION_ENTITY_VARIATION_0 = FastName("variation_0");
+static const FastName VEGETATION_ENTITY_VARIATION_0("variation_0");
 
-static const FastName VEGETATION_ENTITY_LAYER_0 = FastName("layer_0");
-static const FastName VEGETATION_ENTITY_LAYER_1 = FastName("layer_1");
-static const FastName VEGETATION_ENTITY_LAYER_2 = FastName("layer_2");
-static const FastName VEGETATION_ENTITY_LAYER_3 = FastName("layer_3");
+static const FastName VEGETATION_ENTITY_LAYER_0("layer_0");
+static const FastName VEGETATION_ENTITY_LAYER_1("layer_1");
+static const FastName VEGETATION_ENTITY_LAYER_2("layer_2");
+static const FastName VEGETATION_ENTITY_LAYER_3("layer_3");
 
 static FastName VEGETATION_ENTITY_LAYER_NAMES[] =
 {

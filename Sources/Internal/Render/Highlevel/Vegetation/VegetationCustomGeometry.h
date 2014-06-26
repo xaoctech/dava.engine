@@ -109,9 +109,6 @@ private:
         Vector<Vector2> sourceTextureCoords;
         Vector<Vector3> sourceNormals;
         Vector<VegetationIndex> sourceIndices;
-        
-        CustomGeometryLayerData();
-        CustomGeometryLayerData(const CustomGeometryLayerData& src);
     };
     
     struct CustomGeometryEntityData
