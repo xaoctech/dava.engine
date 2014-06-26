@@ -28,7 +28,6 @@
 
 #include <cfloat>
 
-#include "Render/Highlevel/Heightmap.h"
 #include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Render/Material/NMaterialNames.h"
 #include "Render/Material/NMaterial.h"
@@ -39,7 +38,6 @@
 #include "Render/RenderHelper.h"
 #include "Platform/SystemTimer.h"
 
-#include "Render/Highlevel/Vegetation/VegetationPropertyNames.h"
 #include "Render/Highlevel/Vegetation/VegetationFixedGeometry.h"
 #include "Render/Highlevel/Vegetation/VegetationCustomSLGeometry.h"
 
@@ -624,114 +622,7 @@ void VegetationRenderObject::PrepareToRenderSingleMaterial(Camera *camera)
 
     }
 }
-
-    
-void VegetationRenderObject::SetTextureSheet(const FilePath& path)
-{
-    textureSheetPath = path;
-    
-    UpdateVegetationSetup();
-}
-
-void VegetationRenderObject::SetVegetationTexture(const FilePath& texturePath)
-{
-    albedoTexturePath = texturePath;
-    
-    if(vegetationGeometry != NULL)
-    {
-        KeyedArchive* props = new KeyedArchive();
-        props->SetString(NMaterial::TEXTURE_ALBEDO.c_str(), albedoTexturePath.GetAbsolutePathname());
         
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
-        
-        SafeRelease(props);
-    }
-}
-
-const FilePath& VegetationRenderObject::GetVegetationTexture() const
-{
-    return albedoTexturePath;
-}
-    
-const FilePath& VegetationRenderObject::GetTextureSheetPath() const
-{
-    return textureSheetPath;
-}
-
-void VegetationRenderObject::SetClusterLimit(const uint32& maxClusters)
-{
-    Vector4 tmpVec(maxClusters, maxClusters, maxClusters, maxClusters);
-    SetLayerClusterLimit(tmpVec);
-}
-
-uint32 VegetationRenderObject::GetClusterLimit() const
-{
-    return layerParams[0].maxClusterCount;
-}
-
-void VegetationRenderObject::SetHeightmap(Heightmap* _heightmap)
-{
-    if(heightmap != _heightmap)
-    {
-        SafeRelease(heightmap);
-        heightmap = (_heightmap->Data()) ? SafeRetain(_heightmap) : NULL;
-        
-        if(heightmap)
-        {
-            InitHeightTextureFromHeightmap(heightmap);
-        }
-        
-        UpdateVegetationSetup();
-    }
-}
-
-Heightmap* VegetationRenderObject::GetHeightmap() const
-{
-    return heightmap;
-}
-    
-const FilePath& VegetationRenderObject::GetHeightmapPath() const
-{
-    return heightmapPath;
-}
-
-void VegetationRenderObject::SetHeightmapPath(const FilePath& path)
-{
-    heightmapPath = path;
-}
-    
-void VegetationRenderObject::SetLightmap(const FilePath& filePath)
-{
-    lightmapTexturePath = filePath;
-    
-    if(vegetationGeometry != NULL)
-    {
-        KeyedArchive* props = new KeyedArchive();
-        props->SetString(VegetationPropertyNames::UNIFORM_SAMPLER_VEGETATIONMAP.c_str(), lightmapTexturePath.GetAbsolutePathname());
-        
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
-        
-        SafeRelease(props);
-    }
-}
-    
-const FilePath& VegetationRenderObject::GetLightmapPath() const
-{
-    return lightmapTexturePath;
-}
-
-void VegetationRenderObject::SetWorldSize(const Vector3 size)
-{
-    worldSize = size;
-    
-    UpdateVegetationSetup();
-}
-    
-const Vector3& VegetationRenderObject::GetWorldSize() const
-{
-    return worldSize;
-}
-
 Vector2 VegetationRenderObject::GetVegetationUnitWorldSize(float32 resolution) const
 {
     return Vector2((worldSize.x / DENSITY_MAP_SIZE) * resolution,
@@ -1037,37 +928,12 @@ void VegetationRenderObject::UpdateVegetationSetup()
     }
 }
 
-void VegetationRenderObject::SetVisibilityDistance(const Vector2& distances)
-{
-    visibleClippingDistances = distances;
-}
-    
-const Vector2& VegetationRenderObject::GetVisibilityDistance() const
-{
-    return visibleClippingDistances;
-}
-    
 void VegetationRenderObject::ResetVisibilityDistance()
 {
     visibleClippingDistances.x = MAX_VISIBLE_CLIPPING_DISTANCE;
     visibleClippingDistances.y = MAX_VISIBLE_SCALING_DISTANCE;
 }
-    
-void VegetationRenderObject::SetLodRange(const Vector3& distances)
-{
-    lodRanges = distances;
-    
-    if(IsValidSpatialData())
-    {
-        InitLodRanges();
-    }
-}
-    
-const Vector3& VegetationRenderObject::GetLodRange() const
-{
-   return lodRanges;
-}
-    
+
 void VegetationRenderObject::ResetLodRanges()
 {
    lodRanges = LOD_RANGES_SCALE;
@@ -1097,16 +963,6 @@ void VegetationRenderObject::InitLodRanges()
         resolutionRanges[i].x *= resolutionRanges[i].x;
         resolutionRanges[i].y *= resolutionRanges[i].y;
     }
-}
-
-void VegetationRenderObject::SetMaxVisibleQuads(const uint32& _maxVisibleQuads)
-{
-    maxVisibleQuads = _maxVisibleQuads;
-}
-
-const uint32& VegetationRenderObject::GetMaxVisibleQuads() const
-{
-    return maxVisibleQuads;
 }
 
 void VegetationRenderObject::GetDataNodes(Set<DataNode*> & dataNodes)
@@ -1240,77 +1096,6 @@ bool VegetationRenderObject::ReadyToRender()
     return renderFlag && vegetationVisible && (renderData.size() > 0);
 }
 
-void VegetationRenderObject::SetPerturbation(const Vector3& point,
-                                            const Vector3& force,
-                                            float32 distance)
-{
-    perturbationForce = force;
-    maxPerturbationDistance = distance;
-    perturbationPoint = point;
-    
-    if(vegetationGeometry != NULL)
-    {
-        KeyedArchive* props = new KeyedArchive();
-        props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE.c_str(), perturbationForce);
-        props->SetFloat(VegetationPropertyNames::UNIFORM_PERTURBATION_FORCE_DISTANCE.c_str(), maxPerturbationDistance);
-        props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
-        
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
-        
-        SafeRelease(props);
-    }
-}
-
-float32 VegetationRenderObject::GetPerturbationDistance() const
-{
-   return maxPerturbationDistance;
-}
-
-const Vector3& VegetationRenderObject::GetPerturbationForce() const
-{
-    return perturbationForce;
-}
-
-const Vector3& VegetationRenderObject::GetPerturbationPoint() const
-{
-    return perturbationPoint;
-}
-
-void VegetationRenderObject::SetPerturbationPoint(const Vector3& point)
-{
-    perturbationPoint = point;
-    
-    if(vegetationGeometry != NULL)
-    {
-        KeyedArchive* props = new KeyedArchive();
-        props->SetVector3(VegetationPropertyNames::UNIFORM_PERTURBATION_POINT.c_str(), perturbationPoint);
-        
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
-        
-        SafeRelease(props);
-    }
-}
-
-void VegetationRenderObject::SetLayerVisibilityMask(const uint8& mask)
-{
-    layerVisibilityMask = mask;
-}
-    
-const uint8& VegetationRenderObject::GetLayerVisibilityMask() const
-{
-     return layerVisibilityMask;
-}
-
-void VegetationRenderObject::SetVegetationVisible(bool show)
-{
-    vegetationVisible = show;
-}
-    
-bool VegetationRenderObject::GetVegetationVisible() const
-{
-    return vegetationVisible;
-}
-
 size_t VegetationRenderObject::SelectDirectionIndex(const Vector3& cameraDirection, Vector<SortedBufferItem>& buffers)
 {
     size_t index = 0;
@@ -1366,17 +1151,6 @@ void VegetationRenderObject::ClearRenderBatches()
     renderBatchPool.ReturnAll();
 }
 
-const FilePath& VegetationRenderObject::GetCustomGeometryPath() const
-{
-    return customGeometryPath;
-}
-    
-void VegetationRenderObject::SetCustomGeometryPath(const FilePath& path)
-{
-    ImportDataFromExternalScene(path);
-    SetCustomGeometryPathInternal(path);
-}
-
 void VegetationRenderObject::SetCustomGeometryPathInternal(const FilePath& path)
 {
     customGeometryPath = path;
@@ -1386,95 +1160,6 @@ void VegetationRenderObject::SetCustomGeometryPathInternal(const FilePath& path)
         CreateRenderData();
     }
 }
-
-void VegetationRenderObject::SetLayersAnimationAmplitude(const Vector4 & ampitudes)
-{
-    layersAnimationAmplitude = ampitudes;
-}
-    
-Vector4 VegetationRenderObject::GetLayersAnimationAmplitude() const
-{
-    return layersAnimationAmplitude;
-}
- 
-void VegetationRenderObject::SetLayersAnimationSpring(const Vector4 &spring)
-{
-    layersAnimationSpring = spring;
-    layersAnimationSpring.Clamp(.5f, 20.f);
-}
-    
-Vector4 VegetationRenderObject::GetLayersAnimationSpring() const
-{
-    return layersAnimationSpring;
-}
-
-void VegetationRenderObject::SetLayerAnimationDragCoefficient(const Vector4& drag)
-{
-    layersAnimationDrag = drag;
-}
-    
-const Vector4& VegetationRenderObject::GetLayerAnimationDragCoefficient() const
-{
-    return layersAnimationDrag;
-}
-    
-void VegetationRenderObject::SetLayerClusterLimit(const Vector4& maxClusters)
-{
-    size_t layerCount = layerParams.size();
-    for(size_t i = 0; i < layerCount; ++i)
-    {
-        layerParams[i].maxClusterCount = Clamp((uint32)Abs(maxClusters.data[i]), (uint32)1, (uint32)0x00000FFF);
-    }
-    
-    UpdateVegetationSetup();
-}
-    
-Vector4 VegetationRenderObject::GetLayerClusterLimit() const
-{
-    return Vector4(layerParams[0].maxClusterCount,
-                   layerParams[1].maxClusterCount,
-                   layerParams[2].maxClusterCount,
-                   layerParams[3].maxClusterCount);
-}
-
-void VegetationRenderObject::SetScaleVariation(const Vector4& scaleVariation)
-{
-    size_t layerCount = layerParams.size();
-    for(size_t i = 0; i < layerCount; ++i)
-    {
-        layerParams[i].instanceScaleVariation = Clamp(scaleVariation.data[i], 0.0f, 1.0f);
-    }
-    
-    UpdateVegetationSetup();
-}
-    
-Vector4 VegetationRenderObject::GetScaleVariation() const
-{
-    return Vector4(layerParams[0].instanceScaleVariation,
-                   layerParams[1].instanceScaleVariation,
-                   layerParams[2].instanceScaleVariation,
-                   layerParams[3].instanceScaleVariation);
-}
-    
-void VegetationRenderObject::SetRotationVariation(const Vector4& rotationVariation)
-{
-    size_t layerCount = layerParams.size();
-    for(size_t i = 0; i < layerCount; ++i)
-    {
-        layerParams[i].instanceRotationVariation = Clamp(rotationVariation.data[i], 0.0f, 360.0f);
-    }
-    
-    UpdateVegetationSetup();
-}
-
-Vector4 VegetationRenderObject::GetRotationVariation() const
-{
-    return Vector4(layerParams[0].instanceRotationVariation,
-                   layerParams[1].instanceRotationVariation,
-                   layerParams[2].instanceRotationVariation,
-                   layerParams[3].instanceRotationVariation);
-}
-
 
 void VegetationRenderObject::ImportDataFromExternalScene(const FilePath& path)
 {
@@ -1743,14 +1428,6 @@ void VegetationRenderObject::CollectMetrics(VegetationMetrics& metrics)
             }
         }
     }
-}
-
-void VegetationRenderObject::SetLightmapAndGenerateDensityMap(const FilePath& filePath)
-{
-    SetLightmap(filePath);
-    GenerateDensityMapFromTransparencyMask(filePath, densityMap);
-    
-    UpdateVegetationSetup();
 }
 
 void VegetationRenderObject::GenerateDensityMapFromTransparencyMask(FilePath lightmapPath,
