@@ -727,7 +727,7 @@ void RenderManager::AttachRenderData()
     RENDERER_UPDATE_STATS(attachRenderDataCount++);
     
 	Shader * shader = hardwareState.shader;
-    uint32 currentAttributeMask = shader->GetAttributeMask();
+    uint32 currentAttributeMask = shader->GetRequiredVertexFormat();
     
     if (attachedRenderData == currentRenderData && cachedAttributeMask == currentAttributeMask)
     {
@@ -937,6 +937,9 @@ void RenderManager::DiscardDepth()
 #if defined(__DAVAENGINE_ANDROID__)
 void RenderManager::Lost()
 {
+    cachedEnabledStreams = 0;
+    cachedAttributeMask = 0;
+    
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 0;
 
