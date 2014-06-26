@@ -142,7 +142,7 @@ bool VegetationCustomSLGeometry::ClusterByMatrixCompareFunction(const ClusterRes
     return a.cellIndex < b.cellIndex;
 }
 
-VegetationCustomSLGeometry::VegetationCustomSLGeometry(const Vector<LayerParams>& _maxClusters,
+VegetationCustomSLGeometry::VegetationCustomSLGeometry(const Vector<VegetationLayerParams>& _maxClusters,
                                                    uint32 _maxDensityLevels,
                                                    const Vector2& _unitSize,
                                                    const FilePath& _dataPath,
@@ -276,20 +276,20 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
     vertexRDO->SetStream(EVF_TEXCOORD0, TYPE_FLOAT, 2, sizeof(VegetationVertex), &(vertexData[0].texCoord0));
     vertexRDO->BuildVertexBuffer(vertexData.size(), true);
     
-    Vector<Vector<Vector<SortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
+    Vector<Vector<Vector<VegetationSortedBufferItem> > >& indexBuffers = renderData->GetIndexBuffers();
     
     for(size_t resolutionIndex = 0; resolutionIndex < resolutionCount; ++resolutionIndex)
     {
         Vector<Vector<SortBufferData> >& sortedIndexBuffers = resolutionDataArray[resolutionIndex];
         
-        indexBuffers.push_back(Vector<Vector<SortedBufferItem> >());
-        Vector<Vector<SortedBufferItem> >& currentResolutionIndexBuffers = indexBuffers[indexBuffers.size() - 1];
+        indexBuffers.push_back(Vector<Vector<VegetationSortedBufferItem> >());
+        Vector<Vector<VegetationSortedBufferItem> >& currentResolutionIndexBuffers = indexBuffers[indexBuffers.size() - 1];
         
         size_t cellCount = sortedIndexBuffers.size();
         for(size_t cellIndex = 0; cellIndex < cellCount; ++cellIndex)
         {
-            currentResolutionIndexBuffers.push_back(Vector<SortedBufferItem>());
-            Vector<SortedBufferItem>& sortedIndexBufferItems = currentResolutionIndexBuffers[currentResolutionIndexBuffers.size() - 1];
+            currentResolutionIndexBuffers.push_back(Vector<VegetationSortedBufferItem>());
+            Vector<VegetationSortedBufferItem>& sortedIndexBufferItems = currentResolutionIndexBuffers[currentResolutionIndexBuffers.size() - 1];
             
             Vector<SortBufferData>& directionIndexBuffers = sortedIndexBuffers[cellIndex];
             
@@ -298,8 +298,8 @@ void VegetationCustomSLGeometry::Build(Vector<VegetationRenderData*>& renderData
             {
                 SortBufferData& sortData = directionIndexBuffers[directionIndex];
                 
-                sortedIndexBufferItems.push_back(SortedBufferItem());
-                SortedBufferItem& sortBufferItem = sortedIndexBufferItems[directionIndex];
+                sortedIndexBufferItems.push_back(VegetationSortedBufferItem());
+                VegetationSortedBufferItem& sortBufferItem = sortedIndexBufferItems[directionIndex];
                 
                 RenderDataObject* indexBuffer = new RenderDataObject();
                 indexBuffer->SetIndices(VEGETATION_INDEX_TYPE, (uint8*)(&indexData[sortData.indexOffset]), sortData.size);
@@ -399,7 +399,7 @@ void VegetationCustomSLGeometry::OnVegetationPropertiesChanged(Vector<Vegetation
     }
 }
 
-void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<LayerParams>& layerClusterCount,
+void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<VegetationLayerParams>& layerClusterCount,
                                  Vector<ClusterPositionData>& clusters,
                                  Vector<VertexRangeData>& layerRanges)
 {
@@ -419,7 +419,7 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<LayerP
     uint32 currentIndex = 0;
     for(size_t layerIndex = 0; layerIndex < layerCount; ++layerIndex)
     {
-        const LayerParams& layerParamsData = layerClusterCount[layerIndex];
+        const VegetationLayerParams& layerParamsData = layerClusterCount[layerIndex];
         
         uint32 layerMaxClusters = layerParamsData.maxClusterCount;
         
@@ -470,7 +470,7 @@ void VegetationCustomSLGeometry::GenerateClusterPositionData(const Vector<LayerP
 }
 
 void VegetationCustomSLGeometry::GenerateClusterResolutionData(uint32 resolutionId,
-                                                               const Vector<LayerParams>& layerClusterCount,
+                                                               const Vector<VegetationLayerParams>& layerClusterCount,
                                                                const Vector<ClusterPositionData>& clusterPosition,
                                                                const Vector<VertexRangeData>& layerRanges,
                                                                Vector<ClusterResolutionData>& clusterResolution)

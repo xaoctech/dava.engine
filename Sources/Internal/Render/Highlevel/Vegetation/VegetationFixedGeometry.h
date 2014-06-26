@@ -107,7 +107,7 @@ private:
                                             size_t polygonElementCount,
                                             AABBox3& indexBufferBBox,
                                             Vector<Vector3>& directionPoints,
-                                            Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
+                                            Vector<Vector<VegetationSortedBufferItem> >& currentResolutionIndexArray,
                                             Vector<PolygonSortData>& sortingArray,
                                             Vector<VegetationIndex>& preparedIndices,
                                             VegetationRenderData& renderData);

@@ -474,7 +474,7 @@ void VegetationFixedGeometry::GenerateIndices(uint32 maxClusters,
     size_t totalResolutionCount = resolutionRanges.size();
     size_t currentIndexIndex = 0;
     
-    Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderData.GetIndexBuffers();
+    Vector<Vector<Vector<VegetationSortedBufferItem> > >& indexRenderDataObject = renderData.GetIndexBuffers();
     Vector<Vector3> directionPoints;
     
     for(size_t resolutionIndex = 0; resolutionIndex < totalResolutionCount; ++resolutionIndex)
@@ -482,9 +482,9 @@ void VegetationFixedGeometry::GenerateIndices(uint32 maxClusters,
         uint32 resolutionOffset = (uint32)resolutionScale[resolutionIndex];
         uint32 indexBufferCount = resolutionCellSquare[resolutionCellSquare.size() - 1] / resolutionCellSquare[resolutionIndex];
         
-        indexRenderDataObject.push_back(Vector<Vector<SortedBufferItem> >());
+        indexRenderDataObject.push_back(Vector<Vector<VegetationSortedBufferItem> >());
         
-        Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray = indexRenderDataObject[resolutionIndex];
+        Vector<Vector<VegetationSortedBufferItem> >& currentResolutionIndexArray = indexRenderDataObject[resolutionIndex];
         
         for(uint32 i = 0; i < indexBufferCount; ++i)
         {
@@ -572,7 +572,7 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
                                     size_t polygonElementCount,
                                     AABBox3& indexBufferBBox,
                                     Vector<Vector3>& directionPoints,
-                                    Vector<Vector<SortedBufferItem> >& currentResolutionIndexArray,
+                                    Vector<Vector<VegetationSortedBufferItem> >& currentResolutionIndexArray,
                                     Vector<PolygonSortData>& sortingArray,
                                     Vector<VegetationIndex>& preparedIndices,
                                     VegetationRenderData& renderData)
@@ -591,8 +591,8 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
     Vector<VegetationIndex>& indexData = renderData.GetIndices();
     Vector<VegetationVertex>& vertexData = renderData.GetVertices();
     
-    currentResolutionIndexArray.push_back(Vector<SortedBufferItem>());
-    Vector<SortedBufferItem>& currentDirectionBuffers = currentResolutionIndexArray[indexBufferIndex];
+    currentResolutionIndexArray.push_back(Vector<VegetationSortedBufferItem>());
+    Vector<VegetationSortedBufferItem>& currentDirectionBuffers = currentResolutionIndexArray[indexBufferIndex];
     
     uint32 sortDirectionCount = (uint32)directionPoints.size();
     for(uint32 sortDirectionIndex = 0; sortDirectionIndex < sortDirectionCount; ++sortDirectionIndex)
@@ -636,7 +636,7 @@ void VegetationFixedGeometry::PrepareSortedIndexBufferVariations(size_t& current
         RenderDataObject* indexBuffer = new RenderDataObject();
         indexBuffer->SetIndices(VEGETATION_INDEX_TYPE, (uint8*)(&indexData[prevIndexIndex]), (currentIndexIndex - prevIndexIndex));
         
-        SortedBufferItem sortedBufferItem;
+        VegetationSortedBufferItem sortedBufferItem;
         sortedBufferItem.SetRenderDataObject(indexBuffer);
         sortedBufferItem.sortDirection = indexBufferBBox.GetCenter() - cameraPosition;
         sortedBufferItem.sortDirection.Normalize();
@@ -652,7 +652,7 @@ void VegetationFixedGeometry::GenerateRenderDataObjects(VegetationRenderData& re
     renderData.CreateRenderData();
     
     RenderDataObject* vertexRenderDataObject = renderData.GetRenderDataObject();
-    Vector<Vector<Vector<SortedBufferItem> > >& indexRenderDataObject = renderData.GetIndexBuffers();
+    Vector<Vector<Vector<VegetationSortedBufferItem> > >& indexRenderDataObject = renderData.GetIndexBuffers();
     Vector<VegetationVertex>& vertexData = renderData.GetVertices();
     
     vertexRenderDataObject->SetStream(EVF_VERTEX, TYPE_FLOAT, 3, sizeof(VegetationVertex), &(vertexData[0].coord));
@@ -665,12 +665,12 @@ void VegetationFixedGeometry::GenerateRenderDataObjects(VegetationRenderData& re
     size_t totalIndexObjectArrayCount = indexRenderDataObject.size();
     for(size_t indexArrayIndex = 0; indexArrayIndex < totalIndexObjectArrayCount; ++indexArrayIndex)
     {
-        Vector<Vector<SortedBufferItem> >& indexObjectArray = indexRenderDataObject[indexArrayIndex];
+        Vector<Vector<VegetationSortedBufferItem> >& indexObjectArray = indexRenderDataObject[indexArrayIndex];
         size_t totalIndexObjectCount = indexObjectArray.size();
         
         for(size_t i = 0; i < totalIndexObjectCount; ++i)
         {
-            Vector<SortedBufferItem>& directionArray = indexObjectArray[i];
+            Vector<VegetationSortedBufferItem>& directionArray = indexObjectArray[i];
             size_t directionCount = directionArray.size();
             for(size_t directionIndex = 0; directionIndex < directionCount; ++directionIndex)
             {

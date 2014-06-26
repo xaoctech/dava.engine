@@ -54,22 +54,22 @@ struct VegetationVertex
 
 /////////////////////////////////////////////////////////////////////////////////
 
-struct SortedBufferItem
+struct VegetationSortedBufferItem
 {
     RenderDataObject* rdo;
     RenderDataObject* rdoAttachment;
     Vector3 sortDirection;
         
-    inline SortedBufferItem();
-    inline SortedBufferItem(const SortedBufferItem& src);
-    inline ~SortedBufferItem();
+    inline VegetationSortedBufferItem();
+    inline VegetationSortedBufferItem(const VegetationSortedBufferItem& src);
+    inline ~VegetationSortedBufferItem();
     inline void SetRenderDataObject(RenderDataObject* dataObject);
     inline void SetRenderDataObjectAttachment(RenderDataObject* dataObject);
 };
 
 /////////////////////////////////////////////////////////////////////////////////
 
-struct LayerParams
+struct VegetationLayerParams
 {
     uint32 maxClusterCount;
     float32 instanceRotationVariation; //in angles
@@ -88,7 +88,7 @@ public:
     inline Vector<VegetationVertex>& GetVertices();
     inline Vector<VegetationIndex>& GetIndices();
     inline RenderDataObject* GetRenderDataObject();
-    inline Vector<Vector<Vector<SortedBufferItem> > >& GetIndexBuffers();
+    inline Vector<Vector<Vector<VegetationSortedBufferItem> > >& GetIndexBuffers();
     inline NMaterial* GetMaterial();
     inline void SetMaterial(NMaterial* mat);
     
@@ -105,7 +105,7 @@ private:
     Vector<VegetationVertex> vertexData;
     Vector<VegetationIndex> indexData;
     RenderDataObject* vertexRenderDataObject;
-    Vector<Vector<Vector<SortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
+    Vector<Vector<Vector<VegetationSortedBufferItem> > > indexRenderDataObject; //resolution - cell - direction
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ inline RenderDataObject* VegetationRenderData::GetRenderDataObject()
     return vertexRenderDataObject;
 }
 
-inline Vector<Vector<Vector<SortedBufferItem> > >& VegetationRenderData::GetIndexBuffers()
+inline Vector<Vector<Vector<VegetationSortedBufferItem> > >& VegetationRenderData::GetIndexBuffers()
 {
     return indexRenderDataObject;
 }
@@ -146,26 +146,26 @@ inline void VegetationRenderData::SetMaterial(NMaterial* mat)
 
 /////////////////////////////////////////////////////////////////////////////////
 
-inline SortedBufferItem::SortedBufferItem()
+inline VegetationSortedBufferItem::VegetationSortedBufferItem()
 {
     rdo = NULL;
     rdoAttachment = NULL;
 }
 
-inline SortedBufferItem::SortedBufferItem(const SortedBufferItem& src)
+inline VegetationSortedBufferItem::VegetationSortedBufferItem(const VegetationSortedBufferItem& src)
 {
     rdo = SafeRetain(src.rdo);
     rdoAttachment = SafeRetain(src.rdoAttachment);
     sortDirection = src.sortDirection;
 }
 
-inline SortedBufferItem::~SortedBufferItem()
+inline VegetationSortedBufferItem::~VegetationSortedBufferItem()
 {
     SafeRelease(rdoAttachment);
     SafeRelease(rdo);
 }
 
-inline void SortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
+inline void VegetationSortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
 {
     if(dataObject != rdo)
     {
@@ -174,7 +174,7 @@ inline void SortedBufferItem::SetRenderDataObject(RenderDataObject* dataObject)
     }
 }
 
-inline void SortedBufferItem::SetRenderDataObjectAttachment(RenderDataObject* dataObject)
+inline void VegetationSortedBufferItem::SetRenderDataObjectAttachment(RenderDataObject* dataObject)
 {
     if(dataObject != rdoAttachment)
     {
