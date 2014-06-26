@@ -37,6 +37,9 @@
 #include "FileSystem/FilePath.h"
 
 
+#define USER_VERSIONING_DEBUG_FEATURES
+
+
 namespace DAVA
 {
 
@@ -71,6 +74,11 @@ public:
     eStatus TestVersion(const SceneVersion& version) const;
     String UnsupportedTagsMessage(const SceneVersion& version) const;
     String NoncompatibleTagsMessage(const SceneVersion& version) const;
+
+
+#ifdef USER_VERSIONING_DEBUG_FEATURES
+    VersionMap& Versions();
+#endif
 
 private:
     void AddVersion(const SceneVersion& version);

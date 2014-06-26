@@ -84,6 +84,7 @@ namespace DAVA
 {
 
 SceneFileV2::SceneFileV2()
+    : scene(NULL)
 {
     isDebugLogEnabled = false;
     isSaveForGame = false;
@@ -902,7 +903,7 @@ bool SceneFileV2::RemoveEmptySceneNodes(DAVA::Entity * currentNode)
             Entity * parent  = currentNode->GetParent();
             if (parent)
             {
-				if(GetVersion().version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
+                if(header.version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -951,7 +952,7 @@ bool SceneFileV2::RemoveEmptyHierarchy(Entity * currentNode)
 
             if (parent)
             {
-				if(GetVersion().version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
+				if(header.version < OLD_LODS_SCENE_VERSION && GetLodComponent(parent))
 				{
 					return false;
 				}
@@ -1345,7 +1346,7 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	ReplaceOldNodes(rootNode);
 	RemoveEmptyHierarchy(rootNode);
 
-    if(GetVersion().version < OLD_LODS_SCENE_VERSION)
+    if(header.version < OLD_LODS_SCENE_VERSION)
     {
 	    LodToLod2Converter lodConverter;
 	    lodConverter.ConvertLodToV2(rootNode);
@@ -1353,13 +1354,13 @@ void SceneFileV2::OptimizeScene(Entity * rootNode)
 	    switchConverter.ConsumeSwitchedRenderObjects(rootNode);
     }    
 	
-    if(GetVersion().version < TREE_ANIMATION_SCENE_VERSION)
+    if(header.version < TREE_ANIMATION_SCENE_VERSION)
     {
         TreeToAnimatedTreeConverter treeConverter;
         treeConverter.ConvertTrees(rootNode);
     }
 
-    if (GetVersion().version < PREREQUIRED_BINORMAL_SCENE_VERSION)
+    if (header.version < PREREQUIRED_BINORMAL_SCENE_VERSION)
     {     
         RebuildTangentSpace(rootNode);
     }
@@ -1399,8 +1400,10 @@ void SceneFileV2::UpdatePolygonGroupRequestedFormatRecursively(Entity *entity)
 void SceneFileV2::SetVersion(const VersionInfo::SceneVersion& version)
 {
 	header.version = version.version;
-    DVASSERT(scene);
-    scene->version = version;
+    if (scene)
+    {
+        scene->version = version;
+    }
 }
 
 SceneArchive::~SceneArchive()

@@ -128,10 +128,10 @@ VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
     // Checking tags
     const TagsMap& tags = version.tags;
     const TagsMap& fwAllTags = GetTags();
-    const TagsMap& fwVersionedTags = GetTags( version.version );
+    const TagsMap& fwVersionedTags = GetTags(version.version);
 
-    const TagsMap& errTags = GetTagsDiff( tags, fwAllTags );            // List of tags that not supported by current version of framework
-    const TagsMap& warnTags = GetTagsDiff( fwVersionedTags, tags );     // List of tags that will be added to scene
+    const TagsMap& errTags = GetTagsDiff(tags, fwAllTags);            // List of tags that not supported by current version of framework
+    const TagsMap& warnTags = GetTagsDiff(fwVersionedTags, tags);     // List of tags that will be added to scene
 
     if ( errTags.size() > 0 )
         return INVALID;
@@ -144,9 +144,15 @@ VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
 
 void VersionInfo::FillVersionHistory()
 {
+    SceneVersion v12;
+    v12.version = 12;    // Current version of scene file
+    v12.tags.insert(TagsMap::value_type("vegetation", 1));
+    v12.tags.insert(TagsMap::value_type("occlusion", 1));
+    AddVersion(v12);
+
     // Current version
     SceneVersion currentVersion;
-    currentVersion.version = 12;    // Current version of scene file
+    currentVersion.version = 13;    // Current version of scene file
     AddVersion(currentVersion);
 }
 
@@ -157,7 +163,15 @@ void VersionInfo::SetCurrentBranch()
     DVASSERT(!versionMap.empty());
     TagsMap& tags = versionMap.rbegin()->second.tags;
 
-    // Example: tags.insert( TagsMap::value_type( "sky", 2 ) );
+    // Example: tags.insert(TagsMap::value_type("sky", 2));
+    tags.insert(TagsMap::value_type("sky", 2));
 }
+
+#ifdef USER_VERSIONING_DEBUG_FEATURES
+VersionInfo::VersionMap& VersionInfo::Versions()
+{
+    return versionMap;
+}
+#endif
 
 }
