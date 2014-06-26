@@ -71,6 +71,12 @@
 #include "SceneSystemTest.h"
 #include "ParseTextTest.h"
 
+#include "TeamcityOutput/TeamcityOutput.h"
+
+
+#define USE_TEAMCYTY_OUTPUT
+
+
 using namespace DAVA;
 
 GameCore::GameCore()
@@ -94,6 +100,11 @@ void GameCore::OnAppStarted()
 	RenderManager::Instance()->SetFPS(60);
 
     CreateDocumentsFolder();
+
+#ifdef USE_TEAMCYTY_OUTPUT
+    TeamcityOutput *out = new TeamcityOutput();
+	Logger::AddCustomOutput(out);
+#endif
 
     new PVRTest();
  	new DXTTest();
@@ -146,6 +157,11 @@ void GameCore::OnAppStarted()
     errors.reserve(TestCount());
 
     RunTests();
+
+#ifdef USE_TEAMCYTY_OUTPUT
+    Logger::RemoveCustomOutput(out);
+#endif
+
 }
 
 void GameCore::RegisterScreen(BaseScreen *screen)
