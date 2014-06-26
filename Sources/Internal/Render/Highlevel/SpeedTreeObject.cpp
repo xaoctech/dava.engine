@@ -71,7 +71,7 @@ void SpeedTreeObject::SetTreeAnimationParams(const Vector2 & trunkOscillationPar
 
 void SpeedTreeObject::SetSphericalHarmonics(const Vector<Vector3> & coeffs)
 {
-    DVASSERT(coeffs.size() >= SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
+    DVASSERT(coeffs.size() == SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
     sphericalHarmonics = coeffs;
 }
 

@@ -573,7 +573,6 @@ void main()
 
 	mat3 shMatrix = mat3(sphericalHarmonics[1], sphericalHarmonics[2], sphericalHarmonics[3]);
 	sphericalLightFactor += A1 * shMatrix * vec3(n.y, n.z, n.x);
-#endif
 
 #if defined(SPHERICAL_HARMONICS_9)
 	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4] * 1.256637;
@@ -581,6 +580,8 @@ void main()
 	sphericalLightFactor += Y20(n) * sphericalHarmonics[6] * 1.256637;
 	sphericalLightFactor += Y21(n) * sphericalHarmonics[7] * 1.256637;
 	sphericalLightFactor += Y22(n) * sphericalHarmonics[8] * 1.256637;
+#endif
+
 #endif
 	
 	#if defined(VERTEX_COLOR)
