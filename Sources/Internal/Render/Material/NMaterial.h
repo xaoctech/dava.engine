@@ -261,7 +261,7 @@ public:
 //    uint32 GetLightCount() { return lightCount; };
 //    void SetLight(uint32 index, Light * light, bool forceUpdate);
 //    Light * GetLight(uint32 index) { return lights[index]; };
-	inline const uint8 & GetDynamicBindFlags() const {return dynamicBindFlags;}
+	inline uint8 GetDynamicBindFlags() const {return dynamicBindFlags;}
 	//}END TODO
 	
     void Draw(PolygonGroup * polygonGroup);

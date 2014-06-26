@@ -111,7 +111,7 @@ void RenderBatch::BindDynamicParameters(Camera * camera)
 {
     if(camera)
     {
-        const uint8 & bindFlags = material->GetDynamicBindFlags();
+        uint8 bindFlags = material->GetDynamicBindFlags();
         if(lights[0] && bindFlags & NMaterial::DYNAMIC_BIND_LIGHT)
         {
             const Vector4 & lightPositionDirection0InCameraSpace = lights[0]->CalculatePositionDirectionBindVector(camera);
