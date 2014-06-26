@@ -85,7 +85,7 @@ void SpeedTreeObject::BindDynamicParams()
     RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, UPDATE_SEMANTIC_ALWAYS);
     RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, UPDATE_SEMANTIC_ALWAYS);
 
-    DVASSERT(sphericalHarmonics.size() >= SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
+    DVASSERT(sphericalHarmonics.size() == SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
     RenderManager::SetDynamicParam(PARAM_SPHERICAL_HARMONICS, &sphericalHarmonics[0], UPDATE_SEMANTIC_ALWAYS);
 }
 
