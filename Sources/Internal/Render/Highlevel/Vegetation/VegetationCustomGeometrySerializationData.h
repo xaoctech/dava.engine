@@ -42,6 +42,12 @@ namespace DAVA
 {
 
 class Entity;
+
+/**
+ \brief This data structure allows to virtualize geometry storage. Geometry data
+    is loaded both from the saved to scene KeyedArchive and an external .sc2 file.
+    The data is passed to the geometry generator implementation then.
+ */
 class VegetationCustomGeometrySerializationData
 {
 public:

@@ -43,6 +43,9 @@ namespace DAVA
 class RenderBatch;
 class NMaterial;
 
+/**
+ \brief Pool for render batch objects. The pool is used by vegetation render object.
+ */
 class RenderBatchPool
 {
 public:

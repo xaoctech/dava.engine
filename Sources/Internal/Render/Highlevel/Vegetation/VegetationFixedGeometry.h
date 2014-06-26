@@ -47,6 +47,11 @@
 
 namespace DAVA
 {
+
+/**
+ \brief Geometry generator producing render data for billboarded alphablended vegetation.
+    Each vegetation cluster is represented by a billboard plane with alphablend texture.
+ */
 class VegetationFixedGeometry : public VegetationGeometry
 {
 public:
