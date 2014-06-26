@@ -28,8 +28,11 @@
 
 
 
-#include "Utils/TeamcityOutput.h"
+#include "TeamcityOutput.h"
 #include "Utils/Utils.h"
+
+#include <iostream>
+
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
@@ -90,7 +93,12 @@ void TeamcityOutput::PlatformOutput(const String &text) const
 {
     OutputDebugStringA(text.c_str());
 }
-#endif //#if defined (__DAVAENGINE_WIN32__)
+#elif defined(__DAVAENGINE_MACOS__)
+void TeamcityOutput::PlatformOutput(const String &text) const
+{
+    std::err << text << std::endl;
+}
+#endif
     
 }; // end of namespace DAVA
 

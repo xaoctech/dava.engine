@@ -1251,9 +1251,6 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\Process.h">
       <Filter>Internal\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h">
-      <Filter>Internal\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClInclude>
@@ -1431,7 +1428,6 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h">
       <Filter>Internal\Render\3D</Filter>
@@ -2422,9 +2418,6 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\Process.cpp">
       <Filter>Internal\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp">
-      <Filter>Internal\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp">
       <Filter>Internal\Scene3D\Components</Filter>
     </ClCompile>
@@ -2596,7 +2589,6 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp">
       <Filter>Internal\Render\3D</Filter>
