@@ -302,7 +302,8 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                         if (landscape->PlacePoint(renderPosition, pointOnLandscape))
                         {
                             if (renderPosition.z < pointOnLandscape.z)
-                                renderPosition.z = pointOnLandscape.z + 0.5f;
+                                continue;
+                                //renderPosition.z = pointOnLandscape.z + 0.5f;
                         }
                     }
                     
