@@ -257,14 +257,20 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
     // Mesh Grid: 
     //
     // z
-    // ^  6      7      8
+    // ^
+    // |
+    // |  9     10     11
     // |   *-----*-----*
     // |   | \ / | \ / |
-    // |   |11*  |12*  |
+    // |   |16*  |17*  |
+    // |   | / \ | / \ |
+    // |  6*-----*-----*8
+    // |   | \ / | \ / |
+    // |   |14*  |15*  |
     // |   | / \ | / \ |
     // |  3*-----*-----*5
     // |   | \ / | \ / |
-    // |   | 9*  |10*  |
+    // |   |12*  |13*  |
     // |   | / \ | / \ |
     // |   *-----*-----*
     // |  0      1      2
@@ -272,9 +278,9 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
     // +--------------------> x(y)
     //
 
-    int32 gridSize = 2;
-    int32 vxCount = ((gridSize + 1)*(gridSize + 1) + gridSize*gridSize) * 2; // (s+1)^2 for cell corner vertices; s^2 for cell center vertices; for 2 planes
-    int32 indCount = gridSize * gridSize * 4 * 2 * 3; //4 triangles per cell; for 2 planes
+    int32 gridSizeX = 2, gridSizeY = 3;
+    int32 vxCount = ((gridSizeX + 1)*(gridSizeY + 1) + gridSizeX*gridSizeY) * 2; // (sx+1)*(sy+1) for cell corner vertices; sx*sy for cell center vertices; for 2 planes
+    int32 indCount = gridSizeX * gridSizeY * 4 * 2 * 3; //4 triangles per cell; for 2 planes
 
     Vector2 txCoordPlane2Offset;
     Vector2 txCoordPlaneScale;
@@ -291,34 +297,34 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
 
     int32 plane2VxIndexOffset = vxCount / 2;
 
-    Vector2 cellCenterTxCoordOffset = Vector2(.5f, .5f) / gridSize * txCoordPlaneScale;
+    Vector2 cellCenterTxCoordOffset = Vector2(.5f / gridSizeX, .5f / gridSizeY) * txCoordPlaneScale;
 
     PolygonGroup * planePG = new PolygonGroup();
     planePG->AllocateData(EVF_VERTEX | EVF_TEXCOORD0, vxCount, indCount);
 
     int32 currentIndex = 0;
-    for(int32 z = 0; z <= gridSize; ++z)
+    for(int32 z = 0; z <= gridSizeY; ++z)
     {
-        float32 rowCoord = min.z + (size.z * z) / gridSize;
-        float32 rowTxCoord = z / (float32)gridSize;
-        int32 rowVxIndexOffset = (gridSize + 1) * z;
-        int32 nextRowVxIndexOffset = rowVxIndexOffset + (gridSize + 1);
+        float32 rowCoord = min.z + (size.z * z) / gridSizeY;
+        float32 rowTxCoord = z / (float32)gridSizeY;
+        int32 rowVxIndexOffset = (gridSizeX + 1) * z;
+        int32 nextRowVxIndexOffset = rowVxIndexOffset + (gridSizeX + 1);
 
-        int32 cellCenterVxIndexOffset = (gridSize + 1)*(gridSize + 1) - z;
-        float32 rowCenterZCoord = rowCoord + size.z / gridSize / 2.f;
+        int32 cellCenterVxIndexOffset = (gridSizeX + 1)*(gridSizeY + 1) - z;
+        float32 rowCenterZCoord = rowCoord + size.z / gridSizeY / 2.f;
 
-        for(int32 xy = 0; xy <= gridSize; ++xy) // xy and z - it's grid 'coords'. Variable 'xy' - shared variable for two planes.
+        for(int32 xy = 0; xy <= gridSizeX; ++xy) // xy and z - it's grid 'coords'. Variable 'xy' - shared variable for two planes.
         {
             //cell corner vertices
             int32 vxIndex1 = xy + rowVxIndexOffset;
             int32 vxIndex2 = vxIndex1 + plane2VxIndexOffset;
-            float32 xCoord = min.x + size.x * xy / (float32)gridSize; //first plane in Oxz
-            float32 yCoord = min.y + size.y * xy / (float32)gridSize; //second plane in Oyz
+            float32 xCoord = min.x + size.x * xy / (float32)gridSizeX; //first plane in Oxz
+            float32 yCoord = min.y + size.y * xy / (float32)gridSizeX; //second plane in Oyz
 
             Vector3 coord1(xCoord, 0.f, rowCoord); //1st plane
             Vector3 coord2(0.f, yCoord, rowCoord); //2nd plane
 
-            Vector2 txCoord1 = Vector2(xy / (float32)gridSize, rowTxCoord) * txCoordPlaneScale;
+            Vector2 txCoord1 = Vector2(xy / (float32)gridSizeX, rowTxCoord) * txCoordPlaneScale;
             Vector2 txCoord2 = txCoord1 + txCoordPlane2Offset;
 
             planePG->SetCoord(vxIndex1, coord1);
@@ -328,13 +334,13 @@ void CreatePlaneLODCommand::CreatePlaneBatch()
             planePG->SetTexcoord(0, vxIndex2, txCoord2);
 
             //cell center vertices
-            if(z != gridSize && xy != gridSize)
+            if(z != gridSizeY && xy != gridSizeX)
             {
                 int32 centerVxIndex1 = vxIndex1 + cellCenterVxIndexOffset;
                 int32 centerVxIndex2 = centerVxIndex1 + plane2VxIndexOffset;
 
-                float32 centerXCoord = xCoord + size.x / gridSize / 2.f;
-                float32 centerYCoord = yCoord + size.y / gridSize / 2.f;
+                float32 centerXCoord = xCoord + size.x / gridSizeX / 2.f;
+                float32 centerYCoord = yCoord + size.y / gridSizeX / 2.f;
                 planePG->SetCoord(centerVxIndex1, Vector3(centerXCoord, 0.f, rowCenterZCoord));
                 planePG->SetCoord(centerVxIndex2, Vector3(0.f, centerYCoord, rowCenterZCoord));
                 planePG->SetTexcoord(0, centerVxIndex1, txCoord1 + cellCenterTxCoordOffset);
