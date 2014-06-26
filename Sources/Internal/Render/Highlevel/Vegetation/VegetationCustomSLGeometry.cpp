@@ -57,25 +57,10 @@ VegetationCustomSLGeometry::CustomGeometryLayerData::CustomGeometryLayerData()
 
 VegetationCustomSLGeometry::CustomGeometryLayerData::CustomGeometryLayerData(const CustomGeometryLayerData& src)
 {
-    for(size_t i = 0; i < src.sourcePositions.size(); ++i)
-    {
-        sourcePositions.push_back(src.sourcePositions[i]);
-    }
-    
-    for(size_t i = 0; i < src.sourceTextureCoords.size(); ++i)
-    {
-        sourceTextureCoords.push_back(src.sourceTextureCoords[i]);
-    }
-    
-    for(size_t i = 0; i < src.sourceNormals.size(); ++i)
-    {
-        sourceNormals.push_back(src.sourceNormals[i]);
-    }
-    
-    for(size_t i = 0; i < src.sourceIndices.size(); ++i)
-    {
-        sourceIndices.push_back(src.sourceIndices[i]);
-    }
+    sourcePositions = src.sourcePositions;
+    sourceTextureCoords = src.sourceTextureCoords;
+    sourceNormals = src.sourceNormals;
+    sourceIndices = src.sourceIndices;
     
     if(!src.bbox.IsEmpty())
     {
@@ -105,10 +90,7 @@ VegetationCustomSLGeometry::CustomGeometryEntityData::CustomGeometryEntityData(c
     material = NULL;
     SetMaterial(src.material);
     
-    for(size_t i = 0; i < src.lods.size(); ++i)
-    {
-        lods.push_back(src.lods[i]);
-    }
+    lods = src.lods;
 }
 
 VegetationCustomSLGeometry::CustomGeometryEntityData::~CustomGeometryEntityData()
@@ -157,13 +139,7 @@ VegetationCustomSLGeometry::VegetationCustomSLGeometry(const Vector<VegetationLa
                                                    const Vector3& _worldSize,
                                                    VegetationCustomGeometrySerializationData* geometryData)
 {
-    maxClusters.resize(_maxClusters.size());
-    for(size_t i = 0; i < _maxClusters.size(); ++i)
-    {
-        maxClusters[i].maxClusterCount = _maxClusters[i].maxClusterCount;
-        maxClusters[i].instanceRotationVariation = _maxClusters[i].instanceRotationVariation;
-        maxClusters[i].instanceScaleVariation = _maxClusters[i].instanceScaleVariation;
-    }
+    maxClusters = _maxClusters;
     
     maxDensityLevels = _maxDensityLevels;
     unitSize = _unitSize;
