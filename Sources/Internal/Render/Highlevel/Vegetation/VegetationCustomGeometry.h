@@ -50,7 +50,10 @@
 
 namespace DAVA
 {
-
+/**
+ \brief This geometry generator allows to use geometry of any complexity.
+ Geometry and material for each layer is loaded from an external .sc2 file.
+ */
 class VegetationCustomGeometry : public VegetationGeometry
 {
 

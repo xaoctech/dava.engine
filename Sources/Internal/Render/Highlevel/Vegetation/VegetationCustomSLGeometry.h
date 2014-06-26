@@ -51,6 +51,12 @@
 namespace DAVA
 {
 
+/**
+ \brief This geometry generator allows to use geometry of any complexity.
+    Geometry for each layer is loaded from an external .sc2 file but all geometry layers are
+    rendered with material taken from layer 0. 
+    Such simplification allows to boost performance significantly.
+ */
 class VegetationCustomSLGeometry : public VegetationGeometry
 {
     

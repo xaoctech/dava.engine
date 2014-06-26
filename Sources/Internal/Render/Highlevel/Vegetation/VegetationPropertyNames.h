@@ -38,6 +38,9 @@
 namespace DAVA
 {
 
+/**
+ \brief Different uniform and shader flag names
+ */
 class VegetationPropertyNames
 {
 public:

@@ -32,6 +32,10 @@
 namespace DAVA
 {
 
+/**
+ \brief Data chunk associated with a vegetation quad tree. 
+    This data is used for visibility culling and rendering of tree leafes with proper geometry buffers.
+ */
 struct VegetationSpatialData
 {
     int16 x;

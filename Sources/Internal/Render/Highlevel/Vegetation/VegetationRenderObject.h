@@ -59,6 +59,10 @@ namespace DAVA
 typedef Image VegetationMap;
 class FoliageSystem;
 
+/**
+ \brief This structure stores various vegetation metrics useful for performance
+    analysis.
+ */
 struct VegetationMetrics
 {
     Vector<uint32> visibleInstanceCountPerLayer;
@@ -81,6 +85,12 @@ struct VegetationMetrics
     bool isValid;
 };
 
+/**
+ \brief Vegetation rendering implementation. Performs frustum culling, selects geometry to render,
+    provides list of render batches for render system.
+    Use of external vegetation geometry (subclasses of VegetationGeometry) allows to easily switch
+    between vegetation render modes.
+ */
 class VegetationRenderObject : public RenderObject
 {
 public:

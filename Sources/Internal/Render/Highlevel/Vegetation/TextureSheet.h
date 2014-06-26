@@ -39,6 +39,10 @@
 
 namespace DAVA
 {
+
+/**
+ \brief Describes a sinle cell inside of the entire texture sheet.
+ */
 struct TextureSheetCell
 {
     Vector2 coords[MAX_CELL_TEXTURE_COORDS];
@@ -50,6 +54,10 @@ struct TextureSheetCell
     inline TextureSheetCell& operator=(const TextureSheetCell& src);
 };
 
+/**
+ \brief Texture sheet is a simple texture atlas. Each cell represents single texture.
+    Texture sheet is used for rendering billboarded vegetation.
+ */
 class TextureSheet
 {
 public:

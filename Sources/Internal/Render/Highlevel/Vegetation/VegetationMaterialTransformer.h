@@ -34,6 +34,13 @@ namespace DAVA
 {
 
 class NMaterial;
+
+/**
+ \brief Interface for material transformer. Implementations of this interface 
+    are used by VegetationGeometry implementations to modify vegetation materials.
+    For example, set constant properties related to the specific implementations
+    or add/remove shader flags.
+ */
 class VegetationMaterialTransformer
 {
 public:

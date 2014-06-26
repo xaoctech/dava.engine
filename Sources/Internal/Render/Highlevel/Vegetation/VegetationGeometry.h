@@ -46,6 +46,12 @@
 
 namespace DAVA
 {
+
+/**
+ \brief Base class for vegetation geometry generation. Vegetation render object
+    creates a specific vegetation geometry implementation object and uses vegetation
+    render data produced by the generator to render vegetation.
+ */
 class VegetationGeometry
 {
 protected:
