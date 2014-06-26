@@ -928,6 +928,9 @@ void RenderManager::DiscardDepth()
 #if defined(__DAVAENGINE_ANDROID__)
 void RenderManager::Lost()
 {
+    cachedEnabledStreams = 0;
+    cachedAttributeMask = 0;
+    
     bufferBindingId[0] = 0;
     bufferBindingId[1] = 0;
 
