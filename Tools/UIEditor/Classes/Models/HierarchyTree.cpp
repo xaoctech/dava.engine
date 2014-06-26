@@ -196,10 +196,6 @@ bool HierarchyTree::Load(const QString& projectPath)
     // All the data needed is loaded.
     SafeRelease(project);
     
-    // Initialize the control names with their correct (localized) values after the
-    // Localization File is loaded.
-    UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
-
 	HierarchyTreePlatformNode* platformNode = NULL;
 	HierarchyTreeScreenNode* screenNode = NULL;
 	
@@ -599,14 +595,19 @@ void HierarchyTree::UpdateExtraData(BaseMetadata::eExtraDataUpdateStyle updateSt
                 continue;
             }
 
-                // Update extra data from controls in a recursive way.
-            for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER controlNodesIter = screenNode->GetChildNodes().begin();
-                 controlNodesIter != screenNode->GetChildNodes().end(); controlNodesIter ++)
-            {
-                HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(*controlNodesIter);
-                UpdateExtraDataRecursive(controlNode, updateStyle);
-            }
+            UpdateExtraData(screenNode, updateStyle);
         }
+    }
+}
+
+void HierarchyTree::UpdateExtraData(HierarchyTreeScreenNode* screenNode,BaseMetadata::eExtraDataUpdateStyle updateStyle)
+{
+    // Update extra data from controls in a recursive way.
+    for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER controlNodesIter = screenNode->GetChildNodes().begin();
+         controlNodesIter != screenNode->GetChildNodes().end(); controlNodesIter ++)
+    {
+        HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(*controlNodesIter);
+        UpdateExtraDataRecursive(controlNode, updateStyle);
     }
 }
 
@@ -644,6 +645,11 @@ void HierarchyTree::UpdateExtraDataRecursive(HierarchyTreeControlNode* node, Bas
         
         UpdateExtraDataRecursive(childNode, updateStyle);
     }
+}
+
+void HierarchyTree::UpdateControlsData(HierarchyTreeScreenNode* screenNode)
+{
+	UpdateExtraData(screenNode, BaseMetadata::UPDATE_EXTRADATA_FROM_CONTROL);
 }
 
 void HierarchyTree::UpdateControlsData()
