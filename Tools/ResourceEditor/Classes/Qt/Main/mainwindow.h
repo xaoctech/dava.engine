@@ -221,7 +221,7 @@ protected:
 	
 	bool SelectCustomColorsTexturePath();
 	
-protected slots:
+private slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
 
@@ -231,12 +231,11 @@ protected slots:
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     void OnGlobalInvalidateTimeout();
-
 	void EditorLightEnabled(bool enabled);
-
 	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
-
 	void UnmodalDialogFinished(int);
+
+    void DebugVersionInfo();
 
 private:
 	Ui::MainWindow *ui;

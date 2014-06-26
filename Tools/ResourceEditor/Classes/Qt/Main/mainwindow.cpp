@@ -113,6 +113,7 @@
 #include "Render/Highlevel/VegetationRenderObject.h"
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
+#include "Debug/VersionInfoWidget/VersionInfoWidget.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -712,6 +713,10 @@ void QtMainWindow::SetupActions()
 
     // Debug functions
 	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
+	{
+        QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
+        connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
+	}
     
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -2897,3 +2902,11 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
     }
 }
 
+void QtMainWindow::DebugVersionInfo()
+{
+    VersionInfoWidget *w = new VersionInfoWidget(this);
+    w->setWindowFlags(Qt::Dialog);
+    w->setWindowModality(Qt::WindowModal);
+    w->setAttribute(Qt::WA_DeleteOnClose);
+    w->show();
+}
