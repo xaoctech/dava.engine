@@ -714,8 +714,10 @@ void QtMainWindow::SetupActions()
     // Debug functions
 	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
 	{
+#ifdef USER_VERSIONING_DEBUG_FEATURES
         QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
         connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
+#endif
 	}
     
  	//Collision Box Types
