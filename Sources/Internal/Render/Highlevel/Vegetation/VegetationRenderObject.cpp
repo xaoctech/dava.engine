@@ -289,22 +289,7 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 {
     RenderObject::Load(archive, serializationContext);
     
-    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    
-    bool shouldLoadData = deviceCaps.isVertexTextureUnitsSupported;
-    
-    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
-    bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
-    
-    shouldLoadData = shouldLoadData && qualityAllowsVegetation;
-    
-    RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::VEGETATION_DRAW, shouldLoadData);
-    
-#if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
-    shouldLoadData = true;
-#endif
-    
-    if(shouldLoadData)
+    if(IsDataLoadNeeded())
     {
         if(archive->IsKeyExists("vro.geometryData"))
         {
@@ -411,6 +396,26 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
     
     AddFlag(RenderObject::ALWAYS_CLIPPING_VISIBLE);
     AddFlag(RenderObject::CUSTOM_PREPARE_TO_RENDER);
+}
+
+bool VegetationRenderObject::IsDataLoadNeeded()
+{
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    
+    bool shouldLoadData = deviceCaps.isVertexTextureUnitsSupported;
+    
+    FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
+    bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
+    
+    shouldLoadData = shouldLoadData && qualityAllowsVegetation;
+    
+    RenderManager::Instance()->GetOptions()->SetOption(RenderOptions::VEGETATION_DRAW, shouldLoadData);
+    
+#if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
+    shouldLoadData = true;
+#endif
+
+    return shouldLoadData;
 }
     
 void VegetationRenderObject::PrepareToRender(Camera * camera)
@@ -819,59 +824,62 @@ bool VegetationRenderObject::CellByDistanceCompareFunction(const AbstractQuadTre
 void VegetationRenderObject::InitHeightTextureFromHeightmap(Heightmap* heightMap)
 {
     SafeRelease(heightmapTexture);
-
-    Image* originalImage = Image::CreateFromData(heightMap->Size(),
-                                                 heightMap->Size(),
-                                                 FORMAT_A16,
-                                                 (uint8*)heightMap->Data());
     
-    int32 pow2Size = heightmap->Size();
-    if(!IsPowerOf2(heightmap->Size()))
+    if(IsDataLoadNeeded())
     {
-        EnsurePowerOf2(pow2Size);
+        Image* originalImage = Image::CreateFromData(heightMap->Size(),
+                                                     heightMap->Size(),
+                                                     FORMAT_A16,
+                                                     (uint8*)heightMap->Data());
         
-        if(pow2Size > heightmap->Size())
+        int32 pow2Size = heightmap->Size();
+        if(!IsPowerOf2(heightmap->Size()))
         {
-            pow2Size = pow2Size >> 1;
+            EnsurePowerOf2(pow2Size);
+            
+            if(pow2Size > heightmap->Size())
+            {
+                pow2Size = pow2Size >> 1;
+            }
         }
-    }
-    
-    Texture* tx = NULL;
-    if(pow2Size != heightmap->Size())
-    {
-        Image* croppedImage = Image::CopyImageRegion(originalImage, pow2Size, pow2Size);
-        tx = Texture::CreateFromData(FORMAT_RGBA4444, croppedImage->GetData(), pow2Size, pow2Size, false);
-     
-        SafeRelease(croppedImage);
-    }
-    else
-    {
-        tx = Texture::CreateFromData(FORMAT_RGBA4444, originalImage->GetData(), pow2Size, pow2Size, false);
-    }
-    
-    SafeRelease(originalImage);
-    
-    heightmapScale = Vector2((1.0f * heightmap->Size()) / pow2Size,
-                             (1.0f * heightmap->Size()) / pow2Size);
-    
-    ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &VegetationRenderObject::SetupHeightmapParameters, tx));
-	JobInstanceWaiter waiter(job);
-	waiter.Wait();
-    
-    heightmapTexture = SafeRetain(tx);
-    
-    if(vegetationGeometry != NULL)
-    {
-        KeyedArchive* props = new KeyedArchive();
-        props->SetUInt64(NMaterial::TEXTURE_HEIGHTMAP.c_str(), (uint64)heightmapTexture);
-        props->SetVector2(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str(), heightmapScale);
         
-        vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+        Texture* tx = NULL;
+        if(pow2Size != heightmap->Size())
+        {
+            Image* croppedImage = Image::CopyImageRegion(originalImage, pow2Size, pow2Size);
+            tx = Texture::CreateFromData(FORMAT_RGBA4444, croppedImage->GetData(), pow2Size, pow2Size, false);
+            
+            SafeRelease(croppedImage);
+        }
+        else
+        {
+            tx = Texture::CreateFromData(FORMAT_RGBA4444, originalImage->GetData(), pow2Size, pow2Size, false);
+        }
         
-        SafeRelease(props);
+        SafeRelease(originalImage);
+        
+        heightmapScale = Vector2((1.0f * heightmap->Size()) / pow2Size,
+                                 (1.0f * heightmap->Size()) / pow2Size);
+        
+        ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &VegetationRenderObject::SetupHeightmapParameters, tx));
+        JobInstanceWaiter waiter(job);
+        waiter.Wait();
+        
+        heightmapTexture = SafeRetain(tx);
+        
+        if(vegetationGeometry != NULL)
+        {
+            KeyedArchive* props = new KeyedArchive();
+            props->SetUInt64(NMaterial::TEXTURE_HEIGHTMAP.c_str(), (uint64)heightmapTexture);
+            props->SetVector2(VegetationPropertyNames::UNIFORM_HEIGHTMAP_SCALE.c_str(), heightmapScale);
+            
+            vegetationGeometry->OnVegetationPropertiesChanged(renderData, props);
+            
+            SafeRelease(props);
+        }
+        
+        SafeRelease(tx);
     }
-    
-    SafeRelease(tx);
 }
     
 float32 VegetationRenderObject::SampleHeight(int16 x, int16 y)

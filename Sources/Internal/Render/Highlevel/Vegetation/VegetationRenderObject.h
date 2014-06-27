@@ -248,6 +248,8 @@ private:
     void PrepareToRenderMultipleMaterials(Camera *camera);
     void PrepareToRenderSingleMaterial(Camera *camera);
     
+    bool IsDataLoadNeeded();
+    
 private:
     
     Heightmap* heightmap;
