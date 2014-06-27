@@ -385,6 +385,13 @@ void EditFontDialog::UpdatePushButtonWidgetWithPropertyValue(QPushButton *pushBu
                 buttonText = QString("%1\n%2").arg(fontDefinitionName, fontSpriteName);
                 break;
             }
+            case Font::TYPE_DISTANCE:
+            {
+                DFFont *dfFont = static_cast<DFFont*>(fontPropertyValue);
+                //Set pushbutton widget text
+				buttonText = QString::fromStdString(dfFont->GetFontPath().GetFrameworkPath());
+                break;
+            }
             default:
             {
                 //Do nothing if we can't determine font type
