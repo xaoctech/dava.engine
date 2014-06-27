@@ -28,10 +28,6 @@ attribute vec2 inTexCoord1;
 attribute vec4 inColor;
 #endif
 
-#if defined(MATERIAL_GRASS_TRANSFORM)
-attribute vec3 inBinormal;
-#endif
-
 #if defined(VERTEX_LIT)
 #endif
 
@@ -115,13 +111,10 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 varying vec2 varTexCoord1;
 #endif
 
-#if defined(MATERIAL_GRASS)
-varying vec2 varTexCoord2;
-#endif
 
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
