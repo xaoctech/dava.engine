@@ -167,18 +167,9 @@ int SceneTabWidget::OpenTab()
 	return tabIndex;
 }
 
-int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
+bool SceneTabWidget::TestSceneCompatibility(const DAVA::FilePath &scenePath)
 {
-	HideScenePreview();
-
-	int tabIndex = FindTab(scenePapth);
-	if(tabIndex != -1)
-	{
-		SetCurrentTab(tabIndex);
-		return tabIndex;
-	}
-
-    VersionInfo::SceneVersion sceneVersion = SceneFileV2::LoadSceneVersion(scenePapth);
+    VersionInfo::SceneVersion sceneVersion = SceneFileV2::LoadSceneVersion(scenePath);
 
     if (sceneVersion.IsValid())
     {
@@ -193,7 +184,7 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
             const QMessageBox::StandardButton result = QMessageBox::warning(this, "Compatibility warning", msg, QMessageBox::Open | QMessageBox::Cancel, QMessageBox::Open);
             if ( result != QMessageBox::Open )
             {
-                return -1;
+                return false;
             }
             break;
         }
@@ -202,22 +193,41 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
             const String& branches = VersionInfo::Instance()->NoncompatibleTagsMessage(sceneVersion);
             const QString msg = QString("Scene was created with incompatible branch of ResourceEditor. Next tags aren't implemented in current branch:\n%1").arg(branches.c_str());
             QMessageBox::critical(this, "Compatibility error", msg);
-            return -1;
+            return false;
         }
         default:
             break;
         }
     }
 
+    return true;
+}
+
+int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePath)
+{
+	HideScenePreview();
+
+	int tabIndex = FindTab(scenePath);
+	if(tabIndex != -1)
+	{
+		SetCurrentTab(tabIndex);
+		return tabIndex;
+	}
+
+    if (!TestSceneCompatibility(scenePath))
+    {
+        return -1;
+    }
+
     DAVA::int64 openStartTime = DAVA::SystemTimer::Instance()->AbsoluteMS();
 
     SceneEditor2 *scene = new SceneEditor2();
-	if(scene->Load(scenePapth))
+	if(scene->Load(scenePath))
 	{
-		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
+		tabIndex = tabBar->addTab(scenePath.GetFilename().c_str());
 		SetTabScene(tabIndex, scene);
 
-		tabBar->setTabToolTip(tabIndex, scenePapth.GetAbsolutePathname().c_str());
+		tabBar->setTabToolTip(tabIndex, scenePath.GetAbsolutePathname().c_str());
 
         SetCurrentTab(tabIndex);
     }
@@ -401,7 +411,10 @@ void SceneTabWidget::DAVAWidgetDataDropped(const QMimeData *data)
                     }
 
                     QtMainWindow::Instance()->WaitStart("Adding object to scene", path);
-					curScene->structureSystem->Add(path.toStdString(), pos);
+                    if (TestSceneCompatibility(DAVA::FilePath(path.toStdString())))
+                    {
+                        curScene->structureSystem->Add(path.toStdString(), pos);
+                    }
                     QtMainWindow::Instance()->WaitStop();
                 }
             }

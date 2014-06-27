@@ -75,9 +75,9 @@ public:
     String UnsupportedTagsMessage(const SceneVersion& version) const;
     String NoncompatibleTagsMessage(const SceneVersion& version) const;
 
-
 #ifdef USER_VERSIONING_DEBUG_FEATURES
     VersionMap& Versions();
+    void ResetVersionHistory();
 #endif
 
 private:

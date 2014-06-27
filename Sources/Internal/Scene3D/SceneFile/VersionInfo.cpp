@@ -144,15 +144,11 @@ VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
 
 void VersionInfo::FillVersionHistory()
 {
-    SceneVersion v12;
-    v12.version = 12;    // Current version of scene file
-    v12.tags.insert(TagsMap::value_type("vegetation", 1));
-    v12.tags.insert(TagsMap::value_type("occlusion", 1));
-    AddVersion(v12);
+    versionMap.clear();
 
     // Current version
     SceneVersion currentVersion;
-    currentVersion.version = 13;    // Current version of scene file
+    currentVersion.version = 12;    // Current version of scene file
     AddVersion(currentVersion);
 }
 
@@ -164,13 +160,17 @@ void VersionInfo::SetCurrentBranch()
     TagsMap& tags = versionMap.rbegin()->second.tags;
 
     // Example: tags.insert(TagsMap::value_type("sky", 2));
-    tags.insert(TagsMap::value_type("sky", 2));
 }
 
 #ifdef USER_VERSIONING_DEBUG_FEATURES
 VersionInfo::VersionMap& VersionInfo::Versions()
 {
     return versionMap;
+}
+
+void VersionInfo::ResetVersionHistory()
+{
+    FillVersionHistory();
 }
 #endif
 
