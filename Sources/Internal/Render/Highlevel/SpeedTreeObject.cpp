@@ -121,7 +121,9 @@ RenderObject * SpeedTreeObject::Clone(RenderObject *newObject)
 
     RenderObject::Clone(newObject);
     
-    ((SpeedTreeObject *)newObject)->SetSphericalHarmonics(GetSphericalHarmonics());
+    SpeedTreeObject * treeObject = (SpeedTreeObject *)newObject;
+    treeObject->SetSphericalHarmonics(GetSphericalHarmonics());
+    treeObject->SetLightSmoothing(GetLightSmoothing());
 
     return newObject;
 }
