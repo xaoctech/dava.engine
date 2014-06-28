@@ -28,10 +28,9 @@ RunActionEventWidget::RunActionEventWidget(QWidget *parent)
     ui->setupUi(this);
     setObjectName("RunActionEventWidget");
 
-
-    ui->eventType->addItem( "Switch", ActionComponent::Action::EVENT_SWITCH_CHANGED );
-    ui->eventType->addItem( "Added", ActionComponent::Action::EVENT_ADDED_TO_SCENE );
-    ui->eventType->addItem( "User", ActionComponent::Action::EVENT_CUSTOM );
+    ui->eventType->addItem("Switch", ActionComponent::Action::EVENT_SWITCH_CHANGED);
+    ui->eventType->addItem("Added", ActionComponent::Action::EVENT_ADDED_TO_SCENE);
+    ui->eventType->addItem("User", ActionComponent::Action::EVENT_CUSTOM);
 
     editorIdMap[ActionComponent::Action::EVENT_SWITCH_CHANGED] = 0;
     editorIdMap[ActionComponent::Action::EVENT_ADDED_TO_SCENE] = 1;
@@ -160,4 +159,7 @@ void RunActionEventWidget::sceneSelectionChanged(SceneEditor2 *_scene, const Ent
 
     const QStringList& nameList = nameSet.toList();
     autocompleteModel->setStringList(nameList);
+
+    const bool enable = selection.Size() > 0;
+    setEnabled(enable);
 }
