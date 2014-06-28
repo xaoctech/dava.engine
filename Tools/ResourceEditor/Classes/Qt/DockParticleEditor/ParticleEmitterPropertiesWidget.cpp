@@ -308,8 +308,8 @@ void ParticleEmitterPropertiesWidget::Init(SceneEditor2* scene, DAVA::ParticleEf
         maxTime = emitterAngle->GetMaxBoundary();
     }
     emitterAngle->Init(minTime, maxTime, minTimeLimit, maxTimeLimit, updateMinimize);
-    emitterAngle->AddLine(0, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(emitter->emissionAngle)).GetProps(), Qt::blue, "emission angle");
-    emitterAngle->AddLine(1, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(emitter->emissionAngleVariation)).GetProps(), Qt::green, "emission angle variation");
+    emitterAngle->AddLine(0, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(emitter->emissionAngle)).GetProps(), Qt::blue, "emission angle base");
+    emitterAngle->AddLine(1, PropLineWrapper<float32>(PropertyLineHelper::GetValueLine(emitter->emissionAngleVariation)).GetProps(), Qt::green, "emission angle spread");
     emitterAngle->SetYLegendMark(DEGREE_MARK_CHARACTER);
     
 
