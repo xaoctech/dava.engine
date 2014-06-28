@@ -1252,6 +1252,17 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
+            case PARAM_SPEED_TREE_LIGHTING_SMOOTH:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    float32 * param = (float32*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
             case PARAM_SPHERICAL_HARMONICS:
             {
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_SPHERICAL_HARMONICS);
