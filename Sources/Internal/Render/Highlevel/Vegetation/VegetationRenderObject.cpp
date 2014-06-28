@@ -934,6 +934,8 @@ void VegetationRenderObject::UpdateVegetationSetup()
     {
         BuildSpatialStructure();
     }
+    
+    ClearRenderBatches();
 }
 
 void VegetationRenderObject::ResetVisibilityDistance()
