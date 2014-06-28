@@ -38,12 +38,13 @@ namespace DAVA
 
 const FastName SpeedTreeObject::FLAG_WIND_ANIMATION("WIND_ANIMATION");
 
-SpeedTreeObject::SpeedTreeObject()
+SpeedTreeObject::SpeedTreeObject() :
+lightingSmooth(0.f)
 {
     type = TYPE_SPEED_TREE;
 
     Vector<Vector3> fakeSH(9, Vector3());
-    fakeSH[0].x = fakeSH[0].y = fakeSH[0].z = 1.f/0.564188; //fake SH value to make original object color
+    fakeSH[0].x = fakeSH[0].y = fakeSH[0].z = 1.f/0.564188f; //fake SH value to make original object color
     SetSphericalHarmonics(fakeSH);
 }
     
@@ -80,10 +81,21 @@ const Vector<Vector3> & SpeedTreeObject::GetSphericalHarmonics() const
     return sphericalHarmonics;
 }
 
+void SpeedTreeObject::SetLightingSmooth(const float32 & smooth)
+{
+    lightingSmooth = smooth;
+}
+
+const float32 & SpeedTreeObject::GetLightingSmooth() const
+{
+    return lightingSmooth;
+}
+
 void SpeedTreeObject::BindDynamicParams()
 {
     RenderManager::SetDynamicParam(PARAM_SPEED_TREE_TRUNK_OSCILLATION, &trunkOscillation, UPDATE_SEMANTIC_ALWAYS);
     RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LEAFS_OSCILLATION, &leafOscillation, UPDATE_SEMANTIC_ALWAYS);
+    RenderManager::SetDynamicParam(PARAM_SPEED_TREE_LIGHTING_SMOOTH, &lightingSmooth, UPDATE_SEMANTIC_ALWAYS);
 
     DVASSERT(sphericalHarmonics.size() == SPHERICAL_HARMONICS_BASIS_MAX_SIZE);
     RenderManager::SetDynamicParam(PARAM_SPHERICAL_HARMONICS, &sphericalHarmonics[0], UPDATE_SEMANTIC_ALWAYS);
@@ -124,6 +136,8 @@ void SpeedTreeObject::Save(KeyedArchive *archive, SerializationContext *serializ
         archive->SetInt32("sto.SHBasisCount", shCount);
         archive->SetByteArray("sto.SHCoeff", (uint8 *)&sphericalHarmonics[0], sizeof(Vector3) * shCount);
     }
+
+    archive->SetFloat("sto.lightingSmooth", lightingSmooth);
 }
 
 void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializationContext)
@@ -134,6 +148,8 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
     Vector3 * sphericalArray = (Vector3 *)archive->GetByteArray("sto.SHCoeff");
     if(sphericalArray && shCount)
         sphericalHarmonics.assign(sphericalArray, sphericalArray + shCount);
+
+    lightingSmooth = archive->GetFloat("sto.lightingSmooth", lightingSmooth);
 }
 
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)

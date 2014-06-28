@@ -107,9 +107,13 @@ uniform float cutDistance;
 		uniform lowp float treeLeafOcclusionMul;
 	#endif
 	
-#if defined(WIND_ANIMATION)
-uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
-#endif
+	#if defined(WIND_ANIMATION)
+		uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
+	#endif
+	
+	#if defined(SPHERICAL_LIT)
+		uniform mediump float speedTreeLightingSmooth;
+	#endif
 #endif
 
 #if defined(SPHERICAL_LIT)
@@ -312,7 +316,8 @@ void main()
 
 #endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
 
-    eyeCoordsPosition4 = vec4(worldScale * offset, 0.0) + worldViewMatrix * vec4(pivot, inPosition.w);
+	vec4 eyeCoordsPivot = worldViewMatrix * vec4(pivot, inPosition.w);
+    eyeCoordsPosition4 = vec4(worldScale * offset, 0.0) + eyeCoordsPivot;
     gl_Position = projMatrix * eyeCoordsPosition4;
     
 #if defined (CUT_LEAF)   
@@ -566,22 +571,38 @@ void main()
 
 	vec3 sphericalLightFactor = A0 * sphericalHarmonics[0];
 	
+	#if defined(SPEED_TREE_LEAF)
+		vec3 localSphericalLightFactor = sphericalLightFactor;
+	#endif
+	
 #if defined(SPHERICAL_HARMONICS_4) || defined(SPHERICAL_HARMONICS_9)
-	vec3 normal = vec3(invViewMatrix * vec4((eyeCoordsPosition - worldViewObjectCenter), 0.0));
+
+	mat3 invViewMaxtrix3 = mat3(vec3(invViewMatrix[0]), vec3(invViewMatrix[1]), vec3(invViewMatrix[2]));
+	vec3 normal = invViewMaxtrix3 * (eyeCoordsPosition - worldViewObjectCenter);
 	normal /= boundingBoxSize;
 	vec3 n = normalize(normal);
 
 	mat3 shMatrix = mat3(sphericalHarmonics[1], sphericalHarmonics[2], sphericalHarmonics[3]);
 	sphericalLightFactor += A1 * shMatrix * vec3(n.y, n.z, n.x);
-
+	
+	#if defined(SPEED_TREE_LEAF)
+		vec3 localNormal = invViewMaxtrix3 * (eyeCoordsPosition - eyeCoordsPivot);
+		vec3 ln = normalize(localNormal);
+		localSphericalLightFactor += A1 * shMatrix * vec3(ln.y, ln.z, ln.x);
+	#endif
+	
 #if defined(SPHERICAL_HARMONICS_9)
-	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4] * 1.256637;
-	sphericalLightFactor += Y2_1(n) * sphericalHarmonics[5] * 1.256637;
-	sphericalLightFactor += Y20(n) * sphericalHarmonics[6] * 1.256637;
-	sphericalLightFactor += Y21(n) * sphericalHarmonics[7] * 1.256637;
-	sphericalLightFactor += Y22(n) * sphericalHarmonics[8] * 1.256637;
+	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4];
+	sphericalLightFactor += Y2_1(n) * sphericalHarmonics[5];
+	sphericalLightFactor += Y20(n) * sphericalHarmonics[6];
+	sphericalLightFactor += Y21(n) * sphericalHarmonics[7];
+	sphericalLightFactor += Y22(n) * sphericalHarmonics[8];
 #endif
 
+	#if defined(SPEED_TREE_LEAF)
+		sphericalLightFactor = mix(sphericalLightFactor, localSphericalLightFactor, speedTreeLightingSmooth);
+	#endif
+	
 #endif
 	
 	#if defined(VERTEX_COLOR)
