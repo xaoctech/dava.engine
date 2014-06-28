@@ -1252,7 +1252,7 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
-            case PARAM_SPEED_TREE_LIGHTING_SMOOTH:
+            case PARAM_SPEED_TREE_LIGHT_SMOOTHING:
             {
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
                 if (_updateSemantic != currentUniform->updateSemantic)

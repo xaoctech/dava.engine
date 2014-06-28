@@ -112,7 +112,7 @@ uniform float cutDistance;
 	#endif
 	
 	#if defined(SPHERICAL_LIT)
-		uniform mediump float speedTreeLightingSmooth;
+		uniform mediump float speedTreeLightSmoothing;
 	#endif
 #endif
 
@@ -577,8 +577,8 @@ void main()
 	
 #if defined(SPHERICAL_HARMONICS_4) || defined(SPHERICAL_HARMONICS_9)
 
-	mat3 invViewMaxtrix3 = mat3(vec3(invViewMatrix[0]), vec3(invViewMatrix[1]), vec3(invViewMatrix[2]));
-	vec3 normal = invViewMaxtrix3 * (eyeCoordsPosition - worldViewObjectCenter);
+	mat3 invViewMatrix3 = mat3(vec3(invViewMatrix[0]), vec3(invViewMatrix[1]), vec3(invViewMatrix[2]));
+	vec3 normal = invViewMatrix3 * (eyeCoordsPosition - worldViewObjectCenter);
 	normal /= boundingBoxSize;
 	vec3 n = normalize(normal);
 
@@ -586,7 +586,7 @@ void main()
 	sphericalLightFactor += A1 * shMatrix * vec3(n.y, n.z, n.x);
 	
 	#if defined(SPEED_TREE_LEAF)
-		vec3 localNormal = invViewMaxtrix3 * (eyeCoordsPosition - eyeCoordsPivot);
+		vec3 localNormal = invViewMatrix3 * (eyeCoordsPosition - vec3(eyeCoordsPivot));
 		vec3 ln = normalize(localNormal);
 		localSphericalLightFactor += A1 * shMatrix * vec3(ln.y, ln.z, ln.x);
 	#endif
@@ -600,7 +600,7 @@ void main()
 #endif
 
 	#if defined(SPEED_TREE_LEAF)
-		sphericalLightFactor = mix(sphericalLightFactor, localSphericalLightFactor, speedTreeLightingSmooth);
+		sphericalLightFactor = mix(sphericalLightFactor, localSphericalLightFactor, speedTreeLightSmoothing);
 	#endif
 	
 #endif
