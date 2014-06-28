@@ -57,8 +57,9 @@ public:
     void SetSphericalHarmonics(const Vector<Vector3> & coeffs);
     const Vector<Vector3> & GetSphericalHarmonics() const;
 
-    void SetLightingSmooth(const float32 & smooth);
-    const float32 & GetLightingSmooth() const;
+    //Interpolate between globally smoothed (0.0) and locally smoothed (1.0) leafs lighting
+    void SetLightSmoothing(const float32 & smooth);
+    const float32 & GetLightSmoothing() const;
 
 protected:
     static const FastName FLAG_WIND_ANIMATION;
@@ -72,11 +73,11 @@ protected:
     Vector2 leafOscillation;
 
     Vector<Vector3> sphericalHarmonics;
-    float32 lightingSmooth;
+    float32 lightSmoothing;
 
 public:
     INTROSPECTION_EXTEND(SpeedTreeObject, RenderObject,
-        PROPERTY("lightingSmooth", "Base density", GetLightingSmooth, SetLightingSmooth, I_SAVE | I_EDIT | I_VIEW)
+        PROPERTY("lightSmoothing", "Light Smoothing", GetLightSmoothing, SetLightSmoothing, I_SAVE | I_EDIT | I_VIEW)
         );
 
 friend class SpeedTreeUpdateSystem;

@@ -296,7 +296,7 @@ const FastName DYNAMIC_PARAM_NAMES[] =
 
         FastName("trunkOscillationParams"),
         FastName("leafOscillationParams"),
-        FastName("speedTreeLightingSmooth"),
+        FastName("speedTreeLightSmoothing"),
 
         FastName("sphericalHarmonics[0]"),
 
