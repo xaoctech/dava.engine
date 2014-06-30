@@ -156,6 +156,7 @@ void ProjectManager::ProjectClose()
         curProjectPath = "";
         curProjectPathDataSource = "";
         curProjectPathParticles = "";
+        SettingsManager::SetValue(Settings::Internal_ParticleLastEmitterDir, VariantType(FilePath()));
         emit ProjectClosed();
 	}
 }
