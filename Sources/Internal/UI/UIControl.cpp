@@ -1615,7 +1615,7 @@ namespace DAVA
         drawData.angle = angle;
         drawData.AddToGeometricData(geometricData);
 
-        Color parentColor = parent ? parent->GetBackground()->GetDrawColor() : Color(1.0f, 1.0f, 1.0f, 1.0f);
+        const Color &parentColor = parent ? parent->GetBackground()->GetDrawColor() : Color::White;
 
         SetParentColor(parentColor);
 
