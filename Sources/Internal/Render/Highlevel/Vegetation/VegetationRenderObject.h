@@ -306,6 +306,8 @@ private:
     
     Vector<VegetationLayerParams> layerParams;
     
+    bool isHardwareCapableToRenderVegetation;
+    
     
 public:
     

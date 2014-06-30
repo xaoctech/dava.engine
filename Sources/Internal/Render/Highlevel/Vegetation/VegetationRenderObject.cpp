@@ -146,6 +146,17 @@ VegetationRenderObject::VegetationRenderObject() :
     layersAnimationSpring(2.f, 2.f, 2.f, 2.f),
     layersAnimationDrag(1.4f, 1.4, 1.4f, 1.4f)
 {
+    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
+    
+    isHardwareCapableToRenderVegetation = deviceCaps.isVertexTextureUnitsSupported;
+    
+#if defined(__DAVAENGINE_IPHONE__)  || defined(__DAVAENGINE_ANDROID__)
+    
+    //VI: vegetation can only be rendered on ES 3.0 devices
+    isHardwareCapableToRenderVegetation = isHardwareCapableToRenderVegetation && deviceCaps.isOpenGLES3Supported;
+    
+#endif
+    
     bbox.AddPoint(Vector3(0, 0, 0));
     bbox.AddPoint(Vector3(1, 1, 1));
     
@@ -400,9 +411,7 @@ void VegetationRenderObject::Load(KeyedArchive *archive, SerializationContext *s
 
 bool VegetationRenderObject::IsDataLoadNeeded()
 {
-    RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
-    
-    bool shouldLoadData = deviceCaps.isVertexTextureUnitsSupported;
+    bool shouldLoadData = isHardwareCapableToRenderVegetation;
     
     FastName currentQuality = QualitySettingsSystem::Instance()->GetCurMaterialQuality(VegetationPropertyNames::VEGETATION_QUALITY_GROUP_NAME);
     bool qualityAllowsVegetation = (VegetationPropertyNames::VEGETATION_QUALITY_NAME_HIGH == currentQuality);
@@ -1092,7 +1101,7 @@ void VegetationRenderObject::InitWithCustomGeometry(FastNameSet& materialFlags)
 
 bool VegetationRenderObject::ReadyToRender()
 {
-    bool renderFlag = RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW);
+    bool renderFlag = isHardwareCapableToRenderVegetation && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::VEGETATION_DRAW);
     
 #if defined(__DAVAENGINE_MACOS__)  || defined(__DAVAENGINE_WIN32__)
     //VI: case when vegetation was turned off and then qualit changed from low t high is not a real-world scenario

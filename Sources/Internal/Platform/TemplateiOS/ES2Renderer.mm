@@ -30,10 +30,13 @@ using namespace DAVA;
 {
 	if (self = [super init])
 	{
+        isGL30 = YES;
+        
         context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
         
         if(nil == context)
         {
+            isGL30 = NO;
             context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
         }
         
@@ -153,6 +156,11 @@ using namespace DAVA;
 - (GLuint) getDefaultFramebuffer
 {
     return defaultFramebuffer;
+}
+
+- (BOOL) getIsGL30
+{
+    return isGL30;
 }
 
 @end
