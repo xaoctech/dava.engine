@@ -590,8 +590,6 @@ void main()
 		vec3 ln = normalize(localNormal);
 		localSphericalLightFactor += A1 * shMatrix * vec3(ln.y, ln.z, ln.x);
 	#endif
-	
-	sphericalLightFactor.z = 0.0;
 
 #if defined(SPHERICAL_HARMONICS_9)
 	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4];
@@ -599,9 +597,6 @@ void main()
 	sphericalLightFactor += Y20(n) * sphericalHarmonics[6];
 	sphericalLightFactor += Y21(n) * sphericalHarmonics[7];
 	sphericalLightFactor += Y22(n) * sphericalHarmonics[8];
-
-	sphericalLightFactor.z = 0.0;
-	sphericalLightFactor.y = 0.0;
 #endif
 
 	#if defined(SPEED_TREE_LEAF)
