@@ -157,14 +157,6 @@ static FastName RUNTIME_ONLY_TEXTURES[] =
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
 
-//Texture* NMaterial::stubCubemapTexture = NULL;
-//Texture* NMaterial::stub2dTexture = NULL;
-
-int32 IlluminationParams::GetLightmapSize() const
-{
-	return lightmapSize;
-}
-
 void IlluminationParams::SetLightmapSize(const int32 &size)
 {
 	lightmapSize = size;
@@ -192,12 +184,6 @@ void IlluminationParams::SetParent(NMaterial* parentMaterial)
 								 &floatLightmapSize);
 	}
 }
-
-NMaterial* IlluminationParams::GetParent() const
-{
-	return parent;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1440,32 +1426,6 @@ void NMaterial::PrepareTextureState(RenderPassInstance* passInstance)
 	
 	passInstance->texturesDirty = false;
 }
-
-/*Texture* NMaterial::GetStubTexture(const FastName& uniformName)
- {
- Texture* stubTex = NULL;
- 
- if(NMaterial::TEXTURE_CUBEMAP == uniformName)
- {
- if(NULL == stubCubemapTexture)
- {
- stubCubemapTexture = Texture::CreatePink(Texture::TEXTURE_CUBE);
- }
- 
- stubTex = stubCubemapTexture;
- }
- else
- {
- if(NULL == stub2dTexture)
- {
- stub2dTexture = Texture::CreatePink(Texture::TEXTURE_2D);
- }
- 
- stubTex = stub2dTexture;
- }
- 
- return stubTex;
- }*/
 
 void NMaterial::BindMaterialTechnique(const FastName & passName, Camera* camera)
 {

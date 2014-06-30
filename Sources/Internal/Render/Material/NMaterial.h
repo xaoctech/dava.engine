@@ -76,31 +76,17 @@ struct IlluminationParams : public InspBase
     //this is a weak property since IlluminationParams exists only as a part of parent material
     NMaterial* parent;
 
-    IlluminationParams(NMaterial* parentMaterial = NULL) :
-    isUsed(true),
-    castShadow(true),
-    receiveShadow(true),
-    lightmapSize(LIGHTMAP_SIZE_DEFAULT),
-    parent(parentMaterial)
-    {
-    }
-
-    IlluminationParams(const IlluminationParams & params)
-    {
-        isUsed = params.isUsed;
-        castShadow = params.castShadow;
-        receiveShadow = params.receiveShadow;
-        lightmapSize = params.lightmapSize;
-        parent = NULL;
-    }
+    inline IlluminationParams(NMaterial* parentMaterial = NULL);
+ 
+    inline IlluminationParams(const IlluminationParams & params);
     
-    int32 GetLightmapSize() const;
+    inline int32 GetLightmapSize() const;
     void SetLightmapSize(const int32 &size);
     
     void SetParent(NMaterial* parentMaterial);
-    NMaterial* GetParent() const;
+    inline NMaterial* GetParent() const;
 
-    INTROSPECTION(IlluminationParams,
+    inline INTROSPECTION(IlluminationParams,
         MEMBER(isUsed, "Use Illumination", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(castShadow, "Cast Shadow", I_SAVE | I_VIEW | I_EDIT)
         MEMBER(receiveShadow, "Receive Shadow", I_SAVE | I_VIEW | I_EDIT)
@@ -115,34 +101,11 @@ public:
     uint8 size;
     uint8* data;
 	
-	NMaterialProperty()
-	{
-		type = Shader::UT_INT;
-		size = 0;
-		data = NULL;
-	}
+	inline NMaterialProperty();
 	
-	~NMaterialProperty()
-	{
-		SafeDeleteArray(data);
-	}
+	inline ~NMaterialProperty();
 	
-	NMaterialProperty* Clone()
-	{
-		NMaterialProperty* cloneProp = new NMaterialProperty();
-		
-		cloneProp->size = size;
-		cloneProp->type = type;
-		
-		if(data)
-		{
-			size_t dataSize = Shader::GetUniformTypeSize(type) * size;
-			cloneProp->data = new uint8[dataSize];
-			memcpy(cloneProp->data, data, dataSize);
-		}
-		
-		return cloneProp;
-	}
+	inline NMaterialProperty* Clone();
 };
 
 class Camera;
@@ -754,37 +717,17 @@ protected:
 	{
     public:
     
-		TextureBucket() : texture(NULL)
-		{ }
+		inline TextureBucket();
         
-        ~TextureBucket()
-        {
-            SafeRelease(texture);
-        }
+        inline ~TextureBucket();
         
-        inline void SetTexture(Texture* tx)
-        {
-            if(tx != texture)
-            {
-                SafeRelease(texture);
-                texture = SafeRetain(tx);
-            }
-        }
+        inline void SetTexture(Texture* tx);
         
-        inline Texture* GetTexture() const
-        {
-            return texture;
-        }
+        inline Texture* GetTexture() const;
         
-        inline void SetPath(const FilePath& filePath)
-        {
-            path = filePath;
-        }
+        inline void SetPath(const FilePath& filePath);
         
-        inline const FilePath& GetPath() const
-        {
-            return path;
-        }
+        inline const FilePath& GetPath() const;
 
     private:
 		Texture* texture; //VI: can be NULL
@@ -793,12 +736,8 @@ protected:
 		
 	struct UniformCacheEntry
 	{
-		UniformCacheEntry() :
-			uniform(NULL),
-			prop(NULL),
-			index(-1)
-		{ }
-
+		inline UniformCacheEntry();
+        
 		Shader::Uniform* uniform;
 		int32 index;
 		NMaterialProperty* prop;
@@ -808,23 +747,9 @@ protected:
 	{
     public:
 		
-		RenderPassInstance() :
-			textureIndexMap(8),
-			dirtyState(false),
-			texturesDirty(true),
-			activeUniformsCachePtr(NULL),
-			activeUniformsCacheSize(0),
-            propsDirty(true)
-		{
-			renderState.shader = NULL;
-		}
+		inline RenderPassInstance();
         
-        ~RenderPassInstance()
-        {
-            SetRenderStateHandle(InvalidUniqueHandle);
-            SetTextureStateHandle(InvalidUniqueHandle);
-            SafeRelease(renderState.shader);
-        }
+        inline ~RenderPassInstance();
         
         inline void SetShader(Shader* curShader);
         inline Shader* GetShader() const;
@@ -901,16 +826,13 @@ protected:
 	HashMap<FastName, int32> materialSetFlags; //VI: flags set in the current material only
 	
     uint32                  renderLayerIDsBitmask;
-	
-	//static Texture* stubCubemapTexture;
-	//static Texture* stub2dTexture;
-	
+		
 protected:
 	
 	virtual ~NMaterial();
 	
-	inline void SetMaterialType(eMaterialType matType) {materialType = matType;}
-	inline void SetMaterialKey(NMaterialKey key) {materialKey = key; pointer = key;}
+	inline void SetMaterialType(eMaterialType matType);
+	inline void SetMaterialKey(NMaterialKey key);
 	void SetMaterialTemplate(const NMaterialTemplate* matTemplate, const FastName& defaultQuality);
 	
 	void BuildEffectiveFlagSet(FastNameSet& effectiveFlagSet);
@@ -978,6 +900,17 @@ public:
 
 };
 
+inline void NMaterial::SetMaterialType(eMaterialType matType)
+{
+    materialType = matType;
+}
+
+inline void NMaterial::SetMaterialKey(NMaterialKey key)
+{
+    materialKey = key;
+    pointer = key;
+}
+
 inline uint32 NMaterial::GetRenderLayers() const
 {
     return renderLayerIDsBitmask & ((1 << RENDER_LAYER_ID_BITMASK_MIN_POS) - 1);
@@ -1006,6 +939,24 @@ void NMaterial::SetRenderLayers(uint32 bitmask)
         renderLayerIDsBitmask |= (minLayerID << RENDER_LAYER_ID_BITMASK_MIN_POS);
         renderLayerIDsBitmask |= (maxLayerID << RENDER_LAYER_ID_BITMASK_MAX_POS);
     }
+}
+
+inline NMaterial::RenderPassInstance::RenderPassInstance() :
+textureIndexMap(8),
+dirtyState(false),
+texturesDirty(true),
+activeUniformsCachePtr(NULL),
+activeUniformsCacheSize(0),
+propsDirty(true)
+{
+    renderState.shader = NULL;
+}
+
+inline NMaterial::RenderPassInstance::~RenderPassInstance()
+{
+    SetRenderStateHandle(InvalidUniqueHandle);
+    SetTextureStateHandle(InvalidUniqueHandle);
+    SafeRelease(renderState.shader);
 }
 
 inline void NMaterial::RenderPassInstance::SetShader(Shader* curShader)
@@ -1143,6 +1094,105 @@ inline const NMaterialTemplate* NMaterial::GetMaterialTemplate() const
 {
     return materialTemplate;
 }
+
+inline IlluminationParams::IlluminationParams(NMaterial* parentMaterial) :
+                                                                isUsed(true),
+                                                                castShadow(true),
+                                                                receiveShadow(true),
+                                                                lightmapSize(LIGHTMAP_SIZE_DEFAULT),
+                                                                parent(parentMaterial)
+{
+}
+
+inline IlluminationParams::IlluminationParams(const IlluminationParams & params)
+{
+    isUsed = params.isUsed;
+    castShadow = params.castShadow;
+    receiveShadow = params.receiveShadow;
+    lightmapSize = params.lightmapSize;
+    parent = NULL;
+}
+
+inline int32 IlluminationParams::GetLightmapSize() const
+{
+    return lightmapSize;
+}
+
+inline NMaterial* IlluminationParams::GetParent() const
+{
+    return parent;
+}
+
+inline NMaterialProperty::NMaterialProperty()
+{
+    type = Shader::UT_INT;
+    size = 0;
+    data = NULL;
+}
+
+inline NMaterialProperty::~NMaterialProperty()
+{
+    SafeDeleteArray(data);
+}
+
+inline NMaterialProperty* NMaterialProperty::Clone()
+{
+    NMaterialProperty* cloneProp = new NMaterialProperty();
+    
+    cloneProp->size = size;
+    cloneProp->type = type;
+    
+    if(data)
+    {
+        size_t dataSize = Shader::GetUniformTypeSize(type) * size;
+        cloneProp->data = new uint8[dataSize];
+        memcpy(cloneProp->data, data, dataSize);
+    }
+    
+    return cloneProp;
+}
+
+inline NMaterial::TextureBucket::TextureBucket() : texture(NULL)
+{
+}
+
+inline NMaterial::TextureBucket::~TextureBucket()
+{
+    SafeRelease(texture);
+}
+
+inline void NMaterial::TextureBucket::SetTexture(Texture* tx)
+{
+    if(tx != texture)
+    {
+        SafeRelease(texture);
+        texture = SafeRetain(tx);
+    }
+}
+
+inline Texture* NMaterial::TextureBucket::GetTexture() const
+{
+    return texture;
+}
+
+inline void NMaterial::TextureBucket::SetPath(const FilePath& filePath)
+{
+    path = filePath;
+}
+
+inline const FilePath& NMaterial::TextureBucket::GetPath() const
+{
+    return path;
+}
+
+inline NMaterial::UniformCacheEntry::UniformCacheEntry() :
+uniform(NULL),
+prop(NULL),
+index(-1)
+{
+}
+
+
 };
 
 #endif // __DAVAENGINE_MATERIAL_H__
