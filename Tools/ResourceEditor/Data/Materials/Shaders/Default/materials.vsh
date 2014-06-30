@@ -575,6 +575,8 @@ void main()
 		vec3 localSphericalLightFactor = sphericalLightFactor;
 	#endif
 	
+#if !defined(CUT_LEAF)
+
 #if defined(SPHERICAL_HARMONICS_4) || defined(SPHERICAL_HARMONICS_9)
 
 	mat3 invViewMatrix3 = mat3(vec3(invViewMatrix[0]), vec3(invViewMatrix[1]), vec3(invViewMatrix[2]));
@@ -603,6 +605,8 @@ void main()
 		sphericalLightFactor = mix(sphericalLightFactor, localSphericalLightFactor, speedTreeLightSmoothing);
 	#endif
 	
+#endif
+
 #endif
 	
 	#if defined(VERTEX_COLOR)
