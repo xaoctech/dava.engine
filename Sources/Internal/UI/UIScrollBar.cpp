@@ -57,11 +57,37 @@ void UIScrollBar::SetDelegate(UIScrollBarDelegate *newDelegate)
     delegate = newDelegate;
 }
     
-const String& UIScrollBar::GetDelegateName() const
+const String& UIScrollBar::GetDelegateName() 
 {
+    if (delegate)
+    {
+        FixDelegateName();
+    }
     return delegateName;
 }
     
+void UIScrollBar::FixDelegateName()
+{
+ 
+    UIControl * control = dynamic_cast<UIControl*>( delegate );
+    if (control)
+    {
+        String delegatePath = control->GetName();
+        UIControl * parent = control->GetParent();
+        while (parent)
+        {
+            String parentName = parent->GetName();
+            if (parentName.length())
+            {
+                parentName += "/";
+                delegatePath = parentName += delegatePath;
+            }
+            parent=parent->GetParent();
+        }
+
+        delegateName = delegatePath;
+    }
+}
 void UIScrollBar::SetDelegateName(const String& name)
 {
     delegateName = name;
@@ -184,7 +210,13 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 	}
 	node->Set("orientation", stringValue);
 
-    node->Set("linkedScrollBar", delegateName);
+
+    if (delegate)
+    {
+        FixDelegateName();
+        node->Set("linkedScrollBar", delegateName);
+    }
+    
     
 	return node;
 }

@@ -78,13 +78,13 @@ QString UIScrollBarMetadata::GetUIScrollBarDelegateName()
 {
     if (!VerifyActiveParamID())
     {
-        return "None";
+        return "";
     }
     
     return QString::fromStdString(GetActiveUIScrollBar()->GetDelegateName());
 }
 
-void UIScrollBarMetadata::SetUIScrollBarDelegateName(QString value)
+void UIScrollBarMetadata::SetUIScrollBarDelegateName(const QString& value)
 {
     if (!VerifyActiveParamID())
     {

@@ -61,7 +61,7 @@ protected:
 	int GetScrollOrientation();
 	void SetScrollOrientation(int value);
     QString GetUIScrollBarDelegateName();
-	void SetUIScrollBarDelegateName(QString value);
+	void SetUIScrollBarDelegateName(const QString& value);
 };
 
 };
