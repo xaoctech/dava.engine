@@ -35,11 +35,16 @@
 namespace DAVA
 {
 
+const FastName QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION("VEGETATION_ANIMATION");
+
 QualitySettingsSystem::QualitySettingsSystem()
     : curTextureQuality(0)
     , curSoundQuality(0)
+    , prerequiredVertexFromat(EVF_FORCE_DWORD) //default format set to keep all streams
 {
     Load("~res:/quality.yaml");
+
+    EnableOption(QUALITY_OPTION_VEGETATION_ANIMATION, true);
 }
 
 void QualitySettingsSystem::Load(const FilePath &path)
@@ -318,6 +323,16 @@ FilePath QualitySettingsSystem::GetSFXQualityConfigPath(size_t index) const
     }
 
     return ret;
+}
+
+
+int32 QualitySettingsSystem::GetPrerequiredVertexFormat()
+{
+    return prerequiredVertexFromat;
+}
+void QualitySettingsSystem::SetPrerequiredVertexFormat(int32 format)
+{
+    prerequiredVertexFromat = format;
 }
 
 size_t QualitySettingsSystem::GetMaterialQualityGroupCount() const

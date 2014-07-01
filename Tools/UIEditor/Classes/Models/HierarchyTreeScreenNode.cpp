@@ -40,7 +40,8 @@
 const float32 HierarchyTreeScreenNode::POSITION_UNDEFINED = -1.0f;
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const QString& name) :
-	HierarchyTreeNode(name)
+	HierarchyTreeNode(name),
+    loaded(false)
 {
 	this->parent = parent;
 	this->screen = new ScreenControl();
@@ -53,7 +54,8 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 }
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
-	HierarchyTreeNode(base)
+	HierarchyTreeNode(base),
+    loaded(false)
 {
 	this->parent = parent;
 	this->screen = new ScreenControl();
@@ -172,13 +174,34 @@ bool HierarchyTreeScreenNode::IsNameExist(const QString &name, const HierarchyTr
 	return false;
 }
 
+bool HierarchyTreeScreenNode::Unload()
+{
+    if(loaded && !IsNeedSave())
+    {
+        Cleanup();
+        SafeRelease(screen);
+        this->screen = new ScreenControl();
+        if (parent)
+        {
+            screen->SetRect(Rect(0, 0, parent->GetWidth(), parent->GetHeight()));
+        }
+        loaded = false;
+        return true;
+    }
+    return false;
+}
+
 bool HierarchyTreeScreenNode::Load(const QString& path)
 {
-	ScopedPtr<UIYamlLoader> loader( new UIYamlLoader() );
-	loader->Load(screen, path.toStdString());
-    guides.Load(path.toStdString());
-	
-	BuildHierarchyTree(this, screen->GetChildren());
+    if(!loaded)
+    {
+        ScopedPtr<UIYamlLoader> loader( new UIYamlLoader() );
+        loader->Load(screen, path.toStdString());
+        guides.Load(path.toStdString());
+        
+        BuildHierarchyTree(this, screen->GetChildren());
+        loaded = true;
+    }
 	return true;
 }
 
@@ -211,7 +234,9 @@ bool HierarchyTreeScreenNode::Save(const QString& path, bool saveAll)
 		return true;
 	}
 
-	FontManager::Instance()->PrepareToSaveFonts();
+    //TODO: if there is still any reason to group fonts by IsEqual and save using one name (instead of using registered font name assuming all fonts are registered), use FontManager::Instance()->PrepareToSaveFonts();, otherwise:
+    FontManager::Instance()->PrepareToSaveFonts(true);
+    
 	bool saveResult = UIYamlLoader::Save(screen, path.toStdString(), true);
 	if (saveResult)
 	{
@@ -302,9 +327,19 @@ void HierarchyTreeScreenNode::MoveGuide(const Vector2& pos)
     guides.MoveGuide(pos);
 }
 
+const GuideData* HierarchyTreeScreenNode::GetMoveGuide()
+{
+    return guides.GetMoveGuide();
+}
+
 const GuideData* HierarchyTreeScreenNode::AcceptMoveGuide()
 {
     return guides.AcceptMoveGuide();
+}
+
+const GuideData* HierarchyTreeScreenNode::CancelMoveGuide()
+{
+    return guides.CancelMoveGuide();
 }
 
 Vector2 HierarchyTreeScreenNode::GetMoveGuideStartPos() const
@@ -378,6 +413,11 @@ void HierarchyTreeScreenNode::SetGuidePosition(GuideData* guideData, const Vecto
 const List<GuideData*> HierarchyTreeScreenNode::GetGuides(bool includeNewGuide) const
 {
     return guides.GetGuides(includeNewGuide);
+}
+
+int32 HierarchyTreeScreenNode::GetStickMode() const
+{
+    return guides.GetStickMode();
 }
 
 void HierarchyTreeScreenNode::SetStickMode(int32 stickMode)

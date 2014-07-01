@@ -44,6 +44,7 @@
 #include "FileSystem/FileSystem.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/PixelFormatDescriptor.h"
+#include "Render/3D/MeshUtils.h"
 
 namespace DAVA
 {
@@ -342,6 +343,12 @@ bool SceneFile::ReadMaterial()
 	
 bool SceneFile::ReadStaticMesh()
 {
+
+    bool rebuildTangentSpace = false;
+    #ifdef REBUILD_TANGENT_SPACE_ON_IMPORT
+    rebuildTangentSpace = true;
+    #endif
+
 	uint32 polyGroupCount;
 	sceneFP->Read(&polyGroupCount, sizeof(uint32));
 	if (debugLogEnabled)Logger::FrameworkDebug("- Static Mesh: %d\n", polyGroupCount);
@@ -365,7 +372,7 @@ bool SceneFile::ReadStaticMesh()
 		
 		for (uint32 v = 0; v < vertexCount; ++v)
 		{
-			Vector3 position, normal, tangent; 
+			Vector3 position, normal, tangent, binormal; 
 			Vector2 texCoords0, texCoords1;
             
             if (polygonGroup->GetFormat() & EVF_VERTEX)
@@ -387,6 +394,12 @@ bool SceneFile::ReadStaticMesh()
                 polygonGroup->SetTangent(v, tangent);
                 //Logger::FrameworkDebug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
             }
+            if (polygonGroup->GetFormat() & EVF_BINORMAL)
+            {
+                sceneFP->Read(&binormal, sizeof(Vector3));
+                polygonGroup->SetBinormal(v, binormal);
+                //Logger::FrameworkDebug("loadnorm: %f %f %f", normal.x, normal.y, normal.z);
+            }
             
 			if (polygonGroup->GetFormat() & EVF_TEXCOORD0)
             {
@@ -399,7 +412,7 @@ bool SceneFile::ReadStaticMesh()
                 sceneFP->Read(&texCoords1, sizeof(Vector2));
                 polygonGroup->SetTexcoord(1, v, texCoords1);
             }
-		}
+		}        
 		
 		int * indices = new int[indexCount];
 		sceneFP->Read(indices, sizeof(int) * indexCount);
@@ -408,7 +421,12 @@ bool SceneFile::ReadStaticMesh()
 			polygonGroup->SetIndex(i, indices[i]);
         }
         delete [] indices;
-        polygonGroup->BuildBuffers();
+
+        const int32 prerequiredFormat = EVF_TANGENT | EVF_BINORMAL | EVF_NORMAL;
+        if (rebuildTangentSpace&&((polygonGroup->GetFormat()&prerequiredFormat) == prerequiredFormat))
+            MeshUtils::RebuildMeshTangentSpace(polygonGroup, true);
+        else
+            polygonGroup->BuildBuffers();
         
         SafeRelease(polygonGroup);
 	}
@@ -608,18 +626,20 @@ bool SceneFile::ReadSceneNode(Entity * parentNode, int level)
 			sceneFP->Read(&materialIndex, sizeof(int32));
             
             DVASSERT(materialIndex < (int)materials.size());
+            DVASSERT(0 <= materialIndex);
 
+            Material * material = (0 <= materialIndex) ? materials[materialIndex] : NULL;
 			if (debugLogEnabled)Logger::FrameworkDebug("%s polygon group: meshIndex:%d polyGroupIndex:%d materialIndex:%d\n", GetIndentString('-', level + 1).c_str(), meshIndex, polyGroupIndex, materialIndex);
 		
 			if (def.nodeType == SceneNodeDef::SCENE_NODE_MESH)
 			{
 				StaticMesh * staticMesh = staticMeshes[meshIndex]; // staticMeshIndexOffset);
-				meshNode->AddPolygonGroup(staticMesh, polyGroupIndex, materials[materialIndex]);
+				meshNode->AddPolygonGroup(staticMesh, polyGroupIndex, material);
 			}else
 			{
 				// add animated mesh
 				AnimatedMesh * animatedMesh = scene->GetAnimatedMesh(meshIndex + animatedMeshIndexOffset);
-				meshNode->AddPolygonGroup(animatedMesh, polyGroupIndex, materials[materialIndex]);
+				meshNode->AddPolygonGroup(animatedMesh, polyGroupIndex, material);
 			}
 		}
         if (parentNode != scene) 

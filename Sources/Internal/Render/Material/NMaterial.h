@@ -184,7 +184,7 @@ public:
     static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
 	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
     static const FastName PARAM_LIGHTMAP_SIZE;
-    
+
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
     
@@ -194,7 +194,7 @@ public:
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_WAVE_ANIMATION;
-	static const FastName FLAG_FAST_NORMALIZATION;
+	static const FastName FLAG_FAST_NORMALIZATION;    
     
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
@@ -587,7 +587,6 @@ public:
 		Vector<FastName> MembersList(void *object) const;
 		InspDesc MemberDesc(void *object, const FastName &member) const;
 		int MemberFlags(void *object, const FastName &member) const;
-		VariantType MemberAliasGet(void *object, const FastName &member) const;
 		VariantType MemberValueGet(void *object, const FastName &member) const;
 		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 
@@ -628,7 +627,6 @@ public:
 		Vector<FastName> MembersList(void *object) const;
 		InspDesc MemberDesc(void *object, const FastName &member) const;
 		int MemberFlags(void *object, const FastName &member) const;
-		VariantType MemberAliasGet(void *object, const FastName &member) const;
 		VariantType MemberValueGet(void *object, const FastName &member) const;
 		void MemberValueSet(void *object, const FastName &member, const VariantType &value);
 		
