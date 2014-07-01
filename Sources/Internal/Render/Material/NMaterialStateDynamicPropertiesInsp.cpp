@@ -222,13 +222,13 @@ VariantType NMaterialStateDynamicPropertiesInsp::MemberValueGet(void *object, co
     if(members->count(member))
     {
         const PropData &prop = members->at(member);
-        ret = getVariant(member, prop);
+        ret = GetVariant(member, prop);
     }
     
     return ret;
 }
 
-VariantType NMaterialStateDynamicPropertiesInsp::getVariant(const FastName &propName, const PropData &prop) const
+VariantType NMaterialStateDynamicPropertiesInsp::GetVariant(const FastName &propName, const PropData &prop) const
 {
     VariantType ret;
     
@@ -246,7 +246,7 @@ VariantType NMaterialStateDynamicPropertiesInsp::getVariant(const FastName &prop
                 break;
                 
             case Shader::UT_FLOAT_VEC3:
-                if(isColor(propName))
+                if(IsColor(propName))
                 {
                     float32 *color = (float32*) prop.data;
                     ret.SetColor(Color(color[0], color[1], color[2], 1.0));
@@ -258,7 +258,7 @@ VariantType NMaterialStateDynamicPropertiesInsp::getVariant(const FastName &prop
                 break;
                 
             case Shader::UT_FLOAT_VEC4:
-                if(isColor(propName))
+                if(IsColor(propName))
                 {
                     float32 *color = (float32*) prop.data;
                     ret.SetColor(Color(color[0], color[1], color[2], color[3]));
@@ -324,8 +324,8 @@ VariantType NMaterialStateDynamicPropertiesInsp::getVariant(const FastName &prop
         {
             case Shader::UT_FLOAT: ret.SetFloat(0);	break;
             case Shader::UT_FLOAT_VEC2:	ret.SetVector2(DAVA::Vector2()); break;
-            case Shader::UT_FLOAT_VEC3:	isColor(propName) ? ret.SetColor(DAVA::Color()) : ret.SetVector3(DAVA::Vector3()); break;
-            case Shader::UT_FLOAT_VEC4:	isColor(propName) ? ret.SetColor(DAVA::Color()) : ret.SetVector4(DAVA::Vector4()); break;
+            case Shader::UT_FLOAT_VEC3:	IsColor(propName) ? ret.SetColor(DAVA::Color()) : ret.SetVector3(DAVA::Vector3()); break;
+            case Shader::UT_FLOAT_VEC4:	IsColor(propName) ? ret.SetColor(DAVA::Color()) : ret.SetVector4(DAVA::Vector4()); break;
             case Shader::UT_INT: ret.SetInt32(0); break;
             case Shader::UT_BOOL: ret.SetBool(false); break;
             case Shader::UT_FLOAT_MAT2:	ret.SetMatrix2(DAVA::Matrix2()); break;
@@ -357,7 +357,7 @@ VariantType NMaterialStateDynamicPropertiesInsp::getVariant(const FastName &prop
     return ret;
 }
 
-bool NMaterialStateDynamicPropertiesInsp::isColor(const FastName &propName) const
+bool NMaterialStateDynamicPropertiesInsp::IsColor(const FastName &propName) const
 {
     return (NULL != strstr(propName.c_str(), "Color"));
     
@@ -412,7 +412,7 @@ void NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const Fas
                 {
                     Vector3 val;
                     
-                    if(isColor(member))
+                    if(IsColor(member))
                     {
                         Color c = value.AsColor();
                         val = Vector3(c.r, c.g, c.b);
@@ -430,7 +430,7 @@ void NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const Fas
                 {
                     Vector4 val;
                     
-                    if(isColor(member))
+                    if(IsColor(member))
                     {
                         Color c = value.AsColor();
                         val = Vector4(c.r, c.g, c.b, c.a);
