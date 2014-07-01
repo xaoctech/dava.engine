@@ -41,7 +41,7 @@ namespace DAVA
 {
 
 /**
- \brief Describes a sinle cell inside of the entire texture sheet.
+ \brief Describes a single cell inside of the entire texture sheet.
  */
 struct TextureSheetCell
 {

@@ -118,9 +118,6 @@ private:
         AABBox3 bbox;
         Vector3 pivot;
         
-        CustomGeometryLayerData();
-        CustomGeometryLayerData(const CustomGeometryLayerData& src);
-        
         void BuildBBox();
     };
     
