@@ -311,6 +311,21 @@ const GuideData* GuidesManager::AcceptMoveGuide()
     return resultData;
 }
 
+const GuideData* GuidesManager::CancelMoveGuide()
+{
+    if (moveGuide)
+    {
+        moveGuide->SetPosition(GetMoveGuideStartPos());
+        moveGuide->SetSelected(false);
+    }
+
+    GuideData* resultData = moveGuide;
+    moveGuide = NULL;
+    stickRects.clear();
+
+    return resultData;
+}
+
 bool GuidesManager::IsGuideOnPosition(GuideData* guide, const Vector2& pos) const
 {
     if (!guide)
@@ -510,6 +525,11 @@ int32 GuidesManager::CalculateStickToGuides(const List<Rect>& controlsRectList, 
 int32 GuidesManager::GetGuideStickTreshold() const
 {
     return GUIDE_STICK_TRESHOLD;
+}
+
+int32 GuidesManager::GetStickMode() const
+{
+    return stickMode;
 }
 
 void GuidesManager::SetStickMode(int32 mode)

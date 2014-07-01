@@ -61,6 +61,9 @@
 
 #include "Ruler/RulerController.h"
 
+#include "EditorFontManager.h"
+#include "CopyPasteController.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -168,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectLoaded()),
 			this,
-			SLOT(OnProjectCreated()));
+			SLOT(OnProjectLoaded()));
 	
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedScreenChanged(const HierarchyTreeScreenNode*)),
@@ -621,6 +624,7 @@ void MainWindow::OnSelectedScreenChanged()
 	screenChangeUpdate = false;
 	UpdateMenu();
 	UpdateScreenPosition();
+    OnUndoRedoAvailabilityChanged();
 }
 
 void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
@@ -866,8 +870,8 @@ void MainWindow::UpdateMenu()
     bool projectCreated = HierarchyTreeController::Instance()->GetTree().IsProjectCreated();
     bool projectNotEmpty = (HierarchyTreeController::Instance()->GetTree().GetPlatforms().size() > 0);
 
-	ui->actionSave_project->setEnabled(projectCreated);
-	ui->actionSave_All->setEnabled(projectCreated);
+    UpdateSaveButtons();
+
 	ui->actionClose_project->setEnabled(projectCreated);
 	ui->menuProject->setEnabled(projectCreated);
 	ui->actionNew_platform->setEnabled(projectCreated);
@@ -942,6 +946,12 @@ void MainWindow::OnProjectCreated()
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
+}
+
+void MainWindow::OnProjectLoaded()
+{
+    OnProjectCreated();
+    EditorFontManager::Instance()->OnProjectLoaded();
 }
 
 void MainWindow::OnNewPlatform()
@@ -1089,6 +1099,13 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			if (projectPath.isNull())
 				return;
 
+            // Check whether project file is locked.
+            if (!CheckAndUnlockProject(projectPath))
+            {
+                return;
+            }
+
+            // Do the load.
 			if (HierarchyTreeController::Instance()->Load(projectPath))
 			{
 				// Update project title if project was successfully loaded
@@ -1104,6 +1121,38 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			return;
         }
     }
+}
+
+bool MainWindow::CheckAndUnlockProject(const QString& projectPath)
+{
+    if (!FileSystem::Instance()->IsFileLocked(projectPath.toStdString()))
+    {
+        // Nothing to unlock.
+        return true;
+    }
+
+    QMessageBox msgBox;
+    msgBox.setText(QString(tr("The project file %1 is locked by other user. Do you want to unlock it?").arg(projectPath)));
+    QAbstractButton* unlockButton = msgBox.addButton(tr("Unlock"), QMessageBox::YesRole);
+    msgBox.addButton(tr("Cancel"), QMessageBox::NoRole);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() != unlockButton)
+    {
+        return false;
+    }
+
+    // Check whether it is possible to unlock project file.
+    if (!FileSystem::Instance()->LockFile(projectPath.toStdString(), false))
+    {
+        QMessageBox errorBox;
+        errorBox.setText(QString(tr("Unable to unlock project file %1. Please check whether the project is opened in another UIEditor and close it, if yes.").arg(projectPath)));
+        errorBox.exec();
+        
+        return false;
+    }
+
+    return true;
 }
 
 void MainWindow::DoSaveProject(bool changesOnly)
@@ -1202,6 +1251,7 @@ bool MainWindow::CloseProject()
 			OnSaveProject();
 	}
 	
+	CopyPasteController::Instance()->Clear();
 	HierarchyTreeController::Instance()->CloseProject();
 	// Update project title
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
@@ -1264,6 +1314,9 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 	{
 		projectTitle += " *";
 	}
+    
+    UpdateSaveButtons();
+
 	setWindowTitle(projectTitle);
 }
 
@@ -1731,3 +1784,12 @@ void MainWindow::OnLockGuidesChanged()
         activeScreen->LockGuides(ui->actionLock_Guides->isChecked());
     }
 }
+
+void MainWindow::UpdateSaveButtons()
+{
+    bool hasUnsavedChanges = HierarchyTreeController::Instance()->HasUnsavedChanges();
+    
+    ui->actionSave_project->setEnabled(hasUnsavedChanges);
+    ui->actionSave_All->setEnabled(hasUnsavedChanges);
+}
+

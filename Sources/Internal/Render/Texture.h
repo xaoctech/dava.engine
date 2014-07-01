@@ -271,7 +271,7 @@ protected:
 	void FlushDataToRenderer(Vector<Image *> * images);
 	void ReleaseImages(Vector<Image *> * images);
     
-    void MakePink(TextureType requestedType = Texture::TEXTURE_2D, bool checkers = true);
+    void MakePink(bool checkers = true);
 	void ReleaseTextureDataInternal(BaseObject * caller, void * param, void *callerData);
     
 	void GeneratePixelesationInternal(BaseObject * caller, void * param, void *callerData);
@@ -322,7 +322,7 @@ public:							// properties for fast access
     uint32		width:16;			// texture width
 	uint32		height:16;			// texture height
 
-    eGPUFamily loadedAsFile:3;
+    eGPUFamily loadedAsFile:4;
 	TextureState state:2;
 	uint32		textureType:2;
 	DepthFormat depthFormat:2;

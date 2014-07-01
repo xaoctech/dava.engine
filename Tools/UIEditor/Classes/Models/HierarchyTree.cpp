@@ -55,15 +55,22 @@
 #define LOCALIZATION_LOCALE_NODE "Locale"
 #define FONT_NODE "font"
 #define DEFAULT_FONT_PATH_NODE "DefaultFontPath"
+#define DEFAULT_FONTS_PATH_NODE "DefaultFontsPath"
 
 HierarchyTree::HierarchyTree()
 {
 	projectCreated = false;
 }
 
+HierarchyTree::~HierarchyTree()
+{
+    Clear();
+}
+
 void HierarchyTree::Clear()
 {
     rootNode.Clear();
+    UnlockProjectFiles(true);
 }
 
 bool HierarchyTree::Load(const QString& projectPath)
@@ -84,6 +91,10 @@ bool HierarchyTree::Load(const QString& projectPath)
 		return false;
 	}
 
+    // Build the list of file names to be locked.
+    List<QString> fileNames;
+    fileNames.push_back(projectPath);
+
     // NO Localization Data should exist at this point, otherwise automatic
     // LocalizedStrings obtaining will interfere with the loading process!
     LocalizationSystem::Instance()->Cleanup();
@@ -91,24 +102,23 @@ bool HierarchyTree::Load(const QString& projectPath)
     Map<HierarchyTreePlatformNode*, const YamlNode*> loadedPlatforms;
 
 	bool result = true;
-	const YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
-	for (int32 i = 0; i < platforms->GetCount(); i++)
-	{
-		const YamlNode* platform = platforms->Get(i);
-		if (!platform)
-			continue;
-		
-		const String &platformName = platform->AsString();
-		HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, QString::fromStdString(platformName));
-		result &= platformNode->Load(platform);
-		rootNode.AddTreeNode(platformNode);
-        
-        // Remember the platform to load its localization later.
-        loadedPlatforms.insert(std::make_pair(platformNode, platform));
-	}
-	
-	// Get font node
-	const YamlNode *font = projectRoot->Get(FONT_NODE);
+    
+    // add project path to res folders (to allow loading fonts before everything else)
+    FilePath bundleName(rootNode.GetProjectDir().toStdString());
+    bundleName.MakeDirectoryPathname();
+    
+    List<FilePath> resFolders = FilePath::GetResourcesFolders();
+    List<FilePath>::const_iterator searchIt = find(resFolders.begin(), resFolders.end(), bundleName);
+    
+    if(searchIt == resFolders.end())
+    {
+        FilePath::AddResourcesFolder(bundleName);
+    }
+    EditorFontManager::Instance()->SetProjectDataPath(bundleName.GetAbsolutePathname() + "Data/");
+    
+    const YamlNode *font = projectRoot->Get(FONT_NODE);
+    
+    // Get font node
 	if (font)
 	{
 		// Get default font node
@@ -130,6 +140,43 @@ bool HierarchyTree::Load(const QString& projectPath)
 			}
 			EditorFontManager::Instance()->InitDefaultFontFromPath(defaultFontPath);
 		}
+        
+        const YamlNode *localizationFontsPathNode = font->Get(DEFAULT_FONTS_PATH_NODE);
+        if(localizationFontsPathNode)
+        {
+            FilePath localizationFontsPath(localizationFontsPathNode->AsString());
+            if(localizationFontsPath.Exists())
+            {
+                EditorFontManager::Instance()->SetDefaultFontsPath(localizationFontsPath.GetAbsolutePathname());
+            }
+            else
+            {
+                EditorFontManager::Instance()->SetDefaultFontsPath(bundleName.GetAbsolutePathname() + "Data" + localizationFontsPath.GetAbsolutePathname().substr(5));
+            }
+        }
+    }
+    
+    if(EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
+    {
+        EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(bundleName.GetAbsolutePathname() + "Data/UI/Fonts/fonts.yaml"));
+    }
+    EditorFontManager::Instance()->LoadLocalizedFonts();
+    
+	const YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
+	for (int32 i = 0; i < platforms->GetCount(); i++)
+	{
+		const YamlNode* platform = platforms->Get(i);
+		if (!platform)
+			continue;
+		
+		const String &platformName = platform->AsString();
+		HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, QString::fromStdString(platformName));
+        
+		result &= platformNode->Load(platform, fileNames);
+		rootNode.AddTreeNode(platformNode);
+        
+        // Remember the platform to load its localization later.
+        loadedPlatforms.insert(std::make_pair(platformNode, platform));
 	}
 
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
@@ -148,11 +195,7 @@ bool HierarchyTree::Load(const QString& projectPath)
 
     // All the data needed is loaded.
     SafeRelease(project);
-
-    // Initialize the control names with their correct (localized) values after the
-    // Localization File is loaded.
-    UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
-
+    
 	HierarchyTreePlatformNode* platformNode = NULL;
 	HierarchyTreeScreenNode* screenNode = NULL;
 	
@@ -170,6 +213,9 @@ bool HierarchyTree::Load(const QString& projectPath)
     // Do this for all platforms and screens.
 	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);
 
+    // Can lock the project files here.
+    LockProjectFiles(fileNames);
+    
 	return result;
 }
 
@@ -200,6 +246,8 @@ void HierarchyTree::CloseProject()
 	rootNode.ResetUnsavedChanges();
 	// Reset default font
 	EditorFontManager::Instance()->ResetDefaultFont();
+    // TODO: reset localized fonts path (unload localized fonts)
+    EditorFontManager::Instance()->Reset();
 	Clear();
 }
 
@@ -423,25 +471,36 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	FilePath fontPath = defaultFontPath.fontPath;
 	FilePath fontSpritePath = defaultFontPath.fontSpritePath;
 	// Check if default font path exist
-	if (!fontPath.IsEmpty())
+	if (!fontPath.IsEmpty() || !EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
 	{
 		// Create font node
 		YamlNode* fontNode = new YamlNode(YamlNode::TYPE_MAP);
 		root->SetNodeToMap( FONT_NODE, fontNode );
-	
-		// Create fonts array
-		YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
-		
-		// Put font path
-		fontPathNode->AddValueToArray(fontPath.GetFrameworkPath());
-		// Put font sprite path if it available
-		if (!fontSpritePath.IsEmpty())
-		{
-			fontPathNode->AddValueToArray(fontSpritePath.GetFrameworkPath());
-		}
-		// Insert array into node
-		fontNode->AddNodeToMap(DEFAULT_FONT_PATH_NODE, fontPathNode);
-	}
+        
+        if(!fontPath.IsEmpty())
+        {
+            // Create fonts array
+            YamlNode* fontPathNode = new YamlNode(YamlNode::TYPE_ARRAY);
+            
+            // Put font path
+            fontPathNode->AddValueToArray(fontPath.GetFrameworkPath());
+            // Put font sprite path if it available
+            if (!fontSpritePath.IsEmpty())
+            {
+                fontPathNode->AddValueToArray(fontSpritePath.GetFrameworkPath());
+            }
+            // Insert array into node
+            fontNode->AddNodeToMap(DEFAULT_FONT_PATH_NODE, fontPathNode);
+        }
+        
+        if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
+        {
+
+            fontNode->Add(DEFAULT_FONTS_PATH_NODE, EditorFontManager::Instance()->GetDefaultFontsFrameworkPath());
+        }
+    }
+    
+
 	
 	YamlNode* platforms = new YamlNode(YamlNode::TYPE_MAP);
 	root->SetNodeToMap( PLATFORMS_NODE, platforms );
@@ -456,7 +515,17 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	QString projectFile = ResourcesManageHelper::GetProjectFilePath(projectPath);
 	
 	rootNode.SetProjectFilePath(projectFile);
+    
+    if(!EditorFontManager::Instance()->GetDefaultFontsPath().IsEmpty())
+    {
+        EditorFontManager::Instance()->SaveLocalizedFonts();
+    }
 
+    // Unlock project files and delete unused items from disk before saving.
+    UnlockProjectFiles(false);
+    HierarchyTreeController::Instance()->DeleteUnusedItemsFromDisk(projectPath);
+
+    // Do the save itself.
 	for (HierarchyTreeNode::HIERARCHYTREENODESLIST::const_iterator iter = rootNode.GetChildNodes().begin();
 		 iter != rootNode.GetChildNodes().end();
 		 ++iter)
@@ -482,9 +551,9 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	// Update Data directory last modified datetime - set currrent time
 	UpdateModificationDate(ResourcesManageHelper::GetDataPath(projectPath));
 
-	// Save project file
+	// Save project file.
 	result &= parser->SaveToYamlFile(projectFile.toStdString(), root, true);
-	
+
     // Return the Localized Values.
     UpdateExtraData(BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED);
 
@@ -499,6 +568,8 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	}
 
     SafeRelease(parser);
+    LockProjectFiles();
+
 	return result;
 }
 
@@ -524,14 +595,19 @@ void HierarchyTree::UpdateExtraData(BaseMetadata::eExtraDataUpdateStyle updateSt
                 continue;
             }
 
-                // Update extra data from controls in a recursive way.
-            for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER controlNodesIter = screenNode->GetChildNodes().begin();
-                 controlNodesIter != screenNode->GetChildNodes().end(); controlNodesIter ++)
-            {
-                HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(*controlNodesIter);
-                UpdateExtraDataRecursive(controlNode, updateStyle);
-            }
+            UpdateExtraData(screenNode, updateStyle);
         }
+    }
+}
+
+void HierarchyTree::UpdateExtraData(HierarchyTreeScreenNode* screenNode,BaseMetadata::eExtraDataUpdateStyle updateStyle)
+{
+    // Update extra data from controls in a recursive way.
+    for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER controlNodesIter = screenNode->GetChildNodes().begin();
+         controlNodesIter != screenNode->GetChildNodes().end(); controlNodesIter ++)
+    {
+        HierarchyTreeControlNode* controlNode = dynamic_cast<HierarchyTreeControlNode*>(*controlNodesIter);
+        UpdateExtraDataRecursive(controlNode, updateStyle);
     }
 }
 
@@ -569,6 +645,11 @@ void HierarchyTree::UpdateExtraDataRecursive(HierarchyTreeControlNode* node, Bas
         
         UpdateExtraDataRecursive(childNode, updateStyle);
     }
+}
+
+void HierarchyTree::UpdateControlsData(HierarchyTreeScreenNode* screenNode)
+{
+	UpdateExtraData(screenNode, BaseMetadata::UPDATE_EXTRADATA_FROM_CONTROL);
 }
 
 void HierarchyTree::UpdateControlsData()
@@ -645,4 +726,43 @@ void HierarchyTree::UpdateModificationDate(const QString &path)
 	// 02/05/2014 - Request only for MACOS
 	utime(path.toStdString().c_str(), NULL);
 #endif
+}
+
+void HierarchyTree::LockProjectFiles()
+{
+    for (List<String>::iterator iter = projectLockedFiles.begin(); iter != projectLockedFiles.end(); iter ++)
+    {
+        const String& fileName = (*iter);
+        FileSystem::Instance()->LockFile(fileName, true);
+    }
+}
+
+void HierarchyTree::LockProjectFiles(const List<QString>& fileNames)
+{
+    for (List<QString>::const_iterator iter = fileNames.begin(); iter != fileNames.end(); iter ++)
+    {
+        const String& fileName = (*iter).toStdString();
+        if (FileSystem::Instance()->LockFile(fileName, true))
+        {
+            projectLockedFiles.push_back(fileName);
+        }
+        else
+        {
+            Logger::Warning("Unable to lock file %s", fileName.c_str());
+        }
+    }
+}
+
+void HierarchyTree::UnlockProjectFiles(bool needCleanup)
+{
+    for (List<String>::iterator iter = projectLockedFiles.begin(); iter != projectLockedFiles.end(); iter ++)
+    {
+        const String& fileName = (*iter);
+        FileSystem::Instance()->LockFile(fileName, false);
+    }
+
+    if (needCleanup)
+    {
+        projectLockedFiles.clear();
+    }
 }
