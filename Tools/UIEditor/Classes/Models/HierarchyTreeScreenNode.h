@@ -96,12 +96,14 @@ public:
     // Methods related to the moving existing guide.
     bool StartMoveGuide(const Vector2& pos);
     void MoveGuide(const Vector2& pos);
+    const GuideData* GetMoveGuide();
 
     // Get the active (selected or moved) guide.
     const GuideData* GetActiveGuide() const;
 
     Vector2 GetMoveGuideStartPos() const;
     const GuideData* AcceptMoveGuide();
+    const GuideData* CancelMoveGuide();
 
     // Selected Guide methods.
     bool AreGuidesSelected() const;
