@@ -260,6 +260,8 @@ public:
 
     DAVA::NMaterial* GetGlobalMaterial() const;
     void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
+    
+    void OnSceneReady(Entity * rootNode);
 
 protected:
     void UpdateLights();
@@ -283,6 +285,7 @@ protected:
     NMaterial* sceneGlobalMaterial;
     //TODO: think about data-driven initialization. Need to set default properties from outside and save/load per scene
     void InitGlobalMaterial();
+    void ImportShadowColor(Entity * rootNode);
     
 #if defined (USE_FILEPATH_IN_MAP)
     typedef Map<FilePath, ProxyNode*> ProxyNodeMap;
