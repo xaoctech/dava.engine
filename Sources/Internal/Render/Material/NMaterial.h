@@ -351,6 +351,7 @@ public:
     
     /**
 	 \brief Returns set of flags representing vertex format required by the material.
+     That set of flags corresponds to shader attributes.
 	 \returns set of flags representing vertex format required by the material.
 	 */
 	inline uint32 GetRequiredVertexFormat() const;

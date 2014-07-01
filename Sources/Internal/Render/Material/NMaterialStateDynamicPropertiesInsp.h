@@ -67,8 +67,8 @@ protected:
         uint8* data;
     };
     
-    bool isColor(const FastName &propName) const;
-    VariantType getVariant(const FastName &propName, const PropData &propData) const;
+    bool IsColor(const FastName &propName) const;
+    VariantType GetVariant(const FastName &propName, const PropData &propData) const;
     const FastNameMap<PropData>* FindMaterialProperties(NMaterial *state, bool global) const;
 };
 
