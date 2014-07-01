@@ -104,6 +104,8 @@ public:
     static DAVA::FastName GetSettingsName(size_t index);
     static SettingsNode* GetSettingsNode(const DAVA::FastName &name);
 
+    static void ResetPerProjectSettings();
+
     static void ResetToDefault();
 
 protected:
