@@ -77,12 +77,12 @@ public:
 
 #ifdef USER_VERSIONING_DEBUG_FEATURES
     VersionMap& Versions();
-    void ResetVersionHistory();
+    VersionMap GetDefaultVersionHistory();
 #endif
 
 private:
-    void AddVersion(const SceneVersion& version);
-    void FillVersionHistory();
+    void AddVersion(VersionMap& versions, const SceneVersion& version);
+    VersionMap GetVersionHistory();
     void SetCurrentBranch();
     TagsMap GetTags(uint32 minVersion = 0) const;
 
