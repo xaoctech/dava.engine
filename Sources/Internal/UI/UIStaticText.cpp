@@ -196,7 +196,7 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
     UIControl::Draw(geometricData);
 
-    if(0 != shadowBg->GetDrawColor().a && (0 != shadowOffset.dx || 0 != shadowOffset.dy))
+    if(!FLOAT_EQUAL(shadowBg->GetDrawColor().a, 0.0f) && (!FLOAT_EQUAL(shadowOffset.dx, 0.0f) || !FLOAT_EQUAL(shadowOffset.dy, 0.0f)))
     {
         UIGeometricData shadowGeomData = geometricData;
 
