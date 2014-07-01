@@ -31,6 +31,7 @@
 #include "TexturePacker/CommandLineParser.h"
 #include "Render/Image/LibPngHelpers.h"
 #include "Render/Image/ImageSystem.h"
+#include "Render/Image/ImageConvert.h"
 #include "Render/Texture.h"
 #include "Render/PixelFormatDescriptor.h"
 
@@ -52,18 +53,23 @@ PngImageExt::~PngImageExt()
 bool PngImageExt::Read(const FilePath & filename)
 {
     SafeRelease(internalData);
-    
-    Vector<Image*> imageSet;
-    eErrorCode retCode = ImageSystem::Instance()->Load(filename, imageSet);
-    if(SUCCESS != retCode)
-    {
-        Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.GetAbsolutePathname().c_str());
-    }
-    else
-    {
-        internalData = SafeRetain(imageSet[0]);
-    }
-    for_each(imageSet.begin(), imageSet.end(), SafeRelease<Image>);
+	
+	File *fileRead = File::Create(filename, File::READ | File::OPEN);
+	if(!fileRead)
+	{
+		Logger::Error("[PngImageExt::Read] failed to open png file: %s", filename.GetAbsolutePathname().c_str());
+		return false;
+	}
+
+	internalData = new Image();
+	int innerRetCode = LibPngWrapper::ReadPngFile(fileRead, internalData, FORMAT_RGBA8888);
+	if(innerRetCode != 1)
+	{
+		SafeRelease(internalData);
+		Logger::Error("[PngImageExt::Read] failed to read png file: %s", filename.GetAbsolutePathname().c_str());
+	}
+
+	SafeRelease(fileRead);
 	return (internalData != NULL);
 }
 

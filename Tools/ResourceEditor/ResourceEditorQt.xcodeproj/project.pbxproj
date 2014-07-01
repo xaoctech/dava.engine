@@ -44,10 +44,14 @@
 		64B9018A18BF7B15001E6CCC /* GrassEditorProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018818BF7B15001E6CCC /* GrassEditorProxy.cpp */; };
 		64B9018D18BF7B25001E6CCC /* GrassEditorSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018B18BF7B25001E6CCC /* GrassEditorSystem.cpp */; };
 		765A0ADB18CE0C7F0044516F /* MaterialTemplateModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765A0AD918CE0C7F0044516F /* MaterialTemplateModel.cpp */; };
+		765BA22F19406A9E005D6B4E /* BeastDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765BA22B19406A9E005D6B4E /* BeastDialog.cpp */; };
+		765BA23D19406B0B005D6B4E /* BeastDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765BA23C19406B0B005D6B4E /* BeastDialog_moc.cpp */; };
 		76741C8818A3BDE20044A0BF /* CacheRequest.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C8618A3BDE20044A0BF /* CacheRequest.cpp */; };
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
 		76A098A418E1968E00D442EB /* LicenceDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */; };
 		76A098A818E1970E00D442EB /* LicenceDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A618E1970E00D442EB /* LicenceDialog.cpp */; };
+		76BA73DB195839710029DC61 /* RunActionEventWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76BA73D9195839710029DC61 /* RunActionEventWidget.cpp */; };
+		76BA73E419583B840029DC61 /* RunActionEventWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76BA73E319583B840029DC61 /* RunActionEventWidget_moc.cpp */; };
 		77BDEC8E56A833D3814BC614 /* QtNetwork.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 82153068A36B6EA46DD82A06 /* QtNetwork.framework */; };
 		77C663449ABEE93BEE5F2771 /* Cocoa.framework in Frameworks & Libraries */ = {isa = PBXBuildFile; fileRef = 336CB11D929F5E35FA69020F /* Cocoa.framework */; };
 		8406D38718BA583100AFF8E3 /* ImageArea.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 8406D38518BA583100AFF8E3 /* ImageArea.cpp */; };
@@ -716,6 +720,9 @@
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		765A0AD918CE0C7F0044516F /* MaterialTemplateModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTemplateModel.cpp; sourceTree = "<group>"; };
 		765A0ADA18CE0C7F0044516F /* MaterialTemplateModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialTemplateModel.h; sourceTree = "<group>"; };
+		765BA22B19406A9E005D6B4E /* BeastDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeastDialog.cpp; sourceTree = "<group>"; };
+		765BA22C19406A9E005D6B4E /* BeastDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeastDialog.h; sourceTree = "<group>"; };
+		765BA23C19406B0B005D6B4E /* BeastDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeastDialog_moc.cpp; path = _GeneratedQt/BeastDialog/BeastDialog_moc.cpp; sourceTree = "<group>"; };
 		76741C8618A3BDE20044A0BF /* CacheRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest.cpp; sourceTree = "<group>"; };
 		76741C8718A3BDE20044A0BF /* CacheRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CacheRequest.h; sourceTree = "<group>"; };
 		76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest_moc.cpp; sourceTree = "<group>"; };
@@ -723,6 +730,9 @@
 		76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LicenceDialog_moc.cpp; path = _GeneratedQt/LicenceDialog/LicenceDialog_moc.cpp; sourceTree = "<group>"; };
 		76A098A618E1970E00D442EB /* LicenceDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LicenceDialog.cpp; path = LicenceDialog/LicenceDialog.cpp; sourceTree = "<group>"; };
 		76A098A718E1970E00D442EB /* LicenceDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LicenceDialog.h; path = LicenceDialog/LicenceDialog.h; sourceTree = "<group>"; };
+		76BA73D9195839710029DC61 /* RunActionEventWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RunActionEventWidget.cpp; path = RunActionEventWidget/RunActionEventWidget.cpp; sourceTree = "<group>"; };
+		76BA73DA195839710029DC61 /* RunActionEventWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RunActionEventWidget.h; path = RunActionEventWidget/RunActionEventWidget.h; sourceTree = "<group>"; };
+		76BA73E319583B840029DC61 /* RunActionEventWidget_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RunActionEventWidget_moc.cpp; path = _GeneratedQt/RunActionEventWidget/RunActionEventWidget_moc.cpp; sourceTree = "<group>"; };
 		8157E7438190A1EEF4A4D363 /* mongodb_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = mongodb_macos; path = ../../Libs/libs/libmongodb_macos.a; sourceTree = "<group>"; };
 		8159B90213E2E13CB65C75B4 /* vorbis_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = vorbis_macos; path = ../../Libs/oggvorbis/lib/libvorbis_macos.a; sourceTree = "<group>"; };
 		81BBDA0F1849B4A35FAB7D00 /* freetype_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = freetype_macos; path = ../../Libs/freetype/lib/libfreetype_macos.a; sourceTree = "<group>"; };
@@ -1844,6 +1854,15 @@
 			name = QtPropertyDataValidator;
 			sourceTree = "<group>";
 		};
+		765BA22A19406A9E005D6B4E /* BeastDialog */ = {
+			isa = PBXGroup;
+			children = (
+				765BA22B19406A9E005D6B4E /* BeastDialog.cpp */,
+				765BA22C19406A9E005D6B4E /* BeastDialog.h */,
+			);
+			path = BeastDialog;
+			sourceTree = "<group>";
+		};
 		76A098A218E1967B00D442EB /* LicenceDialog */ = {
 			isa = PBXGroup;
 			children = (
@@ -1958,6 +1977,8 @@
 		E89DFBE4163ECBB800B51706 /* GeneratedQt */ = {
 			isa = PBXGroup;
 			children = (
+				76BA73E319583B840029DC61 /* RunActionEventWidget_moc.cpp */,
+				765BA23C19406B0B005D6B4E /* BeastDialog_moc.cpp */,
 				0282B87C18BC745C006F1EE4 /* SoundComponentEditor */,
 				76A098A218E1967B00D442EB /* LicenceDialog */,
 				76A0989A18E1965E00D442EB /* ui_LicenceDialog.h */,
@@ -3267,6 +3288,9 @@
 		E8C99074184CD0EB00AFBF3F /* Qt */ = {
 			isa = PBXGroup;
 			children = (
+				76BA73D9195839710029DC61 /* RunActionEventWidget.cpp */,
+				76BA73DA195839710029DC61 /* RunActionEventWidget.h */,
+				765BA22A19406A9E005D6B4E /* BeastDialog */,
 				0282B86118BC71BC006F1EE4 /* SoundComponentEditor */,
 				76A098A518E196F800D442EB /* LicenceDialog */,
 				84EB52BB18B15E720094DAD9 /* ImageSplitterDialog */,
@@ -4235,6 +4259,7 @@
 				E8C992DC184CD0EC00AFBF3F /* ActionComponentEditor.cpp in Build Sources */,
 				E8BAD6FA1859F50300C98C8D /* HoodCollObject_moc.cpp in Build Sources */,
 				E8C99308184CD0EC00AFBF3F /* ScaleHood.cpp in Build Sources */,
+				76BA73DB195839710029DC61 /* RunActionEventWidget.cpp in Build Sources */,
 				E8C99295184CD0EC00AFBF3F /* MetaObjModifyCommand.cpp in Build Sources */,
 				E8C9930C184CD0EC00AFBF3F /* HeightmapProxy.cpp in Build Sources */,
 				8406D39018BA5A4500AFF8E3 /* ImageArea_moc.cpp in Build Sources */,
@@ -4636,6 +4661,7 @@
 				E8BAD7281859F50300C98C8D /* MimeDataHelper_moc.cpp in Build Sources */,
 				E8BAD752185A46BC00C98C8D /* LibraryWidget.cpp in Build Sources */,
 				E8C9928A184CD0EC00AFBF3F /* DynamicShadowCommands.cpp in Build Sources */,
+				765BA22F19406A9E005D6B4E /* BeastDialog.cpp in Build Sources */,
 				E8C9921D184CD0EC00AFBF3F /* btEmptyShape.cpp in Build Sources */,
 				E8C992D2184CD0EC00AFBF3F /* EmitterLayerWidget.cpp in Build Sources */,
 				E8C99203184CD0EC00AFBF3F /* btEmptyCollisionAlgorithm.cpp in Build Sources */,
@@ -4660,10 +4686,12 @@
 				E8C99243184CD0EC00AFBF3F /* btPersistentManifold.cpp in Build Sources */,
 				E8C9923D184CD0EC00AFBF3F /* btConvexCast.cpp in Build Sources */,
 				E8C992FF184CD0EC00AFBF3F /* EditorLightSystem.cpp in Build Sources */,
+				76BA73E419583B840029DC61 /* RunActionEventWidget_moc.cpp in Build Sources */,
 				E8C99232184CD0EC00AFBF3F /* btGenericPoolAllocator.cpp in Build Sources */,
 				E8C99282184CD0EC00AFBF3F /* Command2.cpp in Build Sources */,
 				8406D38718BA583100AFF8E3 /* ImageArea.cpp in Build Sources */,
 				E8C99309184CD0EC00AFBF3F /* HoodSystem.cpp in Build Sources */,
+				765BA23D19406B0B005D6B4E /* BeastDialog_moc.cpp in Build Sources */,
 				E8C992F8184CD0EC00AFBF3F /* CollisionBox.cpp in Build Sources */,
 				E8BAD6DC1859F50300C98C8D /* QTreeViewStateHelper_moc.cpp in Build Sources */,
 				E8BAD6BB1859F50300C98C8D /* LandscapeEditorShortcutManager_moc.cpp in Build Sources */,
