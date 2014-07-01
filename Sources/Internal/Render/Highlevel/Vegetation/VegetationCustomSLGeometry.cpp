@@ -50,26 +50,6 @@ void VegetationCustomSLGeometry::CustomMaterialTransformer::TransformMaterialOnC
     mat->SetRenderLayers(1 << RENDER_LAYER_VEGETATION_ID);
 }
 
-VegetationCustomSLGeometry::CustomGeometryLayerData::CustomGeometryLayerData()
-{
-    
-}
-
-VegetationCustomSLGeometry::CustomGeometryLayerData::CustomGeometryLayerData(const CustomGeometryLayerData& src)
-{
-    sourcePositions = src.sourcePositions;
-    sourceTextureCoords = src.sourceTextureCoords;
-    sourceNormals = src.sourceNormals;
-    sourceIndices = src.sourceIndices;
-    
-    if(!src.bbox.IsEmpty())
-    {
-        bbox = src.bbox;
-    }
-    
-    pivot = src.pivot;
-}
-
 void VegetationCustomSLGeometry::CustomGeometryLayerData::BuildBBox()
 {
     bbox.Empty();

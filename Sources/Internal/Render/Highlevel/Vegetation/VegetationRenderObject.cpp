@@ -144,7 +144,7 @@ VegetationRenderObject::VegetationRenderObject() :
     cameraBias(0.0f),
     customGeometryData(NULL),
     layersAnimationSpring(2.f, 2.f, 2.f, 2.f),
-    layersAnimationDrag(1.4f, 1.4, 1.4f, 1.4f)
+    layersAnimationDrag(1.4f, 1.4f, 1.4f, 1.4f)
 {
     RenderManager::Caps deviceCaps = RenderManager::Instance()->GetCaps();
     
