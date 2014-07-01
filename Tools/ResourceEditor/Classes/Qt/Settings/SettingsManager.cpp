@@ -35,6 +35,7 @@
 
 // framework
 #include "FileSystem/KeyedArchive.h"
+#include "FileSystem/VariantType.h"
 #include "Render/RenderBase.h"
 
 #define SETTINGS_CONFIG_FILE "~doc:/ResourceEditorOptions.archive"
@@ -185,6 +186,11 @@ void SettingsManager::CreateValue(const DAVA::FastName& pathName, const DAVA::Va
     settingsMap[pathName].desc = description;
 
     settingsOrder.push_back(pathName);
+}
+
+void SettingsManager::ResetPerProjectSettings()
+{
+    SetValue(Settings::Internal_ParticleLastEmitterDir, DAVA::VariantType(DAVA::FilePath()));
 }
 
 void SettingsManager::ResetToDefault()
