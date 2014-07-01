@@ -327,9 +327,19 @@ void HierarchyTreeScreenNode::MoveGuide(const Vector2& pos)
     guides.MoveGuide(pos);
 }
 
+const GuideData* HierarchyTreeScreenNode::GetMoveGuide()
+{
+    return guides.GetMoveGuide();
+}
+
 const GuideData* HierarchyTreeScreenNode::AcceptMoveGuide()
 {
     return guides.AcceptMoveGuide();
+}
+
+const GuideData* HierarchyTreeScreenNode::CancelMoveGuide()
+{
+    return guides.CancelMoveGuide();
 }
 
 Vector2 HierarchyTreeScreenNode::GetMoveGuideStartPos() const

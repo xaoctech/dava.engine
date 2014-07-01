@@ -32,6 +32,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDockWidget>
+#include <QPointer>
+
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
@@ -47,12 +50,21 @@ class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
-class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
+
+class QtMainWindow
+    : public QMainWindow
+    , public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
 
 protected:
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
+
+signals:
+    void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
 
 public:
 	explicit QtMainWindow(QWidget *parent = 0);
@@ -78,12 +90,6 @@ public:
 	bool BeastWaitCanceled();
 
 	void EnableGlobalTimeout(bool enable);
-
-signals:
-    void GlobalInvalidateTimeout();
-
-    void TexturesReloaded();
-    void SpritesReloaded();
     
 // qt actions slots
 public slots:
@@ -241,6 +247,7 @@ private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
 	QtWaitDialog *beastWaitDialog;
+    QPointer<QDockWidget> dockActionEvent;
 
 	QtPosSaver posSaver;
 	bool globalInvalidate;

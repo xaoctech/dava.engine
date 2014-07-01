@@ -30,6 +30,15 @@
 
 #include "DAVAEngine.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDesktopServices>
+#include <QColorDialog>
+#include <QShortcut>
+#include <QKeySequence>
+#include <QMetaObject>
+#include <QMetaType>
+
 #include "mainwindow.h"
 #include "QtUtils.h"
 #include "Project/ProjectManager.h"
@@ -92,13 +101,6 @@
 #include "Tools/HangingObjectsHeight/HangingObjectsHeight.h"
 #include "Tools/ToolButtonWithWidget/ToolButtonWithWidget.h"
 
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDesktopServices>
-#include <QColorDialog>
-#include <QShortcut>
-#include <QKeySequence>
-
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Systems/SkyboxSystem.h"
 #include "Scene3D/Systems/MaterialSystem.h"
@@ -114,6 +116,7 @@
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
 #include "Debug/VersionInfoWidget/VersionInfoWidget.h"
+#include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -140,7 +143,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 	SetupMainMenu();
 	SetupToolBars();
 	SetupStatusBar();
-	SetupDocks();
 	SetupActions();
 	SetupShortCuts();
 
@@ -422,15 +424,17 @@ void QtMainWindow::SetupTitle()
 
 void QtMainWindow::SetupMainMenu()
 {
-	ui->menuView->addAction(ui->dockSceneInfo->toggleViewAction());
-	ui->menuView->addAction(ui->dockLibrary->toggleViewAction());
-	ui->menuView->addAction(ui->dockProperties->toggleViewAction());
-	ui->menuView->addAction(ui->dockParticleEditor->toggleViewAction());
-	ui->menuView->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
-	ui->menuView->addAction(ui->dockSceneTree->toggleViewAction());
-	ui->menuView->addAction(ui->dockConsole->toggleViewAction());
-	ui->menuView->addAction(ui->dockLODEditor->toggleViewAction());
-	ui->menuView->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
+ 	ui->menuDockWindows->addAction(ui->dockSceneInfo->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockLibrary->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockProperties->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockParticleEditor->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockParticleEditorTimeLine->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockSceneTree->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockConsole->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockLODEditor->toggleViewAction());
+	ui->menuDockWindows->addAction(ui->dockLandscapeEditorControls->toggleViewAction());
+
+    ui->menuDockWindows->addAction(dockActionEvent->toggleViewAction());
 
 	InitRecent();
 }
@@ -567,8 +571,14 @@ void QtMainWindow::SetupDocks()
 	QObject::connect(this, SIGNAL(TexturesReloaded()), ui->sceneInfo , SLOT(TexturesReloaded()));
 	QObject::connect(this, SIGNAL(SpritesReloaded()), ui->sceneInfo , SLOT(SpritesReloaded()));
     
-
     ui->libraryWidget->SetupSignals();
+    // Run Action Event dock
+    {
+        dockActionEvent = new QDockWidget("Run Action Event", this);
+        dockActionEvent->setWidget(new RunActionEventWidget());
+        dockActionEvent->setObjectName(QString( "dock_%1" ).arg(dockActionEvent->widget()->objectName()));
+        addDockWidget(Qt::RightDockWidgetArea, dockActionEvent);
+    }
     
 	ui->dockProperties->Init();
 }
