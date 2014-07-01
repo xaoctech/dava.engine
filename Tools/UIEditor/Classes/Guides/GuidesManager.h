@@ -68,6 +68,7 @@ public:
     Vector2 GetMoveGuideStartPos() const;
     const GuideData* GetMoveGuide() const;
     const GuideData* AcceptMoveGuide();
+    const GuideData* CancelMoveGuide();
 
     // Selected guides.
     bool AreGuidesSelected() const;
