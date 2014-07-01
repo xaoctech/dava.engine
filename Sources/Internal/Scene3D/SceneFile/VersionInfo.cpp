@@ -37,7 +37,7 @@ namespace DAVA
 
 VersionInfo::VersionInfo()
 {
-    FillVersionHistory();
+    versionMap = GetVersionHistory();
     SetCurrentBranch();
 }
 
@@ -45,7 +45,7 @@ VersionInfo::~VersionInfo()
 {
 }
 
-void VersionInfo::AddVersion(const VersionInfo::SceneVersion& version)
+void VersionInfo::AddVersion(VersionMap& versions, const VersionInfo::SceneVersion& version)
 {
     DVASSERT(versionMap.find(version.version) == versionMap.end());
     versionMap.insert(VersionMap::value_type(version.version, version));
@@ -142,14 +142,16 @@ VersionInfo::eStatus VersionInfo::TestVersion(const SceneVersion& version) const
     return VALID;
 }
 
-void VersionInfo::FillVersionHistory()
+VersionInfo::VersionMap VersionInfo::GetVersionHistory()
 {
-    versionMap.clear();
+    VersionMap versions;
 
     // Current version
     SceneVersion currentVersion;
     currentVersion.version = 12;    // Current version of scene file
-    AddVersion(currentVersion);
+    AddVersion(versions, currentVersion);
+
+    return versions;
 }
 
 void VersionInfo::SetCurrentBranch()
@@ -168,9 +170,9 @@ VersionInfo::VersionMap& VersionInfo::Versions()
     return versionMap;
 }
 
-void VersionInfo::ResetVersionHistory()
+VersionInfo::VersionMap VersionInfo::GetDefaultVersionHistory()
 {
-    FillVersionHistory();
+    return GetVersionHistory();
 }
 #endif
 

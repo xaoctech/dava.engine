@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>368</width>
-    <height>239</height>
+    <width>613</width>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Veision info</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -45,7 +45,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,0,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0,1,0">
      <item>
       <widget class="QPushButton" name="add">
        <property name="sizePolicy">
@@ -67,7 +67,33 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="remove">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>Remove version tag</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="QtIcons.qrc">
+         <normaloff>:/QtIcons/cminus.png</normaloff>:/QtIcons/cminus.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLineEdit" name="ver">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="placeholderText">
         <string>Scene version</string>
        </property>
@@ -75,6 +101,12 @@
      </item>
      <item>
       <widget class="QLineEdit" name="tag">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="placeholderText">
         <string>Tag</string>
        </property>
@@ -82,6 +114,12 @@
      </item>
      <item>
       <widget class="QLineEdit" name="revision">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="placeholderText">
         <string>Tag revision</string>
        </property>
@@ -99,57 +137,14 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QPushButton" name="remove">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>Remove version tag</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="QtIcons.qrc">
-           <normaloff>:/QtIcons/cminus.png</normaloff>:/QtIcons/cminus.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QTableView" name="view">
+      <widget class="QTreeView" name="view">
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
+       <property name="verticalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
        </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <attribute name="verticalHeaderVisible">
+       <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>
       </widget>
