@@ -82,15 +82,8 @@ protected:
 	bool IsObjectHanging(DAVA::Entity * entity);
     DAVA::Vector3 GetLandscapePointAtCoordinates(const DAVA::Vector2& centerXY);
 
-
-//#define USE_WORLD_VERTEXES
-#if defined (USE_WORLD_VERTEXES)
-    static void GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vector<DAVA::Vector3> &vertexes, const DAVA::Matrix4 & transform);
-    static DAVA::float32 GetMinimalZ(const DAVA::RenderObject *ro, const DAVA::Matrix4 & transform);
-#else //#define USE_WORLD_VERTEXES
 	static void GetLowestVertexes(const DAVA::RenderObject *ro, DAVA::Vector<DAVA::Vector3> &vertexes, const DAVA::Vector3 & scale);
 	static DAVA::float32 GetMinimalZ(const DAVA::RenderObject *ro);
-#endif //#define USE_WORLD_VERTEXES
 
 private:
 	SceneCollisionSystem *collSystem;
