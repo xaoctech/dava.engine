@@ -54,7 +54,7 @@ attribute float inTime;
 // UNIFORMS
 uniform mat4 worldViewProjMatrix;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF) || defined(SPHERICAL_LIT)
 uniform mat4 worldViewMatrix;
 #endif
 
@@ -96,12 +96,35 @@ uniform vec3 worldViewTranslate;
 uniform vec3 worldScale;
 uniform mat4 projMatrix;
 uniform float cutDistance;
-uniform lowp vec3 treeLeafColorMul;
-uniform lowp float treeLeafOcclusionOffset;
-uniform lowp float treeLeafOcclusionMul;
-#if defined(WIND_ANIMATION)
-uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
+
+	#if !defined(SPHERICAL_LIT) //legacy for old tree lighting
+		uniform lowp vec3 treeLeafColorMul;
+		uniform lowp float treeLeafOcclusionOffset;
+		uniform lowp float treeLeafOcclusionMul;
+	#endif
+	
+	#if defined(WIND_ANIMATION)
+		uniform mediump vec2 leafOscillationParams; //x: A*sin(T); y: A*cos(T);
+	#endif
+	
+	#if defined(SPHERICAL_LIT)
+		uniform mediump float speedTreeLightSmoothing;
+	#endif
 #endif
+
+#if defined(SPHERICAL_LIT)
+uniform vec3 worldViewObjectCenter;
+uniform mat4 invViewMatrix;
+uniform vec3 boundingBoxSize;
+
+	#if defined(SPHERICAL_HARMONICS_9)
+		uniform vec3 sphericalHarmonics[9];
+	#elif defined(SPHERICAL_HARMONICS_4)
+		uniform vec3 sphericalHarmonics[4];
+	#else
+		uniform vec3 sphericalHarmonics[1];
+	#endif
+	
 #endif
 
 // OUTPUT ATTRIBUTES
@@ -144,7 +167,7 @@ uniform float lightmapSize;
 varying lowp float varLightmapSize;
 #endif
 
-#if defined(VERTEX_COLOR)
+#if defined(VERTEX_COLOR) || defined(SPHERICAL_LIT)
 varying lowp vec4 varVertexColor;
 #endif
 
@@ -264,23 +287,26 @@ void main()
 	gl_Position = vec4(vecPos.xy, vecPos.w - 0.0001, vecPos.w);
 #elif defined(SPEED_TREE_LEAF)
 
+    vec4 eyeCoordsPosition4;
+    
 #if defined (CUT_LEAF)
     vec4 tangentInCameraSpace = worldViewMatrix * vec4(inPivot, 1.0);
     if (tangentInCameraSpace.z < -cutDistance)
     {
-        gl_Position = projMatrix * vec4(worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
+        gl_Position = worldViewProjMatrix * vec4(inPivot, inPosition.w);
     }
     else
     {
 #endif
 
+    vec3 offset = inPosition.xyz - inPivot;
+    vec3 pivot = inPivot;
+    
 #if defined(WIND_ANIMATION)
     //inAngleSinCos:        x: cos(T0);  y: sin(T0);
     //leafOscillationParams:  x: A*sin(T); y: A*cos(T);
     vec3 windVectorFlex = vec3(trunkOscillationParams * inFlexibility, 0.0);
-    vec3 pivot = inPivot + windVectorFlex;
-    
-    vec3 offset = inPosition.xyz - inPivot;
+    pivot += windVectorFlex;
     
     vec2 SinCos = inAngleSinCos * leafOscillationParams; //vec2(A*sin(t)*cos(t0), A*cos(t)*sin(t0))
     float sinT = SinCos.x + SinCos.y;     //sin(t+t0)*A = sin*cos + cos*sin
@@ -293,18 +319,15 @@ void main()
     offset.x = rotatedOffsetXY.z - rotatedOffsetXY.w; //x*cos - y*sin
     offset.y = rotatedOffsetXY.x + rotatedOffsetXY.y; //x*sin + y*cos
 
-    gl_Position = projMatrix * vec4(worldScale * offset + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(pivot, 0.0);
-    
-#else // not WIND_ANIMATION and SPEED_TREE_LEAF
-    
-    gl_Position = projMatrix * vec4(worldScale * (inPosition.xyz - inPivot) + worldViewTranslate, inPosition.w) + worldViewProjMatrix * vec4(inPivot, 0.0);
-
 #endif //end of (not WIND_ANIMATION and SPEED_TREE_LEAF)
 
-#if defined (CUT_LEAF)
+	vec4 eyeCoordsPivot = worldViewMatrix * vec4(pivot, inPosition.w);
+    eyeCoordsPosition4 = vec4(worldScale * offset, 0.0) + eyeCoordsPivot;
+    gl_Position = projMatrix * eyeCoordsPosition4;
+    
+#if defined (CUT_LEAF)   
     }
 #endif // not CUT_LEAF
-
 
 #else // not SPEED_TREE_LEAF
     
@@ -417,12 +440,14 @@ void main()
     
 #endif //end "not SPEED_TREE_LEAF
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPEED_TREE_LEAF)
-#if defined(MATERIAL_GRASS_TRANSFORM)
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
-#else
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space
-#endif
+#if defined(SPEED_TREE_LEAF)
+	vec3 eyeCoordsPosition = vec3(eyeCoordsPosition4);
+#elif defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPHERICAL_LIT)
+    #if defined(MATERIAL_GRASS_TRANSFORM)
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
+    #else
+        vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space
+    #endif
 #endif
 
 #if defined(VERTEX_LIT)
@@ -555,8 +580,65 @@ void main()
 #if defined(VERTEX_COLOR)
 	varVertexColor = inColor;
 #endif
-    
-#if defined(SPEED_TREE_LEAF)
+
+#if defined(SPHERICAL_LIT)
+
+#define A0		(0.282094)
+#define A1 		(0.325734)
+
+#define Y2_2(n) (0.273136 * (n.y * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.x)) * 0.785398 / PI
+#define Y2_1(n) (0.273136 * (n.y * n.z))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.y * n.z)) * 0.785398 / PI
+#define Y20(n)  (0.078847 * (3.0 * n.z * n.z - 1.0))  					// (1.0 / 4.0) * sqrt(5.0 / PI) * ((3.0 * n.z * n.z - 1.0)) * 0.785398 / PI
+#define Y21(n)  (0.273136 * (n.z * n.x))                                // (1.0 / 2.0) * sqrt(15.0 / PI) * ((n.z * n.x)) * 0.785398 / PI
+#define Y22(n)  (0.136568 * (n.x * n.x - n.y * n.y))                    // (1.0 / 4.0) * sqrt(15.0 / PI) * ((n.x * n.x - n.y * n.y)) * 0.785398 / PI
+
+	vec3 sphericalLightFactor = A0 * sphericalHarmonics[0];
+	
+	#if defined(SPEED_TREE_LEAF)
+		vec3 localSphericalLightFactor = sphericalLightFactor;
+	#endif
+	
+#if !defined(CUT_LEAF)
+
+#if defined(SPHERICAL_HARMONICS_4) || defined(SPHERICAL_HARMONICS_9)
+
+	mat3 invViewMatrix3 = mat3(vec3(invViewMatrix[0]), vec3(invViewMatrix[1]), vec3(invViewMatrix[2]));
+	vec3 normal = invViewMatrix3 * (eyeCoordsPosition - worldViewObjectCenter);
+	normal /= boundingBoxSize;
+	vec3 n = normalize(normal);
+
+	mat3 shMatrix = mat3(sphericalHarmonics[1], sphericalHarmonics[2], sphericalHarmonics[3]);
+	sphericalLightFactor += A1 * shMatrix * vec3(n.y, n.z, n.x);
+	
+	#if defined(SPEED_TREE_LEAF)
+		vec3 localNormal = invViewMatrix3 * (eyeCoordsPosition - vec3(eyeCoordsPivot));
+		vec3 ln = normalize(localNormal);
+		localSphericalLightFactor += A1 * shMatrix * vec3(ln.y, ln.z, ln.x);
+	#endif
+
+#if defined(SPHERICAL_HARMONICS_9)
+	sphericalLightFactor += Y2_2(n) * sphericalHarmonics[4];
+	sphericalLightFactor += Y2_1(n) * sphericalHarmonics[5];
+	sphericalLightFactor += Y20(n) * sphericalHarmonics[6];
+	sphericalLightFactor += Y21(n) * sphericalHarmonics[7];
+	sphericalLightFactor += Y22(n) * sphericalHarmonics[8];
+#endif
+
+	#if defined(SPEED_TREE_LEAF)
+		sphericalLightFactor = mix(sphericalLightFactor, localSphericalLightFactor, speedTreeLightSmoothing);
+	#endif
+	
+#endif
+
+#endif
+	
+	#if defined(VERTEX_COLOR)
+		varVertexColor *= vec4(sphericalLightFactor * 2.0, 1.0);
+	#else
+		varVertexColor = vec4(sphericalLightFactor * 2.0, 1.0);
+	#endif
+	
+#elif defined(SPEED_TREE_LEAF) //legacy for old tree lighting
     varVertexColor.rgb = varVertexColor.rgb * treeLeafColorMul * treeLeafOcclusionMul + vec3(treeLeafOcclusionOffset);
 #endif
     

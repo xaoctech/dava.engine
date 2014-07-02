@@ -131,7 +131,7 @@ varying float varFogFactor;
 varying lowp float varLightmapSize;
 #endif
 
-#if defined(VERTEX_COLOR)
+#if defined(VERTEX_COLOR) || defined(SPHERICAL_LIT)
 varying lowp vec4 varVertexColor;
 #endif
 
@@ -451,7 +451,7 @@ void main()
     gl_FragColor = vec4(color, 1.0);
 #endif
     
-#if defined(VERTEX_COLOR) || defined(SPEED_TREE_LEAF)
+#if defined(VERTEX_COLOR) || defined(SPEED_TREE_LEAF) || defined(SPHERICAL_LIT)
     gl_FragColor *= varVertexColor;
 #endif
     

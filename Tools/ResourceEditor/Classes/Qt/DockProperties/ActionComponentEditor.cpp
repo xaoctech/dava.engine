@@ -36,6 +36,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QCompleter>
+#include <QLineEdit>
 
 
 namespace
@@ -89,7 +90,6 @@ ActionComponentEditor::ActionComponentEditor(QWidget *parent) :
 	targetComponent = NULL;
 	connect(ui->buttonAddItem, SIGNAL(clicked()), SLOT(OnAddAction()));
     connect(ui->buttonRemoveItem, SIGNAL(clicked()), SLOT(OnRemoveAction()));
-    connect( ui->invokeEvent, SIGNAL( clicked() ), SLOT( OnStartAction() ) );
 	connect(ui->tableActions, SIGNAL(itemSelectionChanged()), SLOT(OnSelectedItemChanged()));
 	
 	ui->tableActions->resizeColumnsToContents();
@@ -198,12 +198,6 @@ void ActionComponentEditor::OnRemoveAction()
 		
 		ui->buttonAddItem->setEnabled(!IsActionPresent(GetDefaultAction()));
 	}
-}
-
-void ActionComponentEditor::OnStartAction()
-{
-    const DAVA::FastName eventName( ui->eventName->text().toStdString().c_str() );
-    targetComponent->StartUser(eventName);
 }
 
 void ActionComponentEditor::OnSelectedItemChanged()
