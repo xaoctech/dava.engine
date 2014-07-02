@@ -25,53 +25,27 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
 
-#include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
-#include "Render/Highlevel/RenderBatch.h"
+#ifndef __DAVAENGINE_VEGETATIONMATERIALTRANSFORMER_H__
+#define __DAVAENGINE_VEGETATIONMATERIALTRANSFORMER_H__
+
 
 namespace DAVA
 {
 
-class Entity;
-class Scene;
-class Landscape;
-class VegetationRenderObject;
+class NMaterial;
 
-class FoliageSystem : public SceneSystem
+/**
+ \brief Interface for material transformer. Implementations of this interface 
+    are used by VegetationGeometry implementations to modify vegetation materials.
+    For example, set constant properties related to the specific implementations
+    or add/remove shader flags.
+ */
+class VegetationMaterialTransformer
 {
-
 public:
-    
-    FoliageSystem(Scene* scene);
-    virtual ~FoliageSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-    virtual void Process(float32 timeElapsed);
-    
-    void SyncFoliageWithLandscape();
-    
-    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
-    
-    void SetFoliageVisible(bool show);
-    bool IsFoliageVisible() const;
-    
-    void DebugDrawVegetation();
-    
-private:
-
-    Entity* landscapeEntity;
-    Entity* foliageEntity;
-    
+    virtual void TransformMaterialOnCreate(NMaterial* mat) = 0;
+};
 };
 
-};
-
-#endif
+#endif /* defined(__DAVAENGINE_VEGETATIONMATERIALTRANSFORMER_H__) */

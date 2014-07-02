@@ -25,53 +25,58 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
+
+#ifndef __DAVAENGINE_RENDERBATCHPOOL_H__
+#define __DAVAENGINE_RENDERBATCHPOOL_H__
 
 #include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
+#include "Render/Highlevel/Vegetation/VegetationMaterialTransformer.h"
+
 
 namespace DAVA
 {
 
-class Entity;
-class Scene;
-class Landscape;
-class VegetationRenderObject;
+class RenderBatch;
+class NMaterial;
 
-class FoliageSystem : public SceneSystem
+/**
+ \brief Pool for render batch objects. The pool is used by vegetation render object.
+ */
+class RenderBatchPool
 {
-
 public:
-    
-    FoliageSystem(Scene* scene);
-    virtual ~FoliageSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-    virtual void Process(float32 timeElapsed);
-    
-    void SyncFoliageWithLandscape();
-    
-    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
-    
-    void SetFoliageVisible(bool show);
-    bool IsFoliageVisible() const;
-    
-    void DebugDrawVegetation();
+
+    RenderBatchPool();
+    ~RenderBatchPool();
+
+    void Init(NMaterial* key, uint32 initialCount, VegetationMaterialTransformer* transform);
+    void Clear();
+    RenderBatch* Get(NMaterial* key, VegetationMaterialTransformer* transform);
+    void Return(NMaterial* key, uint32 count);
+    void ReturnAll(NMaterial* key);
+    void ReturnAll();
     
 private:
 
-    Entity* landscapeEntity;
-    Entity* foliageEntity;
+    struct RenderBatchPoolEntry
+    {
+        RenderBatchPoolEntry();
+        ~RenderBatchPoolEntry();
+        
+        Vector<RenderBatch*> renderBatches;
+        int32 poolLine;
+    };
     
+    HashMap<NMaterial*, RenderBatchPoolEntry*> pool;
+    
+    void ReleasePool();
+    RenderBatch* CreateRenderBatch(NMaterial* mat, RenderBatchPoolEntry* entry, VegetationMaterialTransformer* transform);
 };
 
-};
+}
 
-#endif
+#endif /* defined(__DAVAENGINE_RENDERBATCHPOOL_H__) */

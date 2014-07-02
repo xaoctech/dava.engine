@@ -25,53 +25,54 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
+
+#ifndef __DAVAENGINE_VEGETATIONPROPERTYNAMES_H__
+#define __DAVAENGINE_VEGETATIONPROPERTYNAMES_H__
 
 #include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
 
-class Entity;
-class Scene;
-class Landscape;
-class VegetationRenderObject;
-
-class FoliageSystem : public SceneSystem
+/**
+ \brief Different uniform and shader flag names
+ */
+class VegetationPropertyNames
 {
-
 public:
-    
-    FoliageSystem(Scene* scene);
-    virtual ~FoliageSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-    virtual void Process(float32 timeElapsed);
-    
-    void SyncFoliageWithLandscape();
-    
-    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
-    
-    void SetFoliageVisible(bool show);
-    bool IsFoliageVisible() const;
-    
-    void DebugDrawVegetation();
-    
-private:
 
-    Entity* landscapeEntity;
-    Entity* foliageEntity;
+    static const FastName UNIFORM_TILEPOS;
+    static const FastName UNIFORM_WORLD_SIZE;
+    //static const FastName UNIFORM_CLUSTER_SCALE_DENSITY_MAP;
+    static const FastName UNIFORM_HEIGHTMAP_SCALE;
+    static const FastName UNIFORM_SWITCH_LOD_SCALE;
+    static const FastName UNIFORM_PERTURBATION_FORCE;
+    static const FastName UNIFORM_PERTURBATION_POINT;
+    static const FastName UNIFORM_PERTURBATION_FORCE_DISTANCE;
+    static const FastName UNIFORM_BILLBOARD_DIRECTION;
     
+    static const FastName FLAG_FRAMEBUFFER_FETCH;
+    static const FastName FLAG_BILLBOARD_DRAW;
+    static const FastName FLAG_GRASS_TRANSFORM;
+    static const FastName FLAG_GRASS_BLEND;
+    static const FastName FLAG_GRASS_OPAQUE;
+    static const FastName FLAG_VEGETATION_DRAW_LOD_COLOR;
+    static const FastName FLAG_GRASS_TRANSFORM_WAVE;
+    
+    static const FastName VEGETATION_QUALITY_NAME_HIGH;
+    static const FastName VEGETATION_QUALITY_NAME_LOW;
+    static const FastName VEGETATION_QUALITY_GROUP_NAME;
+    
+    static const FastName UNIFORM_SAMPLER_VEGETATIONMAP;
+    static const FastName UNIFORM_SAMPLER_DENSITYMAP;
+    
+    static const FastName UNIFORM_VEGWAVEOFFSET;
 };
 
 };
 
-#endif
+#endif /* defined(__DAVAENGINE_VEGETATIONPROPERTYNAMES_H__) */

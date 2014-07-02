@@ -411,8 +411,11 @@ bool SceneExporter::ExportVegetation(Scene *scene, Set<String> &errorLog)
     VegetationRenderObject *vegetation = FindVegetation(scene);
     if (vegetation)
     {
-        wasExported |= sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
-        wasExported |= sceneUtils.CopyFile(vegetation->GetVegetationMapPath(), errorLog);
+        const FilePath& textureSheetPath = vegetation->GetTextureSheetPath();
+        if(textureSheetPath.Exists())
+        {
+            wasExported |= sceneUtils.CopyFile(vegetation->GetTextureSheetPath(), errorLog);
+        }
     }
     
     return wasExported;
