@@ -498,9 +498,13 @@ void DefaultScreen::ApplyMoveDelta(const Vector2& delta)
             {
                 Matrix3 tmp;
                 tmp.BuildRotation(-parentsTotalAngle);
-                const_cast<Vector2&>(delta) = delta * tmp;
+                Vector2 rotatedVec = delta * tmp;
+                control->SetPosition(startControlPos[control] + rotatedVec);
             }
-            control->SetPosition(startControlPos[control] + delta);
+            else
+            {
+                control->SetPosition(startControlPos[control] + delta);
+            }
 		}
 	}
 }
