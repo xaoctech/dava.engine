@@ -442,14 +442,13 @@ void PolygonGroup::ReleaseData()
 	
 void PolygonGroup::BuildBuffers()
 {
+    UpdateDataPointersAndStreams();
     JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &PolygonGroup::BuildBuffersInternal));
 };
     
 void PolygonGroup::BuildBuffersInternal(BaseObject * caller, void * param, void *callerData)
 {
-    DVASSERT(Thread::IsMainThread());
-
-    UpdateDataPointersAndStreams();
+    DVASSERT(Thread::IsMainThread());    
     
     renderDataObject->BuildVertexBuffer(vertexCount);
     renderDataObject->SetIndices((eIndexFormat)indexFormat, (uint8*)indexArray, indexCount);
@@ -563,7 +562,7 @@ void PolygonGroup::LoadPolygonData(KeyedArchive * keyedArchive, SerializationCon
     renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
     RecalcAABBox();
-    
+        
     BuildBuffers();
 }
     
