@@ -190,6 +190,7 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
     staticOcclusion->BuildOcclusionInParallel(renderObjectsArray, landscape, &data, (StaticOcclusion::eIndexRenew)renewIndex);
     
     SceneForceLod(0);
+    UpdateSwitchMaterialRecursively(GetScene());
     
     Map<RenderObject*, Vector<RenderObject*> > equalRenderObjects;
     staticOcclusion->SetEqualVisibilityVector(equalRenderObjects);
@@ -217,6 +218,7 @@ void StaticOcclusionBuildSystem::OcclusionBuildStep(BaseObject * bo, void * mess
         activeIndex = -1;
         
         SceneForceLod(LodComponent::INVALID_LOD_LAYER);
+        RestoreSwitchMaterials();
     }
     else
     {
@@ -256,8 +258,9 @@ void StaticOcclusionBuildSystem::FinishBuildOcclusion(DAVA::BaseObject *bo, void
         // not final index add more occlusion build cycle
         messageQueue.AddMessage(Message(this, &StaticOcclusionBuildSystem::StartBuildOcclusion));
     }
-    
+ 
     SceneForceLod(LodComponent::INVALID_LOD_LAYER);
+    RestoreSwitchMaterials();
 }
     
 bool StaticOcclusionBuildSystem::IsInBuild() const
@@ -289,6 +292,55 @@ void StaticOcclusionBuildSystem::SceneForceLod(int32 forceLodIndex)
     }
     GetScene()->lodSystem->SetForceUpdateAll();
     GetScene()->lodSystem->Process(0.0f);
+}
+
+void StaticOcclusionBuildSystem::UpdateSwitchMaterialRecursively(Entity *entity)
+{
+    for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
+        UpdateSwitchMaterialRecursively(entity->GetChild(i));
+
+    RenderObject *ro = GetRenderObject(entity);
+    if (ro)
+    {
+        bool isSwitch = false;        
+        for (int32 i=0, sz = ro->GetRenderBatchCount(); i<sz; ++i)
+        {
+            int32 li = 0;
+            int32 si = 0;
+            ro->GetRenderBatch(i, li, si);
+            if (si>0)
+            {
+                isSwitch = true;
+                break;
+            }
+        }
+
+        if (isSwitch)
+        {
+            for (int32 i=0, sz = ro->GetRenderBatchCount(); i<sz; ++i)
+            {
+                NMaterial *mat = ro->GetRenderBatch(i)->GetMaterial();
+                if (mat&&originalRenderStateData.find(mat)==originalRenderStateData.end())
+                {
+                    RenderStateData data;
+                    mat->GetRenderState(PASS_FORWARD, data);
+                    originalRenderStateData[mat]=data;
+                    data.state = data.state & ~RenderStateData::STATE_DEPTH_WRITE;
+                    mat->SubclassRenderState(PASS_FORWARD, data);
+                }
+            }
+        }
+
+    }
+    
+}
+
+void StaticOcclusionBuildSystem::RestoreSwitchMaterials()
+{
+    for (Map<NMaterial*, RenderStateData>::iterator it = originalRenderStateData.begin(), e = originalRenderStateData.end(); it!=e; ++it)
+        it->first->SubclassRenderState(PASS_FORWARD, it->second);
+    
+    originalRenderStateData.clear();
 }
 
 void StaticOcclusionBuildSystem::Process(float32 timeElapsed)
