@@ -2919,7 +2919,7 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
 void QtMainWindow::DebugVersionInfo()
 {
     VersionInfoWidget *w = new VersionInfoWidget(this);
-    w->setWindowFlags(Qt::Dialog);
+    w->setWindowFlags(Qt::Window);
     w->setWindowModality(Qt::WindowModal);
     w->setAttribute(Qt::WA_DeleteOnClose);
     w->show();
