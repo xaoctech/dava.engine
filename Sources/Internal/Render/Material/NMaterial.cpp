@@ -82,9 +82,6 @@ const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
@@ -102,6 +99,8 @@ const FastName NMaterial::FLAG_FAST_NORMALIZATION = FastName("FAST_NORMALIZATION
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterial::FLAG_SPECULAR = FastName("SPECULAR");
+
+const FastName NMaterial::FLAG_SPHERICAL_LIT = FastName("SPHERICAL_LIT");
 
 const FastName NMaterial::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
 
@@ -216,7 +215,7 @@ activePassInstance(NULL),
 activeRenderPass(NULL),
 instancePasses(4),
 textures(8),
-materialDynamicLit(false),
+dynamicBindFlags(0),
 materialTemplate(NULL),
 materialProperties(16),
 instancePassRenderStates(4),
@@ -1171,19 +1170,14 @@ void NMaterial::UpdateMaterialTemplate()
 	SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 
     //{VI: temporray code should be removed once lighting system is up
-    materialDynamicLit = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0);
 
-    if(!materialDynamicLit)
+    dynamicBindFlags = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0) ? DYNAMIC_BIND_LIGHT : 0;
+    for(uint32 i = 0; i < passCount; ++i)
     {
-        uint32 passCount = baseTechnique->GetPassCount();
-        for(uint32 i = 0; i < passCount; ++i)
-        {
-            RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
-            const FastNameSet& defines = pass->GetUniqueDefineSet();
-            materialDynamicLit = materialDynamicLit ||
-                defines.count(DEFINE_VERTEX_LIT) ||
-                defines.count(DEFINE_PIXEL_LIT);
-        }
+        RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
+        const FastNameSet& defines = pass->GetUniqueDefineSet();
+        dynamicBindFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT) || defines.count(FLAG_SPHERICAL_LIT)) ? DYNAMIC_BIND_LIGHT : 0;
+        dynamicBindFlags |= defines.count(FLAG_SPHERICAL_LIT) ? DYNAMIC_BIND_OBJECT_CENTER : 0;
     }
 }
 
@@ -2320,7 +2314,6 @@ const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMa
 						 shaderSemantic == PARAM_PROJ ||
 						 shaderSemantic == PARAM_WORLD_VIEW_INV_TRANSPOSE ||
 						 shaderSemantic == PARAM_GLOBAL_TIME ||
-						 shaderSemantic == PARAM_WORLD_VIEW_TRANSLATE ||
 						 shaderSemantic == PARAM_WORLD_SCALE)
 					   // <--
 					   &&
@@ -2697,7 +2690,7 @@ void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object
 					
 				case Shader::UT_FLOAT_MAT4:
 				{
-					const Matrix3& val = value.AsMatrix3();
+					const Matrix4& val = value.AsMatrix4();
 					state->SetPropertyValue(member, propType, propSize, &val);
 				}
 					break;

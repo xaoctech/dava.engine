@@ -38,6 +38,15 @@
  name: "SpeedTreeLeaf"
  path: SpeedTreeLeaf.material
 -
+ name: "SphericalLit AllQualities SpeedTreeLeaf"
+ path: SphericalLitAllQualities.SpeedTreeLeaf.material
+-
+ name: "SphericalLit AllQualities Textured Alphatest"
+ path: SphericalLitAllQualities.Textured.Alphatest.material
+-
+ name: "SphericalLit AllQualities Textured Opaque"
+ path: SphericalLitAllQualities.Textured.Opaque.material
+-
  name: "Textured Alphablend"
  path: Textured.Alphablend.material
 -
