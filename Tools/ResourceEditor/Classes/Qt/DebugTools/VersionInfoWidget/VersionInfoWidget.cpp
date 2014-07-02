@@ -223,6 +223,10 @@ void VersionInfoWidget::OnRemoveTemplate()
 
     if (isRoot)
     {
+        if (versionMap.size() == 1) // Don't erase last version
+        {
+            return ;
+        }
         versionMap.erase(itVersion);
     }
     else
