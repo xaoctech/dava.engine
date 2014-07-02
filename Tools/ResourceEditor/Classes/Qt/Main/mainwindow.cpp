@@ -115,7 +115,7 @@
 #include "Render/Highlevel/VegetationRenderObject.h"
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
-#include "Debug/VersionInfoWidget/VersionInfoWidget.h"
+#include "DebugTools/VersionInfoWidget/VersionInfoWidget.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
 
 
@@ -140,6 +140,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	qApp->installEventFilter(this);
 
+    SetupDocks();
 	SetupMainMenu();
 	SetupToolBars();
 	SetupStatusBar();
@@ -2566,6 +2567,7 @@ bool QtMainWindow::OpenScene( const QString & path )
                 {
                     ui->sceneTabWidget->CloseTab(needCloseIndex);
                 }
+
 				ret = true;
 			}
 		}
