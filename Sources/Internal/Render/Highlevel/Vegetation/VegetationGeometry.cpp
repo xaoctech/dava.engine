@@ -25,53 +25,51 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
 
-#include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Render/Highlevel/Vegetation/VegetationGeometry.h"
 
 namespace DAVA
 {
 
-class Entity;
-class Scene;
-class Landscape;
-class VegetationRenderObject;
-
-class FoliageSystem : public SceneSystem
+VegetationGeometry::VegetationGeometry() : materialTransform(NULL)
 {
+}
 
-public:
-    
-    FoliageSystem(Scene* scene);
-    virtual ~FoliageSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-    virtual void Process(float32 timeElapsed);
-    
-    void SyncFoliageWithLandscape();
-    
-    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
-    
-    void SetFoliageVisible(bool show);
-    bool IsFoliageVisible() const;
-    
-    void DebugDrawVegetation();
-    
-private:
+VegetationGeometry::~VegetationGeometry()
+{
+    SafeDelete(materialTransform);
+}
 
-    Entity* landscapeEntity;
-    Entity* foliageEntity;
+
+void VegetationGeometry::SetupCameraPositions(const AABBox3& bbox, Vector<Vector3>& positions)
+{
+    float32 z = bbox.min.z + (bbox.max.z - bbox.min.z) * 0.5f;
     
-};
+    positions.push_back(Vector3(bbox.min.x, bbox.min.y, z));
+    positions.push_back(Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.min.y, z));
+    positions.push_back(Vector3(bbox.max.x, bbox.min.y, z));
+    positions.push_back(Vector3(bbox.max.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
+    positions.push_back(Vector3(bbox.max.x, bbox.max.y, z));
+    positions.push_back(Vector3(bbox.min.x + (bbox.max.x - bbox.min.x) * 0.5f, bbox.max.y, z));
+    positions.push_back(Vector3(bbox.min.x, bbox.max.y, z));
+    positions.push_back(Vector3(bbox.min.x, bbox.min.y + (bbox.max.y - bbox.min.y) * 0.5f, z));
+}
 
-};
+uint32 VegetationGeometry::GetSortDirectionCount()
+{
+    return 8;
+}
 
-#endif
+void VegetationGeometry::ReleaseRenderData(Vector<VegetationRenderData*>& renderDataArray)
+{
+    size_t renderDataCount = renderDataArray.size();
+    for(size_t i = 0; i < renderDataCount; ++i)
+    {
+        renderDataArray[i]->ReleaseRenderData();
+        SafeDelete(renderDataArray[i]);
+    }
+    
+    renderDataArray.clear();
+}
+
+}

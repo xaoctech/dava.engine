@@ -25,53 +25,69 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
-#ifndef __DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
-#define	__DAVAENGINE_SCENE3D_FOLIAGE_SYSTEM_H__
+
+#ifndef __DAVAENGINE_TEXTURESHEET_H__
+#define __DAVAENGINE_TEXTURESHEET_H__
 
 #include "Base/BaseTypes.h"
-#include "Math/MathConstants.h"
-#include "Math/Matrix4.h"
-#include "Base/Singleton.h"
-#include "Entity/SceneSystem.h"
-#include "Render/Highlevel/RenderBatch.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
+
+#define MAX_CELL_TEXTURE_COORDS 4
 
 namespace DAVA
 {
 
-class Entity;
-class Scene;
-class Landscape;
-class VegetationRenderObject;
-
-class FoliageSystem : public SceneSystem
+/**
+ \brief Describes a single cell inside of the entire texture sheet.
+ */
+struct TextureSheetCell
 {
+    Vector2 coords[MAX_CELL_TEXTURE_COORDS];
+    uint32 geometryId;
+    Vector2 geometryScale;
+        
+    inline TextureSheetCell();
+        
+    inline TextureSheetCell& operator=(const TextureSheetCell& src);
+};
 
+/**
+ \brief Texture sheet is a simple texture atlas. Each cell represents single texture.
+    Texture sheet is used for rendering billboarded vegetation.
+ */
+class TextureSheet
+{
 public:
-    
-    FoliageSystem(Scene* scene);
-    virtual ~FoliageSystem();
-    
-    virtual void AddEntity(Entity * entity);
-    virtual void RemoveEntity(Entity * entity);
-    
-    virtual void Process(float32 timeElapsed);
-    
-    void SyncFoliageWithLandscape();
-    
-    void SetPerturbation(const Vector3& point, const Vector3& force, float32 distance);
-    
-    void SetFoliageVisible(bool show);
-    bool IsFoliageVisible() const;
-    
-    void DebugDrawVegetation();
-    
-private:
-
-    Entity* landscapeEntity;
-    Entity* foliageEntity;
-    
+        
+    Vector<TextureSheetCell> cells;
+        
+    inline TextureSheet& operator=(const TextureSheet& src);
+        
+    void Load(const FilePath &yamlPath);
 };
 
+inline TextureSheetCell::TextureSheetCell() :
+    geometryId(0),
+    geometryScale(1.0f, 1.0f)
+{
+}
+    
+inline TextureSheetCell& TextureSheetCell::operator=(const TextureSheetCell& src)
+{
+    coords[0] = src.coords[0];
+    coords[1] = src.coords[1];
+    coords[2] = src.coords[2];
+    coords[3] = src.coords[3];
+        
+    geometryId = src.geometryId;
+    geometryScale = src.geometryScale;
+        
+    return *this;
+}
+
 };
 
-#endif
+#endif /* defined(__DAVAENGINE_TEXTURESHEETCELL_H__) */

@@ -987,7 +987,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
         RENDER_VERIFY(glGetShaderInfoLog(*shader, 4096, &logLength, log));
         if (logLength)
         {
-            Logger::FrameworkDebug("Shader compile log:\n%s", log);
+            Logger::Error("Shader compile log:\n%s", log);
         }
     }
 #endif
