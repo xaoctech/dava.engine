@@ -152,6 +152,10 @@ void SpeedTreeObject::Load(KeyedArchive *archive, SerializationContext *serializ
         sphericalHarmonics.assign(sphericalArray, sphericalArray + shCount);
 
     lightSmoothing = archive->GetFloat("sto.lightSmoothing", lightSmoothing);
+    
+    uint32 size = (uint32)renderBatchArray.size();
+    for (uint32 k = 0; k < size; ++k)
+        renderBatchArray[k].renderBatch->GetMaterial()->SetFlag(FLAG_WIND_ANIMATION, NMaterial::FlagOn);
 }
 
 AABBox3 SpeedTreeObject::CalcBBoxForSpeedTreeGeometry(RenderBatch * rb)
