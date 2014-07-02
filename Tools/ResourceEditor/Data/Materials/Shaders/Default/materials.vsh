@@ -10,7 +10,7 @@ precision highp float;
 // INPUT ATTRIBUTES
 attribute vec4 inPosition;
 
-#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(MATERIAL_GRASS)
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec3 inNormal;
 #endif 
 
@@ -20,7 +20,7 @@ attribute vec3 inTexCoord0;
 attribute vec2 inTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 attribute vec2 inTexCoord1;
 #endif
 
@@ -28,14 +28,10 @@ attribute vec2 inTexCoord1;
 attribute vec4 inColor;
 #endif
 
-#if defined(MATERIAL_GRASS)
-attribute vec3 inBinormal;
-#endif
-
 #if defined(VERTEX_LIT)
 #endif
 
-#if defined(PIXEL_LIT) || defined(MATERIAL_GRASS)
+#if defined(PIXEL_LIT) || defined(MATERIAL_GRASS_TRANSFORM)
 attribute vec3 inTangent;
 attribute vec3 inBinormal;
 #endif
@@ -138,13 +134,10 @@ varying vec3 varTexCoord0;
 varying vec2 varTexCoord0;
 #endif
 
-#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND) || defined(MATERIAL_GRASS)
+#if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 varying vec2 varTexCoord1;
 #endif
 
-#if defined(MATERIAL_GRASS)
-varying vec2 varTexCoord2;
-#endif
 
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
@@ -204,20 +197,32 @@ uniform float globalTime;
 uniform vec2 tex0ShiftPerSecond;
 #endif
 
-#if defined(MATERIAL_GRASS)
-uniform vec4 tilePos;
+#if defined(MATERIAL_GRASS_TRANSFORM)
+uniform vec3 tilePos;
 uniform vec3 worldSize;
 uniform vec2 lodSwitchScale;
 
-uniform float clusterScaleDensityMap[128];
+uniform vec3 cameraPosition;
+uniform vec3 billboardDirection;
 
-uniform sampler2D detail;
+uniform sampler2D heightmap;
+uniform sampler2D vegetationmap;
+uniform sampler2D densitymap;
 
 uniform vec2 heightmapScale;
 
-uniform vec3 perturbationForce;
-uniform vec3 perturbationPoint;
-uniform float perturbationForceDistance;
+#if defined(MATERIAL_GRASS_TRANSFORM_WAVE)
+
+uniform float vegWaveOffset[8]; //2 floats (xy) per layer
+
+#endif
+
+#if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
+
+varying lowp vec3 varVegetationColor;
+
+#endif
+
 #endif
 
 const float _PI = 3.141592654;
@@ -335,7 +340,8 @@ void main()
 
 	#if defined(WAVE_ANIMATION)
 		gl_Position = worldViewProjMatrix * Wave(globalTime, inPosition, inTexCoord0);
-	#elif defined(MATERIAL_GRASS)
+	#elif defined(MATERIAL_GRASS_TRANSFORM)
+    
         //inTangent.y - cluster type (0...3)
         //inTangent.z - cluster's reference density (0...15)
     
@@ -352,62 +358,79 @@ void main()
                         inPosition.z,
                         inPosition.w);
     
-        highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - pos.x) / worldSize.x, 0.0, 1.0),
-                        clamp(1.0 - (0.5 * worldSize.y - pos.y) / worldSize.y, 0.0, 1.0));
+    #if defined(MATERIAL_GRASS_BILLBOARD)
+        //1st method of billboards when cameraPosition is point
+        vec3 toCamera = normalize(vec3(clusterCenter.xyz) - vec3(cameraPosition.xy, clusterCenter.z));
+        vec3 actualDirection = normalize(cross(inNormal, toCamera));
+    
+    
+        //2nd method of billboards when cameraDirection is vector
+        //vec2 actualDirection = inNormal.z * vec2(billboardDirection);
+        //
+    
+        vec2 planeDirection = vec2(actualDirection.x, actualDirection.y) * length(vec2(inPosition.x - inBinormal.x, inPosition.y - inBinormal.y));
+        pos = clusterCenter + vec4(planeDirection.x, planeDirection.y, inPosition.z, 0.0);
+    #endif
+    
+        highp vec2 hUV = vec2(clamp(1.0 - (0.5 * worldSize.x - clusterCenter.x) / worldSize.x, 0.0, 1.0),
+                        clamp(1.0 - (0.5 * worldSize.y - clusterCenter.y) / worldSize.y, 0.0, 1.0));
     
         hUV = vec2(clamp(hUV.x * heightmapScale.x, 0.0, 1.0),
                    clamp(hUV.y * heightmapScale.y, 0.0, 1.0));
     
-        highp vec4 heightVec = texture2DLod(detail, hUV, 0.0);
+        highp vec4 heightVec = texture2DLod(heightmap, hUV, 0.0);
         float height = dot(heightVec, vec4(0.93751430533303, 0.05859464408331, 0.00366216525521, 0.00022888532845)) * worldSize.z;
     
     
         pos.z += height;
         clusterCenter.z += height;
     
-        int clusterType = int(inTangent.y);
-        int vertexTileIndex = int(inTangent.x);
-    
-        float densityFactor;
-    
-        float clusterDensity = clusterScaleDensityMap[vertexTileIndex + clusterType];;
-        float clusterScale = clusterScaleDensityMap[vertexTileIndex + 4 + clusterType];
-        float clusterLodScale = 1.0;
-    
-        if(int(inTexCoord1.x) == int(lodSwitchScale.x))
+        float clusterScale = tilePos.z;
+        if(int(inTangent.x) == int(lodSwitchScale.x))
         {
-            clusterLodScale = lodSwitchScale.y;
+            clusterScale *= lodSwitchScale.y;
         }
     
-        vec4 lodScaledPos = pos;
-        lodScaledPos.z = 0.0;
-        lodScaledPos = mix(clusterCenter, lodScaledPos, clusterLodScale);
-    
-        pos.xy = lodScaledPos.xy;
-    
+#if defined(MATERIAL_GRASS_BLEND)
         varTexCoord2.x = clusterLodScale;
+#endif
     
-        if(inTangent.z < clusterDensity)
+        vec4 vegetationMask = texture2DLod(vegetationmap, hUV, 0.0);
+    
+#if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)
+        varVegetationColor = vegetationMask.rgb;
+    
+        /*if(int(inTangent.y) == 0)
         {
-            densityFactor = 1.0;
+           varVegetationColor.r += 0.5;
+        }
+        else if(int(inTangent.y) == 1)
+        {
+           varVegetationColor.g += 0.5;
+        }
+        else if(int(inTangent.y) == 2)
+        {
+            varVegetationColor.rb += vec2(0.75, 0.75);
         }
         else
         {
-            densityFactor = 0.0;
-        }
+            varVegetationColor.rgb += vec3(0.5, 0.5, 0.5);
+        }*/
+#endif
     
-        pos = mix(clusterCenter, pos, clusterScale * densityFactor);
+#if defined(MATERIAL_GRASS_TRANSFORM_WAVE)
     
-        //VI: don't calculate perturbation. Revise the code after oscillators etc have been integrated
-        //vec3 perturbationScale = perturbationForce * clamp(1.0 - (distance(pos.xyz, perturbationPoint) / perturbationForceDistance), 0.0, 1.0);
+    int clusterType = int(inTangent.y);
+    int waveIndex = clusterType * 2;
     
-        //if(pos.z > (clusterCenter.z + 0.1))
-        //{
-        //    pos.xy += perturbationScale.xy * normalize(pos.xy - perturbationPoint.xy);
-        //}
+    pos.x += inTangent.z * vegWaveOffset[waveIndex];
+    pos.y += inTangent.z * vegWaveOffset[waveIndex + 1];
+    
+#endif
 
+        pos = mix(clusterCenter, pos, vegetationMask.a * clusterScale);
+    
         gl_Position = worldViewProjMatrix * pos;
-        varTexCoord1 = hUV;
     
     #else
         gl_Position = worldViewProjMatrix * inPosition;
@@ -420,7 +443,7 @@ void main()
 #if defined(SPEED_TREE_LEAF)
 	vec3 eyeCoordsPosition = vec3(eyeCoordsPosition4);
 #elif defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG) || defined(SPHERICAL_LIT)
-    #if defined(MATERIAL_GRASS)
+    #if defined(MATERIAL_GRASS_TRANSFORM)
         vec3 eyeCoordsPosition = vec3(worldViewMatrix * pos); // view direction in view space
     #else
         vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition); // view direction in view space

@@ -44,7 +44,7 @@
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/RenderObject.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
 #include "Scene3D/Components/TransformComponent.h"
 #include "Scene3D/Components/SpeedTreeComponent.h"

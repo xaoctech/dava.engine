@@ -59,6 +59,7 @@ const FastName NMaterial::TEXTURE_DETAIL("detail");
 const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
+const FastName NMaterial::TEXTURE_HEIGHTMAP("heightmap");
 
 const FastName NMaterial::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
 const FastName NMaterial::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
@@ -151,7 +152,8 @@ static FastName RUNTIME_ONLY_PROPERTIES[] =
 static FastName RUNTIME_ONLY_TEXTURES[] =
 {
     NMaterial::TEXTURE_DYNAMIC_REFLECTION,
-    NMaterial::TEXTURE_DYNAMIC_REFRACTION
+    NMaterial::TEXTURE_DYNAMIC_REFRACTION,
+    NMaterial::TEXTURE_HEIGHTMAP
 };
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -1586,11 +1588,11 @@ void NMaterial::Draw(PolygonGroup * polygonGroup)
 	// TODO: rethink this code
 	if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), 0);
 	}
 	else
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, polygonGroup->indexArray);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), polygonGroup->indexArray);
 	}
 }
 
@@ -1606,13 +1608,13 @@ void NMaterial::Draw(RenderDataObject* renderData, uint16* indices, uint16 index
 	// TODO: rethink this code
 	if(renderData->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, renderData->GetIndexFormat(), 0);
 	}
 	else
 	{
 		if(renderData->indexCount)
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, renderData->indices);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, renderData->GetIndexFormat(), renderData->indices);
 		}
 		else
 		{
