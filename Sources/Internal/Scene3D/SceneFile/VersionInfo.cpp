@@ -45,10 +45,10 @@ VersionInfo::~VersionInfo()
 {
 }
 
-void VersionInfo::AddVersion(VersionMap& versions, const VersionInfo::SceneVersion& version)
+void VersionInfo::AddVersion(VersionMap& versions, const SceneVersion& version)
 {
-    DVASSERT(versionMap.find(version.version) == versionMap.end());
-    versionMap.insert(VersionMap::value_type(version.version, version));
+    DVASSERT(versions.find(version.version) == versions.end());
+    versions.insert(VersionMap::value_type(version.version, version));
 }
 
 const VersionInfo::SceneVersion& VersionInfo::GetCurrentVersion() const
@@ -75,7 +75,7 @@ String VersionInfo::NoncompatibleTagsMessage(const SceneVersion& version) const
     return msg;
 }
 
-VersionInfo::TagsMap VersionInfo::GetTagsDiff(const VersionInfo::TagsMap& from, const VersionInfo::TagsMap& what)
+VersionInfo::TagsMap VersionInfo::GetTagsDiff(const TagsMap& from, const VersionInfo::TagsMap& what)
 {
     TagsMap result;
 
@@ -90,7 +90,7 @@ VersionInfo::TagsMap VersionInfo::GetTagsDiff(const VersionInfo::TagsMap& from, 
     return result;
 }
 
-String VersionInfo::FormatTagsString(const VersionInfo::TagsMap& tags)
+String VersionInfo::FormatTagsString(const TagsMap& tags)
 {
     std::stringstream ss;
     for (TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++)

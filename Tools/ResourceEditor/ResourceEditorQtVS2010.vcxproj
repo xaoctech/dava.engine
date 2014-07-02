@@ -583,7 +583,7 @@
     <ClCompile Include="_GeneratedQt\CubemapEditor\CubeMapTextureBrowser_moc.cpp" />
     <ClCompile Include="_GeneratedQt\CubemapEditor\CubemapUtils_moc.cpp" />
     <ClCompile Include="_GeneratedQt\CubemapEditor\MaterialHelper_moc.cpp" />
-    <ClCompile Include="_GeneratedQt\Debug\VersionInfoWidget\VersionInfoWidget_moc.cpp" />
+    <ClCompile Include="_GeneratedQt\DebugTools\VersionInfoWidget\VersionInfoWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleView_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\ConsoleWidget_moc.cpp" />
     <ClCompile Include="_GeneratedQt\DockConsole\Console_moc.cpp" />

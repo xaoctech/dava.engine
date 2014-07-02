@@ -80,8 +80,9 @@ public:
     VersionMap GetDefaultVersionHistory();
 #endif
 
+    static void AddVersion(VersionMap& versions, const SceneVersion& version);
+
 private:
-    void AddVersion(VersionMap& versions, const SceneVersion& version);
     VersionMap GetVersionHistory();
     void SetCurrentBranch();
     TagsMap GetTags(uint32 minVersion = 0) const;
