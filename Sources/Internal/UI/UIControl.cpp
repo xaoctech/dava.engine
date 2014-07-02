@@ -840,10 +840,10 @@ namespace DAVA
 		return angle;
 	}
     
-    float32 UIControl::GetParentsTotalAngle(bool bIncludeOwn)
+    float32 UIControl::GetParentsTotalAngle(bool includeOwn)
 	{
         float32 angle = 0;
-        if(bIncludeOwn)
+        if(includeOwn)
         {
             angle += this->angle;
         }
