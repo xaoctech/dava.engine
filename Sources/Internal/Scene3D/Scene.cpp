@@ -1076,6 +1076,8 @@ void Scene::ImportShadowColor(Entity * rootNode)
                                                           Shader::UT_FLOAT_VEC4,
                                                           1,
                                                           shadowColor.color);
+                    
+                    props->DeleteKey("ShadowColor");
                 }
             }
         }
