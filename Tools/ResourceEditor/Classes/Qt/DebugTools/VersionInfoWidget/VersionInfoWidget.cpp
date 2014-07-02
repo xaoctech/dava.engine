@@ -133,7 +133,7 @@ void VersionInfoWidget::Reset()
     DVASSERT(model);
 
     model->clear();
-    for (auto itVersion = versionMap.cbegin(); itVersion != versionMap.cend(); ++itVersion)
+    for (auto itVersion = versionMap.begin(); itVersion != versionMap.end(); ++itVersion)
     {
         const DAVA::VersionInfo::SceneVersion& version = itVersion->second;
         
@@ -141,7 +141,7 @@ void VersionInfoWidget::Reset()
         verItem->setData(version.version, Qt::DisplayRole);
         verItem->setData(version.version, eVersionRole);
 
-        for (auto itTags = version.tags.cbegin(); itTags != version.tags.cend(); ++itTags)
+        for (auto itTags = version.tags.begin(); itTags != version.tags.end(); ++itTags)
         {
             const QString tag = itTags->first.c_str();
             const int rev = itTags->second;
