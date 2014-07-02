@@ -93,9 +93,9 @@ VersionInfo::TagsMap VersionInfo::GetTagsDiff(const TagsMap& from, const Version
 String VersionInfo::FormatTagsString(const TagsMap& tags)
 {
     std::stringstream ss;
-    for (TagsMap::const_iterator it = tags.begin(); it != tags.end(); it++)
+    for (TagsMap::const_iterator it = tags.begin(); it != tags.end(); ++it)
     {
-        ss << it->first << '_' << it->second << std::endl;
+        ss << it->first << " (" << it->second << ")" << std::endl;
     }
 
     return ss.str();
@@ -105,7 +105,7 @@ VersionInfo::TagsMap VersionInfo::GetTags(uint32 minVersion) const
 {
     TagsMap tags;
 
-    for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); itVersion++)
+    for (VersionMap::const_iterator itVersion = versionMap.begin(); itVersion != versionMap.end(); ++itVersion)
     {
         if (itVersion->first < minVersion)
             continue;

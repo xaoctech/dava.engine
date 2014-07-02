@@ -174,13 +174,14 @@ bool SceneTabWidget::TestSceneCompatibility(const DAVA::FilePath &scenePath)
     if (sceneVersion.IsValid())
     {
         VersionInfo::eStatus status = VersionInfo::Instance()->TestVersion(sceneVersion);
+        const uint32 curVersion = VersionInfo::Instance()->GetCurrentVersion().version;
 
         switch (status)
         {
         case VersionInfo::COMPATIBLE:
         {
             const String& branches = VersionInfo::Instance()->UnsupportedTagsMessage(sceneVersion);
-            const QString msg = QString("Scene was created with older version or another branch of ResourceEditor. Saving scene will broke compatibility. Next tags will be added:\n%1\n\nContinue opening?").arg(branches.c_str());
+            const QString msg = QString("Scene was created with older version or another branch of ResourceEditor. Saving scene will broke compatibility.\nScene version: %1 (required %2)\n\nNext tags will be added:\n%3\n\nContinue opening?").arg(sceneVersion.version).arg(curVersion).arg(branches.c_str());
             const QMessageBox::StandardButton result = QMessageBox::warning(this, "Compatibility warning", msg, QMessageBox::Open | QMessageBox::Cancel, QMessageBox::Open);
             if ( result != QMessageBox::Open )
             {
@@ -191,7 +192,7 @@ bool SceneTabWidget::TestSceneCompatibility(const DAVA::FilePath &scenePath)
         case VersionInfo::INVALID:
         {
             const String& branches = VersionInfo::Instance()->NoncompatibleTagsMessage(sceneVersion);
-            const QString msg = QString("Scene was created with incompatible branch of ResourceEditor. Next tags aren't implemented in current branch:\n%1").arg(branches.c_str());
+            const QString msg = QString("Scene was created with incompatible version or branch of ResourceEditor.\nScene version: %1 (required %2)\nNext tags aren't implemented in current branch:\n%3").arg(sceneVersion.version).arg(curVersion).arg(branches.c_str());
             QMessageBox::critical(this, "Compatibility error", msg);
             return false;
         }
