@@ -704,8 +704,8 @@ bool FontConvertor::GeneratePackedList(int fontSize, int textureSize)
                     charDesc.x = -1;
                     charDesc.y = -1;
 
-                    float leading = face->height + face->descender;
-                    leading /= 64.f;
+                    float leading = face->size->metrics.height + face->size->metrics.descender;
+                    leading /= (float)params.scale * 64.f;
 
                     charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
                     charDesc.yOffset = leading - face->glyph->bitmap_top / (float)params.scale;
