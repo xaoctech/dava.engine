@@ -50,6 +50,7 @@ class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
+class VersionInfoWidget;
 
 class QtMainWindow
     : public QMainWindow
@@ -288,6 +289,7 @@ private:
 
     //Need for any debug functionality
     DeveloperTools *developerTools;
+    QPointer<VersionInfoWidget> versionInfoWidget;
 };
 
 
