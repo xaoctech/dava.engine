@@ -112,7 +112,7 @@
 #include "Deprecated/SceneValidator.h"
 
 #include "Tools/DeveloperTools/DeveloperTools.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
@@ -2400,7 +2400,7 @@ void QtMainWindow::OnNotPassableTerrain()
 
 void QtMainWindow::OnGrasEditor()
 {
-    SceneEditor2* sceneEditor = GetCurrentScene();
+    /*SceneEditor2* sceneEditor = GetCurrentScene();
     if(!sceneEditor)
     {
         return;
@@ -2421,7 +2421,7 @@ void QtMainWindow::OnGrasEditor()
     {
         SceneSignals::Instance()->EmitGrassEditorToggled(sceneEditor);
         OnLandscapeEditorToggled(sceneEditor);
-    }
+    }*/
 }
 
 void QtMainWindow::OnBuildStaticOcclusion()

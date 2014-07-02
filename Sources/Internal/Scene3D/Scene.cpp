@@ -308,7 +308,7 @@ void Scene::CreateSystems()
     if(SCENE_SYSTEM_FOLIAGE_FLAG & systemsMask)
     {
         foliageSystem = new FoliageSystem(this);
-        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT));
+        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT), true);
     }
 
     if(SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG & systemsMask)
@@ -791,7 +791,8 @@ void Scene::Draw()
     
     
     renderSystem->Render();
-
+    
+    //foliageSystem->DebugDrawVegetation();
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
