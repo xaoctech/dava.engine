@@ -33,6 +33,7 @@
 #include "EditorFontManager.h"
 #include "EditorSettings.h"
 #include "TexturePacker/ResourcePacker2D.h"
+#include "Validators/DistanceFontValidator.h"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -194,12 +195,35 @@ void FontManagerDialog::OkButtonClicked()
            
         if (returnFont)
         {
+            ValidateFont(returnFont);
+
             //Set dialog resulting font - it corresponds to selected font by user
             dialogResultFont = returnFont->Clone();
 			SafeRelease(returnFont);
             //Set dialog result as QDialog::Accepted and close it
             accept();
         }
+    }
+}
+
+void FontManagerDialog::ValidateFont(const Font* font) const
+{
+    switch (font->GetFontType())
+    {
+        case Font::TYPE_DISTANCE:
+        {
+            const DFFont* distanceFont = (const DFFont*)font;
+            DistanceFontValidator validator;
+
+            QString texPath = QString::fromStdString(distanceFont->GetTexturePath().GetAbsolutePathname());
+            QVariant val = QVariant(texPath);
+            validator.Validate(val);
+
+            break;
+        }
+
+        default:
+            break;
     }
 }
 

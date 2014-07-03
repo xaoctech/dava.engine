@@ -27,52 +27,18 @@
 =====================================================================================*/
 
 
-#ifndef FONTMANAGERDIALOG_H
-#define FONTMANAGERDIALOG_H
 
-#include <QDialog>
-#include <DAVAEngine.h>
+#ifndef __TEXTURE_DESCRIPTOR_UTILS_H__
+#define __TEXTURE_DESCRIPTOR_UTILS_H__
 
-class QStandardItemModel;
-class QStringList;
-class QItemSelectionModel;
-class QStandardItem;
+#include "DAVAEngine.h"
 
-using namespace DAVA;
-
-namespace Ui {
-class FontManagerDialog;
-}
-
-class FontManagerDialog : public QDialog
+class TextureDescriptorUtils
 {
-    Q_OBJECT
-
 public:
-    explicit FontManagerDialog(bool okButtonEnable = false, const QString& graphicsFontPath = QString(), QDialog *parent = 0);
-    ~FontManagerDialog();
-    //Return created font
-    Font * ResultFont();
-private:
-    Ui::FontManagerDialog *ui;
-    QStandardItemModel *tableModel;
-    Font *dialogResultFont;
-	QString currentFontPath;
-    
-    void ConnectToSignals();
-    void InitializeTableView();
-    void UpdateTableViewContents();
-	void UpdateDialogInformation();
-	Font* GetSelectedFont(QItemSelectionModel *selectionModel);
-	//void SetDefaultItemFont(QStandardItem *item, QString defaultFontName, QString fontName);
-	QStandardItem* CreateFontItem(QString itemText, QString fontName, QString defaultFontName);
-
-    void ValidateFont(const Font* font) const;
-
-private slots:
-    void OkButtonClicked();
-    void SetDefaultButtonClicked();
-
+    static bool CreateDescriptorIfNeed(const DAVA::FilePath &pngPathname);
 };
 
-#endif // FONTMANAGERDIALOG_H
+
+
+#endif // __TEXTURE_DESCRIPTOR_UTILS_H__
