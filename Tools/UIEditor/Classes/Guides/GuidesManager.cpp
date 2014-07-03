@@ -311,6 +311,21 @@ const GuideData* GuidesManager::AcceptMoveGuide()
     return resultData;
 }
 
+const GuideData* GuidesManager::CancelMoveGuide()
+{
+    if (moveGuide)
+    {
+        moveGuide->SetPosition(GetMoveGuideStartPos());
+        moveGuide->SetSelected(false);
+    }
+
+    GuideData* resultData = moveGuide;
+    moveGuide = NULL;
+    stickRects.clear();
+
+    return resultData;
+}
+
 bool GuidesManager::IsGuideOnPosition(GuideData* guide, const Vector2& pos) const
 {
     if (!guide)
@@ -589,7 +604,11 @@ Vector2 GuidesManager::CalculateDistanceToGuide(GuideData::eGuideType guideType,
 
     if (stickMode & StickToCenters)
     {
-        Vector2 distanceToCenter = rect.GetCenter() - guidePos;
+        Vector2 rectCenter = rect.GetCenter();
+        rectCenter.x = Round(rectCenter.x);
+        rectCenter.y = Round(rectCenter.y);
+        Vector2 distanceToCenter = rectCenter - guidePos;
+
         switch (guideType)
         {
             case GuideData::Horizontal:
