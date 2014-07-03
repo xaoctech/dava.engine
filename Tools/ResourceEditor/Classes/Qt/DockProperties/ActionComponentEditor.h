@@ -91,7 +91,6 @@ private:
 private slots:
 	void OnAddAction();
 	void OnRemoveAction();
-    void OnStartAction();
 	void OnSelectedItemChanged();
     
 private:
