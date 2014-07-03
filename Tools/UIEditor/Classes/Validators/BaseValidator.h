@@ -27,52 +27,24 @@
 =====================================================================================*/
 
 
-#ifndef FONTMANAGERDIALOG_H
-#define FONTMANAGERDIALOG_H
 
-#include <QDialog>
-#include <DAVAEngine.h>
+#ifndef __BASE_VALIDATOR_H__
+#define __BASE_VALIDATOR_H__
 
-class QStandardItemModel;
-class QStringList;
-class QItemSelectionModel;
-class QStandardItem;
+#include <QVariant>
 
-using namespace DAVA;
-
-namespace Ui {
-class FontManagerDialog;
-}
-
-class FontManagerDialog : public QDialog
+class BaseValidator
 {
-    Q_OBJECT
-
 public:
-    explicit FontManagerDialog(bool okButtonEnable = false, const QString& graphicsFontPath = QString(), QDialog *parent = 0);
-    ~FontManagerDialog();
-    //Return created font
-    Font * ResultFont();
-private:
-    Ui::FontManagerDialog *ui;
-    QStandardItemModel *tableModel;
-    Font *dialogResultFont;
-	QString currentFontPath;
+
+    bool Validate(QVariant &v);
+
+protected:
     
-    void ConnectToSignals();
-    void InitializeTableView();
-    void UpdateTableViewContents();
-	void UpdateDialogInformation();
-	Font* GetSelectedFont(QItemSelectionModel *selectionModel);
-	//void SetDefaultItemFont(QStandardItem *item, QString defaultFontName, QString fontName);
-	QStandardItem* CreateFontItem(QString itemText, QString fontName, QString defaultFontName);
+    virtual bool ValidateInternal(QVariant &v) = 0;
+    virtual void FixupInternal(QVariant &v) const {};
 
-    void ValidateFont(const Font* font) const;
-
-private slots:
-    void OkButtonClicked();
-    void SetDefaultButtonClicked();
-
+    virtual void ErrorNotifyInternal(const QVariant &v) const {}
 };
 
-#endif // FONTMANAGERDIALOG_H
+#endif // __BASE_VALIDATOR_H__
