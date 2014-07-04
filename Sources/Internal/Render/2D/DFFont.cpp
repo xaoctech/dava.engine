@@ -33,6 +33,8 @@
 #include "Render/Shader.h"
 #include "FileSystem/YamlParser.h"
 
+#define NOT_DEF_CHAR 0xffff
+
 namespace DAVA {
 
 DFFont::DFFont()
@@ -148,7 +150,8 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
     float32 lastY = 0;
     float32 sizeScale = GetSizeScale();
 
-    float32 halfSize = size / 2.f;
+    CharsMap::const_iterator notDef = chars.find(NOT_DEF_CHAR);
+    bool notDefExists = (notDef != chars.end());
 
     
     for (uint32 charPos = 0; charPos < strLength; ++charPos)
@@ -157,16 +160,15 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
         CharsMap::const_iterator iter = chars.find(charId);
         if (iter == chars.end())
         {
-            float32 charSize = 0;
-            if (charId == L' ')
-                charSize = halfSize * sizeScale;
-            
-            if (charSizes)
-                charSizes->push_back(charSize);
-            
-            lastX += charSize;
-            
-            continue;
+            if (notDefExists)
+            {
+                iter = notDef;
+            }
+            else
+            {
+                DVASSERT_MSG(false, "Font should contain .notDef character!");
+                continue;
+            }
         }
         
         if (charPos>0 && justifyOffset > 0 && charId == L' ')

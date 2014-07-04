@@ -11,6 +11,8 @@
 
 using namespace std;
 
+#define NOT_DEF_CHAR 0xffff
+
 FontConvertor::Params::Params()
 :   filename("")
 ,   maxChar(-1)
@@ -373,7 +375,28 @@ void FontConvertor::FillCharList()
 				err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
 				if (!err)
 				{
-                    charList.push_back(unfilteredChars[i]);
+                    charGlyphPairs.push_back(make_pair(unfilteredChars[i], glyphIndex));
+                }
+            }
+        }
+    }
+
+    // Append .notDef character to the font. We'll use '?' as .notDef character
+    int glyphIndex = FT_Get_Char_Index(face, (int)'?');
+    if (glyphIndex)
+    {
+        err = FT_Load_Glyph(face, glyphIndex, FT_RENDER_MODE_MONO);
+        if (!err)
+        {
+            err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+            if (!err)
+            {
+                int glyphWidth = face->glyph->bitmap.width;
+                int glyphHeight = face->glyph->bitmap.rows;
+
+                if (glyphWidth && glyphHeight)
+                {
+                    charGlyphPairs.push_back(make_pair(NOT_DEF_CHAR, glyphIndex));
                 }
             }
         }
@@ -381,7 +404,7 @@ void FontConvertor::FillCharList()
 
     font.SetSize(oldSize);
 
-    cout << " " << charList.size() << " characters found" << endl << endl;
+    cout << " " << charGlyphPairs.size() << " characters found" << endl << endl;
 }
 
 void FontConvertor::LoadCharList(vector<int>& charList)
@@ -513,72 +536,73 @@ void FontConvertor::GenerateOutputImage()
 
     int err;
     int percentDone = 0;
-    for(int i = 0; i < charList.size(); ++i)
+
+    int i = 0;
+    vector<pair<int, int> >::const_iterator iter = charGlyphPairs.begin();
+    for (;iter != charGlyphPairs.end(); ++iter)
 	{
-        int glyphIndex = FT_Get_Char_Index(face, charList[i]);
-        if (glyphIndex)
+        int glyphIndex = iter->second;
+
+        err = FT_Load_Glyph(face, glyphIndex, 0);
+        if (!err)
         {
-            err = FT_Load_Glyph(face, glyphIndex, 0);
-			if (!err)
-			{
-				err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
-				if (!err)
-				{
-                    int glyphWidth = face->glyph->bitmap.width;
-                    int glyphHeight = face->glyph->bitmap.rows;
-                    int glyphPitch = face->glyph->bitmap.pitch;
+            err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+            if (!err)
+            {
+                int glyphWidth = face->glyph->bitmap.width;
+                int glyphHeight = face->glyph->bitmap.rows;
+                int glyphPitch = face->glyph->bitmap.pitch;
 
-                    //	oversize the holding buffer by spread value to be filled in with distance blur
-                    int charWidth = glyphWidth + params.scale * (params.spread * 2);
-                    int charHeight = glyphHeight + params.scale * (params.spread * 2);
+                //	oversize the holding buffer by spread value to be filled in with distance blur
+                int charWidth = glyphWidth + params.scale * (params.spread * 2);
+                int charHeight = glyphHeight + params.scale * (params.spread * 2);
 
-                    unsigned char *charBuf = new unsigned char[charWidth * charHeight];
-                    memset(charBuf, 0, sizeof(unsigned char) * charWidth * charHeight);
+                unsigned char *charBuf = new unsigned char[charWidth * charHeight];
+                memset(charBuf, 0, sizeof(unsigned char) * charWidth * charHeight);
 
-                    //	copy the glyph into the buffer to be smoothed
-                    unsigned char *glyphBuf = face->glyph->bitmap.buffer;
-                    for (int j = 0; j < glyphHeight; ++j)
+                //	copy the glyph into the buffer to be smoothed
+                unsigned char *glyphBuf = face->glyph->bitmap.buffer;
+                for (int j = 0; j < glyphHeight; ++j)
+                {
+                    for (int i = 0; i < glyphWidth; ++i)
                     {
-                        for (int i = 0; i < glyphWidth; ++i)
-                        {
-                            //check if corresponding bit is set
-                            unsigned char glyphVal = glyphBuf[j * glyphPitch + (i >> 3)];
-                            unsigned char val = (glyphVal >> (7 - (i & 7))) & 1;
+                        //check if corresponding bit is set
+                        unsigned char glyphVal = glyphBuf[j * glyphPitch + (i >> 3)];
+                        unsigned char val = (glyphVal >> (7 - (i & 7))) & 1;
 
-                            int x = i + params.scale * params.spread;
-                            int y = (j + params.scale * params.spread) * charWidth;
-                            charBuf[y + x] = 255 * val;
-                        }
+                        int x = i + params.scale * params.spread;
+                        int y = (j + params.scale * params.spread) * charWidth;
+                        charBuf[y + x] = 255 * val;
                     }
-
-                    CharDescription& desc = chars[charList[i]];
-                    int distanceCharX = desc.x;
-                    int distanceCharY = desc.y;
-                    int distanceCharWidth = desc.width;
-                    int distanceCharHeight = desc.height;
-
-                    unsigned char* distanceBuf = BuildDistanceField(charBuf, charWidth, charHeight);
-
-                    for (int i = 0; i < distanceCharHeight; ++i)
-                    {
-                        int offset = ((distanceCharY + i) * params.textureSize + distanceCharX) * 4;
-
-                        for (int j = 0; j < distanceCharWidth; ++j)
-                        {
-                            imgData[offset + 0] = 0xff;
-                            imgData[offset + 1] = 0xff;
-                            imgData[offset + 2] = 0xff;
-                            imgData[offset + 3] = distanceBuf[i * distanceCharWidth + j];
-                            offset += 4;
-                        }
-                    }
-
-                    delete[] charBuf;
-                    delete[] distanceBuf;
                 }
+
+                CharDescription& desc = chars[iter->first];
+                int distanceCharX = desc.x;
+                int distanceCharY = desc.y;
+                int distanceCharWidth = desc.width;
+                int distanceCharHeight = desc.height;
+
+                unsigned char* distanceBuf = BuildDistanceField(charBuf, charWidth, charHeight);
+
+                for (int i = 0; i < distanceCharHeight; ++i)
+                {
+                    int offset = ((distanceCharY + i) * params.textureSize + distanceCharX) * 4;
+
+                    for (int j = 0; j < distanceCharWidth; ++j)
+                    {
+                        imgData[offset + 0] = 0xff;
+                        imgData[offset + 1] = 0xff;
+                        imgData[offset + 2] = 0xff;
+                        imgData[offset + 3] = distanceBuf[i * distanceCharWidth + j];
+                        offset += 4;
+                    }
+                }
+
+                delete[] charBuf;
+                delete[] distanceBuf;
             }
         }
-        int p = floor(((float)i / charList.size()) * 100);
+        int p = floor(((float)i++ / charGlyphPairs.size()) * 100);
         if (p > percentDone)
         {
             cout << setw(3) << p << "% converted" << endl;
@@ -673,46 +697,46 @@ bool FontConvertor::GeneratePackedList(int fontSize, int textureSize)
     vector<int> rectInfo;
 
     int err;
-    for(int i = 0; i < charList.size(); ++i)
+
+    vector<pair<int, int> >::const_iterator iter = charGlyphPairs.begin();
+    for (;iter != charGlyphPairs.end(); ++iter)
 	{
-        int glyphIndex = FT_Get_Char_Index(face, charList[i]);
-        if (glyphIndex)
+        int glyphIndex = iter->second;
+
+        err = FT_Load_Glyph(face, glyphIndex, 0);
+        if (!err)
         {
-            err = FT_Load_Glyph(face, glyphIndex, 0);
-			if (!err)
-			{
-				err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
-				if (!err)
-				{
-                    FontConvertor::CharDescription charDesc;
-                    int glyphWidth = face->glyph->bitmap.width;
-                    int glyphHeight = face->glyph->bitmap.rows;
+            err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+            if (!err)
+            {
+                FontConvertor::CharDescription charDesc;
+                int glyphWidth = face->glyph->bitmap.width;
+                int glyphHeight = face->glyph->bitmap.rows;
 
-                    int rectWidth = glyphWidth + params.scale * params.spread * 2;
-                    int rectHeight = glyphHeight + params.scale * params.spread * 2;
+                int rectWidth = glyphWidth + params.scale * params.spread * 2;
+                int rectHeight = glyphHeight + params.scale * params.spread * 2;
 
-                    int scaledWidth = rectWidth / params.scale;
-                    int scaledHeight = rectHeight / params.scale;
+                int scaledWidth = rectWidth / params.scale;
+                int scaledHeight = rectHeight / params.scale;
 
-                    rectInfo.push_back(scaledWidth);
-                    rectInfo.push_back(scaledHeight);
+                rectInfo.push_back(scaledWidth);
+                rectInfo.push_back(scaledHeight);
 
-                    charDesc.id = charList[i];
-                    charDesc.width = scaledWidth;
-                    charDesc.height = scaledHeight;
+                charDesc.id = iter->first;
+                charDesc.width = scaledWidth;
+                charDesc.height = scaledHeight;
 
-                    charDesc.x = -1;
-                    charDesc.y = -1;
+                charDesc.x = -1;
+                charDesc.y = -1;
 
-                    float leading = face->size->metrics.height + face->size->metrics.descender;
-                    leading /= (float)params.scale * 64.f;
+                float leading = face->size->metrics.height + face->size->metrics.descender;
+                leading /= (float)params.scale * 64.f;
 
-                    charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
-                    charDesc.yOffset = leading - face->glyph->bitmap_top / (float)params.scale;
-                    charDesc.xAdvance = face->glyph->advance.x / params.scale / 64.f;
+                charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
+                charDesc.yOffset = leading - face->glyph->bitmap_top / (float)params.scale;
+                charDesc.xAdvance = face->glyph->advance.x / params.scale / 64.f;
 
-                    chars[charDesc.id] = charDesc;
-                }
+                chars[charDesc.id] = charDesc;
             }
         }
 	}
@@ -729,7 +753,7 @@ bool FontConvertor::GeneratePackedList(int fontSize, int textureSize)
 		for (unsigned int i = 0; i < cnt; i += 4)
 		{
 			//	index, x, y, rotated
-			unsigned int index = charList[packedInfo[0][i]];
+			unsigned int index = charGlyphPairs[packedInfo[0][i]].first;
 			chars[index].x = packedInfo[0][i + 1];
 			chars[index].y = packedInfo[0][i + 2];
 		}
