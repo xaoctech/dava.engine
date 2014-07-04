@@ -582,6 +582,7 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			screenNode->SetMarked(true);
 			QString path = screenNode->GetPlatform()->GetScreenPath(screenNode->GetName());
+            FileSystem::Instance()->LockFile(path.toStdString(), false);
 			FileSystem::Instance()->DeleteFile(path.toStdString());
 		}
 
