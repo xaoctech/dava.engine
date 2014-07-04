@@ -66,6 +66,8 @@ void TextBlockRender::DrawText()
 	else
 	{
 		uint32 yOffset = 0;
+        int32 stringSize = 0;
+        int32 blockWidth = 0;
 		int32 fontHeight = textBlock->font->GetFontHeight() + textBlock->font->GetVerticalSpacing();
         int32 stringsCnt = (int32)textBlock->multilineStrings.size();
 		for (int32 line = 0; line < stringsCnt; ++line)
@@ -93,14 +95,24 @@ void TextBlockRender::DrawText()
 					xOffset = 0;
 				}
 			}
-			DrawTextML(textBlock->multilineStrings[line],
+            if(textBlock->GetAlign() & ALIGN_HJUSTIFY && textBlock->cacheUseJustify)
+            {
+                stringSize = textBlock->stringSizes[line];
+                blockWidth =textBlock->cacheW;
+            }
+            else
+            {
+                stringSize = 0;
+                blockWidth = 0;
+            }
+            DrawTextML(textBlock->multilineStrings[line],
                        textBlock->cacheDx,
                        textBlock->cacheDy,
-                       textBlock->cacheW,
+                       blockWidth,
                        xOffset,
                        yOffset,
-                       textBlock->stringSizes[line]);
-
+                       stringSize);
+            
 			yOffset += fontHeight;
 		}	
 	}

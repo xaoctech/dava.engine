@@ -153,7 +153,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	
 Size2i TextBlockDistanceRender::DrawTextSL(const WideString& drawText, int32 x, int32 y, int32 w)
 {
-	return InternalDrawText(drawText, 0, 0);
+	return InternalDrawText(drawText, 0, 0, 0, 0);
 }
 		
 Size2i TextBlockDistanceRender::DrawTextML(const WideString& drawText,
@@ -161,17 +161,17 @@ Size2i TextBlockDistanceRender::DrawTextML(const WideString& drawText,
 										   int32 xOffset, uint32 yOffset,
 										   int32 lineSize)
 {
-	return InternalDrawText(drawText, xOffset, yOffset);
+	return InternalDrawText(drawText, xOffset, yOffset, w, lineSize);
 }
 	
-Size2i TextBlockDistanceRender::InternalDrawText(const WideString& drawText, int32 x, int32 y)
+Size2i TextBlockDistanceRender::InternalDrawText(const WideString& drawText, int32 x, int32 y, int32 w, int32 lineSize)
 {
 	if (drawText.empty())
 		return Size2i(0, 0);
 	
 	int32 lastDrawed = 0;
 	
-	Size2i drawRect = dfFont->DrawStringToBuffer(drawText, x, y, vertexBuffer + (charDrawed * 4), lastDrawed);
+	Size2i drawRect = dfFont->DrawStringToBuffer(drawText, x, y, vertexBuffer + (charDrawed * 4), lastDrawed, NULL, w, lineSize);
 	if (drawRect.dx <= 0 && drawRect.dy <= 0)
 		return drawRect;
 	

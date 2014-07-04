@@ -336,7 +336,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 
 	uint8 * resultBuf = (uint8*)buffer;
 
-	LoadString(str);
+	int32 countSpace = LoadString(str);
 	int32 strLen = str.length();
 	FT_Vector * advances = new FT_Vector[strLen];
 	Prepare(advances);
@@ -344,11 +344,31 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
     const int spaceWidth = (face->glyph->metrics.width >> 6) >> 1;
     
 	int32 lastRight = 0; //charSizes helper
-	//int32 justifyOffset = 0;
+    int32 justifyOffset = 0;
+    int32 fixJustifyOffset = 0;
+    if (countSpace > 0 && justifyWidth > 0 && spaceAddon > 0)
+    {
+        int32 diff= justifyWidth - spaceAddon;
+        justifyOffset =  diff / countSpace;
+        fixJustifyOffset = diff - justifyOffset*countSpace;
+        
+    }
 	int32 maxWidth = 0;
 	
 	for(int32 i = 0; i < strLen; ++i)
 	{
+        if ( i > 0 && justifyOffset > 0 )
+        {
+            if(str[i-1] == ' ')
+            {
+                pen.x += justifyOffset<<6;
+            }
+            if (fixJustifyOffset>0)
+            {
+                fixJustifyOffset--;
+                pen.x += 1<<6;
+            }
+        }
 		Glyph		& glyph = glyphs[i];
 		FT_Glyph	image;
 		FT_BBox		bbox;
@@ -422,7 +442,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 				if(realDraw)
 				{
 					int32 realH = Min((int32)bitmap->rows, (int32)(bufHeight - top));
-					int32 realW = Min((int32)bitmap->width, (int32)(bufWidth - left)); 
+					int32 realW = Min((int32)bitmap->width, (int32)(bufWidth - left));
 					int32 ind = top*bufWidth + left;
 					DVASSERT(ind >= 0);
 					uint8 * writeBuf = resultBuf + ind;
