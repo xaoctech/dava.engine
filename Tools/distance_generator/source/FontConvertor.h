@@ -72,7 +72,7 @@ private:
     Params params;
     TtfFont font;
     std::map<int, CharDescription> chars;
-    std::vector<int> charList;
+    std::vector<std::pair<int, int> > charGlyphPairs;
     int kerningCount;
 
     void SetDefaultParams();
