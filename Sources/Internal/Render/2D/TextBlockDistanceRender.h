@@ -55,7 +55,7 @@ protected:
 							  int32 lineSize);
 	
 private:
-	Size2i InternalDrawText(const WideString& drawText, int32 x, int32 y);
+	Size2i InternalDrawText(const WideString& drawText, int32 x, int32 y, int32 w, int32 lineSize);
 	
 private:
 	RenderDataObject* renderObject;

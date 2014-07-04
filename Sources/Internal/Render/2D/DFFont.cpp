@@ -119,8 +119,28 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
                                   int32 yOffset,
                                   DFFontVertex* vertexBuffer,
                                   int32& charDrawed,
-                                  Vector<float32> *charSizes /*= NULL*/) const
+                                  Vector<float32> *charSizes /*= NULL*/,
+                                  int32 justifyWidth,
+                                  int32 spaceAddon) const
 {
+    int32 countSpace = 0;
+    uint32 strLength = str.length();
+	for(int32 i = 0; i < strLength; ++i)
+	{
+		if( L' ' == str[i])
+		{
+			countSpace++;
+		}
+    }
+    int32 justifyOffset = 0;
+    int32 fixJustifyOffset = 0;
+    if (countSpace > 0 && justifyWidth > 0 && spaceAddon > 0)
+    {
+        int32 diff= justifyWidth - spaceAddon;
+        justifyOffset =  diff / countSpace;
+        fixJustifyOffset = diff - justifyOffset*countSpace;
+        
+    }
     uint32 vertexAdded = 0;
     charDrawed = 0;
     
@@ -130,7 +150,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
 
     float32 halfSize = size / 2.f;
 
-    uint32 strLength = str.length();
+    
     for (uint32 charPos = 0; charPos < strLength; ++charPos)
     {
         char16 charId = str.at(charPos);
@@ -149,6 +169,16 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
             continue;
         }
         
+        if (charPos>0 && justifyOffset > 0 && charId == L' ')
+        {
+            lastX += justifyOffset;
+            if (fixJustifyOffset > 0)
+            {
+                lastX++;
+                fixJustifyOffset--;
+            }
+        }
+        
         const CharDescription& charDescription = iter->second;
 
         float32 width = charDescription.width * sizeScale;
@@ -159,7 +189,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
         
         startHeight += yOffset;
         fullHeight += yOffset;
-        
+
         if (vertexBuffer)
         {
             vertexBuffer[vertexAdded].position.x = startX;

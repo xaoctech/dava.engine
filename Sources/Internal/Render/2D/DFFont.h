@@ -38,7 +38,7 @@
 namespace DAVA
 {
 	
-#define DF_FONT_CACHE_SIZE 100	//text cache size
+#define DF_FONT_CACHE_SIZE 1000	//text cache size
 #define DF_FONT_INDEX_BUFFER_SIZE ((DF_FONT_CACHE_SIZE) * 6)
 	
 class DFFont: public Font
@@ -116,7 +116,9 @@ public:
                               int32 yOffset,
                               DFFontVertex* vertexBuffer,
                               int32& charDrawed,
-                              Vector<float32> *charSizes = NULL) const;
+                              Vector<float32> *charSizes = NULL,
+                              int32 justifyWidth = 0,
+                              int32 spaceAddon = 0) const;
     float32 GetSpread() const;
     
 protected:

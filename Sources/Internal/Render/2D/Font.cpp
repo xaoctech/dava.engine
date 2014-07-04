@@ -447,7 +447,7 @@ void Font::SplitTextToStrings(const WideString & text, const Vector2 & targetRec
 				    {
                     
                         //calculate current line width
-					    int currentLineWidth = 0;
+					    float32 currentLineWidth = 0;
 
 					    int32 startPos = (separator.IsLineInitialized()) ? separator.currentLineStart : 0;
 					    for (int i = startPos; i < pos ; i++)
