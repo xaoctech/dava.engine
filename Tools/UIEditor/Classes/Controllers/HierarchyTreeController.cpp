@@ -590,6 +590,15 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			platformNode->SetMarked(true);
 			platformNode->SetChildrenMarked(true);
+
+			FileList* platformFiles = new FileList(platformNode->GetPlatformFolder());
+			int32 filesCount = platformFiles->GetCount();
+			for (int32 i = 0; i < filesCount; i ++)
+			{
+				FileSystem::Instance()->LockFile(platformFiles->GetPathname(i), false);
+			}
+			platformFiles->Release();
+
 			FileSystem::Instance()->DeleteDirectory(platformNode->GetPlatformFolder(), true);
 		}
 	}
