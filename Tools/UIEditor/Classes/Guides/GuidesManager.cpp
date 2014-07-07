@@ -604,7 +604,11 @@ Vector2 GuidesManager::CalculateDistanceToGuide(GuideData::eGuideType guideType,
 
     if (stickMode & StickToCenters)
     {
-        Vector2 distanceToCenter = rect.GetCenter() - guidePos;
+        Vector2 rectCenter = rect.GetCenter();
+        rectCenter.x = Round(rectCenter.x);
+        rectCenter.y = Round(rectCenter.y);
+        Vector2 distanceToCenter = rectCenter - guidePos;
+
         switch (guideType)
         {
             case GuideData::Horizontal:
