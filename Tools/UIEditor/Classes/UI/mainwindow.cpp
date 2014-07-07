@@ -50,6 +50,7 @@
 #include "Dialogs/importdialog.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "Dialogs/previewsettingsdialog.h"
+#include "Dialogs/errorslistdialog.h"
 
 #include "ImportCommands.h"
 #include "AlignDistribute/AlignDistributeEnums.h"
@@ -623,6 +624,7 @@ void MainWindow::OnSelectedScreenChanged()
 	screenChangeUpdate = false;
 	UpdateMenu();
 	UpdateScreenPosition();
+    OnUndoRedoAvailabilityChanged();
 }
 
 void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
@@ -1130,8 +1132,7 @@ bool MainWindow::CheckAndUnlockProject(const QString& projectPath)
     }
 
     QMessageBox msgBox;
-    msgBox.setText(tr("File is locked"));
-    msgBox.setInformativeText(QString(tr("The project file %1 is locked by other user. Do you want to unlock it?").arg(projectPath)));
+    msgBox.setText(QString(tr("The project file %1 is locked by other user. Do you want to unlock it?").arg(projectPath)));
     QAbstractButton* unlockButton = msgBox.addButton(tr("Unlock"), QMessageBox::YesRole);
     msgBox.addButton(tr("Cancel"), QMessageBox::NoRole);
     msgBox.exec();
@@ -1145,8 +1146,7 @@ bool MainWindow::CheckAndUnlockProject(const QString& projectPath)
     if (!FileSystem::Instance()->LockFile(projectPath.toStdString(), false))
     {
         QMessageBox errorBox;
-        errorBox.setText(tr("File is locked"));
-        errorBox.setInformativeText(QString(tr("Unable to unlock project file %1. Please check whether the project is opened in another UIEditor and close it, if yes.").arg(projectPath)));
+        errorBox.setText(QString(tr("Unable to unlock project file %1. Please check whether the project is opened in another UIEditor and close it, if yes.").arg(projectPath)));
         errorBox.exec();
         
         return false;
@@ -1480,8 +1480,15 @@ void MainWindow::OnPixelizationStateChanged()
 void MainWindow::RepackAndReloadSprites()
 {
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
-    HierarchyTreeController::Instance()->RepackAndReloadSprites();
+    const Set<String>& errorsSet = HierarchyTreeController::Instance()->RepackAndReloadSprites();
     ScreenWrapper::Instance()->RestoreApplicationCursor();
+
+    if (!errorsSet.empty())
+	{
+		ErrorsListDialog errorsDialog;
+		errorsDialog.InitializeErrorsList(errorsSet);
+		errorsDialog.exec();
+	}
 }
 
 void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)
