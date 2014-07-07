@@ -143,6 +143,19 @@ void HierarchyTreeController::UpdateSelection(HierarchyTreePlatformNode* activeP
         
         LocalizationSystem::Instance()->Cleanup();
         activeScreen->Load(screenPath);
+      
+        // Update the screen aggregators after screen is loaded.
+        const HierarchyTreeNode::HIERARCHYTREENODESLIST& childNodes = activePlatform->GetChildNodes();
+        for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = childNodes.begin();
+             iter != childNodes.end(); iter ++)
+        {
+            HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(*iter);
+            if (aggregatorNode)
+            {
+                aggregatorNode->UpdateHierarchyTree();
+            }
+        }
+
         updateHierarchyTree = true;
 
         hierarchyTree.UpdateControlsData(activeScreen);
