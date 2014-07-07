@@ -76,7 +76,7 @@ private:
     int kerningCount;
 
     void SetDefaultParams();
-    void FillCharList();
+    bool FillCharList();
     void FillKerning();
     void LoadCharList(std::vector<int>& charList);
 
