@@ -44,6 +44,8 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
+#include "Beast/BeastProxy.h"
+
 class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
@@ -220,7 +222,7 @@ protected:
     
     void StartGlobalInvalidateTimer();
 
-	void RunBeast(const QString& outputPath);
+	void RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode);
 
 	bool IsAnySceneChanged();
 
