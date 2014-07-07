@@ -158,11 +158,6 @@ void SettingsManager::Load()
 	}
 
     SafeRelease(toLoad);
-    
-    //todo convert old settings to new gpu values
-    DAVA::VariantType oldGpu = GetValue(Settings::Internal_TextureViewGPU);
-    DAVA::VariantType newGpu = DAVA::VariantType(DAVA::GPUFamilyDescriptor::ConvertValueToGPU(oldGpu.AsInt32()));
-    SetValue(Settings::Internal_TextureViewGPU, newGpu);
 }
 
 void SettingsManager::Save()
@@ -201,5 +196,12 @@ void SettingsManager::ResetPerProjectSettings()
 void SettingsManager::ResetToDefault()
 {
     SettingsManager::Instance()->Init();
+}
+
+void SettingsManager::UpdateGPUSettings()
+{
+    DAVA::VariantType oldGpu = GetValue(Settings::Internal_TextureViewGPU);
+    DAVA::VariantType newGpu = DAVA::VariantType(DAVA::GPUFamilyDescriptor::ConvertValueToGPU(oldGpu.AsInt32()));
+    SetValue(Settings::Internal_TextureViewGPU, newGpu);
 }
 
