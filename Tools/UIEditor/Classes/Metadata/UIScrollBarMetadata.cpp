@@ -91,26 +91,9 @@ void UIScrollBarMetadata::SetUIScrollBarDelegateName(const QString& value)
         return;
     }
     String name = value.toStdString();
-    UIScrollBar* activeScrollBar = GetActiveUIScrollBar();
-    activeScrollBar->SetDelegateName(name);
-    if (value.toStdString()== "")
-    {
-        activeScrollBar->SetDelegate(NULL);
-        return;
-    }
-    UIControl * control = HierarchyTreeController::Instance()->GetActiveScreen()->GetScreen();
-    Vector<String> controlsPath;
-    Split(name, "/", controlsPath);
-    Vector<String>::iterator it_name = controlsPath.begin();
-    for (; it_name!=controlsPath.end(); ++it_name)
-    {
-        control = control->FindByName(*it_name,false);
-        if (NULL == control)
-        {
-            break;
-        }
-    }
-    activeScrollBar->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
+    UIControl * rootControl = HierarchyTreeController::Instance()->GetActiveScreen()->GetScreen();
+    UIControl * delegate = UIYamlLoader::GetControlByPath(name, rootControl);
+    GetActiveUIScrollBar()->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(delegate));
 }
 
 };

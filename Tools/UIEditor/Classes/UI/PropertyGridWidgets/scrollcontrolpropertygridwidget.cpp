@@ -85,6 +85,7 @@ void ScrollControlPropertyGridWidget::FillComboboxes()
         ui->orientationComboBox->addItem(ScrollPropertyGridWidgetHelper::GetOrientationDesc(i));
     }
     ui->scrollViewsComboBox->addItem(QString(""));
+    ui->scrollViewsComboBox->setItemData(0, "None",Qt::ToolTipRole);
     FillScrollViewsComboBox(HierarchyTreeController::Instance()->GetActiveScreen()->GetChildNodes());
 
     
@@ -100,19 +101,10 @@ void ScrollControlPropertyGridWidget::FillScrollViewsComboBox(const HierarchyTre
         UIScrollBarDelegate* scroll = dynamic_cast<UIScrollBarDelegate*>(control);
         if (NULL != scroll)
         {
-            QString delegatePath = QString::fromStdString(control->GetName());
-            UIControl * parent = control->GetParent();
-            while (parent)
-            {
-                QString parentName = QString::fromStdString(parent->GetName());
-                if (!parentName.isEmpty())
-                {
-                    parentName += "/";
-                    delegatePath = parentName += delegatePath;
-                }
-                parent = parent->GetParent();
-            }
-            ui->scrollViewsComboBox->addItem(delegatePath);
+            QString delegatePath = QString::fromStdString(UIYamlLoader::GetControlPath(control));
+            ui->scrollViewsComboBox->addItem(QString::fromStdString(control->GetName()));
+            uint32 itemCount = ui->scrollViewsComboBox->count();
+            ui->scrollViewsComboBox->setItemData(itemCount-1, delegatePath, Qt::ToolTipRole);
         }
         FillScrollViewsComboBox((*it)->GetChildNodes());
     }
@@ -135,7 +127,9 @@ void ScrollControlPropertyGridWidget::ProcessComboboxValueChanged(QComboBox* sen
 	}
     if (senderWidget == ui->scrollViewsComboBox)
     {
-        CustomProcessScrollViewValueChanged(iter, value);
+        int32 index = ui->scrollViewsComboBox->findText(value);
+        QVariant controlPath = ui->scrollViewsComboBox->itemData(index,Qt::ToolTipRole);
+        CustomProcessScrollViewValueChanged(iter, controlPath.toString());
         return;
     }
 
@@ -197,7 +191,7 @@ void ScrollControlPropertyGridWidget::UpdateComboBoxWidgetWithPropertyValue(QCom
         QString propertyValueName = PropertiesHelper::GetPropertyValue<QString>(this->activeMetadata, propertyName, isPropertyValueDiffers);
 	    UpdateWidgetPalette(comboBoxWidget, propertyName);
 		
-        SetComboboxSelectedItem(comboBoxWidget, propertyValueName);
+        SetComboboxSelectedItem(comboBoxWidget, propertyValueName, true);
 		return;
 	}
     // Not related to the custom combobox - call the generic one.

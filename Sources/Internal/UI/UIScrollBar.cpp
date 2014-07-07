@@ -56,42 +56,18 @@ void UIScrollBar::SetDelegate(UIScrollBarDelegate *newDelegate)
 {
     delegate = newDelegate;
 }
-    
-const String& UIScrollBar::GetDelegateName() 
+
+const String UIScrollBar::GetDelegateName() const
 {
+    String delegateName = "";
+    UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
     if (delegate)
     {
-        FixDelegateName();
+        delegateName = UIYamlLoader::GetControlPath(delegateControl);
     }
     return delegateName;
 }
     
-void UIScrollBar::FixDelegateName()
-{
- 
-    UIControl * control = dynamic_cast<UIControl*>( delegate );
-    if (control)
-    {
-        String delegatePath = control->GetName();
-        UIControl * parent = control->GetParent();
-        while (parent)
-        {
-            String parentName = parent->GetName();
-            if (parentName.length())
-            {
-                parentName += "/";
-                delegatePath = parentName += delegatePath;
-            }
-            parent=parent->GetParent();
-        }
-
-        delegateName = delegatePath;
-    }
-}
-void UIScrollBar::SetDelegateName(const String& name)
-{
-    delegateName = name;
-}
 
 UIControl *UIScrollBar::GetSlider()
 {
@@ -181,8 +157,8 @@ void UIScrollBar::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
     const YamlNode * delegateNode = node->Get("linkedScrollBar");
     if (delegateNode)
     {
-        delegateName = delegateNode->AsString();
-        loader->AddScrollBarToLink(this);
+        String delegatePath = delegateNode->AsString();
+        loader->AddScrollBarToLink(this,delegatePath);
     }
 }
 
@@ -213,8 +189,8 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 
     if (delegate)
     {
-        FixDelegateName();
-        node->Set("linkedScrollBar", delegateName);
+        UIControl* delegateControl = dynamic_cast<UIControl*>(delegate);
+        node->Set("linkedScrollBar", UIYamlLoader::GetControlPath(delegateControl));
     }
     
     
