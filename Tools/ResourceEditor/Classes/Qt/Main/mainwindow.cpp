@@ -112,7 +112,7 @@
 #include "Deprecated/SceneValidator.h"
 
 #include "Tools/DeveloperTools/DeveloperTools.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
@@ -2074,7 +2074,7 @@ void QtMainWindow::OnBeastAndSave()
 		return;
 	}
 
-    RunBeast(dlg.GetPath());
+    RunBeast(dlg.GetPath(), dlg.GetMode());
 	SaveScene(scene);
 
     scene->ClearAllCommands();
@@ -2126,7 +2126,7 @@ void QtMainWindow::OnCameraLookFromTop()
 	}
 }
 
-void QtMainWindow::RunBeast(const QString& outputPath)
+void QtMainWindow::RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode)
 {
 #if defined (__DAVAENGINE_BEAST__)
 
@@ -2134,9 +2134,12 @@ void QtMainWindow::RunBeast(const QString& outputPath)
 	if(!scene) return;
 
     const DAVA::FilePath path = outputPath.toStdString();
-    scene->Exec(new BeastAction(scene, path, beastWaitDialog));
+    scene->Exec(new BeastAction(scene, path, mode, beastWaitDialog));
 
-	OnReloadTextures();
+    if(mode == BeastProxy::MODE_LIGHTMAPS)
+    {
+	    OnReloadTextures();
+    }
 
 #endif //#if defined (__DAVAENGINE_BEAST__)
 }
@@ -2397,7 +2400,7 @@ void QtMainWindow::OnNotPassableTerrain()
 
 void QtMainWindow::OnGrasEditor()
 {
-    SceneEditor2* sceneEditor = GetCurrentScene();
+    /*SceneEditor2* sceneEditor = GetCurrentScene();
     if(!sceneEditor)
     {
         return;
@@ -2418,7 +2421,7 @@ void QtMainWindow::OnGrasEditor()
     {
         SceneSignals::Instance()->EmitGrassEditorToggled(sceneEditor);
         OnLandscapeEditorToggled(sceneEditor);
-    }
+    }*/
 }
 
 void QtMainWindow::OnBuildStaticOcclusion()

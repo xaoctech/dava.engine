@@ -26,52 +26,57 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#include "ReloadSpritesCommand.h"
+#ifndef __DAVAENGINE_RENDERBATCHPOOL_H__
+#define __DAVAENGINE_RENDERBATCHPOOL_H__
 
-#include "TexturePacker/ResourcePacker2D.h"
-#include "ResourcesManageHelper.h"
-#include "UIControlStateHelper.h"
-#include "SpritesHelper.h"
-#include "errorsListDialog.h"
+#include "Base/BaseTypes.h"
+#include "Base/BaseObject.h"
+#include "Base/FastName.h"
+#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
+#include "Render/Highlevel/Vegetation/VegetationMaterialTransformer.h"
 
-ReloadSpritesCommand::ReloadSpritesCommand(const HierarchyTreeNode* node) :
-    rootNode(node)
+
+namespace DAVA
 {
-}
 
-void ReloadSpritesCommand::Execute()
-{
-    RepackSprites();
-    ReloadSprites();
-}
+class RenderBatch;
+class NMaterial;
 
-void ReloadSpritesCommand::RepackSprites()
+/**
+ \brief Pool for render batch objects. The pool is used by vegetation render object.
+ */
+class RenderBatchPool
 {
-	ResourcePacker2D *resPacker = new ResourcePacker2D();
-	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
-                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
+public:
+
+    RenderBatchPool();
+    ~RenderBatchPool();
+
+    void Init(NMaterial* key, uint32 initialCount, VegetationMaterialTransformer* transform);
+    void Clear();
+    RenderBatch* Get(NMaterial* key, VegetationMaterialTransformer* transform);
+    void Return(NMaterial* key, uint32 count);
+    void ReturnAll(NMaterial* key);
+    void ReturnAll();
     
-    resPacker->PackResources(GPU_UNKNOWN);
-	ShowErrorMessage(resPacker->GetErrors());
-    
-	SafeDelete(resPacker);
-}
+private:
 
-void ReloadSpritesCommand::ReloadSprites()
-{
-    Set<Sprite*> spritesToReload = SpritesHelper::EnumerateSprites(rootNode);
-    for (Set<Sprite*>::iterator iter = spritesToReload.begin(); iter != spritesToReload.end(); iter ++)
+    struct RenderBatchPoolEntry
     {
-        (*iter)->Reload();
-    }
+        RenderBatchPoolEntry();
+        ~RenderBatchPoolEntry();
+        
+        Vector<RenderBatch*> renderBatches;
+        int32 poolLine;
+    };
+    
+    HashMap<NMaterial*, RenderBatchPoolEntry*> pool;
+    
+    void ReleasePool();
+    RenderBatch* CreateRenderBatch(NMaterial* mat, RenderBatchPoolEntry* entry, VegetationMaterialTransformer* transform);
+};
+
 }
 
-void ReloadSpritesCommand::ShowErrorMessage(const Set<String>& errorsSet)
-{
-	if (!errorsSet.empty())
-	{
-		ErrorsListDialog errorsDialog;
-		errorsDialog.InitializeErrorsList(errorsSet);
-		errorsDialog.exec();
-	}
-}
+#endif /* defined(__DAVAENGINE_RENDERBATCHPOOL_H__) */
