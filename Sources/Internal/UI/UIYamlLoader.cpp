@@ -471,11 +471,11 @@ void UIYamlLoader::PostLoad(UIControl * rootControl)
 
 void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl)
 {
-    List<UIScrollBar*>::iterator it = scrollsToLink.begin();
+    Map<UIScrollBar*,String>::iterator it = scrollsToLink.begin();
     for (; it!=scrollsToLink.end(); ++it)
     {
         Vector<String> controlsPath;
-        Split((*it)->GetDelegateName(), "/", controlsPath);
+        Split(it->second, "/", controlsPath);
         Vector<String>::iterator it_name = controlsPath.begin();
         UIControl * control = rootControl;
         for (; it_name!=controlsPath.end(); ++it_name)
@@ -486,7 +486,7 @@ void UIYamlLoader::SetScrollBarDelegates(UIControl * rootControl)
                 break;
             }
         }
-        (*it)->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
+        it->first->SetDelegate( dynamic_cast<UIScrollBarDelegate*>(control));
     }
     scrollsToLink.clear();
 }
@@ -740,9 +740,47 @@ const FilePath & UIYamlLoader::GetCurrentPath() const
 	return currentPath;
 }
 
-void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll)
+void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll, String& delegatePath)
 {
-    scrollsToLink.push_back(scroll);
+    scrollsToLink.insert(std::pair<UIScrollBar*,String>(scroll,delegatePath));
+}
+    
+String UIYamlLoader::GetControlPath(UIControl* control)
+{
+    String controlPath = "";
+    if (control)
+    {
+        controlPath = control->GetName();
+        UIControl * parent = control->GetParent();
+        while (parent)
+        {
+            String parentName = parent->GetName();
+            if (parentName.length())
+            {
+                parentName += "/";
+                controlPath = parentName += controlPath;
+            }
+            parent=parent->GetParent();
+        }
+    }
+    return controlPath;
+}
+    
+UIControl* UIYamlLoader::GetControlByPath(const String& controlPath, UIControl* rootControl)
+{
+    UIControl* control = rootControl;
+    Vector<String> controlNames;
+    Split(controlPath, "/", controlNames);
+    Vector<String>::const_iterator it_name = controlNames.begin();
+    for (; it_name!=controlNames.end(); ++it_name)
+    {
+        control = control->FindByName(*it_name,false);
+        if (NULL == control)
+        {
+            break;
+        }
+    }
+    return control;
 }
 	
 }
