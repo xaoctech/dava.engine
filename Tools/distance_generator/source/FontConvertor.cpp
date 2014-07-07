@@ -136,7 +136,10 @@ bool FontConvertor::Convert()
     }
 
     font.SetCharMap(params.charmap);
-    FillCharList();
+    if (!FillCharList())
+    {
+        return false;
+    }
 
     bool ok = true;
     switch (params.mode)
@@ -340,7 +343,7 @@ void FontConvertor::FillKerning()
     cout << kerningCount << " kerning pairs found" << endl << endl;
 }
 
-void FontConvertor::FillCharList()
+bool FontConvertor::FillCharList()
 {
     cout << "Preparing char list...";
 
@@ -401,10 +404,16 @@ void FontConvertor::FillCharList()
             }
         }
     }
+    else
+    {
+        cerr << "Font doesn't contain question mark. This font could not be converted." << endl;
+        return false;
+    }
 
     font.SetSize(oldSize);
 
     cout << " " << charGlyphPairs.size() << " characters found" << endl << endl;
+    return true;
 }
 
 void FontConvertor::LoadCharList(vector<int>& charList)
