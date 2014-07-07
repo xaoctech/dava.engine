@@ -26,52 +26,60 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#include "ReloadSpritesCommand.h"
+#include "Render/Material/NMaterial.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderData.h"
 
-#include "TexturePacker/ResourcePacker2D.h"
-#include "ResourcesManageHelper.h"
-#include "UIControlStateHelper.h"
-#include "SpritesHelper.h"
-#include "errorsListDialog.h"
-
-ReloadSpritesCommand::ReloadSpritesCommand(const HierarchyTreeNode* node) :
-    rootNode(node)
+namespace DAVA
+{
+VegetationRenderData::VegetationRenderData() :
+    vertexRenderDataObject(NULL),
+    material(NULL)
 {
 }
-
-void ReloadSpritesCommand::Execute()
-{
-    RepackSprites();
-    ReloadSprites();
-}
-
-void ReloadSpritesCommand::RepackSprites()
-{
-	ResourcePacker2D *resPacker = new ResourcePacker2D();
-	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
-                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
     
-    resPacker->PackResources(GPU_UNKNOWN);
-	ShowErrorMessage(resPacker->GetErrors());
-    
-	SafeDelete(resPacker);
-}
-
-void ReloadSpritesCommand::ReloadSprites()
+VegetationRenderData::~VegetationRenderData()
 {
-    Set<Sprite*> spritesToReload = SpritesHelper::EnumerateSprites(rootNode);
-    for (Set<Sprite*>::iterator iter = spritesToReload.begin(); iter != spritesToReload.end(); iter ++)
+    SafeRelease(material);
+    ReleaseRenderData();
+}
+    
+void VegetationRenderData::CreateRenderData()
+{
+    DVASSERT(NULL == vertexRenderDataObject);
+    vertexRenderDataObject = new RenderDataObject();
+}
+    
+void VegetationRenderData::ReleaseRenderData()
+{
+    size_t indexBufferResolutionCount = indexRenderDataObject.size();
+    for(size_t indexBufferIndex = 0; indexBufferIndex < indexBufferResolutionCount; ++indexBufferIndex)
     {
-        (*iter)->Reload();
+        Vector<Vector<VegetationSortedBufferItem> >& indexBufferArray = indexRenderDataObject[indexBufferIndex];
+        size_t indexObjectCount = indexBufferArray.size();
+        for(size_t i = 0; i < indexObjectCount; ++i)
+        {
+            Vector<VegetationSortedBufferItem>& directionArray = indexBufferArray[i];
+                
+            size_t directionBufferCount = directionArray.size();
+            for(size_t directionIndex = 0; directionIndex < directionBufferCount; ++directionIndex)
+            {
+                if(directionArray[directionIndex].rdo->HasVertexAttachment())
+                {
+                    directionArray[directionIndex].rdo->DetachVertices();
+                }
+            }
+                
+            directionArray.clear();
+        }
+        
+        indexBufferArray.clear();
     }
+    indexRenderDataObject.clear();
+        
+    SafeRelease(vertexRenderDataObject);
+        
+    vertexData.clear();
+    indexData.clear();
 }
 
-void ReloadSpritesCommand::ShowErrorMessage(const Set<String>& errorsSet)
-{
-	if (!errorsSet.empty())
-	{
-		ErrorsListDialog errorsDialog;
-		errorsDialog.InitializeErrorsList(errorsSet);
-		errorsDialog.exec();
-	}
 }
