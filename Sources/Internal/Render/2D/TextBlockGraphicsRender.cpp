@@ -47,7 +47,6 @@ void TextBlockGraphicsRender::Prepare()
 	TextBlockRender::Prepare();
 	
 	isPredrawed = false;
-    DVASSERT(FALSE);
 	sprite = Sprite::CreateAsRenderTarget(textBlock->cacheFinalSize.dx, textBlock->cacheFinalSize.dy, FORMAT_RGBA8888);
 	if (sprite && sprite->GetTexture())
 	{
