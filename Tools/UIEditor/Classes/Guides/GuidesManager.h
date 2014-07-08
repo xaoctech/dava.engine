@@ -68,6 +68,7 @@ public:
     Vector2 GetMoveGuideStartPos() const;
     const GuideData* GetMoveGuide() const;
     const GuideData* AcceptMoveGuide();
+    const GuideData* CancelMoveGuide();
 
     // Selected guides.
     bool AreGuidesSelected() const;
@@ -98,7 +99,8 @@ public:
     // Get the stick treshold.
     int32 GetGuideStickTreshold() const;
 
-    // Set the stick mode.
+    // Get/Set the stick mode.
+    int32 GetStickMode() const;
     void SetStickMode(int32 mode);
 
     // Enable/disable guides.

@@ -59,6 +59,7 @@ const FastName NMaterial::TEXTURE_DETAIL("detail");
 const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
+const FastName NMaterial::TEXTURE_HEIGHTMAP("heightmap");
 
 const FastName NMaterial::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
 const FastName NMaterial::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
@@ -81,9 +82,6 @@ const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
 const FastName NMaterial::PARAM_UV_SCALE("uvScale");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL("treeLeafColorMul");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL("treeLeafOcclusionMul");
-const FastName NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET("treeLeafOcclusionOffset");
 const FastName NMaterial::PARAM_LIGHTMAP_SIZE("lightmapSize");
 
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
@@ -97,11 +95,12 @@ const FastName NMaterial::FLAG_TEXTURESHIFT = FastName("TEXTURE0_SHIFT_ENABLED")
 const FastName NMaterial::FLAG_TEXTURE0_ANIMATION_SHIFT = FastName("TEXTURE0_ANIMATION_SHIFT");
 const FastName NMaterial::FLAG_WAVE_ANIMATION = FastName("WAVE_ANIMATION");
 const FastName NMaterial::FLAG_FAST_NORMALIZATION = FastName("FAST_NORMALIZATION");
-const FastName NMaterial::FLAG_PRECOMPUTED_BINORMAL = FastName("PRECOMPUTED_BINORMAL");
 
 const FastName NMaterial::FLAG_FLATCOLOR = FastName("FLATCOLOR");
 const FastName NMaterial::FLAG_DISTANCEATTENUATION = FastName("DISTANCE_ATTENUATION");
 const FastName NMaterial::FLAG_SPECULAR = FastName("SPECULAR");
+
+const FastName NMaterial::FLAG_SPHERICAL_LIT = FastName("SPHERICAL_LIT");
 
 const FastName NMaterial::FLAG_TANGENT_SPACE_WATER_REFLECTIONS = FastName("TANGENT_SPACE_WATER_REFLECTIONS");
 
@@ -153,7 +152,8 @@ static FastName RUNTIME_ONLY_PROPERTIES[] =
 static FastName RUNTIME_ONLY_TEXTURES[] =
 {
     NMaterial::TEXTURE_DYNAMIC_REFLECTION,
-    NMaterial::TEXTURE_DYNAMIC_REFRACTION
+    NMaterial::TEXTURE_DYNAMIC_REFRACTION,
+    NMaterial::TEXTURE_HEIGHTMAP
 };
 
 const FastName NMaterial::DEFAULT_QUALITY_NAME = FastName("Normal");
@@ -206,7 +206,7 @@ NMaterial::NMaterial() :
 materialType(NMaterial::MATERIALTYPE_NONE),
 materialKey(0),
 parent(NULL),
-requiredVertexFormat(EVF_FORCE_DWORD),
+requiredVertexFormat(0),
 lightCount(0),
 illuminationParams(NULL),
 materialSetFlags(8),
@@ -215,7 +215,7 @@ activePassInstance(NULL),
 activeRenderPass(NULL),
 instancePasses(4),
 textures(8),
-materialDynamicLit(false),
+dynamicBindFlags(0),
 materialTemplate(NULL),
 materialProperties(16),
 instancePassRenderStates(4),
@@ -669,6 +669,10 @@ NMaterial* NMaterial::Clone()
 	{
 		clonedMaterial = NMaterial::CreateMaterialInstance();
 	}
+    else if(NMaterial::MATERIALTYPE_GLOBAL == materialType)
+    {
+        clonedMaterial = NMaterial::CreateGlobalMaterial(materialName);
+    }
 	else
 	{
 		DVASSERT(false && "Material is not initialized properly!");
@@ -1153,6 +1157,7 @@ void NMaterial::UpdateMaterialTemplate()
         DVASSERT(baseTechnique);
     }
 	
+    requiredVertexFormat = 0;
 	uint32 passCount = baseTechnique->GetPassCount();
 	for(uint32 i = 0; i < passCount; ++i)
 	{
@@ -1165,19 +1170,14 @@ void NMaterial::UpdateMaterialTemplate()
 	SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 
     //{VI: temporray code should be removed once lighting system is up
-    materialDynamicLit = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0);
 
-    if(!materialDynamicLit)
+    dynamicBindFlags = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0) ? DYNAMIC_BIND_LIGHT : 0;
+    for(uint32 i = 0; i < passCount; ++i)
     {
-        uint32 passCount = baseTechnique->GetPassCount();
-        for(uint32 i = 0; i < passCount; ++i)
-        {
-            RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
-            const FastNameSet& defines = pass->GetUniqueDefineSet();
-            materialDynamicLit = materialDynamicLit ||
-                defines.count(DEFINE_VERTEX_LIT) ||
-                defines.count(DEFINE_PIXEL_LIT);
-        }
+        RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
+        const FastNameSet& defines = pass->GetUniqueDefineSet();
+        dynamicBindFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT) || defines.count(FLAG_SPHERICAL_LIT)) ? DYNAMIC_BIND_LIGHT : 0;
+        dynamicBindFlags |= defines.count(FLAG_SPHERICAL_LIT) ? DYNAMIC_BIND_OBJECT_CENTER : 0;
     }
 }
 
@@ -1204,6 +1204,7 @@ void NMaterial::UpdateRenderPass(const FastName& passName,
 	
 	Shader* shader = pass->CompileShader(instanceDefines);
 	passInstance->SetShader(shader);
+    requiredVertexFormat |= shader->GetRequiredVertexFormat();
 	SafeRelease(shader);
 	
 	passInstance->SetRenderer(parentRenderState->renderer);
@@ -1587,11 +1588,11 @@ void NMaterial::Draw(PolygonGroup * polygonGroup)
 	// TODO: rethink this code
 	if(polygonGroup->renderDataObject->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), 0);
 	}
 	else
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, EIF_16, polygonGroup->indexArray);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, polygonGroup->indexCount, polygonGroup->renderDataObject->GetIndexFormat(), polygonGroup->indexArray);
 	}
 }
 
@@ -1607,13 +1608,13 @@ void NMaterial::Draw(RenderDataObject* renderData, uint16* indices, uint16 index
 	// TODO: rethink this code
 	if(renderData->GetIndexBufferID() != 0)
 	{
-		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, 0);
+		RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, renderData->GetIndexFormat(), 0);
 	}
 	else
 	{
 		if(renderData->indexCount)
 		{
-			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, EIF_16, renderData->indices);
+			RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, renderData->indexCount, renderData->GetIndexFormat(), renderData->indices);
 		}
 		else
 		{
@@ -1757,6 +1758,7 @@ void NMaterial::SubclassRenderState(RenderStateData& newState)
 
 void NMaterial::UpdateShaderWithFlags()
 {
+    requiredVertexFormat = 0;
 	if(baseTechnique)
 	{
 		FastNameSet effectiveFlags(16);
@@ -1771,10 +1773,11 @@ void NMaterial::UpdateShaderWithFlags()
 			
 			Shader* shader = techniquePass->CompileShader(effectiveFlags);
 			pass->SetShader(shader);
+            requiredVertexFormat |= shader->GetRequiredVertexFormat();
 			SafeRelease(shader);
 			
             BuildTextureParamsCache(pass);
-			BuildActiveUniformsCacheParamsCache(pass);
+			BuildActiveUniformsCacheParamsCache(pass);                            
 		}
 	}
 
@@ -2311,7 +2314,6 @@ const FastNameMap<NMaterial::NMaterialStateDynamicPropertiesInsp::PropData>* NMa
 						 shaderSemantic == PARAM_PROJ ||
 						 shaderSemantic == PARAM_WORLD_VIEW_INV_TRANSPOSE ||
 						 shaderSemantic == PARAM_GLOBAL_TIME ||
-						 shaderSemantic == PARAM_WORLD_VIEW_TRANSLATE ||
 						 shaderSemantic == PARAM_WORLD_SCALE)
 					   // <--
 					   &&
@@ -2688,7 +2690,7 @@ void NMaterial::NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object
 					
 				case Shader::UT_FLOAT_MAT4:
 				{
-					const Matrix3& val = value.AsMatrix3();
+					const Matrix4& val = value.AsMatrix4();
 					state->SetPropertyValue(member, propType, propSize, &val);
 				}
 					break;
@@ -2727,9 +2729,7 @@ Vector<FastName> NMaterial::NMaterialStateDynamicFlagsInsp::MembersList(void *ob
 		ret.push_back(FLAG_TEXTURE0_ANIMATION_SHIFT);
 
 		ret.push_back(FLAG_WAVE_ANIMATION);
-		ret.push_back(FLAG_FAST_NORMALIZATION);
-
-        ret.push_back(FLAG_PRECOMPUTED_BINORMAL);
+		ret.push_back(FLAG_FAST_NORMALIZATION);        
 
 		ret.push_back(FLAG_SPECULAR);
 		ret.push_back(FLAG_TANGENT_SPACE_WATER_REFLECTIONS);

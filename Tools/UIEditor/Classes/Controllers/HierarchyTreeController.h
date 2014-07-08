@@ -136,10 +136,11 @@ public:
 
     const HierarchyTree& GetTree() const {return hierarchyTree;};
     
-	void UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
-						 const HierarchyTreeScreenNode* activeScreen);
+	void UpdateSelection(HierarchyTreePlatformNode* activePlatform,
+                         HierarchyTreeScreenNode* activeScreen);
 
 	void UpdateSelection(const HierarchyTreeNode* activeItem);
+    void UpdateAggregators(const HierarchyTreePlatformNode* platform);
 	
 	void ChangeItemSelection(HierarchyTreeControlNode* control);
 	void SelectControl(HierarchyTreeControlNode* control);
@@ -174,8 +175,8 @@ public:
 	// Adjust control size logic
 	void AdjustSelectedControlsSize();
 
-    // Repack and reload sprites.
-    void RepackAndReloadSprites();
+    // Repack and reload sprites, return repacking errors.
+    Set<String> RepackAndReloadSprites();
     
     // Preview mode control.
     void EnablePreview(const PreviewSettingsData& data, bool applyScale);
@@ -262,6 +263,9 @@ protected:
     
     // List of unused items to be deleted.
     List<BaseUnusedItem*> unusedItems;
+    
+    // List of loaded screens
+    List<HierarchyTreeScreenNode*> loadedScreenList;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeController__) */

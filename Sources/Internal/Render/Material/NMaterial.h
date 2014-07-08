@@ -158,6 +158,7 @@ public:
     static const FastName TEXTURE_LIGHTMAP;
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
+    static const FastName TEXTURE_HEIGHTMAP;
     
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
@@ -180,11 +181,8 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
-    static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
-    static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
-	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
     static const FastName PARAM_LIGHTMAP_SIZE;
-    
+
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
     
@@ -194,12 +192,13 @@ public:
 	static const FastName FLAG_TEXTURESHIFT;
 	static const FastName FLAG_TEXTURE0_ANIMATION_SHIFT;
 	static const FastName FLAG_WAVE_ANIMATION;
-	static const FastName FLAG_FAST_NORMALIZATION;
-    static const FastName FLAG_PRECOMPUTED_BINORMAL;
+	static const FastName FLAG_FAST_NORMALIZATION;    
     
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
+
+    static const FastName FLAG_SPHERICAL_LIT;
 
     static const FastName FLAG_TANGENT_SPACE_WATER_REFLECTIONS;
     
@@ -232,6 +231,12 @@ public:
         FlagInherited = 2 //VI: this bit is set for flags inherited from the parent
 	};
 	
+    enum eDynamicBindFlags
+    {
+        DYNAMIC_BIND_LIGHT = 1 << 0,
+        DYNAMIC_BIND_OBJECT_CENTER = 1 << 1
+    };
+
 public:
 	
 	NMaterial();
@@ -257,7 +262,7 @@ public:
 //    uint32 GetLightCount() { return lightCount; };
 //    void SetLight(uint32 index, Light * light, bool forceUpdate);
 //    Light * GetLight(uint32 index) { return lights[index]; };
-	inline bool IsDynamicLit() {return materialDynamicLit;}
+	inline uint8 GetDynamicBindFlags() const {return dynamicBindFlags;}
 	//}END TODO
 	
     void Draw(PolygonGroup * polygonGroup);
@@ -495,8 +500,9 @@ protected:
 	//setting properties via special setters
     uint32 lightCount;
     Light * lights[8];
-	bool materialDynamicLit;
 	//}END TODO
+    
+    uint8 dynamicBindFlags;
 
 	uint16 materialSortKey; //VI: depends on baseTechnique
 	RenderTechnique* baseTechnique;
