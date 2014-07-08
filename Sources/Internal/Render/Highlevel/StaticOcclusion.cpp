@@ -336,7 +336,7 @@ void StaticOcclusion::RenderFrame(uint32 cellX, uint32 cellY, uint32 cellZ)
                     staticOcclusionRenderPass->SetOcclusionCamera(camera);
                     staticOcclusionRenderPass->SetIndex(side, stepX, stepY, effectiveSides[side][realSideIndex] == side);
                     
-                    staticOcclusionRenderPass->Draw(renderSystem, true);
+                    staticOcclusionRenderPass->Draw(renderSystem, RenderManager::ALL_BUFFERS);
 
                     timeRendering = SystemTimer::Instance()->GetAbsoluteNano() - timeRendering;
                     timeTotalRendering += timeRendering;
