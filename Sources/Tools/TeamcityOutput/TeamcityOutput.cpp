@@ -50,7 +50,7 @@ void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
     {
     case Logger::LEVEL_INFO:
         case Logger::LEVEL_ERROR:
-            output = "##teamcity[buildProblem description='ERROR: " + outStr + "']";
+            output = "##teamcity[buildProblem description=\'ERROR: " + outStr + "\']";
             break;
 
         case Logger::LEVEL_WARNING:
