@@ -178,6 +178,7 @@ public:
     static const FastName TEXTURE_LIGHTMAP;
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
+    static const FastName TEXTURE_HEIGHTMAP;
     
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
@@ -200,9 +201,6 @@ public:
 	static const FastName PARAM_TEXTURE0_SHIFT;
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
-    static const FastName PARAM_SPEED_TREE_LEAF_COLOR_MUL;
-    static const FastName PARAM_SPEED_TREE_LEAF_OCC_MUL;
-	static const FastName PARAM_SPEED_TREE_LEAF_OCC_OFFSET;
     static const FastName PARAM_LIGHTMAP_SIZE;
 
     static const FastName PARAM_RCP_SCREEN_SIZE;
@@ -219,6 +217,8 @@ public:
 	static const FastName FLAG_FLATCOLOR;
     static const FastName FLAG_DISTANCEATTENUATION;
     static const FastName FLAG_SPECULAR;
+
+    static const FastName FLAG_SPHERICAL_LIT;
 
     static const FastName FLAG_TANGENT_SPACE_WATER_REFLECTIONS;
     
@@ -251,6 +251,12 @@ public:
         FlagInherited = 2 //VI: this bit is set for flags inherited from the parent
 	};
 	
+    enum eDynamicBindFlags
+    {
+        DYNAMIC_BIND_LIGHT = 1 << 0,
+        DYNAMIC_BIND_OBJECT_CENTER = 1 << 1
+    };
+
 public:
 	
 	NMaterial();
@@ -286,12 +292,7 @@ public:
 			
 	//{TODO: these should be removed and changed to a generic system
 	//setting properties via special setters
-    
-    /**
-	 \brief Indicates if the material is affected by dynamic lighting.
-	 \returns true if material should be processed by lighting calculation methods.
-	 */
-	inline bool IsDynamicLit() {return materialDynamicLit;}
+	inline uint8 GetDynamicBindFlags() const;
 	//}END TODO
 	
     /**
@@ -804,8 +805,9 @@ protected:
 	//setting properties via special setters
     uint32 lightCount;
     Light * lights[8];
-	bool materialDynamicLit;
 	//}END TODO
+    
+    uint8 dynamicBindFlags;
 
 	uint16 materialSortKey; //VI: depends on baseTechnique
 	RenderTechnique* baseTechnique;
@@ -1094,6 +1096,11 @@ inline uint32 NMaterial::GetRenderLayerIDsBitmask() const
 inline const NMaterialTemplate* NMaterial::GetMaterialTemplate() const
 {
     return materialTemplate;
+}
+
+inline uint8 NMaterial::GetDynamicBindFlags() const
+{
+    return dynamicBindFlags;
 }
 
 inline IlluminationParams::IlluminationParams(NMaterial* parentMaterial) :

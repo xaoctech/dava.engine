@@ -35,6 +35,7 @@
 
 // framework
 #include "FileSystem/KeyedArchive.h"
+#include "FileSystem/VariantType.h"
 #include "Render/RenderBase.h"
 
 #define SETTINGS_CONFIG_FILE "~doc:/ResourceEditorOptions.archive"
@@ -86,13 +87,14 @@ void SettingsManager::Init()
 	CreateValue(Settings::Internal_EditorVersion, DAVA::VariantType(DAVA::String("local build")));
 	CreateValue(Settings::Internal_CubemapLastFaceDir, DAVA::VariantType(DAVA::FilePath()));
 	CreateValue(Settings::Internal_CubemapLastProjDir, DAVA::VariantType(DAVA::FilePath()));
+    CreateValue(Settings::Internal_ParticleLastEmitterDir, DAVA::VariantType(DAVA::FilePath()));
 
 	CreateValue(Settings::Internal_RecentFiles, DAVA::VariantType((DAVA::KeyedArchive *) NULL));
     CreateValue(Settings::Internal_MaterialsLightViewMode, DAVA::VariantType((DAVA::int32) EditorMaterialSystem::LIGHTVIEW_ALL));
     CreateValue(Settings::Internal_MaterialsShowLightmapCanvas, DAVA::VariantType((bool) false));
     CreateValue(Settings::Internal_LicenceAccepted, DAVA::VariantType((bool) false));
 	CreateValue(Settings::Internal_LODEditorMode, DAVA::VariantType((bool) false));
-
+    CreateValue(DAVA::FastName("Internal/RunActionEventWidget/CurrentType"), DAVA::VariantType((DAVA::uint32)0));
     CreateValue(DAVA::FastName("Internal/Beast/LightmapsDefaultDir"), DAVA::VariantType(DAVA::String("lightmaps")));
 }
 
@@ -184,6 +186,11 @@ void SettingsManager::CreateValue(const DAVA::FastName& pathName, const DAVA::Va
     settingsMap[pathName].desc = description;
 
     settingsOrder.push_back(pathName);
+}
+
+void SettingsManager::ResetPerProjectSettings()
+{
+    SetValue(Settings::Internal_ParticleLastEmitterDir, DAVA::VariantType(DAVA::FilePath()));
 }
 
 void SettingsManager::ResetToDefault()

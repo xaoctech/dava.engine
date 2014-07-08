@@ -115,7 +115,6 @@ const FastNameMap<NMaterialStateDynamicPropertiesInsp::PropData>* NMaterialState
                          shaderSemantic == PARAM_PROJ ||
                          shaderSemantic == PARAM_WORLD_VIEW_INV_TRANSPOSE ||
                          shaderSemantic == PARAM_GLOBAL_TIME ||
-                         shaderSemantic == PARAM_WORLD_VIEW_TRANSLATE ||
                          shaderSemantic == PARAM_WORLD_SCALE)
                        // <--
                        &&
@@ -360,17 +359,6 @@ VariantType NMaterialStateDynamicPropertiesInsp::GetVariant(const FastName &prop
 bool NMaterialStateDynamicPropertiesInsp::IsColor(const FastName &propName) const
 {
     return (NULL != strstr(propName.c_str(), "Color"));
-    
-    // 		return (propName == NMaterial::PARAM_PROP_AMBIENT_COLOR ||
-    // 				propName == NMaterial::PARAM_PROP_DIFFUSE_COLOR ||
-    // 				propName == NMaterial::PARAM_PROP_SPECULAR_COLOR ||
-    // 				propName == NMaterial::PARAM_FOG_COLOR ||
-    // 				propName == NMaterial::PARAM_FLAT_COLOR ||
-    //                 propName == NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL ||
-    //                 propName == Landscape::PARAM_TILE_COLOR0 ||
-    //                 propName == Landscape::PARAM_TILE_COLOR1 ||
-    //                 propName == Landscape::PARAM_TILE_COLOR2 ||
-    //                 propName == Landscape::PARAM_TILE_COLOR3);
 }
 
 void NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const FastName &member, const VariantType &value)
@@ -492,7 +480,7 @@ void NMaterialStateDynamicPropertiesInsp::MemberValueSet(void *object, const Fas
                     
                 case Shader::UT_FLOAT_MAT4:
                 {
-                    const Matrix3& val = value.AsMatrix3();
+                    const Matrix4& val = value.AsMatrix4();
                     state->SetPropertyValue(member, propType, propSize, &val);
                 }
                     break;
