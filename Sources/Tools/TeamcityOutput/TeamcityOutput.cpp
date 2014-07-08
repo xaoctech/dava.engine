@@ -92,18 +92,6 @@ void TeamcityOutput::PlatformOutput(const String &text) const
 {
     std::cout << text << std::endl;
 }
-
-//#if defined (__DAVAENGINE_WIN32__)
-//void TeamcityOutput::PlatformOutput(const String &text) const
-//{
-//    OutputDebugStringA(text.c_str());
-//}
-//#elif defined(__DAVAENGINE_MACOS__)
-//void TeamcityOutput::PlatformOutput(const String &text) const
-//{
-//    std::cerr << text << std::endl;
-//}
-//#endif
     
 }; // end of namespace DAVA
 

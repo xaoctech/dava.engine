@@ -106,10 +106,6 @@ void GameCore::OnAppStarted()
 	Logger::AddCustomOutput(out);
 #endif
 
-    Logger::Instance()->Log(Logger::LEVEL_INFO, "Logger LEVEL_INFO debug");
-    Logger::Instance()->Log(Logger::LEVEL_WARNING, "Logger LEVEL_WARNING debug");
-    Logger::Instance()->Log(Logger::LEVEL_ERROR, "Logger LEVEL_ERROR debug");
-
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
