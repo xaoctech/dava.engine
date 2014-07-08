@@ -151,6 +151,7 @@ int SceneTabWidget::OpenTab()
 {
 	QtMainWindow::Instance()->WaitStart("Opening scene...", "Creating new scene.");
 	SceneEditor2 *scene = new SceneEditor2();
+    scene->SetClearBuffers(RenderManager::DEPTH_BUFFER | RenderManager::STENCIL_BUFFER);
 
 	DAVA::FilePath newScenePath = (QString("newscene") + QString::number(++newSceneCounter)).toStdString();
 	newScenePath.ReplaceExtension(".sc2");
@@ -180,6 +181,7 @@ int SceneTabWidget::OpenTab(const DAVA::FilePath &scenePapth)
 	}
 
 	SceneEditor2 *scene = new SceneEditor2();
+    scene->SetClearBuffers(RenderManager::DEPTH_BUFFER | RenderManager::STENCIL_BUFFER);
 	if(scene->Load(scenePapth))
 	{
 		tabIndex = tabBar->addTab(scenePapth.GetFilename().c_str());
