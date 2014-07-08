@@ -106,6 +106,8 @@ void GameCore::OnAppStarted()
 	Logger::AddCustomOutput(out);
 #endif
 
+    Logger::Instance()->Log(Logger::LEVEL_ERROR, "Test error message there");
+
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
