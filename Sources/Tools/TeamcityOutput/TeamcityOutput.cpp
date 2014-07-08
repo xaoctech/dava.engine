@@ -87,18 +87,23 @@ String TeamcityOutput::NormalizeString(const char8 *text) const
     
     return str;
 }
-	
-#if defined (__DAVAENGINE_WIN32__)
+
 void TeamcityOutput::PlatformOutput(const String &text) const
 {
-    OutputDebugStringA(text.c_str());
+    std::cerr << text << std::endl;
 }
-#elif defined(__DAVAENGINE_MACOS__)
-void TeamcityOutput::PlatformOutput(const String &text) const
-{
-    std::err << text << std::endl;
-}
-#endif
+
+//#if defined (__DAVAENGINE_WIN32__)
+//void TeamcityOutput::PlatformOutput(const String &text) const
+//{
+//    OutputDebugStringA(text.c_str());
+//}
+//#elif defined(__DAVAENGINE_MACOS__)
+//void TeamcityOutput::PlatformOutput(const String &text) const
+//{
+//    std::cerr << text << std::endl;
+//}
+//#endif
     
 }; // end of namespace DAVA
 
