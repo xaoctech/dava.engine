@@ -48,20 +48,19 @@ void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
     
     switch (ll)
     {
-    case Logger::LEVEL_INFO:
-        case Logger::LEVEL_ERROR:
-			status = "ERROR";
-            output = "##teamcity[buildProblem description=\'ERROR: " + outStr + "\']";
-            PlatformOutput(output);
-            break;
+    case Logger::LEVEL_ERROR:
+		status = "ERROR";
+        output = "##teamcity[buildProblem description=\'ERROR: " + outStr + "\']";
+        PlatformOutput(output);
+        break;
 
-        case Logger::LEVEL_WARNING:
-			status = "WARNING";
-            break;
+    case Logger::LEVEL_WARNING:
+		status = "WARNING";
+        break;
             
-        default:
-            status = "NORMAL";
-            break;
+    default:
+        status = "NORMAL";
+        break;
     }
 
     output = "##teamcity[message text=\'" + outStr + "\' errorDetails=\'\' status=\'" + status + "\']\n";
