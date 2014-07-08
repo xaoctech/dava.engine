@@ -107,6 +107,8 @@ void GameCore::OnAppStarted()
 #endif
 
     Logger::Instance()->Log(Logger::LEVEL_ERROR, "Test error message there");
+    Logger::Instance()->Log(Logger::LEVEL_WARNING, "Test warning message there");
+    Logger::Instance()->Log(Logger::LEVEL_INFO, "Test info message there");
 
     new PVRTest();
  	new DXTTest();
