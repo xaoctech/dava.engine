@@ -174,8 +174,8 @@ public:
 	// Adjust control size logic
 	void AdjustSelectedControlsSize();
 
-    // Repack and reload sprites.
-    void RepackAndReloadSprites();
+    // Repack and reload sprites, return repacking errors.
+    Set<String> RepackAndReloadSprites();
     
     // Preview mode control.
     void EnablePreview(const PreviewSettingsData& data, bool applyScale);
