@@ -90,7 +90,7 @@ String TeamcityOutput::NormalizeString(const char8 *text) const
 
 void TeamcityOutput::PlatformOutput(const String &text) const
 {
-    std::cerr << text << std::endl;
+    std::cout << text << std::endl;
 }
 
 //#if defined (__DAVAENGINE_WIN32__)
