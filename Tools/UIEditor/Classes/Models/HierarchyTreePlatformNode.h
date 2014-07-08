@@ -62,7 +62,7 @@ public:
 	QString GetScreenPath(String screenName) const;
 	
 	bool Load(const YamlNode* node, List<QString>& fileNames);
-	bool Save(YamlNode* node, bool saveAll);
+	bool Save(YamlNode* node, bool saveAll, List<QString>& fileNames);
 
     // Separate method to load/save localization.
     bool LoadLocalization(const YamlNode* platform);
