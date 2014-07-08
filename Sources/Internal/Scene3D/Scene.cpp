@@ -120,6 +120,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , windSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
+    , clearBuffers(RenderManager::ALL_BUFFERS)
 {   
 	CreateComponents();
 	CreateSystems();
@@ -219,9 +220,6 @@ void Scene::InitGlobalMaterial()
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_UV_OFFSET)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_UV_SCALE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
-    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
-    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL, Shader::UT_FLOAT, 1, &defaultFloat05);
-    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET, Shader::UT_FLOAT, 1, &defaultFloat05);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE, Shader::UT_FLOAT, 1, &defaultLightmapSize);
 }
 
@@ -311,7 +309,7 @@ void Scene::CreateSystems()
     if(SCENE_SYSTEM_FOLIAGE_FLAG & systemsMask)
     {
         foliageSystem = new FoliageSystem(this);
-        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT));
+        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT), true);
     }
 
     if(SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG & systemsMask)
@@ -785,16 +783,11 @@ void Scene::Draw()
 	{
 		//imposterManager->ProcessQueue();
 	}
- 
-	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
-    //RenderManager::Instance()->SetCullMode(FACE_BACK);
-    //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
-    RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->ClearDepthBuffer();       
     
     
-    renderSystem->Render();
-
+    renderSystem->Render(clearBuffers);
+    
+    //foliageSystem->DebugDrawVegetation();
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
@@ -1037,6 +1030,15 @@ void Scene::OptimizeBeforeExport()
         (*it)->ReleaseIlluminationParams();
 
     Entity::OptimizeBeforeExport();
+}
+
+void Scene::SetClearBuffers(uint32 buffers) 
+{
+    clearBuffers = buffers;
+}
+uint32 Scene::GetClearBuffers() const 
+{
+    return clearBuffers;
 }
 
 };
