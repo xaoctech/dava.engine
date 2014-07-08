@@ -209,6 +209,13 @@ bool HierarchyTree::Load(const QString& projectPath)
 		screenNode = dynamic_cast<HierarchyTreeScreenNode*>((*platformNode->GetChildNodes().begin()));
 	}
     
+    // Update aggregators for all the platform we loaded.
+    for (Map<HierarchyTreePlatformNode*, const YamlNode*>::iterator iter = loadedPlatforms.begin();
+         iter != loadedPlatforms.end(); iter ++)
+    {
+        HierarchyTreeController::Instance()->UpdateAggregators(iter->first);
+    }
+    
     // After the project is loaded and tree is build, update the Tree Extradata with the texts from buttons just loaded.
     // Do this for all platforms and screens.
 	HierarchyTreeController::Instance()->UpdateSelection(platformNode, screenNode);

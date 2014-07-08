@@ -839,6 +839,21 @@ namespace DAVA
     {
         return angle;
     }
+    
+    float32 UIControl::GetParentsTotalAngle(bool includeOwn)
+    {
+        float32 angle = 0;
+        if(includeOwn)
+        {
+            angle += this->angle;
+        }
+        if(this->GetParent())
+        {
+            angle += parent->GetParentsTotalAngle(true);
+        }
+        return angle;
+    }
+
     void UIControl::SetAngle(float32 angleInRad)
     {
         angle = angleInRad;
@@ -1106,10 +1121,8 @@ namespace DAVA
     void UIControl::AddControl(UIControl *control)
     {
         control->Retain();
-        if(control->parent)
-        {
-            control->parent->RemoveControl(control);
-        }
+        control->RemoveFromParent();
+
         bool onScreen = IsOnScreen();
         if(onScreen)
         {
@@ -1199,66 +1212,61 @@ namespace DAVA
         }
     }
 
-    void UIControl::InsertChildBelow(UIControl * _control, UIControl * _belowThisChild)
+    void UIControl::InsertChildBelow(UIControl * control, UIControl * _belowThisChild)
     {
         List<UIControl*>::iterator it = childs.begin();
         for(; it != childs.end(); ++it)
         {
             if((*it) == _belowThisChild)
             {
+                control->Retain();
+                control->RemoveFromParent();
 
-                _control->Retain();
-                if(_control->parent)
-                {
-                    _control->parent->RemoveControl(_control);
-                }
                 bool onScreen = IsOnScreen();
                 if(onScreen)
                 {
-                    _control->SystemWillAppear();
+                    control->SystemWillAppear();
                 }
-                childs.insert(it, _control);
-                _control->SetParent(this);
+                childs.insert(it, control);
+                control->SetParent(this);
                 if(onScreen)
                 {
-                    _control->SystemDidAppear();
+                    control->SystemDidAppear();
                 }
                 isIteratorCorrupted = true;
                 return;
             }
         }
 
-        AddControl(_control);
+        AddControl(control);
     }
-    void UIControl::InsertChildAbove(UIControl * _control, UIControl * _aboveThisChild)
+    void UIControl::InsertChildAbove(UIControl * control, UIControl * _aboveThisChild)
     {
         List<UIControl*>::iterator it = childs.begin();
         for(; it != childs.end(); ++it)
         {
             if((*it) == _aboveThisChild)
             {
-                _control->Retain();
-                if(_control->parent)
-                {
-                    _control->parent->RemoveControl(_control);
-                }
+                control->Retain();
+                control->RemoveFromParent();
+
                 bool onScreen = IsOnScreen();
                 if(onScreen)
                 {
-                    _control->SystemWillAppear();
+                    control->SystemWillAppear();
                 }
-                childs.insert(++it, _control);
-                _control->SetParent(this);
+                childs.insert(++it, control);
+                control->SetParent(this);
                 if(onScreen)
                 {
-                    _control->SystemDidAppear();
+                    control->SystemDidAppear();
                 }
                 isIteratorCorrupted = true;
                 return;
             }
         }
 
-        AddControl(_control);
+        AddControl(control);
     }
 
     void UIControl::SendChildBelow(UIControl * _control, UIControl * _belowThisChild)
