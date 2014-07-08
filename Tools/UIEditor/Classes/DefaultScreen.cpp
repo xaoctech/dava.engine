@@ -707,6 +707,12 @@ void DefaultScreen::DeleteSelectedControls()
 
 void DefaultScreen::MoveGuide(HierarchyTreeScreenNode* screenNode)
 {
+    if (!screenNode->GetMoveGuide())
+    {
+        // Nothing to move.
+        return;
+    }
+
     MoveGuideByMouseCommand* command = new MoveGuideByMouseCommand(screenNode);
     CommandsController::Instance()->ExecuteCommand(command);
     SafeRelease(command);
