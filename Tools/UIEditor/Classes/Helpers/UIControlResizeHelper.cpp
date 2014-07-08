@@ -106,7 +106,7 @@ Rect UIControlResizeHelper::GetResizeRect(ResizeType unrotatedResizeType, UICont
         return Rect();
     }
 
-    eRotationQuadrant quadrant = GetRotationQuadant(uiControl->angle);
+    eRotationQuadrant quadrant = GetRotationQuadant(uiControl->GetParentsTotalAngle(true));
     switch (quadrant)
     {
         case QUADRANT_MINUS_PI_4_TO_PI_4:
@@ -147,7 +147,8 @@ float32 UIControlResizeHelper::ClampDY(float32 rawDY)
 Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    const UIGeometricData &gd = uiControl->GetGeometricData();
+    float32 sinA = sinf(uiControl->angle);
+    float32 cosA = cosf(uiControl->angle);
 
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
@@ -162,8 +163,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeT
                  offsetX = resizeRect.dx - MINIMUM_CONTROL_HEIGHT;
             }
             
-            rect.x += offsetX * gd.cosA;
-            rect.y += offsetX * gd.sinA;
+            rect.x += offsetX * cosA;
+            rect.y += offsetX * sinA;
             break;
         }
 
@@ -180,8 +181,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeT
             {
                 offsetY = resizeRect.dy - MINIMUM_CONTROL_WIDTH;
             }
-            rect.x -= (offsetY * gd.sinA);
-            rect.y += (offsetY * gd.cosA);
+            rect.x -= (offsetY * sinA);
+            rect.y += (offsetY * cosA);
             break;
         }
 
@@ -203,8 +204,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeT
             {
                 offsetY = resizeRect.dy - MINIMUM_CONTROL_WIDTH;
             }
-            rect.x = rect.x + (offsetX * gd.cosA) - (offsetY * gd.sinA);
-            rect.y = rect.y + (offsetX * gd.sinA) + (offsetY * gd.cosA);
+            rect.x = rect.x + (offsetX * cosA) - (offsetY * sinA);
+            rect.y = rect.y + (offsetX * sinA) + (offsetY * cosA);
             break;
         }
 
@@ -215,8 +216,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeT
             {
                 offsetX = resizeRect.dx - MINIMUM_CONTROL_HEIGHT;
             }
-            rect.x += offsetX * gd.cosA;
-            rect.y += offsetX * gd.sinA;
+            rect.x += offsetX * cosA;
+            rect.y += offsetX * sinA;
             rect.dy = ClampDY(rect.dy + offsetY);
             break;
         }
@@ -228,8 +229,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeT
             {
                 offsetY = resizeRect.dy - MINIMUM_CONTROL_WIDTH;
             }
-            rect.x -= (offsetY * gd.sinA);
-            rect.y += (offsetY * gd.cosA);
+            rect.x -= (offsetY * sinA);
+            rect.y += (offsetY * cosA);
             rect.dx = ClampDX(rect.dx + delta.x);
             break;
         }
@@ -253,8 +254,10 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeT
 Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    const UIGeometricData &gd = uiControl->GetGeometricData();
 
+    float32 sinA = sinf(uiControl->angle);
+    float32 cosA = cosf(uiControl->angle);
+    
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
 
@@ -268,8 +271,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
                 offsetY = resizeRect.dx - MINIMUM_CONTROL_WIDTH;
             }
 
-            rect.x += offsetY * gd.cosA;
-            rect.y += offsetY * gd.sinA;
+            rect.x += offsetY * cosA;
+            rect.y += offsetY * sinA;
 
             break;
         }
@@ -282,8 +285,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
                 offsetX = MINIMUM_CONTROL_HEIGHT - resizeRect.dy;
             }
 
-            rect.x += (offsetX * gd.sinA);
-            rect.y -= (offsetX * gd.cosA);
+            rect.x += (offsetX * sinA);
+            rect.y -= (offsetX * cosA);
             
             break;
         }
@@ -313,8 +316,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
                 offsetX = MINIMUM_CONTROL_HEIGHT - resizeRect.dy;
             }
 
-            rect.x = rect.x + (offsetY * gd.cosA) + (offsetX * gd.sinA);
-            rect.y = rect.y + (offsetY * gd.sinA) - (offsetX * gd.cosA);
+            rect.x = rect.x + (offsetY * cosA) + (offsetX * sinA);
+            rect.y = rect.y + (offsetY * sinA) - (offsetX * cosA);
             break;
         }
 
@@ -326,8 +329,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
                 offsetY = resizeRect.dx - MINIMUM_CONTROL_WIDTH;
             }
             
-            rect.x += offsetY * gd.cosA;
-            rect.y += offsetY * gd.sinA;
+            rect.x += offsetY * cosA;
+            rect.y += offsetY * sinA;
             rect.dy = ClampDY(rect.dy - offsetX);
             break;
         }
@@ -340,8 +343,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
                 offsetX = MINIMUM_CONTROL_HEIGHT - resizeRect.dy;
             }
             
-            rect.x += (offsetX * gd.sinA);
-            rect.y -= (offsetX * gd.cosA);
+            rect.x += (offsetX * sinA);
+            rect.y -= (offsetX * cosA);
             rect.dx = ClampDX(rect.dx + offsetY);
             break;
         }
@@ -365,7 +368,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
 Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    const UIGeometricData &gd = uiControl->GetGeometricData();
+    float32 sinA = sinf(uiControl->angle);
+    float32 cosA = cosf(uiControl->angle);
  
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
@@ -379,8 +383,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
             {
                 offsetX = MINIMUM_CONTROL_HEIGHT - resizeRect.dx;
             }
-            rect.x -= offsetX * gd.cosA;
-            rect.y -= offsetX * gd.sinA;
+            rect.x -= offsetX * cosA;
+            rect.y -= offsetX * sinA;
             break;
         }
             
@@ -397,8 +401,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
             {
                 offsetY = MINIMUM_CONTROL_WIDTH - resizeRect.dy;
             }
-            rect.x += (offsetY * gd.sinA);
-            rect.y -= (offsetY * gd.cosA);
+            rect.x += (offsetY * sinA);
+            rect.y -= (offsetY * cosA);
             break;
         }
             
@@ -420,8 +424,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
             {
                 offsetY = MINIMUM_CONTROL_WIDTH - resizeRect.dy;
             }
-            rect.x = rect.x - (offsetX * gd.cosA) + (offsetY * gd.sinA);
-            rect.y = rect.y - (offsetX * gd.sinA) - (offsetY * gd.cosA);
+            rect.x = rect.x - (offsetX * cosA) + (offsetY * sinA);
+            rect.y = rect.y - (offsetX * sinA) - (offsetY * cosA);
             break;
         }
             
@@ -433,8 +437,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
                 offsetX = MINIMUM_CONTROL_HEIGHT - resizeRect.dx;
             }
             rect.dy = ClampDY(rect.dy - offsetY);
-            rect.x -= offsetX * gd.cosA;
-            rect.y -= offsetX * gd.sinA;
+            rect.x -= offsetX * cosA;
+            rect.y -= offsetX * sinA;
             break;
         }
             
@@ -446,8 +450,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
                 offsetY = MINIMUM_CONTROL_WIDTH - resizeRect.dy;
             }
             rect.dx = ClampDX(rect.dx - delta.x);
-            rect.x += (offsetY * gd.sinA);
-            rect.y -= (offsetY * gd.cosA);
+            rect.x += (offsetY * sinA);
+            rect.y -= (offsetY * cosA);
             break;
         }
             
@@ -470,7 +474,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
 Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    const UIGeometricData &gd = uiControl->GetGeometricData();
+    float32 sinA = sinf(uiControl->angle);
+    float32 cosA = cosf(uiControl->angle);
     
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
@@ -485,8 +490,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeT
                 offsetY = MINIMUM_CONTROL_WIDTH - resizeRect.dx;
             }
             
-            rect.x -= offsetY * gd.cosA;
-            rect.y -= offsetY * gd.sinA;
+            rect.x -= offsetY * cosA;
+            rect.y -= offsetY * sinA;
             
             break;
         }
@@ -499,8 +504,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeT
                 offsetX = resizeRect.dy - MINIMUM_CONTROL_HEIGHT;
             }
             
-            rect.x -= (offsetX * gd.sinA);
-            rect.y += (offsetX * gd.cosA);
+            rect.x -= (offsetX * sinA);
+            rect.y += (offsetX * cosA);
             
             break;
         }
@@ -530,8 +535,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeT
                 offsetX = resizeRect.dy - MINIMUM_CONTROL_HEIGHT;
             }
             
-            rect.x = rect.x - (offsetY * gd.cosA) - (offsetX * gd.sinA);
-            rect.y = rect.y - (offsetY * gd.sinA) + (offsetX * gd.cosA);
+            rect.x = rect.x - (offsetY * cosA) - (offsetX * sinA);
+            rect.y = rect.y - (offsetY * sinA) + (offsetX * cosA);
             break;
         }
             
@@ -544,8 +549,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeT
             }
             rect.dy = ClampDY(rect.dy + offsetX);
             
-            rect.x -= offsetY * gd.cosA;
-            rect.y -= offsetY * gd.sinA;
+            rect.x -= offsetY * cosA;
+            rect.y -= offsetY * sinA;
 
             break;
         }
@@ -559,8 +564,8 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeT
             }
             rect.dx = ClampDX(rect.dx - offsetY);
     
-            rect.x -= (offsetX * gd.sinA);
-            rect.y += (offsetX * gd.cosA);
+            rect.x -= (offsetX * sinA);
+            rect.y += (offsetX * cosA);
 
             break;
         }
