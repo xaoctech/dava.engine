@@ -430,6 +430,26 @@ bool HierarchyTreePlatformNode::IsAggregatorOrScreenNamePresent(const QString& c
 	return false;
 }
 
+HierarchyTreeAggregatorNode* HierarchyTreePlatformNode::GetAggregatorNodeByName(const QString& aggregatorName)
+{
+	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (NULL == aggregator)
+		{
+			continue;
+		}
+        
+		if(node->GetName().compare(aggregatorName, Qt::CaseInsensitive) == 0)
+		{
+			return aggregator;
+		}
+	}
+	return NULL;
+}
+
 void HierarchyTreePlatformNode::SetPreviewMode(int width, int height)
 {
     previewWidth = width;
