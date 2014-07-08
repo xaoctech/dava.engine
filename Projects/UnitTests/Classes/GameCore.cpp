@@ -74,7 +74,7 @@
 #include "TeamcityOutput/TeamcityOutput.h"
 
 
-//#define USE_TEAMCYTY_OUTPUT
+#define USE_TEAMCYTY_OUTPUT
 
 
 using namespace DAVA;
