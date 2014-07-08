@@ -50,6 +50,7 @@
 #include "Dialogs/importdialog.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "Dialogs/previewsettingsdialog.h"
+#include "Dialogs/errorslistdialog.h"
 
 #include "ImportCommands.h"
 #include "AlignDistribute/AlignDistributeEnums.h"
@@ -623,6 +624,7 @@ void MainWindow::OnSelectedScreenChanged()
 	screenChangeUpdate = false;
 	UpdateMenu();
 	UpdateScreenPosition();
+    OnUndoRedoAvailabilityChanged();
 }
 
 void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
@@ -1097,6 +1099,13 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			if (projectPath.isNull())
 				return;
 
+            // Check whether project file is locked.
+            if (!CheckAndUnlockProject(projectPath))
+            {
+                return;
+            }
+
+            // Do the load.
 			if (HierarchyTreeController::Instance()->Load(projectPath))
 			{
 				// Update project title if project was successfully loaded
@@ -1112,6 +1121,38 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			return;
         }
     }
+}
+
+bool MainWindow::CheckAndUnlockProject(const QString& projectPath)
+{
+    if (!FileSystem::Instance()->IsFileLocked(projectPath.toStdString()))
+    {
+        // Nothing to unlock.
+        return true;
+    }
+
+    QMessageBox msgBox;
+    msgBox.setText(QString(tr("The project file %1 is locked by other user. Do you want to unlock it?").arg(projectPath)));
+    QAbstractButton* unlockButton = msgBox.addButton(tr("Unlock"), QMessageBox::YesRole);
+    msgBox.addButton(tr("Cancel"), QMessageBox::NoRole);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() != unlockButton)
+    {
+        return false;
+    }
+
+    // Check whether it is possible to unlock project file.
+    if (!FileSystem::Instance()->LockFile(projectPath.toStdString(), false))
+    {
+        QMessageBox errorBox;
+        errorBox.setText(QString(tr("Unable to unlock project file %1. Please check whether the project is opened in another UIEditor and close it, if yes.").arg(projectPath)));
+        errorBox.exec();
+        
+        return false;
+    }
+
+    return true;
 }
 
 void MainWindow::DoSaveProject(bool changesOnly)
@@ -1439,8 +1480,15 @@ void MainWindow::OnPixelizationStateChanged()
 void MainWindow::RepackAndReloadSprites()
 {
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
-    HierarchyTreeController::Instance()->RepackAndReloadSprites();
+    const Set<String>& errorsSet = HierarchyTreeController::Instance()->RepackAndReloadSprites();
     ScreenWrapper::Instance()->RestoreApplicationCursor();
+
+    if (!errorsSet.empty())
+	{
+		ErrorsListDialog errorsDialog;
+		errorsDialog.InitializeErrorsList(errorsSet);
+		errorsDialog.exec();
+	}
 }
 
 void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)

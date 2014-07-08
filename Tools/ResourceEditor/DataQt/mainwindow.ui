@@ -36,16 +36,7 @@
     <property name="spacing">
      <number>3</number>
     </property>
-    <property name="leftMargin">
-     <number>1</number>
-    </property>
-    <property name="topMargin">
-     <number>1</number>
-    </property>
-    <property name="rightMargin">
-     <number>1</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>1</number>
     </property>
     <item>
@@ -78,16 +69,7 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -114,16 +96,7 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -162,16 +135,7 @@
         <property name="spacing">
          <number>1</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -237,7 +201,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -293,6 +257,7 @@
      <addaction name="actionParticleEffectNode"/>
      <addaction name="actionAddLandscape"/>
      <addaction name="actionAddSkybox"/>
+     <addaction name="actionAddWind"/>
      <addaction name="actionAddVegetation"/>
      <addaction name="separator"/>
      <addaction name="actionEditor_Sprite"/>
@@ -344,10 +309,16 @@
      <addaction name="actionDiffuse"/>
      <addaction name="actionSpecular"/>
     </widget>
+    <widget class="QMenu" name="menuDockWindows">
+     <property name="title">
+      <string>Dock Windows</string>
+     </property>
+    </widget>
     <addaction name="menuTexturesForGPU"/>
     <addaction name="menuLightView"/>
     <addaction name="separator"/>
     <addaction name="menuToolbars"/>
+    <addaction name="menuDockWindows"/>
     <addaction name="separator"/>
     <addaction name="actionShowEditorGizmo"/>
     <addaction name="actionLightmapCanvas"/>
@@ -561,16 +532,7 @@
      <property name="spacing">
       <number>3</number>
      </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>0</number>
      </property>
      <item>
@@ -616,16 +578,7 @@
      <property name="spacing">
       <number>2</number>
      </property>
-     <property name="leftMargin">
-      <number>1</number>
-     </property>
-     <property name="topMargin">
-      <number>1</number>
-     </property>
-     <property name="rightMargin">
-      <number>1</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>1</number>
      </property>
      <item>
@@ -657,16 +610,7 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -1534,10 +1478,10 @@
   </action>
   <action name="actionBeastAndSave">
    <property name="text">
-    <string>Generate Lightmaps</string>
+    <string>Run Beast</string>
    </property>
    <property name="toolTip">
-    <string>Generate Lightmaps</string>
+    <string>Run Beast</string>
    </property>
   </action>
   <action name="actionAddActionComponent">
@@ -1822,6 +1766,9 @@
    <property name="toolTip">
     <string>Add skybox</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionCustomQuality">
    <property name="text">
@@ -1886,6 +1833,18 @@
    </property>
    <property name="text">
     <string>ImageSplitter</string>
+   </property>
+  </action>
+  <action name="actionAddWind">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/wind.png</normaloff>:/QtIcons/wind.png</iconset>
+   </property>
+   <property name="text">
+    <string>Wind</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Wind</string>
    </property>
   </action>
   <action name="actionAddVegetation">
@@ -1954,6 +1913,14 @@
     <string>Unlock Transform</string>
    </property>
   </action>
+  <action name="actionAddWaveComponent">
+   <property name="text">
+    <string>Add Wave Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Add Wave Component</string>
+   </property>
+  </action>
   <action name="actionRebuildCurrentOcclusionCell">
    <property name="text">
     <string>Rebuild Current Occlusion Cell</string>
@@ -1965,6 +1932,11 @@
    </property>
    <property name="text">
     <string>Undefined Collision</string>
+   </property>
+  </action>
+  <action name="action123">
+   <property name="text">
+    <string>123</string>
    </property>
   </action>
  </widget>
