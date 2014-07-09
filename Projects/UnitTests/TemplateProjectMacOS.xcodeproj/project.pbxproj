@@ -33,6 +33,7 @@
 		7497446817B3C38D00282DAA /* AlignTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7497446617B3C38D00282DAA /* AlignTest.cpp */; };
 		749A1B4F174A73130082B080 /* UIScrollViewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 749A1B4D174A73130082B080 /* UIScrollViewTest.cpp */; };
 		74AF6341188530CD00070C35 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74AF6340188530CD00070C35 /* Security.framework */; };
+		76762412196D5F6C00E4CC65 /* libFrameworkTools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76359F15196C20D300DF2A57 /* libFrameworkTools.a */; };
 		840CB02418EE08C600B722D0 /* JPEGTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 840CB02218EE08C600B722D0 /* JPEGTest.cpp */; };
 		84E2926F18DA5D4300B5D4C9 /* DateTimeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 84E2926D18DA5D4300B5D4C9 /* DateTimeTest.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -263,6 +264,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76762412196D5F6C00E4CC65 /* libFrameworkTools.a in Frameworks */,
 				74AF6341188530CD00070C35 /* Security.framework in Frameworks */,
 				1767A19B183D227A000DE581 /* CoreMedia.framework in Frameworks */,
 				1767A195183D1B4A000DE581 /* AVFoundation.framework in Frameworks */,
