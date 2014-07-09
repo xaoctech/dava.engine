@@ -384,31 +384,13 @@ bool FontConvertor::FillCharList()
         }
     }
 
-    // Append .notDef character to the font. We'll use '?' as .notDef character
-    int glyphIndex = FT_Get_Char_Index(face, (int)'?');
-    if (glyphIndex)
+    int glyphIndex = FT_Get_Char_Index(face, (int)' ');
+    if (!glyphIndex)
     {
-        err = FT_Load_Glyph(face, glyphIndex, FT_RENDER_MODE_MONO);
-        if (!err)
-        {
-            err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
-            if (!err)
-            {
-                int glyphWidth = face->glyph->bitmap.width;
-                int glyphHeight = face->glyph->bitmap.rows;
-
-                if (glyphWidth && glyphHeight)
-                {
-                    charGlyphPairs.push_back(make_pair(NOT_DEF_CHAR, glyphIndex));
-                }
-            }
-        }
-    }
-    else
-    {
-        cerr << "Font doesn't contain question mark. This font could not be converted." << endl;
+        cerr << "Font doesn't contain space character. This font could not be converted." << endl;
         return false;
     }
+    charGlyphPairs.push_back(make_pair(NOT_DEF_CHAR, glyphIndex));
 
     font.SetSize(oldSize);
 
@@ -566,22 +548,72 @@ void FontConvertor::GenerateOutputImage()
                 int charWidth = glyphWidth + params.scale * (params.spread * 2);
                 int charHeight = glyphHeight + params.scale * (params.spread * 2);
 
-                unsigned char *charBuf = new unsigned char[charWidth * charHeight];
-                memset(charBuf, 0, sizeof(unsigned char) * charWidth * charHeight);
+                unsigned char *charBuf = 0;
 
-                //	copy the glyph into the buffer to be smoothed
-                unsigned char *glyphBuf = face->glyph->bitmap.buffer;
-                for (int j = 0; j < glyphHeight; ++j)
+                if (iter->first == NOT_DEF_CHAR)
                 {
+                    int glyphAdvance = (int)face->glyph->advance.x / 64;
+
+                    glyphWidth = glyphAdvance;
+                    float leading = face->size->metrics.height + face->size->metrics.descender;
+                    leading /= (float)64.f;
+                    
+                    glyphHeight = (int)(leading * 0.75f);
+
+                    charWidth = glyphWidth + params.scale * (params.spread * 2);
+                    charHeight = glyphHeight + params.scale * (params.spread * 2);
+
+                    charBuf = new unsigned char[charWidth * charHeight];
+                    memset(charBuf, 0, sizeof(unsigned char) * charWidth * charHeight);
+
+                    int lineWidth = min(charWidth, charHeight);
+                    lineWidth = max(1, lineWidth / 8);
+
+                    for (int j = 0; j < glyphHeight; ++j)
+                    {
+                        for (int i = 0; i < lineWidth; ++i)
+                        {
+                            int y = (j + params.scale * params.spread) * charWidth;
+                            int x = i + params.scale * params.spread;
+
+                            charBuf[y + x] = 255;
+                            charBuf[y + charWidth - x] = 255;
+                        }
+                    }
+
                     for (int i = 0; i < glyphWidth; ++i)
                     {
-                        //check if corresponding bit is set
-                        unsigned char glyphVal = glyphBuf[j * glyphPitch + (i >> 3)];
-                        unsigned char val = (glyphVal >> (7 - (i & 7))) & 1;
+                        for (int j = 0; j < lineWidth; ++j)
+                        {
+                            int y = (j + params.scale * params.spread) * charWidth;
+                            int x = i + params.scale * params.spread;
 
-                        int x = i + params.scale * params.spread;
-                        int y = (j + params.scale * params.spread) * charWidth;
-                        charBuf[y + x] = 255 * val;
+                            int maxY = (charHeight - 1) * charWidth;
+
+                            charBuf[y + x] = 255;
+                            charBuf[maxY - y + x] = 255;
+                        }
+                    }
+                }
+                else
+                {
+                    charBuf = new unsigned char[charWidth * charHeight];
+                    memset(charBuf, 0, sizeof(unsigned char) * charWidth * charHeight);
+
+                    //	copy the glyph into the buffer to be smoothed
+                    unsigned char *glyphBuf = face->glyph->bitmap.buffer;
+                    for (int j = 0; j < glyphHeight; ++j)
+                    {
+                        for (int i = 0; i < glyphWidth; ++i)
+                        {
+                            //check if corresponding bit is set
+                            unsigned char glyphVal = glyphBuf[j * glyphPitch + (i >> 3)];
+                            unsigned char val = (glyphVal >> (7 - (i & 7))) & 1;
+
+                            int x = i + params.scale * params.spread;
+                            int y = (j + params.scale * params.spread) * charWidth;
+                            charBuf[y + x] = 255 * val;
+                        }
                     }
                 }
 
@@ -710,42 +742,97 @@ bool FontConvertor::GeneratePackedList(int fontSize, int textureSize)
     vector<pair<int, int> >::const_iterator iter = charGlyphPairs.begin();
     for (;iter != charGlyphPairs.end(); ++iter)
 	{
-        int glyphIndex = iter->second;
-
-        err = FT_Load_Glyph(face, glyphIndex, 0);
-        if (!err)
+        if (iter->first == NOT_DEF_CHAR)
         {
-            err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+            int glyphIndex = FT_Get_Char_Index(face, ' ');
+            err = FT_Load_Glyph(face, glyphIndex, 0);
             if (!err)
             {
-                FontConvertor::CharDescription charDesc;
-                int glyphWidth = face->glyph->bitmap.width;
-                int glyphHeight = face->glyph->bitmap.rows;
+                err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+                if (!err)
+                {
+                    FontConvertor::CharDescription charDesc;
+                    int glyphAdvance = (int)face->glyph->advance.x / 64;
 
-                int rectWidth = glyphWidth + params.scale * params.spread * 2;
-                int rectHeight = glyphHeight + params.scale * params.spread * 2;
+                    int glyphWidth = glyphAdvance;
 
-                int scaledWidth = rectWidth / params.scale;
-                int scaledHeight = rectHeight / params.scale;
+                    float leading = face->size->metrics.height + face->size->metrics.descender;
+                    leading /= (float)64.f;
 
-                rectInfo.push_back(scaledWidth);
-                rectInfo.push_back(scaledHeight);
+                    int glyphHeight = (int)(leading * 0.75f);
 
-                charDesc.id = iter->first;
-                charDesc.width = scaledWidth;
-                charDesc.height = scaledHeight;
+                    int rectWidth = glyphWidth + params.scale * params.spread * 2;
+                    int rectHeight = glyphHeight + params.scale * params.spread * 2;
 
-                charDesc.x = -1;
-                charDesc.y = -1;
+                    int scaledWidth = rectWidth / params.scale;
+                    int scaledHeight = rectHeight / params.scale;
 
-                float leading = face->size->metrics.height + face->size->metrics.descender;
-                leading /= (float)params.scale * 64.f;
+                    rectInfo.push_back(scaledWidth);
+                    rectInfo.push_back(scaledHeight);
 
-                charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
-                charDesc.yOffset = leading - face->glyph->bitmap_top / (float)params.scale;
-                charDesc.xAdvance = face->glyph->advance.x / params.scale / 64.f;
+                    charDesc.id = iter->first;
+                    charDesc.width = scaledWidth;
+                    charDesc.height = scaledHeight;
 
-                chars[charDesc.id] = charDesc;
+                    charDesc.x = -1;
+                    charDesc.y = -1;
+
+                    charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
+                    charDesc.yOffset = leading * 0.25f / params.scale;
+                    charDesc.xAdvance = face->glyph->advance.x / params.scale / 64.f;
+
+                    chars[charDesc.id] = charDesc;
+                }
+            }
+        }
+        else
+        {
+            int glyphIndex = iter->second;
+
+            err = FT_Load_Glyph(face, glyphIndex, 0);
+            if (!err)
+            {
+                err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+                if (!err)
+                {
+                    FontConvertor::CharDescription charDesc;
+                    int glyphWidth = face->glyph->bitmap.width;
+                    int glyphHeight = face->glyph->bitmap.rows;
+
+                    int rectWidth = 0;
+                    int rectHeight = 0;
+
+                    if (glyphWidth)
+                    {
+                        rectWidth = glyphWidth + params.scale * params.spread * 2;
+                    }
+                    if (glyphHeight)
+                    {
+                        rectHeight = glyphHeight + params.scale * params.spread * 2;
+                    }
+
+                    int scaledWidth = rectWidth / params.scale;
+                    int scaledHeight = rectHeight / params.scale;
+
+                    rectInfo.push_back(scaledWidth);
+                    rectInfo.push_back(scaledHeight);
+
+                    charDesc.id = iter->first;
+                    charDesc.width = scaledWidth;
+                    charDesc.height = scaledHeight;
+
+                    charDesc.x = -1;
+                    charDesc.y = -1;
+
+                    float leading = face->size->metrics.height + face->size->metrics.descender;
+                    leading /= (float)params.scale * 64.f;
+
+                    charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
+                    charDesc.yOffset = leading - face->glyph->bitmap_top / (float)params.scale;
+                    charDesc.xAdvance = face->glyph->advance.x / params.scale / 64.f;
+
+                    chars[charDesc.id] = charDesc;
+                }
             }
         }
 	}
