@@ -26,70 +26,24 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
-
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
-
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageFormatInterface.h"
+#include "Render/Image/ImageSystem.h"
+#include "FileSystem/File.h"
 
 namespace DAVA 
 {
 
-class Texture;
-class Sprite;
-class Image;
-
-class LibPngWrapper: public ImageFormatInterface
+DAVA::Size2i ImageFormatInterface::GetImageSize( const FilePath & fileName ) const
 {
-public:
-    
-    LibPngWrapper();
-    
-    virtual bool IsImage(File *file) const;
-    
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) const;
-    
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
-    
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
+	Size2i imageSize;
 
-    virtual uint32 GetDataSize(File *infile) const;
-	virtual Size2i GetImageSize(File *infile) const;
+	File *file = File::Create(fileName, File::READ | File::OPEN);
+	if(file)
+	{
+		imageSize = GetImageSize(file);
+		file->Release();
+	}
 
-
-	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-
+	return imageSize;
+}
 
 };
-
-class PngImage : public BaseObject
-{
-protected:
-	~PngImage();
-public:
-	PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-		
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
-
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
-};
-
-#endif // __PNG_IMAGE_H__
