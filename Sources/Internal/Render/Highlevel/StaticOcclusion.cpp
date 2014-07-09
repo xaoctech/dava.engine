@@ -107,7 +107,8 @@ void StaticOcclusion::BuildOcclusionInParallel(Vector<RenderObject*> & renderObj
     if (renewIndexEnum == RENEW_OCCLUSION_INDICES)
     {
         for (uint32 k = 0; k < renderObjects.size(); ++k)
-        {
+        {            
+            DVASSERT(renderObjects[k]->GetStaticOcclusionIndex()==INVALID_STATIC_OCCLUSION_INDEX); //if we are going to renew indices they should be cleared prior to it
             renderObjects[k]->SetStaticOcclusionIndex((uint16)k);
         }
     }
