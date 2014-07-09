@@ -40,7 +40,7 @@ namespace DAVA
     class Entity;
     
 	// default hash function for strings
-	inline size_t DavaHashString(const char* str)
+	inline size_t DavaHashString(const char* str)	//VK: this function is unsafe for NULL str 
 	{
 		size_t hash = 0;
 		for (; *str; ++str)

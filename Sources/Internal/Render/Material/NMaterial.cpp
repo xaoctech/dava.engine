@@ -1119,7 +1119,7 @@ void NMaterial::ReleaseInstancePasses()
 	instancePasses.clear();
 	
 	activePassInstance = NULL;
-	activePassName.Reset();
+	activePassName = FastName();
 	activeRenderPass = NULL;
 }
 
