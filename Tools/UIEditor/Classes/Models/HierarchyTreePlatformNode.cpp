@@ -186,7 +186,7 @@ void HierarchyTreePlatformNode::ActivatePlatform()
 	}
 }
 
-bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
+bool HierarchyTreePlatformNode::Load(const YamlNode* platform, List<QString>& fileNames)
 {
 	const YamlNode* width = platform->Get(WIDTH_NODE);
 	const YamlNode* height = platform->Get(HEIGHT_NODE);
@@ -208,8 +208,12 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
 			String screenName = screen->AsString();
 			
 			QString screenPath = GetScreenPath(screenName);
+            fileNames.push_back(screenPath);
+
 			HierarchyTreeScreenNode* screenNode = new HierarchyTreeScreenNode(this, QString::fromStdString(screenName));
-			result &= screenNode->Load(screenPath);
+			
+            // Do not load screen now,it will be done on selecting it.
+            FileSystem::Instance()->LockFile(screenPath.toStdString(), false);
 			AddTreeNode(screenNode);
 		}
 	}
@@ -226,6 +230,8 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform)
 			String aggregatorName = aggregator->AsString();
 
 			QString aggregatorPath = GetScreenPath(aggregatorName);
+            fileNames.push_back(aggregatorPath);
+
 			HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(this, QString::fromStdString(aggregatorName), Rect());
 
 			const YamlNode* aggregatorWidth = aggregator->Get(WIDTH_NODE);
@@ -280,7 +286,7 @@ bool HierarchyTreePlatformNode::LoadLocalization(const YamlNode* platform)
     return true;
 }
 
-bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
+bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>& fileNames)
 {
 	YamlNode* platform = new YamlNode(YamlNode::TYPE_MAP);
 	platform->Set(WIDTH_NODE, GetWidth());
@@ -315,6 +321,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 			continue;
 
 		QString path = GetScreenPath(node->GetName());
+		fileNames.push_back(path);
 		
 		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
 		result &= node->Save(aggregator, path, saveAll);
@@ -337,7 +344,13 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll)
 			continue;
 		
 		QString screenPath = GetScreenPath(screenNode->GetName());
-		result &= screenNode->Save(screenPath, saveAll);
+		fileNames.push_back(screenPath);
+
+        if(screenNode->IsLoaded())
+        {
+            // Save only loaded (and thus may be changed) screens.
+            result &= screenNode->Save(screenPath, saveAll);
+        }
 		
 		screens->AddValueToArray(screenNode->GetName().toStdString());
 	}
@@ -415,6 +428,26 @@ bool HierarchyTreePlatformNode::IsAggregatorOrScreenNamePresent(const QString& c
 		}
 	}
 	return false;
+}
+
+HierarchyTreeAggregatorNode* HierarchyTreePlatformNode::GetAggregatorNodeByName(const QString& aggregatorName)
+{
+	for (HIERARCHYTREENODESLIST::iterator iter = childNodes.begin(); iter != childNodes.end(); ++iter)
+	{
+		HierarchyTreeNode* node = (*iter);
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (NULL == aggregator)
+		{
+			continue;
+		}
+        
+		if(node->GetName().compare(aggregatorName, Qt::CaseInsensitive) == 0)
+		{
+			return aggregator;
+		}
+	}
+	return NULL;
 }
 
 void HierarchyTreePlatformNode::SetPreviewMode(int width, int height)
