@@ -161,7 +161,7 @@ Size2i TextBlockDistanceRender::DrawTextML(const WideString& drawText,
 										   int32 xOffset, uint32 yOffset,
 										   int32 lineSize)
 {
-	return InternalDrawText(drawText, xOffset, yOffset, w, lineSize);
+	return InternalDrawText(drawText, xOffset, yOffset, (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w), lineSize);
 }
 	
 Size2i TextBlockDistanceRender::InternalDrawText(const WideString& drawText, int32 x, int32 y, int32 w, int32 lineSize)

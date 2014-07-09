@@ -359,7 +359,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 	{
         if ( i > 0 && justifyOffset > 0 )
         {
-            if(str[i-1] == ' ')
+            if(str[i-1] == L' ')
             {
                 pen.x += justifyOffset<<6;
             }
