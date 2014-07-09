@@ -119,7 +119,7 @@ public:
     void RemoveRenderObjectFromOcclusion(RenderObject * renderObject);
 
     void ClearOcclusionObjects();
-    void FindOcclusionObjectsRecursively(Entity *entity);
+    void CollectOcclusionObjectsRecursively(Entity *entity);
 
 
 private:
