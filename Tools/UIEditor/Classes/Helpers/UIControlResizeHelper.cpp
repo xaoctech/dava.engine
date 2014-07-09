@@ -147,8 +147,9 @@ float32 UIControlResizeHelper::ClampDY(float32 rawDY)
 Rect UIControlResizeHelper::ResizeControlInQuadrant0(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    float32 sinA = sinf(uiControl->angle);
-    float32 cosA = cosf(uiControl->angle);
+    float32 sinA = 0.0f;
+    float32 cosA = 0.0f;
+    SinCosFast(uiControl->angle, sinA, cosA);
 
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
@@ -255,8 +256,9 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
 {
     Rect rect = resizeRect;
 
-    float32 sinA = sinf(uiControl->angle);
-    float32 cosA = cosf(uiControl->angle);
+    float32 sinA = 0.0f;
+    float32 cosA = 0.0f;
+    SinCosFast(uiControl->angle, sinA, cosA);
     
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
@@ -368,8 +370,9 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant1(ResizeType unrotatedResizeT
 Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    float32 sinA = sinf(uiControl->angle);
-    float32 cosA = cosf(uiControl->angle);
+    float32 sinA = 0.0f;
+    float32 cosA = 0.0f;
+    SinCosFast(uiControl->angle, sinA, cosA);
  
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
@@ -474,8 +477,9 @@ Rect UIControlResizeHelper::ResizeControlInQuadrant2(ResizeType unrotatedResizeT
 Rect UIControlResizeHelper::ResizeControlInQuadrant3(ResizeType unrotatedResizeType, UIControl* uiControl, const Rect& resizeRect, const Vector2& delta)
 {
     Rect rect = resizeRect;
-    float32 sinA = sinf(uiControl->angle);
-    float32 cosA = cosf(uiControl->angle);
+    float32 sinA = 0.0f;
+    float32 cosA = 0.0f;
+    SinCosFast(uiControl->angle, sinA, cosA);
     
     float32 offsetX = delta.x;
     float32 offsetY = delta.y;
