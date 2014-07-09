@@ -182,7 +182,16 @@ Size2i GraphicsFont::GetStringSize(const WideString & string, Vector<float32> *c
 //	float32 lastCharSize = fdef->characterWidthTable[prevChIndex] * fontScaleCoeff;
 //	float32 lastCharSize = fontSprite->GetRectOffsetValueForFrame(prevChIndex, Sprite::ACTIVE_WIDTH) * fontScaleCoeff;
 //	currentX += lastCharSize; // characterWidthTable[prevChIndex];
-	if (charSizes)charSizes->push_back((currentX - prevX));
+    
+    
+    
+	if (charSizes)
+    {
+        float32 fix = charSizes->at(0);
+        fix += (currentX - prevX);
+        charSizes->erase(charSizes->begin());
+        charSizes->insert(charSizes->begin(), fix);
+    }//charSizes->push_back((currentX - prevX));
 	return Size2i((currentX + 1.5f), GetFontHeight());
 }
 	
