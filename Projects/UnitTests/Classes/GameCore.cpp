@@ -70,6 +70,7 @@
 #include "DateTimeTest.h"
 #include "SceneSystemTest.h"
 #include "ParseTextTest.h"
+#include "ImageSizeTest.h"
 
 #include "TeamcityOutput/TeamcityOutput.h"
 
@@ -105,11 +106,7 @@ void GameCore::OnAppStarted()
     TeamcityOutput *out = new TeamcityOutput();
 	Logger::AddCustomOutput(out);
 #endif
-
-    Logger::Instance()->Log(Logger::LEVEL_ERROR, "Test error message there");
-    Logger::Instance()->Log(Logger::LEVEL_WARNING, "Test warning message there");
-    Logger::Instance()->Log(Logger::LEVEL_INFO, "Test info message there");
-
+	new ImageSizeTest();
     new PVRTest();
  	new DXTTest();
     new JPEGTest();

@@ -63,6 +63,7 @@ public:
 	void SetComponentEditor(ActionComponentEditor* editor);
 	
 private:
+    QWidget *createFloatEditor(QWidget *parent) const;
 	
 	DAVA::ActionComponent* targetComponent;
 	ActionComponentEditor* componentEditor;
@@ -91,7 +92,6 @@ private:
 private slots:
 	void OnAddAction();
 	void OnRemoveAction();
-    void OnStartAction();
 	void OnSelectedItemChanged();
     
 private:
