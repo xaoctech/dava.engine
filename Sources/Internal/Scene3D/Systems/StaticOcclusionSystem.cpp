@@ -183,6 +183,8 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
                   occlusionComponent->GetSubdivisionsZ(),
                   size,
                   worldBox);
+
+        GetScene()->staticOcclusionSystem->ClearOcclusionObjects();
     }
     
     staticOcclusion->SetScene(GetScene());
@@ -261,6 +263,9 @@ void StaticOcclusionBuildSystem::FinishBuildOcclusion(DAVA::BaseObject *bo, void
  
     SceneForceLod(LodComponent::INVALID_LOD_LAYER);
     RestoreSwitchMaterials();
+
+    Scene *scene = GetScene();
+    scene->staticOcclusionSystem->FindOcclusionObjectsRecursively(scene);
 }
     
 bool StaticOcclusionBuildSystem::IsInBuild() const
@@ -568,5 +573,26 @@ void StaticOcclusionSystem::RemoveEntity(Entity * entity)
     }
 }
 
+
+void StaticOcclusionSystem::ClearOcclusionObjects()
+{
+    for (int32 i=0, sz = indexedRenderObjects.size(); i<sz; ++i)
+    {
+        if (indexedRenderObjects[i])
+            indexedRenderObjects[i]->SetStaticOcclusionIndex(INVALID_STATIC_OCCLUSION_INDEX);
+    }
+    indexedRenderObjects.clear();
+}
+void StaticOcclusionSystem::FindOcclusionObjectsRecursively(Entity *entity)
+{
+    RenderObject * renderObject = GetRenderObject(entity);
+    if (renderObject)
+    {
+        AddRenderObjectToOcclusion(renderObject);
+    }
+
+    for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
+        FindOcclusionObjectsRecursively(entity->GetChild(i));
+}
     
 };

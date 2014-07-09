@@ -118,6 +118,9 @@ public:
     void AddRenderObjectToOcclusion(RenderObject * renderObject);
     void RemoveRenderObjectFromOcclusion(RenderObject * renderObject);
 
+    void ClearOcclusionObjects();
+    void FindOcclusionObjectsRecursively(Entity *entity);
+
 
 private:
     Camera * camera;
