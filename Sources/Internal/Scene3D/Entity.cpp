@@ -157,7 +157,7 @@ void Entity::AddComponent(Component * component)
 	componentFlags |= 1 << component->GetType();
 
 	if (scene)
-		scene->AddComponent(this, component);
+		scene->RegisterComponent(this, component);
 }
     
 void Entity::RemoveAllComponents()
@@ -227,7 +227,7 @@ void Entity::RemoveComponent(Component * component)
 void Entity::DetachComponent( Component * component )
 {
     if ( scene )
-        scene->RemoveComponent( this, component );
+        scene->UnregisterComponent( this, component );
 
     uint32 componentType = component->GetType();
     uint32 componentCount = 0;
@@ -283,7 +283,7 @@ void Entity::RemoveComponent(uint32 componentType, uint32 index)
 	{
 		Component *c = GetComponent(componentType, index);
 		if(c)
-			scene->RemoveComponent(this, c);
+			scene->UnregisterComponent(this, c);
 	}
 
 	Component* component = NULL;
@@ -469,12 +469,12 @@ void Entity::SetScene(Scene * _scene)
 	// РЎheck
 	if (scene)
 	{
-		scene->UnregisterNode(this);
+		scene->UnregisterEntity(this);
 	}
 	scene = _scene;
 	if (scene)
 	{
-		scene->RegisterNode(this);
+		scene->RegisterEntity(this);
 		GlobalEventSystem::Instance()->PerformAllEventsFromCache(this);
 	}
 		
