@@ -33,6 +33,9 @@ public class JNITextField {
 		public int id;
 	}
 	static Map<Integer, NativeEditText> controls = new HashMap<Integer, NativeEditText>();
+	
+	static final int NoActiveTextField = -1;
+	static int activeTextField = NoActiveTextField; 
 
 	final static String TAG = "JNITextField";
 	
@@ -573,6 +576,9 @@ public class JNITextField {
 		if (text == null)
 			return;
 		
+		if (id == activeTextField)
+			CloseKeyboard(id);
+		
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
@@ -583,7 +589,7 @@ public class JNITextField {
 		task.Run();
 	}
 	
-	public static void OpenKeyboard(int id) {
+	public static void OpenKeyboard(final int id) {
 		final EditText text = GetEditText(id);
 		if (text == null)
 			return;
@@ -591,8 +597,15 @@ public class JNITextField {
 		InternalTask<Void> task = new InternalTask<Void>(text, new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
+				text.setVisibility(EditText.VISIBLE);
+				text.requestFocus();
+				
 				InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.showSoftInput(text, InputMethodManager.SHOW_IMPLICIT);
+				//imm.showSoftInput(text, InputMethodManager.SHOW_IMPLICIT);
+				imm.showSoftInput(text, InputMethodManager.SHOW_FORCED);
+				
+				activeTextField = id;
+				
 				return null;
 			}
 		});
@@ -610,6 +623,7 @@ public class JNITextField {
 				InputMethodManager imm = (InputMethodManager) JNIActivity.GetActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(text.getWindowToken(), 0);
 				text.clearFocus();
+				activeTextField = NoActiveTextField;
 				return null;
 			}
 		});

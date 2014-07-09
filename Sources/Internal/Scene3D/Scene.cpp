@@ -120,6 +120,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , windSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
+    , clearBuffers(RenderManager::ALL_BUFFERS)
 {   
 	CreateComponents();
 	CreateSystems();
@@ -219,9 +220,6 @@ void Scene::InitGlobalMaterial()
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_TEXTURE0_SHIFT, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_UV_OFFSET)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_OFFSET, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_UV_SCALE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_UV_SCALE, Shader::UT_FLOAT_VEC2, 1, defaultVec2.data);
-    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_COLOR_MUL, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
-    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_MUL, Shader::UT_FLOAT, 1, &defaultFloat05);
-    if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SPEED_TREE_LEAF_OCC_OFFSET, Shader::UT_FLOAT, 1, &defaultFloat05);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHTMAP_SIZE, Shader::UT_FLOAT, 1, &defaultLightmapSize);
 }
 
@@ -311,7 +309,7 @@ void Scene::CreateSystems()
     if(SCENE_SYSTEM_FOLIAGE_FLAG & systemsMask)
     {
         foliageSystem = new FoliageSystem(this);
-        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT));
+        AddSystem(foliageSystem, (1 << Component::RENDER_COMPONENT), true);
     }
 
     if(SCENE_SYSTEM_SPEEDTREE_UPDATE_FLAG & systemsMask)
@@ -393,87 +391,46 @@ Scene::~Scene()
 	SafeDelete(eventSystem);
 	SafeDelete(renderSystem);
 }
-
-void Scene::RegisterNode(Entity * node)
+    
+void Scene::RegisterEntity(Entity * entity)
 {
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-        bool needAdd = ((requiredComponents & node->componentFlags) == requiredComponents);
-        
-        if (needAdd)
-            systems[k]->AddEntity(node);
+        systems[k]->RegisterEntity(entity);
     }
 }
 
-void Scene::UnregisterNode(Entity * node)
+void Scene::UnregisterEntity(Entity * entity)
 {
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-        bool needRemove = ((requiredComponents & node->componentFlags) == requiredComponents);
-        
-        if (needRemove)
-            systems[k]->RemoveEntity(node);
+        systems[k]->UnregisterEntity(entity);
     }
 }
-    
-void Scene::AddComponent(Entity * entity, Component * component)
+
+void Scene::RegisterComponent(Entity * entity, Component * component)
 {
-	DVASSERT(entity && component);
-
-    uint32 componentFlags = entity->componentFlags;
-	uint32 componentType = 1 << component->GetType();
-
-	uint32 systemsCount = systems.size();
-    for (uint32 k = 0; k < systemsCount; ++k)
-    {
-        uint32 requiredComponents = systems[k]->GetRequiredComponents();
-		bool entityForSystem = ((componentFlags & requiredComponents) == requiredComponents);
-		bool componentForSystem = ((requiredComponents & componentType) == componentType);
-		if(entityForSystem && componentForSystem) 
-		{
-			if (entity->GetComponentCount(component->GetType()) == 1)
-			{
-				systems[k]->AddEntity(entity);
-			}
-			else
-			{
-				systems[k]->AddComponent(entity, component);
-			}
-		}
-    }
-}
-    
-void Scene::RemoveComponent(Entity * entity, Component * component)
-{
-	DVASSERT(entity && component);
-
-	uint32 componentFlags = entity->componentFlags;
-	uint32 componentType = 1 << component->GetType();
-
+    DVASSERT(entity && component);
     uint32 systemsCount = systems.size();
     for (uint32 k = 0; k < systemsCount; ++k)
     {
-		uint32 requiredComponents = systems[k]->GetRequiredComponents();
-		bool entityForSystem = ((componentFlags & requiredComponents) == requiredComponents);
-		bool componentForSystem = ((requiredComponents & componentType) == componentType);
-		if(entityForSystem && componentForSystem) 
-		{
-			if (entity->GetComponentCount(component->GetType()) == 1) 
-			{
-				systems[k]->RemoveEntity(entity);
-			}
-			else
-			{
-				systems[k]->RemoveComponent(entity, component);
-			}
-		}
+        systems[k]->RegisterComponent(entity, component);
     }
 }
+
+void Scene::UnregisterComponent(Entity * entity, Component * component)
+{
+    DVASSERT(entity && component);
+    uint32 systemsCount = systems.size();
+    for (uint32 k = 0; k < systemsCount; ++k)
+    {
+        systems[k]->UnregisterComponent(entity, component);
+    }
     
+}
+
 #if 0 // Removed temporarly if everything will work with events can be removed fully.
 void Scene::ImmediateEvent(Entity * entity, uint32 componentType, uint32 event)
 {
@@ -826,16 +783,11 @@ void Scene::Draw()
 	{
 		//imposterManager->ProcessQueue();
 	}
- 
-	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
-    //RenderManager::Instance()->SetCullMode(FACE_BACK);
-    //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
-    RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->ClearDepthBuffer();       
     
     
-    renderSystem->Render();
-
+    renderSystem->Render(clearBuffers);
+    
+    //foliageSystem->DebugDrawVegetation();
     
 	drawTime = SystemTimer::Instance()->AbsoluteMS() - time;
 }
@@ -1078,6 +1030,15 @@ void Scene::OptimizeBeforeExport()
         (*it)->ReleaseIlluminationParams();
 
     Entity::OptimizeBeforeExport();
+}
+
+void Scene::SetClearBuffers(uint32 buffers) 
+{
+    clearBuffers = buffers;
+}
+uint32 Scene::GetClearBuffers() const 
+{
+    return clearBuffers;
 }
 
 };

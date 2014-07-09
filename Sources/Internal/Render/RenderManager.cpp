@@ -44,7 +44,7 @@ namespace DAVA
 Shader * RenderManager::FLAT_COLOR = 0;
 Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR = 0;
 Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
-Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = NULL;
+Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = 0;
 
 AutobindVariableData RenderManager::dynamicParameters[DYNAMIC_PARAMETERS_COUNT];
 uint32  RenderManager::dynamicParamersRequireUpdate;
@@ -149,6 +149,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     SetDynamicParam(PARAM_VIEW, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
     SetDynamicParam(PARAM_PROJ, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
     
+    GetOptions()->SetOption(RenderOptions::LAYER_OCCLUSION_STATS, false);
 }
 	
 RenderManager::~RenderManager()

@@ -30,7 +30,7 @@
 #include "ItemsCommand.h"
 #include "HierarchyTreeController.h"
 #include "ScreenWrapper.h"
-#include "SubcontrolsHelper.h"
+#include "CopyPasteHelper.h"
 
 UndoableHierarchyTreeNodeCommand::UndoableHierarchyTreeNodeCommand()
 {
@@ -221,9 +221,10 @@ CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& po
 	this->commandMode = CREATE_FROM_POINT;
 	this->parentNode = NULL;
 	this->redoNode = NULL;
+    this->insertAfterNode = NULL;
 }
 
-CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode* parent)
+CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode* parent, HierarchyTreeNode* insertAfter/*=NULL*/)
 {
 	this->type = type;
 	this->pos = pos;
@@ -232,6 +233,7 @@ CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNod
 	this->commandMode = CREATE_FROM_NODE;
 	this->parentNode = parent;
 	this->redoNode = NULL;
+    this->insertAfterNode = insertAfter;
 }
 
 void CreateControlCommand::Execute()
@@ -275,6 +277,12 @@ void CreateControlCommand::Execute()
 		return;
 	}
 	
+    if(insertAfterNode)
+    {
+        HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(newControlID);
+        node->SetParent(parentNode, insertAfterNode);
+        HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+    }
 	this->createdControlID = newControlID;
 }
 
@@ -531,7 +539,7 @@ void ChangeNodeHeirarchy::Execute()
 					{
 						if (targetPlatform->IsAggregatorOrScreenNamePresent(node->GetName()))
 						{
-							QString newName = SubcontrolsHelper::FormatCopyName(node->GetName(), targetNode);
+							QString newName = CopyPasteHelper::FormatCopyName(node->GetName(), targetNode);
 							node->SetName(newName);
 						}
 					}
@@ -545,6 +553,7 @@ void ChangeNodeHeirarchy::Execute()
 			{
 				isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
 				HierarchyTreeController::Instance()->UnselectControl(controlNode);
+                CopyPasteHelper::UpdateAggregators(controlNode, targetNode);
 			}
 
 			node->SetParent(targetNode, insertAfterNode);
