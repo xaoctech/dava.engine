@@ -265,7 +265,7 @@ void StaticOcclusionBuildSystem::FinishBuildOcclusion(DAVA::BaseObject *bo, void
     RestoreSwitchMaterials();
 
     Scene *scene = GetScene();
-    scene->staticOcclusionSystem->FindOcclusionObjectsRecursively(scene);
+    scene->staticOcclusionSystem->CollectOcclusionObjectsRecursively(scene);
 }
     
 bool StaticOcclusionBuildSystem::IsInBuild() const
@@ -583,7 +583,7 @@ void StaticOcclusionSystem::ClearOcclusionObjects()
     }
     indexedRenderObjects.clear();
 }
-void StaticOcclusionSystem::FindOcclusionObjectsRecursively(Entity *entity)
+void StaticOcclusionSystem::CollectOcclusionObjectsRecursively(Entity *entity)
 {
     RenderObject * renderObject = GetRenderObject(entity);
     if (renderObject)
@@ -592,7 +592,7 @@ void StaticOcclusionSystem::FindOcclusionObjectsRecursively(Entity *entity)
     }
 
     for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
-        FindOcclusionObjectsRecursively(entity->GetChild(i));
+        CollectOcclusionObjectsRecursively(entity->GetChild(i));
 }
     
 };
