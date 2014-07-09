@@ -2680,5 +2680,8 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.cpp">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.cpp">
+      <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -27,69 +27,44 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
+#include "ImageSizeTest.h"
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
-
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageFormatInterface.h"
-
-namespace DAVA 
+ImageSizeTest::ImageSizeTest()
+: TestTemplate<ImageSizeTest>("ImageSizeTest")
 {
+	RegisterFunction(this, &ImageSizeTest::TestFunction, "ImageSizeTest", NULL);
+}
 
-class Texture;
-class Sprite;
-class Image;
-
-class LibPngWrapper: public ImageFormatInterface
+void ImageSizeTest::LoadResources()
 {
-public:
-    
-    LibPngWrapper();
-    
-    virtual bool IsImage(File *file) const;
-    
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) const;
-    
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
-    
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
-
-    virtual uint32 GetDataSize(File *infile) const;
-	virtual Size2i GetImageSize(File *infile) const;
+    GetBackground()->SetColor(DAVA::Color(0.0f, 1.0f, 0.0f, 1.0f));
+}
 
 
-	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-
-
-};
-
-class PngImage : public BaseObject
+void ImageSizeTest::UnloadResources()
 {
-protected:
-	~PngImage();
-public:
-	PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-		
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
+    RemoveAllControls();
+}
 
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
-};
+void ImageSizeTest::TestFunction(PerfFuncData * data)
+{
+	static const DAVA::FilePath imagePathnames[DAVA::ImageSystem::FILE_FORMAT_COUNT] = 
+	{
+		"~res:/TestData/ImageSizeTest/image.png",
+		"~res:/TestData/ImageSizeTest/image.jpg",
+		"~res:/TestData/ImageSizeTest/image.pvr",
+		"~res:/TestData/ImageSizeTest/image.dds"
+	};
 
-#endif // __PNG_IMAGE_H__
+
+	for(uint32 i = 0; i < DAVA::ImageSystem::FILE_FORMAT_COUNT; ++i)
+	{
+		DAVA::ImageFormatInterface *im = DAVA::ImageSystem::Instance()->GetImageFormatInterface(imagePathnames[i]);	
+		Size2i imageSize = im->GetImageSize(imagePathnames[i]);
+
+		TEST_VERIFY(imageSize.dx == 128);
+		TEST_VERIFY(imageSize.dy == 128);
+	}
+}
+
+
