@@ -91,10 +91,10 @@ Size2i TextBlockGraphicsRender::DrawTextML(const WideString& drawText,
 		return grFont->DrawString((float32)xOffset,
 										   (float32)yOffset,
 										   drawText,
-										   (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w));
+										   (int32)ceilf(Core::GetVirtualToPhysicalFactor() * w), lineSize);
 	}
 	
-	return grFont->DrawString((float32)xOffset, (float32)yOffset, drawText, 0);
+	return grFont->DrawString((float32)xOffset, (float32)yOffset, drawText, 0, 0);
 }
 	
 };
