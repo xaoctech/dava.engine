@@ -30,12 +30,13 @@
 
 #include "ParseTextTest.h"
 
-ParseTextTest::ParseTextTest()
+ParseTextTest::ParseTextTest(Font::eFontType fontType)
 :   UITestTemplate<ParseTextTest>("ParseTextTest")
 ,   wrapBySymbolShort(NULL)
 ,   wrapByWordShort(NULL)
 ,   wrapBySymbolLong(NULL)
 ,   wrapByWordLong(NULL)
+,	requestedFontType(fontType)
 {
     RegisterFunction(this, &ParseTextTest::ParseTestFunction, Format("ParseTextTest"), NULL);
 }
@@ -105,11 +106,29 @@ UIStaticText * ParseTextTest::CreateTextControl(const Rect &rect, const WideStri
     textControl->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
     textControl->SetMultiline(true, wrapBySymbol);
 
-    Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
+	Font *font = NULL;
+	switch(requestedFontType)
+	{
+	case Font::TYPE_FT:
+		font = FTFont::Create("~res:/Fonts/korinna.ttf");
+		font->SetSize(14);
+		break;
+
+	case Font::TYPE_GRAPHICAL:
+		font = GraphicsFont::Create("~res:/Fonts/korinna.def", "~res:/Gfx/Fonts/korinna");
+		break;
+
+		default: break;
+	}
+
     DVASSERT(font);
-    textControl->SetFont(font);
-    font->Release();
-    
+
+	if(font)
+	{
+		textControl->SetFont(font);
+		font->Release();
+	}
+
     return textControl;
 }
 
