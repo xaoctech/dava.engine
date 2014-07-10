@@ -54,8 +54,8 @@ public:
     virtual int32   GetHorizontalSpacing() const;
 	
 	virtual bool	IsTextSupportsHardwareRendering() const;
-	virtual Size2i	DrawString(float32 x, float32 y, const WideString & string, int32 justifyWidth = 0, int32 spaceAddon = 0);
-	
+	virtual Size2i	DrawString(float32 x, float32 y, const WideString & string, int32 justifyWidth = 0, int32 spaceAddon = 0, Vector<float32> *charSizes = NULL, bool draw = true) const;
+
     virtual void    SetHorizontalSpacing(int32 horizontalSpacing);
     
 	virtual Font	* Clone() const;

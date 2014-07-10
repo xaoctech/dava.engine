@@ -53,12 +53,14 @@ void ParseTextTest::LoadResources()
 {
     UITestTemplate<ParseTextTest>::LoadResources();
     
-    static WideString textShort = L"The_Very_Long_Phrase_Without_Spaces Short_Word";
-	static WideString textLong = L"This is test of multistring text with very long phrase The_Very_Long_Phrase_Without_Spaces. We use this phrase for test of wrapping";
-//	static WideString textLong = L"ThisistestofmultistringtextwithverylongphraseTheVeryLongPhraseWithoutSpacesWeusethisphrasefortestofwrapping";
+	WideString textShort, textLong;
 
-    UIStaticText * text = NULL;
-    
+    textShort = L"The_Very_Long_Phrase_Without_Spaces Short_Word";
+//	textShort = L"test";
+
+	textLong = L"This is test of multistring text with very long phrase The_Very_Long_Phrase_Without_Spaces. We use this phrase for test of wrapping";
+//	textLong = L"ThisistestofmultistringtextwithverylongphraseTheVeryLongPhraseWithoutSpacesWeusethisphrasefortestofwrapping";
+
     wrapBySymbolShort = CreateTextControl(Rect(0, 50, 200, 200), textShort, true);
     AddControl(wrapBySymbolShort);
     wrapBySymbolLong = CreateTextControl(Rect(250, 50, 200, 200), textLong, true);
@@ -69,23 +71,23 @@ void ParseTextTest::LoadResources()
     wrapByWordLong = CreateTextControl(Rect(250, 250, 200, 200), textLong, false);
     AddControl(wrapByWordLong);
 
-    text = CreateTextControl(Rect(), L"test2\n    test4", false, Vector2(-1.0f, -1.0f));
-    text->SetSize( text->GetTextSize() );
-    text->SetPosition(Vector2(0, 500));
-    AddControl( text );
-    SafeRelease(text);
-
-    
-    text = CreateTextControl(Rect(), L"test2\n\n    test4", false, Vector2(-1.0f, -1.0f));
-    text->SetSize( text->GetTextSize() );
-    text->SetPosition(Vector2(250, 500));
-    AddControl( text );
-    SafeRelease(text);
-    
-    text = CreateTextControl(Rect(10, 650, 200, 50), L"test2  test4", false);
-    AddControl( text );
-    SafeRelease(text);
-
+// 	UIStaticText * text = NULL;
+//     text = CreateTextControl(Rect(), L"test2\n    test4", false, Vector2(-1.0f, -1.0f));
+//     text->SetSize( text->GetTextSize() );
+//     text->SetPosition(Vector2(0, 500));
+//     AddControl( text );
+//     SafeRelease(text);
+// 
+//     
+//     text = CreateTextControl(Rect(), L"test2\n\n    test4", false, Vector2(-1.0f, -1.0f));
+//     text->SetSize( text->GetTextSize() );
+//     text->SetPosition(Vector2(250, 500));
+//     AddControl( text );
+//     SafeRelease(text);
+//     
+//     text = CreateTextControl(Rect(10, 650, 200, 50), L"test2  test4", false);
+//     AddControl( text );
+//     SafeRelease(text);
 }
 
 void ParseTextTest::UnloadResources()
