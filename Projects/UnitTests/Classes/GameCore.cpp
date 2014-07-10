@@ -96,15 +96,13 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-	new ParseTextTest(Font::TYPE_FT);
-	new ParseTextTest(Font::TYPE_GRAPHICAL);
-
-	new DFFontTest();
+    new DFFontTest();
     
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
 
+    new ParseTextTest();
     new OpenGLES30FormatTest();
     new SaveImageTest();
 

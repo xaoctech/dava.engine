@@ -43,8 +43,6 @@
     <ClCompile Include="Classes\JPEGTest.cpp" />
     <ClCompile Include="Classes\ParseTextTest.cpp" />
     <ClCompile Include="Classes\OpenGLES30FormatTest.cpp" />
-    <ClCompile Include="Classes\SceneSystemTest.cpp" />
-    <ClCompile Include="Classes\DFFontTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\BaseScreen.h" />
@@ -91,7 +89,5 @@
     <ClInclude Include="Classes\UITestTemplate.h" />
     <ClInclude Include="Classes\ParseTextTest.h" />
     <ClInclude Include="Classes\OpenGLES30FormatTest.h" />
-    <ClInclude Include="Classes\SceneSystemTest.h" />
-    <ClInclude Include="Classes\DFFontTest.h" />
   </ItemGroup>
 </Project>
