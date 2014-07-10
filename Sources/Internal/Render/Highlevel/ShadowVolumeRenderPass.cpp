@@ -40,7 +40,7 @@ ShadowVolumeRenderLayer::ShadowVolumeRenderLayer(const FastName & name, uint32 s
     :   RenderLayer(name, sortingFlags, id), shadowRect(NULL)
 {
     
-	blendMode = ShadowPassBlendMode::MODE_BLEND_ALPHA;
+	blendMode = ShadowPassBlendMode::MODE_BLEND_MULTIPLY;
 	
 }
 
