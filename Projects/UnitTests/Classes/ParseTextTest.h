@@ -40,10 +40,11 @@ using namespace DAVA;
 
 class ParseTextTest : public UITestTemplate<ParseTextTest>
 {
+
 protected:
     ~ParseTextTest();
 public:
-	ParseTextTest();
+	ParseTextTest(Font::eFontType requestedFont);
     
 	virtual void LoadResources();
 	virtual void UnloadResources();
@@ -59,6 +60,9 @@ private:
 
     UIStaticText *wrapBySymbolLong;
     UIStaticText *wrapByWordLong;
+
+
+	Font::eFontType requestedFontType;
 };
 
 #endif /* defined(__PARSE_TEXT_TEST_H__) */

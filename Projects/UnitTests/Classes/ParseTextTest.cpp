@@ -30,12 +30,13 @@
 
 #include "ParseTextTest.h"
 
-ParseTextTest::ParseTextTest()
+ParseTextTest::ParseTextTest(Font::eFontType requestedFont)
 :   UITestTemplate<ParseTextTest>("ParseTextTest")
 ,   wrapBySymbolShort(NULL)
 ,   wrapByWordShort(NULL)
 ,   wrapBySymbolLong(NULL)
 ,   wrapByWordLong(NULL)
+,	requestedFontType(requestedFont)
 {
     RegisterFunction(this, &ParseTextTest::ParseTestFunction, Format("ParseTextTest"), NULL);
 }
@@ -51,12 +52,17 @@ ParseTextTest::~ParseTextTest()
 void ParseTextTest::LoadResources()
 {
     UITestTemplate<ParseTextTest>::LoadResources();
-    
-    static WideString textShort = L"The_Very_Long_Phrase_Without_Spaces Short_Word";
-	static WideString textLong = L"This is test of multistring text with very long phrase The_Very_Long_Phrase_Without_Spaces. We use this phrase for test of wrapping";
-//	static WideString textLong = L"ThisistestofmultistringtextwithverylongphraseTheVeryLongPhraseWithoutSpacesWeusethisphrasefortestofwrapping";
 
-    UIStaticText * text = NULL;
+	WideString textShort;
+	WideString textLong;
+
+	textShort = L"The_Very_Long_Phrase_Without_Spaces Short_Word";
+//	textShort = L"test";
+
+	textLong = L"This is test of multi string text with very long phrase The_Very_Long_Phrase_Without_Spaces. We use this phrase for test of wrapping";
+//	textLong = L"ThisistestofmultistringtextwithverylongphraseTheVeryLongPhraseWithoutSpacesWeusethisphrasefortestofwrapping";
+
+//    UIStaticText * text = NULL;
     
     wrapBySymbolShort = CreateTextControl(Rect(0, 50, 200, 200), textShort, true);
     AddControl(wrapBySymbolShort);
@@ -68,23 +74,22 @@ void ParseTextTest::LoadResources()
     wrapByWordLong = CreateTextControl(Rect(250, 250, 200, 200), textLong, false);
     AddControl(wrapByWordLong);
 
-    text = CreateTextControl(Rect(), L"test2\n    test4", false, Vector2(-1.0f, -1.0f));
-    text->SetSize( text->GetTextSize() );
-    text->SetPosition(Vector2(0, 500));
-    AddControl( text );
-    SafeRelease(text);
-
-    
-    text = CreateTextControl(Rect(), L"test2\n\n    test4", false, Vector2(-1.0f, -1.0f));
-    text->SetSize( text->GetTextSize() );
-    text->SetPosition(Vector2(250, 500));
-    AddControl( text );
-    SafeRelease(text);
-    
-    text = CreateTextControl(Rect(10, 650, 200, 50), L"test2  test4", false);
-    AddControl( text );
-    SafeRelease(text);
-
+//     text = CreateTextControl(Rect(), L"test2\n    test4", false, Vector2(-1.0f, -1.0f));
+//     text->SetSize( text->GetTextSize() );
+//     text->SetPosition(Vector2(0, 500));
+//     AddControl( text );
+//     SafeRelease(text);
+// 
+//     
+//     text = CreateTextControl(Rect(), L"test2\n\n    test4", false, Vector2(-1.0f, -1.0f));
+//     text->SetSize( text->GetTextSize() );
+//     text->SetPosition(Vector2(250, 500));
+//     AddControl( text );
+//     SafeRelease(text);
+//     
+//     text = CreateTextControl(Rect(10, 650, 200, 50), L"test2  test4", false);
+//     AddControl( text );
+//     SafeRelease(text);
 }
 
 void ParseTextTest::UnloadResources()
@@ -105,10 +110,26 @@ UIStaticText * ParseTextTest::CreateTextControl(const Rect &rect, const WideStri
     textControl->SetTextAlign(ALIGN_VCENTER | ALIGN_LEFT);
     textControl->SetMultiline(true, wrapBySymbol);
 
-    Font *font = FTFont::Create("~res:/Fonts/korinna.ttf");
-    DVASSERT(font);
-    textControl->SetFont(font);
-    font->Release();
+	Font *font = NULL;
+	switch (requestedFontType)
+	{
+	case Font::TYPE_FT:
+		font = FTFont::Create("~res:/Fonts/korinna.ttf");
+		font->SetSize(14.f);
+		break;
+	case Font::TYPE_GRAPHICAL:
+		font = GraphicsFont::Create("~res:/Fonts/korinna.def", "~res:/Gfx/Fonts/korinna");
+		break;
+	default:
+		break;
+	}
+
+	DVASSERT(font);
+	if(font)
+	{
+		textControl->SetFont(font);
+		font->Release();
+	}
     
     return textControl;
 }
