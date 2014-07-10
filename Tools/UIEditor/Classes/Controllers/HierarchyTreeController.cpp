@@ -143,6 +143,19 @@ void HierarchyTreeController::UpdateSelection(HierarchyTreePlatformNode* activeP
         
         LocalizationSystem::Instance()->Cleanup();
         activeScreen->Load(screenPath);
+      
+        // Update the screen aggregators after screen is loaded.
+        const HierarchyTreeNode::HIERARCHYTREENODESLIST& childNodes = activePlatform->GetChildNodes();
+        for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = childNodes.begin();
+             iter != childNodes.end(); iter ++)
+        {
+            HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(*iter);
+            if (aggregatorNode)
+            {
+                aggregatorNode->UpdateHierarchyTree();
+            }
+        }
+
         updateHierarchyTree = true;
 
         hierarchyTree.UpdateControlsData(activeScreen);
@@ -582,6 +595,7 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			screenNode->SetMarked(true);
 			QString path = screenNode->GetPlatform()->GetScreenPath(screenNode->GetName());
+            FileSystem::Instance()->LockFile(path.toStdString(), false);
 			FileSystem::Instance()->DeleteFile(path.toStdString());
 		}
 
@@ -589,6 +603,15 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			platformNode->SetMarked(true);
 			platformNode->SetChildrenMarked(true);
+
+			FileList* platformFiles = new FileList(platformNode->GetPlatformFolder());
+			int32 filesCount = platformFiles->GetCount();
+			for (int32 i = 0; i < filesCount; i ++)
+			{
+				FileSystem::Instance()->LockFile(platformFiles->GetPathname(i), false);
+			}
+			platformFiles->Release();
+
 			FileSystem::Instance()->DeleteDirectory(platformNode->GetPlatformFolder(), true);
 		}
 	}
