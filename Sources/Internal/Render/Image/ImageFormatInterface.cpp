@@ -26,40 +26,24 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "Render/Image/ImageSystem.h"
+#include "FileSystem/File.h"
 
-
-
-#include "SubcontrolsHelper.h"
-namespace DAVA {
-
-bool SubcontrolsHelper::ControlIsSubcontrol(UIControl* uiControl)
+namespace DAVA 
 {
-	if (!uiControl || !uiControl->GetParent())
+
+DAVA::Size2i ImageFormatInterface::GetImageSize( const FilePath & fileName ) const
+{
+	Size2i imageSize;
+
+	File *file = File::Create(fileName, File::READ | File::OPEN);
+	if(file)
 	{
-		return false;
+		imageSize = GetImageSize(file);
+		file->Release();
 	}
-	
-	// Firstly try the control's method.
-	if (uiControl->IsSubcontrol())
-	{
-		return true;
-	}
-	
-	// Yuri Coder, 2013/04/01. For UIEditor there is no way to compare subcontrols just by pointers,
-	// since multiple Clone() calls may change the pointers' values. So currently lets compare by name.
-	// TODO: if the parent control will contain children with the same name as one of the subcontrols,
-	// this children will become uneditable. Think about the solution.
-	const List<UIControl*>& parentSubcontrols = uiControl->GetParent()->GetSubcontrols();
-	for (List<UIControl*>::const_iterator iter = parentSubcontrols.begin();
-		 iter != parentSubcontrols.end(); iter ++)
-	{
-		if ((*iter)->GetName() == uiControl->GetName())
-		{
-			return true;
-		}
-	}
-	
-	return false;
+
+	return imageSize;
 }
 
 };
