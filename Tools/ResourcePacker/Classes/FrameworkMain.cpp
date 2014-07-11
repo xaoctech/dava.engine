@@ -37,6 +37,7 @@
 
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/PixelFormatDescriptor.h"
+#include "TeamcityOutput/TeamcityOutput.h"
 
 using namespace DAVA;
  
@@ -183,6 +184,15 @@ void FrameworkDidLaunched()
 
             Logger::Instance()->SetLogLevel(Logger::LEVEL_FRAMEWORK);
         }
+
+        if(CommandLineParser::CommandIsFound(String("-teamcity")))
+        {
+            CommandLineParser::Instance()->SetUseTeamcityOutput(true);
+
+            DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
+            DAVA::Logger::AddCustomOutput(out);
+        }
+
 	}
 
     ProcessRecourcePacker();
