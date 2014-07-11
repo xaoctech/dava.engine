@@ -492,8 +492,8 @@ void HierarchyTreeScreenNode::GetControlRectsListRecursive(const HierarchyTreeCo
     // Inner controls aren't forced to be sticked.
     Rect rectControl = rootNode->GetUIObject()->GetRect(true);
     Rect rectFinal = rectControl;
-    float32 fAngle = rootNode->GetUIObject()->GetAngle();
-    if(fAngle != 0)
+    float32 fAngle = rootNode->GetUIObject()->GetParentsTotalAngle(true);
+    if(!FLOAT_EQUAL_EPS(fAngle, 0.0f, 1e-4f))
     {
         // Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
         if(FLOAT_EQUAL_EPS(fAngle, PI_05, 1e-4f))
