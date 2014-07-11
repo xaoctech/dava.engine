@@ -120,6 +120,7 @@ Scene::Scene(uint32 _systemsMask /* = SCENE_SYSTEM_ALL_MASK */)
     , windSystem(0)
 	, sceneGlobalMaterial(0)
     , isDefaultGlobalMaterial(true)
+    , clearBuffers(RenderManager::ALL_BUFFERS)
 {   
 	CreateComponents();
 	CreateSystems();
@@ -166,6 +167,8 @@ void Scene::SetGlobalMaterial(NMaterial *globalMaterial)
 
     renderSystem->SetGlobalMaterial(sceneGlobalMaterial);
     particleEffectSystem->SetGlobalMaterial(sceneGlobalMaterial);
+    
+    ImportShadowColor(this);
 }
 
 void Scene::InitGlobalMaterial()
@@ -772,9 +775,22 @@ void Scene::Draw()
 {
     TIME_PROFILE("Scene::Draw");
 
-	float timeElapsed = SystemTimer::Instance()->FrameDelta();
+	//float timeElapsed = SystemTimer::Instance()->FrameDelta();
 
 	shadowVolumes.clear();
+    
+    if(NULL != sceneGlobalMaterial)
+    {
+        NMaterialProperty* propShadowColor = sceneGlobalMaterial->GetMaterialProperty(NMaterial::PARAM_SHADOW_COLOR);
+        if(NULL != propShadowColor)
+        {
+            DVASSERT(Shader::UT_FLOAT_VEC4 == propShadowColor->type);
+            
+            float32* propDataPtr = (float32*)propShadowColor->data;
+            Color shadowColor(propDataPtr[0], propDataPtr[1], propDataPtr[2], propDataPtr[3]);
+            renderSystem->SetShadowRectColor(shadowColor);
+        }
+    }
     
     uint64 time = SystemTimer::Instance()->AbsoluteMS();
     
@@ -783,14 +799,8 @@ void Scene::Draw()
 		//imposterManager->ProcessQueue();
 	}
  
-	RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
-    //RenderManager::Instance()->SetCullMode(FACE_BACK);
-    //RenderManager::Instance()->SetState(RenderState::DEFAULT_3D_STATE);
-    RenderManager::Instance()->FlushState();
-	RenderManager::Instance()->ClearDepthBuffer();       
     
-    
-    renderSystem->Render();
+    renderSystem->Render(clearBuffers);
     
     //foliageSystem->DebugDrawVegetation();
     
@@ -1029,12 +1039,56 @@ void Scene::OptimizeBeforeExport()
 {
     Set<NMaterial*> materials;
     materialSystem->BuildMaterialList(this, materials);
+    
+    ImportShadowColor(this);
 
     Set<NMaterial *>::const_iterator endIt = materials.end();
     for(Set<NMaterial *>::const_iterator it = materials.begin(); it != endIt; ++it)
         (*it)->ReleaseIlluminationParams();
 
     Entity::OptimizeBeforeExport();
+}
+
+void Scene::ImportShadowColor(Entity * rootNode)
+{
+    if(NULL != sceneGlobalMaterial)
+    {
+        NMaterialProperty* propShadowColor = sceneGlobalMaterial->GetMaterialProperty(NMaterial::PARAM_SHADOW_COLOR);
+        if(NULL == propShadowColor)
+        {
+            Entity * landscapeNode = FindLandscapeEntity(rootNode);
+            
+            if(NULL != landscapeNode)
+            {
+                // try to get shadow color for landscape
+                KeyedArchive * props = GetCustomPropertiesArchieve(landscapeNode);
+                if (props->IsKeyExists("ShadowColor"))
+                {
+                    Color shadowColor = props->GetVariant("ShadowColor")->AsColor();
+                    sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_SHADOW_COLOR,
+                                                          Shader::UT_FLOAT_VEC4,
+                                                          1,
+                                                          shadowColor.color);
+                    
+                    props->DeleteKey("ShadowColor");
+                }
+            }
+        }
+    }
+}
+
+void Scene::OnSceneReady(Entity * rootNode)
+{
+    ImportShadowColor(rootNode);
+}
+
+void Scene::SetClearBuffers(uint32 buffers) 
+{
+    clearBuffers = buffers;
+}
+uint32 Scene::GetClearBuffers() const 
+{
+    return clearBuffers;
 }
 
 };

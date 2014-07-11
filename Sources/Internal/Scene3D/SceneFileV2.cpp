@@ -328,7 +328,7 @@ bool SceneFileV2::ReadVersionTags(VersionInfo::SceneVersion& _version, File * fi
     DVASSERT(file);
 
     bool loaded = false;
-    if ( _version.version >= 12 )
+    if ( _version.version >= 14 )
     {
         KeyedArchive * tagsArchive = new KeyedArchive();
         loaded = tagsArchive->Load( file );
@@ -493,6 +493,8 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
         // TODO: Check do we need to releae root node here
         _scene->AddRootNode(rootNode, rootNodePathName);
     }
+    
+    scene->OnSceneReady(rootNode);
     
     SafeRelease(rootNode);
     SafeRelease(file);
