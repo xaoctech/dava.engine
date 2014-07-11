@@ -142,6 +142,9 @@
     <Filter Include="Internal\Render\Highlevel\Vegetation">
       <UniqueIdentifier>{e44970a1-4a1f-4e97-aaf5-44659db3a9de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Internal\Thread">
+      <UniqueIdentifier>{e940db21-ebe2-45bb-bc09-5f3e66960d95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\External\Box2D\Box2D.h">
@@ -1497,6 +1500,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.h">
       <Filter>Internal\Render\Highlevel\Vegetation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Thread\LockGuard.h">
+      <Filter>Internal\Thread</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
