@@ -27,69 +27,29 @@
 =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_LIBPNG_HELPERS_H__
-#define __DAVAENGINE_LIBPNG_HELPERS_H__
+#ifndef __IMAGE_SIZE_TEST_H__
+#define __IMAGE_SIZE_TEST_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/BaseMath.h"
-#include "Base/BaseObject.h"
-#include "FileSystem/FilePath.h"
+#include "DAVAEngine.h"
 
-#include "Render/Image/Image.h"
-#include "Render/Image/ImageFormatInterface.h"
+#include "TestTemplate.h"
 
-namespace DAVA 
+class ImageSizeTest : public TestTemplate<ImageSizeTest>
 {
 
-class Texture;
-class Sprite;
-class Image;
-
-class LibPngWrapper: public ImageFormatInterface
-{
-public:
-    
-    LibPngWrapper();
-    
-    virtual bool IsImage(File *file) const;
-    
-    virtual eErrorCode ReadFile(File *infile, Vector<Image *> &imageSet, int32 baseMipMap = 0) const;
-    
-    virtual eErrorCode WriteFile(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
-    
-    virtual eErrorCode WriteFileAsCubeMap(const FilePath & fileName, const Vector<Image *> &imageSet, PixelFormat compressionFormat) const;
-
-    virtual uint32 GetDataSize(File *infile) const;
-	virtual Size2i GetImageSize(File *infile) const;
-
-
-	static int ReadPngFile(File *infile, Image * image, PixelFormat targetFormat = FORMAT_INVALID);
-
-
-};
-
-class PngImage : public BaseObject
-{
 protected:
-	~PngImage();
+    ~ImageSizeTest(){}
 public:
-	PngImage();
-	
-	bool Create(int32 _width, int32 _height);
-	bool CreateFromFBOSprite(Sprite * fboSprite);
-		
-	void DrawImage(int sx, int sy, PngImage * image);
-	void DrawRect(const Rect2i & rect, uint32 color);
+	ImageSizeTest();
 
-	uint8 * GetData() { return data; };
-	int32 GetWidth() { return width; };
-	int32 GetHeight() { return height; }; 
-private:	
-	int32		width;
-	int32		height;
-	uint8  *	data;
-    PixelFormat format;
-};
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+    void TestFunction(PerfFuncData * data);
+    
+private:
+
 };
 
-#endif // __PNG_IMAGE_H__
+
+#endif // __IMAGE_SIZE_TEST_H__
