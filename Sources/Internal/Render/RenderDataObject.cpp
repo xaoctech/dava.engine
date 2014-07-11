@@ -221,6 +221,9 @@ void RenderDataObject::BuildVertexBufferInternal(BaseObject * caller, void * par
     
     if (vboBuffer)
     {
+        // Temporary fix: should unbind buffer before deleting (in case it's active).
+        RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, 0));
+        
         RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
         vboBuffer = 0;
     }
