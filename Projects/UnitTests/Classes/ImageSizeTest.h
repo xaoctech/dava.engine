@@ -27,39 +27,29 @@
 =====================================================================================*/
 
 
+#ifndef __IMAGE_SIZE_TEST_H__
+#define __IMAGE_SIZE_TEST_H__
 
+#include "DAVAEngine.h"
 
-#include "SubcontrolsHelper.h"
-namespace DAVA {
+#include "TestTemplate.h"
 
-bool SubcontrolsHelper::ControlIsSubcontrol(UIControl* uiControl)
+class ImageSizeTest : public TestTemplate<ImageSizeTest>
 {
-	if (!uiControl || !uiControl->GetParent())
-	{
-		return false;
-	}
-	
-	// Firstly try the control's method.
-	if (uiControl->IsSubcontrol())
-	{
-		return true;
-	}
-	
-	// Yuri Coder, 2013/04/01. For UIEditor there is no way to compare subcontrols just by pointers,
-	// since multiple Clone() calls may change the pointers' values. So currently lets compare by name.
-	// TODO: if the parent control will contain children with the same name as one of the subcontrols,
-	// this children will become uneditable. Think about the solution.
-	const List<UIControl*>& parentSubcontrols = uiControl->GetParent()->GetSubcontrols();
-	for (List<UIControl*>::const_iterator iter = parentSubcontrols.begin();
-		 iter != parentSubcontrols.end(); iter ++)
-	{
-		if ((*iter)->GetName() == uiControl->GetName())
-		{
-			return true;
-		}
-	}
-	
-	return false;
-}
+
+protected:
+    ~ImageSizeTest(){}
+public:
+	ImageSizeTest();
+
+	virtual void LoadResources();
+	virtual void UnloadResources();
+
+    void TestFunction(PerfFuncData * data);
+    
+private:
 
 };
+
+
+#endif // __IMAGE_SIZE_TEST_H__

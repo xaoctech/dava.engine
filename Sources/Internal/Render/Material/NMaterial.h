@@ -202,6 +202,7 @@ public:
 	static const FastName PARAM_UV_OFFSET;
 	static const FastName PARAM_UV_SCALE;
     static const FastName PARAM_LIGHTMAP_SIZE;
+    static const FastName PARAM_SHADOW_COLOR;
 
     static const FastName PARAM_RCP_SCREEN_SIZE;
     static const FastName PARAM_SCREEN_OFFSET;
