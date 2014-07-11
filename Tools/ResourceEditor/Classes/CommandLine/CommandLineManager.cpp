@@ -43,6 +43,7 @@
 #include "TexturePacker/CommandLineParser.h"
 
 #include "../Qt/Main/QtUtils.h"
+#include "TeamcityOutput/TeamcityOutput.h"
 
 
 using namespace DAVA;
@@ -151,6 +152,12 @@ void CommandLineManager::ParseCommandLine()
     {
         CommandLineParser::Instance()->SetExtendedOutput(true);
     }
+
+    if(CommandLineParser::CommandIsFound(String("-teamcity")))
+    {
+        CommandLineParser::Instance()->SetUseTeamcityOutput(true);
+    }
+
 }
 
 void CommandLineManager::DetectCommandLineMode()
@@ -223,4 +230,10 @@ void CommandLineManager::InitalizeTool()
 		isToolInitialized = activeTool->InitializeFromCommandLine();
         activeTool->DumpParams();
 	}
+
+    if(CommandLineParser::Instance()->UseTeamcityOutput())
+    {
+        DAVA::TeamcityOutput *out = new DAVA::TeamcityOutput();
+        DAVA::Logger::AddCustomOutput(out);
+    }
 }
