@@ -60,10 +60,10 @@ void VersionInfoWidget::FillTemplateList()
     {
         DAVA::VersionInfo::VersionMap versionMap;
 
-        DAVA::VersionInfo::SceneVersion v12;
-        v12.version = 12;
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
-        DAVA::VersionInfo::AddVersion(versionMap, v12);
+        DAVA::VersionInfo::SceneVersion v14;
+        v14.version = 14;
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
+        DAVA::VersionInfo::AddVersion(versionMap, v14);
 
         versions << VersionTemplate("Case 1", versionMap);
     }
@@ -71,11 +71,11 @@ void VersionInfoWidget::FillTemplateList()
     {
         DAVA::VersionInfo::VersionMap versionMap;
 
-        DAVA::VersionInfo::SceneVersion v12;
-        v12.version = 12;
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("sky", 2));
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
-        DAVA::VersionInfo::AddVersion(versionMap, v12);
+        DAVA::VersionInfo::SceneVersion v14;
+        v14.version = 14;
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("sky", 2));
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
+        DAVA::VersionInfo::AddVersion(versionMap, v14);
 
         versions << VersionTemplate("Case 2", versionMap);
     }
@@ -83,16 +83,16 @@ void VersionInfoWidget::FillTemplateList()
     {
         DAVA::VersionInfo::VersionMap versionMap;
 
-        DAVA::VersionInfo::SceneVersion v12;
-        v12.version = 12;
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("sky", 2));
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
-        DAVA::VersionInfo::AddVersion(versionMap, v12);
+        DAVA::VersionInfo::SceneVersion v14;
+        v14.version = 14;
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("sky", 2));
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
+        DAVA::VersionInfo::AddVersion(versionMap, v14);
 
-        DAVA::VersionInfo::SceneVersion v13;
-        v13.version = 13;
-        v13.tags.insert(DAVA::VersionInfo::TagsMap::value_type("fog", 1));
-        DAVA::VersionInfo::AddVersion(versionMap, v13);
+        DAVA::VersionInfo::SceneVersion v15;
+        v15.version = 15;
+        v15.tags.insert(DAVA::VersionInfo::TagsMap::value_type("fog", 1));
+        DAVA::VersionInfo::AddVersion(versionMap, v15);
 
         versions << VersionTemplate("Case 3", versionMap);
     }
@@ -100,17 +100,17 @@ void VersionInfoWidget::FillTemplateList()
     {
         DAVA::VersionInfo::VersionMap versionMap;
 
-        DAVA::VersionInfo::SceneVersion v12;
-        v12.version = 12;
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("sky", 2));
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
-        v12.tags.insert(DAVA::VersionInfo::TagsMap::value_type("occlusion", 1));
-        DAVA::VersionInfo::AddVersion(versionMap, v12);
+        DAVA::VersionInfo::SceneVersion v14;
+        v14.version = 14;
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("sky", 2));
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("vegetation", 1));
+        v14.tags.insert(DAVA::VersionInfo::TagsMap::value_type("occlusion", 1));
+        DAVA::VersionInfo::AddVersion(versionMap, v14);
 
-        DAVA::VersionInfo::SceneVersion v13;
-        v13.version = 13;
-        v13.tags.insert(DAVA::VersionInfo::TagsMap::value_type("fog", 1));
-        DAVA::VersionInfo::AddVersion(versionMap, v13);
+        DAVA::VersionInfo::SceneVersion v15;
+        v15.version = 15;
+        v15.tags.insert(DAVA::VersionInfo::TagsMap::value_type("fog", 1));
+        DAVA::VersionInfo::AddVersion(versionMap, v15);
 
         versions << VersionTemplate("Case 4", versionMap);
     }
