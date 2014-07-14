@@ -68,7 +68,9 @@
 #include "SaveImageTest.h"
 #include "JPEGTest.h"
 #include "DateTimeTest.h"
+#include "SceneSystemTest.h"
 #include "ParseTextTest.h"
+#include "ImageSizeTest.h"
 
 using namespace DAVA;
 
@@ -94,6 +96,10 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
+	new ImageSizeTest();
+
+    new DeviceInfoTest();
+    
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
@@ -113,11 +119,11 @@ void GameCore::OnAppStarted()
     
  	new UIMovieTest();
  	new InputTest();
-     new FormatsTest();
- 	new DeviceInfoTest();
+    new FormatsTest();
+ 
  	new DateTimeTest();
  	new TransparentWebViewTest();
-     new LocalizationTest();
+    new LocalizationTest();
  
  	new SampleTest();
  	new EntityTest(); 
@@ -139,7 +145,8 @@ void GameCore::OnAppStarted()
  	new UIListTest();
  	new UIScrollViewTest();
  
-     new ThreadSyncTest();
+    new ThreadSyncTest();
+    new SceneSystemTest();
     
     errors.reserve(TestCount());
 

@@ -35,6 +35,7 @@
 using namespace DAVA;
 
 #include "TestTemplate.h"
+#include "Platform/DeviceInfo.h"
 
 class DeviceInfoTest : public TestTemplate<DeviceInfoTest>
 {
@@ -49,6 +50,9 @@ public:
     virtual void Draw(const UIGeometricData &geometricData);
 
     void TestFunction(PerfFuncData * data);
+
+    String GetGpuFamilyString(eGPUFamily gpuFamily);
+    String GetNetworkConnectionTypeString(DeviceInfo::eNetworkType networkType);
 };
 
 #endif /* defined(__TEMPLATEPROJECTMACOS__DEVICEINFOTEST__) */
