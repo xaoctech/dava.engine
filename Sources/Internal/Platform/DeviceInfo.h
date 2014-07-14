@@ -66,7 +66,7 @@ public:
     struct NetworkInfo
     {
         eNetworkType networkType;
-        int32 signalStrength;
+        int32 signalStrength; //(0-no signal, 100 - max signal)
         
         NetworkInfo()
         {
