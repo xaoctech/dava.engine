@@ -849,12 +849,14 @@ void PropertyEditor::ActionEditComponent()
 	if(curNodes.size() == 1)
 	{
         Entity *node = curNodes.at(0);
-		ActionComponentEditor editor;
+		ActionComponentEditor editor(this);
 
 		editor.SetComponent((DAVA::ActionComponent*)node->GetComponent(DAVA::Component::ACTION_COMPONENT));
 		editor.exec();
 
-		ResetProperties();
+        SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
+        curScene->selectionSystem->SetSelection(node);
+		//ResetProperties();
 	}	
 }
 
@@ -910,34 +912,8 @@ void PropertyEditor::RebuildTangentSpace()
         SceneEditor2 *curScene = QtMainWindow::Instance()->GetCurrentScene();
         if(NULL != data && NULL != curScene)
         {            
-            QDialog *dlg = new QDialog(this);
-            QVBoxLayout *dlgLayout = new QVBoxLayout();
-            dlgLayout->setMargin(10);
-            dlgLayout->setSpacing(15);
-
-            dlg->setWindowTitle("Rebuild tangent space");
-            dlg->setWindowFlags(Qt::Tool);
-            dlg->setLayout(dlgLayout);                                
-
-            QCheckBox *exportBinormalCheckBox = new QCheckBox("Export binormal");
-            exportBinormalCheckBox->setChecked(false);
-            dlgLayout->addWidget(exportBinormalCheckBox);                
-
-            QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dlg);
-            dlgLayout->addWidget(buttons);
-
-            QObject::connect(buttons, SIGNAL(accepted()), dlg, SLOT(accept()));
-            QObject::connect(buttons, SIGNAL(rejected()), dlg, SLOT(reject()));
-
-            if(QDialog::Accepted == dlg->exec())
-            {
-                bool exportBinormal = (exportBinormalCheckBox->checkState() == Qt::Checked);                    
                 RenderBatch *batch = (RenderBatch *)data->object;
-                curScene->Exec(new RebuildTangentSpaceCommand(batch, exportBinormal));                    
-                ResetProperties();
-            }            
-
-            delete dlg;
+            curScene->Exec(new RebuildTangentSpaceCommand(batch, true));
         }
     }
 }
