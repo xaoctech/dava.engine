@@ -76,7 +76,7 @@ public class JNIGLSurfaceView extends GLSurfaceView
 		
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
 		{
-			//setPreserveEGLContextOnPause(true);
+			setPreserveEGLContextOnPause(true);
 		}
 		
 		doubleTapDetector = new GestureDetector(JNIActivity.GetActivity(), new DoubleTapListener(this));

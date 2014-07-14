@@ -148,8 +148,13 @@ public class JNIDeviceInfo {
 		}
 		
 		case NETWORK_TYPE_MOBILE: {
-			if (JNIActivity.singalStrengthListner != null)
-				return JNIActivity.singalStrengthListner.GetSignalStrength();
+			if (JNIActivity.singalStrengthListner != null) {
+				//Get the GSM Signal Strength, valid values are (0-31, 99) as defined in TS 27.007 8.5
+				int sign = JNIActivity.singalStrengthListner.GetSignalStrength();
+				if (sign == 99)
+					return -1;
+				return (int)(MaxSignalLevel * sign / 31.f); 
+			}
 			else
 				return 0;
 		}
