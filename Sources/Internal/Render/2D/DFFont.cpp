@@ -231,7 +231,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
         }
         float32 charWidth = (charDescription.xAdvance + nextKerning) * sizeScale;
         if (charSizes)
-            charSizes->push_back(charWidth);
+            charSizes->push_back(charWidth * Core::GetVirtualToPhysicalFactor());
         lastX += charWidth;
         
         charDrawed++;
