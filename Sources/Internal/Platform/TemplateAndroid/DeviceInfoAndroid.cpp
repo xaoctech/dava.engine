@@ -260,7 +260,7 @@ eGPUFamily DeviceInfo::GetGPUFamily()
 	return (eGPUFamily) jniDeviceInfo.GetGPUFamily();
 }
 
-DeviceInfo::NetworkInfo DeviceInfo::GetNetworkType()
+DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
 {
 	DeviceInfo::NetworkInfo info;
 	JniDeviceInfo jniDeviceInfo;
