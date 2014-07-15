@@ -28,7 +28,6 @@
 
 
 #include "DeviceInfoTest.h"
-#include "Platform/DeviceInfo.h"
 #include "Platform/DateTime.h"
 
 DeviceInfoTest::DeviceInfoTest()
@@ -73,6 +72,8 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
     Logger::Debug("Name: %s", WStringToString(name).c_str());
     Logger::Debug("ZBufferSize: %d", DeviceInfo::GetZBufferSize());
     Logger::Debug("GPU family: %s", GetGpuFamilyString(DeviceInfo::GetGPUFamily()).c_str());
+    Logger::Debug("Network connection type: %s", GetNetworkConnectionTypeString(DeviceInfo::GetNetworkInfo().networkType).c_str());
+    Logger::Debug("Network signal strength: %i%%", DeviceInfo::GetNetworkInfo().signalStrength);
 	Logger::Debug("********** Device info **********");
 
 	data->testData.message = "DeviceInfo test - passed";
@@ -110,5 +111,43 @@ String DeviceInfoTest::GetGpuFamilyString(eGPUFamily gpuFamily)
             break;
     }
 
+    return res;
+}
+
+String DeviceInfoTest::GetNetworkConnectionTypeString(DeviceInfo::eNetworkType networkType)
+{
+    String res;
+    switch (networkType)
+    {
+        case DeviceInfo::NETWORK_TYPE_NOT_CONNECTED:
+            res = "Not Connected";
+            break;
+            
+        case DeviceInfo::NETWORK_TYPE_CELLULAR:
+            res = "Cellular";
+            break;
+            
+        case DeviceInfo::NETWORK_TYPE_WIFI:
+            res = "Wi-Fi";
+            break;
+            
+        case DeviceInfo::NETWORK_TYPE_WIMAX:
+            res = "WiMAX";
+            break;
+            
+        case DeviceInfo::NETWORK_TYPE_ETHERNET:
+            res = "Ehternet";
+            break;
+
+        case DeviceInfo::NETWORK_TYPE_BLUETOOTH:
+            res = "Bluetooth";
+            break;
+
+        case DeviceInfo::NETWORK_TYPE_UNKNOWN:
+        default:
+            res = "Unknown";
+            break;
+    }
+    
     return res;
 }
