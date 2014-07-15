@@ -50,6 +50,8 @@ public:
     static void SwitchTemplate(NMaterial* material, const FastName& templateName);
     static Texture* GetEffectiveTexture(const FastName& textureName, NMaterial* mat);
     static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
+    static void SetStencilFunc(const FastName& passName, NMaterial* target, eCmpFunc stencilFunc0, eCmpFunc stencilFunc1, int32 stencilRef, uint32 stencilMask);
+    static void SetStencilOp(const FastName& passName, NMaterial* target, eStencilOp passFront, eStencilOp passBack, eStencilOp failFront, eStencilOp failBack, eStencilOp zFailFront, eStencilOp zFailBack);
     
     static bool IsAlphatest(const FastName& passName, NMaterial* mat);
     static bool IsAlphablend(const FastName& passName, NMaterial* mat);
