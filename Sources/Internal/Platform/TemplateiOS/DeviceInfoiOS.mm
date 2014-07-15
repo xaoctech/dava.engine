@@ -25,6 +25,8 @@
 #import <sys/utsname.h>
 #import <AdSupport/ASIdentifierManager.h>
 
+#import "Reachability.h"
+
 namespace DAVA
 {
 
@@ -237,6 +239,46 @@ WideString DeviceInfo::GetName()
 eGPUFamily DeviceInfo::GetGPUFamily()
 {
     return GPU_POWERVR_IOS;
+}
+    
+DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
+{
+    NetworkInfo networkInfo;
+    
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    [reachability startNotifier];
+
+    NetworkStatus networkStatus = [reachability currentReachabilityStatus];
+    switch (networkStatus)
+    {
+        case NotReachable:
+        {
+            networkInfo.networkType = DeviceInfo::NETWORK_TYPE_NOT_CONNECTED;
+            break;
+        }
+            
+        case ReachableViaWiFi:
+        {
+            networkInfo.networkType = DeviceInfo::NETWORK_TYPE_WIFI;
+            break;
+        }
+
+        case ReachableViaWWAN:
+        {
+            networkInfo.networkType = DeviceInfo::NETWORK_TYPE_CELLULAR;
+            break;
+        }
+            
+        default:
+        {
+            break;
+        }
+    }
+
+    [reachability stopNotifier];
+    
+    // No way to determine signal strength under iOS.
+    return networkInfo;
 }
     
 }
