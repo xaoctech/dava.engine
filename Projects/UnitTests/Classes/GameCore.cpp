@@ -107,6 +107,8 @@ void GameCore::OnAppStarted()
 	Logger::AddCustomOutput(out);
 #endif
 	new ImageSizeTest();
+    new DeviceInfoTest();
+    
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
@@ -127,7 +129,7 @@ void GameCore::OnAppStarted()
  	new UIMovieTest();
  	new InputTest();
     new FormatsTest();
- 	new DeviceInfoTest();
+ 
  	new DateTimeTest();
  	new TransparentWebViewTest();
     new LocalizationTest();
