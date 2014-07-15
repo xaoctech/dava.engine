@@ -74,14 +74,16 @@
  
  */
 
+#import "Reachability.h"
+
+#ifdef __DAVAENGINE_IPHONE__
+
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 #import <netdb.h>
 #import <sys/socket.h>
 
 #import <CoreFoundation/CoreFoundation.h>
-
-#import "Reachability.h"
 
 
 NSString *kReachabilityChangedNotification = @"kNetworkReachabilityChangedNotification";
@@ -312,3 +314,5 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 
 @end
+
+#endif

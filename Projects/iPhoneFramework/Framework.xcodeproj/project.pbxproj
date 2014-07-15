@@ -843,9 +843,10 @@
 		17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17816B7F17B2748900B067E1 /* AllocatorFactory.h */; };
 		1799E51A16CCEBDA0058061F /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E51816CCEBDA0058061F /* ParticleForce.cpp */; };
 		1799E51B16CCEBDA0058061F /* ParticleForce.h in Headers */ = {isa = PBXBuildFile; fileRef = 1799E51916CCEBDA0058061F /* ParticleForce.h */; };
+		17C28F0F1975497C001DAD73 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D411681973E4B700CF6BC0 /* Reachability.h */; };
 		17D4116A1973E4B700CF6BC0 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D411681973E4B700CF6BC0 /* Reachability.h */; };
-		17D4116B1973E4B700CF6BC0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D411691973E4B700CF6BC0 /* Reachability.m */; };
-		17D4116C1973E7BE00CF6BC0 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 17D411691973E4B700CF6BC0 /* Reachability.m */; };
+		17D4116B1973E4B700CF6BC0 /* Reachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D411691973E4B700CF6BC0 /* Reachability.mm */; };
+		17D4116C1973E7BE00CF6BC0 /* Reachability.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D411691973E4B700CF6BC0 /* Reachability.mm */; };
 		17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */; };
 		17D7E5F717A6C06B00861981 /* UIDismissionHandlerAlertView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */; };
 		17DC600A17DE16D40075813E /* IMovieViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC600717DE16D40075813E /* IMovieViewControl.h */; };
@@ -1719,7 +1720,7 @@
 		1799E51816CCEBDA0058061F /* ParticleForce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleForce.cpp; sourceTree = "<group>"; };
 		1799E51916CCEBDA0058061F /* ParticleForce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleForce.h; sourceTree = "<group>"; };
 		17D411681973E4B700CF6BC0 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
-		17D411691973E4B700CF6BC0 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		17D411691973E4B700CF6BC0 /* Reachability.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Reachability.mm; sourceTree = "<group>"; };
 		17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDismissionHandlerAlertView.h; sourceTree = "<group>"; };
 		17D7E5F517A6C06B00861981 /* UIDismissionHandlerAlertView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UIDismissionHandlerAlertView.mm; sourceTree = "<group>"; };
 		17DC600717DE16D40075813E /* IMovieViewControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMovieViewControl.h; sourceTree = "<group>"; };
@@ -3113,7 +3114,7 @@
 			isa = PBXGroup;
 			children = (
 				17D411681973E4B700CF6BC0 /* Reachability.h */,
-				17D411691973E4B700CF6BC0 /* Reachability.m */,
+				17D411691973E4B700CF6BC0 /* Reachability.mm */,
 				84E5E100174D02F60001C74F /* OpenUDIDios.h */,
 				84E5E101174D02F60001C74F /* OpenUDIDios.mm */,
 				497BF6E116F751ED00AC57C6 /* DeviceInfoiOS.mm */,
@@ -4116,6 +4117,7 @@
 				02FD805E1924997C007762C0 /* UISpinner.h in Headers */,
 				02FD805F1924997C007762C0 /* VectorSpinnerAdapter.h in Headers */,
 				02FD80601924997C007762C0 /* UISwitch.h in Headers */,
+				17C28F0F1975497C001DAD73 /* Reachability.h in Headers */,
 				02FD80611924997C007762C0 /* Frustum.h in Headers */,
 				02FD80621924997C007762C0 /* Landscape.h in Headers */,
 				02FD80631924997C007762C0 /* RenderFastNames.h in Headers */,
@@ -4742,7 +4744,7 @@
 				022AA8E51934CED9009A4B84 /* WaveSystem.cpp in Sources */,
 				02FD80C21924997C007762C0 /* FilePath.cpp in Sources */,
 				02FD80C31924997C007762C0 /* FileSystem.cpp in Sources */,
-				17D4116C1973E7BE00CF6BC0 /* Reachability.m in Sources */,
+				17D4116C1973E7BE00CF6BC0 /* Reachability.mm in Sources */,
 				02FD80C41924997C007762C0 /* FileSystemObjective.mm in Sources */,
 				02FD80C51924997C007762C0 /* KeyedArchive.cpp in Sources */,
 				02FD80C61924997C007762C0 /* KeyedArchiver.cpp in Sources */,
@@ -5442,7 +5444,7 @@
 				A695E52D18113315008A0F20 /* RenderHierarchy.cpp in Sources */,
 				A695E53218113327008A0F20 /* SerializationContext.cpp in Sources */,
 				CC84B03E18211BCE00934482 /* Job.cpp in Sources */,
-				17D4116B1973E4B700CF6BC0 /* Reachability.m in Sources */,
+				17D4116B1973E4B700CF6BC0 /* Reachability.mm in Sources */,
 				9A0116F3967F43C036364993 /* GamepadDevice.mm in Sources */,
 				624C87F218C6160F00E1049D /* DateTime.cpp in Sources */,
 				9A011FD535036524CA050EF7 /* GamepadManager.mm in Sources */,

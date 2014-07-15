@@ -88,6 +88,7 @@ public:
     static int GetZBufferSize();
     static eGPUFamily GetGPUFamily();
     static NetworkInfo GetNetworkInfo();
+    static String GetNetworkTypeString();
 };
 
 };

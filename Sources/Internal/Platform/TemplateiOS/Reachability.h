@@ -74,6 +74,13 @@
  
  */
 
+#ifndef __FRAMEWORK__REACHABILITY__H__
+#define __FRAMEWORK__REACHABILITY__H__
+
+#include "Base/BaseTypes.h"
+
+#ifdef __DAVAENGINE_IPHONE__
+
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <netinet/in.h>
@@ -126,4 +133,5 @@ extern NSString *kReachabilityChangedNotification;
 
 @end
 
-
+#endif //(__DAVAENGINE_IPHONE__)
+#endif // __FRAMEWORK__REACHABILITY__H__
