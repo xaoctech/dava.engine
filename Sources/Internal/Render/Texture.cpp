@@ -589,7 +589,7 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 		return false;
 	
     int32 baseMipMap = GetBaseMipMap();
-
+    
 	if(texDescriptor->IsCubeMap() && (!GPUFamilyDescriptor::IsGPUForDevice(gpu)))
 	{
 		Vector<FilePath> faceNames;
