@@ -55,6 +55,7 @@ void CommandLineManager::PrintUsage()
     printf("\t-h or --help to display this help\n");
     printf("\t-exo - extended output\n");
     printf("\t-v or --verbose - detailed output\n");
+    printf("\t-teamcity - extra output in teamcity format\n");
     printf("\t-forceclose - close editor after job would be finished\n");
     
     Map<String, CommandLineTool *>::const_iterator endIT = commandLineTools.end();
@@ -73,6 +74,7 @@ void CommandLineManager::PrintUsageForActiveTool()
     printf("\t-h or --help to display this help\n");
     printf("\t-exo - extended output\n");
     printf("\t-v or --verbose - detailed output\n");
+    printf("\t-teamcity - extra output in teamcity format\n");
     printf("\t-forceclose - close editor after job would be finished\n");
     
     if(activeTool)

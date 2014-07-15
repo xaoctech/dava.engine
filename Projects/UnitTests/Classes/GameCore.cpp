@@ -75,9 +75,6 @@
 #include "TeamcityOutput/TeamcityOutput.h"
 
 
-#define USE_TEAMCYTY_OUTPUT
-
-
 using namespace DAVA;
 
 GameCore::GameCore()
@@ -102,10 +99,6 @@ void GameCore::OnAppStarted()
 
     CreateDocumentsFolder();
 
-#ifdef USE_TEAMCYTY_OUTPUT
-    TeamcityOutput *out = new TeamcityOutput();
-	Logger::AddCustomOutput(out);
-#endif
 	new ImageSizeTest();
     new DeviceInfoTest();
     
@@ -160,11 +153,6 @@ void GameCore::OnAppStarted()
     errors.reserve(TestCount());
 
     RunTests();
-
-#ifdef USE_TEAMCYTY_OUTPUT
-    Logger::RemoveCustomOutput(out);
-#endif
-
 }
 
 void GameCore::RegisterScreen(BaseScreen *screen)

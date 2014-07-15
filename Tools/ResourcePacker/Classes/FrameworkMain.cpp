@@ -48,6 +48,7 @@ void PrintUsage()
     printf("\t-usage or --help to display this help\n");
     printf("\t-exo - extended output\n"); 
     printf("\t-v or --verbose - detailed output\n");
+    printf("\t-teamcity - extra output in teamcity format\n");
 
     printf("\n");
     printf("resourcepacker [src_dir] - will pack resources from src_dir\n");
