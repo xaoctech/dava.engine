@@ -390,6 +390,8 @@ void TextureDescriptor::LoadVersion7(int32 signature, DAVA::File *file)
             file->Read(&compression[i].convertedFileCrc);
         }
     }
+    
+    file->Read(&dataSettings.faceDescription);
 }
 
     
