@@ -27,39 +27,34 @@
  =====================================================================================*/
 
 
-#ifndef __DAVAENGINE_NMATERIALHELPER_H__
-#define __DAVAENGINE_NMATERIALHELPER_H__
+#ifndef __DAVAENGINE_LOCK_GUARD_H__
+#define __DAVAENGINE_LOCK_GUARD_H__
 
-#include "Base/BaseTypes.h"
-#include "Base/HashMap.h"
-#include "Base/FastNameMap.h"
-#include "Render/RenderState.h"
+#include "Platform/Mutex.h"
 
 namespace DAVA
 {
+    
+struct AdoptLock_t { };
+const AdoptLock_t AdoptLock();
 
-class NMaterial;
-
-class NMaterialHelper
+template<typename MutexType>
+class LockGuard
 {
 public:
     
-    static void EnableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
-    static void DisableStateFlags(const FastName& passName, NMaterial* target, uint32 stateFlags);
-    static void SetBlendMode(const FastName& passName, NMaterial* target, eBlendMode src, eBlendMode dst);
-    static void SwitchTemplate(NMaterial* material, const FastName& templateName);
-    static Texture* GetEffectiveTexture(const FastName& textureName, NMaterial* mat);
-    static void SetFillMode(const FastName& passName, NMaterial* mat, eFillMode fillMode);
-    static void SetStencilFunc(const FastName& passName, NMaterial* target, eCmpFunc stencilFunc0, eCmpFunc stencilFunc1, int32 stencilRef, uint32 stencilMask);
-    static void SetStencilOp(const FastName& passName, NMaterial* target, eStencilOp passFront, eStencilOp passBack, eStencilOp failFront, eStencilOp failBack, eStencilOp zFailFront, eStencilOp zFailBack);
+    explicit LockGuard(MutexType& m) : mutex(m) { mutex.Lock(); }; //own and lock mutex
     
-    static bool IsAlphatest(const FastName& passName, NMaterial* mat);
-    static bool IsAlphablend(const FastName& passName, NMaterial* mat);
-    static bool IsTwoSided(const FastName& passName, NMaterial* mat);
-    static bool IsOpaque(const FastName& passName, NMaterial* mat);
-    static eFillMode GetFillMode(const FastName& passName, NMaterial* mat);
-};
+    LockGuard(MutexType& m, const AdoptLock_t &al) : mutex(m) { }; //just own mutex
+    
+    ~LockGuard() { mutex.Unlock(); } //unlock mutex
+    
+private:
+	LockGuard(const LockGuard&) { DVASSERT(false); }; // disable wrong using
+	LockGuard& operator=(const LockGuard&){ DVASSERT(false);  return *this; }; // disable wrong using
 
+    MutexType &mutex;
 };
-
-#endif /* defined(__DAVAENGINE_NMATERIALHELPER_H__) */
+    
+};
+#endif //__DAVAENGINE_LOCK_GUARD_H__
