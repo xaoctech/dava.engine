@@ -54,6 +54,8 @@
 	#import <OpenGLES/ES1/glext.h>
     #import <OpenGLES/ES2/gl.h>
     #import <OpenGLES/ES2/glext.h>
+    #import <OpenGLES/ES3/gl.h>
+    #import <OpenGLES/ES3/glext.h>
 #elif defined(__DAVAENGINE_MACOS__)
 	#define __DAVAENGINE_OPENGL__
 	//	#include <GL/glew.h>
@@ -146,8 +148,7 @@ enum PixelFormat
     FORMAT_RGBA32323232,
 
     FORMAT_DXT1,
-    FORMAT_DXT1NM,
-    FORMAT_DXT1A,
+    FORMAT_DXT1A = 14, //back compatibility
     FORMAT_DXT3,
     FORMAT_DXT5,
     FORMAT_DXT5NM,
@@ -157,29 +158,22 @@ enum PixelFormat
 	FORMAT_ATC_RGB,
 	FORMAT_ATC_RGBA_EXPLICIT_ALPHA,
     FORMAT_ATC_RGBA_INTERPOLATED_ALPHA,
+    
+	FORMAT_PVR2_2,	//pvrtc2 generation
+	FORMAT_PVR4_2,
+	FORMAT_EAC_R11_UNSIGNED,
+	FORMAT_EAC_R11_SIGNED,
+	FORMAT_EAC_RG11_UNSIGNED,	//2 channels format for normal maps
+	FORMAT_EAC_RG11_SIGNED,	//2 channels format for normal maps
+	FORMAT_ETC2_RGB,
+	FORMAT_ETC2_RGBA,
+	FORMAT_ETC2_RGB_A1,
 
     FORMAT_COUNT,
     FORMAT_CLOSEST = 255 // fit PixelFormat at 8bits (PixelFormat format:8;)
 };
     
-struct PixelFormatDescriptor
-{
-    GLenum format;
-    GLenum internalformat;
-    GLenum type;
-    
-    String name;
-    int32 pixelSize;
-    PixelFormat formatID;
-    
-    PixelFormatDescriptor()
-    :   format(0), internalformat(0), type(0), pixelSize(0), formatID(FORMAT_INVALID)
-    {
-        
-    }
-};
-
-    
+// Please update JniDeviceInfo.java if change eGPUFamily enum
 enum eGPUFamily
 {
     GPU_UNKNOWN = -1,
@@ -359,30 +353,33 @@ enum ePrimitiveType
 // TODO: we have same structs & functions in PolygonGroup -- we should find a right place for them
 enum eVertexFormat
 {
-    EVF_VERTEX			= 1,
-    EVF_NORMAL			= 2,
-    EVF_COLOR			= 4,
-    EVF_TEXCOORD0		= 8,
-    EVF_TEXCOORD1		= 16,
-    EVF_TEXCOORD2		= 32,
-    EVF_TEXCOORD3		= 64,
-    EVF_TANGENT			= 128,
-    EVF_BINORMAL		= 256,
-    EVF_JOINTWEIGHT		= 512,
-	EVF_TIME			= 1024,
-	EVF_CUBETEXCOORD0	= 2048,
-    EVF_CUBETEXCOORD1	= 4096,
-    EVF_CUBETEXCOORD2	= 8192,
-    EVF_CUBETEXCOORD3	= 16384,	
-    EVF_LOWER_BIT		= EVF_VERTEX,
-    EVF_HIGHER_BIT		= EVF_TIME, 
+    EVF_VERTEX          = 1,
+    EVF_NORMAL          = 1 << 1,
+    EVF_COLOR           = 1 << 2,
+    EVF_TEXCOORD0       = 1 << 3,
+    EVF_TEXCOORD1       = 1 << 4,
+    EVF_TEXCOORD2       = 1 << 5,
+    EVF_TEXCOORD3       = 1 << 6,
+    EVF_TANGENT         = 1 << 7,
+    EVF_BINORMAL        = 1 << 8,
+    EVF_JOINTWEIGHT     = 1 << 9,
+    EVF_TIME            = 1 << 10,
+    EVF_PIVOT           = 1 << 11,
+    EVF_FLEXIBILITY     = 1 << 12,
+    EVF_ANGLE_SIN_COS           = 1 << 13,
+    EVF_CUBETEXCOORD0   = 1 << 14,
+    EVF_CUBETEXCOORD1   = 1 << 15,
+    EVF_CUBETEXCOORD2   = 1 << 16,
+    EVF_CUBETEXCOORD3   = 1 << 17,	
+    EVF_LOWER_BIT       = EVF_VERTEX,
+    EVF_HIGHER_BIT      = EVF_ANGLE_SIN_COS, 
     EVF_NEXT_AFTER_HIGHER_BIT
     = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD     = 0x7fffffff,
 };
 enum
 {
-    VERTEX_FORMAT_STREAM_MAX_COUNT = 11
+    VERTEX_FORMAT_STREAM_MAX_COUNT = 14
 };
 
 inline int32 GetTexCoordCount(int32 vertexFormat)
@@ -437,6 +434,10 @@ inline int32 GetVertexSize(int32 flags)
 
 	if (flags & EVF_TIME) size+=sizeof(float32);
 	
+    if (flags & EVF_PIVOT) size += 3 * sizeof(float32);
+    if (flags & EVF_FLEXIBILITY) size += sizeof(float32);
+    if (flags & EVF_ANGLE_SIN_COS) size += 2 * sizeof(float32);
+
     return size;
 }
 
@@ -472,13 +473,26 @@ enum eShaderSemantic
     
     PARAM_COLOR,
     PARAM_GLOBAL_TIME,
-    PARAM_WORLD_VIEW_TRANSLATE, // NEED TO RENAME TO objectPositionInCameraSpace
     PARAM_WORLD_SCALE,          
     
     PARAM_CAMERA_POS,
     PARAM_CAMERA_DIR,
     PARAM_CAMERA_UP,
     
+    PARAM_LIGHT0_POSITION,
+    PARAM_LIGHT0_COLOR,
+    PARAM_LIGHT0_AMBIENT_COLOR,
+
+    PARAM_LOCAL_BOUNDING_BOX,
+    PARAM_WORLD_VIEW_OBJECT_CENTER,
+    PARAM_BOUNDING_BOX_SIZE,
+
+    PARAM_SPEED_TREE_TRUNK_OSCILLATION,
+    PARAM_SPEED_TREE_LEAFS_OSCILLATION,
+    PARAM_SPEED_TREE_LIGHT_SMOOTHING,
+
+    PARAM_SPHERICAL_HARMONICS,
+
     PARAM_RT_SIZE,
     PARAM_RT_PIXEL_SIZE,
     PARAM_RT_HALF_PIXEL_SIZE,
@@ -486,13 +500,11 @@ enum eShaderSemantic
 
     AUTOBIND_UNIFORMS_END,
     
-    PARAM_OBJECT_POS,
-    PARAM_OBJECT_SCALE,
-    
-    PARAM_LIGHT0_POSITION,
+//    PARAM_OBJECT_POS,
+//    PARAM_OBJECT_SCALE,
     
     
-    DYNAMIC_PARAMETERS_COUNT,
+    DYNAMIC_PARAMETERS_COUNT = AUTOBIND_UNIFORMS_END,
 };
     
 extern const FastName DYNAMIC_PARAM_NAMES[DYNAMIC_PARAMETERS_COUNT];
@@ -535,8 +547,5 @@ public:
 #else
 #define RENDER_GUARD
 #endif
-
-
-
 
 #endif // __DAVAENGINE_RENDER_BASE_H__

@@ -29,6 +29,7 @@
 
 #include "JPEGTest.h"
 #include "TextureUtils.h"
+#include "Render/PixelFormatDescriptor.h"
 
 JPEGTest::JPEGTest()
 : TestTemplate<JPEGTest>("JPEGTest")
@@ -43,7 +44,7 @@ JPEGTest::JPEGTest()
     currentTest = FIRST_TEST;
     for(int32 i = 0; i < TESTS_COUNT; ++i)
     {
-        PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
+        const PixelFormatDescriptor & formatDescriptor = PixelFormatDescriptor::GetPixelFormatDescriptor(FORMAT_RGBA8888);
         RegisterFunction(this, &JPEGTest::TestFunction, Format("JPEGTest of %s", formatDescriptor.name.c_str()), NULL);
     }
 }
@@ -91,7 +92,6 @@ void JPEGTest::TestFunction(PerfFuncData * data)
 		differencePersentage = ((float32)result.difference / ((float32)result.bytesCount * 256.f)) * 100.f;
 	}
     
-    PixelFormatDescriptor formatDescriptor = Texture::GetPixelFormatDescriptor(FORMAT_RGBA8888);
     data->testData.message = Format("\nDifference: %f%%\nCoincidence: %f%%",
                                     differencePersentage, 100.f - differencePersentage);
 
@@ -105,9 +105,11 @@ void JPEGTest::TestFunction(PerfFuncData * data)
     Image *secondComparer = TextureUtils::CreateImageAsRGBA8888(jpegSprite);
     
     FilePath documentsPath = FileSystem::Instance()->GetCurrentDocumentsDirectory();
-    ImageLoader::Save(firstComparer, documentsPath + (Format("JPEGTest/src_number_%d.png", currentTest)));
-    ImageLoader::Save(secondComparer, documentsPath + (Format("JPEGTest/dst_number_%d.png", currentTest)));
-
+    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/src_number_%d.png", currentTest), firstComparer);
+    ImageSystem::Instance()->Save(documentsPath + Format("JPEGTest/dst_number_%d.png", currentTest), secondComparer);
+    
+    SafeRelease(firstComparer);
+    SafeRelease(secondComparer);
     ++currentTest;
 }
 
@@ -120,12 +122,12 @@ void JPEGTest::ReloadSprites()
     
     pngSprite = TextureUtils::CreateSpriteFromTexture(String(Format("~res:/TestData/JPEGTest/PNG/number_%d.png", currentTest)));
     Image* img = pngSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    ImageLoader::Save(img, path);
+    ImageSystem::Instance()->Save(path,img);
+    DVASSERT_MSG(path.Exists(), "Jpeg image was not saved!.");
     SafeRelease(img);
     
     Vector<Image *> imageSet;
-	ImageLoader::CreateFromFileByContent( path, imageSet);
-    
+    ImageSystem::Instance()->Load(path, imageSet);
     DVASSERT(imageSet.size());
     Image* imgJpeg = imageSet[0];
     Texture* tex = Texture::CreateFromData(imgJpeg->GetPixelFormat(), imgJpeg->data, imgJpeg->width, imgJpeg->height, false);

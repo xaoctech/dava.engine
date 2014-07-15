@@ -67,6 +67,10 @@ void LibraryController::Init(LibraryWidget* widget)
 	AddControl("UISpinner", new UISpinner());
 	AddControl("UISwitch", new UISwitch());
     AddControl("UIParticles", new UIParticles());
+	AddControl("UIWebView", new UIWebView());
+    AddControl("UIMovieView", new UIMovieView());
+    AddControl("UIJoypad", new UIJoypad());
+    AddControl("UI3DView", new UI3DView());
 }
 
 void LibraryController::AddControl(HierarchyTreeAggregatorNode* node)
@@ -108,12 +112,25 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 	HierarchyTreeControlNode* controlNode = NULL;
 	UIControl* control = NULL;
 	CONTROLS::iterator iter;
-	
+
+	HierarchyTreeNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
 	for (iter = controls.begin(); iter != controls.end(); ++iter)
 	{
 		HierarchyTreeNode* node = iter->first;
-		if (strType == node->GetName())
+		if (strType != node->GetName())
+			continue;
+		
+		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(node);
+		if (!aggregator)
 			break;
+		
+		HierarchyTreePlatformNode* platform = aggregator->GetPlatform();
+		if (activePlatform && platform && (activePlatform->GetId() == platform->GetId()))
+		{
+			controlNode = aggregator->CreateChild(parentNode, name);
+			control = controlNode->GetUIObject();
+			break;
+		}
 	}
 	
 	if (iter == controls.end() ||
@@ -129,16 +146,6 @@ HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode*
 		}
 		 
 		controlNode = new HierarchyTreeControlNode(parentNode, control, name);
-	}
-	else
-	{
-		//create aggregator
-		HierarchyTreeAggregatorNode* aggregator = dynamic_cast<HierarchyTreeAggregatorNode*>(iter->first);
-		if (aggregator)
-		{
-			controlNode = aggregator->CreateChild(parentNode, name);
-			control = controlNode->GetUIObject();
-		}
 	}
 	
 	parentNode->AddTreeNode(controlNode);

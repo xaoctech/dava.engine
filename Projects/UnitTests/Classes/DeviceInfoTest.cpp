@@ -28,7 +28,6 @@
 
 
 #include "DeviceInfoTest.h"
-#include "Platform/DeviceInfo.h"
 #include "Platform/DateTime.h"
 
 DeviceInfoTest::DeviceInfoTest()
@@ -72,6 +71,9 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
     Logger::Debug("UDID: %s", udid.c_str());
     Logger::Debug("Name: %s", WStringToString(name).c_str());
     Logger::Debug("ZBufferSize: %d", DeviceInfo::GetZBufferSize());
+    Logger::Debug("GPU family: %s", GPUFamilyDescriptor::GetGPUName(DeviceInfo::GetGPUFamily()).c_str());
+    Logger::Debug("Network connection type: %s", DeviceInfo::GetNetworkTypeString().c_str());
+    Logger::Debug("Network signal strength: %i%%", DeviceInfo::GetNetworkInfo().signalStrength);
 	Logger::Debug("********** Device info **********");
 
 	data->testData.message = "DeviceInfo test - passed";

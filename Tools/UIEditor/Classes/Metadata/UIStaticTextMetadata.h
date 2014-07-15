@@ -45,6 +45,10 @@ class UIStaticTextMetadata : public UITextControlMetadata
     Q_PROPERTY(bool Multiline READ GetMultiline WRITE SetMultiline);
     Q_PROPERTY(bool MultilineBySymbol READ GetMultilineBySymbol WRITE SetMultilineBySymbol);
 
+    // Font color/shadow color inherit types.
+    Q_PROPERTY(int FontColorInheritType READ GetFontColorInheritType WRITE SetFontColorInheritType);
+    Q_PROPERTY(int ShadowColorInheritType READ GetShadowColorInheritType WRITE SetShadowColorInheritType);
+
 public:
     UIStaticTextMetadata(QObject* parent = 0);
 
@@ -55,7 +59,7 @@ protected:
     virtual void InitializeControl(const String& controlName, const Vector2& position);
     virtual void UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eExtraDataUpdateStyle updateStyle);
 
-    virtual QString GetUIControlClassName() { return "UIStaticText"; };
+    virtual QString GetUIControlClassName() const { return "UIStaticText"; };
     
     // Set the localized text key.
     virtual void SetLocalizedTextKey(const QString& value);
@@ -74,7 +78,7 @@ protected:
     virtual void SetFont(Font* font);
     
     virtual float GetFontSize() const;
-    virtual void SetFontSize(float fontSize);
+    //virtual void SetFontSize(float fontSize);
     
     virtual QColor GetFontColor() const;
     virtual void SetFontColor(const QColor& value);
@@ -96,6 +100,12 @@ protected:
     
     virtual int GetFittingType() const;
     virtual void SetFittingType(int value);
+    
+    virtual int GetFontColorInheritType() const;
+    virtual void SetFontColorInheritType(int value);
+
+    virtual int GetShadowColorInheritType() const;
+    virtual void SetShadowColorInheritType(int value);
 };
 
 };

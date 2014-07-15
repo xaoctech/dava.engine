@@ -157,6 +157,33 @@ int JniDeviceInfo::GetZBufferSize()
 	return 0;
 }
 
+int JniDeviceInfo::GetGPUFamily()
+{
+	jmethodID mid = GetMethodID("GetGPUFamily", "()I");
+	if (mid)
+		return GetEnvironment()->CallStaticIntMethod(GetJavaClass(), mid);
+
+	return -1;
+}
+
+int JniDeviceInfo::GetNetworkType()
+{
+	jmethodID mid = GetMethodID("GetNetworkType", "()I");
+	if (mid)
+		return GetEnvironment()->CallStaticIntMethod(GetJavaClass(), mid);
+
+	return 0;
+}
+
+int JniDeviceInfo::GetSignalStrength(int networkType)
+{
+	jmethodID mid = GetMethodID("GetSignalStrength", "(I)I");
+	if (mid)
+		return GetEnvironment()->CallStaticIntMethod(GetJavaClass(), mid, networkType);
+
+	return 0;
+}
+
 String DeviceInfo::GetVersion()
 {
 	JniDeviceInfo jniDeviceInfo;
@@ -225,6 +252,21 @@ int DeviceInfo::GetZBufferSize()
 {
 	JniDeviceInfo jniDeviceInfo;
 	return jniDeviceInfo.GetZBufferSize();
+}
+
+eGPUFamily DeviceInfo::GetGPUFamily()
+{
+	JniDeviceInfo jniDeviceInfo;
+	return (eGPUFamily) jniDeviceInfo.GetGPUFamily();
+}
+
+DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
+{
+	DeviceInfo::NetworkInfo info;
+	JniDeviceInfo jniDeviceInfo;
+	info.networkType = (DeviceInfo::eNetworkType) jniDeviceInfo.GetNetworkType();
+	info.signalStrength = jniDeviceInfo.GetSignalStrength(info.networkType);
+	return info;
 }
 
 }

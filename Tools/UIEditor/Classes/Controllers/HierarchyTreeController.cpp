@@ -38,9 +38,34 @@
 #include "CommandsController.h"
 #include "PreviewController.h"
 #include "ControlCommands.h"
-#include "ReloadSpritesCommand.h"
+
+#include "TexturePacker/ResourcePacker2D.h"
+#include "ResourcesManageHelper.h"
 
 #include "AlignDistribute/AlignDistributeManager.h"
+#include "ResourcesManageHelper.h"
+
+#include "EditorFontManager.h"
+
+QDir HierarchyTreeController::BaseUnusedItem::GetFullPath(const QString& baseDir,
+                                                          const QString& dirName) const
+{
+    return QDir::cleanPath(QDir(ResourcesManageHelper::GetPlatformRootPath(baseDir)).filePath(dirName));
+}
+
+void HierarchyTreeController::PlatformUnusedItem::DeleteFromDisk(const QString& baseDir) const
+{
+    // Append a separator, since we are deleting the directory.
+    QString platformPath = GetFullPath(baseDir, platformName).path() + QDir::separator();
+    FileSystem::Instance()->DeleteDirectory(platformPath.toStdString());
+}
+
+void HierarchyTreeController::ScreenUnusedItem::DeleteFromDisk(const QString& baseDir) const
+{
+    QString platformPath = GetFullPath(baseDir, platformName).path() + QDir::separator();
+    QString screenPath = QString("%1%2.yaml").arg(platformPath).arg(screenName);
+    FileSystem::Instance()->DeleteFile(screenPath.toStdString());
+}
 
 HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 	QObject(parent)
@@ -51,6 +76,7 @@ HierarchyTreeController::HierarchyTreeController(QObject* parent) :
 HierarchyTreeController::~HierarchyTreeController()
 {
 	DisconnectFromSignals();
+    CleanupUnusedItems();
 }
 
 void HierarchyTreeController::ConnectToSignals()
@@ -104,9 +130,73 @@ List<HierarchyTreeScreenNode*> HierarchyTreeController::GetUnsavedScreens()
 	return hierarchyTree.GetUnsavedScreens();
 }
 
-void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
-											  const HierarchyTreeScreenNode* activeScreen)
+void HierarchyTreeController::UpdateAggregators(const HierarchyTreePlatformNode* platform)
 {
+    if(platform)
+    {
+        const HierarchyTreeNode::HIERARCHYTREENODESLIST& childNodes = platform->GetChildNodes();
+        for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = childNodes.begin();
+             iter != childNodes.end(); iter ++)
+        {
+            HierarchyTreeAggregatorNode* aggregatorNode = dynamic_cast<HierarchyTreeAggregatorNode*>(*iter);
+            if (aggregatorNode)
+            {
+                aggregatorNode->UpdateHierarchyTree();
+            }
+        }
+    }
+}
+
+void HierarchyTreeController::UpdateSelection(HierarchyTreePlatformNode* activePlatform, HierarchyTreeScreenNode* activeScreen)
+{
+    bool updateHierarchyTree = false;
+    if(activeScreen && !activeScreen->IsLoaded())
+    {
+        static const uint32 maxLoadedScreenListSize = 10;
+        loadedScreenList.push_back(activeScreen);
+        
+        // Screen was selected, load it now
+        QString screenPath = ((HierarchyTreePlatformNode*)(activeScreen)->GetParent())->GetScreenPath(activeScreen->GetName());
+        
+        LocalizationSystem::Instance()->Cleanup();
+        activeScreen->Load(screenPath);
+      
+        // Update the screen aggregators after screen is loaded.
+        UpdateAggregators(activePlatform);
+
+        updateHierarchyTree = true;
+
+        hierarchyTree.UpdateControlsData(activeScreen);
+        UpdateLocalization(false);
+        // This is done to load fonts from old style ui yaml files.
+        EditorFontManager::Instance()->OnProjectLoaded();
+        
+        if(loadedScreenList.size() > maxLoadedScreenListSize)
+        {
+            // Unload unused screens from queue
+            uint32 screensToUnload = loadedScreenList.size() - maxLoadedScreenListSize;
+            uint32 actualUnloaded = 0;
+            List<HierarchyTreeScreenNode*>::iterator startIt = loadedScreenList.begin();
+            List<HierarchyTreeScreenNode*>::iterator endIt = loadedScreenList.end();
+            for(; startIt != endIt; ++startIt)
+            {
+                HierarchyTreeScreenNode* unloadedScreen = *(startIt);
+                if(unloadedScreen != activeScreen)
+                {
+                    if(unloadedScreen->Unload())
+                    {
+                        loadedScreenList.erase(startIt);
+                        ++actualUnloaded;
+                    }
+                }
+                if(actualUnloaded >= screensToUnload)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
 	bool updateLibrary = false;
 	if (this->activePlatform != activePlatform)
 	{
@@ -138,6 +228,11 @@ void HierarchyTreeController::UpdateSelection(const HierarchyTreePlatformNode* a
 	}
 	if (updateLibrary)
 		LibraryController::Instance()->UpdateLibrary();
+    
+    if(updateHierarchyTree)
+    {
+        HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+    }
 }
 
 void HierarchyTreeController::UpdateSelection(const HierarchyTreeNode* activeItem)
@@ -255,6 +350,7 @@ void HierarchyTreeController::Clear()
 
 	ResetSelectedControl();
 	CleanupNodesDeletedFromScene();
+    CleanupUnusedItems();
 }
 
 HierarchyTreeNode::HIERARCHYTREENODEID HierarchyTreeController::CreateNewControl(const QString& strType, const QPoint& position)
@@ -380,6 +476,13 @@ void HierarchyTreeController::EmitHierarchyTreeUpdated(bool needRestoreSelection
 bool HierarchyTreeController::NewProject(const QString& projectPath)
 {
 	hierarchyTree.CreateProject();
+    
+    // add project path to res folders (to allow loading fonts before everything else)
+    FilePath bundleName(projectPath.toStdString());
+    bundleName.MakeDirectoryPathname();
+    EditorFontManager::Instance()->SetProjectDataPath(bundleName.GetAbsolutePathname() + "Data/");
+    EditorFontManager::Instance()->SetDefaultFontsPath(FilePath(bundleName.GetAbsolutePathname() + "Data/UI/Fonts/fonts.yaml"));
+    
 	
 	bool res = SaveAll(projectPath);
 	if (res)
@@ -428,12 +531,15 @@ HierarchyTreeAggregatorNode* HierarchyTreeController::AddAggregator(const QStrin
 
 void HierarchyTreeController::CloseProject()
 {
+    loadedScreenList.clear();
 	activeControlNodes.clear();
 	ResetSelectedControl();
 	UpdateSelection(NULL, NULL);
 	// Need clean undo/redo stack before close project
 	CommandsController::Instance()->CleanupUndoRedoStack();
+
 	CleanupNodesDeletedFromScene();
+    CleanupUnusedItems();
 	hierarchyTree.CloseProject();
 
 	EmitHierarchyTreeUpdated();
@@ -497,6 +603,7 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			screenNode->SetMarked(true);
 			QString path = screenNode->GetPlatform()->GetScreenPath(screenNode->GetName());
+            FileSystem::Instance()->LockFile(path.toStdString(), false);
 			FileSystem::Instance()->DeleteFile(path.toStdString());
 		}
 
@@ -504,6 +611,15 @@ void HierarchyTreeController::DeleteNodesFiles(const HierarchyTreeNode::HIERARCH
 		{
 			platformNode->SetMarked(true);
 			platformNode->SetChildrenMarked(true);
+
+			FileList* platformFiles = new FileList(platformNode->GetPlatformFolder());
+			int32 filesCount = platformFiles->GetCount();
+			for (int32 i = 0; i < filesCount; i ++)
+			{
+				FileSystem::Instance()->LockFile(platformFiles->GetPathname(i), false);
+			}
+			platformFiles->Release();
+
 			FileSystem::Instance()->DeleteDirectory(platformNode->GetPlatformFolder(), true);
 		}
 	}
@@ -598,6 +714,7 @@ void HierarchyTreeController::UpdateLocalization(bool takePathFromLocalizationSy
     // Localization System is updated; need to look through all controls
     // and cause them to update their texts according to the new Localization.
     hierarchyTree.UpdateLocalization();
+    ResetSelectedControl();
 }
 
 void HierarchyTreeController::RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes)
@@ -709,14 +826,23 @@ bool HierarchyTreeController::CanPerformDistribute(eDistributeControlsType /*dis
 	return activeControlNodes.size() >= 3;
 }
 
-void HierarchyTreeController::RepackAndReloadSprites()
+ Set<String> HierarchyTreeController::RepackAndReloadSprites()
 {
-    ReloadSpritesCommand* cmd = new ReloadSpritesCommand(hierarchyTree.GetRootNode());
-    CommandsController::Instance()->ExecuteCommand(cmd);
-    SafeRelease(cmd);
+    Set<String> errorsSet;
+    ResourcePacker2D *resPacker = new ResourcePacker2D();
+	resPacker->InitFolders(ResourcesManageHelper::GetSpritesDatasourceDirectory().toStdString(),
+                           ResourcesManageHelper::GetSpritesDirectory().toStdString());
+    
+    resPacker->PackResources(GPU_UNKNOWN);
+    errorsSet = resPacker->GetErrors();
+	SafeDelete(resPacker);
+
+    Sprite::ReloadSprites();
+
+    return errorsSet;
 }
 
-void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
+void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data, bool applyScale)
 {
     if (PreviewController::Instance()->IsPreviewEnabled() || !activePlatform ||
         !activeScreen || !activeScreen->GetScreen())
@@ -726,12 +852,18 @@ void HierarchyTreeController::EnablePreview(const PreviewSettingsData& data)
 
     // We are entering Preview Mode - nothing should be selected.
     ResetSelectedControl();
+    PreviewController::Instance()->EnablePreview(applyScale);
+    SetPreviewMode(data);
+}
 
+void HierarchyTreeController::SetPreviewMode(const PreviewSettingsData& data)
+{
     uint32 screenDPI = Core::Instance()->GetScreenDPI();
-    const PreviewTransformData& transformData = PreviewController::Instance()->EnablePreview(data, activePlatform->GetSize(), screenDPI);
-    activePlatform->EnablePreview(transformData.screenSize.x, transformData.screenSize.y);
-    activeScreen->GetScreen()->SetSize(transformData.screenSize);
+    const PreviewTransformData& transformData = PreviewController::Instance()->SetPreviewMode(data, activePlatform->GetSize(true), screenDPI);
 
+    activePlatform->SetPreviewMode(transformData.screenSize.x, transformData.screenSize.y);
+    activeScreen->GetScreen()->SetSize(transformData.screenSize);
+    
     emit SelectedScreenChanged(activeScreen);
 }
 
@@ -757,4 +889,41 @@ void HierarchyTreeController::SetStickMode(int32 mode)
     {
         activeScreen->SetStickMode(mode);
     }
+}
+
+HierarchyTreeNode::HIERARCHYTREENODESLIST HierarchyTreeController::GetNodes() const
+{
+    return hierarchyTree.GetNodes();
+}
+
+void HierarchyTreeController::AddUnusedItem(BaseUnusedItem* item)
+{
+    if (!item)
+    {
+        DVASSERT(false);
+        return;
+    }
+
+    unusedItems.push_back(item);
+}
+
+void HierarchyTreeController::CleanupUnusedItems()
+{
+    for (List<BaseUnusedItem*>::iterator iter = unusedItems.begin(); iter != unusedItems.end(); iter ++)
+    {
+        BaseUnusedItem* item = *iter;
+        SafeDelete(item);
+    }
+
+    unusedItems.clear();
+}
+
+void HierarchyTreeController::DeleteUnusedItemsFromDisk(const QString& projectPath)
+{
+    for (List<BaseUnusedItem*>::iterator iter = unusedItems.begin(); iter != unusedItems.end(); iter ++)
+    {
+        (*iter)->DeleteFromDisk(projectPath);
+    }
+
+    CleanupUnusedItems();
 }

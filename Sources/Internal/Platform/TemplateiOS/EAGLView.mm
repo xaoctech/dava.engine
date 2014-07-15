@@ -25,6 +25,7 @@
 
 #import "Platform/TemplateiOS/ES1Renderer.h"
 #import "Platform/TemplateiOS/ES2Renderer.h"
+#import "Platform/TemplateiOS/ES3Renderer.h"
 
 #include "DAVAEngine.h"
 
@@ -113,18 +114,33 @@
         
         DAVA::Core::eRenderer rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_1_0;
         
+        if (rendererRequested == DAVA::Core::RENDERER_OPENGL_ES_3_0)
+        {
+            renderer = [[ES3Renderer alloc] init];
+            if(renderer != nil)
+            {
+                rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_3_0;
+                DAVA::RenderManager::Create(DAVA::Core::RENDERER_OPENGL_ES_3_0);
+                DAVA::RenderManager::Instance()->InitFBO([renderer getColorRenderbuffer], [renderer getDefaultFramebuffer]);
+            }
+            else
+            {
+                rendererRequested =DAVA::Core::RENDERER_OPENGL_ES_2_0;
+            }
+        }
+        
         if (rendererRequested == DAVA::Core::RENDERER_OPENGL_ES_2_0)
         {
-            //RenderManager::Instance()->SetRenderer(Core::RENDERER_OPENGL_ES_2_0);
-            renderer = [[ES2Renderer alloc] init];
-            rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_2_0;
-            DAVA::RenderManager::Create(DAVA::Core::RENDERER_OPENGL_ES_2_0);
+            ES2Renderer* es2Renderer =  [[ES2Renderer alloc] init];
+            renderer = es2Renderer;
+            BOOL isGL30Created = [es2Renderer getIsGL30];
+            rendererCreated = (NO == isGL30Created) ? DAVA::Core::RENDERER_OPENGL_ES_2_0 : DAVA::Core::RENDERER_OPENGL_ES_3_0;
+            DAVA::RenderManager::Create(rendererCreated);
             DAVA::RenderManager::Instance()->InitFBO([renderer getColorRenderbuffer], [renderer getDefaultFramebuffer]);
         }
         
 		if (!renderer)
 		{
-            //RenderManager::Instance()->SetRenderer(Core::RENDERER_OPENGL_ES_1_0);
             renderer = [[ES1Renderer alloc] init];
 			rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_1_0;
 			DAVA::RenderManager::Create(DAVA::Core::RENDERER_OPENGL_ES_1_0);
@@ -174,6 +190,14 @@
 	}
 
 	DAVA::RenderManager::Instance()->Lock();
+    
+    DAVA::uint64 renderManagerContextId = DAVA::RenderManager::Instance()->GetRenderContextId();
+    DAVA::uint64 currentContextId = DAVA::EglGetCurrentContext();
+    if (renderManagerContextId!=currentContextId)
+    {
+        EAGLContext * context =  (EAGLContext *)renderManagerContextId;
+        [EAGLContext setCurrentContext:context];
+    }
     
     if(DAVA::Core::Instance()->IsActive())
     {

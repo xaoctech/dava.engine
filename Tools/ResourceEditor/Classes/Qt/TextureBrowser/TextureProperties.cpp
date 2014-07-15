@@ -34,11 +34,11 @@
 #include "TextureProperties.h"
 #include "Tools/QtPropertyEditor/QtPropertyItem.h"
 
-
 TextureProperties::TextureProperties( QWidget *parent /*= 0*/ )
 	: QtPropertyEditor(parent)
 	, curTextureDescriptor(NULL)
 	, skipPropSizeChanged(false)
+    , curGPU(DAVA::GPU_UNKNOWN)
 {
 	SetEditTracking(true);
 }
@@ -166,19 +166,26 @@ void TextureProperties::ReloadProperties()
 		propMipMap->SetCheckable(true);
 		propMipMap->SetEditable(false);
 		
-		//TODO: magic to display introspection info as bool, not int
-		bool savedValue = propMipMap->GetValue().toBool();
-		propMipMap->SetValue(!savedValue);
-		propMipMap->SetValue(savedValue);
-		//END of TODO
+        propNormalMap = AddPropertyItem("isNormalMap", textureDataSettings, headerIndex);
+        propNormalMap->SetCheckable(true);
+        propNormalMap->SetEditable(false);
+
+        //TODO: magic to display introspection info as bool, not int
+        bool savedValue = propMipMap->GetValue().toBool();
+        propMipMap->SetValue(!savedValue);
+        propMipMap->SetValue(savedValue);
+
+        savedValue = propNormalMap->GetValue().toBool();
+        propNormalMap->SetValue(!savedValue);
+        propNormalMap->SetValue(savedValue);
+        //END of TODO
 
 		propWrapModeS = AddPropertyItem("wrapModeS", textureDrawSettings, headerIndex);
 		propWrapModeT = AddPropertyItem("wrapModeT", textureDrawSettings, headerIndex);
 		propMinFilter = AddPropertyItem("minFilter", textureDrawSettings, headerIndex);
 		propMagFilter = AddPropertyItem("magFilter", textureDrawSettings, headerIndex);
 
-		DVASSERT(curTextureDescriptor->compression);
-		DAVA::InspBase *compressionSettings = curTextureDescriptor->compression[curGPU];
+		DAVA::InspBase *compressionSettings = &curTextureDescriptor->compression[curGPU];
 
 		// add per-gpu drawSettings
 		headerIndex = AppendHeader(GlobalEnumMap<DAVA::eGPUFamily>::Instance()->ToString(curGPU));
@@ -334,6 +341,10 @@ void TextureProperties::OnItemEdited(const QModelIndex &index)
 
 		emit PropertyChanged(PROP_MIPMAP);
 	}
+    else if(data == propNormalMap)
+    {
+        emit PropertyChanged(PROP_NORMALMAP);
+    }
 	else if(data == propFormat)
 	{
 		emit PropertyChanged(PROP_FORMAT);
@@ -363,8 +374,7 @@ void TextureProperties::LoadCurSizeToProp()
 	if( NULL != curTextureDescriptor && NULL != propSizes && 
 		curGPU > DAVA::GPU_UNKNOWN && curGPU < DAVA::GPU_FAMILY_COUNT)
 	{
-		DVASSERT(curTextureDescriptor->compression);
-		QSize curSize(curTextureDescriptor->compression[curGPU]->compressToWidth, curTextureDescriptor->compression[curGPU]->compressToHeight);
+		QSize curSize(curTextureDescriptor->compression[curGPU].compressToWidth, curTextureDescriptor->compression[curGPU].compressToHeight);
 		int level = availableSizes.key(curSize, -1); 
 
 		if(-1 != level)
@@ -387,8 +397,8 @@ void TextureProperties::SaveCurSizeFromProp()
 		if(availableSizes.contains(level))
 		{
 			DVASSERT(curTextureDescriptor->compression);
-			curTextureDescriptor->compression[curGPU]->compressToWidth = availableSizes[level].width();
-			curTextureDescriptor->compression[curGPU]->compressToHeight = availableSizes[level].height();
+			curTextureDescriptor->compression[curGPU].compressToWidth = availableSizes[level].width();
+			curTextureDescriptor->compression[curGPU].compressToHeight = availableSizes[level].height();
 		}
 	}
 }

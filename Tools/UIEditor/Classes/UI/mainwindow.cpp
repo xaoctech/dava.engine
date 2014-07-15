@@ -50,6 +50,7 @@
 #include "Dialogs/importdialog.h"
 #include "Dialogs/localizationeditordialog.h"
 #include "Dialogs/previewsettingsdialog.h"
+#include "Dialogs/errorslistdialog.h"
 
 #include "ImportCommands.h"
 #include "AlignDistribute/AlignDistributeEnums.h"
@@ -60,6 +61,9 @@
 
 #include "Ruler/RulerController.h"
 
+#include "EditorFontManager.h"
+#include "CopyPasteController.h"
+
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -67,6 +71,7 @@
 #include <QUrl>
 #include <QSettings>
 #include <QColorDialog>
+#include <QDateTime>
 
 #define SPIN_SCALE 10.f
 
@@ -102,6 +107,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
 
+    findField = new QLineEdit();
+    findField->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+    ui->findToolBar->addWidget(findField);
+    ui->findToolBar->addSeparator();
+    connect(findField, SIGNAL(returnPressed() ), this, SLOT(OnSearchPressed()));
+    connect(ui->actionFind,SIGNAL(triggered()),this, SLOT(OnSearchPressed()));
+    
 	int32 scalesCount = COUNT_OF(SCALE_PERCENTAGES);
 
 	// Setup the Scale Slider.
@@ -166,7 +178,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(ProjectLoaded()),
 			this,
-			SLOT(OnProjectCreated()));
+			SLOT(OnProjectLoaded()));
 	
 	connect(HierarchyTreeController::Instance(),
 			SIGNAL(SelectedScreenChanged(const HierarchyTreeScreenNode*)),
@@ -192,6 +204,11 @@ MainWindow::MainWindow(QWidget *parent) :
 			SIGNAL(ImportScreenOrAggregator()),
 			this,
 			SLOT(OnImportScreenOrAggregator()));
+
+    connect(ui->previewSettingsDockWidget->widget(),
+            SIGNAL(PreviewModeChanged(int)),
+            this,
+            SLOT(OnPreviewModeChanged(int)));
 
 	connect(ScreenWrapper::Instance(),
 			SIGNAL(UpdateScaleRequest(float)),
@@ -225,6 +242,16 @@ MainWindow::MainWindow(QWidget *parent) :
             this,
             SLOT(OnPreviewTriggered()));
     
+    connect(this->ui->actionScreenshot,
+            SIGNAL(triggered()),
+            this,
+            SLOT(OnScreenshot()));
+
+    connect(this->ui->actionSetScreenshotFolder,
+            SIGNAL(triggered()),
+            this,
+            SLOT(OnSetScreenshotFolder()));
+    
     connect(this->ui->actionEditPreviewSettings,
             SIGNAL(triggered()),
             this,
@@ -257,7 +284,7 @@ MainWindow::~MainWindow()
     }
 	
 	SaveMainWindowState();
-	
+	delete findField;
     delete ui;
 }
 
@@ -604,6 +631,7 @@ void MainWindow::OnSelectedScreenChanged()
 	screenChangeUpdate = false;
 	UpdateMenu();
 	UpdateScreenPosition();
+    OnUndoRedoAvailabilityChanged();
 }
 
 void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
@@ -656,6 +684,7 @@ void MainWindow::UpdateScreenPosition()
         frameRect.SetSize(Vector2(glWidgetRect.width(), glWidgetRect.height()));
 
         ScreenWrapper::Instance()->SetBackgroundFrameRect(frameRect);
+        currentScreen->SetScreenPositionChangedFlag();
     }
 }
 
@@ -779,6 +808,7 @@ void MainWindow::SetupViewMenu()
     ui->menuView->addAction(ui->hierarchyDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->libraryDockWidget->toggleViewAction());
     ui->menuView->addAction(ui->propertiesDockWidget->toggleViewAction());
+    ui->menuView->addAction(ui->previewSettingsDockWidget->toggleViewAction());
 
     ui->menuView->addSeparator();
     ui->menuView->addAction(ui->mainToolbar->toggleViewAction());
@@ -847,8 +877,8 @@ void MainWindow::UpdateMenu()
     bool projectCreated = HierarchyTreeController::Instance()->GetTree().IsProjectCreated();
     bool projectNotEmpty = (HierarchyTreeController::Instance()->GetTree().GetPlatforms().size() > 0);
 
-	ui->actionSave_project->setEnabled(projectCreated);
-	ui->actionSave_All->setEnabled(projectCreated);
+    UpdateSaveButtons();
+
 	ui->actionClose_project->setEnabled(projectCreated);
 	ui->menuProject->setEnabled(projectCreated);
 	ui->actionNew_platform->setEnabled(projectCreated);
@@ -870,11 +900,20 @@ void MainWindow::UpdateMenu()
     bool enablePreview = projectNotEmpty && activeScreen && IsPointerToExactClass<HierarchyTreeScreenNode>(activeScreen);
     ui->actionPreview->setEnabled(enablePreview);
     ui->actionEditPreviewSettings->setEnabled(enablePreview);
-    
+
+    // Preview Dock is not visible by default - only in Preview Mode.
+    bool isPreview = ui->actionPreview->isChecked();
+    ui->previewSettingsDockWidget->setVisible(isPreview);
+    ui->previewSettingsDockWidget->toggleViewAction()->setEnabled(isPreview);
+
     // Guides.
     ui->actionEnable_Guides->setEnabled(projectNotEmpty);
     ui->actionLock_Guides->setEnabled(projectNotEmpty);
     ui->actionStickMode->setEnabled(projectNotEmpty);
+    
+    // Screenshot.
+    ui->actionSetScreenshotFolder->setEnabled(projectNotEmpty);
+    ui->actionScreenshot->setEnabled(projectNotEmpty);
 }
 
 void MainWindow::OnNewProject()
@@ -914,6 +953,12 @@ void MainWindow::OnProjectCreated()
 	// Release focus from Dava GL widget, so after the first click to it
 	// it will lock the keyboard and will process events successfully.
 	ui->hierarchyDockWidget->setFocus();
+}
+
+void MainWindow::OnProjectLoaded()
+{
+    OnProjectCreated();
+    EditorFontManager::Instance()->OnProjectLoaded();
 }
 
 void MainWindow::OnNewPlatform()
@@ -1061,6 +1106,13 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			if (projectPath.isNull())
 				return;
 
+            // Check whether project file is locked.
+            if (!CheckAndUnlockProject(projectPath))
+            {
+                return;
+            }
+
+            // Do the load.
 			if (HierarchyTreeController::Instance()->Load(projectPath))
 			{
 				// Update project title if project was successfully loaded
@@ -1076,6 +1128,38 @@ void MainWindow::FileMenuTriggered(QAction *resentScene)
 			return;
         }
     }
+}
+
+bool MainWindow::CheckAndUnlockProject(const QString& projectPath)
+{
+    if (!FileSystem::Instance()->IsFileLocked(projectPath.toStdString()))
+    {
+        // Nothing to unlock.
+        return true;
+    }
+
+    QMessageBox msgBox;
+    msgBox.setText(QString(tr("The project file %1 is locked by other user. Do you want to unlock it?").arg(projectPath)));
+    QAbstractButton* unlockButton = msgBox.addButton(tr("Unlock"), QMessageBox::YesRole);
+    msgBox.addButton(tr("Cancel"), QMessageBox::NoRole);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() != unlockButton)
+    {
+        return false;
+    }
+
+    // Check whether it is possible to unlock project file.
+    if (!FileSystem::Instance()->LockFile(projectPath.toStdString(), false))
+    {
+        QMessageBox errorBox;
+        errorBox.setText(QString(tr("Unable to unlock project file %1. Please check whether the project is opened in another UIEditor and close it, if yes.").arg(projectPath)));
+        errorBox.exec();
+        
+        return false;
+    }
+
+    return true;
 }
 
 void MainWindow::DoSaveProject(bool changesOnly)
@@ -1105,15 +1189,15 @@ void MainWindow::DoSaveProject(bool changesOnly)
 
 void MainWindow::OnOpenProject()
 {
-	// Close and save current project if any
-	if (!CloseProject())
-		return;
-
 	QString projectPath = QFileDialog::getOpenFileName(this, tr("Select a project file"),
 														ResourcesManageHelper::GetDefaultDirectory(),
 														tr( "Project (*.uieditor)"));
     if (projectPath.isNull() || projectPath.isEmpty())
         return;
+
+	// Close and save current project if any
+	if (!CloseProject())
+		return;
 
 	// Convert file path into Unix-style path
 	projectPath = ResourcesManageHelper::ConvertPathToUnixStyle(projectPath);
@@ -1174,6 +1258,7 @@ bool MainWindow::CloseProject()
 			OnSaveProject();
 	}
 	
+	CopyPasteController::Instance()->Clear();
 	HierarchyTreeController::Instance()->CloseProject();
 	// Update project title
 	this->setWindowTitle(ResourcesManageHelper::GetProjectTitle());
@@ -1236,6 +1321,9 @@ void MainWindow::OnUnsavedChangesNumberChanged()
 	{
 		projectTitle += " *";
 	}
+    
+    UpdateSaveButtons();
+
 	setWindowTitle(projectTitle);
 }
 
@@ -1378,6 +1466,12 @@ void MainWindow::NotifyScaleUpdated(float32 newScale)
     GridVisualizer::Instance()->SetScale(newScale);
 
     RulerController::Instance()->SetScale(newScale);
+    
+    DefaultScreen* currentScreen = ScreenWrapper::Instance()->GetActiveScreen();
+    if (currentScreen)
+    {
+        currentScreen->SetScreenPositionChangedFlag();
+    }
 }
 
 void MainWindow::OnPixelizationStateChanged()
@@ -1393,8 +1487,15 @@ void MainWindow::OnPixelizationStateChanged()
 void MainWindow::RepackAndReloadSprites()
 {
     ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
-    HierarchyTreeController::Instance()->RepackAndReloadSprites();
+    const Set<String>& errorsSet = HierarchyTreeController::Instance()->RepackAndReloadSprites();
     ScreenWrapper::Instance()->RestoreApplicationCursor();
+
+    if (!errorsSet.empty())
+	{
+		ErrorsListDialog errorsDialog;
+		errorsDialog.InitializeErrorsList(errorsSet);
+		errorsDialog.exec();
+	}
 }
 
 void MainWindow::SetBackgroundColorMenuTriggered(QAction* action)
@@ -1485,8 +1586,7 @@ void MainWindow::OnPreviewTriggered()
             return;
         }
 
-        PreviewSettingsData previewData = dialog->GetSelectedData();
-        EnablePreview(previewData);
+        EnablePreview(dialog->GetSelectedData(), dialog->GetApplyScale());
         delete dialog;
     }
     else
@@ -1497,21 +1597,30 @@ void MainWindow::OnPreviewTriggered()
     UpdatePreviewButton();
 }
 
+void MainWindow::OnPreviewModeChanged(int previewSettingsID)
+{
+    const PreviewSettingsData& previewData = PreviewController::Instance()->GetPreviewSettingsData(previewSettingsID);
+    SetPreviewMode(previewData);
+}
+
 void MainWindow::OnGLWidgetResized()
 {
     UpdateSliders();
     UpdateScreenPosition();
 }
 
-void MainWindow::EnablePreview(const PreviewSettingsData& data)
+void MainWindow::EnablePreview(const PreviewSettingsData& data, bool applyScale)
 {
-    HierarchyTreeController::Instance()->EnablePreview(data);
-
-    const PreviewTransformData& transformData = PreviewController::Instance()->GetTransformData();
-    ScreenWrapper::Instance()->SetScale(transformData.zoomLevel);
-    UpdateScaleControls();
-
+    HierarchyTreeController::Instance()->EnablePreview(data, applyScale);
+    UpdatePreviewScale();
     EnableEditing(false);
+}
+
+void MainWindow::SetPreviewMode(const PreviewSettingsData& data)
+{
+    HierarchyTreeController::Instance()->SetPreviewMode(data);
+    UpdatePreviewScale();
+    UpdateScreenPosition();
 }
 
 void MainWindow::DisablePreview()
@@ -1530,6 +1639,8 @@ void MainWindow::EnableEditing(bool value)
     ui->hierarchyDockWidget->setVisible(value);
     ui->libraryDockWidget->setVisible(value);
     ui->propertiesDockWidget->setVisible(value);
+    ui->previewSettingsDockWidget->setVisible(!value);
+
     ui->scaleCombo->setVisible(value);
     ui->scaleSlider->setVisible(value);
 
@@ -1544,6 +1655,7 @@ void MainWindow::EnableEditing(bool value)
     ui->hierarchyDockWidget->toggleViewAction()->setEnabled(value);
     ui->libraryDockWidget->toggleViewAction()->setEnabled(value);
     ui->propertiesDockWidget->toggleViewAction()->setEnabled(value);
+    ui->previewSettingsDockWidget->toggleViewAction()->setEnabled(!value);
 
     if (value)
     {
@@ -1568,6 +1680,13 @@ void MainWindow::UpdatePreviewButton()
     {
         ui->actionPreview->setText("Editing Mode");
     }
+}
+
+void MainWindow::UpdatePreviewScale()
+{
+    const PreviewTransformData& transformData = PreviewController::Instance()->GetTransformData();
+    ScreenWrapper::Instance()->SetScale(transformData.zoomLevel);
+    UpdateScaleControls();
 }
 
 void MainWindow::OnEditPreviewSettings()
@@ -1620,6 +1739,50 @@ void MainWindow::OnEnableGuidesChanged()
     }
 }
 
+void MainWindow::OnSetScreenshotFolder()
+{
+    SetScreenshotFolder();
+}
+
+void MainWindow::SetScreenshotFolder()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Screenshots Directory"),
+                                                    screenShotFolder,
+                                                    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty())
+    {
+        screenShotFolder = dir;
+    }
+}
+
+void MainWindow::OnScreenshot()
+{
+    DefaultScreen* currentScreen = ScreenWrapper::Instance()->GetActiveScreen();
+    if (!currentScreen || !currentScreen->GetScreenControl())
+    {
+        return;
+    }
+
+    if (screenShotFolder.isEmpty())
+    {
+        SetScreenshotFolder();
+    }
+
+    QString deviceModel = "NormalView";
+    if (PreviewController::Instance()->IsPreviewEnabled())
+    {
+        deviceModel = QString::fromStdString(PreviewController::Instance()->GetActivePreviewSettingsData().deviceName);
+        deviceModel.replace(QRegExp("[^a-zA-Z0-9]"),QString("_"));
+    }
+
+    QString screenShotFileName = QString("UIEditor_Screenshot_%1_%2").arg(deviceModel).arg(QDateTime::currentDateTime().toString("yyyy.MM.dd_HH.mm.ss.z.png"));
+    QString fullPath = QDir().cleanPath(screenShotFolder + QDir::separator() + screenShotFileName);
+
+    ScreenWrapper::Instance()->SetApplicationCursor(Qt::WaitCursor);
+    PreviewController::Instance()->MakeScreenshot(fullPath.toStdString(), currentScreen);
+    ScreenWrapper::Instance()->RestoreApplicationCursor();
+}
+
 void MainWindow::OnLockGuidesChanged()
 {
     HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
@@ -1627,4 +1790,71 @@ void MainWindow::OnLockGuidesChanged()
     {
         activeScreen->LockGuides(ui->actionLock_Guides->isChecked());
     }
+}
+
+void MainWindow::UpdateSaveButtons()
+{
+    bool hasUnsavedChanges = HierarchyTreeController::Instance()->HasUnsavedChanges();
+    
+    ui->actionSave_project->setEnabled(hasUnsavedChanges);
+    ui->actionSave_All->setEnabled(hasUnsavedChanges);
+}
+
+
+void MainWindow::OnSearchPressed()
+{
+    QString partOfName = findField->text();
+    QList<HierarchyTreeControlNode*> foundNodes;
+    HierarchyTreeScreenNode* activeScreen = HierarchyTreeController::Instance()->GetActiveScreen();
+    if (NULL == activeScreen)
+    {
+        HierarchyTreePlatformNode* activePlatform = HierarchyTreeController::Instance()->GetActivePlatform();
+        if (activePlatform)
+        {
+            foundNodes = SearchScreenByName(activePlatform->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
+        }
+    }
+    else
+    {
+        SearchControlsByName(foundNodes,activeScreen->GetChildNodes(),partOfName,ui->actionIgnoreCase->isChecked());
+    }
+    HierarchyTreeController::Instance()->ResetSelectedControl();
+    if (!foundNodes.empty())
+    {
+        HierarchyTreeController::Instance()->SynchronizeSelection(foundNodes);
+    }
+    
+}
+
+void MainWindow::SearchControlsByName(QList<HierarchyTreeControlNode*>& foundNodes,const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
+{
+    HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it = nodes.begin();
+    for (; it!=nodes.end(); ++it)
+    {
+        HierarchyTreeControlNode * controlNode = static_cast<HierarchyTreeControlNode *>(*it);
+        const QString name = QString::fromStdString(controlNode->GetUIObject()->GetName());
+        Qt::CaseSensitivity cs = ignoreCase?Qt::CaseInsensitive:Qt::CaseSensitive;
+        if (name.contains(partOfName,cs))
+        {
+            foundNodes.push_back(controlNode);
+        }
+        SearchControlsByName(foundNodes,(*it)->GetChildNodes(),partOfName,ignoreCase);
+    }
+}
+
+QList<HierarchyTreeControlNode*> MainWindow::SearchScreenByName(const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName,bool ignoreCase) const
+{
+    QList<HierarchyTreeControlNode*> foundNodes;
+    HierarchyTreeNode::HIERARCHYTREENODESCONSTITER it = nodes.begin();
+    for (; it!=nodes.end(); ++it)
+    {
+        HierarchyTreeScreenNode * screenNode = static_cast<HierarchyTreeScreenNode *>(*it);
+        QString name = screenNode->GetName();
+        Qt::CaseSensitivity cs = ignoreCase?Qt::CaseInsensitive:Qt::CaseSensitive;
+        if (name.contains(partOfName,cs))
+        {
+            foundNodes.push_back(static_cast<HierarchyTreeControlNode *>(*it));
+        }
+    }
+    return foundNodes;
 }
