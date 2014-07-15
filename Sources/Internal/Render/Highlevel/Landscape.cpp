@@ -28,7 +28,8 @@
 
 
 #include "Render/Highlevel/Landscape.h"
-#include "Render/Image.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
 #include "Render/RenderManager.h"
 #include "Render/RenderHelper.h"
 #include "Render/RenderDataObject.h"
@@ -41,7 +42,6 @@
 #include "Render/Highlevel/Heightmap.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/TextureDescriptor.h"
-#include "Render/ImageLoader.h"
 #include "LandscapeChunk.h"
 #include "Debug/Stats.h"
 #include "Render/Material/NMaterial.h"
@@ -211,6 +211,27 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 			Vector3 normalAverage = normal0 + normal1 + normal2 + normal3;
 			normalAverage.Normalize();
 			landscapeVertices[index].normal = normalAverage;
+            LandscapeVertices[index].tangent = Normalize(right - position);
+            
+            /*
+                VS: Algorithm
+                 // # P.xy store the position for which we want to calculate the normals
+                 // # height() here is a function that return the height at a point in the terrain
+                 
+                 // read neightbor heights using an arbitrary small offset
+                 vec3 off = vec3(1.0, 1.0, 0.0);
+                 float hL = height(P.xy - off.xz);
+                 float hR = height(P.xy + off.xz);
+                 float hD = height(P.xy - off.zy);
+                 float hU = height(P.xy + off.zy);
+                 
+                 // deduce terrain normal
+                 N.x = hL - hR;
+                 N.y = hD - hU;
+                 N.z = 2.0;
+                 N = normalize(N);
+             */
+            
 #endif
 			
             index++;
@@ -223,6 +244,7 @@ int16 Landscape::AllocateRDOQuad(LandscapeQuad * quad)
 	
 #ifdef LANDSCAPE_SPECULAR_LIT
 	landscapeRDO->SetStream(EVF_NORMAL, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].normal);
+    LandscapeRDO->SetStream(EVF_TANGENT, TYPE_FLOAT, 3, sizeof(LandscapeVertex), &landscapeVertices[0].tangent);
 #endif
 	
     landscapeRDO->BuildVertexBuffer((quad->size + 1) * (quad->size + 1));
@@ -282,7 +304,7 @@ bool Landscape::BuildHeightmap()
     if(heightmapPath.IsEqualToExtension(".png"))
     {
         Vector<Image *> imageSet;
-        ImageLoader::CreateFromFileByExtension(heightmapPath, imageSet);
+        ImageSystem::Instance()->Load(heightmapPath, imageSet);
         if(0 != imageSet.size())
         {
             if ((imageSet[0]->GetPixelFormat() != FORMAT_A8) && (imageSet[0]->GetPixelFormat() != FORMAT_A16))
@@ -1382,7 +1404,7 @@ void Landscape::SetHeightmapPathname(const FilePath & newHeightMapPath)
 	BuildLandscapeFromHeightmapImage(newHeightMapPath, bbox);
 }
 	
-float32 Landscape::GetLandscapeSize()
+float32 Landscape::GetLandscapeSize() const
 {
 	return bbox.GetSize().x;
 }
@@ -1393,7 +1415,7 @@ void Landscape::SetLandscapeSize(float32 newSize)
 	SetLandscapeSize(newLandscapeSize);
 }
 	
-float32 Landscape::GetLandscapeHeight()
+float32 Landscape::GetLandscapeHeight() const
 {
 	return bbox.GetSize().z;
 }

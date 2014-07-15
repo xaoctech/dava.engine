@@ -35,6 +35,7 @@
 using namespace DAVA;
 
 #include "TestTemplate.h"
+#include "Platform/DeviceInfo.h"
 
 class DeviceInfoTest : public TestTemplate<DeviceInfoTest>
 {

@@ -82,8 +82,9 @@ public:
 	public:
 		enum eOptionsFlag
 		{
-			FLAG_GENERATE_MIPMAPS = 1 << 0,
-			FLAG_INVALID = 1 << 7
+			FLAG_GENERATE_MIPMAPS   = 1 << 0,
+            FLAG_IS_NORMAL_MAP      = 1 << 1,
+			FLAG_INVALID            = 1 << 7
 		};
 
 		TextureDataSettings() { SetDefaultValues(); }
@@ -92,11 +93,15 @@ public:
 		void SetGenerateMipmaps(const bool & generateMipmaps);
 		bool GetGenerateMipMaps() const;
 
+        void SetIsNormalMap(const bool & isNormalMap);
+        bool GetIsNormalMap() const;
+
 		int8 textureFlags;
 		uint8 faceDescription;
 
 		INTROSPECTION(TextureDataSettings,
-			PROPERTY("generateMipMaps", "generateMipMaps", GetGenerateMipMaps, SetGenerateMipmaps, I_VIEW | I_EDIT | I_SAVE)
+            PROPERTY("generateMipMaps", "generateMipMaps", GetGenerateMipMaps, SetGenerateMipmaps, I_VIEW | I_EDIT | I_SAVE)
+            PROPERTY("isNormalMap", "isNormalMap", GetIsNormalMap, SetIsNormalMap, I_VIEW | I_EDIT | I_SAVE)
 			MEMBER(faceDescription, "faceDescription", I_SAVE)
 		)
 
@@ -128,7 +133,7 @@ public:
     
 
 public:
-    TextureDescriptor(bool needCompressionSettings = false);
+    TextureDescriptor();
 	virtual ~TextureDescriptor();
 
 	static TextureDescriptor * CreateFromFile(const FilePath &filePathname);
@@ -168,12 +173,9 @@ public:
     
     PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU) const;
     
-	void Reload();
+	bool Reload();
 
 protected:
-
-	void AllocateCompressionData();
-	void ReleaseCompressionData();
 
     const Compression * GetCompressionParams(eGPUFamily forGPU) const;
     
@@ -207,7 +209,7 @@ public:
 	FastName qualityGroup;
 	TextureDrawSettings drawSettings;
 	TextureDataSettings dataSettings;
-	Compression **compression;
+	Compression compression[GPU_FAMILY_COUNT];
     
 	PixelFormat format:8;			// texture format
     //Binary only

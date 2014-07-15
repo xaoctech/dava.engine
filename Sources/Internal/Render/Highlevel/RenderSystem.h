@@ -64,11 +64,11 @@ public:
     /**
         \brief Get Render Pass Manager to have ability to get all render passes from RenderSystem.
      */
-    const RenderPassManager * GetRenderPassManager() const { return &renderPassManager; };
+    inline const RenderPassManager * GetRenderPassManager() const;
     /**
         \brief Get Render Hierarchy. It allow you to work with current render hierarchy and perform all main tasks with geometry on the level.
      */
-    RenderHierarchy * GetRenderHierarchy() const {return renderHierarchy; }
+    inline RenderHierarchy * GetRenderHierarchy() const;
 
     /**
         \brief Register render objects for permanent rendering
@@ -115,7 +115,7 @@ public:
     NMaterial *GetGlobalMaterial() const;
     
     void Update(float32 timeElapsed);
-    void Render();
+    void Render(uint32 clearBuffers);
     
     void MarkForUpdate(RenderObject * renderObject);
     void MarkForUpdate(Light * lightNode);
@@ -147,6 +147,8 @@ public:
     RenderHierarchy * GetRenderHierarchy(){return renderHierarchy;}
 
     inline bool IsRenderHierarchyInitialized() const {return hierarchyInitialized;}
+    
+    inline RenderPass* GetMainRenderPass() const;
     
 private:
 	void CreateSpatialTree();
@@ -181,7 +183,16 @@ private:
     friend class RenderPass;
 };
     
-    
+inline const RenderPassManager * RenderSystem::GetRenderPassManager() const
+{
+    return &renderPassManager;
+};
+
+inline RenderHierarchy * RenderSystem::GetRenderHierarchy() const
+{
+    return renderHierarchy;
+}
+
     
 inline void RenderSystem::SetMainCamera(Camera * _camera)
 {
@@ -203,6 +214,11 @@ inline Camera * RenderSystem::GetMainCamera() const
 inline Camera * RenderSystem::GetDrawCamera() const
 {
     return drawCamera;
+}
+
+inline RenderPass* RenderSystem::GetMainRenderPass() const
+{
+    return mainRenderPass;
 }
     
 } // ns

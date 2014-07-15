@@ -1,8 +1,8 @@
 <CONFIG>
-tileTexture0 = 2
-tileMask = 1
-colorTexture = 0
-specularMap = 6
+uniform sampler2D tileTexture0 = 2;
+uniform sampler2D tileMask = 1;
+uniform sampler2D colorTexture = 0;
+uniform sampler2D specularMap = 6;
 <FRAGMENT_SHADER>
 #ifdef GL_ES
 precision highp float;

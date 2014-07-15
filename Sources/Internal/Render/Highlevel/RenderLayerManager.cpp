@@ -36,6 +36,11 @@ namespace DAVA
     
 HashMap<FastName, RenderLayerID> RenderLayerManager::layerIDmap(16);
     
+RenderLayerID RenderLayerManager::GetLayerIDByName(const FastName & fastname)
+{
+    return layerIDmap[fastname];
+}
+
 uint32 RenderLayerManager::GetLayerIDMaskBySet(const FastNameSet & layers)
 {
     uint32 renderLayerIDsBitmask = 0;
@@ -98,6 +103,11 @@ RenderLayerManager::RenderLayerManager()
                                                             0,
                                                             RENDER_LAYER_SHADOW_VOLUME_ID);
     InsertLayer(renderLayerShadowVolume);
+    
+    RenderLayer * renderLayerVegetation = new RenderLayer(LAYER_VEGETATION,
+                                                          0,
+                                                          RENDER_LAYER_VEGETATION_ID);
+    InsertLayer(renderLayerVegetation);
     
 }
 

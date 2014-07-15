@@ -125,6 +125,16 @@ SceneCollisionSystem::~SceneCollisionSystem()
 	DAVA::SafeDelete(landCollConf);
 }
 
+void SceneCollisionSystem::SetDrawMode(int mode)
+{
+	drawMode = mode;
+}
+
+int SceneCollisionSystem::GetDrawMode() const
+{
+	return drawMode;
+}
+
 const EntityGroup* SceneCollisionSystem::ObjectsRayTest(const DAVA::Vector3 &from, const DAVA::Vector3 &to)
 {
 	DAVA::Entity *retEntity = NULL;
@@ -538,7 +548,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		NULL != entity)
 	{
 		if( NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
-			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
+			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) ||
+            NULL != entity->GetComponent(DAVA::Component::WIND_COMPONENT))
 		{
 			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), SIMPLE_COLLISION_BOX_SIZE * debugBoxScale);
 		}

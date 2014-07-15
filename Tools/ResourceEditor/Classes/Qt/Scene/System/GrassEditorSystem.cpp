@@ -39,7 +39,11 @@
 #include "Scene/SceneSignals.h"
 #include "Commands2/ImageRegionCopyCommand.h"
 
+#include "Render/PixelFormatDescriptor.h"
+
 #include <QApplication>
+
+static const float32 DENSITY_THRESHOLD = 0.1f;
 
 GrassEditorSystem::GrassEditorSystem(Scene* scene)
 : SceneSystem(scene)
@@ -143,7 +147,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
 {
     bool ret = false;
 
-    if(LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS == drawSystem->VerifyLandscape())
+    /*if(LandscapeEditorDrawSystem::LANDSCAPE_EDITOR_SYSTEM_NO_ERRORS == drawSystem->VerifyLandscape())
     {
         if(enable != isEnabled)
         {
@@ -154,13 +158,10 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                 DVASSERT(NULL == curVegetation);
                 curVegetation = SafeRetain(veg);
 
-                if(NULL != veg && NULL != veg->GetVegetationMap())
+                if(NULL != veg)
                 {
                     isEnabled = true;
                     ret = true;
-
-                    DVASSERT(NULL == vegetationMap);
-                    vegetationMap = SafeRetain(veg->GetVegetationMap());
 
                     selectionSystem->SetLocked(true);
                     modifSystem->SetLocked(true);
@@ -183,6 +184,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                 if(NULL != curVegetation)
                 {
                     curVegetation->SetLayerVisibilityMask(0xFF);
+                    
                 }
 
                 SafeRelease(vegetationMap);
@@ -193,7 +195,7 @@ bool GrassEditorSystem::EnableGrassEdit(bool enable)
                 ret = true;
             }
         }
-    }
+    }*/
 
     return ret;
 }
@@ -339,7 +341,7 @@ void GrassEditorSystem::DrawGrass(DAVA::Vector2 pos)
 
         for(DAVA::uint8 layer = applyFromLayer; layer <= applyToLayer; ++layer)
         {
-            DAVA::uint32 index = offset * Texture::GetPixelFormatSizeInBytes(vegetationMap->format);
+            DAVA::uint32 index = offset * DAVA::PixelFormatDescriptor::GetPixelFormatSizeInBytes(vegetationMap->format);
             index += layer;
 
             uint8 mapData = vegetationMap->data[index];
@@ -406,7 +408,7 @@ void GrassEditorSystem::DrawGrass(DAVA::Vector2 pos)
 
 void GrassEditorSystem::DrawGrassEnd()
 {
-    if(!affectedArea.IsEmpty() && NULL != vegetationMapCopy)
+    /*if(!affectedArea.IsEmpty() && NULL != vegetationMapCopy)
     {
         SceneEditor2 *sceneEditor = (SceneEditor2 *) GetScene();
 
@@ -414,7 +416,7 @@ void GrassEditorSystem::DrawGrassEnd()
         DAVA::Rect affectedRect = DAVA::Rect(affectedRect2i.x, affectedRect2i.y, affectedRect2i.dx, affectedRect2i.dy);
         DAVA::Image *orig = DAVA::Image::CopyImageRegion(vegetationMapCopy, affectedRect);
         sceneEditor->Exec(new ImageRegionCopyCommand(vegetationMap, affectedRect.GetPosition(), vegetationMap, affectedRect, curVegetation->GetVegetationMapPath(), orig));
-    }
+    }*/
 }
 
 void GrassEditorSystem::BuildGrassCopy(DAVA::AABBox2 area)

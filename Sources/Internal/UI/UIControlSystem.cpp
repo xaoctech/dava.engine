@@ -71,6 +71,8 @@ UIControlSystem::UIControlSystem()
 	baseGeometricData.pivotPoint = Vector2(0, 0);
 	baseGeometricData.scale = Vector2(1.0f, 1.0f);
 	baseGeometricData.angle = 0;
+
+    ui3DViewCount = 0;
 }
 	
 void UIControlSystem::SetScreen(UIScreen *_nextScreen, UIScreenTransition * _transition)
@@ -109,6 +111,7 @@ void UIControlSystem::ReplaceScreen(UIScreen *newMainControl)
 {
 	prevScreen = currentScreen;
 	currentScreen = newMainControl;
+    NotifyListenersDidSwitch(currentScreen);
 }
 
 	
@@ -175,9 +178,7 @@ void UIControlSystem::ProcessScreenLogic()
 		
 		CancelAllInputs();
 		
-		uint32 listenersCount = screenSwitchListeners.size();
-		for(uint32 i = 0; i < listenersCount; ++i)
-			screenSwitchListeners[i]->OnScreenSwitched(nextScreenProcessed);
+        NotifyListenersWillSwitch(nextScreenProcessed);
 
 		// If we have transition set
 		if (transitionProcessed)
@@ -243,6 +244,7 @@ void UIControlSystem::ProcessScreenLogic()
 				nextScreenProcessed->SystemWillAppear();
 			}
 			currentScreen = nextScreenProcessed;
+            NotifyListenersDidSwitch(currentScreen);
             if (nextScreenProcessed)
             {
 				nextScreenProcessed->SystemDidAppear();
@@ -295,6 +297,14 @@ void UIControlSystem::Update()
 void UIControlSystem::Draw()
 {
     drawCounter = 0;
+    if (!ui3DViewCount)
+    {
+        UniqueHandle prevState = RenderManager::Instance()->currentState.stateHandle;
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();            
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);        
+        RenderManager::Instance()->SetRenderState(prevState);
+    }
 //	if(currentScreen && (!currentPopup || currentPopup->isTransparent))
 	if (currentScreen)
 	{
@@ -806,6 +816,33 @@ void UIControlSystem::RemoveScreenSwitchListener(ScreenSwitchListener * listener
 	Vector<ScreenSwitchListener *>::iterator it = std::find(screenSwitchListeners.begin(), screenSwitchListeners.end(), listener);
 	if(it != screenSwitchListeners.end())
 		screenSwitchListeners.erase(it);
+}
+
+void UIControlSystem::NotifyListenersWillSwitch( UIScreen* screen )
+{
+    Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
+    uint32 listenersCount = screenSwitchListenersCopy.size();
+    for(uint32 i = 0; i < listenersCount; ++i)
+        screenSwitchListenersCopy[i]->OnScreenWillSwitch( screen );
+}
+
+void UIControlSystem::NotifyListenersDidSwitch( UIScreen* screen )
+{
+    Vector<ScreenSwitchListener*> screenSwitchListenersCopy = screenSwitchListeners;
+    uint32 listenersCount = screenSwitchListenersCopy.size();
+    for(uint32 i = 0; i < listenersCount; ++i)
+        screenSwitchListenersCopy[i]->OnScreenDidSwitch( screen );
+}
+
+
+void UIControlSystem::UI3DViewAdded()
+{
+    ui3DViewCount++;
+}
+void UIControlSystem::UI3DViewRemoved()
+{
+    DVASSERT(ui3DViewCount);
+    ui3DViewCount--;
 }
 
 };

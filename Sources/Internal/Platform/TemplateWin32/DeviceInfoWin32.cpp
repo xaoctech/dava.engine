@@ -180,6 +180,17 @@ WideString DeviceInfo::GetName()
     return WideString ();
 }
 
+eGPUFamily DeviceInfo::GetGPUFamily()
+{
+    return GPU_UNKNOWN;
+}
+
+DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
+{
+    // For now return default network info for MacOS.
+    return NetworkInfo();
+}
+
 }
 
 #endif

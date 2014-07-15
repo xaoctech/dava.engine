@@ -53,12 +53,15 @@ public:
   
     inline StaticOcclusionData & GetData();
     
-    uint32 member;
+    inline uint32 GetDataSize() const;
+    inline void SetDataSize(uint32 bytes);
 protected:
     StaticOcclusionData data;
+    uint32 sizeInKbytes;
 public:
 	INTROSPECTION_EXTEND(StaticOcclusionDataComponent, Component,
-                         MEMBER(member, "member", I_VIEW | I_EDIT));
+                         PROPERTY("Size in kBytes", "Size of occlusion information in kBytes", GetDataSize, SetDataSize, I_VIEW | I_EDIT)
+                         );
 };
 
 
@@ -81,9 +84,9 @@ public:
     inline void SetSubdivisionsY(uint32 _sizeY);
     inline void SetSubdivisionsZ(uint32 _sizeZ);
     
-    inline uint32 GetSubdivisionsX();
-    inline uint32 GetSubdivisionsY();
-    inline uint32 GetSubdivisionsZ();
+    inline uint32 GetSubdivisionsX() const;
+    inline uint32 GetSubdivisionsY() const;
+    inline uint32 GetSubdivisionsZ() const;
     
     
     //Vector<Vector3> renderPositions;
@@ -104,6 +107,20 @@ public:
             PROPERTY("Subdivisions Z", "Number of subdivisions on Z axis", GetSubdivisionsZ, SetSubdivisionsZ, I_VIEW | I_EDIT)
 		);
 };
+  
+//
+    
+inline uint32 StaticOcclusionDataComponent::GetDataSize() const
+{
+    return (data.blockCount * data.objectCount / 32 * 4) / 1024;
+};
+    
+inline void StaticOcclusionDataComponent::SetDataSize(uint32 bytes)
+{
+    
+};
+    
+//
 
 inline void StaticOcclusionComponent::SetBoundingBox(const AABBox3 & newBBox)
 {
@@ -130,17 +147,17 @@ inline void StaticOcclusionComponent::SetSubdivisionsZ(uint32 _sizeZ)
     zSubdivisions = _sizeZ;
 }
 
-inline uint32 StaticOcclusionComponent::GetSubdivisionsX()
+inline uint32 StaticOcclusionComponent::GetSubdivisionsX() const
 {
     return xSubdivisions;
 }
     
-inline uint32 StaticOcclusionComponent::GetSubdivisionsY()
+inline uint32 StaticOcclusionComponent::GetSubdivisionsY() const
 {
     return ySubdivisions;
 }
 
-inline uint32 StaticOcclusionComponent::GetSubdivisionsZ()
+inline uint32 StaticOcclusionComponent::GetSubdivisionsZ() const
 {
     return zSubdivisions;
 }
