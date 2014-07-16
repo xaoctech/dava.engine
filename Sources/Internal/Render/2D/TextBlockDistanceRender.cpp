@@ -126,24 +126,31 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	int32 align = textBlock->GetAlign();
 	if (align & ALIGN_RIGHT)
 	{
-		xOffset += Max(0.f, textBlock->rectSize.dx - renderRect.dx);
+		xOffset += textBlock->rectSize.dx - renderRect.dx;
 	}
 	else if (align & ALIGN_HCENTER)
 	{
-		xOffset += Max(0.f, (textBlock->rectSize.dx - renderRect.dx) * 0.5f);
+		xOffset += (textBlock->rectSize.dx - renderRect.dx) * 0.5f;
 	}
 	
 	if (align & ALIGN_BOTTOM)
 	{
-		yOffset += Max(0.f, textBlock->rectSize.dy - renderRect.dy);
+		yOffset += textBlock->rectSize.dy - renderRect.dy;
 	}
 	else if ((align & ALIGN_VCENTER) || (align & ALIGN_HJUSTIFY))
 	{
-		yOffset += Max(0.f, (textBlock->rectSize.dy - renderRect.dy) * 0.5f);
+		yOffset += (textBlock->rectSize.dy - renderRect.dy) * 0.5f;
 	}
-    RenderManager::Instance()->ClipPush();
-    RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->rectSize.dx, textBlock->rectSize.dy));
-    
+    if (textBlock->requestedSize.dx == 0 && textBlock->requestedSize.dy == 0)
+    {
+        RenderManager::Instance()->ClipPush();
+        RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->rectSize.dx, textBlock->rectSize.dy));
+    }
+    else if (textBlock->requestedSize.dx > 0 && textBlock->requestedSize.dy > 0)
+    {
+        RenderManager::Instance()->ClipPush();
+        RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->requestedSize.dx, textBlock->requestedSize.dy));
+    }
     RenderManager::Instance()->PushDrawMatrix();
     RenderManager::Instance()->SetDrawTranslate(Vector2(xOffset, yOffset));
 
@@ -165,7 +172,10 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, charDrawed * 6, EIF_16, this->indexBuffer);
     
     RenderManager::Instance()->PopDrawMatrix();
-    RenderManager::Instance()->ClipPop();
+    if (textBlock->requestedSize.dx >= 0 && textBlock->requestedSize.dy >= 0)
+    {
+        RenderManager::Instance()->ClipPop();
+    }
 }
 	
 Size2i TextBlockDistanceRender::DrawTextSL(const WideString& drawText, int32 x, int32 y, int32 w)
