@@ -1091,11 +1091,11 @@ Image * Texture::CreateImageFromMemory(UniqueHandle renderState)
     if(isRenderTarget)
     {
         Sprite *renderTarget = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
-        RenderManager::Instance()->SetRenderTarget(renderTarget);
+        //RenderManager::Instance()->SetRenderTarget(renderTarget);
         
         image = ReadDataToImage();
             
-        RenderManager::Instance()->RestoreRenderTarget();
+        //RenderManager::Instance()->RestoreRenderTarget();
         
         SafeRelease(renderTarget);
     }
