@@ -108,6 +108,8 @@ public:
 
     static void ResetToDefault();
 
+    DAVA_DEPRECATED(static void UpdateGPUSettings());
+    
 protected:
     DAVA::Vector<DAVA::FastName> settingsOrder;
     DAVA::FastNameMap<SettingsNode> settingsMap;
