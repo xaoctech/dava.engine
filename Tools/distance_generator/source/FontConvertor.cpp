@@ -739,7 +739,28 @@ bool FontConvertor::GeneratePackedList(int fontSize, int textureSize)
 
     int err;
 
+    // Here we should determine max glyph height, to get proper yOffset later.
+    int maxBitmapTop = 0;
     vector<pair<int, int> >::const_iterator iter = charGlyphPairs.begin();
+    for (;iter != charGlyphPairs.end(); ++iter)
+    {
+        int glyphIndex = iter->second;
+        err = FT_Load_Glyph(face, glyphIndex, 0);
+        if (!err)
+        {
+            err = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_MONO);
+            if (!err)
+            {
+                if(maxBitmapTop < face->glyph->bitmap_top)
+                {
+                    maxBitmapTop = face->glyph->bitmap_top;
+                }
+            }
+        }
+    }
+    maxBitmapTop /= (float)params.scale;
+    iter = charGlyphPairs.begin();
+    
     for (;iter != charGlyphPairs.end(); ++iter)
 	{
         if (iter->first == NOT_DEF_CHAR)
@@ -824,11 +845,8 @@ bool FontConvertor::GeneratePackedList(int fontSize, int textureSize)
                     charDesc.x = -1;
                     charDesc.y = -1;
 
-                    float leading = face->size->metrics.height + face->size->metrics.descender;
-                    leading /= (float)params.scale * 64.f;
-
                     charDesc.xOffset = face->glyph->bitmap_left / (float)params.scale;
-                    charDesc.yOffset = leading - face->glyph->bitmap_top / (float)params.scale;
+                    charDesc.yOffset = maxBitmapTop - face->glyph->bitmap_top / (float)params.scale;
                     charDesc.xAdvance = face->glyph->advance.x / params.scale / 64.f;
 
                     chars[charDesc.id] = charDesc;
