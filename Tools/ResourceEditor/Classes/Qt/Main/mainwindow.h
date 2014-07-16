@@ -52,7 +52,6 @@ class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
-class VersionInfoWidget;
 
 class QtMainWindow
     : public QMainWindow
@@ -230,7 +229,7 @@ protected:
 	
 	bool SelectCustomColorsTexturePath();
 	
-private slots:
+protected slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
 
@@ -240,11 +239,12 @@ private slots:
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     void OnGlobalInvalidateTimeout();
-	void EditorLightEnabled(bool enabled);
-	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
-	void UnmodalDialogFinished(int);
 
-    void DebugVersionInfo();
+	void EditorLightEnabled(bool enabled);
+
+	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
+
+	void UnmodalDialogFinished(int);
 
 private:
 	Ui::MainWindow *ui;
@@ -291,7 +291,6 @@ private:
 
     //Need for any debug functionality
     DeveloperTools *developerTools;
-    QPointer<VersionInfoWidget> versionInfoWidget;
 };
 
 
