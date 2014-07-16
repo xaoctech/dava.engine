@@ -82,7 +82,7 @@ void SettingsManager::Init()
     CreateValue(Settings::Scene_DebugBoxUserScale, DAVA::VariantType(DAVA::float32(1.0)));
     CreateValue(Settings::Scene_DebugBoxParticleScale, DAVA::VariantType(DAVA::float32(1.0)));
 
-    CreateValue(Settings::Internal_TextureViewGPU, DAVA::VariantType((DAVA::int32) DAVA::GPU_UNKNOWN));
+    CreateValue(Settings::Internal_TextureViewGPU, DAVA::VariantType((DAVA::int32) DAVA::GPU_PNG));
 	CreateValue(Settings::Internal_LastProjectPath, DAVA::VariantType(DAVA::FilePath()));
 	CreateValue(Settings::Internal_EditorVersion, DAVA::VariantType(DAVA::String("local build")));
 	CreateValue(Settings::Internal_CubemapLastFaceDir, DAVA::VariantType(DAVA::FilePath()));
@@ -196,5 +196,12 @@ void SettingsManager::ResetPerProjectSettings()
 void SettingsManager::ResetToDefault()
 {
     SettingsManager::Instance()->Init();
+}
+
+void SettingsManager::UpdateGPUSettings()
+{
+    DAVA::VariantType oldGpu = GetValue(Settings::Internal_TextureViewGPU);
+    DAVA::VariantType newGpu = DAVA::VariantType(DAVA::GPUFamilyDescriptor::ConvertValueToGPU(oldGpu.AsInt32()));
+    SetValue(Settings::Internal_TextureViewGPU, newGpu);
 }
 
