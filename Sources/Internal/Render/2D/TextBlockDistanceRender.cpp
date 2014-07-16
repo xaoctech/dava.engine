@@ -82,6 +82,23 @@ void TextBlockDistanceRender::Prepare()
 {
 	charDrawed = 0;
 	renderRect = Rect(0, 0, 0, 0);
+    
+    uint32 charCount = 0;
+    if (!textBlock->isMultilineEnabled || textBlock->treatMultilineAsSingleLine)
+    {
+        charCount = textBlock->pointsStr.length() ? textBlock->pointsStr.length() : textBlock->text.length();
+    }
+    else
+    {
+        int32 stringsCnt = (int32)textBlock->multilineStrings.size();
+		for (int32 line = 0; line < stringsCnt; ++line)
+            charCount += textBlock->multilineStrings[line].length();
+    }
+    uint32 vertexCount = charCount * 4;
+    
+    if((uint32)vertexBuffer.size() != vertexCount)
+        vertexBuffer.resize(vertexCount);
+    
 	DrawText();
     
 	if (charDrawed == 0)
@@ -171,7 +188,7 @@ Size2i TextBlockDistanceRender::InternalDrawText(const WideString& drawText, int
 	
 	int32 lastDrawed = 0;
 	
-	Size2i drawRect = dfFont->DrawStringToBuffer(drawText, x, y, vertexBuffer + (charDrawed * 4), lastDrawed, NULL, w, lineSize);
+	Size2i drawRect = dfFont->DrawStringToBuffer(drawText, x, y, &vertexBuffer[0] + (charDrawed * 4), lastDrawed, NULL, w, lineSize);
 	if (drawRect.dx <= 0 && drawRect.dy <= 0)
 		return drawRect;
 	
