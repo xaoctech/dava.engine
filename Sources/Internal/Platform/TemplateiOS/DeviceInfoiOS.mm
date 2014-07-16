@@ -243,40 +243,37 @@ eGPUFamily DeviceInfo::GetGPUFamily()
     
 DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
 {
+    static const struct
+    {
+        NetworkStatus platformNetworkStatus;
+        DeviceInfo::eNetworkType internalNetworkType;
+    }
+    networkStatusMap[] =
+    {
+        { NotReachable, DeviceInfo::NETWORK_TYPE_NOT_CONNECTED },
+        { ReachableViaWiFi, DeviceInfo::NETWORK_TYPE_WIFI },
+        { ReachableViaWWAN, DeviceInfo::NETWORK_TYPE_CELLULAR }
+    };
+
     NetworkInfo networkInfo;
     
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     [reachability startNotifier];
 
     NetworkStatus networkStatus = [reachability currentReachabilityStatus];
-    switch (networkStatus)
-    {
-        case NotReachable:
-        {
-            networkInfo.networkType = DeviceInfo::NETWORK_TYPE_NOT_CONNECTED;
-            break;
-        }
-            
-        case ReachableViaWiFi:
-        {
-            networkInfo.networkType = DeviceInfo::NETWORK_TYPE_WIFI;
-            break;
-        }
 
-        case ReachableViaWWAN:
+    uint32 networkStatusMapCount = COUNT_OF(networkStatusMap);
+    for (uint32 i = 0; i < networkStatusMapCount; i ++)
+    {
+        if (networkStatusMap[i].platformNetworkStatus == networkStatus)
         {
-            networkInfo.networkType = DeviceInfo::NETWORK_TYPE_CELLULAR;
-            break;
-        }
-            
-        default:
-        {
+            networkInfo.networkType = networkStatusMap[i].internalNetworkType;
             break;
         }
     }
 
     [reachability stopNotifier];
-    
+
     // No way to determine signal strength under iOS.
     return networkInfo;
 }
