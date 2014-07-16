@@ -2277,6 +2277,9 @@
 		E8BAD5B3185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8BAD5B4185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
 		E8BAD5B5185213F100C98C8D /* IntrospectionDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */; };
+		E8C486F0196BC9AC0082E634 /* LockGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C486EC196BC9AC0082E634 /* LockGuard.h */; };
+		E8C486F1196BC9AC0082E634 /* LockGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C486EC196BC9AC0082E634 /* LockGuard.h */; };
+		E8C486F2196BC9AC0082E634 /* LockGuard.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C486EC196BC9AC0082E634 /* LockGuard.h */; };
 		E8F21DCA16C196DC007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F21DCB16C196DD007F957A /* GlobalEventSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50D6C8E616C107D400BB3F78 /* GlobalEventSystem.cpp */; };
 		E8F43E24186C3D02006796CB /* MaterialSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8F43E22186C3D02006796CB /* MaterialSystem.cpp */; };
@@ -3192,6 +3195,7 @@
 		E8B731A5180BF7EB00C7CF26 /* TeamcityOutputMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TeamcityOutputMac.mm; sourceTree = "<group>"; };
 		E8BAD5AE185213F100C98C8D /* IntrospectionDynamic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionDynamic.cpp; sourceTree = "<group>"; };
 		E8BAD5AF185213F100C98C8D /* IntrospectionDynamic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntrospectionDynamic.h; sourceTree = "<group>"; };
+		E8C486EC196BC9AC0082E634 /* LockGuard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LockGuard.h; path = Thread/LockGuard.h; sourceTree = "<group>"; };
 		E8CC1BF616C109F1009B49BF /* IntrospectionBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntrospectionBase.cpp; sourceTree = "<group>"; };
 		E8F43E22186C3D02006796CB /* MaterialSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialSystem.cpp; sourceTree = "<group>"; };
 		E8F43E23186C3D02006796CB /* MaterialSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaterialSystem.h; sourceTree = "<group>"; };
@@ -4449,6 +4453,14 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		E8C486EA196BC9940082E634 /* Thread */ = {
+			isa = PBXGroup;
+			children = (
+				E8C486EC196BC9AC0082E634 /* LockGuard.h */,
+			);
+			name = Thread;
+			sourceTree = "<group>";
+		};
 		FECFABB612E58B7800C71562 /* External */ = {
 			isa = PBXGroup;
 			children = (
@@ -4486,6 +4498,7 @@
 				E8989CAC16BD24E500732C04 /* Scene2D */,
 				E8989CBF16BD24E500732C04 /* Scene3D */,
 				E8989D3416BD24E500732C04 /* Sound */,
+				E8C486EA196BC9940082E634 /* Thread */,
 				E8989D4A16BD24E500732C04 /* UI */,
 				E8989D8C16BD24E500732C04 /* Utils */,
 			);
@@ -4712,6 +4725,7 @@
 				176DE9B7174B5561007A983B /* Box2DTileCollider.h in Headers */,
 				17FB4BB61923B97F00F3E3BC /* UIScrollViewContainer.h in Headers */,
 				176DE9B8174B5561007A983B /* GameObject.h in Headers */,
+				E8C486F2196BC9AC0082E634 /* LockGuard.h in Headers */,
 				176DE9B9174B5561007A983B /* GameObjectAnimations.h in Headers */,
 				644C86FF19476A7100964F91 /* VegetationSpatialData.h in Headers */,
 				644C86EA19476A7100964F91 /* VegetationMaterialTransformer.h in Headers */,
@@ -5283,6 +5297,7 @@
 				02E9E4241739616800C501BC /* SoundComponent.h in Headers */,
 				02E9E439173964DA00C501BC /* SoundUpdateSystem.h in Headers */,
 				4FE7D35A1745056700D2FCE6 /* GlobalEnum.h in Headers */,
+				E8C486F0196BC9AC0082E634 /* LockGuard.h in Headers */,
 				846CFE5F174D1A64004ECE3C /* OpenUDIDApple.h in Headers */,
 				846CFE63174D1A75004ECE3C /* OpenUDIDMacOS.h in Headers */,
 				4FA5CDC01757AF430040CC6E /* EnumMap.h in Headers */,
@@ -5484,6 +5499,7 @@
 				CC931B29188EC95F000375F9 /* SwitchToRenerObjectConverter.h in Headers */,
 				E898A0E516BD265400732C04 /* Font.h in Headers */,
 				E898A0E616BD265400732C04 /* FontManager.h in Headers */,
+				E8C486F1196BC9AC0082E634 /* LockGuard.h in Headers */,
 				E898A0E716BD265400732C04 /* FTFont.h in Headers */,
 				E898A0E816BD265400732C04 /* GraphicsFont.h in Headers */,
 				E898A0E916BD265400732C04 /* GridSprite.h in Headers */,

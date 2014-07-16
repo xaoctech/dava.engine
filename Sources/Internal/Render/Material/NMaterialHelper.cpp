@@ -172,4 +172,36 @@ eFillMode NMaterialHelper::GetFillMode(const FastName& passName, NMaterial* mat)
     return currentData.fillMode;
 }
 
+void NMaterialHelper::SetStencilFunc(const FastName& passName, NMaterial* target, eCmpFunc stencilFunc0, eCmpFunc stencilFunc1, int32 stencilRef, uint32 stencilMask)
+{
+    DVASSERT(target);
+
+    RenderStateData newData;
+    target->GetRenderState(passName, newData);
+
+    newData.stencilFunc[0] = stencilFunc0;
+    newData.stencilFunc[1] = stencilFunc1;
+    newData.stencilRef = stencilRef;
+    newData.stencilMask = stencilMask;
+
+    target->SubclassRenderState(passName, newData);
+}
+
+void NMaterialHelper::SetStencilOp(const FastName& passName, NMaterial* target, eStencilOp passFront, eStencilOp passBack, eStencilOp failFront, eStencilOp failBack, eStencilOp zFailFront, eStencilOp zFailBack)
+{
+    DVASSERT(target);
+
+    RenderStateData newData;
+    target->GetRenderState(passName, newData);
+
+    newData.stencilPass[0] = passFront;
+    newData.stencilPass[1] = passBack;
+    newData.stencilFail[0] = failFront;
+    newData.stencilFail[1] = failBack;
+    newData.stencilZFail[0] = zFailFront;
+    newData.stencilZFail[1] = zFailBack;
+
+    target->SubclassRenderState(passName, newData);
+}
+
 };
