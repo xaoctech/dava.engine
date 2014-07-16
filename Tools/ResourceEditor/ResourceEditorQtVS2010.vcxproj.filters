@@ -1965,6 +1965,9 @@
     <ClCompile Include="_GeneratedQt\Tools\DeveloperTools\DeveloperTools_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastPointCloud.cpp">
+      <Filter>Classes\Beast\Wrapper</Filter>
+    </ClCompile>
     <ClCompile Include="Classes\Commands2\RebuildTangentSpaceCommand.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
@@ -3481,6 +3484,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.h">
       <Filter>QtGenerated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\dava.resourceeditor.beast\wrapper\BeastPointCloud.h">
+      <Filter>Classes\Beast\Wrapper</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Commands2\RebuildTangentSpaceCommand.h">
       <Filter>Classes\Commands2</Filter>
