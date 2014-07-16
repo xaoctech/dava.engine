@@ -730,7 +730,8 @@ namespace DAVA
                 const Color &color = stateBackground->GetColor();
                 if (baseStateBackground->GetColor() != color)
                 {
-                    node->Set(Format("stateColor%s", statePostfix.c_str()), &VariantType(color));
+                    VariantType colorVariant(color);
+                    node->Set(Format("stateColor%s", statePostfix.c_str()), &colorVariant);
                 }
 
                 // State color inherittype
@@ -770,13 +771,15 @@ namespace DAVA
                 const Color &textColor = stateTextBlock->GetTextColor();
                 if (baseStaticText->GetTextColor() != textColor)
                 {
-                    node->Set(Format("stateTextcolor%s", statePostfix.c_str()), &VariantType(textColor));
+                    VariantType colorVariant(textColor);
+                    node->Set(Format("stateTextcolor%s", statePostfix.c_str()), &colorVariant);
                 }
 
                 const Color &shadowColor = stateTextBlock->GetShadowColor();
                 if( baseStaticText->GetShadowColor() != shadowColor )
                 {
-                    node->Set(Format("stateShadowcolor%s", statePostfix.c_str()), &VariantType(shadowColor));
+                    VariantType colorVariant(shadowColor);
+                    node->Set(Format("stateShadowcolor%s", statePostfix.c_str()), &colorVariant);
                 }
 
                 const Vector2 &shadowOffset = stateTextBlock->GetShadowOffset();
