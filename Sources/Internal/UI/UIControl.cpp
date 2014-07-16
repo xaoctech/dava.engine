@@ -839,6 +839,21 @@ namespace DAVA
     {
         return angle;
     }
+    
+    float32 UIControl::GetParentsTotalAngle(bool includeOwn)
+    {
+        float32 angle = 0;
+        if(includeOwn)
+        {
+            angle += this->angle;
+        }
+        if(this->GetParent())
+        {
+            angle += parent->GetParentsTotalAngle(true);
+        }
+        return angle;
+    }
+
     void UIControl::SetAngle(float32 angleInRad)
     {
         angle = angleInRad;
@@ -2895,8 +2910,8 @@ namespace DAVA
             float32 xMultiup = pivotPoint.x / oldRect.dx;
             float32 yMultiup = pivotPoint.y / oldRect.dy;
 
-            pivotPoint.x = xMultiup * newRect.dx;
-            pivotPoint.y = yMultiup * newRect.dy;
+            pivotPoint.x = Round(xMultiup * newRect.dx);
+            pivotPoint.y = Round(yMultiup * newRect.dy);
         }
     }
 
