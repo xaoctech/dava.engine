@@ -104,11 +104,11 @@ void DeviceInfoTest::DidAppear()
 	const eGPUFamily gpu = DeviceInfo::GetGPUFamily();
 	if(gpu == GPU_INVALID)
 	{
-		deviceInfoString += "GPU family: INVALID";
+		deviceInfoString += "GPU family: INVALID\n";
 	}
 	else
 	{
-		deviceInfoString += Format("GPU family: %s", GPUFamilyDescriptor::GetGPUName(gpu).c_str());
+		deviceInfoString += Format("GPU family: %s\n", GPUFamilyDescriptor::GetGPUName(gpu).c_str());
 	}
     deviceInfoString += Format("Network connection type: %s\n", GetNetworkTypeString().c_str());
     deviceInfoString += Format("Network signal strength: %i%%", DeviceInfo::GetNetworkInfo().signalStrength);
