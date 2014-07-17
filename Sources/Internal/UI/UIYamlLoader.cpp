@@ -740,7 +740,7 @@ const FilePath & UIYamlLoader::GetCurrentPath() const
 	return currentPath;
 }
 
-void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll, String& delegatePath)
+void UIYamlLoader::AddScrollBarToLink(UIScrollBar* scroll, const String& delegatePath)
 {
     scrollsToLink.insert(std::pair<UIScrollBar*,String>(scroll,delegatePath));
 }
@@ -755,12 +755,13 @@ String UIYamlLoader::GetControlPath(UIControl* control)
         while (parent)
         {
             String parentName = parent->GetName();
-            if (parentName.length())
+            parent=parent->GetParent();
+            if (parent)
             {
                 parentName += "/";
                 controlPath = parentName += controlPath;
             }
-            parent=parent->GetParent();
+            
         }
     }
     return controlPath;
@@ -770,8 +771,16 @@ UIControl* UIYamlLoader::GetControlByPath(const String& controlPath, UIControl* 
 {
     UIControl* control = rootControl;
     Vector<String> controlNames;
-    Split(controlPath, "/", controlNames);
+    Split(controlPath, "/", controlNames, false, true);
     Vector<String>::const_iterator it_name = controlNames.begin();
+    if (rootControl->GetName() != *it_name)
+    {
+        Logger::Error("[UIYamlLoader::GetControlByPath] wrong root control");
+        return NULL;
+    } else
+    {
+        ++it_name;
+    }
     for (; it_name!=controlNames.end(); ++it_name)
     {
         control = control->FindByName(*it_name,false);

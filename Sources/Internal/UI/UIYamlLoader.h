@@ -124,7 +124,7 @@ public:
 	void SetAssertIfCustomControlNotFound(bool value);
 
 	const FilePath & GetCurrentPath() const;
-    void AddScrollBarToLink(UIScrollBar* scroll, String& delegatePath);
+    void AddScrollBarToLink(UIScrollBar* scroll,const String& delegatePath);
     static String GetControlPath(UIControl* conrol);
     static UIControl* GetControlByPath(const String& controlPath, UIControl* rootControl);
 protected:
