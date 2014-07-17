@@ -28,7 +28,6 @@
 
 
 #include "DeviceInfoTest.h"
-#include "Platform/DeviceInfo.h"
 #include "Platform/DateTime.h"
 
 DeviceInfoTest::DeviceInfoTest()
@@ -72,43 +71,11 @@ void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *da
     Logger::Debug("UDID: %s", udid.c_str());
     Logger::Debug("Name: %s", WStringToString(name).c_str());
     Logger::Debug("ZBufferSize: %d", DeviceInfo::GetZBufferSize());
-    Logger::Debug("GPU family: %s", GetGpuFamilyString(DeviceInfo::GetGPUFamily()).c_str());
+    Logger::Debug("GPU family: %s", GPUFamilyDescriptor::GetGPUName(DeviceInfo::GetGPUFamily()).c_str());
+    Logger::Debug("Network connection type: %s", DeviceInfo::GetNetworkTypeString().c_str());
+    Logger::Debug("Network signal strength: %i%%", DeviceInfo::GetNetworkInfo().signalStrength);
 	Logger::Debug("********** Device info **********");
 
 	data->testData.message = "DeviceInfo test - passed";
 	TEST_VERIFY(true);
-}
-
-String DeviceInfoTest::GetGpuFamilyString(eGPUFamily gpuFamily)
-{
-    String res;
-    switch (gpuFamily)
-    {
-        case DAVA::GPU_ADRENO:
-            res = "Adreno";
-            break;
-
-        case DAVA::GPU_MALI:
-            res = "Mali";
-            break;
-
-        case DAVA::GPU_POWERVR_ANDROID:
-            res = "PowerVR Android";
-            break;
-
-        case DAVA::GPU_POWERVR_IOS:
-            res = "PowerVR iOS";
-            break;
-
-        case DAVA::GPU_TEGRA:
-            res = "Tegra";
-            break;
-
-        case DAVA::GPU_UNKNOWN:
-        default:
-            res = "Unknown GPU family";
-            break;
-    }
-
-    return res;
 }

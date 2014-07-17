@@ -845,6 +845,8 @@
     </ClCompile>
     <ClCompile Include="Classes\TextureDescriptorUtils.cpp">
       <Filter>Sources</Filter>
+    <ClCompile Include="Classes\Helpers\CopyPasteHelper.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1357,6 +1359,8 @@
     </ClInclude>
     <ClInclude Include="Classes\TextureDescriptorUtils.h">
       <Filter>Sources</Filter>
+    <ClInclude Include="Classes\Helpers\CopyPasteHelper.h">
+      <Filter>Sources\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
