@@ -219,6 +219,7 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
         shadowBg->Draw(shadowGeomData);
     }
 
+    textBlock->Draw(textColor);
     textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
     textBg->SetColor(textColor);
     textBg->SetParentColor(parent->GetBackground()->GetDrawColor());
