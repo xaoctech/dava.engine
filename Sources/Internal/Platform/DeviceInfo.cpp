@@ -62,61 +62,13 @@ DeviceInfo::ePlatform DeviceInfo::GetPlatform()
 
 String DeviceInfo::GetPlatformString()
 {
-    static const struct
-    {
-        ePlatform platform;
-        String platfomName;
-    }
-    platformsMap[] =
-    {
-        { PLATFORM_IOS, "iOS" },
-        { PLATFORM_IOS_SIMULATOR, "iOS Simulator" },
-        { PLATFORM_MACOS, "MacOS" },
-        { PLATFORM_ANDROID, "Android" },
-        { PLATFORM_WIN32, "Win32" }
-    };
-    
-    ePlatform curPlatform = GetPlatform();
-    uint32 platformsCount = COUNT_OF(platformsMap);
-    for (uint32 i = 0; i < platformsCount; i ++)
-    {
-        if (platformsMap[i].platform == curPlatform)
-        {
-            return platformsMap[i].platfomName;
-        }
-    }
-    
-    return "Unknown";
+    return GlobalEnumMap<ePlatform>::Instance()->ToString(GetPlatform());
 }
     
 String DeviceInfo::GetNetworkTypeString()
 {
-    static const struct
-    {
-        eNetworkType networkType;
-        String networkTypeString;
-    } networkTypesMap[] =
-    {
-        { NETWORK_TYPE_NOT_CONNECTED, "Not Connected" },
-        { NETWORK_TYPE_CELLULAR, "Cellular" },
-        { NETWORK_TYPE_WIFI, "Wi-Fi" },
-        { NETWORK_TYPE_WIMAX, "WiMAX" },
-        { NETWORK_TYPE_ETHERNET, "Ehternet" },
-        { NETWORK_TYPE_BLUETOOTH, "Bluetooth" },
-        { NETWORK_TYPE_UNKNOWN, "Unknown" }
-    };
-
     const NetworkInfo& networkInfo = GetNetworkInfo();
-    uint32 networkTypesCount = COUNT_OF(networkTypesMap);
-    for (uint32 i = 0; i < networkTypesCount; i ++)
-    {
-        if (networkTypesMap[i].networkType == networkInfo.networkType)
-        {
-            return networkTypesMap[i].networkTypeString;
-        }
-    }
-
-    return "Unknown";
+    return GlobalEnumMap<eNetworkType>::Instance()->ToString(networkInfo.networkType);
 }
 
 #ifndef __DAVAENGINE_ANDROID__
