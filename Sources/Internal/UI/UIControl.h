@@ -202,6 +202,7 @@ public:
 class UIControl : public AnimatedObject
 {
     friend class UIControlSystem;
+    friend class UIScreenTransition;
 public:
     /**
      \enum Control state bits.
@@ -1172,6 +1173,15 @@ public:
      */
     virtual void DrawAfterChilds(const UIGeometricData &geometricData);
 
+protected:
+    virtual void SystemWillBecomeVisible();
+    virtual void SystemWillBecomeInvisible();
+
+    virtual void WillBecomeVisible();
+    virtual void WillBecomeInvisible();
+
+public:
+
         //TODO: Борода напиши дескрипшн.
     virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
     /**
@@ -1186,8 +1196,14 @@ public:
 
 
     /**
-     \brief Returns control on screen status.
+     \brief Returns control in hierarchy status.
      \returns True if control in view hierarchy for now.
+     */
+    bool InViewHierarchy() const;
+
+    /**
+     \brief Returns control on screen status.
+     \returns True if control visible now.
      */
     bool IsOnScreen() const;
     /**
