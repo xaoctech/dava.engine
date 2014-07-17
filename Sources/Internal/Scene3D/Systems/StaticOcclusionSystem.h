@@ -82,8 +82,8 @@ private:
     void FinishBuildOcclusion(BaseObject * bo, void * messageData, void * callerData);
     void SceneForceLod(int32 layerIndex);
 
-    void UpdateSwitchMaterialRecursively(Entity *entity);
-    void RestoreSwitchMaterials();
+    void UpdateMaterialsForOcclusionRecursively(Entity *entity);
+    void RestoreOcclusionMaterials();
     
     Camera * camera;
     Vector<Entity*> entities;
