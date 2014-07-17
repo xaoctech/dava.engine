@@ -112,7 +112,7 @@ UIStaticText * ParseTextTest::CreateTextControl(const Rect &rect, const WideStri
 	{
 	case Font::TYPE_FT:
 		font = FTFont::Create("~res:/Fonts/korinna.ttf");
-		font->SetSize(14);
+		font->SetSize(14.f);
 		break;
 
 	case Font::TYPE_GRAPHICAL:
