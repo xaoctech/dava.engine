@@ -839,6 +839,21 @@ namespace DAVA
     {
         return angle;
     }
+    
+    float32 UIControl::GetParentsTotalAngle(bool includeOwn)
+    {
+        float32 angle = 0;
+        if(includeOwn)
+        {
+            angle += this->angle;
+        }
+        if(this->GetParent())
+        {
+            angle += parent->GetParentsTotalAngle(true);
+        }
+        return angle;
+    }
+
     void UIControl::SetAngle(float32 angleInRad)
     {
         angle = angleInRad;
@@ -954,19 +969,14 @@ namespace DAVA
         if (recursiveVisible == isVisible)
             return;
 
-        bool onScreen = IsOnScreen();
-        if (onScreen && !isVisible)
-        {
-            SystemWillDisappear();
-            SystemDidDisappear();
-        }
-
         recursiveVisible = isVisible;
 
-        if (!onScreen && isVisible)
+        if (parent && parent->IsOnScreen())
         {
-            SystemWillAppear();
-            SystemDidAppear();
+            if (!recursiveVisible)
+                SystemWillBecomeInvisible();
+            else
+                SystemWillBecomeVisible();
         }
     }
 
@@ -1108,18 +1118,22 @@ namespace DAVA
         control->Retain();
         control->RemoveFromParent();
 
-        bool onScreen = IsOnScreen();
-        if(onScreen)
+        bool inHierarchy = InViewHierarchy();
+        if (inHierarchy)
         {
             control->SystemWillAppear();
         }
         control->isUpdated = false;
         control->SetParent(this);
         childs.push_back(control);
-        if(onScreen)
+        if (inHierarchy)
         {
             control->SystemDidAppear();
         }
+
+        if (IsOnScreen() && control->GetRecursiveVisible())
+            control->SystemWillBecomeVisible();
+
         isIteratorCorrupted = true;
     }
     void UIControl::RemoveControl(UIControl *control)
@@ -1134,14 +1148,17 @@ namespace DAVA
         {
             if((*it) == control)
             {
-                bool onScreen = IsOnScreen();
-                if(onScreen)
+                if (IsOnScreen() && control->GetRecursiveVisible())
+                    control->SystemWillBecomeInvisible();
+
+                bool inHierarchy = InViewHierarchy();
+                if (inHierarchy)
                 {
                     control->SystemWillDisappear();
                 }
                 control->SetParent(NULL);
                 childs.erase(it);
-                if(onScreen)
+                if (inHierarchy)
                 {
                     control->SystemDidDisappear();
                 }
@@ -1207,17 +1224,21 @@ namespace DAVA
                 control->Retain();
                 control->RemoveFromParent();
 
-                bool onScreen = IsOnScreen();
-                if(onScreen)
+                bool inHierarchy = InViewHierarchy();
+                if(inHierarchy)
                 {
                     control->SystemWillAppear();
                 }
                 childs.insert(it, control);
                 control->SetParent(this);
-                if(onScreen)
+                if(inHierarchy)
                 {
                     control->SystemDidAppear();
                 }
+
+                if (IsOnScreen() && control->GetRecursiveVisible())
+                    control->SystemWillBecomeVisible();
+
                 isIteratorCorrupted = true;
                 return;
             }
@@ -1235,17 +1256,21 @@ namespace DAVA
                 control->Retain();
                 control->RemoveFromParent();
 
-                bool onScreen = IsOnScreen();
-                if(onScreen)
+                bool inHierarchy = InViewHierarchy();
+                if(inHierarchy)
                 {
                     control->SystemWillAppear();
                 }
                 childs.insert(++it, control);
                 control->SetParent(this);
-                if(onScreen)
+                if(inHierarchy)
                 {
                     control->SystemDidAppear();
                 }
+
+                if (IsOnScreen() && control->GetRecursiveVisible())
+                    control->SystemWillBecomeVisible();
+
                 isIteratorCorrupted = true;
                 return;
             }
@@ -1399,6 +1424,21 @@ namespace DAVA
     }
 
 
+    bool UIControl::InViewHierarchy() const
+    {
+        if (UIControlSystem::Instance()->GetScreen() == this ||
+            UIControlSystem::Instance()->GetPopupContainer() == this)
+        {
+            return true;
+        }
+
+        if (parent)
+            return parent->InViewHierarchy();
+
+        return false;
+    }
+
+
     bool UIControl::IsOnScreen() const
     {
         if(UIControlSystem::Instance()->GetScreen() == this ||
@@ -1416,9 +1456,6 @@ namespace DAVA
 
     void UIControl::SystemWillAppear()
     {
-        if (!GetRecursiveVisible())
-            return;
-
         WillAppear();
 
         List<UIControl*>::iterator it = childs.begin();
@@ -1440,22 +1477,6 @@ namespace DAVA
 
     void UIControl::SystemWillDisappear()
     {
-        if (GetHover())
-        {
-            UIControlSystem::Instance()->SetHoveredControl(NULL);
-        }
-        if (UIControlSystem::Instance()->GetFocusedControl() == this)
-        {
-            UIControlSystem::Instance()->SetFocusedControl(NULL, true);
-        }
-        if (GetInputEnabled())
-        {
-            UIControlSystem::Instance()->CancelInputs(this, false);
-        }
-
-        if (!GetRecursiveVisible())
-            return;
-
         List<UIControl*>::iterator it = childs.begin();
         while(it != childs.end())
         {
@@ -1477,9 +1498,6 @@ namespace DAVA
 
     void UIControl::SystemDidAppear()
     {
-        if (!GetRecursiveVisible())
-            return;
-
         DidAppear();
 
         List<UIControl*>::iterator it = childs.begin();
@@ -1501,9 +1519,6 @@ namespace DAVA
 
     void UIControl::SystemDidDisappear()
     {
-        if (!GetRecursiveVisible())
-            return;
-
         DidDisappear();
 
         List<UIControl*>::iterator it = childs.begin();
@@ -2117,6 +2132,53 @@ namespace DAVA
     void UIControl::DrawAfterChilds(const UIGeometricData &geometricData)
     {
 
+    }
+
+    void UIControl::SystemWillBecomeVisible()
+    {
+        WillBecomeVisible();
+
+        List<UIControl*>::const_iterator it = childs.begin();
+        List<UIControl*>::const_iterator end = childs.end();
+        for (; it != end; ++it)
+        {
+            if ((*it)->GetRecursiveVisible())
+                (*it)->SystemWillBecomeVisible();
+        }
+    }
+
+    void UIControl::SystemWillBecomeInvisible()
+    {
+        if (GetHover())
+        {
+            UIControlSystem::Instance()->SetHoveredControl(NULL);
+        }
+        if (UIControlSystem::Instance()->GetFocusedControl() == this)
+        {
+            UIControlSystem::Instance()->SetFocusedControl(NULL, true);
+        }
+        if (GetInputEnabled())
+        {
+            UIControlSystem::Instance()->CancelInputs(this, false);
+        }
+
+        List<UIControl*>::const_iterator it = childs.begin();
+        List<UIControl*>::const_iterator end = childs.end();
+        for (; it != end; ++it)
+        {
+            if ((*it)->GetRecursiveVisible())
+                (*it)->SystemWillBecomeInvisible();
+        }
+
+        WillBecomeInvisible();
+    }
+
+    void UIControl::WillBecomeVisible()
+    {
+    }
+
+    void UIControl::WillBecomeInvisible()
+    {
     }
 
     YamlNode* UIControl::SaveToYamlNode(UIYamlLoader * loader)
@@ -2895,8 +2957,8 @@ namespace DAVA
             float32 xMultiup = pivotPoint.x / oldRect.dx;
             float32 yMultiup = pivotPoint.y / oldRect.dy;
 
-            pivotPoint.x = xMultiup * newRect.dx;
-            pivotPoint.y = yMultiup * newRect.dy;
+            pivotPoint.x = Round(xMultiup * newRect.dx);
+            pivotPoint.y = Round(yMultiup * newRect.dy);
         }
     }
 
