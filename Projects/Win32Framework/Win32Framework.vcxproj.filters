@@ -1434,7 +1434,9 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.h">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.h">
+      <Filter>Internal\Render</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h">
       <Filter>Internal\Render\3D</Filter>
     </ClInclude>
@@ -1515,6 +1517,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Thread\LockGuard.h">
       <Filter>Internal\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\DFFont.h">
+      <Filter>Internal\Render\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockDistanceRender.h">
+      <Filter>Internal\Render\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockGraphicsRender.h">
+      <Filter>Internal\Render\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockRender.h">
+      <Filter>Internal\Render\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Render\2D\TextBlockSoftwareRender.h">
+      <Filter>Internal\Render\2D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2646,7 +2663,9 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.cpp">
       <Filter>Internal\Scene3D\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp">
       <Filter>Internal\Render\3D</Filter>
     </ClCompile>
@@ -2712,6 +2731,21 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.cpp">
       <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\DFFont.cpp">
+      <Filter>Internal\Render\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockDistanceRender.cpp">
+      <Filter>Internal\Render\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockGraphicsRender.cpp">
+      <Filter>Internal\Render\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockRender.cpp">
+      <Filter>Internal\Render\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\2D\TextBlockSoftwareRender.cpp">
+      <Filter>Internal\Render\2D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
