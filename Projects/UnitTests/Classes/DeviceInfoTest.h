@@ -46,13 +46,26 @@ public:
 	
 	virtual void LoadResources();
 	virtual void UnloadResources();
-	
-    virtual void Draw(const UIGeometricData &geometricData);
+
+    virtual void DidAppear();
+
+    virtual void Update(float32 timeElapsed);
+    virtual bool RunTest(int32 testNum);
 
     void TestFunction(PerfFuncData * data);
 
-    String GetGpuFamilyString(eGPUFamily gpuFamily);
-    String GetNetworkConnectionTypeString(DeviceInfo::eNetworkType networkType);
+protected:
+    void ButtonPressed(BaseObject *obj, void *data, void *callerData);
+    String GetNetworkTypeString();
+
+private:
+	static float32 AUTO_CLOSE_TIME;
+
+    UIStaticText* deviceInfoText;
+    UIButton* finishTestBtn;
+
+    float32 onScreenTime;
+    bool testFinished;
 };
 
 #endif /* defined(__TEMPLATEPROJECTMACOS__DEVICEINFOTEST__) */
