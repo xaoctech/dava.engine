@@ -92,11 +92,11 @@ namespace DAVA
             eButtonDrawState drawState = (eButtonDrawState)i;
             if (srcButton->GetBackground(drawState))
             {
-                SetBackground(drawState, srcButton->GetBackground(drawState)->Clone());
+                SetBackground(drawState, ScopedPtr<UIControlBackground>(srcButton->GetBackground(drawState)->Clone()));
             }
             if (srcButton->GetTextBlock(drawState))
             {
-                SetTextBlock(drawState, srcButton->GetTextBlock(drawState)->Clone());
+                SetTextBlock(drawState, ScopedPtr<UIStaticText>(srcButton->GetTextBlock(drawState)->Clone()));
             }
         }
     }
@@ -118,7 +118,7 @@ namespace DAVA
 
     void UIButton::SetStateSprite(int32 state, const FilePath &spriteName, int32 spriteFrame/* = 0*/)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -130,7 +130,7 @@ namespace DAVA
 
     void UIButton::SetStateSprite(int32 state, Sprite *newSprite, int32 spriteFrame/* = 0*/)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -142,7 +142,7 @@ namespace DAVA
 
     void UIButton::SetStateFrame(int32 state, int32 spriteFrame)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -154,7 +154,7 @@ namespace DAVA
 
     void UIButton::SetStateDrawType(int32 state, UIControlBackground::eDrawType drawType)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -166,7 +166,7 @@ namespace DAVA
 
     void UIButton::SetStateAlign(int32 state, int32 align)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -178,7 +178,7 @@ namespace DAVA
 
     void UIButton::SetStateModification(int32 state, int32 modification)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -190,7 +190,7 @@ namespace DAVA
 
     void UIButton::SetStateColor(int32 state, Color color)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -202,7 +202,7 @@ namespace DAVA
 
     void UIButton::SetStateColorInheritType(int32 state, UIControlBackground::eColorInheritType value)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -214,7 +214,7 @@ namespace DAVA
 
     void UIButton::CreateBackgroundForState(int32 state)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -249,11 +249,11 @@ namespace DAVA
 
     void UIButton::SetStateBackground(int32 state, UIControlBackground *newBackground)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
-                SetBackground((eButtonDrawState)i, newBackground->Clone());
+                SetBackground((eButtonDrawState)i, ScopedPtr<UIControlBackground>(newBackground->Clone()));
             }
             state >>= 1;
         }
@@ -261,7 +261,7 @@ namespace DAVA
 
     void UIButton::SetStateFont(int32 state, Font *font)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -273,7 +273,7 @@ namespace DAVA
 
     void UIButton::SetStateFontColor(int32 state, const Color& fontColor)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -285,7 +285,7 @@ namespace DAVA
 
     void UIButton::SetStateShadowColor(int32 state, const Color& shadowColor)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -297,7 +297,7 @@ namespace DAVA
 
     void UIButton::SetStateShadowOffset(int32 state, const Vector2& offset)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -309,7 +309,7 @@ namespace DAVA
 
     void UIButton::SetStateFittingOption(int32 state, int32 fittingOption)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -321,7 +321,7 @@ namespace DAVA
 
     void UIButton::SetStateText(int32 state, const WideString &text, const Vector2 &requestedTextRectSize/* = Vector2(0,0)*/)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -333,7 +333,7 @@ namespace DAVA
 
     void UIButton::SetStateTextAlign(int32 state, int32 align)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -345,7 +345,7 @@ namespace DAVA
 
     void UIButton::SetStateTextControl(int32 state, UIStaticText *textControl)
     {
-        for(int i = 0; i < DRAW_STATE_COUNT; i++)
+        for(int i = 0; i < DRAW_STATE_COUNT && state; i++)
         {
             if(state & 0x01)
             {
@@ -418,14 +418,8 @@ namespace DAVA
         if (!GetBackground(drawState))
         {
             UIControlBackground* targetBack = GetActualBackground(drawState);
-            if (!targetBack)
-            {
-                SetBackground(drawState, new UIControlBackground());
-            }
-            else
-            {
-                SetBackground(drawState, targetBack->Clone());
-            }
+            ScopedPtr<UIControlBackground> stateBackground( targetBack ? targetBack->Clone() : new UIControlBackground() );
+            SetBackground(drawState, stateBackground);
         }
 
         return GetBackground(drawState);
@@ -436,14 +430,8 @@ namespace DAVA
         if (!GetTextBlock(drawState))
         {
             UIStaticText* targetTextBlock = GetActualTextBlock(drawState);
-            if(!targetTextBlock)
-            {
-                SetTextBlock(drawState, new UIStaticText(Rect(0, 0, size.x, size.y)));
-            }
-            else
-            {
-                SetTextBlock(drawState, targetTextBlock->Clone());
-            }
+            ScopedPtr<UIStaticText> stateTextBlock( targetTextBlock ? targetTextBlock->Clone() : new UIStaticText(Rect(0, 0, size.x, size.y)) );
+            SetTextBlock(drawState, stateTextBlock);
         }
         return GetTextBlock(drawState);
     }
@@ -536,7 +524,7 @@ namespace DAVA
             if (stateSpriteNode || stateDrawTypeNode || stateAlignNode ||
                 colorInheritNode || colorNode)
             {
-                UIControlBackground *stateBackground = new UIControlBackground();
+                ScopedPtr<UIControlBackground> stateBackground(new UIControlBackground());
                 SetBackground(drawState, stateBackground);
 
                 if (stateSpriteNode)
@@ -615,7 +603,7 @@ namespace DAVA
                 stateShadowColorNode || stateShadowOffsetNode || stateFittingOptionNode ||
                 stateTextNode || multilineNode || multilineBySymbolNode)
             {
-                UIStaticText *stateTextBlock = new UIStaticText(Rect(0, 0, size.x, size.y));
+                ScopedPtr<UIStaticText> stateTextBlock(new UIStaticText(Rect(0, 0, size.x, size.y)));
                 SetTextBlock(drawState, stateTextBlock);
 
                 if (stateFontNode)
@@ -814,14 +802,14 @@ namespace DAVA
         }
 
         SafeRelease(stateBacks[drawState]);
-        stateBacks[drawState] = newBackground;
+        stateBacks[drawState] = SafeRetain(newBackground);
         selectedBackground = GetActualBackgroundForState(controlState);
     }
 
     void UIButton::SetTextBlock( eButtonDrawState drawState, UIStaticText * newTextBlock )
     {
         SafeRelease(stateTexts[drawState]);
-        stateTexts[drawState] = newTextBlock;
+        stateTexts[drawState] = SafeRetain(newTextBlock);
         selectedTextBlock = GetActualTextBlockForState(controlState);
     }
 
