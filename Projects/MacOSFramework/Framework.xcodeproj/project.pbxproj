@@ -2683,6 +2683,7 @@
 		CCC7A48216F1D6700061EA5D /* UpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateSystem.h; sourceTree = "<group>"; };
 		CCC7A48716F1D6B80061EA5D /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
 		CCC7A48816F1D6B80061EA5D /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
+		CCE2CA18197950A600D8086F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
@@ -3326,6 +3327,7 @@
 		0867D691FE84028FC02AAC07 /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				CCE2CA18197950A600D8086F /* AVFoundation.framework */,
 				627AFA6C18E964E300F2A52A /* libjpeg_macos.a */,
 				02E9E40817395FDD00C501BC /* libfmodevent.dylib */,
 				02E9E40917395FDD00C501BC /* libfmodex.dylib */,
