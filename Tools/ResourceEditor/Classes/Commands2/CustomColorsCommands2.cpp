@@ -162,11 +162,7 @@ void ModifyCustomColorsCommand::ApplyImage(DAVA::Image *image)
 	
 	RenderManager::Instance()->SetRenderTarget(customColorsSprite);
 	
-    Rect rect(updatedRect);
-    rect.x /= Core::GetVirtualToPhysicalFactor();
-    rect.y /= Core::GetVirtualToPhysicalFactor();
-    rect.dx /= Core::GetVirtualToPhysicalFactor();
-    rect.dy /= Core::GetVirtualToPhysicalFactor();
+    Rect rect = ConvertPhysicalToVirtual(updatedRect);
     
 	RenderManager::Instance()->ClipPush();
 	RenderManager::Instance()->SetClip(rect);
