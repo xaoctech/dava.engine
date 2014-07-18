@@ -256,7 +256,6 @@ public:
 
 protected:
     virtual ~UIButton();
-    virtual void SetParentColor(const Color &parentColor);
 
     enum eButtonDrawState
     {
