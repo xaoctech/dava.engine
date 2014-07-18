@@ -118,6 +118,7 @@ void UIStaticText::SetFont(Font * _font)
 void UIStaticText::SetTextColor(const Color& color)
 {
     textBg->SetColor(color);
+    textBg->SetColor(textColor);
 }
 
 void UIStaticText::SetShadowOffset(const Vector2 &offset)
@@ -128,6 +129,7 @@ void UIStaticText::SetShadowOffset(const Vector2 &offset)
 void UIStaticText::SetShadowColor(const Color &color)
 {
     shadowBg->SetColor(color);
+    shadowBg->SetColor(shadowColor);
 }
 
 void UIStaticText::SetMultiline(bool _isMultilineEnabled, bool bySymbol)
