@@ -83,7 +83,6 @@ void AutotestingSystem::OnAppStarted()
 		SetUpConnectionToDB();
 
 		FetchParametersFromDB();
-		SetUpTestArchive();
 		
 		String testFilePath = Format("~res:/Autotesting/Tests/%s/%s", groupName.c_str(), testFileName.c_str());
 		AutotestingSystemLua::Instance()->InitFromFile(testFilePath);
@@ -213,6 +212,7 @@ void AutotestingSystem::SetUpConnectionToDB()
 	SafeRelease(option);
 }
 
+// DEPRECATED
 void AutotestingSystem::SetUpTestArchive()
 {
     MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
@@ -272,13 +272,6 @@ void AutotestingSystem::OnTestStart(const String &_testName)
 	Logger::Debug("AutotestingSystem::OnTestStart %s", _testName.c_str());
     testName = _testName;
     
-    String testId = GetTestId();
-    MongodbUpdateObject *dbUpdateObject = new MongodbUpdateObject();
-    KeyedArchive *currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);
-    currentTestArchive->SetString("Name", testName);
-    AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-    SafeRelease(dbUpdateObject);
-    
     AutotestingDB::Instance()->Log("DEBUG", Format("OnTestStart %s", testName.c_str()));
 	AutotestingDB::Instance()->SetTestStarted();
 }
@@ -290,28 +283,18 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 	OnStepFinished();
 
 	++stepIndex;
-	String testId = GetTestId();
-	String stepId = GetStepId();
-	
-
-	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);	
-
-	AutotestingDB::Instance()->InsertStepArchive(currentTestArchive, stepId, stepName);
-
-	AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-	SafeRelease(dbUpdateObject);
 }
     
 void AutotestingSystem::OnStepFinished()
 {
 	Logger::Debug("AutotestingSystem::OnStepFinished");
-
+	AutotestingDB::Instance()->Log("INFO", "Success");
 	// Mark step as SUCCESS
-	String testId = GetTestId();
-	String stepId = GetStepId();
-	logIndex = 0;
+	//String testId = GetTestId();
+	//String stepId = GetStepId();
+	//logIndex = 0;
 
+	/*
 	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
 	KeyedArchive* currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);
 	if(currentTestArchive)
@@ -329,24 +312,14 @@ void AutotestingSystem::OnStepFinished()
 	}
 
 	AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-	SafeRelease(dbUpdateObject);
+	SafeRelease(dbUpdateObject);*/
 }
 
 void AutotestingSystem::SaveScreenShotNameToDB()
 {
 	Logger::Debug("AutotestingSystem::SaveScreenShotNameToDB %s", screenShotName.c_str());
 	
-	String testId = GetTestId();
-	String stepId = GetStepId();
-
-	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);
-	KeyedArchive* currentStepArchive = AutotestingDB::Instance()->FindOrInsertStepArchive(currentTestArchive, stepId);
-
-	currentStepArchive->SetString("screenshot", screenShotName);
-
-	AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-	SafeRelease(dbUpdateObject);
+	AutotestingDB::Instance()->Log("INFO", Format("screenshot: %s", screenShotName));
 }
     
 void AutotestingSystem::Update(float32 timeElapsed)
@@ -467,17 +440,7 @@ void AutotestingSystem::OnTestsFinished()
 	}
 
 	// Mark test as SUCCESS
-	String testId = GetTestId();
-	MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-	KeyedArchive* currentTestArchive = AutotestingDB::Instance()->FindOrInsertTestArchive(dbUpdateObject, testId);
-
-	if (currentTestArchive)
-	{
-		currentTestArchive->SetBool("Success", true);
-	}
-
-	AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-	SafeRelease(dbUpdateObject);
+	AutotestingDB::Instance()->Log("INFO", "Test finished.");
 
     ExitApp();
 }

@@ -382,16 +382,37 @@ namespace DAVA
 		AutotestingSystem::Instance()->logIndex++;
 
 		MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-		KeyedArchive* currentTestArchive = FindOrInsertTestArchive(dbUpdateObject, testId);
-		KeyedArchive* currentStepArchive = FindOrInsertStepArchive(currentTestArchive, stepId); 
 
-		KeyedArchive* logEntry = FindOrInsertTestStepLogEntryArchive(currentStepArchive, logId);
+		// Launch data
+		dbUpdateObject->SetObjectName(Format("%s_%s_%s_%s", AutotestingSystem::Instance()->buildDate.c_str(), AutotestingSystem::Instance()->buildId.c_str(), AutotestingSystem::Instance()->deviceName.c_str(), logId.c_str()));
+
+		dbUpdateObject->AddString("Date", AutotestingSystem::Instance()->buildDate.c_str());
+		dbUpdateObject->AddString("Device", AutotestingSystem::Instance()->deviceName.c_str());			
+		dbUpdateObject->AddString("BuildId", AutotestingSystem::Instance()->buildId.c_str());
+		dbUpdateObject->AddString("Branch", AutotestingSystem::Instance()->branch.c_str());
+		dbUpdateObject->AddString("Framework", AutotestingSystem::Instance()->framework.c_str());
+
+		// Test data
+		dbUpdateObject->AddString("Group", AutotestingSystem::Instance()->groupName.c_str());
+		dbUpdateObject->AddString("Test", testId.c_str());
+		dbUpdateObject->AddString("Step", stepId.c_str());
+		dbUpdateObject->AddString("Log", logId.c_str());
+
+
+		// Log data
+		String currentTime = AutotestingSystem::Instance()->GetCurrentTimeString();
+		dbUpdateObject->AddString("Type", level);
+		dbUpdateObject->AddString("Time", currentTime);
+		dbUpdateObject->AddString("Message", message);
+		/*KeyedArchive* logEntry = new KeyedArchive();
 
 		logEntry->SetString("Type", level);
-		String currentTime = AutotestingSystem::Instance()->GetCurrentTimeString();
+		
 		logEntry->SetString("Time", currentTime);
 		logEntry->SetString("Message", message);
+		dbUpdateObject->Add*/
 
+		dbUpdateObject->LoadData();
 		SaveToDB(dbUpdateObject);
 		SafeRelease(dbUpdateObject);
 		
