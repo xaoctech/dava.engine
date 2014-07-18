@@ -973,10 +973,10 @@ namespace DAVA
 
         if (parent && parent->IsOnScreen())
         {
-            if (!recursiveVisible)
-                SystemWillBecomeInvisible();
-            else
+            if (recursiveVisible)
                 SystemWillBecomeVisible();
+            else
+                SystemWillBecomeInvisible();
         }
     }
 
