@@ -133,17 +133,6 @@ ENUM_DECLARE(DeviceInfo::ePlatform)
     ENUM_ADD_DESCR(DeviceInfo::PLATFORM_UNKNOWN, "Unknown");
 }
 
-ENUM_DECLARE(DeviceInfo::eNetworkType)
-{
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_NOT_CONNECTED, "Not Connected");
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_CELLULAR, "Cellular");
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_WIFI, "Wi-Fi");
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_WIMAX, "WiMAX");
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_ETHERNET, "Ehternet");
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_BLUETOOTH, "Bluetooth");
-    ENUM_ADD_DESCR(DeviceInfo::NETWORK_TYPE_UNKNOWN, "Unknown");
-}
-
 /*
 void f()
 {
