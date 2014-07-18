@@ -707,6 +707,7 @@ void QtMainWindow::SetupActions()
     
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
     QObject::connect(ui->actionRebuildCurrentOcclusionCell, SIGNAL(triggered()), this, SLOT(OnRebuildCurrentOcclusionCell()));
+    QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
     
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -2447,6 +2448,13 @@ void QtMainWindow::OnBuildStaticOcclusion()
     }
 
     delete waitOcclusionDlg;
+}
+
+void QtMainWindow::OnInavalidateStaticOcclusion()
+{
+    SceneEditor2* scene = GetCurrentScene();
+    if(!scene) return;
+    scene->staticOcclusionSystem->InvalidateOcclusion();
 }
 
 void QtMainWindow::OnRebuildCurrentOcclusionCell()

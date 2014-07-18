@@ -27,82 +27,14 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
+#define __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
 
-#ifndef __FRAMEWORK__DEVICEINFO__
-#define __FRAMEWORK__DEVICEINFO__
-
-#include "Base/BaseTypes.h"
-#include "Render/RenderBase.h"
+#include "Base/BaseMath.h"
 
 namespace DAVA
 {
+    DAVA::Rect ConvertPhysicalToVirtual(const DAVA::Rect & rect);
+}
+#endif // __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
 
-class DeviceInfo
-{
-public:
-	enum ePlatform
-	{
-		PLATFORM_MACOS = 0,
-		PLATFORM_IOS,
-		PLATFORM_IOS_SIMULATOR,
-		PLATFORM_ANDROID,
-		PLATFORM_WIN32,
-		PLATFORM_UNKNOWN,
-		PLATFORMS_COUNT
-	};
-
-    enum eNetworkType
-	{
-		NETWORK_TYPE_NOT_CONNECTED = 0,
-		NETWORK_TYPE_UNKNOWN,
-		NETWORK_TYPE_CELLULAR,
-		NETWORK_TYPE_WIFI,
-		NETWORK_TYPE_WIMAX,
-		NETWORK_TYPE_ETHERNET,
-		NETWORK_TYPE_BLUETOOTH,
-	};
-
-    static const int32 SIGNAL_STRENGTH_UNKNOWN = -1;
-    struct NetworkInfo
-    {
-        eNetworkType networkType;
-        int32 signalStrength; //(0-no signal, 100 - max signal)
-        
-        NetworkInfo()
-        {
-            networkType = NETWORK_TYPE_UNKNOWN;
-            signalStrength = SIGNAL_STRENGTH_UNKNOWN;
-        }
-    };
-
-    struct StorageRecord
-    {
-        String name;
-        int64 totalSpace;
-        int64 freeSpace;
-
-        StorageRecord()
-        :   name("")
-        ,   totalSpace(0)
-        ,   freeSpace(0)
-        {}
-    };
-
-	static ePlatform GetPlatform();
-	static String GetPlatformString();
-	static String GetVersion();
-	static String GetManufacturer();
-	static String GetModel();
-	static String GetLocale();
-	static String GetRegion();
-	static String GetTimeZone();
-    static String GetUDID();
-    static WideString GetName();
-    static int GetZBufferSize();
-    static eGPUFamily GetGPUFamily();
-    static NetworkInfo GetNetworkInfo();
-    static List<StorageRecord> GetStorageList();
-};
-
-};
-#endif /* defined(__FRAMEWORK__DEVICEINFO__) */
