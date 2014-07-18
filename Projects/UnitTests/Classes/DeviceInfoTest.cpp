@@ -89,7 +89,8 @@ void DeviceInfoTest::DidAppear()
     String timezone = DeviceInfo::GetTimeZone();
     String udid = DeviceInfo::GetUDID();
     WideString name = DeviceInfo::GetName();
-    
+    List<DeviceInfo::StorageRecord> storages = DeviceInfo::GetStorageList();
+
     String deviceInfoString;
     deviceInfoString += Format("Platform: %s\n", platform.c_str());
     deviceInfoString += Format("OS version: %s\n", version.c_str());
@@ -111,7 +112,13 @@ void DeviceInfoTest::DidAppear()
 		deviceInfoString += Format("GPU family: %s\n", GPUFamilyDescriptor::GetGPUName(gpu).c_str());
 	}
     deviceInfoString += Format("Network connection type: %s\n", GetNetworkTypeString().c_str());
-    deviceInfoString += Format("Network signal strength: %i%%", DeviceInfo::GetNetworkInfo().signalStrength);
+    deviceInfoString += Format("Network signal strength: %i%%\n", DeviceInfo::GetNetworkInfo().signalStrength);
+
+    List<DeviceInfo::StorageRecord>::const_iterator iter = storages.begin();
+    for (;iter != storages.end(); ++iter)
+    {
+    	deviceInfoString += Format("%s; Capacity: %lld; Free: %lld\n", iter->name.c_str(), iter->totalSpace, iter->freeSpace);
+    }
 
     deviceInfoText->SetText(StringToWString(deviceInfoString));
 	Logger::Debug("********** Device info **********");
