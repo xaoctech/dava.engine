@@ -72,8 +72,6 @@
 #include "ParseTextTest.h"
 #include "ImageSizeTest.h"
 
-#include "TeamcityOutput/TeamcityOutput.h"
-
 
 using namespace DAVA;
 
