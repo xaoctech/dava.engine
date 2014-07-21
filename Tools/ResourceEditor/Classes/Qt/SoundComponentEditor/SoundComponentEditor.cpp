@@ -149,7 +149,7 @@ void SoundComponentEditor::FillEventParamsFrame()
 
 void SoundComponentEditor::OnPlay()
 {
-    if(selectedEvent)
+    if(selectedEvent && !selectedEvent->IsActive())
         selectedEvent->Trigger();
 }
 

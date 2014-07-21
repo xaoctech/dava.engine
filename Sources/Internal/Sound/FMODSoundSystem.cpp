@@ -43,7 +43,7 @@
 #endif
 
 #define MAX_SOUND_CHANNELS 48
-#define MAX_SOUND_VIRTUAL_CHANNELS 64
+#define MAX_SOUND_VIRTUAL_CHANNELS 128
 
 namespace DAVA
 {
@@ -179,31 +179,9 @@ void SoundSystem::SerializeEvent(const SoundEvent * sEvent, KeyedArchive *toArch
     }
 #endif //__DAVAENGINE_IPHONE__
 
-    FastName groupName;
-    bool groupWasFound = false;
-    Vector<SoundGroup>::iterator it = soundGroups.begin();
-    Vector<SoundGroup>::iterator itEnd = soundGroups.end();
-    for(;it != itEnd; ++it)
-    {
-        Vector<SoundEvent *> & events = it->events;
-        Vector<SoundEvent *>::const_iterator itEv = events.begin();
-        Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
-        for(;itEv != itEvEnd; ++itEv)
-        {
-            if((*itEv) == sEvent)
-            {
-                groupName = it->name;
-                groupWasFound = true;
-                break;
-            }
-        }
-        if(groupWasFound)
-            break;
-    }
-    if(groupWasFound)
-    {
+    FastName groupName = FindGroupByEvent(sEvent);
+    if(groupName.IsValid())
         toArchive->SetFastName("groupName", groupName);
-    }
 }
 
 SoundEvent * SoundSystem::DeserializeEvent(KeyedArchive *archive)
@@ -229,6 +207,65 @@ SoundEvent * SoundSystem::DeserializeEvent(KeyedArchive *archive)
     }
 
     return 0;
+}
+
+SoundEvent * SoundSystem::CloneEvent(const SoundEvent * sEvent)
+{
+    DVASSERT(sEvent);
+
+    SoundEvent * clonedSound = 0;
+    if(IsPointerToExactClass<FMODFileSoundEvent>(sEvent))
+    {
+        FMODFileSoundEvent * sound = (FMODFileSoundEvent *)sEvent;
+        clonedSound = CreateSoundEventFromFile(sound->fileName, FindGroupByEvent(sound), sound->flags, sound->priority);
+    }
+    else if(IsPointerToExactClass<FMODSoundEvent>(sEvent))
+    {
+        FMODSoundEvent * sound = (FMODSoundEvent *)sEvent;
+        clonedSound = CreateSoundEventByID(sound->eventName, FindGroupByEvent(sound));
+    }
+#ifdef __DAVAENGINE_IPHONE__
+    else if(IsPointerToExactClass<MusicIOSSoundEvent>(sEvent))
+    {
+        MusicIOSSoundEvent * musicEvent = (MusicIOSSoundEvent *)sEvent;
+
+        uint32 flags = SoundEvent::SOUND_EVENT_CREATE_STREAM;
+        if(musicEvent->GetLoopCount() == -1)
+            flags |= SoundEvent::SOUND_EVENT_CREATE_LOOP;
+
+        clonedSound = CreateSoundEventFromFile(musicEvent->GetEventName(), FindGroupByEvent(sEvent), flags);
+    }
+#endif //__DAVAENGINE_IPHONE__
+
+    DVASSERT(clonedSound)
+    return clonedSound;
+}
+
+FastName SoundSystem::FindGroupByEvent(const SoundEvent * soundEvent)
+{
+    FastName groupName;
+    bool groupWasFound = false;
+    Vector<SoundGroup>::iterator it = soundGroups.begin();
+    Vector<SoundGroup>::iterator itEnd = soundGroups.end();
+    for(;it != itEnd; ++it)
+    {
+        Vector<SoundEvent *> & events = it->events;
+        Vector<SoundEvent *>::const_iterator itEv = events.begin();
+        Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
+        for(;itEv != itEvEnd; ++itEv)
+        {
+            if((*itEv) == soundEvent)
+            {
+                groupName = it->name;
+                groupWasFound = true;
+                break;
+            }
+        }
+        if(groupWasFound)
+            break;
+    }
+
+    return groupName;
 }
 
 void SoundSystem::ParseSFXConfig(const FilePath & configPath)
