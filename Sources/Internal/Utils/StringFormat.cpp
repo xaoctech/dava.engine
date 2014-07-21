@@ -250,7 +250,7 @@ int32 do_div(int64 &n, int32 base)
 		if (tail >= pow(10.f, precision))
 		{
 			whole++;
-			tail -= pow(10.f, precision);
+			tail -= (int32)pow(10.f, precision);
 		}
 		
         type = SIGN | LEFT;
@@ -591,7 +591,7 @@ int32 do_div(int64 &n, int32 base)
                         }
                         else
                         {
-                            for (i = 0; pus[i] && i < strlen(pus); i++)
+                            for (i = 0; pus[i] && i < (int32)strlen(pus); i++)
                             {
                                 *str++ = (char16)(pus[i]);
                             }
@@ -611,7 +611,7 @@ int32 do_div(int64 &n, int32 base)
                         }
                         else
                         {
-                            for (i = 0; pus[i] && i < wcslen(pus); ++i) // / sizeof(WCHAR); i++)
+                            for (i = 0; pus[i] && i < (int32)wcslen(pus); ++i) // / sizeof(WCHAR); i++)
                             {
                                 *str++ = pus[i];
                             }
