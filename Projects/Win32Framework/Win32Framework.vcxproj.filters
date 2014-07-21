@@ -1516,6 +1516,9 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.h">
       <Filter>Internal\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlNode.h">
+      <Filter>Internal\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2715,6 +2718,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.cpp">
       <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlNode.cpp">
+      <Filter>Internal\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
