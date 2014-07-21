@@ -223,7 +223,6 @@
 		02FD7FA41924997C007762C0 /* TextBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C90716B9326D002BD35F /* TextBlock.h */; };
 		02FD7FA51924997C007762C0 /* NMaterialNames.h in Headers */ = {isa = PBXBuildFile; fileRef = A6DBFA7D1887E3D5006BE11C /* NMaterialNames.h */; };
 		02FD7FA61924997C007762C0 /* AnimatedMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C90A16B9326D002BD35F /* AnimatedMesh.h */; };
-		02FD7FA71924997C007762C0 /* StaticOcclusion.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D5FF186082D600D8936D /* StaticOcclusion.h */; };
 		02FD7FA81924997C007762C0 /* OcclusionQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 505EB41B18250C53009BEA3C /* OcclusionQuery.h */; };
 		02FD7FA91924997C007762C0 /* EdgeAdjacency.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C90C16B9326D002BD35F /* EdgeAdjacency.h */; };
 		02FD7FAA1924997C007762C0 /* PolygonGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C90E16B9326D002BD35F /* PolygonGroup.h */; };
@@ -287,7 +286,6 @@
 		02FD7FE51924997C007762C0 /* TextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C98B16B9326E002BD35F /* TextureDescriptor.h */; };
 		02FD7FE61924997C007762C0 /* UberShader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C98E16B9326E002BD35F /* UberShader.h */; };
 		02FD7FE71924997C007762C0 /* VertexBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C98F16B9326E002BD35F /* VertexBuffer.h */; };
-		02FD7FE81924997C007762C0 /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D5F7186082A600D8936D /* StaticOcclusionSystem.h */; };
 		02FD7FE91924997C007762C0 /* Box2DDebugDraw.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C99216B9326E002BD35F /* Box2DDebugDraw.h */; };
 		02FD7FEA1924997C007762C0 /* Box2DGameObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C99416B9326E002BD35F /* Box2DGameObject.h */; };
 		02FD7FEB1924997C007762C0 /* Box2DGameObjectManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3C99616B9326E002BD35F /* Box2DGameObjectManager.h */; };
@@ -436,7 +434,6 @@
 		02FD807A1924997C007762C0 /* SkyboxSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A66BC2F017AB98E800B6252E /* SkyboxSystem.h */; };
 		02FD807B1924997C007762C0 /* AllocatorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17816B7F17B2748900B067E1 /* AllocatorFactory.h */; };
 		02FD807C1924997C007762C0 /* SkyboxRenderObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A679102817B3CF2D000AA2F2 /* SkyboxRenderObject.h */; };
-		02FD807D1924997C007762C0 /* StaticOcclusionRenderPass.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D601186082D600D8936D /* StaticOcclusionRenderPass.h */; };
 		02FD807E1924997C007762C0 /* UIDismissionHandlerAlertView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D7E5F417A6C06B00861981 /* UIDismissionHandlerAlertView.h */; };
 		02FD807F1924997C007762C0 /* PerformanceSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = EA56555217CE00E100426EB8 /* PerformanceSettings.h */; };
 		02FD80801924997C007762C0 /* UIScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = E8C0A6F917D5D8B300F8F93C /* UIScrollView.h */; };
@@ -584,7 +581,6 @@
 		02FD810F1924997C007762C0 /* RenderBatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C93916B9326E002BD35F /* RenderBatch.cpp */; };
 		02FD81101924997C007762C0 /* RenderLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C93C16B9326E002BD35F /* RenderLayer.cpp */; };
 		02FD81111924997C007762C0 /* StaticOcclusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A61171411860C24D00E18F8C /* StaticOcclusion.cpp */; };
-		02FD81121924997C007762C0 /* StaticOcclusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D5FE186082D600D8936D /* StaticOcclusion.cpp */; };
 		02FD81131924997C007762C0 /* RenderObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C93E16B9326E002BD35F /* RenderObject.cpp */; };
 		02FD81141924997C007762C0 /* RenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C94016B9326E002BD35F /* RenderPass.cpp */; };
 		02FD81151924997C007762C0 /* RenderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C94216B9326E002BD35F /* RenderSystem.cpp */; };
@@ -717,7 +713,6 @@
 		02FD81941924997C007762C0 /* UIScreenManageriPhoneImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA5F16B9326E002BD35F /* UIScreenManageriPhoneImpl.mm */; };
 		02FD81951924997C007762C0 /* StaticOcclusionRenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D600186082D600D8936D /* StaticOcclusionRenderPass.cpp */; };
 		02FD81961924997C007762C0 /* UIScreenTransition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA6216B9326E002BD35F /* UIScreenTransition.cpp */; };
-		02FD81971924997C007762C0 /* StaticOcclusionRenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A61171431860C24D00E18F8C /* StaticOcclusionRenderPass.cpp */; };
 		02FD81981924997C007762C0 /* UIScrollBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA6416B9326E002BD35F /* UIScrollBar.cpp */; };
 		02FD81991924997C007762C0 /* UISlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA6616B9326E002BD35F /* UISlider.cpp */; };
 		02FD819A1924997C007762C0 /* UIStaticText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3CA6816B9326E002BD35F /* UIStaticText.cpp */; };
@@ -744,7 +739,6 @@
 		02FD81AF1924997C007762C0 /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E2D16D36FF3004D5099 /* UIWebView.cpp */; };
 		02FD81B01924997C007762C0 /* WebViewControliOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17F53E3316D3705E004D5099 /* WebViewControliOS.mm */; };
 		02FD81B11924997C007762C0 /* DPIHelperiOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3C816D506F900D2BA6C /* DPIHelperiOS.mm */; };
-		02FD81B21924997C007762C0 /* StaticOcclusionSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D5F6186082A600D8936D /* StaticOcclusionSystem.cpp */; };
 		02FD81B31924997C007762C0 /* DVAssertMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEC16D69F1700183D40 /* DVAssertMessage.cpp */; };
 		02FD81B41924997C007762C0 /* DVAssertMessageApple.mm in Sources */ = {isa = PBXBuildFile; fileRef = CC247FEE16D69F1700183D40 /* DVAssertMessageApple.mm */; };
 		02FD81B51924997C007762C0 /* UIAlertView_Modal.m in Sources */ = {isa = PBXBuildFile; fileRef = CC247FF016D69F1700183D40 /* UIAlertView_Modal.m */; };
@@ -874,14 +868,9 @@
 		4FDDEC5A17A6920D00D9DDEA /* MaterialOptimazer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FDDEC5817A6920D00D9DDEA /* MaterialOptimazer.h */; };
 		505EB41C18250C53009BEA3C /* OcclusionQuery.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505EB41A18250C53009BEA3C /* OcclusionQuery.cpp */; };
 		505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 505EB41B18250C53009BEA3C /* OcclusionQuery.h */; };
-		50C7D5F8186082A600D8936D /* StaticOcclusionSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D5F6186082A600D8936D /* StaticOcclusionSystem.cpp */; };
-		50C7D5F9186082A600D8936D /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D5F7186082A600D8936D /* StaticOcclusionSystem.h */; };
 		50C7D5FC186082B100D8936D /* StaticOcclusionComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D5FA186082B100D8936D /* StaticOcclusionComponent.cpp */; };
 		50C7D5FD186082B100D8936D /* StaticOcclusionComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D5FB186082B100D8936D /* StaticOcclusionComponent.h */; };
-		50C7D602186082D600D8936D /* StaticOcclusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D5FE186082D600D8936D /* StaticOcclusion.cpp */; };
-		50C7D603186082D600D8936D /* StaticOcclusion.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D5FF186082D600D8936D /* StaticOcclusion.h */; };
 		50C7D604186082D600D8936D /* StaticOcclusionRenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C7D600186082D600D8936D /* StaticOcclusionRenderPass.cpp */; };
-		50C7D605186082D600D8936D /* StaticOcclusionRenderPass.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C7D601186082D600D8936D /* StaticOcclusionRenderPass.h */; };
 		5C77ABBF14C7703800E92D28 /* libpng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C77ABBE14C7703800E92D28 /* libpng_ios.a */; };
 		5C97964714E3E75000FFFA14 /* libxml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964514E3E75000FFFA14 /* libxml_ios.a */; };
 		5C97964814E3E75000FFFA14 /* libyaml_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C97964614E3E75000FFFA14 /* libyaml_ios.a */; };
@@ -983,7 +972,6 @@
 		9A011FF039AF222095F1FFD4 /* GamepadDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A011D1A54C2070D923E1061 /* GamepadDevice.h */; };
 		A61171471860C24D00E18F8C /* StaticOcclusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A61171411860C24D00E18F8C /* StaticOcclusion.cpp */; };
 		A61171481860C24D00E18F8C /* StaticOcclusion.h in Headers */ = {isa = PBXBuildFile; fileRef = A61171421860C24D00E18F8C /* StaticOcclusion.h */; };
-		A61171491860C24D00E18F8C /* StaticOcclusionRenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A61171431860C24D00E18F8C /* StaticOcclusionRenderPass.cpp */; };
 		A611714A1860C24D00E18F8C /* StaticOcclusionRenderPass.h in Headers */ = {isa = PBXBuildFile; fileRef = A61171441860C24D00E18F8C /* StaticOcclusionRenderPass.h */; };
 		A611714D1860C2A500E18F8C /* StaticOcclusionSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A611714B1860C2A500E18F8C /* StaticOcclusionSystem.cpp */; };
 		A611714E1860C2A500E18F8C /* StaticOcclusionSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A611714C1860C2A500E18F8C /* StaticOcclusionSystem.h */; };
@@ -1046,6 +1034,8 @@
 		CC24801516DD17F300183D40 /* UserComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC24801316DD17F300183D40 /* UserComponent.cpp */; };
 		CC24801616DD17F300183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24801416DD17F300183D40 /* UserComponent.h */; };
 		CC24804616E0E34300183D40 /* VectorSpinnerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */; };
+		CC677BA5197D46390089547A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC677BA4197D46390089547A /* SystemConfiguration.framework */; };
+		CC677BA6197D46420089547A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC677BA4197D46390089547A /* SystemConfiguration.framework */; };
 		CC84B03E18211BCE00934482 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC84B03618211BCE00934482 /* Job.cpp */; };
 		CC84B03F18211BCE00934482 /* Job.h in Headers */ = {isa = PBXBuildFile; fileRef = CC84B03718211BCE00934482 /* Job.h */; };
 		CC84B04018211BCE00934482 /* JobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC84B03818211BCE00934482 /* JobManager.cpp */; };
@@ -1889,6 +1879,7 @@
 		CC24801316DD17F300183D40 /* UserComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserComponent.cpp; sourceTree = "<group>"; };
 		CC24801416DD17F300183D40 /* UserComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserComponent.h; sourceTree = "<group>"; };
 		CC24804516E0E34300183D40 /* VectorSpinnerAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorSpinnerAdapter.h; sourceTree = "<group>"; };
+		CC677BA4197D46390089547A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		CC84B03618211BCE00934482 /* Job.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Job.cpp; path = Job/Job.cpp; sourceTree = "<group>"; };
 		CC84B03718211BCE00934482 /* Job.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Job.h; path = Job/Job.h; sourceTree = "<group>"; };
 		CC84B03818211BCE00934482 /* JobManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JobManager.cpp; path = Job/JobManager.cpp; sourceTree = "<group>"; };
@@ -2503,6 +2494,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC677BA6197D46420089547A /* SystemConfiguration.framework in Frameworks */,
 				02FD81F21924997C007762C0 /* libjpeg_ios.a in Frameworks */,
 				02FD81F31924997C007762C0 /* AssetsLibrary.framework in Frameworks */,
 				02FD81F41924997C007762C0 /* libfmodevent_iphoneos.a in Frameworks */,
@@ -2531,6 +2523,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC677BA5197D46390089547A /* SystemConfiguration.framework in Frameworks */,
 				6252BF2618ED506E00058754 /* libjpeg_ios.a in Frameworks */,
 				87A0C45B18EACBEE00A7402D /* AssetsLibrary.framework in Frameworks */,
 				02F6403B173A597A0053F038 /* libfmodevent_iphoneos.a in Frameworks */,
@@ -2623,6 +2616,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC677BA4197D46390089547A /* SystemConfiguration.framework */,
 				6252BF2518ED506E00058754 /* libjpeg_ios.a */,
 				87A0C45A18EACBEE00A7402D /* AssetsLibrary.framework */,
 				EA7DEDDC1448550100D9E652 /* libfreetype_ios.a */,
@@ -3927,7 +3921,6 @@
 				02FD7FA41924997C007762C0 /* TextBlock.h in Headers */,
 				02FD7FA51924997C007762C0 /* NMaterialNames.h in Headers */,
 				02FD7FA61924997C007762C0 /* AnimatedMesh.h in Headers */,
-				02FD7FA71924997C007762C0 /* StaticOcclusion.h in Headers */,
 				02FD7FA81924997C007762C0 /* OcclusionQuery.h in Headers */,
 				02FD7FA91924997C007762C0 /* EdgeAdjacency.h in Headers */,
 				02FD7FAA1924997C007762C0 /* PolygonGroup.h in Headers */,
@@ -3994,7 +3987,6 @@
 				02FD7FE51924997C007762C0 /* TextureDescriptor.h in Headers */,
 				02FD7FE61924997C007762C0 /* UberShader.h in Headers */,
 				02FD7FE71924997C007762C0 /* VertexBuffer.h in Headers */,
-				02FD7FE81924997C007762C0 /* StaticOcclusionSystem.h in Headers */,
 				02FD7FE91924997C007762C0 /* Box2DDebugDraw.h in Headers */,
 				02FD7FEA1924997C007762C0 /* Box2DGameObject.h in Headers */,
 				02FD7FEB1924997C007762C0 /* Box2DGameObjectManager.h in Headers */,
@@ -4156,7 +4148,6 @@
 				02FD807A1924997C007762C0 /* SkyboxSystem.h in Headers */,
 				02FD807B1924997C007762C0 /* AllocatorFactory.h in Headers */,
 				02FD807C1924997C007762C0 /* SkyboxRenderObject.h in Headers */,
-				02FD807D1924997C007762C0 /* StaticOcclusionRenderPass.h in Headers */,
 				02FD807E1924997C007762C0 /* UIDismissionHandlerAlertView.h in Headers */,
 				02FD807F1924997C007762C0 /* PerformanceSettings.h in Headers */,
 				02FD80801924997C007762C0 /* UIScrollView.h in Headers */,
@@ -4357,7 +4348,6 @@
 				E8B3CBC916B9326E002BD35F /* TextBlock.h in Headers */,
 				A6DBFA7F1887E3D5006BE11C /* NMaterialNames.h in Headers */,
 				E8B3CBCB16B9326E002BD35F /* AnimatedMesh.h in Headers */,
-				50C7D603186082D600D8936D /* StaticOcclusion.h in Headers */,
 				505EB41D18250C53009BEA3C /* OcclusionQuery.h in Headers */,
 				E8B3CBCD16B9326E002BD35F /* EdgeAdjacency.h in Headers */,
 				E8B3CBCF16B9326E002BD35F /* PolygonGroup.h in Headers */,
@@ -4418,7 +4408,6 @@
 				E8B3CC4916B9326E002BD35F /* TextureDescriptor.h in Headers */,
 				E8B3CC4C16B9326E002BD35F /* UberShader.h in Headers */,
 				E8B3CC4D16B9326E002BD35F /* VertexBuffer.h in Headers */,
-				50C7D5F9186082A600D8936D /* StaticOcclusionSystem.h in Headers */,
 				E8B3CC4F16B9326E002BD35F /* Box2DDebugDraw.h in Headers */,
 				E8B3CC5116B9326E002BD35F /* Box2DGameObject.h in Headers */,
 				E8B3CC5316B9326E002BD35F /* Box2DGameObjectManager.h in Headers */,
@@ -4587,7 +4576,6 @@
 				647EFC79195F0AC40073B3CB /* NMaterialStateDynamicPropertiesInsp.h in Headers */,
 				17816B8117B2748900B067E1 /* AllocatorFactory.h in Headers */,
 				A679102A17B3CF2D000AA2F2 /* SkyboxRenderObject.h in Headers */,
-				50C7D605186082D600D8936D /* StaticOcclusionRenderPass.h in Headers */,
 				17D7E5F617A6C06B00861981 /* UIDismissionHandlerAlertView.h in Headers */,
 				EA56555417CE00E100426EB8 /* PerformanceSettings.h in Headers */,
 				E8C0A6FB17D5D8B300F8F93C /* UIScrollView.h in Headers */,
@@ -4658,7 +4646,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Framework" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -4842,7 +4830,6 @@
 				02FD810F1924997C007762C0 /* RenderBatch.cpp in Sources */,
 				02FD81101924997C007762C0 /* RenderLayer.cpp in Sources */,
 				02FD81111924997C007762C0 /* StaticOcclusion.cpp in Sources */,
-				02FD81121924997C007762C0 /* StaticOcclusion.cpp in Sources */,
 				02FD81131924997C007762C0 /* RenderObject.cpp in Sources */,
 				02FD81141924997C007762C0 /* RenderPass.cpp in Sources */,
 				647EFC78195F0AC40073B3CB /* NMaterialStateDynamicPropertiesInsp.cpp in Sources */,
@@ -4987,7 +4974,6 @@
 				17675C2819472C1400054F8F /* LibPVRHelper.cpp in Sources */,
 				02FD81951924997C007762C0 /* StaticOcclusionRenderPass.cpp in Sources */,
 				02FD81961924997C007762C0 /* UIScreenTransition.cpp in Sources */,
-				02FD81971924997C007762C0 /* StaticOcclusionRenderPass.cpp in Sources */,
 				02FD81981924997C007762C0 /* UIScrollBar.cpp in Sources */,
 				02FD81991924997C007762C0 /* UISlider.cpp in Sources */,
 				02FD819A1924997C007762C0 /* UIStaticText.cpp in Sources */,
@@ -5014,7 +5000,6 @@
 				02FD81AF1924997C007762C0 /* UIWebView.cpp in Sources */,
 				02FD81B01924997C007762C0 /* WebViewControliOS.mm in Sources */,
 				02FD81B11924997C007762C0 /* DPIHelperiOS.mm in Sources */,
-				02FD81B21924997C007762C0 /* StaticOcclusionSystem.cpp in Sources */,
 				02FD81B31924997C007762C0 /* DVAssertMessage.cpp in Sources */,
 				02FD81B41924997C007762C0 /* DVAssertMessageApple.mm in Sources */,
 				02FD81B51924997C007762C0 /* UIAlertView_Modal.m in Sources */,
@@ -5221,7 +5206,6 @@
 				E8B3CBF816B9326E002BD35F /* RenderBatch.cpp in Sources */,
 				E8B3CBFB16B9326E002BD35F /* RenderLayer.cpp in Sources */,
 				A61171471860C24D00E18F8C /* StaticOcclusion.cpp in Sources */,
-				50C7D602186082D600D8936D /* StaticOcclusion.cpp in Sources */,
 				E8B3CBFD16B9326E002BD35F /* RenderObject.cpp in Sources */,
 				E8B3CBFF16B9326E002BD35F /* RenderPass.cpp in Sources */,
 				E8B3CC0116B9326E002BD35F /* RenderSystem.cpp in Sources */,
@@ -5361,7 +5345,6 @@
 				50C7D604186082D600D8936D /* StaticOcclusionRenderPass.cpp in Sources */,
 				E8B3CD1A16B9326E002BD35F /* UIScreenTransition.cpp in Sources */,
 				647EFC6F195F0AC40073B3CB /* NMaterialHelper.cpp in Sources */,
-				A61171491860C24D00E18F8C /* StaticOcclusionRenderPass.cpp in Sources */,
 				E8B3CD1C16B9326E002BD35F /* UIScrollBar.cpp in Sources */,
 				E8B3CD1E16B9326E002BD35F /* UISlider.cpp in Sources */,
 				E8B3CD2016B9326E002BD35F /* UIStaticText.cpp in Sources */,
@@ -5388,7 +5371,6 @@
 				17F53E3016D36FF3004D5099 /* UIWebView.cpp in Sources */,
 				17F53E3516D3705E004D5099 /* WebViewControliOS.mm in Sources */,
 				840ED3C916D506F900D2BA6C /* DPIHelperiOS.mm in Sources */,
-				50C7D5F8186082A600D8936D /* StaticOcclusionSystem.cpp in Sources */,
 				CC247FF116D69F1700183D40 /* DVAssertMessage.cpp in Sources */,
 				CC247FF316D69F1700183D40 /* DVAssertMessageApple.mm in Sources */,
 				CC247FF516D69F1700183D40 /* UIAlertView_Modal.m in Sources */,
@@ -5746,7 +5728,6 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5772,6 +5753,7 @@
 					./../../Libs/lua/include,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-mno-thumb";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -5791,7 +5773,6 @@
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5835,7 +5816,6 @@
 		785662DF109B65FE00DAF688 /* AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5919,7 +5899,6 @@
 		FEFB031611CA5F1B00B65B8B /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
