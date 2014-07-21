@@ -45,7 +45,6 @@ public:
         String name;
         float32 maxValue;
         float32 minValue;
-        float32 currentValue;
     };
 
     enum eSoundEventCallbackType
