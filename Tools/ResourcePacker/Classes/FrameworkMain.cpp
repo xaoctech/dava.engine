@@ -143,7 +143,7 @@ void ProcessRecourcePacker()
     GPUFamilyDescriptor::SetupGPUParameters();
     
     
-    eGPUFamily exportForGPU = GPU_UNKNOWN;
+    eGPUFamily exportForGPU = GPU_PNG;
     if(CommandLineParser::CommandIsFound(String("-gpu")))
     {
         String gpuName = CommandLineParser::GetCommandParam(String("-gpu"));
