@@ -879,9 +879,6 @@
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h">
       <Filter>Internal\Debug</Filter>
     </ClInclude>

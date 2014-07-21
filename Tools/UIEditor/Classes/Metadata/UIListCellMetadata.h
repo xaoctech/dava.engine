@@ -26,68 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __UIEditor__UIListCellMetadata__
+#define __UIEditor__UIListCellMetadata__
 
+#include "UIButtonMetadata.h"
+#include "UI/UIListCell.h"
 
-#ifndef __DAVAENGINE_UI_LIST_CELL_H__
-#define __DAVAENGINE_UI_LIST_CELL_H__
+namespace DAVA {
 
-#include "UI/UIButton.h"
-
-namespace DAVA 
+// Metadata class for DAVA UIListCell control.
+class UIListCellMetadata : public UIButtonMetadata
 {
-	/**
-	 \ingroup controlsystem
-	 \brief Cell unit for the UIList.
-		UIButton that can be managed by the UIList.
-	 */
-	
-	class UIListCell : public UIButton 
-	{
-		friend class UIList;
-	public:
-		/**
-		 \brief Constructor.
-		 \param[in] rect Used only size part of the rect. Incoming rect size can be modified by the UIList if this is neccesary.
-		 \param[in] cellIdentifier literal identifier to represents cell type. For example: "Name cell", "Phone number cell", etc.
-		 */
-		UIListCell(const Rect &rect = Rect(), const String &cellIdentifier = String(), const FilePath &aggregatorPath = FilePath());
+    Q_OBJECT
 
-        /**
-		 \brief Returns cell's identifier.
-		 \returns identifier
-		 */
-        const String & GetIdentifier() const;
+    Q_PROPERTY(QString Identifier READ GetIdentifier WRITE SetIdentifier);
 
-        /**
-		 \brief set cell's identifier.
-		 \param[in] new cell identifier
-		 */
-        void SetIdentifier(const String &identifier);
-		/**
-		 \brief Returns current cell sequence number in the list.
-		 \returns list item index
-		 */
-		int32 GetIndex() const;
-        
-        virtual UIListCell *Clone();
-        void CopyDataFrom(UIControl *srcControl);
-        
-        virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-        virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-		
-	protected:
-		virtual ~UIListCell();
+public:
+    UIListCellMetadata(QObject* parent = 0);
 
-		virtual void WillDisappear();
+protected:
+    virtual bool GetInitialInputEnabled() const {return true;};
 
-		
-	private:
-		int32 currentIndex;
-		String identifier;
-		
-		void *cellStore;
-		
-	};
-}
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
 
-#endif
+    virtual QString GetUIControlClassName() const { return "UIListCell"; };
+
+    // Helper to access active UI List cell.
+    virtual UIListCell* GetActiveUIControl() const;
+
+    QString GetIdentifier() const;
+    void SetIdentifier(const QString &value);
+};
+
+};
+
+#endif /* defined(__UIEditor__UIListCellMetadata__) */

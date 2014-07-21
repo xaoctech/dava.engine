@@ -28,66 +28,42 @@
 
 
 
-#ifndef __DAVAENGINE_UI_LIST_CELL_H__
-#define __DAVAENGINE_UI_LIST_CELL_H__
+#include "UIListCellMetadata.h"
 
-#include "UI/UIButton.h"
+namespace DAVA {
 
-namespace DAVA 
-{
-	/**
-	 \ingroup controlsystem
-	 \brief Cell unit for the UIList.
-		UIButton that can be managed by the UIList.
-	 */
-	
-	class UIListCell : public UIButton 
-	{
-		friend class UIList;
-	public:
-		/**
-		 \brief Constructor.
-		 \param[in] rect Used only size part of the rect. Incoming rect size can be modified by the UIList if this is neccesary.
-		 \param[in] cellIdentifier literal identifier to represents cell type. For example: "Name cell", "Phone number cell", etc.
-		 */
-		UIListCell(const Rect &rect = Rect(), const String &cellIdentifier = String(), const FilePath &aggregatorPath = FilePath());
+    UIListCellMetadata::UIListCellMetadata( QObject* parent /*= 0*/ )
+        : UIButtonMetadata(parent)
+    {
 
-        /**
-		 \brief Returns cell's identifier.
-		 \returns identifier
-		 */
-        const String & GetIdentifier() const;
+    }
 
-        /**
-		 \brief set cell's identifier.
-		 \param[in] new cell identifier
-		 */
-        void SetIdentifier(const String &identifier);
-		/**
-		 \brief Returns current cell sequence number in the list.
-		 \returns list item index
-		 */
-		int32 GetIndex() const;
-        
-        virtual UIListCell *Clone();
-        void CopyDataFrom(UIControl *srcControl);
-        
-        virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-        virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-		
-	protected:
-		virtual ~UIListCell();
+    void UIListCellMetadata::InitializeControl( const String& controlName, const Vector2& position )
+    {
+        UIButtonMetadata::InitializeControl(controlName, position);
+    }
 
-		virtual void WillDisappear();
+    QString UIListCellMetadata::GetIdentifier() const
+    {
+        if (!GetActiveUIControl())
+        {
+            return QString();
+        }
 
-		
-	private:
-		int32 currentIndex;
-		String identifier;
-		
-		void *cellStore;
-		
-	};
+        return GetActiveUIControl()->GetIdentifier().c_str();
+    }
+
+    void UIListCellMetadata::SetIdentifier(const QString &value)
+    {
+        if (GetActiveUIControl())
+        {
+            GetActiveUIControl()->SetIdentifier(value.toStdString());
+        }
+    }
+
+    UIListCell* UIListCellMetadata::GetActiveUIControl() const
+    {
+        return static_cast<UIListCell*>(UIButtonMetadata::GetActiveUIControl());
+    }
+
 }
-
-#endif

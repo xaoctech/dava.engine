@@ -27,67 +27,41 @@
 =====================================================================================*/
 
 
+#include "UIListCellPropertyGridWidget.h"
+#include "ui_UIListCellPropertyGridWidget.h"
 
-#ifndef __DAVAENGINE_UI_LIST_CELL_H__
-#define __DAVAENGINE_UI_LIST_CELL_H__
+static const QString CELL_PROPERTY_BLOCK_NAME = "Cell property";
 
-#include "UI/UIButton.h"
-
-namespace DAVA 
+UIListCellPropertyGridWidget::UIListCellPropertyGridWidget( QWidget *parent /*= 0*/ )
+    : BasePropertyGridWidget(parent)
+    , ui(new Ui::UIListCellPropertyGridWidget())
 {
-	/**
-	 \ingroup controlsystem
-	 \brief Cell unit for the UIList.
-		UIButton that can be managed by the UIList.
-	 */
-	
-	class UIListCell : public UIButton 
-	{
-		friend class UIList;
-	public:
-		/**
-		 \brief Constructor.
-		 \param[in] rect Used only size part of the rect. Incoming rect size can be modified by the UIList if this is neccesary.
-		 \param[in] cellIdentifier literal identifier to represents cell type. For example: "Name cell", "Phone number cell", etc.
-		 */
-		UIListCell(const Rect &rect = Rect(), const String &cellIdentifier = String(), const FilePath &aggregatorPath = FilePath());
-
-        /**
-		 \brief Returns cell's identifier.
-		 \returns identifier
-		 */
-        const String & GetIdentifier() const;
-
-        /**
-		 \brief set cell's identifier.
-		 \param[in] new cell identifier
-		 */
-        void SetIdentifier(const String &identifier);
-		/**
-		 \brief Returns current cell sequence number in the list.
-		 \returns list item index
-		 */
-		int32 GetIndex() const;
-        
-        virtual UIListCell *Clone();
-        void CopyDataFrom(UIControl *srcControl);
-        
-        virtual void LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader);
-        virtual YamlNode * SaveToYamlNode(UIYamlLoader * loader);
-		
-	protected:
-		virtual ~UIListCell();
-
-		virtual void WillDisappear();
-
-		
-	private:
-		int32 currentIndex;
-		String identifier;
-		
-		void *cellStore;
-		
-	};
+    ui->setupUi(this);
+    SetPropertyBlockName(CELL_PROPERTY_BLOCK_NAME);
+    ui->objectIdentifierLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+    ui->objectIdentifierLineEdit->installEventFilter(this);
 }
 
-#endif
+UIListCellPropertyGridWidget::~UIListCellPropertyGridWidget()
+{
+    delete ui;
+}
+
+void UIListCellPropertyGridWidget::Initialize( BaseMetadata* activeMetadata )
+{
+    BasePropertyGridWidget::Initialize(activeMetadata);
+
+    // Build the properties map to make the properties search faster.
+    PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
+
+    // Initialize the widgets.
+    RegisterLineEditWidgetForProperty(propertiesMap, "Identifier", ui->objectIdentifierLineEdit);
+}
+
+void UIListCellPropertyGridWidget::Cleanup()
+{
+    BasePropertyGridWidget::Cleanup();
+
+    UnregisterLineEditWidget(ui->objectIdentifierLineEdit);
+}
+
