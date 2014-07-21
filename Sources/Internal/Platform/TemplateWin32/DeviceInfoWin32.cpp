@@ -187,7 +187,7 @@ eGPUFamily DeviceInfo::GetGPUFamily()
 
 DeviceInfo::NetworkInfo DeviceInfo::GetNetworkInfo()
 {
-    // For now return default network info for MacOS.
+    // For now return default network info for Windows.
     return NetworkInfo();
 }
 

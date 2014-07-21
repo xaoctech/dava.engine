@@ -1673,7 +1673,7 @@ Texture * Landscape::CreateLandscapeTexture()
  
     RenderManager::SetDynamicParam(PARAM_WORLD, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
     Matrix4 projection;
-    projection.glOrtho(0, (float32)TEXTURE_TILE_FULL_SIZE, 0, (float32)TEXTURE_TILE_FULL_SIZE, 0, 1);
+    projection.glOrtho(0, TEXTURE_TILE_FULL_SIZE * Core::GetVirtualToPhysicalFactor(), 0, TEXTURE_TILE_FULL_SIZE * Core::GetVirtualToPhysicalFactor(), 0, 1);
     
     Matrix4 *oldProjection = (Matrix4*)RenderManager::GetDynamicParam(PARAM_PROJ);
     RenderManager::SetDynamicParam(PARAM_PROJ, &projection, UPDATE_SEMANTIC_ALWAYS);
@@ -1708,7 +1708,7 @@ Texture * Landscape::CreateLandscapeTexture()
     RenderManager::SetDynamicParam(PARAM_PROJ, &oldProjection, UPDATE_SEMANTIC_ALWAYS);
 	RenderManager::Instance()->SetViewport(oldViewport, true);
     SafeRelease(ftRenderData);
-
+    
     return fullTiled;
 }
     

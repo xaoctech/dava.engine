@@ -1,5 +1,8 @@
 package com.dava.framework;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.security.NoSuchAlgorithmException;
@@ -12,7 +15,10 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
 import android.provider.Settings.Secure;
+import android.util.Log;
 
 public class JNIDeviceInfo {
 	final static String TAG = "JNIDeviceInfo";
@@ -163,6 +169,51 @@ public class JNIDeviceInfo {
 			return MaxSignalLevel;
 		}
 		return 0;
+	}
+
+	public static long GetInternalStorageCapacity()
+	{
+        StatFs statFs = new StatFs(Environment.getDataDirectory().getPath());
+        long capacity = (long)statFs.getBlockCount() * (long)statFs.getBlockSize();
+        return capacity;
+	}
+
+	public static long GetInternalStorageFree()
+	{
+		StatFs statFs = new StatFs(Environment.getDataDirectory().getPath());
+		long free = (long)statFs.getAvailableBlocks() * (long)statFs.getBlockSize();
+		return free;
+	}
+
+	public static long GetExternalStorageCapacity()
+	{
+		if (IsExternalStoragePresent())
+		{
+			String path = Environment.getExternalStorageDirectory().getPath();
+            StatFs statFs = new StatFs(path);
+            long capacity = (long)statFs.getBlockCount() * (long)statFs.getBlockSize();
+            return capacity;
+        }
+
+		return 0;
+	}
+
+	public static long GetExternalStorageFree()
+	{
+		if (IsExternalStoragePresent())
+		{
+			String path = Environment.getExternalStorageDirectory().getPath();
+            StatFs statFs = new StatFs(path);
+            long free = (long)statFs.getAvailableBlocks() * (long)statFs.getBlockSize();
+            return free;
+        }
+
+		return 0;
+	}
+	
+	public static boolean IsExternalStoragePresent()
+	{
+		return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 	}
 	
 	public static native void SetJString(String str);
