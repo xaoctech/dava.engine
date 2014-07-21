@@ -141,7 +141,7 @@ void AutotestingSystem::FetchParametersFromIdTxt()
 	bool res = option->LoadFromYamlFile(file);
 	if (!res)
 	{
-//		ForceQuit("Couldn't open file " + file.GetAbsolutePathname());
+		ForceQuit("Couldn't open file " + file.GetAbsolutePathname());
 	}
 
 	buildId = option->GetString("buildId");
