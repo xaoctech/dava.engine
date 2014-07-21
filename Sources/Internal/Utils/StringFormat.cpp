@@ -36,7 +36,6 @@
 
 namespace DAVA
 {
-static const int32 FORMAT_STRING_SIZE = 2048;
 static const int32 FORMAT_STRING_MAX_LEN = 512;
 
 //static char8 formatString8[FORMAT_STRING_SIZE];
@@ -581,7 +580,7 @@ int32 do_div(int64 &n, int32 base)
                     {
                         /* print counted ascii string */
                         char8 * pus = va_arg(args, char8 *);
-                        if ((pus == NULL))
+                        if (pus == NULL)
                         {
                             sw = L"<NULL>";
                             while ((*sw) != 0)
@@ -601,7 +600,7 @@ int32 do_div(int64 &n, int32 base)
                     {
                         /* print counted unicode string */
                         char16* pus = va_arg(args, char16*);
-                        if ((pus == NULL))
+                        if (pus == NULL)
                         {
                             sw = L"<NULL>";
                             while ((*sw) != 0)
