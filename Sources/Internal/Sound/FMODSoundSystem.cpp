@@ -42,7 +42,8 @@
 #include "musicios.h"
 #endif
 
-#define MAX_SOUND_CHANNELS 64
+#define MAX_SOUND_CHANNELS 48
+#define MAX_SOUND_VIRTUAL_CHANNELS 64
 
 namespace DAVA
 {
@@ -70,17 +71,20 @@ SoundSystem::SoundSystem()
 #endif
     
 	FMOD_VERIFY(FMOD::EventSystem_Create(&fmodEventSystem));
+	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
+    
+    FMOD_VERIFY(fmodSystem->setSoftwareChannels(MAX_SOUND_CHANNELS));
+    
 #ifdef DAVA_FMOD_PROFILE
-    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
+    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
 #else
-    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_CHANNELS, FMOD_INIT_NORMAL, extraDriverData));
+    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
 #endif
     
     FMOD::EventCategory * masterCategory = 0;
     FMOD_VERIFY(fmodEventSystem->getCategory("master", &masterCategory));
     FMOD_VERIFY(masterCategory->getChannelGroup(&masterEventChannelGroup));
     
-	FMOD_VERIFY(fmodEventSystem->getSystemObject(&fmodSystem));
     FMOD_VERIFY(fmodSystem->getMasterChannelGroup(&masterChannelGroup));
     FMOD_VERIFY(fmodSystem->setFileSystem(DAVA_FMOD_FILE_OPENCALLBACK, DAVA_FMOD_FILE_CLOSECALLBACK, DAVA_FMOD_FILE_READCALLBACK, DAVA_FMOD_FILE_SEEKCALLBACK, 0, 0, -1));
 }
