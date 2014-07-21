@@ -291,7 +291,7 @@ void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
     Sprite::DrawState drawState;
 	drawState.SetScaleSize(spriteSize.x, spriteSize.y,
                            toolImageSprite->GetWidth(), toolImageSprite->GetHeight());
-	drawState.SetPosition(spritePos.x, spritePos.y);
+	drawState.SetPosition(spritePos / Core::GetVirtualToPhysicalFactor());
 	toolImageSprite->Draw(&drawState);
 	
 	RenderManager::Instance()->RestoreRenderTarget();
@@ -302,6 +302,7 @@ void CustomColorsSystem::UpdateBrushTool(float32 timeElapsed)
 	Rect updatedRect;
 	updatedRect.SetCenter(spritePos);
 	updatedRect.SetSize(spriteSize);
+    
 	AddRectToAccumulator(updatedRect);
 }
 

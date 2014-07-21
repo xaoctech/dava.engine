@@ -89,7 +89,7 @@ RenderBatch* RenderBatchPool::Get(NMaterial* key, VegetationMaterialTransformer*
     
     RenderBatch* rb = NULL;
     
-    size_t currentPoolSize = entry->renderBatches.size();
+    int32 currentPoolSize = (int32)entry->renderBatches.size();
     if(currentPoolSize <= entry->poolLine)
     {
         rb = CreateRenderBatch(key, entry, transform);
