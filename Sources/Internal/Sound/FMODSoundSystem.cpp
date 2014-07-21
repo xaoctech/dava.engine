@@ -36,6 +36,7 @@
 #include "Sound/FMODFileSoundEvent.h"
 #include "Sound/FMODSoundEvent.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 
 #ifdef __DAVAENGINE_IPHONE__
 #include "fmodiphone.h"

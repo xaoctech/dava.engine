@@ -341,6 +341,7 @@
     <ClInclude Include="..\..\Sources\Internal\FileSystem\VariantType.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\XMLParser.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlNode.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlParser.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\Accelerometer.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\AccelerometeriPhone.h" />
@@ -791,6 +792,7 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlParser.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\GamepadDevice.cpp" />
