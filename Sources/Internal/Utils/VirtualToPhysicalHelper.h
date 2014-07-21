@@ -27,49 +27,14 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
+#define __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
 
-#include "StringUtils.h"
+#include "Base/BaseMath.h"
 
-namespace DAVA {
-
-// Truncate the file extension.
-QString TruncateFileExtension(const QString& fileName, const QString& extension)
+namespace DAVA
 {
-    // Just wrap around the particular DAVA engine functions.
-    
-    String truncatedName = fileName.toStdString();
-    
-    int truncatedStringLen = truncatedName.length() - extension.length();
-    bool endsWithExtension = false;
-    if (fileName.length() >= extension.length())
-    {
-        endsWithExtension = (truncatedName.compare(truncatedStringLen, extension.length(), extension.toStdString()) == 0);
-    }
-    
-    if (endsWithExtension)
-    {
-        truncatedName.resize(truncatedStringLen);
-    }
-    
-    return QString::fromStdString(truncatedName);
+    DAVA::Rect ConvertPhysicalToVirtual(const DAVA::Rect & rect);
 }
+#endif // __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
 
-WideString QStrint2WideString(const QString& str)
-{
-#ifdef __DAVAENGINE_MACOS__
-	return str.toStdWString();
-#else
-	return WideString((wchar_t*)str.unicode(), str.length());
-#endif
-}
-
-QString WideString2QString(const WideString& str)
-{
-#ifdef __DAVAENGINE_MACOS__
-	return QString::fromStdWString(str);
-#else
-	return QString((const QChar*)str.c_str(), str.length());
-#endif
-}
-
-}

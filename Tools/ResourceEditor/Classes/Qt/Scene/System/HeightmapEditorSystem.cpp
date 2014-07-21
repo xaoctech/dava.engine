@@ -290,7 +290,7 @@ void HeightmapEditorSystem::UpdateToolImage(bool force)
 
 Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& filePath)
 {
-	Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)sideSize, (float32)sideSize, FORMAT_RGBA8888);
+	Sprite *dstSprite = Sprite::CreateAsRenderTarget((float32)sideSize, (float32)sideSize, FORMAT_RGBA8888, true);
 	Texture *srcTex = Texture::CreateFromFile(filePath);
 	Sprite *srcSprite = Sprite::CreateFromTexture(srcTex, 0, 0, (float32)srcTex->GetWidth(), (float32)srcTex->GetHeight());
 	
@@ -304,7 +304,7 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
     drawState.SetScaleSize((float32)sideSize, (float32)sideSize,
                            srcSprite->GetWidth(), srcSprite->GetHeight());
     drawState.SetPosition(Vector2((dstSprite->GetTexture()->GetWidth() - sideSize)/2.0f,
-                                  (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f));
+                                  (dstSprite->GetTexture()->GetHeight() - sideSize)/2.0f) / Core::GetVirtualToPhysicalFactor());
 	srcSprite->Draw(&drawState);
 	RenderManager::Instance()->RestoreRenderTarget();
 	
