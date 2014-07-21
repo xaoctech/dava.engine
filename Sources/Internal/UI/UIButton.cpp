@@ -349,7 +349,7 @@ namespace DAVA
         {
             if(state & 0x01)
             {
-                SetStateTextControl((eButtonDrawState)i, textControl->Clone());
+                SetTextBlock((eButtonDrawState)i, ScopedPtr<UIStaticText>(textControl->Clone()));
             }
             state >>= 1;
         }
