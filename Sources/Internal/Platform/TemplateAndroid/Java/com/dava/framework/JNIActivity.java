@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
@@ -82,7 +83,8 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         
 
         ConnectivityManager cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
-        if (cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting())
+        NetworkInfo networkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting())
         {
         	TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
         	singalStrengthListner = new SingalStrengthListner();
