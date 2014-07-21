@@ -29,41 +29,42 @@
 
 
 #include "UIListCellMetadata.h"
+#include "UI/UIListCell.h"
 
 namespace DAVA {
 
-    UIListCellMetadata::UIListCellMetadata( QObject* parent /*= 0*/ )
-        : UIButtonMetadata(parent)
-    {
+UIListCellMetadata::UIListCellMetadata( QObject* parent /*= 0*/ )
+    : UIButtonMetadata(parent)
+{
 
+}
+
+void UIListCellMetadata::InitializeControl( const String& controlName, const Vector2& position )
+{
+    UIButtonMetadata::InitializeControl(controlName, position);
+}
+
+QString UIListCellMetadata::GetIdentifier() const
+{
+    if (!GetActiveUIControl())
+    {
+        return QString();
     }
 
-    void UIListCellMetadata::InitializeControl( const String& controlName, const Vector2& position )
-    {
-        UIButtonMetadata::InitializeControl(controlName, position);
-    }
+    return GetActiveUIControl()->GetIdentifier().c_str();
+}
 
-    QString UIListCellMetadata::GetIdentifier() const
+void UIListCellMetadata::SetIdentifier(const QString &value)
+{
+    if (GetActiveUIControl())
     {
-        if (!GetActiveUIControl())
-        {
-            return QString();
-        }
-
-        return GetActiveUIControl()->GetIdentifier().c_str();
+        GetActiveUIControl()->SetIdentifier(value.toStdString());
     }
+}
 
-    void UIListCellMetadata::SetIdentifier(const QString &value)
-    {
-        if (GetActiveUIControl())
-        {
-            GetActiveUIControl()->SetIdentifier(value.toStdString());
-        }
-    }
-
-    UIListCell* UIListCellMetadata::GetActiveUIControl() const
-    {
-        return static_cast<UIListCell*>(UIButtonMetadata::GetActiveUIControl());
-    }
+UIListCell* UIListCellMetadata::GetActiveUIControl() const
+{
+    return static_cast<UIListCell*>(UIButtonMetadata::GetActiveUIControl());
+}
 
 }
