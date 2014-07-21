@@ -30,10 +30,10 @@
 #define __UIEditor__UIListCellMetadata__
 
 #include "UIButtonMetadata.h"
-#include "UI/UIListCell.h"
 
 namespace DAVA {
 
+class UIListCell;
 // Metadata class for DAVA UIListCell control.
 class UIListCellMetadata : public UIButtonMetadata
 {

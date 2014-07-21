@@ -26,8 +26,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-#include <QWidget>
-#include "rootpropertygridwidget.h"
+#include "basepropertygridwidget.h"
 
 namespace Ui {
     class UIListCellPropertyGridWidget;
