@@ -104,7 +104,6 @@
 		02FD826F192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		02FD8270192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		02FD8271192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
-		17183C3D18C880A600491E66 /* MovieViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4E17DF67E500000391 /* MovieViewControlMacOS.mm */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -697,7 +696,6 @@
 		176DEB70174B5561007A983B /* libfreetype_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA29C33F1446EF270049FD7A /* libfreetype_macos.a */; };
 		176DEB72174B5561007A983B /* libfmodevent.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40817395FDD00C501BC /* libfmodevent.dylib */; };
 		176DEB73174B5561007A983B /* libfmodex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 02E9E40917395FDD00C501BC /* libfmodex.dylib */; };
-		1770DF5017DF67E500000391 /* MovieViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4E17DF67E500000391 /* MovieViewControlMacOS.mm */; };
 		1770DF5117DF67E500000391 /* MovieViewControlMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1770DF4F17DF67E500000391 /* MovieViewControlMacOS.h */; };
 		1789108E1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
 		1789108F1740DFBC007B72BA /* NMaterialConsts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1789108D1740DFBC007B72BA /* NMaterialConsts.cpp */; };
@@ -721,7 +719,6 @@
 		17B3EA9218E9A4ED0069AE7A /* CoreMacOSPlatformQt.h in Headers */ = {isa = PBXBuildFile; fileRef = 17B3EA8D18E9A4ED0069AE7A /* CoreMacOSPlatformQt.h */; };
 		17B3EA9518E9A64C0069AE7A /* CorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17B3EA9418E9A64C0069AE7A /* CorePlatformMacOS.h */; };
 		17B3EA9718E9A64C0069AE7A /* CorePlatformMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17B3EA9418E9A64C0069AE7A /* CorePlatformMacOS.h */; };
-		17DC600017DE11650075813E /* UIMovieView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DC5FFE17DE11650075813E /* UIMovieView.cpp */; };
 		17DC600117DE11650075813E /* UIMovieView.h in Headers */ = {isa = PBXBuildFile; fileRef = 17DC5FFF17DE11650075813E /* UIMovieView.h */; };
 		17E2706F174CB1660019EF87 /* NPAPIPluginMacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E2706B174CACA60019EF87 /* NPAPIPluginMacOS.h */; };
 		17F53E2216D36DDE004D5099 /* IWebViewControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F53E2116D36DDE004D5099 /* IWebViewControl.h */; };
@@ -1118,6 +1115,8 @@
 		CC24800A16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
 		CC24800B16DD174E00183D40 /* UserComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24800716DD174E00183D40 /* UserComponent.h */; };
 		CC24804216E0DF2800183D40 /* VectorSpinnerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC24804116E0DF2800183D40 /* VectorSpinnerAdapter.h */; };
+		CC2C2F83197D4B960001E75D /* UIMovieView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DC5FFE17DE11650075813E /* UIMovieView.cpp */; };
+		CC2C2F84197D4B960001E75D /* MovieViewControlMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1770DF4E17DF67E500000391 /* MovieViewControlMacOS.mm */; };
 		CC84B01618211A9000934482 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC84B00E18211A9000934482 /* Job.cpp */; };
 		CC84B01718211A9000934482 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC84B00E18211A9000934482 /* Job.cpp */; };
 		CC84B01818211A9000934482 /* Job.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC84B00E18211A9000934482 /* Job.cpp */; };
@@ -5794,7 +5793,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Framework" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -6550,14 +6549,12 @@
 				50A5187017B256250022E8FA /* ShaderCache.cpp in Sources */,
 				A68290BA17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 				1AD7C36717D895AE00B9977C /* Vector.cpp in Sources */,
-				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
-				1770DF5017DF67E500000391 /* MovieViewControlMacOS.mm in Sources */,
+				CC2C2F83197D4B960001E75D /* UIMovieView.cpp in Sources */,
+				CC2C2F84197D4B960001E75D /* MovieViewControlMacOS.mm in Sources */,
 				A63BCD6A17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16C17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 				024DF6E917FDE4C400138748 /* FMODSoundEvent.cpp in Sources */,
 				024DF6F517FDE4C400138748 /* FMODSoundSystem.cpp in Sources */,
-				17DC600017DE11650075813E /* UIMovieView.cpp in Sources */,
-				1770DF5017DF67E500000391 /* MovieViewControlMacOS.mm in Sources */,
 				84CB6719191FC8850086483D /* Image.cpp in Sources */,
 				9A0119EF8F7D1F04F61B31DF /* GamepadManager.cpp in Sources */,
 				9A01188C3CE745EA32A7DD33 /* GamepadDevice.cpp in Sources */,
@@ -6921,7 +6918,6 @@
 				50A5187117B256250022E8FA /* ShaderCache.cpp in Sources */,
 				A68290BB17F5EEF9007BAFDC /* SerializationContext.cpp in Sources */,
 				1AD7C36817D895AE00B9977C /* Vector.cpp in Sources */,
-				17183C3D18C880A600491E66 /* MovieViewControlMacOS.mm in Sources */,
 				A63BCD6B17EB26E300EA4811 /* Process.cpp in Sources */,
 				EA84E16D17FAC0B400304C3C /* SpatialTree.cpp in Sources */,
 				024DF6EA17FDE4C400138748 /* FMODSoundEvent.cpp in Sources */,
@@ -7117,7 +7113,6 @@
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -7155,7 +7150,6 @@
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
