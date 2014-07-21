@@ -296,25 +296,12 @@ void DebugDrawSystem::DrawSoundNode(DAVA::Entity *entity)
         uint32 eventsCount = sc->GetEventsCount();
         for(uint32 i = 0; i < eventsCount; ++i)
         {
-            float32 distance = 0.f;
             SoundEvent * sEvent = sc->GetSoundEvent(i);
-            DAVA::Vector<DAVA::SoundEvent::SoundEventParameterInfo> params;
-            sEvent->GetEventParametersInfo(params);
-            DAVA::int32 paramsCount = params.size();
-            for(DAVA::int32 p = 0; p < paramsCount; p++)
-            {
-                DAVA::SoundEvent::SoundEventParameterInfo & param = params[p];
-                if(param.name == "(distance)")
-                {
-                    distance = param.maxValue;
-                    break;
-                }
-            }
+            float32 distance = sEvent->GetMaxDistance();
+            hasDirectionSound |= sEvent->IsDirectional();
 
             DAVA::RenderManager::Instance()->SetColor(DAVA::Color(1.0f, 0.3f, 0.8f, 0.2f));
             DAVA::RenderHelper::Instance()->FillSphere(worldPosition, distance, debugDrawState);
-
-            hasDirectionSound |= sEvent->IsDirectional();
         }
 
         if(hasDirectionSound)

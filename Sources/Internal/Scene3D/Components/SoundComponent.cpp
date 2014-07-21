@@ -72,7 +72,10 @@ void SoundComponent::RemoveAllEvents()
 {
     uint32 eventsCount = events.size();
     for(uint32 i = 0; i < eventsCount; ++i)
+    {
+        events[i]->Stop();
         SafeRelease(events[i]);
+    }
 
     events.clear();
 }
@@ -87,9 +90,10 @@ Component * SoundComponent::Clone(Entity * toEntity)
     SoundComponent * soundComponent = new SoundComponent();
     soundComponent->SetEntity(toEntity);
     
+    SoundSystem * soundSystem = SoundSystem::Instance();
     int32 eventCount = events.size();
     for(int32 i = 0; i < eventCount; ++i)
-        soundComponent->AddSoundEvent(events[i]);
+        soundComponent->AddSoundEvent(soundSystem->CloneEvent(events[i]));
     
     soundComponent->localDirection = localDirection;
 
