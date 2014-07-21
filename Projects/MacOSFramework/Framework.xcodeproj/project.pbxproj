@@ -104,6 +104,12 @@
 		02FD826F192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		02FD8270192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
 		02FD8271192A3861007762C0 /* WaveComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 02FD826B192A3861007762C0 /* WaveComponent.h */; };
+		155D77D8197DD22E006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77D6197DD22E006AEBCD /* YamlNode.cpp */; };
+		155D77D9197DD22E006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77D6197DD22E006AEBCD /* YamlNode.cpp */; };
+		155D77DA197DD22E006AEBCD /* YamlNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155D77D6197DD22E006AEBCD /* YamlNode.cpp */; };
+		155D77DB197DD22E006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77D7197DD22E006AEBCD /* YamlNode.h */; };
+		155D77DC197DD22E006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77D7197DD22E006AEBCD /* YamlNode.h */; };
+		155D77DD197DD22E006AEBCD /* YamlNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 155D77D7197DD22E006AEBCD /* YamlNode.h */; };
 		171F938516CE6F28007038AB /* UIWebView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 171F938316CE6F28007038AB /* UIWebView.cpp */; };
 		171F938616CE6F28007038AB /* UIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 171F938416CE6F28007038AB /* UIWebView.h */; };
 		1723D46F16CCF1C00039CCC2 /* ParticleForce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1799E52416CCEC030058061F /* ParticleForce.cpp */; };
@@ -2431,6 +2437,8 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		155D77D6197DD22E006AEBCD /* YamlNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YamlNode.cpp; sourceTree = "<group>"; };
+		155D77D7197DD22E006AEBCD /* YamlNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YamlNode.h; sourceTree = "<group>"; };
 		171F938316CE6F28007038AB /* UIWebView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIWebView.cpp; sourceTree = "<group>"; };
 		171F938416CE6F28007038AB /* UIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIWebView.h; sourceTree = "<group>"; };
 		176DEB77174B5561007A983B /* libFrameworkNPAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFrameworkNPAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3682,6 +3690,8 @@
 		E8989B5816BD24E400732C04 /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
+				155D77D6197DD22E006AEBCD /* YamlNode.cpp */,
+				155D77D7197DD22E006AEBCD /* YamlNode.h */,
 				E8989B5B16BD24E400732C04 /* Bitstream.cpp */,
 				E8989B5C16BD24E400732C04 /* Bitstream.h */,
 				E8989B5D16BD24E400732C04 /* DynamicMemoryFile.cpp */,
@@ -4715,6 +4725,7 @@
 				176DE9B4174B5561007A983B /* Box2DGameObject.h in Headers */,
 				7A169358180EE75A005F1FBC /* GameAPI.h in Headers */,
 				176DE9B5174B5561007A983B /* Box2DGameObjectManager.h in Headers */,
+				155D77DD197DD22E006AEBCD /* YamlNode.h in Headers */,
 				176DE9B6174B5561007A983B /* Box2DHelper.h in Headers */,
 				176DE9B7174B5561007A983B /* Box2DTileCollider.h in Headers */,
 				17FB4BB61923B97F00F3E3BC /* UIScrollViewContainer.h in Headers */,
@@ -5169,6 +5180,7 @@
 				84CB6721191FC8850086483D /* LibDdsHelper.h in Headers */,
 				E8989FC816BD24E500732C04 /* SceneNodeAnimationKey.h in Headers */,
 				E8989FCA16BD24E500732C04 /* SceneNodeAnimationList.h in Headers */,
+				155D77DB197DD22E006AEBCD /* YamlNode.h in Headers */,
 				E8989FCC16BD24E500732C04 /* ShadowVolumeNode.h in Headers */,
 				E8989FCE16BD24E500732C04 /* SkeletonNode.h in Headers */,
 				644C86C119476A7100964F91 /* RenderBatchPool.h in Headers */,
@@ -5639,6 +5651,7 @@
 				644C86E019476A7100964F91 /* VegetationFixedGeometry.h in Headers */,
 				641A61DE18CDC2F4003359E7 /* FoliageSystem.h in Headers */,
 				E898A18E16BD265400732C04 /* UIScreenTransition.h in Headers */,
+				155D77DC197DD22E006AEBCD /* YamlNode.h in Headers */,
 				E898A18F16BD265400732C04 /* UIScrollBar.h in Headers */,
 				0282B87A18BC72C6006F1EE4 /* SoundEvent.h in Headers */,
 				E898A19016BD265400732C04 /* UISlider.h in Headers */,
@@ -5915,6 +5928,7 @@
 				176DEA82174B5561007A983B /* InputSystem.cpp in Sources */,
 				176DEA83174B5561007A983B /* KeyboardDevice.cpp in Sources */,
 				176DEA84174B5561007A983B /* AABBox2.cpp in Sources */,
+				155D77DA197DD22E006AEBCD /* YamlNode.cpp in Sources */,
 				176DEA85174B5561007A983B /* AABBox3.cpp in Sources */,
 				E8ADAEBB18CA1226000B251C /* PixelFormatDescriptor.cpp in Sources */,
 				176DEA86174B5561007A983B /* BezierSpline.cpp in Sources */,
@@ -6233,6 +6247,7 @@
 				E8989DF116BD24E500732C04 /* MongodbObject.cpp in Sources */,
 				E8989DF416BD24E500732C04 /* DAVAEngine.cpp in Sources */,
 				E8989DF616BD24E500732C04 /* Backtrace.cpp in Sources */,
+				155D77D8197DD22E006AEBCD /* YamlNode.cpp in Sources */,
 				17B3EA8618E9A3120069AE7A /* CoreMacOSPlatformBase.cpp in Sources */,
 				647EFC51195EE8EB0073B3CB /* NMaterialStateDynamicPropertiesInsp.cpp in Sources */,
 				E8989DFB16BD24E500732C04 /* MemoryManager.cpp in Sources */,
@@ -6875,6 +6890,7 @@
 				CCC7A45816F1D6170061EA5D /* RenderLayer.cpp in Sources */,
 				02FD7EEA19237DA2007762C0 /* WindComponent.cpp in Sources */,
 				CCC7A45C16F1D6170061EA5D /* RenderObject.cpp in Sources */,
+				155D77D9197DD22E006AEBCD /* YamlNode.cpp in Sources */,
 				CCC7A46016F1D6170061EA5D /* RenderPass.cpp in Sources */,
 				CCC7A46416F1D6170061EA5D /* RenderSystem.cpp in Sources */,
 				7A16933F180EE618005F1FBC /* RectSwig.cpp in Sources */,
