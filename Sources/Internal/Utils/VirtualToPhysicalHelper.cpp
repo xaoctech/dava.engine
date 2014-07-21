@@ -27,51 +27,27 @@
 =====================================================================================*/
 
 
+#ifndef __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
+#define __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
 
-#ifndef __FRAMEWORK__DEVICEINFOANDROID__
-#define __FRAMEWORK__DEVICEINFOANDROID__
-
-#include "JniExtensions.h"
-#include "Base/BaseTypes.h"
-
-#if defined(__DAVAENGINE_ANDROID__)
+#include "VirtualToPhysicalHelper.h"
+#include "Base/BaseMath.h"
+#include "Core/Core.h"
 
 namespace DAVA
 {
 
-class JniDeviceInfo: public JniExtension
+Rect ConvertPhysicalToVirtual(const Rect & _rect)
 {
-public:
-	String GetVersion();
-	String GetManufacturer();
-	String GetModel();
-	String GetLocale();
-	String GetRegion();
-	String GetTimeZone();
-	String GetUDID();
-	String GetName();
-	int GetZBufferSize();
-	int GetGPUFamily();
-	int GetNetworkType();
-	int GetSignalStrength(int networkType);
-
-	DAVA::int64 GetInternalStorageCapacity();
-	DAVA::int64 GetInternalStorageFree();
-	DAVA::int64 GetExternalStorageCapacity();
-	DAVA::int64 GetExternalStorageFree();
-	bool IsExternalStoragePresent();
-
-protected:
-	virtual jclass GetJavaClass() const;
-	virtual const char* GetJavaClassName() const;
-
-public:
-	static jclass gJavaClass;
-	static const char* gJavaClassName;
-};
+    Rect rect(_rect);
+    rect.x /= Core::GetVirtualToPhysicalFactor();
+    rect.y /= Core::GetVirtualToPhysicalFactor();
+    rect.dx /= Core::GetVirtualToPhysicalFactor();
+    rect.dy /= Core::GetVirtualToPhysicalFactor();
+    
+    return rect;
+}
 
 };
+#endif // __DAVAENGINE_VIRTUAL_TO_PHYSICAL_H__
 
-#endif //defined(__DAVAENGINE_ANDROID__)
-
-#endif /* defined(__FRAMEWORK__DEVICEINFOANDROID__) */

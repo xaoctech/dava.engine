@@ -34,6 +34,12 @@
 		0282B87918BC72BE006F1EE4 /* FMODFileSoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0282B87318BC72BE006F1EE4 /* FMODFileSoundEvent.h */; };
 		0282B87A18BC72C6006F1EE4 /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0256F3DA185B4CAA00D22ADF /* SoundEvent.h */; };
 		0282B87B18BC72C6006F1EE4 /* SoundEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0256F3DA185B4CAA00D22ADF /* SoundEvent.h */; };
+		0286451319795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0286451119795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp */; };
+		0286451419795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0286451119795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp */; };
+		0286451519795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0286451119795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp */; };
+		0286451619795E1200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 0286451219795E1200ABCAA0 /* VirtualToPhysicalHelper.h */; };
+		0286451719795E1200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 0286451219795E1200ABCAA0 /* VirtualToPhysicalHelper.h */; };
+		0286451819795E1200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 0286451219795E1200ABCAA0 /* VirtualToPhysicalHelper.h */; };
 		02A03DA91871C37B00FA72CE /* SpeedTreeObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */; };
 		02A03DAA1871C37B00FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */; };
 		02A03DAB1871C49C00FA72CE /* SpeedTreeObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */; };
@@ -2398,6 +2404,8 @@
 		0256F3DA185B4CAA00D22ADF /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
 		0282B87218BC72BE006F1EE4 /* FMODFileSoundEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FMODFileSoundEvent.cpp; sourceTree = "<group>"; };
 		0282B87318BC72BE006F1EE4 /* FMODFileSoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMODFileSoundEvent.h; sourceTree = "<group>"; };
+		0286451119795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VirtualToPhysicalHelper.cpp; sourceTree = "<group>"; };
+		0286451219795E1200ABCAA0 /* VirtualToPhysicalHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VirtualToPhysicalHelper.h; sourceTree = "<group>"; };
 		02A03DA71871C37B00FA72CE /* SpeedTreeObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpeedTreeObject.cpp; sourceTree = "<group>"; };
 		02A03DA81871C37B00FA72CE /* SpeedTreeObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpeedTreeObject.h; sourceTree = "<group>"; };
 		02A2FC3018D2E7460039E66A /* TreeToAnimatedTreeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TreeToAnimatedTreeConverter.cpp; path = Converters/TreeToAnimatedTreeConverter.cpp; sourceTree = "<group>"; };
@@ -4416,6 +4424,8 @@
 		E8989D8C16BD24E500732C04 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				0286451119795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp */,
+				0286451219795E1200ABCAA0 /* VirtualToPhysicalHelper.h */,
 				E8B731A5180BF7EB00C7CF26 /* TeamcityOutputMac.mm */,
 				E843505417FA0D3B00A25F04 /* TeamcityOutput.cpp */,
 				E843505517FA0D3B00A25F04 /* TeamcityOutput.h */,
@@ -4644,6 +4654,7 @@
 				176DE97B174B5561007A983B /* Mutex.h in Headers */,
 				176DE97C174B5561007A983B /* SystemTimer.h in Headers */,
 				176DE97D174B5561007A983B /* AppDelegate.h in Headers */,
+				0286451819795E1200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */,
 				176DE97F174B5561007A983B /* MainWindowController.h in Headers */,
 				176DE980174B5561007A983B /* NSFullScreenWindow.h in Headers */,
 				E843505B17FA0D3B00A25F04 /* TeamcityOutput.h in Headers */,
@@ -5243,6 +5254,7 @@
 				CCC7A43916F1D6170061EA5D /* Landscape.h in Headers */,
 				644C86E519476A7100964F91 /* VegetationGeometry.h in Headers */,
 				CCC7A43D16F1D6170061EA5D /* LandscapeChunk.h in Headers */,
+				0286451619795E1200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */,
 				62BD24C118C621EB00D2F0D3 /* DateTime.h in Headers */,
 				CCC7A44116F1D6170061EA5D /* LandscapeCursor.h in Headers */,
 				647EFC4C195EE2ED0073B3CB /* NMaterialStateDynamicFlagsInsp.h in Headers */,
@@ -5604,6 +5616,7 @@
 				E898A17B16BD265400732C04 /* UIControl.h in Headers */,
 				CC84B01A18211A9000934482 /* Job.h in Headers */,
 				E898A17C16BD265400732C04 /* UIControlBackground.h in Headers */,
+				0286451719795E1200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */,
 				E898A17D16BD265400732C04 /* UIControlSystem.h in Headers */,
 				84E975C4191FCDFF0054CCF9 /* ImageFormatInterface.h in Headers */,
 				E898A17E16BD265400732C04 /* UIEvent.h in Headers */,
@@ -6069,6 +6082,7 @@
 				176DEB10174B5561007A983B /* UIControlBackground.cpp in Sources */,
 				176DEB11174B5561007A983B /* UIControlSystem.cpp in Sources */,
 				17FB4BB81923B9AB00F3E3BC /* UIMovieView.cpp in Sources */,
+				0286451519795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp in Sources */,
 				176DEB12174B5561007A983B /* UIEvent.cpp in Sources */,
 				176DEB13174B5561007A983B /* UIFadeTransition.cpp in Sources */,
 				176DEB14174B5561007A983B /* UIFileSystemDialog.cpp in Sources */,
@@ -6295,6 +6309,7 @@
 				644C86DC19476A7100964F91 /* VegetationFixedGeometry.cpp in Sources */,
 				E8989ED916BD24E500732C04 /* Font.cpp in Sources */,
 				E8989EDB16BD24E500732C04 /* FontManager.cpp in Sources */,
+				0286451319795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp in Sources */,
 				E8989EDD16BD24E500732C04 /* FTFont.cpp in Sources */,
 				E8989EDF16BD24E500732C04 /* GraphicsFont.cpp in Sources */,
 				E8989EE216BD24E500732C04 /* Sprite.cpp in Sources */,
@@ -6896,6 +6911,7 @@
 				A6E4FE131761D9E000B48E41 /* ActionUpdateSystem.cpp in Sources */,
 				4FFE5CB11779E09300728624 /* MipmapReplacer.cpp in Sources */,
 				C18577F017A2600300331A95 /* MaterialOptimazer.cpp in Sources */,
+				0286451419795E1200ABCAA0 /* VirtualToPhysicalHelper.cpp in Sources */,
 				A68B3EF117AA8C4000E129C1 /* SkyboxSystem.cpp in Sources */,
 				4F64848E17AFCAFC00034454 /* AllocatorFactory.cpp in Sources */,
 				A679102017B3C71B000AA2F2 /* SkyboxRenderObject.cpp in Sources */,
