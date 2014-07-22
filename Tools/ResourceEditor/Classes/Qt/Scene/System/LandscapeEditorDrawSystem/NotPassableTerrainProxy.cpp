@@ -139,13 +139,14 @@ Texture* NotPassableTerrainProxy::GetTexture()
 
 void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 											const AABBox3& landscapeBoundingBox,
-											const DAVA::Rect &forRect)
+											const DAVA::Rect &forRect1)
 {
+    Rect forRect = forRect1;
 	if (forRect.dx <= 0 || forRect.dy <= 0)
 	{
 		return;
 	}
-
+    
 	const Vector3 landSize = landscapeBoundingBox.max - landscapeBoundingBox.min;
 	
 	const float32 angleCellDistance = landSize.x / (float32)(heightmap->Size() - 1);
@@ -160,7 +161,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 	
 	renderManager->SetRenderTarget(notPassableMapSprite);
 	
-	const Rect drawRect(forRect.x * dx, forRect.y * dx, (forRect.dx - 1)* dx, (forRect.dy - 1) * dx);
+	const Rect drawRect((heightmap->Size() - (forRect.x + forRect.dx)) * dx, forRect.y * dx, (forRect.dx - 1)* dx, (forRect.dy - 1) * dx);
 	renderManager->ClipPush();
 	renderManager->SetClip(drawRect);
 	
@@ -184,7 +185,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 			const float32 tanRight = (float32)deltaRight * tanCoef;
 			const float32 tanBottom = (float32)deltaBottom * tanCoef;
 			
-			const float32 xdx = (lastX - x - 1) * dx;
+			const float32 xdx = (heightmap->Size() - x - 1) * dx;
 			
 			Color color;
 
@@ -208,10 +209,4 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 	renderManager->ClipPop();
 	
 	renderManager->RestoreRenderTarget();
-//    
-//    Image *img = notPassableMapSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-//    Vector<Image *> imgVector;
-//    imgVector.push_back(img);
-//    ImageSystem::Instance()->Save("/Users/victorkleschenko/Work/WoT/wot.blitz_art/DataSource/3d/Land/test.png", imgVector);
-//    img->Release();
 }

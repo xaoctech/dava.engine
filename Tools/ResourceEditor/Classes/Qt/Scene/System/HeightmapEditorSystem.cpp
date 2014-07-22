@@ -263,8 +263,6 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	RenderManager::Instance()->RestoreRenderTarget();
 	
 	Image *retImage = dstSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-    Vector<Image *> img; img.push_back(retImage);
-    ImageSystem::Instance()->Save("/Users/victorkleschenko/Work/WoT/wot.blitz_art/DataSource/3d/Land/brush.png", img);
 	
 	SafeRelease(srcSprite);
 	SafeRelease(srcTex);
