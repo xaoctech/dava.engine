@@ -27,35 +27,41 @@
 =====================================================================================*/
 
 
-#ifndef __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
-#define __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
+#include "UIListCellPropertyGridWidget.h"
+#include "ui_UIListCellPropertyGridWidget.h"
 
-#include "DAVAEngine.h"
+static const QString CELL_PROPERTY_BLOCK_NAME = "Cell property";
 
-using namespace DAVA;
-
-#include "UITestTemplate.h"
-#include "Platform/DeviceInfo.h"
-
-class DeviceInfoTest : public UITestTemplate<DeviceInfoTest>
+UIListCellPropertyGridWidget::UIListCellPropertyGridWidget( QWidget *parent /*= 0*/ )
+    : BasePropertyGridWidget(parent)
+    , ui(new Ui::UIListCellPropertyGridWidget())
 {
-protected:
-    ~DeviceInfoTest(){}
-public:
-	DeviceInfoTest();
-	
-	virtual void LoadResources();
-	virtual void UnloadResources();
+    ui->setupUi(this);
+    SetPropertyBlockName(CELL_PROPERTY_BLOCK_NAME);
+    ui->objectIdentifierLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+    ui->objectIdentifierLineEdit->installEventFilter(this);
+}
 
-    virtual void DidAppear();
+UIListCellPropertyGridWidget::~UIListCellPropertyGridWidget()
+{
+    delete ui;
+}
 
-    void TestFunction(PerfFuncData * data);
+void UIListCellPropertyGridWidget::Initialize( BaseMetadata* activeMetadata )
+{
+    BasePropertyGridWidget::Initialize(activeMetadata);
 
-protected:
-    String GetNetworkTypeString();
+    // Build the properties map to make the properties search faster.
+    PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-private:
-    UIStaticText* deviceInfoText;
-};
+    // Initialize the widgets.
+    RegisterLineEditWidgetForProperty(propertiesMap, "Identifier", ui->objectIdentifierLineEdit);
+}
 
-#endif /* defined(__TEMPLATEPROJECTMACOS__DEVICEINFOTEST__) */
+void UIListCellPropertyGridWidget::Cleanup()
+{
+    BasePropertyGridWidget::Cleanup();
+
+    UnregisterLineEditWidget(ui->objectIdentifierLineEdit);
+}
+

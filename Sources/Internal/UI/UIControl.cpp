@@ -39,6 +39,7 @@
 #include "Utils/Utils.h"
 #include "Input/InputSystem.h"
 #include "Utils/StringFormat.h"
+#include "FileSystem/YamlNode.h"
 
 namespace DAVA
 {
