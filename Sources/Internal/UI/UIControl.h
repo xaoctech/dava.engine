@@ -446,7 +446,7 @@ public:
         Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \returns control rect.
      */
-    virtual const Rect & GetRect(bool absoluteCoordinates = false);
+    virtual const Rect & GetRect(bool absoluteCoordinates = false, bool rotatedRectNeeded = false);
 
     /**
      \brief Sets the untransformed control rect.

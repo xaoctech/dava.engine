@@ -1708,31 +1708,7 @@ Rect DefaultScreen::GetControlRect(const HierarchyTreeControlNode* controlNode, 
 	if (!control)
 		return rect;
 	
-	rect = control->GetRect();
-	if(checkAngle)
-	{
-		float32 fAngle = control->GetParentsTotalAngle(true);
-		if(!FLOAT_EQUAL_EPS(fAngle, 0.0f, 1e-4f))
-		{
-			Rect rectControl = rect;
-			// Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
-			if(FLOAT_EQUAL_EPS(fAngle, PI_05, 1e-4f))
-			{
-				// 90
-				rect = Rect(rectControl.x - rectControl.dy, rectControl.y, rectControl.dy, rectControl.dx);
-			}
-			else if(FLOAT_EQUAL_EPS(fAngle, PI, 1e-4f))
-			{
-				// 180
-				rect = Rect(rectControl.x - rectControl.dx, rectControl.y - rectControl.dy, rectControl.dx, rectControl.dy);
-			}
-			else if(FLOAT_EQUAL_EPS(fAngle, (PI+PI_05), 1e-4f))
-			{
-				// 270
-				rect = Rect(rectControl.x, rectControl.y - rectControl.dx, rectControl.dy, rectControl.dx);
-			}
-		}
-	}
+	rect = control->GetRect(false, checkAngle);
 	rect += controlNode->GetParentDelta(true);
 
 	return rect;
