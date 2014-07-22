@@ -158,7 +158,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 				if (drawingType == HEIGHTMAP_DRAW_ABSOLUTE_DROPPER ||
 					drawingType == HEIGHTMAP_DROPPER)
 				{
-					curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
+					curHeight = drawSystem->GetHeightAtPoint(GetHeightmapPositionFromCursor());
 					
 					SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
 				}
@@ -170,7 +170,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 						int32 curKeyModifiers = QApplication::keyboardModifiers();
 						if (curKeyModifiers & Qt::AltModifier)
 						{
-							copyPasteFrom = cursorPosition;
+							copyPasteFrom = GetHeightmapPositionFromCursor();
 							copyPasteTo = Vector2(-1.f, -1.f);
 							return;
 						}
@@ -180,7 +180,7 @@ void HeightmapEditorSystem::ProcessUIEvent(DAVA::UIEvent *event)
 							{
 								return;
 							}
-							copyPasteTo = cursorPosition;
+							copyPasteTo = GetHeightmapPositionFromCursor();
 							StoreOriginalHeightmap();
 						}
 					}
@@ -263,6 +263,8 @@ Image* HeightmapEditorSystem::CreateToolImage(int32 sideSize, const FilePath& fi
 	RenderManager::Instance()->RestoreRenderTarget();
 	
 	Image *retImage = dstSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
+    Vector<Image *> img; img.push_back(retImage);
+    ImageSystem::Instance()->Save("/Users/victorkleschenko/Work/WoT/wot.blitz_art/DataSource/3d/Land/brush.png", img);
 	
 	SafeRelease(srcSprite);
 	SafeRelease(srcTex);
@@ -282,7 +284,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 	EditorHeightmap* editorHeightmap = drawSystem->GetHeightmapProxy();
 	
 	int32 scaleSize = toolImage->GetWidth();
-	Vector2 pos = cursorPosition - Vector2((float32)scaleSize, (float32)scaleSize) / 2.0f;
+	Vector2 pos = GetHeightmapPositionFromCursor() - Vector2((float32)scaleSize, (float32)scaleSize) / 2.0f;
 	{
 		switch (activeDrawingType)
 		{
@@ -323,7 +325,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 
 			case HEIGHTMAP_DROPPER:
 			{
-				float32 curHeight = drawSystem->GetHeightAtPoint(cursorPosition);
+				float32 curHeight = drawSystem->GetHeightAtPoint(GetHeightmapPositionFromCursor());
 				SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
 				return;
 			}
@@ -337,7 +339,7 @@ void HeightmapEditorSystem::UpdateBrushTool(float32 timeElapsed)
 
 				Vector2 posTo = pos;
 				
-				Vector2 deltaPos = cursorPosition - copyPasteTo;
+				Vector2 deltaPos = GetHeightmapPositionFromCursor() - copyPasteTo;
 				Vector2 posFrom = copyPasteFrom + deltaPos - Vector2((float32)scaleSize, (float32)scaleSize)/2.f;
 				
 				float32 koef = (averageStrength * timeElapsed) * 2.0f;

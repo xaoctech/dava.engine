@@ -302,7 +302,7 @@ void LandscapeEditorDrawSystem::Process(DAVA::float32 timeElapsed)
 		heightmapProxy->ResetHeightmapChanged();
 	}
 	
-	if (customColorsProxy &&  customColorsProxy->IsSpriteChanged())
+	if (customColorsProxy && customColorsProxy->IsSpriteChanged())
 	{
 		if (landscapeProxy)
 		{
