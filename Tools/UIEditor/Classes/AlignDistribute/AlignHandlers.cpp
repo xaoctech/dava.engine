@@ -71,7 +71,7 @@ ControlsPositionData BaseAlignHandler::AlignLeftTop(const List<UIControl*>& cont
 		}
 
 		resultData.AddControl(uiControl);
-		Rect absoluteRect = uiControl->GetRect(true);
+		Rect absoluteRect = uiControl->GetRect(true, true);
 		float32 currentPos = isLeft ? absoluteRect.x : absoluteRect.y;
 
 		if (currentPos < referencePos)
@@ -89,18 +89,27 @@ ControlsPositionData BaseAlignHandler::AlignLeftTop(const List<UIControl*>& cont
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetRect(true);
-		if (isLeft)
+		Rect absoluteRect = uiControl->GetRect(true, true);
+		Vector2 moveDelta;
+		if(isLeft)
 		{
 			float32 offsetX = absoluteRect.x - referencePos;
-			absoluteRect.x -= offsetX;
+			moveDelta = Vector2(-offsetX, 0);
 		}
 		else
 		{
 			float32 offsetY = absoluteRect.y - referencePos;
-			absoluteRect.y -= offsetY;
+			moveDelta = Vector2(0, -offsetY);
 		}
+		Vector2 controlPosition = uiControl->GetPosition(true);
+		controlPosition += moveDelta;
+		absoluteRect.x = controlPosition.x;
+		absoluteRect.y = controlPosition.y;
 
+		Vector2 pivotPoint = uiControl->pivotPoint;
+		absoluteRect.x -= pivotPoint.x;
+		absoluteRect.y -= pivotPoint.y;
+	
 		uiControl->SetRect(absoluteRect, true);
 	}
 
@@ -125,7 +134,7 @@ ControlsPositionData BaseAlignHandler::AlignCenter(const List<UIControl*>& contr
 
 	// Perform the alignment on the first or last control, depending on the flag.
 	UIControl* referenceControl = GetReferenceControl(controlsList);
-	Vector2 referenceCenter = referenceControl->GetRect(true).GetCenter();
+	Vector2 referenceCenter = referenceControl->GetRect(true, true).GetCenter();
 
 	// Second pass - update.
 	for (List<UIControl*>::const_iterator iter = controlsList.begin(); iter != controlsList.end(); iter ++)
@@ -136,16 +145,27 @@ ControlsPositionData BaseAlignHandler::AlignCenter(const List<UIControl*>& contr
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetRect(true);
+		Rect absoluteRect = uiControl->GetRect(true, true);
 		Vector2 currentCenter = absoluteRect.GetCenter();
+		Vector2 moveDelta;
 		if (isHorizontal)
 		{
-			absoluteRect.x -= (currentCenter.x - referenceCenter.x);
+			float32 offsetX = currentCenter.x - referenceCenter.x;
+			moveDelta = Vector2(-offsetX, 0);
 		}
 		else
 		{
-			absoluteRect.y -= (currentCenter.y - referenceCenter.y);
+			float32 offsetY = currentCenter.y - referenceCenter.y;
+			moveDelta = Vector2(0, -offsetY);
 		}
+		Vector2 controlPosition = uiControl->GetPosition(true);
+		controlPosition += moveDelta;
+		absoluteRect.x = controlPosition.x;
+		absoluteRect.y = controlPosition.y;
+
+		Vector2 pivotPoint = uiControl->pivotPoint;
+		absoluteRect.x -= pivotPoint.x;
+		absoluteRect.y -= pivotPoint.y;
 
 		uiControl->SetRect(absoluteRect, true);
 	}
@@ -168,7 +188,7 @@ ControlsPositionData BaseAlignHandler::AlignRightBottom(const List<UIControl*>& 
 		}
 
 		resultData.AddControl(uiControl);
-		Rect absoluteRect = uiControl->GetRect(true);
+		Rect absoluteRect = uiControl->GetRect(true, true);
 		float32 controlSize = isRight ? (absoluteRect.x + absoluteRect.dx) : (absoluteRect.y + absoluteRect.dy);
 		if (controlSize > referencePos)
 		{
@@ -185,18 +205,26 @@ ControlsPositionData BaseAlignHandler::AlignRightBottom(const List<UIControl*>& 
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetRect(true);
-
+		Rect absoluteRect = uiControl->GetRect(true, true);
+		Vector2 moveDelta;
 		if (isRight)
 		{
 			float32 offsetX = referencePos - (absoluteRect.x + absoluteRect.dx);
-			absoluteRect.x += offsetX;
+			moveDelta = Vector2(offsetX, 0);
 		}
 		else
 		{
 			float32 offsetY = referencePos - (absoluteRect.y + absoluteRect.dy);
-			absoluteRect.y += offsetY;
+			moveDelta = Vector2(0, offsetY);
 		}
+		Vector2 controlPosition = uiControl->GetPosition(true);
+		controlPosition += moveDelta;
+		absoluteRect.x = controlPosition.x;
+		absoluteRect.y = controlPosition.y;
+
+		Vector2 pivotPoint = uiControl->pivotPoint;
+		absoluteRect.x -= pivotPoint.x;
+		absoluteRect.y -= pivotPoint.y;
 
 		uiControl->SetRect(absoluteRect, true);
 	}
