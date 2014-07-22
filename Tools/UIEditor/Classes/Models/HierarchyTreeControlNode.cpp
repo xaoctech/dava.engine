@@ -343,7 +343,7 @@ void HierarchyTreeControlNode::ReturnTreeNodeToScene()
 	this->needReleaseUIObjects = false;
 }
 
-Rect HierarchyTreeControlNode::GetRect() const
+Rect HierarchyTreeControlNode::GetRect(bool checkAngle/*=false*/) const
 {
 	Rect rect;
     
@@ -356,7 +356,7 @@ Rect HierarchyTreeControlNode::GetRect() const
     }
 
 	if (uiObject)
-		rect = uiObject->GetRect(true);
+		rect = uiObject->GetRect(true, checkAngle);
 
 	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
 	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)
