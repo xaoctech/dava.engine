@@ -33,6 +33,7 @@
 #include "HierarchyTreeAggregatorNode.h"
 #include "ResourcesManageHelper.h"
 #include <QDir>
+#include "yaml/yaml.h"
 
 #define WIDTH_NODE "width"
 #define HEIGHT_NODE "height"
@@ -295,7 +296,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>
 	node->SetNodeToMap( GetName().toStdString(), platform );
 	ActivatePlatform();
 	
-	YamlNode* screens = new YamlNode(YamlNode::TYPE_ARRAY, YamlNode::REPRESENT_ARRAY_AS_MULTI_LINE);
+	YamlNode* screens = YamlNode::CreateArrayNode(YAML_BLOCK_SEQUENCE_STYLE);
 	platform->SetNodeToMap( SCREENS_NODE, screens );
 	
 	YamlNode* aggregators = new YamlNode(YamlNode::TYPE_MAP);

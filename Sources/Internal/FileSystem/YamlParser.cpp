@@ -504,9 +504,9 @@ bool YamlParser::WriteArrayNodeToYamlFile(File* fileToSave, const String& nodeNa
     DVASSERT(currentNode->GetType() == YamlNode::TYPE_ARRAY);
 
     String resultString;
-    switch (currentNode->representationType)
+    switch (currentNode->typeRepresentation.mapStyle)
     {
-        case YamlNode::REPRESENT_ARRAY_AS_MULTI_LINE:
+        case YAML_BLOCK_MAPPING_STYLE:
         {
             resultString = GetArrayNodeRepresentationMultiline(nodeName, currentNode, index);
             break;
