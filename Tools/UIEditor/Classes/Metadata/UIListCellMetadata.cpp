@@ -27,35 +27,44 @@
 =====================================================================================*/
 
 
-#ifndef __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
-#define __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
 
-#include "DAVAEngine.h"
+#include "UIListCellMetadata.h"
+#include "UI/UIListCell.h"
 
-using namespace DAVA;
+namespace DAVA {
 
-#include "UITestTemplate.h"
-#include "Platform/DeviceInfo.h"
-
-class DeviceInfoTest : public UITestTemplate<DeviceInfoTest>
+UIListCellMetadata::UIListCellMetadata( QObject* parent /*= 0*/ )
+    : UIButtonMetadata(parent)
 {
-protected:
-    ~DeviceInfoTest(){}
-public:
-	DeviceInfoTest();
-	
-	virtual void LoadResources();
-	virtual void UnloadResources();
 
-    virtual void DidAppear();
+}
 
-    void TestFunction(PerfFuncData * data);
+void UIListCellMetadata::InitializeControl( const String& controlName, const Vector2& position )
+{
+    UIButtonMetadata::InitializeControl(controlName, position);
+}
 
-protected:
-    String GetNetworkTypeString();
+QString UIListCellMetadata::GetIdentifier() const
+{
+    if (!GetActiveUIControl())
+    {
+        return QString();
+    }
 
-private:
-    UIStaticText* deviceInfoText;
-};
+    return GetActiveUIControl()->GetIdentifier().c_str();
+}
 
-#endif /* defined(__TEMPLATEPROJECTMACOS__DEVICEINFOTEST__) */
+void UIListCellMetadata::SetIdentifier(const QString &value)
+{
+    if (GetActiveUIControl())
+    {
+        GetActiveUIControl()->SetIdentifier(value.toStdString());
+    }
+}
+
+UIListCell* UIListCellMetadata::GetActiveUIControl() const
+{
+    return static_cast<UIListCell*>(UIButtonMetadata::GetActiveUIControl());
+}
+
+}

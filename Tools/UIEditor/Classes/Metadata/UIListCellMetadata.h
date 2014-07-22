@@ -26,36 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __UIEditor__UIListCellMetadata__
+#define __UIEditor__UIListCellMetadata__
 
-#ifndef __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
-#define __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
+#include "UIButtonMetadata.h"
 
-#include "DAVAEngine.h"
+namespace DAVA {
 
-using namespace DAVA;
-
-#include "UITestTemplate.h"
-#include "Platform/DeviceInfo.h"
-
-class DeviceInfoTest : public UITestTemplate<DeviceInfoTest>
+class UIListCell;
+// Metadata class for DAVA UIListCell control.
+class UIListCellMetadata : public UIButtonMetadata
 {
-protected:
-    ~DeviceInfoTest(){}
+    Q_OBJECT
+
+    Q_PROPERTY(QString Identifier READ GetIdentifier WRITE SetIdentifier);
+
 public:
-	DeviceInfoTest();
-	
-	virtual void LoadResources();
-	virtual void UnloadResources();
-
-    virtual void DidAppear();
-
-    void TestFunction(PerfFuncData * data);
+    UIListCellMetadata(QObject* parent = 0);
 
 protected:
-    String GetNetworkTypeString();
+    virtual bool GetInitialInputEnabled() const {return true;};
 
-private:
-    UIStaticText* deviceInfoText;
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
+
+    virtual QString GetUIControlClassName() const { return "UIListCell"; };
+
+    // Helper to access active UI List cell.
+    virtual UIListCell* GetActiveUIControl() const;
+
+    QString GetIdentifier() const;
+    void SetIdentifier(const QString &value);
 };
 
-#endif /* defined(__TEMPLATEPROJECTMACOS__DEVICEINFOTEST__) */
+};
+
+#endif /* defined(__UIEditor__UIListCellMetadata__) */

@@ -26,36 +26,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "basepropertygridwidget.h"
 
-#ifndef __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
-#define __TEMPLATEPROJECTMACOS__DEVICEINFOTEST__
+namespace Ui {
+    class UIListCellPropertyGridWidget;
+}
 
-#include "DAVAEngine.h"
-
-using namespace DAVA;
-
-#include "UITestTemplate.h"
-#include "Platform/DeviceInfo.h"
-
-class DeviceInfoTest : public UITestTemplate<DeviceInfoTest>
+class UIListCellPropertyGridWidget : public BasePropertyGridWidget
 {
-protected:
-    ~DeviceInfoTest(){}
+    Q_OBJECT
+
 public:
-	DeviceInfoTest();
-	
-	virtual void LoadResources();
-	virtual void UnloadResources();
+    explicit UIListCellPropertyGridWidget(QWidget *parent = 0);
+    ~UIListCellPropertyGridWidget();
 
-    virtual void DidAppear();
-
-    void TestFunction(PerfFuncData * data);
-
-protected:
-    String GetNetworkTypeString();
+    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Cleanup();
 
 private:
-    UIStaticText* deviceInfoText;
+    Ui::UIListCellPropertyGridWidget *ui;
 };
-
-#endif /* defined(__TEMPLATEPROJECTMACOS__DEVICEINFOTEST__) */
