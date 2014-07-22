@@ -92,7 +92,7 @@ QString DAVA::UIButtonMetadata::GetLocalizedTextKeyForState( UIControl::eControl
     if (node)
     {
         controlState = UIButton::DrawStateToControlState(GetActiveUIButton()->GetActualTextBlockState(UIButton::ControlStateToDrawState(controlState)));
-        return WideString2QStrint(node->GetExtraData().GetLocalizationKey(controlState));
+        return WideString2QString(node->GetExtraData().GetLocalizationKey(controlState));
     }
     return QString();
 }
