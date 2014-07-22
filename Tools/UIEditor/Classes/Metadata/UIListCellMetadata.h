@@ -26,83 +26,39 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __UIEditor__UIListCellMetadata__
+#define __UIEditor__UIListCellMetadata__
 
+#include "UIButtonMetadata.h"
 
-#include "UI/UIHierarchyCell.h"
-#include "UI/UIStaticText.h"
+namespace DAVA {
 
-namespace DAVA 
+class UIListCell;
+// Metadata class for DAVA UIListCell control.
+class UIListCellMetadata : public UIButtonMetadata
 {
+    Q_OBJECT
 
-UIHierarchyCell::UIHierarchyCell()
-:   UIButton()
-,	node(NULL)
-,	identifier("")
-,	cellStore(NULL)
-,   text(NULL)
-,   openButton(NULL)
-{
-}
+    Q_PROPERTY(QString Identifier READ GetIdentifier WRITE SetIdentifier);
 
-UIHierarchyCell::UIHierarchyCell(const Rect &rect, const String &cellIdentifier)
-:	UIButton(rect)
-,	node(NULL)
-,	identifier(cellIdentifier)
-,	cellStore(NULL)
-{
-    text = new UIStaticText(Rect(15, 0, rect.dx - 15, rect.dy));
-    AddControl(text);
-    openButton = new UIButton(Rect(0, 0, 15, rect.dy));
-    AddControl(openButton);
-}
+public:
+    UIListCellMetadata(QObject* parent = 0);
 
-UIHierarchyCell::~UIHierarchyCell()
-{
-    SafeRelease(text);
-    SafeRelease(openButton);
-}
+protected:
+    virtual bool GetInitialInputEnabled() const {return true;};
 
-void UIHierarchyCell::WillDisappear()
-{
-    node = NULL;
-}
+    // Initialize the appropriate control.
+    virtual void InitializeControl(const String& controlName, const Vector2& position);
 
-const String & UIHierarchyCell::GetIdentifier()
-{
-    return identifier;
-}
+    virtual QString GetUIControlClassName() const { return "UIListCell"; };
 
-UIHierarchyNode *UIHierarchyCell::GetNode()
-{
-    return node;
-}
+    // Helper to access active UI List cell.
+    virtual UIListCell* GetActiveUIControl() const;
 
-//    UIListCell *UIListCell::CloneListCell()
-//	{
-//		return (UIListCell *)Clone();
-//	}
-//    
-//	UIControl *UIListCell::Clone()
-//	{
-//		UIListCell *c = new UIListCell(GetRect(),identifier);
-//		c->CopyDataFrom(this);
-//		return c;
-//	}
-//    
-//    void UIListCell::CopyDataFrom(UIControl *srcControl)
-//	{
-//        UIButton::CopyDataFrom(srcControl);
-//        UIListCell *srcListCell = (UIListCell *)srcControl;
-//        identifier = srcListCell->identifier;
-//    }
-
-//    void UIListCell::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
-//	{
-//        YamlNode * identifierNode = node->Get("identifier");
-//        if (identifierNode)
-//        {
-//            identifier = identifierNode->AsString();
-//        }
-//        UIButton::LoadFromYamlNode(node, loader);
-//    }
+    QString GetIdentifier() const;
+    void SetIdentifier(const QString &value);
 };
+
+};
+
+#endif /* defined(__UIEditor__UIListCellMetadata__) */

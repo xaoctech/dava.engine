@@ -27,82 +27,41 @@
 =====================================================================================*/
 
 
+#include "UIListCellPropertyGridWidget.h"
+#include "ui_UIListCellPropertyGridWidget.h"
 
-#include "UI/UIHierarchyCell.h"
-#include "UI/UIStaticText.h"
+static const QString CELL_PROPERTY_BLOCK_NAME = "Cell property";
 
-namespace DAVA 
+UIListCellPropertyGridWidget::UIListCellPropertyGridWidget( QWidget *parent /*= 0*/ )
+    : BasePropertyGridWidget(parent)
+    , ui(new Ui::UIListCellPropertyGridWidget())
 {
-
-UIHierarchyCell::UIHierarchyCell()
-:   UIButton()
-,	node(NULL)
-,	identifier("")
-,	cellStore(NULL)
-,   text(NULL)
-,   openButton(NULL)
-{
+    ui->setupUi(this);
+    SetPropertyBlockName(CELL_PROPERTY_BLOCK_NAME);
+    ui->objectIdentifierLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+    ui->objectIdentifierLineEdit->installEventFilter(this);
 }
 
-UIHierarchyCell::UIHierarchyCell(const Rect &rect, const String &cellIdentifier)
-:	UIButton(rect)
-,	node(NULL)
-,	identifier(cellIdentifier)
-,	cellStore(NULL)
+UIListCellPropertyGridWidget::~UIListCellPropertyGridWidget()
 {
-    text = new UIStaticText(Rect(15, 0, rect.dx - 15, rect.dy));
-    AddControl(text);
-    openButton = new UIButton(Rect(0, 0, 15, rect.dy));
-    AddControl(openButton);
+    delete ui;
 }
 
-UIHierarchyCell::~UIHierarchyCell()
+void UIListCellPropertyGridWidget::Initialize( BaseMetadata* activeMetadata )
 {
-    SafeRelease(text);
-    SafeRelease(openButton);
+    BasePropertyGridWidget::Initialize(activeMetadata);
+
+    // Build the properties map to make the properties search faster.
+    PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
+
+    // Initialize the widgets.
+    RegisterLineEditWidgetForProperty(propertiesMap, "Identifier", ui->objectIdentifierLineEdit);
 }
 
-void UIHierarchyCell::WillDisappear()
+void UIListCellPropertyGridWidget::Cleanup()
 {
-    node = NULL;
+    BasePropertyGridWidget::Cleanup();
+
+    UnregisterLineEditWidget(ui->objectIdentifierLineEdit);
 }
 
-const String & UIHierarchyCell::GetIdentifier()
-{
-    return identifier;
-}
-
-UIHierarchyNode *UIHierarchyCell::GetNode()
-{
-    return node;
-}
-
-//    UIListCell *UIListCell::CloneListCell()
-//	{
-//		return (UIListCell *)Clone();
-//	}
-//    
-//	UIControl *UIListCell::Clone()
-//	{
-//		UIListCell *c = new UIListCell(GetRect(),identifier);
-//		c->CopyDataFrom(this);
-//		return c;
-//	}
-//    
-//    void UIListCell::CopyDataFrom(UIControl *srcControl)
-//	{
-//        UIButton::CopyDataFrom(srcControl);
-//        UIListCell *srcListCell = (UIListCell *)srcControl;
-//        identifier = srcListCell->identifier;
-//    }
-
-//    void UIListCell::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
-//	{
-//        YamlNode * identifierNode = node->Get("identifier");
-//        if (identifierNode)
-//        {
-//            identifier = identifierNode->AsString();
-//        }
-//        UIButton::LoadFromYamlNode(node, loader);
-//    }
-};

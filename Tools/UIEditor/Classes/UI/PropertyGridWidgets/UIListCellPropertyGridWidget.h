@@ -26,83 +26,23 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#include "basepropertygridwidget.h"
 
-
-#include "UI/UIHierarchyCell.h"
-#include "UI/UIStaticText.h"
-
-namespace DAVA 
-{
-
-UIHierarchyCell::UIHierarchyCell()
-:   UIButton()
-,	node(NULL)
-,	identifier("")
-,	cellStore(NULL)
-,   text(NULL)
-,   openButton(NULL)
-{
+namespace Ui {
+    class UIListCellPropertyGridWidget;
 }
 
-UIHierarchyCell::UIHierarchyCell(const Rect &rect, const String &cellIdentifier)
-:	UIButton(rect)
-,	node(NULL)
-,	identifier(cellIdentifier)
-,	cellStore(NULL)
+class UIListCellPropertyGridWidget : public BasePropertyGridWidget
 {
-    text = new UIStaticText(Rect(15, 0, rect.dx - 15, rect.dy));
-    AddControl(text);
-    openButton = new UIButton(Rect(0, 0, 15, rect.dy));
-    AddControl(openButton);
-}
+    Q_OBJECT
 
-UIHierarchyCell::~UIHierarchyCell()
-{
-    SafeRelease(text);
-    SafeRelease(openButton);
-}
+public:
+    explicit UIListCellPropertyGridWidget(QWidget *parent = 0);
+    ~UIListCellPropertyGridWidget();
 
-void UIHierarchyCell::WillDisappear()
-{
-    node = NULL;
-}
+    virtual void Initialize(BaseMetadata* activeMetadata);
+    virtual void Cleanup();
 
-const String & UIHierarchyCell::GetIdentifier()
-{
-    return identifier;
-}
-
-UIHierarchyNode *UIHierarchyCell::GetNode()
-{
-    return node;
-}
-
-//    UIListCell *UIListCell::CloneListCell()
-//	{
-//		return (UIListCell *)Clone();
-//	}
-//    
-//	UIControl *UIListCell::Clone()
-//	{
-//		UIListCell *c = new UIListCell(GetRect(),identifier);
-//		c->CopyDataFrom(this);
-//		return c;
-//	}
-//    
-//    void UIListCell::CopyDataFrom(UIControl *srcControl)
-//	{
-//        UIButton::CopyDataFrom(srcControl);
-//        UIListCell *srcListCell = (UIListCell *)srcControl;
-//        identifier = srcListCell->identifier;
-//    }
-
-//    void UIListCell::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
-//	{
-//        YamlNode * identifierNode = node->Get("identifier");
-//        if (identifierNode)
-//        {
-//            identifier = identifierNode->AsString();
-//        }
-//        UIButton::LoadFromYamlNode(node, loader);
-//    }
+private:
+    Ui::UIListCellPropertyGridWidget *ui;
 };
