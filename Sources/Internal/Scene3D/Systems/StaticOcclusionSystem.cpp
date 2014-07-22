@@ -36,6 +36,7 @@
 #include "Sound/SoundSystem.h"
 #include "Render/Highlevel/RenderSystem.h"
 #include "Render/Highlevel/RenderObject.h"
+#include "Render/3D/PolygonGroup.h"
 #include "Render/Highlevel/Landscape.h"
 #include "Render/Highlevel/StaticOcclusion.h"
 #include "Scene3D/Components/ComponentHelpers.h"
@@ -606,6 +607,57 @@ void StaticOcclusionSystem::InvalidateOcclusionIndicesRecursively(Entity *entity
         ro->SetStaticOcclusionIndex(INVALID_STATIC_OCCLUSION_INDEX);
     for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
         InvalidateOcclusionIndicesRecursively(entity->GetChild(i));
+}
+
+
+PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawObject( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions)
+{
+    int32 vertexCount = xSubdivisions * ySubdivisions * 4 * (zSubdivisions + 1);
+    int32 indexCount = xSubdivisions * ySubdivisions * zSubdivisions * 12 * 2; //12 lines per box 2 indices per line
+    
+    PolygonGroup *res = new PolygonGroup();
+    res->AllocateData(EVF_VERTEX, vertexCount, indexCount);    
+
+    Vector3 boxSize = boundingBox.GetSize();
+    boxSize.x /= xSubdivisions;
+    boxSize.y /= ySubdivisions;
+    boxSize.z /= zSubdivisions;
+
+    #define IDX_BY_POS(xc, yc, zc) ((zc) + (zSubdivisions+1)*((yc) + (xc) * ySubdivisions))*4
+    //vertices
+    //as we are going to place blocks on landscape we are to treat each column as independent - not sharing vertices between columns. we can still share vertices within 1 column
+    for (uint32 xs = 0; xs < xSubdivisions; ++xs)
+        for (uint32 ys = 0; ys < ySubdivisions; ++ys)
+            for (uint32 zs = 0; zs < (zSubdivisions+1); ++zs)  
+            {                
+                //int32 vBase = (zs + (zSubdivisions+1)*(ys + xs * ySubdivisions))*4;                
+                int32 vBase = IDX_BY_POS(xs, ys, zs);
+                res->SetCoord(vBase + 0, boundingBox.min + boxSize * Vector3(xs, ys, zs));
+                res->SetCoord(vBase + 1, boundingBox.min + boxSize * Vector3(xs+1, ys, zs));
+                res->SetCoord(vBase + 2, boundingBox.min + boxSize * Vector3(xs+1, ys+1, zs));
+                res->SetCoord(vBase + 3, boundingBox.min + boxSize * Vector3(xs, ys+1, zs));
+            }        
+    //indices 
+    //in pair indexOffset, z
+    const static int32 indexOffsets[]={0,0, 1,0, 1,0, 2,0, 2,0, 3,0, 3,0, 0,0,  //bot
+                                       0,0, 0,1, 1,0, 1,1, 2,0, 2,1, 3,0, 3,1,  //mid
+                                       0,1, 1,1, 1,1, 2,1, 2,1, 3,1, 3,1, 0,1}; //top
+    
+    for (uint32 xs = 0; xs < xSubdivisions; ++xs)
+        for (uint32 ys = 0; ys < ySubdivisions; ++ys)
+            for (uint32 zs = 0; zs < zSubdivisions; ++zs)
+            {
+                int32 iBase = (zs + zSubdivisions*(ys + xs * ySubdivisions)) * 24;
+                int32 vBase[2] = {IDX_BY_POS(xs, ys, zs), IDX_BY_POS(xs, ys, zs+1)};
+                for (int32 i=0; i<24; i++)
+                    res->SetIndex(iBase + i, indexOffsets[i*2] + vBase[indexOffsets[i*2+1]]);
+
+            }
+
+
+    #undef IDX_BY_POS
+
+    return res;
 }
     
 };

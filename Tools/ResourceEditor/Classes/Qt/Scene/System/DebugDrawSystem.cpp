@@ -184,12 +184,13 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
 	{
         Camera * camera = GetScene()->GetCurrentCamera();
        
-		RenderManager::SetDynamicParam(PARAM_WORLD, &entity->GetWorldTransform(), (pointer_size)&entity->GetWorldTransform());
+		RenderManager::SetDynamicParam(PARAM_WORLD, &entity->GetWorldTransform(), (pointer_size)&entity->GetWorldTransform());        
         
 		AABBox3 localBox = staticOcclusionComponent->GetBoundingBox();
 		DAVA::float32 delta = localBox.GetSize().Length() / 4;
+       
         
-		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.1f, 0.5f, 0.1f, 0.3f));
+		/*DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.1f, 0.5f, 0.1f, 0.3f));
 		DAVA::RenderHelper::Instance()->FillBox(localBox, debugDrawState);
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.9f, 0.2f, 0.8f, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawBox(localBox, 1.0f, debugDrawState);
@@ -197,11 +198,11 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
         Vector3 boxSize = localBox.GetSize();
         boxSize.x /= staticOcclusionComponent->GetSubdivisionsX();
         boxSize.y /= staticOcclusionComponent->GetSubdivisionsY();
-        boxSize.z /= staticOcclusionComponent->GetSubdivisionsZ();
+        boxSize.z /= staticOcclusionComponent->GetSubdivisionsZ();*/
         
         // Draw block grid
         
-        for (uint32 xs = 0; xs < staticOcclusionComponent->GetSubdivisionsX(); ++xs)
+        /*for (uint32 xs = 0; xs < staticOcclusionComponent->GetSubdivisionsX(); ++xs)
             for (uint32 ys = 0; ys < staticOcclusionComponent->GetSubdivisionsY(); ++ys)
                 for (uint32 zs = 0; zs < staticOcclusionComponent->GetSubdivisionsZ(); ++zs)
                 {
@@ -209,10 +210,22 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
                                 localBox.min + boxSize * Vector3(xs + 1, ys + 1, zs + 1) );
                     DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0.0f, 0.3f, 0.1f, 0.1f));
                     DAVA::RenderHelper::Instance()->DrawBox(box, 1.0f, debugDrawState);
-                }
+                }        */
+
+        PolygonGroup *pg = StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawObject(localBox, staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());        
+        RenderManager::Instance()->SetRenderState(debugDrawState);
+        RenderManager::Instance()->SetColor(DAVA::Color(0.0f, 0.0f, 1.0f, 1.0f));
+        RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
+        RenderManager::Instance()->FlushState();        
+
+        RenderManager::Instance()->SetRenderData(pg->renderDataObject);
+        RenderManager::Instance()->AttachRenderData();
+        RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, pg->indexCount, pg->renderDataObject->GetIndexFormat(), pg->indexArray);
+
+        SafeRelease(pg);
         
         
-        const Vector3 & position = camera->GetPosition();
+        /*const Vector3 & position = camera->GetPosition();
         
         AABBox3 worldBox;
         localBox.GetTransformedBox(entity->GetWorldTransform(), worldBox);
@@ -240,7 +253,7 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0.7f, 0, 1.0f));
 		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, delta, 0), 1.0f, debugDrawState);
 		DAVA::RenderManager::Instance()->SetColor(DAVA::Color(0, 0, 0.7f, 1.0f));
-		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, delta), 1.0f, debugDrawState);
+		DAVA::RenderHelper::Instance()->DrawLine(DAVA::Vector3(0, 0, 0), DAVA::Vector3(0, 0, delta), 1.0f, debugDrawState);*/
 	}
 }
 

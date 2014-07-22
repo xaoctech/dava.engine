@@ -41,6 +41,7 @@ class StaticOcclusion;
 class StaticOcclusionData;
 class StaticOcclusionDataComponent;
 class NMaterial;
+class PolygonGroup;
 
 class MessageQueue
 {
@@ -137,6 +138,21 @@ private:
     void UndoOcclusionVisibility();
     Vector<StaticOcclusionDataComponent*> staticOcclusionComponents;
     Vector<RenderObject*> indexedRenderObjects;
+
+};
+
+
+class StaticOcclusionDebugDrawSystem : public SceneSystem
+{
+public:
+    static PolygonGroup* CreateStaticOcclusionDebugDrawObject( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions);
+
+    virtual void AddEntity(Entity * entity);
+    virtual void RemoveEntity(Entity * entity);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
+    void Draw();
+
+private:
 
 };
     
