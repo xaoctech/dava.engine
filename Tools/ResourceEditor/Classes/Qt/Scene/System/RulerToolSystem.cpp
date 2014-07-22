@@ -41,27 +41,15 @@
 #include "../SceneSignals.h"
 
 RulerToolSystem::RulerToolSystem(Scene* scene)
-:	SceneSystem(scene)
-,	enabled(false)
+:	LandscapeEditorSystem(scene, "~res:/LandscapeEditor/Tools/cursor/cursor.tex")
 ,	curToolSize(0)
-,	cursorSize(0)
-,	prevCursorPos(Vector2(-1.f, -1.f))
 ,	previewEnabled(true)
 ,	lineWidth(1)
 {
-	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
-	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
-	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
-	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
 }
 
 RulerToolSystem::~RulerToolSystem()
 {
-}
-
-LandscapeEditorDrawSystem::eErrorType RulerToolSystem::IsCanBeEnabled()
-{
-	return drawSystem->VerifyLandscape();
 }
 
 LandscapeEditorDrawSystem::eErrorType RulerToolSystem::EnableLandscapeEditing()
@@ -130,10 +118,6 @@ bool RulerToolSystem::DisableLandscapeEdititing()
 	return !enabled;
 }
 
-bool RulerToolSystem::IsLandscapeEditingEnabled() const
-{
-	return enabled;
-}
 
 void RulerToolSystem::Process(DAVA::float32 timeElapsed)
 {
@@ -150,7 +134,7 @@ void RulerToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		return;
 	}
 
-	UpdateCursorPosition(landscapeSize);
+	UpdateCursorPosition();
 
 	Vector3 point;
 	collisionSystem->LandRayTestFromCamera(point);
@@ -198,34 +182,6 @@ void RulerToolSystem::ProcessUIEvent(DAVA::UIEvent *event)
 		}
 
 		DrawPoints();
-	}
-}
-
-void RulerToolSystem::UpdateCursorPosition(int32 landscapeSize)
-{
-	Vector3 landPos;
-	isIntersectsLandscape = false;
-	if (collisionSystem->LandRayTestFromCamera(landPos))
-	{
-		isIntersectsLandscape = true;
-		Vector2 point(landPos.x, landPos.y);
-
-		point.x = (float32)((int32)point.x);
-		point.y = (float32)((int32)point.y);
-
-		AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
-
-		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
-		cursorPosition.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
-		cursorPosition.x = (int32)cursorPosition.x;
-		cursorPosition.y = (int32)cursorPosition.y;
-
-		drawSystem->SetCursorPosition(cursorPosition);
-	}
-	else
-	{
-		// hide cursor
-		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
 	}
 }
 

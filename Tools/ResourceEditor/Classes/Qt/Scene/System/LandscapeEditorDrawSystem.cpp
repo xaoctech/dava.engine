@@ -637,7 +637,7 @@ void LandscapeEditorDrawSystem::ResetTileMaskTexture()
 	baseLandscape->SetTexture(Landscape::TEXTURE_TILE_MASK, filePath);
 }
 
-LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape()
+LandscapeEditorDrawSystem::eErrorType LandscapeEditorDrawSystem::VerifyLandscape() const
 {
 	//landscape initialization should be handled by AddEntity/RemoveEntity methods
 	if (!landscapeNode || !baseLandscape || !landscapeProxy)

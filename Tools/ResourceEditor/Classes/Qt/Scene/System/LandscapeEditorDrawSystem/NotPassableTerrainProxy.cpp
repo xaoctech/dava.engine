@@ -208,4 +208,10 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 	renderManager->ClipPop();
 	
 	renderManager->RestoreRenderTarget();
+    
+    Image *img = notPassableMapSprite->GetTexture()->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
+    Vector<Image *> imgVector;
+    imgVector.push_back(img);
+    ImageSystem::Instance()->Save("/Users/victorkleschenko/Work/WoT/wot.blitz_art/DataSource/3d/Land/test.png", imgVector);
+    img->Release();
 }
