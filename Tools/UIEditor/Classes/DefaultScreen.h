@@ -158,7 +158,7 @@ private:
 	
 	Vector2 GetInputDelta(const Vector2& point, bool applyScale = true);
 	
-	Rect GetControlRect(const HierarchyTreeControlNode* control) const;
+	Rect GetControlRect(const HierarchyTreeControlNode* control, bool checkAngle = false) const;
 	void CopySelectedControls();
 
     // In case Preview mode is enabled, translate mouse UI events directly to the preview screen.
