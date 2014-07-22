@@ -404,6 +404,7 @@
 					"\"$(SRCROOT)/../dava.framework/Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = TemplateProjectMacOS;
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -423,6 +424,7 @@
 					"\"$(SRCROOT)/../dava.framework/Libs/fmod/lib/macos\"",
 				);
 				PRODUCT_NAME = TemplateProjectMacOS;
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};

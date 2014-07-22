@@ -28,81 +28,43 @@
 
 
 
-#include "UI/UIHierarchyCell.h"
-#include "UI/UIStaticText.h"
+#include "UIListCellMetadata.h"
+#include "UI/UIListCell.h"
 
-namespace DAVA 
+namespace DAVA {
+
+UIListCellMetadata::UIListCellMetadata( QObject* parent /*= 0*/ )
+    : UIButtonMetadata(parent)
 {
 
-UIHierarchyCell::UIHierarchyCell()
-:   UIButton()
-,	node(NULL)
-,	identifier("")
-,	cellStore(NULL)
-,   text(NULL)
-,   openButton(NULL)
-{
 }
 
-UIHierarchyCell::UIHierarchyCell(const Rect &rect, const String &cellIdentifier)
-:	UIButton(rect)
-,	node(NULL)
-,	identifier(cellIdentifier)
-,	cellStore(NULL)
+void UIListCellMetadata::InitializeControl( const String& controlName, const Vector2& position )
 {
-    text = new UIStaticText(Rect(15, 0, rect.dx - 15, rect.dy));
-    AddControl(text);
-    openButton = new UIButton(Rect(0, 0, 15, rect.dy));
-    AddControl(openButton);
+    UIButtonMetadata::InitializeControl(controlName, position);
 }
 
-UIHierarchyCell::~UIHierarchyCell()
+QString UIListCellMetadata::GetIdentifier() const
 {
-    SafeRelease(text);
-    SafeRelease(openButton);
+    if (!GetActiveUIControl())
+    {
+        return QString();
+    }
+
+    return GetActiveUIControl()->GetIdentifier().c_str();
 }
 
-void UIHierarchyCell::WillDisappear()
+void UIListCellMetadata::SetIdentifier(const QString &value)
 {
-    node = NULL;
+    if (GetActiveUIControl())
+    {
+        GetActiveUIControl()->SetIdentifier(value.toStdString());
+    }
 }
 
-const String & UIHierarchyCell::GetIdentifier()
+UIListCell* UIListCellMetadata::GetActiveUIControl() const
 {
-    return identifier;
+    return static_cast<UIListCell*>(UIButtonMetadata::GetActiveUIControl());
 }
 
-UIHierarchyNode *UIHierarchyCell::GetNode()
-{
-    return node;
 }
-
-//    UIListCell *UIListCell::CloneListCell()
-//	{
-//		return (UIListCell *)Clone();
-//	}
-//    
-//	UIControl *UIListCell::Clone()
-//	{
-//		UIListCell *c = new UIListCell(GetRect(),identifier);
-//		c->CopyDataFrom(this);
-//		return c;
-//	}
-//    
-//    void UIListCell::CopyDataFrom(UIControl *srcControl)
-//	{
-//        UIButton::CopyDataFrom(srcControl);
-//        UIListCell *srcListCell = (UIListCell *)srcControl;
-//        identifier = srcListCell->identifier;
-//    }
-
-//    void UIListCell::LoadFromYamlNode(YamlNode * node, UIYamlLoader * loader)
-//	{
-//        YamlNode * identifierNode = node->Get("identifier");
-//        if (identifierNode)
-//        {
-//            identifier = identifierNode->AsString();
-//        }
-//        UIButton::LoadFromYamlNode(node, loader);
-//    }
-};
