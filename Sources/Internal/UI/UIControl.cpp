@@ -39,6 +39,7 @@
 #include "Utils/Utils.h"
 #include "Input/InputSystem.h"
 #include "Utils/StringFormat.h"
+#include "FileSystem/YamlNode.h"
 
 namespace DAVA
 {
@@ -973,10 +974,10 @@ namespace DAVA
 
         if (parent && parent->IsOnScreen())
         {
-            if (!recursiveVisible)
-                SystemWillBecomeInvisible();
-            else
+            if (recursiveVisible)
                 SystemWillBecomeVisible();
+            else
+                SystemWillBecomeInvisible();
         }
     }
 
