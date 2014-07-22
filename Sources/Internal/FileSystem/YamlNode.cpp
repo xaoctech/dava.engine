@@ -36,10 +36,32 @@ namespace DAVA
 
 const char8* YamlNode::SAVE_INDEX_NAME = "##SAVE_INDEX_NAME##";
 
-YamlNode::YamlNode(eType _type, eRepresentationType _repType)
+
+YamlNode * YamlNode::CreateMapNode( int32 mapRepresentation /*= YAML_ANY_MAPPING_STYLE*/ )
+{
+    YamlNode * node = new YamlNode(TYPE_MAP);
+    node->typeRepresentation.mapStyle = mapRepresentation;
+    return node;
+}
+
+YamlNode * YamlNode::CreateArrayNode( int32 arrayRepresentation /*= YAML_ANY_SCALAR_STYLE*/ )
+{
+    YamlNode * node = new YamlNode(TYPE_MAP);
+    node->typeRepresentation.arrayStyle = arrayRepresentation;
+    return node;
+}
+
+YamlNode * YamlNode::CreateStringNode( int32 stringRepresentation /*= YAML_ANY_SEQUENCE_STYLE*/ )
+{
+    YamlNode * node = new YamlNode(TYPE_MAP);
+    node->typeRepresentation.stringStyle = stringRepresentation;
+    return node;
+}
+
+YamlNode::YamlNode(eType _type)
+    : typeRepresentation()
 {
     type = _type;
-    representationType = _repType;
     mapIndex = 0;
     mapCount = 0;
     isWideString = false;
@@ -886,17 +908,12 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
     }
 }
 
-    bool IsZero(char c)
-    {
-        return (c == '0');
-    }
-
 void YamlNode::ProcessMatrix(const float32* array,uint32 dimension)
 {
     YamlNode* rowNode;
     for (uint32 i = 0; i < dimension; ++i)
     {
-        rowNode = new YamlNode(TYPE_ARRAY);
+        rowNode = YamlNode::CreateArrayNode();
         rowNode->objectArray.reserve(dimension);
 
         YamlNode* columnNode = NULL;
@@ -904,7 +921,7 @@ void YamlNode::ProcessMatrix(const float32* array,uint32 dimension)
         {
             const float32* elementOfArray = array + ((i*dimension)+j);
             String letterRepresentation(FloatToCuttedString(*elementOfArray));
-            columnNode = new YamlNode(TYPE_STRING);
+            columnNode = YamlNode::CreateStringNode();
             columnNode->nwStringValue = letterRepresentation;
             columnNode->stringValue = StringToWString(letterRepresentation);
             rowNode->objectArray.push_back(columnNode);
@@ -919,7 +936,7 @@ void YamlNode::ProcessVector(const float32* array,uint32 dimension)
     {
         const float32* elementOfArray = array + i;
         String letterRepresentation(FloatToCuttedString(*elementOfArray));
-        YamlNode* innerNode = new YamlNode(TYPE_STRING);
+        YamlNode* innerNode = YamlNode::CreateStringNode();
         innerNode->nwStringValue = letterRepresentation;
         innerNode->stringValue = StringToWString(letterRepresentation);
         objectArray.push_back(innerNode);
@@ -1200,4 +1217,5 @@ void  YamlNode::InternalSetNodeToMap(const String& name, YamlNode* node, bool re
 
     objectMap.insert(std::pair<String, YamlNode*> (name, node));
 }
+
 }

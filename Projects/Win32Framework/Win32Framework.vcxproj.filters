@@ -1519,6 +1519,9 @@
     <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlNode.h">
       <Filter>Internal\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlEmitter.h">
+      <Filter>Internal\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp">
@@ -2720,6 +2723,9 @@
       <Filter>Internal\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlNode.cpp">
+      <Filter>Internal\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlEmitter.cpp">
       <Filter>Internal\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>

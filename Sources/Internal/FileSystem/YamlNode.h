@@ -56,7 +56,6 @@ public:
     // See also DF-2389 for details.
     enum eRepresentationType
     {
-
         REPRESENT_AS_DEFAULT,
         REPRESENT_ARRAY_AS_SINGLE_LINE,
         REPRESENT_ARRAY_AS_MULTI_LINE
@@ -68,8 +67,10 @@ public:
 protected:
     virtual ~YamlNode();
 public:
-    YamlNode(eType type, eRepresentationType repType = REPRESENT_AS_DEFAULT);
-
+    YamlNode(eType type);
+    static YamlNode *CreateMapNode(int32 mapRepresentation = 0/*YAML_ANY_MAPPING_STYLE*/);
+    static YamlNode *CreateArrayNode(int32 arrayRepresentation = 0/*YAML_ANY_SCALAR_STYLE*/);
+    static YamlNode *CreateStringNode(int32 stringRepresentation = 0/*YAML_ANY_SEQUENCE_STYLE*/);
 
     void Print(int32 identation);
     void PrintToFile(DAVA::File* file, uint32 identationDepth = 0) const;
@@ -188,13 +189,20 @@ private:
     int						mapIndex;
     int						mapCount;
     eType					type;
-    eRepresentationType		representationType;
     WideString				stringValue;
     String					 nwStringValue;
     Vector<YamlNode*>		 objectArray;
     MultiMap<String, YamlNode*>	objectMap;
     bool					isWideString;
+    union
+    {
+        int32 stringStyle;  /*yaml_scalar_style_t*/
+        int32 arrayStyle;/*yaml_sequence_style_t*/
+        int32 mapStyle; /*yaml_mapping_style_t*/
+    }typeRepresentation;
+
     friend class YamlParser;
+    friend class YamlEmitter;
 };
 };
 
