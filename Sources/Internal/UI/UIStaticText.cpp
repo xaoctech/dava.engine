@@ -34,6 +34,7 @@
 #include "UI/UIYamlLoader.h"
 #include "Utils/StringFormat.h"
 #include "FileSystem/LocalizationSystem.h"
+#include "FileSystem/YamlNode.h"
 #include "Render/2D/FontManager.h"
 #include "Animation/LinearAnimation.h"
 
