@@ -630,7 +630,7 @@ bool SceneEditor2::IsToolsEnabled(int32 toolFlags)
 
     if(toolFlags & LANDSCAPE_TOOL_GRASS_EDITOR)
     {
-        res |= grassEditorSystem->IsEnabledGrassEdit();
+        res |= grassEditorSystem->IsLandscapeEditingEnabled();
     }
 
 	return res;
@@ -670,7 +670,7 @@ int32 SceneEditor2::GetEnabledTools()
 		toolFlags |= LANDSCAPE_TOOL_NOT_PASSABLE_TERRAIN;
 	}
 
-    if(grassEditorSystem->IsEnabledGrassEdit())
+    if(grassEditorSystem->IsLandscapeEditingEnabled())
     {
         toolFlags |= LANDSCAPE_TOOL_GRASS_EDITOR;
     }

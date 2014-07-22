@@ -43,11 +43,9 @@
 #include <QApplication>
 
 HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
-:	SceneSystem(scene)
-,	enabled(false)
+:	LandscapeEditorSystem(scene, "~res:/LandscapeEditor/Tools/cursor/cursor.tex")
 ,	editingIsEnabled(false)
 ,	curToolSize(0)
-,	cursorSize(30)
 ,	originalHeightmap(NULL)
 ,	toolImage(NULL)
 ,	strength(15)
@@ -57,38 +55,21 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	drawingType(HEIGHTMAP_DRAW_ABSOLUTE)
 ,	copyPasteFrom(-1.f, -1.f)
 ,	copyPasteTo(-1.f, -1.f)
-,	prevCursorPosition(-1.f, -1.f)
 ,   squareTexture(NULL)
 ,	toolImageIndex(0)
 ,	curHeight(0.f)
 ,	activeDrawingType(drawingType)
 ,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
-	cursorTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/cursor.tex");
-	cursorTexture->SetWrapMode(Texture::WRAP_CLAMP_TO_EDGE, Texture::WRAP_CLAMP_TO_EDGE);
-
-	collisionSystem = ((SceneEditor2 *) GetScene())->collisionSystem;
-	selectionSystem = ((SceneEditor2 *) GetScene())->selectionSystem;
-	modifSystem = ((SceneEditor2 *) GetScene())->modifSystem;
-	drawSystem = ((SceneEditor2 *) GetScene())->landscapeEditorDrawSystem;
+    //TODO: remove this default initialization
+    cursorSize = 30;
 	
 	noBlendDrawState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);
 }
 
 HeightmapEditorSystem::~HeightmapEditorSystem()
 {
-	SafeRelease(cursorTexture);
 	SafeRelease(squareTexture);
-}
-
-bool HeightmapEditorSystem::IsLandscapeEditingEnabled() const
-{
-	return enabled;
-}
-
-LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::IsCanBeEnabled()
-{
-	return drawSystem->VerifyLandscape();
 }
 
 LandscapeEditorDrawSystem::eErrorType HeightmapEditorSystem::EnableLandscapeEditing()
@@ -240,33 +221,6 @@ void HeightmapEditorSystem::FinishEditing()
 	}
 }
 
-void HeightmapEditorSystem::UpdateCursorPosition()
-{
-	Vector3 landPos;
-	isIntersectsLandscape = false;
-	if (collisionSystem->LandRayTestFromCamera(landPos))
-	{
-		isIntersectsLandscape = true;
-		Vector2 point(landPos.x, landPos.y);
-		
-		point.x = (float32)((int32)point.x);
-		point.y = (float32)((int32)point.y);
-		
-		AABBox3 box = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
-		
-		cursorPosition.x = (point.x - box.min.x) * (landscapeSize - 1) / (box.max.x - box.min.x);
-		cursorPosition.y = (point.y - box.min.y) * (landscapeSize - 1) / (box.max.y - box.min.y);
-		cursorPosition.x = (int32)cursorPosition.x;
-		cursorPosition.y = (int32)cursorPosition.y;
-
-		drawSystem->SetCursorPosition(cursorPosition);
-	}
-	else
-	{
-		// hide cursor
-		drawSystem->SetCursorPosition(DAVA::Vector2(-100, -100));
-	}
-}
 
 void HeightmapEditorSystem::UpdateToolImage(bool force)
 {
@@ -522,7 +476,7 @@ void HeightmapEditorSystem::SetDropperHeight(float32 height)
 	if (height >= 0 && height <= maxHeight)
 	{
 		curHeight = height;
-		SceneSignals::Instance()->EmitDropperHeightChanged(dynamic_cast<SceneEditor2*>(GetScene()), curHeight);
+		SceneSignals::Instance()->EmitDropperHeightChanged(static_cast<SceneEditor2*>(GetScene()), curHeight);
 	}
 }
 
@@ -530,3 +484,9 @@ float32 HeightmapEditorSystem::GetDropperHeight()
 {
 	return curHeight;
 }
+
+Vector2 HeightmapEditorSystem::GetHeightmapPositionFromCursor() const
+{
+    return Vector2(landscapeSize - 1 - cursorPosition.x, cursorPosition.y);
+}
+

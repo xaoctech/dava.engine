@@ -33,6 +33,7 @@
 #include "Render/Image/ImageSystem.h"
 #include "FileSystem/File.h"
 #include "FileSystem/FileSystem.h"
+#include "Utils/Utils.h"
 
 
 namespace DAVA
@@ -94,6 +95,9 @@ bool Heightmap::BuildFromImage(const DAVA::Image *image)
         Logger::Error("Heightmap build from wrong formatted image: format = %d", image->format);
         return false;
     }
+    
+    
+    FlipHorizontal(data, size, size);
     return true;
 }
 
@@ -107,6 +111,7 @@ void Heightmap::SaveToImage(const FilePath & filename)
     {
         unpackedBytes[k] = ((data[k] & 0xFF) << 8) | ((data[k] & 0xFF00) >> 8);
     }
+    FlipHorizontal(unpackedBytes, size, size);
     Memcpy(image->data, unpackedBytes, size*size*sizeof(uint16));
 
     SafeDeleteArray(unpackedBytes);
@@ -282,6 +287,5 @@ Heightmap * Heightmap::CreateHeightmapForSize(int32 newSize)
     return createdHeightmap;
 }
 
-    
 };
 
