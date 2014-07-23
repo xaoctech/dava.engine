@@ -33,7 +33,9 @@
 
 namespace DAVA 
 {
-static const int32 IDENTATION_SPACES_COUNT = 4;
+static const int32 INDENTATION_INCREMENT = 4;
+static const int32 UNESCAPED_UNICODE_CHARACTERS_ALLOWED = 1;
+static const int32 PREFERRED_LINE_WIDTH = -1;//-1 means unlimited.
 
 static yaml_scalar_style_t GetYamlScalarStyle(YamlNode::eStringRepresentation representation)
 {
@@ -68,6 +70,16 @@ static yaml_mapping_style_t GetYamlMappingStyle(YamlNode::eMapRepresentation rep
     return YAML_ANY_MAPPING_STYLE;
 }
 
+int write_handler(void *ext, unsigned char *buffer, size_t size)//yaml_write_handler_t
+{
+    File *yamlFile = static_cast<File *>(ext);
+
+    uint32 prevFileSize = yamlFile->GetSize();
+    uint32 bytesWritten = yamlFile->Write(buffer, size);
+
+    return (yamlFile->GetSize() == prevFileSize + bytesWritten) ? 1 : 0;
+}
+
 class OrderedYamlNode
 {
 public:
@@ -81,46 +93,12 @@ public:
 
     bool operator < (const OrderedYamlNode& right) const
     {
-//         bool result = false;
-//         if(yamlNodeValue->GetType() == right.yamlNodeValue->GetType())
-//         {
-//             switch(yamlNodeValue->GetType())
-//             {
-//             case YamlNode::TYPE_STRING:
-//                 {
-//                     result = yamlNodeValue->AsString() < right.yamlNodeValue->AsString();
-//                 }
-//                 break;
-//             case YamlNode::TYPE_ARRAY :
-//                 {
-//                     result = yamlNodeValue->typeRepresentation.arrayStyle < right.yamlNodeValue->typeRepresentation.arrayStyle;
-//                 }
-//                 break;
-//             case YamlNode::TYPE_MAP   :
-//                 {
-//                     const YamlNode* leftIndexNode = yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-//                     const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-// 
-//                     if (leftIndexNode && rightIndexNode)
-//                     {
-//                         result = leftIndexNode->AsInt() < rightIndexNode->AsInt()
-//                     }
-//                     else
-//                     {
-//                         result = yamlNodeValue->typeRepresentation.mapStyle < right.yamlNodeValue->typeRepresentation.mapStyle; 
-//                     }
-//                 }
-//                 break;
-//             }
-//             return result;
-//         }
-
         const YamlNode* leftIndexNode = yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
         const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
 
         if (!leftIndexNode || !rightIndexNode)
         {
-            return false;
+            return leftIndexNode < rightIndexNode;
         }
 
         return leftIndexNode->AsInt() < rightIndexNode->AsInt();
@@ -130,17 +108,6 @@ private:
     String yamlNodeName;
     const YamlNode *yamlNodeValue;
 };
-
-int write_handler(void *ext, unsigned char *buffer, size_t size)
-{
-    File *yamlFile = static_cast<File *>(ext);
-
-    uint32 prevFileSize = yamlFile->GetSize();
-    uint32 bytesWritten = yamlFile->Write(buffer, size);
-
-    bool error = (yamlFile->GetSize() != prevFileSize + bytesWritten);
-    return error ? 0 : 1;
-}
 
 DAVA::YamlEmitter::~YamlEmitter()
 {
@@ -174,12 +141,12 @@ bool YamlEmitter::Emit(const YamlNode * node, File *outFile)
 
     DVASSERT(yaml_emitter_initialize(&emitter));
     yaml_emitter_set_encoding(&emitter, YAML_UTF8_ENCODING);
-    yaml_emitter_set_unicode(&emitter, 1);
-    yaml_emitter_set_width(&emitter, -1);
-    yaml_emitter_set_indent(&emitter, IDENTATION_SPACES_COUNT);
+    yaml_emitter_set_unicode(&emitter, UNESCAPED_UNICODE_CHARACTERS_ALLOWED);
+    yaml_emitter_set_width(&emitter, PREFERRED_LINE_WIDTH);
+    yaml_emitter_set_indent(&emitter, INDENTATION_INCREMENT);
     yaml_emitter_set_output(&emitter, &write_handler, outFile);
 
-    do 
+    do
     {
         if (!EmitStreamStart(&emitter)) break;
 
@@ -221,55 +188,35 @@ bool YamlEmitter::Emit(const YamlNode * node, File *outFile)
     return true;
 }
 
-void YamlEmitter::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<OrderedYamlNode> &sortedChildren ) const
+void YamlEmitter::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<OrderedYamlNode> &nodes) const
 {
-    sortedChildren.reserve( mapNodes.size() );
+    nodes.reserve( mapNodes.size() );
 
-    for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
+    MultiMap<String, YamlNode*>::const_iterator iter;
+    for (iter = mapNodes.begin(); iter != mapNodes.end(); ++iter)
     {
         // Only the nodes of type Map are expected here.
-        if (t->second->GetType() == YamlNode::TYPE_MAP)
+        if (iter->second->GetType() == YamlNode::TYPE_MAP)
             continue;
 
-        sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
+        nodes.push_back(OrderedYamlNode(iter->first, iter->second));
     }
 
-//     for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
-//     {
-//         // Only the nodes of type Map are expected here.
-//         if (t->second->GetType() != YamlNode::TYPE_STRING)
-//             continue;
-// 
-//         sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
-//     }
-// 
-//     for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
-//     {
-//         // Only the nodes of type Map are expected here.
-//         if (t->second->GetType() != YamlNode::TYPE_ARRAY)
-//             continue;
-// 
-//         sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
-//     }
-
-
-    uint32 lastNotMapItemIndex = sortedChildren.size();
-    // Order the map nodes by the "Save index".
-    for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
+    uint32 lastNotMapItemIndex = nodes.size();
+    for (iter = mapNodes.begin(); iter != mapNodes.end(); ++iter)
     {
-        // Only the nodes of type Map are expected here.
-        if (t->second->GetType() != YamlNode::TYPE_MAP)
+        if (iter->second->GetType() != YamlNode::TYPE_MAP)
             continue;
 
-        sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
+        nodes.push_back(OrderedYamlNode(iter->first, iter->second));
     }
 
-    std::sort(sortedChildren.begin() + lastNotMapItemIndex, sortedChildren.end());
+    std::sort(nodes.begin() + lastNotMapItemIndex, nodes.end());
 }
 
-bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node )
+bool YamlEmitter::EmitYamlNode(yaml_emitter_t * emitter, const YamlNode * node)
 {
-    switch( node->GetType() )
+    switch (node->GetType())
     {
     case YamlNode::TYPE_STRING:
         {
@@ -284,7 +231,7 @@ bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node 
 
             const Vector<YamlNode*> &sequence = node->AsVector();
             Vector<YamlNode*>::const_iterator iter = sequence.begin();
-            for( ; iter != sequence.end(); ++iter )
+            for (; iter != sequence.end(); ++iter)
             {
                 if (!EmitYamlNode(emitter, (*iter)))
                     return false;
@@ -304,7 +251,7 @@ bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node 
             Vector<OrderedYamlNode> sortedMapNodes;
             OrderMapYamlNode(mapNodes, sortedMapNodes);
             Vector<OrderedYamlNode>::const_iterator iter = sortedMapNodes.begin();
-            for ( ;iter != sortedMapNodes.end(); ++iter )
+            for (;iter != sortedMapNodes.end(); ++iter)
             {
                 if (iter->GetNodeName() == YamlNode::SAVE_INDEX_NAME)
                     continue;
@@ -323,7 +270,7 @@ bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node 
     return true;
 }
 
-bool YamlEmitter::EmitStreamStart( yaml_emitter_t * emitter )
+bool YamlEmitter::EmitStreamStart(yaml_emitter_t * emitter)
 {
     yaml_event_t event;
     if (!yaml_stream_start_event_initialize(&event, YAML_UTF8_ENCODING) ||
