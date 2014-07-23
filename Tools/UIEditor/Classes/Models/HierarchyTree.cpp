@@ -551,14 +551,13 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 
     PreviewController::Instance()->SavePreviewSettings(root);
 
-	YamlParser* parser = YamlParser::Create();
 	// Create project sub-directories
 	QDir().mkpath(ResourcesManageHelper::GetPlatformRootPath(projectPath));
 	// Update Data directory last modified datetime - set currrent time
 	UpdateModificationDate(ResourcesManageHelper::GetDataPath(projectPath));
 
 	// Save project file.
-	result &= parser->SaveToYamlFile(projectFile.toStdString(), root, true);
+	result &= YamlEmitter::SaveToYamlFile(projectFile.toStdString(), root);
 	fileNames.push_back(projectFile);
 
     // Return the Localized Values.
@@ -573,8 +572,6 @@ bool HierarchyTree::DoSave(const QString& projectPath, bool saveAll)
 	{
 		rootNode.ResetUnsavedChanges();
 	}
-
-	SafeRelease(parser);
 
 	// List of files to be locked might be changed after save (if new platforms/screens are added).
 	projectLockedFiles.clear();

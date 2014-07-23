@@ -30,6 +30,8 @@
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/KeyedArchive.h"
 #include "Utils/Utils.h"
+#include "Utils/UTF8Utils.h"
+#include "yaml/yaml.h"
 
 namespace DAVA
 {
@@ -46,14 +48,14 @@ YamlNode * YamlNode::CreateMapNode( int32 mapRepresentation /*= YAML_ANY_MAPPING
 
 YamlNode * YamlNode::CreateArrayNode( int32 arrayRepresentation /*= YAML_ANY_SCALAR_STYLE*/ )
 {
-    YamlNode * node = new YamlNode(TYPE_MAP);
+    YamlNode * node = new YamlNode(TYPE_ARRAY);
     node->typeRepresentation.arrayStyle = arrayRepresentation;
     return node;
 }
 
 YamlNode * YamlNode::CreateStringNode( int32 stringRepresentation /*= YAML_ANY_SEQUENCE_STYLE*/ )
 {
-    YamlNode * node = new YamlNode(TYPE_MAP);
+    YamlNode * node = new YamlNode(TYPE_STRING);
     node->typeRepresentation.stringStyle = stringRepresentation;
     return node;
 }
@@ -759,6 +761,7 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
         case VariantType::TYPE_BOOLEAN:
         {
             nwStringValue = varType->AsBool() ? "true" : "false";
+            typeRepresentation.stringStyle = YAML_DOUBLE_QUOTED_SCALAR_STYLE;
         }
             break;
         case VariantType::TYPE_INT32:
@@ -775,16 +778,17 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
             break;
         case VariantType::TYPE_STRING:
         {
-            String strToInitWith = '"'+varType->AsString()+'"';
-            nwStringValue = String(strToInitWith);
-            stringValue = StringToWString(strToInitWith);
+            nwStringValue = varType->AsString();
+            UTF8Utils::EncodeToWideString((const uint8 *)nwStringValue.c_str(), nwStringValue.length(), stringValue);
+            typeRepresentation.stringStyle = YAML_DOUBLE_QUOTED_SCALAR_STYLE;
         }
             break;
         case VariantType::TYPE_WIDE_STRING:
         {
-            stringValue = L'"' + varType->AsWideString() +L'"';
-            nwStringValue = WStringToString(stringValue);
+            stringValue = varType->AsWideString();
+            nwStringValue = UTF8Utils::EncodeToUTF8(stringValue);
             isWideString = true;
+            typeRepresentation.stringStyle = YAML_DOUBLE_QUOTED_SCALAR_STYLE;
         }
             break;
         case VariantType::TYPE_UINT32:
@@ -904,7 +908,7 @@ void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
     {
         String value(str);
         nwStringValue = value;
-        stringValue = StringToWString(value);
+        UTF8Utils::EncodeToWideString((const uint8 *)value.c_str(), value.length(), stringValue);
     }
 }
 
@@ -928,6 +932,7 @@ void YamlNode::ProcessMatrix(const float32* array,uint32 dimension)
         }
         objectArray.push_back(rowNode);
     }
+    typeRepresentation.arrayStyle = YAML_FLOW_SEQUENCE_STYLE;
 }
 
 void YamlNode::ProcessVector(const float32* array,uint32 dimension)
@@ -941,6 +946,7 @@ void YamlNode::ProcessVector(const float32* array,uint32 dimension)
         innerNode->stringValue = StringToWString(letterRepresentation);
         objectArray.push_back(innerNode);
     }
+    typeRepresentation.arrayStyle = YAML_FLOW_SEQUENCE_STYLE;
 }
 
 bool YamlNode::IsContainingMap() const

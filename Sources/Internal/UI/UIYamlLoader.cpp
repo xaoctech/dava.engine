@@ -31,12 +31,14 @@
 #include "Base/ObjectFactory.h"
 #include "Platform/SystemTimer.h"
 #include "UI/UIControl.h"
-#include "FileSystem/YamlParser.h"
 #include "FileSystem/YamlNode.h"
+#include "FileSystem/YamlEmitter.h"
+#include "FileSystem/YamlParser.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
 #include "Render/2D/TextBlock.h"
+#include "yaml/yaml.h"
 
 namespace DAVA 
 {
@@ -213,7 +215,7 @@ int32 UIYamlLoader::GetFittingOptionFromYamlNode( const YamlNode * fittingNode )
 //Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
 YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 {
-	YamlNode *alignNode = new YamlNode(YamlNode::TYPE_ARRAY);
+	YamlNode *alignNode = YamlNode::CreateArrayNode(YAML_FLOW_SEQUENCE_STYLE);
 	String horzAlign = "HCENTER";
 	String vertAlign = "VCENTER";
 
@@ -257,7 +259,7 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 
 YamlNode * UIYamlLoader::GetFittingOptionNodeValue( int32 fitting ) const
 {
-    YamlNode *fittingNode = new YamlNode(YamlNode::TYPE_ARRAY);
+    YamlNode *fittingNode = YamlNode::CreateArrayNode(YAML_FLOW_SEQUENCE_STYLE);
 
     if( fitting == TextBlock::FITTING_DISABLED )
     {
@@ -351,13 +353,6 @@ void UIYamlLoader::LoadFonts(const FilePath & yamlPathname)
     
 bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
 {
-    YamlParser * parser = YamlParser::Create();
-    
-    if (!parser)
-    {
-        Logger::Error("ProcessSave: error while creating YAML parser!");
-        return false;
-    }
     bool res = false;
     
     //save used fonts
@@ -386,9 +381,8 @@ bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
         }
     }
     
-    res = parser->SaveToYamlFile(yamlPathname, fontsNode, true, File::CREATE | File::WRITE);
-    
-    SafeRelease(parser);
+    res = YamlEmitter::SaveToYamlFile(yamlPathname, fontsNode, File::CREATE | File::WRITE);
+
     return res;
 }
 
@@ -463,14 +457,7 @@ void UIYamlLoader::ProcessLoad(UIControl * rootControl, const FilePath & yamlPat
 bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPathname, bool skipRootNode)
 {
     uint64 t1 = SystemTimer::Instance()->AbsoluteMS();
-    YamlParser * parser = YamlParser::Create();
 
-    if (!parser)
-    {
-        Logger::Error("ProcessSave: error while creating YAML parser!");
-        return false;
-    }
-    
     DVASSERT(rootControl);
     YamlNode* resultNode = SaveToNode(rootControl, NULL);
 
@@ -497,13 +484,12 @@ bool UIYamlLoader::ProcessSave(UIControl * rootControl, const FilePath & yamlPat
     }
 
     //resultNode
-    parser->SaveToYamlFile(yamlPathname, fontsNode, true, fileAttr);
+    YamlEmitter::SaveToYamlFile(yamlPathname, fontsNode, fileAttr);
     fileAttr = File::APPEND | File::WRITE;
 #endif
 	
     // Save the resulting YAML file to the path passed.
-    bool savedOK = parser->SaveToYamlFile(yamlPathname, resultNode, skipRootNode, fileAttr);
-    SafeRelease(parser);
+    bool savedOK = YamlEmitter::SaveToYamlFile(yamlPathname, resultNode, fileAttr);
     
     SafeRelease(resultNode);
     

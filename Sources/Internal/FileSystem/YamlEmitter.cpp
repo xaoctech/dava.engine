@@ -48,39 +48,39 @@ public:
 
     bool operator < (const OrderedYamlNode& right) const
     {
-        bool result = false;
-        if(yamlNodeValue->GetType() == right.yamlNodeValue->GetType())
-        {
-            switch(yamlNodeValue->GetType())
-            {
-            case YamlNode::TYPE_STRING:
-                {
-                    result = yamlNodeValue->AsString() < right.yamlNodeValue->AsString();
-                }
-                break;
-            case YamlNode::TYPE_ARRAY :
-                {
-                    result = yamlNodeValue->typeRepresentation.arrayStyle < right.yamlNodeValue->typeRepresentation.arrayStyle;
-                }
-                break;
-            case YamlNode::TYPE_MAP   :
-                {
-                    const YamlNode* leftIndexNode = yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-                    const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-
-                    if (leftIndexNode && rightIndexNode)
-                    {
-                        result = leftIndexNode->AsInt() < rightIndexNode->AsInt()
-                    }
-                    else
-                    {
-                        result = yamlNodeValue->typeRepresentation.mapStyle < right.yamlNodeValue->typeRepresentation.mapStyle; 
-                    }
-                }
-                break;
-            }
-            return result;
-        }
+//         bool result = false;
+//         if(yamlNodeValue->GetType() == right.yamlNodeValue->GetType())
+//         {
+//             switch(yamlNodeValue->GetType())
+//             {
+//             case YamlNode::TYPE_STRING:
+//                 {
+//                     result = yamlNodeValue->AsString() < right.yamlNodeValue->AsString();
+//                 }
+//                 break;
+//             case YamlNode::TYPE_ARRAY :
+//                 {
+//                     result = yamlNodeValue->typeRepresentation.arrayStyle < right.yamlNodeValue->typeRepresentation.arrayStyle;
+//                 }
+//                 break;
+//             case YamlNode::TYPE_MAP   :
+//                 {
+//                     const YamlNode* leftIndexNode = yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
+//                     const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
+// 
+//                     if (leftIndexNode && rightIndexNode)
+//                     {
+//                         result = leftIndexNode->AsInt() < rightIndexNode->AsInt()
+//                     }
+//                     else
+//                     {
+//                         result = yamlNodeValue->typeRepresentation.mapStyle < right.yamlNodeValue->typeRepresentation.mapStyle; 
+//                     }
+//                 }
+//                 break;
+//             }
+//             return result;
+//         }
 
         const YamlNode* leftIndexNode = yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
         const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
@@ -123,12 +123,6 @@ bool YamlEmitter::SaveToYamlFile(const FilePath &outFileName, const YamlNode *no
     return emitter->Emit(node, outFileName, attr);
 }
 
-bool YamlEmitter::SaveLevelOneMapsToYamlFile( const FilePath &outFileName, const YamlNode *node, uint32 attr /*= File::CREATE | File::WRITE*/ )
-{
-    ScopedPtr<YamlEmitter> emitter(new YamlEmitter());
-    return emitter->Emit(node, outFileName, attr);
-}
-
 bool YamlEmitter::Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr)
 {
     ScopedPtr<File> yamlFile( File::Create(outFileName, attr) );
@@ -147,6 +141,8 @@ bool YamlEmitter::Emit(const YamlNode * node, File *outFile)
 
     DVASSERT(yaml_emitter_initialize(&emitter));
     yaml_emitter_set_encoding(&emitter, YAML_UTF8_ENCODING);
+    yaml_emitter_set_unicode(&emitter, 1);
+    yaml_emitter_set_width(&emitter, -1);
     yaml_emitter_set_indent(&emitter, IDENTATION_SPACES_COUNT);
     yaml_emitter_set_output(&emitter, &write_handler, outFile);
 
@@ -195,24 +191,33 @@ bool YamlEmitter::Emit(const YamlNode * node, File *outFile)
 void YamlEmitter::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<OrderedYamlNode> &sortedChildren ) const
 {
     sortedChildren.reserve( mapNodes.size() );
-    // Order the map nodes by the "Save index".
+
     for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
     {
         // Only the nodes of type Map are expected here.
-        if (t->second->GetType() != YamlNode::TYPE_STRING)
+        if (t->second->GetType() == YamlNode::TYPE_MAP)
             continue;
 
         sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
     }
 
-    for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
-    {
-        // Only the nodes of type Map are expected here.
-        if (t->second->GetType() != YamlNode::TYPE_ARRAY)
-            continue;
-
-        sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
-    }
+//     for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
+//     {
+//         // Only the nodes of type Map are expected here.
+//         if (t->second->GetType() != YamlNode::TYPE_STRING)
+//             continue;
+// 
+//         sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
+//     }
+// 
+//     for (MultiMap<String, YamlNode*>::const_iterator t = mapNodes.begin(); t != mapNodes.end(); ++t)
+//     {
+//         // Only the nodes of type Map are expected here.
+//         if (t->second->GetType() != YamlNode::TYPE_ARRAY)
+//             continue;
+// 
+//         sortedChildren.push_back(OrderedYamlNode(t->first, t->second));
+//     }
 
 
     uint32 lastNotMapItemIndex = sortedChildren.size();
