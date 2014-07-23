@@ -45,7 +45,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	curModel = new QtPropertyModel(viewport());
 	setModel(curModel);
 
-	curItemDelegate = new QtPropertyItemDelegate(curModel);
+	curItemDelegate = new QtPropertyItemDelegate(this, curModel);
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
@@ -288,10 +288,6 @@ void QtPropertyEditor::rowsAboutToBeInserted(const QModelIndex & parent, int sta
 void QtPropertyEditor::rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end)
 {
 	curItemDelegate->invalidateButtons();
-    if(selectionModel()->rowIntersectsSelection(start, parent) || selectionModel()->rowIntersectsSelection(end, parent))
-    {
-        selectionModel()->clearSelection();
-    }
 }
 
 void QtPropertyEditor::rowsOp(const QModelIndex & parent, int start, int end)
