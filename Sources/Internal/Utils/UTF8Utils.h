@@ -51,12 +51,12 @@ public:
 	 */
 	static void  EncodeToWideString(const uint8 * string, int32 size, WideString & resultString);
 
-	/**
-		\brief convert UTF8 string to WideString
-		\param[in] string string in UTF8 format
-		\param[in] size size of buffer allocated for this string
-		\param[out] resultString result unicode string
-	 */
+    /**
+        \brief convert UTF8 string to WideString
+        \param[in] string string in UTF8 format
+        \param[in] size size of buffer allocated for this string
+        \param[out] resultString result unicode string
+     */
     static const WideString EncodeToWideString(const String & utf8String)
     {
         WideString str;
