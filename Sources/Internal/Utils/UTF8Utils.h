@@ -52,6 +52,19 @@ public:
 	static void  EncodeToWideString(const uint8 * string, int32 size, WideString & resultString);
 
 	/**
+		\brief convert UTF8 string to WideString
+		\param[in] string string in UTF8 format
+		\param[in] size size of buffer allocated for this string
+		\param[out] resultString result unicode string
+	 */
+    static const WideString EncodeToWideString(const String & utf8String)
+    {
+        WideString str;
+        EncodeToWideString((const uint8 *)utf8String.c_str(), utf8String.length(), str);
+        return str;
+    }
+
+	/**
 	 \brief convert WideString string to UTF8
 	 \param[in] wstring string in WideString format
 	 \returns string in UTF8 format, contained in DAVA::String

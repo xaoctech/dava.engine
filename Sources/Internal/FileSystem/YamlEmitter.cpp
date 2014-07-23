@@ -35,6 +35,39 @@ namespace DAVA
 {
 static const int32 IDENTATION_SPACES_COUNT = 4;
 
+static yaml_scalar_style_t GetYamlScalarStyle(YamlNode::eStringRepresentation representation)
+{
+    switch(representation)
+    {
+    case YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION : return YAML_DOUBLE_QUOTED_SCALAR_STYLE;
+    case YamlNode::SR_PLAIN_REPRESENTATION : return YAML_PLAIN_SCALAR_STYLE;
+    default: break;
+    }
+    return YAML_ANY_SCALAR_STYLE;
+}
+
+static yaml_sequence_style_t GetYamlSequenceStyle(YamlNode::eArrayRepresentation representation)
+{
+    switch(representation)
+    {
+    case YamlNode::AR_BLOCK_REPRESENTATION : return YAML_BLOCK_SEQUENCE_STYLE;
+    case YamlNode::AR_FLOW_REPRESENTATION : return YAML_FLOW_SEQUENCE_STYLE;
+    default: break;
+    }
+    return YAML_ANY_SEQUENCE_STYLE;
+}
+
+static yaml_mapping_style_t GetYamlMappingStyle(YamlNode::eMapRepresentation representation)
+{
+    switch(representation)
+    {
+    case YamlNode::MR_BLOCK_REPRESENTATION : return YAML_BLOCK_MAPPING_STYLE;
+    case YamlNode::MR_FLOW_REPRESENTATION : return YAML_FLOW_MAPPING_STYLE;
+    default: break;
+    }
+    return YAML_ANY_MAPPING_STYLE;
+}
+
 class OrderedYamlNode
 {
 public:
@@ -240,13 +273,13 @@ bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node 
     {
     case YamlNode::TYPE_STRING:
         {
-            if (!EmitScalar(emitter, node->AsString(), node->typeRepresentation.stringStyle))
+            if (!EmitScalar(emitter, node->AsString(), GetYamlScalarStyle(node->representation.stringStyle)))
                 return false;
         }
         break;
     case YamlNode::TYPE_ARRAY:
         {
-            if (!EmitSequenceStart(emitter, node->typeRepresentation.arrayStyle))
+            if (!EmitSequenceStart(emitter, GetYamlSequenceStyle(node->representation.arrayStyle)))
                 return false;
 
             const Vector<YamlNode*> &sequence = node->AsVector();
@@ -263,7 +296,7 @@ bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node 
         break;
     case YamlNode::TYPE_MAP:
         {
-            if (!EmitMappingStart(emitter, node->typeRepresentation.mapStyle))
+            if (!EmitMappingStart(emitter, GetYamlMappingStyle(node->representation.mapStyle.value)))
                 return false;
 
             const MultiMap<String, YamlNode*> &mapNodes = node->AsMap();
@@ -275,7 +308,7 @@ bool YamlEmitter::EmitYamlNode( yaml_emitter_t * emitter, const YamlNode * node 
             {
                 if (iter->GetNodeName() == YamlNode::SAVE_INDEX_NAME)
                     continue;
-                if (!EmitScalar(emitter, iter->GetNodeName(), YAML_PLAIN_SCALAR_STYLE))
+                if (!EmitScalar(emitter, iter->GetNodeName(), GetYamlScalarStyle(node->representation.mapStyle.key)))
                     return false;
                 if (!EmitYamlNode(emitter, iter->GetNodeValue()))
                     return false;

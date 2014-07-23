@@ -38,7 +38,6 @@
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
 #include "Render/2D/TextBlock.h"
-#include "yaml/yaml.h"
 
 namespace DAVA 
 {
@@ -215,7 +214,7 @@ int32 UIYamlLoader::GetFittingOptionFromYamlNode( const YamlNode * fittingNode )
 //Vector<String> UIYamlLoader::GetAlignNodeValue(int32 align)
 YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 {
-	YamlNode *alignNode = YamlNode::CreateArrayNode(YAML_FLOW_SEQUENCE_STYLE);
+	YamlNode *alignNode = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
 	String horzAlign = "HCENTER";
 	String vertAlign = "VCENTER";
 
@@ -259,7 +258,7 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 
 YamlNode * UIYamlLoader::GetFittingOptionNodeValue( int32 fitting ) const
 {
-    YamlNode *fittingNode = YamlNode::CreateArrayNode(YAML_FLOW_SEQUENCE_STYLE);
+    YamlNode *fittingNode = YamlNode::CreateArrayNode(YamlNode::AR_FLOW_REPRESENTATION);
 
     if( fitting == TextBlock::FITTING_DISABLED )
     {

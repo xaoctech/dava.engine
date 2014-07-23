@@ -60,7 +60,6 @@ private:
     bool EmitMappingEnd   (yaml_emitter_t * emitter);
     bool EmitScalar       (yaml_emitter_t * emitter, const String &value, int32 scalarStyle/*yaml_scalar_style_t*/);
     bool EmitYamlNode     (yaml_emitter_t * emitter, const YamlNode * node);
-
 };
 
 };
