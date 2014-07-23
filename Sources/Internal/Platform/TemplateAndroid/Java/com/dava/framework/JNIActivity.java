@@ -81,15 +81,18 @@ public abstract class JNIActivity extends Activity implements JNIAccelerometer.J
         JNITextField.RelinkNativeControls();
         JNIWebView.RelinkNativeControls();
         
-
-        ConnectivityManager cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting())
-        {
-        	TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-        	singalStrengthListner = new SingalStrengthListner();
-        	tm.listen(singalStrengthListner, SingalStrengthListner.LISTEN_SIGNAL_STRENGTHS);
-        }
+        try {
+        	ConnectivityManager cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+        	NetworkInfo networkInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        	if (cm != null && networkInfo != null && networkInfo.isConnectedOrConnecting())
+            {
+            	TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+            	singalStrengthListner = new SingalStrengthListner();
+            	tm.listen(singalStrengthListner, SingalStrengthListner.LISTEN_SIGNAL_STRENGTHS);
+            }
+		} catch (Exception e) {
+			Log.d("", "no singalStrengthListner");
+		}
     }
     
     @Override
