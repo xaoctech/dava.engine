@@ -45,7 +45,7 @@ QtPropertyEditor::QtPropertyEditor(QWidget *parent /* = 0 */)
 	curModel = new QtPropertyModel(viewport());
 	setModel(curModel);
 
-	curItemDelegate = new QtPropertyItemDelegate(curModel);
+	curItemDelegate = new QtPropertyItemDelegate(this, curModel);
 	setItemDelegate(curItemDelegate);
 
 	QObject::connect(this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(OnItemClicked(const QModelIndex &)));
