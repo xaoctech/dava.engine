@@ -5,9 +5,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.security.NoSuchAlgorithmException;
-import java.security.MessageDigest;
-import java.math.BigInteger;
 import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -18,7 +15,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.Settings.Secure;
-import android.util.Log;
 
 public class JNIDeviceInfo {
 	final static String TAG = "JNIDeviceInfo";
@@ -124,7 +120,7 @@ public class JNIDeviceInfo {
 	public static int GetNetworkType() {
 		ConnectivityManager cm = (ConnectivityManager)JNIActivity.GetActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = cm.getActiveNetworkInfo();
-		if (!info.isConnected())
+		if (info == null || !info.isConnected())
 			return NETWORK_TYPE_NOT_CONNECTED;
 		
 		int netType = info.getType();
