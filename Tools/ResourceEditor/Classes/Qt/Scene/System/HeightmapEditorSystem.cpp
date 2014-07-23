@@ -61,7 +61,6 @@ HeightmapEditorSystem::HeightmapEditorSystem(Scene* scene)
 ,	activeDrawingType(drawingType)
 ,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
-    //TODO: remove this default initialization
     cursorSize = 30;
 	
 	noBlendDrawState = DAVA::RenderManager::Instance()->Subclass3DRenderState(DAVA::BLEND_ONE, DAVA::BLEND_ZERO);

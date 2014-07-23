@@ -59,7 +59,6 @@ TilemaskEditorSystem::TilemaskEditorSystem(Scene* scene)
 ,	copyPasteTo(-1.f, -1.f)
 ,	textureLevel(Landscape::TEXTURE_TILE_MASK)
 {
-    //TODO: remove this default initialization
     cursorSize = 120;
     
     tileMaskEditorShader = SafeRetain(ShaderCache::Instance()->Get(FastName("~res:/Materials/Shaders/Landscape/tilemask-editor"), FastNameSet()));

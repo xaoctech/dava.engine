@@ -139,9 +139,8 @@ Texture* NotPassableTerrainProxy::GetTexture()
 
 void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 											const AABBox3& landscapeBoundingBox,
-											const DAVA::Rect &forRect1)
+											const DAVA::Rect &forRect)
 {
-    Rect forRect = forRect1;
 	if (forRect.dx <= 0 || forRect.dy <= 0)
 	{
 		return;
