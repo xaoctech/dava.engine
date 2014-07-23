@@ -39,35 +39,56 @@ static const int32 PREFERRED_LINE_WIDTH = -1;//-1 means unlimited.
 
 static yaml_scalar_style_t GetYamlScalarStyle(YamlNode::eStringRepresentation representation)
 {
-    switch(representation)
+    yaml_scalar_style_t style;
+    switch (representation)
     {
-    case YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION : return YAML_DOUBLE_QUOTED_SCALAR_STYLE;
-    case YamlNode::SR_PLAIN_REPRESENTATION : return YAML_PLAIN_SCALAR_STYLE;
-    default: break;
+    case YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION:
+        style = YAML_DOUBLE_QUOTED_SCALAR_STYLE;
+        break;
+    case YamlNode::SR_PLAIN_REPRESENTATION:
+        style = YAML_PLAIN_SCALAR_STYLE;
+        break;
+    default:
+        style = YAML_ANY_SCALAR_STYLE;
+        break;
     }
-    return YAML_ANY_SCALAR_STYLE;
+    return style;
 }
 
 static yaml_sequence_style_t GetYamlSequenceStyle(YamlNode::eArrayRepresentation representation)
 {
-    switch(representation)
+    yaml_sequence_style_t style;
+    switch (representation)
     {
-    case YamlNode::AR_BLOCK_REPRESENTATION : return YAML_BLOCK_SEQUENCE_STYLE;
-    case YamlNode::AR_FLOW_REPRESENTATION : return YAML_FLOW_SEQUENCE_STYLE;
-    default: break;
+    case YamlNode::AR_BLOCK_REPRESENTATION:
+        style = YAML_BLOCK_SEQUENCE_STYLE;
+        break;
+    case YamlNode::AR_FLOW_REPRESENTATION:
+        style = YAML_FLOW_SEQUENCE_STYLE;
+        break;
+    default:
+        style = YAML_ANY_SEQUENCE_STYLE;
+        break;
     }
-    return YAML_ANY_SEQUENCE_STYLE;
+    return style;
 }
 
 static yaml_mapping_style_t GetYamlMappingStyle(YamlNode::eMapRepresentation representation)
 {
-    switch(representation)
+    yaml_mapping_style_t style;
+    switch (representation)
     {
-    case YamlNode::MR_BLOCK_REPRESENTATION : return YAML_BLOCK_MAPPING_STYLE;
-    case YamlNode::MR_FLOW_REPRESENTATION : return YAML_FLOW_MAPPING_STYLE;
-    default: break;
+    case YamlNode::MR_BLOCK_REPRESENTATION:
+        style = YAML_BLOCK_MAPPING_STYLE;
+        break;
+    case YamlNode::MR_FLOW_REPRESENTATION:
+        style = YAML_FLOW_MAPPING_STYLE;
+        break;
+    default:
+        style = YAML_ANY_MAPPING_STYLE;
+        break;
     }
-    return YAML_ANY_MAPPING_STYLE;
+    return style;
 }
 
 int write_handler(void *ext, unsigned char *buffer, size_t size)//yaml_write_handler_t
@@ -101,7 +122,7 @@ public:
             return leftIndexNode < rightIndexNode;
         }
 
-        return leftIndexNode->AsInt() < rightIndexNode->AsInt();
+        return leftIndexNode->AsInt32() < rightIndexNode->AsInt32();
     }
 
 private:

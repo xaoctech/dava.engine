@@ -43,7 +43,7 @@ class YamlNode;
      */
 class YamlEmitter: public BaseObject
 {
-    ~YamlEmitter();
+    virtual ~YamlEmitter();
     YamlEmitter();
 public:
     /**
