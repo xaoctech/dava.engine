@@ -51,25 +51,25 @@ public:
         TYPE_MAP,
     };
 
-    enum eStringRepresentation//for TYPE_STRING
+    enum eStringRepresentation          //data represent style for TYPE_STRING for storing in file
     {
-        SR_AUTO_REPRESENTATION,
-        SR_PLAIN_REPRESENTATION,
-        SR_DOUBLE_QUOTED_REPRESENTATION,
+        SR_AUTO_REPRESENTATION,         //YamlEmitter choose the data represent style automatically
+        SR_PLAIN_REPRESENTATION,        //plain represent style
+        SR_DOUBLE_QUOTED_REPRESENTATION,//data represent in double-quoted
     };
 
-    enum eArrayRepresentation//for TYPE_ARRAY
+    enum eArrayRepresentation           //data represent style for TYPE_ARRAY for storing in file
     {
-        AR_AUTO_REPRESENTATION,
-        AR_BLOCK_REPRESENTATION,
-        AR_FLOW_REPRESENTATION
+        AR_AUTO_REPRESENTATION,         //YamlEmitter choose the data represent style automatically
+        AR_BLOCK_REPRESENTATION,        //data represent in multi-line with mark "- "
+        AR_FLOW_REPRESENTATION,         //data represent one line in square brackets []
     };
 
-    enum eMapRepresentation//for TYPE_MAP
+    enum eMapRepresentation             //data represent style for TYPE_MAP for storing in file
     {
-        MR_AUTO_REPRESENTATION,
-        MR_BLOCK_REPRESENTATION,
-        MR_FLOW_REPRESENTATION
+        MR_AUTO_REPRESENTATION,         //YamlEmitter choose the data represent style automatically
+        MR_BLOCK_REPRESENTATION,        //data represent in multi-line
+        MR_FLOW_REPRESENTATION,         //data represent one line in braces {}
     };
 
     // Predefined node name to store Relative Depth.
