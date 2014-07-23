@@ -57,6 +57,9 @@ public:
 	float32 GetPreviewLength();
 
 protected:
+    
+    Vector3 MirrorPoint(const Vector3 & point) const;
+
 	uint32 curToolSize;
 	Sprite* toolImageSprite;
 

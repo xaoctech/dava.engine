@@ -291,21 +291,27 @@ void RulerToolSystem::DrawPoints()
 	{
 		points.push_back(previewPoint);
 	}
-
-	if(points.size() > 1)
+    
+    const uint32 pointsCount = points.size();
+	if(pointsCount > 1)
 	{
+        for(uint32 i = 0; i < pointsCount; ++i)
+        {
+            points[i] = MirrorPoint(points[i]);
+        }
+        
 		Color red(1.0f, 0.0f, 0.0f, 1.0f);
 		Color blue(0.f, 0.f, 1.f, 1.f);
 		RenderManager::Instance()->SetColor(red);
 
-		AABBox3 boundingBox = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
-		Vector3 landSize = boundingBox.max - boundingBox.min;
+		const AABBox3 & boundingBox = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
+		const Vector3 landSize = boundingBox.max - boundingBox.min;
 		Vector3 offsetPoint = boundingBox.min;
 
 		float32 koef = (float32)targetTexture->GetWidth() / landSize.x / Core::GetVirtualToPhysicalFactor();
 
 		Vector3 startPoint = points[0];
-		for (uint32 i = 1; i < points.size(); ++i)
+		for (uint32 i = 1; i < pointsCount; ++i)
 		{
 			if (previewEnabled && isIntersectsLandscape && i == (points.size() - 1))
 			{
@@ -316,7 +322,7 @@ void RulerToolSystem::DrawPoints()
 
 			Vector3 startPosition = (startPoint - offsetPoint) * koef;
 			Vector3 endPosition = (endPoint - offsetPoint) * koef;
-
+            
 			RenderHelper::Instance()->DrawLine(DAVA::Vector3(startPosition.x, startPosition.y, 0),
 											   DAVA::Vector3(endPosition.x, endPosition.y, 0),
 											   (float32)lineWidth,
@@ -328,7 +334,7 @@ void RulerToolSystem::DrawPoints()
 
 	RenderManager::Instance()->ResetColor();
 	RenderManager::Instance()->RestoreRenderTarget();
-
+    
 	drawSystem->GetRulerToolProxy()->UpdateSprite();
 }
 
@@ -390,4 +396,14 @@ float32 RulerToolSystem::GetPreviewLength()
 	}
 
 	return previewLength;
+}
+
+Vector3 RulerToolSystem::MirrorPoint(const Vector3 & point) const
+{
+    const AABBox3 & boundingBox = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
+
+    Vector3 newPoint = point;
+    newPoint.x = (boundingBox.max.x - point.x) + boundingBox.min.x;
+    
+    return newPoint;
 }
