@@ -538,14 +538,14 @@ void UIButton::LoadFromYamlNode(const YamlNode * node, UIYamlLoader * loader)
                 }
 
                 int32 frame = 0;
-                if (frameNode)frame = frameNode->AsInt();
+                if (frameNode)frame = frameNode->AsInt32();
                 if (spriteNode)
                 {
                     stateBackground->SetSprite(spriteNode->AsString(), frame);
                 }
                 if (backgroundModificationNode)
                 {
-                    stateBackground->SetModification(backgroundModificationNode->AsInt());
+                    stateBackground->SetModification(backgroundModificationNode->AsInt32());
                 }
             }
 
