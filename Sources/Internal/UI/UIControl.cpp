@@ -873,34 +873,19 @@ namespace DAVA
                 if(FLOAT_EQUAL_EPS(angle, PI_05, 1e-4f))
                 {
                     // 90
-                    Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
-                    Vector2 topLeftRelatedToPivot = -pivotPoint;
-                    Matrix3 rot;
-                    rot.BuildRotation(angle);
-                    topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
-                    xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+                    Vector2 xyCoord = GetTopLeftCornerRotated(rectControl);
                     returnedRect = Rect(xyCoord.x - rectControl.dy, xyCoord.y, rectControl.dy, rectControl.dx);
                 }
                 else if(FLOAT_EQUAL_EPS(angle, PI, 1e-4f))
                 {
                     // 180
-                    Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
-                    Vector2 topLeftRelatedToPivot = -pivotPoint;
-                    Matrix3 rot;
-                    rot.BuildRotation(angle);
-                    topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
-                    xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+                    Vector2 xyCoord = GetTopLeftCornerRotated(rectControl);
                     returnedRect = Rect(xyCoord.x - rectControl.dx, xyCoord.y - rectControl.dy, rectControl.dx, rectControl.dy);
                 }
                 else if(FLOAT_EQUAL_EPS(angle, (PI+PI_05), 1e-4f))
                 {
                     // 270
-                    Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
-                    Vector2 topLeftRelatedToPivot = -pivotPoint;
-                    Matrix3 rot;
-                    rot.BuildRotation(angle);
-                    topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
-                    xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+                    Vector2 xyCoord = GetTopLeftCornerRotated(rectControl);
                     returnedRect = Rect(xyCoord.x, xyCoord.y - rectControl.dx, rectControl.dy, rectControl.dx);
                 }
             }
@@ -2941,6 +2926,17 @@ namespace DAVA
         float32 position = parentSize - align - child->GetSize().y;
 
         return position;
+    }
+
+    const Vector2 &UIControl::GetTopLeftCornerRotated(const Rect &rectControl)
+    {
+        Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
+        Vector2 topLeftRelatedToPivot = -pivotPoint;
+        Matrix3 rot;
+        rot.BuildRotation(angle);
+        topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
+        xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+        return xyCoord;
     }
 
     void UIControl::RecalculatePivotPoint(const Rect &newRect)
