@@ -1472,30 +1472,7 @@ int32 DefaultScreen::CalculateStickToGuidesDrag(Vector2& offset) const
         HierarchyTreeControlNode* controlNode = (*iter);
         if (controlNode && controlNode->GetUIObject())
         {
-            Rect rectControl = controlNode->GetUIObject()->GetRect(true);
-            Rect rectFinal = rectControl;
-            float32 fAngle = controlNode->GetUIObject()->GetAngle();
-            if(fAngle != 0)
-            {
-                // Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
-                if(FLOAT_EQUAL_EPS(fAngle, PI_05, 1e-4f))
-                {
-                    // 90
-                    rectFinal = Rect(rectControl.x - rectControl.dy, rectControl.y, rectControl.dy, rectControl.dx);
-                }
-                else if(FLOAT_EQUAL_EPS(fAngle, PI, 1e-4f))
-                {
-                    // 180
-                    rectFinal = Rect(rectControl.x - rectControl.dx, rectControl.y - rectControl.dy, rectControl.dx, rectControl.dy);
-                }
-                else if(FLOAT_EQUAL_EPS(fAngle, (PI+PI_05), 1e-4f))
-                {
-                    // 270
-                    rectFinal = Rect(rectControl.x, rectControl.y - rectControl.dx, rectControl.dy, rectControl.dx);
-                }
-                
-            }
-            controlRects.push_back(rectFinal);
+            controlRects.push_back(controlNode->GetUIObject()->GetRect(true, true));
         }
     }
     
