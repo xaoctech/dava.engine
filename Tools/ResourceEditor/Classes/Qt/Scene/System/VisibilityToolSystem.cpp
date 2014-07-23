@@ -48,7 +48,6 @@ VisibilityToolSystem::VisibilityToolSystem(Scene* scene)
 ,	state(VT_STATE_NORMAL)
 ,	textureLevel(Landscape::TEXTURE_TILE_FULL)
 {
-    //TODO: remove this default initialization
     cursorSize = 120;
 
 	crossTexture = Texture::CreateFromFile("~res:/LandscapeEditor/Tools/cursor/setPointCursor.tex");

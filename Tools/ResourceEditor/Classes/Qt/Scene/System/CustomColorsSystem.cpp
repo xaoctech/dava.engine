@@ -52,7 +52,6 @@ CustomColorsSystem::CustomColorsSystem(Scene* scene)
 ,	originalImage(NULL)
 ,	colorIndex(0)
 {
-    //TODO: remove this default initialization
     cursorSize = 120;
 
     SetColor(colorIndex);
