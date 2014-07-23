@@ -29,7 +29,7 @@
 #ifndef __DAVAENGINE_YAML_EMITTER_H__
 #define __DAVAENGINE_YAML_EMITTER_H__
 #include "Base/BaseObject.h"
-#include "FileSystem/YamlNode.h"
+#include "Base/BaseTypes.h"
 #include "FileSystem/File.h"
 
 typedef struct yaml_emitter_s yaml_emitter_t;
@@ -37,12 +37,19 @@ typedef struct yaml_emitter_s yaml_emitter_t;
 namespace DAVA
 {
 class YamlNode;
-
+    /** 
+     \ingroup yaml
+     \brief this class is yaml saver and it used if you want to save data to yaml file
+     */
 class YamlEmitter: public BaseObject
 {
     ~YamlEmitter();
     YamlEmitter();
 public:
+    /**
+     \brief Store content of node to file
+     \returns true if success.
+     */
     static bool SaveToYamlFile(const FilePath &outFileName, const YamlNode *node, uint32 attr = File::CREATE | File::WRITE);
 protected:
     bool Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr);
