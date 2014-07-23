@@ -1668,7 +1668,7 @@ namespace DAVA
         if(clipContents)
         {//WARNING: for now clip contents don't work for rotating controls if you have any ideas you are welcome
             RenderManager::Instance()->ClipPush();
-            RenderManager::Instance()->ClipRect(unrotatedRect);
+            RenderManager::Instance()->ClipRect(GetRect(true, true));
         }
 
         if(visible && visibleForUIEditor)
