@@ -288,10 +288,6 @@ void QtPropertyEditor::rowsAboutToBeInserted(const QModelIndex & parent, int sta
 void QtPropertyEditor::rowsAboutToBeRemoved(const QModelIndex & parent, int start, int end)
 {
 	curItemDelegate->invalidateButtons();
-    if(selectionModel()->rowIntersectsSelection(start, parent) || selectionModel()->rowIntersectsSelection(end, parent))
-    {
-        selectionModel()->clearSelection();
-    }
 }
 
 void QtPropertyEditor::rowsOp(const QModelIndex & parent, int start, int end)
