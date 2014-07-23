@@ -103,14 +103,7 @@ ControlsPositionData BaseAlignHandler::AlignLeftTop(const List<UIControl*>& cont
 		}
 		Vector2 controlPosition = uiControl->GetPosition(true);
 		controlPosition += moveDelta;
-		absoluteRect.x = controlPosition.x;
-		absoluteRect.y = controlPosition.y;
-
-		Vector2 pivotPoint = uiControl->pivotPoint;
-		absoluteRect.x -= pivotPoint.x;
-		absoluteRect.y -= pivotPoint.y;
-	
-		uiControl->SetRect(absoluteRect, true);
+		uiControl->SetPosition(controlPosition, true);
 	}
 
 	return resultData;
@@ -160,14 +153,7 @@ ControlsPositionData BaseAlignHandler::AlignCenter(const List<UIControl*>& contr
 		}
 		Vector2 controlPosition = uiControl->GetPosition(true);
 		controlPosition += moveDelta;
-		absoluteRect.x = controlPosition.x;
-		absoluteRect.y = controlPosition.y;
-
-		Vector2 pivotPoint = uiControl->pivotPoint;
-		absoluteRect.x -= pivotPoint.x;
-		absoluteRect.y -= pivotPoint.y;
-
-		uiControl->SetRect(absoluteRect, true);
+		uiControl->SetPosition(controlPosition, true);
 	}
 
 	return resultData;
@@ -219,14 +205,7 @@ ControlsPositionData BaseAlignHandler::AlignRightBottom(const List<UIControl*>& 
 		}
 		Vector2 controlPosition = uiControl->GetPosition(true);
 		controlPosition += moveDelta;
-		absoluteRect.x = controlPosition.x;
-		absoluteRect.y = controlPosition.y;
-
-		Vector2 pivotPoint = uiControl->pivotPoint;
-		absoluteRect.x -= pivotPoint.x;
-		absoluteRect.y -= pivotPoint.y;
-
-		uiControl->SetRect(absoluteRect, true);
+		uiControl->SetPosition(controlPosition, true);
 	}
 
 	return resultData;
