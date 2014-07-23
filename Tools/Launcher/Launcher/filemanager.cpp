@@ -168,7 +168,16 @@ void FileManager::MoveFilesOnlyToDirectory(const QString & dirFrom, const QStrin
 
 QString FileManager::GetApplicationFolder(const QString & branchID, const QString & appID)
 {
-    QString path = baseAppDir + branchID + "/" + appID + "/";
+    QString path = GetBranchFolder(branchID) + appID + "/";
+    if(!QDir(path).exists())
+        QDir().mkpath(path);
+
+    return path;
+}
+
+QString FileManager::GetBranchFolder(const QString & branchID)
+{
+    QString path = baseAppDir + branchID + "/";
     if(!QDir(path).exists())
         QDir().mkpath(path);
 
