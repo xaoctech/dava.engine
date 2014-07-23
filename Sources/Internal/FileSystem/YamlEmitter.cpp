@@ -95,10 +95,9 @@ int write_handler(void *ext, unsigned char *buffer, size_t size)//yaml_write_han
 {
     File *yamlFile = static_cast<File *>(ext);
 
-    uint32 prevFileSize = yamlFile->GetSize();
     uint32 bytesWritten = yamlFile->Write(buffer, size);
 
-    return (yamlFile->GetSize() == prevFileSize + bytesWritten) ? 1 : 0;
+    return (size == bytesWritten) ? 1 : 0;
 }
 
 class OrderedYamlNode
@@ -149,7 +148,7 @@ bool YamlEmitter::Emit(const YamlNode * node, const FilePath & outFileName, uint
     ScopedPtr<File> yamlFile( File::Create(outFileName, attr) );
     if ((File*)yamlFile == NULL)
     {
-        Logger::Error("[YamlEmitter::Emit] Can't create file: %s for output", outFileName.GetAbsolutePathname().c_str());
+        Logger::Error("[YamlEmitter::Emit] Can't create file: %s for output", outFileName.GetStringValue().c_str());
         return false;
     }
 
@@ -214,7 +213,8 @@ void YamlEmitter::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, 
     nodes.reserve( mapNodes.size() );
 
     MultiMap<String, YamlNode*>::const_iterator iter;
-    for (iter = mapNodes.begin(); iter != mapNodes.end(); ++iter)
+    MultiMap<String, YamlNode*>::const_iterator end = mapNodes.end();
+    for (iter = mapNodes.begin(); iter != end; ++iter)
     {
         // Only the nodes of type Map are expected here.
         if (iter->second->GetType() == YamlNode::TYPE_MAP)
@@ -224,7 +224,7 @@ void YamlEmitter::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, 
     }
 
     uint32 lastNotMapItemIndex = nodes.size();
-    for (iter = mapNodes.begin(); iter != mapNodes.end(); ++iter)
+    for (iter = mapNodes.begin(); iter != end; ++iter)
     {
         if (iter->second->GetType() != YamlNode::TYPE_MAP)
             continue;
