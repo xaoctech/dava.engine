@@ -49,18 +49,6 @@ public:
         TYPE_MAP,
     };
 
-    // Representation Type. For example, lists can be represented as ["val1", "val2", "val3"] or
-    //- val1
-    //- val2
-    //- val3
-    // See also DF-2389 for details.
-    enum eRepresentationType
-    {
-        REPRESENT_AS_DEFAULT,
-        REPRESENT_ARRAY_AS_SINGLE_LINE,
-        REPRESENT_ARRAY_AS_MULTI_LINE
-    };
-
     // Predefined node name to store Relative Depth.
     static const char8* SAVE_INDEX_NAME;
 

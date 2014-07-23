@@ -37,6 +37,7 @@
 #include "FileSystem/VariantType.h"
 #include "FileSystem/YamlNode.h"
 #include "Render/2D/FontManager.h"
+#include "yaml/yaml.h"
 
 namespace DAVA
 {
@@ -968,7 +969,7 @@ namespace DAVA
             if (stateSprite)
             {
                 //Create array yamlnode and add it to map
-                YamlNode *spriteNode = new YamlNode(YamlNode::TYPE_ARRAY);
+                YamlNode *spriteNode = YamlNode::CreateArrayNode(YAML_FLOW_SEQUENCE_STYLE);
 
                 spriteNode->AddValueToArray(GetSpriteFrameworkPath(stateSprite));
                 spriteNode->AddValueToArray(stateFrame);

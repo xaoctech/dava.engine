@@ -44,7 +44,6 @@ class YamlEmitter: public BaseObject
     YamlEmitter();
 public:
     static bool SaveToYamlFile(const FilePath &outFileName, const YamlNode *node, uint32 attr = File::CREATE | File::WRITE);
-    static bool SaveLevelOneMapsToYamlFile(const FilePath &outFileName, const YamlNode *node, uint32 attr = File::CREATE | File::WRITE);
 protected:
     bool Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr);
     bool Emit(const YamlNode * node, File *outFile);
