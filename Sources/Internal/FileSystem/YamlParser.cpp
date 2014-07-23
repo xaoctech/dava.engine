@@ -28,50 +28,16 @@
 
 
 #include "FileSystem/YamlParser.h"
-#include "FileSystem/Logger.h"
-#include "Utils/Utils.h"
-#include <sstream>
-#include "yaml/yaml.h"
-#include "Utils/UTF8Utils.h"
 #include "FileSystem/FileSystem.h"
-#include "FileSystem/VariantType.h"
-#include "FileSystem/KeyedArchive.h"
 #include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlEmitter.h"
+#include "FileSystem/Logger.h"
+#include "Utils/Utils.h"
+#include "yaml/yaml.h"
+
 
 namespace DAVA 
 {
-
-// Inner clsee used for sorting.
-class YamlNodeKeyValuePair
-{
-public:
-    YamlNodeKeyValuePair(const String& nodeName, YamlNode* value)
-    {
-        this->yamlNodeName = nodeName;
-        this->yamlNodeValue = value;
-    }
-
-    String GetNodeName() const  {return this->yamlNodeName;};
-    YamlNode* GetNodeValue() const {return this->yamlNodeValue;};
-
-    bool operator < (const YamlNodeKeyValuePair& right) const
-    {
-        const YamlNode* leftIndexNode = this->yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-        const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-
-        if (!leftIndexNode || !rightIndexNode)
-        {
-            return false;
-        }
-
-        return leftIndexNode->AsInt() < rightIndexNode->AsInt();
-    }
-
-private:
-    String yamlNodeName;
-    YamlNode* yamlNodeValue;
-};
 
 YamlParser * YamlParser::Create()
 {
@@ -166,9 +132,7 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 				}
 				CFRelease(s);
 				node->nwStringValue = String((const char*)event.data.scalar.value); */
-				node->nwStringValue = String((const char*)event.data.scalar.value);
-				UTF8Utils::EncodeToWideString((uint8*)event.data.scalar.value, (int32)event.data.scalar.length, node->stringValue);
-				
+                node->InternalSetString((const char*)event.data.scalar.value);
 				
 				if (objectStack.size() == 0)
 				{
@@ -333,75 +297,6 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
     DVASSERT(objectStack.size() == 0);
 	
 	return true;
-}
-
-bool YamlParser::SaveStringsList(const FilePath & fileName, YamlNode * rootNode, uint32 attr)
-{
-	File * yamlFileToSave = File::Create(fileName, attr);
-	if (!yamlFileToSave)
-	{
-		Logger::Error("[YamlParser::Save] Can't create file: %s for output", fileName.GetAbsolutePathname().c_str());
-		return false;
-	}
-	
-	// Strings List is a bit different - it contains one and only Map node with the list of the
-	// strings themselves.
-	DVASSERT(rootNode->GetType() == YamlNode::TYPE_MAP);
-	const MultiMap<String, YamlNode*> & childrenList = rootNode->AsMap();
-
-	bool saveSucceeded = true;
-	for (MultiMap<String, YamlNode*>::const_iterator iter = childrenList.begin();
-		 iter != childrenList.end(); iter ++)
-	{
-		saveSucceeded &= WriteStringListNodeToYamlFie(yamlFileToSave, iter->first, iter->second);
-	}
-	
-	// Cleanup the memory.
-    SafeRelease(yamlFileToSave);
-
-	return saveSucceeded;
-}
-
-bool YamlParser::WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, const YamlNode* currentNode) const
-{
-	const char16* NAME_VALUE_DELIMITER = L"\": ";
-	WideString resultString = L"\"";
-
-	// String nodes must be enquoted and contains no "\n" chars.
-	resultString += ReplaceLineEndings(StringToWString(nodeName));
-	resultString += NAME_VALUE_DELIMITER;
-
-	resultString += ReplaceLineEndings(currentNode->AsWString());
-	resultString += L"\n";
-
-	return WriteStringToYamlFile(fileToSave, resultString);
-}
-
-bool YamlParser::WriteStringToYamlFile(File* fileToSave, const String& stringToWrite) const
-{
-    uint32 prevFileSize = fileToSave->GetSize();
-    uint32 bytesWritten = fileToSave->Write(stringToWrite.c_str(), stringToWrite.size());
-    
-    return (fileToSave->GetSize() == prevFileSize + bytesWritten);
-}
-
-bool YamlParser::WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite) const
-{
-	// Yaml contains UTF8 strings only.
-	String utf8String = UTF8Utils::EncodeToUTF8(stringToWrite);
-	return WriteStringToYamlFile(fileToSave, utf8String);
-}
-
-WideString YamlParser::ReplaceLineEndings(const WideString& rawString) const
-{
-	WideString resultString = rawString;
-	size_t pos = WideString::npos;
-	while ((pos = resultString.find(L"\n")) != WideString::npos)
-	{
-		resultString.replace(pos, WideString(L"\n").length(), L"\\n");
-	}
-
-	return resultString;
 }
 
 YamlParser::YamlParser()

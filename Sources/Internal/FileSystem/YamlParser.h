@@ -32,17 +32,11 @@
 
 #include "Base/BaseTypes.h"
 #include "Base/BaseObject.h"
-#include "Base/BaseMath.h"
-#include <stack>
-#include "FileSystem/File.h"
-#include "Base/FastName.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA 
 {
 class YamlNode;
-class VariantType;
-class YamlNodeKeyValuePair;
-    
 /**
 	\defgroup yaml Yaml configs
  */
@@ -74,11 +68,8 @@ public:
         return YamlParser::CreateAndParse(data);
     }
 
-	// Save the strings list (needed for Localization).
-	bool SaveStringsList(const FilePath & fileName, YamlNode * rootNode, uint32 attr = File::CREATE | File::WRITE);
-
 	// Get the root node.
-	YamlNode			* GetRootNode() const;
+	YamlNode * GetRootNode() const;
 	
 	struct YamlDataHolder
 	{
@@ -108,13 +99,6 @@ protected:
     bool Parse(YamlDataHolder * dataHolder);
 
 private:
-    bool WriteStringListNodeToYamlFie(File* fileToSave, const String& nodeName, const YamlNode* currentNode) const;
-    bool WriteStringToYamlFile(File* fileToSave, const String& stringToWrite) const;
-	bool WriteStringToYamlFile(File* fileToSave, const WideString& stringToWrite) const;
-
-	// Replace \n characters to "\n" string.
-	WideString ReplaceLineEndings(const WideString& rawString) const;
-
 	YamlNode			* rootObject;
 	String				lastMapKey;
 	

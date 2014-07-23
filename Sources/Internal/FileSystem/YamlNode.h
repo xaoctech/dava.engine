@@ -35,6 +35,8 @@
 
 namespace DAVA
 {
+class KeyedArchive;
+class VariantType;
 /**
     \ingroup yaml
     \brief this class is base yaml node that is used for everything connected with yaml
@@ -49,6 +51,27 @@ public:
         TYPE_MAP,
     };
 
+    enum eStringRepresentation//for TYPE_STRING
+    {
+        SR_AUTO_REPRESENTATION,
+        SR_PLAIN_REPRESENTATION,
+        SR_DOUBLE_QUOTED_REPRESENTATION,
+    };
+
+    enum eArrayRepresentation//for TYPE_ARRAY
+    {
+        AR_AUTO_REPRESENTATION,
+        AR_BLOCK_REPRESENTATION,
+        AR_FLOW_REPRESENTATION
+    };
+
+    enum eMapRepresentation//for TYPE_MAP
+    {
+        MR_AUTO_REPRESENTATION,
+        MR_BLOCK_REPRESENTATION,
+        MR_FLOW_REPRESENTATION
+    };
+
     // Predefined node name to store Relative Depth.
     static const char8* SAVE_INDEX_NAME;
 
@@ -56,9 +79,9 @@ protected:
     virtual ~YamlNode();
 public:
     YamlNode(eType type);
-    static YamlNode *CreateMapNode(int32 mapRepresentation = 0/*YAML_ANY_MAPPING_STYLE*/);
-    static YamlNode *CreateArrayNode(int32 arrayRepresentation = 0/*YAML_ANY_SCALAR_STYLE*/);
-    static YamlNode *CreateStringNode(int32 stringRepresentation = 0/*YAML_ANY_SEQUENCE_STYLE*/);
+    static YamlNode *CreateStringNode(eStringRepresentation representation = SR_PLAIN_REPRESENTATION);
+    static YamlNode *CreateArrayNode(eArrayRepresentation representation = AR_FLOW_REPRESENTATION);
+    static YamlNode *CreateMapNode(eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
 
     void Print(int32 identation);
     void PrintToFile(DAVA::File* file, uint32 identationDepth = 0) const;
@@ -153,10 +176,14 @@ public:
 
 protected:
     void            FillContentAccordingToVariantTypeValue(VariantType* varType);
+
     void            ProcessMatrix(const float32* array,uint32 dimension);
     void            ProcessVector(const float32 array[],uint32 dimension);
+    void            ProcessByteArray(const uint8* byteArray,int32 byteArraySize);
+    void            ProcessKeyedArchive(KeyedArchive* archive);
+
     bool            IsContainingMap() const;
-    String          FloatToCuttedString(float f);
+    String          FloatToCuttedString(float32 f);
 
     // Internal setters, which can both add or replace value in the map.
     void            InternalSet(const String& name, bool value, bool rewritePreviousValue);
@@ -170,8 +197,10 @@ protected:
     void            InternalSet(const String& name, const Vector4& value, bool rewritePreviousValue);
     void            InternalSet(const String& name, VariantType* varType, bool rewritePreviousValue);
 
+    void            InternalAddNodeToArray(YamlNode* node);
     void            InternalSetNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue);
-
+    void            InternalSetString(const String &value);
+    void            InternalSetWideString(const WideString &value);
 private:
 
     int						mapIndex;
@@ -184,10 +213,14 @@ private:
     bool					isWideString;
     union
     {
-        int32 stringStyle;  /*yaml_scalar_style_t*/
-        int32 arrayStyle;/*yaml_sequence_style_t*/
-        int32 mapStyle; /*yaml_mapping_style_t*/
-    }typeRepresentation;
+        eStringRepresentation stringStyle;
+        eArrayRepresentation arrayStyle;
+        struct
+        {
+            eMapRepresentation value;
+            eStringRepresentation key;
+        }mapStyle;
+    }representation;
 
     friend class YamlParser;
     friend class YamlEmitter;
