@@ -106,6 +106,19 @@ void LibraryController::AddControl(const QString& name, UIControl* control)
 	controls[new HierarchyTreeControlNode(NULL, control, name)] = widget->AddControl(name, iconPath);
 }
 
+bool LibraryController::IsControlNameExists(const QString& name)
+{
+    CONTROLS::iterator iter;
+    for (iter = controls.begin(); iter != controls.end(); ++iter)
+    {
+        if(iter->first->GetName() == name)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 HierarchyTreeControlNode* LibraryController::CreateNewControl(HierarchyTreeNode* parentNode, const QString& strType, const QString& name, const Vector2& position)
 {
 	String type = strType.toStdString();
