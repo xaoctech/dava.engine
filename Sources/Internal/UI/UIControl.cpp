@@ -863,30 +863,48 @@ namespace DAVA
     {
         Vector2 pos = GetPosition(absoluteCoordinates) - pivotPoint;
         returnedRect = Rect(pos.x, pos.y, size.x, size.y);
-		if(rotatedRectNeeded)
-		{
-			float32 angle = this->GetParentsTotalAngle(true);
-		    if(!FLOAT_EQUAL_EPS(angle, 0.0f, 1e-4f))
-			{
-				Rect rectControl = returnedRect;
-				// Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
-				if(FLOAT_EQUAL_EPS(angle, PI_05, 1e-4f))
-				{
-					// 90
-					returnedRect = Rect(rectControl.x - rectControl.dy, rectControl.y, rectControl.dy, rectControl.dx);
-				}
-				else if(FLOAT_EQUAL_EPS(angle, PI, 1e-4f))
-				{
-					// 180
-					returnedRect = Rect(rectControl.x - rectControl.dx, rectControl.y - rectControl.dy, rectControl.dx, rectControl.dy);
-				}
-				else if(FLOAT_EQUAL_EPS(angle, (PI+PI_05), 1e-4f))
-				{
-					// 270
-					returnedRect = Rect(rectControl.x, rectControl.y - rectControl.dx, rectControl.dy, rectControl.dx);
-				}
-			}
-		}
+        if(rotatedRectNeeded)
+        {
+            float32 angle = this->GetParentsTotalAngle(true);
+            if(!FLOAT_EQUAL_EPS(angle, 0.0f, 1e-4f))
+            {
+                Rect rectControl = returnedRect;
+                // Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
+                if(FLOAT_EQUAL_EPS(angle, PI_05, 1e-4f))
+                {
+                    // 90
+                    Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
+                    Vector2 topLeftRelatedToPivot = -pivotPoint;
+                    Matrix3 rot;
+                    rot.BuildRotation(angle);
+                    topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
+                    xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+                    returnedRect = Rect(xyCoord.x - rectControl.dy, xyCoord.y, rectControl.dy, rectControl.dx);
+                }
+                else if(FLOAT_EQUAL_EPS(angle, PI, 1e-4f))
+                {
+                    // 180
+                    Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
+                    Vector2 topLeftRelatedToPivot = -pivotPoint;
+                    Matrix3 rot;
+                    rot.BuildRotation(angle);
+                    topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
+                    xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+                    returnedRect = Rect(xyCoord.x - rectControl.dx, xyCoord.y - rectControl.dy, rectControl.dx, rectControl.dy);
+                }
+                else if(FLOAT_EQUAL_EPS(angle, (PI+PI_05), 1e-4f))
+                {
+                    // 270
+                    Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
+                    Vector2 topLeftRelatedToPivot = -pivotPoint;
+                    Matrix3 rot;
+                    rot.BuildRotation(angle);
+                    topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
+                    xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
+                    returnedRect = Rect(xyCoord.x, xyCoord.y - rectControl.dx, rectControl.dy, rectControl.dx);
+                }
+            }
+        }
         return returnedRect;
     }
 
