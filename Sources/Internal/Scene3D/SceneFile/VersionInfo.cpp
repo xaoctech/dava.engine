@@ -159,9 +159,10 @@ void VersionInfo::SetCurrentBranch()
     // List of featues, that are under development in current branch
 
     DVASSERT(!versionMap.empty());
-    TagsMap& tags = versionMap.rbegin()->second.tags;
 
-    // Example: tags.insert(TagsMap::value_type("sky", 2));
+    // Example:
+    // TagsMap& tags = versionMap.rbegin()->second.tags;
+    // tags.insert(TagsMap::value_type("sky", 2));
 }
 
 #ifdef USER_VERSIONING_DEBUG_FEATURES
