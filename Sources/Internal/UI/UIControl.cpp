@@ -851,7 +851,7 @@ namespace DAVA
         {
             angle += parent->GetParentsTotalAngle(true);
         }
-        return angle;
+        return fmodf(angle, PI_2);
     }
 
     void UIControl::SetAngle(float32 angleInRad)
