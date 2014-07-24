@@ -155,7 +155,7 @@ void FileManager::MoveFilesOnlyToDirectory(const QString & dirFrom, const QStrin
     QDir fromDirMac(dirFrom);
 
     fromDirMac.setFilter(QDir::Dirs | QDir::Hidden | QDir::NoSymLinks);
-    fromDirMac.setNameFilters(QStringList() << "*.app");
+    fromDirMac.setNameFilters(QStringList() << "Launcher.app");
     list = fromDirMac.entryInfoList();
     for(int i = 0; i < list.size(); ++i)
     {
