@@ -543,7 +543,7 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
-                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
+                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt32());
             }
             
 			//fontMap[t->first] = font;
@@ -574,13 +574,13 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
-                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
+                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt32());
             }
             
             const YamlNode * fontHorizontalSpacingNode = node->Get("horizontalSpacing");
             if(fontHorizontalSpacingNode)
             {
-                font->SetHorizontalSpacing(fontHorizontalSpacingNode->AsInt());
+                font->SetHorizontalSpacing(fontHorizontalSpacingNode->AsInt32());
             }
             
 			//fontMap[t->first] = font;
