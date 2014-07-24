@@ -62,11 +62,10 @@ YamlNode * YamlNode::CreateMapNode(eMapRepresentation valRepresentation /*= MR_B
 
 YamlNode::YamlNode(eType _type)
     : representation()
+    , type(_type)
 {
-    type = _type;
     mapIndex = 0;
     mapCount = 0;
-    isWideString = false;
 }
 
 YamlNode::~YamlNode()
@@ -235,7 +234,7 @@ FastName YamlNode::AsFastName() const
 
 bool YamlNode::AsBool() const
 {
-    return ("true" == nwStringValue);
+    return ("true" == nwStringValue) || ("yes" == nwStringValue);
 }
 
 const WideString & YamlNode::AsWString() const
@@ -547,186 +546,6 @@ const YamlNode * YamlNode::Get(const String & name) const
     return 0;
 }
 
-// "Adders" for different types.
-void YamlNode::Add(const String& name, bool value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, int32 value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, float32 value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, const char8* value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, const String& value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, const WideString& value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, const Vector2& value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, const Vector3& value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, const Vector4& value)
-{
-    InternalSet(name, value, false);
-}
-
-void YamlNode::Add(const String& name, VariantType* varType)
-{
-    InternalSet(name, varType, false);
-}
-
-void YamlNode::AddNodeToMap(const String& name, YamlNode* node)
-{
-    InternalSetNodeToMap(name, node, false);
-}
-
-// "Setters" for different types.
-void YamlNode::Set(const String& name, bool value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, int32 value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, float32 value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, const char8* value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, const String& value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, const WideString& value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, const Vector2& value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, const Vector3& value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, const Vector4& value)
-{
-    InternalSet(name, value, true);
-}
-
-void YamlNode::Set(const String& name, VariantType* varType)
-{
-    InternalSet(name, varType, true);
-}
-
-void YamlNode::SetNodeToMap(const String& name, YamlNode* node)
-{
-    InternalSetNodeToMap(name, node, true);
-}
-
-void  YamlNode::AddNodeToArray(YamlNode* node)
-{
-    InternalAddNodeToArray(node);
-}
-
-void  YamlNode::AddValueToArray(int32 value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
-void  YamlNode::AddValueToArray(float32 value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
-void  YamlNode::AddValueToArray(const Vector2& value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
-void  YamlNode::AddValueToArray(const Vector3& value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
-void  YamlNode::AddValueToArray(const Vector4& value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
-void  YamlNode::AddValueToArray(VariantType* value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
-void  YamlNode::AddValueToArray(const String& value)
-{
-    DVASSERT(this->type == TYPE_ARRAY);
-    YamlNode* childNode = new YamlNode(YamlNode::TYPE_STRING);
-    childNode->Set("", value);
-
-    InternalAddNodeToArray(childNode);
-}
-
 void YamlNode::RemoveNodeFromMap(const String & name)
 {
     MultiMap<String, YamlNode*>::iterator t = objectMap.find(name);
@@ -736,200 +555,208 @@ void YamlNode::RemoveNodeFromMap(const String & name)
     }
 }
 
-void  YamlNode::InitFromVariantType(VariantType* varType)
+YamlNode * YamlNode::CreateNodeWithVariantType(const VariantType &varType)
 {
-    type = TYPE_MAP;
-
-    //create key
-    String variantName = VariantType::variantNamesMap[varType->type].variantName;
-
-    //create value node
-    YamlNode* valueNode = new YamlNode(YamlNode::TYPE_STRING);
-    valueNode->FillContentAccordingToVariantTypeValue(varType);
-    InternalSetNodeToMap(variantName, valueNode, false);
-}
-
-void  YamlNode::FillContentAccordingToVariantTypeValue(VariantType* varType)
-{
-    type = TYPE_STRING;
-    representation.stringStyle = SR_PLAIN_REPRESENTATION;
-    switch(varType->type)
+    YamlNode *node = NULL;
+    switch(varType.GetType())
     {
-        case VariantType::TYPE_BOOLEAN:
+    case VariantType::TYPE_BOOLEAN:
         {
-            representation.stringStyle = SR_DOUBLE_QUOTED_REPRESENTATION;
-            InternalSetString(varType->AsBool() ? "true" : "false");
+            node = CreateNodeWithString(varType.AsBool() ? "true" : "false", SR_DOUBLE_QUOTED_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_INT32:
+        break;
+    case VariantType::TYPE_INT32:
         {
-            InternalSetString(Format("%d", varType->AsInt32()));
+            node = CreateNodeWithString(Format("%d", varType.AsInt32()), SR_PLAIN_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_FLOAT:
+        break;
+    case VariantType::TYPE_FLOAT:
         {
-            InternalSetString(FloatToCuttedString(varType->AsFloat()));
+            node = CreateNodeWithString(FloatToCuttedString(varType.AsFloat()), SR_PLAIN_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_STRING:
+        break;
+    case VariantType::TYPE_STRING:
         {
-            representation.stringStyle = SR_DOUBLE_QUOTED_REPRESENTATION;
-            InternalSetString(varType->AsString());
+            node = CreateNodeWithString(varType.AsString(), SR_DOUBLE_QUOTED_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_WIDE_STRING:
+        break;
+    case VariantType::TYPE_WIDE_STRING:
         {
-            representation.stringStyle = SR_DOUBLE_QUOTED_REPRESENTATION;
-            InternalSetWideString(varType->AsWideString());
+            node = CreateNodeWithString(varType.AsWideString(), SR_DOUBLE_QUOTED_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_UINT32:
+        break;
+    case VariantType::TYPE_UINT32:
         {
-            InternalSetString(Format("%u", varType->AsUInt32()));
+            node = CreateNodeWithString(Format("%u", varType.AsUInt32()), SR_PLAIN_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_INT64:
+        break;
+    case VariantType::TYPE_INT64:
         {
-            InternalSetString(Format("%lld", varType->AsInt64()));
+            node = CreateNodeWithString(Format("%lld", varType.AsInt64()), SR_PLAIN_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_UINT64:
+        break;
+    case VariantType::TYPE_UINT64:
         {
-            InternalSetString(Format("%llu", varType->AsUInt64()));
+            node = CreateNodeWithString(Format("%llu", varType.AsUInt64()), SR_PLAIN_REPRESENTATION);
         }
-            break;
-        case VariantType::TYPE_BYTE_ARRAY:
+        break;
+    case VariantType::TYPE_BYTE_ARRAY:
         {
-            const uint8* byteArray = varType->AsByteArray();
-            int32 byteArraySize = varType->AsByteArraySize();
-            ProcessByteArray(byteArray, byteArraySize);
+            const uint8* byteArray = varType.AsByteArray();
+            int32 byteArraySize = varType.AsByteArraySize();
+            node = CreateNodeWithByteArray(byteArray, byteArraySize);
         }
-            break;
-        case VariantType::TYPE_KEYED_ARCHIVE:
+        break;
+    case VariantType::TYPE_KEYED_ARCHIVE:
         {
-            KeyedArchive* archive = varType->AsKeyedArchive();
-            ProcessKeyedArchive(archive);
+            KeyedArchive* archive = varType.AsKeyedArchive();
+            node = CreateNodeWithKeyedArchive(archive);
         }
-            break;
-        case VariantType::TYPE_VECTOR2:
+        break;
+    case VariantType::TYPE_VECTOR2:
         {
-            const Vector2 & vector = varType->AsVector2();
-            ProcessVector(vector.data,COUNT_OF(vector.data));
+            const Vector2 & vector = varType.AsVector2();
+            node = CreateNodeWithVector(vector.data,COUNT_OF(vector.data));
         }
-            break;
-        case VariantType::TYPE_VECTOR3:
+        break;
+    case VariantType::TYPE_VECTOR3:
         {
-            const Vector3& vector = varType->AsVector3();
-            ProcessVector(vector.data,COUNT_OF(vector.data));
+            const Vector3& vector = varType.AsVector3();
+            node = CreateNodeWithVector(vector.data,COUNT_OF(vector.data));
         }
-            break;
-        case VariantType::TYPE_VECTOR4:
+        break;
+    case VariantType::TYPE_VECTOR4:
         {
-            const Vector4& vector = varType->AsVector4();
-            ProcessVector(vector.data,COUNT_OF(vector.data));
+            const Vector4& vector = varType.AsVector4();
+            node = CreateNodeWithVector(vector.data,COUNT_OF(vector.data));
         }
-            break;
-        case VariantType::TYPE_MATRIX2:
+        break;
+    case VariantType::TYPE_MATRIX2:
         {
             uint32 dimension = 2;
-            const Matrix2& matrix = varType->AsMatrix2();
+            const Matrix2& matrix = varType.AsMatrix2();
             const float32* array = &matrix._data[0][0];
-            ProcessMatrix(array, dimension);
+            node = CreateNodeWithMatrix(array, dimension);
         }
-            break;
-        case VariantType::TYPE_MATRIX3:
+        break;
+    case VariantType::TYPE_MATRIX3:
         {
             uint32 dimension = 3;
-            const Matrix3& matrix = varType->AsMatrix3();
+            const Matrix3& matrix = varType.AsMatrix3();
             const float32* array = &matrix._data[0][0];
-            ProcessMatrix( array, dimension );
+            node = CreateNodeWithMatrix(array, dimension);
         }
-            break;
-        case VariantType::TYPE_MATRIX4:
+        break;
+    case VariantType::TYPE_MATRIX4:
         {
             uint32 dimension = 4;
-            const Matrix4& matrix = varType->AsMatrix4();
+            const Matrix4& matrix = varType.AsMatrix4();
             const float32* array = &matrix._data[0][0];
-            ProcessMatrix( array, dimension );
+            node = CreateNodeWithMatrix(array, dimension);
         }
-            break;
-        case VariantType::TYPE_COLOR:
+        break;
+    case VariantType::TYPE_COLOR:
         {
-            const Color& color = varType->AsColor();
-            ProcessVector(color.color,COUNT_OF(color.color));
+            const Color& color = varType.AsColor();
+            node = CreateNodeWithVector(color.color,COUNT_OF(color.color));
         }
-            break;
-        default:
-            break;
+        break;
+    default:
+        break;
     }
+
+    return node;
 }
 
-void YamlNode::ProcessMatrix(const float32* array,uint32 dimension)
+YamlNode *YamlNode::CreateNodeWithMatrix(const float32* array,uint32 dimension)
 {
-    type = TYPE_ARRAY;
-    representation.arrayStyle = AR_FLOW_REPRESENTATION;
+    YamlNode * node = CreateArrayNode(AR_FLOW_REPRESENTATION);
 
-    YamlNode* rowNode;
     for (uint32 i = 0; i < dimension; ++i)
     {
-        rowNode = YamlNode::CreateArrayNode(AR_FLOW_REPRESENTATION);
+        YamlNode* rowNode = CreateArrayNode(AR_FLOW_REPRESENTATION);
         rowNode->objectArray.reserve(dimension);
 
         YamlNode* columnNode = NULL;
         for (uint32 j = 0; j < dimension; ++j)
         {
             const float32* elementOfArray = array + ((i*dimension)+j);
-            columnNode = YamlNode::CreateStringNode(SR_PLAIN_REPRESENTATION);
-            columnNode->InternalSetString(FloatToCuttedString(*elementOfArray));
+            columnNode = CreateNodeWithString(FloatToCuttedString(*elementOfArray), SR_PLAIN_REPRESENTATION);
             rowNode->InternalAddNodeToArray(columnNode);
         }
-        InternalAddNodeToArray(rowNode);
+        node->InternalAddNodeToArray(rowNode);
     }
+
+    return node;
 }
 
-void YamlNode::ProcessVector(const float32* array,uint32 dimension)
+YamlNode *YamlNode::CreateNodeWithVector(const float32* array,uint32 dimension)
 {
-    type = TYPE_ARRAY;
-    representation.arrayStyle = AR_FLOW_REPRESENTATION;
+    YamlNode *node = CreateArrayNode(AR_FLOW_REPRESENTATION);
 
     for (uint32 i = 0; i < dimension; ++i)
     {
         const float32* elementOfArray = array + i;
-        YamlNode* innerNode = YamlNode::CreateStringNode(SR_PLAIN_REPRESENTATION);
-        innerNode->InternalSetString(FloatToCuttedString(*elementOfArray));
-        InternalAddNodeToArray(innerNode);
+        YamlNode* innerNode = CreateNodeWithString(FloatToCuttedString(*elementOfArray), SR_PLAIN_REPRESENTATION);
+        node->InternalAddNodeToArray(innerNode);
     }
+
+    return node;
 }
 
-void YamlNode::ProcessByteArray(const uint8* byteArray, int32 byteArraySize)
+YamlNode *YamlNode::CreateNodeWithByteArray(const uint8* byteArray, int32 byteArraySize)
 {
-    type = TYPE_ARRAY;
-    representation.arrayStyle = AR_FLOW_REPRESENTATION;
+    YamlNode *node = CreateArrayNode(AR_FLOW_REPRESENTATION);
+
     for (int32 i = 0; i < byteArraySize; ++i)
     {
         String letterRepresentation = Format("%x",byteArray[i]);
-        YamlNode* innerNode = new YamlNode(TYPE_STRING);
-        innerNode->InternalSetString(letterRepresentation);
-        InternalAddNodeToArray(innerNode);
+        YamlNode* innerNode = CreateNodeWithString(letterRepresentation, SR_PLAIN_REPRESENTATION);
+        node->InternalAddNodeToArray(innerNode);
     }
+
+    return node;
 }
 
-void YamlNode::ProcessKeyedArchive(KeyedArchive* archive)
+YamlNode *YamlNode::CreateNodeWithKeyedArchive(KeyedArchive* archive)
 {
-    type = TYPE_ARRAY;
-    representation.arrayStyle = AR_FLOW_REPRESENTATION;
+    YamlNode *node = CreateArrayNode(AR_FLOW_REPRESENTATION);
 
     //creation array with variables
     const Map<String, VariantType*> & innerArchiveMap =  archive->GetArchieveData();
     for (Map<String, VariantType*>::const_iterator it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
     {
-        YamlNode* arrayElementNode = new YamlNode(TYPE_MAP);
-        YamlNode* arrayElementNodeValue = new YamlNode(TYPE_MAP);
-
-        arrayElementNodeValue->InitFromVariantType(it->second);
-        arrayElementNode->InternalSetNodeToMap(it->first, arrayElementNodeValue, false);
-        InternalAddNodeToArray(arrayElementNode);
+        YamlNode* arrayElementNode = CreateMapNode(MR_BLOCK_REPRESENTATION);
+        YamlNode* arrayElementNodeValue = CreateNodeFromVariantType(*it->second);
+        arrayElementNode->InternalAddNodeToMap(it->first, arrayElementNodeValue, false);
+        node->InternalAddNodeToArray(arrayElementNode);
     }
+
+    return node;
+}
+
+YamlNode * YamlNode::CreateNodeWithString( const String &value, eStringRepresentation representation /*= SR_PLAIN_REPRESENTATION*/ )
+{
+    YamlNode *node = CreateStringNode(representation);
+    node->InternalSetString(value);
+    return node;
+}
+
+YamlNode * YamlNode::CreateNodeWithString( const WideString &value, eStringRepresentation representation /*= SR_PLAIN_REPRESENTATION*/ )
+{
+    YamlNode *node = CreateStringNode(representation);
+    node->InternalSetWideString(value);
+    return node;
+}
+
+YamlNode * YamlNode::CreateNodeFromVariantType(const VariantType &varType)
+{
+    YamlNode* node = CreateMapNode(MR_BLOCK_REPRESENTATION);
+
+    String variantName = VariantType::variantNamesMap[varType.GetType()].variantName;
+    node->InternalAddNodeToMap(variantName, CreateNodeWithVariantType(varType), false);
+
+    return node;
 }
 
 bool YamlNode::IsContainingMap() const
@@ -961,200 +788,34 @@ String YamlNode::FloatToCuttedString(float32 f)
     return Format("%.4f",f);
 }
 
-void YamlNode::InitFromKeyedArchive(KeyedArchive* archive)
+void YamlNode::InternalSetToString( const VariantType &varType )
 {
-    type = TYPE_MAP;
-
-
-    //creation array with variables
-    YamlNode* arrayContentNode = new YamlNode(YamlNode::TYPE_ARRAY);
-    const Map<String, VariantType*> & innerArchiveMap =  archive->GetArchieveData();
-
-    arrayContentNode->objectArray.reserve(innerArchiveMap.size());
-    for (Map<String, VariantType*>::const_iterator it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
-    {
-        YamlNode* arrayElementNode = new YamlNode(TYPE_MAP);
-        YamlNode* arrayElementNodeValue = new YamlNode(TYPE_MAP);
-
-        arrayElementNodeValue->InitFromVariantType(it->second);
-        arrayElementNode->InternalSetNodeToMap(it->first, arrayElementNodeValue, false);
-        arrayContentNode->InternalAddNodeToArray(arrayElementNode);
-    }
-
-    InternalSetNodeToMap(VariantType::TYPENAME_KEYED_ARCHIVE, arrayContentNode, false);
+    YamlNode * node = CreateNodeWithVariantType(varType);
+    DVASSERT(node->GetType() == TYPE_STRING);
+    InternalSetString(node->AsString());
 }
 
-void YamlNode::InternalSet(const String& name, bool value, bool rewritePreviousValue)
+void YamlNode::InternalAddToMap(const String& name, const VariantType &varType, bool rewritePreviousValue)
 {
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        String strValue = (value == true) ? "true" : "false";
-        stringNode->Set(name, strValue);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetBool(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
+    YamlNode * node = CreateNodeWithVariantType(varType);
+    InternalAddNodeToMap(name, node, rewritePreviousValue);
 }
 
-void YamlNode::InternalSet(const String& name, int32 value, bool rewritePreviousValue)
+void YamlNode::InternalAddToArray( const VariantType &varType )
 {
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetInt32(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, float32 value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetFloat(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, const char8* value, bool rewritePreviousValue)
-{
-    if (rewritePreviousValue)
-    {
-        RemoveNodeFromMap(name);
-    }
-
-    Set(name, (const String&)value);
-}
-
-void YamlNode::InternalSet(const String& name, const String& value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetString(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, const WideString& value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetWideString(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, const Vector2& value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        VariantType variantValue;
-        variantValue.SetVector2(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, const Vector3& value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetVector3(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, const Vector4& value, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, value);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        // Just initialize the value.
-        VariantType variantValue;
-        variantValue.SetVector4(value);
-        FillContentAccordingToVariantTypeValue(&variantValue);
-    }
-}
-
-void YamlNode::InternalSet(const String& name, VariantType* varType, bool rewritePreviousValue)
-{
-    if (type == TYPE_MAP)
-    {
-        // For Maps just add the new String node.
-        YamlNode* stringNode = new YamlNode(YamlNode::TYPE_STRING);
-        stringNode->Set(name, varType);
-        InternalSetNodeToMap(name, stringNode, rewritePreviousValue);
-    }
-    else if (type == TYPE_STRING)
-    {
-        FillContentAccordingToVariantTypeValue(varType);
-    }
+    YamlNode * node = CreateNodeWithVariantType(varType);
+    InternalAddNodeToArray(node);
 }
 
 void YamlNode::InternalAddNodeToArray( YamlNode* node )
 {
-    DVASSERT(this->type == TYPE_ARRAY);
+    DVASSERT(GetType() == TYPE_ARRAY);
     objectArray.push_back(node);
 }
 
-void  YamlNode::InternalSetNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue)
+void  YamlNode::InternalAddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue)
 {
-    DVASSERT(this->type == TYPE_MAP);
+    DVASSERT(GetType() == TYPE_MAP);
     if (rewritePreviousValue)
     {
         RemoveNodeFromMap(name);
@@ -1163,21 +824,18 @@ void  YamlNode::InternalSetNodeToMap(const String& name, YamlNode* node, bool re
     objectMap.insert(std::pair<String, YamlNode*> (name, node));
 }
 
-void YamlNode::InternalSetString( const String &value )
+void YamlNode::InternalSetString(const String &value)
 {
-    DVASSERT(type == TYPE_STRING);
+    DVASSERT(GetType() == TYPE_STRING);
     nwStringValue = value;
     stringValue = UTF8Utils::EncodeToWideString(nwStringValue);
-    isWideString = false;
 }
 
-void YamlNode::InternalSetWideString( const WideString &value )
+void YamlNode::InternalSetWideString(const WideString &value)
 {
-    DVASSERT(type == TYPE_STRING);
+    DVASSERT(GetType() == TYPE_STRING);
     stringValue = value;
     nwStringValue = UTF8Utils::EncodeToUTF8(stringValue);
-    isWideString = true;
 }
-
 
 }

@@ -220,7 +220,7 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 
     if (align == ALIGN_HJUSTIFY)
     {
-        alignNode->AddValueToArray("HJUSTIFY");
+        alignNode->Add("HJUSTIFY");
         return alignNode;
     }
 
@@ -250,8 +250,8 @@ YamlNode * UIYamlLoader::GetAlignNodeValue(int32 align)
 		vertAlign = "BOTTOM";
 	}
 	
-	alignNode->AddValueToArray(horzAlign);
-	alignNode->AddValueToArray(vertAlign);
+	alignNode->Add(horzAlign);
+	alignNode->Add(vertAlign);
 	
 	return alignNode;
 }
@@ -262,21 +262,21 @@ YamlNode * UIYamlLoader::GetFittingOptionNodeValue( int32 fitting ) const
 
     if( fitting == TextBlock::FITTING_DISABLED )
     {
-        fittingNode->AddValueToArray("DISABLED");
+        fittingNode->Add("DISABLED");
     }
     else
     {
         if( fitting & TextBlock::FITTING_ENLARGE )
         {
-            fittingNode->AddValueToArray("ENLARGE");
+            fittingNode->Add("ENLARGE");
         }
         if( fitting & TextBlock::FITTING_REDUCE )
         {
-            fittingNode->AddValueToArray("REDUCE");
+            fittingNode->Add("REDUCE");
         }
         if( fitting & TextBlock::FITTING_POINTS )
         {
-            fittingNode->AddValueToArray("POINTS");
+            fittingNode->Add("POINTS");
         }
     }
     return fittingNode;
