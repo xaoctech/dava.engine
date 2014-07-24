@@ -189,7 +189,7 @@ void RenderDataObject::BuildVertexBuffer(int32 vertexCount, bool synchronously)
 {
     DVASSERT(!vertexAttachmentActive);
     
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildVertexBufferInternal, (void*)vertexCount));
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &RenderDataObject::BuildVertexBufferInternal, reinterpret_cast<void*>(vertexCount)));
     
     if(synchronously)
     {
@@ -343,7 +343,6 @@ void RenderDataObject::DetachVertices()
     
     vertexAttachmentActive = false;
 }
-
 
 //#if defined (__DAVAENGINE_ANDROID__) || defined (__DAVAENGINE_MACOS__)
 //void RenderDataObject::SaveToSystemMemory()

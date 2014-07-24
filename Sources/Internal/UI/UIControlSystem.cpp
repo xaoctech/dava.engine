@@ -71,6 +71,8 @@ UIControlSystem::UIControlSystem()
 	baseGeometricData.pivotPoint = Vector2(0, 0);
 	baseGeometricData.scale = Vector2(1.0f, 1.0f);
 	baseGeometricData.angle = 0;
+
+    ui3DViewCount = 0;
 }
 	
 void UIControlSystem::SetScreen(UIScreen *_nextScreen, UIScreenTransition * _transition)
@@ -208,6 +210,8 @@ void UIControlSystem::ProcessScreenLogic()
                 {
                     if(currentScreen)
                     {
+                        if (currentScreen->IsOnScreen())
+                            currentScreen->SystemWillBecomeInvisible();
                         currentScreen->SystemWillDisappear();
                         if ((nextScreenProcessed == 0) || (currentScreen->GetGroupId() != nextScreenProcessed->GetGroupId()))
                         {
@@ -220,6 +224,8 @@ void UIControlSystem::ProcessScreenLogic()
                     loadingTransition->SystemWillAppear();
                     currentScreen = loadingTransition;
                     loadingTransition->SystemDidAppear();
+                    if (loadingTransition->IsOnScreen())
+                        loadingTransition->SystemWillBecomeVisible();
                 }
 			}
 		}
@@ -228,6 +234,8 @@ void UIControlSystem::ProcessScreenLogic()
 			// if we have current screen we call events, unload resources for it group
 			if(currentScreen)
 			{
+                if (currentScreen->IsOnScreen())
+                    currentScreen->SystemWillBecomeInvisible();
 				currentScreen->SystemWillDisappear();
 				if ((nextScreenProcessed == 0) || (currentScreen->GetGroupId() != nextScreenProcessed->GetGroupId()))
 				{
@@ -246,6 +254,8 @@ void UIControlSystem::ProcessScreenLogic()
             if (nextScreenProcessed)
             {
 				nextScreenProcessed->SystemDidAppear();
+                if (nextScreenProcessed->IsOnScreen())
+                    nextScreenProcessed->SystemWillBecomeVisible();
             }
 			
 			UnlockInput();
@@ -295,6 +305,14 @@ void UIControlSystem::Update()
 void UIControlSystem::Draw()
 {
     drawCounter = 0;
+    if (!ui3DViewCount)
+    {
+        UniqueHandle prevState = RenderManager::Instance()->currentState.stateHandle;
+        RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_3D_BLEND);
+        RenderManager::Instance()->FlushState();            
+        RenderManager::Instance()->Clear(Color(0,0,0,0), 1.0f, 0);        
+        RenderManager::Instance()->SetRenderState(prevState);
+    }
 //	if(currentScreen && (!currentPopup || currentPopup->isTransparent))
 	if (currentScreen)
 	{
@@ -822,6 +840,17 @@ void UIControlSystem::NotifyListenersDidSwitch( UIScreen* screen )
     uint32 listenersCount = screenSwitchListenersCopy.size();
     for(uint32 i = 0; i < listenersCount; ++i)
         screenSwitchListenersCopy[i]->OnScreenDidSwitch( screen );
+}
+
+
+void UIControlSystem::UI3DViewAdded()
+{
+    ui3DViewCount++;
+}
+void UIControlSystem::UI3DViewRemoved()
+{
+    DVASSERT(ui3DViewCount);
+    ui3DViewCount--;
 }
 
 };

@@ -173,17 +173,19 @@ enum PixelFormat
     FORMAT_CLOSEST = 255 // fit PixelFormat at 8bits (PixelFormat format:8;)
 };
     
+// Please update JniDeviceInfo.java if change eGPUFamily enum
 enum eGPUFamily
 {
-    GPU_UNKNOWN = -1,
-    
     GPU_POWERVR_IOS     =   0,
     GPU_POWERVR_ANDROID,
     GPU_TEGRA,
     GPU_MALI,
     GPU_ADRENO,
+    GPU_PNG,
+    GPU_FAMILY_COUNT,
     
-    GPU_FAMILY_COUNT
+    GPU_DEVICE_COUNT = GPU_PNG,
+    GPU_INVALID = 0x07
 };
     
 #if defined(__DAVAENGINE_OPENGL__)
@@ -352,30 +354,33 @@ enum ePrimitiveType
 // TODO: we have same structs & functions in PolygonGroup -- we should find a right place for them
 enum eVertexFormat
 {
-    EVF_VERTEX			= 1,
-    EVF_NORMAL			= 2,
-    EVF_COLOR			= 4,
-    EVF_TEXCOORD0		= 8,
-    EVF_TEXCOORD1		= 16,
-    EVF_TEXCOORD2		= 32,
-    EVF_TEXCOORD3		= 64,
-    EVF_TANGENT			= 128,
-    EVF_BINORMAL		= 256,
-    EVF_JOINTWEIGHT		= 512,
-	EVF_TIME			= 1024,
-	EVF_CUBETEXCOORD0	= 2048,
-    EVF_CUBETEXCOORD1	= 4096,
-    EVF_CUBETEXCOORD2	= 8192,
-    EVF_CUBETEXCOORD3	= 16384,	
-    EVF_LOWER_BIT		= EVF_VERTEX,
-    EVF_HIGHER_BIT		= EVF_TIME, 
+    EVF_VERTEX          = 1,
+    EVF_NORMAL          = 1 << 1,
+    EVF_COLOR           = 1 << 2,
+    EVF_TEXCOORD0       = 1 << 3,
+    EVF_TEXCOORD1       = 1 << 4,
+    EVF_TEXCOORD2       = 1 << 5,
+    EVF_TEXCOORD3       = 1 << 6,
+    EVF_TANGENT         = 1 << 7,
+    EVF_BINORMAL        = 1 << 8,
+    EVF_JOINTWEIGHT     = 1 << 9,
+    EVF_TIME            = 1 << 10,
+    EVF_PIVOT           = 1 << 11,
+    EVF_FLEXIBILITY     = 1 << 12,
+    EVF_ANGLE_SIN_COS           = 1 << 13,
+    EVF_CUBETEXCOORD0   = 1 << 14,
+    EVF_CUBETEXCOORD1   = 1 << 15,
+    EVF_CUBETEXCOORD2   = 1 << 16,
+    EVF_CUBETEXCOORD3   = 1 << 17,	
+    EVF_LOWER_BIT       = EVF_VERTEX,
+    EVF_HIGHER_BIT      = EVF_ANGLE_SIN_COS, 
     EVF_NEXT_AFTER_HIGHER_BIT
     = (EVF_HIGHER_BIT << 1),
     EVF_FORCE_DWORD     = 0x7fffffff,
 };
 enum
 {
-    VERTEX_FORMAT_STREAM_MAX_COUNT = 11
+    VERTEX_FORMAT_STREAM_MAX_COUNT = 14
 };
 
 inline int32 GetTexCoordCount(int32 vertexFormat)
@@ -430,6 +435,10 @@ inline int32 GetVertexSize(int32 flags)
 
 	if (flags & EVF_TIME) size+=sizeof(float32);
 	
+    if (flags & EVF_PIVOT) size += 3 * sizeof(float32);
+    if (flags & EVF_FLEXIBILITY) size += sizeof(float32);
+    if (flags & EVF_ANGLE_SIN_COS) size += 2 * sizeof(float32);
+
     return size;
 }
 
@@ -465,7 +474,6 @@ enum eShaderSemantic
     
     PARAM_COLOR,
     PARAM_GLOBAL_TIME,
-    PARAM_WORLD_VIEW_TRANSLATE, // NEED TO RENAME TO objectPositionInCameraSpace
     PARAM_WORLD_SCALE,          
     
     PARAM_CAMERA_POS,
@@ -475,6 +483,16 @@ enum eShaderSemantic
     PARAM_LIGHT0_POSITION,
     PARAM_LIGHT0_COLOR,
     PARAM_LIGHT0_AMBIENT_COLOR,
+
+    PARAM_LOCAL_BOUNDING_BOX,
+    PARAM_WORLD_VIEW_OBJECT_CENTER,
+    PARAM_BOUNDING_BOX_SIZE,
+
+    PARAM_SPEED_TREE_TRUNK_OSCILLATION,
+    PARAM_SPEED_TREE_LEAFS_OSCILLATION,
+    PARAM_SPEED_TREE_LIGHT_SMOOTHING,
+
+    PARAM_SPHERICAL_HARMONICS,
 
     PARAM_RT_SIZE,
     PARAM_RT_PIXEL_SIZE,
@@ -530,8 +548,5 @@ public:
 #else
 #define RENDER_GUARD
 #endif
-
-
-
 
 #endif // __DAVAENGINE_RENDER_BASE_H__
