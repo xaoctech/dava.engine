@@ -1158,32 +1158,12 @@ void NMaterial::UpdateMaterialTemplate()
 	SetRenderLayers(RenderLayerManager::Instance()->GetLayerIDMaskBySet(baseTechnique->GetLayersSet()));
 
     //{VI: temporray code should be removed once lighting system is up
-
-/*<<<<<<< HEAD
-    if (!materialDynamicLit)
-    {
-        materialDynamicLit = (techniqueName == NMaterialName::TILE_MASK);
-    }
-    
-    if(!materialDynamicLit)
-    {
-        uint32 passCount = baseTechnique->GetPassCount();
-        for(uint32 i = 0; i < passCount; ++i)
-        {
-            RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
-            const FastNameSet& defines = pass->GetUniqueDefineSet();
-            materialDynamicLit = materialDynamicLit ||
-                defines.count(DEFINE_VERTEX_LIT) ||
-                defines.count(DEFINE_PIXEL_LIT) ||
-                defines.count(DEFINE_LAND_SPECULAR);
-        }
-=======*/
     dynamicBindFlags = (baseTechnique->GetLayersSet().count(LAYER_SHADOW_VOLUME) != 0) ? DYNAMIC_BIND_LIGHT : 0;
     for(uint32 i = 0; i < passCount; ++i)
     {
         RenderTechniquePass* pass = baseTechnique->GetPassByIndex(i);
         const FastNameSet& defines = pass->GetUniqueDefineSet();
-        dynamicBindFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT) || defines.count(FLAG_SPHERICAL_LIT) || defines.count(DEFINE_LAND_SPECULAR)) ? DYNAMIC_BIND_LIGHT : 0;
+        dynamicBindFlags |= (defines.count(DEFINE_VERTEX_LIT) || defines.count(DEFINE_PIXEL_LIT) || defines.count(FLAG_SPHERICAL_LIT)) ? DYNAMIC_BIND_LIGHT : 0;
         dynamicBindFlags |= defines.count(FLAG_SPHERICAL_LIT) ? DYNAMIC_BIND_OBJECT_CENTER : 0;
     }
 }
