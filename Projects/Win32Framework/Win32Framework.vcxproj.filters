@@ -1435,6 +1435,9 @@
     <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h">
       <Filter>Internal\Render\3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.h">
+      <Filter>Internal\Scene3D\SceneFile</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h">
       <Filter>Internal\Render\Image</Filter>
     </ClInclude>
@@ -2652,6 +2655,9 @@
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp">
       <Filter>Internal\Render\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.cpp">
+      <Filter>Internal\Scene3D\SceneFile</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp">
       <Filter>Internal\Render\Image</Filter>
