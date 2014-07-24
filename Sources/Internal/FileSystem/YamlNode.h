@@ -92,7 +92,7 @@ public:
     float32         AsFloat() const;
     FastName        AsFastName() const;
     const String    &AsString() const;
-    const WideString &AsWString() const;
+    WideString      AsWString() const;
 
     //These functions work only if type of node is array
     const Vector<YamlNode*> &AsVector() const;
@@ -188,18 +188,13 @@ public:
     eStringRepresentation GetMapKeyRepresentation() const;
 
 protected:
-    static YamlNode *CreateNodeWithVariantType(const VariantType &varType);
-    static YamlNode *CreateNodeWithMatrix(const float32* array,uint32 dimension);
-    static YamlNode *CreateNodeWithVector(const float32 array[],uint32 dimension);
-    static YamlNode *CreateNodeWithByteArray(const uint8* byteArray,int32 byteArraySize);
-    static YamlNode *CreateNodeWithKeyedArchive(KeyedArchive* archive);
-    static YamlNode *CreateNodeWithString(const String &value, eStringRepresentation representation = SR_PLAIN_REPRESENTATION);
-    static YamlNode *CreateNodeWithString(const WideString &value, eStringRepresentation representation = SR_PLAIN_REPRESENTATION);
-
     static YamlNode *CreateNodeFromVariantType(const VariantType &varType);
 
-    bool            IsContainingMap() const;
-    static String   FloatToCuttedString(float32 f);
+    static eType    VariantTypeToYamlNodeType(VariantType::eVariantType variantType);
+
+    bool            InitStringFromVariantType(const VariantType &varType);
+    bool            InitArrayFromVariantType(const VariantType &varType);
+    bool            InitMapFromVariantType(const VariantType &varType);
 
     // Internal setters, which can both add or replace value in the map.
     void            InternalSetToString(const VariantType &varType);
@@ -209,14 +204,16 @@ protected:
     void            InternalAddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue);
     void            InternalAddNodeToArray(YamlNode* node);
 
-    void            InternalSetString(const String &value);
-    void            InternalSetWideString(const WideString &value);
+    void            InternalSetString(const String &value, eStringRepresentation style = SR_AUTO_REPRESENTATION);
+    void            InternalSetMatrix(const float32* array,uint32 dimension, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
+    void            InternalSetVector(const float32 array[],uint32 dimension, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
+    void            InternalSetByteArray(const uint8* byteArray,int32 byteArraySize, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
+    void            InternalSetKeyedArchive(KeyedArchive* archive, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
 
 private:
     const eType type;
     struct ObjectString
     {
-        WideString  stringValue;
         String      nwStringValue;
         eStringRepresentation style;
     };
