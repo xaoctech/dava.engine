@@ -32,6 +32,7 @@
 
 #include <QWidget>
 #include "basepropertygridwidget.h"
+#include "backgroundpropertygridwidget.h"
 
 namespace Ui {
 class SliderPropertyGridWidget;
@@ -68,6 +69,10 @@ protected:
 private slots:
     // Use this slot to update value on Value Spin according to slider position
     void OnSliderValueChanged(int);
+    
+private:
+    BackgroundPropertyGridWidget* minBgControl;
+    BackgroundPropertyGridWidget* maxBgControl;
 };
 
 #endif // SLIDERPROPERTYGRIDWIDGET_H
