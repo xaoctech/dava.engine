@@ -161,7 +161,7 @@ void Core::CreateSingletons()
 #endif
 
     new DownloadManager();
-    DownloadManager::Instance()->SetDownloader(new CurlDownloader(2000, 1));
+    DownloadManager::Instance()->SetDownloader(new CurlDownloader());
     
     RegisterDAVAClasses();
     
@@ -694,7 +694,7 @@ void Core::SystemProcessFrame()
 			}
 		}
 		
-        DataDownloadManager::Instance()->Update();
+        DownloadManager::Instance()->Update();
 		JobManager::Instance()->Update();
 		core->Update(frameDelta);
         InputSystem::Instance()->OnAfterUpdate();

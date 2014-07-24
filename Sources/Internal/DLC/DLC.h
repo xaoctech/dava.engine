@@ -31,7 +31,7 @@
 
 #include "Base/BaseTypes.h"
 #include "Platform/Thread.h"
-#include "DLC/Downloader/DataDownloadManager.h"
+#include "Downloader/DownloaderCommon.h"
 
 namespace DAVA
 {

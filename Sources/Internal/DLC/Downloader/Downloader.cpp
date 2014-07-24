@@ -45,7 +45,7 @@ size_t Downloader::SaveData(void *ptr, size_t size, size_t nmemb)
     // SaveData performs when task is in IN_PROCESS state, so currentTask should be NOT NULL.
     DVASSERT(mgr->currentTask);
 
-    String storePath = mgr->currentTask->storePath;
+    FilePath storePath = mgr->currentTask->storePath;
 
     File *destFile = File::Create(storePath, File::APPEND | File::WRITE);
     uint32 written = destFile->Write(ptr, size * nmemb);

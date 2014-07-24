@@ -42,7 +42,7 @@
 
 #include "DLC/DLC.h"
 #include "DLC/Patcher/PatchFile.h"
-#include "DLC/Downloader/DataDownloadManager.h"
+#include "DLC/Downloader/DownloadManager.h"
 
 #include "FileSystem/Logger.h"
 #include "Platform/SystemTimer.h"

@@ -200,7 +200,7 @@ void DownloadManager::Update()
     callbackMutex.Unlock();
 }
 
-uint32 DownloadManager::Download(const String &srcUrl, const String &storeToFilePath, DownloadType downloadMode, int32 timeout, int32 retriesCount)
+uint32 DownloadManager::Download(const String &srcUrl, const FilePath &storeToFilePath, DownloadType downloadMode, int32 timeout, int32 retriesCount)
 {
     DVASSERT(true == Thread::IsMainThread());
 
@@ -441,7 +441,7 @@ bool DownloadManager::GetUrl(const uint32 &taskId, String &url)
     return true;
 }
 
-bool DownloadManager::GetStorePath(const uint32 &taskId, String &path)
+bool DownloadManager::GetStorePath(const uint32 &taskId, FilePath &path)
 {
     DownloadTaskDescription *task = GetTaskForId(taskId);
     if (!task)

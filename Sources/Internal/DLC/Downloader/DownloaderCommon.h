@@ -30,6 +30,7 @@
 #define __DOWNLOADER_COMMON_H__
 
 #include "Base/BaseTypes.h"
+#include "FileSystem/FilePath.h"
 
 namespace DAVA
 {
@@ -65,11 +66,11 @@ enum DownloadError
 
 struct DownloadTaskDescription
 {
-    DownloadTaskDescription(String srcUrl, String storeToFilePath, DownloadType downloadMode, int32 _timeout, int32 _retriesCount);
+    DownloadTaskDescription(const String &srcUrl, const FilePath &storeToFilePath, DownloadType downloadMode, int32 _timeout, int32 _retriesCount);
 
     uint32 id;
     String url;
-    String storePath;
+    FilePath storePath;
     int32 timeout;
     int32 retriesCount;
     int32 retriesLeft;
