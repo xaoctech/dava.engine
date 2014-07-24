@@ -395,7 +395,6 @@ SceneFileV2::eError SceneFileV2::LoadScene(const FilePath & filename, Scene * _s
     rootNodePathName = filename;
 
     const bool headerValid = ReadHeader(header, file);
-    const int requiredVersion = 3;
 
     if (!headerValid)
     {
@@ -518,7 +517,6 @@ SceneArchive *SceneFileV2::LoadSceneArchive(const FilePath & filename)
     }   
 
     const bool headerValid = ReadHeader(header, file);
-    const int requiredVersion = 3;
 
     if (!headerValid)
     {
