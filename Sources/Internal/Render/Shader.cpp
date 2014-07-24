@@ -46,6 +46,7 @@
 
 namespace DAVA
 {
+
 #if defined(__DAVAENGINE_OPENGL__)
 GLuint Shader::activeProgram = 0;
 
@@ -61,6 +62,7 @@ Shader::Shader()
     attributeNames = 0;
     activeAttributes = 0;
     activeUniforms = 0;
+    requiredVertexFormat = 0;
     
     //uniforms = 0;
     uniformData = NULL;
@@ -117,7 +119,10 @@ FastName attributeStrings[VERTEX_FORMAT_STREAM_MAX_COUNT] =
     FastName("inTangent"),
     FastName("inBinormal"),
     FastName("inJointWeight"),
-    FastName("inTime")
+    FastName("inTime"),
+    FastName("inPivot"),
+    FastName("inFlexibility"),
+    FastName("inAngleSinCos")
 };
 
 eShaderSemantic Shader::GetShaderSemanticByName(const FastName & name)
@@ -275,7 +280,7 @@ Shader::~Shader()
     ReleaseShaderData();
 }
 
-void Shader::ReleaseShaderData()
+void Shader::ReleaseShaderData(bool deleteShader/* = true*/)
 {
     SafeDeleteArray(attributeNames);
     //SafeDeleteArray(uniforms);
@@ -285,7 +290,8 @@ void Shader::ReleaseShaderData()
     SafeRelease(vertexShaderData);
     SafeRelease(fragmentShaderData);
     
-    DeleteShaders();
+    if (deleteShader)
+        DeleteShaders();
 
     activeAttributes = 0;
     activeUniforms = 0;
@@ -347,6 +353,9 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
     char attributeName[512];
     DVASSERT(attributeNames == NULL);
     attributeNames = new FastName[activeAttributes];
+
+    requiredVertexFormat = 0;
+
     for (int32 k = 0; k < activeAttributes; ++k)
     {
         GLint size;
@@ -355,7 +364,12 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
         attributeNames[k] = FastName(attributeName);
         
         int32 flagIndex = GetAttributeIndexByName(attributeNames[k]);
-        vertexFormatAttribIndeces[flagIndex] = glGetAttribLocation(program, attributeName);
+        if(flagIndex != -1)
+        {
+            int32 attributeLocationIndex = glGetAttribLocation(program, attributeName);
+            vertexFormatAttribIndeces[flagIndex] = attributeLocationIndex;
+            requiredVertexFormat |= 1<<flagIndex;
+        }
     }
     
     RENDER_VERIFY(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms));
@@ -496,7 +510,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
                 RENDER_VERIFY(glGetUniformfv(program, uniformStruct->location, (float32*)value));
                 
                 
-                for(uint32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
+                for(int32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
                 {
                     Matrix2* m = (Matrix2*)(((uint8*)value) + paramIndex * sizeof(Matrix2));
                     Matrix2 t;
@@ -513,7 +527,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
             {
                 RENDER_VERIFY(glGetUniformfv(program, uniformStruct->location, (float32*)value));
                 
-                for(uint32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
+                for(int32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
                 {
 
                     Matrix3* m = (Matrix3*)(((uint8*)value) + paramIndex * sizeof(Matrix3));
@@ -531,7 +545,7 @@ void Shader::RecompileInternal(BaseObject * caller, void * param, void *callerDa
             {
                 RENDER_VERIFY(glGetUniformfv(program, uniformStruct->location, (float32*)value));
                 
-                for(uint32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
+                for(int32 paramIndex = 0; paramIndex < uniformStruct->size; ++paramIndex)
                 {
                     Matrix4* m = (Matrix4*)(((uint8*)value) + paramIndex * sizeof(Matrix4));
                     m->Transpose();
@@ -980,7 +994,7 @@ GLint Shader::CompileShader(GLuint *shader, GLenum type, GLint count, const GLch
         RENDER_VERIFY(glGetShaderInfoLog(*shader, 4096, &logLength, log));
         if (logLength)
         {
-            Logger::FrameworkDebug("Shader compile log:\n%s", log);
+            Logger::Error("Shader compile log:\n%s", log);
         }
     }
 #endif
@@ -1061,19 +1075,6 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
-            case PARAM_WORLD_VIEW_TRANSLATE:
-            {
-                RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
-                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
-                if (_updateSemantic != currentUniform->updateSemantic)
-                {
-                    RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
-                    Matrix4 * world = (Matrix4*)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
-                    SetUniformValueByUniform(currentUniform, world->GetTranslationVector());
-                    currentUniform->updateSemantic = _updateSemantic;
-                }
-                break;
-            }
             case PARAM_WORLD_SCALE:
             {
                 pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD);
@@ -1095,6 +1096,19 @@ void Shader::BindDynamicParameters()
                 {
                     RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
                     Matrix4 * proj = (Matrix4*)RenderManager::GetDynamicParam(PARAM_PROJ);
+                    SetUniformValueByUniform(currentUniform, *proj);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_INV_WORLD_VIEW:
+            {
+                RenderManager::Instance()->ComputeInvWorldViewMatrixIfRequired();
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_INV_WORLD_VIEW);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    RENDERER_UPDATE_STATS(dynamicParamUniformBindCount++);
+                    Matrix4 * proj = (Matrix4*)RenderManager::GetDynamicParam(PARAM_INV_WORLD_VIEW);
                     SetUniformValueByUniform(currentUniform, *proj);
                     currentUniform->updateSemantic = _updateSemantic;
                 }
@@ -1207,7 +1221,66 @@ void Shader::BindDynamicParameters()
                 }
                 break;
             }
-
+            case PARAM_WORLD_VIEW_OBJECT_CENTER:
+            {
+                RenderManager::Instance()->ComputeWorldViewMatrixIfRequired();
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_WORLD_VIEW);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(PARAM_LOCAL_BOUNDING_BOX);
+                    Matrix4 * worldView = (Matrix4 *)RenderManager::GetDynamicParam(PARAM_WORLD_VIEW);
+                    Vector3 param = objectBox->GetCenter() * (*worldView);
+                    SetUniformValueByUniform(currentUniform, param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_BOUNDING_BOX_SIZE:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_LOCAL_BOUNDING_BOX);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    AABBox3 * objectBox = (AABBox3*)RenderManager::GetDynamicParam(PARAM_LOCAL_BOUNDING_BOX);
+                    Vector3 param = objectBox->GetSize();
+                    SetUniformValueByUniform(currentUniform, param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_SPEED_TREE_LEAFS_OSCILLATION:
+            case PARAM_SPEED_TREE_TRUNK_OSCILLATION:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    Vector2 * param = (Vector2*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_SPEED_TREE_LIGHT_SMOOTHING:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(currentUniform->shaderSemantic);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    float32 * param = (float32*)RenderManager::GetDynamicParam(currentUniform->shaderSemantic);
+                    SetUniformValueByUniform(currentUniform, *param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
+            case PARAM_SPHERICAL_HARMONICS:
+            {
+                pointer_size _updateSemantic = GET_DYNAMIC_PARAM_UPDATE_SEMANTIC(PARAM_SPHERICAL_HARMONICS);
+                if (_updateSemantic != currentUniform->updateSemantic)
+                {
+                    Vector3 * param = (Vector3*)RenderManager::GetDynamicParam(PARAM_SPHERICAL_HARMONICS);
+                    SetUniformValueByUniform(currentUniform, Shader::UT_FLOAT_VEC3, currentUniform->size, param);
+                    currentUniform->updateSemantic = _updateSemantic;
+                }
+                break;
+            }
             case PARAM_COLOR:
             {
                 const Color & c = RenderManager::Instance()->GetColor();
@@ -1330,6 +1403,8 @@ void Shader::Lost()
     program = 0;
     activeAttributes = 0;
     activeUniforms = 0;
+    
+    ReleaseShaderData(false);
 }
 
 void Shader::Invalidate()

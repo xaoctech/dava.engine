@@ -44,7 +44,7 @@ namespace DAVA
 Shader * RenderManager::FLAT_COLOR = 0;
 Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR = 0;
 Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_ALPHA_TEST = 0;
-Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = NULL;
+Shader * RenderManager::TEXTURE_MUL_FLAT_COLOR_IMAGE_A8 = 0;
 
 AutobindVariableData RenderManager::dynamicParameters[DYNAMIC_PARAMETERS_COUNT];
 uint32  RenderManager::dynamicParamersRequireUpdate;
@@ -123,7 +123,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
 	cursor = 0;
     currentRenderData = 0;
     cachedEnabledStreams = 0;
-
+    cachedAttributeMask = 0;
     attachedRenderData = 0;
     
     statsFrameCountToShowDebug = 0;
@@ -149,6 +149,7 @@ RenderManager::RenderManager(Core::eRenderer _renderer)
     SetDynamicParam(PARAM_VIEW, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
     SetDynamicParam(PARAM_PROJ, &Matrix4::IDENTITY, (pointer_size)&Matrix4::IDENTITY);
     
+    GetOptions()->SetOption(RenderOptions::LAYER_OCCLUSION_STATS, false);
 }
 	
 RenderManager::~RenderManager()
@@ -744,6 +745,9 @@ void RenderManager::Stats::Clear()
     dynamicParamUniformBindCount = 0;
     materialParamUniformBindCount = 0;
     spriteDrawCount = 0;
+    
+    visibleRenderObjectCount = 0;
+    occludedRenderObjectCount = 0;
 }
 
 void RenderManager::EnableOutputDebugStatsEveryNFrame(int32 _frameToShowDebugStats)
