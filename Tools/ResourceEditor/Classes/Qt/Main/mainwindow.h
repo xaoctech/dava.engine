@@ -32,6 +32,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDockWidget>
+#include <QPointer>
+
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
@@ -41,18 +44,29 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
+#include "Beast/BeastProxy.h"
+
 class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
-class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
+
+class QtMainWindow
+    : public QMainWindow
+    , public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
 
 protected:
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
+
+signals:
+    void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
 
 public:
 	explicit QtMainWindow(QWidget *parent = 0);
@@ -78,12 +92,6 @@ public:
 	bool BeastWaitCanceled();
 
 	void EnableGlobalTimeout(bool enable);
-
-signals:
-    void GlobalInvalidateTimeout();
-
-    void TexturesReloaded();
-    void SpritesReloaded();
     
 // qt actions slots
 public slots:
@@ -139,6 +147,7 @@ public slots:
 	void OnLightDialog();
 	void OnCameraDialog();
 	void OnEmptyEntity();
+	void OnAddWindEntity();
 
 	void OnUserNodeDialog();
 	void OnSwitchEntityDialog();
@@ -165,6 +174,8 @@ public slots:
 	void OnBeastAndSave();
     
     void OnBuildStaticOcclusion();
+    void OnRebuildCurrentOcclusionCell();
+    void OnInavalidateStaticOcclusion();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
@@ -181,9 +192,6 @@ public slots:
 	void OnNotPassableTerrain();
     void OnGrasEditor();
 	
-    void OnAddSoundComponent();
-    void OnRemoveSoundComponent();
-	void OnObjectsTypeMenuWillShow();
 	void OnObjectsTypeChanged(QAction *action);
     void OnObjectsTypeChanged(int type);
 
@@ -214,7 +222,7 @@ protected:
     
     void StartGlobalInvalidateTimer();
 
-	void RunBeast();
+	void RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode);
 
 	bool IsAnySceneChanged();
 
@@ -243,6 +251,7 @@ private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
 	QtWaitDialog *beastWaitDialog;
+    QPointer<QDockWidget> dockActionEvent;
 
 	QtPosSaver posSaver;
 	bool globalInvalidate;

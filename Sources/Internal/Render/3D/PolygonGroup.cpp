@@ -57,6 +57,10 @@ PolygonGroup::PolygonGroup()
 	weightArray(0),
 	jointCountArray(0),
 	
+    flexArray(0),
+    angleArray(0),
+    pivotArray(0),
+
 	colorArray(0), 
 	indexArray(0), 
 	meshData(0),
@@ -174,6 +178,27 @@ void PolygonGroup::UpdateDataPointersAndStreams()
         
         renderDataObject->SetStream(EVF_TEXCOORD3, TYPE_FLOAT, 3, vertexStride, cubeTextureCoordArray[3]);
 	}
+    if (vertexFormat & EVF_PIVOT)
+    {
+        pivotArray = reinterpret_cast<Vector3*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_PIVOT);
+
+        renderDataObject->SetStream(EVF_PIVOT, TYPE_FLOAT, 3, vertexStride, pivotArray);
+    }
+    if (vertexFormat & EVF_FLEXIBILITY)
+    {
+        flexArray = reinterpret_cast<float32*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_FLEXIBILITY);
+
+        renderDataObject->SetStream(EVF_FLEXIBILITY, TYPE_FLOAT, 1, vertexStride, flexArray);
+    }
+    if (vertexFormat & EVF_ANGLE_SIN_COS)
+    {
+        angleArray = reinterpret_cast<Vector2*>(meshData + baseShift);
+        baseShift += GetVertexSize(EVF_ANGLE_SIN_COS);
+
+        renderDataObject->SetStream(EVF_ANGLE_SIN_COS, TYPE_FLOAT, 2, vertexStride, angleArray);
+    }
 }
 
 void PolygonGroup::AllocateData(int32 _meshFormat, int32 _vertexCount, int32 _indexCount)
@@ -417,14 +442,13 @@ void PolygonGroup::ReleaseData()
 	
 void PolygonGroup::BuildBuffers()
 {
+    UpdateDataPointersAndStreams();
     JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &PolygonGroup::BuildBuffersInternal));
 };
     
 void PolygonGroup::BuildBuffersInternal(BaseObject * caller, void * param, void *callerData)
 {
-    DVASSERT(Thread::IsMainThread());
-
-    UpdateDataPointersAndStreams();
+    DVASSERT(Thread::IsMainThread());    
     
     renderDataObject->BuildVertexBuffer(vertexCount);
     renderDataObject->SetIndices((eIndexFormat)indexFormat, (uint8*)indexArray, indexCount);
@@ -459,10 +483,8 @@ void PolygonGroup::Save(KeyedArchive * keyedArchive, SerializationContext * seri
 
 }
 
-void PolygonGroup::Load(KeyedArchive * keyedArchive, SerializationContext * serializationContext)
-{
-    DataNode::Load(keyedArchive, serializationContext);
-    
+void PolygonGroup::LoadPolygonData(KeyedArchive * keyedArchive, SerializationContext * serializationContext, int32 requiredFlags)
+{            
     vertexFormat = keyedArchive->GetInt32("vertexFormat");
     vertexStride = GetVertexSize(vertexFormat);
     vertexCount = keyedArchive->GetInt32("vertexCount");
@@ -480,10 +502,36 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SerializationContext * seri
             Logger::Error("PolygonGroup::Load - Something is going wrong, size of vertex array is incorrect");
             return;
         }
-		SafeDeleteArray(meshData);
-        meshData = new uint8[vertexCount * vertexStride];
+		
         const uint8 * archiveData = keyedArchive->GetByteArray("vertices");
-        memcpy(meshData, archiveData, size);
+
+        if (vertexFormat&~requiredFlags) //not all streams in data are required - smart copy
+        {
+            int32 newFormat = vertexFormat&requiredFlags;
+            DVASSERT(newFormat);
+            int32 newVertexStride = GetVertexSize(newFormat);
+            SafeDeleteArray(meshData);        
+            meshData = new uint8[vertexCount * newVertexStride];                        
+            uint8 *dst = meshData;
+            const uint8 *src = &archiveData[0];
+            for (int32 i = 0; i < vertexCount; ++i)
+            {
+                for (uint32 mask = EVF_LOWER_BIT; mask <= EVF_HIGHER_BIT; mask = mask << 1)
+                {
+                    CopyData(&src, &dst, vertexFormat, newFormat, mask);
+                }
+            }
+            vertexFormat = newFormat;
+            vertexStride = newVertexStride;
+
+        }
+        else
+        {
+            SafeDeleteArray(meshData);        
+            meshData = new uint8[vertexCount * vertexStride];
+            Memcpy(meshData, archiveData, size); //all streams in data required - just copy
+        }
+        
     }
     
     indexFormat = keyedArchive->GetInt32("indexFormat");
@@ -514,7 +562,7 @@ void PolygonGroup::Load(KeyedArchive * keyedArchive, SerializationContext * seri
     renderDataObject = new RenderDataObject();
     UpdateDataPointersAndStreams();
     RecalcAABBox();
-    
+        
     BuildBuffers();
 }
     
@@ -570,7 +618,7 @@ public:
     DynamicObjectCacheData<Vertex>
 };*/
 
-void PolygonGroup::CopyData(uint8 ** meshData, uint8 ** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format) const
+void PolygonGroup::CopyData(const uint8 ** meshData, uint8 ** newMeshData, uint32 vertexFormat, uint32 newVertexFormat, uint32 format) const
 {
 	if (vertexFormat & format)
 	{
@@ -640,7 +688,7 @@ void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
 	uint8 * newMeshData = new uint8[newVertexStride * vertexCount];
 	memset(newMeshData, 0, sizeof(newVertexStride * vertexCount));
 	
-	uint8 * tmpMesh = meshData;
+	const uint8 * tmpMesh = meshData;
 	uint8 * tmpNewMesh = newMeshData;
 	for (int32 i = 0; i < vertexCount; ++i)
 	{
@@ -676,165 +724,6 @@ void PolygonGroup::OptimizeVertices(uint32 newVertexFormat, float32 eplison)
 	memcpy(meshData, &optMeshData[0], vertexStride * vertexCount);
 };
 
-
-void MeshConverter::CopyVertex(PolygonGroup *srcGroup, uint32 srcPos, PolygonGroup *dstGroup, uint32 dstPos)
-{
-
-}
-
-void MeshConverter::RebuildMeshTangentSpace(PolygonGroup *group, bool normalizeTangentSpace/*=true*/, bool computeBinormal/*=false*/)
-{
-    DVASSERT(group->GetPrimitiveType() == PRIMITIVETYPE_TRIANGLELIST); //only triangle lists for now
-    DVASSERT(normalizeTangentSpace||computeBinormal); //can not use non-normalized tangent space without precomputed binormals
-    DVASSERT(group->GetFormat()&EVF_TEXCOORD0);
-
-    Vector<FaceWork> faces;
-    uint32 faceCount = group->GetIndexCount()/3;
-    faces.resize(faceCount);
-    Vector<VertexWork> vertices_origin;
-    Vector<VertexWork> vertices_full;
-    vertices_origin.resize(group->GetVertexCount());
-    vertices_full.resize(group->GetIndexCount());
-
-    for (uint32 i=0, sz = group->GetVertexCount(); i<sz; ++i)
-        vertices_origin[i].refIndex = i;
-    //compute tangent for faces
-    for (uint32 f=0; f<faceCount; ++f)
-    {
-        Vector3 pos[3];
-        Vector2 texCoord[3];
-        for (uint32 i=0; i<3; ++i)
-        {
-            int32 workIndex = f*3+i;
-            int32 originIndex;
-            group->GetIndex(workIndex, originIndex);
-            faces[f].indexOrigin[i] = originIndex;
-            group->GetCoord(originIndex, pos[i]);
-            group->GetTexcoord(0, originIndex, texCoord[i]);
-            
-            vertices_origin[originIndex].refIndices.push_back(workIndex);
-            vertices_full[f*3+i].refIndex = faces[f].indexOrigin[i];
-        }                       
-        
-        float32 x10 = pos[1].x - pos[0].x;
-        float32 y10 = pos[1].y - pos[0].y;
-        float32 z10 = pos[1].z - pos[0].z;
-        float32 u10 = texCoord[1].x-texCoord[0].x;
-        float32 v10 = texCoord[1].y-texCoord[0].y;
-        
-        
-        float32 x20 = pos[2].x - pos[0].x;
-        float32 y20 = pos[2].y - pos[0].y;
-        float32 z20 = pos[2].z - pos[0].z;
-        float32 u20 = texCoord[2].x-texCoord[0].x;
-        float32 v20 = texCoord[2].y-texCoord[0].y;
-
-        float32 d = u10 * v20 - u20 * v10;
-
-        if(d == 0.0f)
-        {
-            d = 1.0f;	// this may happen in case of degenerated triangle
-        }
-        d = 1.0f / d;
-
-
-        Vector3 tangent = Vector3((v20 * x10 - v10 * x20) * d, (v20 * y10 - v10 * y20) * d, (v20 * z10 - v10 * z20) * d);
-        Vector3 binormal = Vector3((x20 * u10 - x10 * u20) * d, (y20 * u10 - y10 * u20) * d, (z20 * u10 - z10 * u20) * d);
-
-        if (normalizeTangentSpace) //should we normalize it here or only final result?
-        {
-            tangent.Normalize();
-            binormal.Normalize();
-        }
-        faces[f].tangent = tangent;
-        faces[f].binormal = binormal;
-        for (int32 i=0; i<3; ++i)
-        {
-            vertices_full[f*3+i].tangent = tangent;            
-            vertices_full[f*3+i].binormal = binormal;
-        }
-    }
-
-    /*smooth tangent space preventing mirrored uv's smooth*/
-    for (uint32 v = 0, sz = vertices_full.size(); v<sz; ++v)
-    {
-        int32 faceId = v/3;
-        VertexWork& originVert = vertices_origin[vertices_full[v].refIndex];      
-        vertices_full[v].tbRatio = 1;
-        for (int32 iRef=0, refSz = originVert.refIndices.size(); iRef<refSz; ++iRef)
-        {
-            int32 refFaceId = originVert.refIndices[iRef]/3;
-            if (refFaceId == faceId) continue;
-            
-            //check if uv's mirrored;
-            
-            bool isNotMirrored;
-            if (computeBinormal)
-            {
-                //here we use handness to find mirrored UV's - still not sure if it is better then using dot product
-                Vector3 n1 = CrossProduct(vertices_full[v].tangent, vertices_full[v].binormal);
-                Vector3 n2 = CrossProduct(faces[refFaceId].tangent, faces[refFaceId].binormal);
-                isNotMirrored = DotProduct(n1, n2)>0.0f;
-            }
-            else
-            {
-                isNotMirrored = DotProduct(vertices_full[v].tangent, faces[refFaceId].tangent)>0.0f;
-            }
-
-            
-            if (isNotMirrored)
-            {
-                vertices_full[v].tangent+=faces[refFaceId].tangent;
-                vertices_full[v].binormal+=faces[refFaceId].binormal;
-                vertices_full[v].tbRatio++;
-            }
-            
-        }
-
-        if (normalizeTangentSpace)
-        {
-            vertices_full[v].tangent.Normalize();
-            vertices_full[v].binormal.Normalize();
-        }
-        else
-        {
-            float32 invScale = 1.0f/(float32)vertices_full[v].tbRatio;
-            vertices_full[v].tangent*=invScale;
-            vertices_full[v].binormal*=invScale;
-        }
-    }
-
-    //unlock vertices that have different tangent/binormal but same ref
-    for (uint32 i=0, sz=vertices_origin.size(); i<sz; ++i)
-    {
-        /*TODO: dopisat'*/
-    }
-    
-    ScopedPtr<PolygonGroup> tmpGroup(new PolygonGroup());        
-    tmpGroup->AllocateData(group->GetFormat(), group->GetVertexCount(), group->GetIndexCount());
-
-    Memcpy(tmpGroup->meshData, tmpGroup->meshData, group->GetVertexCount()*group->vertexStride);
-    Memcpy(tmpGroup->indexArray, tmpGroup->indexArray, group->GetIndexCount()*sizeof(int16));
-
-    int32 vertexFormat = group->GetFormat() | EVF_TANGENT;
-    if (computeBinormal)
-        vertexFormat|=EVF_BINORMAL;
-    group->ReleaseData();
-    group->AllocateData(vertexFormat, vertices_origin.size(), vertices_full.size());
-
-    //copy verices
-    for (uint32 i=0, sz = vertices_origin.size(); i<sz; ++i)
-    {
-        CopyVertex(tmpGroup, vertices_origin[i].refIndex, group, i);
-        group->SetTangent(i, vertices_origin[i].tangent);
-        if (computeBinormal)
-            group->SetBinormal(i, vertices_origin[i].binormal);
-    }
-
-    //copy indices
-    for (int32 i = 0, sz = vertices_full.size(); i<sz; ++i)
-        group->SetIndex(i, vertices_full[i].refIndex);
-}
     
 };
 

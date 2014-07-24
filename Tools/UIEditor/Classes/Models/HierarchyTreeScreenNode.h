@@ -72,6 +72,7 @@ public:
 	
 	bool Load(const QString& path);
 	bool Save(const QString& path, bool saveAll);
+    bool Unload();
 	
 	virtual void ReturnTreeNodeToScene();
 	virtual Rect GetRect() const;
@@ -88,19 +89,21 @@ public:
     void StartNewGuide(GuideData::eGuideType guideType);
     void MoveNewGuide(const Vector2& pos);
     
-    bool CanAcceptNewGuide();
+    bool CanAcceptNewGuide() const;
     const GuideData* AcceptNewGuide();
     void CancelNewGuide();
 
     // Methods related to the moving existing guide.
     bool StartMoveGuide(const Vector2& pos);
     void MoveGuide(const Vector2& pos);
+    const GuideData* GetMoveGuide() const;
 
     // Get the active (selected or moved) guide.
     const GuideData* GetActiveGuide() const;
 
     Vector2 GetMoveGuideStartPos() const;
     const GuideData* AcceptMoveGuide();
+    const GuideData* CancelMoveGuide();
 
     // Selected Guide methods.
     bool AreGuidesSelected() const;
@@ -130,17 +133,21 @@ public:
     bool AreGuidesLocked() const;
     void LockGuides(bool value);
 
-    // Set the stick mode.
+    // Get/set the stick mode.
+    int32 GetStickMode() const;
     void SetStickMode(int32 stickMode);
 
     // Access to Guides Manager.
     const GuidesManager& GetGuidesManager() const;
 
     // Access to the list of control rects for this node.
-    List<Rect> GetControlRectsList(bool includeScreenBounds) const;
-    void GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<Rect>& rectsList) const;
+    List<GuidesManager::StickedRect> GetControlRectsList(bool includeScreenBounds) const;
+    void GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<GuidesManager::StickedRect>& rectsList) const;
+    
+    bool IsLoaded() const {return loaded;}
 
 protected:
+    virtual Rect GetOwnRect() const;
 	void CombineRectWithChild(Rect& rect) const;
     
     // Initialize the control before adding to hierarchy tree.
@@ -158,6 +165,7 @@ protected:
 	float scale;
 	int posX;
 	int posY;
+    bool loaded;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeScreenNode__) */

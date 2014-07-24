@@ -78,7 +78,8 @@ public:
 		TYPE_SPRITE,			// Sprite Node
 		TYPE_PARTICLE_EMTITTER,  // Particle Emitter
 		TYPE_SKYBOX,
-        TYPE_VEGETATION
+        TYPE_VEGETATION,
+        TYPE_SPEED_TREE
     };
     
 	enum eFlags
@@ -100,7 +101,9 @@ public:
 
 	static const uint32 VISIBILITY_CRITERIA = VISIBLE | VISIBLE_STATIC_OCCLUSION;
 	const static uint32 CLIPPING_VISIBILITY_CRITERIA = RenderObject::VISIBLE | VISIBLE_STATIC_OCCLUSION;
-    static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION | ALWAYS_CLIPPING_VISIBLE;protected:
+    static const uint32 SERIALIZATION_CRITERIA = VISIBLE | VISIBLE_REFLECTION | VISIBLE_REFRACTION | ALWAYS_CLIPPING_VISIBLE;
+
+protected:
     virtual ~RenderObject();
 public:
     RenderObject();
@@ -116,6 +119,9 @@ public:
     void AddRenderBatch(RenderBatch * batch, int32 lodIndex, int32 switchIndex);
     void RemoveRenderBatch(RenderBatch * batch);
     void RemoveRenderBatch(uint32 batchIndex);
+
+    void SetRenderBatchLODIndex(uint32 batchIndex, int32 newLodIndex);
+    void SetRenderBatchSwitchIndex(uint32 batchIndex, int32 newSwitchIndex);
 
     void UpdateBatchesSortingTransforms();
 
@@ -147,7 +153,7 @@ public:
     inline void SetBSphere(const Sphere & sphere);
     
     inline const AABBox3 & GetBoundingBox() const;
-    inline AABBox3 & GetWorldBoundingBox();
+    inline const AABBox3 & GetWorldBoundingBox() const;
     
     inline void SetWorldTransformPtr(Matrix4 * _worldTransform);
     inline Matrix4 * GetWorldTransformPtr() const;
@@ -286,7 +292,7 @@ inline const AABBox3 & RenderObject::GetBoundingBox() const
     return bbox;
 }
 
-inline AABBox3 & RenderObject::GetWorldBoundingBox()
+inline const AABBox3 & RenderObject::GetWorldBoundingBox() const
 {
     return worldBBox;
 }

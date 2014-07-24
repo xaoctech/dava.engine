@@ -558,7 +558,7 @@ void VisibilityToolSystem::DrawVisibilityAreaPoints(const Vector<DAVA::Vector3> 
 
 		manager->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
 		manager->SetColor(areaPointColors[colorIndex]);
-		helper->DrawPoint(pos, 5.f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
+		helper->DrawPoint(pos / Core::GetVirtualToPhysicalFactor(), 5.f, DAVA::RenderState::RENDERSTATE_2D_BLEND);
 	}
 
 	manager->ResetColor();
@@ -576,7 +576,7 @@ void VisibilityToolSystem::SaveTexture(const FilePath& filePath)
 	Texture* visibilityToolTexture = visibilityToolSprite->GetTexture();
 
 	Image* image = visibilityToolTexture->CreateImageFromMemory(RenderState::RENDERSTATE_2D_BLEND);
-	ImageLoader::Save(image, filePath);
+    ImageSystem::Instance()->Save(filePath, image);
 	SafeRelease(image);
 }
 

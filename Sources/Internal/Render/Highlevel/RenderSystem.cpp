@@ -53,7 +53,7 @@ namespace DAVA
 {
 
 RenderSystem::RenderSystem()
-    :   renderPassManager(this)
+    :   renderPassManager()
     ,   mainCamera(0)
     ,   drawCamera(0)
     ,   forceUpdateLights(false)
@@ -387,12 +387,12 @@ void RenderSystem::DebugDrawHierarchy(const Matrix4& cameraMatrix)
 		renderHierarchy->DebugDraw(cameraMatrix);
 }
 
-void RenderSystem::Render()
+void RenderSystem::Render(uint32 clearBuffers)
 {
     TIME_PROFILE("RenderSystem::Render");
 
     
-    mainRenderPass->Draw(this);
+    mainRenderPass->Draw(this, clearBuffers);
     
     
     //Logger::FrameworkDebug("OccludedRenderBatchCount: %d", RenderManager::Instance()->GetStats().occludedRenderBatchCount);

@@ -114,8 +114,9 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
@@ -135,8 +136,9 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Lib>
       <AdditionalOptions>/VERBOSE:LIB /ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
@@ -155,6 +157,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;libtheora_win.lib;PVRTexLib32.lib;libdxt.lib;libcurl.lib;ws2_32.lib;winmm.lib;wldap32.lib;lua_win.lib;TextureConverter.lib;fmodex_vc.lib;fmod_event.lib;iphlpapi.lib;libjpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -191,6 +194,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>freetype246MT.lib;opengl32.lib;glew32.lib;libogg_static.lib;libvorbis_static.lib;libvorbisfile_static.lib;libyaml_win.lib;libxml_win.lib;pnglib_win.lib;libmongodb_win.lib;libtheora_win.lib;PVRTexLib32.lib;libdxt.lib;TextureConverter.lib;fmodex_vc.lib;fmod_event.lib;iphlpapi.lib;libjpeg.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -246,7 +250,6 @@
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingDB.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\AutotestingSystemLua.h" />
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\GameAPI.h" />
     <ClInclude Include="..\..\Sources\Internal\Autotesting\MongodbUpdateObject.h" />
     <ClInclude Include="..\..\Sources\Internal\Base\AllocatorFactory.h" />
@@ -338,6 +341,7 @@
     <ClInclude Include="..\..\Sources\Internal\FileSystem\VariantType.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\XMLParser.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlArchive.h" />
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlNode.h" />
     <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlParser.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\Accelerometer.h" />
     <ClInclude Include="..\..\Sources\Internal\Input\AccelerometeriPhone.h" />
@@ -421,6 +425,7 @@
     <ClInclude Include="..\..\Sources\Internal\Platform\TemplateWin32\WindowsSpecifics.h" />
     <ClInclude Include="..\..\Sources\Internal\Platform\Thread.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\3D\MeshUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Cursor.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\D3D9Helpers.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.h" />
@@ -460,16 +465,29 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusion.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusionRenderPass.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\TextureSheet.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometry.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometrySerializationData.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomSLGeometry.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationFixedGeometry.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationGeometry.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationMaterialTransformer.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationPropertyNames.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderData.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationSpatialData.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Highlevel\VisibilityArray.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\Image.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageConvert.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\ImageLoader.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\CRCAdditionInterface.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\Image.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageConvert.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\ImageSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\IndexBuffer.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\LibDxtHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\LibJpegHelper.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPngHelpers.h" />
-    <ClInclude Include="..\..\Sources\Internal\Render\LibPVRHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialGraph.h" />
@@ -477,7 +495,11 @@
     <ClInclude Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterial.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialConsts.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialNames.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialStateDynamicFlagsInsp.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialStateDynamicPropertiesInsp.h" />
+    <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialStateDynamicTexturesInsp.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\NMaterialTemplate.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\Material\RenderTechnique.h" />
     <ClInclude Include="..\..\Sources\Internal\Render\MipmapReplacer.h" />
@@ -539,13 +561,17 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\StaticOcclusionComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\WaveComponent.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Components\WindComponent.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\DataNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\ImposterNode.h" />
@@ -583,16 +609,20 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeUpdateSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\StaticOcclusionSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\UserNode.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODSoundEvent.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\FMODUtils.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundEvent.h" />
     <ClInclude Include="..\..\Sources\Internal\Sound\SoundSystem.h" />
+    <ClInclude Include="..\..\Sources\Internal\Thread\LockGuard.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\ScrollHelper.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\TheoraPlayer.h" />
     <ClInclude Include="..\..\Sources\Internal\UI\UI3DView.h" />
@@ -642,6 +672,7 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\UTF8Utils.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Utils.h" />
+    <ClInclude Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\External\Box2D\Collision\b2BroadPhase.cpp" />
@@ -761,6 +792,7 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\VariantType.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\XMLParser.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlArchive.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlParser.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\Accelerometer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Input\GamepadDevice.cpp" />
@@ -826,6 +858,7 @@
     <ClCompile Include="..\..\Sources\Internal\Platform\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Platform\ThreadWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\3D\EdgeAdjacency.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\3D\MeshUtils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\CursorWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\D3D9Helpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\DynamicIndexBuffer.cpp" />
@@ -863,20 +896,34 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\SpriteRenderBatch.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusion.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\StaticOcclusionRenderPass.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\VegetationRenderObject.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\Image.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\ImageLoader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\LibDxtHelper.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\LibJpegHelper.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPngHelpers.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Render\LibPVRHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\RenderBatchPool.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\TextureSheet.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometry.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomGeometrySerializationData.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationCustomSLGeometry.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationFixedGeometry.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationGeometry.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationPropertyNames.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderData.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Highlevel\Vegetation\VegetationRenderObject.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\Image.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibDdsHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibJpegHelper.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPngHelpers.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Image\LibPVRHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialCompiler.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraph.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialGraphNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\MaterialOptimazer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterial.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialHelper.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialNames.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialStateDynamicFlagsInsp.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialStateDynamicPropertiesInsp.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialStateDynamicTexturesInsp.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\NMaterialTemplate.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\Material\RenderTechnique.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
@@ -937,13 +984,17 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\QualitySettingsComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\RenderComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SoundComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SpeedTreeComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\StaticOcclusionComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\SwitchComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\TransformComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UpdatableComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\UserComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\WaveComponent.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Components\WindComponent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\LodToLod2Converter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\SwitchToRenerObjectConverter.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Converters\TreeToAnimatedTreeConverter.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\DataNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\ImposterNode.cpp" />
@@ -981,10 +1032,13 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\RenderUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SkyboxSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SoundUpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SpeedTreeUpdateSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\StaticOcclusionSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\SwitchSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\TransformSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\UpdateSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WaveSystem.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\Systems\WindSystem.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\UserNode.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODFileSoundEvent.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Sound\FMODSoundEvent.cpp" />
@@ -1032,6 +1086,7 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
