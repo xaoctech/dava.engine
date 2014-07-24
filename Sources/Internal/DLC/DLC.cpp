@@ -29,9 +29,13 @@
 #include "DLC.h"
 #include "Job/JobManager.h"
 #include "Patcher/PatchFile.h"
-#include "Downloader/DataDownloadManager.h"
 #include "Platform/DeviceInfo.h"
+#include "Downloader/DownloadManager.h"
 #include "Render/GPUFamilyDescriptor.h"
+
+#include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
+
 
 namespace DAVA
 {
@@ -108,7 +112,7 @@ void DLC::GetProgress(uint64 &cur, uint64 &total) const
         case DS_READY:
         case DS_DOWNLOADING:
             total = dlcContext.remotePatchSize;
-            DataDownloadManager::Instance()->GetProgress(dlcContext.remotePatchDownloadId, cur);
+            DownloadManager::Instance()->GetProgress(dlcContext.remotePatchDownloadId, cur);
             break;
         case DS_PATCHING:
             total = dlcContext.patchCount;
@@ -387,8 +391,8 @@ void DLC::StepCheckInfoBegin()
         dlcContext.localVer = ReadUint32(dlcContext.localVerStorePath);
     }
 
-    DataDownloadManager::Instance()->SetNotificationCallback(DataDownloadManager::NotifyFunctor(this, &DLC::StepCheckInfoFinish));
-    dlcContext.remoteVerDownloadId = DataDownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);   
+    DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckInfoFinish));
+    dlcContext.remoteVerDownloadId = DownloadManager::Instance()->Download(dlcContext.remoteVerUrl, dlcContext.remoteVerStotePath.GetAbsolutePathname(), FULL);   
 }
 
 // downloading DLC version file finished. need to read removeVersion
@@ -399,7 +403,7 @@ void DLC::StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status)
         if(DL_FINISHED == status)
         {
             DownloadError downloadError;
-            DataDownloadManager::Instance()->GetError(id, downloadError);
+            DownloadManager::Instance()->GetError(id, downloadError);
 
             if(downloadError == DLE_NO_ERROR && dlcContext.remoteVerStotePath.Exists())
             {
@@ -416,7 +420,7 @@ void DLC::StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status)
 
 void DLC::StepCheckInfoCancel()
 {
-    DataDownloadManager::Instance()->Cancel(dlcContext.remoteVerDownloadId);
+    DownloadManager::Instance()->Cancel(dlcContext.remoteVerDownloadId);
 }
 
 void DLC::StepCheckPatchBegin()
@@ -424,9 +428,9 @@ void DLC::StepCheckPatchBegin()
     dlcContext.remotePatchFullUrl = dlcContext.remoteUrl + MakePatchUrl(0, dlcContext.remoteVer);
     dlcContext.remotePatchLiteUrl = dlcContext.remoteUrl + MakePatchUrl(dlcContext.localVer, dlcContext.remoteVer);
 
-    DataDownloadManager::Instance()->SetNotificationCallback(DataDownloadManager::NotifyFunctor(this, &DLC::StepCheckPatchFinish));
-    dlcContext.remoteFullSizeDownloadId = DataDownloadManager::Instance()->GetSize(dlcContext.remotePatchFullUrl, 2000, 2); // full size should be first
-    dlcContext.remoteLiteSizeDownloadId = DataDownloadManager::Instance()->GetSize(dlcContext.remotePatchLiteUrl, 2000, 2); // lite size should be last
+    DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepCheckPatchFinish));
+    dlcContext.remoteFullSizeDownloadId = DownloadManager::Instance()->Download(dlcContext.remotePatchFullUrl, dlcContext.remotePatchStorePath, GET_SIZE); // full size should be first
+    dlcContext.remoteLiteSizeDownloadId = DownloadManager::Instance()->Download(dlcContext.remotePatchLiteUrl, dlcContext.remotePatchStorePath, GET_SIZE); // lite size should be last
 }
 
 void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
@@ -439,9 +443,9 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
             DownloadError downloadErrorFull;
             DownloadError downloadErrorLite;
 
-            DataDownloadManager::Instance()->GetStatus(dlcContext.remoteFullSizeDownloadId, statusFull);
-            DataDownloadManager::Instance()->GetError(dlcContext.remoteFullSizeDownloadId, downloadErrorFull);
-            DataDownloadManager::Instance()->GetError(dlcContext.remoteLiteSizeDownloadId, downloadErrorLite);
+            DownloadManager::Instance()->GetStatus(dlcContext.remoteFullSizeDownloadId, statusFull);
+            DownloadManager::Instance()->GetError(dlcContext.remoteFullSizeDownloadId, downloadErrorFull);
+            DownloadManager::Instance()->GetError(dlcContext.remoteLiteSizeDownloadId, downloadErrorLite);
 
             // when lite id finishing, full id should be already finished
             DVASSERT(DL_FINISHED == statusFull);
@@ -449,7 +453,7 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
             if(downloadErrorLite == DLE_NO_ERROR)
             {
                 dlcContext.remotePatchUrl = dlcContext.remotePatchLiteUrl;
-                DataDownloadManager::Instance()->GetTotal(dlcContext.remoteLiteSizeDownloadId, dlcContext.remotePatchSize);
+                DownloadManager::Instance()->GetTotal(dlcContext.remoteLiteSizeDownloadId, dlcContext.remotePatchSize);
 
                 FSM(EVENT_CHECK_OK);
             }
@@ -458,7 +462,7 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
                 if(DL_FINISHED == statusFull && DLE_NO_ERROR == downloadErrorFull)
                 {
                     dlcContext.remotePatchUrl = dlcContext.remotePatchFullUrl;
-                    DataDownloadManager::Instance()->GetTotal(dlcContext.remoteFullSizeDownloadId, dlcContext.remotePatchSize);
+                    DownloadManager::Instance()->GetTotal(dlcContext.remoteFullSizeDownloadId, dlcContext.remotePatchSize);
 
                     FSM(EVENT_CHECK_OK);
                 }
@@ -473,8 +477,8 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
 
 void DLC::StepCheckPatchCancel()
 {
-    DataDownloadManager::Instance()->Cancel(dlcContext.remoteFullSizeDownloadId);
-    DataDownloadManager::Instance()->Cancel(dlcContext.remoteLiteSizeDownloadId);
+    DownloadManager::Instance()->Cancel(dlcContext.remoteFullSizeDownloadId);
+    DownloadManager::Instance()->Cancel(dlcContext.remoteLiteSizeDownloadId);
 }
 
 // download patch file
@@ -509,7 +513,7 @@ void DLC::StepDownloadPatchBegin()
             if(lastUrl == dlcContext.remotePatchUrl && lastSize == dlcContext.remotePatchSize)
             {
                 // now we can resume last download
-                donwloadType = AUTO;
+                donwloadType = RESUMED;
             }
 
             SafeRelease(downloadInfoFile);
@@ -526,8 +530,8 @@ void DLC::StepDownloadPatchBegin()
         }
 
         // start download and notify about download status into StepDownloadPatchFinish
-        DataDownloadManager::Instance()->SetNotificationCallback(DataDownloadManager::NotifyFunctor(this, &DLC::StepDownloadPatchFinish));
-        dlcContext.remotePatchDownloadId = DataDownloadManager::Instance()->Download(dlcContext.remotePatchUrl, dlcContext.remotePatchStorePath.GetAbsolutePathname(), donwloadType);
+        DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLC::StepDownloadPatchFinish));
+        dlcContext.remotePatchDownloadId = DownloadManager::Instance()->Download(dlcContext.remotePatchUrl, dlcContext.remotePatchStorePath.GetAbsolutePathname(), donwloadType);
     }
 }
 
@@ -538,7 +542,7 @@ void DLC::StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status
         if(DL_FINISHED == status)
         {
             DownloadError downloadError;
-            DataDownloadManager::Instance()->GetError(id, downloadError);
+            DownloadManager::Instance()->GetError(id, downloadError);
 
             if(downloadError == DLE_NO_ERROR)
             {
@@ -554,7 +558,7 @@ void DLC::StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status
 
 void DLC::StepDownloadPatchCancel()
 {
-    DataDownloadManager::Instance()->Cancel(dlcContext.remotePatchDownloadId);
+    DownloadManager::Instance()->Cancel(dlcContext.remotePatchDownloadId);
 }
 
 void DLC::StepPatchBegin()

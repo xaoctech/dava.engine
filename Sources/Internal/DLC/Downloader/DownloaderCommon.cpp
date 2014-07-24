@@ -30,7 +30,7 @@
 
 namespace DAVA
 {
-DownloadTaskDescription::DownloadTaskDescription(String srcUrl, String storeToFilePath, DownloadType downloadMode, int32 _timeout, int32 _retriesCount)
+DownloadTaskDescription::DownloadTaskDescription(const String &srcUrl, const FilePath &storeToFilePath, DownloadType downloadMode, int32 _timeout, int32 _retriesCount)
     : id(0)
     , url(srcUrl)
     , storePath(storeToFilePath)
