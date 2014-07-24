@@ -352,7 +352,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>
             result &= screenNode->Save(screenPath, saveAll);
         }
 		
-		screens->AddValueToArray(screenNode->GetName().toStdString());
+		screens->Add(screenNode->GetName().toStdString());
 	}
 	return result;
 }

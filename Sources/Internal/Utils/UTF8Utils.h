@@ -56,7 +56,7 @@ public:
         \param[in] utf8String string in UTF8 format
         \return string in unicode
      */
-    inline static const WideString EncodeToWideString(const String & utf8String);
+    inline static WideString EncodeToWideString(const String & utf8String);
 
 	/**
 	 \brief convert WideString string to UTF8
@@ -66,7 +66,7 @@ public:
 	static String EncodeToUTF8(const WideString& wstring);
 };
 
-inline const WideString UTF8Utils::EncodeToWideString(const String & utf8String)
+inline WideString UTF8Utils::EncodeToWideString(const String & utf8String)
 {
     WideString str;
     EncodeToWideString((const uint8 *)utf8String.c_str(), utf8String.length(), str);

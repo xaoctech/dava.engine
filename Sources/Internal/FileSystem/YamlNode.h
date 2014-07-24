@@ -83,134 +83,142 @@ public:
     static YamlNode *CreateArrayNode(eArrayRepresentation representation = AR_FLOW_REPRESENTATION);
     static YamlNode *CreateMapNode(eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
 
+    eType           GetType() const { return type; }
+    int32           GetCount() const;
+
     void Print(int32 identation);
     void PrintToFile(DAVA::File* file, uint32 identationDepth = 0) const;
 
-    bool			AsBool() const;
-    int32			AsInt() const;//left for old code
-    int32			AsInt32() const;
-    uint32			AsUInt32() const;
-    int64			AsInt64() const;
-    uint64			AsUInt64() const;
-    float32			AsFloat() const;
-    const String &	AsString() const;
-    const WideString & AsWString() const;
-    const Vector<YamlNode*> & AsVector() const;
-    const MultiMap<String, YamlNode*> & AsMap() const;
+    bool            AsBool() const;
+    int32           AsInt() const;//left for old code
+    int32           AsInt32() const;
+    uint32          AsUInt32() const;
+    int64           AsInt64() const;
+    uint64          AsUInt64() const;
+    float32         AsFloat() const;
+    const String    &AsString() const;
+    const WideString &AsWString() const;
+    const Vector<YamlNode*> &AsVector() const;
+    const MultiMap<String, YamlNode*> &AsMap() const;
     FastName AsFastName() const;
 
     /*
         These functions work only if type of node is array
         All values must be integer or float to perform this conversion
      */
-    Vector2			AsPoint() const;//Dizz: this one exists cause of Boroda
-    Vector2			AsVector2() const;
-    Vector3			AsVector3() const;
-    Vector4			AsVector4() const;
-    Color			AsColor() const;
-    Rect			AsRect() const;
+    Vector2         AsPoint() const;//Dizz: this one exists cause of Boroda
+    Vector2         AsVector2() const;
+    Vector3         AsVector3() const;
+    Vector4         AsVector4() const;
+    Color           AsColor() const;
+    Rect            AsRect() const;
     VariantType     AsVariantType() const;
 
-    const YamlNode *		Get(const String & name) const;
-    const YamlNode *		Get(int32 index) const;
-    const String &	GetItemKeyName(int32 index) const;
+    const YamlNode *Get(const String & name) const;
+    const YamlNode *Get(int32 index) const;
+    const String   &GetItemKeyName(int32 index) const;
+
+    // "Setters". These methods set data in string node.
+    inline void     Set(bool value);
+    inline void     Set(int32 value);
+    inline void     Set(float32 value);
+    inline void     Set(const char *value);
+    inline void     Set(const String &value);
+    inline void     Set(const WideString &value);
+
+    // "Adders". These methods add data to array node.
+    inline void     Add(bool value);
+    inline void     Add(int32 value);
+    inline void     Add(float32 value);
+    inline void     Add(const char *value);
+    inline void     Add(const String &value);
+    inline void     Add(const WideString &value);
+    inline void     Add(const Vector2 &value);
+    inline void     Add(const Vector3 &value);
+    inline void     Add(const Vector4 &value);
+    inline void     Add(const VariantType &value);
+    inline void     Add(YamlNode* value);
 
     // "Adders". These methods ADD node to the map, even in case the node with the same name is added.
-    void            Add(const String& name, bool value);
-    void            Add(const String& name, int32 value);
-    void            Add(const String& name, float32 value);
-
-    void            Add(const String& name, const char8* value);
-    void            Add(const String& name, const String& value);
-    void            Add(const String& name, const WideString& value);
-
-    void            Add(const String& name, const Vector2& value);
-    void            Add(const String& name, const Vector3& value);
-    void            Add(const String& name, const Vector4& value);
-
-    void            Add(const String& name, VariantType* varType);
-
-    // Specific adder for the whole node.
-    void            AddNodeToMap(const String& name, YamlNode* node);
-
+    inline void     Add(const String& name, bool value);
+    inline void     Add(const String& name, int32 value);
+    inline void     Add(const String& name, float32 value);
+    inline void     Add(const String& name, const char *value);
+    inline void     Add(const String& name, const String &value);
+    inline void     Add(const String& name, const WideString &value);
+    inline void     Add(const String& name, const Vector2 &value);
+    inline void     Add(const String& name, const Vector3 &value);
+    inline void     Add(const String& name, const Vector4 &value);
+    inline void     Add(const String& name, const VariantType &value);
+    inline void     Add(const String& name, VariantType *varType);
+    inline void     Add(const String &name, YamlNode *value);
 
     // "Setters". These methods REPLACE node in the map in case the node with the same name exists.
-    void            Set(const String& name, bool value);
-    void            Set(const String& name, int32 value);
-    void            Set(const String& name, float32 value);
+    inline void     Set(const String& name, bool value);
+    inline void     Set(const String& name, int32 value);
+    inline void     Set(const String& name, float32 value);
+    inline void     Set(const String& name, const char *value);
+    inline void     Set(const String& name, const String &value);
+    inline void     Set(const String& name, const WideString &value);
+    inline void     Set(const String& name, const Vector2 &value);
+    inline void     Set(const String& name, const Vector3 &value);
+    inline void     Set(const String& name, const Vector4 &value);
+    inline void     Set(const String& name, const VariantType &value);
+    inline void     Set(const String& name, VariantType *varType);
+    inline void     Set(const String& name, YamlNode *value);
 
-    void            Set(const String& name, const char8* value);
-    void            Set(const String& name, const String& value);
-    void            Set(const String& name, const WideString& value);
-
-    void            Set(const String& name, const Vector2& value);
-    void            Set(const String& name, const Vector3& value);
-    void            Set(const String& name, const Vector4& value);
-
-    void            Set(const String& name, VariantType* varType);
-
+    // Specific adder for the whole node.
+    inline void     AddNodeToMap(const String &name, YamlNode *value);
     // Specific setter for the whole node.
-    void            SetNodeToMap(const String& name, YamlNode* node);
-
+    inline void     SetNodeToMap(const String &name, YamlNode *value);
     // Setters for Map/Array nodes.
-    void            AddNodeToArray(YamlNode* node);
+    inline void     AddNodeToArray(YamlNode* value);
 
     // Add the values to the current node of type Array.
-    void            AddValueToArray(int32 value);
-    void            AddValueToArray(float32 value);
-    void            AddValueToArray(const String& value);
-    void            AddValueToArray(const Vector2& value);
-    void            AddValueToArray(const Vector3& value);
-    void            AddValueToArray(const Vector4& value);
-    void            AddValueToArray(VariantType* value);
+    DAVA_DEPRECATED(inline void    AddValueToArray(int32 value));
+    DAVA_DEPRECATED(inline void    AddValueToArray(float32 value));
+    DAVA_DEPRECATED(inline void    AddValueToArray(const String& value));
+    DAVA_DEPRECATED(inline void    AddValueToArray(const Vector2& value));
+    DAVA_DEPRECATED(inline void    AddValueToArray(const Vector3& value));
+    DAVA_DEPRECATED(inline void    AddValueToArray(const Vector4& value));
+    DAVA_DEPRECATED(inline void    AddValueToArray(VariantType* value));
 
     // Remove node value from map
     void            RemoveNodeFromMap(const String & name);
 
-    eType			GetType() const { return type; }
-    int32			GetCount() const;
-    bool			IsWideString() const { return isWideString; };
-
-    void            InitFromKeyedArchive(KeyedArchive* archive);
-    void            InitFromVariantType(VariantType* varType);
-
 protected:
-    void            FillContentAccordingToVariantTypeValue(VariantType* varType);
+    static YamlNode *CreateNodeWithVariantType(const VariantType &varType);
+    static YamlNode *CreateNodeWithMatrix(const float32* array,uint32 dimension);
+    static YamlNode *CreateNodeWithVector(const float32 array[],uint32 dimension);
+    static YamlNode *CreateNodeWithByteArray(const uint8* byteArray,int32 byteArraySize);
+    static YamlNode *CreateNodeWithKeyedArchive(KeyedArchive* archive);
+    static YamlNode *CreateNodeWithString(const String &value, eStringRepresentation representation = SR_PLAIN_REPRESENTATION);
+    static YamlNode *CreateNodeWithString(const WideString &value, eStringRepresentation representation = SR_PLAIN_REPRESENTATION);
 
-    void            ProcessMatrix(const float32* array,uint32 dimension);
-    void            ProcessVector(const float32 array[],uint32 dimension);
-    void            ProcessByteArray(const uint8* byteArray,int32 byteArraySize);
-    void            ProcessKeyedArchive(KeyedArchive* archive);
+    static YamlNode *CreateNodeFromVariantType(const VariantType &varType);
 
     bool            IsContainingMap() const;
-    String          FloatToCuttedString(float32 f);
+    static String   FloatToCuttedString(float32 f);
 
     // Internal setters, which can both add or replace value in the map.
-    void            InternalSet(const String& name, bool value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, int32 value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, float32 value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, const char8* value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, const String& value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, const WideString& value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, const Vector2& value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, const Vector3& value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, const Vector4& value, bool rewritePreviousValue);
-    void            InternalSet(const String& name, VariantType* varType, bool rewritePreviousValue);
+    void            InternalSetToString(const VariantType &varType);
+    void            InternalAddToMap(const String& name, const VariantType &varType, bool rewritePreviousValue);
+    void            InternalAddToArray(const VariantType &varType);
 
+    void            InternalAddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue);
     void            InternalAddNodeToArray(YamlNode* node);
-    void            InternalSetNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue);
+
     void            InternalSetString(const String &value);
     void            InternalSetWideString(const WideString &value);
-private:
 
-    int						mapIndex;
-    int						mapCount;
-    eType					type;
-    WideString				stringValue;
-    String					 nwStringValue;
-    Vector<YamlNode*>		 objectArray;
-    MultiMap<String, YamlNode*>	objectMap;
-    bool					isWideString;
+private:
+    int                         mapIndex;
+    int                         mapCount;
+    eType                       type;
+    WideString                  stringValue;
+    String                      nwStringValue;
+    Vector<YamlNode*>           objectArray;
+    MultiMap<String, YamlNode*> objectMap;
     union
     {
         eStringRepresentation stringStyle;
@@ -225,6 +233,74 @@ private:
     friend class YamlParser;
     friend class YamlEmitter;
 };
+
+inline void YamlNode::Set(bool value)              { InternalSetToString(VariantType(value)); }
+inline void YamlNode::Set(int32 value)             { InternalSetToString(VariantType(value)); }
+inline void YamlNode::Set(float32 value)           { InternalSetToString(VariantType(value)); }
+inline void YamlNode::Set(const char *value)       { InternalSetToString(VariantType((String)value)); }
+inline void YamlNode::Set(const String &value)     { InternalSetToString(VariantType(value)); }
+inline void YamlNode::Set(const WideString &value) { InternalSetToString(VariantType(value)); }
+
+inline void YamlNode::Add(bool value)              { InternalAddToArray(VariantType(value)); }
+inline void YamlNode::Add(int32 value)             { InternalAddToArray(VariantType(value)); }
+inline void YamlNode::Add(float32 value)           { InternalAddToArray(VariantType(value)); }
+
+inline void YamlNode::Add(const char *value)       { InternalAddToArray(VariantType((String)value)); }
+inline void YamlNode::Add(const String &value)     { InternalAddToArray(VariantType(value)); }
+inline void YamlNode::Add(const WideString &value) { InternalAddToArray(VariantType(value)); }
+
+inline void YamlNode::Add(const Vector2 &value)    { InternalAddToArray(VariantType(value)); }
+inline void YamlNode::Add(const Vector3 &value)    { InternalAddToArray(VariantType(value)); }
+inline void YamlNode::Add(const Vector4 &value)    { InternalAddToArray(VariantType(value)); }
+
+inline void YamlNode::Add(const VariantType &value){ InternalAddToArray(value); };
+inline void YamlNode::Add(YamlNode* value)         { InternalAddNodeToArray(value); };
+
+inline void YamlNode::Add(const String& name, bool value)              { InternalAddToMap(name, VariantType(value), false); }
+inline void YamlNode::Add(const String& name, int32 value)             { InternalAddToMap(name, VariantType(value), false); }
+inline void YamlNode::Add(const String& name, float32 value)           { InternalAddToMap(name, VariantType(value), false); }
+
+inline void YamlNode::Add(const String& name, const char *value)       { InternalAddToMap(name, VariantType((String)value), false); }
+inline void YamlNode::Add(const String& name, const String &value)     { InternalAddToMap(name, VariantType(value), false); }
+inline void YamlNode::Add(const String& name, const WideString &value) { InternalAddToMap(name, VariantType(value), false); }
+
+inline void YamlNode::Add(const String& name, const Vector2 &value)    { InternalAddToMap(name, VariantType(value), false); }
+inline void YamlNode::Add(const String& name, const Vector3 &value)    { InternalAddToMap(name, VariantType(value), false); }
+inline void YamlNode::Add(const String& name, const Vector4 &value)    { InternalAddToMap(name, VariantType(value), false); }
+
+inline void YamlNode::Add(const String& name, const VariantType &value){ InternalAddToMap(name, value, false); }
+inline void YamlNode::Add(const String& name, VariantType *varType)    { InternalAddToMap(name, *varType, false); }
+
+inline void YamlNode::Add(const String &name, YamlNode *value)         { InternalAddNodeToMap(name, value, false);}
+
+inline void YamlNode::Set(const String& name, bool value)              { InternalAddToMap(name, VariantType(value), true); }
+inline void YamlNode::Set(const String& name, int32 value)             { InternalAddToMap(name, VariantType(value), true); }
+inline void YamlNode::Set(const String& name, float32 value)           { InternalAddToMap(name, VariantType(value), true); }
+
+inline void YamlNode::Set(const String& name, const char *value)       { InternalAddToMap(name, VariantType((String)value), true); }
+inline void YamlNode::Set(const String& name, const String &value)     { InternalAddToMap(name, VariantType(value), true); }
+inline void YamlNode::Set(const String& name, const WideString &value) { InternalAddToMap(name, VariantType(value), true); }
+
+inline void YamlNode::Set(const String& name, const Vector2 &value)    { InternalAddToMap(name, VariantType(value), true); }
+inline void YamlNode::Set(const String& name, const Vector3 &value)    { InternalAddToMap(name, VariantType(value), true); }
+inline void YamlNode::Set(const String& name, const Vector4 &value)    { InternalAddToMap(name, VariantType(value), true); }
+
+inline void YamlNode::Set(const String& name, const VariantType &value){ InternalAddToMap(name, value, true); }
+inline void YamlNode::Set(const String& name, VariantType *varType)    { InternalAddToMap(name, *varType, true); }
+
+inline void YamlNode::Set(const String& name, YamlNode *value)         { InternalAddNodeToMap(name, value, true); }
+
+inline void YamlNode::AddNodeToMap(const String &name, YamlNode *value){ Add(name, value);}
+inline void YamlNode::SetNodeToMap(const String &name, YamlNode *value){ Set(name, value); }
+inline void YamlNode::AddNodeToArray(YamlNode* value){ Add(value); }
+
+inline void YamlNode::AddValueToArray(int32 value)                      { Add(value); };
+inline void YamlNode::AddValueToArray(float32 value)                    { Add(value); };
+inline void YamlNode::AddValueToArray(const String& value)              { Add(value); };
+inline void YamlNode::AddValueToArray(const Vector2& value)             { Add(value); };
+inline void YamlNode::AddValueToArray(const Vector3& value)             { Add(value); };
+inline void YamlNode::AddValueToArray(const Vector4& value)             { Add(value); };
+inline void YamlNode::AddValueToArray(VariantType* value)               { Add(*value);};
 };
 
 #endif // __DAVAENGINE_YAML_NODE_H__
