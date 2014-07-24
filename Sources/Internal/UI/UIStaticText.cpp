@@ -201,7 +201,7 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
     if(!FLOAT_EQUAL(shadowBg->GetDrawColor().a, 0.0f) && (!FLOAT_EQUAL(shadowOffset.dx, 0.0f) || !FLOAT_EQUAL(shadowOffset.dy, 0.0f)))
     {
-		textBlock->Draw(shadowColor, &shadowOffset);
+		textBlock->Draw(GetShadowColor(), &shadowOffset);
         UIGeometricData shadowGeomData = geometricData;
 
         shadowGeomData.position += shadowOffset;
@@ -209,15 +209,11 @@ void UIStaticText::Draw(const UIGeometricData &geometricData)
 
         shadowBg->SetAlign(textBg->GetAlign());
         shadowBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-        shadowBg->SetColor(shadowColor);
-        shadowBg->SetParentColor(parent->GetBackground()->GetDrawColor());
         shadowBg->Draw(shadowGeomData);
     }
 
-    textBlock->Draw(textColor);
+    textBlock->Draw(GetTextColor());
     textBg->SetPerPixelAccuracyType(background->GetPerPixelAccuracyType());
-    textBg->SetColor(textColor);
-    textBg->SetParentColor(parent->GetBackground()->GetDrawColor());
     textBg->Draw(geometricData);
 }
 

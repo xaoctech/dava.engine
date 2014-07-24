@@ -32,6 +32,7 @@
 #include "Render/RenderManager.h"
 #include "Render/Shader.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 
 #define NOT_DEF_CHAR 0xffff
 
