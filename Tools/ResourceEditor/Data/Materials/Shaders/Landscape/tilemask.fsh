@@ -65,6 +65,7 @@ void main()
     float specularNorm = (glossiness + 2.0) / 8.0;
     color += varSpecularColor * pow(varNdotH, glossiness) * specularNorm;
 #endif
+    //color = vec3(1.0);
 
 #if defined(VERTEX_FOG)
 	#if defined(FOG_GLOW)
