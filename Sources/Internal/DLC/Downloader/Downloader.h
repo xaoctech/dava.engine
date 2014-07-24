@@ -26,91 +26,48 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
+#ifndef __DATA_DOWNLOADER_H__
+#define __DATA_DOWNLOADER_H__
 
-//
-//  DLCSystemTests.h
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 4/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef __DAVAENGINE_DLCSystemTests_h
-#define __DAVAENGINE_DLCSystemTests_h
-
-#include "DLC/DLCSystem.h"
-#include "TestTemplate.h"
+#include "Base/BaseTypes.h"
+#include "Platform/Thread.h"
+#include "Platform/Mutex.h"
+#include "FileSystem/File.h"
+#include "FileSystem/FileSystem.h"
+#include "DownloaderCommon.h"
 
 namespace DAVA
 {
 
-class DLCSystemTests: public DLCSystemDelegate
+/*
+    Base class for eny downloaders. Used as interface inside DownloadManager.
+*/
+class Downloader
 {
-public:
-	DLCSystemTests();
 
-    void StartTests();
-    
-    void Test1();
-    void Test2();
-    void Test3();
-    void Test4();
-    void Test5();
-    void Test6();
-    void Test7();
-    void Test8();
-
-    void NextTest();
-    
-    // File with contents of all DLCs has getted 
-    virtual void InitCompleted(DLCStatusCode withStatus);
-    // Single DLC file has downloaded or end with error
-    virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index);
-    // All DLC files has downloaded
-    virtual void AllDLCCompleted();
-
-	bool IsFinished() { return isFinished; };
-	bool IsNeedNextTest() { return needNextTest; };
-	uint32 GetCurTestNumber() { return state; };
+friend class DownloadManager;
 
 public:
-    enum States
-    {
-        TEST_1 = 0,
-        TEST_2,
-        TEST_3,
-        TEST_4,
-        TEST_5,
-        TEST_6,
-        TEST_7,
-        TEST_8
-    };
-private:
-    States state;
-    bool isSucsess;
-	bool isFinished;
-	bool needNextTest;
-};
+    Downloader(uint32 operationTimeout = 2000);
 
-}// End DAVA
+/* all methods putted into protected section because they should be used only from DownloadManager. */
+protected: 
+    /* Get content size in bytes for remote Url. Place result to retSize, timeout - for operation cancelling */
+    virtual DownloadError GetSize(const String &url, int64 &retSize, int32 _timeout = -1) = 0;
+    /* Main downloading operation. Should call SaveData to store data. */
+    virtual DownloadError Download(const String &url, const uint64 &loadFrom, int32 _timeout = -1) = 0;
+    /* Interrupt download process. We expects that you will save last data chunk came before */
+    virtual void Interrupt() = 0;
+    /* 
+        Main save method. Should be preferred way to store any downloaded data. If not - you can reimplement it, but it is not recommended. 
+        Take a look on CurlDownloader::CurlDataRecvHandler(...) for example.
+    */
+    virtual size_t SaveData(void *ptr, size_t size, size_t nmemb);
 
-class DLCTest: public TestTemplate<DLCTest>
-{
 protected:
-    ~DLCTest(){}
-public:
-	DLCTest();
-
-	virtual void LoadResources();
-	virtual void UnloadResources();
-
-	void DLCTestFunction(PerfFuncData * data);
-
-private:
-	DLCSystemTests* tests;
-
-	bool isStarted;
+    uint32 timeout;
 };
 
+}
 
 #endif

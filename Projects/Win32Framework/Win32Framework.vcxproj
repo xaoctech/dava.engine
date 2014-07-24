@@ -325,8 +325,9 @@
     <ClInclude Include="..\..\Sources\Internal\Debug\Replay.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\DLC.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\CurlDownloader.h" />
-    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DataDownloader.h" />
-    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DataDownloadManager.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\Downloader.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DownloaderCommon.h" />
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DownloadManager.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\Patcher\BSDiff.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\Patcher\bsdiff\bs_common.h" />
     <ClInclude Include="..\..\Sources\Internal\DLC\Patcher\PatchFile.h" />
@@ -781,8 +782,9 @@
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DLC\DLC.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\CurlDownloader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DataDownloader.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DataDownloadManager.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\Downloader.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DownloaderCommon.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DownloadManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DLC\Patcher\BSDiff.cpp" />
     <ClCompile Include="..\..\Sources\Internal\DLC\Patcher\bsdiff\bs_diff.c" />
     <ClCompile Include="..\..\Sources\Internal\DLC\Patcher\bsdiff\bs_patch.c" />
