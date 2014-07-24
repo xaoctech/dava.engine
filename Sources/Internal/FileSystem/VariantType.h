@@ -188,6 +188,7 @@ public:
     
     
     inline eVariantType GetType() const;
+    inline const String &GetTypeName() const;
 	
 	/**
 		\brief Function to set bool value to variant type variable
@@ -490,6 +491,10 @@ VariantType::eVariantType VariantType::GetType() const
     return (eVariantType)type;
 }
 
+inline const String &VariantType::GetTypeName() const
+{
+    return variantNamesMap[type].variantName;
+}
 	
 };
 

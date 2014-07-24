@@ -208,15 +208,15 @@ bool YamlNode::AsBool() const
     return ("true" == AsString() || "yes" == AsString());
 }
 
-const WideString & YamlNode::AsWString() const
+WideString YamlNode::AsWString() const
 {
     DVASSERT(GetType() == TYPE_STRING);
     if (GetType() == TYPE_STRING)
     {
-        return objectString->stringValue;
+        return UTF8Utils::EncodeToWideString(objectString->nwStringValue);
     }
 
-    return EMPTY_WIDESTRING;
+    return L"";
 }
 
 Vector2	YamlNode::AsPoint() const
@@ -565,255 +565,20 @@ YamlNode::eStringRepresentation YamlNode::GetMapKeyRepresentation() const
     return objectMap->keyStyle;
 }
 
-YamlNode * YamlNode::CreateNodeWithVariantType(const VariantType &varType)
+void YamlNode::InternalSetToString(const VariantType &varType)
 {
-    YamlNode *node = NULL;
-    switch(varType.GetType())
-    {
-    case VariantType::TYPE_BOOLEAN:
-        {
-            node = CreateNodeWithString(varType.AsBool() ? "true" : "false", SR_DOUBLE_QUOTED_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_INT32:
-        {
-            node = CreateNodeWithString(Format("%d", varType.AsInt32()), SR_PLAIN_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_FLOAT:
-        {
-            node = CreateNodeWithString(FloatToCuttedString(varType.AsFloat()), SR_PLAIN_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_STRING:
-        {
-            node = CreateNodeWithString(varType.AsString(), SR_DOUBLE_QUOTED_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_WIDE_STRING:
-        {
-            node = CreateNodeWithString(varType.AsWideString(), SR_DOUBLE_QUOTED_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_UINT32:
-        {
-            node = CreateNodeWithString(Format("%u", varType.AsUInt32()), SR_PLAIN_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_INT64:
-        {
-            node = CreateNodeWithString(Format("%lld", varType.AsInt64()), SR_PLAIN_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_UINT64:
-        {
-            node = CreateNodeWithString(Format("%llu", varType.AsUInt64()), SR_PLAIN_REPRESENTATION);
-        }
-        break;
-    case VariantType::TYPE_BYTE_ARRAY:
-        {
-            const uint8* byteArray = varType.AsByteArray();
-            int32 byteArraySize = varType.AsByteArraySize();
-            node = CreateNodeWithByteArray(byteArray, byteArraySize);
-        }
-        break;
-    case VariantType::TYPE_KEYED_ARCHIVE:
-        {
-            KeyedArchive* archive = varType.AsKeyedArchive();
-            node = CreateNodeWithKeyedArchive(archive);
-        }
-        break;
-    case VariantType::TYPE_VECTOR2:
-        {
-            const Vector2 & vector = varType.AsVector2();
-            node = CreateNodeWithVector(vector.data,COUNT_OF(vector.data));
-        }
-        break;
-    case VariantType::TYPE_VECTOR3:
-        {
-            const Vector3& vector = varType.AsVector3();
-            node = CreateNodeWithVector(vector.data,COUNT_OF(vector.data));
-        }
-        break;
-    case VariantType::TYPE_VECTOR4:
-        {
-            const Vector4& vector = varType.AsVector4();
-            node = CreateNodeWithVector(vector.data,COUNT_OF(vector.data));
-        }
-        break;
-    case VariantType::TYPE_MATRIX2:
-        {
-            uint32 dimension = 2;
-            const Matrix2& matrix = varType.AsMatrix2();
-            const float32* array = &matrix._data[0][0];
-            node = CreateNodeWithMatrix(array, dimension);
-        }
-        break;
-    case VariantType::TYPE_MATRIX3:
-        {
-            uint32 dimension = 3;
-            const Matrix3& matrix = varType.AsMatrix3();
-            const float32* array = &matrix._data[0][0];
-            node = CreateNodeWithMatrix(array, dimension);
-        }
-        break;
-    case VariantType::TYPE_MATRIX4:
-        {
-            uint32 dimension = 4;
-            const Matrix4& matrix = varType.AsMatrix4();
-            const float32* array = &matrix._data[0][0];
-            node = CreateNodeWithMatrix(array, dimension);
-        }
-        break;
-    case VariantType::TYPE_COLOR:
-        {
-            const Color& color = varType.AsColor();
-            node = CreateNodeWithVector(color.color,COUNT_OF(color.color));
-        }
-        break;
-    default:
-        break;
-    }
-
-    return node;
-}
-
-YamlNode *YamlNode::CreateNodeWithMatrix(const float32* array,uint32 dimension)
-{
-    YamlNode * node = CreateArrayNode(AR_FLOW_REPRESENTATION);
-
-    for (uint32 i = 0; i < dimension; ++i)
-    {
-        YamlNode* rowNode = CreateArrayNode(AR_FLOW_REPRESENTATION);
-        rowNode->objectArray->array.reserve(dimension);
-
-        YamlNode* columnNode = NULL;
-        for (uint32 j = 0; j < dimension; ++j)
-        {
-            const float32* elementOfArray = array + ((i*dimension)+j);
-            columnNode = CreateNodeWithString(FloatToCuttedString(*elementOfArray), SR_PLAIN_REPRESENTATION);
-            rowNode->InternalAddNodeToArray(columnNode);
-        }
-        node->InternalAddNodeToArray(rowNode);
-    }
-
-    return node;
-}
-
-YamlNode *YamlNode::CreateNodeWithVector(const float32* array,uint32 dimension)
-{
-    YamlNode *node = CreateArrayNode(AR_FLOW_REPRESENTATION);
-
-    for (uint32 i = 0; i < dimension; ++i)
-    {
-        const float32* elementOfArray = array + i;
-        YamlNode* innerNode = CreateNodeWithString(FloatToCuttedString(*elementOfArray), SR_PLAIN_REPRESENTATION);
-        node->InternalAddNodeToArray(innerNode);
-    }
-
-    return node;
-}
-
-YamlNode *YamlNode::CreateNodeWithByteArray(const uint8* byteArray, int32 byteArraySize)
-{
-    YamlNode *node = CreateArrayNode(AR_FLOW_REPRESENTATION);
-
-    for (int32 i = 0; i < byteArraySize; ++i)
-    {
-        String letterRepresentation = Format("%x",byteArray[i]);
-        YamlNode* innerNode = CreateNodeWithString(letterRepresentation, SR_PLAIN_REPRESENTATION);
-        node->InternalAddNodeToArray(innerNode);
-    }
-
-    return node;
-}
-
-YamlNode *YamlNode::CreateNodeWithKeyedArchive(KeyedArchive* archive)
-{
-    YamlNode *node = CreateArrayNode(AR_FLOW_REPRESENTATION);
-
-    //creation array with variables
-    const Map<String, VariantType*> & innerArchiveMap =  archive->GetArchieveData();
-    for (Map<String, VariantType*>::const_iterator it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
-    {
-        YamlNode* arrayElementNode = CreateMapNode(MR_BLOCK_REPRESENTATION);
-        YamlNode* arrayElementNodeValue = CreateNodeFromVariantType(*it->second);
-        arrayElementNode->InternalAddNodeToMap(it->first, arrayElementNodeValue, false);
-        node->InternalAddNodeToArray(arrayElementNode);
-    }
-
-    return node;
-}
-
-YamlNode * YamlNode::CreateNodeWithString( const String &value, eStringRepresentation representation /*= SR_PLAIN_REPRESENTATION*/ )
-{
-    YamlNode *node = CreateStringNode(representation);
-    node->InternalSetString(value);
-    return node;
-}
-
-YamlNode * YamlNode::CreateNodeWithString( const WideString &value, eStringRepresentation representation /*= SR_PLAIN_REPRESENTATION*/ )
-{
-    YamlNode *node = CreateStringNode(representation);
-    node->InternalSetWideString(value);
-    return node;
-}
-
-YamlNode * YamlNode::CreateNodeFromVariantType(const VariantType &varType)
-{
-    YamlNode* node = CreateMapNode(MR_BLOCK_REPRESENTATION);
-
-    String variantName = VariantType::variantNamesMap[varType.GetType()].variantName;
-    node->InternalAddNodeToMap(variantName, CreateNodeWithVariantType(varType), false);
-
-    return node;
-}
-
-bool YamlNode::IsContainingMap() const
-{
-    bool retValue = false;
-    switch (type)
-    {
-        case YamlNode::TYPE_STRING:
-            break;
-        case YamlNode::TYPE_MAP:
-            retValue =  true;
-            break;
-        case YamlNode::TYPE_ARRAY:
-        {
-            for (Vector<YamlNode*>::const_iterator it = objectArray->array.begin(); it != objectArray->array.end(); ++it)
-            {
-                retValue =  (*it)->IsContainingMap();
-                if(retValue)
-                    break;
-            }
-        }
-            break;
-    }
-    return retValue;
-}
-
-String YamlNode::FloatToCuttedString(float32 f)
-{
-    return Format("%.4f",f);
-}
-
-void YamlNode::InternalSetToString( const VariantType &varType )
-{
-    YamlNode * node = CreateNodeWithVariantType(varType);
-    DVASSERT(node->GetType() == TYPE_STRING);
-    InternalSetString(node->AsString());
+    DVVERIFY(InitStringFromVariantType(varType));
 }
 
 void YamlNode::InternalAddToMap(const String& name, const VariantType &varType, bool rewritePreviousValue)
 {
-    YamlNode * node = CreateNodeWithVariantType(varType);
+    YamlNode * node = CreateNodeFromVariantType(varType);
     InternalAddNodeToMap(name, node, rewritePreviousValue);
 }
 
-void YamlNode::InternalAddToArray( const VariantType &varType )
+void YamlNode::InternalAddToArray(const VariantType &varType)
 {
-    YamlNode * node = CreateNodeWithVariantType(varType);
+    YamlNode * node = CreateNodeFromVariantType(varType);
     InternalAddNodeToArray(node);
 }
 
@@ -835,18 +600,257 @@ void  YamlNode::InternalAddNodeToMap(const String& name, YamlNode* node, bool re
     objectMap->unordered.push_back(std::pair<String, YamlNode*>(name, node));
 }
 
-void YamlNode::InternalSetString(const String &value)
+void YamlNode::InternalSetString(const String &value, eStringRepresentation style/* = SR_AUTO_REPRESENTATION*/)
 {
     DVASSERT(GetType() == TYPE_STRING);
     objectString->nwStringValue = value;
-    objectString->stringValue = UTF8Utils::EncodeToWideString(value);
+    objectString->style = style;
 }
 
-void YamlNode::InternalSetWideString(const WideString &value)
+void YamlNode::InternalSetMatrix(const float32* array,uint32 dimension, eArrayRepresentation style/* = AR_AUTO_REPRESENTATION*/)
+{
+    for (uint32 i = 0; i < dimension; ++i)
+    {
+        YamlNode* rowNode = CreateArrayNode();
+        rowNode->InternalSetVector(&array[i*dimension], dimension, AR_FLOW_REPRESENTATION);
+        InternalAddNodeToArray(rowNode);
+    }
+    objectArray->style = style;
+}
+
+void YamlNode::InternalSetVector(const float32* array,uint32 dimension, eArrayRepresentation style/* = AR_AUTO_REPRESENTATION*/)
+{
+    objectArray->array.reserve(dimension);
+    for (uint32 i = 0; i < dimension; ++i)
+    {
+        YamlNode* innerNode = CreateNodeFromVariantType(VariantType(array[i]));
+        InternalAddNodeToArray(innerNode);
+    }
+    objectArray->style = style;
+}
+
+void YamlNode::InternalSetByteArray(const uint8* byteArray, int32 byteArraySize, eArrayRepresentation style/* = AR_AUTO_REPRESENTATION*/)
+{
+    objectArray->array.reserve(byteArraySize);
+    for (int32 i = 0; i < byteArraySize; ++i)
+    {
+        YamlNode* innerNode = CreateStringNode();
+        innerNode->InternalSetString(Format("%x",byteArray[i]), SR_PLAIN_REPRESENTATION);
+        InternalAddNodeToArray(innerNode);
+    }
+    objectArray->style = style;
+}
+
+void YamlNode::InternalSetKeyedArchive(KeyedArchive* archive, eArrayRepresentation style/* = AR_AUTO_REPRESENTATION*/)
+{
+    //creation array with variables
+    const Map<String, VariantType*> & innerArchiveMap =  archive->GetArchieveData();
+    objectArray->array.reserve(innerArchiveMap.size());
+    for (Map<String, VariantType*>::const_iterator it = innerArchiveMap.begin(); it != innerArchiveMap.end(); ++it)
+    {
+        YamlNode* arrayElementNodeValue = CreateMapNode(MR_BLOCK_REPRESENTATION);
+        arrayElementNodeValue->InternalAddNodeToMap(it->second->GetTypeName(), CreateNodeFromVariantType(*it->second), false);
+
+        YamlNode* arrayElementNode = CreateMapNode(MR_BLOCK_REPRESENTATION);
+        arrayElementNode->InternalAddNodeToMap(it->first, arrayElementNodeValue, false);
+
+        InternalAddNodeToArray(arrayElementNode);
+    }
+    objectArray->style = style;
+}
+
+bool YamlNode::InitStringFromVariantType( const VariantType &varType )
 {
     DVASSERT(GetType() == TYPE_STRING);
-    objectString->stringValue = value;
-    objectString->nwStringValue = UTF8Utils::EncodeToUTF8(value);
+    bool result = true;
+    switch(varType.GetType())
+    {
+    case VariantType::TYPE_BOOLEAN:
+        {
+            InternalSetString(varType.AsBool() ? "true" : "false", SR_DOUBLE_QUOTED_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_INT32:
+        {
+            InternalSetString(Format("%d", varType.AsInt32()), SR_PLAIN_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_FLOAT:
+        {
+            InternalSetString(Format("%.4f", varType.AsFloat()), SR_PLAIN_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_STRING:
+        {
+            InternalSetString(varType.AsString(), SR_DOUBLE_QUOTED_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_WIDE_STRING:
+        {
+            InternalSetString(UTF8Utils::EncodeToUTF8(varType.AsWideString()), SR_DOUBLE_QUOTED_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_UINT32:
+        {
+            InternalSetString(Format("%u", varType.AsUInt32()), SR_PLAIN_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_INT64:
+        {
+            InternalSetString(Format("%lld", varType.AsInt64()), SR_PLAIN_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_UINT64:
+        {
+            InternalSetString(Format("%llu", varType.AsUInt64()), SR_PLAIN_REPRESENTATION);
+        }
+        break;
+    default:
+        result = false;
+        break;
+    }
+    return result;
+}
+
+bool YamlNode::InitArrayFromVariantType( const VariantType &varType )
+{
+    DVASSERT(GetType() == TYPE_ARRAY);
+    bool result = true;
+    switch(varType.GetType())
+    {
+    case VariantType::TYPE_BYTE_ARRAY:
+        {
+            const uint8* byteArray = varType.AsByteArray();
+            int32 byteArraySize = varType.AsByteArraySize();
+            InternalSetByteArray(byteArray, byteArraySize);
+        }
+        break;
+    case VariantType::TYPE_KEYED_ARCHIVE:
+        {
+            KeyedArchive* archive = varType.AsKeyedArchive();
+            InternalSetKeyedArchive(archive, AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_VECTOR2:
+        {
+            const Vector2 & vector = varType.AsVector2();
+            InternalSetVector(vector.data,COUNT_OF(vector.data), AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_VECTOR3:
+        {
+            const Vector3& vector = varType.AsVector3();
+            InternalSetVector(vector.data,COUNT_OF(vector.data), AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_VECTOR4:
+        {
+            const Vector4& vector = varType.AsVector4();
+            InternalSetVector(vector.data,COUNT_OF(vector.data), AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_MATRIX2:
+        {
+            uint32 dimension = 2;
+            const Matrix2& matrix = varType.AsMatrix2();
+            const float32* array = &matrix._data[0][0];
+            InternalSetMatrix(array, dimension, AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_MATRIX3:
+        {
+            uint32 dimension = 3;
+            const Matrix3& matrix = varType.AsMatrix3();
+            const float32* array = &matrix._data[0][0];
+            InternalSetMatrix(array, dimension, AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_MATRIX4:
+        {
+            uint32 dimension = 4;
+            const Matrix4& matrix = varType.AsMatrix4();
+            const float32* array = &matrix._data[0][0];
+            InternalSetMatrix(array, dimension, AR_FLOW_REPRESENTATION);
+        }
+        break;
+    case VariantType::TYPE_COLOR:
+        {
+            const Color& color = varType.AsColor();
+            InternalSetVector(color.color,COUNT_OF(color.color), AR_FLOW_REPRESENTATION);
+        }
+        break;
+    default:
+        result = false;
+        break;
+    }
+
+    return result;
+}
+
+bool YamlNode::InitMapFromVariantType( const VariantType &varType )
+{
+    DVASSERT(GetType() == TYPE_MAP);
+    return false;
+}
+
+YamlNode * YamlNode::CreateNodeFromVariantType( const VariantType &varType )
+{
+    eType nodeType = VariantTypeToYamlNodeType(varType.GetType());
+    YamlNode * node = NULL;
+    switch(nodeType)
+    {
+    case TYPE_STRING:
+        {
+            node = CreateStringNode();
+            DVVERIFY(node->InitStringFromVariantType(varType));
+        }
+        break;
+    case TYPE_ARRAY:
+        {
+            node = CreateArrayNode();
+            DVVERIFY(node->InitArrayFromVariantType(varType));
+        }
+        break;
+    case TYPE_MAP:
+        {
+            node = CreateMapNode();
+            DVVERIFY(node->InitMapFromVariantType(varType));
+        }
+        break;
+    }
+
+    return node;
+}
+
+DAVA::YamlNode::eType YamlNode::VariantTypeToYamlNodeType( VariantType::eVariantType variantType )
+{
+    switch(variantType)
+    {
+    case VariantType::TYPE_BOOLEAN:
+    case VariantType::TYPE_INT32:
+    case VariantType::TYPE_FLOAT:
+    case VariantType::TYPE_STRING:
+    case VariantType::TYPE_WIDE_STRING:
+    case VariantType::TYPE_UINT32:
+    case VariantType::TYPE_INT64:
+    case VariantType::TYPE_UINT64:
+        return TYPE_STRING;
+
+    case VariantType::TYPE_BYTE_ARRAY:
+    case VariantType::TYPE_KEYED_ARCHIVE:
+    case VariantType::TYPE_VECTOR2:
+    case VariantType::TYPE_VECTOR3:
+    case VariantType::TYPE_VECTOR4:
+    case VariantType::TYPE_MATRIX2:
+    case VariantType::TYPE_MATRIX3:
+    case VariantType::TYPE_MATRIX4:
+    case VariantType::TYPE_COLOR:
+        return TYPE_ARRAY;
+    default:
+        break;
+    }
+    DVASSERT(false);
+    return TYPE_MAP;
 }
 
 }
