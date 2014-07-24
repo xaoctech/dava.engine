@@ -490,7 +490,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
         case DRAW_STRETCH_BOTH:
         case DRAW_STRETCH_HORIZONTAL:
         case DRAW_STRETCH_VERTICAL:
-            DrawStretched(drawRect, drawState.GetRenderState());
+            DrawStretched(geometricData, drawState.GetRenderState());
         break;
 
         case DRAW_TILED:
@@ -502,7 +502,7 @@ void UIControlBackground::Draw(const UIGeometricData &geometricData)
 
 }
 
-void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle renderState)
+void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, UniqueHandle renderState)
 {
     DVASSERT(rdoObject);
     if (!spr)return;
@@ -510,6 +510,7 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
     {
         return;
     }
+    Rect drawRect = geometricData.GetUnrotatedRect();
     UniqueHandle textureHandle = spr->GetTextureHandle(frame);
     Texture* texture = spr->GetTexture(frame);
 
@@ -560,6 +561,8 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
 
     int32 vertInTriCount = 18;
 
+    Vector2 pivotInAbs = Vector2(x + geometricData.pivotPoint.x, y + geometricData.pivotPoint.y);
+
     switch (type)
     {
         case DRAW_STRETCH_HORIZONTAL:
@@ -568,13 +571,32 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
             y -= ddy * 0.5f;
             dy += ddy;
 
-            vertices[0] = vertices[8]  = x;
-            vertices[1] = vertices[3]  = vertices[5]  = vertices[7]  = y;
-            vertices[4] = vertices[12] = x + dx - realRightStretchCap;
 
-            vertices[2] = vertices[10] = x + realLeftStretchCap;
-            vertices[9] = vertices[11] = vertices[13] = vertices[15] = y + dy;
-            vertices[6] = vertices[14] = x + dx;
+            vertices[0] = (x - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[1] = (x - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[2] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[3] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[4] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[5] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[6] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[7] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
+
+            vertices[8] = (x - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[9] = (x - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[10] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[11] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[12] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[13] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[14] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[15] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
 
             texCoords[0] = texCoords[8]  = texX / textureWidth;
             texCoords[1] = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
@@ -591,13 +613,33 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
             x -= ddx * 0.5f;
             dx += ddx;
 
-            vertices[0] = vertices[2]  = vertices[4]  = vertices[6]  = x;
-            vertices[8] = vertices[10] = vertices[12] = vertices[14] = x + dx;
+            vertices[0] = (x - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[1] = (x - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
 
-            vertices[1] = vertices[9]  = y;
-            vertices[3] = vertices[11] = y + realTopStretchCap;
-            vertices[5] = vertices[13] = y + dy - realBottomStretchCap;
-            vertices[7] = vertices[15] = y + dy;
+            vertices[2] = (x - pivotInAbs.x)*geometricData.cosA - (y + realTopStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[3] = (x - pivotInAbs.x)*geometricData.sinA + (y + realTopStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[4] = (x - pivotInAbs.x)*geometricData.cosA - (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[5] = (x - pivotInAbs.x)*geometricData.sinA + (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[6] = (x - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[7] = (x - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
+
+            vertices[8] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[9] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[10] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + realTopStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[11] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + realTopStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[12] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[13] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[14] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[15] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
 
             texCoords[0] = texCoords[2]  = texCoords[4]  = texCoords[6]  = texX / textureWidth;
             texCoords[8] = texCoords[10] = texCoords[12] = texCoords[14] = (texX + texDx) / textureWidth;
@@ -612,15 +654,61 @@ void UIControlBackground::DrawStretched(const Rect &drawRect, UniqueHandle rende
         {
             vertInTriCount = 18 * 3;
 
-            vertices[0] = vertices[8]  = vertices[16] = vertices[24] = x;
-            vertices[2] = vertices[10] = vertices[18] = vertices[26] = x + realLeftStretchCap;
-            vertices[4] = vertices[12] = vertices[20] = vertices[28] = x + dx - realRightStretchCap;
-            vertices[6] = vertices[14] = vertices[22] = vertices[30] = x + dx;
+            vertices[0] = (x - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[1] = (x - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
 
-            vertices[1] = vertices[3]  = vertices[5]  = vertices[7]  = y;
-            vertices[9] = vertices[11] = vertices[13] = vertices[15] = y + realTopStretchCap;
-            vertices[17]= vertices[19] = vertices[21] = vertices[23] = y + dy - realBottomStretchCap;
-            vertices[25]= vertices[27] = vertices[29] = vertices[31] = y + dy;
+            vertices[2] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[3] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[4] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[5] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[6] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[7] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
+
+            vertices[8] = (x - pivotInAbs.x)*geometricData.cosA - (y + realTopStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[9] = (x - pivotInAbs.x)*geometricData.sinA + (y + realTopStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[10] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.cosA - (y + realTopStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[11] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.sinA + (y + realTopStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[12] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.cosA - (y + realTopStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[13] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.sinA + (y + realTopStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[14] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + realTopStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[15] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + realTopStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
+
+            vertices[16] = (x - pivotInAbs.x)*geometricData.cosA - (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[17] = (x - pivotInAbs.x)*geometricData.sinA + (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[18] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.cosA - (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[19] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.sinA + (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[20] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.cosA - (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[21] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.sinA + (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[22] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[23] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + dy - realBottomStretchCap - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
+
+            vertices[24] = (x - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[25] = (x - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[26] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[27] = (x + realLeftStretchCap - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[28] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[29] = (x + dx - realRightStretchCap - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            vertices[30] = (x + dx - pivotInAbs.x)*geometricData.cosA - (y + dy - pivotInAbs.y)*geometricData.sinA + pivotInAbs.x;
+            vertices[31] = (x + dx - pivotInAbs.x)*geometricData.sinA + (y + dy - pivotInAbs.y)*geometricData.cosA + pivotInAbs.y;
+
+            ////
 
             texCoords[0] = texCoords[8]  = texCoords[16] = texCoords[24] = texX / textureWidth;
             texCoords[2] = texCoords[10] = texCoords[18] = texCoords[26] = (texX + leftCap) / textureWidth;
