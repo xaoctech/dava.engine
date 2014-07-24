@@ -211,7 +211,7 @@ uint32 DownloadManager::Download(const String &srcUrl, const FilePath &storeToFi
 
     PlaceToQueue(pendingTaskQueue, task);
 
-    SetTaskStatus(task, DL_PENDING);
+    task->status = DL_PENDING;
 
     return task->id;
 }
