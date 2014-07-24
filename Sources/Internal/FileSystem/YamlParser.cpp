@@ -30,7 +30,6 @@
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/FileSystem.h"
 #include "FileSystem/YamlNode.h"
-#include "FileSystem/YamlEmitter.h"
 #include "FileSystem/Logger.h"
 #include "Utils/Utils.h"
 #include "yaml/yaml.h"
@@ -94,7 +93,6 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 	yaml_parser_set_input(&parser, read_handler, dataHolder);
 
 	YamlNode * mapKey = 0;
-//	YamlNode * mapValue = 0;
 
 	/* Read the event sequence. */
 	while (!done) 
@@ -107,32 +105,16 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 			break;
 		}
 		
-		/*if (event.encoding != YAML_UTF8_ENCODING)
-		{
-			Logger::FrameworkDebug("wrong encoding");
-		}*/
-		
 		switch(event.type)
 		{
 		case YAML_ALIAS_EVENT:
-			Logger::FrameworkDebug("alias: %s", event.data.alias.anchor);
+			Logger::FrameworkDebug("[YamlParser::Parse] alias: %s", event.data.alias.anchor);
 			break;
 		
 		case YAML_SCALAR_EVENT:
 			{
-				YamlNode * node = new YamlNode(YamlNode::TYPE_STRING);
-
-				/*CFStringRef s = CFStringCreateWithBytes(NULL, event.data.scalar.value, event.data.scalar.length, kCFStringEncodingUTF8, false);
-				int32 length = CFStringGetLength(s); 
-				node->stringValue.resize(length); 
-				for (int i = 0; i < length; i++) 
-				{
-					UniChar uchar = CFStringGetCharacterAtIndex(s, i);
-					node->stringValue[i] = (wchar_t)uchar;
-				}
-				CFRelease(s);
-				node->nwStringValue = String((const char*)event.data.scalar.value); */
-                node->InternalSetString((const char*)event.data.scalar.value);
+				YamlNode * node = YamlNode::CreateStringNode();
+				node->Set((const char*)event.data.scalar.value);
 				
 				if (objectStack.size() == 0)
 				{
@@ -140,37 +122,22 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 				}else
 				{
 					YamlNode * topContainer = objectStack.top();
-					if (topContainer->type == YamlNode::TYPE_MAP)
+					if (topContainer->GetType() == YamlNode::TYPE_MAP)
 					{
-						if (mapKey == 0)mapKey = node;
+						if (mapKey == 0)
+						{
+							mapKey = node;
+						}
 						else
 						{
-//							if (topContainer->Get(mapKey->nwStringValue))
-//							{
-//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-//							}
-							
-							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
-							topContainer->objectArray.push_back(SafeRetain(node)); // duplicate in array
+							topContainer->AddNodeToMap(mapKey->AsString(), node);
 							SafeRelease(mapKey);
 						}
-					}else if (topContainer->type == YamlNode::TYPE_ARRAY)
+					}else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
 					{
-						topContainer->objectArray.push_back(node);
+						topContainer->AddNodeToArray(node);
 					}
 				}
-				
-//				NSLog()
-//				wprintf(L"scalar: %s %S\n", event.data.scalar.value, node->stringValue.c_str());
-//				Logger::FrameworkDebug("scalar: %s %d", event.data.scalar.value, length);
-//				CFIndex length = CFStringGetLength(s);
-//				UniChar *buffer = malloc(length * sizeof(UniChar));
-//				CFStringGetCharacters(str, CFRangeMake(0, length), buffer);
-//				node->stringValue = (char buffer;
-//				free(buffer);
-				
-				//node->stringValue = event.data.scalar.value;
 			}
 			break;
 		
@@ -184,37 +151,26 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 
 		case YAML_SEQUENCE_START_EVENT:
 			{
-//				printf("[");
-				YamlNode * node = new YamlNode(YamlNode::TYPE_ARRAY);
+				YamlNode * node = YamlNode::CreateArrayNode();
 				if (objectStack.size() == 0)
 					rootObject = node;
 				else
 				{
 					YamlNode * topContainer = objectStack.top();
-					if (topContainer->type == YamlNode::TYPE_MAP)
+					if (topContainer->GetType() == YamlNode::TYPE_MAP)
 					{
-						if (mapKey == 0)
+						if (mapKey == NULL)
 						{
-							printf("Something wrong");
+//							printf("Something wrong");
 						}
 						else
 						{
-//							String s = String(mapKey->stringValue.begin(), mapKey->stringValue.end());
-//							printf("put to map: %s\n", s.c_str());
-							
-//							if (topContainer->Get(mapKey->nwStringValue))
-//							{
-//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-//							}
-							
-							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
-							topContainer->objectArray.push_back(SafeRetain(node));
+							topContainer->AddNodeToMap(mapKey->AsString(), node);
 							SafeRelease(mapKey);
 						}
-					}else if (topContainer->type == YamlNode::TYPE_ARRAY)
+					}else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
 					{
-						topContainer->objectArray.push_back(node);
+						topContainer->AddNodeToArray(node);
 					}
 				}
 				objectStack.push(node);
@@ -222,21 +178,19 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 				
 		case YAML_SEQUENCE_END_EVENT:
 			{
-//				printf("]");
 				objectStack.pop();
 			}break;
 		
 		case YAML_MAPPING_START_EVENT:
 			{
-//				printf("{");
-				YamlNode * node = new YamlNode(YamlNode::TYPE_MAP);
+				YamlNode * node = YamlNode::CreateMapNode();
 				if (objectStack.size() == 0)
 					rootObject = node;
 				else
 				{
 					YamlNode * topContainer = objectStack.top();
 					
-					if (topContainer->type == YamlNode::TYPE_MAP)
+					if (topContainer->GetType() == YamlNode::TYPE_MAP)
 					{
 						if (mapKey == 0)
 						{
@@ -244,24 +198,12 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 						}
 						else
 						{
-							//String s = String(mapKey->stringValue.begin(), mapKey->stringValue.end());
-//							printf("put to map: %s\n", s.c_str());
-
-//							if (topContainer->Get(mapKey->nwStringValue))
-//							{
-//								Logger::Error("[YamlParser::Parse] error in %s: attempt to create duplicate map node: %s", pathName.c_str(), mapKey->nwStringValue.c_str());
-//							}
-							
-							node->mapIndex = topContainer->mapCount ++;
-							topContainer->objectMap.insert(std::pair<String, YamlNode*>(mapKey->nwStringValue, node));
-							node->stringValue = mapKey->stringValue;
-							node->nwStringValue = mapKey->nwStringValue;
-							topContainer->objectArray.push_back(SafeRetain(node));
+							topContainer->AddNodeToMap(mapKey->AsString(), node);
 							SafeRelease(mapKey);
 						}
-					}else if (topContainer->type == YamlNode::TYPE_ARRAY)
+					}else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
 					{
-						topContainer->objectArray.push_back(node);
+						topContainer->AddNodeToArray(node);
 					}
 				}
 				objectStack.push(node);
@@ -270,7 +212,6 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 				
 		case YAML_MAPPING_END_EVENT:
 			{
-//				printf("}");
 				objectStack.pop();
 			}
 			break;
@@ -285,18 +226,13 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 		yaml_event_delete(&event);
 		
 	}
-	
-	//rootObject->Print(0);
-	
-	//printf("%s (%d events)\n", (error ? "FAILURE" : "SUCCESS"), count);
-	
+
 	/* Destroy the Parser object. */
 	yaml_parser_delete(&parser);
-//	fclose(input);
-    
+
     DVASSERT(objectStack.size() == 0);
-	
-	return true;
+
+    return true;
 }
 
 YamlParser::YamlParser()

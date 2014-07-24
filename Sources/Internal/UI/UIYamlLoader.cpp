@@ -672,9 +672,6 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
 
 void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int saveIndex)
 {
-    // "Relative Depth" is needed to save the order of the nodes - it is important!
-    parentNode->Set(YamlNode::SAVE_INDEX_NAME, saveIndex);
-    
     int currentSaveIndex = 0;
     
 	const List<UIControl*>& children = parentControl->GetRealChildren();

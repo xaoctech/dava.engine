@@ -72,9 +72,6 @@ public:
         MR_FLOW_REPRESENTATION,         //data represent one line in braces {}
     };
 
-    // Predefined node name to store Relative Depth.
-    static const char8* SAVE_INDEX_NAME;
-
 protected:
     virtual ~YamlNode();
 public:
@@ -84,11 +81,8 @@ public:
     static YamlNode *CreateMapNode(eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
 
     eType           GetType() const { return type; }
-    int32           GetCount() const;
 
-    void Print(int32 identation);
-    void PrintToFile(DAVA::File* file, uint32 identationDepth = 0) const;
-
+    // These functions work only if type of node is string
     bool            AsBool() const;
     int32           AsInt() const;//left for old code
     int32           AsInt32() const;
@@ -96,26 +90,29 @@ public:
     int64           AsInt64() const;
     uint64          AsUInt64() const;
     float32         AsFloat() const;
+    FastName        AsFastName() const;
     const String    &AsString() const;
     const WideString &AsWString() const;
-    const Vector<YamlNode*> &AsVector() const;
-    const MultiMap<String, YamlNode*> &AsMap() const;
-    FastName AsFastName() const;
 
-    /*
-        These functions work only if type of node is array
-        All values must be integer or float to perform this conversion
-     */
+    //These functions work only if type of node is array
+    const Vector<YamlNode*> &AsVector() const;
     Vector2         AsPoint() const;//Dizz: this one exists cause of Boroda
     Vector2         AsVector2() const;
     Vector3         AsVector3() const;
     Vector4         AsVector4() const;
     Color           AsColor() const;
     Rect            AsRect() const;
+
+    //These functions work only if type of node is map
+    const MultiMap<String, YamlNode*> &AsMap() const;
     VariantType     AsVariantType() const;
 
-    const YamlNode *Get(const String & name) const;
+    //These functions work only if type of node is array or map
+    int32           GetCount() const;
     const YamlNode *Get(int32 index) const;
+
+    //These functions work only if type of node is map
+    const YamlNode *Get(const String & name) const;
     const String   &GetItemKeyName(int32 index) const;
 
     // "Setters". These methods set data in string node.
@@ -185,6 +182,10 @@ public:
 
     // Remove node value from map
     void            RemoveNodeFromMap(const String & name);
+    eStringRepresentation GetStringRepresentation() const;
+    eArrayRepresentation  GetArrayRepresentation() const;
+    eMapRepresentation    GetMapRepresentation() const;
+    eStringRepresentation GetMapKeyRepresentation() const;
 
 protected:
     static YamlNode *CreateNodeWithVariantType(const VariantType &varType);
@@ -212,26 +213,34 @@ protected:
     void            InternalSetWideString(const WideString &value);
 
 private:
-    int                         mapIndex;
-    int                         mapCount;
-    eType                       type;
-    WideString                  stringValue;
-    String                      nwStringValue;
-    Vector<YamlNode*>           objectArray;
-    MultiMap<String, YamlNode*> objectMap;
+    const eType type;
+    struct ObjectString
+    {
+        WideString  stringValue;
+        String      nwStringValue;
+        eStringRepresentation style;
+    };
+
+    struct ObjectArray
+    {
+        Vector<YamlNode*> array;
+        eArrayRepresentation style;
+    };
+
+    struct ObjectMap
+    {
+        MultiMap<String, YamlNode*> ordered;
+        Vector<std::pair<String, YamlNode*>> unordered;
+        eMapRepresentation style;
+        eStringRepresentation keyStyle;
+    };
+
     union
     {
-        eStringRepresentation stringStyle;
-        eArrayRepresentation arrayStyle;
-        struct
-        {
-            eMapRepresentation value;
-            eStringRepresentation key;
-        }mapStyle;
-    }representation;
-
-    friend class YamlParser;
-    friend class YamlEmitter;
+        ObjectString *objectString;
+        ObjectArray  *objectArray;
+        ObjectMap    *objectMap;
+    };
 };
 
 inline void YamlNode::Set(bool value)              { InternalSetToString(VariantType(value)); }
