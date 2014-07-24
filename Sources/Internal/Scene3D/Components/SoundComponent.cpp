@@ -32,6 +32,8 @@
 #include "Sound/SoundEvent.h"
 #include "Base/FastName.h"
 #include "ComponentHelpers.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 
 namespace DAVA
 {
@@ -54,19 +56,7 @@ void SoundComponent::AddSoundEvent(SoundEvent * _event)
     SafeRetain(_event);
     events.push_back(_event);
 
-    TransformComponent * transformCoponent = GetTransformComponent(entity);
-    if(transformCoponent)
-    {
-        const Matrix4 & worldTransform = transformCoponent->GetWorldTransform();
-        Vector3 translation = worldTransform.GetTranslationVector();
-        _event->SetPosition(translation);
-
-        if(_event->IsDirectional())
-        {
-            Vector3 worldDirection = MultiplyVectorMat3x3(GetLocalDirection(), worldTransform);
-            _event->SetDirection(worldDirection);
-        }
-    }
+    GlobalEventSystem::Instance()->Event(entity, EventSystem::SOUND_COMPONENT_CHANGED);
 }
 
 void SoundComponent::RemoveSoundEvent(SoundEvent * event)
