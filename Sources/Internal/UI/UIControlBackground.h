@@ -261,7 +261,7 @@ public:
     void SetShader(Shader *shader);
 
 protected:
-    void DrawStretched(const Rect &drawRect, UniqueHandle renderState);
+    void DrawStretched(const UIGeometricData &geometricData, UniqueHandle renderState);
     void DrawTiled(const UIGeometricData &geometricData, UniqueHandle renderState);
     void DrawFilled(const UIGeometricData &geometricData, UniqueHandle renderState);
 
