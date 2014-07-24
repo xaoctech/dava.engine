@@ -46,6 +46,7 @@
 #include "Scene3D/SceneFileV2.h"
 #include "Render/Highlevel/ShadowVolumeRenderPass.h"
 #include "Scene3D/Systems/RenderUpdateSystem.h"
+#include "Render/Highlevel/RenderBatchArray.h"
 
 const FastName MATERIAL_FOR_REBIND = FastName("Global");
 
@@ -54,6 +55,8 @@ SceneEditor2::SceneEditor2()
 	, isLoaded(false)
 	, isHUDVisible(true)
 {
+    SetClearBuffers(RenderManager::DEPTH_BUFFER | RenderManager::STENCIL_BUFFER);
+
 	renderStats.Clear();
 
 	EditorCommandNotify *notify = new EditorCommandNotify(this);
@@ -247,7 +250,6 @@ bool SceneEditor2::Export(const DAVA::eGPUFamily newGPU)
 	
 	exporter.SetInFolder(projectPath + String("DataSource/3d/"));
     exporter.SetOutFolder(projectPath + String("Data/3d/"));
-    exporter.SetOutSoundsFolder(projectPath + String("Data/Sfx/"));
 	exporter.SetGPUForExporting(newGPU);
 
 	DAVA::VariantType quality = SettingsManager::Instance()->GetValue(Settings::General_CompressionQuality);
@@ -505,8 +507,8 @@ void SceneEditor2::UpdateShadowColorFromLandscape()
 	Entity *land = FindLandscapeEntity(this);
 	if(!land || !GetRenderSystem()) return;
 
-	KeyedArchive * props = land->GetCustomProperties();
-	if (props->IsKeyExists("ShadowColor"))
+	KeyedArchive * props = GetCustomPropertiesArchieve(land);
+	if (props && props->IsKeyExists("ShadowColor"))
 	{
 		GetRenderSystem()->SetShadowRectColor(props->GetVariant("ShadowColor")->AsColor());
 	}
@@ -517,9 +519,7 @@ void SceneEditor2::SetShadowColor( const Color &color )
 	Entity *land = FindLandscapeEntity(this);
 	if(!land) return;
 
-	KeyedArchive * props = land->GetCustomProperties();
-	if(!props) return;
-
+	KeyedArchive * props = GetOrCreateCustomProperties(land)->GetArchive();
 	props->SetVariant("ShadowColor", VariantType(color));
 
 	UpdateShadowColorFromLandscape();

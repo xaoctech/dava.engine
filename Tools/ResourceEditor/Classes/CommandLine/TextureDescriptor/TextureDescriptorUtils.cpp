@@ -96,7 +96,7 @@ void TextureDescriptorUtils::CopyCompressionParams(const FilePath &descriptorPat
         return;
     }
     
-    for(int32 gpu = GPU_POWERVR_ANDROID; gpu < GPU_FAMILY_COUNT; ++gpu)
+    for(int32 gpu = GPU_POWERVR_ANDROID; gpu < GPU_DEVICE_COUNT; ++gpu)
     {
         if(descriptor->compression[gpu].format != FORMAT_INVALID)
             continue;
@@ -147,7 +147,7 @@ bool TextureDescriptorUtils::CreateDescriptorIfNeed(const FilePath &pngPathname)
     FilePath descriptorPathname = TextureDescriptor::GetDescriptorPathname(pngPathname);
     if(false == FileSystem::Instance()->IsFile(descriptorPathname))
     {
-        TextureDescriptor *descriptor = new TextureDescriptor(true);
+        TextureDescriptor *descriptor = new TextureDescriptor();
         descriptor->Save(descriptorPathname);
 		delete descriptor;
 

@@ -49,7 +49,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	this->rect = rect;
 	screen->SetRect(rect);
 	
-	LibraryController::Instance()->AddControl(this);
+	if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
 }
 
 HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNode* parent,
@@ -60,7 +63,10 @@ HierarchyTreeAggregatorNode::HierarchyTreeAggregatorNode(HierarchyTreePlatformNo
 	this->rect = base->GetRect();
 	screen->SetRect(rect);
 
-	LibraryController::Instance()->AddControl(this);
+	if (parent)
+	{
+		LibraryController::Instance()->AddControl(this);
+	}
 }
 
 HierarchyTreeAggregatorNode::~HierarchyTreeAggregatorNode()
@@ -95,6 +101,11 @@ Rect HierarchyTreeAggregatorNode::GetRect() const
 {
     // Need to override because GetRect() implementation of HierarchyTreeScreenNode does additional processing.
     return this->rect;
+}
+
+Rect HierarchyTreeAggregatorNode::GetOwnRect() const
+{
+    return GetRect();
 }
 
 void HierarchyTreeAggregatorNode::SetParent(HierarchyTreeNode* node, HierarchyTreeNode* insertAfter)
@@ -253,6 +264,7 @@ void HierarchyTreeAggregatorNode::ReplaceAggregator(HierarchyTreeControlNode *no
 	// Set aggregator ID for list if it has saved aggregator path and it is available in tree
 	if (list && list->GetAggregatorPath() == path)
 	{
+        SafeRelease(listDelegate);
 		listDelegate = new EditorListDelegate(list->GetRect(), list->GetOrientation());
 		// If loaded delegate has aggregator path - pass its id to delegate
 		listDelegate->SetAggregatorID(GetId());

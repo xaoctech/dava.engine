@@ -252,6 +252,7 @@ void QtPropertyData::SetValue(const QVariant &value, ValueChangeReason reason)
 	// (example: we are trying to set 10, but accepted range is 0-5
 	//   value is 10
 	//   curValue becomes 0-5)
+    UpdateValue();
 	curValue = GetValueInternal();
 
 	if(curValue != oldValue)
@@ -465,9 +466,14 @@ QtPropertyData::UserData* QtPropertyData::GetUserData() const
 	return userData;
 }
 
+void QtPropertyData::SetToolTip(const QVariant& toolTip)
+{
+    tooltipValue = toolTip;
+}
+
 QVariant QtPropertyData::GetToolTip() const
 {
-    return QVariant();
+    return tooltipValue;
 }
 
 const DAVA::MetaInfo* QtPropertyData::MetaInfo() const
