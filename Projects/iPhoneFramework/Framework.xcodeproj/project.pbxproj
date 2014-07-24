@@ -32,6 +32,10 @@
 		029BAE591859C80500478671 /* musicios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 029BAE521859B81700478671 /* musicios.mm */; };
 		02A2FC5518D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */; };
 		02A2FC5618D3064D0039E66A /* TreeToAnimatedTreeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */; };
+		02AD131619767DFA00567AD2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02AD131419767DFA00567AD2 /* VersionInfo.cpp */; };
+		02AD131719767DFB00567AD2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02AD131419767DFA00567AD2 /* VersionInfo.cpp */; };
+		02AD131819767DFB00567AD2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 02AD131519767DFA00567AD2 /* VersionInfo.h */; };
+		02AD131919767DFB00567AD2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 02AD131519767DFA00567AD2 /* VersionInfo.h */; };
 		02C4E8CB18154E490052803E /* AutotestingDB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85172181032EA002B7E1C /* AutotestingDB.cpp */; };
 		02C4E8CC18154E4D0052803E /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85174181032EA002B7E1C /* GameAPI.cpp */; };
 		02C4E8CD18154E520052803E /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85173181032EA002B7E1C /* AutotestingDB.h */; };
@@ -1690,6 +1694,8 @@
 		029BAE541859B81700478671 /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
 		02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeToAnimatedTreeConverter.cpp; sourceTree = "<group>"; };
 		02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeToAnimatedTreeConverter.h; sourceTree = "<group>"; };
+		02AD131419767DFA00567AD2 /* VersionInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VersionInfo.cpp; sourceTree = "<group>"; };
+		02AD131519767DFA00567AD2 /* VersionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionInfo.h; sourceTree = "<group>"; };
 		02C85172181032EA002B7E1C /* AutotestingDB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingDB.cpp; sourceTree = "<group>"; };
 		02C85173181032EA002B7E1C /* AutotestingDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingDB.h; sourceTree = "<group>"; };
 		02C85174181032EA002B7E1C /* GameAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameAPI.cpp; sourceTree = "<group>"; };
@@ -2696,6 +2702,8 @@
 		A695E52F18113327008A0F20 /* SceneFile */ = {
 			isa = PBXGroup;
 			children = (
+				02AD131419767DFA00567AD2 /* VersionInfo.cpp */,
+				02AD131519767DFA00567AD2 /* VersionInfo.h */,
 				A695E53018113327008A0F20 /* SerializationContext.cpp */,
 				A695E53118113327008A0F20 /* SerializationContext.h */,
 			);
@@ -4046,6 +4054,7 @@
 				02FD80171924997C007762C0 /* BaseProcessSystem.h in Headers */,
 				02FD80181924997C007762C0 /* DebugRenderSystem.h in Headers */,
 				02FD80191924997C007762C0 /* EventSystem.h in Headers */,
+				02AD131919767DFB00567AD2 /* VersionInfo.h in Headers */,
 				02FD801A1924997C007762C0 /* LightUpdateSystem.h in Headers */,
 				02FD801B1924997C007762C0 /* LodSystem.h in Headers */,
 				02FD801C1924997C007762C0 /* SwitchToRenerObjectConverter.h in Headers */,
@@ -4430,6 +4439,7 @@
 				E8B3CC5B16B9326E002BD35F /* GameObjectAnimations.h in Headers */,
 				E8B3CC5D16B9326E002BD35F /* GameObjectManager.h in Headers */,
 				E8B3CC5F16B9326E002BD35F /* TextGameObject.h in Headers */,
+				02AD131819767DFB00567AD2 /* VersionInfo.h in Headers */,
 				E8B3CC6116B9326E002BD35F /* BillboardNode.h in Headers */,
 				E8B3CC6316B9326E002BD35F /* BoneNode.h in Headers */,
 				E8B3CC6916B9326E002BD35F /* BulletComponent.h in Headers */,
@@ -4794,6 +4804,7 @@
 				02FD80E41924997C007762C0 /* BTNetworkConnection.mm in Sources */,
 				02FD80E51924997C007762C0 /* NetworkConnection.cpp in Sources */,
 				02FD80E61924997C007762C0 /* NetworkConnectionIPhone.mm in Sources */,
+				02AD131719767DFB00567AD2 /* VersionInfo.cpp in Sources */,
 				02FD80E71924997C007762C0 /* NetworkDelegate.cpp in Sources */,
 				02FD80E81924997C007762C0 /* NetworkPacket.cpp in Sources */,
 				02FD80E91924997C007762C0 /* TCPServer.mm in Sources */,
@@ -5404,6 +5415,7 @@
 				02FD7EBD19237D33007762C0 /* WindComponent.cpp in Sources */,
 				CCC7A4A616F1D8200061EA5D /* RenderState.cpp in Sources */,
 				647EFC77195F0AC40073B3CB /* NMaterialStateDynamicPropertiesInsp.cpp in Sources */,
+				02AD131619767DFA00567AD2 /* VersionInfo.cpp in Sources */,
 				CCC7A4AA16F1D8480061EA5D /* Entity.cpp in Sources */,
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
 				64493E1419476F4700AB2715 /* VegetationRenderData.cpp in Sources */,
