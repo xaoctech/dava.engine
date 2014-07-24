@@ -34,8 +34,9 @@ namespace DAVA
 bool CurlDownloader::isCURLInit = false;
 CURL *CurlDownloader::currentCurlHandle = NULL;
 
-CurlDownloader::CurlDownloader(uint32 operationTimeout, uint8 operationRetryesAllowed)
-    : DataDownloader(operationTimeout, operationRetryesAllowed)
+CurlDownloader::CurlDownloader(uint32 operationTimeout)
+    : Downloader(operationTimeout)
+    , isDownloadInterrupting(false)
 {
     if (!isCURLInit && CURLE_OK == curl_global_init(CURL_GLOBAL_ALL))
         isCURLInit = true;
@@ -46,17 +47,20 @@ CurlDownloader::~CurlDownloader()
     curl_global_cleanup();
 }
 
-uint32 CurlDownloader::InterruptDownload()
-{
-    return DataDownloader::InterruptDownload();
-}
-
 size_t CurlDownloader::CurlDataRecvHandler(void *ptr, size_t size, size_t nmemb, void *fileDownloader)
 {
-    CurlDownloader *thisTask = static_cast<CurlDownloader *>(fileDownloader);
-    size_t bytesWritten = thisTask->SaveData(ptr, size, nmemb);   
+    CurlDownloader *thisDownloader = static_cast<CurlDownloader *>(fileDownloader);
+    size_t bytesWritten = thisDownloader->SaveData(ptr, size, nmemb);   
+
+    if (thisDownloader->isDownloadInterrupting)
+        return 0; 
 
     return bytesWritten;
+}
+
+void CurlDownloader::Interrupt()
+{
+    isDownloadInterrupting = true;
 }
 
 CURL *CurlDownloader::CurlSimpleInit()
@@ -70,7 +74,7 @@ CURL *CurlDownloader::CurlSimpleInit()
     return curl_handle;
 }
 
-DownloadError CurlDownloader::DownloadContent(const uint64 &loadFrom)
+DownloadError CurlDownloader::Download(const String &url, const uint64 &loadFrom, int32 _timeout)
 {
     /* init the curl session */
     currentCurlHandle = CurlSimpleInit();
@@ -78,16 +82,14 @@ DownloadError CurlDownloader::DownloadContent(const uint64 &loadFrom)
    if (!currentCurlHandle)
         return DLE_INIT_ERROR;
 
-    curl_easy_setopt(currentCurlHandle, CURLOPT_URL, currentTask->url.c_str());
+    curl_easy_setopt(currentCurlHandle, CURLOPT_URL, url.c_str());
     curl_easy_setopt(currentCurlHandle, CURLOPT_WRITEFUNCTION, CurlDownloader::CurlDataRecvHandler);
     curl_easy_setopt(currentCurlHandle, CURLOPT_RESUME_FROM, loadFrom);
     curl_easy_setopt(currentCurlHandle, CURLOPT_SSL_VERIFYPEER, 0);
     curl_easy_setopt(currentCurlHandle, CURLOPT_VERBOSE, 0);
     curl_easy_setopt(currentCurlHandle, CURLOPT_NOPROGRESS, 1);
-
-    /* pass currentTask pointer to static callback */ 
     curl_easy_setopt(currentCurlHandle, CURLOPT_WRITEDATA, static_cast<void *>(this));
-    curl_easy_setopt(currentCurlHandle, CURLOPT_TIMEOUT, currentTask->timeout);
+    curl_easy_setopt(currentCurlHandle, CURLOPT_TIMEOUT, (-1 >= _timeout) ? this->timeout : _timeout);
     
     /* get it! */ 
     CURLcode curlStatus = curl_easy_perform(currentCurlHandle);
@@ -96,16 +98,16 @@ DownloadError CurlDownloader::DownloadContent(const uint64 &loadFrom)
     curl_easy_cleanup(currentCurlHandle);
     currentCurlHandle = NULL;
 
-    if (IsInterrupting())
+    if (isDownloadInterrupting)
     {
         // that is an exception from rule because of CURL interrupting mechanism.
-        return DLE_NO_ERROR;
-    }     
+        return DLE_CANCELLED;
+    }
 
     return CurlStatusToDownloadStatus(curlStatus);
 }
 
-DownloadError CurlDownloader::GetDownloadFileSize(int64 &retSize, const String &url)
+DownloadError CurlDownloader::GetSize(const String &url, int64 &retSize, int32 _timeout)
 {
     float64 sizeToDownload = 0.0;
     currentCurlHandle = CurlSimpleInit();
@@ -113,10 +115,8 @@ DownloadError CurlDownloader::GetDownloadFileSize(int64 &retSize, const String &
     if (!currentCurlHandle)
         return DLE_INIT_ERROR;
 
-    if (0 != url.length())
-        curl_easy_setopt(currentCurlHandle, CURLOPT_URL, url.c_str());
-    else
-        curl_easy_setopt(currentCurlHandle, CURLOPT_URL, currentTask->url.c_str());
+    curl_easy_setopt(currentCurlHandle, CURLOPT_URL, url.c_str());
+
     // Set a valid user agent
     curl_easy_setopt(currentCurlHandle, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11");
 
@@ -125,7 +125,7 @@ DownloadError CurlDownloader::GetDownloadFileSize(int64 &retSize, const String &
 
     curl_easy_setopt(currentCurlHandle, CURLOPT_NOBODY, 1);
     curl_easy_setopt(currentCurlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_easy_setopt(currentCurlHandle, CURLOPT_TIMEOUT, (currentTask) ? currentTask->timeout : timeout);
+    curl_easy_setopt(currentCurlHandle, CURLOPT_TIMEOUT, (-1 >= _timeout) ? this->timeout : _timeout);
     curl_easy_setopt(currentCurlHandle, CURLOPT_VERBOSE, 0);
     curl_easy_setopt(currentCurlHandle, CURLOPT_NOPROGRESS, 1);
     CURLcode curlStatus = curl_easy_perform(currentCurlHandle);
@@ -133,16 +133,15 @@ DownloadError CurlDownloader::GetDownloadFileSize(int64 &retSize, const String &
 
     char8 *contentType = new char8[80];
     curl_easy_getinfo(currentCurlHandle, CURLINFO_CONTENT_TYPE, &contentType);
-
     uint32 httpCode;
     curl_easy_getinfo(currentCurlHandle, CURLINFO_HTTP_CODE, &httpCode);
 
-     /* cleanup curl stuff */ 
+    /* cleanup curl stuff */ 
     curl_easy_cleanup(currentCurlHandle);
 
     currentCurlHandle = NULL;
     
-      DownloadError retError;
+    DownloadError retError;
 
     // to discuss. It is ideal to place it to DownloadManager because in that case we need to use same code inside each downloader.
     DownloadError httpError = HttpCodeToError(httpCode);
@@ -179,6 +178,7 @@ DownloadError CurlDownloader::CurlStatusToDownloadStatus(const CURLcode &status)
             return DLE_COMMON_ERROR; // need to log status
     }
 }
+
 
 DownloadError CurlDownloader::HttpCodeToError(uint32 code)
 {

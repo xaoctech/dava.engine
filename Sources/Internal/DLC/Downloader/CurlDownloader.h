@@ -29,13 +29,13 @@
 #ifndef __DATA_CURL_DOWNLOADER_H__
 #define __DATA_CURL_DOWNLOADER_H__
 
-#include "DataDownloader.h"
+#include "Downloader.h"
 #include "curl/curl.h"
 
 namespace DAVA
 {
 
-class CurlDownloader : public DataDownloader
+class CurlDownloader : public Downloader
 {
     enum HttpCodeClass
     {
@@ -47,24 +47,26 @@ class CurlDownloader : public DataDownloader
     };
 
 public:
-    CurlDownloader(uint32 operationTimeout = 3000, uint8 operationRetryesAllowed = 20);
+    CurlDownloader(uint32 operationTimeout = 2000);
     virtual ~CurlDownloader();
 
 protected:
-    virtual uint32 InterruptDownload();
+    virtual void Interrupt();
+
     CURL *CurlSimpleInit();
 
-    virtual DownloadError GetDownloadFileSize(int64 &retSize, const String &url = "");
-    virtual DownloadError DownloadContent(const uint64 &loadFrom);
+    virtual DownloadError GetSize(const String &url, int64 &retSize, int32 timeout = -1);
+    virtual DownloadError Download(const String &url, const uint64 &loadFrom, int32 timeout = -1);
     
     static size_t CurlDataRecvHandler(void *ptr, size_t size, size_t nmemb, void *fileDownloader);
     
     DownloadError CurlStatusToDownloadStatus(const CURLcode &status);
     DownloadError HttpCodeToError(uint32 code);
     
-protected:
+private:
     static bool isCURLInit;
     static CURL *currentCurlHandle;
+    bool isDownloadInterrupting;
 };
 
 }

@@ -1528,15 +1528,6 @@
     <ClInclude Include="..\..\Sources\Internal\DLC\Patcher\ZLibStream.h">
       <Filter>Internal\DLC\Patcher</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\CurlDownloader.h">
-      <Filter>Internal\DLC\Downloader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DataDownloader.h">
-      <Filter>Internal\DLC\Downloader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DataDownloadManager.h">
-      <Filter>Internal\DLC\Downloader</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Base\Bind.h">
       <Filter>Internal\Base</Filter>
     </ClInclude>
@@ -1548,6 +1539,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\DLC\DLC.h">
       <Filter>Internal\DLC</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\CurlDownloader.h">
+      <Filter>Internal\DLC\Downloader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\Downloader.h">
+      <Filter>Internal\DLC\Downloader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DownloaderCommon.h">
+      <Filter>Internal\DLC\Downloader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\DLC\Downloader\DownloadManager.h">
+      <Filter>Internal\DLC\Downloader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2758,17 +2761,20 @@
     <ClCompile Include="..\..\Sources\Internal\DLC\Patcher\ZLibStream.cpp">
       <Filter>Internal\DLC\Patcher</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\DLC\DLC.cpp">
+      <Filter>Internal\DLC</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\CurlDownloader.cpp">
       <Filter>Internal\DLC\Downloader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DataDownloader.cpp">
+    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\Downloader.cpp">
       <Filter>Internal\DLC\Downloader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DataDownloadManager.cpp">
+    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DownloaderCommon.cpp">
       <Filter>Internal\DLC\Downloader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Internal\DLC\DLC.cpp">
-      <Filter>Internal\DLC</Filter>
+    <ClCompile Include="..\..\Sources\Internal\DLC\Downloader\DownloadManager.cpp">
+      <Filter>Internal\DLC\Downloader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -26,91 +26,37 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =====================================================================================*/
 
-
-//
-//  DLCSystemTests.h
-//  WoTSniperMacOS
-//
-//  Created by Andrey Panasyuk on 4/12/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef __DAVAENGINE_DLCSystemTests_h
-#define __DAVAENGINE_DLCSystemTests_h
-
-#include "DLC/DLCSystem.h"
-#include "TestTemplate.h"
+#include "Downloader.h"
+#include "DownloadManager.h"
 
 namespace DAVA
 {
 
-class DLCSystemTests: public DLCSystemDelegate
+Downloader::Downloader(uint32 operationTimeout)
+    : timeout(operationTimeout)
 {
-public:
-	DLCSystemTests();
 
-    void StartTests();
-    
-    void Test1();
-    void Test2();
-    void Test3();
-    void Test4();
-    void Test5();
-    void Test6();
-    void Test7();
-    void Test8();
+}
 
-    void NextTest();
-    
-    // File with contents of all DLCs has getted 
-    virtual void InitCompleted(DLCStatusCode withStatus);
-    // Single DLC file has downloaded or end with error
-    virtual void DLCCompleted(DLCStatusCode withStatus, uint16 index);
-    // All DLC files has downloaded
-    virtual void AllDLCCompleted();
-
-	bool IsFinished() { return isFinished; };
-	bool IsNeedNextTest() { return needNextTest; };
-	uint32 GetCurTestNumber() { return state; };
-
-public:
-    enum States
-    {
-        TEST_1 = 0,
-        TEST_2,
-        TEST_3,
-        TEST_4,
-        TEST_5,
-        TEST_6,
-        TEST_7,
-        TEST_8
-    };
-private:
-    States state;
-    bool isSucsess;
-	bool isFinished;
-	bool needNextTest;
-};
-
-}// End DAVA
-
-class DLCTest: public TestTemplate<DLCTest>
+size_t Downloader::SaveData(void *ptr, size_t size, size_t nmemb)
 {
-protected:
-    ~DLCTest(){}
-public:
-	DLCTest();
+    DownloadManager *mgr = DownloadManager::Instance();
+    
+    // SaveData performs when task is in IN_PROCESS state, so currentTask should be NOT NULL.
+    DVASSERT(mgr->currentTask);
 
-	virtual void LoadResources();
-	virtual void UnloadResources();
+    String storePath = mgr->currentTask->storePath;
 
-	void DLCTestFunction(PerfFuncData * data);
+    File *destFile = File::Create(storePath, File::APPEND | File::WRITE);
+    uint32 written = destFile->Write(ptr, size * nmemb);
+    mgr->currentTask->downloadProgress += written;
 
-private:
-	DLCSystemTests* tests;
+    SafeRelease(destFile);
 
-	bool isStarted;
-};
+    // maybee not ideal, but only Manager can use Downloader, so maybee callback is not required.
+    DownloadManager::Instance()->ResetRetriesCount();
 
+    return written;
+}
 
-#endif
+}
