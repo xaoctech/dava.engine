@@ -224,16 +224,16 @@ bool HierarchyTreePlatformNode::Load(const YamlNode* platform, List<QString>& fi
 	{
 		for (int i = 0; i < aggregators->GetCount(); i++)
 		{
-			const YamlNode* aggregator = aggregators->Get(i);
-			if (!aggregator)
-				continue;
-			String aggregatorName = aggregator->AsString();
+			String aggregatorName = aggregators->GetItemKeyName(i);
+            if (aggregatorName.empty())
+                continue;
 
 			QString aggregatorPath = GetScreenPath(aggregatorName);
             fileNames.push_back(aggregatorPath);
 
 			HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(this, QString::fromStdString(aggregatorName), Rect());
 
+            const YamlNode* aggregator = aggregators->Get(i);
 			const YamlNode* aggregatorWidth = aggregator->Get(WIDTH_NODE);
 			const YamlNode* aggregatorHeight = aggregator->Get(HEIGHT_NODE);
 			if (!aggregatorWidth || !aggregatorHeight)

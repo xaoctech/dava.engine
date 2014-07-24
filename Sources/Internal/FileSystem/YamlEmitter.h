@@ -54,7 +54,6 @@ public:
 protected:
     bool Emit(const YamlNode * node, const FilePath & outFileName, uint32 attr);
     bool Emit(const YamlNode * node, File *outFile);
-    void OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<class OrderedYamlNode> &sortedChildren ) const;
 
 private:
     bool EmitStreamStart  (yaml_emitter_t * emitter);

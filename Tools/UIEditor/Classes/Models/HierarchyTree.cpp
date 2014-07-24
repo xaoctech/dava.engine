@@ -165,13 +165,12 @@ bool HierarchyTree::Load(const QString& projectPath)
 	const YamlNode* platforms = projectRoot->Get(PLATFORMS_NODE);
 	for (int32 i = 0; i < platforms->GetCount(); i++)
 	{
-		const YamlNode* platform = platforms->Get(i);
-		if (!platform)
-			continue;
-		
-		const String &platformName = platform->AsString();
+		const String &platformName = platforms->GetItemKeyName(i);
+        if (platformName.empty())
+            continue;
+
 		HierarchyTreePlatformNode* platformNode = new HierarchyTreePlatformNode(&rootNode, QString::fromStdString(platformName));
-        
+        const YamlNode* platform = platforms->Get(i);
 		result &= platformNode->Load(platform, fileNames);
 		rootNode.AddTreeNode(platformNode);
         

@@ -100,35 +100,6 @@ int write_handler(void *ext, unsigned char *buffer, size_t size)//yaml_write_han
     return (size == bytesWritten) ? 1 : 0;
 }
 
-class OrderedYamlNode
-{
-public:
-    OrderedYamlNode(const String& nodeName, const YamlNode* node)
-        : yamlNodeName(nodeName)
-        , yamlNodeValue(node)
-    {}
-
-    const String &GetNodeName() const  {return yamlNodeName;};
-    const YamlNode *GetNodeValue() const {return yamlNodeValue;};
-
-    bool operator < (const OrderedYamlNode& right) const
-    {
-        const YamlNode* leftIndexNode = yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-        const YamlNode* rightIndexNode = right.yamlNodeValue->Get(YamlNode::SAVE_INDEX_NAME);
-
-        if (!leftIndexNode || !rightIndexNode)
-        {
-            return leftIndexNode < rightIndexNode;
-        }
-
-        return leftIndexNode->AsInt32() < rightIndexNode->AsInt32();
-    }
-
-private:
-    String yamlNodeName;
-    const YamlNode *yamlNodeValue;
-};
-
 DAVA::YamlEmitter::~YamlEmitter()
 {
 }
@@ -208,53 +179,25 @@ bool YamlEmitter::Emit(const YamlNode * node, File *outFile)
     return true;
 }
 
-void YamlEmitter::OrderMapYamlNode(const MultiMap<String, YamlNode*>& mapNodes, Vector<OrderedYamlNode> &nodes) const
-{
-    nodes.reserve( mapNodes.size() );
-
-    MultiMap<String, YamlNode*>::const_iterator iter;
-    MultiMap<String, YamlNode*>::const_iterator end = mapNodes.end();
-    for (iter = mapNodes.begin(); iter != end; ++iter)
-    {
-        // Only the nodes of type Map are expected here.
-        if (iter->second->GetType() == YamlNode::TYPE_MAP)
-            continue;
-
-        nodes.push_back(OrderedYamlNode(iter->first, iter->second));
-    }
-
-    uint32 lastNotMapItemIndex = nodes.size();
-    for (iter = mapNodes.begin(); iter != end; ++iter)
-    {
-        if (iter->second->GetType() != YamlNode::TYPE_MAP)
-            continue;
-
-        nodes.push_back(OrderedYamlNode(iter->first, iter->second));
-    }
-
-    std::sort(nodes.begin() + lastNotMapItemIndex, nodes.end());
-}
-
 bool YamlEmitter::EmitYamlNode(yaml_emitter_t * emitter, const YamlNode * node)
 {
     switch (node->GetType())
     {
     case YamlNode::TYPE_STRING:
         {
-            if (!EmitScalar(emitter, node->AsString(), GetYamlScalarStyle(node->representation.stringStyle)))
+            if (!EmitScalar(emitter, node->AsString(), GetYamlScalarStyle(node->GetStringRepresentation())))
                 return false;
         }
         break;
     case YamlNode::TYPE_ARRAY:
         {
-            if (!EmitSequenceStart(emitter, GetYamlSequenceStyle(node->representation.arrayStyle)))
+            if (!EmitSequenceStart(emitter, GetYamlSequenceStyle(node->GetArrayRepresentation())))
                 return false;
 
-            const Vector<YamlNode*> &sequence = node->AsVector();
-            Vector<YamlNode*>::const_iterator iter = sequence.begin();
-            for (; iter != sequence.end(); ++iter)
+            int32 count = node->GetCount();
+            for (int32 i = 0; i < count; ++i)
             {
-                if (!EmitYamlNode(emitter, (*iter)))
+                if (!EmitYamlNode(emitter, node->Get(i)))
                     return false;
             }
 
@@ -264,21 +207,15 @@ bool YamlEmitter::EmitYamlNode(yaml_emitter_t * emitter, const YamlNode * node)
         break;
     case YamlNode::TYPE_MAP:
         {
-            if (!EmitMappingStart(emitter, GetYamlMappingStyle(node->representation.mapStyle.value)))
+            if (!EmitMappingStart(emitter, GetYamlMappingStyle(node->GetMapRepresentation())))
                 return false;
 
-            const MultiMap<String, YamlNode*> &mapNodes = node->AsMap();
-            // Order the map nodes by the "Save Index" and write.
-            Vector<OrderedYamlNode> sortedMapNodes;
-            OrderMapYamlNode(mapNodes, sortedMapNodes);
-            Vector<OrderedYamlNode>::const_iterator iter = sortedMapNodes.begin();
-            for (;iter != sortedMapNodes.end(); ++iter)
+            int32 count = node->GetCount();
+            for ( int32 i = 0; i < count; ++i)
             {
-                if (iter->GetNodeName() == YamlNode::SAVE_INDEX_NAME)
-                    continue;
-                if (!EmitScalar(emitter, iter->GetNodeName(), GetYamlScalarStyle(node->representation.mapStyle.key)))
+                if (!EmitScalar(emitter, node->GetItemKeyName(i), GetYamlScalarStyle(node->GetMapKeyRepresentation())))
                     return false;
-                if (!EmitYamlNode(emitter, iter->GetNodeValue()))
+                if (!EmitYamlNode(emitter, node->Get(i)))
                     return false;
             }
 
