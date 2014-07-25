@@ -21,6 +21,7 @@ Documentation/doxygen/*
 *.vcxproj.user
 *.suo
 *.sdf
+*.opensdf
 *.ipch
 !*.cpp
 !*.h
@@ -31,4 +32,4 @@ ddd
 /testproj/
 fmod.log
 
-/Tools/ResourceEditor/*.opensdf
+
