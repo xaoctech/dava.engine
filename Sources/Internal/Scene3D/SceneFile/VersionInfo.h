@@ -37,7 +37,7 @@
 #include "FileSystem/FilePath.h"
 
 
-#define USER_VERSIONING_DEBUG_FEATURES
+//#define USER_VERSIONING_DEBUG_FEATURES
 
 
 namespace DAVA
@@ -78,6 +78,8 @@ public:
 #ifdef USER_VERSIONING_DEBUG_FEATURES
     VersionMap& Versions();
     VersionMap GetDefaultVersionHistory();
+#else
+    const VersionMap& Versions() const;
 #endif
 
     static void AddVersion(VersionMap& versions, const SceneVersion& version);
