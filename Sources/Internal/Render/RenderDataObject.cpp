@@ -121,9 +121,9 @@ void RenderDataObject::DeleteBuffersInternal(BaseObject * caller, void * param, 
 		RENDER_VERIFY(glDeleteBuffersARB(1, &container->indexBuffer));
 #else 
 	if (container->vboBuffer)
-		RENDER_VERIFY(glDeleteBuffers(1, &container->vboBuffer));
+		RENDER_VERIFY(RenderManager::Instance()->HWglDeleteBuffers(1, &container->vboBuffer));
 	if (container->indexBuffer)
-		RENDER_VERIFY(glDeleteBuffers(1, &container->indexBuffer));
+		RENDER_VERIFY(RenderManager::Instance()->HWglDeleteBuffers(1, &container->indexBuffer));
 #endif
 #endif
 	SafeDelete(container);
@@ -221,10 +221,7 @@ void RenderDataObject::BuildVertexBufferInternal(BaseObject * caller, void * par
     
     if (vboBuffer)
     {
-        // Temporary fix: should unbind buffer before deleting (in case it's active).
-        RENDER_VERIFY(RenderManager::Instance()->HWglBindBuffer(GL_ARRAY_BUFFER, 0));
-        
-        RENDER_VERIFY(glDeleteBuffers(1, &vboBuffer));
+        RENDER_VERIFY(RenderManager::Instance()->HWglDeleteBuffers(1, &vboBuffer));
         vboBuffer = 0;
     }
     
@@ -287,7 +284,7 @@ void RenderDataObject::BuildIndexBufferInternal(BaseObject * caller, void * para
 #else
     if (indexBuffer)
     {
-        RENDER_VERIFY(glDeleteBuffers(1, &indexBuffer));
+        RENDER_VERIFY(RenderManager::Instance()->HWglDeleteBuffers(1, &indexBuffer));
         indexBuffer = 0;
     }
     RENDER_VERIFY(glGenBuffers(1, &indexBuffer));
