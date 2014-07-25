@@ -69,7 +69,7 @@ void UnpackFile(const FilePath & sourceImagePath)
         Image *image = images[0];
         if((FORMAT_RGBA8888 == image->format) || (FORMAT_A8 == image->format) || (FORMAT_A16 == image->format))
         {
-            ImageSystem::Instance()->Save(FilePath::CreateWithNewExtension(sourceImagePath,".png"), image);
+            ImageSystem::Instance()->Save(FilePath::CreateWithNewExtension(sourceImagePath,".png"), image, image->format);
         }
         else
         {
