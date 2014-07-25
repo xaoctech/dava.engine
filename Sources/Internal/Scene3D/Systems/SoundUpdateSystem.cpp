@@ -114,11 +114,19 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
         uint32 autoCount = autoTriggerSounds.size();
         for(uint32 i = 0; i < autoCount; ++i)
         {
-            if(autoTriggerSounds[i].wasTriggered && !autoTriggerSounds[i].soundEvent->IsActive())
+            if(autoTriggerSounds[i].wasTriggered)
             {
                 float32 distanceSq = (listenerPosition - autoTriggerSounds[i].component->GetEntity()->GetWorldTransform().GetTranslationVector()).SquareLength();
                 if(distanceSq < autoTriggerSounds[i].maxSqDistance)
-                    autoTriggerSounds[i].soundEvent->Trigger();
+                {
+                    if(!autoTriggerSounds[i].soundEvent->IsActive())
+                        autoTriggerSounds[i].soundEvent->Trigger();
+                }
+                else
+                {
+                    if(autoTriggerSounds[i].soundEvent->IsActive())
+                        autoTriggerSounds[i].soundEvent->Stop();
+                }
             }
         }
     }
