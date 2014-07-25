@@ -53,21 +53,18 @@ public:
 
     enum eStringRepresentation          //data represent style for TYPE_STRING for storing in file
     {
-        SR_AUTO_REPRESENTATION,         //YamlEmitter choose the data represent style automatically
         SR_PLAIN_REPRESENTATION,        //plain represent style
         SR_DOUBLE_QUOTED_REPRESENTATION,//data represent in double-quoted
     };
 
     enum eArrayRepresentation           //data represent style for TYPE_ARRAY for storing in file
     {
-        AR_AUTO_REPRESENTATION,         //YamlEmitter choose the data represent style automatically
         AR_BLOCK_REPRESENTATION,        //data represent in multi-line with mark "- "
         AR_FLOW_REPRESENTATION,         //data represent one line in square brackets []
     };
 
     enum eMapRepresentation             //data represent style for TYPE_MAP for storing in file
     {
-        MR_AUTO_REPRESENTATION,         //YamlEmitter choose the data represent style automatically
         MR_BLOCK_REPRESENTATION,        //data represent in multi-line
         MR_FLOW_REPRESENTATION,         //data represent one line in braces {}
     };
@@ -76,9 +73,9 @@ protected:
     virtual ~YamlNode();
 public:
     YamlNode(eType type);
-    static YamlNode *CreateStringNode(eStringRepresentation representation = SR_PLAIN_REPRESENTATION);
+    static YamlNode *CreateStringNode();
     static YamlNode *CreateArrayNode(eArrayRepresentation representation = AR_FLOW_REPRESENTATION);
-    static YamlNode *CreateMapNode(eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
+    static YamlNode *CreateMapNode(bool orderedSave = true, eMapRepresentation valRepresentation = MR_BLOCK_REPRESENTATION, eStringRepresentation keyRepresentation = SR_PLAIN_REPRESENTATION);
 
     eType           GetType() const { return type; }
 
@@ -186,6 +183,7 @@ public:
     eArrayRepresentation  GetArrayRepresentation() const;
     eMapRepresentation    GetMapRepresentation() const;
     eStringRepresentation GetMapKeyRepresentation() const;
+    bool                  GetMapOrderRepresentation() const;
 
 protected:
     static YamlNode *CreateNodeFromVariantType(const VariantType &varType);
@@ -204,11 +202,11 @@ protected:
     void            InternalAddNodeToMap(const String& name, YamlNode* node, bool rewritePreviousValue);
     void            InternalAddNodeToArray(YamlNode* node);
 
-    void            InternalSetString(const String &value, eStringRepresentation style = SR_AUTO_REPRESENTATION);
-    void            InternalSetMatrix(const float32* array,uint32 dimension, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
-    void            InternalSetVector(const float32 array[],uint32 dimension, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
-    void            InternalSetByteArray(const uint8* byteArray,int32 byteArraySize, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
-    void            InternalSetKeyedArchive(KeyedArchive* archive, eArrayRepresentation style = AR_AUTO_REPRESENTATION);
+    void            InternalSetString(const String &value, eStringRepresentation style);
+    void            InternalSetMatrix(const float32* array,uint32 dimension);
+    void            InternalSetVector(const float32 array[],uint32 dimension);
+    void            InternalSetByteArray(const uint8* byteArray,int32 byteArraySize);
+    void            InternalSetKeyedArchive(KeyedArchive* archive);
 
 private:
     const eType type;
@@ -230,6 +228,7 @@ private:
         Vector<std::pair<String, YamlNode*>> unordered;
         eMapRepresentation style;
         eStringRepresentation keyStyle;
+        bool orderedSave;
     };
 
     union

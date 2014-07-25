@@ -288,7 +288,7 @@ bool HierarchyTreePlatformNode::LoadLocalization(const YamlNode* platform)
 
 bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>& fileNames)
 {
-	YamlNode* platform = new YamlNode(YamlNode::TYPE_MAP);
+	YamlNode* platform = YamlNode::CreateMapNode();
 	platform->Set(WIDTH_NODE, GetWidth());
 	platform->Set(HEIGHT_NODE, GetHeight());
 
@@ -298,7 +298,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>
 	YamlNode* screens = YamlNode::CreateArrayNode(YamlNode::AR_BLOCK_REPRESENTATION);
 	platform->SetNodeToMap( SCREENS_NODE, screens );
 	
-	YamlNode* aggregators = new YamlNode(YamlNode::TYPE_MAP);
+	YamlNode* aggregators = YamlNode::CreateMapNode(false);
 	platform->SetNodeToMap( AGGREGATORS_NODE, aggregators );
 
     // Add the Localization info - specific for each Platform.
@@ -322,7 +322,7 @@ bool HierarchyTreePlatformNode::Save(YamlNode* node, bool saveAll, List<QString>
 		QString path = GetScreenPath(node->GetName());
 		fileNames.push_back(path);
 		
-		YamlNode* aggregator = new YamlNode(YamlNode::TYPE_MAP);
+		YamlNode* aggregator = YamlNode::CreateMapNode(false);
 		result &= node->Save(aggregator, path, saveAll);
 		aggregators->SetNodeToMap(node->GetName().toStdString(), aggregator);
 	}

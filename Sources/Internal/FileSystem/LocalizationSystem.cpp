@@ -222,7 +222,7 @@ bool LocalizationSystem::SaveToYamlFile(const StringFile* stringFile)
 		return false;
 	}
 
-	YamlNode *node = YamlNode::CreateMapNode(YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION);
+	YamlNode *node = YamlNode::CreateMapNode(true, YamlNode::MR_BLOCK_REPRESENTATION, YamlNode::SR_DOUBLE_QUOTED_REPRESENTATION);
 	for (Map<WideString, WideString>::const_iterator iter = stringFile->strings.begin();
 		 iter != stringFile->strings.end(); iter ++)
 	{

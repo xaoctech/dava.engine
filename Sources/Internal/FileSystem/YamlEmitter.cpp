@@ -210,14 +210,9 @@ bool YamlEmitter::EmitYamlNode(yaml_emitter_t * emitter, const YamlNode * node)
             if (!EmitMappingStart(emitter, GetYamlMappingStyle(node->GetMapRepresentation())))
                 return false;
 
-            int32 count = node->GetCount();
-            for ( int32 i = 0; i < count; ++i)
-            {
-                if (!EmitScalar(emitter, node->GetItemKeyName(i), GetYamlScalarStyle(node->GetMapKeyRepresentation())))
-                    return false;
-                if (!EmitYamlNode(emitter, node->Get(i)))
-                    return false;
-            }
+            bool res = node->GetMapOrderRepresentation() ? EmitOrderedMap(emitter, node) : EmitUnorderedMap(emitter, node);
+            if (!res)
+                return false;
 
             if (!EmitMappingEnd(emitter))
                 return false;
@@ -315,6 +310,34 @@ bool YamlEmitter::EmitScalar(yaml_emitter_t * emitter, const String &value, int3
         !yaml_emitter_emit(emitter, &event))
         return false;
 
+    return true;
+}
+
+bool YamlEmitter::EmitUnorderedMap(yaml_emitter_t * emitter, const YamlNode * mapNode)
+{
+    int32 count = mapNode->GetCount();
+    for ( int32 i = 0; i < count; ++i)
+    {
+        if (!EmitScalar(emitter, mapNode->GetItemKeyName(i), GetYamlScalarStyle(mapNode->GetMapKeyRepresentation())))
+            return false;
+        if (!EmitYamlNode(emitter, mapNode->Get(i)))
+            return false;
+    }
+    return true;
+}
+
+bool YamlEmitter::EmitOrderedMap( yaml_emitter_t * emitter, const YamlNode * mapNode )
+{
+    const MultiMap<String, YamlNode*> &map = mapNode->AsMap();
+    MultiMap<String, YamlNode*>::const_iterator iter = map.begin();
+    MultiMap<String, YamlNode*>::const_iterator end = map.end();
+    for (; iter != end; ++iter)
+    {
+        if (!EmitScalar(emitter, iter->first, GetYamlScalarStyle(mapNode->GetMapKeyRepresentation())))
+            return false;
+        if (!EmitYamlNode(emitter, iter->second))
+            return false;
+    }
     return true;
 }
 
