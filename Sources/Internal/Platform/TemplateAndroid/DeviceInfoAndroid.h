@@ -50,10 +50,16 @@ public:
 	String GetTimeZone();
 	String GetUDID();
 	String GetName();
-	int GetZBufferSize();
-	int GetGPUFamily();
-	int GetNetworkType();
-	int GetSignalStrength(int networkType);
+	int32 GetZBufferSize();
+	int32 GetGPUFamily();
+	int32 GetNetworkType();
+	int32 GetSignalStrength(int networkType);
+
+	int64 GetInternalStorageCapacity();
+	int64 GetInternalStorageFree();
+	int64 GetExternalStorageCapacity();
+	int64 GetExternalStorageFree();
+	bool IsExternalStoragePresent();
 
 protected:
 	virtual jclass GetJavaClass() const;

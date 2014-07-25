@@ -52,6 +52,7 @@ class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
+class VersionInfoWidget;
 
 class QtMainWindow
     : public QMainWindow
@@ -175,6 +176,7 @@ public slots:
     
     void OnBuildStaticOcclusion();
     void OnRebuildCurrentOcclusionCell();
+    void OnInavalidateStaticOcclusion();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
@@ -229,7 +231,7 @@ protected:
 	
 	bool SelectCustomColorsTexturePath();
 	
-protected slots:
+private slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
 
@@ -239,12 +241,11 @@ protected slots:
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     void OnGlobalInvalidateTimeout();
-
 	void EditorLightEnabled(bool enabled);
-
 	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
-
 	void UnmodalDialogFinished(int);
+
+    void DebugVersionInfo();
 
 private:
 	Ui::MainWindow *ui;
@@ -291,6 +292,7 @@ private:
 
     //Need for any debug functionality
     DeveloperTools *developerTools;
+    QPointer<VersionInfoWidget> versionInfoWidget;
 };
 
 

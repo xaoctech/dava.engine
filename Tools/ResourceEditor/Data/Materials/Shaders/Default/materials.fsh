@@ -9,6 +9,7 @@ uniform sampler2D cubemap = 3;
 uniform sampler2D heightmap = 4;
 uniform sampler2D densitymap = 5;
 
+uniform float normalScale = 1.0;
 uniform float inGlossiness = 0.5;
 uniform float inSpecularity = 1.0;
 uniform vec3 metalFresnelReflectance = vec3(0.5, 0.5, 0.5);
@@ -91,6 +92,7 @@ uniform float lightIntensity0;
 uniform float inSpecularity;
 uniform float physicalFresnelReflectance;
 uniform vec3 metalFresnelReflectance;
+uniform float normalScale;
 #endif
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
@@ -317,6 +319,7 @@ void main()
     // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
     //normal = normalize (normal);
+    normal.xy *= normalScale;
    	normal.z = sqrt(1.0 - (normal.x * normal.x + normal.y * normal.y));
     //normal = vec3(0.0, 0.0, 1.0);
     

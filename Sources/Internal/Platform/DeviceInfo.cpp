@@ -64,17 +64,18 @@ String DeviceInfo::GetPlatformString()
 {
     return GlobalEnumMap<ePlatform>::Instance()->ToString(GetPlatform());
 }
-    
-String DeviceInfo::GetNetworkTypeString()
-{
-    const NetworkInfo& networkInfo = GetNetworkInfo();
-    return GlobalEnumMap<eNetworkType>::Instance()->ToString(networkInfo.networkType);
-}
 
 #ifndef __DAVAENGINE_ANDROID__
 int DeviceInfo::GetZBufferSize()
 {
 	return 24;
 }
+
+List<DeviceInfo::StorageRecord> DeviceInfo::GetStorageList()
+{
+    List<DeviceInfo::StorageRecord> l;
+    return l;
+}
+    
 #endif
 }

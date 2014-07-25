@@ -1101,12 +1101,12 @@ Image * Texture::CreateImageFromMemory(UniqueHandle renderState)
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format, true);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
         RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 
-		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
+		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height, true);
 
         Sprite::DrawState drawState;
         drawState.SetPosition(0, 0);
