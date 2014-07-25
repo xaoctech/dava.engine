@@ -37,7 +37,7 @@ namespace DAVA
 
 static const String EMPTY_STRING = "";
 static const Vector<YamlNode*> EMPTY_VECTOR;
-static const MultiMap<String, YamlNode*> EMPTY_MAP;
+static const MultiMap<String, YamlNode*> EMPTY_MAP = MultiMap<String, YamlNode*>();
 
 YamlNode * YamlNode::CreateStringNode()
 {
@@ -546,7 +546,7 @@ void YamlNode::RemoveNodeFromMap(const String & name)
 
     objectMap->ordered.erase(begin, end);
 
-    Vector<std::pair<String, YamlNode*>> &array = objectMap->unordered;
+    Vector< std::pair<String, YamlNode*> > &array = objectMap->unordered;
     array.erase( std::remove_if( array.begin(), array.end(), EqualToFirst(name) ), array.end() );
 }
 YamlNode::eStringRepresentation YamlNode::GetStringRepresentation() const
