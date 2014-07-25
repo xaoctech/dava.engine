@@ -32,9 +32,12 @@ uniform mat4 worldViewProjMatrix;
 uniform mat4 worldViewMatrix;
 
 
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
+uniform vec4 lightPosition0;
+#endif
+
 #if defined(PIXEL_LIT)
 uniform mat3 worldViewInvTransposeMatrix;
-uniform vec4 lightPosition0;
 uniform float lightIntensity0; 
 uniform float materialSpecularShininess;
 #endif
