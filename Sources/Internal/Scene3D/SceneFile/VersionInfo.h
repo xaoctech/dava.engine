@@ -37,7 +37,7 @@
 #include "FileSystem/FilePath.h"
 
 
-//#define USER_VERSIONING_DEBUG_FEATURES
+#define USER_VERSIONING_DEBUG_FEATURES
 
 
 namespace DAVA
