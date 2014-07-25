@@ -28,8 +28,11 @@
 
 
 
-#include "Utils/TeamcityOutput.h"
+#include "TeamcityOutput.h"
 #include "Utils/Utils.h"
+
+#include <iostream>
+
 
 #if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
 
@@ -40,22 +43,27 @@ namespace DAVA
 void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
 {
     String outStr = NormalizeString(text);
-	String status = "NORMAL";
+	String output;
+    String status;
+    
     switch (ll)
     {
-        case Logger::LEVEL_ERROR:
-			status = "ERROR";
-            break;
+    case Logger::LEVEL_ERROR:
+		status = "ERROR";
+        output = "##teamcity[buildProblem description=\'ERROR: " + outStr + "\']";
+        PlatformOutput(output);
+        break;
 
-        case Logger::LEVEL_WARNING:
-			status = "WARNING";
-            break;
+    case Logger::LEVEL_WARNING:
+		status = "WARNING";
+        break;
             
-        default:
-            break;
+    default:
+        status = "NORMAL";
+        break;
     }
 
-    String output = "##teamcity[message text=\'" + outStr + "\' errorDetails=\'\' status=\'" + status + "\']\n";
+    output = "##teamcity[message text=\'" + outStr + "\' errorDetails=\'\' status=\'" + status + "\']\n";
     PlatformOutput(output);
 }
 
@@ -84,13 +92,11 @@ String TeamcityOutput::NormalizeString(const char8 *text) const
     
     return str;
 }
-	
-#if defined (__DAVAENGINE_WIN32__)
+
 void TeamcityOutput::PlatformOutput(const String &text) const
 {
-    OutputDebugStringA(text.c_str());
+    std::cout << text << std::endl;
 }
-#endif //#if defined (__DAVAENGINE_WIN32__)
     
 }; // end of namespace DAVA
 
