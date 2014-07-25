@@ -29,6 +29,7 @@
 #include "Scene3D/Scene.h"
 #include "Scene3D/Systems/EventSystem.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Render/Highlevel/RenderObject.h"
 
 namespace DAVA
 {
@@ -133,6 +134,44 @@ void StaticOcclusionDataComponent::Deserialize(KeyedArchive *archive, Serializat
 	Component::Deserialize(archive, serializationContext);
 }
 
+StaticOcclusionDebugDrawComponent::StaticOcclusionDebugDrawComponent(RenderObject *object)
+{
+    renderObject = SafeRetain(object);
+}
+
+StaticOcclusionDebugDrawComponent::~StaticOcclusionDebugDrawComponent()
+{
+    SafeRelease(renderObject);
+}    
+    
+RenderObject * StaticOcclusionDebugDrawComponent::GetRenderObject()
+{
+    return renderObject;
+}
+    
+Component * StaticOcclusionDebugDrawComponent::Clone(Entity * toEntity)
+{
+    RenderObject *clonedRO = NULL;
+    if(NULL != renderObject)
+    {        
+        clonedRO = renderObject->Clone(clonedRO);
+    }
+    StaticOcclusionDebugDrawComponent * component = new StaticOcclusionDebugDrawComponent(clonedRO);
+	component->SetEntity(toEntity);    
+
+    return component;
+}
+	
+
+void StaticOcclusionDebugDrawComponent::Serialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	DVASSERT(false&&"Should not Serialize debug components. Check entity::save");
+}
+
+void StaticOcclusionDebugDrawComponent::Deserialize(KeyedArchive *archive, SerializationContext *serializationContext)
+{
+	DVASSERT(false&&"Should not Deserialize debug components. Check entity::save");
+}
 
 
 }

@@ -145,15 +145,18 @@ private:
 class StaticOcclusionDebugDrawSystem : public SceneSystem
 {
 public:
-    static PolygonGroup* CreateStaticOcclusionDebugDrawObject( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions);
+    StaticOcclusionDebugDrawSystem(Scene *scene);    
 
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
-    virtual void ImmediateEvent(Entity * entity, uint32 event);
-    void Draw();
+    virtual void ImmediateEvent(Entity * entity, uint32 event);    
 
+
+    static PolygonGroup* CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions);
+    static PolygonGroup* CreateStaticOcclusionDebugDrawCover( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup);
+    ~StaticOcclusionDebugDrawSystem();    
 private:
-
+    NMaterial *debugOpaqueMaterial, *debugAlphablendMaterial;
 };
     
 inline void StaticOcclusionBuildSystem::SetCamera(Camera * _camera)

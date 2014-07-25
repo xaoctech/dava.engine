@@ -179,6 +179,7 @@ void DebugDrawSystem::DrawUserNode(DAVA::Entity *entity)
 
 void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
 {
+    return;
     StaticOcclusionComponent * staticOcclusionComponent = 0;
 	if((staticOcclusionComponent = (StaticOcclusionComponent*)entity->GetComponent(DAVA::Component::STATIC_OCCLUSION_COMPONENT)) != 0)
 	{
@@ -212,7 +213,7 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
                     DAVA::RenderHelper::Instance()->DrawBox(box, 1.0f, debugDrawState);
                 }        */
 
-        PolygonGroup *pg = StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawObject(localBox, staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());        
+        /*PolygonGroup *pg = StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawObject(localBox, staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());        
         RenderManager::Instance()->SetRenderState(debugDrawState);
         RenderManager::Instance()->SetColor(DAVA::Color(0.0f, 0.0f, 1.0f, 1.0f));
         RenderManager::Instance()->SetRenderEffect(RenderManager::FLAT_COLOR);
@@ -222,7 +223,7 @@ void DebugDrawSystem::DrawStaticOcclusionComponent(DAVA::Entity *entity)
         RenderManager::Instance()->AttachRenderData();
         RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_LINELIST, pg->indexCount, pg->renderDataObject->GetIndexFormat(), pg->indexArray);
 
-        SafeRelease(pg);
+        SafeRelease(pg);*/
         
         
         /*const Vector3 & position = camera->GetPosition();

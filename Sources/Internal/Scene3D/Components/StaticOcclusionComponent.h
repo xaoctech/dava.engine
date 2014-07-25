@@ -33,6 +33,8 @@
 #include "Debug/DVAssert.h"
 #include "Base/Introspection.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
+#include "Scene3D/Systems/EventSystem.h"
+#include "Scene3D/Systems/GlobalEventSystem.h"
 #include "Base/BaseMath.h"
 #include "Render/Highlevel/StaticOcclusion.h"
 
@@ -107,6 +109,25 @@ public:
             PROPERTY("Subdivisions Z", "Number of subdivisions on Z axis", GetSubdivisionsZ, SetSubdivisionsZ, I_VIEW | I_EDIT)
 		);
 };
+
+class StaticOcclusionDebugDrawComponent : public Component
+{
+public:
+    IMPLEMENT_COMPONENT_TYPE(STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);
+
+    StaticOcclusionDebugDrawComponent(RenderObject * object = NULL);    
+    
+    virtual Component * Clone(Entity * toEntity);
+    virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
+    virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
+    
+    RenderObject * GetRenderObject();
+
+protected:
+    ~StaticOcclusionDebugDrawComponent();
+private:
+    RenderObject * renderObject;
+};
   
 //
     
@@ -125,6 +146,7 @@ inline void StaticOcclusionDataComponent::SetDataSize(uint32 bytes)
 inline void StaticOcclusionComponent::SetBoundingBox(const AABBox3 & newBBox)
 {
     boundingBox = newBBox;
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);	
 }
 
 inline const AABBox3 & StaticOcclusionComponent::GetBoundingBox() const
@@ -135,16 +157,19 @@ inline const AABBox3 & StaticOcclusionComponent::GetBoundingBox() const
 inline void StaticOcclusionComponent::SetSubdivisionsX(uint32 _sizeX)
 {
     xSubdivisions = _sizeX;
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);	
 }
 
 inline void StaticOcclusionComponent::SetSubdivisionsY(uint32 _sizeY)
 {
     ySubdivisions = _sizeY;
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);	
 }
     
 inline void StaticOcclusionComponent::SetSubdivisionsZ(uint32 _sizeZ)
 {
     zSubdivisions = _sizeZ;
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);	
 }
 
 inline uint32 StaticOcclusionComponent::GetSubdivisionsX() const
