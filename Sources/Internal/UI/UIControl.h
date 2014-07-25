@@ -527,7 +527,7 @@ public:
         But this methods calls for their children.
      \returns control visibility.
      */
-    DAVA_DEPRECATED(virtual bool GetVisible() const);
+    DAVA_DEPRECATED(virtual bool GetVisible() const);// use GetRecursiveVisible instead
 
     /**
      \brief Sets contol visibility.
@@ -539,7 +539,7 @@ public:
      \param[in] isVisible new control visibility.
      \param[in] hierarchic use true if you want to all control children change visiblity.
      */
-    DAVA_DEPRECATED(virtual void SetVisible(bool isVisible, bool hierarchic = true));
+    DAVA_DEPRECATED(virtual void SetVisible(bool isVisible, bool hierarchic = true));// use SetRecursiveVisible instead;
 
     /**
      \brief Returns control visibility.
@@ -1091,6 +1091,13 @@ public:
      \param[in] geometricData Parent geometric data.
      */
     virtual void SystemDraw(const UIGeometricData &geometricData);// Internal method used by ControlSystem
+
+    /**
+     \brief set parent draw color into control
+     \param[in] parentColor draw color of parent background.
+     */
+    virtual void SetParentColor(const Color &parentColor);
+
     /**
      \brief Calls on every input event. Calls SystemInput() for all control children.
         If no one of the children is processed input. Calls ProcessInput() for the current control.

@@ -42,6 +42,7 @@ SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
 :	SceneSystem(scene)
 {
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_COMPONENT_CHANGED);
 }
 
 SoundUpdateSystem::~SoundUpdateSystem()
@@ -50,7 +51,7 @@ SoundUpdateSystem::~SoundUpdateSystem()
 
 void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
-	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
+	if (event == EventSystem::WORLD_TRANSFORM_CHANGED || event == EventSystem::SOUND_COMPONENT_CHANGED)
 	{
 		const Matrix4 & worldTransform = GetTransformComponent(entity)->GetWorldTransform();
 		Vector3 translation = worldTransform.GetTranslationVector();
@@ -90,6 +91,19 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
         SoundSystem * ss = SoundSystem::Instance();
         ss->SetListenerPosition(activeCamera->GetPosition());
         ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
+    }
+}
+
+void SoundUpdateSystem::RemoveEntity(Entity * entity)
+{
+    SoundComponent * sc = GetSoundComponent(entity);
+    DVASSERT(sc);
+
+    uint32 eventsCount = sc->GetEventsCount();
+    for(uint32 i = 0; i < eventsCount; ++i)
+    {
+        SoundEvent * sound = sc->GetSoundEvent(i);
+        sound->Stop();
     }
 }
 

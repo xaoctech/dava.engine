@@ -75,6 +75,28 @@ public:
         }
     };
 
+    enum eStorageType
+    {
+    	STORAGE_TYPE_UNKNOWN = -1,
+    	STORAGE_TYPE_INTERNAL = 0,
+    	STORAGE_TYPE_EXTERNAL,
+
+    	STORAGE_TYPES_COUNT
+    };
+
+    struct StorageRecord
+    {
+        eStorageType type;
+        int64 totalSpace;
+        int64 freeSpace;
+
+        StorageRecord()
+        :   type(STORAGE_TYPE_UNKNOWN)
+        ,   totalSpace(0)
+        ,   freeSpace(0)
+        {}
+    };
+
 	static ePlatform GetPlatform();
 	static String GetPlatformString();
 	static String GetVersion();
@@ -88,7 +110,7 @@ public:
     static int GetZBufferSize();
     static eGPUFamily GetGPUFamily();
     static NetworkInfo GetNetworkInfo();
-    static String GetNetworkTypeString();
+    static List<StorageRecord> GetStorageList();
 };
 
 };
