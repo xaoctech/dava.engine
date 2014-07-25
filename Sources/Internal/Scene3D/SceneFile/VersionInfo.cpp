@@ -167,10 +167,14 @@ void VersionInfo::SetCurrentBranch()
 
 #ifdef USER_VERSIONING_DEBUG_FEATURES
 VersionInfo::VersionMap& VersionInfo::Versions()
+#else
+const VersionInfo::VersionMap& VersionInfo::Versions() const
+#endif
 {
     return versionMap;
 }
 
+#ifdef USER_VERSIONING_DEBUG_FEATURES
 VersionInfo::VersionMap VersionInfo::GetDefaultVersionHistory()
 {
     return GetVersionHistory();

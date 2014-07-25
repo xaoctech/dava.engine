@@ -40,6 +40,12 @@ VersionInfoWidget::VersionInfoWidget(QWidget* parent)
     connect(ui->view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), SLOT(OnSelectionChanged()));
     connect(ui->add, SIGNAL(clicked()), SLOT(OnAddTemplate()));
     connect(ui->remove, SIGNAL(clicked()), SLOT(OnRemoveTemplate()));
+
+#ifndef USER_VERSIONING_DEBUG_FEATURES
+    ui->add->setEnabled(false);
+    ui->remove->setEnabled(false);
+    ui->tagTemplate->setEnabled(false);
+#endif
 }
 
 VersionInfoWidget::~VersionInfoWidget()
@@ -164,6 +170,7 @@ void VersionInfoWidget::Reset()
 
 void VersionInfoWidget::OnTemplateChanged(const QString& templateName)
 {
+#ifdef USER_VERSIONING_DEBUG_FEATURES
     for (int i = 0; i < versions.size(); i++)
     {
         const QString& text = versions.at(i).first;
@@ -176,10 +183,12 @@ void VersionInfoWidget::OnTemplateChanged(const QString& templateName)
             break;
         }
     }
+#endif
 }
 
 void VersionInfoWidget::OnAddTemplate()
 {
+#ifdef USER_VERSIONING_DEBUG_FEATURES
     if (ui->ver->text().isEmpty())
         return ;
 
@@ -205,10 +214,12 @@ void VersionInfoWidget::OnAddTemplate()
     }
 
     Reset();
+#endif
 }
 
 void VersionInfoWidget::OnRemoveTemplate()
 {
+#ifdef USER_VERSIONING_DEBUG_FEATURES
     DAVA::VersionInfo::VersionMap& versionMap = DAVA::VersionInfo::Instance()->Versions();
     const uint ver = ui->ver->text().toUInt();
     const QString tag = ui->tag->text();
@@ -240,6 +251,7 @@ void VersionInfoWidget::OnRemoveTemplate()
     }
 
     Reset();
+#endif
 }
 
 void VersionInfoWidget::OnSelectionChanged()
