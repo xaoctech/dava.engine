@@ -141,15 +141,19 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	{
 		yOffset += (textBlock->rectSize.dy - renderRect.dy) * 0.5f;
 	}
+    
+    bool needClipPop = false;
     if (textBlock->requestedSize.dx == 0 && textBlock->requestedSize.dy == 0)
     {
         RenderManager::Instance()->ClipPush();
         RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->rectSize.dx, textBlock->rectSize.dy));
+        needClipPop = true;
     }
     else if (textBlock->requestedSize.dx > 0 && textBlock->requestedSize.dy > 0)
     {
         RenderManager::Instance()->ClipPush();
         RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->requestedSize.dx, textBlock->requestedSize.dy));
+        needClipPop = true;
     }
     RenderManager::Instance()->PushDrawMatrix();
     RenderManager::Instance()->SetDrawTranslate(Vector2(xOffset, yOffset));
@@ -172,7 +176,7 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	RenderManager::Instance()->HWDrawElements(PRIMITIVETYPE_TRIANGLELIST, charDrawed * 6, EIF_16, this->indexBuffer);
     
     RenderManager::Instance()->PopDrawMatrix();
-    if (textBlock->requestedSize.dx >= 0 && textBlock->requestedSize.dy >= 0)
+    if (needClipPop)
     {
         RenderManager::Instance()->ClipPop();
     }
