@@ -192,7 +192,7 @@ bool KeyedArchive::LoadFromYamlNode(const YamlNode* rootNode)
    
 bool KeyedArchive::SaveToYamlFile(const FilePath & pathName)
 {
-    ScopedPtr<YamlNode> node( YamlNode::CreateMapNode(YamlNode::MR_BLOCK_REPRESENTATION) );
+    ScopedPtr<YamlNode> node( YamlNode::CreateMapNode() );
     node->Set(VariantType::TYPENAME_KEYED_ARCHIVE, VariantType(this));
 
     return YamlEmitter::SaveToYamlFile(pathName, node);

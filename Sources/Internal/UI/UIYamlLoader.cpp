@@ -655,8 +655,7 @@ UIControl* UIYamlLoader::CreateControl(const String& type, const String& baseTyp
 	return control;
 }
 
-YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode,
-                                   int saveIndex)
+YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentNode)
 {
     // Save ourselves and all children.
     YamlNode* childNode = parentControl->SaveToYamlNode(this);
@@ -665,21 +664,18 @@ YamlNode* UIYamlLoader::SaveToNode(UIControl * parentControl, YamlNode * parentN
         parentNode->AddNodeToMap(parentControl->GetName(), childNode);
     }
 
-    SaveChildren(parentControl, childNode, saveIndex);
+    SaveChildren(parentControl, childNode);
 
     return childNode;
 }
 
-void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode, int saveIndex)
+void UIYamlLoader::SaveChildren(UIControl* parentControl, YamlNode * parentNode)
 {
-    int currentSaveIndex = 0;
-    
 	const List<UIControl*>& children = parentControl->GetRealChildren();
 	for (List<UIControl*>::const_iterator childIter = children.begin(); childIter != children.end(); childIter ++)
     {
         UIControl* childControl = (*childIter);
-        SaveToNode(childControl, parentNode, currentSaveIndex);
-        currentSaveIndex ++;
+        SaveToNode(childControl, parentNode);
     }
 }
 
