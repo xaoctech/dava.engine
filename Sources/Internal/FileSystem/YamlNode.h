@@ -225,7 +225,7 @@ private:
     struct ObjectMap
     {
         MultiMap<String, YamlNode*> ordered;
-        Vector<std::pair<String, YamlNode*>> unordered;
+        Vector< std::pair<String, YamlNode*> > unordered;
         eMapRepresentation style;
         eStringRepresentation keyStyle;
         bool orderedSave;
