@@ -99,8 +99,9 @@ void GameCore::OnAppStarted()
 
 	new ImageSizeTest();
     new DeviceInfoTest();
-    
-    new PVRTest();
+
+// 07/24/2014. Temporarily commented out because of the issue with some PVR files.
+//  new PVRTest();
  	new DXTTest();
     new JPEGTest();
 
