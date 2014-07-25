@@ -210,8 +210,6 @@ uniform vec2 tex0ShiftPerSecond;
 uniform vec3 tilePos;
 uniform vec3 worldSize;
 uniform vec2 lodSwitchScale;
-
-uniform vec3 cameraPosition;
 uniform vec3 billboardDirection;
 
 uniform sampler2D heightmap;
@@ -592,7 +590,7 @@ void main()
 	#if defined(FOG_HALFSPACE)
 		float halfSpaceFogAmoung;
 		vec3 C = cameraPosition;
-		#if defined(MATERIAL_GRASS)
+		#if defined(MATERIAL_GRASS_TRANSFORM)
 			vec3 P = vec3(worldMatrix * pos);
 		#else
 			vec3 P = vec3(worldMatrix * inPosition);

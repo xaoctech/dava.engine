@@ -34,24 +34,13 @@ uniform mat4 worldViewMatrix;
 
 #if defined(PIXEL_LIT)
 uniform mat3 worldViewInvTransposeMatrix;
-uniform vec3 lightPosition0;
+uniform vec4 lightPosition0;
 uniform float lightIntensity0; 
 uniform float materialSpecularShininess;
 #endif
 
 #if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
 varying vec3 eyeDist;
-#endif
-
-
-#if defined(VERTEX_FOG)
-    uniform float fogLimit;
-    #if !defined(FOG_LINEAR)
-    uniform float fogDensity;
-    #else
-    uniform float fogStart;
-    uniform float fogEnd;
-    #endif
 #endif
 
 #if defined(PIXEL_LIT)
@@ -68,11 +57,26 @@ uniform mediump float normal1Scale;
 uniform float globalTime;
 #endif
 
-
-
-
 #if defined(VERTEX_FOG)
-varying float varFogFactor;
+    uniform float fogLimit;
+	varying float varFogAmoung;
+    #if defined(FOG_LINEAR)
+		uniform float fogStart;
+		uniform float fogEnd;
+	#else
+		uniform float fogDensity;
+    #endif
+	#if defined(FOG_HALFSPACE)
+		uniform float fogHalfspaceHeight;
+		uniform float fogHalfspaceFalloff;
+		uniform float fogHalfspaceDensity;
+		uniform float fogHalfspaceLimit;
+	#endif
+	#if defined(FOG_GLOW)
+		uniform float fogGlowScattering;
+		uniform float fogGlowDistance;
+		varying float varFogGlowFactor;
+	#endif
 #endif
 
 uniform vec3 cameraPosition;
@@ -106,27 +110,27 @@ void main()
 	#if defined(MATERIAL_DECAL)
 		varTexCoordDecal = inTexCoord1;		
 	#endif	
-#endif    
+#endif
+
+#if defined(VERTEX_LIT) || defined(PIXEL_LIT) || defined(VERTEX_FOG)
+	vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
+    vec3 toLightDir = lightPosition0.xyz - eyeCoordsPosition * lightPosition0.w;
+#endif
 
 #if defined(PIXEL_LIT)
 	vec3 n = normalize (worldViewInvTransposeMatrix * inNormal);
 	vec3 t = normalize (worldViewInvTransposeMatrix * inTangent);
 	vec3 b = cross (n, t);
 
-	
-    vec3 eyeCoordsPosition = vec3(worldViewMatrix *  inPosition);
-	
 	#if !defined (TANGENT_SPACE_WATER_REFLECTIONS)
 		eyeDist = eyeCoordsPosition;
 	#endif
     
-    vec3 lightDir = lightPosition0 - eyeCoordsPosition;    
-    
 	// transform light and half angle vectors by tangent basis
 	vec3 v;
-	v.x = dot (lightDir, t);
-	v.y = dot (lightDir, b);
-	v.z = dot (lightDir, n);
+	v.x = dot (toLightDir, t);
+	v.y = dot (toLightDir, b);
+	v.z = dot (toLightDir, n);
 	varLightVec = v;       
 
     v.x = dot (eyeCoordsPosition, t);
@@ -144,19 +148,61 @@ void main()
 #endif
 
 #if defined(VERTEX_FOG)
-    #if defined(PIXEL_LIT)
-        float fogFragCoord = length(eyeCoordsPosition);
-    #else
-        vec3 eyeCoordsPosition = vec3(worldViewMatrix * inPosition);
-        float fogFragCoord = length(eyeCoordsPosition);
-    #endif
+	float fogFragCoord = length(eyeCoordsPosition);
+	
     #if !defined(FOG_LINEAR)
         const float LOG2 = 1.442695;
-        varFogFactor = exp2( -fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
-        varFogFactor = clamp(varFogFactor, 1.0 - fogLimit, 1.0);
+        varFogAmoung = 1.0 - exp2(-fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
     #else
-        varFogFactor = 1.0 - clamp((fogFragCoord - fogStart) / (fogEnd - fogStart), 0.0, fogLimit);
+        varFogAmoung = (fogFragCoord - fogStart) / (fogEnd - fogStart);
     #endif
+
+	varFogAmoung = clamp(varFogAmoung, 0.0, fogLimit);
+	
+	#if defined(FOG_HALFSPACE)
+		float halfSpaceFogAmoung;
+		vec3 C = cameraPosition;
+		#if defined(MATERIAL_GRASS_TRANSFORM)
+			vec3 P = vec3(worldMatrix * pos);
+		#else
+			vec3 P = vec3(worldMatrix * inPosition);
+		#endif
+		vec3 V = (P - C);
+		
+		#if defined(FOG_HALFSPACE_LINEAR)
+			float fogK = (C.z < fogHalfspaceHeight) ? 1.0 : 0.0;
+			
+			float FdotP = P.z - fogHalfspaceHeight;
+			float FdotC = C.z - fogHalfspaceHeight;
+			
+			vec3 aV = V * fogHalfspaceDensity;
+			float c1 = fogK * (FdotP + FdotC);
+			float c2 = (1.0 - 2.0 * fogK) * FdotP;
+			
+			float g = min(c2, 0.0);
+			g = -length(aV) * (c1 - g * g / abs(V.z));
+			
+			halfSpaceFogAmoung = clamp(1.0 - exp2(-g), 0.0, fogHalfspaceLimit);
+		#else
+			//float ExponentialFogParametersX = fogDensity * exp2(-fogHalfspaceDensity * (C.z - fogHalfspaceHeight));
+			//float EffectiveZ = (abs(V.z) > 0.001) ? V.z : 0.001;
+			//float Falloff = max( -127.0f, fogHalfspaceDensity * EffectiveZ );	// if it's lower than -127.0, then exp2() goes crazy in OpenGL's GLSL.
+			//float ExponentialHeightLineIntegralShared = ExponentialFogParametersX * (1.0f - exp2(-Falloff) ) / Falloff;
+			//varFogAmoung = 1.0 - exp2(-ExponentialHeightLineIntegralShared);
+			
+			float fogK = (P.z - C.z) / fogFragCoord;
+			float fogB = C.z - fogHalfspaceHeight;
+			halfSpaceFogAmoung = clamp(fogHalfspaceDensity * exp(-fogHalfspaceFalloff * fogB) * (1.0 - exp(-fogHalfspaceFalloff * fogFragCoord * fogK)) / fogK, 0.0, fogHalfspaceLimit);
+		#endif
+		
+		varFogAmoung = max(varFogAmoung, halfSpaceFogAmoung);
+	#endif
+	
+	#if defined(FOG_GLOW)
+		toLightDir = normalize(toLightDir);
+		float fogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
+		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering) * fogGlowDistanceAttenuation;
+	#endif
 #endif
 
     
