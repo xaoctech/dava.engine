@@ -50,15 +50,15 @@ public:
 	String GetTimeZone();
 	String GetUDID();
 	String GetName();
-	int GetZBufferSize();
-	int GetGPUFamily();
-	int GetNetworkType();
-	int GetSignalStrength(int networkType);
+	int32 GetZBufferSize();
+	int32 GetGPUFamily();
+	int32 GetNetworkType();
+	int32 GetSignalStrength(int networkType);
 
-	DAVA::int64 GetInternalStorageCapacity();
-	DAVA::int64 GetInternalStorageFree();
-	DAVA::int64 GetExternalStorageCapacity();
-	DAVA::int64 GetExternalStorageFree();
+	int64 GetInternalStorageCapacity();
+	int64 GetInternalStorageFree();
+	int64 GetExternalStorageCapacity();
+	int64 GetExternalStorageFree();
 	bool IsExternalStoragePresent();
 
 protected:
