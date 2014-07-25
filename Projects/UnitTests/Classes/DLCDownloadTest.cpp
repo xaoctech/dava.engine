@@ -104,7 +104,7 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     uint64 progress = 0;
     uint64 total = 0;
 
-    uint32 missingServerID  = DownloadManager::Instance()->Download(srcUrlMissingServer, dstMissingServer, RESUMED, 10000, 1);
+    uint32 missingServerID  = DownloadManager::Instance()->Download(srcUrlMissingServer, dstMissingServer, RESUMED, 500, 1);
     DownloadManager::Instance()->Wait(missingServerID);
 
     uint32 missingID  = DownloadManager::Instance()->Download(srcUrlMissing, dstMissing);

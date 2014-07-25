@@ -49,6 +49,7 @@ friend class DownloadManager;
 
 public:
     Downloader(uint32 operationTimeout = 2000);
+    virtual ~Downloader(){};
 
 /* all methods putted into protected section because they should be used only from DownloadManager. */
 protected: 
