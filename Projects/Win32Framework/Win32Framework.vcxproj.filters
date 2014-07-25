@@ -879,9 +879,6 @@
     <ClInclude Include="..\..\Sources\Internal\Database\MongodbObject.h">
       <Filter>Internal\Database</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Internal\Autotesting\Config.h">
-      <Filter>Internal\Autotesting</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Debug\Backtrace.h">
       <Filter>Internal\Debug</Filter>
     </ClInclude>
@@ -1512,6 +1509,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Internal\Thread\LockGuard.h">
       <Filter>Internal\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.h">
+      <Filter>Internal\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Internal\FileSystem\YamlNode.h">
+      <Filter>Internal\FileSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2706,6 +2709,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\Image\ImageFormatInterface.cpp">
       <Filter>Internal\Render\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.cpp">
+      <Filter>Internal\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlNode.cpp">
+      <Filter>Internal\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
