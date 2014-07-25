@@ -1086,11 +1086,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="FrameworkTools.vcxproj">
-      <Project>{8785b31f-e437-4ff7-b66e-5975f59e18d4}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
