@@ -75,14 +75,23 @@ public:
         }
     };
 
+    enum eStorageType
+    {
+    	STORAGE_TYPE_UNKNOWN = -1,
+    	STORAGE_TYPE_INTERNAL = 0,
+    	STORAGE_TYPE_EXTERNAL,
+
+    	STORAGE_TYPES_COUNT
+    };
+
     struct StorageRecord
     {
-        String name;
+        eStorageType type;
         int64 totalSpace;
         int64 freeSpace;
 
         StorageRecord()
-        :   name("")
+        :   type(STORAGE_TYPE_UNKNOWN)
         ,   totalSpace(0)
         ,   freeSpace(0)
         {}
