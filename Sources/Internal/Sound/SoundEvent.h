@@ -49,6 +49,7 @@ public:
 
     enum eSoundEventCallbackType
     {
+        EVENT_TRIGGERED,
         EVENT_END,     /* Called when an event is stopped for any reason. */
 
         EVENT_COUNT
@@ -66,7 +67,7 @@ public:
 
     virtual bool IsActive() const = 0;
     virtual bool Trigger() = 0;
-    virtual void Stop() = 0;
+    virtual void Stop(bool force = false) = 0;
     virtual void SetPaused(bool paused) = 0;
     
     virtual void SetVolume(float32 volume) = 0;
