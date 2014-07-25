@@ -694,6 +694,25 @@ void RenderManager::DiscardFramebufferHW(uint32 attachments)
 #endif
 }
     
+void RenderManager::HWglDeleteBuffers(GLsizei count, const GLuint * buffers)
+{
+    // TODO: this is, probably, temporary fix.
+    for(int n = 0; n < count; ++n)
+    {
+        if(bufferBindingId[0] == buffers[n])
+        {
+            RENDER_VERIFY(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            bufferBindingId[0] = 0;
+        }
+        else if (bufferBindingId[1] == buffers[n])
+        {
+            RENDER_VERIFY(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+            bufferBindingId[1] = 0;
+        }
+    }
+    RENDER_VERIFY(glDeleteBuffers(count, buffers));
+}
+    
 void RenderManager::HWglBindBuffer(GLenum target, GLuint buffer)
 {
     DVASSERT(target - GL_ARRAY_BUFFER <= 1);
