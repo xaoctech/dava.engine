@@ -148,7 +148,7 @@ String JniDeviceInfo::GetName()
 	return intermediateStr;
 }
 
-int JniDeviceInfo::GetZBufferSize()
+int32 JniDeviceInfo::GetZBufferSize()
 {
 	jmethodID mid = GetMethodID("GetZBufferSize", "()I");
 	if (mid)
@@ -157,7 +157,7 @@ int JniDeviceInfo::GetZBufferSize()
 	return 0;
 }
 
-int JniDeviceInfo::GetGPUFamily()
+int32 JniDeviceInfo::GetGPUFamily()
 {
 	jmethodID mid = GetMethodID("GetGPUFamily", "()I");
 	if (mid)
@@ -166,7 +166,7 @@ int JniDeviceInfo::GetGPUFamily()
 	return -1;
 }
 
-int JniDeviceInfo::GetNetworkType()
+int32 JniDeviceInfo::GetNetworkType()
 {
 	jmethodID mid = GetMethodID("GetNetworkType", "()I");
 	if (mid)
@@ -175,7 +175,7 @@ int JniDeviceInfo::GetNetworkType()
 	return 0;
 }
 
-int JniDeviceInfo::GetSignalStrength(int networkType)
+int32 JniDeviceInfo::GetSignalStrength(int networkType)
 {
 	jmethodID mid = GetMethodID("GetSignalStrength", "(I)I");
 	if (mid)
@@ -336,7 +336,7 @@ List<DeviceInfo::StorageRecord> DeviceInfo::GetStorageList()
     List<DeviceInfo::StorageRecord> l;
 
     StorageRecord internalMemory;
-    internalMemory.name = "Internal memory";
+    internalMemory.type = DeviceInfo::STORAGE_TYPE_INTERNAL;
     internalMemory.totalSpace = jniDeviceInfo.GetInternalStorageCapacity();
     internalMemory.freeSpace = jniDeviceInfo.GetInternalStorageFree();
     l.push_back(internalMemory);
@@ -344,7 +344,7 @@ List<DeviceInfo::StorageRecord> DeviceInfo::GetStorageList()
     if (jniDeviceInfo.IsExternalStoragePresent())
     {
     	StorageRecord externalMemory;
-    	externalMemory.name = "External memory";
+    	externalMemory.type = DeviceInfo::STORAGE_TYPE_EXTERNAL;
     	externalMemory.totalSpace = jniDeviceInfo.GetExternalStorageCapacity();
     	externalMemory.freeSpace = jniDeviceInfo.GetExternalStorageFree();
 		l.push_back(externalMemory);
