@@ -370,7 +370,7 @@ VariantType YamlNode::AsVariantType() const
             const Vector<YamlNode*> &byteArrayNoodes = it->second->AsVector();
             int32 size = byteArrayNoodes.size();
             uint8* innerArray = new uint8[size];
-            for (int32 i = 0; i < size; ++i )
+            for (int32 i = 0; i < size; ++i)
             {
                 int val = 0;
                 int retCode = sscanf(byteArrayNoodes[i]->AsString().c_str(), "%x", &val);
@@ -406,7 +406,7 @@ VariantType YamlNode::AsVariantType() const
         {
             const YamlNode* firstRowNode  = it->second->Get(0);
             const YamlNode* secondRowNode = it->second->Get(1);
-            if(NULL == firstRowNode || NULL == secondRowNode )
+            if(NULL == firstRowNode || NULL == secondRowNode)
             {
                 return retValue;
             }
@@ -422,7 +422,7 @@ VariantType YamlNode::AsVariantType() const
 
             if(NULL == firstRowNode  ||
                NULL == secondRowNode ||
-               NULL == thirdRowNode )
+               NULL == thirdRowNode)
             {
                 return retValue;
             }
@@ -523,7 +523,7 @@ const YamlNode * YamlNode::Get(const String & name) const
 struct EqualToFirst
 {
     EqualToFirst(const String &strValue):value(strValue){}
-    bool operator()( const std::pair<String, YamlNode*>& val)
+    bool operator()(const std::pair<String, YamlNode*>& val)
     {
         return val.first == value;
     }
@@ -584,9 +584,21 @@ void YamlNode::InternalSetToString(const VariantType &varType)
     DVVERIFY(InitStringFromVariantType(varType));
 }
 
+void YamlNode::InternalSetToString(const String &value)
+{
+    InternalSetString(value, SR_DOUBLE_QUOTED_REPRESENTATION);
+}
+
 void YamlNode::InternalAddToMap(const String& name, const VariantType &varType, bool rewritePreviousValue)
 {
     YamlNode * node = CreateNodeFromVariantType(varType);
+    InternalAddNodeToMap(name, node, rewritePreviousValue);
+}
+
+void YamlNode::InternalAddToMap(const String& name, const String &value, bool rewritePreviousValue)
+{
+    YamlNode * node = CreateStringNode();
+    node->InternalSetString(value, SR_DOUBLE_QUOTED_REPRESENTATION);
     InternalAddNodeToMap(name, node, rewritePreviousValue);
 }
 
@@ -596,7 +608,14 @@ void YamlNode::InternalAddToArray(const VariantType &varType)
     InternalAddNodeToArray(node);
 }
 
-void YamlNode::InternalAddNodeToArray( YamlNode* node )
+void YamlNode::InternalAddToArray(const String &value)
+{
+    YamlNode * node = CreateStringNode();
+    node->InternalSetString(value, SR_DOUBLE_QUOTED_REPRESENTATION);
+    InternalAddNodeToArray(node);
+}
+
+void YamlNode::InternalAddNodeToArray(YamlNode* node)
 {
     DVASSERT(GetType() == TYPE_ARRAY);
     objectArray->array.push_back(node);
@@ -665,15 +684,12 @@ void YamlNode::InternalSetKeyedArchive(KeyedArchive* archive)
         YamlNode* arrayElementNodeValue = CreateMapNode(true, MR_BLOCK_REPRESENTATION);
         arrayElementNodeValue->InternalAddNodeToMap(it->second->GetTypeName(), CreateNodeFromVariantType(*it->second), false);
 
-        YamlNode* arrayElementNode = CreateMapNode(true, MR_BLOCK_REPRESENTATION);
-        arrayElementNode->InternalAddNodeToMap(it->first, arrayElementNodeValue, false);
-
-        InternalAddNodeToArray(arrayElementNode);
+        InternalAddNodeToMap(it->first, arrayElementNodeValue, false);
     }
-    objectArray->style = AR_FLOW_REPRESENTATION;
+    objectMap->style = MR_BLOCK_REPRESENTATION;
 }
 
-bool YamlNode::InitStringFromVariantType( const VariantType &varType )
+bool YamlNode::InitStringFromVariantType(const VariantType &varType)
 {
     DVASSERT(GetType() == TYPE_STRING);
     bool result = true;
@@ -681,7 +697,7 @@ bool YamlNode::InitStringFromVariantType( const VariantType &varType )
     {
     case VariantType::TYPE_BOOLEAN:
         {
-            InternalSetString(varType.AsBool() ? "true" : "false", SR_DOUBLE_QUOTED_REPRESENTATION);
+            InternalSetString(varType.AsBool() ? "true" : "false", SR_PLAIN_REPRESENTATION);
         }
         break;
     case VariantType::TYPE_INT32:
@@ -726,7 +742,7 @@ bool YamlNode::InitStringFromVariantType( const VariantType &varType )
     return result;
 }
 
-bool YamlNode::InitArrayFromVariantType( const VariantType &varType )
+bool YamlNode::InitArrayFromVariantType(const VariantType &varType)
 {
     DVASSERT(GetType() == TYPE_ARRAY);
     bool result = true;
@@ -737,12 +753,6 @@ bool YamlNode::InitArrayFromVariantType( const VariantType &varType )
             const uint8* byteArray = varType.AsByteArray();
             int32 byteArraySize = varType.AsByteArraySize();
             InternalSetByteArray(byteArray, byteArraySize);
-        }
-        break;
-    case VariantType::TYPE_KEYED_ARCHIVE:
-        {
-            KeyedArchive* archive = varType.AsKeyedArchive();
-            InternalSetKeyedArchive(archive);
         }
         break;
     case VariantType::TYPE_VECTOR2:
@@ -801,13 +811,27 @@ bool YamlNode::InitArrayFromVariantType( const VariantType &varType )
     return result;
 }
 
-bool YamlNode::InitMapFromVariantType( const VariantType &varType )
+bool YamlNode::InitMapFromVariantType(const VariantType &varType)
 {
     DVASSERT(GetType() == TYPE_MAP);
-    return false;
+    bool result = true;
+    switch(varType.GetType())
+    {
+    case VariantType::TYPE_KEYED_ARCHIVE:
+        {
+            KeyedArchive* archive = varType.AsKeyedArchive();
+            InternalSetKeyedArchive(archive);
+        }
+        break;
+    default:
+        result = false;
+        break;
+    }
+
+    return result;
 }
 
-YamlNode * YamlNode::CreateNodeFromVariantType( const VariantType &varType )
+YamlNode * YamlNode::CreateNodeFromVariantType(const VariantType &varType)
 {
     eType nodeType = VariantTypeToYamlNodeType(varType.GetType());
     YamlNode * node = NULL;
@@ -836,7 +860,7 @@ YamlNode * YamlNode::CreateNodeFromVariantType( const VariantType &varType )
     return node;
 }
 
-DAVA::YamlNode::eType YamlNode::VariantTypeToYamlNodeType( VariantType::eVariantType variantType )
+DAVA::YamlNode::eType YamlNode::VariantTypeToYamlNodeType(VariantType::eVariantType variantType)
 {
     switch(variantType)
     {
@@ -851,7 +875,6 @@ DAVA::YamlNode::eType YamlNode::VariantTypeToYamlNodeType( VariantType::eVariant
         return TYPE_STRING;
 
     case VariantType::TYPE_BYTE_ARRAY:
-    case VariantType::TYPE_KEYED_ARCHIVE:
     case VariantType::TYPE_VECTOR2:
     case VariantType::TYPE_VECTOR3:
     case VariantType::TYPE_VECTOR4:
@@ -860,6 +883,9 @@ DAVA::YamlNode::eType YamlNode::VariantTypeToYamlNodeType( VariantType::eVariant
     case VariantType::TYPE_MATRIX4:
     case VariantType::TYPE_COLOR:
         return TYPE_ARRAY;
+
+    case VariantType::TYPE_KEYED_ARCHIVE:
+        return TYPE_MAP;
     default:
         break;
     }
