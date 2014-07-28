@@ -66,8 +66,6 @@ private:
 	Font* GetSelectedFont(QItemSelectionModel *selectionModel);
 	//void SetDefaultItemFont(QStandardItem *item, QString defaultFontName, QString fontName);
 	QStandardItem* CreateFontItem(QString itemText, QString fontName, QString defaultFontName);
-
-    void DisconnectFromSignals();
     
 private slots:
     void OkButtonClicked();

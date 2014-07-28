@@ -100,10 +100,6 @@ protected:
     void UpdateStaticTextExtraData(UIStaticText* staticText, UIControl::eControlState state,
                                    HierarchyTreeNodeExtraData& extraData,
                                    eExtraDataUpdateStyle updateStyle);
-    
-    //DF-4250 removed CloneFont because fitting doesn't change font size
-    // Clone the font of the Static Text.
-    //void CloneFont(UIStaticText* staticText);
 };
 
 };
