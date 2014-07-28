@@ -32,6 +32,10 @@
 		029BAE591859C80500478671 /* musicios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 029BAE521859B81700478671 /* musicios.mm */; };
 		02A2FC5518D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */; };
 		02A2FC5618D3064D0039E66A /* TreeToAnimatedTreeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */; };
+		02AD131619767DFA00567AD2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02AD131419767DFA00567AD2 /* VersionInfo.cpp */; };
+		02AD131719767DFB00567AD2 /* VersionInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02AD131419767DFA00567AD2 /* VersionInfo.cpp */; };
+		02AD131819767DFB00567AD2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 02AD131519767DFA00567AD2 /* VersionInfo.h */; };
+		02AD131919767DFB00567AD2 /* VersionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 02AD131519767DFA00567AD2 /* VersionInfo.h */; };
 		02C4E8CB18154E490052803E /* AutotestingDB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85172181032EA002B7E1C /* AutotestingDB.cpp */; };
 		02C4E8CC18154E4D0052803E /* GameAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 02C85174181032EA002B7E1C /* GameAPI.cpp */; };
 		02C4E8CD18154E520052803E /* AutotestingDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 02C85173181032EA002B7E1C /* AutotestingDB.h */; };
@@ -377,7 +381,6 @@
 		02FD80411924997C007762C0 /* UISlider.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA6716B9326E002BD35F /* UISlider.h */; };
 		02FD80421924997C007762C0 /* UIStaticText.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA6916B9326E002BD35F /* UIStaticText.h */; };
 		02FD80431924997C007762C0 /* UITextField.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA6B16B9326E002BD35F /* UITextField.h */; };
-		02FD80441924997C007762C0 /* TeamcityOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = E843505E17FA12BE00A25F04 /* TeamcityOutput.h */; };
 		02FD80451924997C007762C0 /* DateTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 624C87F118C6160F00E1049D /* DateTime.h */; };
 		02FD80461924997C007762C0 /* UITextFieldiPhone.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA6C16B9326E002BD35F /* UITextFieldiPhone.h */; };
 		02FD80471924997C007762C0 /* UIYamlLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8B3CA6F16B9326E002BD35F /* UIYamlLoader.h */; };
@@ -510,7 +513,6 @@
 		02FD80C81924997C007762C0 /* LocalizationIPhone.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C85316B9326D002BD35F /* LocalizationIPhone.mm */; };
 		02FD80C91924997C007762C0 /* LocalizationSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C85416B9326D002BD35F /* LocalizationSystem.cpp */; };
 		02FD80CA1924997C007762C0 /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C85616B9326D002BD35F /* Logger.cpp */; };
-		02FD80CB1924997C007762C0 /* TeamcityOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E843505D17FA12BE00A25F04 /* TeamcityOutput.cpp */; };
 		02FD80CC1924997C007762C0 /* IntrospectionDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6B5D95D185600050011D172 /* IntrospectionDynamic.cpp */; };
 		02FD80CD1924997C007762C0 /* LoggerMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C85916B9326D002BD35F /* LoggerMacOS.mm */; };
 		02FD80CE1924997C007762C0 /* ResourceArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8B3C85C16B9326D002BD35F /* ResourceArchive.cpp */; };
@@ -1068,8 +1070,6 @@
 		E81F2B0516BFF65700C4545E /* libcurl_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F2B0416BFF65700C4545E /* libcurl_ios.a */; };
 		E8373BD817268CD9001A9770 /* UIAggregatorControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */; };
 		E8373BD917268CD9001A9770 /* UIAggregatorControl.h in Headers */ = {isa = PBXBuildFile; fileRef = E8373BD717268CD9001A9770 /* UIAggregatorControl.h */; };
-		E843505F17FA12BE00A25F04 /* TeamcityOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E843505D17FA12BE00A25F04 /* TeamcityOutput.cpp */; };
-		E843506017FA12BE00A25F04 /* TeamcityOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = E843505E17FA12BE00A25F04 /* TeamcityOutput.h */; };
 		E845D4E61732B7C9000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E51732B7C9000DA8E7 /* FilePathObjective.mm */; };
 		E867917C175F620400C5A6A2 /* GlobalEnum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E867917A175F620400C5A6A2 /* GlobalEnum.cpp */; };
 		E867917D175F620400C5A6A2 /* GlobalEnum.h in Headers */ = {isa = PBXBuildFile; fileRef = E867917B175F620400C5A6A2 /* GlobalEnum.h */; };
@@ -1690,6 +1690,8 @@
 		029BAE541859B81700478671 /* SoundEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundEvent.h; sourceTree = "<group>"; };
 		02A2FC5318D3064D0039E66A /* TreeToAnimatedTreeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TreeToAnimatedTreeConverter.cpp; sourceTree = "<group>"; };
 		02A2FC5418D3064D0039E66A /* TreeToAnimatedTreeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TreeToAnimatedTreeConverter.h; sourceTree = "<group>"; };
+		02AD131419767DFA00567AD2 /* VersionInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VersionInfo.cpp; sourceTree = "<group>"; };
+		02AD131519767DFA00567AD2 /* VersionInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VersionInfo.h; sourceTree = "<group>"; };
 		02C85172181032EA002B7E1C /* AutotestingDB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingDB.cpp; sourceTree = "<group>"; };
 		02C85173181032EA002B7E1C /* AutotestingDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutotestingDB.h; sourceTree = "<group>"; };
 		02C85174181032EA002B7E1C /* GameAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameAPI.cpp; sourceTree = "<group>"; };
@@ -1916,8 +1918,6 @@
 		E81F2B0416BFF65700C4545E /* libcurl_ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl_ios.a; path = ../../Libs/libs/libcurl_ios.a; sourceTree = "<group>"; };
 		E8373BD617268CD9001A9770 /* UIAggregatorControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIAggregatorControl.cpp; sourceTree = "<group>"; };
 		E8373BD717268CD9001A9770 /* UIAggregatorControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAggregatorControl.h; sourceTree = "<group>"; };
-		E843505D17FA12BE00A25F04 /* TeamcityOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TeamcityOutput.cpp; sourceTree = "<group>"; };
-		E843505E17FA12BE00A25F04 /* TeamcityOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TeamcityOutput.h; sourceTree = "<group>"; };
 		E845D4E51732B7C9000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
 		E867917A175F620400C5A6A2 /* GlobalEnum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GlobalEnum.cpp; sourceTree = "<group>"; };
 		E867917B175F620400C5A6A2 /* GlobalEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalEnum.h; sourceTree = "<group>"; };
@@ -2696,6 +2696,8 @@
 		A695E52F18113327008A0F20 /* SceneFile */ = {
 			isa = PBXGroup;
 			children = (
+				02AD131419767DFA00567AD2 /* VersionInfo.cpp */,
+				02AD131519767DFA00567AD2 /* VersionInfo.h */,
 				A695E53018113327008A0F20 /* SerializationContext.cpp */,
 				A695E53118113327008A0F20 /* SerializationContext.h */,
 			);
@@ -3666,8 +3668,6 @@
 			children = (
 				02864521197960F200ABCAA0 /* VirtualToPhysicalHelper.cpp */,
 				02864522197960F200ABCAA0 /* VirtualToPhysicalHelper.h */,
-				E843505D17FA12BE00A25F04 /* TeamcityOutput.cpp */,
-				E843505E17FA12BE00A25F04 /* TeamcityOutput.h */,
 				A6A1E8671785688600AA3A86 /* CRC32.cpp */,
 				A6A1E8681785688600AA3A86 /* CRC32.h */,
 				E8B3CA7116B9326E002BD35F /* HTTPDownloader.h */,
@@ -4046,6 +4046,7 @@
 				02FD80171924997C007762C0 /* BaseProcessSystem.h in Headers */,
 				02FD80181924997C007762C0 /* DebugRenderSystem.h in Headers */,
 				02FD80191924997C007762C0 /* EventSystem.h in Headers */,
+				02AD131919767DFB00567AD2 /* VersionInfo.h in Headers */,
 				02FD801A1924997C007762C0 /* LightUpdateSystem.h in Headers */,
 				02FD801B1924997C007762C0 /* LodSystem.h in Headers */,
 				02FD801C1924997C007762C0 /* SwitchToRenerObjectConverter.h in Headers */,
@@ -4096,7 +4097,6 @@
 				02FD80411924997C007762C0 /* UISlider.h in Headers */,
 				02FD80421924997C007762C0 /* UIStaticText.h in Headers */,
 				02FD80431924997C007762C0 /* UITextField.h in Headers */,
-				02FD80441924997C007762C0 /* TeamcityOutput.h in Headers */,
 				02FD80451924997C007762C0 /* DateTime.h in Headers */,
 				02FD80461924997C007762C0 /* UITextFieldiPhone.h in Headers */,
 				02FD80471924997C007762C0 /* UIYamlLoader.h in Headers */,
@@ -4430,6 +4430,7 @@
 				E8B3CC5B16B9326E002BD35F /* GameObjectAnimations.h in Headers */,
 				E8B3CC5D16B9326E002BD35F /* GameObjectManager.h in Headers */,
 				E8B3CC5F16B9326E002BD35F /* TextGameObject.h in Headers */,
+				02AD131819767DFB00567AD2 /* VersionInfo.h in Headers */,
 				E8B3CC6116B9326E002BD35F /* BillboardNode.h in Headers */,
 				E8B3CC6316B9326E002BD35F /* BoneNode.h in Headers */,
 				E8B3CC6916B9326E002BD35F /* BulletComponent.h in Headers */,
@@ -4522,7 +4523,6 @@
 				E8B3CD2116B9326E002BD35F /* UIStaticText.h in Headers */,
 				E8B3CD2316B9326E002BD35F /* UITextField.h in Headers */,
 				02864525197960F200ABCAA0 /* VirtualToPhysicalHelper.h in Headers */,
-				E843506017FA12BE00A25F04 /* TeamcityOutput.h in Headers */,
 				64493E1C19476F4700AB2715 /* VegetationSpatialData.h in Headers */,
 				624C87F318C6160F00E1049D /* DateTime.h in Headers */,
 				E8B3CD2416B9326E002BD35F /* UITextFieldiPhone.h in Headers */,
@@ -4762,7 +4762,6 @@
 				02FD80C81924997C007762C0 /* LocalizationIPhone.mm in Sources */,
 				02FD80C91924997C007762C0 /* LocalizationSystem.cpp in Sources */,
 				02FD80CA1924997C007762C0 /* Logger.cpp in Sources */,
-				02FD80CB1924997C007762C0 /* TeamcityOutput.cpp in Sources */,
 				02FD80CC1924997C007762C0 /* IntrospectionDynamic.cpp in Sources */,
 				02FD80CD1924997C007762C0 /* LoggerMacOS.mm in Sources */,
 				02FD80CE1924997C007762C0 /* ResourceArchive.cpp in Sources */,
@@ -4794,6 +4793,7 @@
 				02FD80E41924997C007762C0 /* BTNetworkConnection.mm in Sources */,
 				02FD80E51924997C007762C0 /* NetworkConnection.cpp in Sources */,
 				02FD80E61924997C007762C0 /* NetworkConnectionIPhone.mm in Sources */,
+				02AD131719767DFB00567AD2 /* VersionInfo.cpp in Sources */,
 				02FD80E71924997C007762C0 /* NetworkDelegate.cpp in Sources */,
 				02FD80E81924997C007762C0 /* NetworkPacket.cpp in Sources */,
 				02FD80E91924997C007762C0 /* TCPServer.mm in Sources */,
@@ -5139,7 +5139,6 @@
 				E8B3CB2416B9326E002BD35F /* LocalizationIPhone.mm in Sources */,
 				E8B3CB2516B9326E002BD35F /* LocalizationSystem.cpp in Sources */,
 				E8B3CB2716B9326E002BD35F /* Logger.cpp in Sources */,
-				E843505F17FA12BE00A25F04 /* TeamcityOutput.cpp in Sources */,
 				A6B5D95F185600050011D172 /* IntrospectionDynamic.cpp in Sources */,
 				E8B3CB2A16B9326E002BD35F /* LoggerMacOS.mm in Sources */,
 				E8B3CB2D16B9326E002BD35F /* ResourceArchive.cpp in Sources */,
@@ -5404,6 +5403,7 @@
 				02FD7EBD19237D33007762C0 /* WindComponent.cpp in Sources */,
 				CCC7A4A616F1D8200061EA5D /* RenderState.cpp in Sources */,
 				647EFC77195F0AC40073B3CB /* NMaterialStateDynamicPropertiesInsp.cpp in Sources */,
+				02AD131619767DFA00567AD2 /* VersionInfo.cpp in Sources */,
 				CCC7A4AA16F1D8480061EA5D /* Entity.cpp in Sources */,
 				CCC7A4AE16F1D88C0061EA5D /* UpdateSystem.cpp in Sources */,
 				64493E1419476F4700AB2715 /* VegetationRenderData.cpp in Sources */,
@@ -5749,6 +5749,7 @@
 					DAVA_FMOD,
 				);
 				GCC_THUMB_SUPPORT = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -5777,7 +5778,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "armv7 armv7s i386";
+				VALID_ARCHS = "armv7 armv7s i386 arm64";
 				WARNING_CFLAGS = "";
 			};
 			name = Debug;
@@ -5793,6 +5794,7 @@
 					DAVA_FMOD,
 				);
 				GCC_THUMB_SUPPORT = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -5820,7 +5822,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "armv7 armv7s i386";
+				VALID_ARCHS = "armv7 armv7s i386 arm64";
 				WARNING_CFLAGS = "";
 			};
 			name = Release;
@@ -5836,6 +5838,7 @@
 					DAVA_FMOD,
 				);
 				GCC_THUMB_SUPPORT = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -5863,7 +5866,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "armv7 armv7s i386";
+				VALID_ARCHS = "armv7 armv7s i386 arm64";
 				WARNING_CFLAGS = "";
 			};
 			name = AdHoc;
@@ -5919,6 +5922,7 @@
 					DAVA_FMOD,
 				);
 				GCC_THUMB_SUPPORT = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_PEDANTIC = NO;
@@ -5946,7 +5950,7 @@
 				);
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "armv7 armv7s i386";
+				VALID_ARCHS = "armv7 armv7s i386 arm64";
 				WARNING_CFLAGS = "";
 			};
 			name = Distribution;

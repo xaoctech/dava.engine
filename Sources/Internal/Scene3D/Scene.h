@@ -38,6 +38,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Scene3D/SceneFile/VersionInfo.h"
 
 namespace DAVA
 {
@@ -165,6 +166,7 @@ public:
     MaterialSystem *materialSystem;
     SpeedTreeUpdateSystem* speedTreeUpdateSystem;
     FoliageSystem* foliageSystem;
+    VersionInfo::SceneVersion version;
     WindSystem * windSystem;
     WaveSystem * waveSystem;
     
