@@ -55,7 +55,12 @@ EditorFontManager::~EditorFontManager()
 
 void EditorFontManager::Init()
 {
-	baseFont = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
+    Font* font = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
+    if(font != baseFont)
+    {
+        SafeRelease(baseFont);
+        baseFont = font;
+    }
 }
 
 void LogRegisteredFonts(Map<Font*, String> &registeredFonts, const String &message)
@@ -210,6 +215,9 @@ void EditorFontManager::LoadLocalizedFonts()
             Logger::FrameworkDebug("EditorFontManager::LoadLocalizedFonts defaultRegisteredFonts[%p] = %s", it->first, it->second.c_str());
         }
     }
+    
+    //DF-4250 if font DEFAULT_FONT_NAME exists in saved fonts, replace default font by saved one
+    Init();
 }
 
 void EditorFontManager::SaveLocalizedFonts()
