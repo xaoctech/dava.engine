@@ -34,6 +34,8 @@
 #include "JniExtensions.h"
 #include "Base/BaseTypes.h"
 
+#include "../../Platform/DeviceInfo.h"
+
 #if defined(__DAVAENGINE_ANDROID__)
 
 namespace DAVA
@@ -55,15 +57,16 @@ public:
 	int32 GetNetworkType();
 	int32 GetSignalStrength(int networkType);
 
-	int64 GetInternalStorageCapacity();
-	int64 GetInternalStorageFree();
-	int64 GetExternalStorageCapacity();
-	int64 GetExternalStorageFree();
-	bool IsExternalStoragePresent();
+	bool IsPrimaryExternalStoragePresent();
+	DeviceInfo::StorageInfo GetInternalStorageInfo();
+	DeviceInfo::StorageInfo GetPrimaryExternalStorageInfo();
+	List<DeviceInfo::StorageInfo> GetSecondaryExternalStoragesList();
 
 protected:
 	virtual jclass GetJavaClass() const;
 	virtual const char* GetJavaClassName() const;
+
+	DeviceInfo::StorageInfo StorageInfoFromJava(jobject object);
 
 public:
 	static jclass gJavaClass;
