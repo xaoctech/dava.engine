@@ -73,8 +73,7 @@ protected:
 	void DrawLightNode(DAVA::Entity *entity);
 	void DrawSoundNode(DAVA::Entity *entity);
 	void DrawHangingObjects(DAVA::Entity *entity);
-	void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);
-	void DrawStaticOcclusionComponent(DAVA::Entity *entity);
+	void DrawEntityBox(DAVA::Entity *entity, const DAVA::Color &color);	
 	void DrawSwitchesWithDifferentLods(DAVA::Entity *entity);
 	void DrawWindNode(DAVA::Entity *entity);
 

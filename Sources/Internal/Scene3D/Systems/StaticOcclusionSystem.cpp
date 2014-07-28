@@ -639,8 +639,8 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
     RenderBatch *gridBatch = new RenderBatch();
     PolygonGroup *gridPolygonGroup = CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());
     NMaterial *gridMaterialInstance = NMaterial::CreateMaterialInstance();    
-    gridMaterialInstance->SetParent(debugOpaqueMaterial);
-    Color col(0,1,0,1);
+    gridMaterialInstance->SetParent(debugAlphablendMaterial);
+    Color col(0.0f, 0.3f, 0.1f, 0.1f);
     gridMaterialInstance->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &col);
     gridBatch->SetPolygonGroup(gridPolygonGroup);
     gridBatch->SetMaterial(gridMaterialInstance);
@@ -652,7 +652,7 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
         
     NMaterial *coverMaterialInstance = NMaterial::CreateMaterialInstance();    
     coverMaterialInstance->SetParent(debugAlphablendMaterial);
-    Color colCover(1,1,1,0.5f);
+    Color colCover(0.1f, 0.5f, 0.1f, 0.3f);
     coverMaterialInstance->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &colCover);
     coverBatch->SetPolygonGroup(coverPolygonGroup);
     coverBatch->SetMaterial(coverMaterialInstance);
@@ -733,12 +733,11 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid
             for (uint32 zs = 0; zs < (zSubdivisions+1); ++zs)  
             {                
                 //int32 vBase = (zs + (zSubdivisions+1)*(ys + xs * ySubdivisions))*4;                
-                int32 vBase = IDX_BY_POS(xs, ys, zs);
-                float vOfs = 0;//(xs+ys+zs)%2?-0.5f:+0.5f;
-                res->SetCoord(vBase + 0, boundingBox.min + Vector3(boxSize.x * xs, boxSize.x * ys, boxSize.x * zs + vOfs));
-                res->SetCoord(vBase + 1, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.x * ys, boxSize.x * zs + vOfs));
-                res->SetCoord(vBase + 2, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.x * (ys+1), boxSize.x * zs + vOfs));
-                res->SetCoord(vBase + 3, boundingBox.min + Vector3(boxSize.x * xs, boxSize.x * (ys+1), boxSize.x * zs + vOfs));
+                int32 vBase = IDX_BY_POS(xs, ys, zs);                
+                res->SetCoord(vBase + 0, boundingBox.min + Vector3(boxSize.x * xs, boxSize.x * ys, boxSize.x * zs ));
+                res->SetCoord(vBase + 1, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.x * ys, boxSize.x * zs));
+                res->SetCoord(vBase + 2, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.x * (ys+1), boxSize.x * zs));
+                res->SetCoord(vBase + 3, boundingBox.min + Vector3(boxSize.x * xs, boxSize.x * (ys+1), boxSize.x * zs));
             }        
     //indices     
     //in pair indexOffset, z

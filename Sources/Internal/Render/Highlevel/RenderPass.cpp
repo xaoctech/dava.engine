@@ -102,8 +102,11 @@ void RenderPass::Draw(RenderSystem * renderSystem, uint32 clearBuffers)
 
 void RenderPass::PrepareVisibilityArrays(Camera *camera, RenderSystem * renderSystem)
 {
+    uint32 currVizibilityCriteria = RenderObject::CLIPPING_VISIBILITY_CRITERIA;
+    if (!RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::ENABLE_STATIC_OCCLUSION))
+        currVizibilityCriteria&=~RenderObject::VISIBLE_STATIC_OCCLUSION;
     visibilityArray.Clear();
-    renderSystem->GetRenderHierarchy()->Clip(camera, &visibilityArray, RenderObject::CLIPPING_VISIBILITY_CRITERIA);
+    renderSystem->GetRenderHierarchy()->Clip(camera, &visibilityArray, currVizibilityCriteria);    
     renderPassBatchArray->Clear();
     renderPassBatchArray->PrepareVisibilityArray(&visibilityArray, camera); 
 }
