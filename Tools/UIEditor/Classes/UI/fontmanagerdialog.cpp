@@ -68,8 +68,7 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphi
 		resPacker->InitFolders(inDir, outDir);
 		resPacker->PackResources(GPU_PNG);
 	}
-    
-    //DF-4250 removed "Set default font"
+
     ui->setDefaultButton->setVisible(false);
     
     // Initialize dialog
@@ -89,7 +88,6 @@ FontManagerDialog::FontManagerDialog(bool okButtonEnable,  const QString& graphi
 
 FontManagerDialog::~FontManagerDialog()
 {
-    DisconnectFromSignals();
     SafeDelete(tableModel);
     SafeDelete(ui);
     SafeRelease(dialogResultFont);
@@ -100,19 +98,6 @@ void FontManagerDialog::ConnectToSignals()
     //Connect signal and slots
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(OkButtonClicked()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	
-    //DF-4250 removed "Set default font"
-    //connect(ui->setDefaultButton, SIGNAL(clicked()), this, SLOT(SetDefaultButtonClicked()));
-}
-
-void FontManagerDialog::DisconnectFromSignals()
-{
-    //Connect signal and slots
-    disconnect(ui->okButton, SIGNAL(clicked()), this, SLOT(OkButtonClicked()));
-    disconnect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	
-    //DF-4250 removed "Set default font"
-    //disconnect(ui->setDefaultButton, SIGNAL(clicked()), this, SLOT(SetDefaultButtonClicked()));
 }
 
 void FontManagerDialog::UpdateDialogInformation()

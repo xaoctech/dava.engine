@@ -335,11 +335,7 @@ void UIStaticTextMetadata::SetFittingType(int value)
         return;
     }
 
-    //DF-4250 Changing Fitting Option doesn't affect font, it uses renderSize instead of font size
-    // Changing Fitting Option affects the font which might be reused
-    // by other controls, so clone the existing one.
     UIStaticText* staticText = GetActiveStaticText();
-    //CloneFont(staticText);
     staticText->SetFittingOption(value);
 }
 
