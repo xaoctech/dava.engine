@@ -2928,7 +2928,7 @@ namespace DAVA
         return position;
     }
 
-    const Vector2 &UIControl::GetTopLeftCornerRotated(const Rect &rectControl)
+    Vector2 UIControl::GetTopLeftCornerRotated(const Rect &rectControl)
     {
         Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
         Vector2 topLeftRelatedToPivot = -pivotPoint;
