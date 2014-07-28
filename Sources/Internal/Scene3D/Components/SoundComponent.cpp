@@ -109,6 +109,13 @@ void SoundComponent::SetLocalDirection(uint32 eventIndex, const Vector3 & direct
     events[eventIndex].localDirection = direction;
 }
 
+void SoundComponent::SetLocalDirection(const DAVA::Vector3 &direction)
+{
+    uint32 eventsCount = events.size();
+    for(uint32 i = 0; i < eventsCount; ++i)
+        SetLocalDirection(i, direction);
+}
+    
 Component * SoundComponent::Clone(Entity * toEntity)
 {
     SoundComponent * soundComponent = new SoundComponent();
