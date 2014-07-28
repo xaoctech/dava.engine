@@ -75,7 +75,7 @@ void DeviceInfoTest::DidAppear()
     String timezone = DeviceInfo::GetTimeZone();
     String udid = DeviceInfo::GetUDID();
     WideString name = DeviceInfo::GetName();
-    List<DeviceInfo::StorageRecord> storages = DeviceInfo::GetStorageList();
+    List<DeviceInfo::StorageInfo> storages = DeviceInfo::GetStoragesList();
     
     String deviceInfoString;
     deviceInfoString += Format("Platform: %s\n", platform.c_str());
@@ -100,7 +100,7 @@ void DeviceInfoTest::DidAppear()
     deviceInfoString += Format("Network connection type: %s\n", GetNetworkTypeString().c_str());
     deviceInfoString += Format("Network signal strength: %i%%\n", DeviceInfo::GetNetworkInfo().signalStrength);
 
-    List<DeviceInfo::StorageRecord>::const_iterator iter = storages.begin();
+    List<DeviceInfo::StorageInfo>::const_iterator iter = storages.begin();
     for (;iter != storages.end(); ++iter)
     {
     	String storageName;
@@ -111,8 +111,12 @@ void DeviceInfoTest::DidAppear()
     			storageName = "Internal storage";
     			break;
 
-    		case DeviceInfo::STORAGE_TYPE_EXTERNAL:
-    			storageName = "External storage";
+    		case DeviceInfo::STORAGE_TYPE_PRIMARY_EXTERNAL:
+    			storageName = "Primary external storage";
+    			break;
+
+    		case DeviceInfo::STORAGE_TYPE_SECONDARY_EXTERNAL:
+    			storageName = "Secondary external storage";
     			break;
 
     		default:
@@ -120,13 +124,41 @@ void DeviceInfoTest::DidAppear()
     			break;
     	}
 
-    	deviceInfoString += Format("%s: capacity: %lld; free: %lld\n", storageName.c_str(), iter->totalSpace, iter->freeSpace);
+    	String str;
+    	if (iter->emulated)
+    	{
+    		str += "; emulated";
+    	}
+    	if (iter->readOnly)
+    	{
+    		str += "; read only";
+    	}
+
+    	deviceInfoString += Format("%s: path: %s; capacity: %s; free: %s%s\n", storageName.c_str(),
+    			iter->path.GetAbsolutePathname().c_str(), FormatStorageSize(iter->totalSpace).c_str(),
+    			FormatStorageSize(iter->freeSpace).c_str(), str.c_str());
     }
 
     deviceInfoText->SetText(StringToWString(deviceInfoString));
 	Logger::Debug("********** Device info **********");
 	Logger::Debug(deviceInfoString.c_str());
 	Logger::Debug("********** Device info **********");
+}
+
+String DeviceInfoTest::FormatStorageSize(int64 size)
+{
+	const char prefix[] = {' ', 'K', 'M', 'G'};
+
+	float32 res = (float)size;
+	int32 i = 0;
+
+	while (i < sizeof(prefix) - 1 && res >= 1024.f)
+	{
+		++i;
+		res /= 1024.f;
+	}
+
+	return Format("%.2f %cB", res, prefix[i]);
 }
 
 void DeviceInfoTest::TestFunction(TestTemplate<DeviceInfoTest>::PerfFuncData *data)
