@@ -38,12 +38,6 @@
 namespace DAVA 
 {
 
-YamlParser * YamlParser::Create()
-{
-    return new YamlParser();
-}
-    
-
 bool YamlParser::Parse(const String& data)
 {
     YamlDataHolder dataHolder;
