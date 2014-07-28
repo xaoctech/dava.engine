@@ -106,7 +106,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;$(ProjectDir)/../../Libs/fmod/include;$(ProjectDir)/../../Libs/lua/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;$(ProjectDir)/../../Libs/fmod/include;$(ProjectDir)/../../Libs/lua/include;%(AdditionalIncludeDirectories);$(ProjectDir)../../Sources/Tools</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;CURL_STATICLIB;DAVA_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -128,7 +128,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;$(ProjectDir)../../Sources/Internal;$(ProjectDir)/../../Sources/External;$(ProjectDir)/../../Sources/External/Freetype;$(ProjectDir)/../../Sources/External/Yaml;$(ProjectDir)/../../Libs/include;$(ProjectDir)/../../Libs/glew/include;$(ProjectDir)/../../Libs/freetype/include;$(DXSDK_DIR)/include;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories);$(ProjectDir)../../Sources/Tools</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;DAVA_DEBUG;DAVA_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -149,7 +149,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;./../../Libs/freetype/include;$(ProjectDir)/../../Libs/lua/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;./../../Libs/freetype/include;$(ProjectDir)/../../Libs/lua/include;%(AdditionalIncludeDirectories);$(ProjectDir)../../Sources/Tools</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;CODE_INLINE;CURL_STATICLIB;DAVA_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -168,7 +168,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAutotesting|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;./../../Libs/freetype/include;$(ProjectDir)/../../Libs/lua/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;./../../Libs/freetype/include;$(ProjectDir)/../../Libs/lua/include;%(AdditionalIncludeDirectories);$(ProjectDir)../../Sources/Tools</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;CODE_INLINE;CURL_STATICLIB;DAVA_FMOD;%(PreprocessorDefinitions)__DAVAENGINE_AUTOTESTING__;AUTOTESTING_LUA;</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -186,7 +186,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;./../../Libs/freetype/include;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/../../Libs/fmod/include;./../../Sources/Internal;./../../Sources/External;./../../Sources/External/Freetype;./../../Sources/External/Yaml;./../../Libs/include;./../../Libs/glew/include;$(DXSDK_DIR)/include;./../../Libs/freetype/include;..\..\Sources\Internal\Platform\Qt;..\..\Sources\Internal\Platform\Qt\Win32;%(AdditionalIncludeDirectories);$(ProjectDir)../../Sources/Tools</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS;FT_BUILD_LIBRARY;CODE_INLINE;_WINDOWS;WIN32;NDEBUG;DAVA_FMOD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -595,6 +595,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Entity.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
@@ -678,7 +679,6 @@
     <ClInclude Include="..\..\Sources\Internal\Utils\MD5.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Random.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\StringFormat.h" />
-    <ClInclude Include="..\..\Sources\Internal\Utils\TeamcityOutput.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\UTF8Utils.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\Utils.h" />
     <ClInclude Include="..\..\Sources\Internal\Utils\VirtualToPhysicalHelper.h" />
@@ -1025,6 +1025,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Entity.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
@@ -1098,7 +1099,6 @@
     <ClCompile Include="..\..\Sources\Internal\Utils\CRC32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\StringFormat.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Utils\TeamcityOutput.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UTF8UtilsWin32.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\Utils.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Utils\UtilsWin32.cpp" />
