@@ -37,7 +37,8 @@
 
 static const String DEFAULT_FONT_PRESET = "Font_default";
 
-static const String DEFAULT_FONT_NAME = "MyriadPro-Regular.otf";
+// DF-4250 default font saving is managed by font presets logic, no need in DEFAULT_FONT_NAME anymore
+//static const String DEFAULT_FONT_NAME = "MyriadPro-Regular.otf";
 static const String DEFAULT_FONT_PATH = "~res:/Fonts/MyriadPro-Regular.otf";
 
 EditorFontManager::EditorFontManager()
@@ -55,7 +56,8 @@ EditorFontManager::~EditorFontManager()
 
 void EditorFontManager::Init()
 {
-    Font* font = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
+    //Font* font = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_NAME);
+    Font* font = CreateDefaultFont(DEFAULT_FONT_PATH, DEFAULT_FONT_PRESET);
     if(font != baseFont)
     {
         SafeRelease(baseFont);
@@ -216,7 +218,7 @@ void EditorFontManager::LoadLocalizedFonts()
         }
     }
     
-    //DF-4250 if font DEFAULT_FONT_NAME exists in saved fonts, replace default font by saved one
+    //DF-4250 if font DEFAULT_FONT_PRESET exists in saved fonts, replace default font by saved one
     Init();
 }
 
@@ -664,8 +666,9 @@ EditorFontManager::DefaultFontPath EditorFontManager::GetDefaultFontPath()
             {
                 FTFont *ftFont = static_cast<FTFont*>(defaultFont);
 				FilePath ftFontPath = ftFont->GetFontPath();
+                // DF-4250 default font saving is managed by font presets logic, no need in DEFAULT_FONT_NAME anymore
 				// Don't save standart default font
-				if (ftFontPath.GetAbsolutePathname().find(DEFAULT_FONT_NAME) == String::npos)
+				//if (ftFontPath.GetAbsolutePathname().find(DEFAULT_FONT_NAME) == String::npos)
 				{
 					// Set font path
 					defFontPath = ftFontPath;
