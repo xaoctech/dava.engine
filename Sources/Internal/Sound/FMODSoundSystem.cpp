@@ -43,7 +43,7 @@
 #include "musicios.h"
 #endif
 
-#define MAX_SOUND_CHANNELS 48
+#define MAX_SOUND_CHANNELS 32
 #define MAX_SOUND_VIRTUAL_CHANNELS 128
 
 namespace DAVA

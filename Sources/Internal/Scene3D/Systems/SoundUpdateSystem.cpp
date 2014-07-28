@@ -42,6 +42,7 @@ SoundUpdateSystem::SoundUpdateSystem(Scene * scene)
 :	SceneSystem(scene)
 {
 	scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::SOUND_COMPONENT_CHANGED);
 }
 
 SoundUpdateSystem::~SoundUpdateSystem()
@@ -50,7 +51,7 @@ SoundUpdateSystem::~SoundUpdateSystem()
 
 void SoundUpdateSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
-	if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
+	if (event == EventSystem::WORLD_TRANSFORM_CHANGED || event == EventSystem::SOUND_COMPONENT_CHANGED)
 	{
 		const Matrix4 & worldTransform = GetTransformComponent(entity)->GetWorldTransform();
 		Vector3 translation = worldTransform.GetTranslationVector();
