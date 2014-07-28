@@ -27,72 +27,41 @@
 =====================================================================================*/
 
 
+#include "UIListCellPropertyGridWidget.h"
+#include "ui_UIListCellPropertyGridWidget.h"
 
-#include "Utils/TeamcityOutput.h"
-#include "Utils/Utils.h"
+static const QString CELL_PROPERTY_BLOCK_NAME = "Cell property";
 
-#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
-
-
-namespace DAVA
+UIListCellPropertyGridWidget::UIListCellPropertyGridWidget( QWidget *parent /*= 0*/ )
+    : BasePropertyGridWidget(parent)
+    , ui(new Ui::UIListCellPropertyGridWidget())
 {
-    
-void TeamcityOutput::Output(Logger::eLogLevel ll, const char8 *text) const
-{
-    String outStr = NormalizeString(text);
-	String status = "NORMAL";
-    switch (ll)
-    {
-        case Logger::LEVEL_ERROR:
-			status = "ERROR";
-            break;
-
-        case Logger::LEVEL_WARNING:
-			status = "WARNING";
-            break;
-            
-        default:
-            break;
-    }
-
-    String output = "##teamcity[message text=\'" + outStr + "\' errorDetails=\'\' status=\'" + status + "\']\n";
-    PlatformOutput(output);
+    ui->setupUi(this);
+    SetPropertyBlockName(CELL_PROPERTY_BLOCK_NAME);
+    ui->objectIdentifierLineEdit->setValidator(new QRegExpValidator(HierarchyTreeNode::GetNameRegExp(), this));
+    ui->objectIdentifierLineEdit->installEventFilter(this);
 }
 
-void TeamcityOutput::Output(Logger::eLogLevel ll, const char16 *text) const
+UIListCellPropertyGridWidget::~UIListCellPropertyGridWidget()
 {
-    WideString wstr = text;
-    Output(ll, WStringToString(wstr).c_str());
+    delete ui;
 }
 
-String TeamcityOutput::NormalizeString(const char8 *text) const
+void UIListCellPropertyGridWidget::Initialize( BaseMetadata* activeMetadata )
 {
-    String str = text;
-    
-    StringReplace(str, "|", "||");
+    BasePropertyGridWidget::Initialize(activeMetadata);
 
-    StringReplace(str, "'", "|'");
-    StringReplace(str, "\n", "|n");
-    StringReplace(str, "\r", "|r");
+    // Build the properties map to make the properties search faster.
+    PROPERTIESMAP propertiesMap = BuildMetadataPropertiesMap();
 
-//    StringReplace(str, "\u0085", "|x");
-//     StringReplace(str, "\u2028", "|l");
-//     StringReplace(str, "\u2029", "|p");
-
-    StringReplace(str, "[", "|[");
-    StringReplace(str, "]", "|]");
-    
-    return str;
+    // Initialize the widgets.
+    RegisterLineEditWidgetForProperty(propertiesMap, "Identifier", ui->objectIdentifierLineEdit);
 }
-	
-#if defined (__DAVAENGINE_WIN32__)
-void TeamcityOutput::PlatformOutput(const String &text) const
+
+void UIListCellPropertyGridWidget::Cleanup()
 {
-    OutputDebugStringA(text.c_str());
-}
-#endif //#if defined (__DAVAENGINE_WIN32__)
-    
-}; // end of namespace DAVA
+    BasePropertyGridWidget::Cleanup();
 
-#endif //#if defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_WIN32__)
+    UnregisterLineEditWidget(ui->objectIdentifierLineEdit);
+}
 
