@@ -72,6 +72,7 @@
 #include "ImageSizeTest.h"
 #include "DLCDownloadTest.h"
 
+
 using namespace DAVA;
 
 GameCore::GameCore()
@@ -99,9 +100,8 @@ void GameCore::OnAppStarted()
     new DLCDownloadTest();
 
 	new ImageSizeTest();
-
     new DeviceInfoTest();
-    
+
     new PVRTest();
  	new DXTTest();
     new JPEGTest();
