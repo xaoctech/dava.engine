@@ -100,7 +100,6 @@ protected:
 
 private:
 	YamlNode			* rootObject;
-	String				lastMapKey;
 	
 	Stack<YamlNode *> objectStack;
 };

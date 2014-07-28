@@ -92,7 +92,9 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 		
 	yaml_parser_set_input(&parser, read_handler, dataHolder);
 
-	YamlNode * mapKey = 0;
+	String lastMapKey;
+	String scalarValue;
+	bool isKeyPresent = false;
 
 	/* Read the event sequence. */
 	while (!done) 
@@ -113,26 +115,28 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 		
 		case YAML_SCALAR_EVENT:
 			{
+				scalarValue = (const char*)event.data.scalar.value;
 				YamlNode * node = YamlNode::CreateStringNode();
-				node->Set((const char*)event.data.scalar.value);
+				node->Set(scalarValue);
 				
-				if (objectStack.size() == 0)
+				if (objectStack.empty())
 				{
 					rootObject = node;
-				}else
+				}
+				else
 				{
 					YamlNode * topContainer = objectStack.top();
 					if (topContainer->GetType() == YamlNode::TYPE_MAP)
 					{
-						if (mapKey == 0)
+						if (!isKeyPresent)
 						{
-							mapKey = node;
+							lastMapKey = scalarValue;
 						}
 						else
 						{
-							topContainer->AddNodeToMap(mapKey->AsString(), node);
-							SafeRelease(mapKey);
+							topContainer->AddNodeToMap(lastMapKey, node);
 						}
+						isKeyPresent = !isKeyPresent;
 					}else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
 					{
 						topContainer->AddNodeToArray(node);
@@ -152,23 +156,20 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 		case YAML_SEQUENCE_START_EVENT:
 			{
 				YamlNode * node = YamlNode::CreateArrayNode();
-				if (objectStack.size() == 0)
+				if (objectStack.empty())
+				{
 					rootObject = node;
+				}
 				else
 				{
 					YamlNode * topContainer = objectStack.top();
 					if (topContainer->GetType() == YamlNode::TYPE_MAP)
 					{
-						if (mapKey == NULL)
-						{
-//							printf("Something wrong");
-						}
-						else
-						{
-							topContainer->AddNodeToMap(mapKey->AsString(), node);
-							SafeRelease(mapKey);
-						}
-					}else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
+						DVASSERT(isKeyPresent);
+						topContainer->AddNodeToMap(lastMapKey, node);
+						isKeyPresent = false;
+					}
+					else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
 					{
 						topContainer->AddNodeToArray(node);
 					}
@@ -184,24 +185,20 @@ bool YamlParser::Parse(YamlDataHolder * dataHolder)
 		case YAML_MAPPING_START_EVENT:
 			{
 				YamlNode * node = YamlNode::CreateMapNode();
-				if (objectStack.size() == 0)
+				if (objectStack.empty())
+				{
 					rootObject = node;
+				}
 				else
 				{
 					YamlNode * topContainer = objectStack.top();
-					
 					if (topContainer->GetType() == YamlNode::TYPE_MAP)
 					{
-						if (mapKey == 0)
-						{
-//							printf("Something wrong");
-						}
-						else
-						{
-							topContainer->AddNodeToMap(mapKey->AsString(), node);
-							SafeRelease(mapKey);
-						}
-					}else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
+						DVASSERT(isKeyPresent);
+						topContainer->AddNodeToMap(lastMapKey, node);
+						isKeyPresent = false;
+					}
+					else if (topContainer->GetType() == YamlNode::TYPE_ARRAY)
 					{
 						topContainer->AddNodeToArray(node);
 					}
