@@ -115,7 +115,7 @@ void AutotestingSystem::OnInit()
     if(!isInit)
     {
         isInit = true;
-		AutotestingDB::Instance()->Log("DEBUG", "OnInit");
+		//AutotestingDB::Instance()->Log("DEBUG", "OnInit");
     }
 }
 
@@ -211,26 +211,6 @@ void AutotestingSystem::SetUpConnectionToDB()
 
 	SafeRelease(option);
 }
-
-// DEPRECATED
-void AutotestingSystem::SetUpTestArchive()
-{
-    MongodbUpdateObject* dbUpdateObject = new MongodbUpdateObject();
-    
-    // clear test
-    String testId = GetTestId();
-	
-	KeyedArchive* currentBuildArchive = AutotestingDB::Instance()->FindOrInsertBuildArchive(dbUpdateObject, "");
-	KeyedArchive* currentGroupArchive = AutotestingDB::Instance()->FindOrInsertGroupArchive(currentBuildArchive, groupName);
-    KeyedArchive* currentTestArchive = AutotestingDB::Instance()->InsertTestArchive(currentGroupArchive, testId);
-
-	// Create document for step 0 - 'Precondition'
-    String stepId = GetStepId();
-    KeyedArchive* currentStepArchive = AutotestingDB::Instance()->InsertStepArchive(currentTestArchive, stepId, "Precondition");
-
-    AutotestingDB::Instance()->SaveToDB(dbUpdateObject);
-    SafeRelease(dbUpdateObject);
-}
       
 uint64 AutotestingSystem::GetCurrentTimeMS()
 {
@@ -283,6 +263,8 @@ void AutotestingSystem::OnStepStart(const String &stepName)
 	OnStepFinished();
 
 	++stepIndex;
+	logIndex = 0;
+	AutotestingDB::Instance()->Log("INFO", stepName);
 }
     
 void AutotestingSystem::OnStepFinished()
@@ -319,7 +301,7 @@ void AutotestingSystem::SaveScreenShotNameToDB()
 {
 	Logger::Debug("AutotestingSystem::SaveScreenShotNameToDB %s", screenShotName.c_str());
 	
-	AutotestingDB::Instance()->Log("INFO", Format("screenshot: %s", screenShotName));
+	AutotestingDB::Instance()->Log("INFO", Format("screenshot: %s", screenShotName.c_str()));
 }
     
 void AutotestingSystem::Update(float32 timeElapsed)
