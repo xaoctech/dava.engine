@@ -53,9 +53,6 @@ protected:
 	virtual ~YamlParser();
 
 public:
-    // This method just creates the YAML parser.
-    static YamlParser   * Create();
-
     // This method creates the parser and parses the input file.
     static YamlParser * Create(const FilePath & fileName)
     {
