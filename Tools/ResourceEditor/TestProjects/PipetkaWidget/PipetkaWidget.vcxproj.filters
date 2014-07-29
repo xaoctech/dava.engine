@@ -36,9 +36,6 @@
     <Filter Include="ColorPicker">
       <UniqueIdentifier>{2262ef47-f656-41b9-b1ee-3ac315cad0ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Expander">
-      <UniqueIdentifier>{cd296ea0-4415-426e-bd63-6b7143cc8335}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -65,14 +62,26 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ColorWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Expander\expanderwidget.cpp">
-      <Filter>Expander</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_expanderwidget.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_AbstractColorPalette.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_expanderwidget.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_AbstractColorPalette.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\AbstractColorPalette.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_HSVPaletteWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_HSVPaletteWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\HSVPaletteWidget.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\PaletteHelper.cpp">
+      <Filter>ColorPicker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,8 +100,11 @@
     <CustomBuild Include="ColorPicker\ColorWidget.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
-    <CustomBuild Include="Expander\expanderwidget.h">
-      <Filter>Expander</Filter>
+    <CustomBuild Include="ColorPicker\AbstractColorPalette.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\HSVPaletteWidget.h">
+      <Filter>ColorPicker</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_ColorWidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorPicker\PaletteHelper.h">
+      <Filter>ColorPicker</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

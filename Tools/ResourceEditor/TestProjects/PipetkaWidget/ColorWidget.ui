@@ -6,33 +6,59 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
-    <height>436</height>
+    <width>848</width>
+    <height>588</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>ColorWidget</string>
   </property>
-  <widget class="ExpanderWidget" name="widget" native="true">
+  <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>230</y>
-     <width>241</width>
-     <height>80</height>
+     <x>70</x>
+     <y>60</y>
+     <width>261</width>
+     <height>191</height>
     </rect>
    </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>9</number>
+    </property>
+    <property name="topMargin">
+     <number>9</number>
+    </property>
+    <property name="rightMargin">
+     <number>9</number>
+    </property>
+    <property name="bottomMargin">
+     <number>9</number>
+    </property>
+    <item>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="paletteLabel">
+        <property name="text">
+         <string>Choose palette:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="paletteCombo"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="paletteStack"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>ExpanderWidget</class>
-   <extends>QWidget</extends>
-   <header>Expander/expanderwidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
