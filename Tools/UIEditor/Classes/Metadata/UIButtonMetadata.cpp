@@ -842,9 +842,6 @@ void UIButtonMetadata::SetFittingType(int value)
         UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
         if (buttonText)
         {
-            // Changing Fitting Option affects the font which might be reused
-            // by other controls, so clone the existing one.
-            CloneFont(buttonText);
             buttonText->SetFittingOption(value);
         }
     }
