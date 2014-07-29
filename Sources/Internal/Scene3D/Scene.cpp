@@ -636,11 +636,16 @@ Entity *Scene::GetRootNode(const FilePath &rootNodePath)
         uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
         SceneFileV2 *file = new SceneFileV2();
         file->EnableDebugLog(false);
-        file->LoadScene(rootNodePath, this);
+        SceneFileV2::eError loadResult = file->LoadScene(rootNodePath, this);
         SafeRelease(file);
 				
         uint64 deltaTime = SystemTimer::Instance()->AbsoluteMS() - startTime;
         Logger::FrameworkDebug("[GETROOTNODE TIME] %dms (%ld)", deltaTime, deltaTime);
+
+        if (loadResult != SceneFileV2::ERROR_NO_ERROR)
+        {
+            return 0;
+        }
     }
     
 	it = rootNodes.find(FILEPATH_MAP_KEY(rootNodePath));
@@ -811,7 +816,6 @@ void Scene::Draw()
 	{
 		//imposterManager->ProcessQueue();
 	}
-    
     
     renderSystem->Render(clearBuffers);
     
