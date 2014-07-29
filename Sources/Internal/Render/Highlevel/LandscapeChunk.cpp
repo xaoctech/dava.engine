@@ -57,12 +57,14 @@ void LandscapeChunk::Draw(const FastName & ownerPassName, Camera * camera)
 
 void LandscapeChunk::Save(KeyedArchive *archive, SerializationContext *serializationContext)
 {
-	// Don't need to save this batch
+ 	// Don't need to save this batch
+    RenderBatch::Save(archive, serializationContext);
 }
-
+ 
 void LandscapeChunk::Load(KeyedArchive *archive, SerializationContext *serializationContext)
 {
 	// Don't need to load this batch
+    RenderBatch::Load(archive, serializationContext);
 }
 
 ShadowVolume * LandscapeChunk::CreateShadow()

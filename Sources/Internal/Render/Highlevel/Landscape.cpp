@@ -110,7 +110,9 @@ static FastName TILEMASK_COLOR_PROPS_NAMES[] =
 // const float32 LandscapeNode::TEXTURE_TILE_FULL_SIZE = 2048;
 
 Landscape::Landscape()
-    : indices(0), foliageSystem(NULL)//,
+    : indices(0)
+    , foliageSystem(NULL)
+    , tileMaskMaterial(NULL)
 	  //currentMaterial(NULL)
 {
 	drawIndices = 0;
@@ -126,27 +128,7 @@ Landscape::Landscape()
 	cursor = 0;
     
     heightmap = new Heightmap();
-        
     prevLodLayer = -1;
-    
-	NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"),
-                                                            NMaterialName::TILE_MASK_SPECULAR,
-                                                            NMaterial::DEFAULT_QUALITY_NAME);
-    
-	tileMaskMaterial = 	NMaterial::CreateMaterialInstance();
-	landscapeParent->AddNodeFlags(DataNode::NodeRuntimeFlag);
-	tileMaskMaterial->AddNodeFlags(DataNode::NodeRuntimeFlag);
-	tileMaskMaterial->SetParent(landscapeParent);
-	
-	
-	LandscapeChunk * chunk = new LandscapeChunk(this);
-	chunk->SetMaterial(tileMaskMaterial);
-	chunk->SetSortingKey(10);
-	AddRenderBatch(chunk);
-	SafeRelease(chunk);
-	SafeRelease(landscapeParent);
-
-	SetDefaultValues();
 }
 
 Landscape::~Landscape()
@@ -1440,40 +1422,46 @@ void Landscape::SetLandscapeSize(const Vector3 & newLandscapeSize)
         foliageSystem->SyncFoliageWithLandscape();
     }
 }
+
+void Landscape::Create(NMaterial *fromMaterial/* = NULL */)
+{
+    DVASSERT(NULL == tileMaskMaterial);
+    DVASSERT(0 == GetRenderBatchCount());
+
+    if(NULL == fromMaterial)
+    {
+        NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"), NMaterialName::TILE_MASK_SPECULAR, NMaterial::DEFAULT_QUALITY_NAME);
+	    tileMaskMaterial = NMaterial::CreateMaterialInstance();
+	    tileMaskMaterial->SetParent(landscapeParent);
+    	SafeRelease(landscapeParent);
+
+    	SetDefaultValues();
+    }
+    else
+    {
+        tileMaskMaterial = fromMaterial->Clone();
+    }
+	
+	LandscapeChunk * chunk = new LandscapeChunk(this);
+	chunk->SetMaterial(tileMaskMaterial);
+	chunk->SetSortingKey(10);
+	AddRenderBatch(chunk);
+	SafeRelease(chunk);
+}
     
 void Landscape::Save(KeyedArchive * archive, SerializationContext * serializationContext)
 {
     RenderObject::Save(archive, serializationContext);
-        
+
     //TODO: remove code in future. Need for transition from *.png to *.heightmap
     if(!heightmapPath.IsEqualToExtension(Heightmap::FileExtension()))
     {
         heightmapPath.ReplaceExtension(Heightmap::FileExtension());
     }
-    //
 
 	heightmap->Save(heightmapPath);
-
     archive->SetString("hmap", heightmapPath.GetRelativePathname(serializationContext->GetScenePath()));
-    
     archive->SetByteArrayAsType("bbox", bbox);
-    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
-    {
-        if(TEXTURE_DETAIL == k) continue;
-
-        
-        String relPath  = tileMaskMaterial->GetEffectiveTexturePath(TILEMASK_TEXTURE_PROPS_NAMES[k]).GetRelativePathname(serializationContext->GetScenePath());
-        
-        //if(serializationContext->IsDebugLogEnabled())
-        //   Logger::FrameworkDebug("landscape tex save: %s rel: %s", textureNames[k].GetAbsolutePathname().c_str(), relPath.c_str());
-        
-        archive->SetString(Format("tex_%d", k), relPath);
-        Vector2 tilingValue = GetTextureTiling((eTextureLevel)k);
-        archive->SetByteArrayAsType(Format("tiling_%d", k), tilingValue);
-        
-        Color tileColorValue = GetTileColor((eTextureLevel)k);
-		archive->SetByteArrayAsType(Format("tilecolor_%d", k), tileColorValue);
-    }
     
     DVASSERT(GetRenderBatch(0));
     IlluminationParams * illuminationParams = GetRenderBatch(0)->GetMaterial()->GetIlluminationParams(false);
@@ -1494,40 +1482,25 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
 		
     AABBox3 boxDef;
     boxDef = archive->GetByteArrayAsType("bbox", boxDef);
-    
     LoadFog(archive, serializationContext);
+
+    // check if this landscape was saved in old format, when all material properties
+    // were saved as part of landscape object
+    if(0 == GetRenderBatchCount())
+    {
+        // create landscape render object and load material properties
+        // from current serialization context
+        Create();
+        LoadMaterialProps(archive, serializationContext);
+    }
+    else
+    {
+        // remember pointer on loaded landscape material
+        tileMaskMaterial = SafeRetain(GetRenderBatch(0)->GetMaterial());
+    }
 	
 	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
     BuildLandscapeFromHeightmapImage(heightmapPath, boxDef);
-        
-    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
-    {
-        if(TEXTURE_DETAIL == k) continue;
-        
-		if(TEXTURE_TILE_FULL == k)
-			continue;
-
-        // load textures
-		if(!(TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k))
-		{
-			String textureName = archive->GetString(Format("tex_%d", k));
-			if(!textureName.empty())
-			{
-				FilePath absPath = serializationContext->GetScenePath() + textureName;
-                SetTexture((eTextureLevel)k, absPath);
-			}
-		}
-
-        Vector2 tilingValue;
-        tilingValue = archive->GetByteArrayAsType(Format("tiling_%d", k), tilingValue);
-        SetTextureTiling((eTextureLevel)k, tilingValue);
-            
-        Color colorValue;
-        colorValue = archive->GetByteArrayAsType(Format("tilecolor_%d", k), colorValue);
-        SetTileColor((eTextureLevel)k, colorValue);
-    }
-	
-	SetupMaterialProperties();
 
     if(archive->IsKeyExists("illumination.isUsed"))
     {
@@ -1565,6 +1538,38 @@ void Landscape::LoadFog(KeyedArchive * archive, SerializationContext * serializa
             globalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &fogDensityValue);
         }
     }
+}
+
+void Landscape::LoadMaterialProps(KeyedArchive * archive, SerializationContext * serializationContext)
+{
+    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
+    {
+        if(TEXTURE_DETAIL == k) continue;
+        
+		if(TEXTURE_TILE_FULL == k)
+			continue;
+
+        // load textures
+		if(!(TEXTURE_TILE1 == k || TEXTURE_TILE2 == k || TEXTURE_TILE3 == k))
+		{
+			String textureName = archive->GetString(Format("tex_%d", k));
+			if(!textureName.empty())
+			{
+				FilePath absPath = serializationContext->GetScenePath() + textureName;
+                SetTexture((eTextureLevel)k, absPath);
+			}
+		}
+
+        Vector2 tilingValue;
+        tilingValue = archive->GetByteArrayAsType(Format("tiling_%d", k), tilingValue);
+        SetTextureTiling((eTextureLevel)k, tilingValue);
+            
+        Color colorValue;
+        colorValue = archive->GetByteArrayAsType(Format("tilecolor_%d", k), colorValue);
+        SetTileColor((eTextureLevel)k, colorValue);
+    }
+	
+	SetupMaterialProperties();
 }
 
 const FilePath & Landscape::GetTextureName(DAVA::Landscape::eTextureLevel level)
@@ -1756,33 +1761,10 @@ RenderObject * Landscape::Clone( RenderObject *newObject )
 	}
     
     Landscape *newLandscape = static_cast<Landscape *>(newObject);
-	   
+    newLandscape->Create(tileMaskMaterial);
+
     newLandscape->flags = flags;
-    
     newLandscape->BuildLandscapeFromHeightmapImage(heightmapPath, bbox);
-    
-    for (int32 k = 0; k < TEXTURE_COUNT; ++k)
-    {
-        //newLandscape->textureNames[k] = textureNames[k];
-		Texture* tex = GetTexture((eTextureLevel)k);
-        if(tex != NULL)
-        {
-            newLandscape->SetTexture((eTextureLevel)k, GetTexture((eTextureLevel)k));
-        }
-        
-        const FilePath& textureName = GetTextureName((eTextureLevel)k);
-        if(!textureName.IsEmpty())
-        {
-            newLandscape->SetTextureName((eTextureLevel)k, textureName);
-        }
-        
-        Vector2 tilingValue = GetTextureTiling((eTextureLevel)k);
-        newLandscape->SetTextureTiling((eTextureLevel)k, tilingValue);
-        
-        Color colorValue = GetTileColor((eTextureLevel)k);
-        newLandscape->SetTileColor((eTextureLevel)k, colorValue);
-    }
-	
 	newLandscape->SetupMaterialProperties();
 
     IlluminationParams * params = GetRenderBatch(0)->GetMaterial()->GetIlluminationParams(false);
