@@ -114,17 +114,10 @@ void RenderDataObject::DeleteBuffersInternal(BaseObject * caller, void * param, 
 	DestructorContainer * container = (DestructorContainer*)param;
 	DVASSERT(container);
 #if defined(__DAVAENGINE_OPENGL__)
-#if defined(__DAVAENGINE_OPENGL_ARB_VBO__)
-	if (container->vboBuffer)
-		RENDER_VERIFY(glDeleteBuffersARB(1, &container->vboBuffer));
-	if (container->indexBuffer)
-		RENDER_VERIFY(glDeleteBuffersARB(1, &container->indexBuffer));
-#else 
 	if (container->vboBuffer)
 		RENDER_VERIFY(RenderManager::Instance()->HWglDeleteBuffers(1, &container->vboBuffer));
 	if (container->indexBuffer)
 		RENDER_VERIFY(RenderManager::Instance()->HWglDeleteBuffers(1, &container->indexBuffer));
-#endif
 #endif
 	SafeDelete(container);
 }
