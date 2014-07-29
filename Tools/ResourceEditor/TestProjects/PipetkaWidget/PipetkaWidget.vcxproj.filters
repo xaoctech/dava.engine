@@ -62,15 +62,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ColorWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_AbstractColorPalette.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AbstractColorPalette.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorPicker\AbstractColorPalette.cpp">
-      <Filter>ColorPicker</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_HSVPaletteWidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -82,6 +73,15 @@
     </ClCompile>
     <ClCompile Include="ColorPicker\PaletteHelper.cpp">
       <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\GradientWidget.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GradientWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GradientWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,10 +100,13 @@
     <CustomBuild Include="ColorPicker\ColorWidget.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
-    <CustomBuild Include="ColorPicker\AbstractColorPalette.h">
+    <CustomBuild Include="ColorPicker\HSVPaletteWidget.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
-    <CustomBuild Include="ColorPicker\HSVPaletteWidget.h">
+    <CustomBuild Include="ColorPicker\GradientWidget.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\IColorEditor.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
   </ItemGroup>
