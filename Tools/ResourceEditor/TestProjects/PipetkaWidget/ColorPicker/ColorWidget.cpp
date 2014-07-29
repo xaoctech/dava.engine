@@ -1,7 +1,7 @@
 #include "ColorWidget.h"
 #include "ui_ColorWidget.h"
 
-#include "AbstractColorPalette.h"
+#include "IColorEditor.h"
 #include "HSVPaletteWidget.h"
 
 
@@ -10,6 +10,12 @@ ColorWidget::ColorWidget(QWidget *parent)
     , ui(new Ui::ColorWidget())
 {
     ui->setupUi(this);
+    
+    // TEST
+    {
+        ui->test->setColorRange( QColor( 255, 0, 0 ), QColor( 0, 0, 0, 0 ) );
+        ui->test->setDimensions( true, false );
+    }
 
     AddPalette( "HSV", new HSVPaletteWidget() );
 
@@ -20,8 +26,11 @@ ColorWidget::~ColorWidget()
 {
 }
 
-void ColorWidget::AddPalette( QString const& name, AbstractColorPalette* pal )
+void ColorWidget::AddPalette( QString const& name, IColorEditor* _pal )
 {
+    QWidget *pal = dynamic_cast<QWidget *>( _pal );
+    Q_ASSERT( pal );
+
     ui->paletteCombo->addItem( name, name );
     ui->paletteStack->addWidget( pal );
     paletteMap[name] = pal;

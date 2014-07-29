@@ -1,19 +1,27 @@
 #ifndef HSVPALETTEWIDGET_H
 #define HSVPALETTEWIDGET_H
 
-#include "AbstractColorPalette.h"
+#include <QWidget>
+#include "IColorEditor.h"
+
 
 class HSVPaletteWidget
-    : public AbstractColorPalette
+    : public QWidget
+    , public IColorEditor
 {
-private:
     Q_OBJECT
+
+signals:
+    void begin();
+    void changing( const QColor& c );
+    void changed( const QColor& c );
+    void canceled();
 
 public:
     explicit HSVPaletteWidget(QWidget *parent = NULL);
     ~HSVPaletteWidget();
 
-    // AbstractColorPalette
+    // IColorEditor
     QColor GetColor() const;
     void setColor( QColor const& c );
 

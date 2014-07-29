@@ -10,7 +10,7 @@
 namespace Ui {class ColorWidget;};
 
 
-class AbstractColorPalette;
+class IColorEditor;
 
 
 class ColorWidget
@@ -19,13 +19,13 @@ class ColorWidget
     Q_OBJECT
 
 private:
-    typedef QMap< QString, QPointer<AbstractColorPalette> > PaletteMap;
+    typedef QMap< QString, QWidget * > PaletteMap;
 
 public:
     explicit ColorWidget(QWidget *parent = 0);
     ~ColorWidget();
 
-    void AddPalette( const QString& name, AbstractColorPalette *pal );
+    void AddPalette( const QString& name, IColorEditor *pal );
 
 private slots:
     void onPaletteType();

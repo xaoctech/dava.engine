@@ -6,9 +6,8 @@
 
 
 HSVPaletteWidget::HSVPaletteWidget(QWidget *parent)
-    : AbstractColorPalette(parent)
+    : QWidget(parent)
 {
-
 }
 
 HSVPaletteWidget::~HSVPaletteWidget()
