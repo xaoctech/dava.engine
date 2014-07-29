@@ -192,8 +192,8 @@ const Vector2 &UIStaticText::GetShadowOffset() const
 void UIStaticText::Draw(const UIGeometricData &geometricData)
 {
 	textBlock->SetRectSize(size);
-	textBlock->SetPosition(GetPosition(true));
-	textBlock->SetPivotPoint(pivotPoint);
+	textBlock->SetPosition(geometricData.position);
+	textBlock->SetPivotPoint(geometricData.pivotPoint);
 	PrepareSprite();
 	textBlock->PreDraw();
 
