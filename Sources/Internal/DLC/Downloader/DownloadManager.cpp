@@ -629,7 +629,7 @@ DownloadError DownloadManager::Download()
 
     }while (0 < currentTask->retriesLeft-- && DLE_NO_ERROR != error);
 
-    if (DLE_NO_ERROR != error && 0 >= currentTask->retriesLeft) // we cannot reconnect to server
+    if (DLE_NO_ERROR != error && DLE_CONTENT_NOT_FOUND != error && 0 > currentTask->retriesLeft) // we cannot reconnect to server
     {
         error = DLE_CANNOT_CONNECT;
     }
