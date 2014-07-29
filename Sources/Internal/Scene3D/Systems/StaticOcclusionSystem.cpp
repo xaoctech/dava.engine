@@ -640,11 +640,11 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
     PolygonGroup *gridPolygonGroup = CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());
     NMaterial *gridMaterialInstance = NMaterial::CreateMaterialInstance();    
     gridMaterialInstance->SetParent(debugAlphablendMaterial);
-    Color col(0.0f, 0.3f, 0.1f, 0.1f);
+    Color col(0.0f, 0.3f, 0.1f, 0.2f);
     gridMaterialInstance->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &col);
     gridBatch->SetPolygonGroup(gridPolygonGroup);
     gridBatch->SetMaterial(gridMaterialInstance);
-    debugRenderObject->AddRenderBatch(gridBatch);
+    
 
 
     RenderBatch *coverBatch = new RenderBatch();
@@ -656,7 +656,10 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
     coverMaterialInstance->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &colCover);
     coverBatch->SetPolygonGroup(coverPolygonGroup);
     coverBatch->SetMaterial(coverMaterialInstance);
+    
+    
     debugRenderObject->AddRenderBatch(coverBatch);
+    debugRenderObject->AddRenderBatch(gridBatch);
     
     debugRenderObject->SetWorldTransformPtr(worldTransformPointer);
     GetScene()->renderSystem->MarkForUpdate(debugRenderObject);
@@ -700,11 +703,11 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 even
     {
         StaticOcclusionDebugDrawComponent *debugDrawComponent = static_cast<StaticOcclusionDebugDrawComponent *>(entity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT));        
         StaticOcclusionComponent *staticOcclusionComponent = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
-        PolygonGroup *gridPolygonGroup = StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());
-        PolygonGroup *coverPolygonGroup = StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCover(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), gridPolygonGroup);
-        RenderObject *debugRenderObject = debugDrawComponent->GetRenderObject();
-        debugRenderObject->GetRenderBatch(0)->SetPolygonGroup(gridPolygonGroup);
-        debugRenderObject->GetRenderBatch(1)->SetPolygonGroup(coverPolygonGroup);
+        ScopedPtr<PolygonGroup> gridPolygonGroup(CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ()));
+        ScopedPtr<PolygonGroup> coverPolygonGroup(CreateStaticOcclusionDebugDrawCover(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), gridPolygonGroup));
+        RenderObject *debugRenderObject = debugDrawComponent->GetRenderObject();        
+        debugRenderObject->GetRenderBatch(0)->SetPolygonGroup(coverPolygonGroup);
+        debugRenderObject->GetRenderBatch(1)->SetPolygonGroup(gridPolygonGroup);
         debugRenderObject->RecalcBoundingBox();
         entity->GetScene()->renderSystem->MarkForUpdate(debugRenderObject);
     }
@@ -734,10 +737,10 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid
             {                
                 //int32 vBase = (zs + (zSubdivisions+1)*(ys + xs * ySubdivisions))*4;                
                 int32 vBase = IDX_BY_POS(xs, ys, zs);                
-                res->SetCoord(vBase + 0, boundingBox.min + Vector3(boxSize.x * xs, boxSize.x * ys, boxSize.x * zs ));
-                res->SetCoord(vBase + 1, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.x * ys, boxSize.x * zs));
-                res->SetCoord(vBase + 2, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.x * (ys+1), boxSize.x * zs));
-                res->SetCoord(vBase + 3, boundingBox.min + Vector3(boxSize.x * xs, boxSize.x * (ys+1), boxSize.x * zs));
+                res->SetCoord(vBase + 0, boundingBox.min + Vector3(boxSize.x * xs, boxSize.y * ys, boxSize.z * zs ));
+                res->SetCoord(vBase + 1, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.y * ys, boxSize.z * zs));
+                res->SetCoord(vBase + 2, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.y * (ys+1), boxSize.z * zs));
+                res->SetCoord(vBase + 3, boundingBox.min + Vector3(boxSize.x * xs, boxSize.y * (ys+1), boxSize.z * zs));
             }        
     //indices     
     //in pair indexOffset, z
