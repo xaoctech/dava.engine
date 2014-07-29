@@ -768,13 +768,21 @@ namespace DAVA
         return background;
     }
 
-    const UIGeometricData &UIControl::GetGeometricData()
+    const UIGeometricData &UIControl::GetGeometricData(bool absoluteCoordinates /*true*/)
     {
         tempGeometricData.position = relativePosition;
         tempGeometricData.size = size;
         tempGeometricData.pivotPoint = pivotPoint;
         tempGeometricData.scale = scale;
         tempGeometricData.angle = angle;
+        tempGeometricData.unrotatedRect.x = relativePosition.x - relativePosition.x * scale.x;
+        tempGeometricData.unrotatedRect.y = relativePosition.y - pivotPoint.y * scale.y;
+        tempGeometricData.unrotatedRect.dx = size.x * scale.x;
+        tempGeometricData.unrotatedRect.dy = size.y * scale.y;
+        if(!absoluteCoordinates)
+        {
+            return tempGeometricData;
+        }
         if(!parent)
         {
             tempGeometricData.AddToGeometricData(UIControlSystem::Instance()->GetBaseGeometricData());
@@ -840,56 +848,15 @@ namespace DAVA
         return angle;
     }
     
-    float32 UIControl::GetParentsTotalAngle(bool includeOwn)
-    {
-        float32 angle = 0;
-        if(includeOwn)
-        {
-            angle += this->angle;
-        }
-        if(this->GetParent())
-        {
-            angle += parent->GetParentsTotalAngle(true);
-        }
-        return fmodf(angle, PI_2);
-    }
-
     void UIControl::SetAngle(float32 angleInRad)
     {
         angle = angleInRad;
     }
 
-    const Rect &UIControl::GetRect(bool absoluteCoordinates/* = FALSE*/, bool rotatedRectNeeded/*=false*/)
+    const Rect &UIControl::GetRect(bool absoluteCoordinates/* = FALSE*/)
     {
         Vector2 pos = GetPosition(absoluteCoordinates) - pivotPoint;
         returnedRect = Rect(pos.x, pos.y, size.x, size.y);
-        if(rotatedRectNeeded)
-        {
-            float32 angle = this->GetParentsTotalAngle(true);
-            if(!FLOAT_EQUAL_EPS(angle, 0.0f, 1e-4f))
-            {
-                Rect rectControl = returnedRect;
-                // Complex case - angle is not 0. Particular fix for 90, 180 and 270 degrees goes here
-                if(FLOAT_EQUAL_EPS(angle, PI_05, 1e-4f))
-                {
-                    // 90
-                    Vector2 xyCoord = GetTopLeftCornerRotated(rectControl);
-                    returnedRect = Rect(xyCoord.x - rectControl.dy, xyCoord.y, rectControl.dy, rectControl.dx);
-                }
-                else if(FLOAT_EQUAL_EPS(angle, PI, 1e-4f))
-                {
-                    // 180
-                    Vector2 xyCoord = GetTopLeftCornerRotated(rectControl);
-                    returnedRect = Rect(xyCoord.x - rectControl.dx, xyCoord.y - rectControl.dy, rectControl.dx, rectControl.dy);
-                }
-                else if(FLOAT_EQUAL_EPS(angle, (PI+PI_05), 1e-4f))
-                {
-                    // 270
-                    Vector2 xyCoord = GetTopLeftCornerRotated(rectControl);
-                    returnedRect = Rect(xyCoord.x, xyCoord.y - rectControl.dx, rectControl.dy, rectControl.dx);
-                }
-            }
-        }
         return returnedRect;
     }
 
@@ -1671,7 +1638,7 @@ namespace DAVA
         if(clipContents)
         {//WARNING: for now clip contents don't work for rotating controls if you have any ideas you are welcome
             RenderManager::Instance()->ClipPush();
-            RenderManager::Instance()->ClipRect(GetRect(true, true));
+            RenderManager::Instance()->ClipRect(GetGeometricData().GetBBox());
         }
 
         if(visible && visibleForUIEditor)
@@ -2926,17 +2893,6 @@ namespace DAVA
         float32 position = parentSize - align - child->GetSize().y;
 
         return position;
-    }
-
-    Vector2 UIControl::GetTopLeftCornerRotated(const Rect &rectControl)
-    {
-        Vector2 xyCoord = Vector2(rectControl.x, rectControl.y);
-        Vector2 topLeftRelatedToPivot = -pivotPoint;
-        Matrix3 rot;
-        rot.BuildRotation(angle);
-        topLeftRelatedToPivot = topLeftRelatedToPivot * rot;
-        xyCoord = xyCoord + pivotPoint + topLeftRelatedToPivot;
-        return xyCoord;
     }
 
     void UIControl::RecalculatePivotPoint(const Rect &newRect)
