@@ -117,7 +117,11 @@ public:
         
      */
     
+    
+    void FlipVertical();
+    void FlipHorizontal();
 
+public:
     uint32 dataSize;
 	uint32	width:16;
 	uint32	height:16;
@@ -128,6 +132,7 @@ public:
     PixelFormat format:8;
 	
 	uint32 cubeFaceID;
+    
 };
 	
 // Implementation of inline functions

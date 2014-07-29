@@ -403,7 +403,7 @@ Vector3 RulerToolSystem::MirrorPoint(const Vector3 & point) const
     const AABBox3 & boundingBox = drawSystem->GetLandscapeProxy()->GetLandscapeBoundingBox();
 
     Vector3 newPoint = point;
-    newPoint.x = (boundingBox.max.x - point.x) + boundingBox.min.x;
+    newPoint.y = (boundingBox.max.y - point.y) + boundingBox.min.y;
     
     return newPoint;
 }

@@ -160,7 +160,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 	
 	renderManager->SetRenderTarget(notPassableMapSprite);
 	
-	const Rect drawRect((heightmap->Size() - (forRect.x + forRect.dx)) * dx, forRect.y * dx, (forRect.dx - 1)* dx, (forRect.dy - 1) * dx);
+	const Rect drawRect(forRect.x * dx, (heightmap->Size() - (forRect.y + forRect.dy)) * dx, (forRect.dx - 1)* dx, (forRect.dy - 1) * dx);
 	renderManager->ClipPush();
 	renderManager->SetClip(drawRect);
 	
@@ -171,7 +171,7 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 	for (int32 y = (int32)forRect.y; y < lastY; ++y)
 	{
 		const int32 yOffset = y * heightmap->Size();
-        const float32 ydx = y * dx;
+        const float32 ydx = (heightmap->Size() - y - 1) * dx;
 		for (int32 x = (int32)forRect.x; x < lastX; ++x)
 		{
 			const uint16 currentPoint = heightmap->Data()[yOffset + x];
@@ -184,20 +184,20 @@ void NotPassableTerrainProxy::UpdateTexture(DAVA::Heightmap *heightmap,
 			const float32 tanRight = (float32)deltaRight * tanCoef;
 			const float32 tanBottom = (float32)deltaBottom * tanCoef;
 			
-			const float32 xdx = (heightmap->Size() - x - 1) * dx;
+			const float32 xdx = x * dx;
 			
 			Color color;
 
 			if(PickColor(tanRight, color))
 			{
 				renderManager->SetColor(color);
-				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2((xdx - dx), ydx), DAVA::RenderState::RENDERSTATE_2D_BLEND);
+				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2((xdx + dx), ydx), DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			}
 			
 			if(PickColor(tanBottom, color))
 			{
 				renderManager->SetColor(color);
-				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2(xdx, (ydx + dx)), DAVA::RenderState::RENDERSTATE_2D_BLEND);
+				renderHelper->DrawLine(Vector2(xdx, ydx), Vector2(xdx, (ydx - dx)), DAVA::RenderState::RENDERSTATE_2D_BLEND);
 			}
 			
 		}

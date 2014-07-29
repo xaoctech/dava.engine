@@ -488,6 +488,6 @@ float32 HeightmapEditorSystem::GetDropperHeight()
 
 Vector2 HeightmapEditorSystem::GetHeightmapPositionFromCursor() const
 {
-    return Vector2(landscapeSize - 1 - cursorPosition.x, cursorPosition.y);
+    return Vector2(cursorPosition.x, landscapeSize - 1 - cursorPosition.y);
 }
 

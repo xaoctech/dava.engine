@@ -152,22 +152,6 @@ uint64 EglGetCurrentContext();
 
 // Open the URL in external browser.
 void OpenURL(const String& url);
-
-template<class T>
-void FlipHorizontal(T * array, const uint32 width, const uint32 height)
-{
-    const uint32 halfWidth = width / 2;
-    const uint32 maxY = height * width;
-    
-    for(uint32 y = 0; y < maxY; y += width)
-    {
-        for(uint32 x = 0; x < halfWidth; ++x)
-        {
-            Swap(array[y + x], array[y + width - x - 1]);
-        }
-    }
-}
-
     
 };
 
