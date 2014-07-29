@@ -50,6 +50,9 @@ size_t CurlTestDownloader::SaveData(void *ptr, size_t size, size_t nmemb)
 
 DLCDownloadTest::DLCDownloadTest()
     : TestTemplate<DLCDownloadTest>("DLCDownloadTest")
+    , serverUrl("by2-badava-mac-11.corp.wargaming.local")
+    , testFileEmpty("/UnitTest/Downloader/empty.file")
+    , testFileOne("/UnitTest/Downloader/r0-1.patch")
 {
     RegisterFunction(this, &DLCDownloadTest::TestFunction, String("DLCDownloadTest TestFunction"), NULL);
 }
@@ -69,33 +72,59 @@ void DLCDownloadTest::DownloadCallback(const uint32 &taskId, const DownloadStatu
        Logger::FrameworkDebug("task %d status %d", taskId, status);
 }
 
+String DLCDownloadTest::StorePathForUrl(const String &url)
+{
+    String prefix = "";
+
+    if (url.length() >= 5)
+    {
+        if ("ftp" == url.substr(0, 3))
+        {
+            prefix = "ftp";
+        }
+
+        else if ("ftps" == url.substr(0, 4))
+        {
+            prefix = "ftps";
+        }
+        else if ("http" == url.substr(0, 4))
+        {
+            prefix = "http";
+        }
+        else if ("https" == url.substr(0, 5))
+        {
+            prefix = "https";
+        }
+    }
+
+
+    return "~doc:/downloads/res/" + prefix + "_" + FilePath(url).GetFilename();
+}
+
 void DLCDownloadTest::TestFunction(PerfFuncData * data)
 {
-    String srcUrlMissing = "http://10.128.108.34:8080/missingFile.txt";
-    String srcUrlMissingServer = "http://1.1.1.1/missingFile.txt";
-    String srcUrl = "http://10.128.108.34:8080/file.msi";
-    String srcUrlSSL = "https://10.128.108.34/file.msi";
-    String srcUrlFTP = "ftp://10.128.108.34/ReSharperSetup.8.5.0.3585.msi";
-    String srcUrlFTPUser = "ftp://test:test@10.128.108.34/ReSharperSetup.8.5.0.3585.msi";
-    FilePath srcPathMissing(srcUrlMissing);
-    FilePath srcServerMissing(srcUrlMissingServer);
-    FilePath srcPath(srcUrl);
-    FilePath srcPathSSL(srcUrlSSL);
-    FilePath srcPathFTP(srcUrlFTP);
-    FilePath srcPathFTPUser(srcUrlFTPUser);
-    String dstMissing = "~doc:/downloads/res/"+srcPathMissing.GetFilename();
-    String dstMissingServer = "~doc:/downloads/res/"+srcServerMissing.GetFilename();
-    String dstHttp = "~doc:/downloads/res/"+srcPath.GetFilename();
-    String dstHttps = "~doc:/downloads/res/ssl"+srcPathSSL.GetFilename();
-    String dstFtp = "~doc:/downloads/res/ftp"+srcPathFTP.GetFilename();
-    
-    FileSystem::Instance()->DeleteFile(dstFtp);
+    String srcUrlMissingFile = "http://" + serverUrl + "/missingFile.txt";
+    String srcUrlFolder = "http://" + serverUrl + "/";
+    String srcUrlEmptyFile = "http://" + serverUrl + testFileEmpty;
+    String srcUrlMissingServer = "http://" + serverUrl + "/missingFile.txt";
+    String srcUrl = "http://" + serverUrl + testFileOne;
+    String srcUrlSSL = "https://" + serverUrl + testFileOne;
+    String srcUrlFTP = "ftp://" + serverUrl + testFileOne;
+    String srcUrlFTPUser = "ftp://" + serverUrl + testFileOne;
+
+    String dstMissingFile = StorePathForUrl(srcUrlMissingFile);
+    String dstHttpFolder = StorePathForUrl(srcUrlFolder);
+    String dstHttpEmptyFile = StorePathForUrl(srcUrlEmptyFile);
+    String dstMissingServer = StorePathForUrl(srcUrlMissingServer);
+    String dstHttp = StorePathForUrl(srcUrl);
+    String dstHttps = StorePathForUrl(srcUrlSSL);
+    String dstFtp = StorePathForUrl(srcUrlFTP);
+
     FileSystem::Instance()->DeleteFile(dstHttp);
-    FileSystem::Instance()->DeleteFile(dstHttps);
 
     // set custom downloader - it interrupts download after one chunk of data comes
     DownloadManager::Instance()->SetDownloader(new CurlTestDownloader());
-    
+
     // example "how to" usage of callback
     DownloadManager::Instance()->SetNotificationCallback(DownloadManager::NotifyFunctor(this, &DLCDownloadTest::DownloadCallback));
 
@@ -103,11 +132,13 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     DownloadError error;
     uint64 progress = 0;
     uint64 total = 0;
+    uint64 filesize = 0;
+    File *file = NULL;
 
-    uint32 missingServerID  = DownloadManager::Instance()->Download(srcUrlMissingServer, dstMissingServer, RESUMED, 500, 1);
-    DownloadManager::Instance()->Wait(missingServerID);
-
-    uint32 missingID  = DownloadManager::Instance()->Download(srcUrlMissing, dstMissing);
+    //uint32 missingServerID  = DownloadManager::Instance()->Download(srcUrlMissingServer, dstMissingServer, RESUMED, 500, 1);
+    //DownloadManager::Instance()->Wait(missingServerID);
+    /*
+    uint32 missingID = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile);
     DownloadManager::Instance()->Wait(missingID);
     TEST_VERIFY(DownloadManager::Instance()->GetProgress(missingID, progress));
     TEST_VERIFY(DownloadManager::Instance()->GetTotal(missingID, total));
@@ -117,35 +148,103 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     TEST_VERIFY(DL_FINISHED == status);
 
     // ask for some downloads
-    uint32 ftpID  = DownloadManager::Instance()->Download(srcUrlFTP, "", GET_SIZE);
+    uint32 ftpID = DownloadManager::Instance()->Download(srcUrlFTP, "", GET_SIZE);
     DownloadManager::Instance()->Wait(ftpID);
     DownloadManager::Instance()->GetTotal(ftpID, total);
     TEST_VERIFY(total != 0);
 
-    ftpID  = DownloadManager::Instance()->Download(srcUrlFTP, dstFtp);
+
+
+    ftpID = DownloadManager::Instance()->Download(srcUrlFTP, dstFtp);
     // wait for download
     DownloadManager::Instance()->Wait(ftpID);
-    File *file = File::Create(dstFtp, File::OPEN | File::READ);
+    file = File::Create(dstFtp, File::OPEN | File::READ);
     TEST_VERIFY(NULL != file);
-    uint64 filesize = file->GetSize();
-    TEST_VERIFY(DownloadManager::Instance()->GetProgress(ftpID, progress));
-    TEST_VERIFY(filesize == progress);
-    SafeRelease(file);
+    if (NULL != file)
+    {
+        filesize = file->GetSize();
+        TEST_VERIFY(DownloadManager::Instance()->GetProgress(ftpID, progress));
+        TEST_VERIFY(filesize == progress);
+        SafeRelease(file);
+    }
+
+
+    */
+
+/* POSITIVE CHECK */
 
     // change downloader to full featured Curl downloader.
     DownloadManager::Instance()->SetDownloader(new CurlDownloader());
 
-    // wait for another download
-    uint32 httpID  = DownloadManager::Instance()->Download(srcUrl, dstHttp);
+    uint32 httpID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 1000, 1);
     DownloadManager::Instance()->Wait(httpID);
     TEST_VERIFY(DownloadManager::Instance()->GetProgress(httpID, progress));
     TEST_VERIFY(DownloadManager::Instance()->GetTotal(httpID, total));
     file = File::Create(dstHttp, File::OPEN | File::READ);
     TEST_VERIFY(NULL != file);
-    filesize = file->GetSize();
-    TEST_VERIFY(filesize == progress);
-    TEST_VERIFY(total == progress); 
-    SafeRelease(file);
+    if (NULL != file)
+    {
+        filesize = file->GetSize();
+        TEST_VERIFY(filesize == progress);
+        TEST_VERIFY(total == progress);
+        SafeRelease(file);
+    }
+    FileSystem::Instance()->DeleteFile(dstHttp);
+
+/* END POSITIVE CHECK*/
+
+/* MISSING FILE ON EXISTENT SERVER*/
+    uint32 missingFileId = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, RESUMED, 1000, 0);
+    DownloadManager::Instance()->Wait(missingFileId);
+
+    DownloadManager::Instance()->GetError(missingFileId, error);
+    TEST_VERIFY(DLE_CONTENT_NOT_FOUND == error);
+    DownloadManager::Instance()->GetStatus(missingFileId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+
+    // file should not be created
+    file = File::Create(dstMissingFile, File::OPEN | File::READ);
+    TEST_VERIFY(NULL == file);
+    if (NULL != file)
+    {
+        FileSystem::Instance()->DeleteFile(dstMissingFile);
+        SafeRelease(file);
+    }
+
+/* END MISSING FILE ON EXISTENT SERVER*/
+
+/* FOLDER INSTEAD OF FILE */
+
+    uint32 folderId = DownloadManager::Instance()->Download(srcUrlFolder, dstHttpFolder, RESUMED, 1000, 0);
+    DownloadManager::Instance()->Wait(folderId);
+
+    DownloadManager::Instance()->GetError(folderId, error);
+    TEST_VERIFY(DLE_NO_ERROR == error);
+    DownloadManager::Instance()->GetStatus(folderId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+
+    FileSystem::Instance()->DeleteFile(dstHttpFolder);
+
+/* END FOLDER INSTEAD OF FILE */
+
+/* EMPTY FILE */
+
+    uint32 emptyFileId = DownloadManager::Instance()->Download(srcUrlEmptyFile, dstHttpEmptyFile, RESUMED, 1000, 1);
+    DownloadManager::Instance()->Wait(emptyFileId);
+    TEST_VERIFY(DownloadManager::Instance()->GetProgress(emptyFileId, progress));
+    TEST_VERIFY(DownloadManager::Instance()->GetTotal(emptyFileId, total));
+    file = File::Create(dstHttpEmptyFile, File::OPEN | File::READ);
+    TEST_VERIFY(NULL != file);
+    if (NULL != file)
+    {
+        filesize = file->GetSize();
+        TEST_VERIFY(filesize == progress);
+        TEST_VERIFY(total == progress);
+        SafeRelease(file);
+    }
+    FileSystem::Instance()->DeleteFile(dstHttpEmptyFile);
+
+/* END EMPTY FILE */
 
     // ask for 3rd download
     uint32 httpsID = DownloadManager::Instance()->Download(srcUrlSSL, dstHttps);
