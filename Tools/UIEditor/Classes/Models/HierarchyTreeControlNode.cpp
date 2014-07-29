@@ -356,7 +356,16 @@ Rect HierarchyTreeControlNode::GetRect(bool checkAngle/*=false*/) const
     }
 
 	if (uiObject)
-		rect = uiObject->GetRect(true, checkAngle);
+    {
+        if(!checkAngle)
+        {
+            rect = uiObject->GetRect(true);
+        }
+        else
+        {
+            rect = uiObject->GetGeometricData().GetBBox();
+        }
+    }
 
 	const HIERARCHYTREENODESLIST& childs = GetChildNodes();
 	for (HIERARCHYTREENODESLIST::const_iterator iter = childs.begin(); iter != childs.end(); ++iter)

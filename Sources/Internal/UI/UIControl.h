@@ -145,6 +145,46 @@ public:
     {
         return unrotatedRect;
     }
+    
+    Rect GetBBox() const
+    {
+        float32 angleCorrected = fmodf(angle, PI_2);
+        if(!FLOAT_EQUAL_EPS(angleCorrected, 0.0f, 1e-4f))
+        {
+            // Particular fix for 90, 180 and 270 degrees
+            if(FLOAT_EQUAL_EPS(angleCorrected, PI_05, 1e-4f))
+            {
+                // 90
+                Polygon2 polygon;
+                GetPolygon(polygon);
+                Rect rectFinal = Rect(polygon.GetPoints()[3],
+                                      Vector2(polygon.GetPoints()[0].x - polygon.GetPoints()[3].x,
+                                              polygon.GetPoints()[2].y - polygon.GetPoints()[3].y));
+                return rectFinal;
+            }
+            else if(FLOAT_EQUAL_EPS(angleCorrected, PI, 1e-4f))
+            {
+                // 180
+                Polygon2 polygon;
+                GetPolygon(polygon);
+                Rect rectFinal = Rect(polygon.GetPoints()[2],
+                                      Vector2(polygon.GetPoints()[3].x - polygon.GetPoints()[2].x,
+                                              polygon.GetPoints()[1].y - polygon.GetPoints()[2].y));
+                return rectFinal;
+            }
+            else if(FLOAT_EQUAL_EPS(angleCorrected, (PI+PI_05), 1e-4f))
+            {
+                // 270
+                Polygon2 polygon;
+                GetPolygon(polygon);
+                Rect rectFinal = Rect(polygon.GetPoints()[1],
+                                      Vector2(polygon.GetPoints()[2].x - polygon.GetPoints()[1].x,
+                                              polygon.GetPoints()[0].y - polygon.GetPoints()[1].y));
+                return rectFinal;
+            }
+        }
+        return unrotatedRect;
+    }
 
     Rect unrotatedRect;
     float32 oldAngle;
@@ -446,7 +486,7 @@ public:
         Warning, rectInAbsoluteCoordinates isn't properly works for now!
      \returns control rect.
      */
-    virtual const Rect & GetRect(bool absoluteCoordinates = false, bool rotatedRectNeeded = false);
+    virtual const Rect & GetRect(bool absoluteCoordinates = false);
 
     /**
      \brief Sets the untransformed control rect.
@@ -490,7 +530,7 @@ public:
      \brief Returns actual control transformation and metrics.
      \returns control geometric data.
      */
-    virtual const UIGeometricData &GetGeometricData();
+    virtual const UIGeometricData &GetGeometricData(bool absoluteCoordinates = true);
 
     /**
      \brief Sets the scaled control rect.
@@ -506,12 +546,6 @@ public:
      */
     virtual float32 GetAngle() const;
     
-    /**
-     \brief Returns control's parents total rotation angle in radians.
-     \returns control's parents total angle in radians.
-     */
-    virtual float32 GetParentsTotalAngle(bool includeOwn);
-
     /**
      \brief Sets contol rotation angle in radians.
         Control rotates around the pivot point.
@@ -1352,8 +1386,6 @@ private:
     float32 GetRelativeX(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
     float32 GetRelativeY(UIControl *parent, int32 align);
     float32 GetRelativeY(UIControl *parent, int32 align, UIControl* child, bool useHalfParentSize = false);
-
-    Vector2 GetTopLeftCornerRotated(const Rect &rectControl);
 };
 };
 

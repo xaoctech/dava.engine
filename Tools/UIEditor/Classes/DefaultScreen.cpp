@@ -493,7 +493,7 @@ void DefaultScreen::ApplyMoveDelta(const Vector2& delta)
 		UIControl* control = controlNode->GetUIObject();
 		if (control)
 		{
-            float32 parentsTotalAngle = control->GetParentsTotalAngle(false);
+            float32 parentsTotalAngle = control->GetParent()->GetGeometricData().angle;
             if(parentsTotalAngle != 0)
             {
                 Matrix3 tmp;
@@ -1472,7 +1472,7 @@ int32 DefaultScreen::CalculateStickToGuidesDrag(Vector2& offset) const
         HierarchyTreeControlNode* controlNode = (*iter);
         if (controlNode && controlNode->GetUIObject())
         {
-            controlRects.push_back(controlNode->GetUIObject()->GetRect(true, true));
+            controlRects.push_back(controlNode->GetUIObject()->GetGeometricData().GetBBox());
         }
     }
     
@@ -1685,7 +1685,14 @@ Rect DefaultScreen::GetControlRect(const HierarchyTreeControlNode* controlNode, 
 	if (!control)
 		return rect;
 	
-	rect = control->GetRect(false, checkAngle);
+    if(!checkAngle)
+    {
+        rect = control->GetRect(false);
+    }
+    else
+    {
+        rect = control->GetGeometricData(false).GetBBox();
+    }
 	rect += controlNode->GetParentDelta(true);
 
 	return rect;
