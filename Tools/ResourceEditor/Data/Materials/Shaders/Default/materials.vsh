@@ -395,7 +395,7 @@ void main()
         varTexCoord2.x = clusterLodScale;
 #endif
     
-        highp vec2 hUVcolor = vec2(1.0 - hUVheight.x, hUVheight.y);
+        highp vec2 hUVcolor = vec2(hUVheight.x, 1.0 - hUVheight.y);
         vec4 vegetationMask = texture2DLod(vegetationmap, hUVcolor, 0.0);
     
 #if defined(MATERIAL_GRASS_OPAQUE) || defined(MATERIAL_GRASS_BLEND)

@@ -31,6 +31,7 @@
 #include "Render/Image/ImageConvert.h"
 #include "Render/Image/ImageSystem.h"
 #include "Render/PixelFormatDescriptor.h"
+#include "Utils/Utils.h"
 
 namespace DAVA 
 {
@@ -398,5 +399,58 @@ bool Image::Save(const FilePath &path) const
 {
     return ImageSystem::Instance()->Save(path, const_cast<Image*>(this), format) == SUCCESS;
 }
+    
+
+void Image::FlipHorizontal()
+{
+    const uint32 halfWidth = width / 2;
+    const uint32 maxY = height * width;
+    
+    for(uint32 y = 0; y < maxY; y += width)
+    {
+        for(uint32 x = 0; x < halfWidth; ++x)
+        {
+            if(format == FORMAT_A16)
+            {
+                uint16 *dataPtr = (uint16 *)data;
+                Swap(dataPtr[y + x], dataPtr[y + width - x - 1]);
+            }
+            else if(format == FORMAT_A8)
+            {
+                Swap(data[y + x], data[y + width - x - 1]);
+            }
+            else
+            {
+                DVASSERT(false && "Not implemented");
+            }
+        }
+    }
+}
+
+void Image::FlipVertical()
+{
+    const uint32 halfHeight = (height / 2 );
+    for(uint32 x = 0; x < width; ++x)
+    {
+        for(uint32 y = 0; y < halfHeight; ++y )
+        {
+            if(format == FORMAT_A16)
+            {
+                uint16 *dataPtr = (uint16 *)data;
+                Swap(dataPtr[y * width + x], dataPtr[(height - 1 - y) * width + x]);
+            }
+            else if(format == FORMAT_A8)
+            {
+                Swap(data[y * width + x], data[(height - 1 - y) * width + x]);
+            }
+            else
+            {
+                DVASSERT(false && "Not implemented");
+            }
+        }
+    }
+}
+
+    
     
 };
