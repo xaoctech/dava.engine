@@ -92,6 +92,9 @@
  name: "Landscape"
  path: TileMask.material
 -
+ name: "Landscape Specular"
+ path: TileMaskSpecular.material
+-
  name: "VertexLit Reflection"
  path: VertexLit.Reflection.Opaque.material
 -
