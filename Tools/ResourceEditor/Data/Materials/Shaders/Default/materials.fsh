@@ -318,9 +318,9 @@ void main()
 #elif defined(PIXEL_LIT)
     // lookup normal from normal map, move from [0, 1] to  [-1, 1] range, normalize
     vec3 normal = 2.0 * texture2D (normalmap, varTexCoord0).rgb - 1.0;
-    //normal = normalize (normal);
     normal.xy *= normalScale;
-   	normal.z = sqrt(1.0 - (normal.x * normal.x + normal.y * normal.y));
+    normal = normalize (normal);
+   	//normal.z = sqrt(1.0 - (normal.x * normal.x + normal.y * normal.y));
     //normal = vec3(0.0, 0.0, 1.0);
     
     float attenuation = lightIntensity0;
