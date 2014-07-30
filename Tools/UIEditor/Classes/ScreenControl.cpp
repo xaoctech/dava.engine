@@ -91,7 +91,6 @@ void ScreenControl::Draw(const UIGeometricData & /*geometricData*/)
     const Vector2& screenSize = ScreenWrapper::Instance()->GetBackgroundFrameRect().GetSize() * scale;
     backGd.size.x = Min(size.x * scale.x, screenSize.x);
     backGd.size.y = Min(size.y * scale.y, screenSize.y);;
-    backGd.AddToGeometricData(geometricData);
     chequeredBackground->Draw(backGd);
 
     RenderManager::Instance()->PopDrawMatrix();
