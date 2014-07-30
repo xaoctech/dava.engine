@@ -16,8 +16,8 @@
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>60</y>
+     <x>10</x>
+     <y>10</y>
      <width>261</width>
      <height>191</height>
     </rect>
@@ -57,13 +57,23 @@
     </item>
    </layout>
   </widget>
-  <widget class="GradientWidget" name="test" native="true">
+  <widget class="GradientWidget" name="test_01" native="true">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>290</y>
-     <width>441</width>
-     <height>101</height>
+     <x>280</x>
+     <y>10</y>
+     <width>261</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="GradientSlider" name="test_02" native="true">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>240</y>
+     <width>461</width>
+     <height>80</height>
     </rect>
    </property>
   </widget>
@@ -74,6 +84,12 @@
    <class>GradientWidget</class>
    <extends>QWidget</extends>
    <header>GradientWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GradientSlider</class>
+   <extends>QWidget</extends>
+   <header>GradientSlider.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

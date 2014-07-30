@@ -83,6 +83,24 @@
     <ClCompile Include="GeneratedFiles\Release\moc_GradientWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GradientSlider.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GradientSlider.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\GradientSlider.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MouseHelper.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MouseHelper.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\MouseHelper.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="pipetkawidget.h">
@@ -107,6 +125,12 @@
       <Filter>ColorPicker</Filter>
     </CustomBuild>
     <CustomBuild Include="ColorPicker\IColorEditor.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\GradientSlider.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\MouseHelper.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
   </ItemGroup>

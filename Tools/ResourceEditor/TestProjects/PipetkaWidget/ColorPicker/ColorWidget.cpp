@@ -13,8 +13,13 @@ ColorWidget::ColorWidget(QWidget *parent)
     
     // TEST
     {
-        ui->test->setColorRange( QColor( 255, 0, 0 ), QColor( 0, 0, 0, 0 ) );
-        ui->test->setDimensions( true, false );
+        ui->test_01->setColorRange( QColor( 255, 0, 0 ), QColor( 0, 0, 0, 0 ) );
+        ui->test_01->setDimensions( true, false );
+    }
+    {
+        ui->test_02->setColorRange( QColor( 0, 255, 0 ), QColor( 0, 0, 255 ) );
+        ui->test_02->setDimensions( true, false );
+        ui->test_02->setBgPadding( 20, 20, 20, 20 );
     }
 
     AddPalette( "HSV", new HSVPaletteWidget() );
