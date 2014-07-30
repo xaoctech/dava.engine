@@ -8,6 +8,8 @@ MouseHelper::MouseHelper( QWidget *_w )
     , w( _w )
     , isHover( false )
     , isPressed( false )
+    , clickDist( 4 )
+    , dblClickDist( 4 )
 {
     Q_ASSERT( w );
     w->installEventFilter( this );
@@ -60,15 +62,30 @@ void MouseHelper::leaveEvent( QEvent* event )
 
 void MouseHelper::mouseMoveEvent( QMouseEvent* event )
 {
+    prevPos = pos;
     pos = event->pos();
+
+    emit mouseMove( pos, prevPos );
 }
 
 void MouseHelper::mousePressEvent( QMouseEvent* event )
 {
+    if ( event->button() != Qt::LeftButton )
+        return ;
+
+    pos = event->pos();
     isPressed = true;
+    emit mousePress( pos );
 }
 
 void MouseHelper::mouseReleaseEvent( QMouseEvent* event )
 {
+    if ( event->button() != Qt::LeftButton )
+        return ;
+    if ( !isPressed )
+        return ;
+
+    pos = event->pos();
     isPressed = false;
+    emit mouseRelease( pos );
 }

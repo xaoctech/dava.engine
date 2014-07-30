@@ -33,6 +33,10 @@ protected:
     // GradientWidget overrides
     QPixmap drawContent() const override;
 
+private slots:
+    void onMousePress();
+    void onMouseRelease();
+
 private:
     QPointer<MouseHelper> mouse;
     QSize arrowSize;
