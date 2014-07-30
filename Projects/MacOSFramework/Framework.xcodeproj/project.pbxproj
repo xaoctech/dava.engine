@@ -1260,6 +1260,9 @@
 		E83F10A416D6737300C6ED39 /* DPIHelperMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840ED3E216D5095000D2BA6C /* DPIHelperMacOS.mm */; };
 		E845D4E11732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
 		E845D4E21732B5DF000DA8E7 /* FilePathObjective.mm in Sources */ = {isa = PBXBuildFile; fileRef = E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */; };
+		E879E2461988EF8D0026191D /* OGLHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E879E2451988EF8D0026191D /* OGLHelpers.cpp */; };
+		E879E2471988EF8D0026191D /* OGLHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E879E2451988EF8D0026191D /* OGLHelpers.cpp */; };
+		E879E2481988EF8D0026191D /* OGLHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E879E2451988EF8D0026191D /* OGLHelpers.cpp */; };
 		E8951B741738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */; };
 		E8951B751738FEEC00755339 /* GPUFamilyDescriptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */; };
 		E8951B761738FEEC00755339 /* GPUFamilyDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */; };
@@ -2678,6 +2681,7 @@
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		E82366CD16148EF9007B40D0 /* libPVRTexLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPVRTexLib.a; path = ../../Libs/libs/libPVRTexLib.a; sourceTree = "<group>"; };
 		E845D4E01732B5DF000DA8E7 /* FilePathObjective.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FilePathObjective.mm; sourceTree = "<group>"; };
+		E879E2451988EF8D0026191D /* OGLHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OGLHelpers.cpp; sourceTree = "<group>"; };
 		E8951B721738FEEC00755339 /* GPUFamilyDescriptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GPUFamilyDescriptor.cpp; sourceTree = "<group>"; };
 		E8951B731738FEEC00755339 /* GPUFamilyDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUFamilyDescriptor.h; sourceTree = "<group>"; };
 		E8989ABE16BD24E400732C04 /* AnimatedObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimatedObject.cpp; sourceTree = "<group>"; };
@@ -3933,6 +3937,7 @@
 				E8989C7316BD24E400732C04 /* Material */,
 				E8989C7D16BD24E400732C04 /* Material.cpp */,
 				E8989C7E16BD24E400732C04 /* Material.h */,
+				E879E2451988EF8D0026191D /* OGLHelpers.cpp */,
 				E8989C7F16BD24E400732C04 /* OGLHelpers.h */,
 				E8989C8016BD24E400732C04 /* PVRDefines.h */,
 				E8989C8116BD24E400732C04 /* RenderBase.cpp */,
@@ -6002,6 +6007,7 @@
 				17FB4BB51923B97D00F3E3BC /* UIScrollViewContainer.cpp in Sources */,
 				176DEADF174B5561007A983B /* LightComponent.cpp in Sources */,
 				176DEAE0174B5561007A983B /* LodComponent.cpp in Sources */,
+				E879E2481988EF8D0026191D /* OGLHelpers.cpp in Sources */,
 				176DEAE1174B5561007A983B /* ParticleEffectComponent.cpp in Sources */,
 				176DEAE2174B5561007A983B /* RenderComponent.cpp in Sources */,
 				176DEAE3174B5561007A983B /* SwitchComponent.cpp in Sources */,
@@ -6400,6 +6406,7 @@
 				E8989FDC16BD24E500732C04 /* LightUpdateSystem.cpp in Sources */,
 				E8989FDE16BD24E500732C04 /* LodSystem.cpp in Sources */,
 				E8989FE016BD24E500732C04 /* ParticleEffectSystem.cpp in Sources */,
+				E879E2461988EF8D0026191D /* OGLHelpers.cpp in Sources */,
 				E8989FE416BD24E500732C04 /* RenderUpdateSystem.cpp in Sources */,
 				E8989FE616BD24E500732C04 /* SwitchSystem.cpp in Sources */,
 				E8989FE816BD24E500732C04 /* TransformSystem.cpp in Sources */,
@@ -6806,6 +6813,7 @@
 				E8ACC88118A29FBA00F26ABC /* ParticleRenderObject.cpp in Sources */,
 				E898A29B16BD265400732C04 /* UIHoleTransition.cpp in Sources */,
 				E898A29C16BD265400732C04 /* UIJoypad.cpp in Sources */,
+				E879E2471988EF8D0026191D /* OGLHelpers.cpp in Sources */,
 				E898A29D16BD265400732C04 /* UIList.cpp in Sources */,
 				7A16933C180EE618005F1FBC /* AutotestingSystemLua.cpp in Sources */,
 				E898A29E16BD265400732C04 /* UIListCell.cpp in Sources */,
