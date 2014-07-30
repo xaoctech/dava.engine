@@ -304,46 +304,22 @@ private:
     
     struct StretchDrawData
     {
-        float32 vertices[16 * 2];
-        float32 texCoords[16 * 2];
-        uint16 indeces[18 * 3] =
-        {
-            0, 1, 4,
-            1, 5, 4,
-            1, 2, 5,
-            2, 6, 5,
-            2, 3, 6,
-            3, 7, 6,
-            
-            4, 5, 8,
-            5, 9, 8,
-            5, 6, 9,
-            6, 10, 9,
-            6, 7, 10,
-            7, 11, 10,
-            
-            8, 9, 12,
-            9, 12, 13,
-            9, 10, 13,
-            10, 14, 13,
-            10, 11, 14,
-            11, 15, 14
-        };
-        
+        Vector<float32> vertices;
+        Vector<float32> texCoords;
+        static const uint16 indeces[18 * 3];
+
         void GenerateStretchData();
         void GenerateTransformData();
-        Polygon2 transformedPolygon;
-        
+        uint32 GetVertexInTrianglesCount();
+
         Sprite *sprite;
         int32 frame;
-        Rect rect;
+        Vector2 size;
         int32 type;
         float32 leftStretchCap;
         float32 topStretchCap;
         Polygon2 polygon;
-        uint32 pointCount;
         Matrix3 transformMatr;
-        int32 vertInTriCount;
     };
     
     StretchDrawData *stretchData;
