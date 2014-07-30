@@ -43,6 +43,7 @@ StaticOcclusionComponent::StaticOcclusionComponent()
     ySubdivisions = 2;
     zSubdivisions = 2;
     boundingBox = AABBox3(Vector3(0.0f, 0.0f, 0.0f), Vector3(20.0f, 20.0f, 20.0f));
+    placeOnLandscape = false;
 }
 
 Component * StaticOcclusionComponent::Clone(Entity * toEntity)
@@ -53,6 +54,7 @@ Component * StaticOcclusionComponent::Clone(Entity * toEntity)
     newComponent->SetSubdivisionsY(ySubdivisions);
     newComponent->SetSubdivisionsZ(zSubdivisions);
     newComponent->SetBoundingBox(boundingBox);
+    newComponent->SetPlaceOnLandscape(placeOnLandscape);
 	return newComponent;
 }
 
@@ -111,7 +113,9 @@ void StaticOcclusionDataComponent::Serialize(KeyedArchive *archive, Serializatio
         archive->SetUInt32("sodc.subX", data.sizeX);
         archive->SetUInt32("sodc.subY", data.sizeY);
         archive->SetUInt32("sodc.subZ", data.sizeZ);
-        archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32 * 4);
+        archive->SetByteArray("sodc.data", (uint8*)data.data, data.blockCount * data.objectCount / 32 * 4);      
+        if (data.cellHeightOffset)
+            archive->SetByteArray("sodc.cellHeightOffset", (uint8*)data.cellHeightOffset, data.sizeX*data.sizeY*sizeof(float32));
     }
 }
     
@@ -129,6 +133,13 @@ void StaticOcclusionDataComponent::Deserialize(KeyedArchive *archive, Serializat
         data.data = new uint32[data.blockCount * data.objectCount / 32];
         DVASSERT(data.blockCount * data.objectCount / 32 * 4 == archive->GetByteArraySize("sodc.data"));
         memcpy(data.data, archive->GetByteArray("sodc.data"), data.blockCount * data.objectCount / 32 * 4);
+
+        if (archive->IsKeyExists("sodc.cellHeightOffset"))
+        {
+            data.cellHeightOffset = new float32[data.sizeX*data.sizeY];
+            DVASSERT(data.sizeX*data.sizeY*sizeof(float32) == archive->GetByteArraySize("sodc.cellHeightOffset"));
+            memcpy(data.cellHeightOffset, archive->GetByteArray("sodc.cellHeightOffset"), data.sizeX*data.sizeY*sizeof(float32));
+        }
     }
     
 	Component::Deserialize(archive, serializationContext);

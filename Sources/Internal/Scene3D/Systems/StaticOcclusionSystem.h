@@ -64,6 +64,7 @@ public:
     virtual void AddEntity(Entity * entity);
     virtual void RemoveEntity(Entity * entity);
     virtual void Process(float32 timeElapsed);
+    virtual void ImmediateEvent(Entity * entity, uint32 event);
     
     inline void SetCamera(Camera * camera);
 
@@ -152,7 +153,7 @@ public:
     virtual void ImmediateEvent(Entity * entity, uint32 event);    
 
 
-    static PolygonGroup* CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions);
+    static PolygonGroup* CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset);
     static PolygonGroup* CreateStaticOcclusionDebugDrawCover( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup);
     ~StaticOcclusionDebugDrawSystem();    
 private:

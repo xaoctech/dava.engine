@@ -43,6 +43,7 @@
 #include "Scene3D/Components/LodComponent.h"
 #include "Scene3D/Systems/LodSystem.h"
 #include "Render/Material/NMaterialNames.h"
+#include "Render/Highlevel/Landscape.h"
 
 namespace DAVA
 {
@@ -75,10 +76,14 @@ StaticOcclusionBuildSystem::StaticOcclusionBuildSystem(Scene * scene)
     staticOcclusion = 0;
     activeIndex = -1;
     componentInProgress = 0;
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED); 
 }
 
 StaticOcclusionBuildSystem::~StaticOcclusionBuildSystem()
 {
+    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
+    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);
     SafeDelete(staticOcclusion);
 }
 
@@ -90,6 +95,39 @@ void StaticOcclusionBuildSystem::AddEntity(Entity * entity)
 void StaticOcclusionBuildSystem::RemoveEntity(Entity * entity)
 {
     entities.erase( std::remove( entities.begin(), entities.end(), entity ), entities.end() );
+}
+
+void StaticOcclusionBuildSystem::ImmediateEvent(Entity * entity, uint32 event)
+{
+    StaticOcclusionComponent *component = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
+    DVASSERT(component);
+    if (component->GetPlaceOnLandscape()&&((event == EventSystem::WORLD_TRANSFORM_CHANGED)||(event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED)))
+    {
+        component->cellHeightOffset.clear();
+        component->cellHeightOffset.resize(component->GetSubdivisionsX()*component->GetSubdivisionsY(), 0);
+        /*place on landscape*/
+        Landscape *landscape = FindLandscape(GetScene());
+        AABBox3 localBox = component->GetBoundingBox();
+        Vector3 boxSize = localBox.GetSize();        
+        AABBox3 bbox;
+        localBox.GetTransformedBox(GetTransformComponent(entity)->GetWorldTransform(), bbox);
+        uint32 xSubdivisions = component->GetSubdivisionsX();
+        uint32 ySubdivisions = component->GetSubdivisionsY();
+        boxSize.x /= xSubdivisions;
+        boxSize.y /= ySubdivisions;
+        
+        if (landscape)
+        {
+            //place on landscape
+            for (uint32 xs = 0; xs<xSubdivisions; ++xs)
+                for (uint32 ys = 0; ys<ySubdivisions; ++ys)
+                {                    
+                    Vector3 v = bbox.min + Vector3(boxSize.x * (xs + 0.5f), boxSize.y * (ys + 0.5f), 0);
+                    if (landscape->PlacePoint(v, v))
+                       component->cellHeightOffset[xs+ys*xSubdivisions] = v.z - bbox.min.z;
+                }
+        }        
+    }    
 }
     
 void StaticOcclusionBuildSystem::Build()
@@ -184,7 +222,8 @@ void StaticOcclusionBuildSystem::StartBuildOcclusion(BaseObject * bo, void * mes
                   occlusionComponent->GetSubdivisionsY(),
                   occlusionComponent->GetSubdivisionsZ(),
                   size,
-                  worldBox);
+                  worldBox,
+                  occlusionComponent->GetCellHeightOffsets());
 
         GetScene()->staticOcclusionSystem->ClearOcclusionObjects();
     }
@@ -444,28 +483,26 @@ void StaticOcclusionSystem::Process(float32 timeElapsed)
     {
         StaticOcclusionData * data = &staticOcclusionComponents[k]->GetData();
         if (!data)return;
-        
-        if (data->bbox.IsInside(position))
-        {
-            uint32 x = (uint32)((position.x - data->bbox.min.x) / (data->bbox.max.x - data->bbox.min.x) * (float32)data->sizeX);
-            uint32 y = (uint32)((position.y - data->bbox.min.y) / (data->bbox.max.y - data->bbox.min.y) * (float32)data->sizeY);
-            uint32 z = (uint32)((position.z - data->bbox.min.z) / (data->bbox.max.z - data->bbox.min.z) * (float32)data->sizeZ);
-            
-            // IsInside function take borders into account.
-            
-            if ((x < data->sizeX) && (y < data->sizeY) && (z < data->sizeZ))
-            {
-                uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
 
-                if ((activePVSSet != data) || (activeBlockIndex != blockIndex))
-                {
-                    activePVSSet = data;
-                    activeBlockIndex = blockIndex;
-                    needUpdatePVS = true;
-                }
-                notInPVS = false;
+        
+        uint32 x = (uint32)((position.x - data->bbox.min.x) / (data->bbox.max.x - data->bbox.min.x) * (float32)data->sizeX);
+        uint32 y = (uint32)((position.y - data->bbox.min.y) / (data->bbox.max.y - data->bbox.min.y) * (float32)data->sizeY);
+        float32 dH = data->cellHeightOffset?data->cellHeightOffset[x+y*data->sizeX]:0;        
+        uint32 z = (uint32)((position.z - (data->bbox.min.z+dH)) / (data->bbox.max.z - data->bbox.min.z) * (float32)data->sizeZ);                    
+            
+        if ((x < data->sizeX) && (y < data->sizeY) && (z < data->sizeZ))
+        {
+            uint32 blockIndex = z * (data->sizeX * data->sizeY) + y * (data->sizeX) + (x);
+
+            if ((activePVSSet != data) || (activeBlockIndex != blockIndex))
+            {
+                activePVSSet = data;
+                activeBlockIndex = blockIndex;
+                needUpdatePVS = true;
             }
+            notInPVS = false;
         }
+        
     }
     
     if (notInPVS)
@@ -635,9 +672,9 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
     RenderObject *debugRenderObject = NULL;
     Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
     //create render object
-    debugRenderObject = new RenderObject();
+    debugRenderObject = new RenderObject();    
     RenderBatch *gridBatch = new RenderBatch();
-    PolygonGroup *gridPolygonGroup = CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ());
+    PolygonGroup *gridPolygonGroup = CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), staticOcclusionComponent->GetCellHeightOffsets());
     NMaterial *gridMaterialInstance = NMaterial::CreateMaterialInstance();    
     gridMaterialInstance->SetParent(debugAlphablendMaterial);
     Color col(0.0f, 0.3f, 0.1f, 0.2f);
@@ -687,23 +724,24 @@ void StaticOcclusionDebugDrawSystem::RemoveEntity(Entity * entity)
 }
 void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
+    
+    StaticOcclusionDebugDrawComponent *debugDrawComponent = static_cast<StaticOcclusionDebugDrawComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT));
+    StaticOcclusionComponent *staticOcclusionComponent = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
     if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
     {
         // Update new transform pointer, and mark that transform is changed
-        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
-        StaticOcclusionDebugDrawComponent *component = static_cast<StaticOcclusionDebugDrawComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT));
-        RenderObject * object = component->GetRenderObject();
+        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();       
+        RenderObject * object = debugDrawComponent->GetRenderObject();
         if(NULL != object)
         {
             object->SetWorldTransformPtr(worldTransformPointer);
             entity->GetScene()->renderSystem->MarkForUpdate(object);
-        }
+        }        
     }
-    if (event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED)
-    {
-        StaticOcclusionDebugDrawComponent *debugDrawComponent = static_cast<StaticOcclusionDebugDrawComponent *>(entity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT));        
-        StaticOcclusionComponent *staticOcclusionComponent = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
-        ScopedPtr<PolygonGroup> gridPolygonGroup(CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ()));
+
+    if ((event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED) || (staticOcclusionComponent->GetPlaceOnLandscape()))
+    {                
+        ScopedPtr<PolygonGroup> gridPolygonGroup(CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), staticOcclusionComponent->GetCellHeightOffsets()));
         ScopedPtr<PolygonGroup> coverPolygonGroup(CreateStaticOcclusionDebugDrawCover(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), gridPolygonGroup));
         RenderObject *debugRenderObject = debugDrawComponent->GetRenderObject();        
         debugRenderObject->GetRenderBatch(0)->SetPolygonGroup(coverPolygonGroup);
@@ -715,7 +753,7 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 even
 
 #define IDX_BY_POS(xc, yc, zc) ((zc) + (zSubdivisions+1)*((yc) + (xc) * ySubdivisions))*4
 
-PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions)
+PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset)
 {
     int32 vertexCount = xSubdivisions * ySubdivisions * 4 * (zSubdivisions + 1);
     int32 indexCount = xSubdivisions * ySubdivisions * zSubdivisions * 12 * 2; //12 lines per box 2 indices per line
@@ -734,13 +772,13 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid
     for (uint32 xs = 0; xs < xSubdivisions; ++xs)
         for (uint32 ys = 0; ys < ySubdivisions; ++ys)
             for (uint32 zs = 0; zs < (zSubdivisions+1); ++zs)  
-            {                
-                //int32 vBase = (zs + (zSubdivisions+1)*(ys + xs * ySubdivisions))*4;                
+            {                                
                 int32 vBase = IDX_BY_POS(xs, ys, zs);                
-                res->SetCoord(vBase + 0, boundingBox.min + Vector3(boxSize.x * xs, boxSize.y * ys, boxSize.z * zs ));
-                res->SetCoord(vBase + 1, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.y * ys, boxSize.z * zs));
-                res->SetCoord(vBase + 2, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.y * (ys+1), boxSize.z * zs));
-                res->SetCoord(vBase + 3, boundingBox.min + Vector3(boxSize.x * xs, boxSize.y * (ys+1), boxSize.z * zs));
+                float32 hOffset = cellHeightOffset?cellHeightOffset[xs+ys*xSubdivisions] :0;
+                res->SetCoord(vBase + 0, boundingBox.min + Vector3(boxSize.x * xs, boxSize.y * ys, boxSize.z * zs + hOffset));
+                res->SetCoord(vBase + 1, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.y * ys, boxSize.z * zs + hOffset));
+                res->SetCoord(vBase + 2, boundingBox.min + Vector3(boxSize.x * (xs+1), boxSize.y * (ys+1), boxSize.z * zs + hOffset));
+                res->SetCoord(vBase + 3, boundingBox.min + Vector3(boxSize.x * xs, boxSize.y * (ys+1), boxSize.z * zs + hOffset));
             }        
     //indices     
     //in pair indexOffset, z
