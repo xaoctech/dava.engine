@@ -100,13 +100,13 @@ ControlsPositionData BaseDistributeHandler::DistributeLeftTopEdges(const List<UI
 	float32 step = 0.0f;
 	if (isHorizontal)
 	{
-		startPos = firstControl->GetGeometricData().GetBBox().x;
-		step = (lastControl->GetGeometricData().GetBBox().x - firstControl->GetGeometricData().GetBBox().x) / (itemsCount - 1);
+		startPos = firstControl->GetGeometricData().GetAABBox().x;
+		step = (lastControl->GetGeometricData().GetAABBox().x - firstControl->GetGeometricData().GetAABBox().x) / (itemsCount - 1);
 	}
 	else
 	{
-		startPos = firstControl->GetGeometricData().GetBBox().y;
-		step = (lastControl->GetGeometricData().GetBBox().y - firstControl->GetGeometricData().GetBBox().y) / (itemsCount - 1);
+		startPos = firstControl->GetGeometricData().GetAABBox().y;
+		step = (lastControl->GetGeometricData().GetAABBox().y - firstControl->GetGeometricData().GetAABBox().y) / (itemsCount - 1);
 	}
 
 	// Update the controls.
@@ -120,7 +120,7 @@ ControlsPositionData BaseDistributeHandler::DistributeLeftTopEdges(const List<UI
 			continue;
 		}
 		
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		Vector2 moveDelta;
 		if (isHorizontal)
 		{
@@ -162,13 +162,13 @@ ControlsPositionData BaseDistributeHandler::DistributeXYCenter(const List<UICont
 	
 	if (isHorizontal)
 	{
-		startPos = firstControl->GetGeometricData().GetBBox().GetCenter().x;
-		step = (lastControl->GetGeometricData().GetBBox().GetCenter().x - firstControl->GetGeometricData().GetBBox().GetCenter().x) / (itemsCount - 1);
+		startPos = firstControl->GetGeometricData().GetAABBox().GetCenter().x;
+		step = (lastControl->GetGeometricData().GetAABBox().GetCenter().x - firstControl->GetGeometricData().GetAABBox().GetCenter().x) / (itemsCount - 1);
 	}
 	else
 	{
-		startPos = firstControl->GetGeometricData().GetBBox().GetCenter().y;
-		step = (lastControl->GetGeometricData().GetBBox().GetCenter().y - firstControl->GetGeometricData().GetBBox().GetCenter().y) / (itemsCount - 1);
+		startPos = firstControl->GetGeometricData().GetAABBox().GetCenter().y;
+		step = (lastControl->GetGeometricData().GetAABBox().GetCenter().y - firstControl->GetGeometricData().GetAABBox().GetCenter().y) / (itemsCount - 1);
 	}
 	
 	// Update the controls.
@@ -182,7 +182,7 @@ ControlsPositionData BaseDistributeHandler::DistributeXYCenter(const List<UICont
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		Vector2 moveDelta;
 		if (isHorizontal)
 		{
@@ -218,8 +218,8 @@ ControlsPositionData BaseDistributeHandler::DistributeRightBottomEdges(const Lis
 	UIControl* firstControl = orderedControlsList.front();
 	UIControl* lastControl = orderedControlsList.back();
 
-	Rect firstControlRect = firstControl->GetGeometricData().GetBBox();
-	Rect lastControlRect = lastControl->GetGeometricData().GetBBox();
+	Rect firstControlRect = firstControl->GetGeometricData().GetAABBox();
+	Rect lastControlRect = lastControl->GetGeometricData().GetAABBox();
 
 	float32 startPos = 0.0f;
 	float32 endPos = 0.0f;
@@ -249,7 +249,7 @@ ControlsPositionData BaseDistributeHandler::DistributeRightBottomEdges(const Lis
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		Vector2 moveDelta;
 		if (isHorizontal)
 		{
@@ -296,8 +296,8 @@ ControlsPositionData BaseDistributeHandler::DistributeXY(const List<UIControl*>&
 			continue;
 		}
 			
-		Rect prevRect = (*prevControlIter)->GetGeometricData().GetBBox();
-		Rect curRect = (*iter)->GetGeometricData().GetBBox();
+		Rect prevRect = (*prevControlIter)->GetGeometricData().GetAABBox();
+		Rect curRect = (*iter)->GetGeometricData().GetAABBox();
 		
 		if (isHorizontal)
 		{
@@ -323,7 +323,7 @@ ControlsPositionData BaseDistributeHandler::DistributeXY(const List<UIControl*>&
 
 	// Update the controls.
 	UIControl* firstControl = orderedControlsList.front();
-	Rect firstControlRect = firstControl->GetGeometricData().GetBBox();
+	Rect firstControlRect = firstControl->GetGeometricData().GetAABBox();
 	float32 curPos = isHorizontal ? firstControlRect.x : firstControlRect.y;
 	for (List<UIControl*>::iterator iter = orderedControlsList.begin(); iter != orderedControlsList.end();
 		 iter ++)
@@ -334,7 +334,7 @@ ControlsPositionData BaseDistributeHandler::DistributeXY(const List<UIControl*>&
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		
 		Vector2 moveDelta;
 		if (isHorizontal)

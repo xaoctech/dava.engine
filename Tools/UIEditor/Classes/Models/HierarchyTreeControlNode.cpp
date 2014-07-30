@@ -363,7 +363,7 @@ Rect HierarchyTreeControlNode::GetRect(bool checkAngle/*=false*/) const
         }
         else
         {
-            rect = uiObject->GetGeometricData().GetBBox();
+            rect = uiObject->GetGeometricData().GetAABBox();
         }
     }
 

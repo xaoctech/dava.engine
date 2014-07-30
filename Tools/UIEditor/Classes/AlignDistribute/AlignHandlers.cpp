@@ -71,7 +71,7 @@ ControlsPositionData BaseAlignHandler::AlignLeftTop(const List<UIControl*>& cont
 		}
 
 		resultData.AddControl(uiControl);
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		float32 currentPos = isLeft ? absoluteRect.x : absoluteRect.y;
 
 		if (currentPos < referencePos)
@@ -89,7 +89,7 @@ ControlsPositionData BaseAlignHandler::AlignLeftTop(const List<UIControl*>& cont
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		Vector2 moveDelta;
 		if(isLeft)
 		{
@@ -127,7 +127,7 @@ ControlsPositionData BaseAlignHandler::AlignCenter(const List<UIControl*>& contr
 
 	// Perform the alignment on the first or last control, depending on the flag.
 	UIControl* referenceControl = GetReferenceControl(controlsList);
-	Vector2 referenceCenter = referenceControl->GetGeometricData().GetBBox().GetCenter();
+	Vector2 referenceCenter = referenceControl->GetGeometricData().GetAABBox().GetCenter();
 
 	// Second pass - update.
 	for (List<UIControl*>::const_iterator iter = controlsList.begin(); iter != controlsList.end(); iter ++)
@@ -138,7 +138,7 @@ ControlsPositionData BaseAlignHandler::AlignCenter(const List<UIControl*>& contr
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		Vector2 currentCenter = absoluteRect.GetCenter();
 		Vector2 moveDelta;
 		if (isHorizontal)
@@ -174,7 +174,7 @@ ControlsPositionData BaseAlignHandler::AlignRightBottom(const List<UIControl*>& 
 		}
 
 		resultData.AddControl(uiControl);
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		float32 controlSize = isRight ? (absoluteRect.x + absoluteRect.dx) : (absoluteRect.y + absoluteRect.dy);
 		if (controlSize > referencePos)
 		{
@@ -191,7 +191,7 @@ ControlsPositionData BaseAlignHandler::AlignRightBottom(const List<UIControl*>& 
 			continue;
 		}
 
-		Rect absoluteRect = uiControl->GetGeometricData().GetBBox();
+		Rect absoluteRect = uiControl->GetGeometricData().GetAABBox();
 		Vector2 moveDelta;
 		if (isRight)
 		{

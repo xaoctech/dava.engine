@@ -1472,7 +1472,7 @@ int32 DefaultScreen::CalculateStickToGuidesDrag(Vector2& offset) const
         HierarchyTreeControlNode* controlNode = (*iter);
         if (controlNode && controlNode->GetUIObject())
         {
-            controlRects.push_back(controlNode->GetUIObject()->GetGeometricData().GetBBox());
+            controlRects.push_back(controlNode->GetUIObject()->GetGeometricData().GetAABBox());
         }
     }
     
@@ -1691,7 +1691,7 @@ Rect DefaultScreen::GetControlRect(const HierarchyTreeControlNode* controlNode, 
     }
     else
     {
-        rect = control->GetGeometricData(false).GetBBox();
+        rect = control->GetGeometricData(false).GetAABBox();
     }
 	rect += controlNode->GetParentDelta(true);
 

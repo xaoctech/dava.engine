@@ -512,208 +512,53 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
     }
     Rect drawRect = geometricData.GetUnrotatedRect();
     UniqueHandle textureHandle = spr->GetTextureHandle(frame);
-    Texture* texture = spr->GetTexture(frame);
-
-    float32 texX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
-    float32 texY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
-    float32 texDx = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH);
-    float32 texDy = spr->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT);
-    float32 texOffX = spr->GetRectOffsetValueForFrame(frame, Sprite::X_OFFSET_TO_ACTIVE);
-    float32 texOffY = spr->GetRectOffsetValueForFrame(frame, Sprite::Y_OFFSET_TO_ACTIVE);
-
-    const float32 spriteWidth = spr->GetWidth();
-    const float32 spriteHeight = spr->GetHeight();
-
-    const float32 leftOffset  = leftStretchCap - texOffX;
-    const float32 rightOffset = leftStretchCap - ( spriteWidth - texDx - texOffX );
-    const float32 topOffset   = topStretchCap  - texOffY;
-    const float32 bottomOffset= topStretchCap  - ( spriteHeight - texDy - texOffY );
-
-    const float32 realLeftStretchCap  = Max( 0.0f, leftOffset );
-    const float32 realRightStretchCap = Max( 0.0f, rightOffset );
-    const float32 realTopStretchCap   = Max( 0.0f, topOffset );
-    const float32 realBottomStretchCap= Max( 0.0f, bottomOffset );
-
-    const float32 scaleFactorX = drawRect.dx / spriteWidth;
-    const float32 scaleFactorY = drawRect.dy / spriteHeight;
-    float32 x = drawRect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
-    float32 y = drawRect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
-    float32 dx = drawRect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
-    float32 dy = drawRect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
-
-    const float32 resMulFactor = 1.0f / Core::Instance()->GetResourceToVirtualFactor(spr->GetResourceSizeIndex());
-//	if (spr->IsUseContentScale())
-//	{
-        texDx *= resMulFactor;
-        texDy *= resMulFactor;
-//	}
-
-    const float32 leftCap  = realLeftStretchCap   * resMulFactor;
-    const float32 rightCap = realRightStretchCap  * resMulFactor;
-    const float32 topCap   = realTopStretchCap    * resMulFactor;
-    const float32 bottomCap= realBottomStretchCap * resMulFactor;
-
-    float32 vertices[16 * 2];
-    float32 texCoords[16 * 2];
-
-    float32 textureWidth = (float32)texture->GetWidth();
-    float32 textureHeight = (float32)texture->GetHeight();
-
-    int32 vertInTriCount = 18;
-
-    Matrix3 transformMtx;
-    geometricData.BuildTransformMatrix( transformMtx );
-
-    switch (type)
+    
+    bool needGenerateData = false;
+    if( !stretchData )
     {
-        case DRAW_STRETCH_HORIZONTAL:
-        {
-            float32 ddy = (spriteHeight - dy);
-            float32 yOffset = -(ddy * 0.5f);
-            y += yOffset;
-            dy += ddy;
-
-            Polygon2 polygon;
-            polygon.points.reserve(8);
-            polygon.AddPoint( Vector2(0, yOffset) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, yOffset) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset) );
-            polygon.AddPoint( Vector2(dx, yOffset) );
-
-            polygon.AddPoint( Vector2(0, dy) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, yOffset + dy) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset + dy) );
-            polygon.AddPoint( Vector2(dx, yOffset + dy) );
-            
-            polygon.Transform(transformMtx);
-
-            memcpy(&vertices[0], polygon.GetPoints(), sizeof(Vector2)*8);
-
-            texCoords[0] = texCoords[8]  = texX / textureWidth;
-            texCoords[1] = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
-            texCoords[4] = texCoords[12] = (texX + texDx - rightCap) / textureWidth;
-
-            texCoords[2] = texCoords[10] = (texX + leftCap) / textureWidth;
-            texCoords[9] = texCoords[11] = texCoords[13] = texCoords[15] = (texY + texDy) / textureHeight;
-            texCoords[6] = texCoords[14] = (texX + texDx) / textureWidth;
-        }
-        break;
-        case DRAW_STRETCH_VERTICAL:
-        {
-            float32 ddx = (spriteWidth - dx);
-            float32 xOffset = -(ddx * 0.5f);
-            x += xOffset;
-            dx += ddx;
-            
-            Polygon2 polygon;
-            polygon.points.reserve(8);
-            polygon.AddPoint( Vector2(xOffset, 0) );
-            polygon.AddPoint( Vector2(xOffset, realTopStretchCap) );
-            polygon.AddPoint( Vector2(xOffset, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(xOffset, dy) );
-            
-            polygon.AddPoint( Vector2(xOffset + dx, 0) );
-            polygon.AddPoint( Vector2(xOffset + dx, realTopStretchCap) );
-            polygon.AddPoint( Vector2(xOffset + dx, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(xOffset + dx, dy) );
-            
-            polygon.Transform(transformMtx);
-
-            memcpy(&vertices[0], polygon.GetPoints(), sizeof(Vector2)*8);
-
-            texCoords[0] = texCoords[2]  = texCoords[4]  = texCoords[6]  = texX / textureWidth;
-            texCoords[8] = texCoords[10] = texCoords[12] = texCoords[14] = (texX + texDx) / textureWidth;
-
-            texCoords[1] = texCoords[9]  = texY / textureHeight;
-            texCoords[3] = texCoords[11] = (texY + topCap) / textureHeight;
-            texCoords[5] = texCoords[13] = (texY + texDy - bottomCap) / textureHeight;
-            texCoords[7] = texCoords[15] = (texY + texDy) / textureHeight;
-        }
-        break;
-        case DRAW_STRETCH_BOTH:
-        {
-            vertInTriCount = 18 * 3;
-            
-            Polygon2 polygon;
-            polygon.points.reserve( 16 );
-            polygon.AddPoint( Vector2(0, 0) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, 0) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, 0) );
-            polygon.AddPoint( Vector2(dx, 0) );
-            
-            polygon.AddPoint( Vector2(0, realTopStretchCap) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, realTopStretchCap) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, realTopStretchCap) );
-            polygon.AddPoint( Vector2(dx, realTopStretchCap) );
-            
-            polygon.AddPoint( Vector2(0, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(dx, dy - realBottomStretchCap) );
-            
-            polygon.AddPoint( Vector2(0, dy) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, dy) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, dy) );
-            polygon.AddPoint( Vector2(dx, dy) );
-            
-            polygon.Transform(transformMtx);
-            
-            memcpy(&vertices[0], polygon.GetPoints(), sizeof(Vector2)*16);
-            
-            texCoords[0] = texCoords[8]  = texCoords[16] = texCoords[24] = texX / textureWidth;
-            texCoords[2] = texCoords[10] = texCoords[18] = texCoords[26] = (texX + leftCap) / textureWidth;
-            texCoords[4] = texCoords[12] = texCoords[20] = texCoords[28] = (texX + texDx - rightCap) / textureWidth;
-            texCoords[6] = texCoords[14] = texCoords[22] = texCoords[30] = (texX + texDx) / textureWidth;
-
-            texCoords[1]  = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
-            texCoords[9]  = texCoords[11] = texCoords[13] = texCoords[15] = (texY + topCap) / textureHeight;
-            texCoords[17] = texCoords[19] = texCoords[21] = texCoords[23] = (texY + texDy - bottomCap)  / textureHeight;
-            texCoords[25] = texCoords[27] = texCoords[29] = texCoords[31] = (texY + texDy) / textureHeight;
-        }
-        break;
+        stretchData = new StretchDrawData();
+        needGenerateData = true;
+    }
+    else
+    {
+        needGenerateData |= spr != stretchData->sprite;
+        needGenerateData |= frame != stretchData->frame;
+        needGenerateData |= drawRect != stretchData->rect;
+        needGenerateData |= type != stretchData->type;
+        needGenerateData |= leftStretchCap != stretchData->leftStretchCap;
+        needGenerateData |= topStretchCap != stretchData->topStretchCap;
+    }
+    
+    StretchDrawData &sd = *stretchData;
+    
+    if( needGenerateData )
+    {
+        sd.sprite = spr;
+        sd.frame = frame;
+        sd.rect = drawRect;
+        sd.type = type;
+        sd.leftStretchCap = leftStretchCap;
+        sd.topStretchCap = topStretchCap;
+        sd.GenerateStretchData();
+    }
+    
+    Matrix3 transformMatr;
+    geometricData.BuildTransformMatrix( transformMatr );
+    
+    if( needGenerateData || sd.transformMatr != transformMatr )
+    {
+        sd.transformMatr = transformMatr;
+        sd.GenerateTransformData();
     }
 
-//	if (Core::GetContentScaleFactor() != 1.0 && RenderManager::IsRenderTarget())
-//	{
-//		for (int i = 0; i < vertCount; i++)
-//		{
-//			vertices[i] *= Core::GetVirtualToPhysicalFactor();
-//	}
-//	}
-
-
-    uint16 indeces[18 * 3] =
-    {
-        0, 1, 4,
-        1, 5, 4,
-        1, 2, 5,
-        2, 6, 5,
-        2, 3, 6,
-        3, 7, 6,
-
-        4, 5, 8,
-        5, 9, 8,
-        5, 6, 9,
-        6, 10, 9,
-        6, 7, 10,
-        7, 11, 10,
-
-        8, 9, 12,
-        9, 12, 13,
-        9, 10, 13,
-        10, 14, 13,
-        10, 11, 14,
-        11, 15, 14
-    };
-
-    vertexStream->Set(TYPE_FLOAT, 2, 0, vertices);
-    texCoordStream->Set(TYPE_FLOAT, 2, 0, texCoords);
+    vertexStream->Set(TYPE_FLOAT, 2, 0, sd.vertices);
+    texCoordStream->Set(TYPE_FLOAT, 2, 0, sd.texCoords);
 
     RenderManager::Instance()->SetTextureState(textureHandle);
     RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(rdoObject);
-    RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, vertInTriCount, EIF_16, indeces);
+    RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, sd.vertInTriCount, EIF_16, sd.indeces);
 
     /*GLenum glErr = glGetError();
     if (glErr != GL_NO_ERROR)
@@ -829,6 +674,160 @@ float32 UIControlBackground::GetTopBottomStretchCap() const
     return topStretchCap;
 }
 
+void UIControlBackground::StretchDrawData::GenerateTransformData()
+{
+    transformedPolygon = polygon;
+    transformedPolygon.Transform(transformMatr);
+    Memcpy(&vertices[0], transformedPolygon.GetPoints(), sizeof(Vector2)*pointCount);
+}
+    
+void UIControlBackground::StretchDrawData::GenerateStretchData()
+{
+    Texture* texture = sprite->GetTexture(frame);
+    
+    float32 texX = sprite->GetRectOffsetValueForFrame(frame, Sprite::X_POSITION_IN_TEXTURE);
+    float32 texY = sprite->GetRectOffsetValueForFrame(frame, Sprite::Y_POSITION_IN_TEXTURE);
+    float32 texDx = sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_WIDTH);
+    float32 texDy = sprite->GetRectOffsetValueForFrame(frame, Sprite::ACTIVE_HEIGHT);
+    float32 texOffX = sprite->GetRectOffsetValueForFrame(frame, Sprite::X_OFFSET_TO_ACTIVE);
+    float32 texOffY = sprite->GetRectOffsetValueForFrame(frame, Sprite::Y_OFFSET_TO_ACTIVE);
+    
+    const float32 spriteWidth = sprite->GetWidth();
+    const float32 spriteHeight = sprite->GetHeight();
+    
+    const float32 leftOffset  = leftStretchCap - texOffX;
+    const float32 rightOffset = leftStretchCap - ( spriteWidth - texDx - texOffX );
+    const float32 topOffset   = topStretchCap  - texOffY;
+    const float32 bottomOffset= topStretchCap  - ( spriteHeight - texDy - texOffY );
+    
+    const float32 realLeftStretchCap  = Max( 0.0f, leftOffset );
+    const float32 realRightStretchCap = Max( 0.0f, rightOffset );
+    const float32 realTopStretchCap   = Max( 0.0f, topOffset );
+    const float32 realBottomStretchCap= Max( 0.0f, bottomOffset );
+    
+    const float32 scaleFactorX = rect.dx / spriteWidth;
+    const float32 scaleFactorY = rect.dy / spriteHeight;
+    float32 x = rect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
+    float32 y = rect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
+    float32 dx = rect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
+    float32 dy = rect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
+    
+    const float32 resMulFactor = 1.0f / Core::Instance()->GetResourceToVirtualFactor(sprite->GetResourceSizeIndex());
+    
+    texDx *= resMulFactor;
+    texDy *= resMulFactor;
+    
+    const float32 leftCap  = realLeftStretchCap   * resMulFactor;
+    const float32 rightCap = realRightStretchCap  * resMulFactor;
+    const float32 topCap   = realTopStretchCap    * resMulFactor;
+    const float32 bottomCap= realBottomStretchCap * resMulFactor;
+    
+    float32 textureWidth = (float32)texture->GetWidth();
+    float32 textureHeight = (float32)texture->GetHeight();
+    
+    vertInTriCount = 18;
+    
+    switch (type)
+    {
+        case DRAW_STRETCH_HORIZONTAL:
+        {
+            float32 ddy = (spriteHeight - dy);
+            float32 yOffset = -(ddy * 0.5f);
+            y += yOffset;
+            dy += ddy;
+            
+            polygon.Clear();
+            polygon.points.reserve(8);
+            polygon.AddPoint( Vector2(0, yOffset) );
+            polygon.AddPoint( Vector2(realLeftStretchCap, yOffset) );
+            polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset) );
+            polygon.AddPoint( Vector2(dx, yOffset) );
+            
+            polygon.AddPoint( Vector2(0, dy) );
+            polygon.AddPoint( Vector2(realLeftStretchCap, yOffset + dy) );
+            polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset + dy) );
+            polygon.AddPoint( Vector2(dx, yOffset + dy) );
+            
+            texCoords[0] = texCoords[8]  = texX / textureWidth;
+            texCoords[1] = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
+            texCoords[4] = texCoords[12] = (texX + texDx - rightCap) / textureWidth;
+            
+            texCoords[2] = texCoords[10] = (texX + leftCap) / textureWidth;
+            texCoords[9] = texCoords[11] = texCoords[13] = texCoords[15] = (texY + texDy) / textureHeight;
+            texCoords[6] = texCoords[14] = (texX + texDx) / textureWidth;
+            pointCount = 8;
+        }
+        break;
+        case DRAW_STRETCH_VERTICAL:
+        {
+            float32 ddx = (spriteWidth - dx);
+            float32 xOffset = -(ddx * 0.5f);
+            x += xOffset;
+            dx += ddx;
+            
+            polygon.Clear();
+            polygon.points.reserve(8);
+            polygon.AddPoint( Vector2(xOffset, 0) );
+            polygon.AddPoint( Vector2(xOffset, realTopStretchCap) );
+            polygon.AddPoint( Vector2(xOffset, dy - realBottomStretchCap) );
+            polygon.AddPoint( Vector2(xOffset, dy) );
+            
+            polygon.AddPoint( Vector2(xOffset + dx, 0) );
+            polygon.AddPoint( Vector2(xOffset + dx, realTopStretchCap) );
+            polygon.AddPoint( Vector2(xOffset + dx, dy - realBottomStretchCap) );
+            polygon.AddPoint( Vector2(xOffset + dx, dy) );
+            
+            texCoords[0] = texCoords[2]  = texCoords[4]  = texCoords[6]  = texX / textureWidth;
+            texCoords[8] = texCoords[10] = texCoords[12] = texCoords[14] = (texX + texDx) / textureWidth;
+            
+            texCoords[1] = texCoords[9]  = texY / textureHeight;
+            texCoords[3] = texCoords[11] = (texY + topCap) / textureHeight;
+            texCoords[5] = texCoords[13] = (texY + texDy - bottomCap) / textureHeight;
+            texCoords[7] = texCoords[15] = (texY + texDy) / textureHeight;
+            pointCount = 8;
+        }
+        break;
+        case DRAW_STRETCH_BOTH:
+        {
+            vertInTriCount = 18 * 3;
+            
+            polygon.Clear();
+            polygon.points.reserve( 16 );
+            polygon.AddPoint( Vector2(0, 0) );
+            polygon.AddPoint( Vector2(realLeftStretchCap, 0) );
+            polygon.AddPoint( Vector2(dx - realRightStretchCap, 0) );
+            polygon.AddPoint( Vector2(dx, 0) );
+            
+            polygon.AddPoint( Vector2(0, realTopStretchCap) );
+            polygon.AddPoint( Vector2(realLeftStretchCap, realTopStretchCap) );
+            polygon.AddPoint( Vector2(dx - realRightStretchCap, realTopStretchCap) );
+            polygon.AddPoint( Vector2(dx, realTopStretchCap) );
+            
+            polygon.AddPoint( Vector2(0, dy - realBottomStretchCap) );
+            polygon.AddPoint( Vector2(realLeftStretchCap, dy - realBottomStretchCap) );
+            polygon.AddPoint( Vector2(dx - realRightStretchCap, dy - realBottomStretchCap) );
+            polygon.AddPoint( Vector2(dx, dy - realBottomStretchCap) );
+            
+            polygon.AddPoint( Vector2(0, dy) );
+            polygon.AddPoint( Vector2(realLeftStretchCap, dy) );
+            polygon.AddPoint( Vector2(dx - realRightStretchCap, dy) );
+            polygon.AddPoint( Vector2(dx, dy) );
+            
+            texCoords[0] = texCoords[8]  = texCoords[16] = texCoords[24] = texX / textureWidth;
+            texCoords[2] = texCoords[10] = texCoords[18] = texCoords[26] = (texX + leftCap) / textureWidth;
+            texCoords[4] = texCoords[12] = texCoords[20] = texCoords[28] = (texX + texDx - rightCap) / textureWidth;
+            texCoords[6] = texCoords[14] = texCoords[22] = texCoords[30] = (texX + texDx) / textureWidth;
+            
+            texCoords[1]  = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
+            texCoords[9]  = texCoords[11] = texCoords[13] = texCoords[15] = (texY + topCap) / textureHeight;
+            texCoords[17] = texCoords[19] = texCoords[21] = texCoords[23] = (texY + texDy - bottomCap)  / textureHeight;
+            texCoords[25] = texCoords[27] = texCoords[29] = texCoords[31] = (texY + texDy) / textureHeight;
+            pointCount = 16;
+        }
+        break;
+    }
+}
+    
 void UIControlBackground::TiledDrawData::GenerateTileData()
 {
     Texture *texture = sprite->GetTexture(frame);

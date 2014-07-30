@@ -146,44 +146,18 @@ public:
         return unrotatedRect;
     }
     
-    Rect GetBBox() const
+    Rect GetAABBox() const
     {
-        float32 angleCorrected = fmodf(angle, PI_2);
-        if(!FLOAT_EQUAL_EPS(angleCorrected, 0.0f, 1e-4f))
+        Polygon2 polygon;
+        GetPolygon(polygon);
+
+        AABBox2 aabbox;
+        for(uint32 i = 0; i < polygon.GetPointCount(); ++i)
         {
-            // Particular fix for 90, 180 and 270 degrees
-            if(FLOAT_EQUAL_EPS(angleCorrected, PI_05, 1e-4f))
-            {
-                // 90
-                Polygon2 polygon;
-                GetPolygon(polygon);
-                Rect rectFinal = Rect(polygon.GetPoints()[3],
-                                      Vector2(polygon.GetPoints()[0].x - polygon.GetPoints()[3].x,
-                                              polygon.GetPoints()[2].y - polygon.GetPoints()[3].y));
-                return rectFinal;
-            }
-            else if(FLOAT_EQUAL_EPS(angleCorrected, PI, 1e-4f))
-            {
-                // 180
-                Polygon2 polygon;
-                GetPolygon(polygon);
-                Rect rectFinal = Rect(polygon.GetPoints()[2],
-                                      Vector2(polygon.GetPoints()[3].x - polygon.GetPoints()[2].x,
-                                              polygon.GetPoints()[1].y - polygon.GetPoints()[2].y));
-                return rectFinal;
-            }
-            else if(FLOAT_EQUAL_EPS(angleCorrected, (PI+PI_05), 1e-4f))
-            {
-                // 270
-                Polygon2 polygon;
-                GetPolygon(polygon);
-                Rect rectFinal = Rect(polygon.GetPoints()[1],
-                                      Vector2(polygon.GetPoints()[2].x - polygon.GetPoints()[1].x,
-                                              polygon.GetPoints()[0].y - polygon.GetPoints()[1].y));
-                return rectFinal;
-            }
+            aabbox.AddPoint(polygon.GetPoints()[i]);
         }
-        return unrotatedRect;
+        Rect bboxRect = Rect(aabbox.min, aabbox.max - aabbox.min);
+        return bboxRect;
     }
 
     Rect unrotatedRect;
