@@ -222,6 +222,21 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
 
 		ValidateCustomColorsTexture(ownerNode, errorsLog);
     }
+    
+    if(ro->GetType() == RenderObject::TYPE_VEGETATION)
+    {
+        ownerNode->SetLocked(true);
+        if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
+        {
+            ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+            SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
+            if(sc)
+            {
+                sc->MarkAsChanged();
+            }
+            errorsLog.insert("Vegetation had wrong transform. Please re-save scene.");
+        }
+    }
 }
 
 
