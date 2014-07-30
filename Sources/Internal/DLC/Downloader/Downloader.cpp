@@ -47,11 +47,14 @@ size_t Downloader::SaveData(void *ptr, size_t size, size_t nmemb)
 
     FilePath storePath = mgr->currentTask->storePath;
 
+    uint32 written = -1;
     File *destFile = File::Create(storePath, File::APPEND | File::WRITE);
-    uint32 written = destFile->Write(ptr, size * nmemb);
-    mgr->currentTask->downloadProgress += written;
-
-    SafeRelease(destFile);
+    if (destFile)
+    {
+        written = destFile->Write(ptr, size * nmemb);
+        mgr->currentTask->downloadProgress += written;
+        SafeRelease(destFile);
+    }
 
     // maybee not ideal, but only Manager can use Downloader, so maybee callback is not required.
     DownloadManager::Instance()->ResetRetriesCount();

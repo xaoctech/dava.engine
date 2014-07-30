@@ -69,8 +69,6 @@ CURL *CurlDownloader::CurlSimpleInit()
     CURL *curl_handle = curl_easy_init();
 
     curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1);
-    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, timeout);
-
     return curl_handle;
 }
 
@@ -89,7 +87,7 @@ DownloadError CurlDownloader::Download(const String &url, const uint64 &loadFrom
     curl_easy_setopt(currentCurlHandle, CURLOPT_VERBOSE, 0);
     curl_easy_setopt(currentCurlHandle, CURLOPT_NOPROGRESS, 1);
     curl_easy_setopt(currentCurlHandle, CURLOPT_WRITEDATA, static_cast<void *>(this));
-    curl_easy_setopt(currentCurlHandle, CURLOPT_TIMEOUT, (-1 >= _timeout) ? this->timeout : _timeout);
+    curl_easy_setopt(currentCurlHandle, CURLOPT_CONNECTTIMEOUT, (-1 >= _timeout) ? this->timeout : _timeout);
     
     /* get it! */ 
     CURLcode curlStatus = curl_easy_perform(currentCurlHandle);
@@ -125,7 +123,7 @@ DownloadError CurlDownloader::GetSize(const String &url, int64 &retSize, int32 _
 
     curl_easy_setopt(currentCurlHandle, CURLOPT_NOBODY, 1);
     curl_easy_setopt(currentCurlHandle, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_easy_setopt(currentCurlHandle, CURLOPT_TIMEOUT, (-1 >= _timeout) ? this->timeout : _timeout);
+    curl_easy_setopt(currentCurlHandle, CURLOPT_CONNECTTIMEOUT, (-1 >= _timeout) ? this->timeout : _timeout);
     curl_easy_setopt(currentCurlHandle, CURLOPT_VERBOSE, 0);
     curl_easy_setopt(currentCurlHandle, CURLOPT_NOPROGRESS, 1);
     CURLcode curlStatus = curl_easy_perform(currentCurlHandle);
@@ -171,7 +169,11 @@ DownloadError CurlDownloader::CurlStatusToDownloadStatus(const CURLcode &status)
         case CURLE_WRITE_ERROR: // happens if callback function for data receive returns wrong number of written data
             return DLE_FILE_ERROR;
 
+        case CURLE_COULDNT_RESOLVE_HOST:
+            return DLE_COULDNT_RESOLVE_HOST;
+
         case CURLE_COULDNT_CONNECT:
+        case CURLE_OPERATION_TIMEDOUT:
             return DLE_CANNOT_CONNECT;
 
         default:
