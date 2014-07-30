@@ -38,7 +38,8 @@ QImage PaletteHelper::BuildHSVImage( QSize const& size )
 
 QImage PaletteHelper::BuildGradient( const QSize& size, const QColor& c1, const QColor& c2, bool hor, bool ver )
 {
-    QImage img( size.width(), size.height(), QImage::Format_RGB32 );
+    QImage img( size, QImage::Format_ARGB32 );
+    img.fill( Qt::transparent );
 
     const qreal x1 = 0;
     const qreal y1 = 0;
@@ -50,12 +51,22 @@ QImage PaletteHelper::BuildGradient( const QSize& size, const QColor& c1, const 
     gradient.setColorAt( 1.0, c2 );
 
     QPainter p( &img );
-    //p.fillRect( 0, 0, size.width(), size.height(), QBrush( Qt::white ) );
     p.fillRect( 0, 0, size.width(), size.height(), QBrush( gradient ) );
 
     return img;
 }
 
+QBrush PaletteHelper::BuildGridBrush( QSize const& size )
+{
+    QImage img( size.width() * 2, size.height() * 2, QImage::Format_ARGB32 );
+    img.fill( Qt::white );
+    
+    QPainter p( &img );
+    p.fillRect( QRect( 0, 0, size.width(), size.height() ), Qt::lightGray );
+    p.fillRect( QRect( size.width(), size.height(), size.width(), size.height() ), Qt::lightGray );
+
+    return QBrush( img );
+}
 
 int PaletteHelper::hue( QPoint const& pt, QSize const& size )
 {
