@@ -168,11 +168,7 @@ void PixelFormatDescriptor::InitializePixelFormatDescriptors()
     SetPixelDescription(FORMAT_A16, FastName("A16"), 16, GL_UNSIGNED_SHORT, GL_ALPHA, GL_ALPHA, true, false);
 #endif
     
-#if defined (__DAVAENGINE_IPHONE__)
-	SetPixelDescription(FORMAT_RGBA16161616, FastName("RGBA16161616"), 64, GL_HALF_FLOAT_OES, GL_RGBA, GL_RGBA, caps.isFloat16Supported);
-#else
-	SetPixelDescription(FORMAT_RGBA16161616, FastName("RGBA16161616"), 64, GL_HALF_FLOAT, GL_RGBA, GL_RGBA, caps.isFloat16Supported);
-#endif
+	SetPixelDescription(FORMAT_RGBA16161616, FastName("RGBA16161616"), 64, GetHalfFloatID(), GL_RGBA, GL_RGBA, caps.isFloat16Supported);
     
     
 	SetPixelDescription(FORMAT_RGBA32323232, FastName("RGBA32323232"), 128, GL_FLOAT, GL_RGBA, GL_RGBA, caps.isFloat32Supported);
