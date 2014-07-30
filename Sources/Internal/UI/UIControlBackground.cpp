@@ -38,6 +38,29 @@
 namespace DAVA
 {
 
+const uint16 UIControlBackground::StretchDrawData::indeces[18 * 3] = {
+    0, 1, 4,
+    1, 5, 4,
+    1, 2, 5,
+    2, 6, 5,
+    2, 3, 6,
+    3, 7, 6,
+            
+    4, 5, 8,
+    5, 9, 8,
+    5, 6, 9,
+    6, 10, 9,
+    6, 7, 10,
+    7, 11, 10,
+            
+    8, 9, 12,
+    9, 12, 13,
+    9, 10, 13,
+    10, 14, 13,
+    10, 11, 14,
+    11, 15, 14
+};
+
 UIControlBackground::UIControlBackground()
 :	spr(NULL)
 ,	frame(0)
@@ -52,6 +75,7 @@ UIControlBackground::UIControlBackground()
 ,	perPixelAccuracyType(PER_PIXEL_ACCURACY_DISABLED)
 ,	lastDrawPos(0, 0)
 ,	tiledData(NULL)
+,   stretchData(NULL)
 ,   rdoObject(NULL)
 ,   vertexStream(NULL)
 ,   texCoordStream(NULL)
@@ -523,7 +547,7 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
     {
         needGenerateData |= spr != stretchData->sprite;
         needGenerateData |= frame != stretchData->frame;
-        needGenerateData |= drawRect != stretchData->rect;
+        needGenerateData |= drawRect.GetSize() != stretchData->size;
         needGenerateData |= type != stretchData->type;
         needGenerateData |= leftStretchCap != stretchData->leftStretchCap;
         needGenerateData |= topStretchCap != stretchData->topStretchCap;
@@ -535,7 +559,7 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
     {
         sd.sprite = spr;
         sd.frame = frame;
-        sd.rect = drawRect;
+        sd.size = drawRect.GetSize();
         sd.type = type;
         sd.leftStretchCap = leftStretchCap;
         sd.topStretchCap = topStretchCap;
@@ -551,14 +575,14 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
         sd.GenerateTransformData();
     }
 
-    vertexStream->Set(TYPE_FLOAT, 2, 0, sd.vertices);
-    texCoordStream->Set(TYPE_FLOAT, 2, 0, sd.texCoords);
+    vertexStream->Set(TYPE_FLOAT, 2, 0, &sd.vertices[0]);
+    texCoordStream->Set(TYPE_FLOAT, 2, 0, &sd.texCoords[0]);
 
     RenderManager::Instance()->SetTextureState(textureHandle);
     RenderManager::Instance()->SetRenderState(renderState);
     RenderManager::Instance()->SetRenderEffect(RenderManager::TEXTURE_MUL_FLAT_COLOR);
     RenderManager::Instance()->SetRenderData(rdoObject);
-    RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, sd.vertInTriCount, EIF_16, sd.indeces);
+    RenderManager::Instance()->DrawElements(PRIMITIVETYPE_TRIANGLELIST, sd.GetVertexInTrianglesCount(), EIF_16, (void*)sd.indeces);
 
     /*GLenum glErr = glGetError();
     if (glErr != GL_NO_ERROR)
@@ -570,6 +594,7 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
 void UIControlBackground::ReleaseDrawData()
 {
     SafeDelete(tiledData);
+    SafeDelete(stretchData);
 }
 
 void UIControlBackground::DrawTiled(const UIGeometricData &gd, UniqueHandle renderState)
@@ -674,11 +699,27 @@ float32 UIControlBackground::GetTopBottomStretchCap() const
     return topStretchCap;
 }
 
+uint32 UIControlBackground::StretchDrawData::GetVertexInTrianglesCount()
+{
+    switch(type)
+    {
+        case DRAW_STRETCH_HORIZONTAL:
+        case DRAW_STRETCH_VERTICAL:
+                return 18;
+        case DRAW_STRETCH_BOTH:
+                return 18 * 3;
+        default:
+            DVASSERT(0);
+            return 0;
+    }
+}
+
 void UIControlBackground::StretchDrawData::GenerateTransformData()
 {
-    transformedPolygon = polygon;
+    Polygon2 transformedPolygon = polygon;
     transformedPolygon.Transform(transformMatr);
-    Memcpy(&vertices[0], transformedPolygon.GetPoints(), sizeof(Vector2)*pointCount);
+    vertices.resize(texCoords.size());
+    Memcpy(&vertices[0], transformedPolygon.GetPoints(), sizeof(float32)*vertices.size());
 }
     
 void UIControlBackground::StretchDrawData::GenerateStretchData()
@@ -705,12 +746,10 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
     const float32 realTopStretchCap   = Max( 0.0f, topOffset );
     const float32 realBottomStretchCap= Max( 0.0f, bottomOffset );
     
-    const float32 scaleFactorX = rect.dx / spriteWidth;
-    const float32 scaleFactorY = rect.dy / spriteHeight;
-    float32 x = rect.x + Max( 0.0f, -leftOffset ) * scaleFactorX;
-    float32 y = rect.y + Max( 0.0f, -topOffset  ) * scaleFactorY;
-    float32 dx = rect.dx - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
-    float32 dy = rect.dy - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
+    const float32 scaleFactorX = size.x / spriteWidth;
+    const float32 scaleFactorY = size.y / spriteHeight;
+    float32 dx = size.x - ( Max( 0.0f, -leftOffset ) + Max( 0.0f, -rightOffset  ) ) * scaleFactorX;
+    float32 dy = size.y - ( Max( 0.0f, -topOffset  ) + Max( 0.0f, -bottomOffset ) ) * scaleFactorY;
     
     const float32 resMulFactor = 1.0f / Core::Instance()->GetResourceToVirtualFactor(sprite->GetResourceSizeIndex());
     
@@ -724,16 +763,13 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
     
     float32 textureWidth = (float32)texture->GetWidth();
     float32 textureHeight = (float32)texture->GetHeight();
-    
-    vertInTriCount = 18;
-    
+
     switch (type)
     {
         case DRAW_STRETCH_HORIZONTAL:
         {
             float32 ddy = (spriteHeight - dy);
             float32 yOffset = -(ddy * 0.5f);
-            y += yOffset;
             dy += ddy;
             
             polygon.Clear();
@@ -743,11 +779,12 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset) );
             polygon.AddPoint( Vector2(dx, yOffset) );
             
-            polygon.AddPoint( Vector2(0, dy) );
+            polygon.AddPoint( Vector2(0, yOffset + dy) );
             polygon.AddPoint( Vector2(realLeftStretchCap, yOffset + dy) );
             polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset + dy) );
             polygon.AddPoint( Vector2(dx, yOffset + dy) );
             
+            texCoords.resize(8 * 2);
             texCoords[0] = texCoords[8]  = texX / textureWidth;
             texCoords[1] = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
             texCoords[4] = texCoords[12] = (texX + texDx - rightCap) / textureWidth;
@@ -755,14 +792,12 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             texCoords[2] = texCoords[10] = (texX + leftCap) / textureWidth;
             texCoords[9] = texCoords[11] = texCoords[13] = texCoords[15] = (texY + texDy) / textureHeight;
             texCoords[6] = texCoords[14] = (texX + texDx) / textureWidth;
-            pointCount = 8;
         }
         break;
         case DRAW_STRETCH_VERTICAL:
         {
             float32 ddx = (spriteWidth - dx);
             float32 xOffset = -(ddx * 0.5f);
-            x += xOffset;
             dx += ddx;
             
             polygon.Clear();
@@ -776,7 +811,8 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             polygon.AddPoint( Vector2(xOffset + dx, realTopStretchCap) );
             polygon.AddPoint( Vector2(xOffset + dx, dy - realBottomStretchCap) );
             polygon.AddPoint( Vector2(xOffset + dx, dy) );
-            
+
+            texCoords.resize(8 * 2);
             texCoords[0] = texCoords[2]  = texCoords[4]  = texCoords[6]  = texX / textureWidth;
             texCoords[8] = texCoords[10] = texCoords[12] = texCoords[14] = (texX + texDx) / textureWidth;
             
@@ -784,13 +820,10 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             texCoords[3] = texCoords[11] = (texY + topCap) / textureHeight;
             texCoords[5] = texCoords[13] = (texY + texDy - bottomCap) / textureHeight;
             texCoords[7] = texCoords[15] = (texY + texDy) / textureHeight;
-            pointCount = 8;
         }
         break;
         case DRAW_STRETCH_BOTH:
         {
-            vertInTriCount = 18 * 3;
-            
             polygon.Clear();
             polygon.points.reserve( 16 );
             polygon.AddPoint( Vector2(0, 0) );
@@ -813,6 +846,7 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             polygon.AddPoint( Vector2(dx - realRightStretchCap, dy) );
             polygon.AddPoint( Vector2(dx, dy) );
             
+            texCoords.resize(16 * 2);
             texCoords[0] = texCoords[8]  = texCoords[16] = texCoords[24] = texX / textureWidth;
             texCoords[2] = texCoords[10] = texCoords[18] = texCoords[26] = (texX + leftCap) / textureWidth;
             texCoords[4] = texCoords[12] = texCoords[20] = texCoords[28] = (texX + texDx - rightCap) / textureWidth;
@@ -822,7 +856,6 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             texCoords[9]  = texCoords[11] = texCoords[13] = texCoords[15] = (texY + topCap) / textureHeight;
             texCoords[17] = texCoords[19] = texCoords[21] = texCoords[23] = (texY + texDy - bottomCap)  / textureHeight;
             texCoords[25] = texCoords[27] = texCoords[29] = texCoords[31] = (texY + texDy) / textureHeight;
-            pointCount = 16;
         }
         break;
     }
