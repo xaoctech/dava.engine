@@ -106,7 +106,8 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     String srcUrlMissingFile = "http://" + serverUrl + "/missingFile.txt";
     String srcUrlFolder = "http://" + serverUrl + "/";
     String srcUrlEmptyFile = "http://" + serverUrl + testFileEmpty;
-    String srcUrlMissingServer = "http://" + serverUrl + "/missingFile.txt";
+    String srcUrlMissingServerName = "http://wriongServername.not.a.domain/missingFile.txt";
+    String srcUrlMissingServerAddress = "http://1.1.1.1:8011/missingFile.txt";
     String srcUrl = "http://" + serverUrl + testFileOne;
     String srcUrlSSL = "https://" + serverUrl + testFileOne;
     String srcUrlFTP = "ftp://" + serverUrl + testFileOne;
@@ -115,7 +116,7 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     String dstMissingFile = StorePathForUrl(srcUrlMissingFile);
     String dstHttpFolder = StorePathForUrl(srcUrlFolder);
     String dstHttpEmptyFile = StorePathForUrl(srcUrlEmptyFile);
-    String dstMissingServer = StorePathForUrl(srcUrlMissingServer);
+    String dstMissingServer = StorePathForUrl(srcUrlMissingServerName);
     String dstHttp = StorePathForUrl(srcUrl);
     String dstHttps = StorePathForUrl(srcUrlSSL);
     String dstFtp = StorePathForUrl(srcUrlFTP);
@@ -135,66 +136,69 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     uint64 filesize = 0;
     File *file = NULL;
 
-    //uint32 missingServerID  = DownloadManager::Instance()->Download(srcUrlMissingServer, dstMissingServer, RESUMED, 500, 1);
-    //DownloadManager::Instance()->Wait(missingServerID);
-    /*
-    uint32 missingID = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile);
-    DownloadManager::Instance()->Wait(missingID);
-    TEST_VERIFY(DownloadManager::Instance()->GetProgress(missingID, progress));
-    TEST_VERIFY(DownloadManager::Instance()->GetTotal(missingID, total));
-    DownloadManager::Instance()->GetError(missingID, error);
-    TEST_VERIFY(DLE_CONTENT_NOT_FOUND == error);
-    DownloadManager::Instance()->GetStatus(missingID, status);
-    TEST_VERIFY(DL_FINISHED == status);
-
-    // ask for some downloads
-    uint32 ftpID = DownloadManager::Instance()->Download(srcUrlFTP, "", GET_SIZE);
-    DownloadManager::Instance()->Wait(ftpID);
-    DownloadManager::Instance()->GetTotal(ftpID, total);
-    TEST_VERIFY(total != 0);
-
-
-
-    ftpID = DownloadManager::Instance()->Download(srcUrlFTP, dstFtp);
-    // wait for download
-    DownloadManager::Instance()->Wait(ftpID);
-    file = File::Create(dstFtp, File::OPEN | File::READ);
-    TEST_VERIFY(NULL != file);
-    if (NULL != file)
-    {
-        filesize = file->GetSize();
-        TEST_VERIFY(DownloadManager::Instance()->GetProgress(ftpID, progress));
-        TEST_VERIFY(filesize == progress);
-        SafeRelease(file);
-    }
-
-
-    */
-
-/* POSITIVE CHECK */
-
+  
     // change downloader to full featured Curl downloader.
     DownloadManager::Instance()->SetDownloader(new CurlDownloader());
 
-    uint32 httpID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 1000, 1);
-    DownloadManager::Instance()->Wait(httpID);
-    TEST_VERIFY(DownloadManager::Instance()->GetProgress(httpID, progress));
-    TEST_VERIFY(DownloadManager::Instance()->GetTotal(httpID, total));
-    file = File::Create(dstHttp, File::OPEN | File::READ);
-    TEST_VERIFY(NULL != file);
-    if (NULL != file)
+    // POSITIVE CHECK 
     {
-        filesize = file->GetSize();
-        TEST_VERIFY(filesize == progress);
-        TEST_VERIFY(total == progress);
-        SafeRelease(file);
+        // FULL DOWNLOAD
+        // Make sure that file is missing
+        FileSystem::Instance()->DeleteFile(dstHttp); 
+        uint32 httpID = DownloadManager::Instance()->Download(srcUrl, dstHttp, FULL, 1, 1);
+        DownloadManager::Instance()->Wait(httpID);
+        TEST_VERIFY(DownloadManager::Instance()->GetProgress(httpID, progress));
+        TEST_VERIFY(DownloadManager::Instance()->GetTotal(httpID, total));
+        file = File::Create(dstHttp, File::OPEN | File::READ);
+        TEST_VERIFY(NULL != file);
+        if (NULL != file)
+        {
+            filesize = file->GetSize();
+            TEST_VERIFY(filesize == progress);
+            TEST_VERIFY(total == progress);
+            SafeRelease(file);
+        }
+
+        // retry finished download
+        DownloadManager::Instance()->Retry(httpID);
+        DownloadManager::Instance()->GetStatus(httpID, status);
+        TEST_VERIFY(DL_PENDING == status);
+
+        DownloadManager::Instance()->Update();
+        Thread::SleepThread(300);
+        DownloadManager::Instance()->Cancel(httpID);
+        DownloadManager::Instance()->GetStatus(httpID, status);
+        TEST_VERIFY(DL_FINISHED == status);
+        DownloadManager::Instance()->GetError(httpID, error);
+        TEST_VERIFY(DLE_CANCELLED == error);
+
+        FileSystem::Instance()->DeleteFile(dstHttp);
     }
-    FileSystem::Instance()->DeleteFile(dstHttp);
+    /*
+    {
+        // RESUMED DOWNLOAD
+        // Make sure that file is missing
+        FileSystem::Instance()->DeleteFile(dstHttp);
+        uint32 httpID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 1, 1);
+        DownloadManager::Instance()->Wait(httpID);
+        TEST_VERIFY(DownloadManager::Instance()->GetProgress(httpID, progress));
+        TEST_VERIFY(DownloadManager::Instance()->GetTotal(httpID, total));
+        file = File::Create(dstHttp, File::OPEN | File::READ);
+        TEST_VERIFY(NULL != file);
+        if (NULL != file)
+        {
+            filesize = file->GetSize();
+            TEST_VERIFY(filesize == progress);
+            TEST_VERIFY(total == progress);
+            SafeRelease(file);
+        }
+        FileSystem::Instance()->DeleteFile(dstHttp);
+    }
+// END POSITIVE CHECK
 
-/* END POSITIVE CHECK*/
+// MISSING FILE ON EXISTENT SERVER
 
-/* MISSING FILE ON EXISTENT SERVER*/
-    uint32 missingFileId = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, RESUMED, 1000, 0);
+    uint32 missingFileId = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, RESUMED, 1, 0);
     DownloadManager::Instance()->Wait(missingFileId);
 
     DownloadManager::Instance()->GetError(missingFileId, error);
@@ -211,11 +215,11 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
         SafeRelease(file);
     }
 
-/* END MISSING FILE ON EXISTENT SERVER*/
+// END MISSING FILE ON EXISTENT SERVER
 
-/* FOLDER INSTEAD OF FILE */
+// FOLDER INSTEAD OF FILE 
 
-    uint32 folderId = DownloadManager::Instance()->Download(srcUrlFolder, dstHttpFolder, RESUMED, 1000, 0);
+    uint32 folderId = DownloadManager::Instance()->Download(srcUrlFolder, dstHttpFolder, RESUMED, 1, 0);
     DownloadManager::Instance()->Wait(folderId);
 
     DownloadManager::Instance()->GetError(folderId, error);
@@ -225,11 +229,11 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
 
     FileSystem::Instance()->DeleteFile(dstHttpFolder);
 
-/* END FOLDER INSTEAD OF FILE */
+// END FOLDER INSTEAD OF FILE
 
-/* EMPTY FILE */
+// EMPTY FILE
 
-    uint32 emptyFileId = DownloadManager::Instance()->Download(srcUrlEmptyFile, dstHttpEmptyFile, RESUMED, 1000, 1);
+    uint32 emptyFileId = DownloadManager::Instance()->Download(srcUrlEmptyFile, dstHttpEmptyFile, RESUMED, 1, 1);
     DownloadManager::Instance()->Wait(emptyFileId);
     TEST_VERIFY(DownloadManager::Instance()->GetProgress(emptyFileId, progress));
     TEST_VERIFY(DownloadManager::Instance()->GetTotal(emptyFileId, total));
@@ -244,7 +248,360 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     }
     FileSystem::Instance()->DeleteFile(dstHttpEmptyFile);
 
-/* END EMPTY FILE */
+// END EMPTY FILE 
+
+// DIFFERENT FILE SIZES
+
+    uint64 remoteFileSize;
+
+    // RESUMING 
+    {
+        // remote size < local size 
+
+        uint32 getSmallerFileSizeId = DownloadManager::Instance()->Download(srcUrl, "", GET_SIZE, 1, 1);
+        DownloadManager::Instance()->Wait(getSmallerFileSizeId);
+
+        if (DownloadManager::Instance()->GetTotal(getSmallerFileSizeId, remoteFileSize))
+        {
+            // create new file with size > remoteFileSize
+            File *f = File::Create(dstHttp, File::CREATE | File::WRITE);
+            if (f)
+            {
+                // generate file with lagrer size than remote
+                uint8 *buf = new uint8[remoteFileSize + 1]; // values is not important
+                f->Write(buf, remoteFileSize + 1);
+                SafeRelease(f);
+
+                uint32 smallerFileId = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 1, 1);
+                DownloadManager::Instance()->Wait(smallerFileId);
+
+                DownloadManager::Instance()->GetTotal(smallerFileId, total);
+                DownloadManager::Instance()->GetProgress(smallerFileId, progress);
+
+                file = File::Create(dstHttp, File::OPEN | File::READ);
+                TEST_VERIFY(NULL != file);
+                if (NULL != file)
+                {
+                    filesize = file->GetSize();
+                    TEST_VERIFY(filesize == progress);
+                    TEST_VERIFY(total == progress);
+                    SafeRelease(file);
+                }
+                FileSystem::Instance()->DeleteFile(dstHttp);
+            }
+        }
+
+        // remote size > local size 
+
+        uint32 getLargerFileSizeId = DownloadManager::Instance()->Download(srcUrl, "", GET_SIZE, 1, 1);
+        DownloadManager::Instance()->Wait(getLargerFileSizeId);
+
+        if (DownloadManager::Instance()->GetTotal(getLargerFileSizeId, remoteFileSize))
+        {
+            // create new file with size > remoteFileSize
+            File *f = File::Create(dstHttp, File::CREATE | File::WRITE);
+            if (f)
+            {
+                // generate file with smaller size than remote
+                uint8 *buf = new uint8[remoteFileSize + 1]; // values is not important
+                f->Write(buf, remoteFileSize - 1);
+                SafeRelease(f);
+
+                uint32 largerFileId = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 1, 1);
+                DownloadManager::Instance()->Wait(largerFileId);
+
+                DownloadManager::Instance()->GetTotal(largerFileId, total);
+                DownloadManager::Instance()->GetProgress(largerFileId, progress);
+
+                file = File::Create(dstHttp, File::OPEN | File::READ);
+                TEST_VERIFY(NULL != file);
+                if (NULL != file)
+                {
+                    filesize = file->GetSize();
+                    TEST_VERIFY(filesize == progress);
+                    TEST_VERIFY(total == progress);
+                    SafeRelease(file);
+                }
+                FileSystem::Instance()->DeleteFile(dstHttp);
+            }
+        }
+
+        // remote size == local size
+
+        uint32 getEqualFileSizeId = DownloadManager::Instance()->Download(srcUrl, "", GET_SIZE, 1, 1);
+        DownloadManager::Instance()->Wait(getEqualFileSizeId);
+
+        if (DownloadManager::Instance()->GetTotal(getEqualFileSizeId, remoteFileSize))
+        {
+            // create new file with size > remoteFileSize
+            File *f = File::Create(dstHttp, File::CREATE | File::WRITE);
+            if (f)
+            {
+                // generate file with smaller size than remote
+                uint8 *buf = new uint8[remoteFileSize]; // values is not important
+                f->Write(buf, remoteFileSize);
+                SafeRelease(f);
+
+                uint32 equalFileId = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 1, 1);
+                DownloadManager::Instance()->Wait(equalFileId);
+
+                DownloadManager::Instance()->GetTotal(equalFileId, total);
+                DownloadManager::Instance()->GetProgress(equalFileId, progress);
+
+                file = File::Create(dstHttp, File::OPEN | File::READ);
+                TEST_VERIFY(NULL != file);
+                if (NULL != file)
+                {
+                    filesize = file->GetSize();
+                    TEST_VERIFY(filesize == progress);
+                    TEST_VERIFY(total == progress);
+                    SafeRelease(file);
+                }
+                FileSystem::Instance()->DeleteFile(dstHttp);
+            }
+        }
+    }
+
+    // FULL RELOAD
+    {
+        uint32 getSmallerFileSizeId = DownloadManager::Instance()->Download(srcUrl, "", GET_SIZE, 1, 1);
+        DownloadManager::Instance()->Wait(getSmallerFileSizeId);
+
+        if (DownloadManager::Instance()->GetTotal(getSmallerFileSizeId, remoteFileSize))
+        {
+            // create new file with size > remoteFileSize
+            File *f = File::Create(dstHttp, File::CREATE | File::WRITE);
+            if (f)
+            {
+                // generate file with lagrer size than remote
+                uint8 *buf = new uint8[remoteFileSize + 1]; // values is not important
+                f->Write(buf, remoteFileSize + 1);
+                SafeRelease(f);
+
+                uint32 smallerFileId = DownloadManager::Instance()->Download(srcUrl, dstHttp, FULL, 1, 1);
+                DownloadManager::Instance()->Wait(smallerFileId);
+
+                DownloadManager::Instance()->GetTotal(smallerFileId, total);
+                DownloadManager::Instance()->GetProgress(smallerFileId, progress);
+
+                file = File::Create(dstHttp, File::OPEN | File::READ);
+                TEST_VERIFY(NULL != file);
+                if (NULL != file)
+                {
+                    filesize = file->GetSize();
+                    TEST_VERIFY(filesize == progress);
+                    TEST_VERIFY(total == progress);
+                    SafeRelease(file);
+                }
+                FileSystem::Instance()->DeleteFile(dstHttp);
+            }
+        }
+
+        // remote size > local size
+
+        uint32 getLargerFileSizeId = DownloadManager::Instance()->Download(srcUrl, "", GET_SIZE, 1, 1);
+        DownloadManager::Instance()->Wait(getLargerFileSizeId);
+
+        if (DownloadManager::Instance()->GetTotal(getLargerFileSizeId, remoteFileSize))
+        {
+            // create new file with size > remoteFileSize
+            File *f = File::Create(dstHttp, File::CREATE | File::WRITE);
+            if (f)
+            {
+                // generate file with smaller size than remote
+                uint8 *buf = new uint8[remoteFileSize + 1]; // values is not important
+                f->Write(buf, remoteFileSize - 1);
+                SafeRelease(f);
+
+                uint32 largerFileId = DownloadManager::Instance()->Download(srcUrl, dstHttp, FULL, 1, 1);
+                DownloadManager::Instance()->Wait(largerFileId);
+
+                DownloadManager::Instance()->GetTotal(largerFileId, total);
+                DownloadManager::Instance()->GetProgress(largerFileId, progress);
+
+                file = File::Create(dstHttp, File::OPEN | File::READ);
+                TEST_VERIFY(NULL != file);
+                if (NULL != file)
+                {
+                    filesize = file->GetSize();
+                    TEST_VERIFY(filesize == progress);
+                    TEST_VERIFY(total == progress);
+                    SafeRelease(file);
+                }
+                FileSystem::Instance()->DeleteFile(dstHttp);
+            }
+        }
+
+        // remote size == local size
+
+        uint32 getEqualFileSizeId = DownloadManager::Instance()->Download(srcUrl, "", GET_SIZE, 1, 1);
+        DownloadManager::Instance()->Wait(getEqualFileSizeId);
+
+        if (DownloadManager::Instance()->GetTotal(getEqualFileSizeId, remoteFileSize))
+        {
+            // create new file with size > remoteFileSize
+            File *f = File::Create(dstHttp, File::CREATE | File::WRITE);
+            if (f)
+            {
+                // generate file with smaller size than remote
+                uint8 *buf = new uint8[remoteFileSize]; // values is not important
+                f->Write(buf, remoteFileSize);
+                SafeRelease(f);
+
+                uint32 equalFileId = DownloadManager::Instance()->Download(srcUrl, dstHttp, FULL, 1, 1);
+                DownloadManager::Instance()->Wait(equalFileId);
+
+                DownloadManager::Instance()->GetTotal(equalFileId, total);
+                DownloadManager::Instance()->GetProgress(equalFileId, progress);
+
+                file = File::Create(dstHttp, File::OPEN | File::READ);
+                TEST_VERIFY(NULL != file);
+                if (NULL != file)
+                {
+                    filesize = file->GetSize();
+                    TEST_VERIFY(filesize == progress);
+                    TEST_VERIFY(total == progress);
+                    SafeRelease(file);
+                }
+                FileSystem::Instance()->DeleteFile(dstHttp);
+            }
+        }
+    }
+
+
+// END DIFFERENT FILE SIZES
+
+// TIMEOUTS
+
+    int32 timeout;
+    int32 retries;
+    uint64 startTime;
+    int32 delta;
+
+    // MISSING SERVER NAME
+    timeout = 2;
+    retries = 1;
+
+    uint32 missingServerNameID = DownloadManager::Instance()->Download(srcUrlMissingServerName, dstMissingServer, RESUMED, timeout, retries);
+    DownloadManager::Instance()->Wait(missingServerNameID);
+
+    DownloadManager::Instance()->GetError(missingServerNameID, error);
+    TEST_VERIFY(DLE_COULDNT_RESOLVE_HOST == error);
+    DownloadManager::Instance()->GetStatus(missingServerNameID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+
+    // MISSING SERVER NAME
+    timeout = 1;
+    retries = 0;
+
+    uint32 missingServerAddressID = DownloadManager::Instance()->Download(srcUrlMissingServerAddress, dstMissingServer, RESUMED, timeout, retries);
+
+    startTime = SystemTimer::Instance()->AbsoluteMS();
+    DownloadManager::Instance()->Wait(missingServerAddressID);
+    delta = SystemTimer::Instance()->AbsoluteMS() - startTime;
+
+    TEST_VERIFY(delta >= timeout*(retries+1));
+    DownloadManager::Instance()->GetError(missingServerAddressID, error);
+    TEST_VERIFY(DLE_CANNOT_CONNECT == error);
+    DownloadManager::Instance()->GetStatus(missingServerAddressID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+
+
+    // MISSING FILE ON THE SERVER
+    timeout = 1;
+    retries = 1;
+
+    uint32 missingID = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, FULL, timeout, retries);
+    DownloadManager::Instance()->Wait(missingID);
+    TEST_VERIFY(DownloadManager::Instance()->GetProgress(missingID, progress));
+    TEST_VERIFY(DownloadManager::Instance()->GetTotal(missingID, total));
+    DownloadManager::Instance()->GetError(missingID, error);
+    TEST_VERIFY(DLE_CONTENT_NOT_FOUND == error);
+    DownloadManager::Instance()->GetStatus(missingID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+
+    // File exists in file system but not exists on remote server
+    File *f = File::Create(dstMissingFile, File::CREATE | File::WRITE);
+    if (f)
+    {
+        uint8 t = 1;
+        f->Write(&t, sizeof(t));
+        SafeRelease(f);
+
+        uint32 missingID = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, RESUMED, timeout, retries);
+        DownloadManager::Instance()->Wait(missingID);
+        TEST_VERIFY(DownloadManager::Instance()->GetProgress(missingID, progress));
+        TEST_VERIFY(DownloadManager::Instance()->GetTotal(missingID, total));
+        DownloadManager::Instance()->GetError(missingID, error);
+        TEST_VERIFY(DLE_CONTENT_NOT_FOUND == error);
+        DownloadManager::Instance()->GetStatus(missingID, status);
+        TEST_VERIFY(DL_FINISHED == status);
+
+        FileSystem::Instance()->DeleteFile(dstMissingFile);
+    }
+
+
+
+// END TIMEOUTS
+
+*/
+
+
+
+// DOWNLOAD QUEUES
+
+{
+    uint32 httpID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 2, 2);
+    uint32 missingFileId = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, RESUMED, 2, 2);
+    uint32 folderId = DownloadManager::Instance()->Download(srcUrlFolder, dstHttpFolder, RESUMED, 2, 2);
+    uint32 emptyFileId = DownloadManager::Instance()->Download(srcUrlEmptyFile, dstHttpEmptyFile, RESUMED, 2, 2);
+
+    DownloadManager::Instance()->Update();
+
+    // Check if only one task is in the progress
+    Thread::SleepThread(300);
+    DownloadManager::Instance()->GetStatus(httpID, status);
+    TEST_VERIFY(DL_IN_PROGRESS == status);
+    DownloadManager::Instance()->GetStatus(missingFileId, status);
+    TEST_VERIFY(DL_PENDING == status);
+    DownloadManager::Instance()->GetStatus(folderId, status);
+    TEST_VERIFY(DL_PENDING == status);
+    DownloadManager::Instance()->GetStatus(emptyFileId, status);
+    TEST_VERIFY(DL_PENDING == status);
+
+    // retry current task
+    DownloadManager::Instance()->Retry(httpID);
+    DownloadManager::Instance()->GetStatus(httpID, status);
+    TEST_VERIFY(DL_IN_PROGRESS == status);
+
+    // check that pending task could be cancelled
+    DownloadManager::Instance()->Cancel(missingFileId);
+
+    DownloadManager::Instance()->GetStatus(httpID, status);
+    TEST_VERIFY(DL_IN_PROGRESS == status);
+    DownloadManager::Instance()->GetStatus(missingFileId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(missingFileId, error);
+    TEST_VERIFY(DLE_CANCELLED == error);
+    DownloadManager::Instance()->GetStatus(folderId, status);
+    TEST_VERIFY(DL_PENDING == status);
+    DownloadManager::Instance()->GetStatus(emptyFileId, status);
+    TEST_VERIFY(DL_PENDING == status);
+
+    // check retry pending task
+    DownloadManager::Instance()->Retry(folderId);
+    DownloadManager::Instance()->GetStatus(folderId, status);
+    TEST_VERIFY(DL_PENDING == status);
+
+
+    DownloadManager::Instance()->Cancel(httpID);
+    DownloadManager::Instance()->Retry(httpID);
+    DownloadManager::Instance()->GetStatus(httpID, status);
+    TEST_VERIFY(DL_PENDING == status);
+
+}
+
+// END DOWNLOAD QUEUES
 
     // ask for 3rd download
     uint32 httpsID = DownloadManager::Instance()->Download(srcUrlSSL, dstHttps);

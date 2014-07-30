@@ -55,7 +55,7 @@ public:
     void DownloadCallback(const uint32 &taskId, const DownloadStatus &status);
 
     String StorePathForUrl(const String &url);
-    void TestFunction(PerfFuncData * data);
+    void TestFunction(PerfFuncData *data);
 
 private:
     const String serverUrl;

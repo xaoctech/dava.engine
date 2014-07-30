@@ -629,11 +629,6 @@ DownloadError DownloadManager::Download()
 
     }while (0 < currentTask->retriesLeft-- && DLE_NO_ERROR != error);
 
-    if (DLE_NO_ERROR != error && DLE_CONTENT_NOT_FOUND != error && 0 > currentTask->retriesLeft) // we cannot reconnect to server
-    {
-        error = DLE_CANNOT_CONNECT;
-    }
-
     SetTaskStatus(currentTask, DL_FINISHED);
     return error;
 }
@@ -719,7 +714,6 @@ void DownloadManager::MakeFullDownload(DownloadTaskDescription *task)
     File *file = File::Create(task->storePath, File::CREATE | File::WRITE);
     SafeRelease(file);
     task->downloadProgress = 0;
-    task->downloadTotal = 0;
 }
 
 void DownloadManager::ResetRetriesCount()

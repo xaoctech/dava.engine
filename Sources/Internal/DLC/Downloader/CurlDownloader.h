@@ -47,7 +47,7 @@ class CurlDownloader : public Downloader
     };
 
 public:
-    CurlDownloader(uint32 operationTimeout = 2000);
+    CurlDownloader(uint32 operationTimeout = 2);
     virtual ~CurlDownloader();
 
 protected:
