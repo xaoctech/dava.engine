@@ -81,7 +81,7 @@ bool DFFont::IsCharAvaliable(char16 ch) const
 
 uint32 DFFont::GetFontHeight() const
 {
-    return (lineHeight) * GetSizeScale();
+    return (uint32)((lineHeight) * GetSizeScale());
 }
 
 Font * DFFont::Clone() const
@@ -128,7 +128,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
 {
     int32 countSpace = 0;
     uint32 strLength = str.length();
-	for(int32 i = 0; i < strLength; ++i)
+	for(uint32 i = 0; i < strLength; ++i)
 	{
 		if( L' ' == str[i])
 		{
@@ -147,7 +147,7 @@ Size2i DFFont::DrawStringToBuffer(const WideString & str,
     uint32 vertexAdded = 0;
     charDrawed = 0;
     
-    float32 lastX = xOffset;
+    float32 lastX = (float32)xOffset;
     float32 lastY = 0;
     float32 sizeScale = GetSizeScale();
 

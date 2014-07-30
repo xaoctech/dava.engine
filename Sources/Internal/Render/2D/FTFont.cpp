@@ -417,7 +417,7 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					{
                         if(str[i] == ' ')
                         {
-                            charSizes->push_back(spaceWidth);
+                            charSizes->push_back((float32)spaceWidth);
                             lastRight += spaceWidth;
                         }
                         else
@@ -427,14 +427,14 @@ Size2i FTInternalFont::DrawString(const WideString& str, void * buffer, int32 bu
 					}
 					else if(charSizes->empty())
 					{
-						charSizes->push_back(width);
+						charSizes->push_back((float32)width);
 						lastRight = width;
 					}
 					else
 					{
 						int32 value = left+width-lastRight;
 						lastRight += value;
-						charSizes->push_back(value);
+						charSizes->push_back((float32)value);
 					}
 				}
 

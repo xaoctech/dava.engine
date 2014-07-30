@@ -114,49 +114,49 @@ void TextBlockDistanceRender::Draw(const Color& textColor, const Vector2* offset
 	if (charDrawed == 0)
 		return;
 	
-	int32 xOffset = textBlock->position.x - textBlock->pivotPoint.x;
-	int32 yOffset = textBlock->position.y - textBlock->pivotPoint.y;
+	int32 xOffset = (int32)(textBlock->position.x - textBlock->pivotPoint.x);
+	int32 yOffset = (int32)(textBlock->position.y - textBlock->pivotPoint.y);
 
 	if (offset)
 	{
-		xOffset += offset->x;
-		yOffset += offset->y;
+		xOffset += (int32)offset->x;
+		yOffset += (int32)offset->y;
 	}
 	
 	int32 align = textBlock->GetAlign();
 	if (align & ALIGN_RIGHT)
 	{
-		xOffset += textBlock->rectSize.dx - renderRect.dx;
+		xOffset += (int32)(textBlock->rectSize.dx - renderRect.dx);
 	}
 	else if (align & ALIGN_HCENTER)
 	{
-		xOffset += (textBlock->rectSize.dx - renderRect.dx) * 0.5f;
+		xOffset += (int32)((textBlock->rectSize.dx - renderRect.dx) * 0.5f);
 	}
 	
 	if (align & ALIGN_BOTTOM)
 	{
-		yOffset += textBlock->rectSize.dy - renderRect.dy;
+		yOffset += (int32)(textBlock->rectSize.dy - renderRect.dy);
 	}
 	else if ((align & ALIGN_VCENTER) || (align & ALIGN_HJUSTIFY))
 	{
-		yOffset += (textBlock->rectSize.dy - renderRect.dy) * 0.5f;
+		yOffset += (int32)((textBlock->rectSize.dy - renderRect.dy) * 0.5f);
 	}
     
     bool needClipPop = false;
     if (textBlock->requestedSize.dx == 0 && textBlock->requestedSize.dy == 0)
     {
         RenderManager::Instance()->ClipPush();
-        RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->rectSize.dx, textBlock->rectSize.dy));
+        RenderManager::Instance()->ClipRect(Rect((float32)xOffset, (float32)yOffset, textBlock->rectSize.dx, textBlock->rectSize.dy));
         needClipPop = true;
     }
     else if (textBlock->requestedSize.dx > 0 && textBlock->requestedSize.dy > 0)
     {
         RenderManager::Instance()->ClipPush();
-        RenderManager::Instance()->ClipRect(Rect(xOffset, yOffset, textBlock->requestedSize.dx, textBlock->requestedSize.dy));
+        RenderManager::Instance()->ClipRect(Rect((float32)xOffset, (float32)yOffset, textBlock->requestedSize.dx, textBlock->requestedSize.dy));
         needClipPop = true;
     }
     RenderManager::Instance()->PushDrawMatrix();
-    RenderManager::Instance()->SetDrawTranslate(Vector2(xOffset, yOffset));
+    RenderManager::Instance()->SetDrawTranslate(Vector2((float32)xOffset, (float32)yOffset));
 
     RenderManager::Instance()->SetRenderState(RenderState::RENDERSTATE_2D_BLEND);
     RenderManager::Instance()->SetTextureState(dfFont->GetTextureHandler());
@@ -206,7 +206,7 @@ Size2i TextBlockDistanceRender::InternalDrawText(const WideString& drawText, int
 	if (drawRect.dx <= 0 && drawRect.dy <= 0)
 		return drawRect;
 	
-	renderRect = renderRect.Combine(Rect(0, 0, drawRect.dx, drawRect.dy));
+	renderRect = renderRect.Combine(Rect(0.f, 0.f, (float32)drawRect.dx, (float32)drawRect.dy));
 	this->charDrawed += lastDrawed;
 	return drawRect;
 }

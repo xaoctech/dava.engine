@@ -190,7 +190,7 @@ void Font::SplitTextBySymbolsToStrings(const WideString & text, const Vector2 & 
         }
         else
         {
-            currentLineDx += sizes[pos];
+            currentLineDx += (int32)sizes[pos];
         }
     }
     
