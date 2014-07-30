@@ -490,7 +490,7 @@ Rect HierarchyTreeScreenNode::GetOwnRect() const
 void HierarchyTreeScreenNode::GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<GuidesManager::StickedRect>& rectsList) const
 {
     // Inner controls aren't forced to be sticked.
-    rectsList.push_back(GuidesManager::StickedRect(rootNode->GetUIObject()->GetGeometricData().GetBBox(), false));
+    rectsList.push_back(GuidesManager::StickedRect(rootNode->GetUIObject()->GetGeometricData().GetAABBox(), false));
 
     const HierarchyTreeNode::HIERARCHYTREENODESLIST& children = rootNode->GetChildNodes();
     for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = children.begin(); iter != children.end(); iter ++)
