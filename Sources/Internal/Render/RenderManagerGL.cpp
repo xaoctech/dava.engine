@@ -697,7 +697,7 @@ void RenderManager::DiscardFramebufferHW(uint32 attachments)
 void RenderManager::HWglDeleteBuffers(GLsizei count, const GLuint * buffers)
 {
     // TODO: this is, probably, temporary fix.
-    for(uint32 n = 0; n < count; ++n)
+    for(uint32 n = 0; n < (uint32)count; ++n)
     {
         if(bufferBindingId[0] == buffers[n])
         {
