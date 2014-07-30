@@ -39,3 +39,11 @@ QPixmap GradientSlider::drawContent() const
 
     return buf;
 }
+
+void GradientSlider::onMousePress()
+{
+}
+
+void GradientSlider::onMouseRelease()
+{
+}
