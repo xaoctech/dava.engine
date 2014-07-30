@@ -85,11 +85,13 @@ public:
     inline void SetSubdivisionsX(uint32 _sizeX);
     inline void SetSubdivisionsY(uint32 _sizeY);
     inline void SetSubdivisionsZ(uint32 _sizeZ);
+    inline void SetPlaceOnLandscape(bool place);
     
     inline uint32 GetSubdivisionsX() const;
     inline uint32 GetSubdivisionsY() const;
     inline uint32 GetSubdivisionsZ() const;
-    
+    inline bool GetPlaceOnLandscape() const;
+    inline const float32 * GetCellHeightOffsets() const;
     
     //Vector<Vector3> renderPositions;
     
@@ -98,8 +100,10 @@ private:
     uint32 xSubdivisions;
     uint32 ySubdivisions;
     uint32 zSubdivisions;
+    bool placeOnLandscape;
+    Vector<float32> cellHeightOffset; //x*y
     
-	friend class StaticOcclusionUpdateSystem;
+	friend class StaticOcclusionBuildSystem;
 
 public:
 	INTROSPECTION_EXTEND(StaticOcclusionComponent, Component,
@@ -107,6 +111,7 @@ public:
             PROPERTY("Subdivisions X", "Number of subdivisions on X axis", GetSubdivisionsX, SetSubdivisionsX, I_VIEW | I_EDIT)
             PROPERTY("Subdivisions Y", "Number of subdivisions on Y axis", GetSubdivisionsY, SetSubdivisionsY, I_VIEW | I_EDIT)
             PROPERTY("Subdivisions Z", "Number of subdivisions on Z axis", GetSubdivisionsZ, SetSubdivisionsZ, I_VIEW | I_EDIT)
+            PROPERTY("Place on Landscape", "Place lowest occlusion cubes at landscape height", GetPlaceOnLandscape, SetPlaceOnLandscape, I_VIEW | I_EDIT)
 		);
 };
 
@@ -172,6 +177,12 @@ inline void StaticOcclusionComponent::SetSubdivisionsZ(uint32 _sizeZ)
     GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);	
 }
 
+inline void StaticOcclusionComponent::SetPlaceOnLandscape(bool place)
+{
+    placeOnLandscape = place;
+    GlobalEventSystem::Instance()->Event(GetEntity(), EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);	
+}
+
 inline uint32 StaticOcclusionComponent::GetSubdivisionsX() const
 {
     return xSubdivisions;
@@ -186,10 +197,20 @@ inline uint32 StaticOcclusionComponent::GetSubdivisionsZ() const
 {
     return zSubdivisions;
 }
+
+inline bool StaticOcclusionComponent::GetPlaceOnLandscape() const
+{
+    return placeOnLandscape;    
+}
     
 inline StaticOcclusionData & StaticOcclusionDataComponent::GetData()
 {
     return data;
+}
+
+inline const float32 * StaticOcclusionComponent::GetCellHeightOffsets() const
+{
+    return placeOnLandscape?&cellHeightOffset.front():NULL;
 }
 
 
