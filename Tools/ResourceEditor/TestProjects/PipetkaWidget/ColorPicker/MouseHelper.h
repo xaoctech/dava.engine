@@ -19,6 +19,8 @@ public:
     explicit MouseHelper( QWidget *w );
     ~MouseHelper();
 
+    bool IsPressed() const;
+
 private:
     bool eventFilter( QObject *obj, QEvent *e ) override;
 

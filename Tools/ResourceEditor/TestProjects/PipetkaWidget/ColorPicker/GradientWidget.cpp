@@ -23,7 +23,7 @@ void GradientWidget::setColorRange( QColor const& start, QColor const& stop )
     stopColor = stop;
 }
 
-void GradientWidget::setDimensions( bool _hor, bool _ver )
+void GradientWidget::setRenderDimensions( bool _hor, bool _ver )
 {
     if ( hor != _hor || ver != _ver )
     {
