@@ -98,6 +98,7 @@ DownloadError CurlDownloader::Download(const String &url, const uint64 &loadFrom
 
     if (isDownloadInterrupting)
     {
+        isDownloadInterrupting = false;
         // that is an exception from rule because of CURL interrupting mechanism.
         return DLE_CANCELLED;
     }

@@ -53,6 +53,7 @@ public:
     virtual void UnloadResources();
 
     void DownloadCallback(const uint32 &taskId, const DownloadStatus &status);
+    void WaitForTaskState(const uint32 &taskId, const DownloadStatus &status, const uint32 timeout);
 
     String StorePathForUrl(const String &url);
     void TestFunction(PerfFuncData *data);
@@ -61,6 +62,8 @@ private:
     const String serverUrl;
     const String testFileEmpty;
     const String testFileOne;
+    uint32 taskIdToWait;
+    DownloadStatus statusToWait;
 };
 
 #endif

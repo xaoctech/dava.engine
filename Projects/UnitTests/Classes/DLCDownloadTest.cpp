@@ -70,6 +70,21 @@ void DLCDownloadTest::UnloadResources()
 void DLCDownloadTest::DownloadCallback(const uint32 &taskId, const DownloadStatus &status)
 {
        Logger::FrameworkDebug("task %d status %d", taskId, status);
+       statusToWait = status;
+       taskIdToWait = taskId;
+}
+
+void DLCDownloadTest::WaitForTaskState(const uint32 &taskId, const DownloadStatus &status, const uint32 timeout)
+{
+    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+    while (taskIdToWait != taskId && statusToWait != status)
+    {
+        DownloadManager::Instance()->Update();
+        Thread::SleepThread(1);
+        uint64 delta = SystemTimer::Instance()->AbsoluteMS() - startTime;
+        if (delta >= timeout)
+            return;
+    }
 }
 
 String DLCDownloadTest::StorePathForUrl(const String &url)
@@ -164,17 +179,31 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
         DownloadManager::Instance()->GetStatus(httpID, status);
         TEST_VERIFY(DL_PENDING == status);
 
-        DownloadManager::Instance()->Update();
-        Thread::SleepThread(300);
+        WaitForTaskState(httpID, DL_IN_PROGRESS, 1000);
         DownloadManager::Instance()->Cancel(httpID);
+        WaitForTaskState(httpID, DL_FINISHED, 1000);
         DownloadManager::Instance()->GetStatus(httpID, status);
         TEST_VERIFY(DL_FINISHED == status);
         DownloadManager::Instance()->GetError(httpID, error);
         TEST_VERIFY(DLE_CANCELLED == error);
+        
+        // retry task with error
+        DownloadManager::Instance()->Retry(httpID);
+        DownloadManager::Instance()->GetStatus(httpID, status);
+        TEST_VERIFY(DL_PENDING == status);
+        DownloadManager::Instance()->GetError(httpID, error);
+        TEST_VERIFY(DLE_NO_ERROR == error);
+
+        // retry pending task
+        DownloadManager::Instance()->Retry(httpID);
+        DownloadManager::Instance()->GetStatus(httpID, status);
+        TEST_VERIFY(DL_PENDING == status);
+        DownloadManager::Instance()->GetError(httpID, error);
+        TEST_VERIFY(DLE_NO_ERROR == error);
 
         FileSystem::Instance()->DeleteFile(dstHttp);
     }
-    /*
+    
     {
         // RESUMED DOWNLOAD
         // Make sure that file is missing
@@ -215,8 +244,15 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
         SafeRelease(file);
     }
 
-// END MISSING FILE ON EXISTENT SERVER
+    // cancel finished download should not work
+    DownloadManager::Instance()->Cancel(missingFileId);
+    DownloadManager::Instance()->GetStatus(missingFileId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(missingFileId, error);
+    TEST_VERIFY(DLE_CONTENT_NOT_FOUND == error);
 
+// END MISSING FILE ON EXISTENT SERVER
+    
 // FOLDER INSTEAD OF FILE 
 
     uint32 folderId = DownloadManager::Instance()->Download(srcUrlFolder, dstHttpFolder, RESUMED, 1, 0);
@@ -544,7 +580,7 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
 
 // END TIMEOUTS
 
-*/
+
 
 
 
@@ -556,10 +592,10 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     uint32 folderId = DownloadManager::Instance()->Download(srcUrlFolder, dstHttpFolder, RESUMED, 2, 2);
     uint32 emptyFileId = DownloadManager::Instance()->Download(srcUrlEmptyFile, dstHttpEmptyFile, RESUMED, 2, 2);
 
-    DownloadManager::Instance()->Update();
 
+
+    WaitForTaskState(httpID, DL_IN_PROGRESS, 1000);
     // Check if only one task is in the progress
-    Thread::SleepThread(300);
     DownloadManager::Instance()->GetStatus(httpID, status);
     TEST_VERIFY(DL_IN_PROGRESS == status);
     DownloadManager::Instance()->GetStatus(missingFileId, status);
@@ -569,7 +605,7 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     DownloadManager::Instance()->GetStatus(emptyFileId, status);
     TEST_VERIFY(DL_PENDING == status);
 
-    // retry current task
+    // retry current task should not work
     DownloadManager::Instance()->Retry(httpID);
     DownloadManager::Instance()->GetStatus(httpID, status);
     TEST_VERIFY(DL_IN_PROGRESS == status);
@@ -593,69 +629,157 @@ void DLCDownloadTest::TestFunction(PerfFuncData * data)
     DownloadManager::Instance()->GetStatus(folderId, status);
     TEST_VERIFY(DL_PENDING == status);
 
-
+    // cancel task in progress
     DownloadManager::Instance()->Cancel(httpID);
+    WaitForTaskState(httpID, DL_FINISHED, 1000);
+    DownloadManager::Instance()->GetStatus(httpID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpID, error);
+    TEST_VERIFY(DLE_CANCELLED == error);
+
+    // cancel cancelled task
+    DownloadManager::Instance()->Cancel(httpID);
+    DownloadManager::Instance()->GetStatus(httpID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpID, error);
+    TEST_VERIFY(DLE_CANCELLED == error);
+
+    // retry cancelled task
     DownloadManager::Instance()->Retry(httpID);
     DownloadManager::Instance()->GetStatus(httpID, status);
     TEST_VERIFY(DL_PENDING == status);
+
+    DownloadManager::Instance()->Cancel(httpID);
+    DownloadManager::Instance()->Wait(httpID);
+
+    DownloadManager::Instance()->WaitAll();
+
+    FileSystem::Instance()->DeleteFile(dstHttp);
+    FileSystem::Instance()->DeleteFile(dstHttpFolder);
+    FileSystem::Instance()->DeleteFile(dstHttpEmptyFile);
+}
+
+{
+    //Check Cancel All
+
+    // finished task
+    uint32 httpFinishedID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 2, 2);
+    DownloadManager::Instance()->Wait(httpFinishedID);
+    FileSystem::Instance()->DeleteFile(dstHttp);
+
+    DownloadManager::Instance()->GetStatus(httpFinishedID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpFinishedID, error);
+    TEST_VERIFY(DLE_NO_ERROR == error);
+
+    // error result task
+    uint32 missingFileId = DownloadManager::Instance()->Download(srcUrlMissingFile, dstMissingFile, RESUMED, 2, 2);
+    DownloadManager::Instance()->Wait(missingFileId);
+
+    uint32 httpCancelledID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 2, 2);
+    WaitForTaskState(httpCancelledID, DL_IN_PROGRESS, 1000);
+    DownloadManager::Instance()->Cancel(httpCancelledID);
+    FileSystem::Instance()->DeleteFile(dstHttp);
+
+    uint32 httpInProcessID = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED, 2, 2);
+    WaitForTaskState(httpInProcessID, DL_IN_PROGRESS, 1000);
+
+    DownloadManager::Instance()->CancelAll();
+
+    DownloadManager::Instance()->GetStatus(httpFinishedID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpFinishedID, error);
+    TEST_VERIFY(DLE_NO_ERROR == error);
+
+    DownloadManager::Instance()->GetStatus(missingFileId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(missingFileId, error);
+    TEST_VERIFY(DLE_CONTENT_NOT_FOUND == error);
+
+    DownloadManager::Instance()->GetStatus(httpCancelledID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpCancelledID, error);
+    TEST_VERIFY(DLE_CANCELLED == error);
+
+    DownloadManager::Instance()->GetStatus(httpInProcessID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpInProcessID, error);
+    TEST_VERIFY(DLE_CANCELLED == error);
+
+    DownloadManager::Instance()->Wait(httpInProcessID);
+    FileSystem::Instance()->DeleteFile(dstHttp);
 
 }
 
 // END DOWNLOAD QUEUES
 
-    // ask for 3rd download
-    uint32 httpsID = DownloadManager::Instance()->Download(srcUrlSSL, dstHttps);
-    
-    // interrupt task in process test. You should not call Update from your code, but that is unit test.
-    DownloadManager::Instance()->Update();
-    Thread::SleepThread(1000);
-    DownloadManager::Instance()->Cancel(httpsID);
-    DownloadManager::Instance()->GetError(httpsID, error);
-    TEST_VERIFY(DLE_CANCELLED == error);
-    DownloadManager::Instance()->GetStatus(httpsID, status);
-    TEST_VERIFY(DL_FINISHED == status);
+// GET SIZE
+    {
+    // finished task
+    uint32 httpFinishedID = DownloadManager::Instance()->Download(srcUrl, dstHttp, GET_SIZE, 2, 2);
+    DownloadManager::Instance()->Wait(httpFinishedID);
 
-    DownloadManager::Instance()->Retry(httpsID);
-    DownloadManager::Instance()->Update();
-    Thread::SleepThread(1000);
-    DownloadType type;
-    DownloadManager::Instance()->GetType(httpsID, type);
-    TEST_VERIFY(RESUMED == type);
-    // cancell all downloads
-    DownloadManager::Instance()->CancelAll();
-    
-    // download retry
-    FileSystem::Instance()->DeleteFile(dstHttps);
-    DownloadManager::Instance()->Retry(httpsID);
+    DownloadManager::Instance()->GetStatus(httpFinishedID, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(httpFinishedID, error);
+    TEST_VERIFY(DLE_NO_ERROR == error);
+
+    // error result task
+    uint32 missingServerId = DownloadManager::Instance()->Download(srcUrlMissingServerAddress, dstMissingServer, GET_SIZE, 4, 2);
+
+    WaitForTaskState(missingServerId, DL_IN_PROGRESS, 1000);
+    uint64 startTime = SystemTimer::Instance()->AbsoluteMS();
+
+    // task should be not finished (timeout is larger)
+    DownloadManager::Instance()->GetStatus(missingServerId, status);
+    TEST_VERIFY(DL_IN_PROGRESS == status);
+    DownloadManager::Instance()->GetError(missingServerId, error);
+    TEST_VERIFY(DLE_NO_ERROR == error);
+
+    DownloadManager::Instance()->Wait(missingServerId);
+
+    // task is finished, timeout is ok, status is predictable
+
+    uint64 delta = SystemTimer::Instance()->AbsoluteMS() - startTime;
+    TEST_VERIFY(delta >= 2 * 2);
+    DownloadManager::Instance()->GetStatus(missingServerId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(missingServerId, error);
+    TEST_VERIFY(DLE_CANNOT_CONNECT == error);
+
+    uint32 emptyFileId = DownloadManager::Instance()->Download(srcUrlEmptyFile, dstHttpEmptyFile, GET_SIZE, 2, 2);
+    DownloadManager::Instance()->Wait(emptyFileId);
+
+    DownloadManager::Instance()->GetTotal(emptyFileId, total);
+    TEST_VERIFY(0 == total);
+    DownloadManager::Instance()->GetStatus(emptyFileId, status);
+    TEST_VERIFY(DL_FINISHED == status);
+    DownloadManager::Instance()->GetError(emptyFileId, error);
+    TEST_VERIFY(DLE_NO_ERROR == error);
+
+    }
+
+// END GET SIZE
+
+
+// SET DOWNLOADER TEST
 
     // we don't need to full featured downloader here
-    DownloadManager::Instance()->SetDownloader(new CurlTestDownloader);
-    FileSystem::Instance()->DeleteFile(dstHttps);
-    DownloadManager::Instance()->Retry(httpsID);
-    DownloadManager::Instance()->Wait(httpsID);
+    DownloadManager::Instance()->SetDownloader(new CurlTestDownloader);   
+    uint32 httpId = DownloadManager::Instance()->Download(srcUrl, dstHttp, RESUMED);
+    DownloadManager::Instance()->Retry(httpId);
+    DownloadManager::Instance()->Wait(httpId);
 
-    TEST_VERIFY(DownloadManager::Instance()->GetProgress(httpsID, progress));
+    DownloadManager::Instance()->GetProgress(httpId, progress);
+    DownloadManager::Instance()->GetTotal(httpId, total);
     file = File::Create(dstHttps, File::OPEN | File::READ);
     TEST_VERIFY(NULL != file);
     filesize = file->GetSize();
     TEST_VERIFY(filesize == progress);
+    TEST_VERIFY(total > progress);
     SafeRelease(file);
-
-    // download through https
-    DownloadManager::Instance()->SetDownloader(new CurlDownloader);
-    FileSystem::Instance()->DeleteFile(dstHttps);
-    DownloadManager::Instance()->Retry(httpsID);
-    DownloadManager::Instance()->Wait(httpsID);
-    TEST_VERIFY(DownloadManager::Instance()->GetProgress(httpsID, progress));
-    file = File::Create(dstHttps, File::OPEN | File::READ);
-    TEST_VERIFY(NULL != file);
-    filesize = file->GetSize();
-    TEST_VERIFY(filesize == progress);
-
-    SafeRelease(file);
-
-    FileSystem::Instance()->DeleteFile(dstFtp);
     FileSystem::Instance()->DeleteFile(dstHttp);
-    FileSystem::Instance()->DeleteFile(dstHttps);
+
+// END SET DOWNLOADER TEST
 }
 

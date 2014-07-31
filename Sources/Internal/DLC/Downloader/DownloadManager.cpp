@@ -204,7 +204,11 @@ uint32 DownloadManager::Download(const String &srcUrl, const FilePath &storeToFi
 {
     DVASSERT(true == Thread::IsMainThread());
 
-    DownloadTaskDescription *task = new DownloadTaskDescription(srcUrl, storeToFilePath, downloadMode, timeout, retriesCount);
+    int32 fullTimeout = timeout;
+    if (GET_SIZE == downloadMode && timeout >= 2)
+        fullTimeout /= 2;
+
+    DownloadTaskDescription *task = new DownloadTaskDescription(srcUrl, storeToFilePath, downloadMode, fullTimeout, retriesCount);
  
     static uint32 prevId = 1;
     task->id = prevId++;

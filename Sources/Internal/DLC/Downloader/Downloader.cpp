@@ -47,7 +47,7 @@ size_t Downloader::SaveData(void *ptr, size_t size, size_t nmemb)
 
     FilePath storePath = mgr->currentTask->storePath;
 
-    uint32 written = -1;
+    size_t written = 0;
     File *destFile = File::Create(storePath, File::APPEND | File::WRITE);
     if (destFile)
     {
