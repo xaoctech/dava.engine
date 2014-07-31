@@ -155,14 +155,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/ControlRotationTest.h</locationURI>
 		</link>
 		<link>
-			<name>src/Classes/DLCSystemTests.cpp</name>
+			<name>src/Classes/DLCDownloadTest.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCSystemTests.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCDownloadTest.cpp</locationURI>
 		</link>
 		<link>
-			<name>src/Classes/DLCSystemTests.h</name>
+			<name>src/Classes/DLCDownloadTest.h</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCSystemTests.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCDownloadTest.h</locationURI>
 		</link>
 		<link>
 			<name>src/Classes/DPITest.cpp</name>
@@ -465,14 +465,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Classes/ControlRotationTest.h</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Classes/DLCSystemTests.cpp</name>
+			<name>bin/classes/Classes/DLCDownloadTest.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCSystemTests.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCDownloadTest.cpp</locationURI>
 		</link>
 		<link>
-			<name>bin/classes/Classes/DLCSystemTests.h</name>
+			<name>bin/classes/Classes/DLCDownloadTest.h</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCSystemTests.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Classes/DLCDownloadTest.h</locationURI>
 		</link>
 		<link>
 			<name>bin/classes/Classes/DPITest.cpp</name>
