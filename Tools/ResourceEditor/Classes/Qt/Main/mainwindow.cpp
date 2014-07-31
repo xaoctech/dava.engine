@@ -118,6 +118,10 @@
 #include "DebugTools/VersionInfoWidget/VersionInfoWidget.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
 
+#include "Classes/Commands2/PaintHeightDeltaAction.h"
+
+#include "Tools/HeightDeltaTool/HeightDeltaTool.h"
+
 
 QtMainWindow::QtMainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -185,6 +189,8 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
+    delete heightDeltaTool;
+
 	SafeDelete(addSwitchEntityDialog);
     SafeDelete(developerTools);
     
@@ -528,6 +534,37 @@ void QtMainWindow::SetupToolBars()
 		ui->sceneToolBar->addSeparator();
 		ui->sceneToolBar->addWidget(objectTypesWidget);
 	}
+    
+    //heightmap toolbar
+    {
+        QDoubleSpinBox* thresholdBox = new QDoubleSpinBox(this);
+        thresholdBox->setMinimum(0.0);
+        thresholdBox->setMaximum(100.0);
+        thresholdBox->setSingleStep(0.1);
+        
+        ui->heightDeltaToolBar->addWidget(thresholdBox);
+    
+        QToolButton* heightDeltaBtn = new QToolButton();
+		heightDeltaBtn->setDefaultAction(ui->actionHeightDeltaColor);
+		heightDeltaBtn->setToolButtonStyle(Qt::ToolButtonTextOnly);
+		heightDeltaBtn->setAutoRaise(false);
+        heightDeltaBtn->setText("    ");
+        heightDeltaBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
+		heightDeltaBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
+    
+        ui->heightDeltaToolBar->addWidget(heightDeltaBtn);
+        
+        QToolButton* runHeightDeltaBtn = new QToolButton();
+		runHeightDeltaBtn->setDefaultAction(ui->actionGenerateHeightDeltaImage);
+		runHeightDeltaBtn->setToolButtonStyle(Qt::ToolButtonIconOnly);
+		runHeightDeltaBtn->setAutoRaise(false);
+
+        ui->heightDeltaToolBar->addWidget(runHeightDeltaBtn);
+        
+        heightDeltaTool = new HeightDeltaTool(thresholdBox, heightDeltaBtn);
+        heightDeltaTool->SetThreshold(0.5);
+        heightDeltaTool->SetSelectedColor(QColor::fromRgb(255, 0, 0));
+    }
 }
 
 void QtMainWindow::SetupStatusBar()
@@ -708,6 +745,9 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionBuildStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnBuildStaticOcclusion()));
     QObject::connect(ui->actionRebuildCurrentOcclusionCell, SIGNAL(triggered()), this, SLOT(OnRebuildCurrentOcclusionCell()));
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
+    
+    QObject::connect(ui->actionGenerateHeightDeltaImage, SIGNAL(triggered()), this, SLOT(OnGenerateHeightDelta()));
+    QObject::connect(ui->actionHeightDeltaColor, SIGNAL(triggered()), this, SLOT(OnSelectHeightDeltaColor()));
     
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -2938,4 +2978,28 @@ void QtMainWindow::DebugVersionInfo()
     }
 
     versionInfoWidget->show();
+}
+
+void QtMainWindow::OnSelectHeightDeltaColor()
+{
+    QColor color = QColorDialog::getColor(heightDeltaTool->GetSelectedColor(), 0, tr("Height delta color"));
+    heightDeltaTool->SetSelectedColor(color);
+}
+
+void QtMainWindow::OnGenerateHeightDelta()
+{
+    SceneEditor2* scene = GetCurrentScene();
+	if(NULL != scene)
+	{
+        Landscape* landscapeRO = FindLandscape(scene);
+        if(landscapeRO != NULL)
+        {
+            DAVA::FilePath defaultPath = ProjectManager::Instance()->CurProjectPath();
+            QString retString = QFileDialog::getOpenFileName(this, "Select image", defaultPath.GetAbsolutePathname().c_str(), "PNG(*.png)");
+            if(retString.size() > 0)
+            {
+                heightDeltaTool->GenerateHeightDeltaImage(retString, landscapeRO);
+            }
+        }
+    }
 }

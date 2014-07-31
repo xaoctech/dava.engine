@@ -39,6 +39,7 @@
 		62C8751B189698E5000E398E /* RegExpValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C87519189698E5000E398E /* RegExpValidator.cpp */; };
 		643BE8FF18C74B1C00D824FE /* ImageRegionCopyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 643BE8FD18C74B1C00D824FE /* ImageRegionCopyCommand.cpp */; };
 		64533A9F18E0344800941529 /* MaterialTemplateModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64533A9E18E0344800941529 /* MaterialTemplateModel_moc.cpp */; };
+		645938DC198A7C7500F386B6 /* HeightDeltaTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 645938DA198A7C7500F386B6 /* HeightDeltaTool.cpp */; };
 		64B9017E18BF7ACF001E6CCC /* GrassEditorPanel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9017C18BF7ACF001E6CCC /* GrassEditorPanel.cpp */; };
 		64B9018718BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018618BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp */; };
 		64B9018A18BF7B15001E6CCC /* GrassEditorProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018818BF7B15001E6CCC /* GrassEditorProxy.cpp */; };
@@ -712,6 +713,8 @@
 		643BE8FD18C74B1C00D824FE /* ImageRegionCopyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageRegionCopyCommand.cpp; sourceTree = "<group>"; };
 		643BE8FE18C74B1C00D824FE /* ImageRegionCopyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRegionCopyCommand.h; sourceTree = "<group>"; };
 		64533A9E18E0344800941529 /* MaterialTemplateModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTemplateModel_moc.cpp; sourceTree = "<group>"; };
+		645938DA198A7C7500F386B6 /* HeightDeltaTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightDeltaTool.cpp; sourceTree = "<group>"; };
+		645938DB198A7C7500F386B6 /* HeightDeltaTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightDeltaTool.h; sourceTree = "<group>"; };
 		64B9017C18BF7ACF001E6CCC /* GrassEditorPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrassEditorPanel.cpp; sourceTree = "<group>"; };
 		64B9017D18BF7ACF001E6CCC /* GrassEditorPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrassEditorPanel.h; sourceTree = "<group>"; };
 		64B9018618BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrassEditorPanel_moc.cpp; sourceTree = "<group>"; };
@@ -1860,6 +1863,15 @@
 				62C8751A189698E5000E398E /* RegExpValidator.h */,
 			);
 			name = QtPropertyDataValidator;
+			sourceTree = "<group>";
+		};
+		645938D2198A7C6100F386B6 /* HeightDeltaTool */ = {
+			isa = PBXGroup;
+			children = (
+				645938DA198A7C7500F386B6 /* HeightDeltaTool.cpp */,
+				645938DB198A7C7500F386B6 /* HeightDeltaTool.h */,
+			);
+			path = HeightDeltaTool;
 			sourceTree = "<group>";
 		};
 		763DCF081964524A00D94EB3 /* DebugTools */ = {
@@ -3760,6 +3772,7 @@
 		E8C9917F184CD0EB00AFBF3F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				645938D2198A7C6100F386B6 /* HeightDeltaTool */,
 				E86F97BA18DB2978007330E1 /* DeveloperTools */,
 				4FA41987188EA4C500395C70 /* RunGuard */,
 				E8C99180184CD0EB00AFBF3F /* AddParticleEmitterDialog */,
@@ -4432,6 +4445,7 @@
 				E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */,
 				E8BAD6FD1859F50300C98C8D /* NormalHood_moc.cpp in Build Sources */,
 				62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */,
+				645938DC198A7C7500F386B6 /* HeightDeltaTool.cpp in Build Sources */,
 				E8C9927D184CD0EC00AFBF3F /* TextureDescriptorUtils.cpp in Build Sources */,
 				E8BAD6E81859F50300C98C8D /* SceneHelper_moc.cpp in Build Sources */,
 				E8C992BB184CD0EC00AFBF3F /* HeightmapEditorPanel.cpp in Build Sources */,

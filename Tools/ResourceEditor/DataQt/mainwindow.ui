@@ -201,7 +201,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -759,6 +759,23 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSwitchesWithDifferentLODs"/>
+  </widget>
+  <widget class="QToolBar" name="heightDeltaToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
   <action name="actionNewScene">
    <property name="icon">
@@ -1943,6 +1960,26 @@
   <action name="actionInvalidateStaticOcclusion">
    <property name="text">
     <string>Invalidate Static Occlusion</string>
+   </property>
+  </action>
+  <action name="actionHeightDeltaColor">
+   <property name="text">
+    <string/>
+   </property>
+   <property name="toolTip">
+    <string>Height difference color</string>
+   </property>
+   <property name="font">
+    <font/>
+   </property>
+  </action>
+  <action name="actionGenerateHeightDeltaImage">
+   <property name="icon">
+    <iconset resource="QtIcons.qrc">
+     <normaloff>:/QtIcons/play.png</normaloff>:/QtIcons/play.png</iconset>
+   </property>
+   <property name="text">
+    <string>Generate</string>
    </property>
   </action>
  </widget>

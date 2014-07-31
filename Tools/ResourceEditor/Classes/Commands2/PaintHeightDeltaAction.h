@@ -48,9 +48,9 @@ public:
     
     ~PaintHeightDeltaAction();
     
-protected:
+    virtual void Redo();
     
-	virtual void Redo();
+protected:
     
     DAVA::Image* CropHeightmapToPow2(DAVA::Heightmap* srcHeightmap);
     DAVA::Image* CreateHeightDeltaImage(DAVA::uint32 width, DAVA::uint32 height);
