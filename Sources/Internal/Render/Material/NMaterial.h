@@ -179,6 +179,8 @@ public:
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
     static const FastName TEXTURE_HEIGHTMAP;
+    static const FastName TEXTURE_TILEMASK;
+    static const FastName TEXTURE_TILETEXTURE;
     
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;

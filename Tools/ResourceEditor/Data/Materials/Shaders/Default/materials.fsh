@@ -3,11 +3,13 @@ uniform sampler2D albedo = 0;
 uniform sampler2D decal = 1;
 uniform sampler2D detail = 1;
 uniform sampler2D lightmap = 1;
+uniform sampler2D tilemask = 1;
 uniform sampler2D vegetationmap = 2
 uniform sampler2D normalmap = 2;
 uniform sampler2D cubemap = 3;
 uniform sampler2D heightmap = 4;
 uniform sampler2D densitymap = 5;
+uniform sampler2D tiletexture = 6;
 
 uniform float normalScale = 1.0;
 uniform float inGlossiness = 0.5;
@@ -93,6 +95,15 @@ uniform float inSpecularity;
 uniform float physicalFresnelReflectance;
 uniform vec3 metalFresnelReflectance;
 uniform float normalScale;
+#endif
+
+#if defined(COLORIZED_TILE)
+uniform sampler2D tilemask;
+uniform lowp vec4 detailColor0;
+uniform lowp vec4 detailColor1;
+uniform lowp vec4 detailColor2;
+uniform sampler2D tiletexture;
+varying vec2 varTileTexCoord0;
 #endif
 
 #if defined(VERTEX_LIT) || defined(PIXEL_LIT)
@@ -274,7 +285,13 @@ void main()
     #endif
 
     #if defined(VIEW_ALBEDO)
-        color *= textureColor0.rgb;
+        #if defined(COLORIZED_TILE)
+            lowp float maskSample = texture2D(tilemask, varTexCoord0).a;
+            lowp vec4 tileColor = texture2D(tiletexture, varTileTexCoord0).rgba;
+            color *= textureColor0.rgb + (tileColor.rgb - textureColor0.rgb) * tileColor.a * maskSample;
+        #else
+            color *= textureColor0.rgb;
+        #endif
     #endif
 
     #if defined(VIEW_SPECULAR)
@@ -297,7 +314,13 @@ void main()
     #endif
         
     #if defined(VIEW_ALBEDO)
-        color *= textureColor0.rgb;
+        #if defined(COLORIZED_TILE)
+            lowp float maskSample = texture2D(tilemask, varTexCoord0).a;
+            lowp vec4 tileColor = texture2D(tiletexture, varTileTexCoord0).rgba;
+            color *= textureColor0.rgb + (tileColor.rgb - textureColor0.rgb) * tileColor.a * maskSample;
+        #else
+            color *= textureColor0.rgb;
+        #endif
     #endif
     
     #if defined(VIEW_SPECULAR)
@@ -418,7 +441,13 @@ void main()
     #endif
     
     #if defined(VIEW_ALBEDO)
-        color *= textureColor0.rgb;
+        #if defined(COLORIZED_TILE)
+            lowp float maskSample = texture2D(tilemask, varTexCoord0).a;
+            lowp vec4 tileColor = texture2D(tiletexture, varTileTexCoord0).rgba;
+            color *= textureColor0.rgb + (tileColor.rgb - textureColor0.rgb) * tileColor.a * maskSample;
+        #else
+            color *= textureColor0.rgb;
+        #endif
     #endif
     
     #if defined(VIEW_SPECULAR)

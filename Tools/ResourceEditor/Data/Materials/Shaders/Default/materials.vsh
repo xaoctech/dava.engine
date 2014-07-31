@@ -127,6 +127,10 @@ uniform vec3 boundingBoxSize;
 	
 #endif
 
+#if defined(COLORIZED_TILE)
+uniform float tileCoordScale0;
+#endif
+
 // OUTPUT ATTRIBUTES
 #if defined(MATERIAL_SKYBOX)
 varying vec3 varTexCoord0;
@@ -138,6 +142,9 @@ varying vec2 varTexCoord0;
 varying vec2 varTexCoord1;
 #endif
 
+#if defined(COLORIZED_TILE)
+varying vec2 varTileTexCoord0;
+#endif
 
 #if defined(VERTEX_LIT)
 varying lowp float varDiffuseColor;
@@ -651,7 +658,11 @@ void main()
 #if defined(TEXTURE0_ANIMATION_SHIFT)
     varTexCoord0 += tex0ShiftPerSecond * globalTime;
 #endif
-		
+	
+#if defined(COLORIZED_TILE)
+    varTileTexCoord0 = varTexCoord0 * tileCoordScale0;
+#endif
+    
 #if defined(MATERIAL_DECAL) || defined(MATERIAL_DETAIL) || defined(MATERIAL_LIGHTMAP) || defined(FRAME_BLEND)
 	
 	#if defined(SETUP_LIGHTMAP)
