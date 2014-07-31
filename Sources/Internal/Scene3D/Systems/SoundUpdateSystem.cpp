@@ -107,25 +107,26 @@ void SoundUpdateSystem::Process(float32 timeElapsed)
     if(activeCamera)
     {
         SoundSystem * ss = SoundSystem::Instance();
-        Vector3 listenerPosition = activeCamera->GetPosition();
+        const Vector3 & listenerPosition = activeCamera->GetPosition();
         ss->SetListenerPosition(listenerPosition);
         ss->SetListenerOrientation(activeCamera->GetDirection(), activeCamera->GetLeft());
 
         uint32 autoCount = autoTriggerSounds.size();
         for(uint32 i = 0; i < autoCount; ++i)
         {
-            if(autoTriggerSounds[i].wasTriggered)
+            AutoTriggerSound & autoTriggerSound = autoTriggerSounds[i];
+            if(autoTriggerSound.wasTriggered)
             {
-                float32 distanceSq = (listenerPosition - autoTriggerSounds[i].component->GetEntity()->GetWorldTransform().GetTranslationVector()).SquareLength();
-                if(distanceSq < autoTriggerSounds[i].maxSqDistance)
+                float32 distanceSq = (listenerPosition - autoTriggerSound.component->GetEntity()->GetWorldTransform().GetTranslationVector()).SquareLength();
+                if(distanceSq < autoTriggerSound.maxSqDistance)
                 {
-                    if(!autoTriggerSounds[i].soundEvent->IsActive())
-                        autoTriggerSounds[i].soundEvent->Trigger();
+                    if(!autoTriggerSound.soundEvent->IsActive())
+                        autoTriggerSound.soundEvent->Trigger();
                 }
                 else
                 {
-                    if(autoTriggerSounds[i].soundEvent->IsActive())
-                        autoTriggerSounds[i].soundEvent->Stop();
+                    if(autoTriggerSound.soundEvent->IsActive())
+                        autoTriggerSound.soundEvent->Stop();
                 }
             }
         }
@@ -170,19 +171,16 @@ void SoundUpdateSystem::AddEntity(Entity * entity)
     SoundComponent * sc = GetSoundComponent(entity);
     DVASSERT(sc);
     
-    bool needRebuild = false;
     uint32 eventsCount = sc->GetEventsCount();
     for(uint32 i = 0; i < eventsCount; ++i)
     {
         if((sc->GetSoundEventFlags(i) & SoundComponent::FLAG_AUTO_DISTANCE_TRIGGER) > 0)
         {
             componentsWithAutoTrigger.insert(sc);
-            needRebuild = true;
+            RebuildAutoTriggerArray();
+            break;
         }
     }
-
-    if(needRebuild)
-        RebuildAutoTriggerArray();
 }
 
 void SoundUpdateSystem::RemoveEntity(Entity * entity)
