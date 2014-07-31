@@ -53,6 +53,7 @@ class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
 class VersionInfoWidget;
+class HeightDeltaTool;
 
 class QtMainWindow
     : public QMainWindow
@@ -206,6 +207,9 @@ public slots:
 
     void OnSwitchWithDifferentLODs(bool checked);
     
+    void OnSelectHeightDeltaColor();
+    void OnGenerateHeightDelta();
+    
 protected:
 	virtual bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * e);
@@ -264,6 +268,8 @@ private:
 
 	AddSwitchEntityDialog*	addSwitchEntityDialog;
 	HangingObjectsHeight*	hangingObjectsWidget;
+    
+    HeightDeltaTool* heightDeltaTool;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);

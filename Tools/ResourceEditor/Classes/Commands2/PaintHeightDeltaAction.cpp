@@ -54,11 +54,15 @@ PaintHeightDeltaAction::~PaintHeightDeltaAction()
 void PaintHeightDeltaAction::Redo()
 {
     DAVA::Image* croppedHeightmap = CropHeightmapToPow2(heightmap);
+    
+    imageWidth = DAVA::Max(croppedHeightmap->width, imageWidth);
+    imageHeight = DAVA::Max(croppedHeightmap->height, imageHeight);
+    
     DAVA::Image* imageDelta = CreateHeightDeltaImage(imageWidth, imageHeight);
     
     PrepareDeltaImage(croppedHeightmap, imageDelta);
     
-    SaveDeltaImage(imagePath, deltaImage);
+    SaveDeltaImage(imagePath, imageDelta);
     
     SafeRelease(croppedHeightmap);
     SafeRelease(imageDelta);
@@ -174,18 +178,18 @@ void PaintHeightDeltaAction::MarkDeltaRegion(DAVA::uint32 x,
                                              const DAVA::Color& markColor,
                                              DAVA::Image* deltaImage)
 {
-    DAVA::uint32 regionWidth = x + (DAVA::uint32)widthPixelRatio;
-    DAVA::uint32 regionHeight = y + (DAVA::uint32)heightPixelRatio;
+    DAVA::uint32 regionEndX = x * widthPixelRatio + (DAVA::uint32)widthPixelRatio;
+    DAVA::uint32 regionEndY = y * heightPixelRatio + (DAVA::uint32)heightPixelRatio;
     DAVA::uint32 rgbaStride = sizeof(DAVA::uint32);
     
-    DAVA::uint8 r = (markColor.r * 255.0f);
-    DAVA::uint8 g = (markColor.g * 255.0f);
-    DAVA::uint8 b = (markColor.b * 255.0f);
-    DAVA::uint8 a = (markColor.a * 255.0f);
+    DAVA::uint8 r = (DAVA::uint8)(markColor.r * 255.0f);
+    DAVA::uint8 g = (DAVA::uint8)(markColor.g * 255.0f);
+    DAVA::uint8 b = (DAVA::uint8)(markColor.b * 255.0f);
+    DAVA::uint8 a = (DAVA::uint8)(markColor.a * 255.0f);
     
-    for(DAVA::int32 yy = y; yy < regionHeight; ++yy)
+    for(DAVA::int32 yy = y * heightPixelRatio; yy < regionEndY; ++yy)
     {
-        for(DAVA::int32 xx = x; xx < regionWidth; ++xx)
+        for(DAVA::int32 xx = x * widthPixelRatio; xx < regionEndX; ++xx)
         {
             DAVA::uint8* dataPtr = deltaImage->data + yy * deltaImage->width * rgbaStride + xx * rgbaStride;
             
