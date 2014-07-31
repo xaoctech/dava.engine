@@ -1,6 +1,10 @@
 #ifndef GRADIENTSLIDER_H
 #define GRADIENTSLIDER_H
 
+#include <QWidget>
+#include <QMap>
+
+
 #include "GradientWidget.h"
 #include "IColorEditor.h"
 #include "MouseHelper.h"
@@ -34,14 +38,27 @@ protected:
     QPixmap drawContent() const override;
 
 private slots:
-    void onMousePress();
-    void onMouseRelease();
+    void onMousePress( const QPoint& pos );
+    void onMouseMove( const QPoint& pos );
+    void onMouseRelease( const QPoint& pos );
 
 private:
+    QPoint fitInGradient( const QPoint& pos ) const;
+    void setPos( const QPoint& pos );
+
+    void drawArrows( QPainter *p ) const;
+    void drawArrow( Qt::Edge arrow, QPainter *p ) const;
+
     QPointer<MouseHelper> mouse;
     QSize arrowSize;
     Qt::Edges arrows;
     QPoint currentPos;
+    QColor startColor;
+    QColor color;
+
+    QMap< Qt::Edge, QPixmap > arrowCache;
+
+private:
 };
 
 #endif // GRADIENTSLIDER_H

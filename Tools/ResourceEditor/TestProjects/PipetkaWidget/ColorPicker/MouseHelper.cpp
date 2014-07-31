@@ -20,6 +20,11 @@ MouseHelper::~MouseHelper()
 {
 }
 
+bool MouseHelper::IsPressed() const
+{
+    return isPressed;
+}
+
 bool MouseHelper::eventFilter( QObject* obj, QEvent* e )
 {
     if ( obj == w )

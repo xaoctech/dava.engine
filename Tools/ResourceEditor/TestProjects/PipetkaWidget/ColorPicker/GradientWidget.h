@@ -25,7 +25,7 @@ public:
     ~GradientWidget();
 
     void setColorRange( const QColor& start, const QColor& stop );
-    void setDimensions( bool hor, bool ver );
+    void setRenderDimensions( bool hor, bool ver );
     void setBgPadding( int left, int top, int right, int bottom );
     void setGrid( bool enabled, const QSize& size = QSize() );
 
