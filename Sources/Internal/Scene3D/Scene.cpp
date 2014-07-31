@@ -207,6 +207,7 @@ void Scene::InitGlobalMaterial()
     if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_DECAL)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_DECAL, stubTexture2d);
     if(NULL == sceneGlobalMaterial->GetTexture(NMaterial::TEXTURE_CUBEMAP)) sceneGlobalMaterial->SetTexture(NMaterial::TEXTURE_CUBEMAP, stubTextureCube);
     if(NULL == sceneGlobalMaterial->GetTexture(FastName("colorTexture"))) sceneGlobalMaterial->SetTexture(FastName("colorTexture"), stubTexture2d);
+    if(NULL == sceneGlobalMaterial->GetTexture(FastName("fogGlowCubemap"))) sceneGlobalMaterial->SetTexture(FastName("fogGlowCubemap"), stubTextureCube);
 
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_LIGHT_POSITION0, Shader::UT_FLOAT_VEC3, 1, defaultVec3.data);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_PROP_AMBIENT_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
@@ -224,6 +225,7 @@ void Scene::InitGlobalMaterial()
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_START)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_START, Shader::UT_FLOAT, 1, &defaultFogStart);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_END)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_END, Shader::UT_FLOAT, 1, &defaultFogEnd);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_GLOW_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_GLOW_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(FastName("fogK"))) sceneGlobalMaterial->SetPropertyValue(FastName("fogK"), Shader::UT_FLOAT, 1, &defaultFloat10);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_GLOW_SCATTERING)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_GLOW_SCATTERING, Shader::UT_FLOAT, 1, &defaultFloat10);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_GLOW_DISTANCE)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_GLOW_DISTANCE, Shader::UT_FLOAT, 1, &defaultFogEnd);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_HALFSPACE_DENSITY)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_HALFSPACE_DENSITY, Shader::UT_FLOAT, 1, &defaultFogDensity);

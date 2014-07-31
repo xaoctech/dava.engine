@@ -3,6 +3,7 @@ uniform sampler2D tileTexture0 = 2;
 uniform sampler2D tileMask = 1;
 uniform sampler2D colorTexture = 0;
 uniform sampler2D specularMap = 6;
+uniform samplerCube fogGlowCubemap = 7;
 <FRAGMENT_SHADER>
 #ifdef GL_ES
 precision highp float;
@@ -42,7 +43,11 @@ uniform vec3 fogColor;
 varying float varFogAmoung;
 #if defined(FOG_GLOW)
 uniform vec3 fogGlowColor;
+uniform float fogK;
+uniform samplerCube fogGlowCubemap;
 varying float varFogGlowFactor;
+varying float varFogGlowDistanceAttenuation;
+varying vec3 viewDirection;
 #endif
 #endif
 
@@ -69,7 +74,11 @@ void main()
 
 #if defined(VERTEX_FOG)
 	#if defined(FOG_GLOW)
-		vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
+        lowp vec4 atmoColor = textureCube(fogGlowCubemap, viewDirection);
+        vec3 ccc = mix(atmoColor.rgb, fogGlowColor, varFogGlowFactor);
+        vec3 realFogColor = mix(fogColor, ccc, varFogGlowDistanceAttenuation)  * fogK;
+        
+		//vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
 		gl_FragColor.rgb = mix(color, realFogColor, varFogAmoung);
 	#else
 		gl_FragColor.rgb = mix(color, fogColor, varFogAmoung);

@@ -8,6 +8,7 @@ uniform sampler2D normalmap = 2;
 uniform sampler2D cubemap = 3;
 uniform sampler2D heightmap = 4;
 uniform sampler2D densitymap = 5;
+uniform samplerCube fogGlowCubemap = 7;
 
 uniform float normalScale = 1.0;
 uniform float inGlossiness = 0.5;
@@ -129,8 +130,11 @@ uniform vec3 fogColor;
 varying float varFogAmoung;
 #if defined(FOG_GLOW)
 uniform vec3 fogGlowColor;
+uniform float fogK;
+uniform samplerCube fogGlowCubemap;
 varying float varFogGlowFactor;
 varying float varFogGlowDistanceAttenuation;
+varying vec3 viewDirection;
 #endif
 #endif
 
@@ -486,7 +490,11 @@ void main()
 
 #if defined(VERTEX_FOG)
     #if defined(FOG_GLOW)
-        vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
+        lowp vec4 atmoColor = textureCube(fogGlowCubemap, viewDirection);
+        vec3 ccc = mix(atmoColor.rgb, fogGlowColor, varFogGlowFactor);
+        vec3 realFogColor = mix(fogColor, ccc, varFogGlowDistanceAttenuation)  * fogK;
+        
+        //vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
     #else
         vec3 realFogColor = fogColor;
     #endif
