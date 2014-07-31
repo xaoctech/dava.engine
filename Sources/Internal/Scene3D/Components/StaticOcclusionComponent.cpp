@@ -55,6 +55,7 @@ Component * StaticOcclusionComponent::Clone(Entity * toEntity)
     newComponent->SetSubdivisionsZ(zSubdivisions);
     newComponent->SetBoundingBox(boundingBox);
     newComponent->SetPlaceOnLandscape(placeOnLandscape);
+    newComponent->cellHeightOffset = cellHeightOffset;
 	return newComponent;
 }
 
@@ -68,6 +69,9 @@ void StaticOcclusionComponent::Serialize(KeyedArchive *archive, SerializationCon
         archive->SetUInt32("soc.xsub", xSubdivisions);
         archive->SetUInt32("soc.ysub", ySubdivisions);
         archive->SetUInt32("soc.zsub", zSubdivisions);
+        archive->SetBool("soc.placeOnLandscape", placeOnLandscape);
+        if (placeOnLandscape)
+            archive->SetByteArray("soc.cellHeightOffset", (uint8*)(&cellHeightOffset.front()), xSubdivisions*ySubdivisions*sizeof(float32));
 	}
 }
 
@@ -79,6 +83,13 @@ void StaticOcclusionComponent::Deserialize(KeyedArchive *archive, SerializationC
         xSubdivisions = archive->GetUInt32("soc.xsub", 1);
         ySubdivisions = archive->GetUInt32("soc.ysub", 1);
         zSubdivisions = archive->GetUInt32("soc.zsub", 1);
+        placeOnLandscape = archive->GetBool("soc.placeOnLandscape", false);
+        if (placeOnLandscape)
+        {
+            cellHeightOffset.resize(xSubdivisions*ySubdivisions, 0);
+            DVASSERT(xSubdivisions*ySubdivisions*sizeof(float32) == archive->GetByteArraySize("soc.cellHeightOffset"));            
+            memcpy(&cellHeightOffset.front(), archive->GetByteArray("soc.cellHeightOffset"), xSubdivisions*ySubdivisions*sizeof(float32));            
+        }
     }
 
 	Component::Deserialize(archive, serializationContext);
