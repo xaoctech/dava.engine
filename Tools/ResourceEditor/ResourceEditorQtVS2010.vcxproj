@@ -371,6 +371,7 @@
     <ClCompile Include="Classes\Commands2\MaterialGlobalCommand.cpp" />
     <ClCompile Include="Classes\Commands2\MaterialSwitchParentCommand.cpp" />
     <ClCompile Include="Classes\Commands2\MetaObjModifyCommand.cpp" />
+    <ClCompile Include="Classes\Commands2\PaintHeightDeltaAction.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleEditorCommands.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleEmitterMoveCommands.cpp" />
     <ClCompile Include="Classes\Commands2\ParticleForceMoveCommand.cpp" />
@@ -537,6 +538,7 @@
     <ClCompile Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.cpp" />
     <ClCompile Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.cpp" />
     <ClCompile Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.cpp" />
+    <ClCompile Include="Classes\Qt\Tools\HeightDeltaTool\HeightDeltaTool.cpp" />
     <ClCompile Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.cpp" />
     <ClCompile Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">false</ExcludedFromBuild>
@@ -1019,6 +1021,7 @@
     <ClInclude Include="Classes\Commands2\MaterialGlobalCommand.h" />
     <ClInclude Include="Classes\Commands2\MaterialSwitchParentCommand.h" />
     <ClInclude Include="Classes\Commands2\MetaObjModifyCommand.h" />
+    <ClInclude Include="Classes\Commands2\PaintHeightDeltaAction.h" />
     <ClInclude Include="Classes\Commands2\ParticleEditorCommands.h" />
     <ClInclude Include="Classes\Commands2\ParticleEmitterMoveCommands.h" />
     <ClInclude Include="Classes\Commands2\ParticleForceMoveCommand.h" />
@@ -1190,6 +1193,7 @@
     <ClInclude Include="Classes\Qt\Tools\DeveloperTools\DeveloperTools.h" />
     <ClInclude Include="Classes\Qt\Tools\EventFilterDoubleSpinBox\EventFilterDoubleSpinBox.h" />
     <ClInclude Include="Classes\Qt\Tools\HangingObjectsHeight\HangingObjectsHeight.h" />
+    <ClInclude Include="Classes\Qt\Tools\HeightDeltaTool\HeightDeltaTool.h" />
     <ClInclude Include="Classes\Qt\Tools\LabeledSlider\LabeledSlider.h" />
     <ClInclude Include="Classes\Qt\Tools\LandscapeDialog\LandscapeDialog.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">false</ExcludedFromBuild>

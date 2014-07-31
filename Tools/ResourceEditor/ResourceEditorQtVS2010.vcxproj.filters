@@ -229,6 +229,9 @@
     <Filter Include="Classes\Qt\DebugTools\VersionInfoWidget">
       <UniqueIdentifier>{5bf73ad8-d14f-48a7-88da-3142464bc5f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\Qt\Tools\HeightDeltaTool">
+      <UniqueIdentifier>{e0fc8e8b-5838-4377-b25b-3a32bdef5a89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Collada\ColladaAnimatedMesh.cpp">
@@ -1998,6 +2001,12 @@
     <ClCompile Include="_GeneratedQt\DebugTools\VersionInfoWidget\VersionInfoWidget_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Qt\Tools\HeightDeltaTool\HeightDeltaTool.cpp">
+      <Filter>Classes\Qt\Tools\HeightDeltaTool</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Commands2\PaintHeightDeltaAction.cpp">
+      <Filter>Classes\Commands2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Collada\ColladaAnimatedMesh.h">
@@ -3517,6 +3526,12 @@
     </ClInclude>
     <ClInclude Include="Classes\Qt\DebugTools\VersionInfoWidget\VersionInfoWidget.h">
       <Filter>Classes\Qt\DebugTools\VersionInfoWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Qt\Tools\HeightDeltaTool\HeightDeltaTool.h">
+      <Filter>Classes\Qt\Tools\HeightDeltaTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Commands2\PaintHeightDeltaAction.h">
+      <Filter>Classes\Commands2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
