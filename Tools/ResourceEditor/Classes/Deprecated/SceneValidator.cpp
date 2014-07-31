@@ -206,16 +206,7 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
 	if(ro->GetType() == RenderObject::TYPE_LANDSCAPE)
     {
         ownerNode->SetLocked(true);
-        if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
-        {
-            ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
-            SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
-            if(sc)
-            {
-                sc->MarkAsChanged();
-            }
-            errorsLog.insert("Landscape had wrong transform. Please re-save scene.");
-        }
+        FixIdentityTransform(ownerNode, errorsLog, "Landscape had wrong transform. Please re-save scene.");
         
 		Landscape *landscape = static_cast<Landscape *>(ro);
         ValidateLandscape(landscape, errorsLog);
@@ -226,19 +217,25 @@ void SceneValidator::ValidateRenderComponent(Entity *ownerNode, Set<String> &err
     if(ro->GetType() == RenderObject::TYPE_VEGETATION)
     {
         ownerNode->SetLocked(true);
-        if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
-        {
-            ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
-            SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
-            if(sc)
-            {
-                sc->MarkAsChanged();
-            }
-            errorsLog.insert("Vegetation had wrong transform. Please re-save scene.");
-        }
+        FixIdentityTransform(ownerNode, errorsLog, "Vegetation had wrong transform. Please re-save scene.");
     }
 }
 
+void SceneValidator::FixIdentityTransform(Entity *ownerNode,
+                          Set<String> &errorsLog,
+                          const String& errorMessage)
+{
+    if(ownerNode->GetLocalTransform() != DAVA::Matrix4::IDENTITY)
+    {
+        ownerNode->SetLocalTransform(DAVA::Matrix4::IDENTITY);
+        SceneEditor2 *sc = dynamic_cast<SceneEditor2 *>(ownerNode->GetScene());
+        if(sc)
+        {
+            sc->MarkAsChanged();
+        }
+        errorsLog.insert(errorMessage);
+    }
+}
 
 
 void SceneValidator::ValidateParticleEffectComponent(DAVA::Entity *ownerNode, Set<String> &errorsLog) const
