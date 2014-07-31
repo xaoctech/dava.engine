@@ -43,10 +43,10 @@ namespace DAVA
 class SoundComponent;
 struct SoundComponentElement
 {
-    SoundComponentElement(SoundEvent * sEvent, uint32 _flags, const Vector3 & direction) : 
-         soundEvent(sEvent), 
+    SoundComponentElement(SoundEvent * _soundEvent, uint32 _flags, const Vector3 & _localDirection) : 
+         soundEvent(_soundEvent), 
          flags(_flags),
-         localDirection(direction)
+         localDirection(_localDirection)
          {}
 
     SoundEvent * soundEvent;
