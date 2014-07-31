@@ -38,6 +38,8 @@
 
 namespace DAVA {
 
+	Map<FilePath, DFFont*> dfFontsMap;
+
 DFFont::DFFont()
 :   fontTexture(NULL)
 {
@@ -56,6 +58,12 @@ DFFont::~DFFont()
 
 DFFont* DFFont::Create(const FilePath & path)
 {
+    Map<FilePath, DFFont*>::iterator iter = dfFontsMap.find(path);
+    if (iter != dfFontsMap.end())
+    {
+        return static_cast<DFFont*>(iter->second->Clone());
+    }
+
     DFFont* font = new DFFont();
     
     if (!font->LoadConfig(path) || !font->LoadTexture(font->GetTexturePath()))
@@ -64,6 +72,7 @@ DFFont* DFFont::Create(const FilePath & path)
         return NULL;
     }
     
+    dfFontsMap[path] = font;
     return font;
 }
 
