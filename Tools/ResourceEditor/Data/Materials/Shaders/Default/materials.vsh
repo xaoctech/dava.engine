@@ -91,6 +91,8 @@ uniform vec3 metalFresnelReflectance;
 		uniform float fogGlowScattering;
 		uniform float fogGlowDistance;
 		varying float varFogGlowFactor;
+        varying float varFogGlowDistanceAttenuation;
+        varying vec3 viewDirection;
 	#endif
 #endif
 
@@ -628,8 +630,9 @@ void main()
 	
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
-		float fogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
-		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering) * fogGlowDistanceAttenuation;
+        viewDirection = normalize(vec3(worldMatrix * inPosition) - cameraPosition);
+		varFogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
+		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering) * varFogGlowDistanceAttenuation;
 	#endif
 #endif
 
