@@ -43,6 +43,7 @@
 		64B9018718BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018618BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp */; };
 		64B9018A18BF7B15001E6CCC /* GrassEditorProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018818BF7B15001E6CCC /* GrassEditorProxy.cpp */; };
 		64B9018D18BF7B25001E6CCC /* GrassEditorSystem.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018B18BF7B25001E6CCC /* GrassEditorSystem.cpp */; };
+		64FA1F24198914350004981D /* PaintHeightDeltaAction.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64FA1F22198914350004981D /* PaintHeightDeltaAction.cpp */; };
 		763DCF001964524200D94EB3 /* VersionInfoWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 763DCEFE1964524200D94EB3 /* VersionInfoWidget.cpp */; };
 		763DCF0B1964546C00D94EB3 /* VersionInfoWidget_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 763DCF0A1964546C00D94EB3 /* VersionInfoWidget_moc.cpp */; };
 		765A0ADB18CE0C7F0044516F /* MaterialTemplateModel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765A0AD918CE0C7F0044516F /* MaterialTemplateModel.cpp */; };
@@ -718,6 +719,8 @@
 		64B9018918BF7B15001E6CCC /* GrassEditorProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrassEditorProxy.h; sourceTree = "<group>"; };
 		64B9018B18BF7B25001E6CCC /* GrassEditorSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrassEditorSystem.cpp; sourceTree = "<group>"; };
 		64B9018C18BF7B25001E6CCC /* GrassEditorSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrassEditorSystem.h; sourceTree = "<group>"; };
+		64FA1F22198914350004981D /* PaintHeightDeltaAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PaintHeightDeltaAction.cpp; sourceTree = "<group>"; };
+		64FA1F23198914350004981D /* PaintHeightDeltaAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PaintHeightDeltaAction.h; sourceTree = "<group>"; };
 		6AB05FD3B5F9D1E725443AAE /* QtOpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QtOpenGL.framework; path = "~/QtSDK/Desktop/Qt/4.8.1/gcc/lib/QtOpenGL.framework"; sourceTree = "<absolute>"; };
 		6C21256244E578A9DE07EE60 /* xml_macos */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = xml_macos; path = ../../Libs/libs/libxml_macos.a; sourceTree = "<group>"; };
 		763DCEFE1964524200D94EB3 /* VersionInfoWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VersionInfoWidget.cpp; path = DebugTools/VersionInfoWidget/VersionInfoWidget.cpp; sourceTree = "<group>"; };
@@ -3261,6 +3264,8 @@
 				E8C9904D184CD0EB00AFBF3F /* TransformCommand.h */,
 				E8C9904E184CD0EB00AFBF3F /* VisibilityToolActions.cpp */,
 				E8C9904F184CD0EB00AFBF3F /* VisibilityToolActions.h */,
+				64FA1F22198914350004981D /* PaintHeightDeltaAction.cpp */,
+				64FA1F23198914350004981D /* PaintHeightDeltaAction.h */,
 			);
 			name = Commands2;
 			path = Classes/Commands2;
@@ -4656,6 +4661,7 @@
 				E8C991FE184CD0EC00AFBF3F /* btConvex2dConvex2dAlgorithm.cpp in Build Sources */,
 				E8C99289184CD0EC00AFBF3F /* DAEConvertAction.cpp in Build Sources */,
 				E8BAD757185A46DE00C98C8D /* LibraryFilteringModel_moc.cpp in Build Sources */,
+				64FA1F24198914350004981D /* PaintHeightDeltaAction.cpp in Build Sources */,
 				E8C99251184CD0EC00AFBF3F /* btSliderConstraint.cpp in Build Sources */,
 				E8C991EE184CD0EC00AFBF3F /* btCollisionAlgorithm.cpp in Build Sources */,
 				E8BAD6B71859F50300C98C8D /* LandscapeEditorBasePanel_moc.cpp in Build Sources */,
