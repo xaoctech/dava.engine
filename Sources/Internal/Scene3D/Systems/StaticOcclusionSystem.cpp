@@ -809,9 +809,12 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
     
     int32 xSideIndexCount = xSubdivisions * 6 * 2; 
     int32 ySideIndexCount = ySubdivisions * 6 * 2;
-    int32 sideIndexCount =  xSideIndexCount + ySideIndexCount;
+    int32 xySideIndexCount =  xSideIndexCount + ySideIndexCount;
     int32 zSideIndexCount = xSubdivisions * xSubdivisions * 6 * 2;
-    int32 indexCount = sideIndexCount + zSideIndexCount;
+    int32 totalSideIndexCount = xySideIndexCount+zSideIndexCount;
+    int32 xExtraIndexCount = (xSubdivisions-1) * (ySubdivisions) * 6 * 2;
+    int32 yExtraIndexCount = (ySubdivisions-1) * (xSubdivisions) * 6 * 2;
+    int32 indexCount = totalSideIndexCount+xExtraIndexCount+yExtraIndexCount;
 
     PolygonGroup *res = new PolygonGroup();    
     res->AllocateData(0, 0, indexCount);    
@@ -821,6 +824,7 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
     boxSize.y /= ySubdivisions;
     boxSize.z /= zSubdivisions;
 
+    //left and right
     for (uint32 xs = 0; xs < xSubdivisions; ++xs)
     {
         int32 iBase = xs*6*2;
@@ -842,6 +846,7 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
         res->SetIndex(iBase+5, IDX_BY_POS(xs, ySubdivisions-1, zSubdivisions)+3);
     }
 
+    //front and back
     for (uint32 ys = 0; ys < ySubdivisions; ++ys)
     {
         int32 iBase = xSideIndexCount + ys*6*2;
@@ -863,10 +868,11 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
         res->SetIndex(iBase+5, IDX_BY_POS(xSubdivisions-1, ys, zSubdivisions)+1);
     }
     
+    //bot and top
     for (uint32 xs = 0; xs < xSubdivisions; ++xs)
         for (uint32 ys = 0; ys < ySubdivisions; ++ys)
         {
-            int32 iBase = sideIndexCount + (ys*xSubdivisions+xs)*6*2;
+            int32 iBase = xySideIndexCount + (ys*xSubdivisions+xs)*6*2;
             int32 vBase = IDX_BY_POS(xs, ys, 0);
             res->SetIndex(iBase+0, vBase+0);
             res->SetIndex(iBase+1, vBase+1);
@@ -875,7 +881,7 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
             res->SetIndex(iBase+4, vBase+2);
             res->SetIndex(iBase+5, vBase+3);
 
-            iBase = sideIndexCount + (ys*xSubdivisions+xs)*6*2 + 6;
+            iBase = xySideIndexCount + (ys*xSubdivisions+xs)*6*2 + 6;
             vBase = IDX_BY_POS(xs, ys, zSubdivisions);
             res->SetIndex(iBase+0, vBase+0);
             res->SetIndex(iBase+1, vBase+1);
@@ -885,6 +891,55 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCove
             res->SetIndex(iBase+5, vBase+3);
         }
 
+    //extras across x axis
+    for (uint32 xs = 0; xs < (xSubdivisions-1); ++xs)
+        for (uint32 ys = 0; ys < ySubdivisions; ++ys)
+        {
+            int32 iBase = totalSideIndexCount + (xs*ySubdivisions+ys) * 6 * 2;
+            int32 vBase1 = IDX_BY_POS(xs, ys, 0);
+            int32 vBase2 = IDX_BY_POS(xs+1, ys, 0);
+            res->SetIndex(iBase+0, vBase1+1);
+            res->SetIndex(iBase+1, vBase1+2);
+            res->SetIndex(iBase+2, vBase2+3);
+            res->SetIndex(iBase+3, vBase1+1);
+            res->SetIndex(iBase+4, vBase2+3);
+            res->SetIndex(iBase+5, vBase2+0);
+
+            iBase += 6;
+            vBase1 = IDX_BY_POS(xs, ys, zSubdivisions);
+            vBase2 = IDX_BY_POS(xs+1, ys, zSubdivisions);
+            res->SetIndex(iBase+0, vBase1+1);
+            res->SetIndex(iBase+1, vBase1+2);
+            res->SetIndex(iBase+2, vBase2+3);
+            res->SetIndex(iBase+3, vBase1+1);
+            res->SetIndex(iBase+4, vBase2+3);
+            res->SetIndex(iBase+5, vBase2+0);
+        }
+
+    //extras across y axis
+    for (uint32 xs = 0; xs < xSubdivisions; ++xs)
+        for (uint32 ys = 0; ys < (ySubdivisions-1); ++ys)
+        {
+            int32 iBase = totalSideIndexCount + xExtraIndexCount + (ys*xSubdivisions+xs) * 6 * 2;
+            int32 vBase1 = IDX_BY_POS(xs, ys, 0);
+            int32 vBase2 = IDX_BY_POS(xs, ys+1, 0);
+            res->SetIndex(iBase+0, vBase1+2);
+            res->SetIndex(iBase+1, vBase1+3);
+            res->SetIndex(iBase+2, vBase2+0);
+            res->SetIndex(iBase+3, vBase1+2);
+            res->SetIndex(iBase+4, vBase2+0);
+            res->SetIndex(iBase+5, vBase2+1);
+
+            iBase += 6;
+            vBase1 = IDX_BY_POS(xs, ys, zSubdivisions);
+            vBase2 = IDX_BY_POS(xs, ys+1, zSubdivisions);
+            res->SetIndex(iBase+0, vBase1+2);
+            res->SetIndex(iBase+1, vBase1+3);
+            res->SetIndex(iBase+2, vBase2+0);
+            res->SetIndex(iBase+3, vBase1+2);
+            res->SetIndex(iBase+4, vBase2+0);
+            res->SetIndex(iBase+5, vBase2+1);
+        }
 
     res->BuildBuffers();
     res->renderDataObject->AttachVertices(gridPolygonGroup->renderDataObject);
