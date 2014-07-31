@@ -137,8 +137,7 @@ void UIControlSystem::RemovePopup(UIPopup *popup)
 {
     if (popupsToRemove.count(popup))
     {
-        Logger::Error("[UIControlSystem::RemovePopup] attempt to double remove popup.");
-        DVASSERT(false);
+        Logger::Warning("[UIControlSystem::RemovePopup] attempt to double remove popup during one frame.");
         return;
     }
 
