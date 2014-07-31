@@ -2737,6 +2737,9 @@
     <ClCompile Include="..\..\Sources\Internal\FileSystem\YamlNode.cpp">
       <Filter>Internal\FileSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Internal\Render\OGLHelpers.cpp">
+      <Filter>Internal\Render</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Render\2D\DFFont.cpp">
       <Filter>Internal\Render\2D</Filter>
     </ClCompile>
