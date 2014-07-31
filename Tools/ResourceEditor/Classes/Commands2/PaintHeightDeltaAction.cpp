@@ -153,9 +153,9 @@ void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
         {
             DAVA::float32 heightXY = SampleHeight(x, y, heightmapImage);
             DAVA::float32 heightLeft = (x - 1 >= 0) ? SampleHeight(x - 1, y, heightmapImage) : heightXY;
-            DAVA::float32 heightRight = (x + 1 < heightmapImage->width) ? SampleHeight(x + 1, y, heightmapImage) : heightXY;
+            DAVA::float32 heightRight = (x + 1 < (DAVA::int32)heightmapImage->width) ? SampleHeight(x + 1, y, heightmapImage) : heightXY;
             DAVA::float32 heightTop = (y - 1 >= 0) ? SampleHeight(x, y - 1, heightmapImage) : heightXY;
-            DAVA::float32 heightDown = (y + 1 < heightmapImage->height) ? SampleHeight(x, y + 1, heightmapImage) : heightXY;
+            DAVA::float32 heightDown = (y + 1 < (DAVA::int32)heightmapImage->height) ? SampleHeight(x, y + 1, heightmapImage) : heightXY;
             
             bool isOverThreshold = (DAVA::Abs(heightXY - heightLeft) > heightDelta) ||
                                     (DAVA::Abs(heightXY - heightRight) > heightDelta) ||
@@ -178,18 +178,18 @@ void PaintHeightDeltaAction::MarkDeltaRegion(DAVA::uint32 x,
                                              const DAVA::Color& markColor,
                                              DAVA::Image* deltaImage)
 {
-    DAVA::uint32 regionEndX = x * widthPixelRatio + (DAVA::uint32)widthPixelRatio;
-    DAVA::uint32 regionEndY = y * heightPixelRatio + (DAVA::uint32)heightPixelRatio;
-    DAVA::uint32 rgbaStride = sizeof(DAVA::uint32);
+    DAVA::int32 regionEndX = (DAVA::int32)(x * widthPixelRatio + (DAVA::uint32)widthPixelRatio);
+    DAVA::int32 regionEndY = (DAVA::int32)(y * heightPixelRatio + (DAVA::uint32)heightPixelRatio);
+    DAVA::int32 rgbaStride = sizeof(DAVA::uint32);
     
     DAVA::uint8 r = (DAVA::uint8)(markColor.r * 255.0f);
     DAVA::uint8 g = (DAVA::uint8)(markColor.g * 255.0f);
     DAVA::uint8 b = (DAVA::uint8)(markColor.b * 255.0f);
     DAVA::uint8 a = (DAVA::uint8)(markColor.a * 255.0f);
     
-    for(DAVA::int32 yy = y * heightPixelRatio; yy < regionEndY; ++yy)
+    for(DAVA::int32 yy = (DAVA::int32)(y * heightPixelRatio); yy < regionEndY; ++yy)
     {
-        for(DAVA::int32 xx = x * widthPixelRatio; xx < regionEndX; ++xx)
+        for(DAVA::int32 xx = (DAVA::int32)(x * widthPixelRatio); xx < regionEndX; ++xx)
         {
             DAVA::uint8* dataPtr = deltaImage->data + yy * deltaImage->width * rgbaStride + xx * rgbaStride;
             

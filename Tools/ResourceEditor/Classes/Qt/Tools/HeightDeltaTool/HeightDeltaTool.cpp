@@ -95,4 +95,6 @@ bool HeightDeltaTool::GenerateHeightDeltaImage(const QString& srcPath,
     action->Redo();
     
     DAVA::SafeDelete(action);
+
+    return true;
 }
