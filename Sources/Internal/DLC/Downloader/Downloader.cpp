@@ -57,7 +57,8 @@ size_t Downloader::SaveData(void *ptr, size_t size, size_t nmemb)
     }
 
     // maybee not ideal, but only Manager can use Downloader, so maybee callback is not required.
-    DownloadManager::Instance()->ResetRetriesCount();
+    if (written != 0)
+        DownloadManager::Instance()->ResetRetriesCount();
 
     return written;
 }
