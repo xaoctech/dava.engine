@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOption>
+#include <QMessageBox>
 
 #include <QDebug>
 #include "PaintingHelper.h"
@@ -17,6 +18,7 @@ GradientSlider::GradientSlider(QWidget *parent)
     connect( mouse, SIGNAL( mousePress( const QPoint& ) ), SLOT( onMousePress( const QPoint& ) ) );
     connect( mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( onMouseMove( const QPoint& ) ) );
     connect( mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( onMouseRelease( const QPoint& ) ) );
+    connect( mouse, SIGNAL( clicked() ), SLOT( onClick() ) );
 }
 
 GradientSlider::~GradientSlider()
@@ -31,14 +33,10 @@ void GradientSlider::setEditorDimensions( Qt::Edges flags )
 
 void GradientSlider::setPrefferableArrows()
 {
-    const int minPaddingSum = 36;
-    int paddingSum = padding().left + padding().right + padding().top + padding().bottom;
-    if ( paddingSum < minPaddingSum )
-    {
-        paddingSum = minPaddingSum;
-    }
+    const int paddingBase = padding().left + padding().right + padding().top + padding().bottom;
+    const int paddingSum = paddingBase < 27 ? paddingBase : 27;
     const int d = paddingSum * 3 / 7;
-    arrowSize = QSize( d, d );
+    //arrowSize = QSize( d, d );
     arrowCache.clear();
 }
 
@@ -108,6 +106,11 @@ void GradientSlider::onMouseRelease( const QPoint& pos )
     }
 }
 
+void GradientSlider::onClick()
+{
+    QMessageBox::information( this, "Test", QString() );
+}
+
 QPoint GradientSlider::fitInBackground( QPoint const& pos ) const
 {
     const QRect rc = QRect( 0, 0, width(), height() ).adjusted( padding().left, padding().top, -padding().right, -padding().bottom );
@@ -163,7 +166,7 @@ void GradientSlider::drawArrow( Qt::Edge arrow, QPainter *p ) const
     const auto it = arrowCache.constFind( arrow );
     if ( it == arrowCache.constEnd() )
     {
-        arrowCache[arrow] = QPixmap::fromImage( PaintingHelper::BuildArrowIcon( arrowSize, arrow, Qt::gray ) );
+        arrowCache[arrow] = QPixmap::fromImage( PaintingHelper::BuildArrowIcon( arrowSize, arrow, Qt::lightGray ) );
     }
 
     QPoint pos;

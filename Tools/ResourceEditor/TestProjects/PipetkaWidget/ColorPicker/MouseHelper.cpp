@@ -13,7 +13,7 @@ MouseHelper::MouseHelper( QWidget *_w )
 {
     Q_ASSERT( w );
     w->installEventFilter( this );
-    w->setMouseTracking( true );
+    //w->setMouseTracking( true );
 }
 
 MouseHelper::~MouseHelper()
@@ -67,10 +67,8 @@ void MouseHelper::leaveEvent( QEvent* event )
 
 void MouseHelper::mouseMoveEvent( QMouseEvent* event )
 {
-    prevPos = pos;
     pos = event->pos();
-
-    emit mouseMove( pos, prevPos );
+    emit mouseMove( pos );
 }
 
 void MouseHelper::mousePressEvent( QMouseEvent* event )
@@ -79,6 +77,7 @@ void MouseHelper::mousePressEvent( QMouseEvent* event )
         return ;
 
     pos = event->pos();
+    clickPos = pos;
     isPressed = true;
     emit mousePress( pos );
 }
@@ -93,4 +92,10 @@ void MouseHelper::mouseReleaseEvent( QMouseEvent* event )
     pos = event->pos();
     isPressed = false;
     emit mouseRelease( pos );
+
+    const QPoint dist = pos - clickPos;
+    if ( dist.manhattanLength() <= clickDist )
+    {
+        emit clicked();
+    }
 }

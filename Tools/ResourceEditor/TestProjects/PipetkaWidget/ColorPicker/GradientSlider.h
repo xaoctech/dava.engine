@@ -47,6 +47,7 @@ private slots:
     void onMousePress( const QPoint& pos );
     void onMouseMove( const QPoint& pos );
     void onMouseRelease( const QPoint& pos );
+    void onClick();
 
 private:
     QPoint fitInBackground( const QPoint& pos ) const;
