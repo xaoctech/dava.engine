@@ -162,7 +162,7 @@ void EditorLightSystem::RemoveEntity( DAVA::Entity * entity )
     {
 	    DVASSERT(lightCountOnScene >= 0);
 
-	    if(isEnabled && (lightCountOnScene == 0))
+	    if(lightCountOnScene == 0)
 	    {
 		    AddCameraLightOnScene();
 	    }

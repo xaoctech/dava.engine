@@ -126,7 +126,7 @@ public:
     virtual void Serialize(KeyedArchive *archive, SerializationContext *serializationContext);
     virtual void Deserialize(KeyedArchive *archive, SerializationContext *serializationContext);
     
-    RenderObject * GetRenderObject();
+    RenderObject * GetRenderObject() const;
 
 protected:
     ~StaticOcclusionDebugDrawComponent();
