@@ -77,13 +77,13 @@ StaticOcclusionBuildSystem::StaticOcclusionBuildSystem(Scene * scene)
     activeIndex = -1;
     componentInProgress = 0;
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
-    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED); 
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHANGED); 
 }
 
 StaticOcclusionBuildSystem::~StaticOcclusionBuildSystem()
 {
     GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
-    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);
+    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHANGED);
     SafeDelete(staticOcclusion);
 }
 
@@ -101,7 +101,7 @@ void StaticOcclusionBuildSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
     StaticOcclusionComponent *component = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
     DVASSERT(component);
-    if (component->GetPlaceOnLandscape()&&((event == EventSystem::WORLD_TRANSFORM_CHANGED)||(event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED)))
+    if (component->GetPlaceOnLandscape()&&((event == EventSystem::WORLD_TRANSFORM_CHANGED)||(event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHANGED)))
     {
         component->cellHeightOffset.clear();
         component->cellHeightOffset.resize(component->GetSubdivisionsX()*component->GetSubdivisionsY(), 0);
@@ -652,7 +652,7 @@ void StaticOcclusionSystem::InvalidateOcclusionIndicesRecursively(Entity *entity
 StaticOcclusionDebugDrawSystem::StaticOcclusionDebugDrawSystem(Scene *scene):SceneSystem(scene)
 {
     scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
-    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);
+    scene->GetEventSystem()->RegisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHANGED);
 
     debugOpaqueMaterial = NMaterial::CreateMaterial(FastName("Debug_Opaque_Material"),  NMaterialName::DEBUG_DRAW_OPAQUE, NMaterial::DEFAULT_QUALITY_NAME);		
     debugAlphablendMaterial = NMaterial::CreateMaterial(FastName("Debug_Alphablend_Material"),  NMaterialName::DEBUG_DRAW_ALPHABLEND, NMaterial::DEFAULT_QUALITY_NAME);	
@@ -661,7 +661,7 @@ StaticOcclusionDebugDrawSystem::StaticOcclusionDebugDrawSystem(Scene *scene):Sce
 StaticOcclusionDebugDrawSystem::~StaticOcclusionDebugDrawSystem()
 {
     GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::WORLD_TRANSFORM_CHANGED);
-    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED);
+    GetScene()->GetEventSystem()->UnregisterSystemForEvent(this, EventSystem::STATIC_OCCLUSION_COMPONENT_CHANGED);
     SafeRelease(debugOpaqueMaterial);
     SafeRelease(debugAlphablendMaterial);
 }
@@ -669,13 +669,12 @@ StaticOcclusionDebugDrawSystem::~StaticOcclusionDebugDrawSystem()
 void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
 {
     StaticOcclusionComponent *staticOcclusionComponent = static_cast<StaticOcclusionComponent*>(entity->GetComponent(Component::STATIC_OCCLUSION_COMPONENT));
-    RenderObject *debugRenderObject = NULL;
-    Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();
+    Matrix4 * worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
     //create render object
-    debugRenderObject = new RenderObject();    
-    RenderBatch *gridBatch = new RenderBatch();
-    PolygonGroup *gridPolygonGroup = CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), staticOcclusionComponent->GetCellHeightOffsets());
-    NMaterial *gridMaterialInstance = NMaterial::CreateMaterialInstance();    
+    ScopedPtr<RenderObject> debugRenderObject(new RenderObject());
+    ScopedPtr<RenderBatch> gridBatch(new RenderBatch());
+    ScopedPtr<PolygonGroup> gridPolygonGroup(CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), staticOcclusionComponent->GetCellHeightOffsets()));
+    ScopedPtr<NMaterial> gridMaterialInstance(NMaterial::CreateMaterialInstance());
     gridMaterialInstance->SetParent(debugAlphablendMaterial);
     Color col(0.0f, 0.3f, 0.1f, 0.2f);
     gridMaterialInstance->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &col);
@@ -684,10 +683,10 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
     
 
 
-    RenderBatch *coverBatch = new RenderBatch();
-    PolygonGroup *coverPolygonGroup = CreateStaticOcclusionDebugDrawCover(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), gridPolygonGroup);
+    ScopedPtr<RenderBatch> coverBatch(new RenderBatch());
+    ScopedPtr<PolygonGroup> coverPolygonGroup(CreateStaticOcclusionDebugDrawCover(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), gridPolygonGroup));
         
-    NMaterial *coverMaterialInstance = NMaterial::CreateMaterialInstance();    
+    ScopedPtr<NMaterial> coverMaterialInstance(NMaterial::CreateMaterialInstance());
     coverMaterialInstance->SetParent(debugAlphablendMaterial);
     Color colCover(0.1f, 0.5f, 0.1f, 0.3f);
     coverMaterialInstance->SetPropertyValue(NMaterial::PARAM_FLAT_COLOR, Shader::UT_FLOAT_VEC4, 1, &colCover);
@@ -702,25 +701,15 @@ void StaticOcclusionDebugDrawSystem::AddEntity(Entity * entity)
     GetScene()->renderSystem->MarkForUpdate(debugRenderObject);
 
     entity->AddComponent(new StaticOcclusionDebugDrawComponent(debugRenderObject));    
-    GetScene()->GetRenderSystem()->RenderPermanent(debugRenderObject);
-
-    SafeRelease(gridPolygonGroup);
-    SafeRelease(gridMaterialInstance);
-    SafeRelease(gridBatch);
-    SafeRelease(coverPolygonGroup);
-    SafeRelease(coverMaterialInstance);
-    SafeRelease(coverBatch);
-    SafeRelease(debugRenderObject);
-    
+    GetScene()->GetRenderSystem()->RenderPermanent(debugRenderObject);        
 }
+
 void StaticOcclusionDebugDrawSystem::RemoveEntity(Entity * entity)
 {
     StaticOcclusionDebugDrawComponent *debugDrawComponent = static_cast<StaticOcclusionDebugDrawComponent *>(entity->GetComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT));
     DVASSERT(debugDrawComponent);    
     GetScene()->GetRenderSystem()->RemoveFromRender(debugDrawComponent->GetRenderObject());
-    entity->RemoveComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);
-    
-
+    entity->RemoveComponent(Component::STATIC_OCCLUSION_DEBUG_DRAW_COMPONENT);    
 }
 void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 event)
 {
@@ -730,7 +719,7 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 even
     if (event == EventSystem::WORLD_TRANSFORM_CHANGED)
     {
         // Update new transform pointer, and mark that transform is changed
-        Matrix4 * worldTransformPointer = ((TransformComponent*)entity->GetComponent(Component::TRANSFORM_COMPONENT))->GetWorldTransformPtr();       
+        Matrix4 * worldTransformPointer = GetTransformComponent(entity)->GetWorldTransformPtr();
         RenderObject * object = debugDrawComponent->GetRenderObject();
         if(NULL != object)
         {
@@ -739,7 +728,7 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 even
         }        
     }
 
-    if ((event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHENGED) || (staticOcclusionComponent->GetPlaceOnLandscape()))
+    if ((event == EventSystem::STATIC_OCCLUSION_COMPONENT_CHANGED) || (staticOcclusionComponent->GetPlaceOnLandscape()))
     {                
         ScopedPtr<PolygonGroup> gridPolygonGroup(CreateStaticOcclusionDebugDrawGrid(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), staticOcclusionComponent->GetCellHeightOffsets()));
         ScopedPtr<PolygonGroup> coverPolygonGroup(CreateStaticOcclusionDebugDrawCover(staticOcclusionComponent->GetBoundingBox(), staticOcclusionComponent->GetSubdivisionsX(), staticOcclusionComponent->GetSubdivisionsY(), staticOcclusionComponent->GetSubdivisionsZ(), gridPolygonGroup));
@@ -753,7 +742,7 @@ void StaticOcclusionDebugDrawSystem::ImmediateEvent(Entity * entity, uint32 even
 
 #define IDX_BY_POS(xc, yc, zc) ((zc) + (zSubdivisions+1)*((yc) + (xc) * ySubdivisions))*4
 
-PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset)
+PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid(const AABBox3& boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset)
 {
     int32 vertexCount = xSubdivisions * ySubdivisions * 4 * (zSubdivisions + 1);
     int32 indexCount = xSubdivisions * ySubdivisions * zSubdivisions * 12 * 2; //12 lines per box 2 indices per line
@@ -804,7 +793,7 @@ PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawGrid
     return res;
 }
 
-PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCover( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup)
+PolygonGroup* StaticOcclusionDebugDrawSystem::CreateStaticOcclusionDebugDrawCover(const AABBox3& boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup)
 {
     
     int32 xSideIndexCount = xSubdivisions * 6 * 2; 

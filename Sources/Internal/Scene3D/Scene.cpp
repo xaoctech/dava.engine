@@ -413,17 +413,17 @@ void Scene::UnregisterEntity(Entity * entity)
     }
 }
 
-void Scene::RegisterEntitiesInSsystemRecursively(SceneSystem *system, Entity * entity)
+void Scene::RegisterEntitiesInSystemRecursively(SceneSystem *system, Entity * entity)
 {
     system->RegisterEntity(entity);
     for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
-        RegisterEntitiesInSsystemRecursively(system, entity->GetChild(i));
+        RegisterEntitiesInSystemRecursively(system, entity->GetChild(i));
 }
-void Scene::UnregisterEntitiesInSsystemRecursively(SceneSystem *system, Entity * entity)
+void Scene::UnregisterEntitiesInSystemRecursively(SceneSystem *system, Entity * entity)
 {
     system->UnregisterEntity(entity);
     for (int32 i=0, sz = entity->GetChildrenCount(); i<sz; ++i)
-        UnregisterEntitiesInSsystemRecursively(system, entity->GetChild(i));
+        UnregisterEntitiesInSystemRecursively(system, entity->GetChild(i));
 }
 
 void Scene::RegisterComponent(Entity * entity, Component * component)
@@ -509,12 +509,12 @@ void Scene::AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool nee
         }
     }
     DVASSERT(needProcess == wasInsertedForUpdate);
-    RegisterEntitiesInSsystemRecursively(sceneSystem, this);
+    RegisterEntitiesInSystemRecursively(sceneSystem, this);
 }
     
 void Scene::RemoveSystem(SceneSystem * sceneSystem)
 {
-    UnregisterEntitiesInSsystemRecursively(sceneSystem, this);
+    UnregisterEntitiesInSystemRecursively(sceneSystem, this);
     Vector<SceneSystem*>::iterator endIt = systemsToProcess.end();
     for(Vector<SceneSystem*>::iterator it = systemsToProcess.begin(); it != endIt; ++it)
     {
