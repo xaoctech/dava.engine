@@ -220,6 +220,7 @@ void Scene::InitGlobalMaterial()
     
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_LIMIT)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_LIMIT, Shader::UT_FLOAT, 1, &defaultFloat10);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_COLOR)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_COLOR, Shader::UT_FLOAT_VEC4, 1, &defaultColor);
+    if(NULL == sceneGlobalMaterial->GetPropertyValue(FastName("fogDistance"))) sceneGlobalMaterial->SetPropertyValue(FastName("fogDistance"), Shader::UT_FLOAT, 1, &defaultFogEnd);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_DENSITY)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_DENSITY, Shader::UT_FLOAT, 1, &defaultFogDensity);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_START)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_START, Shader::UT_FLOAT, 1, &defaultFogStart);
     if(NULL == sceneGlobalMaterial->GetPropertyValue(NMaterial::PARAM_FOG_END)) sceneGlobalMaterial->SetPropertyValue(NMaterial::PARAM_FOG_END, Shader::UT_FLOAT, 1, &defaultFogEnd);
