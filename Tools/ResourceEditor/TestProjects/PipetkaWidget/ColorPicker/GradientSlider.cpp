@@ -6,11 +6,12 @@
 #include <QStyleOption>
 
 #include <QDebug>
+#include "PaintingHelper.h"
 
 
 GradientSlider::GradientSlider(QWidget *parent)
     : GradientWidget(parent)
-    , arrowSize( 20, 20 )
+    , arrowSize( 9, 9 )
     , mouse( new MouseHelper( this ) )
 {
     connect( mouse, SIGNAL( mousePress( const QPoint& ) ), SLOT( onMousePress( const QPoint& ) ) );
@@ -26,6 +27,13 @@ void GradientSlider::setEditorDimensions( Qt::Edges flags )
 {
     arrows = flags;
     update();
+}
+
+void GradientSlider::setPrefferableArrows()
+{
+    const int d = ( padding().left + padding().right + padding().top + padding().bottom ) * 3 / 7;
+    arrowSize = QSize( d, d );
+    arrowCache.clear();
 }
 
 QColor GradientSlider::GetColor() const
@@ -46,6 +54,11 @@ QPixmap GradientSlider::drawContent() const
     drawArrows( &p );
 
     return buf;
+}
+
+void GradientSlider::resizeEvent( QResizeEvent* e )
+{
+    GradientWidget::resizeEvent( e );
 }
 
 void GradientSlider::onMousePress( const QPoint& pos )
@@ -130,28 +143,29 @@ void GradientSlider::drawArrows( QPainter* p ) const
 
 void GradientSlider::drawArrow( Qt::Edge arrow, QPainter *p ) const
 {
-    QStyle::PrimitiveElement pe;
+    const auto it = arrowCache.constFind( arrow );
+    if ( it == arrowCache.constEnd() )
+    {
+        arrowCache[arrow] = QPixmap::fromImage( PaintingHelper::BuildArrowIcon( arrowSize, arrow, Qt::gray ) );
+    }
+
     QPoint pos;
 
     switch ( arrow )
     {
     case Qt::TopEdge:
-        pe = QStyle::PE_IndicatorArrowDown;
         pos.setX( currentPos.x() - arrowSize.width() / 2 );
         pos.setY( 0 );
         break;
     case Qt::LeftEdge:
-        pe = QStyle::PE_IndicatorArrowRight;
         pos.setX( 0 );
         pos.setY( currentPos.y() - arrowSize.height() / 2 );
         break;
     case Qt::RightEdge:
-        pe = QStyle::PE_IndicatorArrowLeft;
         pos.setX( width() - arrowSize.width() - 1 );
         pos.setY( currentPos.y() - arrowSize.height() / 2 );
         break;
     case Qt::BottomEdge:
-        pe = QStyle::PE_IndicatorArrowUp;
         pos.setX( currentPos.x() - arrowSize.width() / 2 );
         pos.setY( height() - arrowSize.height() - 1 );
         break;
@@ -159,9 +173,6 @@ void GradientSlider::drawArrow( Qt::Edge arrow, QPainter *p ) const
         return;
     }
 
-    QStyleOption opt;
-    opt.initFrom( this );
-    opt.rect = QRect( pos, arrowSize );
-    p->fillRect( opt.rect, Qt::red );
-    style()->drawPrimitive( pe, &opt, p, this );
+    QRect rc( pos, arrowSize );
+    p->drawPixmap( pos, arrowCache[arrow] );
 }
