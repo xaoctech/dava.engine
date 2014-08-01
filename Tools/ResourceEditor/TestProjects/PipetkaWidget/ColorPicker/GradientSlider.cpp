@@ -31,17 +31,33 @@ void GradientSlider::setEditorDimensions( Qt::Edges flags )
 
 void GradientSlider::setPrefferableArrows()
 {
-    const int d = ( padding().left + padding().right + padding().top + padding().bottom ) * 3 / 7;
+    const int minPaddingSum = 36;
+    int paddingSum = padding().left + padding().right + padding().top + padding().bottom;
+    if ( paddingSum < minPaddingSum )
+    {
+        paddingSum = minPaddingSum;
+    }
+    const int d = paddingSum * 3 / 7;
     arrowSize = QSize( d, d );
     arrowCache.clear();
 }
 
-QColor GradientSlider::GetColor() const
+QPointF GradientSlider::GetPosF() const
 {
-    return QColor();
+    const QSize size( width() - padding().left - padding().right, height() - padding().top - padding().bottom );
+    const QPoint relPos( currentPos.x() + padding().left, currentPos.y() + padding().top );
+    const QPointF pos( double(relPos.x()) / double(size.width()), double(relPos.y()) / double(size.height()) );
+
+    return pos;
 }
 
-void GradientSlider::setColor( QColor const& c )
+QColor GradientSlider::GetColor() const
+{
+    const QPoint relPos( currentPos.x() - padding().left, currentPos.y() - padding().top );
+    return GetColorAt( relPos );
+}
+
+void GradientSlider::setColor( const QColor& c )
 {
 }
 
@@ -66,6 +82,7 @@ void GradientSlider::onMousePress( const QPoint& pos )
     startColor = GetColor();
     setPos( pos );
     emit begin();
+    emit changing( GetColor() );
 }
 
 void GradientSlider::onMouseMove( QPoint const& pos )
@@ -91,7 +108,7 @@ void GradientSlider::onMouseRelease( const QPoint& pos )
     }
 }
 
-QPoint GradientSlider::fitInGradient( QPoint const& pos ) const
+QPoint GradientSlider::fitInBackground( QPoint const& pos ) const
 {
     const QRect rc = QRect( 0, 0, width(), height() ).adjusted( padding().left, padding().top, -padding().right, -padding().bottom );
     QPoint pt = pos;
@@ -121,7 +138,7 @@ QPoint GradientSlider::fitInGradient( QPoint const& pos ) const
 
 void GradientSlider::setPos( QPoint const& pos )
 {
-    currentPos = fitInGradient( pos );
+    currentPos = fitInBackground( pos );
     repaint();
 }
 

@@ -29,6 +29,7 @@ public:
 
 private slots:
     void onPaletteType();
+    void onSliderColor( const QColor& c );
 
 private:
     QScopedPointer<Ui::ColorWidget> ui;

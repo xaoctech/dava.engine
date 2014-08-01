@@ -17,13 +17,13 @@ GradientWidget::~GradientWidget()
 {
 }
 
-void GradientWidget::setColorRange( QColor const& start, QColor const& stop )
+void GradientWidget::SetColorRange( QColor const& start, QColor const& stop )
 {
     startColor = start;
     stopColor = stop;
 }
 
-void GradientWidget::setRenderDimensions( bool _hor, bool _ver )
+void GradientWidget::SetRenderDimensions( bool _hor, bool _ver )
 {
     if ( hor != _hor || ver != _ver )
     {
@@ -35,7 +35,7 @@ void GradientWidget::setRenderDimensions( bool _hor, bool _ver )
     }
 }
 
-void GradientWidget::setBgPadding( int left, int top, int right, int bottom )
+void GradientWidget::SetBgPadding( int left, int top, int right, int bottom )
 {
     paddingOfs.left = left;
     paddingOfs.top = top;
@@ -43,7 +43,7 @@ void GradientWidget::setBgPadding( int left, int top, int right, int bottom )
     paddingOfs.bottom = bottom;
 }
 
-void GradientWidget::setGrid( bool enabled, const QSize& _size )
+void GradientWidget::SetGrid( bool enabled, const QSize& _size )
 {
     if ( _size == QSize() )
     {
@@ -58,6 +58,14 @@ void GradientWidget::setGrid( bool enabled, const QSize& _size )
         cacheBg = QPixmap();
         update();
     }
+}
+
+QColor GradientWidget::GetColorAt( QPoint const& pos ) const
+{
+    drawBackground();   // Refresh cache;
+    QRgb data = cacheBgImage.pixel( pos );
+
+    return QColor(data);
 }
 
 QPixmap GradientWidget::drawBackground() const
@@ -81,6 +89,7 @@ QPixmap GradientWidget::drawBackground() const
         }
         p.drawImage( bgRc, bg );
 
+        cacheBgImage = fullBg;
         cacheBg = QPixmap::fromImage( fullBg );
     }
 

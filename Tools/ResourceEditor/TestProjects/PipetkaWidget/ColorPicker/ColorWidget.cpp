@@ -13,15 +13,19 @@ ColorWidget::ColorWidget(QWidget *parent)
     
     // TEST
     {
-        ui->test_01->setColorRange( QColor( 255, 0, 0 ), QColor( 0, 0, 0, 0 ) );
-        ui->test_01->setRenderDimensions( true, false );
+        ui->test_01->SetColorRange( QColor( 255, 0, 0 ), QColor( 0, 0, 0, 0 ) );
+        ui->test_01->SetRenderDimensions( true, false );
     }
     {
-        ui->test_02->setColorRange( QColor( 0, 255, 0 ), QColor( 0, 0, 255 ) );
-        ui->test_02->setRenderDimensions( false, true );
-        ui->test_02->setBgPadding( 5, 5, 5, 5 );
-        ui->test_02->setEditorDimensions( Qt::LeftEdge | Qt::RightEdge | Qt::TopEdge | Qt::BottomEdge );
+        const QColor c1 = QColor( 0, 255, 0 );
+        const QColor c2 = QColor( 0, 0, 255 );
+        ui->test_02->SetColorRange( c1, c2 );
+        ui->test_02->SetRenderDimensions( false, true );
+        //ui->test_02->SetBgPadding( 5, 5, 5, 5 );
+        ui->test_02->setEditorDimensions( Qt::LeftEdge | Qt::RightEdge );
         ui->test_02->setPrefferableArrows();
+
+        connect( ui->test_02, SIGNAL( changing( const QColor& ) ), SLOT( onSliderColor( const QColor& ) ) );
     }
 
     AddPalette( "HSV", new HSVPaletteWidget() );
@@ -51,4 +55,12 @@ void ColorWidget::onPaletteType()
 
     const QString& key = ui->paletteCombo->itemData( idx ).toString();
     ui->paletteStack->setCurrentWidget( paletteMap[key] );
+}
+
+void ColorWidget::onSliderColor( QColor const& c )
+{
+    const QSize picSize( ui->cmid->size() );
+    QPixmap pix( picSize );
+    pix.fill( c );
+    ui->cmid->setPixmap( pix );
 }

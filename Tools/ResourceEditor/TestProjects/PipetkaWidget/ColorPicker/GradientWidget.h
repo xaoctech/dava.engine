@@ -24,10 +24,12 @@ public:
     explicit GradientWidget(QWidget *parent);
     ~GradientWidget();
 
-    void setColorRange( const QColor& start, const QColor& stop );
-    void setRenderDimensions( bool hor, bool ver );
-    void setBgPadding( int left, int top, int right, int bottom );
-    void setGrid( bool enabled, const QSize& size = QSize() );
+    void SetColorRange( const QColor& start, const QColor& stop );
+    void SetRenderDimensions( bool hor, bool ver );
+    void SetBgPadding( int left, int top, int right, int bottom );
+    void SetGrid( bool enabled, const QSize& size = QSize() );
+
+    QColor GetColorAt( const QPoint& pos ) const;
 
 protected:
     virtual QPixmap drawBackground() const;
@@ -42,6 +44,7 @@ protected:
 private:
 
     mutable QPixmap cacheBg;
+    mutable QImage cacheBgImage;    // To fast GetColor of any pixel
     QColor startColor;
     QColor stopColor;
     Offset paddingOfs;

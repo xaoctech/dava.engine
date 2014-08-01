@@ -30,6 +30,8 @@ public:
     void setEditorDimensions( Qt::Edges flags = (Qt::LeftEdge | Qt::RightEdge) );
     void setPrefferableArrows();
 
+    QPointF GetPosF() const;
+
     // IColorEditor overrides
     QColor GetColor() const override;
     void setColor( QColor const& c ) override;
@@ -47,7 +49,7 @@ private slots:
     void onMouseRelease( const QPoint& pos );
 
 private:
-    QPoint fitInGradient( const QPoint& pos ) const;
+    QPoint fitInBackground( const QPoint& pos ) const;
     void setPos( const QPoint& pos );
 
     void drawArrows( QPainter *p ) const;
