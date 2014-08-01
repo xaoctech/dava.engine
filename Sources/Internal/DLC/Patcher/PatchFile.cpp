@@ -639,7 +639,10 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                         else
                         {
                             // this operation should be atomic
-                            FileSystem::Instance()->MoveFile(tmpNewPath, newPath, true);
+                            if(!FileSystem::Instance()->MoveFile(tmpNewPath, newPath, true))
+                            {
+                                ret = ERROR_APPLY;
+                            }
                         }
                     }
                 }
@@ -674,11 +677,17 @@ PatchFileReader::PatchError PatchFileReader::Apply(const FilePath &_origBase, co
                 if(newPathToDelete.IsDirectoryPathname())
                 {
                     // delete only empty directory
-                    FileSystem::Instance()->DeleteDirectory(newPathToDelete);
+                    if(!FileSystem::Instance()->DeleteDirectory(newPathToDelete))
+                    {
+                        ret = ERROR_APPLY;
+                    }
                 }
                 else
                 {
-                    FileSystem::Instance()->DeleteFile(newPathToDelete);
+                    if(!FileSystem::Instance()->DeleteFile(newPathToDelete))
+                    {
+                        ret = ERROR_APPLY;
+                    }
                 }
             }
         }

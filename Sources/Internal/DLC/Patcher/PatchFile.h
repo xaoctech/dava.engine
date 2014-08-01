@@ -108,6 +108,7 @@ public:
         ERROR_ORIG_CRC,     // file on origPath has wrong crc to apply patch
         ERROR_NEW_PATH,     // file on newPath can't be opened for writing
         ERROR_NEW_CRC,      // file on newPath has wrong crc after applied patch
+        ERROR_APPLY,        // patch can't be applied
         ERROR_UNKNOWN
     };
 
