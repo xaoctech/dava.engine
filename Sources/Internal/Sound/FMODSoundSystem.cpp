@@ -43,8 +43,8 @@
 #include "musicios.h"
 #endif
 
-#define MAX_SOUND_CHANNELS 32
-#define MAX_SOUND_VIRTUAL_CHANNELS 128
+#define MAX_SOUND_CHANNELS 48
+#define MAX_SOUND_VIRTUAL_CHANNELS 64
 
 namespace DAVA
 {
@@ -79,7 +79,7 @@ SoundSystem::SoundSystem()
 #ifdef DAVA_FMOD_PROFILE
     FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
 #else
-    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL, extraDriverData));
+    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
 #endif
     
     FMOD::EventCategory * masterCategory = 0;
