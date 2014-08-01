@@ -2,7 +2,7 @@
 
 #include <QPainter>
 
-#include "PaletteHelper.h"
+#include "PaintingHelper.h"
 
 
 HSVPaletteWidget::HSVPaletteWidget(QWidget *parent)
@@ -34,7 +34,7 @@ void HSVPaletteWidget::paintEvent( QPaintEvent* e )
 
     if ( cache.isNull() )
     {
-        const QImage& pal = PaletteHelper::BuildHSVImage( size() );
+        const QImage& pal = PaintingHelper::BuildHSVImage( size() );
         cache = QPixmap::fromImage( pal );
     }
 

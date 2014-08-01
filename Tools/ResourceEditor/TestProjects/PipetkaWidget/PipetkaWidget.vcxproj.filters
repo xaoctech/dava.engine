@@ -71,9 +71,6 @@
     <ClCompile Include="ColorPicker\HSVPaletteWidget.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
-    <ClCompile Include="ColorPicker\PaletteHelper.cpp">
-      <Filter>ColorPicker</Filter>
-    </ClCompile>
     <ClCompile Include="ColorPicker\GradientWidget.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
@@ -99,6 +96,9 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="ColorPicker\MouseHelper.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\PaintingHelper.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,7 +141,7 @@
     <ClInclude Include="GeneratedFiles\ui_ColorWidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="ColorPicker\PaletteHelper.h">
+    <ClInclude Include="ColorPicker\PaintingHelper.h">
       <Filter>ColorPicker</Filter>
     </ClInclude>
   </ItemGroup>

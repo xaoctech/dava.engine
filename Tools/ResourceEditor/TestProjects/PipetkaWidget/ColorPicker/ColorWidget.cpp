@@ -18,9 +18,10 @@ ColorWidget::ColorWidget(QWidget *parent)
     }
     {
         ui->test_02->setColorRange( QColor( 0, 255, 0 ), QColor( 0, 0, 255 ) );
-        ui->test_02->setRenderDimensions( true, true );
-        ui->test_02->setBgPadding( 10, 10, 10, 10 );
+        ui->test_02->setRenderDimensions( false, true );
+        ui->test_02->setBgPadding( 5, 5, 5, 5 );
         ui->test_02->setEditorDimensions( Qt::LeftEdge | Qt::RightEdge | Qt::TopEdge | Qt::BottomEdge );
+        ui->test_02->setPrefferableArrows();
     }
 
     AddPalette( "HSV", new HSVPaletteWidget() );

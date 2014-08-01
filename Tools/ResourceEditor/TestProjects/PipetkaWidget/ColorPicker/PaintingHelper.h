@@ -6,12 +6,13 @@
 #include <QImage>
 
 
-class PaletteHelper
+class PaintingHelper
 {
 public:
     static QImage BuildHSVImage( const QSize& size );
     static QImage BuildGradient( const QSize& size, const QColor& c1, const QColor& c2, bool hor, bool ver );
     static QBrush BuildGridBrush( const QSize& size );
+    static QImage BuildArrowIcon( const QSize& size, Qt::Edge dimension, const QColor& color = Qt::gray );
 
 private:
     static int hue( const QPoint& pt, const QSize& size );

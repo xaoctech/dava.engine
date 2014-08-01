@@ -1,7 +1,7 @@
 #include "GradientWidget.h"
 
 #include <QPainter>
-#include "PaletteHelper.h"
+#include "PaintingHelper.h"
 
 
 GradientWidget::GradientWidget( QWidget *parent )
@@ -68,7 +68,7 @@ QPixmap GradientWidget::drawBackground() const
         const int verPadding = paddingOfs.top + paddingOfs.bottom;
         QSize actualSize( size().width() - horPadding, size().height() - verPadding );
         
-        const QImage& bg = PaletteHelper::BuildGradient( actualSize, startColor, stopColor, hor, ver );
+        const QImage& bg = PaintingHelper::BuildGradient( actualSize, startColor, stopColor, hor, ver );
         QImage fullBg( size(), QImage::Format_ARGB32 );
         fullBg.fill( Qt::transparent );
 
@@ -76,7 +76,7 @@ QPixmap GradientWidget::drawBackground() const
         QPainter p( &fullBg );
         if ( fillBg )
         {
-            const QBrush& bgBrush = PaletteHelper::BuildGridBrush( QSize( 5, 5 ) );
+            const QBrush& bgBrush = PaintingHelper::BuildGridBrush( QSize( 5, 5 ) );
             p.fillRect( bgRc, bgBrush );
         }
         p.drawImage( bgRc, bg );

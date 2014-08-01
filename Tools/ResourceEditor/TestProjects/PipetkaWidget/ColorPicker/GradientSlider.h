@@ -28,6 +28,7 @@ public:
     ~GradientSlider();
 
     void setEditorDimensions( Qt::Edges flags = (Qt::LeftEdge | Qt::RightEdge) );
+    void setPrefferableArrows();
 
     // IColorEditor overrides
     QColor GetColor() const override;
@@ -36,6 +37,9 @@ public:
 protected:
     // GradientWidget overrides
     QPixmap drawContent() const override;
+
+    // QWidget overrides
+    void resizeEvent( QResizeEvent* e ) override;
 
 private slots:
     void onMousePress( const QPoint& pos );
@@ -56,9 +60,7 @@ private:
     QColor startColor;
     QColor color;
 
-    QMap< Qt::Edge, QPixmap > arrowCache;
-
-private:
+    mutable QMap< Qt::Edge, QPixmap > arrowCache;
 };
 
 #endif // GRADIENTSLIDER_H
