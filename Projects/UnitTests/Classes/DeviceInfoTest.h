@@ -54,6 +54,8 @@ public:
 protected:
     String GetNetworkTypeString();
 
+    String FormatStorageSize(int64 size);
+
 private:
     UIStaticText* deviceInfoText;
 };
