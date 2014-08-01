@@ -41,24 +41,22 @@ class HeightDeltaTool
 {
 public:
 
-    HeightDeltaTool(QDoubleSpinBox* tb,
-                    QToolButton* cb);
-    
-    void SetSelectedColor(const QColor& color);
-    const QColor& GetSelectedColor();
+    HeightDeltaTool(QDoubleSpinBox* tb);
     
     void SetThreshold(double thresholdValue);
     double GetThreshold() const;
     
     bool GenerateHeightDeltaImage(const QString& srcPath,
-                                  DAVA::Landscape* landscape);
+                                  DAVA::Landscape* landscape,
+                                  DAVA::FilePath& outResultPath);
+    
+private:
+
+    double GetThresholdInMeters(double unitSize);
     
 private:
    
     QDoubleSpinBox* thresholdBox;
-    QToolButton* colorButton;
-    
-    QColor selectedColor;
 };
 
 

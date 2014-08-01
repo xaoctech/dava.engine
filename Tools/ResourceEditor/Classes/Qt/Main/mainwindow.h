@@ -206,8 +206,7 @@ public slots:
     void OnReloadShaders();
 
     void OnSwitchWithDifferentLODs(bool checked);
-    
-    void OnSelectHeightDeltaColor();
+
     void OnGenerateHeightDelta();
     
 protected:

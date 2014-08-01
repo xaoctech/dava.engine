@@ -32,24 +32,9 @@
 
 #include <QImageReader>
 
-HeightDeltaTool::HeightDeltaTool(QDoubleSpinBox* tb,
-                QToolButton* cb)
+HeightDeltaTool::HeightDeltaTool(QDoubleSpinBox* tb)
 {
     thresholdBox = tb;
-    colorButton = cb;
-}
-
-void HeightDeltaTool::SetSelectedColor(const QColor& color)
-{
-    selectedColor = color;
-    
-    QString styleSheet = QString("background:%1").arg(selectedColor.name());
-    colorButton->setStyleSheet(styleSheet);
-}
-
-const QColor& HeightDeltaTool::GetSelectedColor()
-{
-    return selectedColor;
 }
 
 void HeightDeltaTool::SetThreshold(double thresholdValue)
@@ -62,39 +47,54 @@ double HeightDeltaTool::GetThreshold() const
     return thresholdBox->value();
 }
 
+double HeightDeltaTool::GetThresholdInMeters(double unitSize)
+{
+    double angle = GetThreshold();
+    DAVA::float32 radAngle = DAVA::DegToRad((DAVA::float32)angle);
+    
+    double tangens = tan(radAngle);
+    
+    double delta = DAVA::Abs(unitSize * (DAVA::float32)tangens);
+    return delta;
+}
+
 bool HeightDeltaTool::GenerateHeightDeltaImage(const QString& srcPath,
-                                               DAVA::Landscape* landscape)
+                                               DAVA::Landscape* landscape,
+                                               DAVA::FilePath& outResultPath)
 {
     QImageReader imageReader(srcPath);
     
-    QSize imageSize = imageReader.size();
-    QColor selectedColor = GetSelectedColor();
-    double threshold = GetThreshold();
-    
-    DAVA::FilePath dstImagePath = srcPath.toStdString();
-    DAVA::String baseName = dstImagePath.GetBasename();
-    DAVA::String extension = dstImagePath.GetExtension();
-    
-    QString colorName = selectedColor.name();
-    colorName = colorName.replace("#", "");
-    colorName.prepend("_");
-    
-    baseName += colorName.toStdString();
-    
-    dstImagePath = dstImagePath.GetDirectory() + baseName + extension;
-    
     const DAVA::AABBox3& bbox = landscape->GetBoundingBox();
-    PaintHeightDeltaAction* action = new PaintHeightDeltaAction(dstImagePath,
-                                                                QColorToColor(selectedColor),
-                                                                (DAVA::float32)threshold,
-                                                                landscape->GetHeightmap(),
-                                                                imageSize.width(),
-                                                                imageSize.height(),
-                                                                bbox.max.z - bbox.min.z);
+    DAVA::Heightmap* heightmap = landscape->GetHeightmap();
     
-    action->Redo();
-    
-    DAVA::SafeDelete(action);
+    if(heightmap != NULL)
+    {
+        double unitSize = (bbox.max.x - bbox.min.x) / heightmap->Size();
+        
+        QSize imageSize = imageReader.size();
+        double threshold = GetThresholdInMeters(unitSize);
+        
+        DAVA::FilePath dstImagePath = srcPath.toStdString();
+        DAVA::String baseName = dstImagePath.GetBasename();
+        DAVA::String extension = dstImagePath.GetExtension();
+        
+        baseName += "_heightmask";
+        
+        dstImagePath = dstImagePath.GetDirectory() + baseName + extension;
+        
+        PaintHeightDeltaAction* action = new PaintHeightDeltaAction(dstImagePath,
+                                                                    (DAVA::float32)threshold,
+                                                                    heightmap,
+                                                                    imageSize.width(),
+                                                                    imageSize.height(),
+                                                                    bbox.max.z - bbox.min.z);
+        
+        action->Redo();
+        
+        DAVA::SafeDelete(action);
+        
+        outResultPath = dstImagePath;
+    }
 
-    return true;
+    return (heightmap != NULL);
 }

@@ -28,8 +28,19 @@
 
 #include "Commands2/PaintHeightDeltaAction.h"
 
+static DAVA::Color COLOR_ARRAY[] =
+{
+    DAVA::Color(0.0f, 0.0f, 0.0f, 1.0f),
+    DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f),
+};
+
+static DAVA::Color ALTERNATE_COLOR_ARRAY[] =
+{
+    DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f),
+    DAVA::Color(0.0f, 0.0f, 0.0f, 1.0f),
+};
+
 PaintHeightDeltaAction::PaintHeightDeltaAction(const DAVA::FilePath& targetImagePath,
-                                               const DAVA::Color& targetColor,
                                                DAVA::float32 refDelta,
                                                DAVA::Heightmap* srcHeightmap,
                                                DAVA::uint32 targetImageWidth,
@@ -38,7 +49,6 @@ PaintHeightDeltaAction::PaintHeightDeltaAction(const DAVA::FilePath& targetImage
                                                
 {
     imagePath = targetImagePath;
-    color = targetColor;
     heightDelta = refDelta;
     heightmap = SafeRetain(srcHeightmap);
     imageWidth = targetImageWidth;
@@ -136,6 +146,8 @@ DAVA::float32 PaintHeightDeltaAction::SampleHeight(DAVA::uint32 x,
 void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
                                                DAVA::Image* deltaImage)
 {
+    DVASSERT(COUNT_OF(COLOR_ARRAY) == COUNT_OF(ALTERNATE_COLOR_ARRAY));
+    
     DAVA::float32 widthPixelRatio = 0.0f;
     DAVA::float32 heightPixelRatio = 0.0f;
     
@@ -164,8 +176,11 @@ void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
             
             if(isOverThreshold)
             {
+                DAVA::Color* arrayPtr = ((y % 2) == 0) ? COLOR_ARRAY : ALTERNATE_COLOR_ARRAY;
+                DAVA::int32 colorIndex = x % COUNT_OF(COLOR_ARRAY);
+                
                 MarkDeltaRegion((DAVA::uint32)x,
-                                (DAVA::uint32)y, widthPixelRatio, heightPixelRatio, color, deltaImage);
+                                (DAVA::uint32)y, widthPixelRatio, heightPixelRatio, arrayPtr[colorIndex], deltaImage);
             }
         }
     }
