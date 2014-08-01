@@ -534,7 +534,6 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
     {
         return;
     }
-    Rect drawRect = geometricData.GetUnrotatedRect();
     UniqueHandle textureHandle = spr->GetTextureHandle(frame);
     
     bool needGenerateData = false;
@@ -547,7 +546,7 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
     {
         needGenerateData |= spr != stretchData->sprite;
         needGenerateData |= frame != stretchData->frame;
-        needGenerateData |= drawRect.GetSize() != stretchData->size;
+        needGenerateData |= geometricData.size != stretchData->size;
         needGenerateData |= type != stretchData->type;
         needGenerateData |= leftStretchCap != stretchData->leftStretchCap;
         needGenerateData |= topStretchCap != stretchData->topStretchCap;
@@ -559,7 +558,7 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
     {
         sd.sprite = spr;
         sd.frame = frame;
-        sd.size = drawRect.GetSize();
+        sd.size = geometricData.size;
         sd.type = type;
         sd.leftStretchCap = leftStretchCap;
         sd.topStretchCap = topStretchCap;
@@ -575,7 +574,7 @@ void UIControlBackground::DrawStretched(const UIGeometricData &geometricData, Un
         sd.GenerateTransformData();
     }
 
-    vertexStream->Set(TYPE_FLOAT, 2, 0, &sd.vertices[0]);
+    vertexStream->Set(TYPE_FLOAT, 2, 0, &sd.transformedVertices[0]);
     texCoordStream->Set(TYPE_FLOAT, 2, 0, &sd.texCoords[0]);
 
     RenderManager::Instance()->SetTextureState(textureHandle);
@@ -699,7 +698,7 @@ float32 UIControlBackground::GetTopBottomStretchCap() const
     return topStretchCap;
 }
 
-uint32 UIControlBackground::StretchDrawData::GetVertexInTrianglesCount()
+uint32 UIControlBackground::StretchDrawData::GetVertexInTrianglesCount() const
 {
     switch(type)
     {
@@ -716,10 +715,10 @@ uint32 UIControlBackground::StretchDrawData::GetVertexInTrianglesCount()
 
 void UIControlBackground::StretchDrawData::GenerateTransformData()
 {
-    Polygon2 transformedPolygon = polygon;
-    transformedPolygon.Transform(transformMatr);
-    vertices.resize(texCoords.size());
-    Memcpy(&vertices[0], transformedPolygon.GetPoints(), sizeof(float32)*vertices.size());
+    for( uint32 index = 0; index < vertices.size(); ++index )
+    {
+        transformedVertices[index] = vertices[index] * transformMatr;
+    }
 }
     
 void UIControlBackground::StretchDrawData::GenerateStretchData()
@@ -772,26 +771,29 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             float32 yOffset = -(ddy * 0.5f);
             dy += ddy;
             
-            polygon.Clear();
-            polygon.points.reserve(8);
-            polygon.AddPoint( Vector2(0, yOffset) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, yOffset) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset) );
-            polygon.AddPoint( Vector2(dx, yOffset) );
+            vertices.resize(8);
+            transformedVertices.resize(8);
+            texCoords.resize(8);
             
-            polygon.AddPoint( Vector2(0, yOffset + dy) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, yOffset + dy) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, yOffset + dy) );
-            polygon.AddPoint( Vector2(dx, yOffset + dy) );
+            vertices[0] = Vector2(0, yOffset);
+            vertices[1] = Vector2(realLeftStretchCap, yOffset);
+            vertices[2] = Vector2(dx - realRightStretchCap, yOffset);
+            vertices[3] = Vector2(dx, yOffset);
             
-            texCoords.resize(8 * 2);
-            texCoords[0] = texCoords[8]  = texX / textureWidth;
-            texCoords[1] = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
-            texCoords[4] = texCoords[12] = (texX + texDx - rightCap) / textureWidth;
+            vertices[4] = Vector2(0, yOffset + dy);
+            vertices[5] = Vector2(realLeftStretchCap, yOffset + dy);
+            vertices[6] = Vector2(dx - realRightStretchCap, yOffset + dy);
+            vertices[7] = Vector2(dx, yOffset + dy);
             
-            texCoords[2] = texCoords[10] = (texX + leftCap) / textureWidth;
-            texCoords[9] = texCoords[11] = texCoords[13] = texCoords[15] = (texY + texDy) / textureHeight;
-            texCoords[6] = texCoords[14] = (texX + texDx) / textureWidth;
+            texCoords[0] = Vector2(texX / textureWidth, texY / textureHeight);
+            texCoords[1] = Vector2((texX + leftCap) / textureWidth, texY / textureHeight);
+            texCoords[2] = Vector2((texX + texDx - rightCap) / textureWidth, texY / textureHeight);
+            texCoords[3] = Vector2((texX + texDx) / textureWidth, texY / textureHeight);
+            
+            texCoords[4] = Vector2(texX / textureWidth, (texY + texDy) / textureHeight);
+            texCoords[5] = Vector2((texX + leftCap) / textureWidth, (texY + texDy) / textureHeight);
+            texCoords[6] = Vector2((texX + texDx - rightCap) / textureWidth, (texY + texDy) / textureHeight);
+            texCoords[7] = Vector2((texX + texDx) / textureWidth, (texY + texDy) / textureHeight);
         }
         break;
         case DRAW_STRETCH_VERTICAL:
@@ -800,62 +802,76 @@ void UIControlBackground::StretchDrawData::GenerateStretchData()
             float32 xOffset = -(ddx * 0.5f);
             dx += ddx;
             
-            polygon.Clear();
-            polygon.points.reserve(8);
-            polygon.AddPoint( Vector2(xOffset, 0) );
-            polygon.AddPoint( Vector2(xOffset, realTopStretchCap) );
-            polygon.AddPoint( Vector2(xOffset, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(xOffset, dy) );
+            vertices.resize(8);
+            transformedVertices.resize(8);
+            texCoords.resize(8);
             
-            polygon.AddPoint( Vector2(xOffset + dx, 0) );
-            polygon.AddPoint( Vector2(xOffset + dx, realTopStretchCap) );
-            polygon.AddPoint( Vector2(xOffset + dx, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(xOffset + dx, dy) );
-
-            texCoords.resize(8 * 2);
-            texCoords[0] = texCoords[2]  = texCoords[4]  = texCoords[6]  = texX / textureWidth;
-            texCoords[8] = texCoords[10] = texCoords[12] = texCoords[14] = (texX + texDx) / textureWidth;
+            vertices[0] = Vector2(xOffset, 0);
+            vertices[1] = Vector2(xOffset, realTopStretchCap);
+            vertices[2] = Vector2(xOffset, dy - realBottomStretchCap);
+            vertices[3] = Vector2(xOffset, dy);
             
-            texCoords[1] = texCoords[9]  = texY / textureHeight;
-            texCoords[3] = texCoords[11] = (texY + topCap) / textureHeight;
-            texCoords[5] = texCoords[13] = (texY + texDy - bottomCap) / textureHeight;
-            texCoords[7] = texCoords[15] = (texY + texDy) / textureHeight;
+            vertices[4] = Vector2(xOffset + dx, 0);
+            vertices[5] = Vector2(xOffset + dx, realTopStretchCap);
+            vertices[6] = Vector2(xOffset + dx, dy - realBottomStretchCap);
+            vertices[7] = Vector2(xOffset + dx, dy);
+            
+            texCoords[0] = Vector2(texX / textureWidth, texY / textureHeight);
+            texCoords[1] = Vector2(texX / textureWidth, (texY + topCap) / textureHeight);
+            texCoords[2] = Vector2(texX / textureWidth, (texY + texDy - bottomCap) / textureHeight);
+            texCoords[3] = Vector2(texX / textureWidth, (texY + texDy) / textureHeight);
+            
+            texCoords[4] = Vector2((texX + texDx) / textureWidth, texY / textureHeight);
+            texCoords[5] = Vector2((texX + texDx) / textureWidth, (texY + topCap) / textureHeight);
+            texCoords[6] = Vector2((texX + texDx) / textureWidth, (texY + texDy - bottomCap) / textureHeight);
+            texCoords[7] = Vector2((texX + texDx) / textureWidth, (texY + texDy) / textureHeight);
         }
         break;
         case DRAW_STRETCH_BOTH:
         {
-            polygon.Clear();
-            polygon.points.reserve( 16 );
-            polygon.AddPoint( Vector2(0, 0) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, 0) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, 0) );
-            polygon.AddPoint( Vector2(dx, 0) );
+            vertices.resize(16);
+            transformedVertices.resize(16);
+            texCoords.resize(16);
             
-            polygon.AddPoint( Vector2(0, realTopStretchCap) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, realTopStretchCap) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, realTopStretchCap) );
-            polygon.AddPoint( Vector2(dx, realTopStretchCap) );
+            vertices[0] = Vector2(0, 0);
+            vertices[1] = Vector2(realLeftStretchCap, 0);
+            vertices[2] = Vector2(dx - realRightStretchCap, 0);
+            vertices[3] = Vector2(dx, 0);
             
-            polygon.AddPoint( Vector2(0, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, dy - realBottomStretchCap) );
-            polygon.AddPoint( Vector2(dx, dy - realBottomStretchCap) );
+            vertices[4] = Vector2(0, realTopStretchCap);
+            vertices[5] = Vector2(realLeftStretchCap, realTopStretchCap);
+            vertices[6] = Vector2(dx - realRightStretchCap, realTopStretchCap);
+            vertices[7] = Vector2(dx, realTopStretchCap);
             
-            polygon.AddPoint( Vector2(0, dy) );
-            polygon.AddPoint( Vector2(realLeftStretchCap, dy) );
-            polygon.AddPoint( Vector2(dx - realRightStretchCap, dy) );
-            polygon.AddPoint( Vector2(dx, dy) );
+            vertices[8] = Vector2(0, dy - realBottomStretchCap);
+            vertices[9] = Vector2(realLeftStretchCap, dy - realBottomStretchCap);
+            vertices[10] = Vector2(dx - realRightStretchCap, dy - realBottomStretchCap);
+            vertices[11] = Vector2(dx, dy - realBottomStretchCap);
             
-            texCoords.resize(16 * 2);
-            texCoords[0] = texCoords[8]  = texCoords[16] = texCoords[24] = texX / textureWidth;
-            texCoords[2] = texCoords[10] = texCoords[18] = texCoords[26] = (texX + leftCap) / textureWidth;
-            texCoords[4] = texCoords[12] = texCoords[20] = texCoords[28] = (texX + texDx - rightCap) / textureWidth;
-            texCoords[6] = texCoords[14] = texCoords[22] = texCoords[30] = (texX + texDx) / textureWidth;
+            vertices[12] = Vector2(0, dy);
+            vertices[13] = Vector2(realLeftStretchCap, dy);
+            vertices[14] = Vector2(dx - realRightStretchCap, dy);
+            vertices[15] = Vector2(dx, dy);
             
-            texCoords[1]  = texCoords[3]  = texCoords[5]  = texCoords[7]  = texY / textureHeight;
-            texCoords[9]  = texCoords[11] = texCoords[13] = texCoords[15] = (texY + topCap) / textureHeight;
-            texCoords[17] = texCoords[19] = texCoords[21] = texCoords[23] = (texY + texDy - bottomCap)  / textureHeight;
-            texCoords[25] = texCoords[27] = texCoords[29] = texCoords[31] = (texY + texDy) / textureHeight;
+            texCoords[0] = Vector2(texX / textureWidth, texY / textureHeight);
+            texCoords[1] = Vector2((texX + leftCap) / textureWidth, texY / textureHeight);
+            texCoords[2] = Vector2((texX + texDx - rightCap) / textureWidth, texY / textureHeight);
+            texCoords[3] = Vector2((texX + texDx) / textureWidth, texY / textureHeight);
+            
+            texCoords[4] = Vector2(texX / textureWidth, (texY + topCap) / textureHeight);
+            texCoords[5] = Vector2((texX + leftCap) / textureWidth, (texY + topCap) / textureHeight);
+            texCoords[6] = Vector2((texX + texDx - rightCap) / textureWidth, (texY + topCap) / textureHeight);
+            texCoords[7] = Vector2((texX + texDx) / textureWidth, (texY + topCap) / textureHeight);
+            
+            texCoords[8] = Vector2(texX / textureWidth, (texY + texDy - bottomCap)  / textureHeight);
+            texCoords[9] = Vector2((texX + leftCap) / textureWidth, (texY + texDy - bottomCap)  / textureHeight);
+            texCoords[10] = Vector2((texX + texDx - rightCap) / textureWidth, (texY + texDy - bottomCap)  / textureHeight);
+            texCoords[11] = Vector2((texX + texDx) / textureWidth, (texY + texDy - bottomCap)  / textureHeight);
+            
+            texCoords[12] = Vector2(texX / textureWidth, (texY + texDy) / textureHeight);
+            texCoords[13] = Vector2((texX + leftCap) / textureWidth, (texY + texDy) / textureHeight);
+            texCoords[14] = Vector2((texX + texDx - rightCap) / textureWidth, (texY + texDy) / textureHeight);
+            texCoords[15] = Vector2((texX + texDx) / textureWidth, (texY + texDy) / textureHeight);
         }
         break;
     }
