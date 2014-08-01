@@ -83,9 +83,11 @@ QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, co
     QPainterPath path;
     path.moveTo( 0, 0 );
     path.lineTo( 0, size.height() - 1 );
-    path.lineTo( size.width() - 1, size.height() / 2 );
+    path.lineTo( size.width() - 1, (size.height() - 1) / 2 );
     path.lineTo( 0, 0 );
 
+    int adjustX = 0;
+    int adjustY = 0;
     QMatrix rm;
     switch ( dimension )
     {
@@ -97,6 +99,8 @@ QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, co
         break;
     case Qt::RightEdge:
         rm.rotate( 180 );
+        adjustX = -1;
+        adjustY = -1;
         break;
     case Qt::BottomEdge:
         rm.rotate( 270 );
@@ -111,17 +115,11 @@ QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, co
         tmp.fill( Qt::transparent );
         p.setRenderHints( QPainter::Antialiasing | QPainter::SmoothPixmapTransform, true );
         p.fillPath( path, color );
-        //p.setPen( Qt::red );
-        //p.drawLine( 0, 0, 0, size.height() - 1 );
-        //p.setPen( Qt::yellow );
-        //p.drawLine( 0, 0, size.width() - 1, size.height() / 2 );
-        //p.setPen( Qt::magenta );
-        //p.drawLine( 0, size.height() - 1, size.width() - 1, size.height() / 2 );
     }
 
     QPainter p( &img );
     p.setRenderHints( QPainter::Antialiasing | QPainter::SmoothPixmapTransform, true );
-    p.drawPixmap( 0, 0, QPixmap::fromImage( tmp ).transformed( rm ) );
+    p.drawPixmap( adjustX, adjustY, QPixmap::fromImage( tmp ).transformed( rm, Qt::SmoothTransformation ) );
 
     return img;
 }
