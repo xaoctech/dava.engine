@@ -126,12 +126,9 @@ varying float varPerPixelAttenuation;
 #endif
 
 #if defined(VERTEX_FOG)
-uniform vec3 fogColor;
 varying float varFogAmoung;
+varying vec3 varFogColor;
 #if defined(FOG_GLOW)
-uniform vec3 fogGlowColor;
-uniform float fogK;
-uniform samplerCube fogGlowCubemap;
 varying float varFogGlowFactor;
 varying float varFogGlowDistanceAttenuation;
 varying vec3 viewDirection;
@@ -489,15 +486,11 @@ void main()
     //    gl_FragColor.r += 0.5;
 
 #if defined(VERTEX_FOG)
-    #if defined(FOG_GLOW)
-        lowp vec4 atmoColor = textureCube(fogGlowCubemap, viewDirection);
-        vec3 ccc = mix(atmoColor.rgb, fogGlowColor, varFogGlowFactor);
-        vec3 realFogColor = mix(fogColor, ccc, varFogGlowDistanceAttenuation)  * fogK;
-        
-        //vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-    #else
-        vec3 realFogColor = fogColor;
-    #endif
+    //#if defined(FOG_GLOW)
+    //    vec3 realFogColor = mix(varFogColor, fogGlowColor, varFogGlowFactor);
+    //#else
+        vec3 realFogColor = varFogColor;
+    //#endif
 #endif
 
 #if defined(MATERIAL_GRASS_TRANSFORM)

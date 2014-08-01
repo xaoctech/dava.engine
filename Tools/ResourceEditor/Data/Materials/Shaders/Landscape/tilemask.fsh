@@ -39,12 +39,9 @@ uniform sampler2D cursorTexture;
 #endif
 
 #if defined(VERTEX_FOG)
-uniform vec3 fogColor;
 varying float varFogAmoung;
+varying vec3 varFogColor;
 #if defined(FOG_GLOW)
-uniform vec3 fogGlowColor;
-uniform float fogK;
-uniform samplerCube fogGlowCubemap;
 varying float varFogGlowFactor;
 varying float varFogGlowDistanceAttenuation;
 varying vec3 viewDirection;
@@ -73,16 +70,13 @@ void main()
     //color = vec3(1.0);
 
 #if defined(VERTEX_FOG)
-	#if defined(FOG_GLOW)
-        lowp vec4 atmoColor = textureCube(fogGlowCubemap, viewDirection);
-        vec3 ccc = mix(atmoColor.rgb, fogGlowColor, varFogGlowFactor);
-        vec3 realFogColor = mix(fogColor, ccc, varFogGlowDistanceAttenuation)  * fogK;
-        
-		//vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-		gl_FragColor.rgb = mix(color, realFogColor, varFogAmoung);
-	#else
-		gl_FragColor.rgb = mix(color, fogColor, varFogAmoung);
-	#endif
+    //#if defined(FOG_GLOW)
+    //    vec3 realFogColor = mix(varFogColor, fogGlowColor, varFogGlowFactor);
+    //#else
+        vec3 realFogColor = varFogColor;
+    //#endif
+    
+    gl_FragColor.rgb = mix(color, realFogColor, varFogAmoung);
 #else
     gl_FragColor = vec4(color, 1.0);
 #endif

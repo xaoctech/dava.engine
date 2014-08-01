@@ -73,8 +73,14 @@ uniform vec3 metalFresnelReflectance;
 #endif
 
 #if defined(VERTEX_FOG)
+    uniform vec3 fogColor;
     uniform float fogLimit;
-	varying float varFogAmoung;
+    
+    uniform float fogDistance;
+    uniform samplerCube fogGlowCubemap;
+    
+    varying float varFogAmoung;
+    varying vec3 varFogColor;
     #if defined(FOG_LINEAR)
 		uniform float fogStart;
 		uniform float fogEnd;
@@ -88,11 +94,10 @@ uniform vec3 metalFresnelReflectance;
 		uniform float fogHalfspaceLimit;
 	#endif
 	#if defined(FOG_GLOW)
+        uniform vec3 fogGlowColor;
+        uniform float fogGlowDistance;
 		uniform float fogGlowScattering;
-		uniform float fogGlowDistance;
 		varying float varFogGlowFactor;
-        varying float varFogGlowDistanceAttenuation;
-        varying vec3 viewDirection;
 	#endif
 #endif
 
@@ -581,13 +586,17 @@ void main()
     float fogFragCoord = length(eyeCoordsPosition);
 	
     #if !defined(FOG_LINEAR)
-        const float LOG2 = 1.442695;
-        varFogAmoung = 1.0 - exp2(-fogDensity * fogDensity * fogFragCoord * fogFragCoord *  LOG2);
+        varFogAmoung = 1.0 - exp(-fogDensity * fogFragCoord);
     #else
         varFogAmoung = (fogFragCoord - fogStart) / (fogEnd - fogStart);
     #endif
-
 	varFogAmoung = clamp(varFogAmoung, 0.0, fogLimit);
+    
+    // fog color
+    float fogDistanceAttenuation = clamp(fogFragCoord / fogDistance, 0.0, 1.0);
+    vec3 viewDirection = normalize(vec3(worldMatrix * inPosition) - cameraPosition);
+    lowp vec4 cubemapColor = textureCubeLod(fogGlowCubemap, viewDirection, 0);
+    varFogColor = mix(fogColor, cubemapColor.rgb, fogDistanceAttenuation);
 	
 	#if defined(FOG_HALFSPACE)
 		float halfSpaceFogAmoung;
@@ -630,9 +639,9 @@ void main()
 	
 	#if defined(FOG_GLOW)
 		toLightDir = normalize(toLightDir);
-        viewDirection = normalize(vec3(worldMatrix * inPosition) - cameraPosition);
-		varFogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
-		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering) * varFogGlowDistanceAttenuation;
+        float fogGlowDistanceAttenuation = clamp(fogFragCoord / fogGlowDistance, 0.0, 1.0);
+		varFogGlowFactor = pow(dot(toLightDir, normalize(eyeCoordsPosition)) * 0.5 + 0.5, fogGlowScattering) * fogGlowDistanceAttenuation;
+        varFogColor = mix(varFogColor, fogGlowColor, varFogGlowFactor);
 	#endif
 #endif
 
