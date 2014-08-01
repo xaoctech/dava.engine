@@ -21,8 +21,8 @@ ColorWidget::ColorWidget(QWidget *parent)
         const QColor c2 = QColor( 0, 0, 255 );
         ui->test_02->SetColorRange( c1, c2 );
         ui->test_02->SetRenderDimensions( false, true );
-        ui->test_02->SetBgPadding( 5, 5, 5, 5 );
-        ui->test_02->setEditorDimensions( Qt::LeftEdge | Qt::RightEdge | Qt::TopEdge | Qt::BottomEdge );
+        ui->test_02->SetBgPadding( 5, 0, 5, 0 );
+        ui->test_02->setEditorDimensions( Qt::LeftEdge | Qt::RightEdge/* | Qt::TopEdge | Qt::BottomEdge*/ );
         ui->test_02->setPrefferableArrows();
 
         connect( ui->test_02, SIGNAL( changing( const QColor& ) ), SLOT( onSliderColor( const QColor& ) ) );

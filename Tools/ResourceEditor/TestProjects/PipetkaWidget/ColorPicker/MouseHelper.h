@@ -12,8 +12,9 @@ class MouseHelper
 
 signals:
     void mousePress( const QPoint& pos );
-    void mouseMove( const QPoint& pos, const QPoint& prevPos = QPoint() );
+    void mouseMove( const QPoint& pos );
     void mouseRelease( const QPoint& pos );
+    void clicked();
 
 public:
     explicit MouseHelper( QWidget *w );
@@ -32,7 +33,7 @@ private:
 
     QPointer<QWidget> w;
     QPoint pos;
-    QPoint prevPos;
+    QPoint clickPos;
     bool isHover;
     bool isPressed;
     int clickDist;
