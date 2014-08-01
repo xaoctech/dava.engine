@@ -535,24 +535,14 @@ void QtMainWindow::SetupToolBars()
 		ui->sceneToolBar->addWidget(objectTypesWidget);
 	}
     
-    //heightmap toolbar
+    //heightmap color toolbar
     {
         QDoubleSpinBox* thresholdBox = new QDoubleSpinBox(this);
-        thresholdBox->setMinimum(0.0);
-        thresholdBox->setMaximum(100.0);
-        thresholdBox->setSingleStep(0.1);
+        thresholdBox->setMinimum(1.0);
+        thresholdBox->setMaximum(89.0);
+        thresholdBox->setSingleStep(1.0);
         
         ui->heightDeltaToolBar->addWidget(thresholdBox);
-    
-        QToolButton* heightDeltaBtn = new QToolButton();
-		heightDeltaBtn->setDefaultAction(ui->actionHeightDeltaColor);
-		heightDeltaBtn->setToolButtonStyle(Qt::ToolButtonTextOnly);
-		heightDeltaBtn->setAutoRaise(false);
-        heightDeltaBtn->setText("    ");
-        heightDeltaBtn->setMaximumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-		heightDeltaBtn->setMinimumWidth(ResourceEditor::DEFAULT_TOOLBAR_CONTROL_SIZE_WITH_ICON);
-    
-        ui->heightDeltaToolBar->addWidget(heightDeltaBtn);
         
         QToolButton* runHeightDeltaBtn = new QToolButton();
 		runHeightDeltaBtn->setDefaultAction(ui->actionGenerateHeightDeltaImage);
@@ -561,9 +551,8 @@ void QtMainWindow::SetupToolBars()
 
         ui->heightDeltaToolBar->addWidget(runHeightDeltaBtn);
         
-        heightDeltaTool = new HeightDeltaTool(thresholdBox, heightDeltaBtn);
-        heightDeltaTool->SetThreshold(0.5);
-        heightDeltaTool->SetSelectedColor(QColor::fromRgb(255, 0, 0));
+        heightDeltaTool = new HeightDeltaTool(thresholdBox);
+        heightDeltaTool->SetThreshold(30.0);
     }
 }
 
@@ -747,7 +736,6 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
     
     QObject::connect(ui->actionGenerateHeightDeltaImage, SIGNAL(triggered()), this, SLOT(OnGenerateHeightDelta()));
-    QObject::connect(ui->actionHeightDeltaColor, SIGNAL(triggered()), this, SLOT(OnSelectHeightDeltaColor()));
     
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -2980,12 +2968,6 @@ void QtMainWindow::DebugVersionInfo()
     versionInfoWidget->show();
 }
 
-void QtMainWindow::OnSelectHeightDeltaColor()
-{
-    QColor color = QColorDialog::getColor(heightDeltaTool->GetSelectedColor(), 0, tr("Height delta color"));
-    heightDeltaTool->SetSelectedColor(color);
-}
-
 void QtMainWindow::OnGenerateHeightDelta()
 {
     SceneEditor2* scene = GetCurrentScene();
@@ -2998,7 +2980,21 @@ void QtMainWindow::OnGenerateHeightDelta()
             QString retString = QFileDialog::getOpenFileName(this, "Select image", defaultPath.GetAbsolutePathname().c_str(), "PNG(*.png)");
             if(retString.size() > 0)
             {
-                heightDeltaTool->GenerateHeightDeltaImage(retString, landscapeRO);
+                WaitStart("Generating color height mask...", retString);
+                
+                DAVA::FilePath outResultPath;
+                bool result = heightDeltaTool->GenerateHeightDeltaImage(retString, landscapeRO, outResultPath);
+                
+                WaitStop();
+                
+                if(result)
+                {
+                    QMessageBox::information(this, "Mask is ready", outResultPath.GetAbsolutePathname().c_str());
+                }
+                else
+                {
+                    QMessageBox::information(this, "An error occured", "Please check if landscape has proper setup.");
+                }
             }
         }
     }

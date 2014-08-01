@@ -39,7 +39,6 @@ class PaintHeightDeltaAction : public CommandAction
 public:
 
 	PaintHeightDeltaAction(const DAVA::FilePath& targetImagePath,
-                           const DAVA::Color& targetColor,
                            DAVA::float32 refDelta,
                            DAVA::Heightmap* srcHeightmap,
                            DAVA::uint32 targetImageWidth,
@@ -75,7 +74,6 @@ protected:
 private:
     
     DAVA::FilePath imagePath;
-    DAVA::Color color;
     DAVA::float32 heightDelta;
     DAVA::Heightmap* heightmap;
     DAVA::uint32 imageWidth;
