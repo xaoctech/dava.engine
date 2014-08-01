@@ -166,7 +166,7 @@ StaticOcclusionDebugDrawComponent::~StaticOcclusionDebugDrawComponent()
     SafeRelease(renderObject);
 }    
     
-RenderObject * StaticOcclusionDebugDrawComponent::GetRenderObject()
+RenderObject * StaticOcclusionDebugDrawComponent::GetRenderObject() const
 {
     return renderObject;
 }
