@@ -153,8 +153,8 @@ public:
     virtual void ImmediateEvent(Entity * entity, uint32 event);    
 
 
-    static PolygonGroup* CreateStaticOcclusionDebugDrawGrid( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset);
-    static PolygonGroup* CreateStaticOcclusionDebugDrawCover( AABBox3 boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup);
+    static PolygonGroup* CreateStaticOcclusionDebugDrawGrid(const AABBox3& boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, const float32 *cellHeightOffset);
+    static PolygonGroup* CreateStaticOcclusionDebugDrawCover(const AABBox3& boundingBox, uint32 xSubdivisions, uint32 ySubdivisions, uint32 zSubdivisions, PolygonGroup *gridPolygonGroup);
     ~StaticOcclusionDebugDrawSystem();    
 private:
     NMaterial *debugOpaqueMaterial, *debugAlphablendMaterial;

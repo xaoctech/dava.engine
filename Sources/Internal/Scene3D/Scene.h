@@ -273,8 +273,8 @@ public:
 protected:
     void UpdateLights();
 
-    void RegisterEntitiesInSsystemRecursively(SceneSystem *system, Entity * entity);
-    void UnregisterEntitiesInSsystemRecursively(SceneSystem *system, Entity * entity);
+    void RegisterEntitiesInSystemRecursively(SceneSystem *system, Entity * entity);
+    void UnregisterEntitiesInSystemRecursively(SceneSystem *system, Entity * entity);
 
 	uint64 updateTime;
 
