@@ -30,6 +30,8 @@
 #ifndef HIERARCHYTREECONTROL_H
 #define HIERARCHYTREECONTROL_H
 
+#include <QTimer>
+
 #include <QTreeWidget>
 #include "HierarchyTreeNode.h"
 
@@ -53,16 +55,18 @@ class HierarchyTreeControl : public QTreeWidget
     Q_OBJECT
 public:
     explicit HierarchyTreeControl(QWidget *parent = 0);
-	
+	virtual ~HierarchyTreeControl();
+
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent * event);
 	
 	virtual QMimeData *mimeData(const QList<QTreeWidgetItem*> items) const;
 	
-	void dropEvent(QDropEvent *event);
-	void dragMoveEvent(QDragMoveEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
-	
+	virtual void dropEvent(QDropEvent *event);
+	virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+	virtual void dragLeaveEvent(QDragLeaveEvent * event);
+
 	// Custom Drag&Drop handlers for different mime data.
 	void HandleDragEnterControlMimeData(QDragEnterEvent *event, const ControlMimeData* mimeData);
 	void HandleDragEnterHierarchyMimeData(QDragEnterEvent *event, const HierarchyTreeControlMimeData* mimeData);
@@ -72,6 +76,11 @@ protected:
 
 	void HandleDropControlMimeData(QDropEvent *event, const ControlMimeData* mimeData);
 	void HandleDropHierarchyMimeData(QDropEvent *event, const HierarchyTreeControlMimeData* mimeData);
+
+    void StopExpandTimer();
+
+protected slots:
+    void OnExpandTimer();
 
 signals:
 	void ShowCustomMenu(const QPoint& pos);
@@ -92,6 +101,9 @@ private:
 		}
 	};
 	static bool SortByInternalIndex(const SortedItems &first, const SortedItems &second);
+    
+    QTimer* expandTimer;
+    HierarchyTreeNode::HIERARCHYTREENODEID expandNodeID;
 };
 
 #endif // HIERARCHYTREECONTROL_H
