@@ -73,53 +73,50 @@ QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, co
     QImage img( size, QImage::Format_ARGB32 );
     img.fill( Qt::transparent );
 
-    /*
-    #
-    ###
-    #####
-    ###
-    #
-    */
-    QPainterPath path;
-    path.moveTo( 0, 0 );
-    path.lineTo( 0, size.height() - 1 );
-    path.lineTo( size.width() - 1, (size.height() - 1) / 2 );
-    path.lineTo( 0, 0 );
+    const int x1 = 0;
+    const int x2 = size.width() / 2;
+    const int x3 = size.width() - 1;
+    const int y1 = 0;
+    const int y2 = size.height() / 2;
+    const int y3 = size.height() - 1;
 
-    int adjustX = 0;
-    int adjustY = 0;
-    QMatrix rm;
+    QPoint point[3];
+
     switch ( dimension )
     {
-    case Qt::TopEdge:
-        rm.rotate( 90 );
-        break;
     case Qt::LeftEdge:
-        rm.rotate( 0 );
+        point[0] = QPoint( x1, y1 );
+        point[1] = QPoint( x3, y2 );
+        point[2] = QPoint( x1, y3 );
+        break;
+    case Qt::TopEdge:
+        point[0] = QPoint( x1, y1 );
+        point[1] = QPoint( x2, y3 );
+        point[2] = QPoint( x3, y1 );
         break;
     case Qt::RightEdge:
-        rm.rotate( 180 );
-        adjustX = -1;
-        adjustY = -1;
+        point[0] = QPoint( x1, y2 );
+        point[1] = QPoint( x3, y1 );
+        point[2] = QPoint( x3, y3 );
         break;
     case Qt::BottomEdge:
-        rm.rotate( 270 );
+        point[0] = QPoint( x1, y3 );
+        point[1] = QPoint( x2, y1 );
+        point[2] = QPoint( x3, y3 );
         break;
     default:
         return img;
     }
 
-    QImage tmp( size, QImage::Format_ARGB32 );
-    {
-        QPainter p( &tmp );
-        tmp.fill( Qt::transparent );
-        p.setRenderHints( QPainter::Antialiasing | QPainter::SmoothPixmapTransform, true );
-        p.fillPath( path, color );
-    }
+    QPainterPath path;
+    path.moveTo( point[0] );
+    path.lineTo( point[1] );
+    path.lineTo( point[2] );
+    path.lineTo( point[0] );
 
     QPainter p( &img );
     p.setRenderHints( QPainter::Antialiasing | QPainter::SmoothPixmapTransform, true );
-    p.drawPixmap( adjustX, adjustY, QPixmap::fromImage( tmp ).transformed( rm, Qt::SmoothTransformation ) );
+    p.fillPath( path, color );
 
     return img;
 }

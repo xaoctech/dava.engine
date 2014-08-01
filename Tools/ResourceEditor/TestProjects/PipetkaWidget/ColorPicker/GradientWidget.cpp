@@ -77,17 +77,17 @@ QPixmap GradientWidget::drawBackground() const
         QSize actualSize( size().width() - horPadding, size().height() - verPadding );
         
         const QImage& bg = PaintingHelper::BuildGradient( actualSize, startColor, stopColor, hor, ver );
-        QImage fullBg( size(), QImage::Format_ARGB32 );
+        QImage fullBg( actualSize, QImage::Format_ARGB32 );
         fullBg.fill( Qt::transparent );
 
-        QRect bgRc( paddingOfs.left, paddingOfs.top, bg.width(), bg.height() );
+        const QRect rc( QPoint( 0, 0 ), actualSize );
         QPainter p( &fullBg );
         if ( fillBg )
         {
             const QBrush& bgBrush = PaintingHelper::BuildGridBrush( QSize( 5, 5 ) );
-            p.fillRect( bgRc, bgBrush );
+            p.fillRect( rc, bgBrush );
         }
-        p.drawImage( bgRc, bg );
+        p.drawImage( QPoint( 0, 0 ), bg );
 
         cacheBgImage = fullBg;
         cacheBg = QPixmap::fromImage( fullBg );
@@ -113,7 +113,7 @@ void GradientWidget::paintEvent( QPaintEvent* e )
     QPainter p( this );
     const QPixmap& bg = drawBackground();
     const QPixmap& fg = drawContent();
-    p.drawPixmap( 0, 0, bg );
+    p.drawPixmap( paddingOfs.left, paddingOfs.top, bg );
     p.drawPixmap( 0, 0, fg );
 }
 

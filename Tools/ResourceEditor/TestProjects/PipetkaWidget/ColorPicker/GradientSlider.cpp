@@ -79,8 +79,8 @@ void GradientSlider::resizeEvent( QResizeEvent* e )
 
 void GradientSlider::onMousePress( const QPoint& pos )
 {
-    startColor = GetColor();
     setPos( pos );
+    startColor = GetColor();
     emit begin();
     emit changing( GetColor() );
 }
@@ -179,12 +179,12 @@ void GradientSlider::drawArrow( Qt::Edge arrow, QPainter *p ) const
         pos.setY( currentPos.y() - arrowSize.height() / 2 );
         break;
     case Qt::RightEdge:
-        pos.setX( width() - arrowSize.width() - 1 );
+        pos.setX( width() - arrowSize.width() + 1 );
         pos.setY( currentPos.y() - arrowSize.height() / 2 );
         break;
     case Qt::BottomEdge:
         pos.setX( currentPos.x() - arrowSize.width() / 2 );
-        pos.setY( height() - arrowSize.height() - 1 );
+        pos.setY( height() - arrowSize.height() + 1 );
         break;
     default:
         return;
