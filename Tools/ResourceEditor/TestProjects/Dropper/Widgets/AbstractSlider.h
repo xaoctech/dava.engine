@@ -1,0 +1,58 @@
+#ifndef ABSTRACTSLIDER_H
+#define ABSTRACTSLIDER_H
+
+#include <QWidget>
+#include <QPointer>
+
+
+class MouseHelper;
+
+
+class AbstractSlider
+    : public QWidget
+{
+    Q_OBJECT
+
+signals:
+    void started( const QPointF& );
+    void changing( const QPointF& );
+    void changed( const QPointF& );
+    void canceled();
+
+public:
+    explicit AbstractSlider(QWidget *parent);
+    ~AbstractSlider();
+
+    QPointF PosF() const;
+    void SetPostF( const QPointF& posF );
+
+protected:
+    void paintEvent( QPaintEvent* e ) override;
+    void resizeEvent( QResizeEvent* e ) override;
+
+    virtual QPixmap DrawBackground() const;
+    virtual QPixmap DrawForground() const;
+    virtual QRect PosArea() const;
+
+    QPoint Pos() const;
+    void SetPos( const QPoint& pos );
+    void InvalidateBackground();
+    void InvalidateForeGround();
+    MouseHelper *Mouse() const;
+
+private slots:
+    void OnMousePress( const QPoint& pos );
+    void OnMouseMove( const QPoint& pos );
+    void OnMouseRelease( const QPoint& pos );
+
+private:
+
+    QPoint pos;
+    QPoint pressPos;
+    QPointer< MouseHelper > mouse;
+    mutable QPixmap bgPix;
+    mutable QPixmap fgPix;
+};
+
+
+#endif // ABSTRACTSLIDER_H
