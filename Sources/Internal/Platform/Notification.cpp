@@ -28,31 +28,34 @@
 
 
 
-#ifndef __ANDROID_LAYER_H__
-#define __ANDROID_LAYER_H__
+#include "Notification.h"
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
+#ifndef __DAVAENGINE_ANDROID__
 
-#include <jni.h>
-#include <android/log.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
+namespace DAVA
+{
 
-#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "davaFrameworkLog", __VA_ARGS__)
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "davaFrameworkLog", __VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "davaFrameworkLog", __VA_ARGS__)
+void Notification::ShowNotifitaion(uint32 id,
+			const WideString& title,
+			const WideString& text)
+{
 
-extern bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString);
-extern void CreateStringFromJni(JNIEnv* env, jstring jniString, DAVA::String& string);
-extern void CreateWStringFromJni(JNIEnv* env, jstring jniString, DAVA::WideString& string);
+}
 
-extern jstring CreateJString(JNIEnv* env, const DAVA::WideString& string);
+void Notification::ShowNotifitaionWithProgress(uint32 id,
+			const WideString& title,
+			const WideString& text,
+			int32 maxValue,
+			int32 value)
+{
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+}
 
-#endif //__ANDROID_LAYER_H__
+void Notification::HideNotification(uint32 id)
+{
+
+}
+    
+}
+
+#endif

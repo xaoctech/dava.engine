@@ -647,39 +647,9 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/DLC.h</locationURI>
 		</link>
 		<link>
-			<name>Internal/DLC/DLCSystem.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/DLCSystem.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/DLC/DLCSystem.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/DLCSystem.h</locationURI>
-		</link>
-		<link>
-			<name>Internal/DLC/DLCUnpacker.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/DLCUnpacker.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/DLC/DLCUnpacker.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/DLCUnpacker.h</locationURI>
-		</link>
-		<link>
 			<name>Internal/DLC/Downloader</name>
 			<type>2</type>
 			<locationURI>virtual:/virtual</locationURI>
-		</link>
-		<link>
-			<name>Internal/DLC/FileDownloader.cpp</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/FileDownloader.cpp</locationURI>
-		</link>
-		<link>
-			<name>Internal/DLC/FileDownloader.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/DLC/FileDownloader.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/DLC/Patcher</name>
@@ -1680,6 +1650,16 @@
 			<name>Internal/Platform/Mutex.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Mutex.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/Notification.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Notification.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/Notification.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/Notification.h</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/OpenUDIDApple.h</name>
@@ -3247,6 +3227,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/MovieViewControlAndroid.h</locationURI>
 		</link>
 		<link>
+			<name>Internal/Platform/TemplateAndroid/NotificationAndroid.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/NotificationAndroid.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/NotificationAndroid.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/NotificationAndroid.h</locationURI>
+		</link>
+		<link>
 			<name>Internal/Platform/TemplateAndroid/WebViewControl.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/WebViewControl.cpp</locationURI>
@@ -4350,6 +4340,11 @@
 			<name>Internal/Platform/TemplateAndroid/ExternC/AndroidLayer.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/AndroidLayer.h</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/ExternC/JNIDownloadManager.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNIDownloadManager.cpp</locationURI>
 		</link>
 		<link>
 			<name>Internal/Platform/TemplateAndroid/ExternC/JNITextField.cpp</name>

@@ -23,6 +23,7 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	private int height = 0;
 	
 	private boolean isRenderRecreated = false;
+	private JNIDownloadManager downloadManager = new JNIDownloadManager();
 	
 	public JNIRenderer()
 	{
@@ -86,10 +87,13 @@ public class JNIRenderer implements GLSurfaceView.Renderer {
 	{
 		PowerManager pm = (PowerManager) JNIApplication.GetApplication().getSystemService(Context.POWER_SERVICE);
 		nativeOnPauseView(!pm.isScreenOn());
+		downloadManager.StartBackgroundDownloadThread();
 	}
 	
 	public void OnResume()
 	{
 		nativeOnResumeView();
+		downloadManager.WaitExitDownloadTread();
 	}
+	
 }
