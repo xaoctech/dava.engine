@@ -28,31 +28,35 @@
 
 
 
-#ifndef __ANDROID_LAYER_H__
-#define __ANDROID_LAYER_H__
+#ifndef __NOTIFICATION_ANDROID_H__
+#define __NOTIFICATION_ANDROID_H__
 
 #include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
+#ifdef __DAVAENGINE_ANDROID__
+#include "JniExtensions.h"
 
-#include <jni.h>
-#include <android/log.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
+namespace DAVA {
 
-#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "davaFrameworkLog", __VA_ARGS__)
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "davaFrameworkLog", __VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "davaFrameworkLog", __VA_ARGS__)
+class JniNotification: public JniExtension
+{
+public:
+    void ShowNotifitaionWithProgress(uint32 id,
+			const WideString& title,
+			const WideString& text,
+			int32 maxValue,
+			int32 value);
+    void HideNotification(uint32 id);
 
-extern bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString);
-extern void CreateStringFromJni(JNIEnv* env, jstring jniString, DAVA::String& string);
-extern void CreateWStringFromJni(JNIEnv* env, jstring jniString, DAVA::WideString& string);
+protected:
+	virtual jclass GetJavaClass() const;
+	virtual const char* GetJavaClassName() const;
 
-extern jstring CreateJString(JNIEnv* env, const DAVA::WideString& string);
+public:
+	static jclass gJavaClass;
+	static const char* gJavaClassName;
+};
 
-#endif //#if defined(__DAVAENGINE_ANDROID__)
+};
+#endif //__DAVAENGINE_ANDROID__
 
-#endif //__ANDROID_LAYER_H__
+#endif // __NOTIFICATION_ANDROID_H__

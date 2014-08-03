@@ -28,31 +28,18 @@
 
 
 
-#ifndef __ANDROID_LAYER_H__
-#define __ANDROID_LAYER_H__
+#include "AndroidLayer.h"
+#include "Base/BaseObject.h"
+#include "Platform/Mutex.h"
+#include "DLC/Downloader/DownloadManager.h"
 
-#include "Base/BaseTypes.h"
-#if defined(__DAVAENGINE_ANDROID__)
-
-#include <jni.h>
-#include <android/log.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-
-#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO, "davaFrameworkLog", __VA_ARGS__)
-#define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, "davaFrameworkLog", __VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "davaFrameworkLog", __VA_ARGS__)
-
-extern bool CreateStringFromJni(JNIEnv* env, jstring jniString, char *generalString);
-extern void CreateStringFromJni(JNIEnv* env, jstring jniString, DAVA::String& string);
-extern void CreateWStringFromJni(JNIEnv* env, jstring jniString, DAVA::WideString& string);
-
-extern jstring CreateJString(JNIEnv* env, const DAVA::WideString& string);
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
-#endif //__ANDROID_LAYER_H__
+extern "C"
+{
+	void Java_com_dava_framework_JNIDownloadManager_UpdateDownloadManager(JNIEnv * env, jobject classthis)
+	{
+		DAVA::DownloadManager::Instance()->Update();
+		DAVA::DownloadManager::HideUpdateCallback callback = DAVA::DownloadManager::Instance()->GetHideUpdateCallback();
+		if (callback != DAVA::DownloadManager::HideUpdateCallback(NULL))
+			callback();
+	}
+};

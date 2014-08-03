@@ -221,7 +221,7 @@ void GameCore::OnResume()
 void GameCore::OnDeviceLocked()
 {
 //    Logger::Debug("GameCore::OnDeviceLocked");
-    Core::Instance()->Quit();
+    //Core::Instance()->Quit();
 }
 
 void GameCore::OnBackground()

@@ -54,6 +54,7 @@ DownloadManager::DownloadManager()
     , callNotify(NULL)
     , remoteFileSize(0)
     , downloadedTotal(0)
+    , hideUpdateCallback(NULL)
 {
 }
 
@@ -107,11 +108,24 @@ DownloadManager::NotifyFunctor DownloadManager::GetNotificationCallback() const
     return callNotify;
 }
 
+void DownloadManager::SetHideUpdateCallback(DownloadManager::HideUpdateCallback callback)
+{
+    DVASSERT(true == Thread::IsMainThread());
+    
+    hideUpdateCallback = callback;
+}
+
+DownloadManager::HideUpdateCallback DownloadManager::GetHideUpdateCallback() const
+{
+    return hideUpdateCallback;
+}
 
 void DownloadManager::StartProcessingThread()
 {
     // thread should be stopped
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(!isThreadStarted);
+#endif
     DVASSERT(NULL == thisThread);
 
     thisThread = Thread::Create(Message(this, &DownloadManager::ThreadFunction));
@@ -121,7 +135,9 @@ void DownloadManager::StartProcessingThread()
 
 void DownloadManager::StopProcessingThread()
 {
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     isThreadStarted = false;
     thisThread->Join();
@@ -132,7 +148,9 @@ void DownloadManager::StopProcessingThread()
 void DownloadManager::Update()
 {
     // use it only from Main thread
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     callbackMutex.Lock();
     if (!callbackMessagesQueue.empty())
@@ -222,7 +240,9 @@ uint32 DownloadManager::Download(const String &srcUrl, const FilePath &storeToFi
 
 void DownloadManager::Retry(const uint32 &taskId)
 {
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     DownloadTaskDescription *taskToRetry = ExtractFromQueue(doneTaskQueue, taskId);
     if (taskToRetry)
@@ -236,7 +256,9 @@ void DownloadManager::Retry(const uint32 &taskId)
 
 void DownloadManager::Cancel(const uint32 &taskId)
 {
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     DownloadTaskDescription * curTaskToDelete = currentTask;
 
@@ -260,7 +282,9 @@ void DownloadManager::Cancel(const uint32 &taskId)
 
 void DownloadManager::CancelCurrent()
 {
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     DownloadTaskDescription * curTaskToCancel = currentTask;
     if (!curTaskToCancel)
@@ -298,7 +322,9 @@ void DownloadManager::CancelAll()
 void DownloadManager::Clear(const uint32 &taskId)
 {
     //queues changing allowed only from main thread
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     // cancel task if possible
     Cancel(taskId);
@@ -522,7 +548,9 @@ bool DownloadManager::SetOperationTimeout(const uint32 operationTimeout)
 
 void DownloadManager::ClearQueue(Deque<DownloadTaskDescription *> &queue)
 {
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
     if (!queue.empty())
     {
         for (Deque<DownloadTaskDescription *>::iterator it = queue.begin(); it != queue.end();)
@@ -563,7 +591,9 @@ void DownloadManager::PlaceToQueue(Deque<DownloadTaskDescription *> &queue, Down
 
 DownloadTaskDescription *DownloadManager::GetTaskForId(const uint32 &taskId)
 {
+#ifndef __DAVAENGINE_ANDROID__
     DVASSERT(true == Thread::IsMainThread());
+#endif
 
     DownloadTaskDescription *retPointer = NULL;
 

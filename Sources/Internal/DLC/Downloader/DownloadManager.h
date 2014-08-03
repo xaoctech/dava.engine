@@ -48,6 +48,7 @@ class DownloadManager : public Singleton<DownloadManager>
 
 public:
     typedef Function<void (const uint32 &, const DownloadStatus &)> NotifyFunctor;
+    typedef Function<void (void)> HideUpdateCallback;
 
 public:
     DownloadManager();
@@ -56,9 +57,14 @@ public:
     // Downloader for further operations
     void SetDownloader(Downloader *_downloader);
     Downloader *GetDownloader();
+    
     // Callback functor for tasks status reporting
     void SetNotificationCallback(NotifyFunctor callbackFn);
     NotifyFunctor GetNotificationCallback() const;
+    
+    // Callback function for update progress and status in hide state
+    void SetHideUpdateCallback(HideUpdateCallback callback);
+    HideUpdateCallback GetHideUpdateCallback() const;
 
     // Checks tasks status and determine current task and handles tasks queues
     void Update();
@@ -140,6 +146,7 @@ private:
 
     Downloader *downloader;
     NotifyFunctor callNotify;
+    HideUpdateCallback hideUpdateCallback;
 
     int64 remoteFileSize;
     uint64 downloadedTotal;
