@@ -22,7 +22,7 @@ public:
 
 protected:
     void DrawBackground( QPainter *p ) const override;
-    void DrawForground( QPainter *p ) const override;
+    void DrawForeground( QPainter *p ) const override;
 
     void resizeEvent( QResizeEvent* e ) override;
 

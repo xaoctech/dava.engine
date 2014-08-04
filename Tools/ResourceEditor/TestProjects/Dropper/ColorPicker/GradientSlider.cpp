@@ -50,7 +50,7 @@ void GradientSlider::DrawBackground( QPainter* p ) const
     p->drawPixmap( rc.topLeft(), bgCache );
 }
 
-void GradientSlider::DrawForground( QPainter* p ) const
+void GradientSlider::DrawForeground( QPainter* p ) const
 {
     Qt::Edges flags;
     switch ( orientation )

@@ -49,7 +49,7 @@ void AbstractSlider::paintEvent( QPaintEvent* e )
     DrawBackground( &p );
     p.restore();
     p.save();
-    DrawForground( &p );
+    DrawForeground( &p );
     p.restore();
 }
 
@@ -77,7 +77,7 @@ void AbstractSlider::DrawBackground( QPainter *p ) const
     Q_UNUSED( p );
 }
 
-void AbstractSlider::DrawForground( QPainter *p ) const
+void AbstractSlider::DrawForeground( QPainter *p ) const
 {
     Q_UNUSED( p );
 }
@@ -102,7 +102,6 @@ void AbstractSlider::OnMousePress( const QPoint & _pos )
     SetPos( _pos );
     pressPos = pos;
     emit started( PosF() );
-    emit changing( PosF() );
 }
 
 void AbstractSlider::OnMouseMove( const QPoint & _pos )

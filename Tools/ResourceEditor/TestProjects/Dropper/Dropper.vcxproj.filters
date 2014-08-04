@@ -107,6 +107,15 @@
     <ClCompile Include="ColorPicker\ColorPreview.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ValueSlider.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ValueSlider.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\ValueSlider.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="dropper.h">
@@ -132,6 +141,9 @@
     </CustomBuild>
     <CustomBuild Include="ColorPicker\ColorPreview.h">
       <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Widgets\ValueSlider.h">
+      <Filter>Widgets</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
