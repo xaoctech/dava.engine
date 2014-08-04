@@ -608,15 +608,15 @@ bool NMaterial::ReloadQuality(bool force)
 	{
 		ret = true;
 		currentQuality = effectiveQuality;
-		
-        SetQuality(currentQuality);
-
+		        
 		if(NMaterial::MATERIALTYPE_INSTANCE == materialType)
 		{
 			OnInstanceQualityChanged();
 		}
 		else if(NMaterial::MATERIALTYPE_MATERIAL == materialType)
 		{
+            SetQuality(currentQuality);
+
 			UpdateMaterialTemplate();
 			
 			LoadActiveTextures();
