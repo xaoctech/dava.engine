@@ -27,12 +27,8 @@
  =====================================================================================*/
 
 #include "Commands2/PaintHeightDeltaAction.h"
+#include "Qt/Settings/SettingsManager.h"
 
-static DAVA::Color COLOR_ARRAY[] =
-{
-    DAVA::Color(0.0f, 0.0f, 0.0f, 1.0f),
-    DAVA::Color(0.5f, 0.5f, 0.5f, 1.0f),
-};
 
 PaintHeightDeltaAction::PaintHeightDeltaAction(const DAVA::FilePath& targetImagePath,
                                                DAVA::float32 refDelta,
@@ -74,6 +70,8 @@ void PaintHeightDeltaAction::Redo()
 
 DAVA::Image* PaintHeightDeltaAction::CropHeightmapToPow2(DAVA::Heightmap* srcHeightmap)
 {
+    //VI: see VegetationObject for details
+
     DAVA::Image* originalImage = DAVA::Image::CreateFromData(srcHeightmap->Size(),
                                                              srcHeightmap->Size(),
                                                              DAVA::FORMAT_A16,
@@ -127,6 +125,8 @@ DAVA::float32 PaintHeightDeltaAction::SampleHeight(DAVA::uint32 x,
                                                    DAVA::uint32 y,
                                                    DAVA::Image* heightmapImage)
 {
+    //VI: see VegetationObject and Landscape for details
+
     DAVA::uint32 pixelSize = sizeof(DAVA::uint16);
     DAVA::uint32 rowStride = pixelSize * heightmapImage->width;
     
@@ -151,6 +151,10 @@ void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
     DVASSERT(widthPixelRatio > 0.0f);
     DVASSERT(heightPixelRatio > 0.0f);
     
+    DAVA::Color colors[2];
+    colors[0] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color0).AsColor();
+    colors[1] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color1).AsColor();
+    
     for(DAVA::int32 y = 0; y < (DAVA::int32)heightmapImage->height; ++y)
     {
         for(DAVA::int32 x = 0; x < (DAVA::int32)heightmapImage->width; ++x)
@@ -168,10 +172,10 @@ void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
             
             if(isOverThreshold)
             {
-                DAVA::int32 colorIndex = (x + y) % COUNT_OF(COLOR_ARRAY);
+                DAVA::int32 colorIndex = (x + y) % COUNT_OF(colors);
                 
                 MarkDeltaRegion((DAVA::uint32)x,
-                                (DAVA::uint32)y, widthPixelRatio, heightPixelRatio, COLOR_ARRAY[colorIndex], deltaImage);
+                                (DAVA::uint32)y, widthPixelRatio, heightPixelRatio, colors[colorIndex], deltaImage);
             }
         }
     }
