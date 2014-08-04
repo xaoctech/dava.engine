@@ -45,17 +45,12 @@ void AbstractSlider::paintEvent( QPaintEvent* e )
 
     QPainter p( this );
 
-    if ( bgPix.isNull() )
-    {
-        bgPix = DrawBackground();
-    }
-    if ( fgPix.isNull() )
-    {
-        fgPix = DrawForground();
-    }
-
-    p.drawPixmap( 0, 0, bgPix );
-    p.drawPixmap( 0, 0, fgPix );
+    p.save();
+    DrawBackground( &p );
+    p.restore();
+    p.save();
+    DrawForground( &p );
+    p.restore();
 }
 
 void AbstractSlider::resizeEvent( QResizeEvent* e )
@@ -74,18 +69,17 @@ void AbstractSlider::resizeEvent( QResizeEvent* e )
     pos.setX( int( oldPos.x() * xScale ) );
     pos.setY( int( oldPos.y() * yScale ) );
 
-    InvalidateBackground();
-    InvalidateForeGround();
+    update();
 }
 
-QPixmap AbstractSlider::DrawBackground() const
+void AbstractSlider::DrawBackground( QPainter *p ) const
 {
-    return QPixmap();
+    Q_UNUSED( p );
 }
 
-QPixmap AbstractSlider::DrawForground() const
+void AbstractSlider::DrawForground( QPainter *p ) const
 {
-    return QPixmap();
+    Q_UNUSED( p );
 }
 
 QRect AbstractSlider::PosArea() const
@@ -96,18 +90,6 @@ QRect AbstractSlider::PosArea() const
 QPoint AbstractSlider::Pos() const
 {
     return pos;
-}
-
-void AbstractSlider::InvalidateBackground()
-{
-    bgPix = QPixmap();
-    update();
-}
-
-void AbstractSlider::InvalidateForeGround()
-{
-    fgPix = QPixmap();
-    repaint();
 }
 
 MouseHelper* AbstractSlider::Mouse() const
@@ -171,5 +153,5 @@ void AbstractSlider::SetPos(const QPoint& _pos)
     }
 
     pos = pt - rc.topLeft();
-    InvalidateForeGround();
+    repaint();
 }

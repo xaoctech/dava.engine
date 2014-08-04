@@ -30,14 +30,12 @@ protected:
     void paintEvent( QPaintEvent* e ) override;
     void resizeEvent( QResizeEvent* e ) override;
 
-    virtual QPixmap DrawBackground() const;
-    virtual QPixmap DrawForground() const;
+    virtual void DrawBackground( QPainter *p ) const;
+    virtual void DrawForground( QPainter *p ) const;
     virtual QRect PosArea() const;
 
     QPoint Pos() const;
     void SetPos( const QPoint& pos );
-    void InvalidateBackground();
-    void InvalidateForeGround();
     MouseHelper *Mouse() const;
 
 private slots:
@@ -50,8 +48,6 @@ private:
     QPoint pos;
     QPoint pressPos;
     QPointer< MouseHelper > mouse;
-    mutable QPixmap bgPix;
-    mutable QPixmap fgPix;
 };
 
 

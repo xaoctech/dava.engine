@@ -21,8 +21,10 @@ public:
     void SetOrientation( Qt::Orientation orientation );
 
 protected:
-    QPixmap DrawBackground() const override;
-    QPixmap DrawForground() const override;
+    void DrawBackground( QPainter *p ) const override;
+    void DrawForground( QPainter *p ) const override;
+
+    void resizeEvent( QResizeEvent* e ) override;
 
 private:
     void drawArrow( Qt::Edge arrow, QPainter *p ) const;
@@ -32,6 +34,8 @@ private:
     QSize arrowSize;
     Qt::Edges arrows;
     Qt::Orientation orientation;
+    const QBrush bgBrush;
+    mutable QPixmap bgCache;
     mutable QMap< Qt::Edge, QPixmap > arrowCache;
 };
 
