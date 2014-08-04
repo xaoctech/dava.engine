@@ -33,6 +33,7 @@
 #include "ui_davaglwidget.h"
 
 #include <QApplication>
+#include <QMessageBox>
 #include <QResizeEvent>
 #include <QTimer>
 #include <QElapsedTimer>
@@ -361,4 +362,9 @@ Vector2 DavaGLWidget::GuideToInternal(const QPoint& pos)
     internalPos.y = Round(internalPos.y);
     
     return internalPos;
+}
+
+void DavaGLWidget::ShowAssertMessage(const char * message)
+{
+	QMessageBox::critical(this, "", message);
 }
