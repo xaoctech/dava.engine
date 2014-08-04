@@ -152,19 +152,21 @@ void DownloadManager::Update()
     DVASSERT(true == Thread::IsMainThread());
 #endif
 
-    callbackMutex.Lock();
-    if (!callbackMessagesQueue.empty())
+    if (!currentTask)
     {
-        for (Deque<CallbackData>::iterator it = callbackMessagesQueue.begin(); it != callbackMessagesQueue.end();)
+        if (!pendingTaskQueue.empty())
         {
-           CallbackData cbData = (*it);
-           it = callbackMessagesQueue.erase(it);
-           callNotify(cbData.id, cbData.status);
+            currentTaskMutex.Lock();
+            currentTask = pendingTaskQueue.front();
+            DVASSERT(0 < currentTask->id);
+            pendingTaskQueue.pop_front();
+            currentTaskMutex.Unlock();
+
+            if (!isThreadStarted)
+                StartProcessingThread();
         }
     }
-    callbackMutex.Unlock();
-
-    if (currentTask)
+    else
     {
         // if task is done and we have no pending tasks - stop processing thread.
         if (DL_FINISHED == currentTask->status)
@@ -172,38 +174,13 @@ void DownloadManager::Update()
             PlaceToQueue(doneTaskQueue, currentTask);
 
             if (pendingTaskQueue.empty())
-            {
                 StopProcessingThread();
 
-                currentTaskMutex.Lock();
-                currentTask = NULL;
-                currentTaskMutex.Unlock();
-                return;
-            }
+            currentTaskMutex.Lock();
+            currentTask = NULL;
+            currentTaskMutex.Unlock();
         }
-        else
-            return;
     }
-
-    if (pendingTaskQueue.empty())
-        return;
-
-    if (currentTask)
-    {
-        currentTaskMutex.Lock();
-        currentTask = NULL;
-        currentTaskMutex.Unlock();
-        return;
-    }
-
-    currentTaskMutex.Lock();
-    currentTask = pendingTaskQueue.front();
-    DVASSERT(0 < currentTask->id);
-    pendingTaskQueue.pop_front();
-    currentTaskMutex.Unlock();
-
-    if (!isThreadStarted)
-        StartProcessingThread();
 
     callbackMutex.Lock();
     if (!callbackMessagesQueue.empty())
@@ -606,16 +583,16 @@ DownloadTaskDescription *DownloadManager::GetTaskForId(const uint32 &taskId)
     Deque<DownloadTaskDescription *>::iterator it;
     for (it = pendingTaskQueue.begin(); it != pendingTaskQueue.end(); ++it)
     {
-        retPointer = (*it);
-        if (retPointer->id == taskId)
-            return retPointer;
+        DownloadTaskDescription *task = (*it);
+        if (task->id == taskId)
+            return task;
     }
 
     for (it = doneTaskQueue.begin(); it != doneTaskQueue.end(); ++it)
     {
-        retPointer = (*it);
-        if (retPointer->id == taskId)
-            return retPointer;
+        DownloadTaskDescription *task = (*it);
+        if (task->id == taskId)
+            return task;
     }
 
     return retPointer;
@@ -758,3 +735,4 @@ void DownloadManager::ResetRetriesCount()
 }
 
 }
+
