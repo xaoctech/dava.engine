@@ -186,9 +186,9 @@ MainWindow::MainWindow(QWidget *parent) :
 			SLOT(OnSelectedScreenChanged()));
 	
     connect(HierarchyTreeController::Instance(),
-			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)),
+			SIGNAL(SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &, HierarchyTreeController::eExpandControlType expandType)),
 			this,
-			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &)));
+			SLOT(OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &,HierarchyTreeController::eExpandControlType)));
 
 	connect(ui->hierarchyDockWidget->widget(),
 			SIGNAL(CreateNewScreen()),
@@ -634,7 +634,7 @@ void MainWindow::OnSelectedScreenChanged()
     OnUndoRedoAvailabilityChanged();
 }
 
-void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes)
+void MainWindow::OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES& selectedNodes, HierarchyTreeController::eExpandControlType expandType)
 {
     int nodesCount = selectedNodes.size();
 
