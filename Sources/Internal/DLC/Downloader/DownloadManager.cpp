@@ -698,6 +698,8 @@ DownloadError DownloadManager::TryDownload()
             // create new file if there is no file.
             SafeRelease(fileToGetSize);
             fileToGetSize = File::Create(currentTask->storePath, File::CREATE | File::WRITE | File::READ);
+            if (!fileToGetSize)
+                return DLE_FILE_ERROR;
         }
 
         loadFrom = fileToGetSize->GetSize();
