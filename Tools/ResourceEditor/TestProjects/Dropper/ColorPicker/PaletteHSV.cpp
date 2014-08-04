@@ -51,7 +51,7 @@ void PaletteHSV::DrawBackground( QPainter* p ) const
     p->drawPixmap( 0, 0, bgCache );
 }
 
-void PaletteHSV::DrawForground( QPainter* p ) const
+void PaletteHSV::DrawForeground( QPainter* p ) const
 {
     DrawCursor( p );
 }

@@ -31,7 +31,7 @@ protected:
     void resizeEvent( QResizeEvent* e ) override;
 
     virtual void DrawBackground( QPainter *p ) const;
-    virtual void DrawForground( QPainter *p ) const;
+    virtual void DrawForeground( QPainter *p ) const;
     virtual QRect PosArea() const;
 
     QPoint Pos() const;
