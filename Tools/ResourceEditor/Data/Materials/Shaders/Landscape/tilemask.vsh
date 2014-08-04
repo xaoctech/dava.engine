@@ -143,7 +143,8 @@ void main()
     // fog color
     float fogDistanceAttenuation = clamp(fogFragCoord / fogDistance, 0.0, 1.0);
     vec3 viewDirection = normalize(vec3(worldMatrix * inPosition) - cameraPosition);
-    lowp vec4 cubemapColor = textureCubeLod(fogGlowCubemap, viewDirection, 0);
+    viewDirection.z = clamp(viewDirection.z, 0.1, 1.0);
+    vec4 cubemapColor = textureCubeLod(fogGlowCubemap, viewDirection, 0.0);
     varFogColor = mix(fogColor, cubemapColor.rgb, fogDistanceAttenuation);
 	
 	#if defined(FOG_HALFSPACE)
