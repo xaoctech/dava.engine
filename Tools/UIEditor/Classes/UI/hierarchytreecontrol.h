@@ -55,17 +55,17 @@ class HierarchyTreeControl : public QTreeWidget
     Q_OBJECT
 public:
     explicit HierarchyTreeControl(QWidget *parent = 0);
-	virtual ~HierarchyTreeControl();
+    ~HierarchyTreeControl();
 
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent * event);
 	
 	virtual QMimeData *mimeData(const QList<QTreeWidgetItem*> items) const;
 	
-	virtual void dropEvent(QDropEvent *event);
-	virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-	virtual void dragLeaveEvent(QDragLeaveEvent * event);
+    void dropEvent(QDropEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent * event);
 
 	// Custom Drag&Drop handlers for different mime data.
 	void HandleDragEnterControlMimeData(QDragEnterEvent *event, const ControlMimeData* mimeData);
@@ -77,8 +77,6 @@ protected:
 	void HandleDropControlMimeData(QDropEvent *event, const ControlMimeData* mimeData);
 	void HandleDropHierarchyMimeData(QDropEvent *event, const HierarchyTreeControlMimeData* mimeData);
 
-    void StopExpandTimer();
-
 protected slots:
     void OnExpandTimer();
 
@@ -89,7 +87,9 @@ private:
 	bool GetMoveItemID(QDropEvent *event, HierarchyTreeNode::HIERARCHYTREENODEID &insertInTo, HierarchyTreeNode::HIERARCHYTREENODEID &insertAfter);
 
 	Vector<int32> GetPositionKey(QTreeWidgetItem* item) const;
-	
+
+    void StopExpandTimer();
+
 	struct SortedItems {
 		QTreeWidgetItem* item;
 		Vector<int32> positionKey;
