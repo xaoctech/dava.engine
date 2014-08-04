@@ -812,7 +812,9 @@ void MainWindow::SetupViewMenu()
 
     ui->menuView->addSeparator();
     ui->menuView->addAction(ui->mainToolbar->toggleViewAction());
-
+    ui->menuView->addAction(ui->previewToolBar->toggleViewAction());
+    ui->menuView->addAction(ui->findToolBar->toggleViewAction());
+    
     // Setup the Background Color menu.
     QMenu* setBackgroundColorMenu = new QMenu("Background Color");
     ui->menuView->addSeparator();
