@@ -20,6 +20,8 @@ public:
     void SetDimensions( const Qt::Edges& flags );
     void SetOrientation( Qt::Orientation orientation );
 
+    double GetValue() const;
+
 protected:
     void DrawBackground( QPainter *p ) const override;
     void DrawForeground( QPainter *p ) const override;

@@ -12,6 +12,9 @@ public:
     Dropper(QWidget *parent = 0);
     ~Dropper();
 
+private slots:
+    void showCP();
+
 private:
     Ui::DropperClass ui;
 };

@@ -8,6 +8,10 @@
 class QLineEdit;
 class MouseHelper;
 
+//
+//  Parent widget must have Click focus policy
+//
+
 class ValueSlider
     : public QWidget
 {
@@ -16,6 +20,8 @@ class ValueSlider
 public:
     explicit ValueSlider(QWidget *parent);
     ~ValueSlider();
+
+    void SetDigitsAfterDot( int c );
 
 protected:
     virtual void DrawBackground( QPainter *p ) const;
@@ -36,9 +42,14 @@ private slots:
     void OnMouseClick();
 
 private:
+    void normalize();
+    void undoEditing();
+    void acceptEditing();
+
     double minVal;
     double maxVal;
     double val;
+    int digitsAfterDot;
 
     QPointer< MouseHelper > mouse;
     QPoint clickPos;
