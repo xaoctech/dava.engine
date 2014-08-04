@@ -1,5 +1,8 @@
 #include "dropper.h"
 
+#include "ColorPicker/ColorPicker.h"
+
+
 Dropper::Dropper(QWidget *parent)
     : QWidget(parent)
 {
@@ -17,9 +20,20 @@ Dropper::Dropper(QWidget *parent)
 
     ui.test_4->setColorOld( QColor( 255, 0, 255, 100 ) );
     ui.test_4->setColorNew( QColor( 255, 255, 100, 50 ) );
+
+    connect( ui.btn, SIGNAL( clicked() ), SLOT( showCP() ) );
 }
 
 Dropper::~Dropper()
 {
 
+}
+
+void Dropper::showCP()
+{
+    ColorPicker *cp = new ColorPicker( this );
+    cp->setWindowFlags( Qt::Window );
+    cp->setAttribute( Qt::WA_DeleteOnClose, true );
+
+    cp->show();
 }

@@ -3,8 +3,9 @@
 #include <QPainter>
 #include <QApplication>
 #include <QLineEdit>
-#include <QDoubleValidator>
+#include <QRegExpValidator>
 #include <QStyleOption>
+#include <QKeyEvent>
 
 #include "../Helpers/MouseHelper.h"
 
@@ -17,17 +18,17 @@ namespace
         "padding: 0px;"
         "margin: 0px;"
         ;
-    const int digits = 8;
 }
 
 
 ValueSlider::ValueSlider(QWidget *parent)
     : QWidget( parent )
     , minVal( 0 )
-    , maxVal( 1 )
-    , val( 0.2 )
+    , maxVal( 10 )
+    , val( 4 )
     , clickVal( 0 )
     , mouse( new MouseHelper( this ) )
+    , digitsAfterDot( 6 )
 {
     connect( mouse, SIGNAL( mousePress( const QPoint& ) ), SLOT( OnMousePress( const QPoint& ) ) );
     connect( mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ) );
@@ -37,6 +38,11 @@ ValueSlider::ValueSlider(QWidget *parent)
 
 ValueSlider::~ValueSlider()
 {
+}
+
+void ValueSlider::SetDigitsAfterDot( int c )
+{
+    digitsAfterDot = c;
 }
 
 void ValueSlider::DrawBackground( QPainter* p ) const
@@ -71,7 +77,7 @@ void ValueSlider::DrawForeground( QPainter* p ) const
     {
         QStyleOptionFrameV2 panel;
         panel.initFrom( this );
-        style()->drawItemText( p, clip.adjusted( 3, 0, 0, 0 ), (Qt::AlignLeft | Qt::AlignVCenter), palette(), true, QString::number( val, 'g', digits ), QPalette::WindowText );
+        style()->drawItemText( p, clip.adjusted( 3, 0, 0, 0 ), (Qt::AlignLeft | Qt::AlignVCenter), palette(), true, QString::number( val, 'f', digitsAfterDot ), QPalette::WindowText );
     }
 }
 
@@ -101,6 +107,36 @@ void ValueSlider::resizeEvent( QResizeEvent* e )
 
 bool ValueSlider::eventFilter( QObject* obj, QEvent* e )
 {
+    if ( obj == editor )
+    {
+        switch ( e->type() )
+        {
+        case QEvent::KeyPress:
+            {
+                QKeyEvent *ke = static_cast<QKeyEvent *>( e );
+                switch ( ke->key() )
+                {
+                case Qt::Key_Enter:
+                case Qt::Key_Return:
+                case Qt::Key_Escape:
+                    acceptEditing();
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            break;
+
+        case QEvent::FocusOut:
+            acceptEditing();
+            break;
+
+        default:
+            break;
+        }
+    }
+
     return QWidget::eventFilter( obj, e );
 }
 
@@ -128,10 +164,7 @@ void ValueSlider::OnMouseMove( const QPoint& pos )
         const double ofs = dd * dw;
 
         val = clickVal + ofs;
-        if ( val < minVal )
-            val = minVal;
-        if ( val > maxVal )
-            val = maxVal;
+        normalize();
 
         repaint();
     }
@@ -147,16 +180,58 @@ void ValueSlider::OnMouseClick()
 {
     if ( editor )
         delete editor;
-    QDoubleValidator *validator = new QDoubleValidator( minVal, maxVal, digits );
+
+    QRegExpValidator *validator = new QRegExpValidator( QRegExp("\\s*-? \\d*[, \\.] ? \\d*\\s*") );
+    
     editor = new QLineEdit(this);
+    editor->installEventFilter( this );
     editor->setValidator( validator );
     editor->setStyleSheet( editorQss );
     editor->move( 0, 0 );
     editor->resize( width(), height() );
 
-    editor->setText( QString::number( val, 'g', digits ) );
+    editor->setText( QString::number( val, 'f', digitsAfterDot ) );
 
     editor->show();
     editor->setFocus();
     update();
+}
+
+void ValueSlider::normalize()
+{
+    if ( val < minVal )
+    {
+        val = minVal;
+    }
+    if ( val > maxVal )
+    {
+        val = maxVal;
+    }
+}
+
+void ValueSlider::undoEditing()
+{
+    if ( editor )
+    {
+        editor->deleteLater();
+    }
+}
+
+void ValueSlider::acceptEditing()
+{
+    if ( editor )
+    {
+        const QString text = editor->text();
+
+        bool ok = false;
+        const double newVal = text.toDouble( &ok );
+        if ( ok )
+        {
+            val = newVal;
+            normalize();
+        }
+
+        editor->deleteLater();
+        repaint();
+    }
 }

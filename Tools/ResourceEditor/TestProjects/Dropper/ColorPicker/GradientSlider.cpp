@@ -21,12 +21,14 @@ void GradientSlider::SetColors( const QColor& _c1, const QColor& _c2 )
 {
     c1 = _c1;
     c2 = _c2;
+    bgCache = QPixmap();
     update();
 }
 
 void GradientSlider::SetDimensions( const Qt::Edges& flags )
 {
     arrows = flags;
+    bgCache = QPixmap();
     update();
 }
 
@@ -36,11 +38,16 @@ void GradientSlider::SetOrientation( Qt::Orientation _orientation )
     update();
 }
 
+double GradientSlider::GetValue() const
+{
+    return ( orientation == Qt::Horizontal ) ? PosF().x() : PosF().y();
+}
+
 void GradientSlider::DrawBackground( QPainter* p ) const
 {
     const QRect& rc = PosArea();
 
-    if ( bgCache .isNull() )
+    if ( bgCache.isNull() )
     {
         const QImage& bg = PaintingHelper::BuildGradient( rc.size(), c1, c2, orientation );
         bgCache = QPixmap::fromImage( bg );
