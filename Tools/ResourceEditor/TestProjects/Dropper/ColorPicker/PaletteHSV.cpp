@@ -40,21 +40,26 @@ void PaletteHSV::setColor( const QColor& c )
     setColor( c.hue(), c.saturation() );
 }
 
-QPixmap PaletteHSV::DrawBackground() const
+void PaletteHSV::DrawBackground( QPainter* p ) const
 {
-    const QImage& pal = PaintingHelper::BuildHSVImage( size() );
-    return QPixmap::fromImage( pal );
+    if ( bgCache.isNull() )
+    {
+        const QImage& pal = PaintingHelper::BuildHSVImage( size() );
+        bgCache = QPixmap::fromImage( pal );
+    }
+
+    p->drawPixmap( 0, 0, bgCache );
 }
 
-QPixmap PaletteHSV::DrawForground() const
+void PaletteHSV::DrawForground( QPainter* p ) const
 {
-    QPixmap pix( size() );
-    pix.fill( Qt::transparent );
+    DrawCursor( p );
+}
 
-    QPainter p( &pix );
-    DrawCursor( &p );
-
-    return pix;
+void PaletteHSV::resizeEvent( QResizeEvent* e )
+{
+    bgCache = QPixmap();
+    AbstractSlider::resizeEvent( e );
 }
 
 void PaletteHSV::DrawCursor( QPainter* p ) const

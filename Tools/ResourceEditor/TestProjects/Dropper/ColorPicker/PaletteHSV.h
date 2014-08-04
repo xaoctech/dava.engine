@@ -20,13 +20,16 @@ public:
     void setColor( const QColor& c );
 
 protected:
-    QPixmap DrawBackground() const override;
-    QPixmap DrawForground() const override;
+    void DrawBackground( QPainter *p ) const override;
+    void DrawForground( QPainter *p ) const override;
+
+    void resizeEvent( QResizeEvent* e ) override;
 
 private:
     void DrawCursor( QPainter *p ) const;
 
     QSize cursorSize;
+    mutable QPixmap bgCache;
 };
 
 #endif // PALETTEHSV_H

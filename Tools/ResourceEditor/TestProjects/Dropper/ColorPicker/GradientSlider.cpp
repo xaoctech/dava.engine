@@ -9,6 +9,7 @@ GradientSlider::GradientSlider(QWidget *parent)
     : AbstractSlider(parent)
     , arrowSize( 9, 9 )
     , orientation( Qt::Horizontal )
+    , bgBrush( PaintingHelper::BuildGridBrush( QSize( 5, 5 ) ) )
 {
 }
 
@@ -20,38 +21,36 @@ void GradientSlider::SetColors( const QColor& _c1, const QColor& _c2 )
 {
     c1 = _c1;
     c2 = _c2;
-    InvalidateBackground();
+    update();
 }
 
 void GradientSlider::SetDimensions( const Qt::Edges& flags )
 {
     arrows = flags;
-    InvalidateForeGround();
+    update();
 }
 
 void GradientSlider::SetOrientation( Qt::Orientation _orientation )
 {
     orientation = _orientation;
-    InvalidateBackground();
+    update();
 }
 
-QPixmap GradientSlider::DrawBackground() const
+void GradientSlider::DrawBackground( QPainter* p ) const
 {
     const QRect& rc = PosArea();
-    const QImage& bg = PaintingHelper::BuildGradient( rc.size(), c1, c2, orientation );
 
-    QPixmap pix( size() );
-    pix.fill( Qt::transparent );
-    QPainter p( &pix );
+    if ( bgCache .isNull() )
+    {
+        const QImage& bg = PaintingHelper::BuildGradient( rc.size(), c1, c2, orientation );
+        bgCache = QPixmap::fromImage( bg );
+    }
 
-    const QBrush& br = PaintingHelper::BuildGridBrush( QSize( 5, 5 ) );
-    p.fillRect( rc, br );
-    p.drawImage( rc.topLeft(), bg );
-
-    return pix;
+    p->fillRect( rc, bgBrush );
+    p->drawPixmap( rc.topLeft(), bgCache );
 }
 
-QPixmap GradientSlider::DrawForground() const
+void GradientSlider::DrawForground( QPainter* p ) const
 {
     Qt::Edges flags;
     switch ( orientation )
@@ -64,20 +63,20 @@ QPixmap GradientSlider::DrawForground() const
         break;
     }
 
-    QPixmap buf( size() );
-    buf.fill( Qt::transparent );
-
-    QPainter p( &buf );
     if ( flags.testFlag( Qt::TopEdge ) )
-        drawArrow( Qt::TopEdge, &p );
+        drawArrow( Qt::TopEdge, p );
     if ( flags.testFlag( Qt::LeftEdge ) )
-        drawArrow( Qt::LeftEdge, &p );
+        drawArrow( Qt::LeftEdge, p );
     if ( flags.testFlag( Qt::RightEdge ) )
-        drawArrow( Qt::RightEdge, &p );
+        drawArrow( Qt::RightEdge, p );
     if ( flags.testFlag( Qt::BottomEdge ) )
-        drawArrow( Qt::BottomEdge, &p );
+        drawArrow( Qt::BottomEdge, p );
+}
 
-    return buf;
+void GradientSlider::resizeEvent( QResizeEvent* e )
+{
+    bgCache = QPixmap();
+    AbstractSlider::resizeEvent( e );
 }
 
 void GradientSlider::drawArrow( Qt::Edge arrow, QPainter *p ) const
