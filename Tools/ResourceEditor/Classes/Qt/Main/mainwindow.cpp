@@ -189,8 +189,6 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 QtMainWindow::~QtMainWindow()
 {
-    delete heightDeltaTool;
-
 	SafeDelete(addSwitchEntityDialog);
     SafeDelete(developerTools);
     
@@ -451,12 +449,10 @@ void QtMainWindow::SetupToolBars()
 {
 	QAction *actionMainToolBar = ui->mainToolBar->toggleViewAction();
 	QAction *actionModifToolBar = ui->modificationToolBar->toggleViewAction();
-	QAction *actionViewModeToolBar = ui->viewModeToolBar->toggleViewAction();
 	QAction *actionLandscapeToolbar = ui->landscapeToolBar->toggleViewAction();
 
 	ui->menuToolbars->addAction(actionMainToolBar);
 	ui->menuToolbars->addAction(actionModifToolBar);
-	ui->menuToolbars->addAction(actionViewModeToolBar);
 	ui->menuToolbars->addAction(actionLandscapeToolbar);
 	ui->menuToolbars->addAction(ui->sceneToolBar->toggleViewAction());
     ui->menuToolbars->addAction(ui->testingToolBar->toggleViewAction());
@@ -534,26 +530,6 @@ void QtMainWindow::SetupToolBars()
 		ui->sceneToolBar->addSeparator();
 		ui->sceneToolBar->addWidget(objectTypesWidget);
 	}
-    
-    //heightmap color toolbar
-    {
-        QDoubleSpinBox* thresholdBox = new QDoubleSpinBox(this);
-        thresholdBox->setMinimum(1.0);
-        thresholdBox->setMaximum(89.0);
-        thresholdBox->setSingleStep(1.0);
-        
-        ui->heightDeltaToolBar->addWidget(thresholdBox);
-        
-        QToolButton* runHeightDeltaBtn = new QToolButton();
-		runHeightDeltaBtn->setDefaultAction(ui->actionGenerateHeightDeltaImage);
-		runHeightDeltaBtn->setToolButtonStyle(Qt::ToolButtonIconOnly);
-		runHeightDeltaBtn->setAutoRaise(false);
-
-        ui->heightDeltaToolBar->addWidget(runHeightDeltaBtn);
-        
-        heightDeltaTool = new HeightDeltaTool(thresholdBox);
-        heightDeltaTool->SetThreshold(30.0);
-    }
 }
 
 void QtMainWindow::SetupStatusBar()
