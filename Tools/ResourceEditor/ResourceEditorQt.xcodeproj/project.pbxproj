@@ -39,7 +39,6 @@
 		62C8751B189698E5000E398E /* RegExpValidator.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 62C87519189698E5000E398E /* RegExpValidator.cpp */; };
 		643BE8FF18C74B1C00D824FE /* ImageRegionCopyCommand.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 643BE8FD18C74B1C00D824FE /* ImageRegionCopyCommand.cpp */; };
 		64533A9F18E0344800941529 /* MaterialTemplateModel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64533A9E18E0344800941529 /* MaterialTemplateModel_moc.cpp */; };
-		645938DC198A7C7500F386B6 /* HeightDeltaTool.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 645938DA198A7C7500F386B6 /* HeightDeltaTool.cpp */; };
 		64B9017E18BF7ACF001E6CCC /* GrassEditorPanel.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9017C18BF7ACF001E6CCC /* GrassEditorPanel.cpp */; };
 		64B9018718BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018618BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp */; };
 		64B9018A18BF7B15001E6CCC /* GrassEditorProxy.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 64B9018818BF7B15001E6CCC /* GrassEditorProxy.cpp */; };
@@ -52,6 +51,8 @@
 		765BA23D19406B0B005D6B4E /* BeastDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 765BA23C19406B0B005D6B4E /* BeastDialog_moc.cpp */; };
 		76741C8818A3BDE20044A0BF /* CacheRequest.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C8618A3BDE20044A0BF /* CacheRequest.cpp */; };
 		76741C9118A3BE650044A0BF /* CacheRequest_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */; };
+		7680FC0519912A5A00A628DE /* HeightmapPath.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7680FC0319912A5A00A628DE /* HeightmapPath.cpp */; };
+		7680FC0C19912B8300A628DE /* HeightmapPath_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 7680FC0B19912B8300A628DE /* HeightmapPath_moc.cpp */; };
 		76A098A418E1968E00D442EB /* LicenceDialog_moc.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */; };
 		76A098A818E1970E00D442EB /* LicenceDialog.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76A098A618E1970E00D442EB /* LicenceDialog.cpp */; };
 		76BA73DB195839710029DC61 /* RunActionEventWidget.cpp in Build Sources */ = {isa = PBXBuildFile; fileRef = 76BA73D9195839710029DC61 /* RunActionEventWidget.cpp */; };
@@ -713,8 +714,6 @@
 		643BE8FD18C74B1C00D824FE /* ImageRegionCopyCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageRegionCopyCommand.cpp; sourceTree = "<group>"; };
 		643BE8FE18C74B1C00D824FE /* ImageRegionCopyCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageRegionCopyCommand.h; sourceTree = "<group>"; };
 		64533A9E18E0344800941529 /* MaterialTemplateModel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MaterialTemplateModel_moc.cpp; sourceTree = "<group>"; };
-		645938DA198A7C7500F386B6 /* HeightDeltaTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeightDeltaTool.cpp; sourceTree = "<group>"; };
-		645938DB198A7C7500F386B6 /* HeightDeltaTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeightDeltaTool.h; sourceTree = "<group>"; };
 		64B9017C18BF7ACF001E6CCC /* GrassEditorPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrassEditorPanel.cpp; sourceTree = "<group>"; };
 		64B9017D18BF7ACF001E6CCC /* GrassEditorPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrassEditorPanel.h; sourceTree = "<group>"; };
 		64B9018618BF7ADE001E6CCC /* GrassEditorPanel_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GrassEditorPanel_moc.cpp; sourceTree = "<group>"; };
@@ -737,6 +736,9 @@
 		76741C8618A3BDE20044A0BF /* CacheRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest.cpp; sourceTree = "<group>"; };
 		76741C8718A3BDE20044A0BF /* CacheRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CacheRequest.h; sourceTree = "<group>"; };
 		76741C9018A3BE650044A0BF /* CacheRequest_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CacheRequest_moc.cpp; sourceTree = "<group>"; };
+		7680FC0319912A5A00A628DE /* HeightmapPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapPath.cpp; path = HeightmapPath/HeightmapPath.cpp; sourceTree = "<group>"; };
+		7680FC0419912A5A00A628DE /* HeightmapPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeightmapPath.h; path = HeightmapPath/HeightmapPath.h; sourceTree = "<group>"; };
+		7680FC0B19912B8300A628DE /* HeightmapPath_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HeightmapPath_moc.cpp; path = HeightmapPath/HeightmapPath_moc.cpp; sourceTree = "<group>"; };
 		76A0989A18E1965E00D442EB /* ui_LicenceDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ui_LicenceDialog.h; path = _GeneratedQt/ui_LicenceDialog.h; sourceTree = "<group>"; };
 		76A098A318E1968E00D442EB /* LicenceDialog_moc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LicenceDialog_moc.cpp; path = _GeneratedQt/LicenceDialog/LicenceDialog_moc.cpp; sourceTree = "<group>"; };
 		76A098A618E1970E00D442EB /* LicenceDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LicenceDialog.cpp; path = LicenceDialog/LicenceDialog.cpp; sourceTree = "<group>"; };
@@ -1865,15 +1867,6 @@
 			name = QtPropertyDataValidator;
 			sourceTree = "<group>";
 		};
-		645938D2198A7C6100F386B6 /* HeightDeltaTool */ = {
-			isa = PBXGroup;
-			children = (
-				645938DA198A7C7500F386B6 /* HeightDeltaTool.cpp */,
-				645938DB198A7C7500F386B6 /* HeightDeltaTool.h */,
-			);
-			path = HeightDeltaTool;
-			sourceTree = "<group>";
-		};
 		763DCF081964524A00D94EB3 /* DebugTools */ = {
 			isa = PBXGroup;
 			children = (
@@ -1898,6 +1891,15 @@
 				765BA22C19406A9E005D6B4E /* BeastDialog.h */,
 			);
 			path = BeastDialog;
+			sourceTree = "<group>";
+		};
+		7680FC0619912A6500A628DE /* HeightmapPath */ = {
+			isa = PBXGroup;
+			children = (
+				7680FC0319912A5A00A628DE /* HeightmapPath.cpp */,
+				7680FC0419912A5A00A628DE /* HeightmapPath.h */,
+			);
+			name = HeightmapPath;
 			sourceTree = "<group>";
 		};
 		76A098A218E1967B00D442EB /* LicenceDialog */ = {
@@ -2379,6 +2381,7 @@
 		E8BAD65F1859F50300C98C8D /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				7680FC0B19912B8300A628DE /* HeightmapPath_moc.cpp */,
 				E86F97C518DB2990007330E1 /* DeveloperTools */,
 				E8BAD6601859F50300C98C8D /* AddParticleEmitterDialog */,
 				E8BAD6621859F50300C98C8D /* AddSkyboxDialog */,
@@ -3772,7 +3775,7 @@
 		E8C9917F184CD0EB00AFBF3F /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				645938D2198A7C6100F386B6 /* HeightDeltaTool */,
+				7680FC0619912A6500A628DE /* HeightmapPath */,
 				E86F97BA18DB2978007330E1 /* DeveloperTools */,
 				4FA41987188EA4C500395C70 /* RunGuard */,
 				E8C99180184CD0EB00AFBF3F /* AddParticleEmitterDialog */,
@@ -4445,7 +4448,6 @@
 				E8185C2B190950E500AAD457 /* MaterialGlobalCommand.cpp in Build Sources */,
 				E8BAD6FD1859F50300C98C8D /* NormalHood_moc.cpp in Build Sources */,
 				62C1B9A2188E947200CD3005 /* MaterialFilterModel_moc.cpp in Build Sources */,
-				645938DC198A7C7500F386B6 /* HeightDeltaTool.cpp in Build Sources */,
 				E8C9927D184CD0EC00AFBF3F /* TextureDescriptorUtils.cpp in Build Sources */,
 				E8BAD6E81859F50300C98C8D /* SceneHelper_moc.cpp in Build Sources */,
 				E8C992BB184CD0EC00AFBF3F /* HeightmapEditorPanel.cpp in Build Sources */,
@@ -4475,6 +4477,7 @@
 				E8C99262184CD0EC00AFBF3F /* ColladaAnimation.cpp in Build Sources */,
 				E8BAD7391859F50300C98C8D /* QtPropertyItemDelegate_moc.cpp in Build Sources */,
 				E8C9932D184CD0EC00AFBF3F /* LabeledSlider.cpp in Build Sources */,
+				7680FC0C19912B8300A628DE /* HeightmapPath_moc.cpp in Build Sources */,
 				E8C9933D184CD0EC00AFBF3F /* QtPropertyData.cpp in Build Sources */,
 				E8D417C5188160C800A76E21 /* EditorMaterialSystem.cpp in Build Sources */,
 				E8C992C1184CD0EC00AFBF3F /* LandscapeEditorShortcutManager.cpp in Build Sources */,
@@ -4527,6 +4530,7 @@
 				E881535118883A630028AFD3 /* InspDynamicModifyCommand.cpp in Build Sources */,
 				84A6B1FB18972F64002FD263 /* FloatRangeValidator.cpp in Build Sources */,
 				E8BAD71C1859F50300C98C8D /* TextureProperties_moc.cpp in Build Sources */,
+				7680FC0519912A5A00A628DE /* HeightmapPath.cpp in Build Sources */,
 				E8BAD6B31859F50300C98C8D /* ConsoleView_moc.cpp in Build Sources */,
 				E8C992BD184CD0EC00AFBF3F /* RulerToolPanel.cpp in Build Sources */,
 				E8BAD6F21859F50300C98C8D /* CollisionRenderObject_moc.cpp in Build Sources */,
