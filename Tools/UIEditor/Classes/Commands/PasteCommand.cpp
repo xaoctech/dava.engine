@@ -265,7 +265,7 @@ int PasteCommand::PasteScreens(HierarchyTreeNode::HIERARCHYTREENODESLIST* newScr
 		HierarchyTreeNode* copy;
 		if (aggregator)
 		{
-			copy = new HierarchyTreeAggregatorNode(parent, aggregator, false);
+			copy = new HierarchyTreeAggregatorNode(parent, aggregator);
 		}
 		else
 		{

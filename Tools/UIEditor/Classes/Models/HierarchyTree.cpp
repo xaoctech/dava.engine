@@ -316,7 +316,7 @@ HierarchyTreeAggregatorNode* HierarchyTree::AddAggregator(const QString& name, H
 		return NULL;
 	}
 	
-	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect, false);
+	HierarchyTreeAggregatorNode* aggregatorNode = new HierarchyTreeAggregatorNode(platformNode, name, rect);
 	platformNode->AddTreeNode(aggregatorNode);
 	
 	return aggregatorNode;
