@@ -7,11 +7,11 @@
 
 namespace Ui {class ColorPicker;};
 
-class AbstractColorPicker;
+#include "AbstractColorPicker.h"
 
 
 class ColorPicker
-    : public QWidget
+    : public AbstractColorPicker
 {
     Q_OBJECT
 
@@ -24,10 +24,20 @@ public:
 
 protected:
     void RegisterPicker( const QString& key, AbstractColorPicker *picker );
+    void RegisterColorSpace( const QString& key, AbstractColorPicker *picker );
+
+    void SetColorInternal( const QColor& c ) override;
+
+private slots:
+    void OnChanging( const QColor& c );
+    void OnChanged( const QColor& c );
 
 private:
+    void UpdateControls( const QColor& c, AbstractColorPicker *source );
+
     QScopedPointer<Ui::ColorPicker> ui;
     PickerMap pickers;
+    PickerMap colorSpaces;
 };
 
 #endif // COLORPICKER_H

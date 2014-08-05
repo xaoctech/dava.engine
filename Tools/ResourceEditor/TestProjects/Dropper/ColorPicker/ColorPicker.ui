@@ -6,32 +6,82 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>796</width>
-    <height>557</height>
+    <width>752</width>
+    <height>844</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>ColorPicker</string>
   </property>
-  <widget class="QComboBox" name="pickerCombo">
+  <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>100</y>
-     <width>171</width>
-     <height>22</height>
+     <x>30</x>
+     <y>20</y>
+     <width>331</width>
+     <height>211</height>
     </rect>
    </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Palette:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="pickerCombo"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="pickerStack"/>
+    </item>
+   </layout>
   </widget>
-  <widget class="QStackedWidget" name="pickerStack">
+  <widget class="QWidget" name="verticalLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>140</y>
-     <width>351</width>
-     <height>291</height>
+     <x>30</x>
+     <y>280</y>
+     <width>331</width>
+     <height>331</height>
     </rect>
    </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Color space:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="colorSpaceCombo"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="colorSpaceStack"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

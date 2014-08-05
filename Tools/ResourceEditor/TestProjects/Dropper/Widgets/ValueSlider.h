@@ -18,7 +18,7 @@ class ValueSlider
     Q_OBJECT
 
 public:
-    explicit ValueSlider(QWidget *parent);
+    explicit ValueSlider(QWidget *parent = NULL);
     ~ValueSlider();
 
     void SetDigitsAfterDot( int c );
@@ -54,6 +54,7 @@ private:
     QPointer< MouseHelper > mouse;
     QPoint clickPos;
     double clickVal;
+    mutable QPixmap arrows;
 
     QPointer<QLineEdit> editor;
 };

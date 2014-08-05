@@ -13,7 +13,7 @@ class GradientSlider
     Q_OBJECT
 
 public:
-    explicit GradientSlider(QWidget *parent);
+    explicit GradientSlider(QWidget *parent = NULL);
     ~GradientSlider();
 
     void SetColors( const QColor& c1, const QColor& c2 );

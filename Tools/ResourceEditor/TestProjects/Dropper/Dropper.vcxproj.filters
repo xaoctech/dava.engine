@@ -143,6 +143,24 @@
     <ClCompile Include="ColorPicker\ColorPickerHSV.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ColorComponentSlider.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ColorComponentSlider.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\ColorComponentSlider.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ColorPickerRGBAM.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ColorPickerRGBAM.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\ColorPickerRGBAM.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="dropper.h">
@@ -182,6 +200,12 @@
       <Filter>ColorPicker</Filter>
     </CustomBuild>
     <CustomBuild Include="ColorPicker\ColorPickerHSV.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\ColorComponentSlider.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\ColorPickerRGBAM.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
   </ItemGroup>

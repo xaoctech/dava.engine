@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 
 #include "../Helpers/MouseHelper.h"
+#include "../Helpers/PaintingHelper.h"
 
 
 namespace
@@ -24,8 +25,8 @@ namespace
 ValueSlider::ValueSlider(QWidget *parent)
     : QWidget( parent )
     , minVal( 0 )
-    , maxVal( 10 )
-    , val( 4 )
+    , maxVal( 1 )
+    , val( 0 )
     , clickVal( 0 )
     , mouse( new MouseHelper( this ) )
     , digitsAfterDot( 6 )
@@ -78,6 +79,22 @@ void ValueSlider::DrawForeground( QPainter* p ) const
         QStyleOptionFrameV2 panel;
         panel.initFrom( this );
         style()->drawItemText( p, clip.adjusted( 3, 0, 0, 0 ), (Qt::AlignLeft | Qt::AlignVCenter), palette(), true, QString::number( val, 'f', digitsAfterDot ), QPalette::WindowText );
+
+        if ( arrows.isNull() )
+        {
+            const int div = 3;
+            const QSize arrowSize( clip.height() / div + 1, clip.height() / div + 1 );
+            const QImage& left = PaintingHelper::BuildArrowIcon( arrowSize, Qt::RightEdge );
+            const QImage& right = PaintingHelper::BuildArrowIcon( arrowSize, Qt::LeftEdge );
+
+            arrows = QPixmap( arrowSize.width() * 2, arrowSize.height() );
+            arrows.fill( Qt::transparent );
+            QPainter pa( &arrows );
+            pa.drawImage( 0, 0, left );
+            pa.drawImage( arrowSize.width(), 0, right );
+        }
+
+        p->drawPixmap( clip.width() - arrows.width(), (clip.height() - arrows.height()) / 2, arrows );
     }
 }
 
