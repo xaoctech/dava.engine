@@ -120,7 +120,7 @@
 
 #include "Classes/Commands2/PaintHeightDeltaAction.h"
 
-#include "Tools/HeightDeltaTool/HeightDeltaTool.h"
+#include "Tools/HeightmapPath/HeightmapPath.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -735,7 +735,7 @@ void QtMainWindow::SetupActions()
     QObject::connect(ui->actionRebuildCurrentOcclusionCell, SIGNAL(triggered()), this, SLOT(OnRebuildCurrentOcclusionCell()));
     QObject::connect(ui->actionInvalidateStaticOcclusion, SIGNAL(triggered()), this, SLOT(OnInavalidateStaticOcclusion()));
     
-    QObject::connect(ui->actionGenerateHeightDeltaImage, SIGNAL(triggered()), this, SLOT(OnGenerateHeightDelta()));
+    connect(ui->actionHeightmap_Delta_Tool, SIGNAL(triggered()), this, SLOT(OnGenerateHeightDelta()));
     
 	//Help
     QObject::connect(ui->actionHelp, SIGNAL(triggered()), this, SLOT(OnOpenHelp()));
@@ -758,6 +758,8 @@ void QtMainWindow::SetupActions()
         QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
         connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
 #endif
+        QAction *act = ui->menuDebug_Functions->addAction("Test HeightMap save dialog");
+        connect(act, SIGNAL(triggered()), SLOT(DebugHeightMap()));
 	}
     
  	//Collision Box Types
@@ -2970,32 +2972,9 @@ void QtMainWindow::DebugVersionInfo()
 
 void QtMainWindow::OnGenerateHeightDelta()
 {
-    SceneEditor2* scene = GetCurrentScene();
-	if(NULL != scene)
-	{
-        Landscape* landscapeRO = FindLandscape(scene);
-        if(landscapeRO != NULL)
-        {
-            DAVA::FilePath defaultPath = ProjectManager::Instance()->CurProjectPath();
-            QString retString = QFileDialog::getOpenFileName(this, "Select image", defaultPath.GetAbsolutePathname().c_str(), "PNG(*.png)");
-            if(retString.size() > 0)
-            {
-                WaitStart("Generating color height mask...", retString);
-                
-                DAVA::FilePath outResultPath;
-                bool result = heightDeltaTool->GenerateHeightDeltaImage(retString, landscapeRO, outResultPath);
-                
-                WaitStop();
-                
-                if(result)
-                {
-                    QMessageBox::information(this, "Mask is ready", outResultPath.GetAbsolutePathname().c_str());
-                }
-                else
-                {
-                    QMessageBox::information(this, "An error occured", "Please check if landscape has proper setup.");
-                }
-            }
-        }
-    }
+    HeightmapPath *w = new HeightmapPath( this );
+    w->setWindowFlags( Qt::Window );
+    w->setAttribute( Qt::WA_DeleteOnClose );
+    
+    w->show();
 }
