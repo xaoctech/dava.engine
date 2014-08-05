@@ -29,6 +29,7 @@
 #include "HeightDeltaTool.h"
 #include "Commands2/PaintHeightDeltaAction.h"
 #include "Qt/MAin/QtUtils.h"
+#include "Qt/Settings/SettingsManager.h"
 
 #include <QImageReader>
 
@@ -82,12 +83,18 @@ bool HeightDeltaTool::GenerateHeightDeltaImage(const QString& srcPath,
         
         dstImagePath = dstImagePath.GetDirectory() + baseName + extension;
         
+        DAVA::Vector<DAVA::Color> colors;
+        colors.resize(2);
+        colors[0] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color0).AsColor();
+        colors[1] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color1).AsColor();
+        
         PaintHeightDeltaAction* action = new PaintHeightDeltaAction(dstImagePath,
                                                                     (DAVA::float32)threshold,
                                                                     heightmap,
                                                                     imageSize.width(),
                                                                     imageSize.height(),
-                                                                    bbox.max.z - bbox.min.z);
+                                                                    bbox.max.z - bbox.min.z,
+                                                                    colors);
         
         action->Redo();
         

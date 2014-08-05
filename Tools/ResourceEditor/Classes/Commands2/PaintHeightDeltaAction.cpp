@@ -35,7 +35,8 @@ PaintHeightDeltaAction::PaintHeightDeltaAction(const DAVA::FilePath& targetImage
                                                DAVA::Heightmap* srcHeightmap,
                                                DAVA::uint32 targetImageWidth,
                                                DAVA::uint32 targetImageHeight,
-                                               DAVA::float32 targetTerrainHeight) : CommandAction(CMDID_PAINT_HEIGHT_DELTA)
+                                               DAVA::float32 targetTerrainHeight,
+                                               const DAVA::Vector<DAVA::Color>& pixelColors) : CommandAction(CMDID_PAINT_HEIGHT_DELTA)
                                                
 {
     imagePath = targetImagePath;
@@ -44,6 +45,7 @@ PaintHeightDeltaAction::PaintHeightDeltaAction(const DAVA::FilePath& targetImage
     imageWidth = targetImageWidth;
     imageHeight = targetImageHeight;
     terrainHeight = targetTerrainHeight;
+    colors = pixelColors;
 }
 
 PaintHeightDeltaAction::~PaintHeightDeltaAction()
@@ -151,9 +153,9 @@ void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
     DVASSERT(widthPixelRatio > 0.0f);
     DVASSERT(heightPixelRatio > 0.0f);
     
-    DAVA::Color colors[2];
-    colors[0] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color0).AsColor();
-    colors[1] = SettingsManager::GetValue(Settings::General_HeighMaskTool_Color1).AsColor();
+    DAVA::int32 colorCount = colors.size();
+    
+    DVASSERT(colorCount >= 2);
     
     for(DAVA::int32 y = 0; y < (DAVA::int32)heightmapImage->height; ++y)
     {
@@ -172,7 +174,7 @@ void PaintHeightDeltaAction::PrepareDeltaImage(DAVA::Image* heightmapImage,
             
             if(isOverThreshold)
             {
-                DAVA::int32 colorIndex = (x + y) % COUNT_OF(colors);
+                DAVA::int32 colorIndex = (x + y) % colorCount;
                 
                 MarkDeltaRegion((DAVA::uint32)x,
                                 (DAVA::uint32)y, widthPixelRatio, heightPixelRatio, colors[colorIndex], deltaImage);
