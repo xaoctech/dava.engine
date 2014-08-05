@@ -43,7 +43,8 @@ public:
                            DAVA::Heightmap* srcHeightmap,
                            DAVA::uint32 targetImageWidth,
                            DAVA::uint32 targetImageHeight,
-                           DAVA::float32 targetTerrainHeight);
+                           DAVA::float32 targetTerrainHeight,
+                           const DAVA::Vector<DAVA::Color>& pixelColors);
     
     ~PaintHeightDeltaAction();
     
@@ -79,6 +80,7 @@ private:
     DAVA::uint32 imageWidth;
     DAVA::uint32 imageHeight;
     DAVA::float32 terrainHeight;
+    DAVA::Vector<DAVA::Color> colors;
 };
 
 
