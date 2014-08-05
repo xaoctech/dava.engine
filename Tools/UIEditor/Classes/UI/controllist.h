@@ -42,6 +42,8 @@ public:
 	~ControlMimeData();
 
     HierarchyTreeNode::HIERARCHYTREENODEID GetControlId() const {return controlId;};
+    
+    virtual bool hasFormat ( const QString & mimeType ) const;
 	
 private:
     HierarchyTreeNode::HIERARCHYTREENODEID controlId;

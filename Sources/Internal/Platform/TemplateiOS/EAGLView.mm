@@ -131,9 +131,11 @@
         
         if (rendererRequested == DAVA::Core::RENDERER_OPENGL_ES_2_0)
         {
-            renderer = [[ES2Renderer alloc] init];
-            rendererCreated = DAVA::Core::RENDERER_OPENGL_ES_2_0;
-            DAVA::RenderManager::Create(DAVA::Core::RENDERER_OPENGL_ES_2_0);
+            ES2Renderer* es2Renderer =  [[ES2Renderer alloc] init];
+            renderer = es2Renderer;
+            BOOL isGL30Created = [es2Renderer getIsGL30];
+            rendererCreated = (NO == isGL30Created) ? DAVA::Core::RENDERER_OPENGL_ES_2_0 : DAVA::Core::RENDERER_OPENGL_ES_3_0;
+            DAVA::RenderManager::Create(rendererCreated);
             DAVA::RenderManager::Instance()->InitFBO([renderer getColorRenderbuffer], [renderer getDefaultFramebuffer]);
         }
         
@@ -303,7 +305,7 @@ void MoveTouchsToVector(void *inTouches, DAVA::Vector<DAVA::UIEvent> *outTouches
 	for(UITouch *curTouch in ar)
 	{
 		DAVA::UIEvent newTouch;
-		newTouch.tid = (DAVA::int32)curTouch;
+		newTouch.tid = (DAVA::int32)(DAVA::pointer_size)curTouch;
 //		newTouch.buttonId = DAVA::UIEvent::BUTTON_1;
 		CGPoint p = [curTouch locationInView: curTouch.view ];
 		newTouch.physPoint.x = p.x;

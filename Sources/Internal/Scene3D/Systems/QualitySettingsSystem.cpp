@@ -31,6 +31,7 @@
 #include "Scene3D/Components/ComponentHelpers.h"
 #include "Scene3D/Scene.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 
 namespace DAVA
 {
@@ -40,6 +41,7 @@ const FastName QualitySettingsSystem::QUALITY_OPTION_VEGETATION_ANIMATION("VEGET
 QualitySettingsSystem::QualitySettingsSystem()
     : curTextureQuality(0)
     , curSoundQuality(0)
+    , prerequiredVertexFromat(EVF_FORCE_DWORD) //default format set to keep all streams
 {
     Load("~res:/quality.yaml");
 
@@ -322,6 +324,16 @@ FilePath QualitySettingsSystem::GetSFXQualityConfigPath(size_t index) const
     }
 
     return ret;
+}
+
+
+int32 QualitySettingsSystem::GetPrerequiredVertexFormat()
+{
+    return prerequiredVertexFromat;
+}
+void QualitySettingsSystem::SetPrerequiredVertexFormat(int32 format)
+{
+    prerequiredVertexFromat = format;
 }
 
 size_t QualitySettingsSystem::GetMaterialQualityGroupCount() const

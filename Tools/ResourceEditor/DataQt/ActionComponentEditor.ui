@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1020</width>
     <height>400</height>
    </rect>
   </property>
@@ -19,11 +19,20 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTableWidget" name="tableActions">
+     <property name="editTriggers">
+      <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropOverwriteMode">
+      <bool>false</bool>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
      <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
+      <enum>QAbstractItemView::SelectItems</enum>
      </property>
      <property name="verticalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -31,15 +40,29 @@
      <property name="horizontalScrollMode">
       <enum>QAbstractItemView::ScrollPerPixel</enum>
      </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>true</bool>
+     </attribute>
      <attribute name="horizontalHeaderDefaultSectionSize">
       <number>150</number>
      </attribute>
      <attribute name="horizontalHeaderStretchLastSection">
       <bool>false</bool>
      </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderHighlightSections">
+      <bool>false</bool>
+     </attribute>
      <column>
       <property name="text">
        <string>EventType</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Event Name</string>
       </property>
      </column>
      <column>
@@ -55,6 +78,11 @@
      <column>
       <property name="text">
        <string>Delay</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Delay variation</string>
       </property>
      </column>
      <column>
@@ -131,6 +159,13 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <tabstops>
+  <tabstop>tableActions</tabstop>
+  <tabstop>buttonAddItem</tabstop>
+  <tabstop>buttonRemoveItem</tabstop>
+ </tabstops>
+ <resources>
+  <include location="QtIcons.qrc"/>
+ </resources>
  <connections/>
 </ui>
