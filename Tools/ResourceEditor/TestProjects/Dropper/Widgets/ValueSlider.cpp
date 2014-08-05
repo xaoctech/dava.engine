@@ -6,6 +6,7 @@
 #include <QRegExpValidator>
 #include <QStyleOption>
 #include <QKeyEvent>
+#include <QDebug>
 
 #include "../Helpers/MouseHelper.h"
 #include "../Helpers/PaintingHelper.h"
@@ -44,6 +45,25 @@ ValueSlider::~ValueSlider()
 void ValueSlider::SetDigitsAfterDot( int c )
 {
     digitsAfterDot = c;
+}
+
+void ValueSlider::SetRange( double min, double max )
+{
+    minVal = qMin( min, max );
+    maxVal = qMax( min, max );
+    SetValue( val );    // Validation
+}
+
+void ValueSlider::SetValue( double _val )
+{
+    val = _val;
+    normalize();
+    update();
+}
+
+double ValueSlider::GetValue() const
+{
+    return val;
 }
 
 void ValueSlider::DrawBackground( QPainter* p ) const
@@ -168,6 +188,7 @@ void ValueSlider::OnMousePress( const QPoint& pos )
     clickVal = val;
 
     QApplication::setOverrideCursor( Qt::BlankCursor );
+    emit started( GetValue() );
 }
 
 void ValueSlider::OnMouseMove( const QPoint& pos )
@@ -182,6 +203,7 @@ void ValueSlider::OnMouseMove( const QPoint& pos )
 
         val = clickVal + ofs;
         normalize();
+        emit changing( GetValue() );
 
         repaint();
     }
@@ -191,6 +213,15 @@ void ValueSlider::OnMouseRelease( const QPoint& pos )
 {
     QCursor::setPos( mapToGlobal( clickPos ) );
     QApplication::restoreOverrideCursor();
+
+    if ( clickVal != val )
+    {
+        emit changed( GetValue() );
+    }
+    else
+    {
+        emit canceled();
+    }
 }
 
 void ValueSlider::OnMouseClick()

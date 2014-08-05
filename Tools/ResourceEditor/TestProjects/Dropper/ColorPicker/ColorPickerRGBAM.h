@@ -17,8 +17,12 @@ public:
     explicit ColorPickerRGBAM(QWidget *parent = NULL);
     ~ColorPickerRGBAM();
 
+private slots:
+    void OnChanging( double val );
+
 private:
     void SetColorInternal( QColor const& c ) override;
+    void UpdateColorInternal( ColorComponentSlider *source = NULL );
 
     QLayout *CreateSlider( const QString& text, ColorComponentSlider *w ) const;
 

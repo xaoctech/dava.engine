@@ -17,11 +17,20 @@ class ValueSlider
 {
     Q_OBJECT
 
+signals:
+    void started( double );
+    void changing( double );
+    void changed( double );
+    void canceled();
+
 public:
     explicit ValueSlider(QWidget *parent = NULL);
     ~ValueSlider();
 
     void SetDigitsAfterDot( int c );
+    void SetRange( double min, double max );
+    void SetValue( double val );
+    double GetValue() const;
 
 protected:
     virtual void DrawBackground( QPainter *p ) const;
