@@ -18,6 +18,9 @@ public:
     explicit ColorPickerHSV(QWidget *parent = NULL);
     ~ColorPickerHSV();
 
+protected:
+    void SetColorInternal( const QColor& c ) override;
+
 private slots:
     void OnChanging();
     void OnChanged();

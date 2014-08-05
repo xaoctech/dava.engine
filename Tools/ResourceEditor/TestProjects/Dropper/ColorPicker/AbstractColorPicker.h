@@ -21,11 +21,13 @@ public:
 
     QColor GetColor() const;
 
-protected:
-    void SetColorInternal( const QColor& c );
+public slots:
+    void SetColor( const QColor& c );
 
-private:
+protected:
+    virtual void SetColorInternal( const QColor& c ) = 0;
     QColor color;
 };
+
 
 #endif // ABSTRACTCOLORPICKER_H

@@ -19,12 +19,15 @@ public:
     void SetColors( const QColor& c1, const QColor& c2 );
     void SetDimensions( const Qt::Edges& flags );
     void SetOrientation( Qt::Orientation orientation );
+    void SetOffsets( int l, int t, int r, int b );
 
     double GetValue() const;
+    void SetValue( double val );
 
 protected:
     void DrawBackground( QPainter *p ) const override;
     void DrawForeground( QPainter *p ) const override;
+    QRect PosArea() const override;
 
     void resizeEvent( QResizeEvent* e ) override;
 
@@ -36,6 +39,10 @@ private:
     QSize arrowSize;
     Qt::Edges arrows;
     Qt::Orientation orientation;
+    int ofsL;
+    int ofsR;
+    int ofsT;
+    int ofsB;
     const QBrush bgBrush;
     mutable QPixmap bgCache;
     mutable QMap< Qt::Edge, QPixmap > arrowCache;

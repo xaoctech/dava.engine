@@ -17,16 +17,18 @@ ColorPickerHSV::ColorPickerHSV(QWidget *parent)
 
     val = new GradientSlider( this );
     val->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
-    val->setMinimumSize( 20, 0 );
+    val->setMinimumSize( 30, 0 );
     val->SetDimensions( Qt::LeftEdge | Qt::RightEdge );
     val->SetOrientation( Qt::Vertical );
+    val->SetOffsets( 5, 0, 5, 0 );
     l->addWidget( val );
 
     alpha = new GradientSlider( this );
     alpha->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
-    alpha->setMinimumSize( 20, 0 );
+    alpha->setMinimumSize( 30, 0 );
     alpha->SetDimensions( Qt::LeftEdge | Qt::RightEdge );
     alpha->SetOrientation( Qt::Vertical );
+    alpha->SetOffsets( 5, 0, 5, 0 );
     l->addWidget( alpha );
 
     setLayout( l );
@@ -44,10 +46,32 @@ ColorPickerHSV::ColorPickerHSV(QWidget *parent)
 
     connect( pal, SIGNAL( started( const QPointF& ) ), SLOT( OnHS() ) );
     connect( pal, SIGNAL( changing( const QPointF& ) ), SLOT( OnHS() ) );
+    connect( val, SIGNAL( started( const QPointF& ) ), SLOT( OnVal() ) );
+    connect( val, SIGNAL( changing( const QPointF& ) ), SLOT( OnVal() ) );
 }
 
 ColorPickerHSV::~ColorPickerHSV()
 {
+}
+
+void ColorPickerHSV::SetColorInternal( QColor const& c )
+{
+    QColor min;
+    QColor max;
+    int h, s, v, a;
+    c.getHsv( &h, &s, &v, &a );
+
+    pal->SetColor( h, s );
+
+    min.setHsv( h, s, 0, 255 );
+    max.setHsv( h, s, 255, 255 );
+    val->SetColors( max, min );
+    val->SetValue( double( v ) / 255.0 );
+
+    min.setHsv( h, s, v, 0 );
+    max.setHsv( h, s, v, 255 );
+    alpha->SetColors( max, min );
+    alpha->SetValue( double( a ) / 255.0 );
 }
 
 void ColorPickerHSV::OnChanging()
@@ -82,6 +106,16 @@ void ColorPickerHSV::OnHS()
 
 void ColorPickerHSV::OnVal()
 {
+    int h, s, v, a;
+    const QColor c = GetColor();
+    QColor min;
+    QColor max;
+
+    c.getHsv( &h, &s, &v, &a );
+
+    min.setHsv( h, s, v, 0 );
+    max.setHsv( h, s, v, 255 );
+    alpha->SetColors( max, min );
 }
 
 void ColorPickerHSV::OnAlpha()
@@ -93,8 +127,8 @@ void ColorPickerHSV::UpdateColor()
     QColor c;
     const int h = pal->GetHue();
     const int s = pal->GetSat();
-    const int v = val->GetValue() * 255;      // HSV, max V = 255
-    const int a = alpha->GetValue() * 255;    // Transparency, max = 255
+    const int v = 255 - val->GetValue() * 255;      // HSV, max V = 255
+    const int a = 255 - alpha->GetValue() * 255;    // Transparency, max = 255
     c.setHsv( h, s, v, a );
-    SetColorInternal( c );
+    color = c;
 }

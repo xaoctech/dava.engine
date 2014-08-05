@@ -27,7 +27,7 @@ int PaletteHSV::GetSat() const
     return s;
 }
 
-void PaletteHSV::setColor( int hue, int sat )
+void PaletteHSV::SetColor( int hue, int sat )
 {
     QColor c;
     c.setHsv( hue, sat, PaintingHelper::ValRC( Pos(), size() ) );
@@ -37,7 +37,7 @@ void PaletteHSV::setColor( int hue, int sat )
 
 void PaletteHSV::setColor( const QColor& c )
 {
-    setColor( c.hue(), c.saturation() );
+    SetColor( c.hue(), c.saturation() );
 }
 
 void PaletteHSV::DrawBackground( QPainter* p ) const
