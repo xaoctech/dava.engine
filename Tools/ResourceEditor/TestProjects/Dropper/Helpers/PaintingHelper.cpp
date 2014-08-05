@@ -151,3 +151,55 @@ int PaintingHelper::ValRC( QPoint const& pt, QSize const& size )
 
     return 240;
 }
+
+QColor PaintingHelper::MinColorComponent( QColor const& color, char component )
+{
+    int r = color.red();
+    int g = color.green();
+    int b = color.blue();
+    int a = color.alpha();
+
+    switch ( component )
+    {
+    case 'r':
+        r = 0;
+        break;
+    case 'g':
+        g = 0;
+        break;
+    case 'b':
+        b = 0;
+        break;
+    case 'a':
+        a = 0;
+        break;
+    }
+
+    return QColor( r, g, b, a );
+}
+
+QColor PaintingHelper::MaxColorComponent( QColor const& color, char component )
+{
+    int r = color.red();
+    int g = color.green();
+    int b = color.blue();
+    int a = color.alpha();
+
+    switch ( component )
+    {
+    case 'r':
+        r = 255;
+        break;
+    case 'g':
+        g = 255;
+        break;
+    case 'b':
+        b = 255;
+        break;
+    case 'a':
+        a = 255;
+        break;
+    }
+
+    return QColor( r, g, b, a );
+}

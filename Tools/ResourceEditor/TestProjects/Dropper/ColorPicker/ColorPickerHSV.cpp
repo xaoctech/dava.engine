@@ -39,6 +39,7 @@ ColorPickerHSV::ColorPickerHSV(QWidget *parent)
     for ( size_t i = 0; i < sizeof( editors ) / sizeof( *editors ); i++ )
     {
         connect( editors[i], SIGNAL( started( const QPointF& ) ), SIGNAL( begin() ) );
+        connect( editors[i], SIGNAL( started( const QPointF& ) ), SLOT( OnChanging() ) );
         connect( editors[i], SIGNAL( changing( const QPointF& ) ), SLOT( OnChanging() ) );
         connect( editors[i], SIGNAL( changed( const QPointF& ) ), SLOT( OnChanged() ) );
         connect( editors[i], SIGNAL( canceled() ), SIGNAL( canceled() ) );
