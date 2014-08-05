@@ -587,6 +587,7 @@
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFileV2.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.h" />
+    <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneManager.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\Entity.h" />
     <ClInclude Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.h" />
@@ -767,7 +768,10 @@
     <ClCompile Include="..\..\Sources\Internal\Core\CoreMacOS_OpenGL.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Backtrace.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessage.cpp" />
-    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Debug\DVAssertMessageWin.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugQt|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseQt|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Internal\Debug\MemoryManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Replay.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Debug\Stats.cpp" />
@@ -929,6 +933,7 @@
     <ClCompile Include="..\..\Sources\Internal\Render\Material\RenderTechnique.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\MipmapReplacer.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\OcclusionQuery.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Render\OGLHelpers.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\PixelFormatDescriptor.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderBase.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Render\RenderDataObject.cpp" />
@@ -1010,6 +1015,7 @@
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFileV2.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\SerializationContext.cpp" />
+    <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneFile\VersionInfo.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneManager.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\Entity.cpp" />
     <ClCompile Include="..\..\Sources\Internal\Scene3D\SceneNodeAnimation.cpp" />
