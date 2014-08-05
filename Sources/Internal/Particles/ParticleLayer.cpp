@@ -428,7 +428,7 @@ void ParticleLayer::LoadFromYaml(const FilePath & configPath, const YamlNode * n
 	{
 		const Vector<YamlNode*> & vec = lodsNode->AsVector();
 		for (uint32 i=0; i<(uint32)vec.size(); ++i)
-			SetLodActive(i, (bool)(vec[i]->AsInt())); //as AddToArray has no override for bool, flags are stored as int
+			SetLodActive(i, (vec[i]->AsInt()) != 0); //as AddToArray has no override for bool, flags are stored as int
 	}
 
 
@@ -712,10 +712,12 @@ void ParticleLayer::SaveToYamlNode(const FilePath & configPath, YamlNode* parent
 
     // Truncate an extension of the sprite file.
     FilePath savePath = spritePath;
-    savePath.TruncateExtension();
-	String relativePath = savePath.GetRelativePathname(configPath.GetDirectory());
-	PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite", relativePath);
-
+    if (!savePath.IsEmpty())
+    {        
+        savePath.TruncateExtension();
+	    String relativePath = savePath.GetRelativePathname(configPath.GetDirectory());
+	    PropertyLineYamlWriter::WritePropertyValueToYamlNode<String>(layerNode, "sprite", relativePath);
+    }
 
 	layerNode->Add("srcBlendFactor", BLEND_MODE_NAMES[(int32)srcBlendFactor]);
 	layerNode->Add("dstBlendFactor", BLEND_MODE_NAMES[(int32)dstBlendFactor]);

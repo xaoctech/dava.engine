@@ -59,6 +59,7 @@
 #include "UI/ScrollHelper.h"
 #include "Debug/Replay.h"
 #include "Utils/Random.h"
+#include "Utils/VirtualToPhysicalHelper.h"
 
 #include "Base/ObjectFactory.h"
 #include "Base/FixedSizePoolAllocator.h"
@@ -99,6 +100,7 @@
 #include "FileSystem/KeyedArchive.h"
 
 #include "FileSystem/XMLParser.h"
+#include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/Parser.h"
 #include "FileSystem/FilePath.h"
@@ -231,7 +233,8 @@
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/TextureSheet.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"

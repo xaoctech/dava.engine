@@ -48,6 +48,7 @@ namespace DAVA
 		void UpdateLibrary();
 		
 		HierarchyTreeControlNode* CreateNewControl(HierarchyTreeNode* parentNode, HierarchyTreeNode::HIERARCHYTREENODEID typeId, const Vector2& position);
+        bool IsControlNameExists(const QString& name);
 		
 	private:
 		void AddControl(const QString& name, DAVA::UIControl* control);

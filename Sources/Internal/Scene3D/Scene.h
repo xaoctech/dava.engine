@@ -38,6 +38,7 @@
 #include "Render/Highlevel/Light.h"
 #include "Scene3D/SceneFile/SerializationContext.h"
 #include "Scene3D/SceneFileV2.h"
+#include "Scene3D/SceneFile/VersionInfo.h"
 
 namespace DAVA
 {
@@ -141,7 +142,7 @@ public:
     void    UnregisterComponent(Entity * entity, Component * component);
     
     virtual void    AddSystem(SceneSystem * sceneSystem, uint32 componentFlags, bool needProcess = false, SceneSystem * insertBeforeSceneForProcess = NULL);
-    virtual void    RemoveSystem(SceneSystem * sceneSystem);
+    virtual void    RemoveSystem(SceneSystem * sceneSystem);    
     
 	//virtual void ImmediateEvent(Entity * entity, uint32 componentType, uint32 event);
 
@@ -165,6 +166,7 @@ public:
     MaterialSystem *materialSystem;
     SpeedTreeUpdateSystem* speedTreeUpdateSystem;
     FoliageSystem* foliageSystem;
+    VersionInfo::SceneVersion version;
     WindSystem * windSystem;
     WaveSystem * waveSystem;
     
@@ -260,6 +262,11 @@ public:
 
     DAVA::NMaterial* GetGlobalMaterial() const;
     void SetGlobalMaterial(DAVA::NMaterial* globalMaterial);
+    
+    void OnSceneReady(Entity * rootNode);
+
+    void SetClearBuffers(uint32 buffers);
+    uint32 GetClearBuffers() const;
 
 protected:
     void UpdateLights();
@@ -270,6 +277,8 @@ protected:
     uint32 nodeCounter;
 
     uint32 systemsMask;
+
+    uint32 clearBuffers;
 
 	Vector<AnimatedMesh*> animatedMeshes;
 	Vector<Camera*> cameras;
@@ -283,6 +292,7 @@ protected:
     NMaterial* sceneGlobalMaterial;
     //TODO: think about data-driven initialization. Need to set default properties from outside and save/load per scene
     void InitGlobalMaterial();
+    void ImportShadowColor(Entity * rootNode);
     
 #if defined (USE_FILEPATH_IN_MAP)
     typedef Map<FilePath, ProxyNode*> ProxyNodeMap;

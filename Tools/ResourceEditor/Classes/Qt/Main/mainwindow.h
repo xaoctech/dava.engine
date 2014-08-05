@@ -32,6 +32,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDockWidget>
+#include <QPointer>
+
 #include "ui_mainwindow.h"
 #include "ModificationWidget.h"
 #include "Tools/QtWaitDialog/QtWaitDialog.h"
@@ -41,18 +44,30 @@
 #include "Scene/SceneEditor2.h"
 #include "Tools/QtPosSaver/QtPosSaver.h"
 
+#include "Beast/BeastProxy.h"
+
 class AddSwitchEntityDialog;
 class Request;
 class QtLabelWithActions;
 class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
-class QtMainWindow : public QMainWindow, public DAVA::Singleton<QtMainWindow>
+class VersionInfoWidget;
+
+class QtMainWindow
+    : public QMainWindow
+    , public DAVA::Singleton<QtMainWindow>
 {
 	Q_OBJECT
 
 protected:
     static const int GLOBAL_INVALIDATE_TIMER_DELTA = 1000;
+
+signals:
+    void GlobalInvalidateTimeout();
+
+    void TexturesReloaded();
+    void SpritesReloaded();
 
 public:
 	explicit QtMainWindow(QWidget *parent = 0);
@@ -78,12 +93,6 @@ public:
 	bool BeastWaitCanceled();
 
 	void EnableGlobalTimeout(bool enable);
-
-signals:
-    void GlobalInvalidateTimeout();
-
-    void TexturesReloaded();
-    void SpritesReloaded();
     
 // qt actions slots
 public slots:
@@ -151,7 +160,6 @@ public slots:
 	void OnShowSettings();
 	void OnOpenHelp();
 
-	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
@@ -167,6 +175,7 @@ public slots:
     
     void OnBuildStaticOcclusion();
     void OnRebuildCurrentOcclusionCell();
+    void OnInavalidateStaticOcclusion();
 
 	void OnCameraSpeed0();
 	void OnCameraSpeed1();
@@ -213,7 +222,7 @@ protected:
     
     void StartGlobalInvalidateTimer();
 
-	void RunBeast(const QString& outputPath);
+	void RunBeast(const QString& outputPath, BeastProxy::eBeastMode mode);
 
 	bool IsAnySceneChanged();
 
@@ -221,7 +230,7 @@ protected:
 	
 	bool SelectCustomColorsTexturePath();
 	
-protected slots:
+private slots:
 	void ProjectOpened(const QString &path);
 	void ProjectClosed();
 
@@ -231,17 +240,17 @@ protected slots:
 	void SceneSelectionChanged(SceneEditor2 *scene, const EntityGroup *selected, const EntityGroup *deselected);
 
     void OnGlobalInvalidateTimeout();
-
 	void EditorLightEnabled(bool enabled);
-
 	void OnSnapToLandscapeChanged(SceneEditor2* scene, bool isSpanToLandscape);
-
 	void UnmodalDialogFinished(int);
+
+    void DebugVersionInfo();
 
 private:
 	Ui::MainWindow *ui;
 	QtWaitDialog *waitDialog;
 	QtWaitDialog *beastWaitDialog;
+    QPointer<QDockWidget> dockActionEvent;
 
 	QtPosSaver posSaver;
 	bool globalInvalidate;
@@ -282,6 +291,7 @@ private:
 
     //Need for any debug functionality
     DeveloperTools *developerTools;
+    QPointer<VersionInfoWidget> versionInfoWidget;
 };
 
 

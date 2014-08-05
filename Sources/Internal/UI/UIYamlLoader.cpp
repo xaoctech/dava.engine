@@ -32,6 +32,7 @@
 #include "Platform/SystemTimer.h"
 #include "UI/UIControl.h"
 #include "FileSystem/YamlParser.h"
+#include "FileSystem/YamlNode.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/2D/GraphicsFont.h"
 #include "Render/2D/FontManager.h"
@@ -336,7 +337,7 @@ Font * UIYamlLoader::GetFontByName(const String & fontName)
     
 void UIYamlLoader::LoadFonts(const FilePath & yamlPathname)
 {
-	UIYamlLoader * loader = new UIYamlLoader();
+    ScopedPtr<UIYamlLoader> loader( new UIYamlLoader() );
     YamlNode * rootNode = loader->CreateRootNode(yamlPathname);
     if (!rootNode)
     {
@@ -346,7 +347,6 @@ void UIYamlLoader::LoadFonts(const FilePath & yamlPathname)
     }
     loader->LoadFontsFromNode(rootNode);
     SafeRelease(rootNode);
-	loader->Release();
 }
     
 bool UIYamlLoader::SaveFonts(const FilePath & yamlPathname)
@@ -543,11 +543,12 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
-                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
+                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt32());
             }
             
 			//fontMap[t->first] = font;
 			FontManager::Instance()->SetFontName(font, t->first);
+            SafeRelease(font);
 		}
 		else if(type == "GraphicsFont")
 		{
@@ -573,13 +574,13 @@ void UIYamlLoader::LoadFontsFromNode(const YamlNode * rootNode)
             const YamlNode * fontVerticalSpacingNode = node->Get("verticalSpacing");
             if(fontVerticalSpacingNode)
             {
-                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt());
+                font->SetVerticalSpacing(fontVerticalSpacingNode->AsInt32());
             }
             
             const YamlNode * fontHorizontalSpacingNode = node->Get("horizontalSpacing");
             if(fontHorizontalSpacingNode)
             {
-                font->SetHorizontalSpacing(fontHorizontalSpacingNode->AsInt());
+                font->SetHorizontalSpacing(fontHorizontalSpacingNode->AsInt32());
             }
             
 			//fontMap[t->first] = font;

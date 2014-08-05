@@ -40,7 +40,8 @@
 const float32 HierarchyTreeScreenNode::POSITION_UNDEFINED = -1.0f;
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const QString& name) :
-	HierarchyTreeNode(name)
+	HierarchyTreeNode(name),
+    loaded(false)
 {
 	this->parent = parent;
 	this->screen = new ScreenControl();
@@ -53,7 +54,8 @@ HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* pare
 }
 
 HierarchyTreeScreenNode::HierarchyTreeScreenNode(HierarchyTreePlatformNode* parent, const HierarchyTreeScreenNode* base):
-	HierarchyTreeNode(base)
+	HierarchyTreeNode(base),
+    loaded(false)
 {
 	this->parent = parent;
 	this->screen = new ScreenControl();
@@ -172,13 +174,34 @@ bool HierarchyTreeScreenNode::IsNameExist(const QString &name, const HierarchyTr
 	return false;
 }
 
+bool HierarchyTreeScreenNode::Unload()
+{
+    if(loaded && !IsNeedSave())
+    {
+        Cleanup();
+        SafeRelease(screen);
+        this->screen = new ScreenControl();
+        if (parent)
+        {
+            screen->SetRect(Rect(0, 0, parent->GetWidth(), parent->GetHeight()));
+        }
+        loaded = false;
+        return true;
+    }
+    return false;
+}
+
 bool HierarchyTreeScreenNode::Load(const QString& path)
 {
-	ScopedPtr<UIYamlLoader> loader( new UIYamlLoader() );
-	loader->Load(screen, path.toStdString());
-    guides.Load(path.toStdString());
-	
-	BuildHierarchyTree(this, screen->GetChildren());
+    if(!loaded)
+    {
+        ScopedPtr<UIYamlLoader> loader( new UIYamlLoader() );
+        loader->Load(screen, path.toStdString());
+        guides.Load(path.toStdString());
+        
+        BuildHierarchyTree(this, screen->GetChildren());
+        loaded = true;
+    }
 	return true;
 }
 
@@ -279,7 +302,7 @@ void HierarchyTreeScreenNode::MoveNewGuide(const Vector2& pos)
     guides.MoveNewGuide(pos);
 }
 
-bool HierarchyTreeScreenNode::CanAcceptNewGuide()
+bool HierarchyTreeScreenNode::CanAcceptNewGuide() const
 {
     return guides.CanAcceptNewGuide();
 }
@@ -304,9 +327,19 @@ void HierarchyTreeScreenNode::MoveGuide(const Vector2& pos)
     guides.MoveGuide(pos);
 }
 
+const GuideData* HierarchyTreeScreenNode::GetMoveGuide() const
+{
+    return guides.GetMoveGuide();
+}
+
 const GuideData* HierarchyTreeScreenNode::AcceptMoveGuide()
 {
     return guides.AcceptMoveGuide();
+}
+
+const GuideData* HierarchyTreeScreenNode::CancelMoveGuide()
+{
+    return guides.CancelMoveGuide();
 }
 
 Vector2 HierarchyTreeScreenNode::GetMoveGuideStartPos() const
@@ -427,9 +460,9 @@ const GuidesManager& HierarchyTreeScreenNode::GetGuidesManager() const
     return guides;
 }
 
-List<Rect> HierarchyTreeScreenNode::GetControlRectsList(bool includeScreenBounds) const
+List<GuidesManager::StickedRect> HierarchyTreeScreenNode::GetControlRectsList(bool includeScreenBounds) const
 {
-    List<Rect> rectsList;
+    List<GuidesManager::StickedRect> rectsList;
     
     const HierarchyTreeNode::HIERARCHYTREENODESLIST& children = GetChildNodes();
 
@@ -441,16 +474,23 @@ List<Rect> HierarchyTreeScreenNode::GetControlRectsList(bool includeScreenBounds
 
     if (includeScreenBounds)
     {
-        const Vector2& screenSize = GetPlatform()->GetSize();
-        rectsList.push_back(Rect(0, 0, screenSize.x, screenSize.y));
+        // Screen/platform bounds are always forced to be sticked.
+        rectsList.push_back(GuidesManager::StickedRect(GetOwnRect(), true));
     }
 
     return rectsList;
 }
 
-void HierarchyTreeScreenNode::GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<Rect>& rectsList) const
+Rect HierarchyTreeScreenNode::GetOwnRect() const
 {
-    rectsList.push_back(rootNode->GetUIObject()->GetRect(true));
+    const Vector2& screenSize = GetPlatform()->GetSize();
+    return Rect(0, 0, screenSize.x, screenSize.y);
+}
+
+void HierarchyTreeScreenNode::GetControlRectsListRecursive(const HierarchyTreeControlNode* rootNode, List<GuidesManager::StickedRect>& rectsList) const
+{
+    // Inner controls aren't forced to be sticked.
+    rectsList.push_back(GuidesManager::StickedRect(rootNode->GetUIObject()->GetRect(true), false));
 
     const HierarchyTreeNode::HIERARCHYTREENODESLIST& children = rootNode->GetChildNodes();
     for (HierarchyTreeNode::HIERARCHYTREENODESCONSTITER iter = children.begin(); iter != children.end(); iter ++)
