@@ -53,7 +53,7 @@ class LandscapeDialog;
 class HangingObjectsHeight;
 class DeveloperTools;
 class VersionInfoWidget;
-class HeightDeltaTool;
+
 
 class QtMainWindow
     : public QMainWindow
@@ -267,8 +267,6 @@ private:
 
 	AddSwitchEntityDialog*	addSwitchEntityDialog;
 	HangingObjectsHeight*	hangingObjectsWidget;
-    
-    HeightDeltaTool* heightDeltaTool;
 
 	void EnableSceneActions(bool enable);
 	void EnableProjectActions(bool enable);
