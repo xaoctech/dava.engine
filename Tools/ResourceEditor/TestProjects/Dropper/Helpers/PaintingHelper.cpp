@@ -79,7 +79,7 @@ QBrush PaintingHelper::BuildGridBrush( QSize const& size )
     return QBrush( img );
 }
 
-QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, const QColor& color )
+QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, const QColor& bgColor, const QColor& brdColor )
 {
     QImage img( size, QImage::Format_ARGB32 );
     img.fill( Qt::transparent );
@@ -127,7 +127,9 @@ QImage PaintingHelper::BuildArrowIcon( QSize const& size, Qt::Edge dimension, co
 
     QPainter p( &img );
     p.setRenderHints( QPainter::Antialiasing | QPainter::SmoothPixmapTransform, true );
-    p.fillPath( path, color );
+    p.fillPath( path, bgColor );
+    p.setPen( brdColor );
+    p.drawPath( path );
 
     return img;
 }

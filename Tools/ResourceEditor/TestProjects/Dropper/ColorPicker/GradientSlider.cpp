@@ -10,6 +10,10 @@ GradientSlider::GradientSlider(QWidget *parent)
     , arrowSize( 9, 9 )
     , orientation( Qt::Horizontal )
     , bgBrush( PaintingHelper::BuildGridBrush( QSize( 5, 5 ) ) )
+    , ofsL( 0 )
+    , ofsR( 0 )
+    , ofsT( 0 )
+    , ofsB( 0 )
 {
 }
 
@@ -38,9 +42,32 @@ void GradientSlider::SetOrientation( Qt::Orientation _orientation )
     update();
 }
 
+void GradientSlider::SetOffsets( int l, int t, int r, int b )
+{
+    ofsL = l;
+    ofsT = t;
+    ofsR = r;
+    ofsB = b;
+    
+    update();
+}
+
 double GradientSlider::GetValue() const
 {
     return ( orientation == Qt::Horizontal ) ? PosF().x() : PosF().y();
+}
+
+void GradientSlider::SetValue( double val )
+{
+    switch ( orientation  )
+    {
+    case Qt::Horizontal:
+        SetPostF( QPointF( val, PosF().y() ) );
+        break;
+    case Qt::Vertical:
+        SetPostF( QPointF( PosF().x(), val ) );
+        break;
+    }
 }
 
 void GradientSlider::DrawBackground( QPainter* p ) const
@@ -78,6 +105,11 @@ void GradientSlider::DrawForeground( QPainter* p ) const
         drawArrow( Qt::RightEdge, p );
     if ( flags.testFlag( Qt::BottomEdge ) )
         drawArrow( Qt::BottomEdge, p );
+}
+
+QRect GradientSlider::PosArea() const
+{
+    return rect().adjusted( ofsL, ofsT, -ofsR, -ofsB );
 }
 
 void GradientSlider::resizeEvent( QResizeEvent* e )

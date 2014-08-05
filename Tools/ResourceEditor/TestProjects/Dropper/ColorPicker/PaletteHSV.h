@@ -16,7 +16,7 @@ public:
     int GetHue() const;
     int GetSat() const;
 
-    void setColor( int hue, int sat );
+    void SetColor( int hue, int sat );
     void setColor( const QColor& c );
 
 protected:
