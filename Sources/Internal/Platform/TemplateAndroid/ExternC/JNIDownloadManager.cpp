@@ -38,8 +38,5 @@ extern "C"
 	void Java_com_dava_framework_JNIDownloadManager_UpdateDownloadManager(JNIEnv * env, jobject classthis)
 	{
 		DAVA::DownloadManager::Instance()->Update();
-		DAVA::DownloadManager::HideUpdateCallback callback = DAVA::DownloadManager::Instance()->GetHideUpdateCallback();
-		if (callback != DAVA::DownloadManager::HideUpdateCallback(NULL))
-			callback();
 	}
 };

@@ -173,6 +173,8 @@ protected:
     // patch thread variables
     Thread *patchingThread;
 
+    void PostEvent(int event);
+    void PostEventJob(BaseObject *caller, void *callerData, void *userData);
     void FSM(int event);
 
     void StepCheckInfoBegin();

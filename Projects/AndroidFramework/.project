@@ -4347,6 +4347,16 @@
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNIDownloadManager.cpp</locationURI>
 		</link>
 		<link>
+			<name>Internal/Platform/TemplateAndroid/ExternC/JNIForegroundUpdateThread.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNIForegroundUpdateThread.cpp</locationURI>
+		</link>
+		<link>
+			<name>Internal/Platform/TemplateAndroid/ExternC/JNINotification.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNINotification.cpp</locationURI>
+		</link>
+		<link>
 			<name>Internal/Platform/TemplateAndroid/ExternC/JNITextField.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/Sources/Internal/Platform/TemplateAndroid/ExternC/JNITextField.cpp</locationURI>

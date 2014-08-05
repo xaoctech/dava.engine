@@ -28,84 +28,15 @@
 
 
 
-#include "Platform/Thread.h"
+#include "AndroidLayer.h"
+#include "Platform/Notification.h"
 
-#if defined(__DAVAENGINE_ANDROID__)
-#include "Platform/TemplateAndroid/CorePlatformAndroid.h"
-
-namespace DAVA
+extern "C"
 {
-
-#include <unistd.h>
-
-#include <pthread.h>
-
-
-Thread::ThreadId Thread::mainThreadId = 0;
-Thread::ThreadId Thread::glThreadId = 0;
-Thread::ThreadId Thread::foregroundUpdateThreadId = 0;
-
-void * PthreadMain (void * param)
-{
-	Thread * t = (Thread*)param;
-	t->SetThreadId(Thread::GetCurrentThreadId());
-	
-	t->state = Thread::STATE_RUNNING;
-	t->msg(t);
-
-	t->state = Thread::STATE_ENDED;
-	t->Release();
-
-	pthread_exit(0);
-}
-
-void Thread::StartAndroid()
-{
-    pthread_t threadId;
-	pthread_create(&threadId, 0, PthreadMain, (void*)this);
-}
-
-bool Thread::IsMainThread()
-{
-	ThreadId threadId = pthread_self();
-	return (mainThreadId == threadId || glThreadId == threadId || foregroundUpdateThreadId == threadId);
-}
-
-void Thread::InitMainThread()
-{
-	mainThreadId = GetCurrentThreadId();
-}
-
-void Thread::InitGLThread()
-{
-	glThreadId = GetCurrentThreadId();
-}
-
-void Thread::YieldThread()
-{
-	sched_yield();
-}
-
-Thread::ThreadId Thread::GetCurrentThreadId()
-{
-	ThreadId ret;
-	ret.internalTid = pthread_self();
-
-	return ret;
-}
-
-void Thread::RegisterForegroundThread()
-{
-	DVASSERT(foregroundUpdateThreadId == 0);
-	foregroundUpdateThreadId = GetCurrentThreadId();
-}
-
-void Thread::UnRegisterForegroundThread()
-{
-	foregroundUpdateThreadId = 0;
-}
-
+	void Java_com_dava_framework_JNINotification_UpdateNotification(JNIEnv * env, jobject classthis)
+	{
+		DAVA::Notification::ForegroundUpdateCallback callback = DAVA::Notification::Instance()->GetForegroundUpdateCallback();
+		if (callback != DAVA::Notification::ForegroundUpdateCallback(NULL))
+			callback();
+	}
 };
-
-#endif //#if defined(__DAVAENGINE_ANDROID__)
-
