@@ -32,12 +32,23 @@
 #define __NOTIFICATION_H__
 
 #include "Base/BaseTypes.h"
+#include "Base/Singleton.h"
+#include "Base/Function.h"
 
 namespace DAVA {
 
-class Notification
+class Notification : public Singleton<Notification>
 {
 public:
+    typedef Function<void (void)> ForegroundUpdateCallback;
+
+    Notification();
+    virtual ~Notification();
+    
+    // Callback function for update progress and status in hide state
+    void SetForegroundUpdateCallback(ForegroundUpdateCallback callback);
+    ForegroundUpdateCallback GetForegroundUpdateCallback() const;
+    
     static void ShowNotifitaion(uint32 id,
 			const WideString& title,
 			const WideString& text);
@@ -47,6 +58,9 @@ public:
 			int32 maxValue,
 			int32 value);
     static void HideNotification(uint32 id);
+    
+private:
+    ForegroundUpdateCallback foregroundUpdateCallback;
 };
 
 }

@@ -34,4 +34,6 @@ public class JNINotification {
 		if (notificationManager != null)
 			notificationManager.cancel(id);
 	}
+	
+	protected static native void UpdateNotification();
 }

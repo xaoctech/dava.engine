@@ -30,10 +30,29 @@
 
 #include "Notification.h"
 
-#ifndef __DAVAENGINE_ANDROID__
-
 namespace DAVA
 {
+
+Notification::Notification()
+    : foregroundUpdateCallback(NULL)
+{
+}
+    
+Notification::~Notification()
+{
+}
+
+void Notification::SetForegroundUpdateCallback(ForegroundUpdateCallback callback)
+{
+    foregroundUpdateCallback = callback;
+}
+
+Notification::ForegroundUpdateCallback Notification::GetForegroundUpdateCallback() const
+{
+	return foregroundUpdateCallback;
+}
+
+#ifndef __DAVAENGINE_ANDROID__
 
 void Notification::ShowNotifitaion(uint32 id,
 			const WideString& title,
@@ -55,7 +74,7 @@ void Notification::HideNotification(uint32 id)
 {
 
 }
-    
-}
 
 #endif
+
+}

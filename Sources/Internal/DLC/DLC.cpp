@@ -92,17 +92,17 @@ DLC::~DLC()
 
 void DLC::Check()
 {
-    FSM(EVENT_CHECK_START);
+    PostEvent(EVENT_CHECK_START);
 }
 
 void DLC::Start()
 { 
-    FSM(EVENT_DOWNLOAD_START);
+    PostEvent(EVENT_DOWNLOAD_START);
 }
 
 void DLC::Cancel()
 {
-    FSM(EVENT_CANCEL);
+    PostEvent(EVENT_CANCEL);
 }
 
 void DLC::GetProgress(uint64 &cur, uint64 &total) const
@@ -133,6 +133,17 @@ DLC::DLCState DLC::GetState() const
 DLC::DLCError DLC::GetError() const
 {
     return dlcError;
+}
+    
+void DLC::PostEvent(int event)
+{
+    JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &DLC::PostEventJob, reinterpret_cast<void*>(event)));
+}
+    
+void DLC::PostEventJob(BaseObject *caller, void *callerData, void *userData)
+{
+    int event = reinterpret_cast<int64>(callerData);
+    FSM(event);
 }
 
 void DLC::FSM(int event)
@@ -408,11 +419,11 @@ void DLC::StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status)
             if(downloadError == DLE_NO_ERROR && dlcContext.remoteVerStotePath.Exists())
             {
                 dlcContext.remoteVer = ReadUint32(dlcContext.remoteVerStotePath);
-                FSM(EVENT_CHECK_OK);
+                PostEvent(EVENT_CHECK_OK);
             }
             else
             {
-                FSM(EVENT_CHECK_ERROR);
+                PostEvent(EVENT_CHECK_ERROR);
             }
         }
     }
@@ -455,7 +466,7 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
                 dlcContext.remotePatchUrl = dlcContext.remotePatchLiteUrl;
                 DownloadManager::Instance()->GetTotal(dlcContext.remoteLiteSizeDownloadId, dlcContext.remotePatchSize);
 
-                FSM(EVENT_CHECK_OK);
+                PostEvent(EVENT_CHECK_OK);
             }
             else
             {
@@ -464,11 +475,11 @@ void DLC::StepCheckPatchFinish(const uint32 &id, const DownloadStatus &status)
                     dlcContext.remotePatchUrl = dlcContext.remotePatchFullUrl;
                     DownloadManager::Instance()->GetTotal(dlcContext.remoteFullSizeDownloadId, dlcContext.remotePatchSize);
 
-                    FSM(EVENT_CHECK_OK);
+                    PostEvent(EVENT_CHECK_OK);
                 }
                 else
                 {
-                    FSM(EVENT_CHECK_ERROR);
+                    PostEvent(EVENT_CHECK_ERROR);
                 }
             }
         }
@@ -488,7 +499,7 @@ void DLC::StepDownloadPatchBegin()
     if(dlcContext.prevState == DS_PATCHING && dlcContext.remotePatchStorePath.Exists())
     {
         // we should without downloading
-        FSM(EVENT_DOWNLOAD_OK);
+        PostEvent(EVENT_DOWNLOAD_OK);
     }
     else
     {
@@ -546,11 +557,11 @@ void DLC::StepDownloadPatchFinish(const uint32 &id, const DownloadStatus &status
 
             if(downloadError == DLE_NO_ERROR)
             {
-                FSM(EVENT_DOWNLOAD_OK);
+                PostEvent(EVENT_DOWNLOAD_OK);
             }
             else
             {
-                FSM(EVENT_DOWNLOAD_ERROR);
+                PostEvent(EVENT_DOWNLOAD_ERROR);
             }
         }
     }
@@ -592,17 +603,17 @@ void DLC::StepPatchFinish(BaseObject *caller, void *callerData, void *userData)
 
     if(dlcContext.patchingOk)
     {
-        FSM(EVENT_PATCH_OK);
+        PostEvent(EVENT_PATCH_OK);
     }
     else
     {
         if(dlcContext.remotePatchUrl == dlcContext.remotePatchFullUrl)
         {
-            FSM(EVENT_PATCH_ERROR_FULL);
+            PostEvent(EVENT_PATCH_ERROR_FULL);
         }
         else
         {
-            FSM(EVENT_PATCH_ERROR_LITE);
+            PostEvent(EVENT_PATCH_ERROR_LITE);
         }
     }
 }
@@ -648,7 +659,7 @@ void DLC::StepClean()
     FileSystem::Instance()->DeleteFile(dlcContext.downloadInfoStorePath);
     FileSystem::Instance()->DeleteFile(dlcContext.remotePatchStorePath);
 
-    FSM(EVENT_CLEAN_OK);
+    PostEvent(EVENT_CLEAN_OK);
 }
 
 void DLC::StepDone()
