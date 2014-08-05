@@ -115,6 +115,7 @@
 #include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 #include "Classes/Qt/BeastDialog/BeastDialog.h"
+#include "DebugTools/VersionInfoWidget/VersionInfoWidget.h"
 #include "Classes/Qt/RunActionEventWidget/RunActionEventWidget.h"
 
 
@@ -139,7 +140,7 @@ QtMainWindow::QtMainWindow(QWidget *parent)
 
 	qApp->installEventFilter(this);
 
-	SetupDocks();
+    SetupDocks();
 	SetupMainMenu();
 	SetupToolBars();
 	SetupStatusBar();
@@ -572,7 +573,6 @@ void QtMainWindow::SetupDocks()
 	QObject::connect(this, SIGNAL(SpritesReloaded()), ui->sceneInfo , SLOT(SpritesReloaded()));
     
     ui->libraryWidget->SetupSignals();
-
     // Run Action Event dock
     {
         dockActionEvent = new QDockWidget("Run Action Event", this);
@@ -688,7 +688,6 @@ void QtMainWindow::SetupActions()
 			
 	QObject::connect(ui->actionShowSettings, SIGNAL(triggered()), this, SLOT(OnShowSettings()));
 	
-	QObject::connect(ui->actionSetShadowColor, SIGNAL(triggered()), this, SLOT(OnSetShadowColor()));
 	QObject::connect(ui->actionDynamicBlendModeAlpha, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeAlpha()));
 	QObject::connect(ui->actionDynamicBlendModeMultiply, SIGNAL(triggered()), this, SLOT(OnShadowBlendModeMultiply()));
 	QObject::connect(ui->menuDynamicShadowBlendMode, SIGNAL(aboutToShow()), this, SLOT(OnShadowBlendModeWillShow()));
@@ -725,6 +724,12 @@ void QtMainWindow::SetupActions()
 
     // Debug functions
 	QObject::connect(ui->actionGridCopy, SIGNAL(triggered()), developerTools, SLOT(OnDebugFunctionsGridCopy()));
+	{
+#ifdef USER_VERSIONING_DEBUG_FEATURES
+        QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
+        connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
+#endif
+	}
     
  	//Collision Box Types
     objectTypesLabel = new QtLabelWithActions();
@@ -935,7 +940,6 @@ void QtMainWindow::EnableSceneActions(bool enable)
 
 	ui->actionDynamicBlendModeAlpha->setEnabled(enable);
 	ui->actionDynamicBlendModeMultiply->setEnabled(enable);
-	ui->actionSetShadowColor->setEnabled(enable);
 
 	ui->actionHangingObjects->setEnabled(enable);
 
@@ -1839,21 +1843,6 @@ void QtMainWindow::LoadLandscapeEditorState(SceneEditor2* scene)
 	OnLandscapeEditorToggled(scene);
 }
 
-void QtMainWindow::OnSetShadowColor()
-{
-	SceneEditor2* scene = GetCurrentScene();
-    if(!scene) return;
-    if(NULL == FindLandscape(scene))
-	{
-		ShowErrorDialog(ResourceEditor::NO_LANDSCAPE_ERROR_MESSAGE);
-		return;
-	}
-	
-    QColor color = QColorDialog::getColor(ColorToQColor(scene->GetShadowColor()), 0, tr("Shadow Color"), QColorDialog::ShowAlphaChannel);
-
-	scene->Exec(new ChangeDynamicShadowColorCommand(scene, QColorToColor(color)));
-}
-
 void QtMainWindow::OnShadowBlendModeWillShow()
 {
 	SceneEditor2* scene = GetCurrentScene();
@@ -2576,10 +2565,6 @@ bool QtMainWindow::OpenScene( const QString & path )
 
 				ret = true;
 			}
-            else
-            {
-                QMessageBox::critical(this, "Open scene error.", "Unexpected opening error. See logs for more info.");
-            }
 		}
 	}
 
@@ -2601,7 +2586,7 @@ void QtMainWindow::closeEvent( QCloseEvent * e )
 	bool changed = IsAnySceneChanged();
 	if(changed)
 	{
-		int answer = QMessageBox::question(NULL, "Scene was changed", "Do you want to quit anyway?",
+		int answer = QMessageBox::question(this, "Scene was changed", "Do you want to quit anyway?",
 			QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
 		if(answer == QMessageBox::No)
@@ -2924,4 +2909,16 @@ void QtMainWindow::OnSwitchWithDifferentLODs(bool checked)
             ++it;
         }
     }
+}
+
+void QtMainWindow::DebugVersionInfo()
+{
+    if (!versionInfoWidget)
+    {
+        versionInfoWidget = new VersionInfoWidget(this);
+        versionInfoWidget->setWindowFlags(Qt::Window);
+        versionInfoWidget->setAttribute(Qt::WA_DeleteOnClose);
+    }
+
+    versionInfoWidget->show();
 }
