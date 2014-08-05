@@ -36,4 +36,6 @@ void Dropper::showCP()
     cp->setAttribute( Qt::WA_DeleteOnClose, true );
 
     cp->show();
+
+    cp->SetColor( QColor( 90, 150, 230, 120 ) );
 }

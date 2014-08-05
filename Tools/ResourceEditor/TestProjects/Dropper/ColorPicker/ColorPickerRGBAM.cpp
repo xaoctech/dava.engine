@@ -27,24 +27,66 @@ ColorPickerRGBAM::ColorPickerRGBAM(QWidget *parent)
     for ( int i = 0; i < sizeof( sliders ) / sizeof( *sliders ); i++ )
     {
         l->addLayout( CreateSlider( labels[i], sliders[i] ) );
+
+        connect( sliders[i], SIGNAL( changing( double ) ), SLOT( OnChanging( double ) ) );
     }
     l->addStretch( 1 );
 
     setLayout( l );
-
-    SetColor( Qt::lightGray );
 }
 
 ColorPickerRGBAM::~ColorPickerRGBAM()
 {
 }
 
+void ColorPickerRGBAM::OnChanging( double val )
+{
+    Q_UNUSED( val );
+    ColorComponentSlider *source = qobject_cast<ColorComponentSlider *>( sender() );
+    UpdateColorInternal( source );
+    emit changing( GetColor() );
+}
+
 void ColorPickerRGBAM::SetColorInternal( const QColor& c )
 {
-    r->SetColorRange( PaintingHelper::MinColorComponent( c, 'r' ), PaintingHelper::MaxColorComponent( c, 'r' ) );
-    g->SetColorRange( PaintingHelper::MinColorComponent( c, 'g' ), PaintingHelper::MaxColorComponent( c, 'g' ) );
-    b->SetColorRange( PaintingHelper::MinColorComponent( c, 'b' ), PaintingHelper::MaxColorComponent( c, 'b' ) );
-    a->SetColorRange( PaintingHelper::MinColorComponent( c, 'a' ), PaintingHelper::MaxColorComponent( c, 'a' ) );
+    color = c;
+    r->SetValue( color.redF() );
+    g->SetValue( color.greenF() );
+    b->SetValue( color.blueF() );
+    a->SetValue( color.alphaF() );
+    m->SetColorRange( color, color );
+
+    UpdateColorInternal();
+}
+
+void ColorPickerRGBAM::UpdateColorInternal( ColorComponentSlider* source )
+{
+    color.setRgbF( r->GetValue(), g->GetValue(), b->GetValue(), a->GetValue() );
+
+    if ( source != r )
+    {
+        r->SetColorRange( PaintingHelper::MinColorComponent( color, 'r' ), PaintingHelper::MaxColorComponent( color, 'r' ) );
+        r->SetValue( color.redF() );
+    }
+    if ( source != g )
+    {
+        g->SetColorRange( PaintingHelper::MinColorComponent( color, 'g' ), PaintingHelper::MaxColorComponent( color, 'g' ) );
+        g->SetValue( color.greenF() );
+    }
+    if ( source != b )
+    {
+        b->SetColorRange( PaintingHelper::MinColorComponent( color, 'b' ), PaintingHelper::MaxColorComponent( color, 'b' ) );
+        b->SetValue( color.blueF() );
+    }
+    if ( source != a )
+    {
+        a->SetColorRange( PaintingHelper::MinColorComponent( color, 'a' ), PaintingHelper::MaxColorComponent( color, 'a' ) );
+        a->SetValue( color.alphaF() );
+    }
+    if ( source != m )
+    {
+        m->SetColorRange( color, color );
+    }
 }
 
 QLayout* ColorPickerRGBAM::CreateSlider( const QString& text, ColorComponentSlider *w ) const

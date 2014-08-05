@@ -163,12 +163,15 @@ QColor PaintingHelper::MinColorComponent( QColor const& color, char component )
     {
     case 'r':
         r = 0;
+        a = 255;
         break;
     case 'g':
         g = 0;
+        a = 255;
         break;
     case 'b':
         b = 0;
+        a = 255;
         break;
     case 'a':
         a = 0;
@@ -189,12 +192,15 @@ QColor PaintingHelper::MaxColorComponent( QColor const& color, char component )
     {
     case 'r':
         r = 255;
+        a = 255;
         break;
     case 'g':
         g = 255;
+        a = 255;
         break;
     case 'b':
         b = 255;
+        a = 255;
         break;
     case 'a':
         a = 255;

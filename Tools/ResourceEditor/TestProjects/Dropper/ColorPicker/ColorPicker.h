@@ -33,7 +33,7 @@ private slots:
     void OnChanged( const QColor& c );
 
 private:
-    void UpdateControls( const QColor& c, AbstractColorPicker *source );
+    void UpdateControls( const QColor& c, AbstractColorPicker *source = NULL );
 
     QScopedPointer<Ui::ColorPicker> ui;
     PickerMap pickers;

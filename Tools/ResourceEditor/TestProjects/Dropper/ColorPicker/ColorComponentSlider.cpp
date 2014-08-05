@@ -28,6 +28,11 @@ ColorComponentSlider::ColorComponentSlider(QWidget *parent)
     setLayout( l );
     setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Maximum );
     updateGeometry();
+
+    connect( value, SIGNAL( started( double ) ), SIGNAL( started( double ) ) );
+    connect( value, SIGNAL( changing( double ) ), SIGNAL( changing( double ) ) );
+    connect( value, SIGNAL( changed( double ) ), SIGNAL( changed( double ) ) );
+    connect( value, SIGNAL( canceled() ), SIGNAL( canceled() ) );
 }
 
 ColorComponentSlider::~ColorComponentSlider()
@@ -37,4 +42,14 @@ ColorComponentSlider::~ColorComponentSlider()
 void ColorComponentSlider::SetColorRange( QColor const& c1, QColor const& c2 )
 {
     gradient->SetColors( c1, c2 );
+}
+
+void ColorComponentSlider::SetValue( double val )
+{
+    value->SetValue( val );
+}
+
+double ColorComponentSlider::GetValue() const
+{
+    return value->GetValue();
 }
