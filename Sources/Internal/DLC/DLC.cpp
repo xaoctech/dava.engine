@@ -135,18 +135,22 @@ DLC::DLCError DLC::GetError() const
     return dlcError;
 }
     
-void DLC::PostEvent(int event)
+void DLC::PostEvent(DLCEvent event)
 {
     JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &DLC::PostEventJob, reinterpret_cast<void*>(event)));
 }
     
 void DLC::PostEventJob(BaseObject *caller, void *callerData, void *userData)
 {
-    int event = reinterpret_cast<int64>(callerData);
+#if UINTPTR_MAX == UINT64_MAX
+    DLCEvent event = (DLCEvent) reinterpret_cast<int64>(callerData);
+#else
+    DLCEvent event = reinterpret_cast<DLCEvent>(callerData);
+#endif
     FSM(event);
 }
 
-void DLC::FSM(int event)
+void DLC::FSM(DLCEvent event)
 {
     bool eventHandled = true;
     DLCState oldState = dlcState;
