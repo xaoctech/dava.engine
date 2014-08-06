@@ -50,6 +50,7 @@ public:
     
 #endif
 
+
 class Image : public BaseObject
 {
 protected:
@@ -121,6 +122,15 @@ public:
     void FlipVertical();
     void FlipHorizontal();
 
+private:
+
+	template<class Type>
+	void FlipVertical(Type *buffer, uint32 width, uint32 height);
+
+	template<class Type>
+	void FlipHorizontal(Type *buffer, uint32 width, uint32 height);
+
+
 public:
     uint32 dataSize;
 	uint32	width:16;
@@ -134,7 +144,37 @@ public:
 	uint32 cubeFaceID;
     
 };
-	
+
+
+template<class Type>
+void Image::FlipVertical(Type *buffer, uint32 width, uint32 height)
+{
+	const uint32 halfHeight = (height / 2 );
+	for(uint32 x = 0; x < width; ++x)
+	{
+		for(uint32 y = 0; y < halfHeight; ++y )
+		{
+			Swap(buffer[y * width + x], buffer[(height - 1 - y) * width + x]);
+		}
+	}
+}
+
+template<class Type>
+void Image::FlipHorizontal(Type *buffer, uint32 width, uint32 height)
+{
+	const uint32 halfWidth = width / 2;
+	const uint32 maxY = height * width;
+
+	for(uint32 y = 0; y < maxY; y += width)
+	{
+		for(uint32 x = 0; x < halfWidth; ++x)
+		{
+			Swap(buffer[y + x], buffer[y + width - x - 1]);
+		}
+	}
+}
+
+
 // Implementation of inline functions
 uint32 Image::GetWidth() const
 {
@@ -152,6 +192,8 @@ PixelFormat Image::GetPixelFormat() const
 {
 	return format;
 }
+
+
 
 	
 };
