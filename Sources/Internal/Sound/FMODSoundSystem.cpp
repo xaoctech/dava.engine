@@ -79,7 +79,7 @@ SoundSystem::SoundSystem()
 #ifdef DAVA_FMOD_PROFILE
     FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
 #else
-    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, extraDriverData));
+    FMOD_VERIFY(fmodEventSystem->init(MAX_SOUND_VIRTUAL_CHANNELS, FMOD_INIT_NORMAL, extraDriverData));
 #endif
     
     FMOD::EventCategory * masterCategory = 0;
@@ -571,27 +571,31 @@ void SoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * 
     
 void SoundSystem::RemoveSoundEventFromGroups(SoundEvent * event)
 {
-    Vector<SoundGroup>::iterator it = soundGroups.begin();
-    while(it != soundGroups.end())
+    for(uint32 i = 0; i < (uint32)soundGroups.size(); ++i)
     {
-        Vector<SoundEvent *> & events = it->events;
-        Vector<SoundEvent *>::iterator itEv = events.begin();
-        Vector<SoundEvent *>::const_iterator itEvEnd = events.end();
-        while(itEv != itEvEnd)
+        Vector<SoundEvent *> & events = soundGroups[i].events;
+        uint32 eventsCount = events.size();
+        for(uint32 k = 0; k < eventsCount; k++)
         {
-            if((*itEv) == event)
+            if(events[k] == event)
             {
-                it->events.erase(itEv);
+                RemoveExchangingWithLast(events, k);
                 break;
             }
-
-            ++itEv;
         }
 
         if(!events.size())
-            it = soundGroups.erase(it);
-        else
-            ++it;
+        {
+            if(soundGroups.size() == 1)
+            {
+                soundGroups.clear();
+            }
+            else
+            {
+                RemoveExchangingWithLast(soundGroups, i);
+                --i;
+            }
+        }
     }
 }
     
