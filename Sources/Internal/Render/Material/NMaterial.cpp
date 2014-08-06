@@ -796,7 +796,7 @@ void NMaterial::SetTexture(const FastName& textureFastName,
 		bucket->SetTexture(NULL); //VI: texture WILL NOT BE RELOADED if it's not active in the current quality
 		bucket->SetPath(texturePath);
 		
-		if(IsTextureActive(textureFastName))
+		if(IsTextureActive(textureFastName) || materialType == MATERIALTYPE_GLOBAL)
 		{
 			Texture* tx = Texture::CreateFromFile(texturePath, textureFastName);
 			bucket->SetTexture(tx);

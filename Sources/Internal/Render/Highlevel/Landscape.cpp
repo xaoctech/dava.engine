@@ -1430,7 +1430,7 @@ void Landscape::Create(NMaterial *fromMaterial/* = NULL */)
 
     if(NULL == fromMaterial)
     {
-        NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"), NMaterialName::TILE_MASK_SPECULAR, NMaterial::DEFAULT_QUALITY_NAME);
+        NMaterial* landscapeParent = NMaterial::CreateMaterial(FastName("Landscape_Tilemask_Material"), NMaterialName::TILE_MASK, NMaterial::DEFAULT_QUALITY_NAME);
 	    tileMaskMaterial = NMaterial::CreateMaterialInstance();
 	    tileMaskMaterial->SetParent(landscapeParent);
     	SafeRelease(landscapeParent);
@@ -1495,8 +1495,14 @@ void Landscape::Load(KeyedArchive * archive, SerializationContext * serializatio
     }
     else
     {
+        LandscapeChunk *landCunk = dynamic_cast<LandscapeChunk *>(GetRenderBatch(0));
+        DVASSERT(NULL != landCunk);
+        
         // remember pointer on loaded landscape material
-        tileMaskMaterial = SafeRetain(GetRenderBatch(0)->GetMaterial());
+        tileMaskMaterial = SafeRetain(landCunk->GetMaterial());
+
+        // remember this landscape in createad landscapeChunk
+        landCunk->landscape = this;
     }
 	
 	FilePath heightmapPath = serializationContext->GetScenePath() + archive->GetString("hmap");
