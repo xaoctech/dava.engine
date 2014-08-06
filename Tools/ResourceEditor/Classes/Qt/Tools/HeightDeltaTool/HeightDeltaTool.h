@@ -7,17 +7,17 @@
 #include <QScopedPointer>
 
 
-namespace Ui { class HeightmapPath; }
+namespace Ui { class HeightDeltaTool; }
 
 
-class HeightmapPath
+class HeightDeltaTool
     : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit HeightmapPath(QWidget *p = NULL);
-    ~HeightmapPath();
+    explicit HeightDeltaTool(QWidget *p = NULL);
+    ~HeightDeltaTool();
 
     void SetDefaultDir(const QString& path);
     void SetOutputTemplate(const QString& prefix, const QString& suffix);
@@ -30,7 +30,7 @@ private slots:
 private:
     double GetThresholdInMeters(double unitSize);
 
-    QScopedPointer<Ui::HeightmapPath> ui;
+    QScopedPointer<Ui::HeightDeltaTool> ui;
     QString defaultDir;
     QString outTemplate;
     QString inPath;

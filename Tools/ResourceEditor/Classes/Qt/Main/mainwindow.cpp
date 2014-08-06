@@ -120,7 +120,7 @@
 
 #include "Classes/Commands2/PaintHeightDeltaAction.h"
 
-#include "Tools/HeightmapPath/HeightmapPath.h"
+#include "Tools/HeightDeltaTool/HeightDeltaTool.h"
 
 
 QtMainWindow::QtMainWindow(QWidget *parent)
@@ -734,8 +734,6 @@ void QtMainWindow::SetupActions()
         QAction *act = ui->menuDebug_Functions->addAction("Edit version tags");
         connect(act, SIGNAL(triggered()), SLOT(DebugVersionInfo()));
 #endif
-        QAction *act = ui->menuDebug_Functions->addAction("Test HeightMap save dialog");
-        connect(act, SIGNAL(triggered()), SLOT(DebugHeightMap()));
 	}
     
  	//Collision Box Types
@@ -2948,7 +2946,7 @@ void QtMainWindow::DebugVersionInfo()
 
 void QtMainWindow::OnGenerateHeightDelta()
 {
-    HeightmapPath *w = new HeightmapPath( this );
+    HeightDeltaTool *w = new HeightDeltaTool( this );
     w->setWindowFlags( Qt::Window );
     w->setAttribute( Qt::WA_DeleteOnClose );
     
