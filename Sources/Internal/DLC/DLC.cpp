@@ -145,7 +145,7 @@ void DLC::PostEventJob(BaseObject *caller, void *callerData, void *userData)
 #if UINTPTR_MAX == UINT64_MAX
     DLCEvent event = (DLCEvent) reinterpret_cast<int64>(callerData);
 #else
-    DLCEvent event = reinterpret_cast<DLCEvent>(callerData);
+    DLCEvent event = (DLCEvent) reinterpret_cast<int32>(callerData);
 #endif
     FSM(event);
 }
