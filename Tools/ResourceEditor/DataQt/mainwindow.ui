@@ -237,7 +237,7 @@
      <x>0</x>
      <y>0</y>
      <width>1103</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -359,6 +359,7 @@
     <addaction name="separator"/>
     <addaction name="actionShowEditorGizmo"/>
     <addaction name="actionLightmapCanvas"/>
+    <addaction name="actionShowStaticOcclusion"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -430,7 +431,6 @@
     <addaction name="actionReloadShader"/>
     <addaction name="actionConvertModifiedTextures"/>
     <addaction name="separator"/>
-    <addaction name="actionSetShadowColor"/>
     <addaction name="menuDynamicShadowBlendMode"/>
     <addaction name="separator"/>
     <addaction name="actionHeightMapEditor"/>
@@ -769,7 +769,6 @@
    </attribute>
    <addaction name="actionReloadSprites"/>
    <addaction name="actionReloadShader"/>
-   <addaction name="actionSetShadowColor"/>
    <addaction name="actionConvertModifiedTextures"/>
   </widget>
   <widget class="QDockWidget" name="dockLibrary">
@@ -1425,15 +1424,6 @@
     <string>Setup Skybox</string>
    </property>
   </action>
-  <action name="actionSetShadowColor">
-   <property name="icon">
-    <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/color.png</normaloff>:/QtIcons/color.png</iconset>
-   </property>
-   <property name="text">
-    <string>Dynamic Shadow Color</string>
-   </property>
-  </action>
   <action name="actionDynamicBlendModeAlpha">
    <property name="checkable">
     <bool>true</bool>
@@ -1984,29 +1974,19 @@
     <string>Invalidate Static Occlusion</string>
    </property>
   </action>
-  <action name="actionHeightDeltaColor">
-   <property name="text">
-    <string/>
+  <action name="actionShowStaticOcclusion">
+   <property name="checkable">
+    <bool>true</bool>
    </property>
-   <property name="toolTip">
-    <string>Height difference color</string>
+   <property name="checked">
+    <bool>false</bool>
    </property>
-   <property name="font">
-    <font/>
-   </property>
-  </action>
-  <action name="actionGenerateHeightDeltaImage">
    <property name="icon">
     <iconset resource="QtIcons.qrc">
-     <normaloff>:/QtIcons/play.png</normaloff>:/QtIcons/play.png</iconset>
+     <normaloff>:/QtIcons/so.png</normaloff>:/QtIcons/so.png</iconset>
    </property>
    <property name="text">
-    <string>Generate</string>
-   </property>
-  </action>
-  <action name="actionHeightmap_Delta_Tool">
-   <property name="text">
-    <string>Heightmap Delta Tool</string>
+    <string>Show Static Occlusion</string>
    </property>
   </action>
  </widget>

@@ -115,6 +115,7 @@ public slots:
 	void OnEditorGizmoToggle(bool show);
     void OnViewLightmapCanvas(bool show);
 	void OnAllowOnSceneSelectionToggle(bool allow);
+    void OnShowStaticOcclusionToggle(bool show);
 
 	void OnReloadTextures();
 	void OnReloadTexturesTriggered(QAction *reloadAction);
@@ -161,7 +162,6 @@ public slots:
 	void OnShowSettings();
 	void OnOpenHelp();
 
-	void OnSetShadowColor();
 	void OnShadowBlendModeWillShow();
 	void OnShadowBlendModeAlpha();
 	void OnShadowBlendModeMultiply();
