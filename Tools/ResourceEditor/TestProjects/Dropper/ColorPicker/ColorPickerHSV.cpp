@@ -20,7 +20,7 @@ ColorPickerHSV::ColorPickerHSV(QWidget *parent)
     val->setMinimumSize( 30, 0 );
     val->SetDimensions( Qt::LeftEdge | Qt::RightEdge );
     val->SetOrientation( Qt::Vertical );
-    val->SetOffsets( 5, 0, 5, 0 );
+    val->SetOffsets( 5, 5, 5, 5 );
     l->addWidget( val );
 
     alpha = new GradientSlider( this );
@@ -28,7 +28,7 @@ ColorPickerHSV::ColorPickerHSV(QWidget *parent)
     alpha->setMinimumSize( 30, 0 );
     alpha->SetDimensions( Qt::LeftEdge | Qt::RightEdge );
     alpha->SetOrientation( Qt::Vertical );
-    alpha->SetOffsets( 5, 0, 5, 0 );
+    alpha->SetOffsets( 5, 5, 5, 5 );
     l->addWidget( alpha );
 
     setLayout( l );
