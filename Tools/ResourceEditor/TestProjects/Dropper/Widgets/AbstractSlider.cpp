@@ -13,6 +13,8 @@ AbstractSlider::AbstractSlider(QWidget *parent)
     connect( mouse, SIGNAL( mousePress( const QPoint& ) ), SLOT( OnMousePress( const QPoint& ) ) );
     connect( mouse, SIGNAL( mouseMove( const QPoint& ) ), SLOT( OnMouseMove( const QPoint& ) ) );
     connect( mouse, SIGNAL( mouseRelease( const QPoint& ) ), SLOT( OnMouseRelease( const QPoint& ) ) );
+
+    setFocusPolicy( Qt::ClickFocus );
 }
 
 AbstractSlider::~AbstractSlider()
@@ -22,8 +24,9 @@ AbstractSlider::~AbstractSlider()
 QPointF AbstractSlider::PosF() const
 {
     const QRect& rc = PosArea();
-    const qreal x = double( pos.x() ) / double( rc.width() );
-    const qreal y = double( pos.y() ) / double( rc.height() );
+    const QPoint pt = Pos() - rc.topLeft();
+    const qreal x = double( pt.x() ) / double( rc.width() - 1 );
+    const qreal y = double( pt.y() ) / double( rc.height() - 1 );
 
     return QPointF( x, y );
 }
@@ -84,7 +87,7 @@ void AbstractSlider::DrawForeground( QPainter *p ) const
 
 QRect AbstractSlider::PosArea() const
 {
-    return QRect( 0, 0, width(), height() );
+    return QRect( 0, 0, width() - 1, height() - 1 );
 }
 
 QPoint AbstractSlider::Pos() const
@@ -151,6 +154,6 @@ void AbstractSlider::SetPos(const QPoint& _pos)
         }
     }
 
-    pos = pt - rc.topLeft();
+    pos = pt;
     repaint();
 }

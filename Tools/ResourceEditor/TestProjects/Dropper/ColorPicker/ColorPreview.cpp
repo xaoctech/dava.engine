@@ -16,13 +16,13 @@ ColorPreview::~ColorPreview()
 {
 }
 
-void ColorPreview::setColorOld( const QColor& c )
+void ColorPreview::SetColorOld( const QColor& c )
 {
     cOld = c;
     repaint();
 }
 
-void ColorPreview::setColorNew( const QColor& c )
+void ColorPreview::SetColorNew( const QColor& c )
 {
     cNew = c;
     repaint();

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QScopedPointer>
 #include <QMap>
+#include <QPointer>
 
 namespace Ui {class ColorPicker;};
 
@@ -16,7 +17,7 @@ class ColorPicker
     Q_OBJECT
 
 private:
-    typedef QMap< QString, AbstractColorPicker * > PickerMap;
+    typedef QMap< QString, QPointer<AbstractColorPicker> > PickerMap;
 
 public:
     explicit ColorPicker(QWidget *parent = 0);
@@ -34,6 +35,7 @@ private slots:
 
 private:
     void UpdateControls( const QColor& c, AbstractColorPicker *source = NULL );
+    void ConnectPicker( AbstractColorPicker *picker );
 
     QScopedPointer<Ui::ColorPicker> ui;
     PickerMap pickers;

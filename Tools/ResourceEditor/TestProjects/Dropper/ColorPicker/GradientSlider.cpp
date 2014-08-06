@@ -48,7 +48,7 @@ void GradientSlider::SetOffsets( int l, int t, int r, int b )
     ofsT = t;
     ofsR = r;
     ofsB = b;
-    
+    SetPos( Pos() );    // validate
     update();
 }
 
@@ -105,6 +105,12 @@ void GradientSlider::DrawForeground( QPainter* p ) const
         drawArrow( Qt::RightEdge, p );
     if ( flags.testFlag( Qt::BottomEdge ) )
         drawArrow( Qt::BottomEdge, p );
+
+    // Debug draw
+    //p->setPen( Qt::red );
+    //p->drawRect( rect().adjusted( 0, 0, -1, -1 ) );
+    //p->setPen( Qt::green );
+    //p->drawRect( PosArea() );
 }
 
 QRect GradientSlider::PosArea() const

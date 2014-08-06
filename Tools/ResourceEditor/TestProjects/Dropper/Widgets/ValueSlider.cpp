@@ -156,6 +156,7 @@ bool ValueSlider::eventFilter( QObject* obj, QEvent* e )
                 case Qt::Key_Enter:
                 case Qt::Key_Return:
                 case Qt::Key_Escape:
+                case Qt::Key_Tab:
                     acceptEditing();
                     break;
 

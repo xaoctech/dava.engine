@@ -11,8 +11,9 @@ public:
     explicit ColorPreview(QWidget *parent);
     ~ColorPreview();
 
-    void setColorOld( const QColor& c );
-    void setColorNew( const QColor& c );
+public slots:
+    void SetColorOld( const QColor& c );
+    void SetColorNew( const QColor& c );
 
 private:
     void paintEvent( QPaintEvent* e ) override;

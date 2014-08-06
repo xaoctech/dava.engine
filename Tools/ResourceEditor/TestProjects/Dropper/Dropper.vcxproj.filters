@@ -161,6 +161,15 @@
     <ClCompile Include="ColorPicker\ColorPickerRGBAM.cpp">
       <Filter>ColorPicker</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_EyeDropper.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_EyeDropper.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker\EyeDropper.cpp">
+      <Filter>ColorPicker</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="dropper.h">
@@ -206,6 +215,9 @@
       <Filter>ColorPicker</Filter>
     </CustomBuild>
     <CustomBuild Include="ColorPicker\ColorPickerRGBAM.h">
+      <Filter>ColorPicker</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ColorPicker\EyeDropper.h">
       <Filter>ColorPicker</Filter>
     </CustomBuild>
   </ItemGroup>
