@@ -26,37 +26,28 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef GUIDEPROPERTYGRIDWIDGET_H
-#define GUIDEPROPERTYGRIDWIDGET_H
+#include "AdjustablePointDoubleSpinbox.h"
+#include <cmath>
 
-#include <QWidget>
-#include "rootpropertygridwidget.h"
-#include "Metadata/Custom/GuideMetadata.h"
-
-namespace Ui {
-class GuidePropertyGridWidget;
+AdjustablePointDoubleSpinBox::AdjustablePointDoubleSpinBox(QWidget* parent) :
+    QDoubleSpinBox(parent)
+{
 }
 
-class GuidePropertyGridWidget : public RootPropertyGridWidget
+void AdjustablePointDoubleSpinBox::SetValueAndAdjustPoint(double value)
 {
-    Q_OBJECT
-
-public:
-    explicit GuidePropertyGridWidget(QWidget *parent = 0);
-    ~GuidePropertyGridWidget();
-
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
-
-protected:
-    GuideMetadata* GetGuideMetadata();
+    double fracPart = fmod(value, 1.0f);
     
-protected slots:
-    void OnGuideMoved(GuideData* guideData);
-    void OnGuidePositionChanged(double value);
+    static const double roundingMultiplier = 1000.0f; // 4 digits.
+    static const int minDecimalPlaces = 1;
 
-private:
-    Ui::GuidePropertyGridWidget *ui;
-};
+    double rounded = roundf(fracPart * roundingMultiplier) / roundingMultiplier;
 
-#endif // GUIDEPROPERTYGRIDWIDGET_H
+    char buf[8] = {0};
+    sprintf(buf, "%.4g", rounded);
+
+    int curDecimalPlaces = strlen(buf) - 2; // 2 means size of leading "0."
+
+    setDecimals(qMax(curDecimalPlaces, minDecimalPlaces));
+    setValue(value);
+}
