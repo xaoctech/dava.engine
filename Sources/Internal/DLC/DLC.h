@@ -173,9 +173,8 @@ protected:
     // patch thread variables
     Thread *patchingThread;
 
-    void PostEvent(int event);
-    void PostEventJob(BaseObject *caller, void *callerData, void *userData);
-    void FSM(int event);
+    void PostEvent(DLCEvent event);
+    void FSM(DLCEvent event);
 
     void StepCheckInfoBegin();
     void StepCheckInfoFinish(const uint32 &id, const DownloadStatus &status);
@@ -203,6 +202,9 @@ protected:
     void WriteUint32(const FilePath &path, uint32 value);
 
     String MakePatchUrl(uint32 localVer, uint32 removeVer);
+    
+private:
+    void PostEventJob(BaseObject *caller, void *callerData, void *userData);
 };
 
 }
