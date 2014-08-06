@@ -29,6 +29,9 @@
 
 
 #include "UI/UIScrollViewContainer.h"
+#include "UI/UIScrollView.h"
+#include "UI/UIControlSystem.h"
+#include "UI/ScrollHelper.h"
 
 namespace DAVA 
 {
@@ -239,14 +242,6 @@ void UIScrollViewContainer::Update(float32 timeElapsed)
 			state = STATE_NONE;
 		}
 	}
-}
-
-YamlNode * UIScrollViewContainer::SaveToYamlNode(UIYamlLoader * loader)
-{
-    YamlNode *node = UIControl::SaveToYamlNode(loader);
-	SetPreferredNodeType(node, "UIScrollViewContainer");
-
-    return node;
 }
 
 void UIScrollViewContainer::InputCancelled( UIEvent *currentInput )

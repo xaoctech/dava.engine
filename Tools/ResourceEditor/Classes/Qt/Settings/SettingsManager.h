@@ -56,6 +56,8 @@ namespace Settings
 	static const DAVA::FastName Scene_CameraSpeed2("Scene/CameraSpeed2");
 	static const DAVA::FastName Scene_CameraSpeed3("Scene/CameraSpeed3");
 	static const DAVA::FastName Scene_CameraFOV("Scene/CameraFOV");
+	static const DAVA::FastName Scene_CameraNear("Scene/CameraNear");
+	static const DAVA::FastName Scene_CameraFar("Scene/CameraFar");
     static const DAVA::FastName Scene_SelectionSequent("Scene/SelectionSequent");
     static const DAVA::FastName Scene_SelectionDrawMode("Scene/SelectionDrawMode");
     static const DAVA::FastName Scene_CollisionDrawMode("Scene/CollisionDrawMode");
@@ -63,19 +65,25 @@ namespace Settings
     static const DAVA::FastName Scene_DebugBoxScale("Scene/DebugBoxScale");
     static const DAVA::FastName Scene_DebugBoxUserScale("Scene/DebugBoxUserScale");
     static const DAVA::FastName Scene_DebugBoxParticleScale("Scene/DebugBoxParticleScale");
+
+    static const DAVA::FastName Scene_Sound_SoundObjectDraw("Scene/Sound/SoundObjectDraw");
+    static const DAVA::FastName Scene_Sound_SoundObjectBoxColor("Scene/Sound/SoundObjectBoxColor");
+    static const DAVA::FastName Scene_Sound_SoundObjectSphereColor("Scene/Sound/SoundObjectSphereColor");
     
     // this settings won't be shown in settings dialog
     // and are used only by application
     static const DAVA::FastName InternalGroup("Internal");
     static const DAVA::FastName Internal_TextureViewGPU("Internal/TextureViewGPU");
-	static const DAVA::FastName Internal_LastProjectPath("Internal/LastProjectPath");
+	static const DAVA::FastName Internal_LastProjectPath("Internal/LastProjectPath");    
 	static const DAVA::FastName Internal_EditorVersion("Internal/EditorVersion");
 	static const DAVA::FastName Internal_CubemapLastFaceDir("Internal/CubemapLastFaceDir");
 	static const DAVA::FastName Internal_CubemapLastProjDir("Internal/CubemapLastProjDir");
+    static const DAVA::FastName Internal_ParticleLastEmitterDir("Internal/ParticleLastEmitterDir");
 	static const DAVA::FastName Internal_RecentFiles("Internal/RecentFiles");
     static const DAVA::FastName Internal_MaterialsLightViewMode("Internal/MaterialsLightViewMode");
     static const DAVA::FastName Internal_MaterialsShowLightmapCanvas("Internal/MaterialsShowLightmapCanvas");
     static const DAVA::FastName Internal_LicenceAccepted("Internal/LicenceAccepted");
+	static const DAVA::FastName Internal_LODEditorMode("Internal/LODEditorMode");
 };
 
 struct SettingsNode
@@ -100,8 +108,12 @@ public:
     static DAVA::FastName GetSettingsName(size_t index);
     static SettingsNode* GetSettingsNode(const DAVA::FastName &name);
 
+    static void ResetPerProjectSettings();
+
     static void ResetToDefault();
 
+    DAVA_DEPRECATED(static void UpdateGPUSettings());
+    
 protected:
     DAVA::Vector<DAVA::FastName> settingsOrder;
     DAVA::FastNameMap<SettingsNode> settingsMap;

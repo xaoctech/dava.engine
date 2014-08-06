@@ -50,7 +50,7 @@
 
 #define SIMPLE_COLLISION_BOX_SIZE 1.0f
 
-ENUM_DECLARE(CollisionSystemDrawMode)
+ENUM_IMPLEMENTATION(CollisionSystemDrawMode)
 {
 	//ENUM_ADD(CS_DRAW_OBJECTS);
 	ENUM_ADD(CS_DRAW_OBJECTS_SELECTED);
@@ -548,7 +548,8 @@ CollisionBaseObject* SceneCollisionSystem::BuildFromEntity(DAVA::Entity * entity
 		NULL != entity)
 	{
 		if( NULL != entity->GetComponent(DAVA::Component::SOUND_COMPONENT) ||
-			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT))
+			NULL != entity->GetComponent(DAVA::Component::LIGHT_COMPONENT) ||
+            NULL != entity->GetComponent(DAVA::Component::WIND_COMPONENT))
 		{
 			cObj = new CollisionBox(entity, objectsCollWorld, entity->GetWorldTransform().GetTranslationVector(), SIMPLE_COLLISION_BOX_SIZE * debugBoxScale);
 		}

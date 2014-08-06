@@ -34,7 +34,7 @@
 #include <QCloseEvent>
 #include "ScreenWrapper.h"
 #include "EditorSettings.h"
-
+#include <QLineEdit>
 #include "PreviewController.h"
 
 namespace Ui {
@@ -83,6 +83,7 @@ private slots:
 	void OnImportScreenOrAggregator();
 
 	void OnProjectCreated();
+    void OnProjectLoaded();
 	void OnSelectedScreenChanged();
 	
 	void OnUpdateScaleRequest(float scaleDelta);
@@ -104,7 +105,7 @@ private slots:
 
 	void OnUnsavedChangesNumberChanged();
 
-    void OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &);
+    void OnSelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &, HierarchyTreeController::eExpandControlType expandType);
 
 	// Adjust size
 	void OnAdjustSize();
@@ -159,6 +160,7 @@ private slots:
 
     // Notification from GL widget its resize is done.
     void OnGLWidgetResized();
+    void OnSearchPressed();
 
 private:
 	bool CloseProject();
@@ -217,6 +219,10 @@ private:
     // Set the screenshot folder.
     void SetScreenshotFolder();
     
+    void UpdateSaveButtons();
+
+    bool CheckAndUnlockProject(const QString& projectPath);
+
 private:
     Ui::MainWindow *ui;
 	QAction *recentPojectActions[EditorSettings::RECENT_FILES_COUNT];
@@ -228,6 +234,10 @@ private:
 
 	bool screenChangeUpdate;
     QString screenShotFolder;
+    
+    QLineEdit *findField;
+    void SearchControlsByName(QList<HierarchyTreeControlNode*>& foundNodes,const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName, bool ignoreCase) const;
+    QList<HierarchyTreeControlNode*> SearchScreenByName(const HierarchyTreeNode::HIERARCHYTREENODESLIST nodes, const  QString partOfName, bool ignoreCase) const;
 };
 
 #endif // MAINWINDOW_H

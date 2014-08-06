@@ -30,6 +30,7 @@
 
 #include "UI/UIScrollBar.h"
 #include "Base/ObjectFactory.h"
+#include "FileSystem/YamlNode.h"
 
 namespace DAVA 
 {
@@ -151,9 +152,6 @@ YamlNode * UIScrollBar::SaveToYamlNode(UIYamlLoader * loader)
 	YamlNode *node = UIControl::SaveToYamlNode(loader);
 	//Temp variables
 	String stringValue;
-    
-	//Control Type
-	SetPreferredNodeType(node, "UIScrollBar");
 
 	//Orientation
 	eScrollOrientation orient = this->GetOrientation();

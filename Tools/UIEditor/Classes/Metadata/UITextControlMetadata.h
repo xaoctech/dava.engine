@@ -44,7 +44,8 @@ class UITextControlMetadata : public UIControlMetadata
 
     // Font Properties
     Q_PROPERTY(Font* Font READ GetFont WRITE SetFont);
-    Q_PROPERTY(float FontSize READ GetFontSize WRITE SetFontSize);
+    //Q_PROPERTY(float FontSize READ GetFontSize WRITE SetFontSize);
+    Q_PROPERTY(float FontSize READ GetFontSize);
     Q_PROPERTY(QColor FontColor READ GetFontColor WRITE SetFontColor);
 
     Q_PROPERTY(QString LocalizedTextKey READ GetLocalizedTextKey WRITE SetLocalizedTextKey);
@@ -71,7 +72,7 @@ protected:
     virtual void SetTextAlign(int align) = 0;
     
     virtual float GetFontSize() const = 0;
-    virtual void SetFontSize(float fontSize) = 0;
+    //virtual void SetFontSize(float fontSize) = 0;
 
     virtual QColor GetFontColor() const = 0;
     virtual void SetFontColor(const QColor& value) = 0;
@@ -93,15 +94,12 @@ protected:
     virtual void SetFittingType(int value);
 
     // Get the localized text for particular control state.
-    QString GetLocalizedTextKeyForState(UIControl::eControlState controlState) const;
+    virtual QString GetLocalizedTextKeyForState(UIControl::eControlState controlState) const;
     
     // Update the static text extra data based on update style.
     void UpdateStaticTextExtraData(UIStaticText* staticText, UIControl::eControlState state,
                                    HierarchyTreeNodeExtraData& extraData,
                                    eExtraDataUpdateStyle updateStyle);
-    
-    // Clone the font of the Static Text.
-    void CloneFont(UIStaticText* staticText);
 };
 
 };

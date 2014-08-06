@@ -30,7 +30,7 @@
 #include "ItemsCommand.h"
 #include "HierarchyTreeController.h"
 #include "ScreenWrapper.h"
-#include "SubcontrolsHelper.h"
+#include "CopyPasteHelper.h"
 
 UndoableHierarchyTreeNodeCommand::UndoableHierarchyTreeNodeCommand()
 {
@@ -212,26 +212,28 @@ void CreateAggregatorCommand::DecrementUnsavedChanges()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CreateControlCommand::CreateControlCommand(const QString& type, const QPoint& pos)
+CreateControlCommand::CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& pos)
 {
-	this->type = type;
+    this->typeId = typeId;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 
 	this->commandMode = CREATE_FROM_POINT;
 	this->parentNode = NULL;
 	this->redoNode = NULL;
+    this->insertAfterNode = NULL;
 }
 
-CreateControlCommand::CreateControlCommand(const QString& type, HierarchyTreeNode* parent)
+CreateControlCommand::CreateControlCommand(HierarchyTreeNode::HIERARCHYTREENODEID typeId, HierarchyTreeNode* parent, HierarchyTreeNode* insertAfter/*=NULL*/)
 {
-	this->type = type;
+    this->typeId = typeId;
 	this->pos = pos;
 	this->createdControlID = HierarchyTreeNode::HIERARCHYTREENODEID_EMPTY;
 	
 	this->commandMode = CREATE_FROM_NODE;
 	this->parentNode = parent;
 	this->redoNode = NULL;
+    this->insertAfterNode = insertAfter;
 }
 
 void CreateControlCommand::Execute()
@@ -251,7 +253,7 @@ void CreateControlCommand::Execute()
 		case CREATE_FROM_POINT:
 		{
 			// Use the point passed.
-			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, pos);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(typeId, pos);
 			break;
 		}
 
@@ -259,7 +261,7 @@ void CreateControlCommand::Execute()
 		{
 			static const Vector2 NEW_CONTROL_OFFSET = Vector2(10, 10);
 			DVASSERT(parentNode);
-			newControlID = HierarchyTreeController::Instance()->CreateNewControl(type, NEW_CONTROL_OFFSET, this->parentNode);
+			newControlID = HierarchyTreeController::Instance()->CreateNewControl(typeId, NEW_CONTROL_OFFSET, this->parentNode);
 			break;
 		}
 
@@ -275,6 +277,12 @@ void CreateControlCommand::Execute()
 		return;
 	}
 	
+    if(insertAfterNode)
+    {
+        HierarchyTreeNode* node = HierarchyTreeController::Instance()->GetTree().GetNode(newControlID);
+        node->SetParent(parentNode, insertAfterNode);
+        HierarchyTreeController::Instance()->EmitHierarchyTreeUpdated();
+    }
 	this->createdControlID = newControlID;
 }
 
@@ -531,7 +539,7 @@ void ChangeNodeHeirarchy::Execute()
 					{
 						if (targetPlatform->IsAggregatorOrScreenNamePresent(node->GetName()))
 						{
-							QString newName = SubcontrolsHelper::FormatCopyName(node->GetName(), targetNode);
+							QString newName = CopyPasteHelper::FormatCopyName(node->GetName(), targetNode);
 							node->SetName(newName);
 						}
 					}
@@ -545,6 +553,7 @@ void ChangeNodeHeirarchy::Execute()
 			{
 				isNodeSelected = HierarchyTreeController::Instance()->IsControlSelected(controlNode);
 				HierarchyTreeController::Instance()->UnselectControl(controlNode);
+                CopyPasteHelper::UpdateAggregators(controlNode, targetNode);
 			}
 
 			node->SetParent(targetNode, insertAfterNode);

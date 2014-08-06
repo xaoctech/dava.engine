@@ -54,7 +54,6 @@ static Set<PixelFormat> InitPixelFormatsWithCompression()
     set.insert(FORMAT_PVR4);
     set.insert(FORMAT_PVR2);
     set.insert(FORMAT_DXT1);
-    set.insert(FORMAT_DXT1NM);
     set.insert(FORMAT_DXT1A);
     set.insert(FORMAT_DXT3);
     set.insert(FORMAT_DXT5);
@@ -660,11 +659,10 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
     image->DitherAlpha();
     image->Write(exportedPathname);
 
-    eGPUFamily gpuFamily = (eGPUFamily)descriptor->exportedAsGpuFamily;
-    if(gpuFamily != GPU_UNKNOWN)
+    eGPUFamily gpuFamily = GPUFamilyDescriptor::ConvertValueToGPU(descriptor->exportedAsGpuFamily);
+    if(GPUFamilyDescriptor::IsGPUForDevice(gpuFamily))
     {
 		TextureConverter::ConvertTexture(*descriptor, gpuFamily, false, quality);
-        
         FileSystem::Instance()->DeleteFile(exportedPathname);
     }
 
@@ -674,7 +672,7 @@ void TexturePacker::ExportImage(PngImageExt *image, const FilePath &exportedPath
 
 TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 {
-    TextureDescriptor *descriptor = new TextureDescriptor(true);
+    TextureDescriptor *descriptor = new TextureDescriptor();
 
     descriptor->drawSettings.wrapModeS = descriptor->drawSettings.wrapModeT = GetDescriptorWrapMode();
     descriptor->SetGenerateMipmaps(CommandLineParser::Instance()->IsFlagSet(String("--generateMipMaps")));
@@ -682,10 +680,10 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 	TexturePacker::FilterItem ftItem = GetDescriptorFilter(descriptor->GetGenerateMipMaps());
 	descriptor->drawSettings.minFilter = ftItem.minFilter;
 	descriptor->drawSettings.magFilter = ftItem.magFilter;
-	
-    if(forGPU == GPU_UNKNOWN)   // not need compression
+
+	if(!GPUFamilyDescriptor::IsGPUForDevice(forGPU)) // not need compression
         return descriptor;
-    
+
     descriptor->exportedAsGpuFamily = forGPU;
 
     const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
@@ -699,8 +697,7 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 		{
 			descriptor->format = format;
 
-			DVASSERT(descriptor->compression);
-			descriptor->compression[forGPU]->format = format;
+			descriptor->compression[forGPU].format = format;
 
 		}
 		else
@@ -709,14 +706,14 @@ TextureDescriptor * TexturePacker::CreateDescriptor(eGPUFamily forGPU)
 									formatName.c_str(),
 									GPUFamilyDescriptor::GetGPUName(forGPU).c_str()));
 			
-			descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
+			descriptor->exportedAsGpuFamily = GPU_PNG;
 		}
     }
     else
     {
         Logger::Warning("params for GPU %s were not set.\n", gpuNameFlag.c_str());
         
-        descriptor->exportedAsGpuFamily = GPU_UNKNOWN;
+        descriptor->exportedAsGpuFamily = GPU_PNG;
     }
     
     return descriptor;
@@ -782,7 +779,7 @@ TexturePacker::FilterItem TexturePacker::GetDescriptorFilter(bool generateMipMap
     
 bool TexturePacker::NeedSquareTextureForCompression(eGPUFamily forGPU)
 {
-    if(forGPU != GPU_UNKNOWN)
+    if(GPUFamilyDescriptor::IsGPUForDevice(forGPU))
     {
         const String gpuNameFlag = "--" + GPUFamilyDescriptor::GetGPUName(forGPU);
         if(CommandLineParser::Instance()->IsFlagSet(gpuNameFlag))

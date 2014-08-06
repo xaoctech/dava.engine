@@ -36,6 +36,7 @@ using namespace DAVA;
 namespace ResourceEditor 
 {
 	// Node names
+	static const DAVA::FastName VEGETATION_NODE_NAME = DAVA::FastName("Vegetation");
 	static const DAVA::FastName LANDSCAPE_NODE_NAME = DAVA::FastName("Landscape");
 	static const DAVA::FastName LIGHT_NODE_NAME = DAVA::FastName("Light");
 	static const DAVA::FastName SERVICE_NODE_NAME = DAVA::FastName("Servicenode");
@@ -45,6 +46,7 @@ namespace ResourceEditor
 	static const DAVA::FastName USER_NODE_NAME = DAVA::FastName("UserNode");
 	static const DAVA::FastName SWITCH_NODE_NAME = DAVA::FastName("SwitchNode");
 	static const DAVA::FastName PARTICLE_EFFECT_NODE_NAME = DAVA::FastName("Particle Effect");
+	static const DAVA::FastName WIND_NODE_NAME = DAVA::FastName("Wind");
 	static const String LAYER_NODE_NAME = "Layer";
 	static const DAVA::FastName ENTITY_NAME = DAVA::FastName("Entity");
 
@@ -55,7 +57,7 @@ namespace ResourceEditor
 	static const String EDITOR_ARROWS_NODE = "editor.arrows-node";
 	static const DAVA::FastName EDITOR_CAMERA_LIGHT = DAVA::FastName("editor.camera-light");
     static const DAVA::FastName EDITOR_2D_CAMERA = DAVA::FastName("editor.2d-camera");
-    static const DAVA::FastName EDITOR_SPRITE = DAVA::FastName("editor.sprite");
+    static const DAVA::FastName EDITOR_SPRITE = DAVA::FastName("Sprite");
 	
 	// Headers
 	static const WideString CREATE_NODE_LANDSCAPE = L"createnode.landscape";

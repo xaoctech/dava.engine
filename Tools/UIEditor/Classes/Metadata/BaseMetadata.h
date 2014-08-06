@@ -76,7 +76,7 @@ public:
 
     // Get the list of Params attached.
     int GetParamsCount() const;
-    const METADATAPARAMSVECT& GetParams();
+    const METADATAPARAMSVECT& GetParams() const;
     
     // Get/Set the active Parameter in context. All the properties operations will be executed
     // on this control.
@@ -154,10 +154,10 @@ protected:
     HierarchyTreeNode::HIERARCHYTREENODEID GetActiveTreeNodeID() const;
     
     // Helper to access active UI Control.
-    UIControl* GetActiveUIControl() const;
+    virtual UIControl* GetActiveUIControl() const;
 
     // Get the UI control class name.
-    virtual QString GetUIControlClassName() { return QString(); };
+    virtual QString GetUIControlClassName() const { return QString(); };
     
     // List of Params.
     METADATAPARAMSVECT treeNodeParams;

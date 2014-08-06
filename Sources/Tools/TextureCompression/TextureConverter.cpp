@@ -36,7 +36,7 @@
 #include "FileSystem/FileSystem.h"
 
 
-ENUM_DECLARE(DAVA::TextureConverter::eConvertQuality)
+ENUM_IMPLEMENTATION(DAVA::TextureConverter::eConvertQuality)
 {
     ENUM_ADD_DESCR(DAVA::TextureConverter::ECQ_FAST, "Developer Quality");
     ENUM_ADD_DESCR(DAVA::TextureConverter::ECQ_FASTEST, "Lower Quality");
@@ -49,8 +49,7 @@ namespace DAVA
 {
 	FilePath TextureConverter::ConvertTexture(const TextureDescriptor &descriptor, eGPUFamily gpuFamily, bool updateAfterConversion, eConvertQuality quality)
 	{
-		DVASSERT(descriptor.compression);
-		const TextureDescriptor::Compression * compression = descriptor.compression[gpuFamily];
+		const TextureDescriptor::Compression * compression = &descriptor.compression[gpuFamily];
 
 		FilePath outputPath;
 		const String& outExtension = GPUFamilyDescriptor::GetCompressedFileExtension(gpuFamily, (DAVA::PixelFormat)compression->format);

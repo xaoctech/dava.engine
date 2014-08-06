@@ -30,6 +30,8 @@
 #include "UITextControlMetadata.h"
 #include "StringUtils.h"
 
+#include "EditorFontManager.h"
+
 using namespace DAVA;
 
 UITextControlMetadata::UITextControlMetadata(QObject* parent) :
@@ -43,7 +45,7 @@ QString UITextControlMetadata::GetLocalizedTextKeyForState(UIControl::eControlSt
     HierarchyTreeNode* node = this->GetActiveTreeNode();
     if (node)
     {
-        return WideString2QStrint(node->GetExtraData().GetLocalizationKey(controlState));
+        return WideString2QString(node->GetExtraData().GetLocalizationKey(controlState));
     }
     
     return QString();
@@ -99,6 +101,11 @@ void UITextControlMetadata::UpdateStaticTextExtraData(UIStaticText* staticText, 
             
         case BaseMetadata::UPDATE_CONTROL_FROM_EXTRADATA_LOCALIZED:
         {
+            //TODO: remove this workaround
+            String fontPresetName = EditorFontManager::Instance()->GetLocalizedFontName(staticText->GetFont());
+            Font* font = EditorFontManager::Instance()->GetLocalizedFont(fontPresetName, LocalizationSystem::Instance()->GetCurrentLocale());
+            staticText->SetFont(font);
+            
             staticText->SetText(LocalizationSystem::Instance()->GetLocalizedString(extraData.GetLocalizationKey(state)));
             break;
         }
@@ -132,14 +139,4 @@ int UITextControlMetadata::GetFittingType() const
 
 void UITextControlMetadata::SetFittingType(int /*value*/)
 {
-}
-
-void UITextControlMetadata::CloneFont(UIStaticText* staticText)
-{
-    if (staticText && staticText->GetFont())
-    {
-		Font* newFont = staticText->GetFont()->Clone();
-		staticText->SetFont(newFont);
-		newFont->Release();
-    }
 }
