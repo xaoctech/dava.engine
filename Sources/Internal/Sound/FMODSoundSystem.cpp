@@ -514,7 +514,7 @@ float32 SoundSystem::GetGroupVolume(const FastName & groupName)
             ret = group.volume;
     }
     soundGroupsMutex.Unlock();
-    return -1.f;
+    return ret;
 }
 
 void SoundSystem::AddSoundEventToGroup(const FastName & groupName, SoundEvent * event)
