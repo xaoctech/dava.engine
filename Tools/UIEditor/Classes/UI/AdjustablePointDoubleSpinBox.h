@@ -26,37 +26,22 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  =====================================================================================*/
 
-#ifndef GUIDEPROPERTYGRIDWIDGET_H
-#define GUIDEPROPERTYGRIDWIDGET_H
+
+#ifndef __QT_ADJUSTABLE_POINT_DOUBLE_SPINBOX_H__
+#define __QT_ADJUSTABLE_POINT_DOUBLE_SPINBOX_H__
 
 #include <QWidget>
-#include "rootpropertygridwidget.h"
-#include "Metadata/Custom/GuideMetadata.h"
+#include <QDoubleSpinbox>
 
-namespace Ui {
-class GuidePropertyGridWidget;
-}
-
-class GuidePropertyGridWidget : public RootPropertyGridWidget
+class AdjustablePointDoubleSpinBox : public QDoubleSpinBox
 {
-    Q_OBJECT
-
-public:
-    explicit GuidePropertyGridWidget(QWidget *parent = 0);
-    ~GuidePropertyGridWidget();
-
-    virtual void Initialize(BaseMetadata* activeMetadata);
-    virtual void Cleanup();
-
-protected:
-    GuideMetadata* GetGuideMetadata();
+	Q_OBJECT
     
-protected slots:
-    void OnGuideMoved(GuideData* guideData);
-    void OnGuidePositionChanged(double value);
+public:
+	AdjustablePointDoubleSpinBox(QWidget * parent);
 
-private:
-    Ui::GuidePropertyGridWidget *ui;
+    // Set the value and adjust the decimal point position according to the frac part value.
+    void SetValueAndAdjustPoint(double value);
 };
 
-#endif // GUIDEPROPERTYGRIDWIDGET_H
+#endif //__QT_ADJUSTABLE_POINT_DOUBLE_SPINBOX_H__
