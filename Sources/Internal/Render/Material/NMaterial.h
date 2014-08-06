@@ -179,6 +179,7 @@ public:
 	static const FastName TEXTURE_DECAL;
 	static const FastName TEXTURE_CUBEMAP;
     static const FastName TEXTURE_HEIGHTMAP;
+    static const FastName TEXTURE_ATMOSPHEREMAP;
     
     static const FastName TEXTURE_DYNAMIC_REFLECTION;
     static const FastName TEXTURE_DYNAMIC_REFRACTION;
@@ -200,6 +201,7 @@ public:
     static const FastName PARAM_FOG_GLOW_COLOR;
     static const FastName PARAM_FOG_GLOW_SCATTERING;
     static const FastName PARAM_FOG_GLOW_DISTANCE;
+    static const FastName PARAM_FOG_ATMOSPHERE_DISTANCE;
     static const FastName PARAM_FOG_HALFSPACE_HEIGHT;
     static const FastName PARAM_FOG_HALFSPACE_DENSITY;
     static const FastName PARAM_FOG_HALFSPACE_FALLOFF;
@@ -215,6 +217,7 @@ public:
     static const FastName PARAM_SCREEN_OFFSET;
     
 	static const FastName FLAG_VERTEXFOG;
+    static const FastName FLAG_FOG_ATMOSPHERE_MAP;
 	static const FastName FLAG_FOG_EXP;
 	static const FastName FLAG_FOG_LINEAR;
 	static const FastName FLAG_FOG_GLOW;
