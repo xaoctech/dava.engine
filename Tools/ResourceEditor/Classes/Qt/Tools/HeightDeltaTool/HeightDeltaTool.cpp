@@ -1,20 +1,20 @@
-#include "HeightmapPath.h"
+#include "HeightDeltaTool.h"
 
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QImageReader>
 #include <QMessageBox>
 
-#include "ui_HeightmapPath.h"
+#include "ui_HeightDeltaTool.h"
 
 #include "Classes/Qt/Main/mainwindow.h"
 #include "Project/ProjectManager.h"
 #include "Commands2/PaintHeightDeltaAction.h"
 
 
-HeightmapPath::HeightmapPath( QWidget* p )
+HeightDeltaTool::HeightDeltaTool( QWidget* p )
     : QWidget(p)
-    , ui(new Ui::HeightmapPath())
+    , ui(new Ui::HeightDeltaTool())
     , outTemplate( "%1" )
 {
     ui->setupUi(this);
@@ -31,21 +31,21 @@ HeightmapPath::HeightmapPath( QWidget* p )
     SetDefaultDir(defaultPath.GetAbsolutePathname().c_str());
 }
 
-HeightmapPath::~HeightmapPath()
+HeightDeltaTool::~HeightDeltaTool()
 {
 }
 
-void HeightmapPath::SetDefaultDir( QString const& path )
+void HeightDeltaTool::SetDefaultDir( QString const& path )
 {
     defaultDir = path;
 }
 
-void HeightmapPath::SetOutputTemplate( QString const& prefix, QString const& suffix )
+void HeightDeltaTool::SetOutputTemplate( QString const& prefix, QString const& suffix )
 {
     outTemplate = QString( "%1%2%3" ).arg(prefix).arg("%1").arg(suffix);
 }
 
-void HeightmapPath::OnBrowse()
+void HeightDeltaTool::OnBrowse()
 {
     const QString path = QFileDialog::getOpenFileName( this, QString(), defaultDir, "Png images (*.png)" );
     
@@ -56,7 +56,7 @@ void HeightmapPath::OnBrowse()
     }
 }
 
-double HeightmapPath::GetThresholdInMeters(double unitSize)
+double HeightDeltaTool::GetThresholdInMeters(double unitSize)
 {
     double angle = ui->angle->value();
     DAVA::float32 radAngle = DAVA::DegToRad((DAVA::float32)angle);
@@ -67,7 +67,7 @@ double HeightmapPath::GetThresholdInMeters(double unitSize)
     return delta;
 }
 
-void HeightmapPath::OnRun()
+void HeightDeltaTool::OnRun()
 {
     SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
     if (scene != NULL)
@@ -119,7 +119,7 @@ void HeightmapPath::OnRun()
     }
 }
 
-void HeightmapPath::OnValueChanged()
+void HeightDeltaTool::OnValueChanged()
 {
     const QString name = QFileInfo(inPath).completeBaseName();
     const QString ext = QFileInfo(inPath).suffix();

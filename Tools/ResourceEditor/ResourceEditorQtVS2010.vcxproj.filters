@@ -229,7 +229,7 @@
     <Filter Include="Classes\Qt\DebugTools\VersionInfoWidget">
       <UniqueIdentifier>{5bf73ad8-d14f-48a7-88da-3142464bc5f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Classes\Qt\Tools\HeightmapPath">
+    <Filter Include="Classes\Qt\Tools\HeightDeltaTool">
       <UniqueIdentifier>{8c57bbd9-39b8-44aa-88de-7d953c6aaa9c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -2004,10 +2004,10 @@
     <ClCompile Include="Classes\Commands2\PaintHeightDeltaAction.cpp">
       <Filter>Classes\Commands2</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Qt\Tools\HeightmapPath\HeightmapPath.cpp">
-      <Filter>Classes\Qt\Tools\HeightmapPath</Filter>
+    <ClCompile Include="Classes\Qt\Tools\HeightDeltaTool\HeightDeltaTool.cpp">
+      <Filter>Classes\Qt\Tools\HeightDeltaTool</Filter>
     </ClCompile>
-    <ClCompile Include="_GeneratedQt\Tools\HeightmapPath\HeightmapPath_moc.cpp">
+    <ClCompile Include="_GeneratedQt\Tools\HeightDeltaTool\HeightDeltaTool_moc.cpp">
       <Filter>QtGenerated</Filter>
     </ClCompile>
   </ItemGroup>
@@ -3533,8 +3533,8 @@
     <ClInclude Include="Classes\Commands2\PaintHeightDeltaAction.h">
       <Filter>Classes\Commands2</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Qt\Tools\HeightmapPath\HeightmapPath.h">
-      <Filter>Classes\Qt\Tools\HeightmapPath</Filter>
+    <ClInclude Include="Classes\Qt\Tools\HeightDeltaTool\HeightDeltaTool.h">
+      <Filter>Classes\Qt\Tools\HeightDeltaTool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3604,7 +3604,7 @@
     <None Include="DataQt\RunActionEventWidget.ui">
       <Filter>QtData</Filter>
     </None>
-    <None Include="DataQt\HeightmapPath.ui">
+    <None Include="DataQt\HeightDeltaTool.ui">
       <Filter>QtData</Filter>
     </None>
   </ItemGroup>
