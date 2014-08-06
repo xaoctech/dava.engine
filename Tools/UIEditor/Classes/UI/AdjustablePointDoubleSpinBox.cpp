@@ -27,7 +27,8 @@
  =====================================================================================*/
 
 #include "AdjustablePointDoubleSpinbox.h"
-#include <cmath>
+#include "Base/BaseMath.h"
+#include "Math/MathHelpers.h"
 
 AdjustablePointDoubleSpinBox::AdjustablePointDoubleSpinBox(QWidget* parent) :
     QDoubleSpinBox(parent)
@@ -36,12 +37,12 @@ AdjustablePointDoubleSpinBox::AdjustablePointDoubleSpinBox(QWidget* parent) :
 
 void AdjustablePointDoubleSpinBox::SetValueAndAdjustPoint(double value)
 {
-    double fracPart = fmod(value, 1.0f);
-    
+    double fracPart = fmodf(value, 1.0f);
+
     static const double roundingMultiplier = 1000.0f; // 4 digits.
     static const int minDecimalPlaces = 1;
 
-    double rounded = roundf(fracPart * roundingMultiplier) / roundingMultiplier;
+    double rounded = DAVA::Round(fracPart * roundingMultiplier) / roundingMultiplier;
 
     char buf[8] = {0};
     sprintf(buf, "%.4g", rounded);
