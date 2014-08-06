@@ -24,9 +24,12 @@ HeightDeltaTool::HeightDeltaTool( QWidget* p )
     connect( ui->run, SIGNAL(clicked()), SLOT(OnRun()));
     connect( ui->suffix, SIGNAL(stateChanged(int)), SLOT(OnValueChanged()) );
     connect( ui->angle, SIGNAL(valueChanged(double)), SLOT(OnValueChanged()) );
+    connect( ui->input, SIGNAL(textChanged( const QString& )), SLOT(OnValueChanged()) );
 
     const DAVA::FilePath defaultPath = ProjectManager::Instance()->CurProjectPath();
     SetDefaultDir(defaultPath.GetAbsolutePathname().c_str());
+
+    OnValueChanged();
 }
 
 HeightDeltaTool::~HeightDeltaTool()
@@ -41,6 +44,7 @@ void HeightDeltaTool::SetDefaultDir( QString const& path )
 void HeightDeltaTool::SetOutputTemplate( QString const& prefix, QString const& suffix )
 {
     outTemplate = QString( "%1%2%3" ).arg(prefix).arg("%1").arg(suffix);
+    OnValueChanged();
 }
 
 void HeightDeltaTool::OnBrowse()
@@ -50,6 +54,7 @@ void HeightDeltaTool::OnBrowse()
     if ( path != NULL )
     {
         inPath = path;
+        ui->input->setText(inPath);
         OnValueChanged();
     }
 }
@@ -126,6 +131,12 @@ void HeightDeltaTool::OnRun()
 
 void HeightDeltaTool::OnValueChanged()
 {
+    inPath = ui->input->text();
+    if ( inPath.isEmpty() )
+    {
+        return ;
+    }
+
     const QString name = QFileInfo(inPath).completeBaseName();
     const QString ext = QFileInfo(inPath).suffix();
     const QString outNameTemplate = QString( outTemplate ).arg(name);
@@ -139,6 +150,6 @@ void HeightDeltaTool::OnValueChanged()
     outName = QString("%1%2.%3").arg(outNameTemplate).arg(angle).arg(ext);
     outPath = QString("%1/%2").arg(QFileInfo(inPath).absoluteDir().absolutePath()).arg(outName);
         
-    ui->input->setText(inPath);
+    // ui->input->setText(inPath);
     ui->output->setText(outName);
 }
