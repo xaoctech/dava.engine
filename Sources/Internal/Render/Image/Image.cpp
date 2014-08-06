@@ -403,52 +403,52 @@ bool Image::Save(const FilePath &path) const
 
 void Image::FlipHorizontal()
 {
-    const uint32 halfWidth = width / 2;
-    const uint32 maxY = height * width;
-    
-    for(uint32 y = 0; y < maxY; y += width)
-    {
-        for(uint32 x = 0; x < halfWidth; ++x)
-        {
-            if(format == FORMAT_A16)
-            {
-                uint16 *dataPtr = (uint16 *)data;
-                Swap(dataPtr[y + x], dataPtr[y + width - x - 1]);
-            }
-            else if(format == FORMAT_A8)
-            {
-                Swap(data[y + x], data[y + width - x - 1]);
-            }
-            else
-            {
-                DVASSERT(false && "Not implemented");
-            }
-        }
-    }
+	switch(format)
+	{
+	case FORMAT_A8:
+		FlipHorizontal((uint8 *)data, width, height);
+		break;
+
+	case FORMAT_A16:
+	case FORMAT_RGBA5551:
+	case FORMAT_RGBA4444:
+	case FORMAT_RGB565:
+		FlipHorizontal((uint16 *)data, width, height);
+		break;
+
+	case FORMAT_RGBA8888:
+		FlipHorizontal((uint32 *)data, width, height);
+		break;
+
+	default:
+		DVASSERT(false && "Not implemented");
+		break;
+	}
 }
 
 void Image::FlipVertical()
 {
-    const uint32 halfHeight = (height / 2 );
-    for(uint32 x = 0; x < width; ++x)
-    {
-        for(uint32 y = 0; y < halfHeight; ++y )
-        {
-            if(format == FORMAT_A16)
-            {
-                uint16 *dataPtr = (uint16 *)data;
-                Swap(dataPtr[y * width + x], dataPtr[(height - 1 - y) * width + x]);
-            }
-            else if(format == FORMAT_A8)
-            {
-                Swap(data[y * width + x], data[(height - 1 - y) * width + x]);
-            }
-            else
-            {
-                DVASSERT(false && "Not implemented");
-            }
-        }
-    }
+	switch(format)
+	{
+	case FORMAT_A8:
+		FlipVertical((uint8 *)data, width, height);
+		break;
+
+	case FORMAT_A16:
+	case FORMAT_RGBA5551:
+	case FORMAT_RGBA4444:
+	case FORMAT_RGB565:
+		FlipVertical((uint16 *)data, width, height);
+		break;
+
+	case FORMAT_RGBA8888:
+		FlipVertical((uint32 *)data, width, height);
+		break;
+
+	default:
+		DVASSERT(false && "Not implemented");
+		break;
+	}
 }
 
     
