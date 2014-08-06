@@ -8,7 +8,7 @@ uniform sampler2D normalmap = 2;
 uniform sampler2D cubemap = 3;
 uniform sampler2D heightmap = 4;
 uniform sampler2D densitymap = 5;
-uniform samplerCube fogGlowCubemap = 7;
+uniform samplerCube atmospheremap = 7;
 
 uniform float normalScale = 1.0;
 uniform float inGlossiness = 0.5;
@@ -128,11 +128,6 @@ varying float varPerPixelAttenuation;
 #if defined(VERTEX_FOG)
 varying float varFogAmoung;
 varying vec3 varFogColor;
-#if defined(FOG_GLOW)
-varying float varFogGlowFactor;
-varying float varFogGlowDistanceAttenuation;
-varying vec3 viewDirection;
-#endif
 #endif
 
 #if defined(SETUP_LIGHTMAP)
@@ -485,14 +480,6 @@ void main()
 #endif
     //    gl_FragColor.r += 0.5;
 
-#if defined(VERTEX_FOG)
-    //#if defined(FOG_GLOW)
-    //    vec3 realFogColor = mix(varFogColor, fogGlowColor, varFogGlowFactor);
-    //#else
-        vec3 realFogColor = varFogColor;
-    //#endif
-#endif
-
 #if defined(MATERIAL_GRASS_TRANSFORM)
     #if defined(MATERIAL_GRASS_OPAQUE)
         gl_FragColor.rgb = gl_FragColor.rgb * varVegetationColor * 2.0;
@@ -503,7 +490,7 @@ void main()
         #if defined(FRAMEBUFFER_FETCH)
             //VI: fog is taken to account here
             #if defined(VERTEX_FOG)
-                gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(gl_FragColor.rgb * varVegetationColor * 2.0, realFogColor, varFogAmoung), gl_FragColor.a);
+                gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, mix(gl_FragColor.rgb * varVegetationColor * 2.0, varFogColor, varFogAmoung), gl_FragColor.a);
             #else
                 gl_FragColor.rgb = mix(gl_LastFragData[0].rgb, gl_FragColor.rgb * varVegetationColor * 2.0, gl_FragColor.a);
             #endif
@@ -523,7 +510,7 @@ void main()
 #if defined(VERTEX_FOG)
     #if !defined(FRAMEBUFFER_FETCH)
         //VI: fog equation is inside of color equation for framebuffer fetch
-        gl_FragColor.rgb = mix(gl_FragColor.rgb, realFogColor, varFogAmoung);
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, varFogColor, varFogAmoung);
     #endif
 #endif
 }
