@@ -67,6 +67,13 @@ double HeightDeltaTool::GetThresholdInMeters(double unitSize)
 
 void HeightDeltaTool::OnRun()
 {
+    const bool sourceExists = QFileInfo(inPath).exists();
+    if ( !sourceExists )
+    {
+        QMessageBox::warning(this, "File doest not exists", QString("Input file could not be opened:\n\"%1\"").arg(inPath) );
+        return ;
+    }
+
     SceneEditor2* scene = QtMainWindow::Instance()->GetCurrentScene();
     if (scene != NULL)
     {
