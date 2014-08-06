@@ -511,7 +511,10 @@ float32 SoundSystem::GetGroupVolume(const FastName & groupName)
     {
         SoundGroup & group = soundGroups[i];
         if(group.name == groupName)
+        {
             ret = group.volume;
+            break;
+        }
     }
     soundGroupsMutex.Unlock();
     return ret;
