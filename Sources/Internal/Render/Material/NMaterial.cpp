@@ -61,6 +61,7 @@ const FastName NMaterial::TEXTURE_LIGHTMAP("lightmap");
 const FastName NMaterial::TEXTURE_DECAL("decal");
 const FastName NMaterial::TEXTURE_CUBEMAP("cubemap");
 const FastName NMaterial::TEXTURE_HEIGHTMAP("heightmap");
+const FastName NMaterial::TEXTURE_ATMOSPHEREMAP("atmospheremap");
 
 const FastName NMaterial::TEXTURE_DYNAMIC_REFLECTION("dynamicReflection");
 const FastName NMaterial::TEXTURE_DYNAMIC_REFRACTION("dynamicRefraction");
@@ -79,13 +80,14 @@ const FastName NMaterial::PARAM_FOG_COLOR("fogColor");
 const FastName NMaterial::PARAM_FOG_DENSITY("fogDensity");
 const FastName NMaterial::PARAM_FOG_START("fogStart");
 const FastName NMaterial::PARAM_FOG_END("fogEnd");
-const FastName NMaterial::PARAM_FOG_GLOW_COLOR("fogGlowColor");
-const FastName NMaterial::PARAM_FOG_GLOW_SCATTERING("fogGlowScattering");
-const FastName NMaterial::PARAM_FOG_GLOW_DISTANCE("fogGlowDistance");
 const FastName NMaterial::PARAM_FOG_HALFSPACE_DENSITY("fogHalfspaceDensity");
 const FastName NMaterial::PARAM_FOG_HALFSPACE_HEIGHT("fogHalfspaceHeight");
 const FastName NMaterial::PARAM_FOG_HALFSPACE_FALLOFF("fogHalfspaceFalloff");
 const FastName NMaterial::PARAM_FOG_HALFSPACE_LIMIT("fogHalfspaceLimit");
+const FastName NMaterial::PARAM_FOG_GLOW_COLOR("fogGlowColor");
+const FastName NMaterial::PARAM_FOG_GLOW_SCATTERING("fogGlowScattering");
+const FastName NMaterial::PARAM_FOG_GLOW_DISTANCE("fogGlowDistance");
+const FastName NMaterial::PARAM_FOG_ATMOSPHERE_DISTANCE("fogAtmosphereDistance");
 const FastName NMaterial::PARAM_FLAT_COLOR("flatColor");
 const FastName NMaterial::PARAM_TEXTURE0_SHIFT("texture0Shift");
 const FastName NMaterial::PARAM_UV_OFFSET("uvOffset");
@@ -96,8 +98,8 @@ const FastName NMaterial::PARAM_SHADOW_COLOR("shadowColor");
 const FastName NMaterial::PARAM_RCP_SCREEN_SIZE("rcpScreenSize");
 const FastName NMaterial::PARAM_SCREEN_OFFSET("screenOffset");
 
-
 const FastName NMaterial::FLAG_VERTEXFOG = FastName("VERTEX_FOG");
+const FastName NMaterial::FLAG_FOG_ATMOSPHERE_MAP = FastName("FOG_ATMOSPHERE_MAP");
 const FastName NMaterial::FLAG_FOG_EXP = FastName("FOG_EXP");
 const FastName NMaterial::FLAG_FOG_LINEAR = FastName("FOG_LINEAR");
 const FastName NMaterial::FLAG_FOG_GLOW = FastName("FOG_GLOW");

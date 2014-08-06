@@ -5,6 +5,7 @@ uniform samplerCube cubemap = 1
 uniform sampler2D decal = 2
 uniform sampler2D dynamicReflection = 1
 uniform sampler2D dynamicRefraction = 2
+uniform samplerCube atmospheremap = 7;
 <FRAGMENT_SHADER>
 
 #ifdef GL_ES
@@ -92,13 +93,8 @@ uniform highp float distortionFallSquareDist;
 #endif
 
 #if defined(VERTEX_FOG)
-uniform vec3 fogColor;
 varying float varFogAmoung;
-#if defined(FOG_GLOW)
-uniform vec3 fogGlowColor;
-varying float varFogGlowFactor;
-varying float varFogGlowDistanceAttenuation;
-#endif
+varying vec3 varFogColor;
 #endif
 
 
@@ -202,11 +198,6 @@ void main()
 #endif
     
 #if defined(VERTEX_FOG)
-    #if defined(FOG_GLOW)
-        vec3 realFogColor = mix(fogColor, fogGlowColor, varFogGlowFactor);
-    #else
-        vec3 realFogColor = fogColor;
-    #endif
-	gl_FragColor.rgb = mix(gl_FragColor.rgb, realFogColor, varFogAmoung);
+	gl_FragColor.rgb = mix(gl_FragColor.rgb, varFogColor, varFogAmoung);
 #endif
 }
