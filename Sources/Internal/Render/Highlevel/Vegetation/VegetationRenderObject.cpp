@@ -297,10 +297,10 @@ void VegetationRenderObject::Save(KeyedArchive *archive, SerializationContext *s
         archive->SetBool(Format("vro.densityBit.%d", i), densityMap[i]);
     }
     
-    Vector3 savingLodRanges = GetLodRange();
+    const Vector3& savingLodRanges = GetLodRange();
     archive->SetVector3("vro.lodRanges", savingLodRanges);
     
-    Vector2 savingVisibilityDistance = GetVisibilityDistance();
+    const Vector2& savingVisibilityDistance = GetVisibilityDistance();
     archive->SetVector2("vro.visibilityDistance", savingVisibilityDistance);
 }
     
