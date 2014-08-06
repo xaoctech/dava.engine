@@ -331,19 +331,16 @@ void TextBlock::Prepare()
         // which can't be broken to the separate lines.
         if (isMultilineEnabled)
         {
-            Vector<WideString> strings;
-            Vector2 rectSize;
-
             if(isMultilineBySymbolEnabled)
             {
-                font->SplitTextBySymbolsToStrings(text, rectSize, strings);
+                font->SplitTextBySymbolsToStrings(text, drawSize, multilineStrings);
             }
             else
             {
-                font->SplitTextToStrings(text, rectSize, strings);
+                font->SplitTextToStrings(text, drawSize, multilineStrings);
             }
             
-            treatMultilineAsSingleLine = strings.size() == 1;
+            treatMultilineAsSingleLine = multilineStrings.size() == 1;
         }
 
 		if(!isMultilineEnabled || treatMultilineAsSingleLine)
@@ -447,10 +444,10 @@ void TextBlock::Prepare()
 							yBigger = true;
 							yMul = drawSize.y / textSize.dy;
 						}
-						else if((isChanged || fittingType & FITTING_ENLARGE) && textSize.dy < drawSize.y * 0.95)
+						else if((isChanged || fittingType & FITTING_ENLARGE) && textSize.dy < drawSize.y * 0.9)
 						{
 							yLower = true;
-							yMul = (drawSize.y * 0.95f) / textSize.dy;
+							yMul = (drawSize.y * 0.9f) / textSize.dy;
 							if(yMul < 1.01f)
 							{
 								yLower = false;
@@ -664,7 +661,6 @@ void TextBlock::Prepare()
 				{
 					textSize.dx = Max(textSize.dx, stringSize.dx);
 				}
-				
 			}
 		}
 		
@@ -737,12 +733,11 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 	}
     else
 	{
-		int16 * buf = 0;
 		if (jobData->font->IsTextSupportsSoftwareRendering())
 		{
-			int bsz = cacheDx * cacheDy;
-			buf = new int16[bsz];
-			memset(buf, 0, bsz * sizeof(int16));
+			int32 bsz = cacheDx * cacheDy;
+			uint8 * buf = new uint8[bsz];
+			memset(buf, 0, bsz * sizeof(uint8));
 			
 			DrawToBuffer(jobData->font, buf);
             
@@ -762,7 +757,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
 				}
 			}
 			
-			Texture *tex = Texture::CreateTextFromData(FORMAT_RGBA4444, (uint8*)buf, cacheDx, cacheDy, false, addInfo.c_str());
+			Texture *tex = Texture::CreateTextFromData(FORMAT_A8, buf, cacheDx, cacheDy, false, addInfo.c_str());
 			delete[] buf;
 			sprite = Sprite::CreateFromTexture(tex, 0, 0, cacheFinalSize.x, cacheFinalSize.y);
 			SafeRelease(tex);
@@ -792,7 +787,7 @@ void TextBlock::PrepareInternal(BaseObject * caller, void * param, void *callerD
     mutex.Unlock();
 }
 
-void TextBlock::DrawToBuffer(Font *realFont, int16 *buf)
+void TextBlock::DrawToBuffer(Font *realFont, uint8 *buf)
 {
 	Size2i realSize;
 	if(!isMultilineEnabled || treatMultilineAsSingleLine)
@@ -932,6 +927,5 @@ const Vector<int32> & TextBlock::GetStringSizes() const
 {
 	return stringSizes;
 }
-
 
 };

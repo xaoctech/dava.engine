@@ -34,9 +34,9 @@
 #include "Platform/Process.h"
 
 #include "Render/GPUFamilyDescriptor.h"
-#include "Render/LibPVRHelper.h"
-#include "Render/ImageLoader.h"
-#include "Render/Image.h"
+#include "Render/Image/LibPVRHelper.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/Image/Image.h"
 
 #include "Base/GlobalEnum.h"
 
@@ -154,7 +154,8 @@ FilePath PVRConverter::ConvertPngToPvr(const TextureDescriptor &descriptor, eGPU
 		
     if(addCRC)
     {
-	    LibPVRHelper::AddCRCIntoMetaData(outputName);
+        LibPVRHelper helper;
+	    helper.AddCRCIntoMetaData(outputName);
     }
 	return outputName;
 }
@@ -164,7 +165,7 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
     FilePath filePath = FilePath::CreateWithNewExtension(descriptor.pathname, ".png");
 
     Vector<Image *> images;
-    ImageLoader::CreateFromFileByExtension(filePath, images);
+    ImageSystem::Instance()->Load(filePath, images);
 
     if(!images.size())
         return FilePath();
@@ -189,7 +190,7 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
     for(int32 i = 0; i < imgCount; ++i)
     {
         FilePath imgPath = dirPath + Format("mip%d.png", i);
-        ImageLoader::Save(images[i], imgPath);
+        ImageSystem::Instance()->Save(imgPath, images[i]);
 
         TextureDescriptor desc;
         desc.Initialize(&descriptor);
@@ -207,7 +208,8 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
 
     if(ret)
     {
-        LibPVRHelper::AddCRCIntoMetaData(outputName);
+        LibPVRHelper helper;
+        helper.AddCRCIntoMetaData(outputName);
         return outputName;
     }
     else
@@ -219,7 +221,7 @@ FilePath PVRConverter::ConvertNormalMapPngToPvr(const TextureDescriptor &descrip
 void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const FilePath & fileToConvert, eGPUFamily gpuFamily, TextureConverter::eConvertQuality quality, Vector<String>& args)
 {
 	DVASSERT(descriptor.compression);
-	const TextureDescriptor::Compression *compression = descriptor.compression[gpuFamily];
+	const TextureDescriptor::Compression *compression = &descriptor.compression[gpuFamily];
 
 	String format = pixelFormatToPVRFormat[(PixelFormat) compression->format];
 	FilePath outputFile = GetPVRToolOutput(descriptor, gpuFamily);
@@ -243,7 +245,7 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 
 	//quality
 	args.push_back("-q");
-	if(FORMAT_ETC1 == descriptor.compression[gpuFamily]->format)
+	if(FORMAT_ETC1 == descriptor.compression[gpuFamily].format)
 	{
 		args.push_back(ETC_QUALITY_SETTING[quality]);
 	}
@@ -270,12 +272,9 @@ void PVRConverter::GetToolCommandLine(const TextureDescriptor &descriptor, const
 	// base mipmap level (base resize)
 	if(0 != compression->compressToWidth && compression->compressToHeight != 0)
 	{
-		args.push_back("-x");
-		args.push_back(Format("%d", compression->compressToWidth));
-		args.push_back("-y");
-		args.push_back(Format("%d", compression->compressToHeight));
+        args.push_back("-r");
+		args.push_back(Format("%d,%d", compression->compressToWidth, compression->compressToHeight));
 	}
-    
     
     //args.push_back("-l"); //Alpha Bleed: Discards any data in fully transparent areas to optimise the texture for better compression.
 

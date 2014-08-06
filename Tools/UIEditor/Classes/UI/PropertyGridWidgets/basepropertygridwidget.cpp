@@ -38,10 +38,13 @@
 #include "HierarchyTreeController.h"
 #include "WidgetSignalsBlocker.h"
 #include "SubcontrolsHelper.h"
+#include "ResourcesManageHelper.h"
 
 #include "CommandsController.h"
 #include "ChangePropertyCommand.h"
 #include "InvokeMethodCommand.h"
+
+const QString BasePropertyGridWidget::MULTIPLE_VALUE = "multiple";
 
 BasePropertyGridWidget::BasePropertyGridWidget(QWidget *parent) :
     QWidget(parent),
@@ -106,7 +109,7 @@ BasePropertyGridWidget::PROPERTIESMAP BasePropertyGridWidget::BuildMetadataPrope
     for (int32 i = 0; i < count; i ++)
     {
         const QMetaProperty& curProperty = activeMetadata->metaObject()->property(i);
-        //Logger::Debug("Property name %s", curProperty.name());
+        //Logger::FrameworkDebug("Property name %s", curProperty.name());
         propertiesMap.insert(std::make_pair(curProperty.name(), curProperty));
     }
     
@@ -672,12 +675,14 @@ void BasePropertyGridWidget::UpdateLineEditWidgetWithPropertyValue(QLineEdit* li
         WidgetSignalsBlocker blocker(lineEditWidget);
         if (isPropertyValueDiffers)
         {
-            lineEditWidget->setText("<multiple>"); // TODO! TO CONST!!!
+            lineEditWidget->setText(BasePropertyGridWidget::MULTIPLE_VALUE);
+            lineEditWidget->setStyleSheet("font:bold;");
         }
         else
         {
             // Get the current value.
             lineEditWidget->setText(propertyValue);
+            lineEditWidget->setStyleSheet("font:normal;");
         }
     }
 
@@ -1034,4 +1039,9 @@ bool BasePropertyGridWidget::ActiveControlIsSubcontrol()
 	}
 
 	return false;
+}
+
+QString BasePropertyGridWidget::PreprocessSpriteName(const QString& rawSpriteName)
+{
+    return ResourcesManageHelper::GetResourceRelativePath(rawSpriteName);
 }

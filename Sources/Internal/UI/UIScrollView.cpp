@@ -30,8 +30,8 @@
 
 
 #include "UIScrollView.h"
-#include "Base/ObjectFactory.h"
 #include "UI/UIScrollViewContainer.h"
+#include "UI/ScrollHelper.h"
 
 namespace DAVA 
 {
@@ -280,8 +280,6 @@ YamlNode * UIScrollView::SaveToYamlNode(UIYamlLoader * loader)
     }
     
     YamlNode *node = UIControl::SaveToYamlNode(loader);
-	SetPreferredNodeType(node, "UIScrollView");
-
     return node;
 }
 

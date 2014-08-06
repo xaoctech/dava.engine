@@ -38,6 +38,8 @@
 #include <QObject>
 #include <QString>
 #include <QPoint>
+#include <QDir>
+
 #include "HierarchyTreeScreenNode.h"
 #include "HierarchyTreeControlNode.h"
 #include "HierarchyTreePlatformNode.h"
@@ -55,6 +57,54 @@ class HierarchyTreeController: public QObject, public Singleton<HierarchyTreeCon
 	Q_OBJECT
 	
 public:
+    // How the selected tree item should be expanded when selected.
+    enum eExpandControlType
+    {
+        NoExpand,                       // No expanding needed
+        DeferredExpand,                 // Deferred (delayed) force expand
+        DeferredExpandWithMouseCheck,   // Deffered expand with check whether mouse is on the control.
+        ImmediateExpand                 // Immediate expand.
+    };
+
+    // Unused hierarchy items - needed to delete them after save.
+    class BaseUnusedItem
+    {
+        public:
+            BaseUnusedItem() {};
+            virtual ~BaseUnusedItem() {};
+
+            // Delete the appropriate item data from disk.
+            virtual void DeleteFromDisk(const QString& /*baseDir*/) const  = 0;
+
+        protected:
+            // Get the full path to the item based on the base directory.
+            QDir GetFullPath(const QString& baseDir, const QString& dirName) const;
+    };
+
+    class PlatformUnusedItem : public BaseUnusedItem
+    {
+        public:
+            PlatformUnusedItem(const QString& platform) :
+                BaseUnusedItem(), platformName(platform) {};
+        
+            virtual void DeleteFromDisk(const QString& baseDir) const;
+        
+        protected:
+            QString platformName;
+    };
+
+    class ScreenUnusedItem : public PlatformUnusedItem
+    {
+        public:
+            ScreenUnusedItem(const QString& platform, const QString& screen) :
+                PlatformUnusedItem(platform), screenName(screen)  {};
+
+            virtual void DeleteFromDisk(const QString& baseDir) const;
+        
+        protected:
+            QString screenName;
+    };
+
 	typedef List<HierarchyTreeControlNode*> SELECTEDCONTROLNODES;
 	
 	explicit HierarchyTreeController(QObject* parent = NULL);
@@ -81,8 +131,8 @@ public:
 
 	// Two separate versions of CreateNewControl method - by its position (when control is dropped
 	// to the screen) and by its direct parent (when the control is dropped to the tree).
-	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& type, const QPoint& position);
-	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(const QString& strType, const Vector2& position,																				 HierarchyTreeNode* parentNode);
+	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const QPoint& position);
+	HierarchyTreeNode::HIERARCHYTREENODEID CreateNewControl(HierarchyTreeNode::HIERARCHYTREENODEID typeId, const Vector2& position,																				 HierarchyTreeNode* parentNode);
 
 	// Return any kind of node (one or multiple) back to the scene.
 	void ReturnNodeToScene(HierarchyTreeNode* nodeToReturn);
@@ -95,13 +145,14 @@ public:
 
     const HierarchyTree& GetTree() const {return hierarchyTree;};
     
-	void UpdateSelection(const HierarchyTreePlatformNode* activePlatform,
-						 const HierarchyTreeScreenNode* activeScreen);
+	void UpdateSelection(HierarchyTreePlatformNode* activePlatform,
+                         HierarchyTreeScreenNode* activeScreen);
 
 	void UpdateSelection(const HierarchyTreeNode* activeItem);
+    void UpdateAggregators(const HierarchyTreePlatformNode* platform);
 	
 	void ChangeItemSelection(HierarchyTreeControlNode* control);
-	void SelectControl(HierarchyTreeControlNode* control);
+	void SelectControl(HierarchyTreeControlNode* control, eExpandControlType expandType = ImmediateExpand);
 	void UnselectControl(HierarchyTreeControlNode* control, bool emitSelectedControlNodesChanged = true);
 	bool IsControlSelected(HierarchyTreeControlNode* control) const;
 	void ResetSelectedControl();
@@ -133,8 +184,8 @@ public:
 	// Adjust control size logic
 	void AdjustSelectedControlsSize();
 
-    // Repack and reload sprites.
-    void RepackAndReloadSprites();
+    // Repack and reload sprites, return repacking errors.
+    Set<String> RepackAndReloadSprites();
     
     // Preview mode control.
     void EnablePreview(const PreviewSettingsData& data, bool applyScale);
@@ -143,6 +194,15 @@ public:
 
     // Set the Stick Mode.
     void SetStickMode(int32 mode);
+
+    // Access to the hierarchy tree nodes list.
+    HierarchyTreeNode::HIERARCHYTREENODESLIST GetNodes() const;
+
+    // Add the unused items.
+    void AddUnusedItem(BaseUnusedItem* item);
+
+    // Perform the physical deletion from the disk of the unused items.
+    void DeleteUnusedItemsFromDisk(const QString& projectPath);
 
 private:
 	void DeleteNodesInternal(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
@@ -164,7 +224,7 @@ signals:
 	
 	void AddSelectedControl(const HierarchyTreeControlNode*);
 	void RemoveSelectedControl(const HierarchyTreeControlNode*);
-	void SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &);
+	void SelectedControlNodesChanged(const HierarchyTreeController::SELECTEDCONTROLNODES &, HierarchyTreeController::eExpandControlType expandType = ImmediateExpand);
 	
 	void SelectedTreeItemChanged(const HierarchyTreeNode*);
 	
@@ -173,7 +233,8 @@ protected slots:
 
 protected:
 	void Clear();
-	
+    void CleanupUnusedItems();
+
 	// Register/unregister nodes removed from scene.
 	void RegisterNodesDeletedFromScene(const HierarchyTreeNode::HIERARCHYTREENODESLIST& nodes);
 	void RegisterNodeDeletedFromScene(HierarchyTreeNode* node);
@@ -208,6 +269,12 @@ protected:
 
     // Stick mode set from MainWindow.
     int32 stickMode;
+    
+    // List of unused items to be deleted.
+    List<BaseUnusedItem*> unusedItems;
+    
+    // List of loaded screens
+    List<HierarchyTreeScreenNode*> loadedScreenList;
 };
 
 #endif /* defined(__UIEditor__HierarchyTreeController__) */

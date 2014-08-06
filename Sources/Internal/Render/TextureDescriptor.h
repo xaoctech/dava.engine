@@ -47,7 +47,7 @@ class TextureDescriptor
 
     static const int32 DATE_BUFFER_SIZE = 20;
     static const int32 LINE_SIZE = 256;
-    static const int8 CURRENT_VERSION = 7;
+    static const int8 CURRENT_VERSION = 8;
     
 	enum eSignatures
 	{
@@ -133,7 +133,7 @@ public:
     
 
 public:
-    TextureDescriptor(bool needCompressionSettings = false);
+    TextureDescriptor();
 	virtual ~TextureDescriptor();
 
 	static TextureDescriptor * CreateFromFile(const FilePath &filePathname);
@@ -173,12 +173,9 @@ public:
     
     PixelFormat GetPixelFormatForCompression(eGPUFamily forGPU) const;
     
-	void Reload();
+	bool Reload();
 
 protected:
-
-	void AllocateCompressionData();
-	void ReleaseCompressionData();
 
     const Compression * GetCompressionParams(eGPUFamily forGPU) const;
     
@@ -196,8 +193,8 @@ protected:
     
     
     void ConvertToCurrentVersion(int8 version, int32 signature, File *file);
-	void LoadVersion5(int32 signature, File *file);
 	void LoadVersion6(int32 signature, File *file);
+	void LoadVersion7(int32 signature, File *file);
     
 	uint32 ReadSourceCRC() const;
 	uint32 GetConvertedCRC(eGPUFamily forGPU) const;
@@ -212,7 +209,7 @@ public:
 	FastName qualityGroup;
 	TextureDrawSettings drawSettings;
 	TextureDataSettings dataSettings;
-	Compression **compression;
+	Compression compression[GPU_FAMILY_COUNT];
     
 	PixelFormat format:8;			// texture format
     //Binary only

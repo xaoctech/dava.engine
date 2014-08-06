@@ -38,7 +38,6 @@
 #include "Platform/SystemTimer.h"
 #include "FileSystem/File.h"
 #include "Render/D3D9Helpers.h"
-#include "Render/ImageConvert.h"
 #include "FileSystem/FileSystem.h"
 #include "Render/OGLHelpers.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
@@ -50,12 +49,11 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif //PLATFORMS
 
-#include "Render/Image.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/Image/ImageConvert.h"
 #include "Render/OGLHelpers.h"
 
 #include "Render/TextureDescriptor.h"
-#include "Render/ImageLoader.h"
-
 #include "Render/GPUFamilyDescriptor.h"
 #include "Job/JobManager.h"
 #include "Job/JobWaiter.h"
@@ -154,7 +152,7 @@ public:
 	int	fboMemoryUsed;
 };
 
-eGPUFamily Texture::defaultGPU = GPU_UNKNOWN;
+eGPUFamily Texture::defaultGPU = GPU_PNG;
     
 static TextureMemoryUsageInfo texMemoryUsageInfo;
 	
@@ -205,7 +203,7 @@ Texture::Texture()
 ,	height(0)
 ,	depthFormat(DEPTH_NONE)
 ,	isRenderTarget(false)
-,   loadedAsFile(GPU_UNKNOWN)
+,   loadedAsFile(GPU_PNG)
 ,	textureType(Texture::TEXTURE_2D)
 ,	isPink(false)
 ,	state(STATE_INVALID)
@@ -248,11 +246,14 @@ void Texture::ReleaseTextureData()
 #if defined(__DAVAENGINE_ANDROID__)
     container->stencilRboID = stencilRboID;
 #endif
-	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container), 0);
+	ScopedPtr<Job> job = JobManager::Instance()->CreateJob(JobManager::THREAD_MAIN, Message(this, &Texture::ReleaseTextureDataInternal, container), Job::NO_FLAGS);
     
     id = 0;
 	fboID = -1;
 	rboID = -1;
+#if defined(__DAVAENGINE_ANDROID__)
+    stencilRboID = -1;
+#endif
     isRenderTarget = false;
 }
 
@@ -582,12 +583,14 @@ Texture * Texture::CreateFromImage(TextureDescriptor *descriptor, eGPUFamily gpu
 
 bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 {
+    DVASSERT(gpu != GPU_INVALID);
+    
 	if(!IsLoadAvailable(gpu))
 		return false;
 	
     int32 baseMipMap = GetBaseMipMap();
-
-	if(texDescriptor->IsCubeMap() && (GPU_UNKNOWN == gpu))
+    
+	if(texDescriptor->IsCubeMap() && (!GPUFamilyDescriptor::IsGPUForDevice(gpu)))
 	{
 		Vector<FilePath> faceNames;
 		GenerateCubeFaceNames(texDescriptor->GetSourceTexturePathname(), faceNames);
@@ -595,8 +598,8 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 		for(size_t i = 0; i < faceNames.size(); ++i)
 		{
             Vector<Image *> imageFace;
-			ImageLoader::CreateFromFileByExtension(faceNames[i], imageFace, baseMipMap);
-			if(imageFace.size() == 0)
+            ImageSystem::Instance()->Load(faceNames[i], imageFace,baseMipMap);
+            if(imageFace.size() == 0)
 			{
 				Logger::Error("[Texture::LoadImages] Cannot open file %s", faceNames[i].GetAbsolutePathname().c_str());
 
@@ -625,8 +628,8 @@ bool Texture::LoadImages(eGPUFamily gpu, Vector<Image *> * images)
 	{
 		FilePath imagePathname = GPUFamilyDescriptor::CreatePathnameForGPU(texDescriptor, gpu);
 
-		ImageLoader::CreateFromFileByExtension(imagePathname, *images, baseMipMap);
-        if(images->size() == 1 && gpu == GPU_UNKNOWN && texDescriptor->GetGenerateMipMaps())
+        ImageSystem::Instance()->Load(imagePathname, *images,baseMipMap);
+        if(images->size() == 1 && gpu == GPU_PNG && texDescriptor->GetGenerateMipMaps())
         {
             Image * img = *images->begin();
             *images = img->CreateMipMapsImages(texDescriptor->dataSettings.GetIsNormalMap());
@@ -745,7 +748,7 @@ Texture * Texture::CreateFromFile(const FilePath & pathName, const FastName &gro
  	if(!texture)
 	{
 		texture = CreatePink(typeHint);
-        texture->texDescriptor->pathname = pathName;
+        texture->texDescriptor->pathname = (!pathName.IsEmpty()) ? TextureDescriptor::GetDescriptorPathname(pathName) : FilePath();
         
         AddToMap(texture);
 	}
@@ -792,19 +795,15 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
 {
     DVASSERT(isRenderTarget == false);
     
-    FilePath savedPath = texDescriptor->pathname;
-    
     ReleaseTextureData();
 
-	texDescriptor->Reload();
-    
-	DVASSERT(NULL != texDescriptor);
+	bool descriptorReloaded = texDescriptor->Reload();
     
 	eGPUFamily gpuForLoading = GetGPUForLoading(gpuFamily, texDescriptor);
     Vector<Image *> *images = new Vector<Image *> ();
     
     bool loaded = false;
-    if(RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
+    if(descriptorReloaded && RenderManager::Instance()->GetOptions()->IsOptionEnabled(RenderOptions::TEXTURE_LOAD_ENABLED))
     {
 	    loaded = LoadImages(gpuForLoading, images);
     }
@@ -820,8 +819,8 @@ void Texture::ReloadAs(eGPUFamily gpuFamily)
     {
         SafeDelete(images);
         
-        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", savedPath.GetAbsolutePathname().c_str());
-        MakePink(texDescriptor->IsCubeMap() ? Texture::TEXTURE_CUBE : Texture::TEXTURE_2D);
+        Logger::Error("[Texture::ReloadAs] Cannot reload from file %s", texDescriptor->pathname.GetAbsolutePathname().c_str());
+        MakePink();
     }
 }
 
@@ -833,10 +832,7 @@ bool Texture::IsLoadAvailable(const eGPUFamily gpuFamily) const
         return true;
     }
     
-    DVASSERT(gpuFamily < GPU_FAMILY_COUNT);
-    
-	DVASSERT(texDescriptor->compression);
-    if(gpuFamily != GPU_UNKNOWN && texDescriptor->compression[gpuFamily]->format == FORMAT_INVALID)
+    if(GPUFamilyDescriptor::IsGPUForDevice(gpuFamily) && texDescriptor->compression[gpuFamily].format == FORMAT_INVALID)
     {
         return false;
     }
@@ -1055,7 +1051,7 @@ void Texture::Invalidate()
 	}
 	else if (isPink)
 	{
-		MakePink((TextureType)textureType);
+		MakePink();
 	}
 }
 #endif //#if defined(__DAVAENGINE_ANDROID__)
@@ -1105,12 +1101,12 @@ Image * Texture::CreateImageFromMemory(UniqueHandle renderState)
     }
     else
     {
-        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format);
+        Sprite *renderTarget = Sprite::CreateAsRenderTarget((float32)width, (float32)height, texDescriptor->format, true);
         RenderManager::Instance()->SetRenderTarget(renderTarget);
 
         RenderManager::Instance()->ClearWithColor(0.f, 0.f, 0.f, 0.f);
 
-		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height);
+		Sprite *drawTexture = Sprite::CreateFromTexture(this, 0, 0, (float32)width, (float32)height, true);
 
         Sprite::DrawState drawState;
         drawState.SetPosition(0, 0);
@@ -1146,19 +1142,26 @@ Texture * Texture::CreatePink(TextureType requestedType, bool checkers)
 	//we need instances for pink textures for ResourceEditor. We use it for reloading for different GPUs
 	//pink textures at game is invalid situation
 	Texture *tex = new Texture();
-	tex->MakePink(requestedType, checkers);
+	if(Texture::TEXTURE_CUBE == requestedType)
+	{
+		tex->texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, true);
+		tex->texDescriptor->dataSettings.faceDescription = 0x000000FF;
+	}
+	else
+	{
+		tex->texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
+	}
+
+	tex->MakePink(checkers);
 
 	return tex;
 }
 
-void Texture::MakePink(TextureType requestedType, bool checkers)
+void Texture::MakePink(bool checkers)
 {
-	FilePath savePath = texDescriptor->pathname;
-
     Vector<Image *> *images = new Vector<Image *> ();
-	if(Texture::TEXTURE_CUBE == requestedType)
+	if(texDescriptor->IsCubeMap())
 	{
-		texDescriptor->Initialize(WRAP_REPEAT, true);
 		for(uint32 i = 0; i < Texture::CUBE_FACE_MAX_COUNT; ++i)
 		{
             Image *img = Image::CreatePinkPlaceholder(checkers);
@@ -1167,16 +1170,11 @@ void Texture::MakePink(TextureType requestedType, bool checkers)
 
 			images->push_back(img);
 		}
-		
-		texDescriptor->dataSettings.faceDescription = 0x000000FF;
 	}
 	else
 	{
-		texDescriptor->Initialize(WRAP_CLAMP_TO_EDGE, false);
 		images->push_back(Image::CreatePinkPlaceholder(checkers));
 	}
-
-	texDescriptor->pathname = savePath;
 
 	SetParamsFromImages(images);
     FlushDataToRenderer(images);
@@ -1250,7 +1248,7 @@ void Texture::GenerateCubeFaceNames(const FilePath & filePath, const Vector<Stri
 		DAVA::FilePath faceFilePath = filePath;
 		faceFilePath.ReplaceFilename(fileNameWithoutExtension +
 									 faceNameSuffixes[i] +
-									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_UNKNOWN, FORMAT_INVALID));
+									 GPUFamilyDescriptor::GetFilenamePostfix(GPU_INVALID, FORMAT_INVALID));
 			
 		faceNames.push_back(faceFilePath);
 	}

@@ -37,6 +37,9 @@
 namespace DAVA
 {
 
+Set<Thread *> Thread::threadList;
+Mutex Thread::threadListMutex;
+
 Thread::Id Thread::mainThreadId = 0;
 
 ConditionalVariable::ConditionalVariable()
@@ -80,22 +83,58 @@ Thread * Thread::Create(const Message& msg)
 	
 	return t;
 }
-	
+
+void Thread::KillAll()
+{
+    threadListMutex.Lock();
+    Set<Thread *>::iterator i = threadList.begin();
+    Set<Thread *>::iterator end = threadList.end();
+    for(; i != end; ++i)
+    {
+        (*i)->Kill();
+    }
+    threadListMutex.Unlock();
+}
+
 Thread::Thread(const Message& _msg)
 :   msg(_msg)
 {
+    threadListMutex.Lock();
+    threadList.insert(this);
+    threadListMutex.Unlock();
+
     Init();
 }
 
 Thread::~Thread()
 {
-    Shutdown();
+    threadListMutex.Lock();
+    threadList.erase(this);
+    threadListMutex.Unlock();
+}
+
+void Thread::Start()
+{
+
+
 }
 
 Thread::eThreadState Thread::GetState()
 {
 	return state;
 }
+
+
+#ifndef __DAVAENGINE_WIN32__
+void Thread::Kill()
+{
+    if(state != STATE_ENDED && state != STATE_KILLED)
+    {
+        pthread_kill(GetThreadId().internalTid, SIGKILL);
+        state = STATE_KILLED;
+    }
+}
+#endif
 
 void Thread::Wait(ConditionalVariable * cv)
 {

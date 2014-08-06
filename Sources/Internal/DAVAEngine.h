@@ -59,6 +59,7 @@
 #include "UI/ScrollHelper.h"
 #include "Debug/Replay.h"
 #include "Utils/Random.h"
+#include "Utils/VirtualToPhysicalHelper.h"
 
 #include "Base/ObjectFactory.h"
 #include "Base/FixedSizePoolAllocator.h"
@@ -84,8 +85,10 @@
 #include "FileSystem/LocalizationSystem.h"
 
 // Image formats stuff (PNG & JPG & other formats)
-#include "Render/LibPngHelpers.h"
-#include "Render/Image.h"
+#include "Render/Image/LibPngHelpers.h"
+#include "Render/Image/Image.h"
+#include "Render/Image/ImageSystem.h"
+#include "Render/Image/LibDdsHelper.h"
 
 // Files & Serialization
 #include "FileSystem/FileSystem.h"
@@ -97,6 +100,7 @@
 #include "FileSystem/KeyedArchive.h"
 
 #include "FileSystem/XMLParser.h"
+#include "FileSystem/YamlNode.h"
 #include "FileSystem/YamlParser.h"
 #include "FileSystem/Parser.h"
 #include "FileSystem/FilePath.h"
@@ -119,8 +123,6 @@
 #include "Render/GPUFamilyDescriptor.h"
 #include "Render/TextureDescriptor.h"
 #include "Render/Texture.h"
-#include "Render/Image.h"
-#include "Render/ImageLoader.h"
 #include "Render/Shader.h"
 #include "Render/ShaderCache.h"
 
@@ -130,8 +132,6 @@
 #include "Render/RenderHelper.h"
 
 #include "Render/Cursor.h"
-
-#include "Render/LibDxtHelper.h"
 
 #include "Render/MipmapReplacer.h"
 
@@ -163,10 +163,12 @@
 #include "UI/UIFileSystemDialog.h"
 #include "UI/UIWebView.h"
 #include "UI/UIScrollView.h"
+#include "UI/UI3DView.h"
 #include "UI/UISpinner.h"
 #include "UI/VectorSpinnerAdapter.h"
 #include "UI/UISwitch.h"
 #include "UI/UIParticles.h"
+#include "UI/UIMovieView.h"
 
 #include "UI/UIYamlLoader.h"
 
@@ -231,7 +233,8 @@
 #include "Render/Highlevel/LandscapeChunk.h"
 #include "Render/Highlevel/SkyboxRenderObject.h"
 #include "Render/Highlevel/SpeedTreeObject.h"
-#include "Render/Highlevel/VegetationRenderObject.h"
+#include "Render/Highlevel/Vegetation/TextureSheet.h"
+#include "Render/Highlevel/Vegetation/VegetationRenderObject.h"
 
 #include "Scene3D/ShadowVolumeNode.h"
 #include "Scene3D/LodNode.h"
@@ -247,6 +250,7 @@
 #include "Scene3D/ProxyNode.h"
 #include "Scene3D/SkeletonNode.h"
 #include "Scene3D/Systems/GlobalEventSystem.h"
+#include "Scene3D/Systems/SpeedTreeUpdateSystem.h"
 #include "Scene3D/Systems/QualitySettingsSystem.h"
 #include "Scene3D/Systems/FoliageSystem.h"
 
@@ -267,6 +271,9 @@
 #include "Scene3D/Components/ActionComponent.h"
 #include "Scene3D/Components/StaticOcclusionComponent.h"
 #include "Scene3D/Components/QualitySettingsComponent.h"
+#include "Scene3D/Components/SpeedTreeComponent.h"
+#include "Scene3D/Components/WindComponent.h"
+#include "Scene3D/Components/WaveComponent.h"
 
 // Application core 
 #include "Core/Core.h"

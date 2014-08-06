@@ -78,6 +78,9 @@ public:
 	static const char* SHADOW_OFFSET_X;
 	static const char* SHADOW_OFFSET_Y;
 	static const char* SHADOW_COLOR;
+    
+    static const char* FONT_COLOR_INHERIT_TYPE_PROPERTY_NAME;
+    static const char* SHADOW_COLOR_INHERIT_TYPE_PROPERTY_NAME;
 
 	// Slider properties
 	static const char* SLIDER_VALUE_PROPERTY_NAME;
@@ -127,6 +130,15 @@ public:
     static const char* UIPARTICLES_RESTART_METHOD_NAME;
     static const char* UIPARTICLES_RELOAD_METHOD_NAME;
     
+    // UI Joypad properties.
+    static const char* JOYPAD_STICK_SPRITE_PROPERTY_NAME;
+    static const char* JOYPAD_STICK_SPRITE_FRAME_PROPERTY_NAME;
+    static const char* JOYPAD_DEAD_AREA_PROPERTY_NAME;
+    static const char* JOYPAD_DIGITAL_SENSE_PROPERTY_NAME;
+    
+    // UI Web View properties.
+    static const char* WEBVIEW_DATA_DETECTOR_TYPES_PROPERTY_NAME;
+
 	// Custom Control properties.
 	static const char* CUSTOM_CONTROL_NAME;
 };

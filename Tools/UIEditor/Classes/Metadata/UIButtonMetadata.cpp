@@ -47,7 +47,7 @@ UIButtonMetadata::UIButtonMetadata(QObject* parent) :
 
 UIButton* UIButtonMetadata::GetActiveUIButton() const
 {
-    return dynamic_cast<UIButton*>(GetActiveUIControl());
+    return static_cast<UIButton*>(GetActiveUIControl());
 }
 
 void UIButtonMetadata::SetLocalizedTextKey(const QString& value)
@@ -78,15 +78,23 @@ void UIButtonMetadata::UpdatePropertyDirtyFlagForLocalizedText()
     for (int i = 0; i < statesCount; i ++)
     {
         UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
-        if (curState == GetReferenceState())
-        {
-            continue;
-        }
-            
+
         bool curStateDirty = (GetLocalizedTextKeyForState(curState) !=
                               GetLocalizedTextKeyForState(GetReferenceState()));
         SetStateDirtyForProperty(curState, PropertyNames::LOCALIZED_TEXT_KEY_PROPERTY_NAME, curStateDirty);
     }
+}
+
+QString DAVA::UIButtonMetadata::GetLocalizedTextKeyForState( UIControl::eControlState controlState ) const
+{
+    // Return the localization key from the Hierarchy Tree node.
+    HierarchyTreeNode *node = this->GetActiveTreeNode();
+    if (node)
+    {
+        controlState = UIButton::DrawStateToControlState(GetActiveUIButton()->GetActualTextBlockState(UIButton::ControlStateToDrawState(controlState)));
+        return WideString2QString(node->GetExtraData().GetLocalizationKey(controlState));
+    }
+    return QString();
 }
 
 Font * UIButtonMetadata::GetFont()
@@ -106,10 +114,14 @@ void UIButtonMetadata::SetFont(Font * font)
     }
     if (font)
     {
-        font->SetSize(GetFontSize());
+        //TODO: remove this workaround
+        Font* localizedFont = EditorFontManager::Instance()->GetLocalizedFont(font);
+        
+        //localizedFont->SetSize(GetFontSize());
+        
 		for (uint32 i = 0; i < this->GetStatesCount(); ++i)
 		{
-			GetActiveUIButton()->SetStateFont(this->uiControlStates[i], font);
+			GetActiveUIButton()->SetStateFont(this->uiControlStates[i], localizedFont);
 		}
         UpdatePropertyDirtyFlagForFont();
     }
@@ -133,7 +145,10 @@ Font * UIButtonMetadata::GetFontForState(UIControl::eControlState state) const
     UIStaticText *buttonText = GetActiveUIButton()->GetStateTextControl(state);
     if (buttonText)
     {
-        return buttonText->GetFont();
+        //return buttonText->GetFont();
+        
+        //TODO: remove this workaround
+        return EditorFontManager::Instance()->GetLocalizedFont(buttonText->GetFont());
     }
     return EditorFontManager::Instance()->GetDefaultFont();
 }
@@ -148,48 +163,48 @@ float UIButtonMetadata::GetFontSize() const
     return GetFontSizeForState(this->uiControlStates[GetActiveStateIndex()]);
 }
 
-void UIButtonMetadata::SetFontSize(float fontSize)
-{
-    if (!VerifyActiveParamID())
-    {
-        return;
-    }
+//void UIButtonMetadata::SetFontSize(float fontSize)
+//{
+//    if (!VerifyActiveParamID())
+//    {
+//        return;
+//    }
+//
+//	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
+//	{
+//		UIStaticText *buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
+//		if (!buttonText)
+//		{
+//			return;
+//		}
+//    
+//		Font *font = buttonText->GetFont();
+//		if (!font)
+//		{
+//			return;
+//		}
+//
+//		Font* newFont = font->Clone();
+//		newFont->SetSize(fontSize);
+//		buttonText->SetFont(newFont);
+//		newFont->Release();
+//	}
+//
+//    UpdatePropertyDirtyFlagForFontSize();
+//}
 
-	for (uint32 i = 0; i < this->GetStatesCount(); ++i)
-	{
-		UIStaticText *buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
-		if (!buttonText)
-		{
-			return;
-		}
-    
-		Font *font = buttonText->GetFont();
-		if (!font)
-		{
-			return;
-		}
-
-		Font* newFont = font->Clone();
-		newFont->SetSize(fontSize);
-		buttonText->SetFont(newFont);
-		newFont->Release();
-	}
-
-    UpdatePropertyDirtyFlagForFontSize();
-}
-
-void UIButtonMetadata::UpdatePropertyDirtyFlagForFontSize()
-{
-    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
-    for (int i = 0; i < statesCount; i ++)
-    {
-        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
-
-        bool curStateDirty = (GetFontSizeForState(curState) !=
-                              GetFontSizeForState(GetReferenceState()));
-        SetStateDirtyForProperty(curState, PropertyNames::FONT_SIZE_PROPERTY_NAME, curStateDirty);
-    }
-}
+//void UIButtonMetadata::UpdatePropertyDirtyFlagForFontSize()
+//{
+//    int statesCount = UIControlStateHelper::GetUIControlStatesCount();
+//    for (int i = 0; i < statesCount; i ++)
+//    {
+//        UIControl::eControlState curState = UIControlStateHelper::GetUIControlState(i);
+//
+//        bool curStateDirty = (GetFontSizeForState(curState) !=
+//                              GetFontSizeForState(GetReferenceState()));
+//        SetStateDirtyForProperty(curState, PropertyNames::FONT_SIZE_PROPERTY_NAME, curStateDirty);
+//    }
+//}
 
 float UIButtonMetadata::GetFontSizeForState(UIControl::eControlState state) const
 {
@@ -197,9 +212,13 @@ float UIButtonMetadata::GetFontSizeForState(UIControl::eControlState state) cons
    if (referenceButtonText)
     {
         Font* referenceFont = referenceButtonText->GetFont();
-        if (referenceFont)
+        
+        //TODO: remove this workaround
+        Font* localizedReferenceFont = EditorFontManager::Instance()->GetLocalizedFont(referenceFont);
+        
+        if (localizedReferenceFont)
         {
-            return referenceFont->GetSize();
+            return localizedReferenceFont->GetSize();
         }
     }
     
@@ -755,26 +774,19 @@ void UIButtonMetadata::InitializeControl(const String& controlName, const Vector
     int paramsCount = this->GetParamsCount();
     for (BaseMetadataParams::METADATAPARAMID i = 0; i < paramsCount; i ++)
     {
-        UIButton* button = dynamic_cast<UIButton*>(this->treeNodeParams[i].GetUIControl());
-
+        UIButton* button = static_cast<UIButton*>(this->treeNodeParams[i].GetUIControl());
         WideString controlText = StringToWString(button->GetName());
         HierarchyTreeNode* activeNode = GetTreeNode(i);
     
-        // Initialize the button for all states.
-        int statesCount = UIControlStateHelper::GetUIControlStatesCount();
-        for (int stateID = 0; stateID < statesCount; stateID ++)
-        {
-            UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
-            button->SetStateFont(state, EditorFontManager::Instance()->GetDefaultFont());
-            button->SetStateText(state, controlText);
-            button->SetStateTextAlign(state, ALIGN_HCENTER | ALIGN_VCENTER);
-
-            // Button is state-aware.
-            activeNode->GetExtraData().SetLocalizationKey(controlText, state);
-        }
-        
         // Define some properties for the reference state.
-        button->SetStateDrawType(GetReferenceState(), UIControlBackground::DRAW_SCALE_TO_RECT);
+        UIControl::eControlState refState = GetReferenceState();
+        button->SetStateFont(refState, EditorFontManager::Instance()->GetDefaultFont());
+        button->SetStateText(refState, controlText);
+        button->SetStateTextAlign(refState, ALIGN_HCENTER | ALIGN_VCENTER);
+        button->SetStateDrawType(refState, UIControlBackground::DRAW_SCALE_TO_RECT);
+
+        // Button is state-aware.
+        activeNode->GetExtraData().SetLocalizationKey(controlText, refState);
     }
 }
 
@@ -792,7 +804,7 @@ void UIButtonMetadata::UpdateExtraData(HierarchyTreeNodeExtraData& extraData, eE
     for (int stateID = 0; stateID < statesCount; stateID ++)
     {
         UIControl::eControlState state = UIControlStateHelper::GetUIControlState(stateID);
-        UIStaticText* textControl = button->GetStateTextControl(state);
+        UIStaticText* textControl = button->GetTextBlock(UIButton::ControlStateToDrawState(state));
         if (!textControl)
         {
             continue;
@@ -830,9 +842,6 @@ void UIButtonMetadata::SetFittingType(int value)
         UIStaticText* buttonText = GetActiveUIButton()->GetStateTextControl(this->uiControlStates[i]);
         if (buttonText)
         {
-            // Changing Fitting Option affects the font which might be reused
-            // by other controls, so clone the existing one.
-            CloneFont(buttonText);
             buttonText->SetFittingOption(value);
         }
     }
@@ -973,7 +982,7 @@ void UIButtonMetadata::RecoverPropertyDirtyFlags()
 {
     UpdatePropertyDirtyFlagForLocalizedText();
     UpdatePropertyDirtyFlagForFont();
-    UpdatePropertyDirtyFlagForFontSize();
+    //UpdatePropertyDirtyFlagForFontSize();
     UpdatePropertyDirtyFlagForColor();
 
     UpdatePropertyDirtyFlagForSpriteName();

@@ -33,6 +33,7 @@
 #include "Base/BaseTypes.h"
 #include "Base/Message.h"
 #include "Base/BaseObject.h"
+#include "Mutex.h"
 
 #if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__) || defined(__DAVAENGINE_ANDROID__)
     #define DAVAENGINE_PTHREAD
@@ -43,6 +44,7 @@
 #include "Platform/TemplateWin32/pThreadWin32.h"
 #elif defined(DAVAENGINE_PTHREAD)
 #include <pthread.h>
+#include <signal.h>
 #endif
 
 namespace DAVA
@@ -103,7 +105,8 @@ public:
 	{
 		STATE_CREATED = 0,
 		STATE_RUNNING,
-		STATE_ENDED
+		STATE_ENDED,
+        STATE_KILLED
 	};
 	
 	/**
@@ -118,6 +121,8 @@ public:
 		\returns ptr to thread object 
 	*/
 	static Thread * Create(const Message& msg);
+
+    static void KillAll();
 
 	/**
 		\brief Start execution of the thread
@@ -134,6 +139,10 @@ public:
     /** Wait until thread's finished.
     */
     void Join();
+
+    /** Kill thread
+    */
+    void Kill();
 
     /**
         Wrapp pthread wait, signal and broadcast
@@ -161,10 +170,7 @@ public:
     static void	InitMainThread();
 
 private:
-    Thread();
-    virtual ~Thread();
-    Thread(const Thread& t);
-    Thread(const Message& msg);
+	Thread(const Message& msg);
     void Init();
     void Shutdown();
 
@@ -176,15 +182,25 @@ private:
 	Id id;
 	static Id mainThreadId;
 
+    static Set<Thread *> threadList;
+    static Mutex threadListMutex;
+	
+#if defined(__DAVAENGINE_IPHONE__) || defined(__DAVAENGINE_MACOS__)
+	#if defined (__DAVAENGINE_NPAPI__)
+		CGLContextObj npAPIGLContext;
+	#endif // #if defined (__DAVAENGINE_NPAPI__)
+
 #if defined(DAVAENGINE_PTHREAD)
     bool joined;
 	friend void	* PthreadMain(void * param);
 #elif defined (__DAVAENGINE_WIN32__)
     HANDLE threadHandle;
+
 	friend DWORD WINAPI ThreadFunc(void* param);
 #elif defined(__DAVAENGINE_ANDROID__)
 private:
 	static ThreadId glThreadId;
+
 public:
 	static void	InitGLThread();
 #endif //PLATFORMS	
