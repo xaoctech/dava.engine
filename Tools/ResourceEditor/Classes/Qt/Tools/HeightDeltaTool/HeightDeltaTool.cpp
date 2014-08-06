@@ -19,8 +19,6 @@ HeightDeltaTool::HeightDeltaTool( QWidget* p )
 {
     ui->setupUi(this);
 
-    ui->angle->setValue( 0.0 );
-
     connect( ui->browse, SIGNAL(clicked()), SLOT(OnBrowse()));
     connect( ui->cancel, SIGNAL(clicked()), SLOT(close()));
     connect( ui->run, SIGNAL(clicked()), SLOT(OnRun()));
