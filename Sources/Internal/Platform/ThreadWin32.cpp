@@ -89,7 +89,7 @@ DWORD WINAPI ThreadFunc(void* param)
 
 void Thread::YieldThread()
 {
-    ::SwitchToThread();
+    Yield();
 }
 
 Thread::Id Thread::GetCurrentThreadId()

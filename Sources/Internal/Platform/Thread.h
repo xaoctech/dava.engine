@@ -175,22 +175,17 @@ private:
 
 	Id id;
 	static Id mainThreadId;
-	
+
 #if defined(DAVAENGINE_PTHREAD)
     bool joined;
 	friend void	* PthreadMain(void * param);
 #elif defined (__DAVAENGINE_WIN32__)
-private:
     HANDLE threadHandle;
 	friend DWORD WINAPI ThreadFunc(void* param);
 #elif defined(__DAVAENGINE_ANDROID__)
 private:
 	static ThreadId glThreadId;
-private:
-	friend void	* PthreadMain(void * param);
-	void StartAndroid();
 public:
-	static void	InitMainThread();
 	static void	InitGLThread();
 #endif //PLATFORMS	
 };
