@@ -1017,6 +1017,9 @@
 		A6E4FDFB1761D83100B48E41 /* ActionUpdateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */; };
 		A6E4FDFC1761D83100B48E41 /* ActionUpdateSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */; };
 		AA747D9F0F9514B9006C5449 /* Framework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */; };
+		C16A431819927C850011024B /* Notification.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C16A431619927C850011024B /* Notification.cpp */; };
+		C16A431919927C850011024B /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = C16A431719927C850011024B /* Notification.h */; };
+		C16A431A19927C970011024B /* Notification.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C16A431619927C850011024B /* Notification.cpp */; };
 		C1DC1F081717FD3C001C5EC3 /* libTextureConverter_macos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */; };
 		C70B565B1753CB5E008966FA /* KeyedArchiveSwig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */; };
 		C7E76D3116DF69370041ED9A /* AutotestingSystemLua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */; };
@@ -1896,6 +1899,8 @@
 		A6E4FDF91761D83100B48E41 /* ActionUpdateSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionUpdateSystem.cpp; sourceTree = "<group>"; };
 		A6E4FDFA1761D83100B48E41 /* ActionUpdateSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionUpdateSystem.h; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* Framework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Framework_Prefix.pch; sourceTree = SOURCE_ROOT; };
+		C16A431619927C850011024B /* Notification.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Notification.cpp; sourceTree = "<group>"; };
+		C16A431719927C850011024B /* Notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Notification.h; sourceTree = "<group>"; };
 		C1DC1F071717FD3C001C5EC3 /* libTextureConverter_macos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTextureConverter_macos.a; path = ../../Libs/libs/libTextureConverter_macos.a; sourceTree = "<group>"; };
 		C70B56591753CB5E008966FA /* KeyedArchiveSwig.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyedArchiveSwig.cpp; sourceTree = "<group>"; };
 		C7E76D2116DF69370041ED9A /* AutotestingSystemLua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AutotestingSystemLua.cpp; sourceTree = "<group>"; };
@@ -3180,6 +3185,8 @@
 		E8B3C8BB16B9326D002BD35F /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				C16A431619927C850011024B /* Notification.cpp */,
+				C16A431719927C850011024B /* Notification.h */,
 				6280BAA418D6F7DC007809B7 /* DateTimeApple.mm */,
 				624C87F018C6160F00E1049D /* DateTime.cpp */,
 				624C87F118C6160F00E1049D /* DateTime.h */,
@@ -4439,6 +4446,7 @@
 				E8B3CBB916B9326E002BD35F /* Thread.h in Headers */,
 				E8B3CBBE16B9326E002BD35F /* Font.h in Headers */,
 				E8B3CBC016B9326E002BD35F /* FontManager.h in Headers */,
+				C16A431919927C850011024B /* Notification.h in Headers */,
 				E8B3CBC216B9326E002BD35F /* FTFont.h in Headers */,
 				E8B3CBC416B9326E002BD35F /* GraphicsFont.h in Headers */,
 				E8B3CBC516B9326E002BD35F /* GridSprite.h in Headers */,
@@ -5144,6 +5152,7 @@
 				02FD81D01924997C007762C0 /* MailComposeDelegate.mm in Sources */,
 				02FD81D11924997C007762C0 /* GlobalEnum.cpp in Sources */,
 				02FD81D21924997C007762C0 /* GPUFamilyDescriptor.cpp in Sources */,
+				C16A431A19927C970011024B /* Notification.cpp in Sources */,
 				02FD81D31924997C007762C0 /* EnumMap.cpp in Sources */,
 				02FD81D41924997C007762C0 /* ActionComponent.cpp in Sources */,
 				02FD81D51924997C007762C0 /* CustomPropertiesComponent.cpp in Sources */,
@@ -5451,6 +5460,7 @@
 				E8B3CD0916B9326E002BD35F /* UILoadingTransition.cpp in Sources */,
 				E8B3CD0B16B9326E002BD35F /* UIMoveInTransition.cpp in Sources */,
 				E8B3CD0D16B9326E002BD35F /* UIPopup.cpp in Sources */,
+				C16A431819927C850011024B /* Notification.cpp in Sources */,
 				E8B3CD0F16B9326E002BD35F /* UIScreen.cpp in Sources */,
 				84D18C0219201BEF009E3E90 /* LibDdsHelper.cpp in Sources */,
 				E8B3CD1516B9326E002BD35F /* UIScreenManageriPhone.mm in Sources */,
